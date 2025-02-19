@@ -937,7 +937,15 @@ class TestSimilarity:
                 G.nodes[n]["attr"] = n
             for e in G.edges:
                 G.edges[e]["attr"] = e
-        match = lambda x, y: x == y
 
-        assert nx.graph_edit_distance(G2, G3, node_match=match, edge_match=match) == 1
-        assert nx.graph_edit_distance(G3, G2, node_match=match, edge_match=match) == 1
+        def user_match(x, y):
+            return x == y
+
+        assert (
+            nx.graph_edit_distance(G2, G3, node_match=user_match, edge_match=user_match)
+            == 1
+        )
+        assert (
+            nx.graph_edit_distance(G3, G2, node_match=user_match, edge_match=user_match)
+            == 1
+        )

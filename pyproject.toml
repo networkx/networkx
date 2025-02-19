@@ -219,8 +219,9 @@ ignore = [
   "PLR09",    # Too many <...>
   "PLR2004",  # Magic value used in comparison
   "ISC001",   # Conflicts with formatter
+  "E741",     # Ambiguous variable name
+  "E722",     # Do not use bare `except`
   "F",        # pyflakes
-  "E",        # pycodestyle
   "EM101",    # Exception must not use a string literal
   "EM102",    # Exception must not use an f-string literal
   "PD",       # pandas-vet
@@ -228,6 +229,7 @@ ignore = [
   "PYI",      # flake8-pyi
   "NPY002",   # Replace legacy `np.random.random` call with `np.random.Generator`
 ]
+exclude=['doc/conf.py', '__init__.py']
 
 # Need to select D above
 #[tool.ruff.lint.pydocstyle]

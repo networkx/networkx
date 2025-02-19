@@ -484,7 +484,7 @@ class GEXFWriter(GEXF):
                     e.attrib["for"] = attr_id
                     e.attrib["value"] = str(val)
                     # Handle nan, inf, -inf differently
-                    if val_type == float:
+                    if val_type is float:
                         if e.attrib["value"] == "inf":
                             e.attrib["value"] = "INF"
                         elif e.attrib["value"] == "nan":
@@ -509,7 +509,7 @@ class GEXFWriter(GEXF):
                 else:
                     e.attrib["value"] = str(v)
                     # Handle float nan, inf, -inf differently
-                    if val_type == float:
+                    if val_type is float:
                         if e.attrib["value"] == "inf":
                             e.attrib["value"] = "INF"
                         elif e.attrib["value"] == "nan":

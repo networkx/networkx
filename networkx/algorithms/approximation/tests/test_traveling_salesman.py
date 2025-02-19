@@ -300,9 +300,8 @@ def test_TSP_method():
     G[4][5]["weight"] = 10
 
     # Test using the old currying method
-    sa_tsp = lambda G, weight: nx_app.simulated_annealing_tsp(
-        G, "greedy", weight, source=4, seed=1
-    )
+    def sa_tsp(G, weight):
+        return nx_app.simulated_annealing_tsp(G, "greedy", weight, source=4, seed=1)
 
     path = nx_app.traveling_salesman_problem(
         G,

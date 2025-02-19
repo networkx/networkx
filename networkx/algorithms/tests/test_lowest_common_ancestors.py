@@ -341,7 +341,7 @@ class TestDAGLCA:
             ]
         )
 
-        assert nx.lowest_common_ancestor(G, 7, 9) == None
+        assert nx.lowest_common_ancestor(G, 7, 9) is None
 
     def test_all_pairs_lca_one_pair_gh4942(self):
         G = nx.DiGraph()

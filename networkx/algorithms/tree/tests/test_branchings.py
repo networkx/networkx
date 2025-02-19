@@ -3,10 +3,10 @@ from operator import itemgetter
 
 import pytest
 
-np = pytest.importorskip("numpy")
-
 import networkx as nx
 from networkx.algorithms.tree import branchings, recognition
+
+np = pytest.importorskip("numpy")
 
 #
 # Explicitly discussed examples from Edmonds paper.

@@ -1,5 +1,7 @@
 """Flow based node and edge disjoint paths."""
 
+from itertools import filterfalse as _filterfalse
+
 import networkx as nx
 
 # Define the default maximum flow function to use for the underlying
@@ -11,13 +13,11 @@ from networkx.algorithms.flow import (
 )
 from networkx.exception import NetworkXNoPath
 
-default_flow_func = edmonds_karp
-from itertools import filterfalse as _filterfalse
-
 # Functions to build auxiliary data structures.
 from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_connectivity
 
 __all__ = ["edge_disjoint_paths", "node_disjoint_paths"]
+default_flow_func = edmonds_karp
 
 
 @nx._dispatchable(

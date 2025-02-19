@@ -1,11 +1,12 @@
-import pytest
-
-np = pytest.importorskip("numpy")
 import random
+
+import pytest
 
 import networkx as nx
 from networkx.algorithms import approximation as approx
 from networkx.algorithms import threshold
+
+np = pytest.importorskip("numpy")
 
 progress = 0
 

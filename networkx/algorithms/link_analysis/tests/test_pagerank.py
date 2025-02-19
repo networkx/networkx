@@ -3,16 +3,15 @@ import random
 import pytest
 
 import networkx as nx
-from networkx.classes.tests import dispatch_interface
-
-np = pytest.importorskip("numpy")
-pytest.importorskip("scipy")
-
 from networkx.algorithms.link_analysis.pagerank_alg import (
     _pagerank_numpy,
     _pagerank_python,
     _pagerank_scipy,
 )
+from networkx.classes.tests import dispatch_interface
+
+np = pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web

@@ -1,15 +1,14 @@
 import pytest
 
 import networkx as nx
-
-np = pytest.importorskip("numpy")
-sp = pytest.importorskip("scipy")
-
 from networkx.algorithms.link_analysis.hits_alg import (
     _hits_numpy,
     _hits_python,
     _hits_scipy,
 )
+
+np = pytest.importorskip("numpy")
+sp = pytest.importorskip("scipy")
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
