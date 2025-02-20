@@ -75,7 +75,7 @@ def weisfeiler_lehman_graph_hash(
     Returns
     -------
     h : string
-        Hexadecimal string corresponding to hash of the input graph (:code:`2 * digest_size` hex characters).
+        Hexadecimal string corresponding to hash of `G` (length ``2 * digest_size``).
 
     Examples
     --------
@@ -240,7 +240,7 @@ def weisfeiler_lehman_subgraph_hashes(
     node_subgraph_hashes : dict
         A dictionary with each key given by a node in G, and each value given
         by the subgraph hashes in order of depth from the key node.
-        Hashes are hexadecimal strings (hence :code:`2 * digest_size` long).
+        Hashes are hexadecimal strings (hence ``2 * digest_size`` long).
 
     Examples
     --------
