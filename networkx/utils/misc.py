@@ -12,10 +12,8 @@ can be accessed, for example, as
 """
 
 import random
-import sys
-import uuid
 import warnings
-from collections import defaultdict, deque
+from collections import defaultdict
 from collections.abc import Iterable, Iterator, Sized
 from itertools import chain, tee
 
