@@ -88,7 +88,7 @@ with the following contents::
 At this point, your contribution is ready to be reviewed. You can make the
 changes on your ``complete-graph-circular-layout-example`` branch visible to
 other NetworkX developers by
-`creating a pull request`__. 
+`creating a pull request`__.
 
 .. _PR: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request
 

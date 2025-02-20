@@ -71,7 +71,7 @@ Release Process
 
  - Commit and push changes::
 
-    git add networkx/__init__.py 
+    git add networkx/__init__.py
     git commit -m "Bump release version"
     git push origin main
 
