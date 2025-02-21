@@ -2,6 +2,31 @@
 # pre-commit install
 
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b # frozen: v5.0.0
+    hooks:
+      # Sanity checks
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-illegal-windows-names
+      - id: check-merge-conflict
+      # Checks based on file type
+      - id: check-ast
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: check-yaml
+      # Detect mistakes
+      - id: debug-statements
+      - id: detect-private-key
+      - id: forbid-submodules
+      # Automatic fixes
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: trailing-whitespace
+        exclude_types: [svg, xml]
+        exclude: test_p2g.py
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: bc7af46104f0f5368b95878decf720f9f00c2559 # frozen: v3.4.2
     hooks:
