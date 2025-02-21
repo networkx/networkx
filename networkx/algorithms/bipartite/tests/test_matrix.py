@@ -2,8 +2,6 @@ import pytest
 
 np = pytest.importorskip("numpy")
 sp = pytest.importorskip("scipy")
-sparse = pytest.importorskip("scipy.sparse")
-
 
 import networkx as nx
 from networkx.algorithms import bipartite
