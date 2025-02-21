@@ -2,6 +2,13 @@
 # pre-commit install
 
 repos:
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: bc7af46104f0f5368b95878decf720f9f00c2559 # frozen: v3.4.2
+    hooks:
+      - id: prettier
+        files: \.(html|md|toml|yml|yaml)
+        args: [--prose-wrap=preserve]
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b # frozen: v5.0.0
     hooks:
@@ -27,12 +34,6 @@ repos:
       - id: trailing-whitespace
         exclude_types: [svg, xml]
         exclude: test_p2g.py
-  - repo: https://github.com/rbubley/mirrors-prettier
-    rev: bc7af46104f0f5368b95878decf720f9f00c2559 # frozen: v3.4.2
-    hooks:
-      - id: prettier
-        files: \.(html|md|toml|yml|yaml)
-        args: [--prose-wrap=preserve]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: 73413df07b4ab0bf103ca1ae73c7cec5c0ace593 # frozen: v0.9.2
