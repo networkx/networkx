@@ -62,7 +62,7 @@ repos:
   #
   #   $ pre-commit run --all-files --hook-stage manual
   #
-  # Automatically remove unused imports (but not as aggressively as ruff rule F401 )
+  # Automatically remove unused imports (but not as aggressively as ruff rule F401)
   - repo: https://github.com/PyCQA/autoflake
     rev: 0544741e2b4a22b472d9d93e37d4ea9153820bb1 # frozen: v2.3.1
     hooks:
