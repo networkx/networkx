@@ -44,15 +44,17 @@ class TestSimilarity:
     def test_graph_edit_distance_roots_and_timeout(self):
         G0 = nx.star_graph(5)
         G1 = G0.copy()
-        pytest.raises(ValueError, graph_edit_distance, G0, G1, roots=[2])
-        pytest.raises(ValueError, graph_edit_distance, G0, G1, roots=[2, 3, 4])
+        pytest.raises(TypeError, graph_edit_distance, G0, G1, roots=[2])
+        pytest.raises(ValueError, graph_edit_distance, G0, G1, roots=(2, ))
+        pytest.raises(ValueError, graph_edit_distance, G0, G1, roots=(2, 3, 4))
         pytest.raises(nx.NodeNotFound, graph_edit_distance, G0, G1, roots=(9, 3))
-        pytest.raises(nx.NodeNotFound, graph_edit_distance, G0, G1, roots=(3, 9))
+        pytest.raises(nx.NodeNotFound, graph_edit_distance, G0, G1, roots=[(1, 1), (3, 9)])
         pytest.raises(nx.NodeNotFound, graph_edit_distance, G0, G1, roots=(9, 9))
         assert graph_edit_distance(G0, G1, roots=(1, 2)) == 0
-        assert graph_edit_distance(G0, G1, roots=(0, 1)) == 8
+        assert graph_edit_distance(G0, G1, roots=[(0, 1)]) == 8
         assert graph_edit_distance(G0, G1, roots=(1, 2), timeout=5) == 0
         assert graph_edit_distance(G0, G1, roots=(0, 1), timeout=5) == 8
+        assert graph_edit_distance(G0, G1, roots=[(0, 1), [4, 2]], timeout=5) == 7
         assert graph_edit_distance(G0, G1, roots=(0, 1), timeout=0.0001) is None
         # test raise on 0 timeout
         pytest.raises(nx.NetworkXError, graph_edit_distance, G0, G1, timeout=0)
