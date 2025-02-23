@@ -311,17 +311,17 @@ def is_triad(G):
 @not_implemented_for("undirected")
 @nx._dispatchable(returns_graph=True)
 def all_triads(G):
-    """A generator of all possible triads in G.
+    """Yield all possible triads in G.
 
     Parameters
     ----------
     G : digraph
        A NetworkX DiGraph
 
-    Returns
-    -------
-    all_triads : generator of DiGraphs
-       Generator of triads (order-3 DiGraphs)
+    Yields
+    ------
+    triads : DiGraphs
+       A triad from G (order-3 DiGraph)
 
     Examples
     --------

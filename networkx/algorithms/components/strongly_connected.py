@@ -15,18 +15,17 @@ __all__ = [
 @not_implemented_for("undirected")
 @nx._dispatchable
 def strongly_connected_components(G):
-    """Generate nodes in strongly connected components of graph.
+    """Yield nodes of strongly connected components of graph.
 
     Parameters
     ----------
     G : NetworkX Graph
         A directed graph.
 
-    Returns
-    -------
-    comp : generator of sets
-        A generator of sets of nodes, one for each strongly connected
-        component of G.
+    Yields
+    ------
+    comp : set
+       Set of nodes of a strongly connected component of G.
 
     Raises
     ------
@@ -114,18 +113,17 @@ def strongly_connected_components(G):
 @not_implemented_for("undirected")
 @nx._dispatchable
 def kosaraju_strongly_connected_components(G, source=None):
-    """Generate nodes in strongly connected components of graph.
+    """Yield nodes of strongly connected components of graph.
 
     Parameters
     ----------
     G : NetworkX Graph
         A directed graph.
 
-    Returns
-    -------
-    comp : generator of sets
-        A generator of sets of nodes, one for each strongly connected
-        component of G.
+    Yields
+    ------
+    comp : set
+       Set of nodes of a strongly connected component of G.
 
     Raises
     ------
