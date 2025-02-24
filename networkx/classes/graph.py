@@ -336,6 +336,10 @@ class Graph:
         """
         return Graph
 
+    @nx._dispatchable(name="graph__new__", graphs=None, returns_graph=True)
+    def __new__(cls, incoming_graph_data=None, **attr):
+        return object.__new__(cls)
+
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
