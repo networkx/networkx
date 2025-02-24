@@ -1187,10 +1187,10 @@ def count_planar_perfect_matchings(G: nx.Graph):
 
     # If the graph has multiple connected components, handle each component
     # separately. Return the product of matching sums for all components.
-    connectedComponents = list(nx.connected_components(G))
-    if len(connectedComponents) > 1:
+    connected_components = list(nx.connected_components(G))
+    if len(connected_components) > 1:
         result = 1
-        for component in connectedComponents:
+        for component in connected_components:
             result *= count_planar_perfect_matchings(G.subgraph(component))
         return result
 
@@ -1204,66 +1204,97 @@ def count_planar_perfect_matchings(G: nx.Graph):
 
     if isinstance(G, nx.MultiGraph):
         # convert graph into non-multi graph, by adding repeated edge weights.
-        newGraph = nx.Graph()
+        newG = nx.Graph()
         for edge in G.edges(data=True):
             edgeWeight = edge[2].get("weight", 1)
-            if newGraph.has_edge(edge[0], edge[1]):
-                newGraph[edge[0]][edge[1]]["weigh"] += edgeWeight
+            if newG.has_edge(edge[0], edge[1]):
+                newG[edge[0]][edge[1]]["weigh"] += edgeWeight
             else:
-                newGraph.add_edge(edge[0], edge[1], weight=edgeWeight)
+                newG.add_edge(edge[0], edge[1], weight=edgeWeight)
 
-        G = newGraph
+        G = newG
 
     # Construct list of faces. Each face is a list of edges, in
     # counterclockwise order. Each edge also has its nodes in counterclockwise
     # order.
-    visitedHalfEdges = set()
-    facesList = []
-    for halfEdge in embedding.edges():
-        if halfEdge not in visitedHalfEdges:
-            faceNodes = embedding.traverse_face(
-                halfEdge[0], halfEdge[1], mark_half_edges=visitedHalfEdges
+    visited_half_edges = set()
+    faces = []
+    for halfedge in embedding.edges():
+        if halfedge not in visited_half_edges:
+            face_nodes = embedding.traverse_face(
+                halfedge[0], halfedge[1], mark_half_edges=visited_half_edges
             )
-            faceNodes.reverse()  # traverse_face goes in clockwise order, but we want counterclockwise
-            faceEdges = []
-            for i, node in enumerate(faceNodes):
-                faceEdges.append((node, faceNodes[(i + 1) % len(faceNodes)]))
-            facesList.append(tuple(faceEdges))
+            face_nodes.reverse()  # traverse_face goes in clockwise order, but we want counterclockwise
+            face_edges = []
+            for i, node in enumerate(face_nodes):
+                face_edges.append((node, face_nodes[(i + 1) % len(face_nodes)]))
+            faces.append(tuple(face_edges))
 
     # This will have one too many faces, because it will include the extra face
     # you get if you embed the graph in a sphere, not a plane. So, remove the
     # last face.
-    facesListMissingOne = []
-    for i in range(len(facesList) - 1):
-        facesListMissingOne.append(facesList[i])
+    faces_missing_one = []
+    for i in range(len(faces) - 1):
+        faces_missing_one.append(faces[i])
 
-    return _fkt_with_embedding(G, facesListMissingOne)
+    return _fkt_with_embedding(G, faces_missing_one)
 
 
-def _fkt_with_embedding(G: nx.Graph, faces, numericalStabilityThreshold=1e-5):
+def _fkt_with_embedding(G: nx.Graph, faces, numerical_stability_threshold=1e-5):
+    """Counts the number of perfect matchings using the FKT algorithm, using
+    an already-computed planar embedding that is a list of faces, rather than
+    computing it from scratch.
+
+    Parameters
+    ----------
+    G : NetworkX graph.
+    faces : list
+        A list of faces of the graph corresponding to some planar
+        embedding. Each face should be a list of edges in counterclockwise
+        order. Each edge should have its nodes ordered counterclockwise.
+    numerical_stability_threshold : float
+        Tolerance to negative determinants due to numerical instability.
+        Sometimes the FKT algorithm (which returns the suqre root of a
+        determinant) will get a small negative determinant. This should never
+        happen in principle, but may happen due to numerical instability. This
+        parameter is the tolerance of what negative determinants we round to 0.
+
+    Returns
+    ----------
+    float
+        Sum (possibly weighted) of perfect matchings in `G`.
+
+    Raises
+    ----------
+    NetworkXAlgorithmError
+        If a negative determinant is encountered that is more negative than
+        -numerical_stability_threshold. This indicates severe numerical
+        instability.
+    """
+
     if isinstance(G, nx.DiGraph):
         G = nx.Graph.to_undirected(G)
 
-    orientedGraph = kasteleyn_orientation(G, faces)
+    oriented_graph = kasteleyn_orientation(G, faces)
 
     # Now make the weights of the oriented graph equal to the weights of the
     # original graph, with appropriate signs.
     for edge in G.edges(data=True):
-        edgeWeight = edge[2].get("weight", 1)
-        orientedGraph[edge[0]][edge[1]]["weight"] *= edgeWeight
-        orientedGraph[edge[1]][edge[0]]["weight"] *= edgeWeight
+        edge_weight = edge[2].get("weight", 1)
+        oriented_graph[edge[0]][edge[1]]["weight"] *= edge_weight
+        oriented_graph[edge[1]][edge[0]]["weight"] *= edge_weight
 
-    adj = nx.adjacency_matrix(orientedGraph)
+    adj = nx.adjacency_matrix(oriented_graph)
     determinant = np.linalg.det(adj.toarray())  # detSparseMatrix(adj)
     if determinant < 0:
-        if determinant > -numericalStabilityThreshold:
+        if determinant > -numerical_stability_threshold:
             # Sometimes the determinant is negative, which should be
             # impossible, but this just because of numerical instability. It
             # really should be zero.
             determinant = 0
         else:
             raise nx.NetworkXAlgorithmError(
-                f"Error: got negative determinant, which should be impossible. Determinant is {determinant}."
+                f"Error: got negative determinant, which should be impossible. Determinant is {determinant}. This likely indicates severe numerical instability."
             )
     return np.sqrt(determinant)
 
@@ -1293,40 +1324,42 @@ def kasteleyn_orientation(G: nx.Graph, faces):
         from v to u. If the result has edge (u, v) with weight +1, then it will
         also have an edge (v, u) with weight -1, and vice versa.
     """
+
     result = nx.DiGraph()
 
-    # make some spanning tree of the graph, and arbitrarily set orientation of edges along that spanning tree
-    spanningTree = nx.minimum_spanning_tree(G)
-    for edge in spanningTree.edges(data=True):
+    # Make some spanning tree of the graph, and arbitrarily set orientation of
+    # edges along that spanning tree.
+    spanning_tree = nx.minimum_spanning_tree(G)
+    for edge in spanning_tree.edges(data=True):
         result.add_edge(edge[0], edge[1], weight=1)
         result.add_edge(edge[1], edge[0], weight=-1)
 
-    unfinishedFaces = set()  # set of faces where not all orientations are set
+    unfinished_faces = set()  # set of faces where not all orientations are set
     for face in faces:
-        unfinishedFaces.add(face)
+        unfinished_faces.add(face)
 
-    while len(unfinishedFaces) > 0:
-        # find a face where there is one edge not yet oriented, and orient it
-        for face in unfinishedFaces:
-            numUnorientedEdges = 0
-            numClockwiseEdges = 0
-            unorientedEdge = None
+    while len(unfinished_faces) > 0:
+        # Find a face where there is one edge not yet oriented, and orient it.
+        for face in unfinished_faces:
+            num_unoriented_edges = 0
+            num_clockwise_edges = 0
+            unoriented_edge = None
             for edge in face:
                 if not result.has_edge(edge[0], edge[1]):
-                    numUnorientedEdges += 1
-                    unorientedEdge = edge
+                    num_unoriented_edges += 1
+                    unoriented_edge = edge
                 else:
                     if result[edge[0]][edge[1]]["weight"] == -1:
-                        numClockwiseEdges += 1
+                        num_clockwise_edges += 1
 
-            if numUnorientedEdges == 1:
-                unfinishedFaces.remove(face)
-                if numClockwiseEdges % 2 == 0:
-                    result.add_edge(unorientedEdge[0], unorientedEdge[1], weight=-1)
-                    result.add_edge(unorientedEdge[1], unorientedEdge[0], weight=1)
+            if num_unoriented_edges == 1:
+                unfinished_faces.remove(face)
+                if num_clockwise_edges % 2 == 0:
+                    result.add_edge(unoriented_edge[0], unoriented_edge[1], weight=-1)
+                    result.add_edge(unoriented_edge[1], unoriented_edge[0], weight=1)
                 else:
-                    result.add_edge(unorientedEdge[0], unorientedEdge[1], weight=1)
-                    result.add_edge(unorientedEdge[1], unorientedEdge[0], weight=-1)
+                    result.add_edge(unoriented_edge[0], unoriented_edge[1], weight=1)
+                    result.add_edge(unoriented_edge[1], unoriented_edge[0], weight=-1)
                 break
 
     return result
