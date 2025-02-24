@@ -1154,8 +1154,9 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
 
 
 def count_planar_perfect_matchings(G: nx.Graph):
-    """Counts the number of perfect matchings using the FKT algorithm. `G` must
-    be planar in order to use the FKT algorithm.
+    """Counts the number of perfect matchings using the
+    Fisher-Kasteleyn-Temperley (FKT) algorithm. `G` must be planar in order to
+    use the FKT algorithm.
 
     If `G` is a weighted graph, each matching is counted with weight equal to
     the product of weights of edges included in the matching. Edges without
@@ -1248,10 +1249,12 @@ def _fkt_with_embedding(G: nx.Graph, faces, numerical_stability_threshold=1e-5):
     Parameters
     ----------
     G : NetworkX graph.
+
     faces : list
         A list of faces of the graph corresponding to some planar
         embedding. Each face should be a list of edges in counterclockwise
         order. Each edge should have its nodes ordered counterclockwise.
+
     numerical_stability_threshold : float
         Tolerance to negative determinants due to numerical instability.
         Sometimes the FKT algorithm (which returns the suqre root of a
@@ -1309,6 +1312,7 @@ def kasteleyn_orientation(G: nx.Graph, faces):
     Parameters
     ----------
     G : NetworkX graph.
+
     faces : list
         A list of faces of the graph corresponding to some planar
         embedding. Each face should be a list of edges in counterclockwise
