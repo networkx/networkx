@@ -1,7 +1,8 @@
 """Functions for computing and verifying matchings in a graph."""
 
-from collections import Counter
 from itertools import combinations, repeat
+
+import numpy as np
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -1150,3 +1151,182 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
         verifyOptimum()
 
     return matching_dict_to_set(mate)
+
+
+def count_planar_perfect_matchings(G: nx.Graph):
+    """Counts the number of perfect matchings using the FKT algorithm. `G` must
+    be planar in order to use the FKT algorithm.
+
+    If `G` is a weighted graph, each matching is counted with weight equal to
+    the product of weights of edges included in the matching. Edges without
+    weights default to having weight 1.
+
+    Technically, the FKT algorithm only returns the absolute value of the sum
+    of perfect matchings. Generally one can tell for other reasons whether the
+    sum of perfect matchings should be positive or negative for their problem.
+
+    If `G` is a directed graph, this ignores the edge directions and considers
+    `G` as undirected.
+
+    Raises NetworkXError if `G` is not planar.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    Returns
+    ----------
+    float
+        Sum (possibly weighted) of perfect matchings in `G`.
+
+    Raises
+    ----------
+    NetworkXError
+        If `G` is not planar.
+    """
+
+    # If the graph has multiple connected components, handle each component
+    # separately. Return the product of matching sums for all components.
+    connectedComponents = list(nx.connected_components(G))
+    if len(connectedComponents) > 1:
+        result = 1
+        for component in connectedComponents:
+            result *= count_planar_perfect_matchings(G.subgraph(component))
+        return result
+
+    planar, embedding = nx.check_planarity(G)
+    if not planar:
+        raise nx.NetworkXError("Graph is not planar, so FKT algorithm cannot be used.")
+
+    # If we're given a directed graph, we just convert it to undirected.
+    if isinstance(G, nx.DiGraph):
+        G = nx.Graph.to_undirected(G)
+
+    if isinstance(G, nx.MultiGraph):
+        # convert graph into non-multi graph, by adding repeated edge weights.
+        newGraph = nx.Graph()
+        for edge in G.edges(data=True):
+            edgeWeight = edge[2].get("weight", 1)
+            if newGraph.has_edge(edge[0], edge[1]):
+                newGraph[edge[0]][edge[1]]["weigh"] += edgeWeight
+            else:
+                newGraph.add_edge(edge[0], edge[1], weight=edgeWeight)
+
+        G = newGraph
+
+    # Construct list of faces. Each face is a list of edges, in
+    # counterclockwise order. Each edge also has its nodes in counterclockwise
+    # order.
+    visitedHalfEdges = set()
+    facesList = []
+    for halfEdge in embedding.edges():
+        if halfEdge not in visitedHalfEdges:
+            faceNodes = embedding.traverse_face(
+                halfEdge[0], halfEdge[1], mark_half_edges=visitedHalfEdges
+            )
+            faceNodes.reverse()  # traverse_face goes in clockwise order, but we want counterclockwise
+            faceEdges = []
+            for i, node in enumerate(faceNodes):
+                faceEdges.append((node, faceNodes[(i + 1) % len(faceNodes)]))
+            facesList.append(tuple(faceEdges))
+
+    # This will have one too many faces, because it will include the extra face
+    # you get if you embed the graph in a sphere, not a plane. So, remove the
+    # last face.
+    facesListMissingOne = []
+    for i in range(len(facesList) - 1):
+        facesListMissingOne.append(facesList[i])
+
+    return _fkt_with_embedding(G, facesListMissingOne)
+
+
+def _fkt_with_embedding(G: nx.Graph, faces, numericalStabilityThreshold=1e-5):
+    if isinstance(G, nx.DiGraph):
+        G = nx.Graph.to_undirected(G)
+
+    orientedGraph = kasteleyn_orientation(G, faces)
+
+    # Now make the weights of the oriented graph equal to the weights of the
+    # original graph, with appropriate signs.
+    for edge in G.edges(data=True):
+        edgeWeight = edge[2].get("weight", 1)
+        orientedGraph[edge[0]][edge[1]]["weight"] *= edgeWeight
+        orientedGraph[edge[1]][edge[0]]["weight"] *= edgeWeight
+
+    adj = nx.adjacency_matrix(orientedGraph)
+    determinant = np.linalg.det(adj.toarray())  # detSparseMatrix(adj)
+    if determinant < 0:
+        if determinant > -numericalStabilityThreshold:
+            # Sometimes the determinant is negative, which should be
+            # impossible, but this just because of numerical instability. It
+            # really should be zero.
+            determinant = 0
+        else:
+            raise nx.NetworkXAlgorithmError(
+                f"Error: got negative determinant, which should be impossible. Determinant is {determinant}."
+            )
+    return np.sqrt(determinant)
+
+
+def kasteleyn_orientation(G: nx.Graph, faces):
+    """Returns a Kasteleyn orientation of `G`.
+
+    A Kasteleyn orientation of a graph is an assignment of directions to the
+    edges such that every face has an odd number of edges oriented clockwise.
+    `faces` is a list of faces corresponding to some planar embedding of `G`.
+
+    Parameters
+    ----------
+    G : NetworkX graph.
+    faces : list
+        A list of faces of the graph corresponding to some planar
+        embedding. Each face should be a list of edges in counterclockwise
+        order. Each edge should have its nodes ordered counterclockwise.
+
+    Returns
+    -------
+    NetworkX DiGraph
+        A directed graph indicating directions for each edge in `G`. Each edge
+        in will have weight +1 or -1 indicating the direction of the
+        corresponding edge in `G`. Edge (u, v) having weight +1 means the
+        direction is from u to v. And having weight -1 means the direction is
+        from v to u. If the result has edge (u, v) with weight +1, then it will
+        also have an edge (v, u) with weight -1, and vice versa.
+    """
+    result = nx.DiGraph()
+
+    # make some spanning tree of the graph, and arbitrarily set orientation of edges along that spanning tree
+    spanningTree = nx.minimum_spanning_tree(G)
+    for edge in spanningTree.edges(data=True):
+        result.add_edge(edge[0], edge[1], weight=1)
+        result.add_edge(edge[1], edge[0], weight=-1)
+
+    unfinishedFaces = set()  # set of faces where not all orientations are set
+    for face in faces:
+        unfinishedFaces.add(face)
+
+    while len(unfinishedFaces) > 0:
+        # find a face where there is one edge not yet oriented, and orient it
+        for face in unfinishedFaces:
+            numUnorientedEdges = 0
+            numClockwiseEdges = 0
+            unorientedEdge = None
+            for edge in face:
+                if not result.has_edge(edge[0], edge[1]):
+                    numUnorientedEdges += 1
+                    unorientedEdge = edge
+                else:
+                    if result[edge[0]][edge[1]]["weight"] == -1:
+                        numClockwiseEdges += 1
+
+            if numUnorientedEdges == 1:
+                unfinishedFaces.remove(face)
+                if numClockwiseEdges % 2 == 0:
+                    result.add_edge(unorientedEdge[0], unorientedEdge[1], weight=-1)
+                    result.add_edge(unorientedEdge[1], unorientedEdge[0], weight=1)
+                else:
+                    result.add_edge(unorientedEdge[0], unorientedEdge[1], weight=1)
+                    result.add_edge(unorientedEdge[1], unorientedEdge[0], weight=-1)
+                break
+
+    return result
