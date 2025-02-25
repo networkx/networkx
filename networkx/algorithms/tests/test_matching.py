@@ -852,10 +852,10 @@ class TestCountPlanarPerfectMatchings:
         """
 
         # set telling us which vertices have been covered.
-        covered_nodes = set()
+        covered_nodes: set = set()
 
         # edges we're including in the matching
-        included_edges = set()
+        included_edges: set = set()
 
         yield from self.generate_perfect_matchings_recursive(
             G.number_of_nodes(), list(G.edges()), covered_nodes, included_edges, 0

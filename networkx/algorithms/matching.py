@@ -1225,8 +1225,8 @@ def count_planar_perfect_matchings(G: nx.Graph):
     # Construct list of faces. Each face is a list of edges, in
     # counterclockwise order. Each edge also has its nodes in counterclockwise
     # order.
-    visited_half_edges = set()
-    faces = []
+    visited_half_edges: set = set()
+    faces: list = []
     for halfedge in embedding.edges():
         if halfedge not in visited_half_edges:
             face_nodes = embedding.traverse_face(
@@ -1352,7 +1352,7 @@ def kasteleyn_orientation(G: nx.Graph, faces):
         for face in unfinished_faces:
             num_unoriented_edges = 0
             num_clockwise_edges = 0
-            unoriented_edge = None
+            unoriented_edge: tuple = None
             for edge in face:
                 if not result.has_edge(edge[0], edge[1]):
                     num_unoriented_edges += 1
