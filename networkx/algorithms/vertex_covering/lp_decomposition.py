@@ -9,7 +9,7 @@ __all__ = ["_lp_decomposition_vc", "_find_lp_decomposition"]
 
 
 @not_implemented_for("directed")
-def _lp_decomposition_vc(G: nx.Graph, k):
+def _lp_decomposition_vc(G, k):
     lp_value, greater_than_half, less_than_half, equal_to_half = _find_lp_decomposition(
         G
     )
