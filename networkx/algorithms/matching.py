@@ -1352,7 +1352,7 @@ def kasteleyn_orientation(G: nx.Graph, faces):
         for face in unfinished_faces:
             num_unoriented_edges = 0
             num_clockwise_edges = 0
-            unoriented_edge: tuple = None
+            unoriented_edge: tuple = ()
             for edge in face:
                 if not result.has_edge(edge[0], edge[1]):
                     num_unoriented_edges += 1
