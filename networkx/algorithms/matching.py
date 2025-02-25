@@ -1184,7 +1184,18 @@ def count_planar_perfect_matchings(G: nx.Graph):
     ----------
     NetworkXError
         If `G` is not planar.
+
+    References
+    ----------
+    .. [1] P. W. Kasteleyn:
+        Dimer Statistics and Phase Transitions
+        1963
+        https://pubs.aip.org/aip/jmp/article/4/2/287/230188/Dimer-Statistics-and-Phase-Transitions
     """
+
+    # If we're given a directed graph, we just convert it to undirected.
+    if isinstance(G, nx.DiGraph):
+        G = nx.Graph.to_undirected(G)
 
     # If the graph has multiple connected components, handle each component
     # separately. Return the product of matching sums for all components.
@@ -1198,10 +1209,6 @@ def count_planar_perfect_matchings(G: nx.Graph):
     planar, embedding = nx.check_planarity(G)
     if not planar:
         raise nx.NetworkXError("Graph is not planar, so FKT algorithm cannot be used.")
-
-    # If we're given a directed graph, we just convert it to undirected.
-    if isinstance(G, nx.DiGraph):
-        G = nx.Graph.to_undirected(G)
 
     if isinstance(G, nx.MultiGraph):
         # convert graph into non-multi graph, by adding repeated edge weights.
@@ -1252,7 +1259,7 @@ def _fkt_with_embedding(G: nx.Graph, faces, numerical_stability_threshold=1e-5):
 
     faces : list
         A list of faces of the graph corresponding to some planar
-        embedding. Each face should be a list of edges in counterclockwise
+        embedding. Each face should be a tuple of edges in counterclockwise
         order. Each edge should have its nodes ordered counterclockwise.
 
     numerical_stability_threshold : float
@@ -1315,7 +1322,7 @@ def kasteleyn_orientation(G: nx.Graph, faces):
 
     faces : list
         A list of faces of the graph corresponding to some planar
-        embedding. Each face should be a list of edges in counterclockwise
+        embedding. Each face should be a tuple of edges in counterclockwise
         order. Each edge should have its nodes ordered counterclockwise.
 
     Returns

@@ -620,7 +620,7 @@ class TestCountPlanarPerfectMatchings:
         has an odd number of nodes."""
 
         unweighted_grids = [
-            self.grid_graph_unweighted(lattice_size) for lattice_size in [2, 3, 4]
+            grid_graph_unweighted(lattice_size)[0] for lattice_size in [2, 3, 4]
         ]
 
         brute_force_results = [
@@ -633,9 +633,10 @@ class TestCountPlanarPerfectMatchings:
         ]
 
         for i in range(len(brute_force_results)):
-            assert (
-                math.abs(brute_force_results[i] - math.abs(fkt_results[i]))
-                < self.numerical_stability_threshold
+            assert self.results_close_enough(
+                brute_force_results[i],
+                fkt_results[i],
+                self.numerical_stability_threshold,
             )
 
         assert brute_force_results[1] == 0.0
@@ -647,7 +648,7 @@ class TestCountPlanarPerfectMatchings:
         has an odd number of nodes."""
 
         weighted_grids = [
-            self.grid_graph_weighted(lattice_size) for lattice_size in [2, 3, 4]
+            grid_graph_weighted(lattice_size)[0] for lattice_size in [2, 3, 4]
         ]
 
         brute_force_results = [
@@ -660,18 +661,93 @@ class TestCountPlanarPerfectMatchings:
         ]
 
         for i in range(len(brute_force_results)):
-            assert (
-                math.abs(brute_force_results[i] - math.abs(fkt_results[i]))
-                < self.numerical_stability_threshold
+            assert self.results_close_enough(
+                brute_force_results[i],
+                fkt_results[i],
+                self.numerical_stability_threshold,
             )
 
         assert brute_force_results[1] == 0.0
 
     def test_multiple_components(self):
-        pass  # TODO
+        component1 = nx.Graph([(0, 1), (1, 2), (2, 0), (2, 3)])
+        component2 = grid_graph_weighted(4)[0]
+        graph = nx.union(component1, component2, ("1-", "2-"))
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            self.count_perfect_matchings_brute_force(graph),
+            self.numerical_stability_threshold,
+        )
+
+        component1 = nx.Graph([(0, 1), (1, 2), (2, 0), (2, 3)])
+        component2 = grid_graph_weighted(4)[0]
+        component3 = grid_graph_unweighted(2)[0]
+        graph = nx.union(
+            nx.union(component1, component2, ("1-", "2-")), component3, ("", "3-")
+        )
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            self.count_perfect_matchings_brute_force(graph),
+            self.numerical_stability_threshold,
+        )
 
     def test_small_graphs(self):
-        pass  # TODO
+        graph = nx.Graph([(0, 1), (1, 2), (2, 0), (2, 3)])
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            self.count_perfect_matchings_brute_force(graph),
+            self.numerical_stability_threshold,
+        )
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            1,
+            self.numerical_stability_threshold,
+        )
+
+        # Same graph as above, but with arbitrary directions on the edges.
+        # Should have identical answer as above
+        graph = nx.DiGraph()
+        graph.add_edge(0, 1)
+        graph.add_edge(2, 1)
+        graph.add_edge(0, 2)
+        graph.add_edge(3, 2)
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            self.count_perfect_matchings_brute_force(graph),
+            self.numerical_stability_threshold,
+        )
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            1,
+            self.numerical_stability_threshold,
+        )
+
+        # one moderately large graph with some weights
+        graph = nx.Graph()
+        graph.add_edge(0, 1, weight=3)
+        graph.add_edge(1, 2, weight=2)
+        graph.add_edge(2, 3, weight=-3)
+        graph.add_edge(3, 0, weight=-0.5)
+        graph.add_edge(0, 4, weight=1.5)
+        graph.add_edge(3, 4, weight=0.2)
+        graph.add_edge(0, 5, weight=4)
+        graph.add_edge(5, 1, weight=5)
+        graph.add_edge(1, 6, weight=-3)
+        graph.add_edge(6, 2, weight=-4)
+        graph.add_edge(2, 7, weight=4.5)
+        graph.add_edge(7, 3, weight=-5)
+        graph.add_edge(3, 4, weight=-1)
+        graph.add_edge(4, 7, weight=-0.5)
+        graph.add_edge(3, 8, weight=3.2)
+        graph.add_edge(8, 9, weight=3.1)
+        graph.add_edge(10, 1, weight=2)
+        graph.add_edge(10, 11, weight=1.1)
+        graph.add_edge(12, 11, weight=-2)
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            self.count_perfect_matchings_brute_force(graph),
+            self.numerical_stability_threshold,
+        )
 
     def test_nonplanar(self):
         """Tests that count_planar_perfect_matchings raises a NetworkXError
@@ -692,63 +768,34 @@ class TestCountPlanarPerfectMatchings:
         with raises(nx.NetworkXError):
             nx.matching.count_planar_perfect_matchings(k5)
 
-    # Exaple graphs to test FKT algorithm.
-
-    def grid_graph_unweighted(self, lattice_size: int):
-        """Square grid graph on a grid of size `lattice_size` x `lattice_size`.
-
-        Parameters
-        ----------
-        lattice_size : int
-            Dimension of the grid. The graph will have `lattice_size` x
-            `lattice_size` nodes.
-
-        Returns
-        ----------
-        NetworkX Graph
-            Unweighted grid graph.
-        """
-
-        graph = nx.Graph()
-        for i in range(lattice_size):
-            for j in range(lattice_size - 1):
-                graph.add_edge((i, j), (i, j + 1))
-        for i in range(lattice_size - 1):
-            for j in range(lattice_size):
-                graph.add_edge((i, j), (i + 1, j))
-
-        return graph
-
-    def grid_graph_weighted(self, lattice_size: int):
-        """Square grid graph on a grid of size `lattice_size` x `lattice_size`.
-
-        The graph edges will have various weights.
-
-        The edge from (i, j) to (i, j+1) will have weight i+j+1.
-
-        The edge from (i, j) to (i+1, j) will have weight -i-j-2.
+    def results_close_enough(
+        self, result1: float, result2: float, numerical_stability_threshold: float
+    ):
+        """Returns whether 2 results for perfect matching sum (eg from the FKT
+        algorithm and from brute force) are "close enough". One wouldn't expect
+        these results to be exactly the same when using FKT and brute force
+        because of numerical instability associated with calculating
+        determinants. And because the FKT algorithm is not guaranteed to get
+        the sign of the answer correct.
 
         Parameters
         ----------
-        lattice_size : int
-            Dimension of the grid. The graph will have `lattice_size` x
-            `lattice_size` nodes.
+        result1 : float
+            Result of one method (eg FKT).
+
+        result2 : float
+            Result of another method (eg brute force).
+
+        numerical_stability_threshold : float
+            Tolerance for differences between the magnitudes of the 2 results.
 
         Returns
         ----------
-        NetworkX Graph
-            Weighted grid graph.
+        bool
+            True if the absolute values of `result1` and `result2` are within
+            `numerical_stability_threshold` of each other.
         """
-
-        graph = nx.Graph()
-        for i in range(lattice_size):
-            for j in range(lattice_size - 1):
-                graph.add_edge((i, j), (i, j + 1), weight=i + j + 1)
-        for i in range(lattice_size - 1):
-            for j in range(lattice_size):
-                graph.add_edge((i, j), (i + 1, j), weight=-i - j - 2)
-
-        return graph
+        return abs(abs(result1) - abs(result2)) < numerical_stability_threshold
 
     # Below methods count perfect matchings via brute force.
     # For testing purposes.
@@ -896,3 +943,188 @@ class TestKasteleynOrientation:
     :func:`~networkx.algorithms.matching.kasteleyn_orientation`.
 
     """
+
+    def test_grid(self):
+        grid, faces = grid_graph_unweighted(6)
+        orientation = nx.algorithms.matching.kasteleyn_orientation(grid, faces)
+        assert self.is_kasteleyn_orientation(orientation, faces)
+
+    def test_multiple_components(self):
+        grid5, faces5 = grid_graph_unweighted(5)
+        grid3, faces3 = grid_graph_unweighted(3)
+        graph = nx.union(grid5, grid3, ("5-", "3-"))
+
+        # We must rename nodes in the lists of faces faces5 and faces3, since
+        # nx.union above renamed the nodes.
+        new_faces5 = []
+        new_faces3 = []
+        for face in faces5:
+            new_face = []
+            for edge in face:
+                new_face.append(("5-" + str(edge[0]), "5-" + str(edge[1])))
+            new_faces5.append(tuple(new_face))
+        for face in faces3:
+            new_face = []
+            for edge in face:
+                new_face.append(("3-" + str(edge[0]), "3-" + str(edge[1])))
+            new_faces3.append(tuple(new_face))
+
+        faces = new_faces5 + new_faces3
+        orientation = nx.algorithms.matching.kasteleyn_orientation(graph, faces)
+        assert self.is_kasteleyn_orientation(orientation, faces)
+
+    def is_kasteleyn_orientation(
+        self, oriented_graph: nx.DiGraph, faces: list, raise_error=True
+    ):
+        """Returns whether the given orientation is a Kasteleyn orientation,
+        given the list of faces that make a planar embedding of the graph.
+
+        Parameters
+        ----------
+        oriented_graph : NetworkX DiGraph
+            A graph where every edge a -> b has weight +1 or -1. And the edge
+            b -> a has the opposite weight. The weight indicates the direction
+            of the edge. +1 weight on the edge a -> b means the edge is
+            oriented in the direction a to b.
+
+        faces : list
+            A list of faces that make a planar embedding of this graph. Each
+            face should be a tuple of edges in counterclockwise order. And each
+            edge should have the nodes in counterclockwise order too.
+
+        raise_error : bool
+            Whether this method should raise an error if the orientation is not
+            a correct Kasteleyn orientation. As opposed to just returning
+            False. The error will have useful debugging information.
+
+        Returns
+        ----------
+        bool
+            Returns whether `oriented_graph` is a Kasteleyn orientation. If
+            `raises_error` is True (as it is by default), then instead of
+            returning false, this method raises a NetworkXError.
+
+        Raises
+        ----------
+        NetworkXError
+            If the orientation is not a correct Kasteleyn orientation and
+            `raises_error` is True (as it is by default).
+        """
+        # Ensure that oriented graph has opposites weights a -> b and b -> a.
+        for node1 in oriented_graph.nodes():
+            for node2 in oriented_graph.nodes():
+                if (
+                    oriented_graph.has_edge(node1, node2)
+                    and oriented_graph[node1][node2]["weight"]
+                    != -oriented_graph[node2][node1]["weight"]
+                ):
+                    if raise_error:
+                        errorMsg = f"""ERROR: the following 2 edges should have opposite weight (orientation):
+                        Between {node1} and {node2}: {oriented_graph[node1][node2]}
+                        Between {node2} and {node1}: {oriented_graph[node2][node1]}"""
+                        raise nx.NetworkXError(errorMsg)
+                    else:
+                        return False
+
+        # Ensure every face has an odd number of clockwise edges.
+        for face in faces:
+            clockwise_count = 0
+            for edge in face:
+                if oriented_graph[edge[0]][edge[1]]["weight"] == -1:
+                    clockwise_count += 1
+
+            if clockwise_count % 2 != 1:
+                if raise_error:
+                    errorMsg = f"ERROR: face has {clockwise_count} clockwise edges.\n"
+                    for edge in face:
+                        errorMsg += f"edge: {edge}. data: {oriented_graph.get_edge_data(edge[0], edge[1])}\n"
+                    raise nx.NetworkXError(errorMsg)
+                else:
+                    return False
+
+        return True
+
+
+# Example graphs to test FKT algorithm.
+
+
+def grid_graph_unweighted(lattice_size: int):
+    """Square grid graph on a grid of size `lattice_size` x `lattice_size`.
+
+    Parameters
+    ----------
+    lattice_size : int
+        Dimension of the grid. The graph will have `lattice_size` x
+        `lattice_size` nodes.
+
+    Returns
+    ----------
+    (graph, faces) : (NetworkX Graph, list) tuple
+        Unweighted grid graph, and a list of faces of the grid. Each face
+        in `faces` is a list of edges in counterclockwise order, where each
+        edge also has each node in counterclockwise order.
+    """
+
+    graph = nx.Graph()
+    faces = []
+    for i in range(lattice_size):
+        for j in range(lattice_size - 1):
+            graph.add_edge((i, j), (i, j + 1), weight=1)
+    for i in range(lattice_size - 1):
+        for j in range(lattice_size):
+            graph.add_edge((i, j), (i + 1, j), weight=1)
+    for i in range(lattice_size - 1):
+        for j in range(lattice_size - 1):
+            faceEdges = [
+                ((i, j), (i + 1, j)),
+                ((i + 1, j), (i + 1, j + 1)),
+                ((i + 1, j + 1), (i, j + 1)),
+                ((i, j + 1), (i, j)),
+            ]
+            faces.append(tuple(faceEdges))
+
+    return graph, faces
+
+
+def grid_graph_weighted(lattice_size: int):
+    """Square grid graph on a grid of size `lattice_size` x `lattice_size`.
+
+    The graph edges will have various weights.
+
+    The edge from (i, j) to (i, j+1) will have weight i+j+1.
+
+    The edge from (i, j) to (i+1, j) will have weight -i-j-2.
+
+    Parameters
+    ----------
+    lattice_size : int
+        Dimension of the grid. The graph will have `lattice_size` x
+        `lattice_size` nodes.
+
+    Returns
+    ----------
+    (graph, faces) : (NetworkX Graph, list) tuple
+        Unweighted grid graph, and a list of faces of the grid. Each face
+        in `faces` is a list of edges in counterclockwise order, where each
+        edge also has each node in counterclockwise order.
+    """
+
+    graph = nx.Graph()
+    faces = []
+    for i in range(lattice_size):
+        for j in range(lattice_size - 1):
+            graph.add_edge((i, j), (i, j + 1), weight=i + j + 1)
+    for i in range(lattice_size - 1):
+        for j in range(lattice_size):
+            graph.add_edge((i, j), (i + 1, j), weight=-i - j - 2)
+    for i in range(lattice_size - 1):
+        for j in range(lattice_size - 1):
+            faceEdges = [
+                ((i, j), (i + 1, j)),
+                ((i + 1, j), (i + 1, j + 1)),
+                ((i + 1, j + 1), (i, j + 1)),
+                ((i, j + 1), (i, j)),
+            ]
+            faces.append(tuple(faceEdges))
+
+    return graph, faces
