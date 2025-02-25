@@ -2,8 +2,6 @@
 
 from itertools import combinations, repeat
 
-import numpy as np
-
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -1282,6 +1280,8 @@ def _fkt_with_embedding(G: nx.Graph, faces, numerical_stability_threshold=1e-5):
         -numerical_stability_threshold. This indicates severe numerical
         instability.
     """
+
+    import numpy as np
 
     oriented_graph = kasteleyn_orientation(G, faces)
 
