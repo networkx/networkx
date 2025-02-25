@@ -1190,7 +1190,7 @@ def count_planar_perfect_matchings(G: nx.Graph):
     .. [1] P. W. Kasteleyn:
         Dimer Statistics and Phase Transitions
         1963
-        https://pubs.aip.org/aip/jmp/article/4/2/287/230188/Dimer-Statistics-and-Phase-Transitions
+        https://doi.org/10.1063/1.1703953
     """
 
     # If we're given a directed graph, we just convert it to undirected.
