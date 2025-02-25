@@ -1293,7 +1293,7 @@ def _fkt_with_embedding(G: nx.Graph, faces, numerical_stability_threshold=1e-5):
         oriented_graph[edge[1]][edge[0]]["weight"] *= edge_weight
 
     adj = nx.adjacency_matrix(oriented_graph)
-    determinant = np.linalg.det(adj.toarray())  # detSparseMatrix(adj)
+    determinant = np.linalg.det(adj.toarray())
     if determinant < 0:
         if determinant > -numerical_stability_threshold:
             # Sometimes the determinant is negative, which should be
