@@ -5,8 +5,6 @@ These algorithms work with undirected and directed graphs.
 
 """
 
-import warnings
-
 import networkx as nx
 
 __all__ = [
