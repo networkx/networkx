@@ -71,7 +71,7 @@ def _partial_weighted_lp_decomposition(G, partial_weights):
 @not_implemented_for("directed")
 def _find_lp_decomposition(G: nx.Graph):
     """
-    Given a graph `G` and a parameter `k`,
+    Given a graph `G`,
     returns a tuple return `lp_value, greater_than_half, less_than_half, equal_to_half`,
     where, in the solution of Linear Programming formulation of Vertex Cover
     `lp_value` is the value of the optimum solution
@@ -83,7 +83,6 @@ def _find_lp_decomposition(G: nx.Graph):
     if len(G) == 0:
         return 0, set(), set(), set()
 
-    # it should be ensured in this algorithm that, k does not become negative
     label = {}
     reverse_label = {}
     label_index = 1
@@ -95,12 +94,14 @@ def _find_lp_decomposition(G: nx.Graph):
     g_new = nx.Graph()
 
     for node in G.nodes():
-        g_new.add_node(f"1_{label[node]}")
-        g_new.add_node(f"2_{label[node]}")
+        # add 2 new copies of vertex u1 and u2 for all u in V(G)
+        g_new.add_node((1, label[node]))
+        g_new.add_node((2, label[node]))
 
     for node in G.nodes:
-        for neighbor in G.neighbors(node):
-            g_new.add_edge(f"1_{label[node]}", f"2_{label[neighbor]}")
+        for neighbour in G.neighbors(node):
+            # add edges (u1, v2) and (v1, u2) for all (u, v) in E(G)
+            g_new.add_edge((1, label[node]), (2, label[neighbour]))
 
     # bipartite graph is created
     weight_dictionary = {}
@@ -110,14 +111,14 @@ def _find_lp_decomposition(G: nx.Graph):
     min_vertex_cover = to_vertex_cover(g_new, maximum_matching, top_nodes=top_nodes)
 
     for node in G.nodes:
-        container_1_name = f"1_{label[node]}"
-        container_2_name = f"2_{label[node]}"
+        node_1_name = (1, label[node])
+        node_2_name = (2, label[node])
 
         weight = 0.0
 
-        if container_1_name in min_vertex_cover:
+        if node_1_name in min_vertex_cover:
             weight += 0.5
-        if container_2_name in min_vertex_cover:
+        if node_2_name in min_vertex_cover:
             weight += 0.5
 
         weight_dictionary[node] = weight
