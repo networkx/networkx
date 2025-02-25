@@ -216,7 +216,7 @@ def _deg_two_preprocessing(G, k, vc):
         k_new = k - 2
         applied = True
 
-        def function_to_be_applied_deg_two_first_case(is_k_vc_exists, vc: set):
+        def function_to_be_applied_deg_two_first_case(is_k_vc_exists, vc):
             if not is_k_vc_exists:
                 return
 
@@ -242,7 +242,7 @@ def _deg_two_preprocessing(G, k, vc):
         k_new = k - 1
         applied = True
 
-        def function_to_be_applied_deg_two_second_case(is_k_vc_exists, vc: set):
+        def function_to_be_applied_deg_two_second_case(is_k_vc_exists, vc):
             if not is_k_vc_exists:
                 return
 
@@ -352,7 +352,7 @@ def _check_bipartite_graph(G, k, vc):
     k_new = k - len(min_vertex_cover)
     applied = True
 
-    def function_to_be_applied_after_bipartite(is_k_vc_exists, vc: set):
+    def function_to_be_applied_after_bipartite(is_k_vc_exists, vc):
         if not is_k_vc_exists:
             return
 
@@ -418,12 +418,11 @@ def _crown_decomposition_based_preprocessing(G, k, vc):
             None,
         )
 
-    g_new: nx.Graph
     g_new.remove_nodes_from(head_union_crown)
     k_new = k - len(head_vertices)
     applied = True
 
-    def function_to_be_applied_after_crown_decomposition(is_k_vc_exists, vc: set):
+    def function_to_be_applied_after_crown_decomposition(is_k_vc_exists, vc):
         if not is_k_vc_exists:
             return
 
@@ -500,7 +499,7 @@ def _lp_decomposition_based_preprocessing(G, k, vc):
         applied = True
 
         def function_to_be_applied_after_lp_all_half_not_unique_optimum(
-            is_k_vc_exists, vc: set
+            is_k_vc_exists, vc
         ):
             if not is_k_vc_exists:
                 return
@@ -570,7 +569,7 @@ def _surplus_one_neighbours_not_independent(G, k, vc):
             applied = True
 
             def function_to_be_applied_after_surplus_one_neighbours_not_independent_set(
-                is_k_vc_exists, vc: set
+                is_k_vc_exists, vc
             ):
                 if not is_k_vc_exists:
                     return
@@ -657,7 +656,7 @@ def _surplus_one_neighbours_independent(G, k, vc):
 
             # `node` is the identified vertex
             def function_to_be_applied_after_surplus_one_neighbours_independent_set(
-                is_k_vc_exists, vc: set
+                is_k_vc_exists, vc
             ):
                 if not is_k_vc_exists:
                     return
