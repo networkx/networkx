@@ -7,7 +7,7 @@ __all__ = ["_crown_decomposition"]
 
 
 @not_implemented_for("directed")
-def _crown_decomposition(G, k) -> tuple[set, set, set, bool]:
+def _crown_decomposition(G, k):
     """
     Given a graph `G` and a parameter `k`, returns False if matching of size more
     than `k` is found, else returns a crown decomposition (C, H, R) of the graph G
