@@ -184,6 +184,7 @@ needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
     "algorithms/centrality/current_flow_closeness.py",
     "algorithms/centrality/laplacian.py",
+    "algorithms/matching.py",
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
     "algorithms/polynomials.py",
