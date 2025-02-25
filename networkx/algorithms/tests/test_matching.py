@@ -669,6 +669,21 @@ class TestCountPlanarPerfectMatchings:
 
         assert brute_force_results[1] == 0.0
 
+    def test_multigraph(self):
+        """Tests that the FKT algorithm works properly with multigraphs, i.e.,
+        just sums edge weights"""
+
+        graph = nx.MultiGraph()
+        graph.add_edge(0, 1, weight=2)
+        graph.add_edge(0, 1, weight=3)
+        graph.add_edge(2, 3)
+        graph.add_edge(2, 3)
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            10,
+            self.numerical_stability_threshold,
+        )
+
     def test_multiple_components(self):
         component1 = nx.Graph([(0, 1), (1, 2), (2, 0), (2, 3)])
         component2 = grid_graph_weighted(4)[0]

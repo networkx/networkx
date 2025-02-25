@@ -1216,7 +1216,7 @@ def count_planar_perfect_matchings(G: nx.Graph):
         for edge in G.edges(data=True):
             edgeWeight = edge[2].get("weight", 1)
             if newG.has_edge(edge[0], edge[1]):
-                newG[edge[0]][edge[1]]["weigh"] += edgeWeight
+                newG[edge[0]][edge[1]]["weight"] += edgeWeight
             else:
                 newG.add_edge(edge[0], edge[1], weight=edgeWeight)
 
@@ -1255,7 +1255,8 @@ def _fkt_with_embedding(G: nx.Graph, faces, numerical_stability_threshold=1e-5):
 
     Parameters
     ----------
-    G : NetworkX graph.
+    G : NetworkX Graph.
+        This method assumes G is undirected.
 
     faces : list
         A list of faces of the graph corresponding to some planar
@@ -1281,9 +1282,6 @@ def _fkt_with_embedding(G: nx.Graph, faces, numerical_stability_threshold=1e-5):
         -numerical_stability_threshold. This indicates severe numerical
         instability.
     """
-
-    if isinstance(G, nx.DiGraph):
-        G = nx.Graph.to_undirected(G)
 
     oriented_graph = kasteleyn_orientation(G, faces)
 
