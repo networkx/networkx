@@ -783,6 +783,33 @@ class TestCountPlanarPerfectMatchings:
         with raises(nx.NetworkXError):
             nx.matching.count_planar_perfect_matchings(k5)
 
+    def test_negative_determinant(self):
+        # This example results in a small negative determinant due to numerical
+        # instability. This is for code coverage reasons.
+        graph = nx.Graph(
+            [
+                (4, 8, {"weight": -1.8879550158071776}),
+                (4, 2, {"weight": 0.1843550547106454}),
+                (4, 1, {"weight": -1.9814976492143304}),
+                (7, 3, {"weight": -1.6191164277671835}),
+                (7, 2, {"weight": -1.3059579097207004}),
+                (7, 0, {"weight": 1.8096532730219357}),
+                (3, 0, {"weight": 0.610701732528073}),
+                (2, 1, {"weight": 0.33352383016842335}),
+                (2, 5, {"weight": 0.3618537928282155}),
+                (1, 0, {"weight": -0.7811600938193326}),
+                (0, 6, {"weight": -0.41866716331880394}),
+                (0, 5, {"weight": -0.692166798663477}),
+                (6, 5, {"weight": 1.6005021072685413}),
+            ]
+        )
+
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            self.count_perfect_matchings_brute_force(graph),
+            self.numerical_stability_threshold,
+        )
+
     def results_close_enough(
         self, result1: float, result2: float, numerical_stability_threshold: float
     ):
