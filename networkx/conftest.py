@@ -215,6 +215,7 @@ needs_scipy = [
     "algorithms/distance_measures.py",
     "algorithms/link_analysis/hits_alg.py",
     "algorithms/link_analysis/pagerank_alg.py",
+    "algorithms/matching.py",
     "algorithms/node_classification.py",
     "algorithms/similarity.py",
     "algorithms/tree/mst.py",
