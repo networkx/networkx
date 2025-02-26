@@ -10,6 +10,18 @@ These ideas can be used as projects for Google Summer of Code, Outreachy,
 NumFOCUS Small Development Grants and university course/project credits (if
 your university allows contribution to open source for credit).
 
+If you are a professor interested in having your class develop tools
+and contribute the results to NetworkX, we welcome your submissions!
+We encourage you to consider rewriting/improving existing functions
+as a potential source of projects. Working off of and
+improving existing tools involves reading, evaluating and writing code,
+rather than just writing new code. We also encourage them to review each
+other's PRs. You can have students submit their PRs to your personal fork,
+discuss, review, etc in an environment conducive to mentoring and learning.
+Once their branch is ready to merge, it can be submitted to the main NetworkX
+repository. This will help keep in-class discussions separate from the
+broader NetworkX review process, making both more manageable and readable.
+Feel free to reach out to use as you plan these activities.
 
 Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 ------------------------------------------------------------------------
@@ -34,7 +46,7 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 
 - Interested Mentors: `@MridulS <https://github.com/MridulS/>`__,
   `@rossbar <https://github.com/rossbar/>`__
-  
+
 - Expected time commitment: This project can be either a medium project (~175 hours)
   or a large project (~350 hours). The contributor is expected to contribute 2-3
   pedagogical interactive notebooks for the medium duration project and 4-5 notebooks
@@ -122,15 +134,15 @@ Completed Projects
     - Contributor: `@kpetridis24 <https://github.com/kpetridis24/>`__
     - Link to Proposal: `GSoC 2022: VF2++ Algorithm <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2022-VF2plusplus-isomorphism.pdf>`_
 
-- `Louvain community detection algorithm`_ 
+- `Louvain community detection algorithm`_
     - Program: Google Summer of Code 2021
     - Contributor: `@z3y50n <https://github.com/z3y50n/>`__
-    - Link to Proposal:  `GSoC 2021: Community Detection Algorithms <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2021-Community-Detection-Algorithms.pdf>`__ 
+    - Link to Proposal:  `GSoC 2021: Community Detection Algorithms <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2021-Community-Detection-Algorithms.pdf>`__
 
 - `Asadpour algorithm for directed travelling salesman problem`_
     - Program: Google Summer of Code 2021
     - Contributor: `@mjschwenne <https://github.com/mjschwenne/>`__
-    - Link to Proposal:  `GSoC 2021: Asadpour algorithm <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2021-Asadpour-Asymmetric-Traveling%20Salesman-Problem.pdf>`__ 
+    - Link to Proposal:  `GSoC 2021: Asadpour algorithm <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2021-Asadpour-Asymmetric-Traveling%20Salesman-Problem.pdf>`__
 
 - Pedagogical notebook: `Directed acyclic graphs and topological sort`_
     - Program: Google Summer of Code 2021
@@ -163,14 +175,14 @@ Completed Projects
 ..
    Project Idea Template
    ---------------------
-   
+
    - Abstract:
-   
+
    - Recommended Skills:
-   
+
    - Expected Outcome:
-   
+
    - Complexity;
-   
+
    - Interested Mentors:
-   
+

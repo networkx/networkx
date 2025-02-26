@@ -3,7 +3,6 @@ Tests for VF2 isomorphism algorithm.
 """
 
 import importlib.resources
-import os
 import random
 import struct
 

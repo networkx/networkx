@@ -1,7 +1,5 @@
 import collections
-import os
 import typing
-import warnings
 from dataclasses import dataclass
 
 __all__ = ["Config"]

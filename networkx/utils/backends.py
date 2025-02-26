@@ -1706,6 +1706,10 @@ class _dispatchable:
             "minimum_spanning_arborescence",
             "recursive_simple_cycles",
             "connected_double_edge_swap",
+            "set_node_attributes",
+            "remove_node_attributes",
+            "set_edge_attributes",
+            "remove_edge_attributes",
         }:
             # Special-case algorithms that mutate input graphs
             bound = self.__signature__.bind(*converted_args, **converted_kwargs)
@@ -1717,12 +1721,22 @@ class _dispatchable:
                 "minimum_spanning_arborescence",
                 "recursive_simple_cycles",
                 "connected_double_edge_swap",
+                "set_edge_attributes",
+                "remove_edge_attributes",
             }:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 G2._adj = G1._adj
                 if G2.is_directed():
                     G2._pred = G1._pred
+                nx._clear_cache(G2)
+            elif self.name in {
+                "set_node_attributes",
+                "remove_node_attributes",
+            }:
+                G1 = backend.convert_to_nx(bound.arguments["G"])
+                G2 = bound2.arguments["G"]
+                G2._node = G1._node
                 nx._clear_cache(G2)
             elif self.name == "edmonds_karp":
                 R1 = backend.convert_to_nx(bound.arguments["residual"])

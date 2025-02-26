@@ -18,7 +18,6 @@ See Also
  - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
 
-import os
 import tempfile
 
 import networkx as nx
@@ -291,7 +290,7 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
     for the layout computation using something similar to::
 
         >>> H = nx.convert_node_labels_to_integers(G, label_attribute="node_label")
-        >>> H_layout = nx.nx_agraph.pygraphviz_layout(G, prog="dot")
+        >>> H_layout = nx.nx_agraph.pygraphviz_layout(H, prog="dot")
         >>> G_layout = {H.nodes[n]["node_label"]: p for n, p in H_layout.items()}
 
     Note that some graphviz layouts are not guaranteed to be deterministic,
@@ -343,6 +342,7 @@ def view_pygraphviz(
     path : str, None
         The filename used to save the image.  If None, save to a temporary
         file.  File formats are the same as those from pygraphviz.agraph.draw.
+        Filenames ending in .gz or .bz2 will be compressed.
     show : bool, default = True
         Whether to display the graph with :mod:`PIL.Image.show`,
         default is `True`. If `False`, the rendered graph is still available

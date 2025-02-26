@@ -5,7 +5,7 @@ Bipartite Motifs: α/β-core
 
 The alpha-beta core of a bipartite graph is a maximal subgraph where each node
 in the top set has at least ``alpha`` neighbors and each node in bottom set has
-at least ``beta`` neightbors.
+at least ``beta`` neighbors.
 """
 
 import networkx as nx

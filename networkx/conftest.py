@@ -13,7 +13,6 @@ General guidelines for writing good tests:
 """
 
 import os
-import sys
 import warnings
 from importlib.metadata import entry_points
 
@@ -110,12 +109,6 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\n`compute_v_structures"
