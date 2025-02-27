@@ -613,6 +613,7 @@ class TestCountPlanarPerfectMatchings:
     """
 
     pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     numerical_stability_threshold = 1e-5
 
@@ -990,6 +991,7 @@ class TestKasteleynOrientation:
     """
 
     pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
 
     def test_grid(self):
         grid, faces = grid_graph_unweighted(6)
