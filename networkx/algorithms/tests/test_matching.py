@@ -1,6 +1,7 @@
 import math
 from itertools import permutations
 
+import pytest
 from pytest import raises
 
 import networkx as nx
@@ -611,6 +612,8 @@ class TestCountPlanarPerfectMatchings:
 
     """
 
+    pytest.importorskip("numpy")
+
     numerical_stability_threshold = 1e-5
 
     def test_unweighted_grids(self):
@@ -985,6 +988,8 @@ class TestKasteleynOrientation:
     :func:`~networkx.algorithms.matching.kasteleyn_orientation`.
 
     """
+
+    pytest.importorskip("numpy")
 
     def test_grid(self):
         grid, faces = grid_graph_unweighted(6)
