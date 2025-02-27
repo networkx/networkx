@@ -694,10 +694,10 @@ class ISMAGS:
         """
         constraints = []
         for node_i, node_ts in cosets.items():
-            for node_t in node_ts:
-                if node_i != node_t:
-                    # Node i must be smaller than node t.
-                    constraints.append((node_i, node_t))
+            # Node i must be smaller than node t.
+            constraints.extend(
+                (node_i, node_t) for node_t in node_ts if node_i != node_t
+            )
         return constraints
 
     @staticmethod
@@ -788,8 +788,9 @@ class ISMAGS:
                     permutations = cls._get_permutations_by_length(refined)
                     new_output = []
                     for n_p in output:
-                        for permutation in permutations:
-                            new_output.append(n_p + list(permutation[0]))
+                        new_output.extend(
+                            n_p + list(permutation[0]) for permutation in permutations
+                        )
                     output = new_output
                 else:
                     for n_p in output:

@@ -162,9 +162,13 @@ def spanner(G, stretch, weight=None, seed=None):
         residual_graph.remove_edges_from(edges_to_remove)
 
         # copy old clustering data to new_clustering
-        for node, center in clustering.items():
-            if center in sampled_centers:
-                new_clustering[node] = center
+        new_clustering.update(
+            {
+                node: center
+                for node, center in clustering.items()
+                if center in sampled_centers
+            }
+        )
         clustering = new_clustering
 
         # step 4: remove intra-cluster edges

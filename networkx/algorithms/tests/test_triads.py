@@ -213,7 +213,7 @@ def test_triadic_census_nodelist():
         for triad_key in expected:
             actual[triad_key] += node_triad_census[triad_key]
     # Divide all counts by 3
-    for k, v in actual.items():
+    for k in actual:
         actual[k] //= 3
     assert expected == actual
 

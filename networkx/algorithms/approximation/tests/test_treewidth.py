@@ -32,10 +32,7 @@ def is_tree_decomp(graph, decomp):
 
     # Check if the nodes associated with vertex v form a connected subset of T
     for v in graph.nodes():
-        subset = []
-        for bag in decomp.nodes():
-            if v in bag:
-                subset.append(bag)
+        subset = [bag for bag in decomp.nodes() if v in bag]
         sub_graph = decomp.subgraph(subset)
         assert nx.is_connected(sub_graph)
 

@@ -25,7 +25,7 @@ def _detect_unboundedness(R):
         for v, e in R[u].items():
             # Compute the minimum weight of infinite-capacity (u, v) edges.
             w = f_inf
-            for k, e in e.items():
+            for e in e.values():
                 if e["capacity"] == inf:
                     w = min(w, e["weight"])
             if w != f_inf:

@@ -269,7 +269,7 @@ def label_propagation_communities(G):
     labeling = {v: k for k, v in enumerate(G)}
     while not _labeling_complete(labeling, G):
         # Update the labels of every node with the same color.
-        for color, nodes in coloring.items():
+        for nodes in coloring.values():
             for n in nodes:
                 _update_label(n, labeling, G)
 

@@ -336,18 +336,18 @@ class TestAllPairsNodeConnectivity:
     def test_cycles(self):
         K_undir = nx.all_pairs_node_connectivity(self.cycle)
         for source in K_undir:
-            for target, k in K_undir[source].items():
+            for k in K_undir[source].values():
                 assert k == 2
         K_dir = nx.all_pairs_node_connectivity(self.directed_cycle)
         for source in K_dir:
-            for target, k in K_dir[source].items():
+            for k in K_dir[source].values():
                 assert k == 1
 
     def test_complete(self):
         for G in [self.K10, self.K5, self.K20]:
             K = nx.all_pairs_node_connectivity(G)
             for source in K:
-                for target, k in K[source].items():
+                for k in K[source].values():
                     assert k == len(G) - 1
 
     def test_paths(self):

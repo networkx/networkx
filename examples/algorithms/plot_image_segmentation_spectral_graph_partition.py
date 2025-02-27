@@ -83,9 +83,7 @@ G = nx.from_scipy_sparse_array(cluster_affinity_matrix)
 # remove self edges
 G.remove_edges_from(nx.selfloop_edges(G))
 
-cluser_member = []
-for u in G.nodes:
-    cluser_member.append(pred_labels[u])
+cluser_member = [pred_labels[u] for u in G.nodes]
 
 ###############################################################################
 # Generate the plots of the data.

@@ -297,7 +297,7 @@ def _augment_and_check(
             assert not isinstance(generator, list), "should always return an iter"
             aug_edges = []
             for edge in generator:
-                aug_edges.append(edge)
+                aug_edges.append(edge)  # noqa: PERF402
         except nx.NetworkXUnfeasible:
             infeasible = True
             info["infeasible"] = True
