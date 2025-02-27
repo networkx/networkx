@@ -624,7 +624,7 @@ class TestCountPlanarPerfectMatchings:
         has an odd number of nodes."""
 
         unweighted_grids = [
-            grid_graph_unweighted(lattice_size)[0] for lattice_size in [2, 3, 4]
+            nx.grid_2d_graph(lattice_size, lattice_size) for lattice_size in [2, 3, 4]
         ]
 
         brute_force_results = [
@@ -652,8 +652,13 @@ class TestCountPlanarPerfectMatchings:
         has an odd number of nodes."""
 
         weighted_grids = [
-            grid_graph_weighted(lattice_size)[0] for lattice_size in [2, 3, 4]
+            nx.grid_2d_graph(lattice_size, lattice_size) for lattice_size in [2, 3, 4]
         ]
+
+        # assign some weights to edges of the grid.
+        for grid in weighted_grids:
+            for edge in grid.edges(data=True):
+                edge[2]["weight"] = edge[0][0] + edge[0][1] + 1
 
         brute_force_results = [
             self.count_perfect_matchings_brute_force(grid) for grid in weighted_grids
@@ -690,7 +695,7 @@ class TestCountPlanarPerfectMatchings:
 
     def test_multiple_components(self):
         component1 = nx.Graph([(0, 1), (1, 2), (2, 0), (2, 3)])
-        component2 = grid_graph_weighted(4)[0]
+        component2 = nx.grid_2d_graph(4, 4)
         graph = nx.union(component1, component2, ("1-", "2-"))
         assert self.results_close_enough(
             nx.algorithms.matching.count_planar_perfect_matchings(graph),
@@ -699,8 +704,8 @@ class TestCountPlanarPerfectMatchings:
         )
 
         component1 = nx.Graph([(0, 1), (1, 2), (2, 0), (2, 3)])
-        component2 = grid_graph_weighted(4)[0]
-        component3 = grid_graph_unweighted(2)[0]
+        component2 = nx.grid_2d_graph(4, 4)
+        component3 = nx.grid_2d_graph(2, 2)
         graph = nx.union(
             nx.union(component1, component2, ("1-", "2-")), component3, ("", "3-")
         )
@@ -994,13 +999,16 @@ class TestKasteleynOrientation:
     pytest.importorskip("scipy")
 
     def test_grid(self):
-        grid, faces = grid_graph_unweighted(6)
+        grid = nx.grid_2d_graph(6, 4)
+        faces = self.grid_faces(6, 4)
         orientation = nx.algorithms.matching.kasteleyn_orientation(grid, faces)
         assert self.is_kasteleyn_orientation(orientation, faces)
 
     def test_multiple_components(self):
-        grid5, faces5 = grid_graph_unweighted(5)
-        grid3, faces3 = grid_graph_unweighted(3)
+        grid5 = nx.grid_2d_graph(5, 5)
+        faces5 = self.grid_faces(5, 5)
+        grid3 = nx.grid_2d_graph(3, 3)
+        faces3 = self.grid_faces(3, 3)
         graph = nx.union(grid5, grid3, ("5-", "3-"))
 
         # We must rename nodes in the lists of faces faces5 and faces3, since
@@ -1021,6 +1029,19 @@ class TestKasteleynOrientation:
         faces = new_faces5 + new_faces3
         orientation = nx.algorithms.matching.kasteleyn_orientation(graph, faces)
         assert self.is_kasteleyn_orientation(orientation, faces)
+
+    def grid_faces(self, num_rows: int, num_cols):
+        faces = []
+        for i in range(num_rows - 1):
+            for j in range(num_cols - 1):
+                faceEdges = (
+                    ((i, j), (i + 1, j)),
+                    ((i + 1, j), (i + 1, j + 1)),
+                    ((i + 1, j + 1), (i, j + 1)),
+                    ((i, j + 1), (i, j)),
+                )
+                faces.append(faceEdges)
+        return faces
 
     def is_kasteleyn_orientation(
         self, oriented_graph: nx.DiGraph, faces: list, raise_error=True
@@ -1092,88 +1113,3 @@ class TestKasteleynOrientation:
                     return False
 
         return True
-
-
-# Example graphs to test FKT algorithm.
-
-
-def grid_graph_unweighted(lattice_size: int):
-    """Square grid graph on a grid of size `lattice_size` x `lattice_size`.
-
-    Parameters
-    ----------
-    lattice_size : int
-        Dimension of the grid. The graph will have `lattice_size` x
-        `lattice_size` nodes.
-
-    Returns
-    ----------
-    (graph, faces) : (NetworkX Graph, list) tuple
-        Unweighted grid graph, and a list of faces of the grid. Each face
-        in `faces` is a list of edges in counterclockwise order, where each
-        edge also has each node in counterclockwise order.
-    """
-
-    graph = nx.Graph()
-    faces = []
-    for i in range(lattice_size):
-        for j in range(lattice_size - 1):
-            graph.add_edge((i, j), (i, j + 1), weight=1)
-    for i in range(lattice_size - 1):
-        for j in range(lattice_size):
-            graph.add_edge((i, j), (i + 1, j), weight=1)
-    for i in range(lattice_size - 1):
-        for j in range(lattice_size - 1):
-            faceEdges = [
-                ((i, j), (i + 1, j)),
-                ((i + 1, j), (i + 1, j + 1)),
-                ((i + 1, j + 1), (i, j + 1)),
-                ((i, j + 1), (i, j)),
-            ]
-            faces.append(tuple(faceEdges))
-
-    return graph, faces
-
-
-def grid_graph_weighted(lattice_size: int):
-    """Square grid graph on a grid of size `lattice_size` x `lattice_size`.
-
-    The graph edges will have various weights.
-
-    The edge from (i, j) to (i, j+1) will have weight i+j+1.
-
-    The edge from (i, j) to (i+1, j) will have weight -i-j-2.
-
-    Parameters
-    ----------
-    lattice_size : int
-        Dimension of the grid. The graph will have `lattice_size` x
-        `lattice_size` nodes.
-
-    Returns
-    ----------
-    (graph, faces) : (NetworkX Graph, list) tuple
-        Unweighted grid graph, and a list of faces of the grid. Each face
-        in `faces` is a list of edges in counterclockwise order, where each
-        edge also has each node in counterclockwise order.
-    """
-
-    graph = nx.Graph()
-    faces = []
-    for i in range(lattice_size):
-        for j in range(lattice_size - 1):
-            graph.add_edge((i, j), (i, j + 1), weight=i + j + 1)
-    for i in range(lattice_size - 1):
-        for j in range(lattice_size):
-            graph.add_edge((i, j), (i + 1, j), weight=-i - j - 2)
-    for i in range(lattice_size - 1):
-        for j in range(lattice_size - 1):
-            faceEdges = [
-                ((i, j), (i + 1, j)),
-                ((i + 1, j), (i + 1, j + 1)),
-                ((i + 1, j + 1), (i, j + 1)),
-                ((i, j + 1), (i, j)),
-            ]
-            faces.append(tuple(faceEdges))
-
-    return graph, faces
