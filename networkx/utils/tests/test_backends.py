@@ -23,7 +23,7 @@ def test_dispatch_kwds_vs_args():
 
 def test_pickle():
     count = 0
-    for name, func in nx.utils.backends._registered_algorithms.items():
+    for func in nx.utils.backends._registered_algorithms.values():
         pickled = pickle.dumps(func.__wrapped__)
         assert pickle.loads(pickled) is func.__wrapped__
         try:

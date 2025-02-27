@@ -317,11 +317,7 @@ def _triangles(G, e):
         raise nx.NetworkXError(f"Vertex {u} not in graph")
     if v not in G[u]:
         raise nx.NetworkXError(f"Edge ({u}, {v}) not in graph")
-    triangle_list = []
-    for x in G[u]:
-        if x in G[v]:
-            triangle_list.append((u, v, x))
-    return triangle_list
+    return [(u, v, x) for x in G[u] if x in G[v]]
 
 
 def _odd_triangle(G, T):

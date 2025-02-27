@@ -163,15 +163,14 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
         # TODO: Checking whether a color has been visited can be made faster by
         # using a look-up table instead of testing for membership in a set by a
         # logarithmic factor.
-        next_layer = []
-        for k in C:
-            if (
-                H[(k, pop)] > 0
-                and k not in A_cal
-                and k not in excluded_colors
-                and k not in marked
-            ):
-                next_layer.append(k)
+        next_layer = [
+            k
+            for k in C
+            if H[(k, pop)] > 0
+            and k not in A_cal
+            and k not in excluded_colors
+            and k not in marked
+        ]
 
         for dst in next_layer:
             # Record that `dst` can reach `pop`

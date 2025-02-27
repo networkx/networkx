@@ -107,7 +107,7 @@ def global_efficiency(G):
         lengths = nx.all_pairs_shortest_path_length(G)
         g_eff = 0
         for source, targets in lengths:
-            for target, distance in targets.items():
+            for distance in targets.values():
                 if distance > 0:
                     g_eff += 1 / distance
         g_eff /= denom

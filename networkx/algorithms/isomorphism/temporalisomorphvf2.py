@@ -107,10 +107,11 @@ class TimeRespectingGraphMatcher(GraphMatcher):
             if isinstance(Gx, nx.Graph):  # Graph G[u][v] returns the data dictionary.
                 dates.append(Gx[Gx_node][n][self.temporal_attribute_name])
             else:  # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
-                for edge in Gx[Gx_node][
-                    n
-                ].values():  # Iterates all edges between node pair.
-                    dates.append(edge[self.temporal_attribute_name])
+                # Iterates all edges between node pair.
+                dates.extend(
+                    edge[self.temporal_attribute_name]
+                    for edge in Gx[Gx_node][n].values()
+                )
         if any(x is None for x in dates):
             raise ValueError("Datetime not supplied for at least one edge.")
         return not dates or max(dates) - min(dates) <= self.delta
@@ -170,32 +171,32 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         """
         Get the dates of edges from predecessors.
         """
-        pred_dates = []
         if isinstance(Gx, nx.DiGraph):  # Graph G[u][v] returns the data dictionary.
-            for n in pred:
-                pred_dates.append(Gx[n][Gx_node][self.temporal_attribute_name])
-        else:  # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
-            for n in pred:
-                for edge in Gx[n][
-                    Gx_node
-                ].values():  # Iterates all edge data between node pair.
-                    pred_dates.append(edge[self.temporal_attribute_name])
+            return [Gx[n][Gx_node][self.temporal_attribute_name] for n in pred]
+
+        # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
+        pred_dates = []
+        for n in pred:
+            # Iterates all edge data between node pair.
+            pred_dates.extend(
+                edge[self.temporal_attribute_name] for edge in Gx[n][Gx_node].values()
+            )
         return pred_dates
 
     def get_succ_dates(self, Gx, Gx_node, core_x, succ):
         """
         Get the dates of edges to successors.
         """
-        succ_dates = []
         if isinstance(Gx, nx.DiGraph):  # Graph G[u][v] returns the data dictionary.
-            for n in succ:
-                succ_dates.append(Gx[Gx_node][n][self.temporal_attribute_name])
-        else:  # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
-            for n in succ:
-                for edge in Gx[Gx_node][
-                    n
-                ].values():  # Iterates all edge data between node pair.
-                    succ_dates.append(edge[self.temporal_attribute_name])
+            return [Gx[Gx_node][n][self.temporal_attribute_name] for n in succ]
+
+        # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
+        succ_dates = []
+        for n in succ:
+            # Iterates all edge data between node pair.
+            succ_dates.extend(
+                edge[self.temporal_attribute_name] for edge in Gx[Gx_node][n].values()
+            )
         return succ_dates
 
     def one_hop(self, Gx, Gx_node, core_x, pred, succ):
