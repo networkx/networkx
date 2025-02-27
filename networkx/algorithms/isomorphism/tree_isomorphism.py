@@ -62,9 +62,8 @@ def root_trees(t1, root1, t2, root2):
     # giving the old name given the new
     # since the values of namemap1 and namemap2 are unique
     # there won't be collisions
-    namemap = {new: old for old, new in namemap1.items()} | {
-        new: old for old, new in namemap2.items()
-    }
+    namemap = {new: old for old, new in namemap1.items()}
+    namemap.update((new, old) for old, new in namemap2.items())
 
     return (dT, namemap, newroot1, newroot2)
 

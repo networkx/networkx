@@ -278,7 +278,7 @@ def maximum_branching(
             d[partition] = data.get(partition)
 
         if preserve_attrs:
-            d.update({d_k: d_v for d_k, d_v in data.items() if d_k != attr})
+            d.update((d_k, d_v) for d_k, d_v in data.items() if d_k != attr)
 
         edmonds_add_edge(G, G_edge_index, u, v, key, **d)
 

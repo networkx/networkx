@@ -192,7 +192,6 @@ extend-select = [
   "EM",       # flake8-errmsg
   "ICN",      # flake8-import-conventions
 #  "G",        # flake8-logging-format
-  "PERF",     # flake8-performance
   "PGH",      # pygrep-hooks
   "PIE",      # flake8-pie
 #  "PL",       # pylint

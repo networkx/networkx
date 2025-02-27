@@ -163,11 +163,9 @@ def spanner(G, stretch, weight=None, seed=None):
 
         # copy old clustering data to new_clustering
         new_clustering.update(
-            {
-                node: center
-                for node, center in clustering.items()
-                if center in sampled_centers
-            }
+            (node, center)
+            for node, center in clustering.items()
+            if center in sampled_centers
         )
         clustering = new_clustering
 

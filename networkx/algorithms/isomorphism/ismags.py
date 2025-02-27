@@ -692,13 +692,13 @@ class ISMAGS:
         """
         Turn cosets into constraints.
         """
-        constraints = []
-        for node_i, node_ts in cosets.items():
+        return [
+            (node_i, node_t)
+            for node_i, node_ts in cosets.items()
+            for node_t in node_ts
             # Node i must be smaller than node t.
-            constraints.extend(
-                (node_i, node_t) for node_t in node_ts if node_i != node_t
-            )
-        return constraints
+            if node_i != node_t
+        ]
 
     @staticmethod
     def _find_node_edge_color(graph, node_colors, edge_colors):
