@@ -13,7 +13,6 @@ General guidelines for writing good tests:
 """
 
 import os
-import sys
 import warnings
 from importlib.metadata import entry_points
 

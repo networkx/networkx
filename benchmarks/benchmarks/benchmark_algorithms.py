@@ -73,3 +73,6 @@ class AlgorithmBenchmarksConnectedGraphsOnly:
         # Added to ensure the connectivity check doesn't affect
         # performance too much (see gh-6888, gh-7549).
         _ = nx.eigenvector_centrality_numpy(self.graphs_dict[graph])
+
+    def time_square_clustering(self, graph):
+        _ = nx.square_clustering(self.graphs_dict[graph])

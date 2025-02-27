@@ -4,11 +4,7 @@ import gzip
 import inspect
 import itertools
 import re
-import warnings
 from collections import defaultdict
-from contextlib import contextmanager
-from functools import wraps
-from inspect import Parameter, signature
 from os.path import splitext
 from pathlib import Path
 

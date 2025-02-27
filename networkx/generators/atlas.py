@@ -4,8 +4,6 @@ Generators for the small graph atlas.
 
 import gzip
 import importlib.resources
-import os
-import os.path
 from itertools import islice
 
 import networkx as nx
