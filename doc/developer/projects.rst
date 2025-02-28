@@ -8,7 +8,10 @@ suggest any other idea if you are interested on the
 
 These ideas can be used as projects for Google Summer of Code, Outreachy,
 NumFOCUS Small Development Grants and university course/project credits (if
-your university allows contribution to open source for credit).
+your university allows contribution to open source for credit). Mentee/contributors
+participating under NetworkX organisation would be expected to share their weekly
+work updates and get feedback in a 1-hr weekly meetings. If this isn't feasible for
+the contributor we can discuss further to figure something else out.
 
 If you are a professor interested in having your class develop tools
 and contribute the results to NetworkX, we welcome your submissions!
@@ -22,6 +25,65 @@ Once their branch is ready to merge, it can be submitted to the main NetworkX
 repository. This will help keep in-class discussions separate from the
 broader NetworkX review process, making both more manageable and readable.
 Feel free to reach out to use as you plan these activities.
+
+Creating a cookie-cutter backend repository in NetworkX
+-------------------------------------------------------
+
+- Abstract: NetworkX has recently incorporated a backend `plugin <https://en.wikipedia.org/wiki/Plug-in_(computing)>`__
+  system based on `Python entry-points <https://packaging.python.org/en/latest/specifications/entry-points/>`__.
+  This project aims to develop a template backend repository to help developers
+  create their own NetworkX backends with ease. The template will clearly distinguish
+  between the mandatory, optional, and additional features/requirements that a NetworkX
+  backend package needs to have. We expect this template backend to be forked by the
+  developers, and then they would only have to add their backend implementation for the
+  algorithms they want to support at the designated places, and they would not have to
+  care about setting up all the other aspects of a backend unless they want to enable
+  or adopt any of the optional or additional functionalities of a backend. You can start by:
+    - looking at `nx-j4f <https://github.com/Schefflera-Arboricola/nx-j4f>`__ (a dummy backend)
+      and `nx-parallel <https://github.com/networkx/nx-parallel>`__ (a simple backend) for inspiration.
+    - reading and understanding `Backends <https://networkx.org/documentation/latest/reference/backends.html>`__
+      and `Configs <https://networkx.org/documentation/latest/reference/configs.html>`__ documentation.
+  Feel free to ask questions or open an issue if you find something hard to understand,
+  as the above documentations are not that well-written.
+
+- Recommended Skills: Python, willingness to roll up your sleeves and dig deep
+  and understand the dispatching mechanism in NetworkX, and ability to take feedback
+  and iterate on your work.
+
+- Expected Outcome: A "ready-to-fork" and comprehensive backend template in the
+  NetworkX organization.
+
+- Expected time commitment: ~350 hours project 
+
+- Complexity: Medium
+
+- Interested Mentors: `@Schefflera-Arboricola <https://github.com/Schefflera-Arboricola>`__,
+
+Adding embarrassingly parallel graph algorithms in nx-parallel
+--------------------------------------------------------------
+
+- Abstract: `nx-parallel <https://github.com/networkx/nx-parallel>`__ is a NetworkX
+  backend that uses `joblib <https://joblib.readthedocs.io/en/latest/index.html>`__ for
+  implementing parallel graph algorithms. Currently, only some of the NetworkX
+  `algorithms are implemented in nx-parallel <https://github.com/networkx/nx-parallel?tab=readme-ov-file#algorithms-in-nx-parallel>`__.
+  We expect the contributor to find `embarrassingly parallel <https://en.wikipedia.org/wiki/Embarrassingly_parallel>`__
+  graph algorithms from the :ref:`wide variety of graph algorithms <Algorithms>`
+  implemented in NetworkX and then write their parallel implementations in nx-parallel.
+  You can start by looking at:
+    - the implementations of existing algorithms in nx-parallel for inspiration.
+    - Joblib docs: `Embarrassingly parallel for loops <https://joblib.readthedocs.io/en/latest/parallel.html>`__
+  Find more details in `Issue#82 <https://github.com/networkx/nx-parallel/issues/82>`__.
+
+- Recommended Skills: Python, willingness to roll up your sleeves and dig deep
+  and understand nx-parallel's infrastructure, and ability to take feedback and
+  iterate on your work.
+
+- Expected Outcome: 3 parallel graph algorithms (~175 hours), or 7 (~350 hours),
+  implemented in nx-parallel.
+
+- Complexity: Medium
+
+- Interested Mentors: `@Schefflera-Arboricola <https://github.com/Schefflera-Arboricola>`__,
 
 Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 ------------------------------------------------------------------------
@@ -45,7 +107,8 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 - Complexity: Depending on the algorithms you are interested to work on.
 
 - Interested Mentors: `@MridulS <https://github.com/MridulS/>`__,
-  `@rossbar <https://github.com/rossbar/>`__
+  `@rossbar <https://github.com/rossbar/>`__,
+  `@Schefflera-Arboricola <https://github.com/Schefflera-Arboricola>`__
 
 - Expected time commitment: This project can be either a medium project (~175 hours)
   or a large project (~350 hours). The contributor is expected to contribute 2-3
@@ -116,7 +179,8 @@ Centrality Atlas
   measures.
 
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
-  `@rossbar <https://github.com/rossbar/>`__
+  `@rossbar <https://github.com/rossbar/>`__,
+  `@Schefflera-Arboricola <https://github.com/Schefflera-Arboricola>`__
 
 - Expected time commitment: Variable, though a high-quality review article would
   be expected to take several months of dedicated research (~350 hours).
