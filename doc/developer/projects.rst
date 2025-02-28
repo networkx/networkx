@@ -53,7 +53,7 @@ Creating a cookie-cutter backend repository in NetworkX
 - Expected Outcome: A "ready-to-fork" and comprehensive backend template in the
   NetworkX organization.
 
-- Expected time commitment: ~350 hours project 
+- Expected time commitment: ~350 hours project
 
 - Complexity: Medium
 
