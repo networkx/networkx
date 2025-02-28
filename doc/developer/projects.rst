@@ -52,27 +52,6 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
   pedagogical interactive notebooks for the medium duration project and 4-5 notebooks
   for the long duration project.
 
-Visualization API with Matplotlib
----------------------------------
-
-- Abstract: NetworkX has some basic drawing tools that use Matplotlib to render the
-  images. The API hasn't changed while Matplotlib has changed. Also we have added or
-  are trying to add new features especially with regard to plotting edges. We'd like
-  someone to read a lot about what we offer and also what Matplotlib offers, and
-  come up with a nice way for users to draw graphs flexibly and yet with good defaults.
-  There is little chance just a broad topic could be completed in one summer, but a
-  roadmap and substantial headway on that road is possible.
-
-- Recommended Skills: Python, matplotlib experience.
-
-- Expected Outcome: A roadmap for a refined API for the matplotlib tools within NetworkX
-  as well as code in the form of PR(s) which implement (part of) that API with tests.
-
-- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
-  `@rossbar <https://github.com/rossbar/>`__
-
-- Expected time commitment: This project will be a full time 10 week project (~350 hrs).
-
 Incorporate a Python library for ISMAGs isomorphism calculations
 ----------------------------------------------------------------
 
@@ -128,6 +107,12 @@ Completed Projects
     - Program: Google Summer of Code 2024
     - Contributor: `@Schefflera-Arboricola <https://github.com/Schefflera-Arboricola>`__
     - Link to Proposal: `GSoC 2024: Revisiting and expanding nx-parallel <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2024-Revisiting-and-expanding-nx-parallel.pdf>`_
+
+- `Unifying the Visualization Interface for NetworkX`
+    - Program: Funded by a grant from CZI (Chan-Zuckerberg Initiative) 2024
+    - Contributor: `@mjschwenne <https://github.com/mjschwenne>`__
+    - Summary: Refactored existing draw functions to a single function with all drawing
+      attributes stored in the NetworkX Graph object.
 
 - `VF2++ algorithm for graph isomorphism`_
     - Program: Google Summer of Code 2022
