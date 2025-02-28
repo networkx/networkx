@@ -77,3 +77,11 @@ repos:
       - id: pyupgrade
         stages: [manual]
         args: [--py311-plus]
+
+  # Additional ruff rules that may be nice to check occasionally, but not require
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 73413df07b4ab0bf103ca1ae73c7cec5c0ace593 # frozen: v0.9.2
+    hooks:
+      - id: ruff
+        stages: [manual]
+        args: [--select=PERF]
