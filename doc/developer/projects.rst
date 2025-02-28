@@ -58,6 +58,7 @@ Creating a cookie-cutter backend repository in NetworkX
 - Complexity: Medium
 
 - Interested Mentors: `@Schefflera-Arboricola <https://github.com/Schefflera-Arboricola>`__,
+  `@dschult <https://github.com/dschult/>`__
 
 Adding embarrassingly parallel graph algorithms in nx-parallel
 --------------------------------------------------------------
@@ -84,6 +85,7 @@ Adding embarrassingly parallel graph algorithms in nx-parallel
 - Complexity: Medium
 
 - Interested Mentors: `@Schefflera-Arboricola <https://github.com/Schefflera-Arboricola>`__,
+  `@dschult <https://github.com/dschult/>`__
 
 Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 ------------------------------------------------------------------------
