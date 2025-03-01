@@ -259,15 +259,16 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
        A NetworkX graph
 
     nodelist : list
-       Use only nodes specified in nodelist
+       Use only nodes specified in nodelist. If None, all nodes in G.
 
-    edge_data : scalar, optional
+    edge_data : scalar, optional (default: the G edgedatadict for each edge)
        If provided, the value of the dictionary will be set to `edge_data` for
        all edges. Usual values could be `1` or `True`. If `edge_data` is
        `None` (the default), the edgedata in `G` is used, resulting in a
        dict-of-dict-of-dicts. If `G` is a MultiGraph, the result will be a
        dict-of-dict-of-dict-of-dicts. See Notes for an approach to customize
-       handling edge data. `edge_data` should *not* be a container.
+       handling edge data. `edge_data` should *not* be a container as it will
+       be the same container for all the edges.
 
     Returns
     -------
