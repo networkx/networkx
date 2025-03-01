@@ -1,7 +1,15 @@
+from functools import partial
+
 import pytest
 
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
+
+# Convenience functions for testing that the behavior of `could_be_isomorphic`
+# with the "properties" kwarg is equivalent to the corresponding function (i.e.
+# nx.fast_could_be_isomorphic or nx.faster_could_be_isomorphic)
+fast_cbi = partial(nx.could_be_isomorphic, properties="dt")
+faster_cbi = partial(nx.could_be_isomorphic, properties="d")
 
 
 def test_graph_could_be_isomorphic_variants_deprecated():
@@ -41,15 +49,17 @@ class TestIsomorph:
         assert iso.could_be_isomorphic(self.G3, self.G2)
         assert not iso.could_be_isomorphic(self.G1, self.G6)
 
-    def test_fast_could_be_isomorphic(self):
-        assert iso.fast_could_be_isomorphic(self.G3, self.G2)
-        assert not iso.fast_could_be_isomorphic(self.G3, self.G5)
-        assert not iso.fast_could_be_isomorphic(self.G1, self.G6)
+    @pytest.mark.parametrize("fn", (iso.fast_could_be_isomorphic, fast_cbi))
+    def test_fast_could_be_isomorphic(self, fn):
+        assert fn(self.G3, self.G2)
+        assert not fn(self.G3, self.G5)
+        assert not fn(self.G1, self.G6)
 
-    def test_faster_could_be_isomorphic(self):
-        assert iso.faster_could_be_isomorphic(self.G3, self.G2)
-        assert not iso.faster_could_be_isomorphic(self.G3, self.G5)
-        assert not iso.faster_could_be_isomorphic(self.G1, self.G6)
+    @pytest.mark.parametrize("fn", (iso.faster_could_be_isomorphic, faster_cbi))
+    def test_faster_could_be_isomorphic(self, fn):
+        assert fn(self.G3, self.G2)
+        assert not fn(self.G3, self.G5)
+        assert not fn(self.G1, self.G6)
 
     def test_is_isomorphic(self):
         assert iso.is_isomorphic(self.G1, self.G2)
