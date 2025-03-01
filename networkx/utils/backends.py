@@ -204,22 +204,6 @@ def _load_backend(backend_name):
 class _dispatchable:
     _is_testing = False
 
-#    class _fallback_to_nx:
-#        """Class property that returns ``nx.config.fallback_to_nx``."""
-#
-#        def __get__(self, instance, owner=None):
-#            warnings.warn(
-#                "`_dispatchable._fallback_to_nx` is deprecated and will be removed "
-#                "in NetworkX v3.5. Use `nx.config.fallback_to_nx` instead.",
-#                category=DeprecationWarning,
-#                stacklevel=2,
-#            )
-#            return nx.config.fallback_to_nx
-#
-#    # Note that chaining `@classmethod` and `@property` was removed in Python 3.13
-#    _fallback_to_nx = _fallback_to_nx()  # type: ignore[assignment,misc]
-#    _fallback_to_nx = nx.config.fallback_to_nx
-
     def __new__(
         cls,
         func=None,
