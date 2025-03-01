@@ -2,8 +2,8 @@
 Graph isomorphism functions.
 """
 
-from collections import Counter
 import itertools
+from collections import Counter
 
 import networkx as nx
 from networkx.exception import NetworkXError
