@@ -154,8 +154,8 @@ to add your name to the bottom of the list.
 - Aaron Zolnai-Lucas, GitHub: `aaronzo <https://github.com/aaronzo>`_, LinkedIn: `aaronzolnailucas <https://www.linkedin.com/in/aaronzolnailucas/>`_
 - Erik Welch, GitHub: `eriknw <https://github.com/eriknw>`_, LinkedIn: `eriknwelch <https://www.linkedin.com/in/eriknwelch/>`_
 - Mohamed Rezk, Github: `mohamedrezk122 <https://github.com/mohamedrezk122>`_
-- Orion Sehn, GitHub: `OrionSehn <https://github.com/OrionSehn>`_ 
-- Berlin Cho, GitHub: `berlincho <https://github.com/berlincho>`_ 
+- Orion Sehn, GitHub: `OrionSehn <https://github.com/OrionSehn>`_
+- Berlin Cho, GitHub: `berlincho <https://github.com/berlincho>`_
 
 A supplementary (but still incomplete) list of contributors is given by the
 list of names that have commits in ``networkx``'s
@@ -213,6 +213,6 @@ NetworkX acknowledges the following financial support:
 
 - Chan Zuckerberg Initiative Essential Open Source Software for Science
   EOSS2-0000000066 and EOSS4-0000000138
-  
+
 - Wellcome Trust via CZI, Wellcome and Kavli EOSS Cycle 6 (EOSS6-000000368)
 
