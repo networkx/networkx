@@ -144,7 +144,7 @@ def _set_configs_from_environment():
         fallback_to_nx=bool(os.environ.get("NETWORKX_FALLBACK_TO_NX", False)),
         warnings_to_ignore=set(
             _comma_sep_to_list(os.environ.get("NETWORKX_WARNINGS_TO_IGNORE", ""))
-        )
+        ),
     )
 
     # add "networkx" backend_info after backend_config is done with backend_info
