@@ -1,11 +1,11 @@
 import pytest
 
-np = pytest.importorskip("numpy")
-sp = pytest.importorskip("scipy")
-
 import networkx as nx
 from networkx.algorithms import bipartite
 from networkx.utils import edges_equal
+
+np = pytest.importorskip("numpy")
+sp = pytest.importorskip("scipy")
 
 
 class TestBiadjacencyMatrix:
