@@ -971,7 +971,7 @@ class GraphMLReader(GraphML):
             text = data_element.text
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element)) == 0:
-                if data_type == bool:
+                if data_type is bool:
                     # Ignore cases.
                     # http://docs.oracle.com/javase/6/docs/api/java/lang/
                     # Boolean.html#parseBoolean%28java.lang.String%29
@@ -1044,7 +1044,7 @@ class GraphMLReader(GraphML):
             if default is not None:
                 # Handle default values identically to data element values
                 python_type = graphml_keys[attr_id]["type"]
-                if python_type == bool:
+                if python_type is bool:
                     graphml_key_defaults[attr_id] = self.convert_bool[
                         default.text.lower()
                     ]

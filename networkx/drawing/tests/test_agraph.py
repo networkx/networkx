@@ -4,11 +4,10 @@ import warnings
 
 import pytest
 
-pygraphviz = pytest.importorskip("pygraphviz")
-
-
 import networkx as nx
 from networkx.utils import edges_equal, graphs_equal, nodes_equal
+
+pygraphviz = pytest.importorskip("pygraphviz")
 
 
 class TestAGraph:
