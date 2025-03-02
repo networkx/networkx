@@ -249,7 +249,7 @@ def mixing_dict(xy, normalized=False):
         psum += 1
 
     if normalized:
-        for _, jdict in d.items():
+        for jdict in d.values():
             for j in jdict:
                 jdict[j] /= psum
     return d

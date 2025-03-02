@@ -152,14 +152,12 @@ def from_pydot(P):
         if isinstance(u, str):
             s.append(u.strip('"'))
         else:
-            for unodes in u["nodes"]:
-                s.append(unodes.strip('"'))
+            s.extend(unodes.strip('"') for unodes in u["nodes"])
 
         if isinstance(v, str):
             d.append(v.strip('"'))
         else:
-            for vnodes in v["nodes"]:
-                d.append(vnodes.strip('"'))
+            d.extend(vnodes.strip('"') for vnodes in v["nodes"])
 
         for source_node in s:
             for destination_node in d:
