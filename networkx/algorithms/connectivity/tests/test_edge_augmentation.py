@@ -138,19 +138,22 @@ def test_edgeless_graph():
 
 def test_invalid_k():
     G = nx.Graph()
-    pytest.raises(ValueError, list, k_edge_augmentation(G, k=-1))
-    pytest.raises(ValueError, list, k_edge_augmentation(G, k=0))
+    with pytest.raises(ValueError):
+        list(k_edge_augmentation(G, k=-1))
+    with pytest.raises(ValueError):
+        list(k_edge_augmentation(G, k=0))
 
 
 def test_unfeasible():
     G = tarjan_bridge_graph()
-    pytest.raises(nx.NetworkXUnfeasible, list, k_edge_augmentation(G, k=1, avail=[]))
+    with pytest.raises(nx.NetworkXUnfeasible):
+        list(k_edge_augmentation(G, k=1, avail=[]))
 
-    pytest.raises(nx.NetworkXUnfeasible, list, k_edge_augmentation(G, k=2, avail=[]))
+    with pytest.raises(nx.NetworkXUnfeasible):
+        list(k_edge_augmentation(G, k=2, avail=[]))
 
-    pytest.raises(
-        nx.NetworkXUnfeasible, list, k_edge_augmentation(G, k=2, avail=[(7, 9)])
-    )
+    with pytest.raises(nx.NetworkXUnfeasible):
+        list(k_edge_augmentation(G, k=2, avail=[(7, 9)]))
 
     # partial solutions should not error if real solutions are infeasible
     aug_edges = list(k_edge_augmentation(G, k=2, avail=[(7, 9)], partial=True))
@@ -293,9 +296,9 @@ def _augment_and_check(
             avail_dict = None
         try:
             # Find the augmentation if possible
+            aug_edges = []
             generator = nx.k_edge_augmentation(G, k=k, weight=weight, avail=avail)
             assert not isinstance(generator, list), "should always return an iter"
-            aug_edges = []
             for edge in generator:
                 aug_edges.append(edge)
         except nx.NetworkXUnfeasible:

@@ -42,7 +42,7 @@ def is_isolate(G, n):
 
 @nx._dispatchable
 def isolates(G):
-    """Iterator over isolates in the graph.
+    """Yield isolate nodes of the graph.
 
     An *isolate* is a node with no neighbors (that is, with degree
     zero). For directed graphs, this means no in-neighbors and no
@@ -52,10 +52,10 @@ def isolates(G):
     ----------
     G : NetworkX graph
 
-    Returns
-    -------
-    iterator
-        An iterator over the isolates of `G`.
+    Yields
+    ------
+    isolate : node
+        An isolate node of `G`.
 
     Examples
     --------

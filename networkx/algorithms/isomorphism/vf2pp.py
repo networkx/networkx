@@ -166,7 +166,7 @@ def vf2pp_is_isomorphic(G1, G2, node_label=None, default_label=None):
 
 @nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
 def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=None):
-    """Yields all the possible mappings between G1 and G2.
+    """Yield all the possible mappings between G1 and G2.
 
     Parameters
     ----------

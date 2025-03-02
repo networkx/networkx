@@ -165,7 +165,7 @@ def is_directed_acyclic_graph(G):
 
 @nx._dispatchable
 def topological_generations(G):
-    """Stratifies a DAG into generations.
+    """Stratify a DAG into generations and yield each generation.
 
     A topological generation is node collection in which ancestors of a node in each
     generation are guaranteed to be in a previous generation, and any descendants of
@@ -179,8 +179,8 @@ def topological_generations(G):
 
     Yields
     ------
-    sets of nodes
-        Yields sets of nodes representing each generation.
+    generation : set of nodes
+        Set of nodes for each generation.
 
     Raises
     ------
@@ -243,7 +243,7 @@ def topological_generations(G):
 
 @nx._dispatchable
 def topological_sort(G):
-    """Returns a generator of nodes in topologically sorted order.
+    """Yield nodes in topologically sorted order.
 
     A topological sort is a nonunique permutation of the nodes of a
     directed graph such that an edge from u to v implies that u
@@ -257,8 +257,8 @@ def topological_sort(G):
 
     Yields
     ------
-    nodes
-        Yields the nodes in topological sorted order.
+    node
+        Each node in topologically sorted order.
 
     Raises
     ------
@@ -312,7 +312,7 @@ def topological_sort(G):
 
 @nx._dispatchable
 def lexicographical_topological_sort(G, key=None):
-    """Generate the nodes in the unique lexicographical topological sort order.
+    """Yield nodes in the unique lexicographical topological sort order.
 
     Generates a unique ordering of nodes by first sorting topologically (for which there are often
     multiple valid orderings) and then additionally by sorting lexicographically.
@@ -345,8 +345,8 @@ def lexicographical_topological_sort(G, key=None):
 
     Yields
     ------
-    nodes
-        Yields the nodes of G in lexicographical topological sort order.
+    node
+        Each node of G in lexicographical topological sort order.
 
     Raises
     ------
@@ -455,7 +455,7 @@ def lexicographical_topological_sort(G, key=None):
 @not_implemented_for("undirected")
 @nx._dispatchable
 def all_topological_sorts(G):
-    """Returns a generator of _all_ topological sorts of the directed graph G.
+    """Yield _all_ topological sorts of the directed graph G.
 
     A topological sort is a nonunique permutation of the nodes such that an
     edge from u to v implies that u appears before v in the topological sort
@@ -469,7 +469,7 @@ def all_topological_sorts(G):
     Yields
     ------
     topological_sort_order : list
-        a list of nodes in `G`, representing one of the topological sort orders
+        A list of nodes in `G`, representing one of the topological sort orders
 
     Raises
     ------
@@ -890,7 +890,7 @@ def transitive_reduction(G):
 @not_implemented_for("undirected")
 @nx._dispatchable
 def antichains(G, topo_order=None):
-    """Generates antichains from a directed acyclic graph (DAG).
+    """Yield antichains from a directed acyclic graph (DAG).
 
     An antichain is a subset of a partially ordered set such that any
     two elements in the subset are incomparable.
@@ -906,7 +906,7 @@ def antichains(G, topo_order=None):
     Yields
     ------
     antichain : list
-        a list of nodes in `G` representing an antichain
+        A list of nodes in `G` representing an antichain
 
     Raises
     ------
@@ -1109,7 +1109,7 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
 
 @nx._dispatchable
 def root_to_leaf_paths(G):
-    """Yields root-to-leaf paths in a directed acyclic graph.
+    """Yield root-to-leaf paths in a directed acyclic graph.
 
     `G` must be a directed acyclic graph. If not, the behavior of this
     function is undefined. A "root" in this graph is a node of in-degree
@@ -1228,7 +1228,7 @@ def dag_to_branching(G):
 @not_implemented_for("undirected")
 @nx._dispatchable
 def compute_v_structures(G):
-    """Yields 3-node tuples that represent the v-structures in `G`.
+    """Yield 3-node tuples that represent the v-structures in `G`.
 
     .. deprecated:: 3.4
 
@@ -1303,7 +1303,7 @@ def compute_v_structures(G):
 @not_implemented_for("undirected")
 @nx._dispatchable
 def v_structures(G):
-    """Yields 3-node tuples that represent the v-structures in `G`.
+    """Yield 3-node tuples that represent the v-structures in `G`.
 
     Colliders are triples in the directed acyclic graph (DAG) where two parent nodes
     point to the same child node. V-structures are colliders where the two parent
@@ -1362,7 +1362,7 @@ def v_structures(G):
 @not_implemented_for("undirected")
 @nx._dispatchable
 def colliders(G):
-    """Yields 3-node tuples that represent the colliders in `G`.
+    """Yield 3-node tuples that represent the colliders in `G`.
 
     In a Directed Acyclic Graph (DAG), if you have three nodes A, B, and C, and
     there are edges from A to C and from B to C, then C is a collider [1]_ . In

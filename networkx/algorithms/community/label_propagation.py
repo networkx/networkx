@@ -17,7 +17,7 @@ __all__ = [
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
 def fast_label_propagation_communities(G, *, weight=None, seed=None):
-    """Returns communities in `G` as detected by fast label propagation.
+    """Yield communities in `G` as detected by fast label propagation.
 
     The fast label propagation algorithm is described in [1]_. The algorithm is
     probabilistic and the found communities may vary in different executions.
@@ -47,10 +47,10 @@ def fast_label_propagation_communities(G, *, weight=None, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state. See :ref:`Randomness<randomness>`.
 
-    Returns
-    -------
-    communities : iterable
-        Iterable of communities given as sets of nodes.
+    Yields
+    ------
+    community : set
+        Set of nodes of a community.
 
     Notes
     -----
@@ -140,7 +140,7 @@ def _fast_label_count(G, comms, node, weight=None):
 @py_random_state(2)
 @nx._dispatchable(edge_attrs="weight")
 def asyn_lpa_communities(G, weight=None, seed=None):
-    """Returns communities in `G` as detected by asynchronous label
+    """Yield communities in `G` as detected by asynchronous label
     propagation.
 
     The asynchronous label propagation algorithm is described in
@@ -173,10 +173,10 @@ def asyn_lpa_communities(G, weight=None, seed=None):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
-    Returns
-    -------
-    communities : iterable
-        Iterable of communities given as sets of nodes.
+    Yields
+    ------
+    community : set
+        Set of nodes of a community.
 
     Notes
     -----
@@ -236,7 +236,7 @@ def asyn_lpa_communities(G, weight=None, seed=None):
 @not_implemented_for("directed")
 @nx._dispatchable
 def label_propagation_communities(G):
-    """Generates community sets determined by label propagation
+    """Return community sets determined by label propagation.
 
     Finds communities in `G` using a semi-synchronous label propagation
     method [1]_. This method combines the advantages of both the synchronous
@@ -249,7 +249,7 @@ def label_propagation_communities(G):
 
     Returns
     -------
-    communities : iterable
+    community : dict_values
         A dict_values object that contains a set of nodes for each community.
 
     Raises
