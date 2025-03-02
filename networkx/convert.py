@@ -28,6 +28,8 @@ __all__ = [
     "to_dict_of_lists",
     "from_edgelist",
     "to_edgelist",
+    "from_backend_graph",
+    "to_backend_graph",
 ]
 
 
@@ -499,3 +501,75 @@ def from_edgelist(edgelist, create_using=None):
     G = nx.empty_graph(0, create_using)
     G.add_edges_from(edgelist)
     return G
+
+
+@nx._dispatchable(graphs=None, backend_name_arg=1)
+def to_backend_graph(
+    G,
+    backend_name,
+    /,
+    *,
+    edge_attrs=None,
+    node_attrs=None,
+    preserve_attrs=("edge", "node", "graph"),
+):
+    # This exposes converting a NetworkX graph to a backend graph, and is the
+    # default (fallback) implementation to convert from backend to backend.
+    from networkx.utils.backends import _load_backend, backends
+
+    # Check arguments
+    if backend_name not in backends:
+        known_backends = ", ".join(sorted(backends))
+        raise ValueError(
+            f"Unknown backend: {backend_name}. Valid backends: {known_backends}"
+        )
+    if isinstance(preserve_attrs, str):
+        preserve_attrs = {preserve_attrs}
+    elif preserve_attrs is None:
+        prserve_attrs = set()
+    else:
+        preserve_attrs = set(preserve_attrs)
+    if invalid := preserve_attrs - {"edge", "node", "graph"}:
+        raise ValueError(invalid)  # TODO
+
+    # Get NetworkX graph from `G`
+    if hasattr(G, "__networkx_backend__"):
+        # Backend-to-backend conversion: first convert to NetworkX graph
+        if G.__networkx_backend__ == backend_name:
+            # Should we try to use other arguments `edge_attrs`, etc?
+            return G.copy()  # Or should we simply return `G`?
+        G_nx = from_backend_graph(G)  # Should always return NetworkX graph
+    elif isinstance(G, nx.Graph):
+        G_nx = G
+    else:
+        raise TypeError  # TODO
+
+    # Convert to backend graph
+    backend_interface = _load_backend(backend_name)
+    return backend_interface.convert_from_nx(
+        G,
+        edge_attrs=edge_attrs,
+        node_attrs=node_attrs,
+        preserve_edge_attrs=edge_attrs is None and "edge" in preserve_attrs,
+        preserve_node_attrs=node_attrs is None and "node" in preserve_attrs,
+        preserve_graph_attrs="graph" in preserve_attrs,
+        name="to_backend_graph",
+    )
+
+
+@nx._dispatchable(graphs=None)
+def from_backend_graph(G):
+    """Make a NetworkX graph from a backend graph."""
+    from networkx.utils.backends import _load_backend, backends
+
+    if not hasattr(G, "__networkx_backend__"):
+        raise TypeError  # TODO
+
+    G_backend = G.__networkx_backend__
+    if G_backend not in backends:
+        known_backends = ", ".join(sorted(backends))
+        raise ValueError(
+            f"Graph has unknown backend: {G_backend}. Valid backends: {known_backends}"
+        )
+    G_backend_interface = _load_backend(G_backend)
+    return G_backend_interface.convert_to_nx(G)
