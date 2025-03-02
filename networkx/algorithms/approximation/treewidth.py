@@ -132,16 +132,19 @@ class MinDegreeHeuristic:
         return None
 
 
-def min_fill_in_heuristic(graph):
+def min_fill_in_heuristic(graph_dict):
     """Implements the Minimum Degree heuristic.
+
+    graph_dict: dict keyed by node to sets of neighbors (no self-loops)
 
     Returns the node from the graph, where the number of edges added when
     turning the neighborhood of the chosen node into clique is as small as
     possible. This algorithm chooses the nodes using the Minimum Fill-In
     heuristic. The running time of the algorithm is :math:`O(V^3)` and it uses
-    additional constant memory."""
+    additional constant memory.
+    """
 
-    if len(graph) == 0:
+    if len(graph_dict) == 0:
         return None
 
     min_fill_in_node = None
@@ -149,20 +152,20 @@ def min_fill_in_heuristic(graph):
     min_fill_in = sys.maxsize
 
     # sort nodes by degree
-    nodes_by_degree = sorted(graph, key=lambda x: len(graph[x]))
-    min_degree = len(graph[nodes_by_degree[0]])
+    nodes_by_degree = sorted(graph_dict, key=lambda x: len(graph_dict[x]))
+    min_degree = len(graph_dict[nodes_by_degree[0]])
 
     # abort condition (handle complete graph)
-    if min_degree == len(graph) - 1:
+    if min_degree == len(graph_dict) - 1:
         return None
 
     for node in nodes_by_degree:
         num_fill_in = 0
-        nbrs = graph[node]
+        nbrs = graph_dict[node]
         for nbr in nbrs:
             # count how many nodes in nbrs current nbr is not connected to
             # subtract 1 for the node itself
-            num_fill_in += len(nbrs - graph[nbr]) - 1
+            num_fill_in += len(nbrs - graph_dict[nbr]) - 1
             if num_fill_in >= 2 * min_fill_in:
                 break
 
@@ -193,33 +196,33 @@ def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
     """
 
     # make dict-of-sets structure
-    graph = {n: set(G[n]) - {n} for n in G}
+    graph_dict = {n: set(G[n]) - {n} for n in G}
 
     # stack containing nodes and neighbors in the order from the heuristic
     node_stack = []
 
     # get first node from heuristic
-    elim_node = heuristic(graph)
+    elim_node = heuristic(graph_dict)
     while elim_node is not None:
         # connect all neighbors with each other
-        nbrs = graph[elim_node]
+        nbrs = graph_dict[elim_node]
         for u, v in itertools.permutations(nbrs, 2):
-            if v not in graph[u]:
-                graph[u].add(v)
+            if v not in graph_dict[u]:
+                graph_dict[u].add(v)
 
         # push node and its current neighbors on stack
         node_stack.append((elim_node, nbrs))
 
-        # remove node from graph
-        for u in graph[elim_node]:
-            graph[u].remove(elim_node)
+        # remove node from graph_dict
+        for u in graph_dict[elim_node]:
+            graph_dict[u].remove(elim_node)
 
-        del graph[elim_node]
-        elim_node = heuristic(graph)
+        del graph_dict[elim_node]
+        elim_node = heuristic(graph_dict)
 
     # the abort condition is met; put all remaining nodes into one bag
     decomp = nx.Graph()
-    first_bag = frozenset(graph.keys())
+    first_bag = frozenset(graph_dict.keys())
     decomp.add_node(first_bag)
 
     treewidth = len(first_bag) - 1
