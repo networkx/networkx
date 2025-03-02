@@ -171,7 +171,7 @@ def christofides(G, weight="weight", tree=None):
     # Check that G is a complete graph
     N = len(G) - 1
     # This check ignores selfloops which is what we want here.
-    if any(len(nbrdict) != N for n, nbrdict in G.adj.items()):
+    if any(len(nbrdict) != N for n, nbrdict in G._adj.items()):
         raise nx.NetworkXError("G must be a complete graph.")
 
     if tree is None:
@@ -441,7 +441,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     if N < 1:
         raise nx.NetworkXError("G must have at least two nodes")
     # This check ignores selfloops which is what we want here.
-    if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+    if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G._adj.items()):
         raise nx.NetworkXError("G is not a complete DiGraph")
     # Check that the source vertex, if given, is in the graph
     if source is not None and source not in G.nodes:
@@ -1022,7 +1022,7 @@ def greedy_tsp(G, weight="weight", source=None):
     # Check that G is a complete graph
     N = len(G) - 1
     # This check ignores selfloops which is what we want here.
-    if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+    if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G._adj.items()):
         raise nx.NetworkXError("G must be a complete graph.")
 
     if source is None:
@@ -1236,7 +1236,7 @@ def simulated_annealing_tsp(
         # Check that G is a complete graph
         N = len(G) - 1
         # This check ignores selfloops which is what we want here.
-        if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+        if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G._adj.items()):
             raise nx.NetworkXError("G must be a complete graph.")
 
         if G.number_of_nodes() == 2:
@@ -1471,7 +1471,7 @@ def threshold_accepting_tsp(
         # Check that G is a complete graph
         N = len(G) - 1
         # This check ignores selfloops which is what we want here.
-        if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+        if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G._adj.items()):
             raise nx.NetworkXError("G must be a complete graph.")
 
         if G.number_of_nodes() == 2:
