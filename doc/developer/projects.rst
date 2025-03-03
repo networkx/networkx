@@ -44,10 +44,7 @@ Creating a cookie-cutter backend repository in NetworkX
       (a dummy backend) and `nx-parallel <https://github.com/networkx/nx-parallel>`__
       (a simple backend) for inspiration.
 
-    - reading and understanding
-      `Backends <https://networkx.org/documentation/latest/reference/backends.html>`__
-      and `Configs <https://networkx.org/documentation/latest/reference/configs.html>`__
-      documentation.
+    - reading and understanding :ref:`backends` and :ref:`configs` documentation.
 
   Feel free to ask questions or open an issue if you find something hard to understand,
   as the above documentations are not that well-written.
