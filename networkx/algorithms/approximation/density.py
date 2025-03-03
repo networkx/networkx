@@ -365,28 +365,28 @@ def densest_subgraph(G, iterations=1, *, method="fista"):
     References
     ----------
     .. [1] Charikar, Moses. "Greedy approximation algorithms for finding dense
-    components in a graph." In International workshop on approximation
-    algorithms for combinatorial optimization, pp. 84-95. Berlin, Heidelberg:
-    Springer Berlin Heidelberg, 2000.
+       components in a graph." In International workshop on approximation
+       algorithms for combinatorial optimization, pp. 84-95. Berlin, Heidelberg:
+       Springer Berlin Heidelberg, 2000.
 
     .. [2] Boob, Digvijay, Yu Gao, Richard Peng, Saurabh Sawlani, Charalampos
-    Tsourakakis, Di Wang, and Junxing Wang. "Flowless: Extracting densest
-    subgraphs without flow computations." In Proceedings of The Web Conference
-    2020, pp. 573-583. 2020.
+       Tsourakakis, Di Wang, and Junxing Wang. "Flowless: Extracting densest
+       subgraphs without flow computations." In Proceedings of The Web Conference
+       2020, pp. 573-583. 2020.
 
     .. [3] Harb, Elfarouk, Kent Quanrud, and Chandra Chekuri. "Faster and scalable
-    algorithms for densest subgraph and decomposition." Advances in Neural
-    Information Processing Systems 35 (2022): 26966-26979.
+       algorithms for densest subgraph and decomposition." Advances in Neural
+       Information Processing Systems 35 (2022): 26966-26979.
 
     .. [4] Harb, Elfarouk, Kent Quanrud, and Chandra Chekuri. "Convergence to
-    lexicographically optimal base in a (contra) polymatroid and applications
-    to densest subgraph and tree packing." arXiv preprint arXiv:2305.02987
-    (2023).
+       lexicographically optimal base in a (contra) polymatroid and applications
+       to densest subgraph and tree packing." arXiv preprint arXiv:2305.02987
+       (2023).
 
     .. [5] Chekuri, Chandra, Kent Quanrud, and Manuel R. Torres. "Densest
-    subgraph: Supermodularity, iterative peeling, and flow." In Proceedings of
-    the 2022 Annual ACM-SIAM Symposium on Discrete Algorithms (SODA), pp.
-    1531-1555. Society for Industrial and Applied Mathematics, 2022.
+       subgraph: Supermodularity, iterative peeling, and flow." In Proceedings of
+       the 2022 Annual ACM-SIAM Symposium on Discrete Algorithms (SODA), pp.
+       1531-1555. Society for Industrial and Applied Mathematics, 2022.
     """
     try:
         algo = ALGORITHMS[method]
