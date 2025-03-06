@@ -36,7 +36,9 @@ def could_be_isomorphic(G1, G2, *, properties="dtc"):
 
        Unrecognized characters are ignored. The default is ``"dtc"``, which
        compares the sequence of ``(degree, num_triangles, num_cliques)`` properties
-       between `G1` and `G2`.
+       between `G1` and `G2`. Generally, ``properties="dt"`` would be faster, and
+       ``properties="d"`` faster still. See Notes for additional details on
+       property selection.
 
     Returns
     -------
@@ -49,6 +51,14 @@ def could_be_isomorphic(G1, G2, *, properties="dtc"):
     The triangle sequence contains the number of triangles each node is part of.
     The clique sequence contains for each node the number of maximal cliques
     involving that node.
+
+    Some properties are faster to compute than others. And there are other
+    properties we could include and don't. For example, ``len(G1) == len(G2)``
+    and ``G1.size() == G2.size()``. But of the three properties listed here,
+    comparing the degree distributions is the fastest. The "triangles" property
+    is slower (and also a stricter version of "could") and the "maximal cliques"
+    property is slower still, but usually faster than doing a full isomorphism
+    check.
     """
 
     # Check global properties
