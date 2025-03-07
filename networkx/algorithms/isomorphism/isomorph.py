@@ -53,8 +53,7 @@ def could_be_isomorphic(G1, G2, *, properties="dtc"):
     involving that node.
 
     Some properties are faster to compute than others. And there are other
-    properties we could include and don't. For example, ``len(G1) == len(G2)``
-    and ``G1.size() == G2.size()``. But of the three properties listed here,
+    properties we could include and don't. But of the three properties listed here,
     comparing the degree distributions is the fastest. The "triangles" property
     is slower (and also a stricter version of "could") and the "maximal cliques"
     property is slower still, but usually faster than doing a full isomorphism
