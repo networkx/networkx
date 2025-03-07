@@ -778,7 +778,6 @@ def display(
         )
         pos = default_display_pos_attr
         kwargs["node_pos"] = default_display_pos_attr
-        print("calculated spring layout")
 
     # Each shape requires a new scatter object since they can't have different
     # shapes.
@@ -889,7 +888,7 @@ def display(
             e for e, v in nx.get_edge_attributes(G, edge_visible, True).items() if v
         ]
 
-    edge_subgraph = G.edge_subgraph(visible_edges)
+    edge_subgraph = node_subgraph.edge_subgraph(visible_edges)
 
     collection_edges = (
         [e for e in edge_subgraph.edges(keys=True) if collection_compatible(e)]
