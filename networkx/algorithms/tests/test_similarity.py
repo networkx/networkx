@@ -922,8 +922,8 @@ class TestSimilarity:
         assert expected_map == index_map
 
     def test_symmetry_with_custom_matching(self):
-        print("G2 is edge (a,b) and G3 is edge (a,a)")
-        print("but node order for G2 is (a,b) while for G3 it is (b,a)")
+        """G2 has edge (a,b) and G3 has edge (a,a) but node order for G2 is (a,b)
+        while for G3 it is (b,a)"""
 
         a, b = "A", "B"
         G2 = nx.Graph()
@@ -937,10 +937,15 @@ class TestSimilarity:
                 G.nodes[n]["attr"] = n
             for e in G.edges:
                 G.edges[e]["attr"] = e
-        match = lambda x, y: x == y
 
-        print("Starting G2 to G3 GED calculation")
-        assert nx.graph_edit_distance(G2, G3, node_match=match, edge_match=match) == 1
+        def user_match(x, y):
+            return x == y
 
-        print("Starting G3 to G2 GED calculation")
-        assert nx.graph_edit_distance(G3, G2, node_match=match, edge_match=match) == 1
+        assert (
+            nx.graph_edit_distance(G2, G3, node_match=user_match, edge_match=user_match)
+            == 1
+        )
+        assert (
+            nx.graph_edit_distance(G3, G2, node_match=user_match, edge_match=user_match)
+            == 1
+        )

@@ -569,6 +569,8 @@ sp[3]
 See {doc}`/reference/algorithms/index` for details on graph algorithms
 supported.
 
+(using-networkx-backends)=
+
 ## Using NetworkX backends
 
 NetworkX can be configured to use separate thrid-party backends to improve
@@ -623,7 +625,7 @@ pr = nx.pagerank(G)  # runs using backend from NETWORKX_BACKEND_PRIORITY, if set
 The equivalent configuration can be applied to NetworkX directly to the code
 through the NetworkX `config` global parameters, which may be useful if
 environment variables are not suitable. This will override the corresponding
-environment variable allowing backends to be enabled programatically in Python
+environment variable allowing backends to be enabled programmatically in Python
 code. However, the tradeoff is slightly less portability as updating the
 backend specification may require a small code change instead of simply
 updating an environment variable.

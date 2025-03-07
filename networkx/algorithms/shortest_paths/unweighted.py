@@ -2,8 +2,6 @@
 Shortest path algorithms for unweighted graphs.
 """
 
-import warnings
-
 import networkx as nx
 
 __all__ = [
@@ -20,7 +18,7 @@ __all__ = [
 
 @nx._dispatchable
 def single_source_shortest_path_length(G, source, cutoff=None):
-    """Compute the shortest path lengths from source to all reachable nodes.
+    """Compute the shortest path lengths from `source` to all reachable nodes in `G`.
 
     Parameters
     ----------
@@ -30,30 +28,27 @@ def single_source_shortest_path_length(G, source, cutoff=None):
        Starting node for path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths of length <= `cutoff` are returned.
 
     Returns
     -------
     lengths : dict
-        Dict keyed by node to shortest path length to source.
+        Dict keyed by node to shortest path length to `source`.
 
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> length = nx.single_source_shortest_path_length(G, 0)
-    >>> length[4]
-    4
-    >>> for node in length:
-    ...     print(f"{node}: {length[node]}")
-    0: 0
-    1: 1
-    2: 2
-    3: 3
-    4: 4
+    >>> nx.single_source_shortest_path_length(G, 0)
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
 
     See Also
     --------
-    shortest_path_length
+    :any:`shortest_path_length` :
+       Shortest path length with specifiable source, target, and weight.
+    :any:`single_source_dijkstra_path_length` :
+       Shortest weighted path length from source with Dijkstra algorithm.
+    :any:`single_source_bellman_ford_path_length` :
+       Shortest weighted path length from source with Bellman-Ford algorithm.
     """
     if source not in G:
         raise nx.NodeNotFound(f"Source {source} is not in G")
@@ -112,13 +107,13 @@ def single_target_shortest_path_length(G, target, cutoff=None):
 
     Returns
     -------
-    lengths : iterator
-        (source, shortest path length) iterator
+    lengths : dictionary
+        Dictionary, keyed by source, of shortest path lengths.
 
     Examples
     --------
     >>> G = nx.path_graph(5, create_using=nx.DiGraph())
-    >>> length = dict(nx.single_target_shortest_path_length(G, 4))
+    >>> length = nx.single_target_shortest_path_length(G, 4)
     >>> length[0]
     4
     >>> for node in range(5):
@@ -135,24 +130,12 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     """
     if target not in G:
         raise nx.NodeNotFound(f"Target {target} is not in G")
-
-    warnings.warn(
-        (
-            "\n\nsingle_target_shortest_path_length will return a dict instead of"
-            "\nan iterator in version 3.5"
-        ),
-        FutureWarning,
-        stacklevel=3,
-    )
-
     if cutoff is None:
         cutoff = float("inf")
     # handle either directed or undirected
     adj = G._pred if G.is_directed() else G._adj
     nextlevel = [target]
-    # for version 3.3 we will return a dict like this:
-    # return dict(_single_shortest_path_length(adj, nextlevel, cutoff))
-    return _single_shortest_path_length(adj, nextlevel, cutoff)
+    return dict(_single_shortest_path_length(adj, nextlevel, cutoff))
 
 
 @nx._dispatchable

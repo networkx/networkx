@@ -41,6 +41,24 @@ def trophic_levels(G, weight="weight"):
     ----------
     .. [1] Stephen Levine (1980) J. theor. Biol. 83, 195-207
     """
+
+    basal_nodes = [n for n, deg in G.in_degree if deg == 0]
+    if not basal_nodes:
+        raise nx.NetworkXError(
+            "This graph has no basal nodes (nodes with no incoming edges)."
+            "Trophic levels are not defined without at least one basal node."
+        )
+
+    reachable_nodes = {
+        node for layer in nx.bfs_layers(G, sources=basal_nodes) for node in layer
+    }
+
+    if len(reachable_nodes) != len(G.nodes):
+        raise nx.NetworkXError(
+            "Trophic levels are only defined for graphs where every node has a path "
+            "from a basal node (basal nodes are nodes with no incoming edges)."
+        )
+
     import numpy as np
 
     # find adjacency matrix

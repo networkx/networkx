@@ -25,7 +25,7 @@ backends that NetworkX developers don't know about. You should be able to
 install the backend, enable the backend using the `backend=...` keyword arg,
 the `NETWORKX_BACKEND_PRIORITY` environment variable, or the config setting
 `nx.config.backend_priority="..."` as described in the
-[Tutorial](/tutorial.md#using-networkx-backends).
+[Tutorial](#using-networkx-backends).
 
 See the documentation for a particular backend for a description of
 the NetworkX functions it provides, how to install it, and any special
@@ -39,6 +39,6 @@ backend-specific configurations it supports.
    - Parallelized implementations of various NetworkX functions using joblib
 *  - [nx-cugraph](https://rapids.ai/nx-cugraph)
    - GPU acceleration using RAPIDS cuGraph and NVIDIA GPUs
-*  - [nx-arangodb](https://nx-arangodb.readthedocs.io/en/latest/)
+*  - [nx-arangodb](https://github.com/arangodb/nx-arangodb)
    - Seamlessly adds ArangoDB as a persistence layer to NetworkX graphs
 ```

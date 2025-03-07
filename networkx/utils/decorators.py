@@ -4,11 +4,7 @@ import gzip
 import inspect
 import itertools
 import re
-import warnings
 from collections import defaultdict
-from contextlib import contextmanager
-from functools import wraps
-from inspect import Parameter, signature
 from os.path import splitext
 from pathlib import Path
 
@@ -1146,7 +1142,7 @@ class argmap:
             def_sig.append(name)
 
         fname = cls._name(f)
-        def_sig = f'def {fname}({", ".join(def_sig)}):'
+        def_sig = f"def {fname}({', '.join(def_sig)}):"
 
         call_sig = f"return {{}}({', '.join(call_sig)})"
 

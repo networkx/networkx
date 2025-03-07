@@ -48,17 +48,17 @@ def render_team(team):
 .. raw:: html
 
    <div class="team-member">
-     <a href="https://github.com/{member['login']}" class="team-member-name">
+     <a href="https://github.com/{member["login"]}" class="team-member-name">
         <div class="team-member-photo">
            <img
-             src="{member['avatar_url']}&s=40"
+             src="{member["avatar_url"]}&s=40"
              loading="lazy"
-             alt="Avatar picture of @{profile['login']}"
+             alt="Avatar picture of @{profile["login"]}"
            />
         </div>
-        {profile['name'] if profile['name'] else '@' + profile['login']}
+        {profile["name"] if profile["name"] else "@" + profile["login"]}
      </a>
-     <div class="team-member-handle">@{member['login']}</div>
+     <div class="team-member-handle">@{member["login"]}</div>
    </div>
 """
         )

@@ -249,7 +249,6 @@ class TestSimulatedAnnealingTSP(TestBase):
             self.DG2, "greedy", source="D", move="1-0", alpha=1, N_inner=1, seed=42
         )
         cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        print(cycle, cost)
         assert cost > self.DG2_cost
 
         # Try with an incorrect initial guess
@@ -265,7 +264,6 @@ class TestSimulatedAnnealingTSP(TestBase):
             seed=42,
         )
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        print(cycle, cost)
         assert cost > self.DG_cost
 
 
@@ -302,16 +300,14 @@ def test_TSP_method():
     G[4][5]["weight"] = 10
 
     # Test using the old currying method
-    sa_tsp = lambda G, weight: nx_app.simulated_annealing_tsp(
-        G, "greedy", weight, source=4, seed=1
-    )
+    def sa_tsp(G, weight):
+        return nx_app.simulated_annealing_tsp(G, "greedy", weight, source=4, seed=1)
 
     path = nx_app.traveling_salesman_problem(
         G,
         method=sa_tsp,
         cycle=False,
     )
-    print(path)
     assert path == [4, 3, 2, 1, 0, 8, 7, 6, 5]
 
 
@@ -389,14 +385,40 @@ def test_TSP_incomplete_graph_short_path():
     G[4][5]["weight"] = 5
 
     cycle = nx_app.traveling_salesman_problem(G)
-    print(cycle)
     assert len(cycle) == 17 and len(set(cycle)) == 12
 
     # make sure that cutting one edge out of complete graph formulation
     # cuts out many edges out of the path of the TSP
     path = nx_app.traveling_salesman_problem(G, cycle=False)
-    print(path)
     assert len(path) == 13 and len(set(path)) == 12
+
+
+def test_TSP_alternate_weight():
+    G = nx.complete_graph(9)
+    G[0][1]["weight"] = 2
+    G[1][2]["weight"] = 2
+    G[2][3]["weight"] = 2
+    G[3][4]["weight"] = 4
+    G[4][5]["weight"] = 5
+    G[5][6]["weight"] = 4
+    G[6][7]["weight"] = 2
+    G[7][8]["weight"] = 2
+    G[8][0]["weight"] = 2
+
+    H = nx.complete_graph(9)
+    H[0][1]["distance"] = 2
+    H[1][2]["distance"] = 2
+    H[2][3]["distance"] = 2
+    H[3][4]["distance"] = 4
+    H[4][5]["distance"] = 5
+    H[5][6]["distance"] = 4
+    H[6][7]["distance"] = 2
+    H[7][8]["distance"] = 2
+    H[8][0]["distance"] = 2
+
+    assert nx_app.traveling_salesman_problem(
+        G, weight="weight"
+    ) == nx_app.traveling_salesman_problem(H, weight="distance")
 
 
 def test_held_karp_ascent():
@@ -914,6 +936,20 @@ def test_asadpour_empty_graph():
     G = nx.DiGraph()
 
     pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
+
+
+def test_asadpour_small_graphs():
+    # 1 node
+    G = nx.path_graph(1, create_using=nx.DiGraph)
+    with pytest.raises(nx.NetworkXError, match="at least two nodes"):
+        nx_app.asadpour_atsp(G)
+
+    # 2 nodes
+    G = nx.DiGraph()
+    G.add_weighted_edges_from([(0, 1, 7), (1, 0, 8)])
+    assert nx_app.asadpour_atsp(G) in [[0, 1], [1, 0]]
+    assert nx_app.asadpour_atsp(G, source=1) == [1, 0]
+    assert nx_app.asadpour_atsp(G, source=0) == [0, 1]
 
 
 @pytest.mark.slow

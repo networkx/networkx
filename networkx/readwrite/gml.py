@@ -30,7 +30,6 @@ Several example graphs in GML format may be found on Mark Newman's
 
 import html.entities as htmlentitydefs
 import re
-import warnings
 from ast import literal_eval
 from collections import defaultdict
 from enum import Enum
@@ -119,8 +118,9 @@ def read_gml(path, label="label", destringizer=None):
 
     Parameters
     ----------
-    path : filename or filehandle
-        The filename or filehandle to read from.
+    path : file or string
+        Filename or file handle to read.
+        Filenames ending in .gz or .bz2 will be decompressed.
 
     label : string, optional
         If not None, the parsed nodes will be renamed according to node
@@ -753,7 +753,7 @@ def generate_gml(G, stringizer=None):
                     yield from stringize(key, value, (), next_indent)
                 yield indent + "]"
             elif isinstance(value, tuple) and key == "label":
-                yield indent + key + f" \"({','.join(repr(v) for v in value)})\""
+                yield indent + key + f' "({",".join(repr(v) for v in value)})"'
             elif isinstance(value, list | tuple) and key != "label" and not in_list:
                 if len(value) == 0:
                     yield indent + key + " " + f'"{value!r}"'
@@ -823,9 +823,9 @@ def write_gml(G, path, stringizer=None):
     G : NetworkX graph
         The graph to be converted to GML.
 
-    path : filename or filehandle
-        The filename or filehandle to write. Files whose names end with .gz or
-        .bz2 will be compressed.
+    path : string or file
+        Filename or file handle to write to.
+        Filenames ending in .gz or .bz2 will be compressed.
 
     stringizer : callable, optional
         A `stringizer` which converts non-int/non-float/non-dict values into

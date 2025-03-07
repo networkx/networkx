@@ -291,6 +291,27 @@ class TestLRPlanarity:
         P.remove_edges_from(((0, 3), (1, 3)))
         self.check_graph(P, is_planar=True)
 
+    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
+    def test_graph_planar_embedding_to_undirected(self, graph_type):
+        G = graph_type([(0, 1), (0, 1), (1, 2), (2, 3), (3, 0), (0, 2)])
+        is_planar, P = nx.check_planarity(G)
+        assert is_planar
+        U = P.to_undirected()
+        assert isinstance(U, nx.Graph)
+        assert all((d == {} for _, _, d in U.edges(data=True)))
+
+    @pytest.mark.parametrize(
+        "reciprocal, as_view", [(True, True), (True, False), (False, True)]
+    )
+    def test_planar_embedding_to_undirected_invalid_parameters(
+        self, reciprocal, as_view
+    ):
+        G = nx.Graph([(0, 1), (1, 2), (2, 3), (3, 0), (0, 2)])
+        is_planar, P = nx.check_planarity(G)
+        assert is_planar
+        with pytest.raises(ValueError, match="is not supported for PlanarEmbedding."):
+            P.to_undirected(reciprocal=reciprocal, as_view=as_view)
+
 
 def check_embedding(G, embedding):
     """Raises an exception if the combinatorial embedding is not correct
@@ -319,9 +340,9 @@ def check_embedding(G, embedding):
 
     # Check that graphs are equivalent
 
-    assert set(G.nodes) == set(
-        embedding.nodes
-    ), "Bad embedding. Nodes don't match the original graph."
+    assert set(G.nodes) == set(embedding.nodes), (
+        "Bad embedding. Nodes don't match the original graph."
+    )
 
     # Check that the edges are equal
     g_edges = set()
@@ -329,9 +350,9 @@ def check_embedding(G, embedding):
         if edge[0] != edge[1]:
             g_edges.add((edge[0], edge[1]))
             g_edges.add((edge[1], edge[0]))
-    assert g_edges == set(
-        embedding.edges
-    ), "Bad embedding. Edges don't match the original graph."
+    assert g_edges == set(embedding.edges), (
+        "Bad embedding. Edges don't match the original graph."
+    )
 
 
 def check_counterexample(G, sub_graph):

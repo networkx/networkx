@@ -45,10 +45,6 @@ def find_asteroidal_triple(G):
     list or None
         An asteroidal triple is returned as a list of nodes. If no asteroidal
         triple exists, i.e. the graph is AT-free, then None is returned.
-        The returned value depends on the certificate parameter. The default
-        option is a bool which is True if the graph is AT-free, i.e. the
-        given graph contains no asteroidal triples, and False otherwise, i.e.
-        if the graph contains at least one asteroidal triple.
 
     Notes
     -----
@@ -69,11 +65,8 @@ def find_asteroidal_triple(G):
         return None
 
     component_structure = create_component_structure(G)
-    E_complement = set(nx.complement(G).edges)
 
-    for e in E_complement:
-        u = e[0]
-        v = e[1]
+    for u, v in nx.non_edges(G):
         u_neighborhood = set(G[u]).union([u])
         v_neighborhood = set(G[v]).union([v])
         union_of_neighborhoods = u_neighborhood.union(v_neighborhood)

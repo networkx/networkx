@@ -6,7 +6,7 @@ import warnings
 
 import pytest
 
-# Ignore the numerous Deprecation warnings in the nx_pylab module right now
+import networkx as nx
 
 mpl = pytest.importorskip("matplotlib")
 np = pytest.importorskip("numpy")
@@ -14,8 +14,6 @@ mpl.use("PS")
 plt = pytest.importorskip("matplotlib.pyplot")
 plt.rcParams["text.usetex"] = False
 
-
-import networkx as nx
 
 barbell = nx.barbell_graph(4, 6)
 
@@ -398,7 +396,10 @@ def test_display_edge_position(graph_type):
 
 def test_display_position_function():
     G = nx.karate_club_graph()
-    fixed_layout = lambda G: nx.spring_layout(G, seed=314159)
+
+    def fixed_layout(G):
+        return nx.spring_layout(G, seed=314159)
+
     pos = fixed_layout(G)
     ax = plt.figure().add_subplot(111)
     nx.display(G, node_pos=fixed_layout, canvas=ax)
@@ -722,6 +723,14 @@ def test_display_remove_pos_attr():
     assert nx.get_node_attributes(G, "display's position attribute name") == {}
 
 
+@pytest.fixture
+def subplots():
+    fig, ax = plt.subplots()
+    yield fig, ax
+    plt.delaxes(ax)
+    plt.close()
+
+
 def test_draw():
     try:
         functions = [
@@ -750,6 +759,18 @@ def test_draw_shell_nlist():
     try:
         nlist = [list(range(4)), list(range(4, 10)), list(range(10, 14))]
         nx.draw_shell(barbell, nlist=nlist)
+        plt.savefig("test.ps")
+    finally:
+        try:
+            os.unlink("test.ps")
+        except OSError:
+            pass
+
+
+def test_draw_bipartite():
+    try:
+        G = nx.complete_bipartite_graph(2, 5)
+        nx.draw_bipartite(G)
         plt.savefig("test.ps")
     finally:
         try:
@@ -1066,6 +1087,32 @@ def test_directed_edges_linestyle_sequence(style_seq):
         assert fap.get_linestyle() == style
 
 
+def test_return_types():
+    from matplotlib.collections import LineCollection, PathCollection
+    from matplotlib.patches import FancyArrowPatch
+
+    G = nx.frucht_graph(create_using=nx.Graph)
+    dG = nx.frucht_graph(create_using=nx.DiGraph)
+    pos = nx.spring_layout(G)
+    dpos = nx.spring_layout(dG)
+    # nodes
+    nodes = nx.draw_networkx_nodes(G, pos)
+    assert isinstance(nodes, PathCollection)
+    # edges
+    edges = nx.draw_networkx_edges(dG, dpos, arrows=True)
+    assert isinstance(edges, list)
+    if len(edges) > 0:
+        assert isinstance(edges[0], FancyArrowPatch)
+    edges = nx.draw_networkx_edges(dG, dpos, arrows=False)
+    assert isinstance(edges, LineCollection)
+    edges = nx.draw_networkx_edges(G, dpos, arrows=None)
+    assert isinstance(edges, LineCollection)
+    edges = nx.draw_networkx_edges(dG, pos, arrows=None)
+    assert isinstance(edges, list)
+    if len(edges) > 0:
+        assert isinstance(edges[0], FancyArrowPatch)
+
+
 def test_labels_and_colors():
     G = nx.cubical_graph()
     pos = nx.spring_layout(G)  # positions for all nodes
@@ -1153,8 +1200,8 @@ def test_house_with_colors():
     return fig
 
 
-def test_axes():
-    fig, ax = plt.subplots()
+def test_axes(subplots):
+    fig, ax = subplots
     nx.draw(barbell, ax=ax)
     nx.draw_networkx_edge_labels(barbell, nx.circular_layout(barbell), ax=ax)
 
@@ -1211,9 +1258,9 @@ def test_alpha_iter():
     nx.draw_networkx_nodes(barbell, pos, alpha=alpha)
 
 
-def test_multiple_node_shapes():
+def test_multiple_node_shapes(subplots):
+    fig, ax = subplots
     G = nx.path_graph(4)
-    ax = plt.figure().add_subplot(111)
     nx.draw(G, node_shape=["o", "h", "s", "^"], ax=ax)
     scatters = [
         s for s in ax.get_children() if isinstance(s, mpl.collections.PathCollection)
@@ -1221,9 +1268,9 @@ def test_multiple_node_shapes():
     assert len(scatters) == 4
 
 
-def test_individualized_font_attributes():
+def test_individualized_font_attributes(subplots):
     G = nx.karate_club_graph()
-    ax = plt.figure().add_subplot(111)
+    fig, ax = subplots
     nx.draw(
         G,
         ax=ax,
@@ -1244,9 +1291,9 @@ def test_individualized_font_attributes():
         assert int(n / (34 / 15) + 5) == t.get_size()
 
 
-def test_individualized_edge_attributes():
+def test_individualized_edge_attributes(subplots):
     G = nx.karate_club_graph()
-    ax = plt.figure().add_subplot(111)
+    fig, ax = subplots
     arrowstyles = ["-|>" if (u + v) % 2 == 0 else "-[" for u, v in G.edges()]
     arrowsizes = [10 * (u % 2 + v % 2) + 10 for u, v in G.edges()]
     nx.draw(G, ax=ax, arrows=True, arrowstyle=arrowstyles, arrowsize=arrowsizes)
@@ -1326,7 +1373,7 @@ def test_draw_nodes_missing_node_from_position():
 # NOTE: parametrizing on marker to test both branches of internal
 # nx.draw_networkx_edges.to_marker_edge function
 @pytest.mark.parametrize("node_shape", ("o", "s"))
-def test_draw_edges_min_source_target_margins(node_shape):
+def test_draw_edges_min_source_target_margins(node_shape, subplots):
     """Test that there is a wider gap between the node and the start of an
     incident edge when min_source_margin is specified.
 
@@ -1344,7 +1391,7 @@ def test_draw_edges_min_source_target_margins(node_shape):
     """
     # Create a single axis object to get consistent pixel coords across
     # multiple draws
-    fig, ax = plt.subplots()
+    fig, ax = subplots
     G = nx.DiGraph([(0, 1)])
     pos = {0: (0, 0), 1: (1, 0)}  # horizontal layout
     # Get leftmost and rightmost points of the FancyArrowPatch object
@@ -1373,7 +1420,7 @@ def test_draw_edges_min_source_target_margins(node_shape):
 # NOTE: parametrizing on marker to test both branches of internal
 # nx.draw_networkx_edges.to_marker_edge function
 @pytest.mark.parametrize("node_shape", ("o", "s"))
-def test_draw_edges_min_source_target_margins_individual(node_shape):
+def test_draw_edges_min_source_target_margins_individual(node_shape, subplots):
     """Test that there is a wider gap between the node and the start of an
     incident edge when min_source_margin is specified.
 
@@ -1391,7 +1438,7 @@ def test_draw_edges_min_source_target_margins_individual(node_shape):
     """
     # Create a single axis object to get consistent pixel coords across
     # multiple draws
-    fig, ax = plt.subplots()
+    fig, ax = subplots
     G = nx.DiGraph([(0, 1), (1, 2)])
     pos = {0: (0, 0), 1: (1, 0), 2: (2, 0)}  # horizontal layout
     # Get leftmost and rightmost points of the FancyArrowPatch object
@@ -1410,7 +1457,6 @@ def test_draw_edges_min_source_target_margins_individual(node_shape):
     )
     padded_extent = [p.get_extents().corners()[::2, 0] for p in padded_patch]
     for d, p in zip(default_extent, padded_extent):
-        print(f"{p=}, {d=}")
         # With padding, the left-most extent of the edge should be further to the
         # right
         assert p[0] > d[0]
@@ -1418,10 +1464,10 @@ def test_draw_edges_min_source_target_margins_individual(node_shape):
         assert p[1] < d[1]
 
 
-def test_nonzero_selfloop_with_single_node():
+def test_nonzero_selfloop_with_single_node(subplots):
     """Ensure that selfloop extent is non-zero when there is only one node."""
     # Create explicit axis object for test
-    fig, ax = plt.subplots()
+    fig, ax = subplots
     # Graph with single node + self loop
     G = nx.DiGraph()
     G.add_node(0)
@@ -1431,17 +1477,14 @@ def test_nonzero_selfloop_with_single_node():
     # The resulting patch must have non-zero extent
     bbox = patch.get_extents()
     assert bbox.width > 0 and bbox.height > 0
-    # Cleanup
-    plt.delaxes(ax)
-    plt.close()
 
 
-def test_nonzero_selfloop_with_single_edge_in_edgelist():
+def test_nonzero_selfloop_with_single_edge_in_edgelist(subplots):
     """Ensure that selfloop extent is non-zero when only a single edge is
     specified in the edgelist.
     """
     # Create explicit axis object for test
-    fig, ax = plt.subplots()
+    fig, ax = subplots
     # Graph with selfloop
     G = nx.path_graph(2, create_using=nx.DiGraph)
     G.add_edge(1, 1)
@@ -1451,9 +1494,6 @@ def test_nonzero_selfloop_with_single_edge_in_edgelist():
     # The resulting patch must have non-zero extent
     bbox = patch.get_extents()
     assert bbox.width > 0 and bbox.height > 0
-    # Cleanup
-    plt.delaxes(ax)
-    plt.close()
 
 
 def test_apply_alpha():
@@ -1502,42 +1542,36 @@ def test_draw_edges_toggling_with_arrows_kwarg():
 
 
 @pytest.mark.parametrize("drawing_func", (nx.draw, nx.draw_networkx))
-def test_draw_networkx_arrows_default_undirected(drawing_func):
+def test_draw_networkx_arrows_default_undirected(drawing_func, subplots):
     import matplotlib.collections
 
     G = nx.path_graph(3)
-    fig, ax = plt.subplots()
+    fig, ax = subplots
     drawing_func(G, ax=ax)
     assert any(isinstance(c, mpl.collections.LineCollection) for c in ax.collections)
     assert not ax.patches
-    plt.delaxes(ax)
-    plt.close()
 
 
 @pytest.mark.parametrize("drawing_func", (nx.draw, nx.draw_networkx))
-def test_draw_networkx_arrows_default_directed(drawing_func):
+def test_draw_networkx_arrows_default_directed(drawing_func, subplots):
     import matplotlib.collections
 
     G = nx.path_graph(3, create_using=nx.DiGraph)
-    fig, ax = plt.subplots()
+    fig, ax = subplots
     drawing_func(G, ax=ax)
     assert not any(
         isinstance(c, mpl.collections.LineCollection) for c in ax.collections
     )
     assert ax.patches
-    plt.delaxes(ax)
-    plt.close()
 
 
-def test_edgelist_kwarg_not_ignored():
+def test_edgelist_kwarg_not_ignored(subplots):
     # See gh-4994
     G = nx.path_graph(3)
     G.add_edge(0, 0)
-    fig, ax = plt.subplots()
+    fig, ax = subplots
     nx.draw(G, edgelist=[(0, 1), (1, 2)], ax=ax)  # Exclude self-loop from edgelist
     assert not ax.patches
-    plt.delaxes(ax)
-    plt.close()
 
 
 @pytest.mark.parametrize(
@@ -1607,10 +1641,10 @@ def test_draw_networkx_edge_label_empty_dict():
     assert nx.draw_networkx_edge_labels(G, pos, edge_labels={}) == {}
 
 
-def test_draw_networkx_edges_undirected_selfloop_colors():
+def test_draw_networkx_edges_undirected_selfloop_colors(subplots):
     """When an edgelist is supplied along with a sequence of colors, check that
     the self-loops have the correct colors."""
-    fig, ax = plt.subplots()
+    fig, ax = subplots
     # Edge list and corresponding colors
     edgelist = [(1, 3), (1, 2), (2, 3), (1, 1), (3, 3), (2, 2)]
     edge_colors = ["pink", "cyan", "black", "red", "blue", "green"]
@@ -1632,8 +1666,6 @@ def test_draw_networkx_edges_undirected_selfloop_colors():
     for fap, clr, slp in zip(ax.patches, edge_colors[-3:], sl_points):
         assert fap.get_path().contains_point(slp)
         assert mpl.colors.same_color(fap.get_edgecolor(), clr)
-    plt.delaxes(ax)
-    plt.close()
 
 
 @pytest.mark.parametrize(
@@ -1646,13 +1678,13 @@ def test_draw_networkx_edges_undirected_selfloop_colors():
         {"min_target_margin": 10},
     ),
 )
-def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg):
+def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg, subplots):
     """Users should get a warning when they specify a non-default value for
     one of the kwargs that applies only to edges drawn with FancyArrowPatches,
     but FancyArrowPatches aren't being used under the hood."""
     G = nx.path_graph(3)
     pos = {n: (n, n) for n in G}
-    fig, ax = plt.subplots()
+    fig, ax = subplots
     # By default, an undirected graph will use LineCollection to represent
     # the edges
     kwarg_name = list(fap_only_kwarg.keys())[0]
@@ -1668,21 +1700,15 @@ def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         nx.draw_networkx_edges(G, pos, ax=ax, arrows=True, **fap_only_kwarg)
 
-    plt.delaxes(ax)
-    plt.close()
-
 
 @pytest.mark.parametrize("draw_fn", (nx.draw, nx.draw_circular))
-def test_no_warning_on_default_draw_arrowstyle(draw_fn):
+def test_no_warning_on_default_draw_arrowstyle(draw_fn, subplots):
     # See gh-7284
-    fig, ax = plt.subplots()
+    fig, ax = subplots
     G = nx.cycle_graph(5)
     with warnings.catch_warnings(record=True) as w:
         draw_fn(G, ax=ax)
     assert len(w) == 0
-
-    plt.delaxes(ax)
-    plt.close()
 
 
 @pytest.mark.parametrize("hide_ticks", [False, True])
@@ -1696,13 +1722,35 @@ def test_no_warning_on_default_draw_arrowstyle(draw_fn):
         nx.draw_networkx_nodes,
     ],
 )
-def test_hide_ticks(method, hide_ticks):
+def test_hide_ticks(method, hide_ticks, subplots):
     G = nx.path_graph(3)
     pos = {n: (n, n) for n in G.nodes}
-    _, ax = plt.subplots()
+    _, ax = subplots
     method(G, pos=pos, ax=ax, hide_ticks=hide_ticks)
     for axis in [ax.xaxis, ax.yaxis]:
         assert bool(axis.get_ticklabels()) != hide_ticks
 
-    plt.delaxes(ax)
-    plt.close()
+
+def test_edge_label_bar_connectionstyle(subplots):
+    """Check that FancyArrowPatches with `bar` connectionstyle are also supported
+    in edge label rendering. See gh-7735."""
+    fig, ax = subplots
+    edge = (0, 1)
+    G = nx.DiGraph([edge])
+    pos = {n: (n, 0) for n in G}  # Edge is horizontal line between (0, 0) and (1, 0)
+
+    style_arc = "arc3,rad=0.0"
+    style_bar = "bar,fraction=0.1"
+
+    arc_lbl = nx.draw_networkx_edge_labels(
+        G, pos, edge_labels={edge: "edge"}, connectionstyle=style_arc
+    )
+    # This would fail prior to gh-7739
+    bar_lbl = nx.draw_networkx_edge_labels(
+        G, pos, edge_labels={edge: "edge"}, connectionstyle=style_bar
+    )
+
+    # For the "arc" style, the label should be at roughly the midpoint
+    assert arc_lbl[edge].x, arc_lbl[edge].y == pytest.approx((0.5, 0))
+    # The label should be below the x-axis for the "bar" style
+    assert bar_lbl[edge].y < arc_lbl[edge].y

@@ -287,7 +287,7 @@ def read_edgelist(
     path : file or string
        File or filename to read. If a file is provided, it must be
        opened in 'rb' mode.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filenames ending in .gz or .bz2 will be decompressed.
     comments : string, optional
        The character used to indicate the start of a comment.
     delimiter : string, optional
