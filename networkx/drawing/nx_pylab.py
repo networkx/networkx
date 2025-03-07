@@ -366,7 +366,7 @@ def display(
     ------
     NetworkXError
         If a node or edge is missing a required parameter such as `pos` or
-        if `new_draw` receives an argument not listed above.
+        if `display` receives an argument not listed above.
 
     ValueError
         If a node or edge has an invalid color format, i.e. not a color string,
@@ -765,19 +765,20 @@ def display(
     # default attribute name
     pos = kwargs.get("node_pos", "pos")
 
-    default_new_draw_pos_attr = "diaplay's position attribute name"
+    default_display_pos_attr = "display's position attribute name"
     if callable(pos):
         nx.set_node_attributes(
-            node_subgraph, pos(node_subgraph), default_new_draw_pos_attr
+            node_subgraph, pos(node_subgraph), default_display_pos_attr
         )
-        pos = default_new_draw_pos_attr
-        kwargs["node_pos"] = default_new_draw_pos_attr
+        pos = default_display_pos_attr
+        kwargs["node_pos"] = default_display_pos_attr
     elif nx.get_node_attributes(G, pos) == {}:
         nx.set_node_attributes(
-            node_subgraph, nx.spring_layout(node_subgraph), default_new_draw_pos_attr
+            node_subgraph, nx.spring_layout(node_subgraph), default_display_pos_attr
         )
-        pos = default_new_draw_pos_attr
-        kwargs["node_pos"] = default_new_draw_pos_attr
+        pos = default_display_pos_attr
+        kwargs["node_pos"] = default_display_pos_attr
+        print("calculated spring layout")
 
     # Each shape requires a new scatter object since they can't have different
     # shapes.
@@ -1017,8 +1018,8 @@ def display(
             )
 
     # If we had to add an attribute, remove it here
-    if pos == default_new_draw_pos_attr:
-        nx.remove_node_attributes(G, default_new_draw_pos_attr)
+    if pos == default_display_pos_attr:
+        nx.remove_node_attributes(G, default_display_pos_attr)
 
     return G
 
