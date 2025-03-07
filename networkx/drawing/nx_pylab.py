@@ -888,7 +888,11 @@ def display(
             e for e, v in nx.get_edge_attributes(G, edge_visible, True).items() if v
         ]
 
-    edge_subgraph = node_subgraph.edge_subgraph(visible_edges)
+    edge_subgraph = G.edge_subgraph(visible_edges)
+    print(nx.get_node_attributes(node_subgraph, pos))
+    nx.set_node_attributes(
+        edge_subgraph, nx.get_node_attributes(node_subgraph, pos), name=pos
+    )
 
     collection_edges = (
         [e for e in edge_subgraph.edges(keys=True) if collection_compatible(e)]
