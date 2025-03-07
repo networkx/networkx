@@ -68,35 +68,33 @@ def could_be_isomorphic(G1, G2, *, properties="dtc"):
     properties_to_check = set(properties)
     G1_props, G2_props = [], []
 
+    def _properties_consistent():
+        # Ravel the properties into a table with # nodes rows and # properties columns
+        G1_ptable = [tuple(p[n] for p in G1_props) for n in G1]
+        G2_ptable = [tuple(p[n] for p in G2_props) for n in G2]
+
+        if sorted(G1_ptable) != sorted(G2_ptable):
+            return False
+        return True
+
     # Degree sequence
     if "d" in properties_to_check:
-        G1d, G2d = G1.degree(), G2.degree()
-        if sorted(d for _, d in G1d) != sorted(d for _, d in G2d):
+        G1_props.append(G1.degree())
+        G2_props.append(G2.degree())
+        if not _properties_consistent():
             return False
-        G1_props.append(G1d)
-        G2_props.append(G2d)
     # Sequence of triangles per node
     if "t" in properties_to_check:
-        G1t, G2t = nx.triangles(G1), nx.triangles(G2)
-        if sorted(G1t.values()) != sorted(G2t.values()):
+        G1_props.append(nx.triangles(G1))
+        G2_props.append(nx.triangles(G2))
+        if not _properties_consistent():
             return False
-        G1_props.append(G1t)
-        G2_props.append(G2t)
     # Sequence of maximal cliques per node
     if "c" in properties_to_check:
-        G1c = Counter(itertools.chain.from_iterable(nx.find_cliques(G1)))
-        G2c = Counter(itertools.chain.from_iterable(nx.find_cliques(G2)))
-        if sorted(G1c.values()) != sorted(G2c.values()):
+        G1_props.append(Counter(itertools.chain.from_iterable(nx.find_cliques(G1))))
+        G2_props.append(Counter(itertools.chain.from_iterable(nx.find_cliques(G2))))
+        if not _properties_consistent():
             return False
-        G1_props.append(G1c)
-        G2_props.append(G2c)
-
-    # Ravel the properties into a table with # nodes rows and # properties columns
-    G1_ptable = [tuple(p[n] for p in G1_props) for n in G1]
-    G2_ptable = [tuple(p[n] for p in G2_props) for n in G2]
-
-    if sorted(G1_ptable) != sorted(G2_ptable):
-        return False
 
     # All checked conditions passed
     return True
