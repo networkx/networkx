@@ -2,6 +2,9 @@
 Graph isomorphism functions.
 """
 
+from collections import Counter
+from itertools import chain
+
 import networkx as nx
 from networkx.exception import NetworkXError
 
@@ -40,14 +43,14 @@ def could_be_isomorphic(G1, G2):
     d1 = G1.degree()
     t1 = nx.triangles(G1)
     clqs_1 = list(nx.find_cliques(G1))
-    c1 = {n: sum(1 for c in clqs_1 if n in c) for n in G1}  # number of cliques
+    c1 = Counter(chain.from_iterable(nx.find_cliques(G1)))  # number of cliques
     props1 = [[d, t1[v], c1[v]] for v, d in d1]
     props1.sort()
 
     d2 = G2.degree()
     t2 = nx.triangles(G2)
     clqs_2 = list(nx.find_cliques(G2))
-    c2 = {n: sum(1 for c in clqs_2 if n in c) for n in G2}  # number of cliques
+    c2 = Counter(chain.from_iterable(nx.find_cliques(G2)))  # number of cliques
     props2 = [[d, t2[v], c2[v]] for v, d in d2]
     props2.sort()
 

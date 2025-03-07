@@ -30,7 +30,6 @@ Several example graphs in GML format may be found on Mark Newman's
 
 import html.entities as htmlentitydefs
 import re
-import warnings
 from ast import literal_eval
 from collections import defaultdict
 from enum import Enum

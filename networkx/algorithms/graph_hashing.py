@@ -70,12 +70,12 @@ def weisfeiler_lehman_graph_hash(
         Number of neighbor aggregations to perform.
         Should be larger for larger graphs.
     digest_size: int, optional (default=16)
-        Size (in bits) of blake2b hash digest to use for hashing node labels.
+        Size (in bytes) of blake2b hash digest to use for hashing node labels.
 
     Returns
     -------
     h : string
-        Hexadecimal string corresponding to hash of the input graph.
+        Hexadecimal string corresponding to hash of `G` (length ``2 * digest_size``).
 
     Examples
     --------
@@ -229,8 +229,8 @@ def weisfeiler_lehman_subgraph_hashes(
         Number of neighbor aggregations to perform.
         Should be larger for larger graphs.
     digest_size : int, optional (default=16)
-        Size (in bits) of blake2b hash digest to use for hashing node labels.
-        The default size is 16 bits.
+        Size (in bytes) of blake2b hash digest to use for hashing node labels.
+        The default size is 16 bytes.
     include_initial_labels : bool, optional (default=False)
         If True, include the hashed initial node label as the first subgraph
         hash for each node.
@@ -240,6 +240,7 @@ def weisfeiler_lehman_subgraph_hashes(
     node_subgraph_hashes : dict
         A dictionary with each key given by a node in G, and each value given
         by the subgraph hashes in order of depth from the key node.
+        Hashes are hexadecimal strings (hence ``2 * digest_size`` long).
 
     Examples
     --------

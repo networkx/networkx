@@ -10,9 +10,9 @@ import networkx as nx
 # cut algorithms.
 from networkx.algorithms.flow import build_residual_network, edmonds_karp
 
-default_flow_func = edmonds_karp
-
 from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_connectivity
+
+default_flow_func = edmonds_karp
 
 __all__ = [
     "minimum_st_node_cut",

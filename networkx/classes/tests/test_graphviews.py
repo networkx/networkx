@@ -255,7 +255,7 @@ class TestChainsOfViews:
             G = nx.Graph(origG)
             SG = G.subgraph([4, 5, 6])
             H = SG.copy()
-            assert type(G) == type(H)
+            assert type(G) is type(H)
 
     def test_subgraph_todirected(self):
         SG = nx.induced_subgraph(self.G, [4, 5, 6])

@@ -4,7 +4,7 @@ Cycle finding algorithms
 ========================
 """
 
-from collections import Counter, defaultdict
+from collections import defaultdict
 from itertools import combinations, product
 from math import inf
 

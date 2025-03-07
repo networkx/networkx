@@ -41,7 +41,7 @@ def init():
     ax.scatter(*nodes.T, alpha=0.2, s=100, color="blue")
     for vizedge in edges:
         ax.plot(*vizedge.T, color="gray")
-    # Intialize the "walking" node
+    # Initialize the "walking" node
     ax.plot(*nodes[0], alpha=1, marker="s", color="red")
     ax.grid(False)
     ax.set_axis_off()
