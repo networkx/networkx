@@ -76,6 +76,12 @@ def could_be_isomorphic(G1, G2, *, properties="dtc"):
             return False
         return True
 
+    # The property table is built and checked as each individual property is
+    # added. The reason for this is the building/checking the property table
+    # is in general much faster than computing the properties, making it
+    # worthwhile to check multiple times to enable early termination when
+    # a subset of properties don't match
+
     # Degree sequence
     if "d" in properties_to_check:
         G1_props.append(G1.degree())
