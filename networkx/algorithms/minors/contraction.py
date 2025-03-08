@@ -428,7 +428,7 @@ def _quotient_graph(
 @nx._dispatchable(
     preserve_all_attrs=True, mutates_input={"not copy": 4}, returns_graph=True
 )
-def contracted_nodes(G, u, v, self_loops=True, copy=True):
+def contracted_nodes(G, u, v, self_loops=True, copy=True, *, store_contraction=True):
     """Returns the graph that results from contracting `u` and `v`.
 
     Node contraction identifies the two nodes as a single node incident to any
@@ -449,6 +449,12 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     copy : Boolean
         If this is True (default True), make a copy of
         `G` and return that instead of directly changing `G`.
+
+    store_contraction : bool
+        If `True`, store information about the contracted node and any
+        contracted edges in a `"contraction"` attribute on the resulting node
+        and/or edge. If `False`, information about the contracted nodes/edges
+        and their data are not stored.
 
 
     Returns
@@ -518,10 +524,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
 
     """
     # Copying has significant overhead and can be disabled if needed
-    if copy:
-        H = G.copy()
-    else:
-        H = G
+    H = G.copy() if copy else G
 
     # edge code uses G.edges(v) instead of G.adj[v] to handle multiedges
     if H.is_directed():
@@ -546,16 +549,22 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
 
         if not H.has_edge(w, x) or G.is_multigraph():
             H.add_edge(w, x, **d)
-        else:
+            continue
+
+        # Store information about the contracted edge iff `store_contraction`
+        if store_contraction:
             if "contraction" in H.edges[(w, x)]:
                 H.edges[(w, x)]["contraction"][(prev_w, prev_x)] = d
             else:
                 H.edges[(w, x)]["contraction"] = {(prev_w, prev_x): d}
 
-    if "contraction" in H.nodes[u]:
-        H.nodes[u]["contraction"][v] = v_data
-    else:
-        H.nodes[u]["contraction"] = {v: v_data}
+    # Store information about the contracted node iff `store_contraction`
+    if store_contraction:
+        if "contraction" in H.nodes[u]:
+            H.nodes[u]["contraction"][v] = v_data
+        else:
+            H.nodes[u]["contraction"] = {v: v_data}
+
     return H
 
 
