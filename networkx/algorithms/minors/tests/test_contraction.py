@@ -285,17 +285,23 @@ def test_quotient_graph_incomplete_partition():
 
 @pytest.mark.parametrize("store_contraction", (True, False))
 @pytest.mark.parametrize("copy", (True, False))
-def test_undirected_node_contraction(store_contraction, copy):
+@pytest.mark.parametrize("selfloops", (True, False))
+def test_undirected_node_contraction(store_contraction, copy, selfloops):
     """Tests for node contraction in an undirected graph."""
     G = nx.cycle_graph(4)
     actual = nx.contracted_nodes(
-        G, 0, 1, copy=copy, store_contraction=store_contraction
+        G, 0, 1, copy=copy, self_loops=selfloops, store_contraction=store_contraction
     )
+
     expected = nx.cycle_graph(3)
-    expected.add_edge(0, 0)
+    if selfloops:
+        expected.add_edge(0, 0)
+
     assert nx.is_isomorphic(actual, expected)
+
     if not copy:
         assert actual is G
+
     # Test contracted node attributes
     if store_contraction:
         assert actual.nodes[0]["contraction"] == {1: {}}
@@ -307,16 +313,20 @@ def test_undirected_node_contraction(store_contraction, copy):
 
 @pytest.mark.parametrize("store_contraction", (True, False))
 @pytest.mark.parametrize("copy", (True, False))
-def test_directed_node_contraction(store_contraction, copy):
+@pytest.mark.parametrize("selfloops", (True, False))
+def test_directed_node_contraction(store_contraction, copy, selfloops):
     """Tests for node contraction in a directed graph."""
     G = nx.DiGraph(nx.cycle_graph(4))
     actual = nx.contracted_nodes(
-        G, 0, 1, copy=copy, store_contraction=store_contraction
+        G, 0, 1, copy=copy, self_loops=selfloops, store_contraction=store_contraction
     )
+
     expected = nx.DiGraph(nx.cycle_graph(3))
-    expected.add_edge(0, 0)
-    expected.add_edge(0, 0)
+    if selfloops:
+        expected.add_edge(0, 0)
+
     assert nx.is_isomorphic(actual, expected)
+
     if not copy:
         assert actual is G
     # Test contracted node attributes
@@ -324,8 +334,8 @@ def test_directed_node_contraction(store_contraction, copy):
         assert actual.nodes[0]["contraction"] == {1: {}}
     else:
         assert actual.nodes[0] == {}
-    # Test contracted edge attributes
-    if store_contraction:
+    # Test contracted edge attributes (only relevant if self loops is enabled)
+    if selfloops and store_contraction:
         assert actual.edges[(0, 0)]["contraction"] == {(1, 0): {}}
     else:
         assert all(d == {} for _, _, d in actual.edges(data=True))
@@ -348,6 +358,7 @@ def test_create_multigraph(store_contraction, copy, selfloops):
     # only if `selfloops` is True
     if selfloops:
         expected.add_edge(0, 0)
+
     assert edges_equal(actual.edges, expected.edges)
     if not copy:
         assert actual is G
