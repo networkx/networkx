@@ -354,15 +354,6 @@ class TestCycleEnumeration:
         expected_cycles = [[1], [2], (3, 4)]
         self.check_cycle_algorithm(G, expected_cycles, chordless=True)
 
-    def test_chordless_cycles_multigraph_self_loops(self):
-        G = nx.MultiGraph([(1, 1), (2, 2), (1, 2), (1, 2)])
-        expected_cycles = [[1], [2]]
-        self.check_cycle_algorithm(G, expected_cycles, chordless=True)
-
-        G.add_edges_from([(2, 3), (3, 4), (3, 4), (1, 3)])
-        expected_cycles = [[1], [2], (3, 4)]
-        self.check_cycle_algorithm(G, expected_cycles, chordless=True)
-
     def test_directed_chordless_cycle_undirected(self):
         g = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 5), (5, 0), (5, 1), (0, 2)])
         expected_cycles = [(0, 2, 3, 4, 5), (1, 2, 3, 4, 5)]
