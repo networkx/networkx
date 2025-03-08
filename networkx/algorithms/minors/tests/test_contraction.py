@@ -284,13 +284,18 @@ def test_quotient_graph_incomplete_partition():
 
 
 @pytest.mark.parametrize("store_contraction", (True, False))
-def test_undirected_node_contraction(store_contraction):
+@pytest.mark.parametrize("copy", (True, False))
+def test_undirected_node_contraction(store_contraction, copy):
     """Tests for node contraction in an undirected graph."""
     G = nx.cycle_graph(4)
-    actual = nx.contracted_nodes(G, 0, 1, store_contraction=store_contraction)
+    actual = nx.contracted_nodes(
+        G, 0, 1, copy=copy, store_contraction=store_contraction
+    )
     expected = nx.cycle_graph(3)
     expected.add_edge(0, 0)
     assert nx.is_isomorphic(actual, expected)
+    if not copy:
+        assert actual is G
     # Test contracted node attributes
     if store_contraction:
         assert actual.nodes[0]["contraction"] == {1: {}}
@@ -301,14 +306,19 @@ def test_undirected_node_contraction(store_contraction):
 
 
 @pytest.mark.parametrize("store_contraction", (True, False))
-def test_directed_node_contraction(store_contraction):
+@pytest.mark.parametrize("copy", (True, False))
+def test_directed_node_contraction(store_contraction, copy):
     """Tests for node contraction in a directed graph."""
     G = nx.DiGraph(nx.cycle_graph(4))
-    actual = nx.contracted_nodes(G, 0, 1, store_contraction=store_contraction)
+    actual = nx.contracted_nodes(
+        G, 0, 1, copy=copy, store_contraction=store_contraction
+    )
     expected = nx.DiGraph(nx.cycle_graph(3))
     expected.add_edge(0, 0)
     expected.add_edge(0, 0)
     assert nx.is_isomorphic(actual, expected)
+    if not copy:
+        assert actual is G
     # Test contracted node attributes
     if store_contraction:
         assert actual.nodes[0]["contraction"] == {1: {}}
@@ -321,43 +331,26 @@ def test_directed_node_contraction(store_contraction):
         assert all(d == {} for _, _, d in actual.edges(data=True))
 
 
-def test_undirected_node_contraction_no_copy():
-    """Tests for node contraction in an undirected graph
-    by making changes in place."""
-    G = nx.cycle_graph(4)
-    actual = nx.contracted_nodes(G, 0, 1, copy=False)
-    expected = nx.cycle_graph(3)
-    expected.add_edge(0, 0)
-    assert actual is G
-    assert nx.is_isomorphic(actual, expected)
-
-
-def test_directed_node_contraction_no_copy():
-    """Tests for node contraction in a directed graph
-    by making changes in place."""
-    G = nx.DiGraph(nx.cycle_graph(4))
-    actual = nx.contracted_nodes(G, 0, 1, copy=False)
-    expected = nx.DiGraph(nx.cycle_graph(3))
-    expected.add_edge(0, 0)
-    expected.add_edge(0, 0)
-    assert actual is G
-    assert nx.is_isomorphic(actual, expected)
-
-
-def test_create_multigraph():
-    """Tests that using a MultiGraph creates multiple edges."""
-    G = nx.path_graph(3, create_using=nx.MultiGraph())
-    G.add_edge(0, 1)
-    G.add_edge(0, 0)
-    G.add_edge(0, 2)
-    actual = nx.contracted_nodes(G, 0, 2)
-    expected = nx.MultiGraph()
-    expected.add_edge(0, 1)
-    expected.add_edge(0, 1)
-    expected.add_edge(0, 1)
-    expected.add_edge(0, 0)
-    expected.add_edge(0, 0)
+@pytest.mark.parametrize("store_contraction", (True, False))
+@pytest.mark.parametrize("copy", (True, False))
+@pytest.mark.parametrize("selfloops", (True, False))
+def test_create_multigraph(store_contraction, copy, selfloops):
+    """Tests that using a MultiGraph creates multiple edges. `store_contraction`
+    has no effect for multigraphs."""
+    G = nx.path_graph(3, create_using=nx.MultiGraph)
+    G.add_edges_from([(0, 1), (0, 0), (0, 2)])
+    actual = nx.contracted_nodes(
+        G, 0, 2, copy=copy, self_loops=selfloops, store_contraction=store_contraction
+    )
+    # Two (0, 1) edges from G, another from the contraction of edge (1, 2)
+    expected = nx.MultiGraph([(0, 1), (0, 1), (0, 1), (0, 0)])
+    # One (0, 0) edge from G, another from the contraction of edge (0, 2), but
+    # only if `selfloops` is True
+    if selfloops:
+        expected.add_edge(0, 0)
     assert edges_equal(actual.edges, expected.edges)
+    if not copy:
+        assert actual is G
 
 
 def test_multigraph_keys():
@@ -460,6 +453,6 @@ def test_nonexistent_edge():
     exception.
 
     """
+    G = nx.cycle_graph(4)
     with pytest.raises(ValueError):
-        G = nx.cycle_graph(4)
         nx.contracted_edge(G, (0, 2))
