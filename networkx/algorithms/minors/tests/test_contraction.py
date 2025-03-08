@@ -380,14 +380,15 @@ def test_multigraph_keys():
     assert edges_equal(actual.edges, expected.edges)
 
 
+@pytest.mark.parametrize("copy", (True, False))
 @pytest.mark.parametrize("selfloops", (True, False))
-def test_node_attributes(selfloops):
+def test_node_attributes(copy, selfloops):
     """Tests that node contraction preserves node attributes."""
     G = nx.cycle_graph(4)
     # Add some data to the two nodes being contracted.
     G.nodes[0]["foo"] = "bar"
     G.nodes[1]["baz"] = "xyzzy"
-    actual = nx.contracted_nodes(G, 0, 1, self_loops=selfloops)
+    actual = nx.contracted_nodes(G, 0, 1, copy=copy, self_loops=selfloops)
     # We expect that contracting the nodes 0 and 1 in C_4 yields K_3, but
     # with nodes labeled 0, 2, and 3.
     expected = nx.complete_graph(3)
@@ -399,6 +400,8 @@ def test_node_attributes(selfloops):
     expected.nodes[0].update({"foo": "bar", "contraction": cdict})
     assert nx.is_isomorphic(actual, expected)
     assert actual.nodes == expected.nodes
+    if not copy:
+        assert actual is G
 
 
 def test_edge_attributes():
