@@ -283,23 +283,42 @@ def test_quotient_graph_incomplete_partition():
     assert edges_equal(H.edges(), [(0, 1)])
 
 
-def test_undirected_node_contraction():
+@pytest.mark.parametrize("store_contraction", (True, False))
+def test_undirected_node_contraction(store_contraction):
     """Tests for node contraction in an undirected graph."""
     G = nx.cycle_graph(4)
-    actual = nx.contracted_nodes(G, 0, 1)
+    actual = nx.contracted_nodes(G, 0, 1, store_contraction=store_contraction)
     expected = nx.cycle_graph(3)
     expected.add_edge(0, 0)
     assert nx.is_isomorphic(actual, expected)
+    # Test contracted node attributes
+    if store_contraction:
+        assert actual.nodes[0]["contraction"] == {1: {}}
+    else:
+        assert actual.nodes[0] == {}
+    # There should be no contracted edges for this case
+    assert all(d == {} for _, _, d in actual.edges(data=True))
 
 
-def test_directed_node_contraction():
+@pytest.mark.parametrize("store_contraction", (True, False))
+def test_directed_node_contraction(store_contraction):
     """Tests for node contraction in a directed graph."""
     G = nx.DiGraph(nx.cycle_graph(4))
-    actual = nx.contracted_nodes(G, 0, 1)
+    actual = nx.contracted_nodes(G, 0, 1, store_contraction=store_contraction)
     expected = nx.DiGraph(nx.cycle_graph(3))
     expected.add_edge(0, 0)
     expected.add_edge(0, 0)
     assert nx.is_isomorphic(actual, expected)
+    # Test contracted node attributes
+    if store_contraction:
+        assert actual.nodes[0]["contraction"] == {1: {}}
+    else:
+        assert actual.nodes[0] == {}
+    # Test contracted edge attributes
+    if store_contraction:
+        assert actual.edges[(0, 0)]["contraction"] == {(1, 0): {}}
+    else:
+        assert all(d == {} for _, _, d in actual.edges(data=True))
 
 
 def test_undirected_node_contraction_no_copy():
@@ -309,7 +328,7 @@ def test_undirected_node_contraction_no_copy():
     actual = nx.contracted_nodes(G, 0, 1, copy=False)
     expected = nx.cycle_graph(3)
     expected.add_edge(0, 0)
-    assert nx.is_isomorphic(actual, G)
+    assert actual is G
     assert nx.is_isomorphic(actual, expected)
 
 
@@ -321,7 +340,7 @@ def test_directed_node_contraction_no_copy():
     expected = nx.DiGraph(nx.cycle_graph(3))
     expected.add_edge(0, 0)
     expected.add_edge(0, 0)
-    assert nx.is_isomorphic(actual, G)
+    assert actual is G
     assert nx.is_isomorphic(actual, expected)
 
 
