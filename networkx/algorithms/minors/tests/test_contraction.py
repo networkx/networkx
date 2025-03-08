@@ -417,16 +417,16 @@ def test_edge_attributes():
     G = nx.DiGraph([("src1", "dest"), ("src2", "dest")])
     G["src1"]["dest"]["value"] = "src1-->dest"
     G["src2"]["dest"]["value"] = "src2-->dest"
-    H = nx.MultiDiGraph(G)
 
-    G = nx.contracted_nodes(G, "src1", "src2")  # New Shape: src1 --> dest
-    assert G.edges[("src1", "dest")]["value"] == "src1-->dest"
+    H = nx.contracted_nodes(G, "src1", "src2")  # New Shape: src1 --> dest
+    assert H.edges[("src1", "dest")]["value"] == "src1-->dest"
     assert (
-        G.edges[("src1", "dest")]["contraction"][("src2", "dest")]["value"]
+        H.edges[("src1", "dest")]["contraction"][("src2", "dest")]["value"]
         == "src2-->dest"
     )
 
-    H = nx.contracted_nodes(H, "src1", "src2")  # New Shape: src1 -(x2)-> dest
+    G = nx.MultiDiGraph(G)
+    H = nx.contracted_nodes(G, "src1", "src2")  # New Shape: src1 -(x2)-> dest
     assert len(H.edges(("src1", "dest"))) == 2
 
 
