@@ -1034,65 +1034,6 @@ def kemeny_constant(G, *, weight=None):
     return float(np.sum(1 / (1 - eig[:-1])))
 
 
-def _bfs_detailed(G, start):
-    """Performs a BFS traversal from the given start node and records various BFS properties.
-
-    Parameters:
-    G : NetworkX graph
-        The input graph.
-    start : node
-        The starting node for BFS traversal.
-
-    Returns:
-    dict
-        A dictionary containing:
-        - "level": Mapping of nodes to their BFS levels.
-        - "level_vertices": Nodes grouped by BFS level.
-        - "parent": Parent node for each node in BFS.
-        - "max_level_vertex": The farthest node from the start.
-        - "mid_level_vertex": A node at the approximate middle of BFS depth.
-    """
-    level = {}
-    level_vertices = {}
-    parent = {}
-
-    visited = set()
-    queue = deque([start])
-    visited.add(start)
-    parent[start] = None
-    level[start] = 0
-    level_vertices[0] = [start]
-
-    while queue:
-        cur = queue.popleft()
-        for neighbor in G.neighbors(cur):
-            if neighbor not in visited:
-                parent[neighbor] = cur
-                level[neighbor] = level[cur] + 1
-
-                if level[neighbor] not in level_vertices:
-                    level_vertices[level[neighbor]] = []
-                level_vertices[level[neighbor]].append(neighbor)
-
-                visited.add(neighbor)
-                queue.append(neighbor)
-
-    max_level_vertex = max(level, key=level.get)
-
-    mid_level = level[max_level_vertex] // 2
-    mid_level_vertex = level_vertices[mid_level][0]
-
-    bfs_data = {
-        "level": level,
-        "level_vertices": level_vertices,
-        "parent": parent,
-        "max_level_vertex": max_level_vertex,
-        "mid_level_vertex": mid_level_vertex,
-    }
-
-    return bfs_data
-
-
 def _four_sweep_start_vertex(G, choice):
     """Selects a start vertex for the four-sweep BFS process.
 
@@ -1133,18 +1074,39 @@ def _four_sweep_data(G, start_vertex):
         - lower_bound: An estimated lower bound for the graph diameter.
     """
     lower_bound = 0
-    bfs_data = _bfs_detailed(G, start_vertex)
-    max_level_vertex = bfs_data["max_level_vertex"]
-    bfs_data = _bfs_detailed(G, max_level_vertex)
-    max_level_vertex = bfs_data["max_level_vertex"]
-    lower_bound = max(lower_bound, bfs_data["level"][max_level_vertex])
-    mid_level_vertex = bfs_data["mid_level_vertex"]
-    bfs_data = _bfs_detailed(G, mid_level_vertex)
-    max_level_vertex = bfs_data["max_level_vertex"]
-    bfs_data = _bfs_detailed(G, max_level_vertex)
-    max_level_vertex = bfs_data["max_level_vertex"]
-    lower_bound = max(lower_bound, bfs_data["level"][max_level_vertex])
-    mid_level_vertex = bfs_data["mid_level_vertex"]
+
+    # First BFS from start_vertex
+    layers = list(nx.bfs_layers(G, start_vertex))
+    max_level_vertex = layers[-1][0] if layers[-1] else None
+
+    # Second BFS from max_level_vertex
+    layers = list(nx.bfs_layers(G, max_level_vertex))
+    max_level = len(layers) - 1
+    max_level_vertex = layers[-1][0] if layers[-1] else None
+    lower_bound = max(lower_bound, max_level)
+
+    # Find a mid-level vertex
+    mid_level = max_level // 2
+    mid_level_vertex = (
+        layers[mid_level][0] if mid_level < len(layers) and layers[mid_level] else None
+    )
+
+    # Third BFS from mid_level_vertex
+    layers = list(nx.bfs_layers(G, mid_level_vertex))
+    max_level_vertex = layers[-1][0] if layers[-1] else None
+
+    # Fourth BFS from max_level_vertex
+    layers = list(nx.bfs_layers(G, max_level_vertex))
+    max_level = len(layers) - 1
+    max_level_vertex = layers[-1][0] if layers[-1] else None
+    lower_bound = max(lower_bound, max_level)
+
+    # Find a mid-level vertex from the last BFS
+    mid_level = max_level // 2
+    mid_level_vertex = (
+        layers[mid_level][0] if mid_level < len(layers) and layers[mid_level] else None
+    )
+
     return mid_level_vertex, lower_bound
 
 
@@ -1163,8 +1125,8 @@ def _ifub_helper(G, fringe_vertices):
     """
     max_ecc = 0
     for vertex in fringe_vertices:
-        bfs_data = _bfs_detailed(G, vertex)
-        max_ecc = max(max_ecc, bfs_data["level"][bfs_data["max_level_vertex"]])
+        layers = list(nx.bfs_layers(G, vertex))
+        max_ecc = max(max_ecc, len(layers) - 1)
     return max_ecc
 
 
@@ -1185,16 +1147,17 @@ def _ifub(G, root, lower_bound, error_threshold=0):
     int
         The estimated diameter of the graph.
     """
-    bfs_data = _bfs_detailed(G, root)
-    upper_bound = 2 * bfs_data["level"][bfs_data["max_level_vertex"]]
-    lower_bound = max(lower_bound, bfs_data["level"][bfs_data["max_level_vertex"]])
+    layers = list(nx.bfs_layers(G, root))
+    max_level = len(layers) - 1
+    upper_bound = 2 * max_level
+    lower_bound = max(lower_bound, max_level)
     k = error_threshold
 
     cur_max_ecc = 0
-    cur_level = bfs_data["level"][bfs_data["max_level_vertex"]]
-
+    cur_level = max_level
+    level_vertices = dict(enumerate(layers))
     while upper_bound - lower_bound > k:
-        fringe_vertices = bfs_data["level_vertices"].get(cur_level, [])
+        fringe_vertices = level_vertices.get(cur_level, [])
 
         cur_max_ecc = _ifub_helper(G, fringe_vertices)
         if max(lower_bound, cur_max_ecc) > 2 * (cur_level - 1):
