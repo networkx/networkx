@@ -411,23 +411,32 @@ def test_node_attributes(store_contraction, copy, selfloops):
         assert actual is G
 
 
-def test_edge_attributes():
+@pytest.mark.parametrize("store_contraction", (True, False))
+def test_edge_attributes(store_contraction):
     """Tests that node contraction preserves edge attributes."""
     # Shape: src1 --> dest <-- src2
     G = nx.DiGraph([("src1", "dest"), ("src2", "dest")])
     G["src1"]["dest"]["value"] = "src1-->dest"
     G["src2"]["dest"]["value"] = "src2-->dest"
 
-    H = nx.contracted_nodes(G, "src1", "src2")  # New Shape: src1 --> dest
-    assert H.edges[("src1", "dest")]["value"] == "src1-->dest"
-    assert (
-        H.edges[("src1", "dest")]["contraction"][("src2", "dest")]["value"]
-        == "src2-->dest"
-    )
+    # New Shape: src1 --> dest
+    H = nx.contracted_nodes(G, "src1", "src2", store_contraction=store_contraction)
+    assert H.edges[("src1", "dest")]["value"] == "src1-->dest"  # Should be unchanged
+    if store_contraction:
+        assert (
+            H.edges[("src1", "dest")]["contraction"][("src2", "dest")]["value"]
+            == "src2-->dest"
+        )
+    else:
+        assert "contraction" not in H.edges[("src1", "dest")]
 
     G = nx.MultiDiGraph(G)
-    H = nx.contracted_nodes(G, "src1", "src2")  # New Shape: src1 -(x2)-> dest
+    # New Shape: src1 -(x2)-> dest
+    H = nx.contracted_nodes(G, "src1", "src2", store_contraction=store_contraction)
+    # store_contraction should not affect multigraphs
     assert len(H.edges(("src1", "dest"))) == 2
+    assert H.edges[("src1", "dest", 0)]["value"] == "src1-->dest"
+    assert H.edges[("src1", "dest", 1)]["value"] == "src2-->dest"
 
 
 def test_contract_loop_graph():
