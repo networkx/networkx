@@ -4,6 +4,7 @@ Isomorphic graphs should be assigned identical hashes.
 For now, only Weisfeiler-Lehman hashing is implemented.
 """
 
+import warnings
 from collections import Counter, defaultdict
 from hashlib import blake2b
 
@@ -22,6 +23,12 @@ def _init_node_labels(G, edge_attr, node_attr):
     elif edge_attr:
         return {u: "" for u in G}
     else:
+        warnings.warn(
+            "The hashes produced for graphs without node or edge attributes"
+            "changed in version [TBD] due to a bugfix (see documentation).",
+            UserWarning,
+            stacklevel=2,
+        )
         if nx.is_directed(G):
             return {u: str(G.in_degree(u)) + "_" + str(G.out_degree(u)) for u in G}
         else:
@@ -67,6 +74,15 @@ def weisfeiler_lehman_graph_hash(
     G, edge_attr=None, node_attr=None, iterations=3, digest_size=16
 ):
     """Return Weisfeiler Lehman (WL) graph hash.
+
+    .. Warning:: Hash values for directed graphs and graphs without edge or
+        node attributes have changed in version [TBD]. In previous versions,
+        directed graphs did not distinguish in- and outgoing edges. Graphs
+        without attributes previously performed one more iteration of WL
+        than indicated by the passed argument. For these graphs, the old
+        hashes can be obtained by increasing the iteration count by one.
+        For more details, see `issue #7806
+        <https://github.com/networkx/networkx/issues/7806>`_.
 
     The function iteratively aggregates and hashes neighborhoods of each node.
     After each node's neighbors are hashed to obtain updated node labels,
@@ -166,6 +182,12 @@ def weisfeiler_lehman_graph_hash(
 
     if G.is_directed():
         _neighborhood_aggregate = _neighborhood_aggregate_directed
+        warnings.warn(
+            "The hashes produced for directed graphs changed in version [TBD]"
+            " due to a bugfix (see documentation).",
+            UserWarning,
+            stacklevel=2,
+        )
     else:
         _neighborhood_aggregate = _neighborhood_aggregate_undirected
 
@@ -217,6 +239,18 @@ def weisfeiler_lehman_subgraph_hashes(
 ):
     """
     Return a dictionary of subgraph hashes by node.
+
+    .. Warning:: Hash values for directed graphs have changed in version
+        [TBD]. In previous versions, directed graphs did not distinguish in-
+        and outgoing edges.
+        Graphs without attributes previously performed an extra iteration of
+        WL at initialisation, which was not visible in the output of this
+        function. This hash value is now included in the returned dictionary,
+        shifting the other calculated hashes one position to the right. To
+        obtain the same last subgraph hash, increase the number of iterations
+        by one.
+        For more details, see `issue #7806
+        <https://github.com/networkx/networkx/issues/7806>`_.
 
     Dictionary keys are nodes in `G`, and values are a list of hashes.
     Each hash corresponds to a subgraph rooted at a given node u in `G`.
@@ -348,6 +382,12 @@ def weisfeiler_lehman_subgraph_hashes(
 
     if G.is_directed():
         _neighborhood_aggregate = _neighborhood_aggregate_directed
+        warnings.warn(
+            "The hashes produced for directed graphs changed in version [TBD]"
+            " due to a bugfix (see documentation).",
+            UserWarning,
+            stacklevel=2,
+        )
     else:
         _neighborhood_aggregate = _neighborhood_aggregate_undirected
 
