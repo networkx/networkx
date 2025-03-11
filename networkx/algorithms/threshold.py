@@ -863,13 +863,21 @@ def random_threshold_sequence(n, p, seed=None):
 # and a keyword parameter?
 def right_d_threshold_sequence(n, m):
     """
-    Create a skewed threshold graph with a given number
-    of vertices (n) and a given number of edges (m).
+    Construct a "right-dominant" threshold graph with n vertices and m 
+    edges. Each element of the creation_sequence is 'd' (dominant) or 'i' 
+    (isolated):
+      - 'd': new vertex connects to all existing vertices.
+      - 'i': new vertex is isolated.
 
-    The routine returns an unlabeled creation sequence
-    for the threshold graph.
+    For m < n, only m vertices become dominant. 
+    For larger m (up to n*(n-1)/2), isolated vertices are flipped to 
+    dominant from the right until reaching m edges.
+    Raises ValueError if m exceeds the maximum possible edges.
 
-    FIXME: describe algorithm
+    n: Number of vertices  
+    m: Desired number of edges  
+
+    Returns an unlabeled creation sequence
 
     """
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
@@ -897,13 +905,21 @@ def right_d_threshold_sequence(n, m):
 
 def left_d_threshold_sequence(n, m):
     """
-    Create a skewed threshold graph with a given number
-    of vertices (n) and a given number of edges (m).
+    Construct a "left-dominant" threshold graph with n vertices and m 
+    edges. Each element of the creation_sequence is 'd' (dominant) or 'i' 
+    (isolated):
+      - 'd': new vertex connects to all existing vertices.
+      - 'i': new vertex is isolated.
 
-    The routine returns an unlabeled creation sequence
-    for the threshold graph.
+    For m < n, only m vertices become dominant.
+    For larger m (up to n*(n-1)/2), isolated vertices are flipped to
+    dominant from the left until reaching m edges.
+    Raises ValueError if m exceeds the maximum possible edges.
 
-    FIXME: describe algorithm
+    n: Number of vertices
+    m: Desired number of edges
+
+    Returns an unlabeled creation sequence
 
     """
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
