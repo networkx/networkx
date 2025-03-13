@@ -77,9 +77,10 @@ def weisfeiler_lehman_graph_hash(
 
     .. Warning:: Hash values for directed graphs and graphs without edge or
         node attributes have changed in version [TBD]. In previous versions,
-        directed graphs did not distinguish in- and outgoing edges. Graphs
-        without attributes previously performed one more iteration of WL
-        than indicated by the passed argument. For these graphs, the old
+        directed graphs did not distinguish in- and outgoing edges. Also,
+        graphs without attributes set initial states such that effectively
+        one extra iteration of WL occurred than indicated by `iterations`.
+        For undirected graphs without node or edge labels, the old
         hashes can be obtained by increasing the iteration count by one.
         For more details, see `issue #7806
         <https://github.com/networkx/networkx/issues/7806>`_.
@@ -184,7 +185,7 @@ def weisfeiler_lehman_graph_hash(
         _neighborhood_aggregate = _neighborhood_aggregate_directed
         warnings.warn(
             "The hashes produced for directed graphs changed in version [TBD]"
-            " due to a bugfix (see documentation).",
+            " due to a bugfix to track in and out edges separately (see documentation).",
             UserWarning,
             stacklevel=2,
         )
@@ -409,7 +410,7 @@ def weisfeiler_lehman_subgraph_hashes(
 
     if iterations <= 0:
         raise ValueError(
-            "The WL algorithm is only meaningful when run for a positve number of iterations."
+            "The WL algorithm requires that `iterations` be positive"
         )
 
     node_labels = _init_node_labels(G, edge_attr, node_attr)

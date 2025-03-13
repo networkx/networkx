@@ -413,9 +413,9 @@ def test_trivial_labels_isomorphism_directed():
 def test_trivial_labels_hashes():
     """
     Test that 'empty' labelling of nodes or edges shouldn't have a different impact
-    on the calculated hash. Note that we cannot assume it trivial weights have no
+    on the calculated hash. Note that we cannot assume that trivial weights have no
     impact at all. Without (trivial) weights, a node will start with hashing its
-    degree. This step isomitted when there áre weights.
+    degree. This step is omitted when there are weights.
     """
     n, r = 100, 10
     p = 1.0 / r
