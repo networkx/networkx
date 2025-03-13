@@ -205,9 +205,7 @@ def weisfeiler_lehman_graph_hash(
         return new_labels
 
     if iterations <= 0:
-        raise ValueError(
-            "The WL algorithm is only meaningful when run for a positve number of iterations."
-        )
+        raise ValueError("The WL algorithm requires that `iterations` be positive")
 
     # set initial node labels
     node_labels = _init_node_labels(G, edge_attr, node_attr)
