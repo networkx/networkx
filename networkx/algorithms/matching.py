@@ -1185,10 +1185,27 @@ def count_planar_perfect_matchings(G: nx.Graph):
 
     References
     ----------
-    .. [1] P. W. Kasteleyn:
-        Dimer Statistics and Phase Transitions
-        1963
+    The first 3 references are the 3 papers by F, K, and T (Fisher, Kasteleyn,
+    and Temperley) that pieced together the FKT algorithm in 1961--1963. They
+    are not the most accessible reads, but historically significant.
+
+    .. [1] Fisher, Michael E. "Statistical mechanics of dimers on a plane
+        lattice." Physical Review 124.6 (1961): 1664.
+        https://doi.org/10.1103/PhysRev.124.1664
+    .. [2] Kasteleyn, Pieter W. "Dimer statistics and phase transitions."
+        Journal of Mathematical Physics 4.2 (1963): 287-293.
         https://doi.org/10.1063/1.1703953
+    .. [3] Temperley, Harold NV, and Michael E. Fisher. "Dimer problem in
+        statistical mechanics-an exact result." Philosophical Magazine 6.68
+        (1961): 1061-1063.
+        https://doi.org/10.1080/14786436108243366
+
+    For a more accessible overview of the FKT algorithm, see Section 1.2 of
+
+    .. [4] Jerrum, Mark. "Counting, sampling and integrating: algorithms and
+        complexity." Springer Science & Business Media, 2003.
+        https://doi.org/10.1007/978-3-0348-8005-3
+
     """
 
     # If we're given a directed graph, we just convert it to undirected.
