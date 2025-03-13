@@ -1191,8 +1191,7 @@ def count_planar_perfect_matchings(G: nx.Graph):
         https://doi.org/10.1063/1.1703953
     """
 
-    # If we're given a directed graph, we just convert it to undirected.
-    if isinstance(G, nx.DiGraph):
+    if G.is_directed():
         G = nx.Graph.to_undirected(G)
 
     # If the graph has multiple connected components, handle each component
