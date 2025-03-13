@@ -972,7 +972,7 @@ class TestCountPlanarPerfectMatchings:
             covered_nodes.remove(current_edge[1])
             included_edges.remove(current_edge)
 
-    def count_perfect_matchings_brute_force(self, G: nx.Graph):
+    def count_perfect_matchings_brute_force(self, G):
         """Sums weights of perfect matchings, via brute force counting all
         perfect matchings.
 
@@ -1035,7 +1035,7 @@ class TestKasteleynOrientation:
         orientation = nx.algorithms.matching.kasteleyn_orientation(graph, faces)
         assert self.is_kasteleyn_orientation(orientation, faces)
 
-    def grid_faces(self, num_rows: int, num_cols):
+    def grid_faces(self, num_rows, num_cols):
         faces = []
         for i in range(num_rows - 1):
             for j in range(num_cols - 1):
@@ -1048,9 +1048,7 @@ class TestKasteleynOrientation:
                 faces.append(faceEdges)
         return faces
 
-    def is_kasteleyn_orientation(
-        self, oriented_graph: nx.DiGraph, faces: list, raise_error=True
-    ):
+    def is_kasteleyn_orientation(self, oriented_graph, faces, raise_error=True):
         """Returns whether the given orientation is a Kasteleyn orientation,
         given the list of faces that make a planar embedding of the graph.
 
