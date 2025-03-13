@@ -344,7 +344,7 @@ def test_directed_node_contraction(store_contraction, copy, selfloops):
 @pytest.mark.parametrize("store_contraction", (True, False))
 @pytest.mark.parametrize("copy", (True, False))
 @pytest.mark.parametrize("selfloops", (True, False))
-def test_create_multigraph(store_contraction, copy, selfloops):
+def test_contract_multigraph(store_contraction, copy, selfloops):
     """Tests that using a MultiGraph creates multiple edges. `store_contraction`
     has no effect for multigraphs."""
     G = nx.path_graph(3, create_using=nx.MultiGraph)
