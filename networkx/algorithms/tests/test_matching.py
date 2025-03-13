@@ -851,17 +851,20 @@ class TestCountPlanarPerfectMatchings:
     # Below methods count perfect matchings via brute force.
     # For testing purposes.
 
-    def matching_weight(self, G: nx.Graph, matching: set):
-        """Returns the weight of this matching in the graph `G`, that is, the
-        product of edge weights. Edges without weights are assumed to have
-        weight 1.
+    def matching_weight(self, G, matching):
+        """Returns the weight of this matching in the graph `G`.
+
+        The weight of a matching is the product of edge weights. Edges without
+        weights are assumed to have weight 1.
 
         Parameters
         ----------
         G : NetworkX Graph
 
         matching : set
-            A `set` of edges that makes up a matching.
+            A `set` of edges that makes up a matching. The edges in this set do
+            not need to have edge data; the method will get the edge data from
+            the graph `G`.
 
         Returns
         ----------
@@ -874,7 +877,7 @@ class TestCountPlanarPerfectMatchings:
             weight *= G.get_edge_data(edge[0], edge[1]).get("weight", 1)
         return weight
 
-    def generate_perfect_matchings(self, G: nx.Graph):
+    def generate_perfect_matchings(self, G):
         """Generator giving all perfect matchings for this graph.
 
         Parameters
@@ -893,19 +896,21 @@ class TestCountPlanarPerfectMatchings:
         # edges we're including in the matching
         included_edges: set = set()
 
-        yield from self.generate_perfect_matchings_recursive(
+        yield from self._generate_perfect_matchings_recursive(
             G.number_of_nodes(), list(G.edges()), covered_nodes, included_edges, 0
         )
 
-    def generate_perfect_matchings_recursive(
+    def _generate_perfect_matchings_recursive(
         self,
-        num_nodes: int,
-        all_edges: list,
-        covered_nodes: set,
-        included_edges: set,
-        edge_index: int,
+        num_nodes,
+        all_edges,
+        covered_nodes,
+        included_edges,
+        edge_index,
     ):
-        """Generator that recursively generates all perfect matchings in a
+        """Helper function for generate_perfect_matchings.
+
+        Generator that recursively generates all perfect matchings in a
         graph. This generator assumes that we have already determined which
         edges in the list `all_edges` we want to include, up to index edge
         index-1 (inclusive). `covered_nodes` is what nodes are covered so far
@@ -947,7 +952,7 @@ class TestCountPlanarPerfectMatchings:
             return
 
         # try NOT including the edge at edgeIndex
-        yield from self.generate_perfect_matchings_recursive(
+        yield from self._generate_perfect_matchings_recursive(
             num_nodes, all_edges, covered_nodes, included_edges, edge_index + 1
         )
 
@@ -960,7 +965,7 @@ class TestCountPlanarPerfectMatchings:
             covered_nodes.add(current_edge[0])
             covered_nodes.add(current_edge[1])
             included_edges.add(current_edge)
-            yield from self.generate_perfect_matchings_recursive(
+            yield from self._generate_perfect_matchings_recursive(
                 num_nodes, all_edges, covered_nodes, included_edges, edge_index + 1
             )
             covered_nodes.remove(current_edge[0])

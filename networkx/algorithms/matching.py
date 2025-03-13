@@ -1151,10 +1151,11 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     return matching_dict_to_set(mate)
 
 
-def count_planar_perfect_matchings(G: nx.Graph):
-    """Counts the number of perfect matchings using the
-    Fisher-Kasteleyn-Temperley (FKT) algorithm. `G` must be planar in order to
-    use the FKT algorithm.
+def count_planar_perfect_matchings(G):
+    """Counts perfect matchings of planar graph G.
+
+    Counts the number of perfect matchings using the Fisher-Kasteleyn-Temperley
+    (FKT) algorithm. `G` must be planar in order to use the FKT algorithm.
 
     If `G` is a weighted graph, each matching is counted with weight equal to
     the product of weights of edges included in the matching. Edges without
@@ -1262,8 +1263,10 @@ def count_planar_perfect_matchings(G: nx.Graph):
     return _fkt_with_embedding(G, faces_missing_one)
 
 
-def _fkt_with_embedding(G: nx.Graph, faces, numerical_stability_threshold=1e-5):
-    """Counts the number of perfect matchings using the FKT algorithm, using
+def _fkt_with_embedding(G, faces, numerical_stability_threshold=1e-5):
+    """Uses the FKT algorithm and list of faces to count perfect matchings.
+
+    Counts the number of perfect matchings using the FKT algorithm, using
     an already-computed planar embedding that is a list of faces, rather than
     computing it from scratch.
 
@@ -1323,7 +1326,7 @@ def _fkt_with_embedding(G: nx.Graph, faces, numerical_stability_threshold=1e-5):
     return np.sqrt(determinant)
 
 
-def kasteleyn_orientation(G: nx.Graph, faces):
+def kasteleyn_orientation(G, faces):
     """Returns a Kasteleyn orientation of `G`.
 
     A Kasteleyn orientation of a graph is an assignment of directions to the
