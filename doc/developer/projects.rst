@@ -39,10 +39,13 @@ Creating a cookie-cutter backend repository in NetworkX
   algorithms they want to support at the designated places, and they would not have to
   care about setting up all the other aspects of a backend unless they want to enable
   or adopt any of the optional or additional functionalities of a backend. You can start by:
-    - looking at `nx-j4f <https://github.com/Schefflera-Arboricola/nx-j4f>`__ (a dummy backend)
-      and `nx-parallel <https://github.com/networkx/nx-parallel>`__ (a simple backend) for inspiration.
-    - reading and understanding `Backends <https://networkx.org/documentation/latest/reference/backends.html>`__
-      and `Configs <https://networkx.org/documentation/latest/reference/configs.html>`__ documentation.
+
+  - looking at `nx-j4f <https://github.com/Schefflera-Arboricola/nx-j4f>`__
+    (a dummy backend) and `nx-parallel <https://github.com/networkx/nx-parallel>`__
+    (a simple backend) for inspiration.
+
+  - reading and understanding :ref:`backends` and :ref:`configs` documentation.
+
   Feel free to ask questions or open an issue if you find something hard to understand,
   as the above documentations are not that well-written.
 
@@ -71,8 +74,11 @@ Adding embarrassingly parallel graph algorithms in nx-parallel
   graph algorithms from the :ref:`wide variety of graph algorithms <Algorithms>`
   implemented in NetworkX and then write their parallel implementations in nx-parallel.
   You can start by looking at:
-    - the implementations of existing algorithms in nx-parallel for inspiration.
-    - Joblib docs: `Embarrassingly parallel for loops <https://joblib.readthedocs.io/en/latest/parallel.html>`__
+
+  - the implementations of existing algorithms in nx-parallel for inspiration.
+
+  - Joblib docs: `Embarrassingly parallel for loops <https://joblib.readthedocs.io/en/latest/parallel.html>`__
+
   Find more details in `Issue#82 <https://github.com/networkx/nx-parallel/issues/82>`__.
 
 - Recommended Skills: Python, willingness to roll up your sleeves and dig deep
