@@ -25,7 +25,7 @@ def _init_node_labels(G, edge_attr, node_attr):
     else:
         warnings.warn(
             "The hashes produced for graphs without node or edge attributes"
-            "changed in version [TBD] due to a bugfix (see documentation).",
+            "changed in v3.5 due to a bugfix (see documentation).",
             UserWarning,
             stacklevel=2,
         )
@@ -76,7 +76,7 @@ def weisfeiler_lehman_graph_hash(
     """Return Weisfeiler Lehman (WL) graph hash.
 
     .. Warning:: Hash values for directed graphs and graphs without edge or
-        node attributes have changed in version [TBD]. In previous versions,
+        node attributes have changed in v3.5. In previous versions,
         directed graphs did not distinguish in- and outgoing edges. Also,
         graphs without attributes set initial states such that effectively
         one extra iteration of WL occurred than indicated by `iterations`.
@@ -184,7 +184,7 @@ def weisfeiler_lehman_graph_hash(
     if G.is_directed():
         _neighborhood_aggregate = _neighborhood_aggregate_directed
         warnings.warn(
-            "The hashes produced for directed graphs changed in version [TBD]"
+            "The hashes produced for directed graphs changed in version v3.5"
             " due to a bugfix to track in and out edges separately (see documentation).",
             UserWarning,
             stacklevel=2,
@@ -242,7 +242,7 @@ def weisfeiler_lehman_subgraph_hashes(
     Return a dictionary of subgraph hashes by node.
 
     .. Warning:: Hash values for directed graphs have changed in version
-        [TBD]. In previous versions, directed graphs did not distinguish in-
+        v3.5. In previous versions, directed graphs did not distinguish in-
         and outgoing edges.
         Graphs without attributes previously performed an extra iteration of
         WL at initialisation, which was not visible in the output of this
@@ -384,7 +384,7 @@ def weisfeiler_lehman_subgraph_hashes(
     if G.is_directed():
         _neighborhood_aggregate = _neighborhood_aggregate_directed
         warnings.warn(
-            "The hashes produced for directed graphs changed in version [TBD]"
+            "The hashes produced for directed graphs changed in v3.5"
             " due to a bugfix (see documentation).",
             UserWarning,
             stacklevel=2,
@@ -409,9 +409,7 @@ def weisfeiler_lehman_subgraph_hashes(
         return new_labels
 
     if iterations <= 0:
-        raise ValueError(
-            "The WL algorithm requires that `iterations` be positive"
-        )
+        raise ValueError("The WL algorithm requires that `iterations` be positive")
 
     node_labels = _init_node_labels(G, edge_attr, node_attr)
 
