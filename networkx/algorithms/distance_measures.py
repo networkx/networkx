@@ -10,7 +10,6 @@ from networkx.utils import not_implemented_for
 __all__ = [
     "eccentricity",
     "diameter",
-    "unweighted_diameter",
     "harmonic_diameter",
     "radius",
     "periphery",
@@ -383,6 +382,8 @@ def diameter(G, e=None, usebounds=False, weight=None):
     --------
     eccentricity
     """
+    if not G.is_directed() and weight is None:
+        return _unweighted_diameter(G)
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="diameter", weight=weight)
     if e is None:
@@ -1034,80 +1035,80 @@ def kemeny_constant(G, *, weight=None):
     return float(np.sum(1 / (1 - eig[:-1])))
 
 
-def _four_sweep_start_vertex(G, choice):
-    """Selects a start vertex for the four-sweep BFS process.
+def _four_sweep_start_node(G, choice):
+    """Selects a start node for the four-sweep BFS process.
 
     Parameters:
     G : NetworkX graph
         The input graph.
     choice : str
-        The selection strategy for the start vertex. Options:
+        The selection strategy for the start node. Options:
         - "random": Randomly selects a node.
         - "degree": Selects the node with the highest degree.
 
     Returns:
     node
-        The selected start vertex.
+        The selected start node.
     """
     if choice == "random":
-        start_vertex = random.choice(list(G.nodes()))
+        start_node = random.choice(list(G.nodes()))
     elif choice == "degree":
-        start_vertex = max(G.nodes(), key=lambda x: G.degree(x))
+        start_node = max(G.nodes(), key=G.degree)
     else:
-        raise ValueError("Invalid choice of start vertex")
+        raise ValueError("Invalid choice of start node")
 
-    return start_vertex
+    return start_node
 
 
-def _four_sweep_data(G, start_vertex):
+def _four_sweep_data(G, start_node):
     """Executes the four-sweep BFS process to determine an approximate lower bound for the diameter.
 
     Parameters:
     G : NetworkX graph
         The input graph.
-    start_vertex : node
+    start_node : node
         The initial node for BFS traversal.
 
     Returns:
     tuple
-        - mid_level_vertex: A node close to the middle of the BFS depth.
+        - mid_level_node: A node close to the middle of the BFS depth.
         - lower_bound: An estimated lower bound for the graph diameter.
     """
     lower_bound = 0
 
-    # First BFS from start_vertex
-    layers = list(nx.bfs_layers(G, start_vertex))
-    max_level_vertex = layers[-1][0] if layers[-1] else None
+    # First BFS from start_node
+    layers = list(nx.bfs_layers(G, start_node))
+    max_level_node = layers[-1][0] if layers[-1] else None
 
-    # Second BFS from max_level_vertex
-    layers = list(nx.bfs_layers(G, max_level_vertex))
+    # Second BFS from max_level_node
+    layers = list(nx.bfs_layers(G, max_level_node))
     max_level = len(layers) - 1
-    max_level_vertex = layers[-1][0] if layers[-1] else None
+    max_level_node = layers[-1][0] if layers[-1] else None
     lower_bound = max(lower_bound, max_level)
 
-    # Find a mid-level vertex
+    # Find a mid-level node
     mid_level = max_level // 2
-    mid_level_vertex = (
+    mid_level_node = (
         layers[mid_level][0] if mid_level < len(layers) and layers[mid_level] else None
     )
 
-    # Third BFS from mid_level_vertex
-    layers = list(nx.bfs_layers(G, mid_level_vertex))
-    max_level_vertex = layers[-1][0] if layers[-1] else None
+    # Third BFS from mid_level_node
+    layers = list(nx.bfs_layers(G, mid_level_node))
+    max_level_node = layers[-1][0] if layers[-1] else None
 
-    # Fourth BFS from max_level_vertex
-    layers = list(nx.bfs_layers(G, max_level_vertex))
+    # Fourth BFS from max_level_node
+    layers = list(nx.bfs_layers(G, max_level_node))
     max_level = len(layers) - 1
-    max_level_vertex = layers[-1][0] if layers[-1] else None
+    max_level_node = layers[-1][0] if layers[-1] else None
     lower_bound = max(lower_bound, max_level)
 
-    # Find a mid-level vertex from the last BFS
+    # Find a mid-level node from the last BFS
     mid_level = max_level // 2
-    mid_level_vertex = (
+    mid_level_node = (
         layers[mid_level][0] if mid_level < len(layers) and layers[mid_level] else None
     )
 
-    return mid_level_vertex, lower_bound
+    return mid_level_node, lower_bound
 
 
 def _ifub_helper(G, fringe_vertices):
@@ -1124,13 +1125,13 @@ def _ifub_helper(G, fringe_vertices):
         The maximum eccentricity found in the given vertices.
     """
     max_ecc = 0
-    for vertex in fringe_vertices:
-        layers = list(nx.bfs_layers(G, vertex))
+    for node in fringe_vertices:
+        layers = list(nx.bfs_layers(G, node))
         max_ecc = max(max_ecc, len(layers) - 1)
     return max_ecc
 
 
-def _ifub(G, root, lower_bound, error_threshold=0):
+def _ifub(G, root, lower_bound, error_tolerance=0):
     """Algorithm for estimating the graph diameter.
 
     Parameters:
@@ -1140,7 +1141,7 @@ def _ifub(G, root, lower_bound, error_threshold=0):
         The starting node for BFS traversal.
     lower_bound : int
         The initial lower bound for the diameter.
-    error_threshold : int, optional
+    error_tolerance : int, optional
         The tolerance for additive error (default is 0).
 
     Returns:
@@ -1151,7 +1152,7 @@ def _ifub(G, root, lower_bound, error_threshold=0):
     max_level = len(layers) - 1
     upper_bound = 2 * max_level
     lower_bound = max(lower_bound, max_level)
-    k = error_threshold
+    k = error_tolerance
 
     cur_max_ecc = 0
     cur_level = max_level
@@ -1170,17 +1171,21 @@ def _ifub(G, root, lower_bound, error_threshold=0):
     return lower_bound
 
 
-@nx.utils.not_implemented_for("directed")
-def unweighted_diameter(G, error_threshold=0, start_vertex_type="degree"):
-    """Computes an approximation of the graph diameter using the IFUB algorithm.
+def _unweighted_diameter(G, error_tolerance=0, start_node_type="degree"):
+    """Returns the diameter for an unweighted graph with optional approximation.
+
+    This alternative to the more general `diameter` function is faster and allows
+    for an approximation tolerance, though the default is to find the exact zero
+    tolerance result. The function uses the Iterative Fringe Upper Bound (IFUB)
+    algorithm [1]_.
 
     Parameters:
     G : NetworkX graph
         The input undirected graph.
-    error_threshold : int, optional
+    error_tolerance : int, optional
         The tolerance for additive error (default is 0).
-    start_vertex_type : str, optional
-        Strategy to choose the starting vertex. Options:
+    start_node_type : str, optional
+        Strategy to choose the starting node. Options:
         - "random": Selects a random node.
         - "degree": Selects the node with the highest degree (default).
 
@@ -1192,6 +1197,15 @@ def unweighted_diameter(G, error_threshold=0, start_vertex_type="degree"):
     NetworkXError
         If the graph is not connected.
 
+    Notes:
+    The Iterative Fringe Upper Bound (IFUB) algorithm first selects an approximate "central"
+    node through 4-sweep. A BFS tree is rooted at this node, subsequently the eccentricities
+    of the vertices in this rooted tree are computed layer wise. When the maximum eccentricity
+    obtained from a node in a particular layer is greater than twice the layer number, then
+    the diameter is the maximum eccentricity. Otherwise, the algorithm continues to the next
+    layer. It is observed that the algorithm quickly computes the diameter
+    of real world graphs as shown in [1]_.
+
     References:
     .. [1] Crescenzi, Pierluigi, Roberto Grossi, Leonardo Lanzi, and Andrea Marino.
     "A comparison of different bounds on the diameter of graphs." Theoretical Computer Science 426 (2012): 34-52.
@@ -1201,6 +1215,6 @@ def unweighted_diameter(G, error_threshold=0, start_vertex_type="degree"):
     if not nx.is_connected(G):
         raise nx.NetworkXError("Cannot compute metric because graph is not connected.")
 
-    source = _four_sweep_start_vertex(G, start_vertex_type)
+    source = _four_sweep_start_node(G, start_node_type)
     root, lower_bound = _four_sweep_data(G, source)
-    return _ifub(G, root, lower_bound, error_threshold)
+    return _ifub(G, root, lower_bound, error_tolerance)
