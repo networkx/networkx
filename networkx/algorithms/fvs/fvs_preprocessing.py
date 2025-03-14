@@ -143,3 +143,8 @@ def _handling_high_multiplicity(G, k, fvs):
         applied = True
 
     return applied, g_new, k_new, is_k_fvs_possible, None
+
+
+@not_implemented_for("directed")
+def _disjoint_compression_preprocessing(G, k, fvs):
+    pass
