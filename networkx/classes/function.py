@@ -653,7 +653,7 @@ def set_node_attributes(G, values, name=None):
         try:  # `values` is a dict
             for n, v in values.items():
                 try:
-                    G.nodes[n][name] = values[n]
+                    G.nodes[n][name] = v
                 except KeyError:
                     pass
         except AttributeError:  # `values` is a constant

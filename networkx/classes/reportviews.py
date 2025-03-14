@@ -1394,7 +1394,7 @@ class MultiEdgeView(OutMultiEdgeView):
         for n, nbrs in self._nodes_nbrs():
             for nbr, kd in nbrs.items():
                 if nbr not in seen:
-                    for k, dd in kd.items():
+                    for k in kd:
                         yield (n, nbr, k)
             seen[n] = 1
         del seen

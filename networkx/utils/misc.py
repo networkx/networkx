@@ -112,7 +112,7 @@ def _dict_to_numpy_array2(d, mapping=None):
 
     if mapping is None:
         s = set(d.keys())
-        for k, v in d.items():
+        for v in d.values():
             s.update(v.keys())
         mapping = dict(zip(s, range(len(s))))
     n = len(mapping)
