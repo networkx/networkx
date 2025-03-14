@@ -6,6 +6,7 @@ import typing
 import warnings
 from functools import partial
 from importlib.metadata import entry_points
+from types import MethodType
 
 import networkx as nx
 
@@ -102,6 +103,7 @@ def _set_configs_from_environment():
         backend_priority=BackendPriorities(
             algos=[],
             generators=[],
+            classes=[],
         ),
         backends=Config(
             **{
@@ -580,7 +582,9 @@ class _dispatchable:
 
         backend_priority = nx.config.backend_priority.get(
             self.name,
-            nx.config.backend_priority.generators
+            nx.config.backend_priority.classes
+            if self.name.endswith("__new__")
+            else nx.config.backend_priority.generators
             if self._returns_graph
             else nx.config.backend_priority.algos,
         )
@@ -1930,6 +1934,11 @@ class _dispatchable:
             lines.insert(index, to_add)
             new_doc = "\n".join(lines)
         return new_doc
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        return MethodType(self, obj)
 
     def __reduce__(self):
         """Allow this object to be serialized with pickle.
