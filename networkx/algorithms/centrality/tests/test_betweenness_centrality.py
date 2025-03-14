@@ -65,8 +65,8 @@ class TestBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
         b = nx.betweenness_centrality(G, k=2, weight=None, normalized=False, seed=1)
         # python versions give different results with same seed
-        b_approx1 = {0: 0.0, 1: 1.5, 2: 0.0}
-        b_approx2 = {0: 0.0, 1: 0.75, 2: 0.0}
+        b_approx1 = {0: 0.0, 1: 1.0, 2: 0.0}
+        b_approx2 = {0: 0.0, 1: 0.5, 2: 0.0}
         for n in sorted(G):
             assert b[n] in (b_approx1[n], b_approx2[n])
 

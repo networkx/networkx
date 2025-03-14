@@ -127,6 +127,8 @@ def betweenness_centrality(
        https://doi.org/10.2307/3033543
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
+    if k == len(G):
+        k = None
     if k is None:
         nodes = G
     else:
