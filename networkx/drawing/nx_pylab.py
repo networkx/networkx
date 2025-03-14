@@ -97,13 +97,17 @@ def apply_matplotlib_colors(
     mapper = mpl.cm.ScalarMappable(cmap=map)
     mapper.set_clim(vmin, vmax)
 
+    def do_map(x):
+        # Cast numpy scalars to float
+        return tuple(float(x) for x in mapper.to_rgba(x))
+
     if nodes:
         nx.set_node_attributes(
-            G, {n: mapper.to_rgba(G.nodes[n][src_attr]) for n in G.nodes()}, dest_attr
+            G, {n: do_map(G.nodes[n][src_attr]) for n in G.nodes()}, dest_attr
         )
     else:
         nx.set_edge_attributes(
-            G, {e: mapper.to_rgba(G.edges[e][src_attr]) for e in type_iter}, dest_attr
+            G, {e: do_map(G.edges[e][src_attr]) for e in type_iter}, dest_attr
         )
 
 
