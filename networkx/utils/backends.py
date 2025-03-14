@@ -1697,7 +1697,6 @@ class _dispatchable:
             "edmonds_karp",
             "barycenter",
             "contracted_edge",
-            "contracted_nodes",
             "stochastic_graph",
             "relabel_nodes",
             "maximum_branching",
@@ -1753,10 +1752,7 @@ class _dispatchable:
                 for k, v in G1.nodes.items():
                     G2.nodes[k][attr] = v[attr]
                 nx._clear_cache(G2)
-            elif (
-                self.name in {"contracted_nodes", "contracted_edge"}
-                and not bound.arguments["copy"]
-            ):
+            elif self.name == "contracted_edge" and not bound.arguments["copy"]:
                 # Edges and nodes changed; node "contraction" and edge "weight" attrs
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
