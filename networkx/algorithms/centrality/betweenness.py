@@ -375,7 +375,10 @@ def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False
             scale = None
     if scale is not None:
         if k is not None:
-            scale = scale * n / k
+            if endpoints:
+                scale = scale * n / k
+            else:
+                scale = scale * (n - 1) / k
         for v in betweenness:
             betweenness[v] *= scale
     return betweenness

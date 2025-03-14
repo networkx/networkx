@@ -288,6 +288,13 @@ class TestBetweennessCentrality:
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
+    def test_normalized_with_k_on_star_graph(self):
+        G = nx.star_graph(4)
+        b = nx.betweenness_centrality(G, k=1, seed=1, endpoints=False)
+        assert b == pytest.approx({0: 1.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0})
+        b = nx.betweenness_centrality(G, k=1, seed=1, endpoints=True)
+        assert b == pytest.approx({0: 1.0, 1: 1.0, 2: 0.25, 3: 0.25, 4: 0.25})
+
 
 class TestWeightedBetweennessCentrality:
     def test_K5(self):
