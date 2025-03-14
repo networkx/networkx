@@ -428,7 +428,9 @@ def _quotient_graph(
 @nx._dispatchable(
     preserve_all_attrs=True, mutates_input={"not copy": 4}, returns_graph=True
 )
-def contracted_nodes(G, u, v, self_loops=True, copy=True, *, store_contraction=True):
+def contracted_nodes(
+    G, u, v, self_loops=True, copy=True, *, store_contraction_as="contraction"
+):
     """Returns the graph that results from contracting `u` and `v`.
 
     Node contraction identifies the two nodes as a single node incident to any
@@ -450,12 +452,12 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True, *, store_contraction=T
         If this is True (default True), make a copy of
         `G` and return that instead of directly changing `G`.
 
-    store_contraction : bool
-        If `True`, store information about the contracted node and any
-        contracted edges in a `"contraction"` attribute on the resulting node
-        and/or edge. If `False`, information about the contracted nodes/edges
-        and their data are not stored.
-
+    store_contraction_as : str
+        Name of the node/edge attribute where information about the contraction
+        should be stored. The default is ``"contraction"``, in which case information
+        about the contracted node and any contracted edges is stored in a `"contraction"`
+        attribute on the resulting node and/or edge. If `None`, information about
+        the contracted nodes/edges and their data are not stored.
 
     Returns
     -------
@@ -540,6 +542,11 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True, *, store_contraction=T
     v_data = H.nodes[v]
     H.remove_node(v)
 
+    # A bit of input munging to extract whether contraction info should be
+    # stored, and if so bind to a shorter name
+    if _store_contraction := (store_contraction_as is not None):
+        contraction = store_contraction_as
+
     for prev_w, prev_x, d in edges_to_remap:
         w = prev_w if prev_w != v else u
         x = prev_x if prev_x != v else u
@@ -551,19 +558,19 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True, *, store_contraction=T
             H.add_edge(w, x, **d)
             continue
 
-        # Store information about the contracted edge iff `store_contraction`
-        if store_contraction:
-            if "contraction" in H.edges[(w, x)]:
-                H.edges[(w, x)]["contraction"][(prev_w, prev_x)] = d
+        # Store information about the contracted edge iff `store_contraction` is not None
+        if _store_contraction:
+            if contraction in H.edges[(w, x)]:
+                H.edges[(w, x)][contraction][(prev_w, prev_x)] = d
             else:
-                H.edges[(w, x)]["contraction"] = {(prev_w, prev_x): d}
+                H.edges[(w, x)][contraction] = {(prev_w, prev_x): d}
 
     # Store information about the contracted node iff `store_contraction`
-    if store_contraction:
-        if "contraction" in H.nodes[u]:
-            H.nodes[u]["contraction"][v] = v_data
+    if _store_contraction:
+        if contraction in H.nodes[u]:
+            H.nodes[u][contraction][v] = v_data
         else:
-            H.nodes[u]["contraction"] = {v: v_data}
+            H.nodes[u][contraction] = {v: v_data}
 
     return H
 
