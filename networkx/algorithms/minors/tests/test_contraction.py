@@ -283,7 +283,7 @@ def test_quotient_graph_incomplete_partition():
     assert edges_equal(H.edges(), [(0, 1)])
 
 
-@pytest.mark.parametrize("store_contraction_as", ("contraction", None))
+@pytest.mark.parametrize("store_contraction_as", ("contraction", "c", None))
 @pytest.mark.parametrize("copy", (True, False))
 @pytest.mark.parametrize("selfloops", (True, False))
 def test_undirected_node_contraction(store_contraction_as, copy, selfloops):
@@ -316,7 +316,7 @@ def test_undirected_node_contraction(store_contraction_as, copy, selfloops):
     assert all(d == {} for _, _, d in actual.edges(data=True))
 
 
-@pytest.mark.parametrize("store_contraction_as", ("contraction", None))
+@pytest.mark.parametrize("store_contraction_as", ("contraction", "c", None))
 @pytest.mark.parametrize("copy", (True, False))
 @pytest.mark.parametrize("selfloops", (True, False))
 def test_directed_node_contraction(store_contraction_as, copy, selfloops):
@@ -351,7 +351,7 @@ def test_directed_node_contraction(store_contraction_as, copy, selfloops):
         assert all(d == {} for _, _, d in actual.edges(data=True))
 
 
-@pytest.mark.parametrize("store_contraction_as", ("contraction", None))
+@pytest.mark.parametrize("store_contraction_as", ("contraction", "c", None))
 @pytest.mark.parametrize("copy", (True, False))
 @pytest.mark.parametrize("selfloops", (True, False))
 def test_contract_multigraph(store_contraction_as, copy, selfloops):
@@ -395,7 +395,7 @@ def test_multigraph_keys():
     assert edges_equal(actual.edges, expected.edges)
 
 
-@pytest.mark.parametrize("store_contraction_as", ("contraction", None))
+@pytest.mark.parametrize("store_contraction_as", ("contraction", "c", None))
 @pytest.mark.parametrize("copy", (True, False))
 @pytest.mark.parametrize("selfloops", (True, False))
 def test_node_attributes(store_contraction_as, copy, selfloops):
@@ -423,7 +423,7 @@ def test_node_attributes(store_contraction_as, copy, selfloops):
 
     if store_contraction_as:
         cdict = {1: {"baz": "xyzzy"}}
-        expected.nodes[0].update({"foo": "bar", "contraction": cdict})
+        expected.nodes[0].update({"foo": "bar", store_contraction_as: cdict})
 
     assert nx.is_isomorphic(actual, expected)
     assert actual.nodes(data=True) == expected.nodes(data=True)
@@ -431,7 +431,7 @@ def test_node_attributes(store_contraction_as, copy, selfloops):
         assert actual is G
 
 
-@pytest.mark.parametrize("store_contraction_as", ("contraction", None))
+@pytest.mark.parametrize("store_contraction_as", ("contraction", "c", None))
 def test_edge_attributes(store_contraction_as):
     """Tests that node contraction preserves edge attributes."""
     # Shape: src1 --> dest <-- src2
@@ -446,11 +446,11 @@ def test_edge_attributes(store_contraction_as):
     assert H.edges[("src1", "dest")]["value"] == "src1-->dest"  # Should be unchanged
     if store_contraction_as:
         assert (
-            H.edges[("src1", "dest")]["contraction"][("src2", "dest")]["value"]
+            H.edges[("src1", "dest")][store_contraction_as][("src2", "dest")]["value"]
             == "src2-->dest"
         )
     else:
-        assert "contraction" not in H.edges[("src1", "dest")]
+        assert store_contraction_as not in H.edges[("src1", "dest")]
 
     G = nx.MultiDiGraph(G)
     # New Shape: src1 -(x2)-> dest
