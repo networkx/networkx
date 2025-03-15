@@ -452,12 +452,12 @@ def contracted_nodes(
         If this is True (default True), make a copy of
         `G` and return that instead of directly changing `G`.
 
-    store_contraction_as : str
+    store_contraction_as : str, default="contraction"
         Name of the node/edge attribute where information about the contraction
-        should be stored. The default is ``"contraction"``, in which case information
-        about the contracted node and any contracted edges is stored in a `"contraction"`
-        attribute on the resulting node and/or edge. If `None`, information about
-        the contracted nodes/edges and their data are not stored.
+        should be stored. By default information about the contracted node and
+        any contracted edges is stored in a ``"contraction"`` attribute on the
+        resulting node and edge. If `None`, information about the contracted
+        nodes/edges and their data are not stored.
 
     Returns
     -------
