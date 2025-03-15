@@ -359,28 +359,47 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
 
 
 def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False):
-    if normalized:
+    if endpoints and n < 2 or not endpoints and n <= 2:
+        # no normalization b=0 for all nodes
+        scale = None
+    elif normalized:
         if endpoints:
-            if n < 2:
-                scale = None  # no normalization
-            else:
-                # Scale factor should include endpoint nodes
+            # Scale factor should include endpoint nodes
+            if k is None:
                 scale = 1 / (n * (n - 1))
-        elif n <= 2:
-            scale = None  # no normalization b=0 for all nodes
-        else:
-            scale = 1 / ((n - 1) * (n - 2))
-    else:  # rescale by 2 for undirected graphs
-        if not directed:
-            scale = 0.5
-        else:
-            scale = None
-    if scale is not None:
-        if k is not None:
-            if endpoints:
-                scale = scale * n / k
             else:
-                scale = scale * (n - 1) / k
+                scale = 1 / (k * (n - 1))
+        else:
+            if k is None:
+                scale = 1 / ((n - 1) * (n - 2))
+            else:
+                scale = 1 / (k * (n - 2))
+    # Not normalized, but we still need to scale undirected graphs by 2
+    # and to estimate the full BC when using k.
+    elif endpoints:
+        if k is None:
+            if directed:
+                scale = None
+            else:
+                scale = 0.5
+        else:
+            if directed:
+                scale = n / k
+            else:
+                scale = n / (k * 2)
+    else:
+        if k is None or k == n - 1:
+            if directed:
+                scale = None
+            else:
+                scale = 0.5
+        else:
+            if directed:
+                scale = (n - 1) / k
+            else:
+                scale = (n - 1) / (2 * k)
+
+    if scale is not None:
         for v in betweenness:
             betweenness[v] *= scale
     return betweenness
