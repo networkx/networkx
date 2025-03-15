@@ -1174,10 +1174,10 @@ def _ifub(G, root, lower_bound, error_tolerance=0):
 def _unweighted_diameter(G, error_tolerance=0, start_node_type="degree"):
     """Returns the diameter for an unweighted graph with optional approximation.
 
-    This alternative to the more general `diameter` function is faster and allows
-    for an approximation tolerance, though the default is to find the exact zero
-    tolerance result. The function uses the Iterative Fringe Upper Bound (IFUB)
-    algorithm [1]_.
+    This alternative to the more general `diameter` function is faster and
+    allows for an approximation tolerance, though the default is to find the
+    exact zero-tolerance result. The function uses the Iterative Fringe Upper
+    Bound (IFUB) algorithm [1]_.
 
     Parameters:
     G : NetworkX graph
@@ -1198,18 +1198,20 @@ def _unweighted_diameter(G, error_tolerance=0, start_node_type="degree"):
         If the graph is not connected.
 
     Notes:
-    The Iterative Fringe Upper Bound (IFUB) algorithm first selects an approximate "central"
-    node through 4-sweep. A BFS tree is rooted at this node, subsequently the eccentricities
-    of the vertices in this rooted tree are computed layer wise. When the maximum eccentricity
-    obtained from a node in a particular layer is greater than twice the layer number, then
-    the diameter is the maximum eccentricity. Otherwise, the algorithm continues to the next
-    layer. It is observed that the algorithm quickly computes the diameter
-    of real world graphs as shown in [1]_.
+    The IFUB algorithm first selects an approximate "central" node using
+    the 4-sweep heuristic. The 4-sweep method starts from a random node,
+    finds its farthest node, then repeats this process four times to
+    approximate a central node. A BFS tree is then rooted at this node,
+    and eccentricities are computed layer-wise. If the max eccentricity
+    from a layer exceeds twice the layer index, the algorithm terminates
+    and returns the diameter; otherwise, it proceeds further. IFUB is
+    observed to compute diameters efficiently for real-world graphs [1]_.
 
     References:
-    .. [1] Crescenzi, Pierluigi, Roberto Grossi, Leonardo Lanzi, and Andrea Marino.
-    "A comparison of different bounds on the diameter of graphs." Theoretical Computer Science 426 (2012): 34-52.
-    https://doi.org/10.1016/j.tcs.2012.09.018
+    .. [1] Crescenzi, P., Grossi, R., Lanzi, L., & Marino, A.
+           "A comparison of different bounds on the diameter of graphs."
+           Theoretical Computer Science 426 (2012): 34-52.
+           https://doi.org/10.1016/j.tcs.2012.09.018
     """
 
     if not nx.is_connected(G):
