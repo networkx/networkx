@@ -17,7 +17,7 @@ interact with different languages and even different Python versions.
 Re-importing from gml is also a concern.
 
 Without specifying a `stringizer`/`destringizer`, the code is capable of
-writing `int`/`float`/`str`/`dict`/`list` data as required by the GML 
+writing `int`/`float`/`str`/`dict`/`list` data as required by the GML
 specification.  For writing other data types, and for reading data other
 than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
@@ -27,9 +27,9 @@ For additional documentation on the GML file format, please see the
 Several example graphs in GML format may be found on Mark Newman's
 `Network data page <http://www-personal.umich.edu/~mejn/netdata/>`_.
 """
+
 import html.entities as htmlentitydefs
 import re
-import warnings
 from ast import literal_eval
 from collections import defaultdict
 from enum import Enum
@@ -112,14 +112,15 @@ def literal_destringizer(rep):
 
 
 @open_file(0, mode="rb")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_gml(path, label="label", destringizer=None):
     """Read graph in GML format from `path`.
 
     Parameters
     ----------
-    path : filename or filehandle
-        The filename or filehandle to read from.
+    path : file or string
+        Filename or file handle to read.
+        Filenames ending in .gz or .bz2 will be decompressed.
 
     label : string, optional
         If not None, the parsed nodes will be renamed according to node
@@ -195,7 +196,7 @@ def read_gml(path, label="label", destringizer=None):
     return G
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_gml(lines, label="label", destringizer=None):
     """Parse GML graph from a string or iterable.
 
@@ -752,7 +753,7 @@ def generate_gml(G, stringizer=None):
                     yield from stringize(key, value, (), next_indent)
                 yield indent + "]"
             elif isinstance(value, tuple) and key == "label":
-                yield indent + key + f" \"({','.join(repr(v) for v in value)})\""
+                yield indent + key + f' "({",".join(repr(v) for v in value)})"'
             elif isinstance(value, list | tuple) and key != "label" and not in_list:
                 if len(value) == 0:
                     yield indent + key + " " + f'"{value!r}"'
@@ -822,9 +823,9 @@ def write_gml(G, path, stringizer=None):
     G : NetworkX graph
         The graph to be converted to GML.
 
-    path : filename or filehandle
-        The filename or filehandle to write. Files whose names end with .gz or
-        .bz2 will be compressed.
+    path : string or file
+        Filename or file handle to write to.
+        Filenames ending in .gz or .bz2 will be compressed.
 
     stringizer : callable, optional
         A `stringizer` which converts non-int/non-float/non-dict values into

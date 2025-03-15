@@ -130,15 +130,15 @@ def write_pajek(G, path, encoding="UTF-8"):
 
 
 @open_file(0, mode="rb")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_pajek(path, encoding="UTF-8"):
     """Read graph in Pajek format from path.
 
     Parameters
     ----------
     path : file or string
-       File or filename to write.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filename or file handle to read.
+       Filenames ending in .gz or .bz2 will be decompressed.
 
     Returns
     -------
@@ -163,7 +163,7 @@ def read_pajek(path, encoding="UTF-8"):
     return parse_pajek(lines)
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_pajek(lines):
     """Parse Pajek format graph from string or iterable.
 

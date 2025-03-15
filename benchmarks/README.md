@@ -24,3 +24,19 @@ Run the benchmark to compare two commits:
 ```
 asv continuous base_commit_hash test_commit_hash
 ```
+
+The `--bench` flag can be used to limit a run to a subset of benchmarks.
+For example, the following will only run the algorithm benchmarks for performance
+comparison between two commits:
+
+```
+asv continuous --bench AlgorithmBenchmarks <sha1> <sha2>
+```
+
+The same pattern can be used to specify individual benchmarks:
+
+```
+asv continuous --bench AlgorithmBenchmarks.time_pagerank <sha1> <sha2>
+```
+
+To know more visit - https://asv.readthedocs.io/en/stable/commands.html

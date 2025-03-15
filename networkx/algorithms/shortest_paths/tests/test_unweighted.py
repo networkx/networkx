@@ -49,7 +49,7 @@ class TestUnweightedPath:
     def test_bidirectional_shortest_path_src_tgt_not_in_graph(self, src, tgt):
         with pytest.raises(
             nx.NodeNotFound,
-            match=f"Either source {src} or target {tgt} is not in G",
+            match=f"(Source {src}|Target {tgt}) is not in G",
         ):
             nx.bidirectional_shortest_path(self.cycle, src, tgt)
 

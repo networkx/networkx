@@ -289,7 +289,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=\
 "http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd" version="1.2">
-  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+  <meta lastmodifieddate="{time.strftime("%Y-%m-%d")}">
     <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
@@ -316,7 +316,7 @@ gexf.xsd" version="1.2">
         expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.\
 gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
-  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+  <meta lastmodifieddate="{time.strftime("%Y-%m-%d")}">
     <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
@@ -347,7 +347,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation\
 ="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd"\
  version="1.2">
-  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+  <meta lastmodifieddate="{time.strftime("%Y-%m-%d")}">
     <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">

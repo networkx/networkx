@@ -1,11 +1,12 @@
-import pytest
-
-np = pytest.importorskip("numpy")
 import random
+
+import pytest
 
 import networkx as nx
 from networkx.algorithms import approximation as approx
 from networkx.algorithms import threshold
+
+np = pytest.importorskip("numpy")
 
 progress = 0
 
@@ -76,12 +77,16 @@ def run_all_random_functions(seed):
     t(
         approx.traveling_salesman_problem,
         H,
-        method=lambda G, wt: approx.simulated_annealing_tsp(G, "greedy", wt, seed=seed),
+        method=lambda G, weight: approx.simulated_annealing_tsp(
+            G, "greedy", weight, seed=seed
+        ),
     )
     t(
         approx.traveling_salesman_problem,
         H,
-        method=lambda G, wt: approx.threshold_accepting_tsp(G, "greedy", wt, seed=seed),
+        method=lambda G, weight: approx.threshold_accepting_tsp(
+            G, "greedy", weight, seed=seed
+        ),
     )
     t(nx.betweenness_centrality, G, seed=seed)
     t(nx.edge_betweenness_centrality, G, seed=seed)
@@ -90,7 +95,6 @@ def run_all_random_functions(seed):
     t(nx.algorithms.community.kernighan_lin_bisection, G, seed=seed)
     # nx.algorithms.community.asyn_lpa_communities(G, seed=seed)
     t(nx.algorithms.tree.greedy_branching, G, seed=seed)
-    t(nx.algorithms.tree.Edmonds, G, seed=seed)
     # print('done with graph argument functions')
 
     t(nx.spectral_graph_forge, G, alpha, seed=seed)
@@ -134,7 +138,6 @@ def run_all_random_functions(seed):
     t(nx.random_clustered_graph, joint_degree_sequence, seed=seed)
     constructor = [(3, 3, 0.5), (10, 10, 0.7)]
     t(nx.random_shell_graph, constructor, seed=seed)
-    t(nx.random_triad, G.to_directed(), seed=seed)
     mapping = {1: 0.4, 2: 0.3, 3: 0.3}
     t(nx.utils.random_weighted_sample, mapping, k, seed=seed)
     t(nx.utils.weighted_choice, mapping, seed=seed)
@@ -190,7 +193,7 @@ def run_all_random_functions(seed):
     t(nx.random_lobster, n, p1, p2, seed=seed)
     t(nx.random_powerlaw_tree, n, seed=seed, tries=5000)
     t(nx.random_powerlaw_tree_sequence, 10, seed=seed, tries=5000)
-    t(nx.random_tree, n, seed=seed)
+    t(nx.random_labeled_tree, n, seed=seed)
     t(nx.utils.powerlaw_sequence, n, seed=seed)
     t(nx.utils.zipf_rv, 2.3, seed=seed)
     cdist = [0.2, 0.4, 0.5, 0.7, 0.9, 1.0]

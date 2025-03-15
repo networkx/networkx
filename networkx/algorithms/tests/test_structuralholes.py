@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`networkx.algorithms.structuralholes` module."""
+
 import math
 
 import pytest
@@ -52,11 +53,8 @@ class TestStructuralHoles:
             ("G", "C"): 10,
         }
 
-    # This additionally tests the @nx._dispatchable mechanism, treating
-    # nx.mutual_weight as if it were a re-implementation from another package
-    @pytest.mark.parametrize("wrapper", [lambda x: x, dispatch_interface.convert])
-    def test_constraint_directed(self, wrapper):
-        constraint = nx.constraint(wrapper(self.D))
+    def test_constraint_directed(self):
+        constraint = nx.constraint(self.D)
         assert constraint[0] == pytest.approx(1.003, abs=1e-3)
         assert constraint[1] == pytest.approx(1.003, abs=1e-3)
         assert constraint[2] == pytest.approx(1.389, abs=1e-3)
@@ -137,3 +135,18 @@ class TestStructuralHoles:
         G.add_node(1)
         effective_size = nx.effective_size(G)
         assert math.isnan(effective_size[1])
+
+
+@pytest.mark.parametrize("graph", (nx.Graph, nx.DiGraph))
+def test_effective_size_isolated_node_with_selfloop(graph):
+    """Behavior consistent with isolated node without self-loop. See gh-6916"""
+    G = graph([(0, 0)])  # Single node with one self-edge
+    assert math.isnan(nx.effective_size(G)[0])
+
+
+@pytest.mark.parametrize("graph", (nx.Graph, nx.DiGraph))
+def test_effective_size_isolated_node_with_selfloop_weighted(graph):
+    """Weighted self-loop. See gh-6916"""
+    G = graph()
+    G.add_weighted_edges_from([(0, 0, 10)])
+    assert math.isnan(nx.effective_size(G)[0])

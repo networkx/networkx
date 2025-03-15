@@ -1,6 +1,7 @@
 """
 Generators and functions for bipartite graphs.
 """
+
 import math
 import numbers
 from functools import reduce
@@ -20,7 +21,7 @@ __all__ = [
 ]
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 @nodes_or_number([0, 1])
 def complete_bipartite_graph(n1, n2, create_using=None):
     """Returns the complete bipartite graph `K_{n_1,n_2}`.
@@ -62,12 +63,12 @@ def complete_bipartite_graph(n1, n2, create_using=None):
     if len(G) != len(top) + len(bottom):
         raise nx.NetworkXError("Inputs n1 and n2 must contain distinct nodes")
     G.add_edges_from((u, v) for u in top for v in bottom)
-    G.graph["name"] = f"complete_bipartite_graph({n1}, {n2})"
+    G.graph["name"] = f"complete_bipartite_graph({len(top)}, {len(bottom)})"
     return G
 
 
 @py_random_state(3)
-@nx._dispatchable(name="bipartite_configuration_model", graphs=None)
+@nx._dispatchable(name="bipartite_configuration_model", graphs=None, returns_graph=True)
 def configuration_model(aseq, bseq, create_using=None, seed=None):
     """Returns a random bipartite graph from two given degree sequences.
 
@@ -138,7 +139,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     return G
 
 
-@nx._dispatchable(name="bipartite_havel_hakimi_graph", graphs=None)
+@nx._dispatchable(name="bipartite_havel_hakimi_graph", graphs=None, returns_graph=True)
 def havel_hakimi_graph(aseq, bseq, create_using=None):
     """Returns a bipartite graph from two given degree sequences using a
     Havel-Hakimi style construction.
@@ -213,7 +214,7 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
     return G
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     """Returns a bipartite graph from two given degree sequences using a
     Havel-Hakimi style construction.
@@ -287,7 +288,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     return G
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     """Returns a bipartite graph from two given degree sequences using
     an alternating Havel-Hakimi style construction.
@@ -366,7 +367,7 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
 
 
 @py_random_state(3)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
     """Create a bipartite graph with a preferential attachment model from
     a given single degree sequence.
@@ -438,7 +439,7 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
 
 
 @py_random_state(3)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_graph(n, m, p, seed=None, directed=False):
     """Returns a bipartite random graph.
 
@@ -525,7 +526,7 @@ def random_graph(n, m, p, seed=None, directed=False):
 
 
 @py_random_state(3)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def gnmk_random_graph(n, m, k, seed=None, directed=False):
     """Returns a random bipartite graph G_{n,m,k}.
 
@@ -550,8 +551,7 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
 
     Examples
     --------
-    from nx.algorithms import bipartite
-    G = bipartite.gnmk_random_graph(10,20,50)
+    >>> G = nx.bipartite.gnmk_random_graph(10, 20, 50)
 
     See Also
     --------

@@ -133,7 +133,10 @@ def dijkstra_path(G, source, target, weight="weight"):
     >>> G.add_weighted_edges_from([(1, 2, 0.75), (1, 2, 0.5), (2, 3, 0.5), (1, 3, 1.5)])
     >>> nodes = nx.dijkstra_path(G, 1, 3)
     >>> edges = nx.utils.pairwise(nodes)
-    >>> list((u, v, min(G[u][v], key=lambda k: G[u][v][k].get('weight', 1))) for u, v in edges)
+    >>> list(
+    ...     (u, v, min(G[u][v], key=lambda k: G[u][v][k].get("weight", 1)))
+    ...     for u, v in edges
+    ... )
     [(1, 2, 1), (2, 3, 0)]
 
     Notes
@@ -1927,7 +1930,6 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
 
     """
     path = single_source_bellman_ford_path
-    # TODO This can be trivially parallelized.
     for n in G:
         yield (n, path(G, n, weight=weight))
 
@@ -2229,7 +2231,9 @@ def find_negative_cycle(G, source, weight="weight"):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from([(0, 1, 2), (1, 2, 2), (2, 0, 1), (1, 4, 2), (4, 0, -5)])
+    >>> G.add_weighted_edges_from(
+    ...     [(0, 1, 2), (1, 2, 2), (2, 0, 1), (1, 4, 2), (4, 0, -5)]
+    ... )
     >>> nx.find_negative_cycle(G, 0)
     [4, 0, 1, 4]
 
@@ -2319,7 +2323,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     Raises
     ------
     NodeNotFound
-        If either `source` or `target` is not in `G`.
+        If `source` or `target` is not in `G`.
 
     NetworkXNoPath
         If no path exists between source and target.
@@ -2361,9 +2365,11 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     shortest_path
     shortest_path_length
     """
-    if source not in G or target not in G:
-        msg = f"Either source {source} or target {target} is not in G"
-        raise nx.NodeNotFound(msg)
+    if source not in G:
+        raise nx.NodeNotFound(f"Source {source} is not in G")
+
+    if target not in G:
+        raise nx.NodeNotFound(f"Target {target} is not in G")
 
     if source == target:
         return (0, [source])

@@ -22,6 +22,7 @@ Arbitrary data::
 
 For each edge (u, v) the node u is assigned to part 0 and the node v to part 1.
 """
+
 __all__ = ["generate_edgelist", "write_edgelist", "parse_edgelist", "read_edgelist"]
 
 import networkx as nx
@@ -146,7 +147,7 @@ def generate_edgelist(G, delimiter=" ", data=True):
                 yield delimiter.join(map(str, edge))
 
 
-@nx._dispatchable(name="bipartite_parse_edgelist", graphs=None)
+@nx._dispatchable(name="bipartite_parse_edgelist", graphs=None, returns_graph=True)
 def parse_edgelist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None, data=True
 ):
@@ -219,7 +220,7 @@ def parse_edgelist(
         if not len(line):
             continue
         # split line, should have 2 or more
-        s = line.strip().split(delimiter)
+        s = line.rstrip("\n").split(delimiter)
         if len(s) < 2:
             continue
         u = s.pop(0)
@@ -268,7 +269,7 @@ def parse_edgelist(
 
 
 @open_file(0, mode="rb")
-@nx._dispatchable(name="bipartite_read_edgelist", graphs=None)
+@nx._dispatchable(name="bipartite_read_edgelist", graphs=None, returns_graph=True)
 def read_edgelist(
     path,
     comments="#",
@@ -286,7 +287,7 @@ def read_edgelist(
     path : file or string
        File or filename to read. If a file is provided, it must be
        opened in 'rb' mode.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filenames ending in .gz or .bz2 will be decompressed.
     comments : string, optional
        The character used to indicate the start of a comment.
     delimiter : string, optional

@@ -1,6 +1,7 @@
 """
 Subraph centrality and communicability betweenness.
 """
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -63,6 +64,7 @@ def subgraph_centrality_exp(G):
     Examples
     --------
     (Example from [1]_)
+
     >>> G = nx.Graph(
     ...     [
     ...         (1, 2),
@@ -144,6 +146,7 @@ def subgraph_centrality(G):
     Examples
     --------
     (Example from [1]_)
+
     >>> G = nx.Graph(
     ...     [
     ...         (1, 2),
@@ -278,7 +281,7 @@ def communicability_betweenness_centrality(G):
         B[i, :] = 0
         B[:, i] = 0
         B -= np.diag(np.diag(B))
-        cbc[v] = B.sum()
+        cbc[v] = float(B.sum())
         # put row and col back
         A[i, :] = row
         A[:, i] = col
@@ -286,8 +289,7 @@ def communicability_betweenness_centrality(G):
     order = len(cbc)
     if order > 2:
         scale = 1.0 / ((order - 1.0) ** 2 - (order - 1.0))
-        for v in cbc:
-            cbc[v] *= scale
+        cbc = {node: value * scale for node, value in cbc.items()}
     return cbc
 
 

@@ -7,7 +7,8 @@ see the Wikipedia article on the clique problem [1]_.
 .. [1] clique problem:: https://en.wikipedia.org/wiki/Clique_problem
 
 """
-from collections import defaultdict, deque
+
+from collections import Counter, defaultdict, deque
 from itertools import chain, combinations, islice
 
 import networkx as nx
@@ -155,7 +156,10 @@ def find_cliques(G, nodes=None):
     node. The following produces a dictionary keyed by node whose
     values are the number of maximal cliques in `G` that contain the node:
 
-    >>> pprint({n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G})
+    >>> from collections import Counter
+    >>> from itertools import chain
+    >>> counts = Counter(chain.from_iterable(nx.find_cliques(G)))
+    >>> pprint(dict(counts))
     {0: 13,
      1: 6,
      2: 7,
@@ -412,7 +416,7 @@ def find_cliques_recursive(G, nodes=None):
     return expand(subg_init, cand_init)
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def make_max_clique_graph(G, create_using=None):
     """Returns the maximal clique graph of the given graph.
 
@@ -437,8 +441,9 @@ def make_max_clique_graph(G, create_using=None):
     This function behaves like the following code::
 
         import networkx as nx
+
         G = nx.make_clique_bipartite(G)
-        cliques = [v for v in G.nodes() if G.nodes[v]['bipartite'] == 0]
+        cliques = [v for v in G.nodes() if G.nodes[v]["bipartite"] == 0]
         G = nx.bipartite.projected_graph(G, cliques)
         G = nx.relabel_nodes(G, {-v: v - 1 for v in G})
 
@@ -459,7 +464,7 @@ def make_max_clique_graph(G, create_using=None):
     return B
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def make_clique_bipartite(G, fpos=None, create_using=None, name=None):
     """Returns the bipartite clique graph corresponding to `G`.
 
@@ -579,7 +584,7 @@ def number_of_cliques(G, nodes=None, cliques=None):
     Optional list of cliques can be input if already computed.
     """
     if cliques is None:
-        cliques = list(find_cliques(G))
+        cliques = find_cliques(G)
 
     if nodes is None:
         nodes = list(G.nodes())  # none, get entire graph
@@ -587,11 +592,10 @@ def number_of_cliques(G, nodes=None, cliques=None):
     if not isinstance(nodes, list):  # check for a list
         v = nodes
         # assume it is a single value
-        numcliq = len([1 for c in cliques if v in c])
+        numcliq = sum(1 for c in cliques if v in c)
     else:
-        numcliq = {}
-        for v in nodes:
-            numcliq[v] = len([1 for c in cliques if v in c])
+        numcliq = Counter(chain.from_iterable(cliques))
+        numcliq = {v: numcliq[v] for v in nodes}  # return a dict
     return numcliq
 
 

@@ -7,6 +7,7 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 
 For directed graphs see DiGraph and MultiDiGraph.
 """
+
 from copy import deepcopy
 from functools import cached_property
 
@@ -37,8 +38,11 @@ class _CachedPropertyResetterAdj:
     def __set__(self, obj, value):
         od = obj.__dict__
         od["_adj"] = value
-        if "adj" in od:
-            del od["adj"]
+        # reset cached properties
+        props = ["adj", "edges", "degree"]
+        for prop in props:
+            if prop in od:
+                del od[prop]
 
 
 class _CachedPropertyResetterNode:
@@ -59,6 +63,7 @@ class _CachedPropertyResetterNode:
     def __set__(self, obj, value):
         od = obj.__dict__
         od["_node"] = value
+        # reset cached properties
         if "nodes" in od:
             del od["nodes"]
 
@@ -303,6 +308,8 @@ class Graph:
     True
     """
 
+    __networkx_backend__ = "networkx"
+
     _adj = _CachedPropertyResetterAdj()
     _node = _CachedPropertyResetterNode()
 
@@ -365,6 +372,7 @@ class Graph:
         self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
+        self.__networkx_cache__ = {}
         # attempt to load graph with data
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
@@ -403,6 +411,7 @@ class Graph:
     @name.setter
     def name(self, s):
         self.graph["name"] = s
+        nx._clear_cache(self)
 
     def __str__(self):
         """Returns a short summary of the graph.
@@ -559,6 +568,7 @@ class Graph:
             attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
+        nx._clear_cache(self)
 
     def add_nodes_from(self, nodes_for_adding, **attr):
         """Add multiple nodes.
@@ -636,6 +646,7 @@ class Graph:
                 self._adj[n] = self.adjlist_inner_dict_factory()
                 self._node[n] = self.node_attr_dict_factory()
             self._node[n].update(newdict)
+        nx._clear_cache(self)
 
     def remove_node(self, n):
         """Remove node n.
@@ -676,6 +687,7 @@ class Graph:
         for u in nbrs:
             del adj[u][n]  # remove all edges n-u in graph
         del adj[n]  # now remove node
+        nx._clear_cache(self)
 
     def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
@@ -728,6 +740,7 @@ class Graph:
                 del adj[n]
             except KeyError:
                 pass
+        nx._clear_cache(self)
 
     @cached_property
     def nodes(self):
@@ -957,6 +970,7 @@ class Graph:
         datadict.update(attr)
         self._adj[u][v] = datadict
         self._adj[v][u] = datadict
+        nx._clear_cache(self)
 
     def add_edges_from(self, ebunch_to_add, **attr):
         """Add all the edges in ebunch_to_add.
@@ -1037,6 +1051,7 @@ class Graph:
             datadict.update(dd)
             self._adj[u][v] = datadict
             self._adj[v][u] = datadict
+        nx._clear_cache(self)
 
     def add_weighted_edges_from(self, ebunch_to_add, weight="weight", **attr):
         """Add weighted edges in `ebunch_to_add` with specified weight attr
@@ -1087,6 +1102,7 @@ class Graph:
         >>> G.add_weighted_edges_from(list((5, n, weight) for n in G.nodes))
         """
         self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch_to_add), **attr)
+        nx._clear_cache(self)
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.
@@ -1120,6 +1136,7 @@ class Graph:
                 del self._adj[v][u]
         except KeyError as err:
             raise NetworkXError(f"The edge {u}-{v} is not in the graph") from err
+        nx._clear_cache(self)
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -1154,6 +1171,7 @@ class Graph:
                 del adj[u][v]
                 if u != v:  # self loop needs only one entry removed
                     del adj[v][u]
+        nx._clear_cache(self)
 
     def update(self, edges=None, nodes=None):
         """Update the graph using nodes/edges/graphs as input.
@@ -1534,6 +1552,7 @@ class Graph:
         self._adj.clear()
         self._node.clear()
         self.graph.clear()
+        nx._clear_cache(self)
 
     def clear_edges(self):
         """Remove all edges from the graph without altering nodes.
@@ -1549,6 +1568,7 @@ class Graph:
         """
         for nbr_dict in self._adj.values():
             nbr_dict.clear()
+        nx._clear_cache(self)
 
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""
@@ -1800,14 +1820,22 @@ class Graph:
             SG = G.__class__()
             SG.add_nodes_from((n, G.nodes[n]) for n in largest_wcc)
             if SG.is_multigraph():
-                SG.add_edges_from((n, nbr, key, d)
-                    for n, nbrs in G.adj.items() if n in largest_wcc
-                    for nbr, keydict in nbrs.items() if nbr in largest_wcc
-                    for key, d in keydict.items())
+                SG.add_edges_from(
+                    (n, nbr, key, d)
+                    for n, nbrs in G.adj.items()
+                    if n in largest_wcc
+                    for nbr, keydict in nbrs.items()
+                    if nbr in largest_wcc
+                    for key, d in keydict.items()
+                )
             else:
-                SG.add_edges_from((n, nbr, d)
-                    for n, nbrs in G.adj.items() if n in largest_wcc
-                    for nbr, d in nbrs.items() if nbr in largest_wcc)
+                SG.add_edges_from(
+                    (n, nbr, d)
+                    for n, nbrs in G.adj.items()
+                    if n in largest_wcc
+                    for nbr, d in nbrs.items()
+                    if nbr in largest_wcc
+                )
             SG.graph.update(G.graph)
 
         Examples
@@ -1965,7 +1993,7 @@ class Graph:
         """Returns an iterator over nodes contained in nbunch that are
         also in the graph.
 
-        The nodes in nbunch are checked for membership in the graph
+        The nodes in an iterable nbunch are checked for membership in the graph
         and if not are silently ignored.
 
         Parameters
@@ -2019,6 +2047,9 @@ class Graph:
                         exc = NetworkXError(
                             "nbunch is not a node or a sequence of nodes."
                         )
+                    # capture single nodes that are not in the graph.
+                    if "object is not iterable" in message:
+                        exc = NetworkXError(f"Node {nbunch} is not in the graph.")
                     # capture error for unhashable node.
                     if "hashable" in message:
                         exc = NetworkXError(

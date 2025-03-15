@@ -15,7 +15,7 @@ Bipartitions
    kernighan_lin_bisection
 
 Divisive Communities
----------------------
+--------------------
 .. automodule:: networkx.algorithms.community.divisive
 .. autosummary::
    :toctree: generated/
@@ -58,6 +58,14 @@ Label propagation
    label_propagation_communities
    fast_label_propagation_communities
 
+Local Community Detection
+-------------------------
+.. automodule:: networkx.algorithms.community.local
+.. autosummary::
+   :toctree: generated/
+
+   greedy_source_expansion
+
 Louvain Community Detection
 ---------------------------
 .. automodule:: networkx.algorithms.community.louvain
@@ -66,6 +74,15 @@ Louvain Community Detection
 
     louvain_communities
     louvain_partitions
+
+Leiden Community Detection
+---------------------------
+.. automodule:: networkx.algorithms.community.leiden
+.. autosummary::
+    :toctree: generated/
+
+    leiden_communities
+    leiden_partitions
 
 Fluid Communities
 -----------------

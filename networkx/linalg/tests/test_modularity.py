@@ -1,17 +1,16 @@
 import pytest
 
+import networkx as nx
+
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
-
-import networkx as nx
-from networkx.generators.degree_seq import havel_hakimi_graph
 
 
 class TestModularity:
     @classmethod
     def setup_class(cls):
         deg = [3, 2, 2, 1, 0]
-        cls.G = havel_hakimi_graph(deg)
+        cls.G = nx.havel_hakimi_graph(deg)
         # Graph used as an example in Sec. 4.1 of Langville and Meyer,
         # "Google's PageRank and Beyond". (Used for test_directed_laplacian)
         cls.DG = nx.DiGraph()

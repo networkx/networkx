@@ -1411,8 +1411,8 @@ class TestWriteGraphML(BaseGraphML):
         wtG = G[1][2]["weight"]
         wtH = H[1][2]["weight"]
         assert wtG == pytest.approx(wtH, abs=1e-6)
-        assert type(wtG) == np.float64
-        assert type(wtH) == float
+        assert type(wtG) is np.float64
+        assert type(wtH) is float
 
     def test_numpy_float32(self, tmp_path):
         np = pytest.importorskip("numpy")
@@ -1425,8 +1425,8 @@ class TestWriteGraphML(BaseGraphML):
         wtG = G[1][2]["weight"]
         wtH = H[1][2]["weight"]
         assert wtG == pytest.approx(wtH, abs=1e-6)
-        assert type(wtG) == np.float32
-        assert type(wtH) == float
+        assert type(wtG) is np.float32
+        assert type(wtH) is float
 
     def test_numpy_float64_inference(self, tmp_path):
         np = pytest.importorskip("numpy")
@@ -1505,3 +1505,27 @@ def test_exception_for_unsupported_datatype_graph_attr():
     fh = io.BytesIO()
     with pytest.raises(TypeError, match="GraphML does not support"):
         nx.write_graphml(G, fh)
+
+
+def test_empty_attribute():
+    """Tests that a GraphML string with an empty attribute can be parsed
+    correctly."""
+    s = """<?xml version='1.0' encoding='utf-8'?>
+    <graphml>
+      <key id="d1" for="node" attr.name="foo" attr.type="string"/>
+      <key id="d2" for="node" attr.name="bar" attr.type="string"/>
+      <graph>
+        <node id="0">
+          <data key="d1">aaa</data>
+          <data key="d2">bbb</data>
+        </node>
+        <node id="1">
+          <data key="d1">ccc</data>
+          <data key="d2"></data>
+        </node>
+      </graph>
+    </graphml>"""
+    fh = io.BytesIO(s.encode("UTF-8"))
+    G = nx.read_graphml(fh)
+    assert G.nodes["0"] == {"foo": "aaa", "bar": "bbb"}
+    assert G.nodes["1"] == {"foo": "ccc", "bar": ""}

@@ -173,7 +173,7 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
         path.write(line.encode(encoding))
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_edgelist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None, data=True
 ):
@@ -247,7 +247,7 @@ def parse_edgelist(
             if not line:
                 continue
         # split line, should have 2 or more
-        s = line.strip().split(delimiter)
+        s = line.rstrip("\n").split(delimiter)
         if len(s) < 2:
             continue
         u = s.pop(0)
@@ -298,7 +298,7 @@ def parse_edgelist(
 
 
 @open_file(0, mode="rb")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_edgelist(
     path,
     comments="#",
@@ -316,7 +316,7 @@ def read_edgelist(
     path : file or string
        File or filename to read. If a file is provided, it must be
        opened in 'rb' mode.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filenames ending in .gz or .bz2 will be decompressed.
     comments : string, optional
        The character used to indicate the start of a comment. To specify that
        no character should be treated as a comment, use ``comments=None``.
@@ -425,7 +425,7 @@ def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-
     )
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_weighted_edgelist(
     path,
     comments="#",
@@ -441,7 +441,7 @@ def read_weighted_edgelist(
     path : file or string
        File or filename to read. If a file is provided, it must be
        opened in 'rb' mode.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filenames ending in .gz or .bz2 will be decompressed.
     comments : string, optional
        The character used to indicate the start of a comment.
     delimiter : string, optional

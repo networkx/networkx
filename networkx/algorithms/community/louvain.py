@@ -1,6 +1,7 @@
-"""Function for detecting communities based on Louvain Community Detection
+"""Functions for detecting communities based on Louvain Community Detection
 Algorithm"""
 
+import itertools
 from collections import defaultdict, deque
 
 import networkx as nx
@@ -13,7 +14,7 @@ __all__ = ["louvain_communities", "louvain_partitions"]
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
 def louvain_communities(
-    G, weight="weight", resolution=1, threshold=0.0000001, seed=None
+    G, weight="weight", resolution=1, threshold=0.0000001, max_level=None, seed=None
 ):
     r"""Find the best partition of a graph using the Louvain Community Detection
     Algorithm.
@@ -56,7 +57,7 @@ def louvain_communities(
     increased modularity.
 
     The above two phases are executed until no modularity gain is achieved (or is less than
-    the `threshold`).
+    the `threshold`, or until `max_levels` is reached).
 
     Be careful with self-loops in the input graph. These are treated as
     previously reduced communities -- as if the process had been started
@@ -79,6 +80,10 @@ def louvain_communities(
         Modularity gain threshold for each level. If the gain of modularity
         between 2 levels of the algorithm is less than the given threshold
         then the algorithm stops and returns the resulting communities.
+    max_level : int or None, optional (default=None)
+        The maximum number of levels (steps of the algorithm) to compute.
+        Must be a positive integer or None. If None, then there is no max
+        level and the threshold parameter determines the stopping condition.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -113,11 +118,16 @@ def louvain_communities(
     See Also
     --------
     louvain_partitions
+    :any:`leiden_communities`
     """
 
-    d = louvain_partitions(G, weight, resolution, threshold, seed)
-    q = deque(d, maxlen=1)
-    return q.pop()
+    partitions = louvain_partitions(G, weight, resolution, threshold, seed)
+    if max_level is not None:
+        if max_level <= 0:
+            raise ValueError("max_level argument must be a positive integer or None")
+        partitions = itertools.islice(partitions, max_level)
+    final_partition = deque(partitions, maxlen=1)
+    return final_partition.pop()
 
 
 @py_random_state("seed")
@@ -125,7 +135,7 @@ def louvain_communities(
 def louvain_partitions(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
-    """Yields partitions for each level of the Louvain Community Detection Algorithm
+    """Yield partitions for each level of the Louvain Community Detection Algorithm
 
     Louvain Community Detection Algorithm is a simple method to extract the community
     structure of a network. This is a heuristic method based on modularity optimization. [1]_
@@ -178,6 +188,7 @@ def louvain_partitions(
     See Also
     --------
     louvain_communities
+    :any:`leiden_partitions`
     """
 
     partition = [{u} for u in G.nodes()]

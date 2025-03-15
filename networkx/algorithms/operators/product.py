@@ -1,6 +1,7 @@
 """
 Graph products.
 """
+
 from itertools import product
 
 import networkx as nx
@@ -124,7 +125,7 @@ def _init_product_graph(G, H):
     return GH
 
 
-@nx._dispatchable(graphs=_G_H, preserve_node_attrs=True)
+@nx._dispatchable(graphs=_G_H, preserve_node_attrs=True, returns_graph=True)
 def tensor_product(G, H):
     r"""Returns the tensor product of G and H.
 
@@ -180,7 +181,7 @@ def tensor_product(G, H):
     return GH
 
 
-@nx._dispatchable(graphs=_G_H, preserve_node_attrs=True)
+@nx._dispatchable(graphs=_G_H, preserve_node_attrs=True, returns_graph=True)
 def cartesian_product(G, H):
     r"""Returns the Cartesian product of G and H.
 
@@ -232,7 +233,7 @@ def cartesian_product(G, H):
     return GH
 
 
-@nx._dispatchable(graphs=_G_H, preserve_node_attrs=True)
+@nx._dispatchable(graphs=_G_H, preserve_node_attrs=True, returns_graph=True)
 def lexicographic_product(G, H):
     r"""Returns the lexicographic product of G and H.
 
@@ -285,16 +286,18 @@ def lexicographic_product(G, H):
     return GH
 
 
-@nx._dispatchable(graphs=_G_H, preserve_node_attrs=True)
+@nx._dispatchable(graphs=_G_H, preserve_node_attrs=True, returns_graph=True)
 def strong_product(G, H):
     r"""Returns the strong product of G and H.
 
     The strong product $P$ of the graphs $G$ and $H$ has a node set that
     is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
-    $P$ has an edge $((u,v), (x,y))$ if and only if
-    $u==v$ and $(x,y)$ is an edge in $H$, or
-    $x==y$ and $(u,v)$ is an edge in $G$, or
-    $(u,v)$ is an edge in $G$ and $(x,y)$ is an edge in $H$.
+    $P$ has an edge $((u,x), (v,y))$ if any of the following conditions
+    are met:
+
+    - $u=v$ and $(x,y)$ is an edge in $H$
+    - $x=y$ and $(u,v)$ is an edge in $G$
+    - $(u,v)$ is an edge in $G$ and $(x,y)$ is an edge in $H$
 
     Parameters
     ----------
@@ -343,7 +346,7 @@ def strong_product(G, H):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def power(G, k):
     """Returns the specified power of a graph.
 
@@ -432,7 +435,7 @@ def power(G, k):
 
 
 @not_implemented_for("multigraph")
-@nx._dispatchable(graphs=_G_H)
+@nx._dispatchable(graphs=_G_H, returns_graph=True)
 def rooted_product(G, H, root):
     """Return the rooted product of graphs G and H rooted at root in H.
 
@@ -459,7 +462,7 @@ def rooted_product(G, H, root):
     The nodes of G and H are not relabeled.
     """
     if root not in H:
-        raise nx.NetworkXError("root must be a vertex in H")
+        raise nx.NodeNotFound("root must be a vertex in H")
 
     R = nx.Graph()
     R.add_nodes_from(product(G, H))
@@ -472,7 +475,7 @@ def rooted_product(G, H, root):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatchable(graphs=_G_H)
+@nx._dispatchable(graphs=_G_H, returns_graph=True)
 def corona_product(G, H):
     r"""Returns the Corona product of G and H.
 
@@ -535,7 +538,9 @@ def corona_product(G, H):
     return GH
 
 
-@nx._dispatchable(graphs=_G_H)
+@nx._dispatchable(
+    graphs=_G_H, preserve_edge_attrs=True, preserve_node_attrs=True, returns_graph=True
+)
 def modular_product(G, H):
     r"""Returns the Modular product of G and H.
 
@@ -546,11 +551,11 @@ def modular_product(G, H):
     - if u is adjacent to x in `G` and v is adjacent to y in `H`, or
     - if u is not adjacent to x in `G` and v is not adjacent to y in `H`.
 
-    More formally
-    ::
+    More formally::
 
         E(M) = {((u, v), (x, y)) | ((u, x) in E(G) and (v, y) in E(H)) or
                                    ((u, x) not in E(G) and (v, y) not in E(H))}
+
     Parameters
     ----------
     G, H: NetworkX graphs
@@ -559,12 +564,12 @@ def modular_product(G, H):
     Returns
     -------
     M: NetworkX graph
-        The Modular product of G and H.
+        The Modular product of `G` and `H`.
 
     Raises
     ------
     NetworkXNotImplemented
-        If G is not a simple graph.
+        If `G` is not a simple graph.
 
     Examples
     --------

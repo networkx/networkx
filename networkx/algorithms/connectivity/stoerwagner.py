@@ -1,6 +1,7 @@
 """
 Stoer-Wagner minimum cut algorithm.
 """
+
 from itertools import islice
 
 import networkx as nx
@@ -94,6 +95,7 @@ def stoer_wagner(G, weight="weight", heap=BinaryHeap):
     G = nx.Graph(
         (u, v, {"weight": e.get(weight, 1)}) for u, v, e in G.edges(data=True) if u != v
     )
+    G.__networkx_cache__ = None  # Disable caching
 
     for u, v, e in G.edges(data=True):
         if e["weight"] < 0:
