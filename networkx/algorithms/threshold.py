@@ -879,17 +879,18 @@ def right_d_threshold_sequence(n, m):
 
     Returns
     -------
-    list of {'d', 'i'}
+    A list containing 'd' and 'i' nodes.
 
     Raises
     ------
-    ValueError If `m` exceeds the maximum number of edges.
+    ValueError
+        If `m` exceeds the maximum number of edges.
 
     Examples
     --------
     >>> from networkx.algorithms.threshold import right_d_threshold_sequence
     >>> right_d_threshold_sequence(5, 3)
-    ['d', 'd', 'i', 'i', 'i']
+    ['d', 'i', 'i', 'd', 'i']
     """
 
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
@@ -933,11 +934,12 @@ def left_d_threshold_sequence(n, m):
 
     Returns
     -------
-    list of {'d', 'i'}
+    A list containing 'd' and 'i' nodes.
 
     Raises
     ------
-    ValueError If `m` exceeds the maximum number of edges.
+    ValueError
+        If `m` exceeds the maximum number of edges.
 
     Examples
     --------
