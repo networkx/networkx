@@ -354,7 +354,7 @@ def test_directed_node_contraction(store_contraction_as, copy, selfloops):
 @pytest.mark.parametrize("store_contraction_as", ("contraction", "c", None))
 @pytest.mark.parametrize("copy", (True, False))
 @pytest.mark.parametrize("selfloops", (True, False))
-def test_contract_multigraph(store_contraction_as, copy, selfloops):
+def test_contracted_nodes_multigraph(store_contraction_as, copy, selfloops):
     """Tests that using a MultiGraph creates multiple edges. `store_contraction_as`
     has no effect for multigraphs."""
     G = nx.path_graph(3, create_using=nx.MultiGraph)
@@ -477,22 +477,61 @@ def test_contract_loop_graph():
     assert edges_equal(actual.edges, expected.edges)
 
 
-def test_undirected_edge_contraction():
-    """Tests for edge contraction in an undirected graph."""
+@pytest.mark.parametrize("store_contraction_as", ("contraction", "c", None))
+@pytest.mark.parametrize("copy", (True, False))
+@pytest.mark.parametrize("selfloops", (True, False))
+def test_undirected_edge_contraction(store_contraction_as, copy, selfloops):
+    """Tests for node contraction in an undirected graph."""
     G = nx.cycle_graph(4)
-    actual = nx.contracted_edge(G, (0, 1))
-    expected = nx.complete_graph(3)
-    expected.add_edge(0, 0)
+    actual = nx.contracted_edge(
+        G,
+        (0, 1),
+        copy=copy,
+        self_loops=selfloops,
+        store_contraction_as=store_contraction_as,
+    )
+
+    expected = nx.cycle_graph(3)
+    if selfloops:
+        expected.add_edge(0, 0)
+
     assert nx.is_isomorphic(actual, expected)
 
+    if not copy:
+        assert actual is G
 
-def test_multigraph_edge_contraction():
+    # Test contracted node attributes
+    if store_contraction_as is not None:
+        assert actual.nodes[0][store_contraction_as] == {1: {}}
+    else:
+        assert actual.nodes[0] == {}
+    # There should be no contracted edges for this case
+    assert all(d == {} for _, _, d in actual.edges(data=True))
+
+
+@pytest.mark.parametrize("edge", [(0, 1), (0, 1, 0)])
+@pytest.mark.parametrize("store_contraction_as", ("contraction", "c", None))
+@pytest.mark.parametrize("copy", [True, False])
+@pytest.mark.parametrize("selfloops", [True, False])
+def test_multigraph_edge_contraction(edge, store_contraction_as, copy, selfloops):
     """Tests for edge contraction in a multigraph"""
-    G = nx.cycle_graph(4)
-    actual = nx.contracted_edge(G, (0, 1, 0))
-    expected = nx.complete_graph(3)
-    expected.add_edge(0, 0)
-    assert nx.is_isomorphic(actual, expected)
+    G = nx.cycle_graph(4, create_using=nx.MultiGraph)
+    actual = nx.contracted_edge(
+        G,
+        edge,
+        copy=copy,
+        self_loops=selfloops,
+        store_contraction_as=store_contraction_as,
+    )
+    expected = nx.relabel_nodes(
+        nx.complete_graph(3, create_using=nx.MultiGraph), {0: 0, 1: 2, 2: 3}
+    )
+    if selfloops:
+        expected.add_edge(0, 0)
+
+    assert edges_equal(actual.edges, expected.edges)
+    if not copy:
+        assert actual is G
 
 
 def test_nonexistent_edge():

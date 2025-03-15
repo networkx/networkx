@@ -581,7 +581,9 @@ identified_nodes = contracted_nodes
 @nx._dispatchable(
     preserve_edge_attrs=True, mutates_input={"not copy": 3}, returns_graph=True
 )
-def contracted_edge(G, edge, self_loops=True, copy=True):
+def contracted_edge(
+    G, edge, self_loops=True, copy=True, *, store_contraction_as="contraction"
+):
     """Returns the graph that results from contracting the specified edge.
 
     Edge contraction identifies the two endpoints of the edge as a single node
@@ -605,6 +607,13 @@ def contracted_edge(G, edge, self_loops=True, copy=True):
     copy : Boolean (default True)
         If this is True, a the contraction will be performed on a copy of `G`,
         otherwise the contraction will happen in place.
+
+    store_contraction_as : str, default="contraction"
+        Name of the node/edge attribute where information about the contraction
+        should be stored. By default information about the contracted node and
+        any contracted edges is stored in a ``"contraction"`` attribute on the
+        resulting node and edge. If `None`, information about the contracted
+        nodes/edges and their data are not stored.
 
     Returns
     -------
@@ -647,4 +656,11 @@ def contracted_edge(G, edge, self_loops=True, copy=True):
     u, v = edge[:2]
     if not G.has_edge(u, v):
         raise ValueError(f"Edge {edge} does not exist in graph G; cannot contract it")
-    return contracted_nodes(G, u, v, self_loops=self_loops, copy=copy)
+    return contracted_nodes(
+        G,
+        u,
+        v,
+        self_loops=self_loops,
+        copy=copy,
+        store_contraction_as=store_contraction_as,
+    )
