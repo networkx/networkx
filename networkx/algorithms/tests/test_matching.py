@@ -1,6 +1,7 @@
 import math
 from itertools import permutations
 
+import pytest
 from pytest import raises
 
 import networkx as nx
@@ -603,3 +604,515 @@ class TestMaximalMatching:
         raises(error, nx.maximal_matching, nx.MultiGraph())
         raises(error, nx.maximal_matching, nx.MultiDiGraph())
         raises(error, nx.maximal_matching, nx.DiGraph())
+
+
+class TestCountPlanarPerfectMatchings:
+    """Unit tests for the
+    :func:`~networkx.algorithms.matching.kasteleyn_orientation`.
+
+    """
+
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+
+    numerical_stability_threshold = 1e-5
+
+    def test_unweighted_grids(self):
+        """Tests that the FKT algorithm returns the correct result (to within
+        numerical stability tolerance) for 2x2, 3x3, and 4x4 unweighted grid
+        graphs. The 3x3 grid graph should have 0 perfect matchings because it
+        has an odd number of nodes."""
+
+        unweighted_grids = [
+            nx.grid_2d_graph(lattice_size, lattice_size) for lattice_size in [2, 3, 4]
+        ]
+
+        brute_force_results = [
+            self.count_perfect_matchings_brute_force(grid) for grid in unweighted_grids
+        ]
+
+        fkt_results = [
+            nx.algorithms.matching.count_planar_perfect_matchings(grid)
+            for grid in unweighted_grids
+        ]
+
+        for i in range(len(brute_force_results)):
+            assert self.results_close_enough(
+                brute_force_results[i],
+                fkt_results[i],
+                self.numerical_stability_threshold,
+            )
+
+        assert brute_force_results[1] == 0.0
+
+    def test_weighted_grids(self):
+        """Tests that the FKT algorithm returns the correct result (to within
+        numerical stability tolerance) for 2x2, 3x3, and 4x4 weighted grid
+        graphs. The 3x3 grid graph should have 0 perfect matchings because it
+        has an odd number of nodes."""
+
+        weighted_grids = [
+            nx.grid_2d_graph(lattice_size, lattice_size) for lattice_size in [2, 3, 4]
+        ]
+
+        # assign some weights to edges of the grid.
+        for grid in weighted_grids:
+            for edge in grid.edges(data=True):
+                edge[2]["weight"] = edge[0][0] + edge[0][1] + 1
+
+        brute_force_results = [
+            self.count_perfect_matchings_brute_force(grid) for grid in weighted_grids
+        ]
+
+        fkt_results = [
+            nx.algorithms.matching.count_planar_perfect_matchings(grid)
+            for grid in weighted_grids
+        ]
+
+        for i in range(len(brute_force_results)):
+            assert self.results_close_enough(
+                brute_force_results[i],
+                fkt_results[i],
+                self.numerical_stability_threshold,
+            )
+
+        assert brute_force_results[1] == 0.0
+
+    def test_multigraph(self):
+        """Tests that the FKT algorithm works properly with multigraphs, i.e.,
+        just sums edge weights"""
+
+        graph = nx.MultiGraph()
+        graph.add_edge(0, 1, weight=2)
+        graph.add_edge(0, 1, weight=3)
+        graph.add_edge(2, 3)
+        graph.add_edge(2, 3)
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            10,
+            self.numerical_stability_threshold,
+        )
+
+    def test_multiple_components(self):
+        component1 = nx.Graph([(0, 1), (1, 2), (2, 0), (2, 3)])
+        component2 = nx.grid_2d_graph(4, 4)
+        graph = nx.union(component1, component2, ("1-", "2-"))
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            self.count_perfect_matchings_brute_force(graph),
+            self.numerical_stability_threshold,
+        )
+
+        component1 = nx.Graph([(0, 1), (1, 2), (2, 0), (2, 3)])
+        component2 = nx.grid_2d_graph(4, 4)
+        component3 = nx.grid_2d_graph(2, 2)
+        graph = nx.union(
+            nx.union(component1, component2, ("1-", "2-")), component3, ("", "3-")
+        )
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            self.count_perfect_matchings_brute_force(graph),
+            self.numerical_stability_threshold,
+        )
+
+    def test_small_graphs(self):
+        graph = nx.Graph([(0, 1), (1, 2), (2, 0), (2, 3)])
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            self.count_perfect_matchings_brute_force(graph),
+            self.numerical_stability_threshold,
+        )
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            1,
+            self.numerical_stability_threshold,
+        )
+
+        # Same graph as above, but with arbitrary directions on the edges.
+        # Should have identical answer as above
+        graph = nx.DiGraph()
+        graph.add_edge(0, 1)
+        graph.add_edge(2, 1)
+        graph.add_edge(0, 2)
+        graph.add_edge(3, 2)
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            self.count_perfect_matchings_brute_force(graph),
+            self.numerical_stability_threshold,
+        )
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            1,
+            self.numerical_stability_threshold,
+        )
+
+        # one moderately large graph with some weights
+        graph = nx.Graph()
+        graph.add_edge(0, 1, weight=3)
+        graph.add_edge(1, 2, weight=2)
+        graph.add_edge(2, 3, weight=-3)
+        graph.add_edge(3, 0, weight=-0.5)
+        graph.add_edge(0, 4, weight=1.5)
+        graph.add_edge(3, 4, weight=0.2)
+        graph.add_edge(0, 5, weight=4)
+        graph.add_edge(5, 1, weight=5)
+        graph.add_edge(1, 6, weight=-3)
+        graph.add_edge(6, 2, weight=-4)
+        graph.add_edge(2, 7, weight=4.5)
+        graph.add_edge(7, 3, weight=-5)
+        graph.add_edge(3, 4, weight=-1)
+        graph.add_edge(4, 7, weight=-0.5)
+        graph.add_edge(3, 8, weight=3.2)
+        graph.add_edge(8, 9, weight=3.1)
+        graph.add_edge(10, 1, weight=2)
+        graph.add_edge(10, 11, weight=1.1)
+        graph.add_edge(12, 11, weight=-2)
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            self.count_perfect_matchings_brute_force(graph),
+            self.numerical_stability_threshold,
+        )
+
+    def test_nonplanar(self):
+        """Tests that count_planar_perfect_matchings raises a NetworkXError
+        when given a nonplanar graph."""
+        k33 = nx.Graph()
+        for i in range(3):
+            for j in range(3, 6):
+                k33.add_edge(i, j)
+
+        with raises(nx.NetworkXError):
+            nx.matching.count_planar_perfect_matchings(k33)
+
+        k5 = nx.Graph()
+        for i in range(5):
+            for j in range(i + 1, 5):
+                k5.add_edge(i, j)
+
+        with raises(nx.NetworkXError):
+            nx.matching.count_planar_perfect_matchings(k5)
+
+    def test_negative_determinant(self):
+        # This example results in a small negative determinant due to numerical
+        # instability. This is for code coverage reasons.
+        graph = nx.Graph(
+            [
+                (4, 8, {"weight": -1.8879550158071776}),
+                (4, 2, {"weight": 0.1843550547106454}),
+                (4, 1, {"weight": -1.9814976492143304}),
+                (7, 3, {"weight": -1.6191164277671835}),
+                (7, 2, {"weight": -1.3059579097207004}),
+                (7, 0, {"weight": 1.8096532730219357}),
+                (3, 0, {"weight": 0.610701732528073}),
+                (2, 1, {"weight": 0.33352383016842335}),
+                (2, 5, {"weight": 0.3618537928282155}),
+                (1, 0, {"weight": -0.7811600938193326}),
+                (0, 6, {"weight": -0.41866716331880394}),
+                (0, 5, {"weight": -0.692166798663477}),
+                (6, 5, {"weight": 1.6005021072685413}),
+            ]
+        )
+
+        assert self.results_close_enough(
+            nx.algorithms.matching.count_planar_perfect_matchings(graph),
+            self.count_perfect_matchings_brute_force(graph),
+            self.numerical_stability_threshold,
+        )
+
+    def results_close_enough(
+        self, result1: float, result2: float, numerical_stability_threshold: float
+    ):
+        """Returns whether 2 results for perfect matching sum (eg from the FKT
+        algorithm and from brute force) are "close enough". One wouldn't expect
+        these results to be exactly the same when using FKT and brute force
+        because of numerical instability associated with calculating
+        determinants. And because the FKT algorithm is not guaranteed to get
+        the sign of the answer correct.
+
+        Parameters
+        ----------
+        result1 : float
+            Result of one method (eg FKT).
+
+        result2 : float
+            Result of another method (eg brute force).
+
+        numerical_stability_threshold : float
+            Tolerance for differences between the magnitudes of the 2 results.
+
+        Returns
+        ----------
+        bool
+            True if the absolute values of `result1` and `result2` are within
+            `numerical_stability_threshold` of each other.
+        """
+        return abs(abs(result1) - abs(result2)) < numerical_stability_threshold
+
+    # Below methods count perfect matchings via brute force.
+    # For testing purposes.
+
+    def matching_weight(self, G, matching):
+        """Returns the weight of this matching in the graph `G`.
+
+        The weight of a matching is the product of edge weights. Edges without
+        weights are assumed to have weight 1.
+
+        Parameters
+        ----------
+        G : NetworkX Graph
+
+        matching : set
+            A `set` of edges that makes up a matching. The edges in this set do
+            not need to have edge data; the method will get the edge data from
+            the graph `G`.
+
+        Returns
+        ----------
+        Float
+            Product of edge weights.
+        """
+
+        weight = 1.0
+        for edge in matching:
+            weight *= G.get_edge_data(edge[0], edge[1]).get("weight", 1)
+        return weight
+
+    def generate_perfect_matchings(self, G):
+        """Generator giving all perfect matchings for this graph.
+
+        Parameters
+        ----------
+        G : NetworkX Graph
+
+        Yields
+        ----------
+        set
+            Matchings as sets of edges.
+        """
+
+        # set telling us which vertices have been covered.
+        covered_nodes: set = set()
+
+        # edges we're including in the matching
+        included_edges: set = set()
+
+        yield from self._generate_perfect_matchings_recursive(
+            G.number_of_nodes(), list(G.edges()), covered_nodes, included_edges, 0
+        )
+
+    def _generate_perfect_matchings_recursive(
+        self,
+        num_nodes,
+        all_edges,
+        covered_nodes,
+        included_edges,
+        edge_index,
+    ):
+        """Helper function for generate_perfect_matchings.
+
+        Generator that recursively generates all perfect matchings in a
+        graph. This generator assumes that we have already determined which
+        edges in the list `all_edges` we want to include, up to index edge
+        index-1 (inclusive). `covered_nodes` is what nodes are covered so far
+        by those edges. This generator recursively tries including or not
+        including all edges in the list `all_edges` on or after index
+        `edge_index`.
+
+        Parameters
+        ----------
+        num_nodes : int
+            Number of ndoes in the graph.
+
+        all_edges: list
+            List of all edges in this graph. These need not have edge data.
+
+        covered_nodes : set
+            Nodes covered so far by the edges in `included_edges`.
+
+        included_edges : set
+            Edges included so far in the matching. These should all be before
+            index `edge_index` in the list `all_edges`.
+
+        edge_index : int
+            Index of list `all_edges` where this generator will start including
+            or not including edges.
+
+        Yields
+        ----------
+        set
+            Matchings as sets of edges.
+        """
+
+        # Base case: if covered_nodes includes all nodes, yield this matching.
+        # Else, if edge_index is the number of nodes, return and yield nothing.
+        if len(covered_nodes) == num_nodes:
+            yield included_edges
+            return
+        elif edge_index == len(all_edges):
+            return
+
+        # try NOT including the edge at edgeIndex
+        yield from self._generate_perfect_matchings_recursive(
+            num_nodes, all_edges, covered_nodes, included_edges, edge_index + 1
+        )
+
+        # try including the edge at edgeIndex
+        current_edge = all_edges[edge_index]
+        if (
+            current_edge[0] not in covered_nodes
+            and current_edge[1] not in covered_nodes
+        ):
+            covered_nodes.add(current_edge[0])
+            covered_nodes.add(current_edge[1])
+            included_edges.add(current_edge)
+            yield from self._generate_perfect_matchings_recursive(
+                num_nodes, all_edges, covered_nodes, included_edges, edge_index + 1
+            )
+            covered_nodes.remove(current_edge[0])
+            covered_nodes.remove(current_edge[1])
+            included_edges.remove(current_edge)
+
+    def count_perfect_matchings_brute_force(self, G):
+        """Sums weights of perfect matchings, via brute force counting all
+        perfect matchings.
+
+        Parameters
+        ----------
+        G : NetworkX Graph
+
+        Returns
+        ----------
+        Float
+            Sum of weights of all perfect matghings. The weight of a perfect
+            matching is the product of edge weights. Edges without weights are
+            assumed to have weight 1.
+        """
+
+        sum = 0
+        for matching in self.generate_perfect_matchings(G):
+            sum += self.matching_weight(G, matching)
+        return sum
+
+
+class TestKasteleynOrientation:
+    """Unit tests for the
+    :func:`~networkx.algorithms.matching.kasteleyn_orientation`.
+
+    """
+
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+
+    def test_grid(self):
+        grid = nx.grid_2d_graph(6, 4)
+        faces = self.grid_faces(6, 4)
+        orientation = nx.algorithms.matching.kasteleyn_orientation(grid, faces)
+        assert self.is_kasteleyn_orientation(orientation, faces)
+
+    def test_multiple_components(self):
+        grid5 = nx.grid_2d_graph(5, 5)
+        faces5 = self.grid_faces(5, 5)
+        grid3 = nx.grid_2d_graph(3, 3)
+        faces3 = self.grid_faces(3, 3)
+        graph = nx.union(grid5, grid3, ("5-", "3-"))
+
+        # We must rename nodes in the lists of faces faces5 and faces3, since
+        # nx.union above renamed the nodes.
+        new_faces5 = []
+        new_faces3 = []
+        for face in faces5:
+            new_face = []
+            for edge in face:
+                new_face.append(("5-" + str(edge[0]), "5-" + str(edge[1])))
+            new_faces5.append(tuple(new_face))
+        for face in faces3:
+            new_face = []
+            for edge in face:
+                new_face.append(("3-" + str(edge[0]), "3-" + str(edge[1])))
+            new_faces3.append(tuple(new_face))
+
+        faces = new_faces5 + new_faces3
+        orientation = nx.algorithms.matching.kasteleyn_orientation(graph, faces)
+        assert self.is_kasteleyn_orientation(orientation, faces)
+
+    def grid_faces(self, num_rows, num_cols):
+        faces = []
+        for i in range(num_rows - 1):
+            for j in range(num_cols - 1):
+                faceEdges = (
+                    ((i, j), (i + 1, j)),
+                    ((i + 1, j), (i + 1, j + 1)),
+                    ((i + 1, j + 1), (i, j + 1)),
+                    ((i, j + 1), (i, j)),
+                )
+                faces.append(faceEdges)
+        return faces
+
+    def is_kasteleyn_orientation(self, oriented_graph, faces, raise_error=True):
+        """Returns whether the given orientation is a Kasteleyn orientation,
+        given the list of faces that make a planar embedding of the graph.
+
+        Parameters
+        ----------
+        oriented_graph : NetworkX DiGraph
+            A graph where every edge a -> b has weight +1 or -1. And the edge
+            b -> a has the opposite weight. The weight indicates the direction
+            of the edge. +1 weight on the edge a -> b means the edge is
+            oriented in the direction a to b.
+
+        faces : list
+            A list of faces that make a planar embedding of this graph. Each
+            face should be a tuple of edges in counterclockwise order. And each
+            edge should have the nodes in counterclockwise order too.
+
+        raise_error : bool
+            Whether this method should raise an error if the orientation is not
+            a correct Kasteleyn orientation. As opposed to just returning
+            False. The error will have useful debugging information.
+
+        Returns
+        ----------
+        bool
+            Returns whether `oriented_graph` is a Kasteleyn orientation. If
+            `raises_error` is True (as it is by default), then instead of
+            returning false, this method raises a NetworkXError.
+
+        Raises
+        ----------
+        NetworkXError
+            If the orientation is not a correct Kasteleyn orientation and
+            `raises_error` is True (as it is by default).
+        """
+        # Ensure that oriented graph has opposites weights a -> b and b -> a.
+        for node1 in oriented_graph.nodes():
+            for node2 in oriented_graph.nodes():
+                if (
+                    oriented_graph.has_edge(node1, node2)
+                    and oriented_graph[node1][node2]["weight"]
+                    != -oriented_graph[node2][node1]["weight"]
+                ):
+                    if raise_error:
+                        errorMsg = f"""ERROR: the following 2 edges should have opposite weight (orientation):
+                        Between {node1} and {node2}: {oriented_graph[node1][node2]}
+                        Between {node2} and {node1}: {oriented_graph[node2][node1]}"""
+                        raise nx.NetworkXError(errorMsg)
+                    else:
+                        return False
+
+        # Ensure every face has an odd number of clockwise edges.
+        for face in faces:
+            clockwise_count = 0
+            for edge in face:
+                if oriented_graph[edge[0]][edge[1]]["weight"] == -1:
+                    clockwise_count += 1
+
+            if clockwise_count % 2 != 1:
+                if raise_error:
+                    errorMsg = f"ERROR: face has {clockwise_count} clockwise edges.\n"
+                    for edge in face:
+                        errorMsg += f"edge: {edge}. data: {oriented_graph.get_edge_data(edge[0], edge[1])}\n"
+                    raise nx.NetworkXError(errorMsg)
+                else:
+                    return False
+
+        return True
