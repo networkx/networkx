@@ -863,18 +863,33 @@ def random_threshold_sequence(n, p, seed=None):
 # and a keyword parameter?
 def right_d_threshold_sequence(n, m):
     """
-    Construct a "right-dominated" threshold graph with n vertices and m edges.
-    Each element of the creation sequence is either 'd' (dominant) or 'i' (isolated):
-        - 'd': A new vertex connects to all existing vertices.
-        - 'i': A new vertex is isolated.
-    For m < n, only m vertices become dominant.
-    For larger m (up to n * (n - 1) / 2), isolated vertices are flipped to dominant from the right until
-    reaching m edges.
-    Raises a ValueError if m exceeds the maximum possible edges.
-    Args:
-        n (int): Number of vertices.
-        m (int): Desired number of edges.
-    Returns an unlabeled creation sequence.
+    Construct a "right-dominated" threshold graph with `n` vertices and `m` edges.
+
+    In a threshold graph, each new vertex is either dominant or isolated.
+    In the "right-dominated" version, once the basic sequence is formed,
+    isolated vertices may be flipped to dominant from the right in order
+    to reach the target number of edges.
+
+    Parameters
+    ----------
+    n : int
+        Number of vertices.
+    m : int
+        Number of edges.
+
+    Returns
+    -------
+    list of {'d', 'i'}
+
+    Raises
+    ------
+    ValueError If `m` exceeds the maximum number of edges.
+
+    Examples
+    --------
+    >>> from networkx.algorithms.threshold import right_d_threshold_sequence
+    >>> right_d_threshold_sequence(5, 3)
+    ['d', 'd', 'i', 'i', 'i']
     """
 
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
@@ -902,19 +917,48 @@ def right_d_threshold_sequence(n, m):
 
 def left_d_threshold_sequence(n, m):
     """
-    Construct a "left-dominated" threshold graph with n vertices and m edges.
-    Each element of the creation sequence is either 'd' (dominant) or 'i' (isolated):
-        - 'd': A new vertex connects to all existing vertices.
-        - 'i': A new vertex is isolated.
-    For m < n, only m vertices become dominant.
-    For larger m (up to n * (n - 1) / 2), isolated vertices are flipped to dominant from the left until
-    reaching m edges.
-    Raises a ValueError if m exceeds the maximum possible edges.
-    Args:
-        n (int): Number of vertices.
-        m (int): Desired number of edges.
-    Returns an unlabeled creation sequence.
+    Construct a "left-dominated" threshold graph with `n` vertices and `m` edges.
+
+    In a threshold graph, each new vertex is either dominant or isolated.
+    In the "left-dominated" version, once the basic sequence is formed,
+    isolated vertices may be flipped to dominant from the left in order
+    to reach the target number of edges.
+
+    Parameters
+    ----------
+    n : int
+        Number of vertices.
+    m : int
+        Number of edges.
+
+    Returns
+    -------
+    list of {'d', 'i'}
+
+    Raises
+    ------
+    ValueError If `m` exceeds the maximum number of edges.
+
+    Examples
+    --------
+    For certain small cases, both left and right dominated versions produce
+    the same sequence. However, for larger values of `m`, the difference in
+    flipping order becomes evident. For instance, compare the sequences for
+    ``n=6, m=8``:
+
+    >>> from networkx.algorithms.threshold import left_d_threshold_sequence
+    >>> seq = left_d_threshold_sequence(6, 8)
+    >>> seq
+    ['d', 'd', 'd', 'i', 'i', 'd']
+
+    In contrast, the right-dominated version yields:
+
+    >>> from networkx.algorithms.threshold import right_d_threshold_sequence
+    >>> right_seq = right_d_threshold_sequence(6, 8)
+    >>> right_seq
+    ['d', 'i', 'i', 'd', 'i', 'd']
     """
+
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
 
     #  m <n : not enough edges, make disconnected
