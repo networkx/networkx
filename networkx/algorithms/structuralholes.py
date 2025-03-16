@@ -149,7 +149,9 @@ def effective_size(G, nodes=None, weight=None):
     # Check if Numpy is installed
     try:
         import numpy as np
-        import scipy  # make sure nx.adjacency_matrix will not raise
+
+        # make sure nx.adjacency_matrix will not raise
+        import scipy as sp
 
         has_numpy = True
     except:
@@ -177,8 +179,8 @@ def effective_size(G, nodes=None, weight=None):
         r = 1 - (mutual_weights1 @ mutual_weights2.T).toarray()
         effective_size = ((mutual_weights1 > 0) * r).sum(axis=1)
 
-        # Special treatment: isolated nodes marked with "nan"
-        sum_mutual_weights = mutual_weights1.sum(axis=1)
+        # Special treatment: isolated nodes (ignoring selfloops) marked with "nan"
+        sum_mutual_weights = mutual_weights1.sum(axis=1) - mutual_weights1.diagonal()
         isolated_nodes = sum_mutual_weights == 0
         effective_size[isolated_nodes] = float("nan")
         result = dict(zip(G, effective_size.tolist()))
@@ -263,7 +265,9 @@ def constraint(G, nodes=None, weight=None):
     # Check if Numpy is installed
     try:
         import numpy as np
-        import scipy  # make sure nx.adjacency_matrix will not raise
+
+        # make sure nx.adjacency_matrix will not raise
+        import scipy as sp
 
         has_numpy = True
     except:
@@ -289,10 +293,9 @@ def constraint(G, nodes=None, weight=None):
         constraints = ((mutual_weights > 0) * local_constraints).sum(axis=1)
 
         # Special treatment: isolated nodes marked with "nan"
-        isolated_nodes = sum_mutual_weights == 0
+        isolated_nodes = sum_mutual_weights - 2 * mutual_weights.diagonal() == 0
         constraints[isolated_nodes] = float("nan")
-        result = dict(zip(G, constraints.tolist()))
-        return result
+        return dict(zip(G, constraints.tolist()))
 
     # Result for only requested nodes
     constraint = {}
