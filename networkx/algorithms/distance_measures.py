@@ -382,12 +382,11 @@ def diameter(G, e=None, usebounds=False, weight=None):
     --------
     eccentricity
     """
-    if not G.is_directed() and weight is None:
-        return _unweighted_diameter(G)
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="diameter", weight=weight)
-    if e is None:
-        e = eccentricity(G, weight=weight)
+    if e is None and not G.is_directed() and weight is None:
+        return _unweighted_diameter_ifub(G)
+    e = eccentricity(G, weight=weight)
     return max(e.values())
 
 
@@ -1035,143 +1034,7 @@ def kemeny_constant(G, *, weight=None):
     return float(np.sum(1 / (1 - eig[:-1])))
 
 
-def _four_sweep_start_node(G, choice):
-    """Selects a start node for the four-sweep BFS process.
-
-    Parameters:
-    G : NetworkX graph
-        The input graph.
-    choice : str
-        The selection strategy for the start node. Options:
-        - "random": Randomly selects a node.
-        - "degree": Selects the node with the highest degree.
-
-    Returns:
-    node
-        The selected start node.
-    """
-    if choice == "random":
-        start_node = random.choice(list(G.nodes()))
-    elif choice == "degree":
-        start_node = max(G.nodes(), key=G.degree)
-    else:
-        raise ValueError("Invalid choice of start node")
-
-    return start_node
-
-
-def _four_sweep_data(G, start_node):
-    """Executes the four-sweep BFS process to determine an approximate lower bound for the diameter.
-
-    Parameters:
-    G : NetworkX graph
-        The input graph.
-    start_node : node
-        The initial node for BFS traversal.
-
-    Returns:
-    tuple
-        - mid_level_node: A node close to the middle of the BFS depth.
-        - lower_bound: An estimated lower bound for the graph diameter.
-    """
-    lower_bound = 0
-
-    # First BFS from start_node
-    layers = list(nx.bfs_layers(G, start_node))
-    max_level_node = layers[-1][0] if layers[-1] else None
-
-    # Second BFS from max_level_node
-    layers = list(nx.bfs_layers(G, max_level_node))
-    max_level = len(layers) - 1
-    max_level_node = layers[-1][0] if layers[-1] else None
-    lower_bound = max(lower_bound, max_level)
-
-    # Find a mid-level node
-    mid_level = max_level // 2
-    mid_level_node = (
-        layers[mid_level][0] if mid_level < len(layers) and layers[mid_level] else None
-    )
-
-    # Third BFS from mid_level_node
-    layers = list(nx.bfs_layers(G, mid_level_node))
-    max_level_node = layers[-1][0] if layers[-1] else None
-
-    # Fourth BFS from max_level_node
-    layers = list(nx.bfs_layers(G, max_level_node))
-    max_level = len(layers) - 1
-    max_level_node = layers[-1][0] if layers[-1] else None
-    lower_bound = max(lower_bound, max_level)
-
-    # Find a mid-level node from the last BFS
-    mid_level = max_level // 2
-    mid_level_node = (
-        layers[mid_level][0] if mid_level < len(layers) and layers[mid_level] else None
-    )
-
-    return mid_level_node, lower_bound
-
-
-def _ifub_helper(G, fringe_vertices):
-    """Computes the maximum eccentricity from a set of fringe vertices.
-
-    Parameters:
-    G : NetworkX graph
-        The input graph.
-    fringe_vertices : list
-        The nodes to compute eccentricity from.
-
-    Returns:
-    int
-        The maximum eccentricity found in the given vertices.
-    """
-    max_ecc = 0
-    for node in fringe_vertices:
-        layers = list(nx.bfs_layers(G, node))
-        max_ecc = max(max_ecc, len(layers) - 1)
-    return max_ecc
-
-
-def _ifub(G, root, lower_bound, error_tolerance=0):
-    """Algorithm for estimating the graph diameter.
-
-    Parameters:
-    G : NetworkX graph
-        The input graph.
-    root : node
-        The starting node for BFS traversal.
-    lower_bound : int
-        The initial lower bound for the diameter.
-    error_tolerance : int, optional
-        The tolerance for additive error (default is 0).
-
-    Returns:
-    int
-        The estimated diameter of the graph.
-    """
-    layers = list(nx.bfs_layers(G, root))
-    max_level = len(layers) - 1
-    upper_bound = 2 * max_level
-    lower_bound = max(lower_bound, max_level)
-    k = error_tolerance
-
-    cur_max_ecc = 0
-    cur_level = max_level
-    level_vertices = dict(enumerate(layers))
-    while upper_bound - lower_bound > k:
-        fringe_vertices = level_vertices.get(cur_level, [])
-
-        cur_max_ecc = _ifub_helper(G, fringe_vertices)
-        if max(lower_bound, cur_max_ecc) > 2 * (cur_level - 1):
-            return max(lower_bound, cur_max_ecc)
-        else:
-            lower_bound = max(lower_bound, cur_max_ecc)
-            upper_bound = 2 * (cur_level - 1)
-        cur_level -= 1
-
-    return lower_bound
-
-
-def _unweighted_diameter(G, error_tolerance=0, start_node_type="degree"):
+def _unweighted_diameter_ifub(G, error_tolerance=0):
     """Returns the diameter for an unweighted graph with optional approximation.
 
     This alternative to the more general `diameter` function is faster and
@@ -1217,6 +1080,63 @@ def _unweighted_diameter(G, error_tolerance=0, start_node_type="degree"):
     if not nx.is_connected(G):
         raise nx.NetworkXError("Cannot compute metric because graph is not connected.")
 
-    source = _four_sweep_start_node(G, start_node_type)
-    root, lower_bound = _four_sweep_data(G, source)
-    return _ifub(G, root, lower_bound, error_tolerance)
+    start_node = max(G.nodes(), key=G.degree)
+    lower_bound = 0
+
+    # First BFS from start_node
+    layers = list(nx.bfs_layers(G, start_node))
+    max_level_node = layers[-1][0] if layers[-1] else None
+
+    # Second BFS from max_level_node
+    layers = list(nx.bfs_layers(G, max_level_node))
+    max_level = len(layers) - 1
+    max_level_node = layers[-1][0] if layers[-1] else None
+    lower_bound = max(lower_bound, max_level)
+
+    # Find a mid-level node
+    mid_level = max_level // 2
+    mid_level_node = (
+        layers[mid_level][0] if mid_level < len(layers) and layers[mid_level] else None
+    )
+
+    # Third BFS from mid_level_node
+    layers = list(nx.bfs_layers(G, mid_level_node))
+    max_level_node = layers[-1][0] if layers[-1] else None
+
+    # Fourth BFS from max_level_node
+    layers = list(nx.bfs_layers(G, max_level_node))
+    max_level = len(layers) - 1
+    max_level_node = layers[-1][0] if layers[-1] else None
+    lower_bound = max(lower_bound, max_level)
+
+    # Find a mid-level node from the last BFS
+    mid_level = max_level // 2
+    mid_level_node = (
+        layers[mid_level][0] if mid_level < len(layers) and layers[mid_level] else None
+    )
+
+    root = mid_level_node
+    layers = list(nx.bfs_layers(G, root))
+    max_level = len(layers) - 1
+    upper_bound = 2 * max_level
+    lower_bound = max(lower_bound, max_level)
+    cur_level = max_level
+    level_vertices = dict(enumerate(layers))
+
+    while upper_bound - lower_bound > error_tolerance:
+        fringe_vertices = level_vertices.get(cur_level, [])
+
+        cur_max_ecc = 0
+        for node in fringe_vertices:
+            layers = list(nx.bfs_layers(G, node))
+            cur_max_ecc = max(cur_max_ecc, len(layers) - 1)
+
+        if max(lower_bound, cur_max_ecc) > 2 * (cur_level - 1):
+            return max(lower_bound, cur_max_ecc)
+        else:
+            lower_bound = max(lower_bound, cur_max_ecc)
+            upper_bound = 2 * (cur_level - 1)
+
+        cur_level -= 1
+
+    return lower_bound
