@@ -76,7 +76,7 @@ jobs:
           pip list
 
       - name: Run benchmarks
-        shell: bash -l {0}
+        shell: bash -le {0}
         id: benchmark
         env:
           ASV_FACTOR: 1.5
@@ -84,6 +84,8 @@ jobs:
         run: |
           set -x
           python -m pip install -r requirements/benchmarking.txt
+          conda config --add channels conda-forge
+          conda install -c conda-forge libmambapy
           cd benchmarks/
 
           # ID this runner
