@@ -386,7 +386,7 @@ def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False
             if directed:
                 scale = n / k
             else:
-                scale = n / (k * 2)
+                scale = n / (2 * k)
     else:
         if k is None or k == n - 1:
             if directed:
