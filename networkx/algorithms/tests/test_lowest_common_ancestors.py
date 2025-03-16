@@ -71,11 +71,11 @@ class TestTreeLCA:
         self.assert_has_same_pairs(self.gold, ans)
 
     def test_tree_all_pairs_lca_invalid_input(self):
-        empty_digraph = tree_all_pairs_lca(nx.DiGraph())
-        pytest.raises(nx.NetworkXPointlessConcept, list, empty_digraph)
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            list(tree_all_pairs_lca(nx.DiGraph()))
 
-        bad_pairs_digraph = tree_all_pairs_lca(self.DG, pairs=[(-1, -2)])
-        pytest.raises(nx.NodeNotFound, list, bad_pairs_digraph)
+        with pytest.raises(nx.NodeNotFound):
+            list(tree_all_pairs_lca(self.DG, pairs=[(-1, -2)]))
 
     def test_tree_all_pairs_lca_subtrees(self):
         ans = dict(tree_all_pairs_lca(self.DG, 1))
@@ -95,15 +95,18 @@ class TestTreeLCA:
         assert {(1, 1): 1} == dict(tree_all_pairs_lca(G, 1))
         assert {(0, 0): 0} == dict(tree_all_pairs_lca(G, 0))
 
-        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        with pytest.raises(nx.NetworkXError):
+            list(tree_all_pairs_lca(G))
 
     def test_tree_all_pairs_lca_error_if_input_not_tree(self):
         # Cycle
         G = nx.DiGraph([(1, 2), (2, 1)])
-        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        with pytest.raises(nx.NetworkXError):
+            list(tree_all_pairs_lca(G))
         # DAG
         G = nx.DiGraph([(0, 2), (1, 2)])
-        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        with pytest.raises(nx.NetworkXError):
+            list(tree_all_pairs_lca(G))
 
     def test_tree_all_pairs_lca_generator(self):
         pairs = iter([(0, 1), (0, 1), (1, 0)])
@@ -112,15 +115,16 @@ class TestTreeLCA:
         assert len(some_pairs) == 2
 
     def test_tree_all_pairs_lca_nonexisting_pairs_exception(self):
-        lca = tree_all_pairs_lca(self.DG, 0, [(-1, -1)])
-        pytest.raises(nx.NodeNotFound, list, lca)
+        with pytest.raises(nx.NodeNotFound):
+            list(tree_all_pairs_lca(self.DG, 0, [(-1, -1)]))
         # check if node is None
-        lca = tree_all_pairs_lca(self.DG, None, [(-1, -1)])
-        pytest.raises(nx.NodeNotFound, list, lca)
+        with pytest.raises(nx.NodeNotFound):
+            list(tree_all_pairs_lca(self.DG, None, [(-1, -1)]))
 
     def test_tree_all_pairs_lca_routine_bails_on_DAGs(self):
         G = nx.DiGraph([(3, 4), (5, 4)])
-        pytest.raises(nx.NetworkXError, list, tree_all_pairs_lca(G))
+        with pytest.raises(nx.NetworkXError):
+            list(tree_all_pairs_lca(G))
 
     def test_tree_all_pairs_lca_not_implemented(self):
         NNI = nx.NetworkXNotImplemented
@@ -282,7 +286,8 @@ class TestDAGLCA:
         self.assert_lca_dicts_same(testing, gold, G)
 
     def test_all_pairs_lca_nonexisting_pairs_exception(self):
-        pytest.raises(nx.NodeNotFound, all_pairs_lca, self.DG, [(-1, -1)])
+        with pytest.raises(nx.NodeNotFound):
+            list(all_pairs_lca(self.DG, [(-1, -1)]))
 
     def test_all_pairs_lca_pairs_without_lca(self):
         G = self.DG.copy()
@@ -291,10 +296,12 @@ class TestDAGLCA:
         assert dict(gen) == {(-1, -1): -1}
 
     def test_all_pairs_lca_null_graph(self):
-        pytest.raises(nx.NetworkXPointlessConcept, all_pairs_lca, nx.DiGraph())
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            list(all_pairs_lca(nx.DiGraph()))
 
     def test_all_pairs_lca_non_dags(self):
-        pytest.raises(nx.NetworkXError, all_pairs_lca, nx.DiGraph([(3, 4), (4, 3)]))
+        with pytest.raises(nx.NetworkXError):
+            list(all_pairs_lca(nx.DiGraph([(3, 4), (4, 3)])))
 
     def test_all_pairs_lca_nonempty_graph_without_lca(self):
         G = nx.DiGraph()

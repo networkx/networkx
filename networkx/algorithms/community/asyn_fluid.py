@@ -15,7 +15,7 @@ __all__ = ["asyn_fluidc"]
 @py_random_state(3)
 @nx._dispatchable
 def asyn_fluidc(G, k, max_iter=100, seed=None):
-    """Returns communities in `G` as detected by Fluid Communities algorithm.
+    """Yield communities in `G` as detected by Fluid Communities algorithm.
 
     The asynchronous fluid communities algorithm is described in
     [1]_. The algorithm is based on the simple idea of fluids interacting
@@ -52,10 +52,10 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
-    Returns
-    -------
-    communities : iterable
-        Iterable of communities given as sets of nodes.
+    Yields
+    ------
+    community : set
+        Set of nodes of a community.
 
     Notes
     -----
@@ -147,5 +147,5 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
         # If maximum iterations reached --> output actual results
         if iter_count > max_iter:
             break
-    # Return results by grouping communities as list of vertices
+    # Yield results by grouping communities as list of vertices
     return iter(groups(communities).values())

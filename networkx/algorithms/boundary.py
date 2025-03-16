@@ -18,7 +18,7 @@ __all__ = ["edge_boundary", "node_boundary"]
 
 @nx._dispatchable(edge_attrs={"data": "default"}, preserve_edge_attrs="data")
 def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None):
-    """Returns the edge boundary of `nbunch1`.
+    """Yield the edge boundary of `nbunch1`.
 
     The *edge boundary* of a set *S* with respect to a set *T* is the
     set of edges (*u*, *v*) such that *u* is in *S* and *v* is in *T*.
@@ -52,13 +52,12 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None
         This parameter has the same meaning as in
         :meth:`MultiGraph.edges`.
 
-    Returns
-    -------
-    iterator
-        An iterator over the edges in the boundary of `nbunch1` with
-        respect to `nbunch2`. If `keys`, `data`, or `default`
-        are specified and `G` is a multigraph, then edges are returned
-        with keys and/or data, as in :meth:`MultiGraph.edges`.
+    Yields
+    ------
+    edge : tuple
+        The edges in the boundary of `nbunch1` with respect to `nbunch2`.
+        If `keys`, `data`, or `default` are specified and `G` is a multigraph,
+        then edges are yielded with keys and/or data as in :meth:`MultiGraph.edges`.
 
     Examples
     --------

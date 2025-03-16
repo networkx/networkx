@@ -8,7 +8,7 @@ import networkx as nx
 
 
 def cycles(seq):
-    """Yields cyclic permutations of the given sequence.
+    """Yield cyclic permutations of the given sequence.
 
     For example::
 

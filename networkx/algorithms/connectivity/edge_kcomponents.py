@@ -26,7 +26,7 @@ __all__ = [
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def k_edge_components(G, k):
-    """Generates nodes in each maximal k-edge-connected component in G.
+    """Yield nodes in each maximal k-edge-connected component in G.
 
     Parameters
     ----------
@@ -35,10 +35,10 @@ def k_edge_components(G, k):
     k : Integer
         Desired edge connectivity
 
-    Returns
-    -------
-    k_edge_components : a generator of k-edge-ccs. Each set of returned nodes
-       will have k-edge-connectivity in the graph G.
+    Yields
+    ------
+    k_edge_components : set of nodes
+        Each set of returned nodes with k-edge-connectivity in the graph G.
 
     See Also
     --------
@@ -110,7 +110,7 @@ def k_edge_components(G, k):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def k_edge_subgraphs(G, k):
-    """Generates nodes in each maximal k-edge-connected subgraph in G.
+    """Yield nodes in each maximal k-edge-connected subgraph in G.
 
     Parameters
     ----------
@@ -119,10 +119,10 @@ def k_edge_subgraphs(G, k):
     k : Integer
         Desired edge connectivity
 
-    Returns
-    -------
-    k_edge_subgraphs : a generator of k-edge-subgraphs
-        Each k-edge-subgraph is a maximal set of nodes that defines a subgraph
+    Yields
+    ------
+    k_edge_subgraphs : set of nodes
+        Each k-edge-subgraph as a maximal set of nodes that defines a subgraph
         of G that is k-edge-connected.
 
     See Also
@@ -199,16 +199,16 @@ def _k_edge_subgraphs_nodes(G, k):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def bridge_components(G):
-    """Finds all bridge-connected components G.
+    """Yield all bridge-connected components G.
 
     Parameters
     ----------
     G : NetworkX undirected graph
 
-    Returns
-    -------
-    bridge_components : a generator of 2-edge-connected components
-
+    Yields
+    ------
+    bridge_components : set of nodes
+        2-edge-connected components.
 
     See Also
     --------

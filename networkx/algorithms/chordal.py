@@ -171,7 +171,7 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
 
 @nx._dispatchable
 def chordal_graph_cliques(G):
-    """Returns all maximal cliques of a chordal graph.
+    """Yield all maximal cliques of a chordal graph.
 
     The algorithm breaks the graph in connected components and performs a
     maximum cardinality search in each component to get the cliques.
