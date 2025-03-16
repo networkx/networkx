@@ -2,11 +2,10 @@ import math
 
 import pytest
 
+import networkx as nx
+
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
-
-
-import networkx as nx
 
 
 class TestEigenvectorCentrality:
