@@ -382,10 +382,10 @@ def diameter(G, e=None, usebounds=False, weight=None):
     --------
     eccentricity
     """
-    if e is None and not G.is_directed():
-        if usebounds:
-            return _extrema_bounding(G, compute="diameter", weight=weight)
-        elif weight is None:
+    if usebounds is True and e is None and not G.is_directed():
+        return _extrema_bounding(G, compute="diameter", weight=weight)
+    if e is None:
+        if not G.is_directed() and weight is None:
             return _unweighted_diameter_ifub(G)
         e = eccentricity(G, weight=weight)
     return max(e.values())
