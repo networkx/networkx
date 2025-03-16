@@ -575,7 +575,7 @@ def chordless_cycles(G, length_bound=None):
     multigraph = G.is_multigraph()
 
     if multigraph:
-        yield from ([v] for v, Gv in G.adj.items() if 0 < len(Gv.get(v, ())) < 2)
+        yield from ([v] for v, Gv in G.adj.items() if len(Gv.get(v, ())) == 1)
     else:
         yield from ([v] for v, Gv in G.adj.items() if v in Gv)
 
@@ -588,10 +588,10 @@ def chordless_cycles(G, length_bound=None):
     self_loop_nodes = set(nx.nodes_with_selfloops(G))
     Gless = G.subgraph(set(G) - self_loop_nodes).copy()
     if directed:
-        F = nx.DiGraph((u, v) for u, Gu in Gless.adj.items() if u not in Gu for v in Gu)
+        F = nx.DiGraph(Gless)
         B = F.to_undirected(as_view=False)
     else:
-        F = nx.Graph((u, v) for u, Gu in Gless.adj.items() if u not in Gu for v in Gu)
+        F = nx.Graph(Gless)
         B = None
 
     # If we're given a multigraph, we have a few cases to consider with parallel
