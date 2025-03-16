@@ -98,6 +98,33 @@ def test_graph_converter_needs_backend():
     "not nx.config.backend_priority.algos "
     "or nx.config.backend_priority.algos[0] != 'nx_loopback'"
 )
+def test_backends_kwargs():
+    """Test that `<backend-name>_kwargs={...}` works (and is ignored) as expected."""
+    G = nx.barbell_graph(2, 2)
+    # Check normal usage
+    result = nx.betweenness_centrality(G, normalized=True)
+    s = 1 / 20
+    expected = {0: 0, 1: 8 * s, 2: 12 * s, 3: 12 * s, 4: 8 * s, 5: 0}
+    assert result == expected
+    # We ignore `*_kwargs` for unknown backends, so this should be same as above
+    result = nx.betweenness_centrality(G, unknown_backend_kwargs={"bad_keyword": False})
+    assert result == expected
+    # `nx_loopback_kwargs` matches our backend name + `_kwargs`, so it gets applied.
+    # Raise an exception b/c this function does not have this keyword!
+    with pytest.raises(TypeError, match="unexpected keyword.*bad_keyword"):
+        nx.betweenness_centrality(G, nx_loopback_kwargs={"bad_keyword": True})
+    # `*_kwargs` is meant for backend-only keywords, and this illustrates why.
+    # `betweenness_centrality` is decorated with `@py_random_state(5)`, which
+    # binds `normalized` argument to its default value (of True). Hence, if we
+    # also try to pass it in via `nx_loopback_kwargs`, then it's defined twice.
+    with pytest.raises(TypeError, match="multiple values.*normalized"):
+        nx.betweenness_centrality(G, nx_loopback_kwargs={"normalized": False})
+
+
+@pytest.mark.skipif(
+    "not nx.config.backend_priority.algos "
+    "or nx.config.backend_priority.algos[0] != 'nx_loopback'"
+)
 def test_networkx_backend():
     """Test using `backend="networkx"` in a dispatchable function."""
     # (Implementing this test is harder than it should be)
