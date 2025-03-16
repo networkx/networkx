@@ -1,8 +1,6 @@
 """Graph diameter, radius, eccentricity and other properties."""
 
 import math
-import random
-from collections import deque
 
 import networkx as nx
 from networkx.utils import not_implemented_for
