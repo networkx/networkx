@@ -191,7 +191,7 @@ def attr_matrix(
         A list of the node attribute values. This list specifies the ordering
         of rows and columns of the array. If no ordering is provided, then
         the ordering will be the same as the node order in `G`.
-        When `rc_order` is `None`, the function returns a 2-tuple `(matrix, ordering)`
+        When `rc_order` is `None`, the function returns a 2-tuple ``(matrix, ordering)``
 
     Other Parameters
     ----------------
