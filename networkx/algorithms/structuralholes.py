@@ -146,18 +146,19 @@ def effective_size(G, nodes=None, weight=None):
         )
         return 1 - r
 
-    # Check if Numpy is installed
+    # Check if scipy is available
     try:
+        # Needed for errstate
         import numpy as np
 
         # make sure nx.adjacency_matrix will not raise
         import scipy as sp
 
-        has_numpy = True
+        has_scipy = True
     except:
-        has_numpy = False
+        has_scipy = False
 
-    if nodes is None and has_numpy:
+    if nodes is None and has_scipy:
         # In order to compute constraint of all nodes,
         # algorithms based on sparse matrices can be much faster
 
@@ -183,9 +184,8 @@ def effective_size(G, nodes=None, weight=None):
         sum_mutual_weights = mutual_weights1.sum(axis=1) - mutual_weights1.diagonal()
         isolated_nodes = sum_mutual_weights == 0
         effective_size[isolated_nodes] = float("nan")
-        result = dict(zip(G, effective_size.tolist()))
-
-        return result
+        # Use tolist() to automatically convert numpy scalars -> Python scalars
+        return dict(zip(G, effective_size.tolist()))
 
     # Results for only requested nodes
     effective_size = {}
@@ -262,18 +262,19 @@ def constraint(G, nodes=None, weight=None):
 
     """
 
-    # Check if Numpy is installed
+    # Check if scipy is available
     try:
+        # Needed for errstate
         import numpy as np
 
         # make sure nx.adjacency_matrix will not raise
         import scipy as sp
 
-        has_numpy = True
+        has_scipy = True
     except:
-        has_numpy = False
+        has_scipy = False
 
-    if nodes is None and has_numpy:
+    if nodes is None and has_scipy:
         # In order to compute constraint of all nodes,
         # algorithms based on sparse matrices can be much faster
 
@@ -295,6 +296,7 @@ def constraint(G, nodes=None, weight=None):
         # Special treatment: isolated nodes marked with "nan"
         isolated_nodes = sum_mutual_weights - 2 * mutual_weights.diagonal() == 0
         constraints[isolated_nodes] = float("nan")
+        # Use tolist() to automatically convert numpy scalars -> Python scalars
         return dict(zip(G, constraints.tolist()))
 
     # Result for only requested nodes
