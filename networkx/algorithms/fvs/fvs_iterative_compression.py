@@ -1,10 +1,9 @@
-from itertools import chain, combinations
+from itertools import combinations
 
 import networkx as nx
-from networkx.algorithms.fvs.fvs import is_fvs
 from networkx.algorithms.fvs.fvs_preprocessing import *
 from networkx.algorithms.tree.recognition import is_forest
-from networkx.exception import NetworkXNoCycle
+from networkx.exception import NetworkXPointlessConcept
 from networkx.utils.decorators import not_implemented_for
 
 preprocessing_rules = [
@@ -13,6 +12,8 @@ preprocessing_rules = [
     _remove_self_loops,
     _handling_high_multiplicity,
 ]
+
+branch_preprocessing_rules = [_handling_cycles, _handling_degree_two_vertex]
 
 
 @not_implemented_for("directed")
@@ -48,8 +49,94 @@ def _fvs_preprocessing(G, k, fvs, rules=None):
 
 
 @not_implemented_for("directed")
-def _fvs_disjoint_compression(G, k, X, Y, r_1):
-    pass
+def _fvs_disjoint_compression_preprocessing(G, k, X, Y, r_1, fvs):
+    is_k_fvs_possible = True
+
+    rules = branch_preprocessing_rules
+
+    applied = False
+    for rule in rules:
+        if not applied:
+            (applied, G, r_new, is_k_fvs_possible, function_to_be_applied) = rule(
+                G, k, X, Y, r_1
+            )
+            k = r_new
+
+            if not is_k_fvs_possible:
+                is_k_fvs_possible = False
+                return G, k, fvs, is_k_fvs_possible
+
+            if applied and function_to_be_applied is not None:
+                is_k_fvs_exists, fvs_sub = feedback_vertex_set(G, k)
+
+                if not is_k_fvs_exists:
+                    is_k_fvs_possible = False
+                    return G, k, fvs, is_k_fvs_possible
+
+                fvs.update(fvs_sub)
+                function_to_be_applied(is_k_fvs_exists, fvs)
+
+        if applied:
+            return _fvs_preprocessing(G, k, fvs)
+
+    return G, k, fvs, is_k_fvs_possible
+
+
+@not_implemented_for("directed")
+def _fvs_disjoint_compression_branching(G, k, X, Y, r_1):
+    if r_1 <= 0:
+        is_G_forest = False
+        try:
+            is_G_forest = is_forest(G)
+        except NetworkXPointlessConcept:
+            is_G_forest = True
+        if is_G_forest:
+            return True, set()
+        else:
+            return False, set()
+
+    is_G_forest = False
+    try:
+        is_G_forest = is_forest(G)
+    except NetworkXPointlessConcept:
+        is_G_forest = True
+
+    if is_G_forest or len(G) == 0:
+        return True, set()
+
+    fvs = set()
+    # Branch preprocessing
+    G, k, fvs, is_k_fvs_possible = _fvs_disjoint_compression_preprocessing(
+        G, k, X, Y, r_1, fvs
+    )
+    r_1 = k
+
+    # early return
+    if not is_k_fvs_possible:
+        return False, set()
+
+    v = Y.pop()
+    # either v is in the solution or v is not in the solutoin
+
+    # case 1 : v is in the solution
+    is_fvs_exists, fvs_sub = _fvs_disjoint_compression_branching(
+        G, k - 1, X, Y, r_1 - 1
+    )
+    if is_fvs_exists:
+        fvs.update(fvs_sub)
+        fvs.update([v])
+        return True, fvs
+
+    # case 2: v is not in the solution
+    X.add(v)
+    is_fvs_exists, fvs_sub = _fvs_disjoint_compression_branching(G, k, X, Y, r_1)
+    # X.discard(v)
+    if is_fvs_exists:
+        fvs.update(fvs_sub)
+        return True, fvs
+
+    # if both return False, k-sized fvs is not possible
+    return False, set()
 
 
 @not_implemented_for("directed")
@@ -67,8 +154,8 @@ def _guess_intersection_and_fvs(G, k, S):
             is_H_forest = False
             try:
                 is_H_forest = is_forest(H)
-            except NetworkXNoCycle:
-                is_H_forest = False
+            except NetworkXPointlessConcept:
+                is_H_forest = True
 
             if not is_H_forest:
                 # if H is not forest, the guessed subset cannot be intersection with FVS
@@ -83,8 +170,10 @@ def _guess_intersection_and_fvs(G, k, S):
             r = len(S_minus_R)
 
             # find a FVS of size at most r - 1
-            is_r_1_fvs_possible, r_1_sized_solution = _fvs_disjoint_compression(
-                H, k, S_minus_R, remaining_vertices, r - 1
+            is_r_1_fvs_possible, r_1_sized_solution = (
+                _fvs_disjoint_compression_branching(
+                    H, r - 1, S_minus_R.copy(), remaining_vertices.copy(), r - 1
+                )
             )
 
             if not is_r_1_fvs_possible:
@@ -108,14 +197,13 @@ def feedback_vertex_set(G, k):
         return True, set()
 
     g_new = G.copy()
-    g_new: nx.MultiGraph
     nodes = list(g_new.nodes)
     n = len(nodes)
-    if len(g_new) <= k + 1:
+    if n <= k + 1:
         return True, set(nodes[:k])
 
     # k + 1 solution for a subgraph of k + 2 vertices
-    S = nodes[: k + 1]
+    S = set(nodes[: k + 1])
     H = g_new.subgraph(nodes[: k + 2])
 
     for k_new in range(k + 3, n):
@@ -123,10 +211,12 @@ def feedback_vertex_set(G, k):
         if not is_k_fvs_possible:
             return False, set()
         else:
-            S = k_sized_solution
-            H = g_new.subgraph(k_new)
+            # add the new vertex to get the new k + 1 sized solution
+            S = k_sized_solution.union([nodes[k_new - 1]])
+            H = g_new.subgraph(nodes[k_new])
 
-    if is_fvs(G, S):
-        return True, S
+    is_k_fvs_possible, k_sized_solution = _guess_intersection_and_fvs(H, k, S)
+    if not is_k_fvs_possible:
+        return False, set()
 
-    return False, set()
+    return True, k_sized_solution

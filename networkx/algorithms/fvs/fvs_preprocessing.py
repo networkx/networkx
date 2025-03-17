@@ -1,5 +1,7 @@
 import networkx as nx
+from networkx.algorithms.cycles import find_cycle
 from networkx.algorithms.isolate import isolates
+from networkx.exception import NetworkXNoCycle
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
@@ -7,6 +9,8 @@ __all__ = [
     "_deg_one_preprocessing",
     "_remove_self_loops",
     "_handling_high_multiplicity",
+    "_handling_cycles",
+    "_handling_degree_two_vertex",
 ]
 
 
@@ -98,10 +102,10 @@ def _remove_self_loops(G, k, f):
     k_new = k - 1
     applied = True
 
-    def function_to_be_applied_after_self_loops(is_k_fvs_exists, f):
+    def function_to_be_applied_after_self_loops(is_k_fvs_exists, fvs):
         if not is_k_fvs_exists:
             return
-        f.update([self_loop_node])
+        fvs.update([self_loop_node])
 
     return (
         applied,
@@ -113,7 +117,7 @@ def _remove_self_loops(G, k, f):
 
 
 @not_implemented_for("directed")
-def _handling_high_multiplicity(G, k, fvs):
+def _handling_high_multiplicity(G, k, f):
     applied = False
     g_new = G
     k_new = k
@@ -146,5 +150,84 @@ def _handling_high_multiplicity(G, k, fvs):
 
 
 @not_implemented_for("directed")
-def _disjoint_compression_preprocessing(G, k, fvs):
-    pass
+def _handling_cycles(G, k, X, Y, r_1):
+    applied = False
+    g_new = G
+    r_new = r_1
+    is_r_1_fvs_possible = True
+
+    node = None
+    for v in Y:
+        try:
+            _ = find_cycle(g_new, v)
+            node = v
+
+        except NetworkXNoCycle:
+            continue
+
+    if node is None:
+        return applied, g_new, r_new, is_r_1_fvs_possible, None
+
+    if r_1 <= 0:
+        is_r_1_fvs_possible = False
+        return applied, g_new, r_new, is_r_1_fvs_possible, None
+
+    g_new.remove_node(node)
+    applied = True
+    r_new = r_1 - 1
+
+    def function_to_be_applied_after_handling_cycles(is_k_fvs_exists, fvs):
+        if not is_k_fvs_exists:
+            return
+
+        fvs.update([node])
+
+    return (
+        applied,
+        g_new,
+        r_new,
+        is_r_1_fvs_possible,
+        function_to_be_applied_after_handling_cycles,
+    )
+
+
+@not_implemented_for("directed")
+def _handling_degree_two_vertex(G, k, X, Y, r_1):
+    applied = False
+    g_new = G
+    r_new = r_1
+    is_r_1_fvs_possible = True
+
+    function_to_be_applied_after_degree_two = None
+
+    node = None
+    for v in G:
+        if G.degree(v) == 2:
+            node = v
+            break
+
+    if node is None or r_1 <= 0:
+        return (
+            applied,
+            g_new,
+            r_new,
+            is_r_1_fvs_possible,
+            function_to_be_applied_after_degree_two,
+        )
+
+    u, v = list(G.neighbors(node))
+    G.add_edge(u, v)
+    G.remove_node(node)
+    applied = True
+    # neighbors = list(G.neighbors(node))
+    # multiplicity = len(G.edges(node))
+    # G.add_edges_from([(neighbors[0], neighbors[1]) for _ in range(multiplicity)])
+    # G.remove_node(node)
+
+    return (
+        applied,
+        g_new,
+        r_new,
+        is_r_1_fvs_possible,
+        function_to_be_applied_after_degree_two,
+    )
