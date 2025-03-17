@@ -863,9 +863,9 @@ def random_threshold_sequence(n, p, seed=None):
 # and a keyword parameter?
 def right_d_threshold_sequence(n, m):
     """
-    Construct a "right-dominated" threshold graph with `n` vertices and `m` edges.
+    Returns a "right-dominated" threshold sequence with `n` vertices and `m` edges.
 
-    In a threshold graph, each new vertex is either dominant or isolated.
+    Each vertex in the sequence is either dominant or isolated.
     In the "right-dominated" version, once the basic sequence is formed,
     isolated vertices may be flipped to dominant from the right in order
     to reach the target number of edges.
@@ -918,9 +918,9 @@ def right_d_threshold_sequence(n, m):
 
 def left_d_threshold_sequence(n, m):
     """
-    Construct a "left-dominated" threshold graph with `n` vertices and `m` edges.
+    Returns a "left-dominated" threshold sequence with `n` vertices and `m` edges.
 
-    In a threshold graph, each new vertex is either dominant or isolated.
+    Each vertex in the sequence is either dominant or isolated.
     In the "left-dominated" version, once the basic sequence is formed,
     isolated vertices may be flipped to dominant from the left in order
     to reach the target number of edges.
