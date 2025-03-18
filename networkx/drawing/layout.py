@@ -1491,6 +1491,9 @@ def forceatlas2_layout(
         Controls the tolerance for adjusting the speed of layout generation.
     scaling_ratio : float (default: 2.0)
         Determines the scaling of attraction and repulsion forces.
+        gravity : float (default: 1.0)
+                Determines the amount of attraction on nodes to the center. Prevents islands
+                from drifting away.
     distributed_attraction : bool (default: False)
         Distributes the attraction force evenly among nodes.
     strong_gravity : bool (default: False)
