@@ -206,9 +206,9 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     cutset : set
         Set of nodes that, if removed, would destroy all paths between
         source and target in G.
-        
+
         Returns an empty set if source and target are directly connected
-        by an edge in G, as no nodes can destroy their path.  
+        by an edge in G, as no nodes can destroy their path.
 
     Examples
     --------
