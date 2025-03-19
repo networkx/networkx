@@ -207,8 +207,9 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
         Set of nodes that, if removed, would destroy all paths between
         source and target in G.
 
-        Returns an empty set if source and target are directly connected
-        by an edge in G, as no nodes can destroy their path.
+        Returns an empty set if source and target are either in different
+        components or are directly connected by an edge, as no node removal
+        can destroy the path.
 
     Examples
     --------
