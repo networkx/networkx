@@ -128,6 +128,9 @@ def betweenness_centrality(
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     if k == len(G):
+        # This is for performance and correctness. When `endpoints` is False
+        # and k is given, k == n is a special case that would violate the
+        # assumption that node `v` is not one of the (s, t) node pairs.
         k = None
     if k is None:
         nodes = G
@@ -359,17 +362,27 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
 
 
 def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False):
+    # The non-normalized BC values are computed the same way for directed and
+    # undirected graphs: shortest paths are computed and counted for each
+    # *ordered* (s, t) pair. Undirected graphs should only count valid
+    # *unordered* node pairs {s, t}; that is, (s, t) and (t, s) should
+    # be counted only once.
     if endpoints and n < 2 or not endpoints and n <= 2:
         # no normalization b=0 for all nodes
         scale = None
     elif normalized:
+        # The numerator is computed the same for directed and undirected
+        # graphs, so the normalization factor is the same too.
         if endpoints:
-            # Scale factor should include endpoint nodes
+            # Scale factor should include endpoint nodes.
+            # Scale by all (s, t) combos where s != t.
             if k is None:
                 scale = 1 / (n * (n - 1))
             else:
                 scale = 1 / (k * (n - 1))
         else:
+            # Exclude endpoints and count the number of (s, t) node pairs
+            # that could have a path pass through v where v is not s or t.
             if k is None:
                 scale = 1 / ((n - 1) * (n - 2))
             else:
@@ -381,8 +394,10 @@ def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False
             if directed:
                 scale = None
             else:
+                # Halve so we count {s, t} pair once, and not (s, t) and (t, s)
                 scale = 0.5
         else:
+            # Estimate full BC with k samples
             if directed:
                 scale = n / k
             else:
@@ -394,6 +409,8 @@ def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False
             else:
                 scale = 0.5
         else:
+            # Estimate full BC with k samples.
+            # There are at most n-1 contributors, b/c endpoints are excluded.
             if directed:
                 scale = (n - 1) / k
             else:
