@@ -348,8 +348,8 @@ def attr_sparse_matrix(
 
     rc_order : list, optional (default: order of nodes in G)
         A list of the node attribute values. This list specifies the ordering
-        of rows and columns of the array. If no ordering is provided, then
-        the ordering will be random (and also, a return value).
+        of rows and columns of the array and the return value. If no ordering
+        is provided, then the ordering will be that of nodes in `G`.
 
     Other Parameters
     ----------------
