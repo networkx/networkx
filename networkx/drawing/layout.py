@@ -1493,6 +1493,7 @@ def forceatlas2_layout(
         Determines the scaling of attraction and repulsion forces.
     gravity : float (default: 1.0)
         Determines the amount of attraction on nodes to the center. Prevents islands
+        (i.e. weakly connected or disconnected parts of the graph)
         from drifting away.
     distributed_attraction : bool (default: False)
         Distributes the attraction force evenly among nodes.
