@@ -9,6 +9,8 @@ the root.
 
 __all__ = ["nonisomorphic_trees", "number_of_nonisomorphic_trees"]
 
+from functools import lru_cache
+
 import networkx as nx
 
 
@@ -54,9 +56,37 @@ def number_of_nonisomorphic_trees(order):
 
     References
     ----------
-
+    Based on an algorithm by Alois P. Heinz. Complexity is O(n ** 3).
     """
-    return sum(1 for _ in nonisomorphic_trees(order))
+    if order < 2:
+        raise ValueError
+    return _unlabeled_trees(order)
+
+
+@lru_cache(None)
+def _unlabeled_trees(n):
+    """Implements OEIS A000055 (number of unlabeled trees)."""
+
+    value = 0
+    for k in range(n + 1):
+        value += _rooted_trees(k) * _rooted_trees(n - k)
+    if n % 2 == 0:
+        value -= _rooted_trees(n // 2)
+    return _rooted_trees(n) - value // 2
+
+
+@lru_cache(None)
+def _rooted_trees(n):
+    """Implements OEIS A000081 (number of unlabeled rooted trees)."""
+
+    if n < 2:
+        return n
+    value = 0
+    for j in range(1, n):
+        for d in range(1, n):
+            if j % d == 0:
+                value += d * _rooted_trees(d) * _rooted_trees(n - j)
+    return value // (n - 1)
 
 
 def _next_rooted_tree(predecessor, p=None):
