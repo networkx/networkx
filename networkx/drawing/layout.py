@@ -1491,6 +1491,10 @@ def forceatlas2_layout(
         Controls the tolerance for adjusting the speed of layout generation.
     scaling_ratio : float (default: 2.0)
         Determines the scaling of attraction and repulsion forces.
+    gravity : float (default: 1.0)
+        Determines the amount of attraction on nodes to the center. Prevents islands
+        (i.e. weakly connected or disconnected parts of the graph)
+        from drifting away.
     distributed_attraction : bool (default: False)
         Distributes the attraction force evenly among nodes.
     strong_gravity : bool (default: False)
@@ -1499,6 +1503,9 @@ def forceatlas2_layout(
         Maps nodes to their masses, influencing the attraction to other nodes.
     node_size : dict or None, optional
         Maps nodes to their sizes, preventing crowding by creating a halo effect.
+    weight : string or None, optional (default='weight')
+        The edge attribute that holds the numerical value used for
+        the edge weight.  If None, then all edge weights are 1.
     dissuade_hubs : bool (default: False)
         Prevents the clustering of hub nodes.
     linlog : bool (default: False)
