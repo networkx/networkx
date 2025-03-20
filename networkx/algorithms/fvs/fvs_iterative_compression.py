@@ -1,3 +1,4 @@
+import inspect
 from itertools import combinations
 
 import networkx as nx
@@ -16,7 +17,25 @@ preprocessing_rules = [
 branch_preprocessing_rules = [_handling_cycles, _handling_degree_two_vertex]
 
 
+# For debugging
+def trace(func):
+    def wrapper(*args, **kwargs):
+        # sig = inspect.signature(func)
+        # bound_args = sig.bind(*args, **kwargs)
+        # bound_args.apply_defaults()
+        #
+        # print(f"Function: {func.__name__}")
+        # print("Arguments:")
+        # for name, value in bound_args.arguments.items():
+        #     print(f"  {name} = {value}")
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
 @not_implemented_for("directed")
+@trace
 def _fvs_preprocessing(G, k, fvs, rules=None):
     is_k_fvs_possible = True
 
@@ -49,6 +68,7 @@ def _fvs_preprocessing(G, k, fvs, rules=None):
 
 
 @not_implemented_for("directed")
+@trace
 def _fvs_disjoint_compression_preprocessing(G, k, X, Y, r_1, fvs):
     is_k_fvs_possible = True
 
@@ -84,6 +104,7 @@ def _fvs_disjoint_compression_preprocessing(G, k, X, Y, r_1, fvs):
 
 
 @not_implemented_for("directed")
+@trace
 def _fvs_disjoint_compression_branching(G, k, X, Y, r_1):
     # k and r_1 has to be the same
     if r_1 <= 0:
@@ -142,6 +163,7 @@ def _fvs_disjoint_compression_branching(G, k, X, Y, r_1):
 
 
 @not_implemented_for("directed")
+@trace
 def _guess_intersection_and_fvs(G, k, S):
     # returns boolean, k_sized_solution if it exists
 
@@ -150,6 +172,10 @@ def _guess_intersection_and_fvs(G, k, S):
     remaining_vertices = set(G).difference(S)
 
     for subset_length in range(len(S_nodes) + 1):
+        # subset length should be less than or equal to k
+        if subset_length > k:
+            continue
+
         for S_intersection_R_guess in combinations(S_nodes, subset_length):
             H = G.copy()
             H.remove_nodes_from(S_intersection_R_guess)
@@ -172,6 +198,7 @@ def _guess_intersection_and_fvs(G, k, S):
             r = len(S_minus_R)
 
             # find a FVS of size at most r - 1
+            # print(f"S_intersection_R = {S_intersection_R_guess}")
             is_r_1_fvs_possible, r_1_sized_solution = (
                 _fvs_disjoint_compression_branching(
                     H, r - 1, S_minus_R.copy(), remaining_vertices.copy(), r - 1
@@ -186,6 +213,7 @@ def _guess_intersection_and_fvs(G, k, S):
 
 
 @not_implemented_for("directed")
+@trace
 def feedback_vertex_set(G, k):
     """
     Returns a boolean (is_k_fvs_exists, fvs) where `is_k_fvs_exists` denotes
@@ -201,12 +229,14 @@ def feedback_vertex_set(G, k):
     g_new = nx.MultiGraph(G)
     nodes = list(g_new.nodes)
     n = len(nodes)
-    if n <= k + 1:
+    if n <= k:
         return True, set(nodes[:k])
 
     # k + 1 solution for a subgraph of k + 2 vertices
     S = set(nodes[: k + 1])
     H = g_new.subgraph(nodes[: k + 2])
+    # print(S)
+    # print(H.nodes, H.edges)
 
     for k_new in range(k + 3, n):
         is_k_fvs_possible, k_sized_solution = _guess_intersection_and_fvs(H, k, S)
@@ -217,6 +247,8 @@ def feedback_vertex_set(G, k):
             S = k_sized_solution.union([nodes[k_new - 1]])
             H = g_new.subgraph(nodes[:k_new])
 
+    # print(S)
+    # print(H.nodes, H.edges)
     is_k_fvs_possible, k_sized_solution = _guess_intersection_and_fvs(H, k, S)
     if not is_k_fvs_possible:
         return False, set()

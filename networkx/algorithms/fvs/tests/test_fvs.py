@@ -1,12 +1,11 @@
-import pytest
-
 import networkx as nx
 from networkx.algorithms.fvs import is_fvs
+from networkx.algorithms.fvs.fvs_iterative_compression import feedback_vertex_set
 
 
 class TestIsFVS:
     """
-    Tests for :func:``
+    Tests for :func:`networkx.algorithms.fvs.is_fvs`
     """
 
     def test_empty_graph(self):
