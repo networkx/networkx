@@ -61,6 +61,7 @@ def _fvs_disjoint_compression_preprocessing(G, k, X, Y, r_1, fvs):
                 G, k, X, Y, r_1
             )
             k = r_new
+            r_1 = r_new
 
             if not is_k_fvs_possible:
                 is_k_fvs_possible = False
@@ -77,13 +78,14 @@ def _fvs_disjoint_compression_preprocessing(G, k, X, Y, r_1, fvs):
                 function_to_be_applied(is_k_fvs_exists, fvs)
 
         if applied:
-            return _fvs_preprocessing(G, k, fvs)
+            return _fvs_disjoint_compression_preprocessing(G, k, X, Y, r_1, fvs)
 
     return G, k, fvs, is_k_fvs_possible
 
 
 @not_implemented_for("directed")
 def _fvs_disjoint_compression_branching(G, k, X, Y, r_1):
+    # k and r_1 has to be the same
     if r_1 <= 0:
         is_G_forest = False
         try:
@@ -116,7 +118,7 @@ def _fvs_disjoint_compression_branching(G, k, X, Y, r_1):
         return False, set()
 
     v = Y.pop()
-    # either v is in the solution or v is not in the solutoin
+    # either v is in the solution or v is not in the solution
 
     # case 1 : v is in the solution
     is_fvs_exists, fvs_sub = _fvs_disjoint_compression_branching(
@@ -145,7 +147,7 @@ def _guess_intersection_and_fvs(G, k, S):
 
     # S is a k + 1 sized solution
     S_nodes = list(S)
-    remaining_vertices = set(G).difference(S_nodes)
+    remaining_vertices = set(G).difference(S)
 
     for subset_length in range(len(S_nodes) + 1):
         for S_intersection_R_guess in combinations(S_nodes, subset_length):
@@ -196,7 +198,7 @@ def feedback_vertex_set(G, k):
         # return trivial FVS
         return True, set()
 
-    g_new = G.copy()
+    g_new = nx.MultiGraph(G)
     nodes = list(g_new.nodes)
     n = len(nodes)
     if n <= k + 1:
@@ -213,7 +215,7 @@ def feedback_vertex_set(G, k):
         else:
             # add the new vertex to get the new k + 1 sized solution
             S = k_sized_solution.union([nodes[k_new - 1]])
-            H = g_new.subgraph(nodes[k_new])
+            H = g_new.subgraph(nodes[:k_new])
 
     is_k_fvs_possible, k_sized_solution = _guess_intersection_and_fvs(H, k, S)
     if not is_k_fvs_possible:
