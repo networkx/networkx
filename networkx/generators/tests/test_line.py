@@ -7,27 +7,32 @@ from networkx.utils import edges_equal
 
 class TestGeneratorLine:
     def test_star(self):
+        """Test that the line graph of a star graph is a complete graph."""
         G = nx.star_graph(5)
         L = nx.line_graph(G)
         assert nx.is_isomorphic(L, nx.complete_graph(5))
 
     def test_path(self):
+        """Test that the line graph of a path graph with 5 nodes is a path graph with 4 nodes."""
         G = nx.path_graph(5)
         L = nx.line_graph(G)
         assert nx.is_isomorphic(L, nx.path_graph(4))
 
     def test_cycle(self):
+        """Test that the line graph of a cycle graph is isomorphic to itself."""
         G = nx.cycle_graph(5)
         L = nx.line_graph(G)
         assert nx.is_isomorphic(L, G)
 
     def test_digraph1(self):
+        """Test that the line graph of a directed star graph has the correct nodes and no edges."""
         G = nx.DiGraph([(0, 1), (0, 2), (0, 3)])
         L = nx.line_graph(G)
         # no edge graph, but with nodes
         assert L.adj == {(0, 1): {}, (0, 2): {}, (0, 3): {}}
 
     def test_multigraph1(self):
+        """Test that the line graph of a multigraph with multiple edges between nodes has correct edges."""
         G = nx.MultiGraph([(0, 1), (0, 1), (1, 0), (0, 2), (2, 0), (0, 3)])
         L = nx.line_graph(G)
         # no edge graph, but with nodes
@@ -53,16 +58,19 @@ class TestGeneratorLine:
         )
 
     def test_multigraph2(self):
+        """Test that the line graph of a multigraph with two edges between the same nodes has a single edge."""
         G = nx.MultiGraph([(1, 2), (2, 1)])
         L = nx.line_graph(G)
         assert edges_equal(L.edges(), [((1, 2, 0), (1, 2, 1))])
 
     def test_multidigraph1(self):
+        """Test that the line graph of a multidigraph with bidirectional edges has a cycle."""
         G = nx.MultiDiGraph([(1, 2), (2, 1)])
         L = nx.line_graph(G)
         assert edges_equal(L.edges(), [((1, 2, 0), (2, 1, 0)), ((2, 1, 0), (1, 2, 0))])
 
     def test_multidigraph2(self):
+        """Test that the line graph of a multidigraph with multiple edges has correct directed edges."""
         G = nx.MultiDiGraph([(0, 1), (0, 1), (0, 1), (1, 2)])
         L = nx.line_graph(G)
         assert edges_equal(
@@ -71,16 +79,19 @@ class TestGeneratorLine:
         )
 
     def test_digraph2(self):
+        """Test that the line graph of a directed path graph has directed edges in sequence."""
         G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
         L = nx.line_graph(G)
         assert edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
     def test_create1(self):
+        """Test that the line graph of a digraph can be created as an undirected graph."""
         G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
         L = nx.line_graph(G, create_using=nx.Graph())
         assert edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
     def test_create2(self):
+        """Test that the line graph of an undirected graph can be created as a digraph."""
         G = nx.Graph([(0, 1), (1, 2), (2, 3)])
         L = nx.line_graph(G, create_using=nx.DiGraph())
         assert edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
@@ -88,6 +99,7 @@ class TestGeneratorLine:
 
 class TestGeneratorInverseLine:
     def test_example(self):
+        """Test the inverse line graph of a specific graph with multiple cliques."""
         G = nx.Graph()
         G_edges = [
             [1, 2],
@@ -121,6 +133,7 @@ class TestGeneratorInverseLine:
         assert nx.is_isomorphic(H, solution)
 
     def test_example_2(self):
+        """Test the inverse line graph of a graph with triangles and a path."""
         G = nx.Graph()
         G_edges = [[1, 2], [1, 3], [2, 3], [3, 4], [3, 5], [4, 5]]
         G.add_edges_from(G_edges)
@@ -131,18 +144,21 @@ class TestGeneratorInverseLine:
         assert nx.is_isomorphic(H, solution)
 
     def test_pair(self):
+        """Test the inverse line graph of a path graph with 2 nodes."""
         G = nx.path_graph(2)
         H = nx.inverse_line_graph(G)
         solution = nx.path_graph(3)
         assert nx.is_isomorphic(H, solution)
 
     def test_line(self):
+        """Test the inverse line graph of a path graph with 5 nodes."""
         G = nx.path_graph(5)
         solution = nx.path_graph(6)
         H = nx.inverse_line_graph(G)
         assert nx.is_isomorphic(H, solution)
 
     def test_triangle_graph(self):
+        """Test the inverse line graph of a complete graph with 3 nodes (triangle)."""
         G = nx.complete_graph(3)
         H = nx.inverse_line_graph(G)
         alternative_solution = nx.Graph()
@@ -152,32 +168,38 @@ class TestGeneratorInverseLine:
         assert nx.is_isomorphic(H, G) or nx.is_isomorphic(H, alternative_solution)
 
     def test_cycle(self):
+        """Test the inverse line graph of a cycle graph with 5 nodes."""
         G = nx.cycle_graph(5)
         H = nx.inverse_line_graph(G)
         assert nx.is_isomorphic(H, G)
 
     def test_empty(self):
+        """Test the inverse line graph of an empty graph."""
         G = nx.Graph()
         H = nx.inverse_line_graph(G)
         assert nx.is_isomorphic(H, nx.complete_graph(1))
 
     def test_K1(self):
+        """Test the inverse line graph of a complete graph with 1 node."""
         G = nx.complete_graph(1)
         H = nx.inverse_line_graph(G)
         solution = nx.path_graph(2)
         assert nx.is_isomorphic(H, solution)
 
     def test_edgeless_graph(self):
+        """Test that an edgeless graph raises a NetworkXError."""
         G = nx.empty_graph(5)
         with pytest.raises(nx.NetworkXError, match="edgeless graph"):
             nx.inverse_line_graph(G)
 
     def test_selfloops_error(self):
+        """Test that a graph with self-loops raises a NetworkXError."""
         G = nx.cycle_graph(4)
         G.add_edge(0, 0)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
     def test_non_line_graphs(self):
+        """Test that known non-line graphs raise a NetworkXError."""
         # Tests several known non-line graphs for impossibility
         # Adapted from L.W.Beineke, "Characterizations of derived graphs"
 
@@ -189,7 +211,7 @@ class TestGeneratorInverseLine:
         wheel = nx.wheel_graph(6)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, wheel)
 
-        # K5 with one edge remove
+        # K5 with one edge removed
         K5m = nx.complete_graph(5)
         K5m.remove_edge(0, 1)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, K5m)
@@ -225,6 +247,7 @@ class TestGeneratorInverseLine:
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
     def test_wrong_graph_type(self):
+        """Test that directed and multigraphs raise a NetworkXNotImplemented error."""
         G = nx.DiGraph()
         G_edges = [[0, 1], [0, 2], [0, 3]]
         G.add_edges_from(G_edges)
@@ -236,48 +259,56 @@ class TestGeneratorInverseLine:
         pytest.raises(nx.NetworkXNotImplemented, nx.inverse_line_graph, G)
 
     def test_line_inverse_line_complete(self):
+        """Test that the inverse line graph of a complete graph's line graph returns the original graph."""
         G = nx.complete_graph(10)
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
 
     def test_line_inverse_line_path(self):
+        """Test that the inverse line graph of a path graph's line graph returns the original graph."""
         G = nx.path_graph(10)
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
 
     def test_line_inverse_line_hypercube(self):
+        """Test that the inverse line graph of a hypercube graph's line graph returns the original graph."""
         G = nx.hypercube_graph(5)
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
 
     def test_line_inverse_line_cycle(self):
+        """Test that the inverse line graph of a cycle graph's line graph returns the original graph."""
         G = nx.cycle_graph(10)
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
 
     def test_line_inverse_line_star(self):
+        """Test that the inverse line graph of a star graph's line graph returns the original graph."""
         G = nx.star_graph(20)
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
 
     def test_line_inverse_line_multipartite(self):
+        """Test that the inverse line graph of a complete multipartite graph's line graph returns the original graph."""
         G = nx.complete_multipartite_graph(3, 4, 5)
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
 
     def test_line_inverse_line_dgm(self):
+        """Test that the inverse line graph of a Dorogovtsev-Goltsev-Mendes graph's line graph returns the original graph."""
         G = nx.dorogovtsev_goltsev_mendes_graph(4)
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
 
     def test_line_different_node_types(self):
+        """Test that the inverse line graph works with graphs having different node types (e.g., integers and strings)."""
         G = nx.path_graph([1, 2, 3, "a", "b", "c"])
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
@@ -286,21 +317,25 @@ class TestGeneratorInverseLine:
 
 class TestGeneratorPrivateFunctions:
     def test_triangles_error(self):
+        """Test that _triangles raises a NetworkXError for invalid edges in a diamond graph."""
         G = nx.diamond_graph()
         pytest.raises(nx.NetworkXError, line._triangles, G, (4, 0))
         pytest.raises(nx.NetworkXError, line._triangles, G, (0, 3))
 
     def test_odd_triangles_error(self):
+        """Test that _odd_triangle raises a NetworkXError for invalid triangles in a diamond graph."""
         G = nx.diamond_graph()
         pytest.raises(nx.NetworkXError, line._odd_triangle, G, (0, 1, 4))
         pytest.raises(nx.NetworkXError, line._odd_triangle, G, (0, 1, 3))
 
     def test_select_starting_cell_error(self):
+        """Test that _select_starting_cell raises a NetworkXError for invalid edges in a diamond graph."""
         G = nx.diamond_graph()
         pytest.raises(nx.NetworkXError, line._select_starting_cell, G, (4, 0))
         pytest.raises(nx.NetworkXError, line._select_starting_cell, G, (0, 3))
 
     def test_diamond_graph(self):
+        """Test that _select_starting_cell returns a valid triangle for each edge in a diamond graph."""
         G = nx.diamond_graph()
         for edge in G.edges:
             cell = line._select_starting_cell(G, starting_edge=edge)
