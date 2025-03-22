@@ -10,6 +10,12 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
 )
 
 
+def test_long_paths_graphs():
+    """Smoke test for potential RecursionError. See gh-7945."""
+    G = nx.path_graph(10_000)
+    rooted_tree_isomorphism(G, 0, G, 0) == [(n, n) for n in G]
+
+
 @pytest.mark.parametrize("graph_constructor", (nx.DiGraph, nx.MultiGraph))
 def test_tree_isomorphism_raises_on_directed_and_multigraphs(graph_constructor):
     t1 = graph_constructor([(0, 1)])
@@ -188,25 +194,13 @@ def test_rooted_tree_isomorphism_different_order():
     assert tree_isomorphism(t1, t2) == []
 
 
-# the function nonisomorphic_trees generates all the non-isomorphic
-# trees of a given size.  Take each pair of these and verify that
-# they are not isomorphic
-# k = 4 is the first level that has more than 1 non-isomorphic tree
-# k = 11 takes about 4.76 seconds to run on my laptop
-# larger values run slow down significantly
-# as the number of trees grows rapidly
-def test_negative(maxk=11):
-    for k in range(4, maxk + 1):
-        test_trees = list(nx.nonisomorphic_trees(k))
-        start_time = time.time()
-        trial = 0
-        for i in range(len(test_trees) - 1):
-            for j in range(i + 1, len(test_trees)):
-                trial += 1
-                assert tree_isomorphism(test_trees[i], test_trees[j]) == []
-
-
-def test_long_paths_graphs():
-    """Smoke test for potential RecursionError. See gh-7945."""
-    G = nx.path_graph(10_000)
-    rooted_tree_isomorphism(G, 0, G, 0) == [(n, n) for n in G]
+# NOTE: number of nonisomorphic_trees grows very rapidly - do not increase n
+# further without marking "slow"
+@pytest.mark.parametrize("n", range(4, 12))
+def test_tree_isomorphism_all_non_isomorphic_pairs(n):
+    test_trees = list(nx.nonisomorphic_trees(n))
+    assert all(
+        tree_isomorphism(test_trees[i], test_trees[j]) == []
+        for i in range(len(test_trees) - 1)
+        for j in range(i + 1, len(test_trees))
+    )
