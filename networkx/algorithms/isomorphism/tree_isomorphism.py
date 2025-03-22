@@ -214,13 +214,11 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
 @nx._dispatchable(graphs={"t1": 0, "t2": 1})
 def tree_isomorphism(t1, t2):
     """
-    Given two undirected (or free) trees `t1` and `t2`,
-    this routine will determine if they are isomorphic.
-    It returns the isomorphism, a mapping of the nodes of `t1` onto the nodes
-    of `t2`, such that two trees are then identical.
+    Return an isomorphic mapping between two trees `t1` and `t2`.
 
-    Note that two trees may have more than one isomorphism, and this
-    routine just returns one valid mapping.
+    If `t1` and `t2` are not isomorphic, an empty list is returned.
+    Note that two trees may have more than one isomorphism, and this routine just
+    returns one valid mapping.
 
     Parameters
     ----------
@@ -241,9 +239,14 @@ def tree_isomorphism(t1, t2):
 
         If `t1` and `t2` are not isomorphic, then it returns the empty list.
 
+    Raises
+    ------
+    NetworkXError
+        If either `t1` or `t2` is not a tree
+
     Notes
     -----
-    This runs in O(n*log(n)) time for trees with n nodes.
+    This runs in ``O(n*log(n))`` time for trees with ``n`` nodes.
     """
     if not nx.is_tree(t1):
         raise nx.NetworkXError("t1 is not a tree")
