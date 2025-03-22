@@ -4,10 +4,6 @@ import time
 import pytest
 
 import networkx as nx
-from networkx.algorithms.isomorphism.tree_isomorphism import (
-    rooted_tree_isomorphism,
-    tree_isomorphism,
-)
 
 
 def test_long_paths_graphs():
@@ -124,7 +120,7 @@ def test_hardcoded():
     t2.add_edges_from(edges_2)
     root2 = "n"
 
-    isomorphism = sorted(rooted_tree_isomorphism(t1, root1, t2, root2))
+    isomorphism = sorted(nx.isomorphism.rooted_tree_isomorphism(t1, root1, t2, root2))
 
     # is correct by hand
     assert isomorphism in (isomorphism1, isomorphism2)
@@ -141,7 +137,7 @@ def test_hardcoded():
     t2.add_edges_from(edges_2)
     root2 = "n"
 
-    isomorphism = sorted(rooted_tree_isomorphism(t1, root1, t2, root2))
+    isomorphism = sorted(nx.isomorphism.rooted_tree_isomorphism(t1, root1, t2, root2))
 
     # is correct by hand
     assert isomorphism in (isomorphism1, isomorphism2)
@@ -185,13 +181,13 @@ def test_trivial_rooted_tree_isomorphism():
     t2 = nx.Graph()
     t2.add_node("n")
 
-    assert rooted_tree_isomorphism(t1, "a", t2, "n") == [("a", "n")]
+    assert nx.isomorphism.rooted_tree_isomorphism(t1, "a", t2, "n") == [("a", "n")]
 
 
 def test_rooted_tree_isomorphism_different_order():
     t1 = nx.Graph([("a", "b"), ("a", "c")])
     t2 = nx.Graph([("a", "b")])
-    assert tree_isomorphism(t1, t2) == []
+    assert nx.isomorphism.tree_isomorphism(t1, t2) == []
 
 
 # NOTE: number of nonisomorphic_trees grows very rapidly - do not increase n
@@ -200,7 +196,7 @@ def test_rooted_tree_isomorphism_different_order():
 def test_tree_isomorphism_all_non_isomorphic_pairs(n):
     test_trees = list(nx.nonisomorphic_trees(n))
     assert all(
-        tree_isomorphism(test_trees[i], test_trees[j]) == []
+        nx.isomorphism.tree_isomorphism(test_trees[i], test_trees[j]) == []
         for i in range(len(test_trees) - 1)
         for j in range(i + 1, len(test_trees))
     )
