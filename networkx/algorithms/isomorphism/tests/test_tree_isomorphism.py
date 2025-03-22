@@ -204,43 +204,20 @@ def test_positive(maxk=14):
             trial += 1
 
 
-# test the trivial case of a single node in each tree
-# note that nonisomorphic_trees doesn't work for k = 1
-def test_trivial():
-    # back to an undirected graph
+def test_trivial_rooted_tree_isomorphism():
     t1 = nx.Graph()
     t1.add_node("a")
-    root1 = "a"
 
     t2 = nx.Graph()
     t2.add_node("n")
-    root2 = "n"
 
-    isomorphism = rooted_tree_isomorphism(t1, root1, t2, root2)
-
-    assert isomorphism == [("a", "n")]
-
-    assert check_isomorphism(t1, t2, isomorphism)
+    assert rooted_tree_isomorphism(t1, "a", t2, "n") == [("a", "n")]
 
 
-# test another trivial case where the two graphs have
-# different numbers of nodes
-def test_trivial_2():
-    edges_1 = [("a", "b"), ("a", "c")]
-
-    edges_2 = [("v", "y")]
-
-    t1 = nx.Graph()
-    t1.add_edges_from(edges_1)
-
-    t2 = nx.Graph()
-    t2.add_edges_from(edges_2)
-
-    isomorphism = tree_isomorphism(t1, t2)
-
-    # they cannot be isomorphic,
-    # since they have different numbers of nodes
-    assert isomorphism == []
+def test_rooted_tree_isomorphism_different_order():
+    t1 = nx.Graph([("a", "b"), ("a", "c")])
+    t2 = nx.Graph([("a", "b")])
+    assert tree_isomorphism(t1, t2) == []
 
 
 # the function nonisomorphic_trees generates all the non-isomorphic
