@@ -45,6 +45,9 @@ def nonisomorphic_trees(order):
 def number_of_nonisomorphic_trees(order):
     """Returns the number of nonisomorphic trees
 
+    Based on an algorithm by Alois P. Heinz in
+    `OEIS entry A000055 <https://oeis.org/A000055>`_. Complexity is ``O(n ** 3)``
+
     Parameters
     ----------
     order : int
@@ -52,11 +55,8 @@ def number_of_nonisomorphic_trees(order):
 
     Returns
     -------
-    length : Number of nonisomorphic graphs for the given order
-
-    References
-    ----------
-    Based on an algorithm by Alois P. Heinz. Complexity is O(n ** 3).
+    int
+       Number of nonisomorphic graphs for the given order
     """
     if order < 2:
         raise ValueError
