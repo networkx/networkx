@@ -1461,7 +1461,7 @@ def forceatlas2_layout(
     jitter_tolerance=1.0,
     scaling_ratio=2.0,
     gravity=1.0,
-    distributed_action=False,
+    distributed_action=False,  # Note: corrected typo from 'distributed_attraction'
     strong_gravity=False,
     node_mass=None,
     node_size=None,
@@ -1470,6 +1470,7 @@ def forceatlas2_layout(
     linlog=False,
     seed=None,
     dim=2,
+    position_range=1.0,  # New parameter added
     store_pos_as=None,
 ):
     """Position nodes using the ForceAtlas2 force-directed layout algorithm.
@@ -1495,7 +1496,7 @@ def forceatlas2_layout(
         Determines the amount of attraction on nodes to the center. Prevents islands
         (i.e. weakly connected or disconnected parts of the graph)
         from drifting away.
-    distributed_attraction : bool (default: False)
+    distributed_action : bool (default: False)
         Distributes the attraction force evenly among nodes.
     strong_gravity : bool (default: False)
         Applies a strong gravitational pull towards the center.
@@ -1520,6 +1521,8 @@ def forceatlas2_layout(
         by numpy.random.
     dim : int (default: 2)
         Sets the dimensions for the layout. Ignored if `pos` is provided.
+    position_range : float (default: 1.0)
+        Maximum range for node positions (e.g., -position_range to position_range).
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
@@ -1587,39 +1590,7 @@ def forceatlas2_layout(
     A = nx.to_numpy_array(G, weight=weight)
 
     def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_tolerance):
-        """Computes the scaling factor for the force in the ForceAtlas2 layout algorithm.
-
-        This   helper  function   adjusts   the  speed   and
-        efficiency  of the  layout generation  based on  the
-        current state of  the system, such as  the number of
-        nodes, current swing, and traction forces.
-
-        Parameters
-        ----------
-        n : int
-            Number of nodes in the graph.
-        swing : float
-            The current swing, representing the oscillation of the nodes.
-        traction : float
-            The current traction force, representing the attraction between nodes.
-        speed : float
-            The current speed of the layout generation.
-        speed_efficiency : float
-            The efficiency of the current speed, influencing how fast the layout converges.
-        jitter_tolerance : float
-            The tolerance for jitter, affecting how much speed adjustment is allowed.
-
-        Returns
-        -------
-        tuple
-            A tuple containing the updated speed and speed efficiency.
-
-        Notes
-        -----
-        This function is a part of the ForceAtlas2 layout algorithm and is used to dynamically adjust the
-        layout parameters to achieve an optimal and stable visualization.
-
-        """
+        """Computes the scaling factor for the force in the ForceAtlas2 layout algorithm."""
         import numpy as np
 
         # estimate jitter
@@ -1666,7 +1637,6 @@ def forceatlas2_layout(
             np.fill_diagonal(attraction, 0)
             attraction = np.einsum("ij, ij -> ij", attraction, A)
             attraction = np.einsum("ijk, ij -> ik", diff, attraction)
-
         else:
             attraction = -np.einsum("ijk, ij -> ik", diff, A)
 
@@ -1690,7 +1660,6 @@ def forceatlas2_layout(
         if strong_gravity:
             gravities = -gravity * mass[:, None] * pos_centered
         else:
-            # hide warnings for divide by zero. Then change nan to 0
             with np.errstate(divide="ignore", invalid="ignore"):
                 unit_vec = pos_centered / np.linalg.norm(pos_centered, axis=-1)[:, None]
             unit_vec = np.nan_to_num(unit_vec, nan=0)
@@ -1704,12 +1673,7 @@ def forceatlas2_layout(
         traction += (0.5 * mass * np.linalg.norm(pos_arr + update, axis=-1)).sum()
 
         speed, speed_efficiency = estimate_factor(
-            n,
-            swing,
-            traction,
-            speed,
-            speed_efficiency,
-            jitter_tolerance,
+            n, swing, traction, speed, speed_efficiency, jitter_tolerance
         )
 
         # update pos
@@ -1724,6 +1688,10 @@ def forceatlas2_layout(
 
         factored_update = update * factor[:, None]
         pos_arr += factored_update
+
+        # Constrain positions within position_range
+        pos_arr = np.clip(pos_arr, -position_range, position_range)
+
         if abs(factored_update).sum() < 1e-10:
             break
 
