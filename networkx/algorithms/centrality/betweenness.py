@@ -127,6 +127,11 @@ def betweenness_centrality(
        https://doi.org/10.2307/3033543
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
+    if k == len(G):
+        # This is for performance and correctness. When `endpoints` is False
+        # and k is given, k == n is a special case that would violate the
+        # assumption that node `v` is not one of the (s, t) node pairs.
+        k = None
     if k is None:
         nodes = G
     else:
@@ -357,25 +362,61 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
 
 
 def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False):
-    if normalized:
+    # The non-normalized BC values are computed the same way for directed and
+    # undirected graphs: shortest paths are computed and counted for each
+    # *ordered* (s, t) pair. Undirected graphs should only count valid
+    # *unordered* node pairs {s, t}; that is, (s, t) and (t, s) should
+    # be counted only once.
+    if endpoints and n < 2 or not endpoints and n <= 2:
+        # no normalization b=0 for all nodes
+        scale = None
+    elif normalized:
+        # The numerator is computed the same for directed and undirected
+        # graphs, so the normalization factor is the same too.
         if endpoints:
-            if n < 2:
-                scale = None  # no normalization
-            else:
-                # Scale factor should include endpoint nodes
+            # Scale factor should include endpoint nodes.
+            # Scale by all (s, t) combos where s != t.
+            if k is None:
                 scale = 1 / (n * (n - 1))
-        elif n <= 2:
-            scale = None  # no normalization b=0 for all nodes
+            else:
+                scale = 1 / (k * (n - 1))
         else:
-            scale = 1 / ((n - 1) * (n - 2))
-    else:  # rescale by 2 for undirected graphs
-        if not directed:
-            scale = 0.5
+            # Exclude endpoints and count the number of (s, t) node pairs
+            # that could have a path pass through v where v is not s or t.
+            if k is None:
+                scale = 1 / ((n - 1) * (n - 2))
+            else:
+                scale = 1 / (k * (n - 2))
+    # Not normalized, but we still need to scale undirected graphs by 2
+    # and to estimate the full BC when using k.
+    elif endpoints:
+        if k is None:
+            if directed:
+                scale = None
+            else:
+                # Halve so we count {s, t} pair once, and not (s, t) and (t, s)
+                scale = 0.5
         else:
-            scale = None
+            # Estimate full BC with k samples
+            if directed:
+                scale = n / k
+            else:
+                scale = n / (2 * k)
+    else:
+        if k is None or k == n - 1:
+            if directed:
+                scale = None
+            else:
+                scale = 0.5
+        else:
+            # Estimate full BC with k samples.
+            # There are at most n-1 contributors, b/c endpoints are excluded.
+            if directed:
+                scale = (n - 1) / k
+            else:
+                scale = (n - 1) / (2 * k)
+
     if scale is not None:
-        if k is not None:
-            scale = scale * n / k
         for v in betweenness:
             betweenness[v] *= scale
     return betweenness
