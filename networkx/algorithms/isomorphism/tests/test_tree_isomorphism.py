@@ -8,7 +8,6 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
     rooted_tree_isomorphism,
     tree_isomorphism,
 )
-from networkx.classes.function import is_directed
 
 
 @pytest.mark.parametrize("graph_constructor", (nx.DiGraph, nx.MultiGraph))
@@ -36,46 +35,11 @@ def test_input_not_tree():
         nx.isomorphism.rooted_tree_isomorphism(tree, 0, not_tree, 0)
 
 
-# have this work for graph
-# given two trees (either the directed or undirected)
-# transform t2 according to the isomorphism
-# and confirm it is identical to t1
-# randomize the order of the edges when constructing
-def check_isomorphism(t1, t2, isomorphism):
-    # get the name of t1, given the name in t2
-    mapping = {v2: v1 for (v1, v2) in isomorphism}
-
-    # these should be the same
-    d1 = is_directed(t1)
-    d2 = is_directed(t2)
-    assert d1 == d2
-
-    edges_1 = []
-    for u, v in t1.edges():
-        if d1:
-            edges_1.append((u, v))
-        else:
-            # if not directed, then need to
-            # put the edge in a consistent direction
-            if u < v:
-                edges_1.append((u, v))
-            else:
-                edges_1.append((v, u))
-
-    edges_2 = []
-    for u, v in t2.edges():
-        # translate to names for t1
-        u = mapping[u]
-        v = mapping[v]
-        if d2:
-            edges_2.append((u, v))
-        else:
-            if u < v:
-                edges_2.append((u, v))
-            else:
-                edges_2.append((v, u))
-
-    return sorted(edges_1) == sorted(edges_2)
+def _check_isomorphism(t1, t2, isomorphism):
+    assert nx.is_directed(t1) == nx.is_directed(t2)
+    # Apply mapping and check for equality
+    H = nx.relabel_nodes(t1, dict(isomorphism))
+    return nx.utils.graphs_equal(t2, H)
 
 
 def test_hardcoded():
@@ -160,7 +124,7 @@ def test_hardcoded():
     assert isomorphism in (isomorphism1, isomorphism2)
 
     # check algorithmically
-    assert check_isomorphism(t1, t2, isomorphism)
+    assert _check_isomorphism(t1, t2, isomorphism)
 
     # try again as digraph
     t1 = nx.DiGraph()
@@ -177,7 +141,7 @@ def test_hardcoded():
     assert isomorphism in (isomorphism1, isomorphism2)
 
     # check algorithmically
-    assert check_isomorphism(t1, t2, isomorphism)
+    assert _check_isomorphism(t1, t2, isomorphism)
 
 
 # randomly swap a tuple (a,b)
@@ -222,7 +186,7 @@ def positive_single_tree(t1):
     # make sure we got a correct solution
     # although not necessarily someisomorphism
     assert len(isomorphism) > 0
-    assert check_isomorphism(t1, t2, isomorphism)
+    assert _check_isomorphism(t1, t2, isomorphism)
 
 
 # run positive_single_tree over all the
