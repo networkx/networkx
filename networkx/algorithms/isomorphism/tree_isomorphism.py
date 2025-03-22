@@ -245,9 +245,10 @@ def tree_isomorphism(t1, t2):
     -----
     This runs in O(n*log(n)) time for trees with n nodes.
     """
-
-    assert nx.is_tree(t1)
-    assert nx.is_tree(t2)
+    if not nx.is_tree(t1):
+        raise nx.NetworkXError("t1 is not a tree")
+    if not nx.is_tree(t2):
+        raise nx.NetworkXError("t2 is not a tree")
 
     # To be isomorphic, t1 and t2 must have the same number of nodes.
     if nx.number_of_nodes(t1) != nx.number_of_nodes(t2):
