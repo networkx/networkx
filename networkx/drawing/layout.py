@@ -1724,6 +1724,10 @@ def forceatlas2_layout(
 
         factored_update = update * factor[:, None]
         pos_arr += factored_update
+
+        # Constrain positions within position_range
+        pos_arr = np.clip(pos_arr, -position_range, position_range)
+        
         if abs(factored_update).sum() < 1e-10:
             break
 
