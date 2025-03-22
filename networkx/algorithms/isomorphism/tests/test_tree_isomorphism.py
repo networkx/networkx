@@ -144,64 +144,32 @@ def test_hardcoded():
     assert _check_isomorphism(t1, t2, isomorphism)
 
 
-# randomly swap a tuple (a,b)
-def random_swap(t):
-    (a, b) = t
-    if random.randint(0, 1) == 1:
-        return (a, b)
-    else:
-        return (b, a)
+# NOTE: number of nonisomorphic_trees grows very rapidly - do not increase n
+# further without marking "slow"
+@pytest.mark.parametrize("n", range(2, 15))
+def test_tree_isomorphic_all_non_isomorphic_trees_relabeled(n):
+    """Tests every non-isomorphic tree with `n` nodes is isomorphic with a
+    copy of itself with an arbitrary node-remapping."""
+    for tree in nx.nonisomorphic_trees(n):
+        nodes = list(tree)
+        shuffled = nodes.copy()
+        random.shuffle(shuffled)
+        node_mapping = dict(zip(nodes, shuffled))
+        # Randomly order edges to ensure no dependence on node order within edges
+        new_edges = [
+            (node_mapping[u], node_mapping[v])
+            if random.randint(0, 1)
+            else (node_mapping[v], node_mapping[u])
+            for (u, v) in tree.edges
+        ]
+        # Shuffle the edge list to ensure no dependence on edge order
+        random.shuffle(new_edges)
+        relabeled = nx.Graph(new_edges)
+        # Does not necessarily have to be the same as node_mapping
+        iso_mapping = nx.isomorphism.tree_isomorphism(tree, relabeled)
 
-
-# given a tree t1, create a new tree t2
-# that is isomorphic to t1, with a known isomorphism
-# and test that our algorithm found the right one
-def positive_single_tree(t1):
-    assert nx.is_tree(t1)
-
-    nodes1 = list(t1.nodes())
-    # get a random permutation of this
-    nodes2 = nodes1.copy()
-    random.shuffle(nodes2)
-
-    # this is one isomorphism, however they may be multiple
-    # so we don't necessarily get this one back
-    someisomorphism = list(zip(nodes1, nodes2))
-
-    # map from old to new
-    map1to2 = dict(someisomorphism)
-
-    # get the edges with the transformed names
-    edges2 = [random_swap((map1to2[u], map1to2[v])) for (u, v) in t1.edges()]
-    # randomly permute, to ensure we're not relying on edge order somehow
-    random.shuffle(edges2)
-
-    # so t2 is isomorphic to t1
-    t2 = nx.Graph()
-    t2.add_edges_from(edges2)
-
-    # lets call our code to see if t1 and t2 are isomorphic
-    isomorphism = tree_isomorphism(t1, t2)
-
-    # make sure we got a correct solution
-    # although not necessarily someisomorphism
-    assert len(isomorphism) > 0
-    assert _check_isomorphism(t1, t2, isomorphism)
-
-
-# run positive_single_tree over all the
-# non-isomorphic trees for k from 4 to maxk
-# k = 4 is the first level that has more than 1 non-isomorphic tree
-# k = 13 takes about 2.86 seconds to run on my laptop
-# larger values run slow down significantly
-# as the number of trees grows rapidly
-def test_positive(maxk=14):
-    for k in range(2, maxk + 1):
-        start_time = time.time()
-        trial = 0
-        for t in nx.nonisomorphic_trees(k):
-            positive_single_tree(t)
-            trial += 1
+        assert iso_mapping != []
+        assert _check_isomorphism(tree, relabeled, iso_mapping)
 
 
 def test_trivial_rooted_tree_isomorphism():
