@@ -1390,7 +1390,7 @@ def _simrank_similarity_python(
     def avg_sim(s):
         return sum(newsim[w][x] for (w, x) in s) / len(s) if s else 0.0
 
-    Gadj = G.pred if G.is_directed() else G.adj
+    Gadj = G._pred if G.is_directed() else G._adj
 
     def sim(u, v):
         return importance_factor * avg_sim(list(product(Gadj[u], Gadj[v])))

@@ -66,7 +66,7 @@ def maximal_independent_set(G, nodes=None, seed=None):
         nodes = set(nodes)
     if not nodes.issubset(G):
         raise nx.NetworkXUnfeasible(f"{nodes} is not a subset of the nodes of G")
-    neighbors = set.union(*[set(G.adj[v]) for v in nodes])
+    neighbors = set.union(*[set(G._adj[v]) for v in nodes])
     if set.intersection(neighbors, nodes):
         raise nx.NetworkXUnfeasible(f"{nodes} is not an independent set of G")
     indep_nodes = list(nodes)
@@ -74,5 +74,5 @@ def maximal_independent_set(G, nodes=None, seed=None):
     while available_nodes:
         node = seed.choice(list(available_nodes))
         indep_nodes.append(node)
-        available_nodes.difference_update(list(G.adj[node]) + [node])
+        available_nodes.difference_update(list(G._adj[node]) + [node])
     return indep_nodes

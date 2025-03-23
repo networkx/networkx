@@ -262,11 +262,11 @@ def _bidirectional_pred_succ(G, source, target):
 
     # handle either directed or undirected
     if G.is_directed():
-        Gpred = G.pred
-        Gsucc = G.succ
+        Gpred = G._pred
+        Gsucc = G._succ
     else:
-        Gpred = G.adj
-        Gsucc = G.adj
+        Gpred = G._adj
+        Gsucc = G._adj
 
     # predecessor and successors in search
     pred = {source: None}
@@ -349,7 +349,7 @@ def single_source_shortest_path(G, source, cutoff=None):
         cutoff = float("inf")
     nextlevel = {source: 1}  # list of nodes to check at next level
     paths = {source: [source]}  # paths dictionary  (paths to key from source)
-    return dict(_single_shortest_path(G.adj, nextlevel, paths, cutoff, join))
+    return dict(_single_shortest_path(G._adj, nextlevel, paths, cutoff, join))
 
 
 def _single_shortest_path(adj, firstlevel, paths, cutoff, join):
@@ -429,7 +429,7 @@ def single_target_shortest_path(G, target, cutoff=None):
         return p2 + p1
 
     # handle undirected graphs
-    adj = G.pred if G.is_directed() else G.adj
+    adj = G._pred if G.is_directed() else G._adj
     if cutoff is None:
         cutoff = float("inf")
     nextlevel = {target: 1}  # list of nodes to check at next level
