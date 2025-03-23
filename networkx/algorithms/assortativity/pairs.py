@@ -7,7 +7,7 @@ __all__ = ["node_attribute_xy", "node_degree_xy"]
 
 @nx._dispatchable(node_attrs="attribute")
 def node_attribute_xy(G, attribute, nodes=None):
-    """Yields 2-tuples of node attribute values for all edges in `G`.
+    """Yield 2-tuples of node attribute values for all edges in `G`.
 
     This generator yields, for each edge in `G` incident to a node in `nodes`,
     a 2-tuple of form ``(attribute value,  attribute value)`` for the parameter
@@ -27,7 +27,7 @@ def node_attribute_xy(G, attribute, nodes=None):
     Yields
     ------
     (x, y): 2-tuple
-        Generates 2-tuple of (attribute, attribute) values.
+        2-tuple of (attribute, attribute) values.
 
     Examples
     --------
@@ -67,7 +67,7 @@ def node_attribute_xy(G, attribute, nodes=None):
 
 @nx._dispatchable(edge_attrs="weight")
 def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
-    """Yields 2-tuples of ``(degree, degree)`` values for edges in `G`.
+    """Yield 2-tuples of ``(degree, degree)`` values for edges in `G`.
 
     This generator yields, for each edge in `G` incident to a node in `nodes`,
     a 2-tuple of form ``(degree, degree)``. The node degrees are weighted
@@ -95,7 +95,7 @@ def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
     Yields
     ------
     (x, y): 2-tuple
-        Generates 2-tuple of (degree, degree) values.
+        2-tuple of (degree, degree) values.
 
     Examples
     --------

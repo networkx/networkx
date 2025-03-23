@@ -13,7 +13,7 @@ __all__ = [
 @not_implemented_for("undirected")
 @nx._dispatchable
 def attracting_components(G):
-    """Generates the attracting components in `G`.
+    """Yield the attracting components in `G`.
 
     An attracting component in a directed graph `G` is a strongly connected
     component with the property that a random walker on the graph will never
@@ -31,10 +31,10 @@ def attracting_components(G):
     G : DiGraph, MultiDiGraph
         The graph to be analyzed.
 
-    Returns
-    -------
-    attractors : generator of sets
-        A generator of sets of nodes, one for each attracting component of G.
+    Yields
+    ------
+    attractors : set
+        Set of nodes of attracting component of `G`.
 
     Raises
     ------

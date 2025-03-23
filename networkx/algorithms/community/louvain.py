@@ -176,7 +176,7 @@ def louvain_partitions(
 
     Yields
     ------
-    list
+    communities : list of sets
         A list of sets (partition of `G`). Each set represents one community and contains
         all the nodes that constitute it.
 

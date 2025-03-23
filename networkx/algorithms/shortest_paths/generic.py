@@ -437,7 +437,7 @@ def average_shortest_path_length(G, weight=None, method=None):
 
 @nx._dispatchable(edge_attrs="weight")
 def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
-    """Compute all shortest simple paths in the graph.
+    """Yield all shortest simple paths in the graph.
 
     Parameters
     ----------
@@ -466,10 +466,10 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
        If `weight` is None, unweighted graph methods are used, and this
        suggestion is ignored.
 
-    Returns
-    -------
-    paths : generator of lists
-        A generator of all paths between source and target.
+    Yields
+    ------
+    path : list
+        Eath path between source and target.
 
     Raises
     ------
@@ -515,7 +515,7 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
 
 @nx._dispatchable(edge_attrs="weight")
 def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
-    """Compute all shortest simple paths from the given source in the graph.
+    """Yield all shortest simple paths from the given source in the graph.
 
     Parameters
     ----------
@@ -541,10 +541,10 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
        If `weight` is None, unweighted graph methods are used, and this
        suggestion is ignored.
 
-    Returns
-    -------
-    paths : generator of dictionary
-        A generator of all paths between source and all nodes in the graph.
+    Yields
+    ------
+    (target, paths) : 2-tuple
+        All paths between source and target in the graph.
 
     Raises
     ------
@@ -588,7 +588,7 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
 
 @nx._dispatchable(edge_attrs="weight")
 def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
-    """Compute all shortest paths between all nodes.
+    """Yield all shortest paths between all nodes.
 
     Parameters
     ----------
@@ -611,10 +611,11 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
        If `weight` is None, unweighted graph methods are used, and this
        suggestion is ignored.
 
-    Returns
-    -------
-    paths : generator of dictionary
-        Dictionary of arrays, keyed by source and target, of all shortest paths.
+    Yields
+    ------
+    (source, paths_dict) : 2-tuple
+        (source, paths_dict) tuple with dictionary keyed by target and
+        shortest path as the key value.
 
     Raises
     ------
@@ -647,7 +648,7 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
 
 
 def _build_paths_from_predecessors(sources, target, pred):
-    """Compute all simple paths to target, given the predecessors found in
+    """Yield all simple paths to target, given the predecessors found in
     pred, terminating when any source in sources is found.
 
     Parameters
@@ -661,10 +662,10 @@ def _build_paths_from_predecessors(sources, target, pred):
     pred : dict
        A dictionary of predecessor lists, keyed by node
 
-    Returns
-    -------
-    paths : generator of lists
-        A generator of all paths between source and target.
+    Yields
+    ------
+    path : list
+        A path between source and target. All paths will be generated.
 
     Raises
     ------

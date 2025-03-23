@@ -17,7 +17,7 @@ __all__ = [
 @not_implemented_for("undirected")
 @nx._dispatchable
 def all_pairs_lowest_common_ancestor(G, pairs=None):
-    """Return the lowest common ancestor of all pairs or the provided pairs
+    """Yield the lowest common ancestor of all pairs or the provided pairs
 
     Parameters
     ----------
@@ -167,10 +167,11 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
         The pairs of interest. If None, Defaults to all pairs of nodes
         under `root` that have a lowest common ancestor.
 
-    Returns
-    -------
-    lcas : generator of tuples `((u, v), lca)` where `u` and `v` are nodes
-        in `pairs` and `lca` is their lowest common ancestor.
+    Yields
+    ------
+    ((u, v), lca) : tuple
+        `((u, v), lca)` where `u` and `v` are nodes in `pairs` and `lca`
+        is their lowest common ancestor.
 
     Examples
     --------

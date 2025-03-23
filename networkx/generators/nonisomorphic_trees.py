@@ -16,7 +16,7 @@ import networkx as nx
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def nonisomorphic_trees(order):
-    """Generates lists of nonisomorphic trees
+    """Yield nonisomorphic trees.
 
     Parameters
     ----------
@@ -25,8 +25,8 @@ def nonisomorphic_trees(order):
 
     Yields
     ------
-    list of `networkx.Graph` instances
-       A list of nonisomorphic trees
+    tree : Graph
+        A nonisomorphic tree
     """
 
     if order < 2:

@@ -59,7 +59,7 @@ def single_source_shortest_path_length(G, source, cutoff=None):
 
 
 def _single_shortest_path_length(adj, firstlevel, cutoff):
-    """Yields (node, level) in a breadth first search
+    """Yield (node, level) in a breadth first search
 
     Shortest Path Length helper function
     Parameters
@@ -140,7 +140,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
 
 @nx._dispatchable
 def all_pairs_shortest_path_length(G, cutoff=None):
-    """Computes the shortest path lengths between all nodes in `G`.
+    """Yield shortest path lengths between all nodes in `G`.
 
     Parameters
     ----------
@@ -150,10 +150,10 @@ def all_pairs_shortest_path_length(G, cutoff=None):
         Depth at which to stop the search. Only paths of length at most
         `cutoff` are returned.
 
-    Returns
-    -------
-    lengths : iterator
-        (source, dictionary) iterator with dictionary keyed by target and
+    Yields
+    ------
+    (source, length_dict) : 2-tuple
+        (source, length_dict) tuple with dictionary keyed by target and
         shortest path length as the key value.
 
     Notes
@@ -439,7 +439,7 @@ def single_target_shortest_path(G, target, cutoff=None):
 
 @nx._dispatchable
 def all_pairs_shortest_path(G, cutoff=None):
-    """Compute shortest paths between all nodes.
+    """Yield shortest paths between all nodes.
 
     Parameters
     ----------
@@ -449,10 +449,11 @@ def all_pairs_shortest_path(G, cutoff=None):
         Depth at which to stop the search. Only paths of length at most
         `cutoff` are returned.
 
-    Returns
-    -------
-    paths : iterator
-        Dictionary, keyed by source and target, of shortest paths.
+    Yields
+    ------
+    (source, paths_dict) : 2-tuple
+        (source, paths_dict) tuple with dictionary keyed by target and
+        shortest path as the key value.
 
     Examples
     --------

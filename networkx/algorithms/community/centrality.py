@@ -7,7 +7,7 @@ __all__ = ["girvan_newman"]
 
 @nx._dispatchable(preserve_edge_attrs="most_valuable_edge")
 def girvan_newman(G, most_valuable_edge=None):
-    """Finds communities in a graph using the Girvan–Newman method.
+    """Yield communities in a graph using the Girvan–Newman method.
 
     Parameters
     ----------
@@ -21,12 +21,12 @@ def girvan_newman(G, most_valuable_edge=None):
         If not specified, the edge with the highest
         :func:`networkx.edge_betweenness_centrality` will be used.
 
-    Returns
-    -------
-    iterator
-        Iterator over tuples of sets of nodes in `G`. Each set of node
-        is a community, each tuple is a sequence of communities at a
-        particular level of the algorithm.
+    Yields
+    ------
+    communities : tuple of sets
+        Tuples of sets of nodes in `G`. Each set of nodes is a community,
+        and each tuple is a sequence of communities at a particular
+        level of the algorithm.
 
     Examples
     --------

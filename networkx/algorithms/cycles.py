@@ -26,7 +26,7 @@ __all__ = [
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def cycle_basis(G, root=None):
-    """Returns a list of cycles which form a basis for cycles of G.
+    """Return a list of cycles which form a basis for cycles of G.
 
     A basis for cycles of a network is a minimal collection of
     cycles such that any cycle in the network can be written
@@ -104,7 +104,7 @@ def cycle_basis(G, root=None):
 
 @nx._dispatchable
 def simple_cycles(G, length_bound=None):
-    """Find simple cycles (elementary circuits) of a graph.
+    """Yield simple cycles (elementary circuits) of a graph.
 
     A "simple cycle", or "elementary circuit", is a closed path where
     no node appears twice.  In a directed graph, two simple cycles are distinct
@@ -144,7 +144,7 @@ def simple_cycles(G, length_bound=None):
     Yields
     ------
     list of nodes
-       Each cycle is represented by a list of nodes along the cycle.
+       Each cycle represented by a list of nodes along the cycle.
 
     Examples
     --------
@@ -269,7 +269,7 @@ def _directed_cycle_search(G, length_bound):
     Yields
     ------
     list of nodes
-       Each cycle is represented by a list of nodes along the cycle.
+       Each cycle represented by a list of nodes along the cycle.
     """
 
     scc = nx.strongly_connected_components
@@ -319,7 +319,7 @@ def _undirected_cycle_search(G, length_bound):
     Yields
     ------
     list of nodes
-       Each cycle is represented by a list of nodes along the cycle.
+       Each cycle represented by a list of nodes along the cycle.
     """
 
     bcc = nx.biconnected_components
@@ -367,7 +367,7 @@ def _johnson_cycle_search(G, path):
     Yields
     ------
     list of nodes
-       Each cycle is represented by a list of nodes along the cycle.
+       Each cycle represented by a list of nodes along the cycle.
 
     References
     ----------
@@ -430,7 +430,7 @@ def _bounded_cycle_search(G, path, length_bound):
     Yields
     ------
     list of nodes
-       Each cycle is represented by a list of nodes along the cycle.
+       Each cycle represented by a list of nodes along the cycle.
 
     References
     ----------
@@ -476,7 +476,7 @@ def _bounded_cycle_search(G, path, length_bound):
 
 @nx._dispatchable
 def chordless_cycles(G, length_bound=None):
-    """Find simple chordless cycles of a graph.
+    """Yield simple chordless cycles of a graph.
 
     A `simple cycle` is a closed path where no node appears twice.  In a simple
     cycle, a `chord` is an additional edge between two nodes in the cycle.  A
@@ -537,7 +537,7 @@ def chordless_cycles(G, length_bound=None):
     Yields
     ------
     list of nodes
-       Each cycle is represented by a list of nodes along the cycle.
+       Each cycle represented by a list of nodes along the cycle.
 
     Examples
     --------
@@ -723,7 +723,7 @@ def _chordless_cycle_search(F, B, path, length_bound):
     Yields
     ------
     list of nodes
-       Each cycle is represented by a list of nodes along the cycle.
+       Each cycle represented by a list of nodes along the cycle.
 
     References
     ----------

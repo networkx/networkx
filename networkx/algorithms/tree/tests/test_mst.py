@@ -8,11 +8,11 @@ from networkx.utils import edges_equal, nodes_equal
 
 def test_unknown_algorithm():
     with pytest.raises(ValueError):
-        nx.minimum_spanning_tree(nx.Graph(), algorithm="random")
+        list(nx.minimum_spanning_tree(nx.Graph(), algorithm="random"))
     with pytest.raises(
         ValueError, match="random is not a valid choice for an algorithm."
     ):
-        nx.maximum_spanning_edges(nx.Graph(), algorithm="random")
+        list(nx.maximum_spanning_edges(nx.Graph(), algorithm="random"))
 
 
 class MinimumSpanningTreeTestBase:
@@ -98,28 +98,28 @@ class MinimumSpanningTreeTestBase:
         expected = [(u, v) for u, v, d in self.minimum_spanning_edgelist]
         assert edges_equal(actual, expected)
         # Now test for raising exception
-        edges = nx.minimum_spanning_edges(
-            G, algorithm=self.algo, data=False, ignore_nan=False
-        )
         with pytest.raises(ValueError):
-            list(edges)
+            list(
+                nx.minimum_spanning_edges(
+                    G, algorithm=self.algo, data=False, ignore_nan=False
+                )
+            )
         # test default for ignore_nan as False
-        edges = nx.minimum_spanning_edges(G, algorithm=self.algo, data=False)
         with pytest.raises(ValueError):
-            list(edges)
+            list(nx.minimum_spanning_edges(G, algorithm=self.algo, data=False))
 
     def test_nan_weights_MultiGraph(self):
         G = nx.MultiGraph()
         G.add_edge(0, 12, weight=float("nan"))
-        edges = nx.minimum_spanning_edges(
-            G, algorithm="prim", data=False, ignore_nan=False
-        )
         with pytest.raises(ValueError):
-            list(edges)
+            list(
+                nx.minimum_spanning_edges(
+                    G, algorithm="prim", data=False, ignore_nan=False
+                )
+            )
         # test default for ignore_nan as False
-        edges = nx.minimum_spanning_edges(G, algorithm="prim", data=False)
         with pytest.raises(ValueError):
-            list(edges)
+            list(nx.minimum_spanning_edges(G, algorithm="prim", data=False))
 
     def test_nan_weights_order(self):
         # now try again with a nan edge at the beginning of G.nodes

@@ -4,8 +4,10 @@ import logging
 import os
 import typing
 import warnings
+from collections.abc import Iterator
 from functools import partial
 from importlib.metadata import entry_points
+from types import GeneratorType
 
 import networkx as nx
 
@@ -15,6 +17,12 @@ from .decorators import argmap
 __all__ = ["_dispatchable"]
 
 _logger = logging.getLogger(__name__)
+
+
+def peek(seq):
+    iterator = iter(seq)
+    item = next(iterator)
+    return itertools.chain((item,), iterator)
 
 
 def _do_nothing():
@@ -342,7 +350,18 @@ class _dispatchable:
         self._orig_doc = func.__doc__
         self._cached_doc = None
 
-        self.orig_func = func
+        def fake_orig_func(*args, **kwargs):
+            """Experiment with generator functions and functions that return iterators."""
+            rv = func(*args, **kwargs)
+            if isinstance(rv, GeneratorType):
+                try:
+                    rv = peek(rv)
+                except StopIteration:
+                    rv = iter([])
+            return rv
+
+        self._orig_func = func
+        self.orig_func = fake_orig_func
         self.name = name
         self.edge_attrs = edge_attrs
         self.node_attrs = node_attrs
@@ -466,7 +485,7 @@ class _dispatchable:
         the `backend` and `backend_kwargs` parameters."""
 
         if self._sig is None:
-            sig = inspect.signature(self.orig_func)
+            sig = inspect.signature(self._orig_func)
             # `backend` is now a reserved argument used by dispatching.
             # assert "backend" not in sig.parameters
             if not any(

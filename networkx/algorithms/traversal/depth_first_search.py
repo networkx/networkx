@@ -17,7 +17,7 @@ __all__ = [
 
 @nx._dispatchable
 def dfs_edges(G, source=None, depth_limit=None, *, sort_neighbors=None):
-    """Iterate over edges in a depth-first-search (DFS).
+    """Yield edges in a depth-first-search (DFS).
 
     Perform a depth-first-search over the nodes of `G` and yield
     the edges in order. This may not generate all edges in `G`
@@ -41,8 +41,8 @@ def dfs_edges(G, source=None, depth_limit=None, *, sort_neighbors=None):
 
     Yields
     ------
-    edge: 2-tuple of nodes
-       Yields edges resulting from the depth-first-search.
+    edge : 2-tuple of nodes
+       Edge resulting from the depth-first-search.
 
     Examples
     --------
@@ -294,7 +294,7 @@ def dfs_successors(G, source=None, depth_limit=None, *, sort_neighbors=None):
 
 @nx._dispatchable
 def dfs_postorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None):
-    """Generate nodes in a depth-first-search post-ordering starting at source.
+    """Yield nodes in a depth-first-search post-ordering starting at source.
 
     Parameters
     ----------
@@ -311,10 +311,10 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None
         returns an iterable of the same nodes with a custom ordering.
         For example, `sorted` will sort the nodes in increasing order.
 
-    Returns
-    -------
-    nodes: generator
-       A generator of nodes in a depth-first-search post-ordering.
+    Yields
+    ------
+    node
+       Each node in a depth-first-search post-ordering.
 
     Examples
     --------
@@ -353,7 +353,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None
 
 @nx._dispatchable
 def dfs_preorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None):
-    """Generate nodes in a depth-first-search pre-ordering starting at source.
+    """Yield nodes in a depth-first-search pre-ordering starting at source.
 
     Parameters
     ----------
@@ -371,10 +371,10 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None)
         returns an iterable of the same nodes with a custom ordering.
         For example, `sorted` will sort the nodes in increasing order.
 
-    Returns
-    -------
-    nodes: generator
-       A generator of nodes in a depth-first-search pre-ordering.
+    Yields
+    ------
+    node
+       Each node in a depth-first-search pre-ordering.
 
     Examples
     --------
@@ -412,7 +412,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None)
 
 @nx._dispatchable
 def dfs_labeled_edges(G, source=None, depth_limit=None, *, sort_neighbors=None):
-    """Iterate over edges in a depth-first-search (DFS) labeled by type.
+    """Yield edges in a depth-first-search (DFS) labeled by type.
 
     Parameters
     ----------
@@ -430,12 +430,12 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, *, sort_neighbors=None):
         returns an iterable of the same nodes with a custom ordering.
         For example, `sorted` will sort the nodes in increasing order.
 
-    Returns
-    -------
-    edges: generator
-       A generator of triples of the form (*u*, *v*, *d*), where (*u*,
-       *v*) is the edge being explored in the depth-first search and *d*
-       is one of the strings 'forward', 'nontree', 'reverse', or 'reverse-depth_limit'.
+    Yields
+    ------
+    edge : 3-tuple
+       An edge as a triple of the form (*u*, *v*, *d*), where (*u*, *v*) is
+       the edge being explored in the depth-first search and *d* is one of
+       the strings 'forward', 'nontree', 'reverse', or 'reverse-depth_limit'.
        A 'forward' edge is one in which *u* has been visited but *v* has
        not. A 'nontree' edge is one in which both *u* and *v* have been
        visited but the edge is not in the DFS tree. A 'reverse' edge is
