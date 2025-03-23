@@ -115,6 +115,7 @@ from networkx.algorithms.flow import min_cost_flow_cost
 from networkx.algorithms.flow import minimum_cut
 from networkx.algorithms.flow import minimum_cut_value
 from networkx.algorithms.flow import network_simplex
+from networkx.algorithms.flow import network_simplex_generalized
 from networkx.algorithms.isomorphism import could_be_isomorphic
 from networkx.algorithms.isomorphism import fast_could_be_isomorphic
 from networkx.algorithms.isomorphism import faster_could_be_isomorphic
