@@ -280,6 +280,12 @@ class NetworkXConfig(Config):
 
     Parameters
     ----------
+    backend : str or None
+        If not None, the backend to use for all dispatchable functions. This is
+        equivalent to using ``backend=`` keyword argument in all dispatchable
+        functions. Input graphs will be converted to the backend if necessary.
+        Default is None.
+
     backend_priority : list of backend names or dict or BackendPriorities
         Enable automatic conversion of graphs to backend graphs for functions
         implemented by the backend. Priority is given to backends listed earlier.
@@ -330,9 +336,18 @@ class NetworkXConfig(Config):
 
     - ``NETWORKX_BACKEND_PRIORITY_ALGOS``: same as ``NETWORKX_BACKEND_PRIORITY`` to set ``backend_priority.algos``.
 
+    ``backend`` and ``backend_priority`` configurations are similar in that they can
+    both be used to run an algorithm with a backend (converting inputs if necessary),
+    but they have important differences. ``backend_priority`` is "soft" and will only
+    use one of the specified backends if it is able to run the algorithm. This is a
+    safer option that behaves well--it doesn't raise--when backends are incomplete.
+    ``backend`` configuration is "hard" and directs all dispatchable calls to use
+    the specified backend. It will raise if the backend does not implement a function.
+
     This is a global configuration. Use with caution when using from multiple threads.
     """
 
+    backend: str | None
     backend_priority: BackendPriorities
     backends: Config
     cache_converted_graphs: bool
@@ -342,7 +357,10 @@ class NetworkXConfig(Config):
     def _on_setattr(self, key, value):
         from .backends import backend_info
 
-        if key == "backend_priority":
+        if key == "backend":
+            if value is not None and value not in backend_info:
+                raise ValueError(f"Unknown backend when setting {key!r}: {value}")
+        elif key == "backend_priority":
             if isinstance(value, list):
                 # `config.backend_priority = [backend]` sets `backend_priority.algos`
                 value = dict(
