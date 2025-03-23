@@ -22,11 +22,12 @@ if token is None:
 
 
 def api(url):
-    json = requests.get(url=url, headers={"Authorization": f"token {token}"}).json()
-    if "message" in json and json["message"] == "Bad credentials":
-        raise RuntimeError("Invalid token provided")
-    else:
-        return json
+    response = requests.get(url=url, headers={"Authorization": f"token {token}"})
+    if response.status_code == 401:
+        raise RuntimeError("Error: Invalid GitHub token provided.")
+    elif response.status_code != 200:
+        raise RuntimeError(f"Error: Failed to fetch data from {url} (Status Code: {response.status_code})")
+    return response.json()
 
 
 resp = api(core_url)
