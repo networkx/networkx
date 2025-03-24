@@ -503,7 +503,7 @@ def contracted_nodes(
 
     Any node attributes on the contracted node are also preserved:
 
-    >>> nx.set_node_attributes(P3, dict(enumerate(("rgb"))), name="color")
+    >>> nx.set_node_attributes(P3, dict(enumerate("rgb")), name="color")
     >>> P3.nodes(data=True)
     NodeDataView({0: {'color': 'r'}, 1: {'color': 'g'}, 2: {'color': 'b'}})
     >>> H = nx.contracted_nodes(P3, 0, 2)
@@ -520,6 +520,24 @@ def contracted_nodes(
     >>> H = nx.contracted_nodes(P3, 0, 2)
     >>> H.edges(data=True)
     EdgeDataView([(0, 1, {'weight': 10, 'contraction': {(2, 1): {'weight': 100}}})])
+
+    Attributes from contracted nodes/edges can be combined with those of the
+    nodes/edges onto which they were contracted:
+
+    >>> # Concatenate colors of contracted nodes
+    >>> for u, cdict in H.nodes(data="contraction"):
+    ...     if cdict is not None:
+    ...         H.nodes[u]["color"] += "".join(n["color"] for n in cdict.values())
+    ...         del H.nodes[u]["contraction"]  # Remove contraction attr (optional)
+    >>> H.nodes(data=True)
+    NodeDataView({0: {'color': 'rb'}, 1: {'color': 'g'}})
+    >>> # Sum contracted edge weights
+    >>> for u, v, cdict in H.edges(data="contraction"):
+    ...     if cdict is not None:
+    ...         H[u][v]["weight"] += sum(n["weight"] for n in cdict.values())
+    ...         del H.edges[(u, v)]["contraction"]  # Remove contraction attr (optional)
+    >>> H.edges(data=True)
+    EdgeDataView([(0, 1, {'weight': 110})])
 
     If `G` is a multigraph, then a new edge is added instead. Any edge attributes
     are still preserved:
