@@ -4,7 +4,7 @@ Cycle finding algorithms
 ========================
 """
 
-from collections import Counter, defaultdict
+from collections import defaultdict
 from itertools import combinations, product
 from math import inf
 
@@ -585,13 +585,13 @@ def chordless_cycles(G, length_bound=None):
     # Nodes with loops cannot belong to longer cycles.  Let's delete them here.
     # also, we implicitly reduce the multiplicity of edges down to 1 in the case
     # of multiedges.
-    self_loop_nodes = set(nx.nodes_with_selfloops(G))
-    Gless = G.subgraph(set(G) - self_loop_nodes).copy()
+    loops = set(nx.nodes_with_selfloops(G))
+    edges = ((u, v) for u in G if u not in loops for v in G._adj[u] if v not in loops)
     if directed:
-        F = nx.DiGraph(Gless)
+        F = nx.DiGraph(edges)
         B = F.to_undirected(as_view=False)
     else:
-        F = nx.Graph(Gless)
+        F = nx.Graph(edges)
         B = None
 
     # If we're given a multigraph, we have a few cases to consider with parallel
@@ -615,7 +615,9 @@ def chordless_cycles(G, length_bound=None):
         if not directed:
             B = F.copy()
             visited = set()
-        for u, Gu in Gless.adj.items():
+        for u, Gu in G.adj.items():
+            if u in loops:
+                continue
             if directed:
                 multiplicity = ((v, len(Guv)) for v, Guv in Gu.items())
                 for v, m in multiplicity:
@@ -658,7 +660,7 @@ def chordless_cycles(G, length_bound=None):
         # predecessors of v with successors of v.
         def stems(C, v):
             for u, w in product(C.pred[v], C.succ[v]):
-                if not Gless.has_edge(u, w):  # omit stems with acyclic chords
+                if not G.has_edge(u, w):  # omit stems with acyclic chords
                     yield [u, v, w], F.has_edge(w, u)
 
     else:
