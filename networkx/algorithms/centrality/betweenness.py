@@ -131,6 +131,7 @@ def betweenness_centrality(
         # This is for performance and correctness. When `endpoints` is False
         # and k is given, k == n is a special case that would violate the
         # assumption that node `v` is not one of the (s, t) node pairs.
+        # Should this warn or raise instead?
         k = None
     if k is None:
         nodes = G
@@ -362,32 +363,28 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
 
 
 def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False):
-    if endpoints and n < 2 or not endpoints and n <= 2:
+    # N is used to count the number of valid (s, t) pairs where s != t that
+    # could have a path pass through v. If endpoints is False, then v may
+    # not be the target t, hence why we subtract by 1.
+    N = n if endpoints else n - 1
+    if N < 2:
         # No rescaling necessary: b=0 for all nodes
         return betweenness
 
-    # The non-normalized BC values are computed the same way for directed and
-    # undirected graphs: shortest paths are computed and counted for each
-    # *ordered* (s, t) pair. Undirected graphs should only count valid
-    # *unordered* node pairs {s, t}; that is, (s, t) and (t, s) should
-    # be counted only once. `N_double_counted` corrects for this.
+    # The non-normalized BC values are computed the same way for directed
+    # and undirected graphs: shortest paths are computed and counted for
+    # each *ordered* (s, t) pair. Undirected graphs should only count
+    # valid *unordered* node pairs {s, t}; that is, (s, t) and (t, s)
+    # should be counted only once. `N_double_counted` corrects for this.
     N_double_counted = 1 if normalized or directed else 2
 
-    if normalized:
-        # `K_source * N_dest` is the number of valid (s, t) node pairs that
-        # could have a path through v where s != t. If endpoints is False,
-        # then v may not be s or t, hence `N_dest = n - 2`.
-        N_source = 1
-        N_dest = n - 1 if endpoints else n - 2
-    else:
-        # `N_source / K_source` scales to the full BC when using k samples.
-        N_source = n if endpoints else n - 1
-        N_dest = 1
-    if k is None:
-        # If endpoints if False, then v may not be s, hence `K_source = n - 1`
-        K_source = n if endpoints else n - 1
-    else:
-        K_source = k
+    # When not normalized, `N_source / K_source` scales to the full BC.
+    N_source = 1 if normalized else N
+    K_source = N if k is None else k
+
+    # When normalized, `K_source * N_dest` is the number of valid (s, t)
+    # node pairs that could have a path through v where s != t.
+    N_dest = N - 1 if normalized else 1
 
     scale = N_source / (K_source * N_dest * N_double_counted)
 
