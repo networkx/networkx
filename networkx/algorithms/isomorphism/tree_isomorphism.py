@@ -256,15 +256,9 @@ def tree_isomorphism(t1, t2):
     if not nx.is_tree(t2):
         raise nx.NetworkXError("t2 is not a tree")
 
-    # To be isomorphic, t1 and t2 must have the same number of nodes.
-    if nx.number_of_nodes(t1) != nx.number_of_nodes(t2):
-        return []
-
-    # Another shortcut is that the sorted degree sequences need to be the same.
-    degree_sequence1 = sorted(d for (_, d) in t1.degree())
-    degree_sequence2 = sorted(d for (_, d) in t2.degree())
-
-    if degree_sequence1 != degree_sequence2:
+    # To be isomorphic, t1 and t2 must have the same number of nodes and sorted
+    # degree sequences
+    if not nx.faster_could_be_isomorphic(t1, t2):
         return []
 
     # A tree can have either 1 or 2 centers.
