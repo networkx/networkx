@@ -145,8 +145,10 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
         If `t1` and `t2` are not isomorphic, then it returns the empty list.
     """
 
-    assert nx.is_tree(t1)
-    assert nx.is_tree(t2)
+    if not nx.is_tree(t1):
+        raise nx.NetworkXError("t1 is not a tree")
+    if not nx.is_tree(t2):
+        raise nx.NetworkXError("t2 is not a tree")
 
     # get the rooted tree formed by combining them
     # with unique names
