@@ -322,6 +322,22 @@ class TestBetweennessCentrality:
         )
         assert b == pytest.approx(expected)
 
+    def test_k_out_of_bounds_raises(self):
+        G = nx.cycle_graph(4)
+        with pytest.raises(ValueError, match="larger"):
+            nx.betweenness_centrality(G, k=5)
+        with pytest.raises(ValueError, match="negative"):
+            nx.betweenness_centrality(G, k=-1)
+        with pytest.raises(ZeroDivisionError):
+            nx.betweenness_centrality(G, k=0)
+        with pytest.raises(ZeroDivisionError):
+            nx.betweenness_centrality(G, k=0, normalized=False)
+        # Test edge case: use full population when k == len(G)
+        # Should we warn or raise instead?
+        b1 = nx.betweenness_centrality(G, k=4, endpoints=False)
+        b2 = nx.betweenness_centrality(G, endpoints=False)
+        assert b1 == b2
+
 
 class TestWeightedBetweennessCentrality:
     def test_K5(self):

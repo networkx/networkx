@@ -127,7 +127,7 @@ def betweenness_centrality(
        https://doi.org/10.2307/3033543
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
-    if k is not None and k >= len(G):
+    if k == len(G):
         # This is for performance and correctness. When `endpoints` is False
         # and k is given, k == n is a special case that would violate the
         # assumption that node `v` is not one of the (s, t) node pairs.
