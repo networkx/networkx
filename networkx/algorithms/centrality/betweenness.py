@@ -371,22 +371,22 @@ def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False
         # No rescaling necessary: b=0 for all nodes
         return betweenness
 
-    # The non-normalized BC values are computed the same way for directed
-    # and undirected graphs: shortest paths are computed and counted for
-    # each *ordered* (s, t) pair. Undirected graphs should only count
-    # valid *unordered* node pairs {s, t}; that is, (s, t) and (t, s)
-    # should be counted only once. `N_double_counted` corrects for this.
-    N_double_counted = 1 if normalized or directed else 2
-
-    # When not normalized, `N_source / K_source` scales to the full BC.
-    N_source = 1 if normalized else N
     K_source = N if k is None else k
+    if not normalized and not directed:
+        # The non-normalized BC values are computed the same way for directed
+        # and undirected graphs: shortest paths are computed and counted for
+        # each *ordered* (s, t) pair. Undirected graphs should only count
+        # valid *unordered* node pairs {s, t}; that is, (s, t) and (t, s)
+        # should be counted only once. We correct for this here.
+        K_source *= 2
 
-    # When normalized, `K_source * N_dest` is the number of valid (s, t)
-    # node pairs that could have a path through v where s != t.
-    N_dest = N - 1 if normalized else 1
-
-    scale = N_source / (K_source * N_dest * N_double_counted)
+    if normalized:
+        # Divide by the number of valid (s, t) node pairs that could have
+        # a path through v where s != t.
+        scale = 1 / (K_source * (N - 1))
+    else:
+        # Scale to the full BC
+        scale = N / K_source
 
     if scale != 1:
         for v in betweenness:
