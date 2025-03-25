@@ -364,7 +364,7 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
 
 def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False):
     # N is used to count the number of valid (s, t) pairs where s != t that
-    # could have a path pass through v. If endpoints is False, then v may
+    # could have a path pass through v. If endpoints is False, then v must
     # not be the target t, hence why we subtract by 1.
     N = n if endpoints else n - 1
     if N < 2:
