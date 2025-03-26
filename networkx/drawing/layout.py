@@ -441,6 +441,7 @@ def spring_layout(
     seed=None,
     store_pos_as=None,
     method="auto",
+    gravity=1.0,
 ):
     """Position nodes using Fruchterman-Reingold force-directed algorithm.
 
@@ -518,10 +519,14 @@ def spring_layout(
 
     method : str  optional (default='auto')
         The method to compute the layout.
-        If 'FR', the force-directed Fruchterman-Reingold algorithm [1] is used.
-        If 'L-BFGS', the energy-based optimization algorithm [2] is used
-        with absolute values of edge weights and additional forces per connected component.
-        If 'auto', we use 'FR' if len(G) < 500 and 'L-BFGS' otherwise.
+        If 'force', the force-directed Fruchterman-Reingold algorithm [1] is used.
+        If 'energy', the energy-based optimization algorithm [2] is used with absolute
+        values of edge weights and gravitational forces acting on each connected component.
+        If 'auto', we use 'force' if len(G) < 500 and 'energy' otherwise.
+
+    gravity: float optional (default=1.0)
+        Used only for the method='energy'.
+        The positive coefficient of gravitational forces per connected component.
 
     Returns
     -------
@@ -553,8 +558,8 @@ def spring_layout(
     """
     import numpy as np
 
-    if method not in ("auto", "FR", "L-BFGS"):
-        raise ValueError(f"method not supported: {method}")
+    if method not in ("auto", "force", "energy"):
+        raise ValueError("the method must be either auto, force, or energy.")
 
     G, center = _process_params(G, center, dim)
 
@@ -591,7 +596,7 @@ def spring_layout(
 
     try:
         # Sparse matrix
-        if method == "FR" or (method == "auto" and len(G) < 500):
+        if method in ["auto", "force"] and len(G) < 500:
             raise ValueError
         A = nx.to_scipy_sparse_array(G, weight=weight, dtype="f")
         if k is None and fixed is not None:
@@ -599,7 +604,7 @@ def spring_layout(
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
         pos = _sparse_fruchterman_reingold(
-            A, k, pos_arr, fixed, iterations, threshold, dim, seed
+            A, k, pos_arr, fixed, iterations, threshold, dim, seed, method, gravity
         )
     except ValueError:
         A = nx.to_numpy_array(G, weight=weight)
@@ -687,9 +692,18 @@ def _fruchterman_reingold(
 
 @np_random_state(7)
 def _sparse_fruchterman_reingold(
-    A, k=None, pos=None, fixed=None, iterations=50, threshold=1e-4, dim=2, seed=None
+    A,
+    k=None,
+    pos=None,
+    fixed=None,
+    iterations=50,
+    threshold=1e-4,
+    dim=2,
+    seed=None,
+    method="energy",
+    gravity=1.0,
 ):
-    # Position nodes in adjacency matrix A using L-BFGS
+    # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
     import numpy as np
@@ -700,11 +714,10 @@ def _sparse_fruchterman_reingold(
     except AttributeError as err:
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
         raise nx.NetworkXError(msg) from err
-    # make sure we have a Compressed Sparse Row format
-    try:
-        A = A.tocsr()
-    except AttributeError:
-        A = sp.sparse.csr_array(A)
+
+    # optimal distance between nodes
+    if k is None:
+        k = np.sqrt(1.0 / nnodes)
 
     if pos is None:
         # random initial positions
@@ -717,9 +730,71 @@ def _sparse_fruchterman_reingold(
     if fixed is None:
         fixed = []
 
-    # optimal distance between nodes
-    if k is None:
-        k = np.sqrt(1.0 / nnodes)
+    if method == "energy":
+        return _energy_fruchterman_reingold(
+            A, nnodes, k, pos, fixed, iterations, threshold, dim, gravity
+        )
+
+    # make sure we have a LIst of Lists representation
+    try:
+        A = A.tolil()
+    except AttributeError:
+        A = (sp.sparse.coo_array(A)).tolil()
+
+    # the initial "temperature"  is about .1 of domain area (=1x1)
+    # this is the largest step allowed in the dynamics.
+    t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1])) * 0.1
+    # simple cooling scheme.
+    # linearly step down by dt on each iteration so last iteration is size dt.
+    dt = t / (iterations + 1)
+
+    displacement = np.zeros((dim, nnodes))
+    for iteration in range(iterations):
+        displacement *= 0
+        # loop over rows
+        for i in range(A.shape[0]):
+            if i in fixed:
+                continue
+            # difference between this row's node position and all others
+            delta = (pos[i] - pos).T
+            # distance between points
+            distance = np.sqrt((delta**2).sum(axis=0))
+            # enforce minimum distance of 0.01
+            distance = np.where(distance < 0.01, 0.01, distance)
+            # the adjacency matrix row
+            Ai = A.getrowview(i).toarray()  # TODO: revisit w/ sparse 1D container
+            # displacement "force"
+            displacement[:, i] += (
+                delta * (k * k / distance**2 - Ai * distance / k)
+            ).sum(axis=1)
+        # update positions
+        length = np.sqrt((displacement**2).sum(axis=0))
+        length = np.where(length < 0.01, 0.1, length)
+        delta_pos = (displacement * t / length).T
+        pos += delta_pos
+        # cool temperature
+        t -= dt
+        if (np.linalg.norm(delta_pos) / nnodes) < threshold:
+            break
+    return pos
+
+
+def _energy_fruchterman_reingold(
+    A, nnodes, k, pos, fixed, iterations, threshold, dim, gravity
+):
+    # Entry point for NetworkX graph is fruchterman_reingold_layout()
+    # energy-based version
+    import numpy as np
+    import scipy as sp
+
+    if gravity <= 0:
+        raise ValueError(f"the gravity must be positive.")
+
+    # make sure we have a Compressed Sparse Row format
+    try:
+        A = A.tocsr()
+    except AttributeError:
+        A = sp.sparse.csr_array(A)
 
     # Take absolute values of edge weights and symmetrize it
     A = np.abs(A)
@@ -727,33 +802,34 @@ def _sparse_fruchterman_reingold(
 
     n_components, labels = sp.sparse.csgraph.connected_components(A, directed=False)
     bincount = np.bincount(labels)
+    batchsize = 500
 
     def _cost_FR(x):
         pos = x.reshape((nnodes, dim))
         grad = np.zeros((nnodes, dim))
         cost = 0.0
-        for i in range(0, nnodes, 500):
-            i2 = min(i + 500, nnodes)  # 500 is the batch size
+        for l in range(0, nnodes, batchsize):
+            r = min(l + batchsize, nnodes)
             # difference between selected node positions and all others
-            delta = pos[i:i2, np.newaxis, :] - pos[np.newaxis, :, :]
+            delta = pos[l:r, np.newaxis, :] - pos[np.newaxis, :, :]
             # distance between points with a minimum distance of 1e-5
-            distance2 = np.sum(delta**2, axis=2)
+            distance2 = np.sum(delta * delta, axis=2)
             distance2 = np.maximum(distance2, 1e-10)
             distance = np.sqrt(distance2)
             # temporary variable for calculation
-            Aid = A[i:i2] * distance
+            Aid = A[l:r] * distance
             # attractive forces and repulsive forces
-            grad[i:i2] = 2 * np.einsum("ij,ijk->ik", Aid / k - k**2 / distance2, delta)
+            grad[l:r] = 2 * np.einsum("ij,ijk->ik", Aid / k - k**2 / distance2, delta)
             # integrated attractive forces
             cost += np.sum(Aid * distance2) / (3 * k)
             # integrated repulsive forces
             cost -= k**2 * np.sum(np.log(distance))
-        # additional forces from the centers of gravity to (0.5, ..., 0.5)^T
+        # gravitational force from the centroids of connected components to (0.5, ..., 0.5)^T
         centers = np.zeros((n_components, dim))
         np.add.at(centers, labels, pos)
         delta0 = centers / bincount[:, np.newaxis] - 0.5
-        grad += delta0[labels]
-        cost += 0.5 * np.sum(bincount * np.linalg.norm(delta0, axis=1) ** 2)
+        grad += gravity * delta0[labels]
+        cost += gravity * 0.5 * np.sum(bincount * np.linalg.norm(delta0, axis=1) ** 2)
         # fix positions of fixed nodes
         grad[fixed] = 0.0
         return cost, grad.ravel()
