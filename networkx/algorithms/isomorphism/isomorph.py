@@ -72,9 +72,7 @@ def could_be_isomorphic(G1, G2, *, properties="dtc"):
         G1_ptable = [tuple(p[n] for p in G1_props) for n in G1]
         G2_ptable = [tuple(p[n] for p in G2_props) for n in G2]
 
-        if sorted(G1_ptable) != sorted(G2_ptable):
-            return False
-        return True
+        return sorted(G1_ptable) == sorted(G2_ptable)
 
     # The property table is built and checked as each individual property is
     # added. The reason for this is the building/checking the property table
