@@ -65,8 +65,8 @@ class TestBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
         b = nx.betweenness_centrality(G, k=2, weight=None, normalized=False, seed=1)
         # python versions give different results with same seed
-        b_approx1 = {0: 0.0, 1: 1.5, 2: 0.0}
-        b_approx2 = {0: 0.0, 1: 0.75, 2: 0.0}
+        b_approx1 = {0: 0.0, 1: 1.0, 2: 0.0}
+        b_approx2 = {0: 0.0, 1: 0.5, 2: 0.0}
         for n in sorted(G):
             assert b[n] in (b_approx1[n], b_approx2[n])
 
@@ -287,6 +287,56 @@ class TestBetweennessCentrality:
         b_answer = {0: 0.0, 1: 0.5, 2: 0.0}
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
+
+    @pytest.mark.parametrize(
+        ("normalized", "endpoints", "is_directed", "k", "expected"),
+        [
+            (True, True, True, None, {0: 1.0, 1: 0.4, 2: 0.4, 3: 0.4, 4: 0.4}),
+            (True, True, True, 1, {0: 1.0, 1: 1.0, 2: 0.25, 3: 0.25, 4: 0.25}),
+            (True, True, False, None, {0: 1.0, 1: 0.4, 2: 0.4, 3: 0.4, 4: 0.4}),
+            (True, True, False, 1, {0: 1.0, 1: 1.0, 2: 0.25, 3: 0.25, 4: 0.25}),
+            (True, False, True, None, {0: 1.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}),
+            (True, False, True, 1, {0: 1.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}),
+            (True, False, False, None, {0: 1.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}),
+            (True, False, False, 1, {0: 1.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}),
+            (False, True, True, None, {0: 20.0, 1: 8.0, 2: 8.0, 3: 8.0, 4: 8.0}),
+            (False, True, True, 1, {0: 20.0, 1: 20.0, 2: 5.0, 3: 5.0, 4: 5.0}),
+            (False, True, False, None, {0: 10.0, 1: 4.0, 2: 4.0, 3: 4.0, 4: 4.0}),
+            (False, True, False, 1, {0: 10.0, 1: 10.0, 2: 2.5, 3: 2.5, 4: 2.5}),
+            (False, False, True, None, {0: 12.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}),
+            (False, False, True, 1, {0: 12.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}),
+            (False, False, False, None, {0: 6.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}),
+            (False, False, False, 1, {0: 6.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}),
+        ],
+    )
+    def test_scale_with_k_on_star_graph(
+        self, normalized, endpoints, is_directed, k, expected
+    ):
+        # seed=1 selects node 1 as the initial node when using k=1.
+        # Recall node 0 is the center of the star graph.
+        G = nx.star_graph(4)
+        if is_directed:
+            G = G.to_directed()
+        b = nx.betweenness_centrality(
+            G, k=k, seed=1, endpoints=endpoints, normalized=normalized
+        )
+        assert b == pytest.approx(expected)
+
+    def test_k_out_of_bounds_raises(self):
+        G = nx.cycle_graph(4)
+        with pytest.raises(ValueError, match="larger"):
+            nx.betweenness_centrality(G, k=5)
+        with pytest.raises(ValueError, match="negative"):
+            nx.betweenness_centrality(G, k=-1)
+        with pytest.raises(ZeroDivisionError):
+            nx.betweenness_centrality(G, k=0)
+        with pytest.raises(ZeroDivisionError):
+            nx.betweenness_centrality(G, k=0, normalized=False)
+        # Test edge case: use full population when k == len(G)
+        # Should we warn or raise instead?
+        b1 = nx.betweenness_centrality(G, k=4, endpoints=False)
+        b2 = nx.betweenness_centrality(G, endpoints=False)
+        assert b1 == b2
 
 
 class TestWeightedBetweennessCentrality:
