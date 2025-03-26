@@ -214,6 +214,7 @@ extend-select = [
   "PD",       # pandas-vet
 #  "FURB",     # refurb
   "PYI",      # flake8-pyi
+  "W505",     # pycodestyle docstring/comment line length (see config below)
 ]
 ignore = [
   "PLR09",    # Too many <...>
@@ -228,6 +229,7 @@ ignore = [
   "ICN",      # flake8-import-conventions
   "PYI",      # flake8-pyi
   "NPY002",   # Replace legacy `np.random.random` call with `np.random.Generator`
+  "W291",     # Trailing white space
 ]
 exclude=['doc/conf.py', '__init__.py']
 
@@ -235,12 +237,16 @@ exclude=['doc/conf.py', '__init__.py']
 #[tool.ruff.lint.pydocstyle]
 #convention = "numpy"
 
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 110
+
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ['I']
 "examples/*.py" = ['I']
 "doc/*.py" = ['I']
 "tools/*.py" = ['I']
 "networkx/classes/filters.py" = ['C416']
+"networkx/classes/reportviews.py" = ['W505']  # Ignore long docstring examples
 
 [tool.ruff.format]
 docstring-code-format = true
