@@ -98,7 +98,8 @@ def join_trees(rooted_trees, *, label_attribute=None, first_label=0):
     for tree in new_trees:
         R.update(tree)
 
-    # Finally, join the subtrees at the root. We know first_label is unused by the way we relabeled the subtrees.
+    # Finally, join the subtrees at the root. We know first_label is unused by
+    # the way we relabeled the subtrees.
     R.add_node(first_label)
     R.add_edges_from((first_label, root) for root in new_roots)
 

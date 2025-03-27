@@ -978,13 +978,9 @@ def optimize_edit_paths(
         # debug_print('pending-u:', pending_u)
         # debug_print('pending-v:', pending_v)
         # debug_print(Cv.C)
-        # assert list(sorted(G1.nodes)) == list(sorted(list(u for u, v in matched_uv if u is not None) + pending_u))
-        # assert list(sorted(G2.nodes)) == list(sorted(list(v for u, v in matched_uv if v is not None) + pending_v))
         # debug_print('pending-g:', pending_g)
         # debug_print('pending-h:', pending_h)
         # debug_print(Ce.C)
-        # assert list(sorted(G1.edges)) == list(sorted(list(g for g, h in matched_gh if g is not None) + pending_g))
-        # assert list(sorted(G2.edges)) == list(sorted(list(h for g, h in matched_gh if h is not None) + pending_h))
         # debug_print()
 
         if prune(matched_cost + Cv.ls + Ce.ls):
