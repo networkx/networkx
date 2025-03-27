@@ -1346,7 +1346,7 @@ def arf_layout(
         Scales the radius of the circular layout space.
 
     a : float
-        Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation ofunconnected sub clusters.
+        Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation of unconnected sub clusters.
 
     etol : float
         Gradient sum of spring forces must be larger than `etol` before successful termination.
