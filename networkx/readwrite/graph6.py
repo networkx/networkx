@@ -107,6 +107,9 @@ def from_graph6_bytes(bytes_in):
             for i in [5, 4, 3, 2, 1, 0]:
                 yield (d >> i) & 1
 
+    # Ignore trailing newline
+    bytes_in = bytes_in.rstrip(b"\n")
+
     if bytes_in.startswith(b">>graph6<<"):
         bytes_in = bytes_in[10:]
 
