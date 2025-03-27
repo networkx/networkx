@@ -59,13 +59,21 @@ def union(G, H, rename=()):
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.Graph([(0, 1), (0, 2), (1, 2)])
     >>> H = nx.Graph([(0, 1), (0, 3), (1, 3), (1, 2)])
     >>> U = nx.union(G, H, rename=("G", "H"))
     >>> U.nodes
     NodeView(('G0', 'G1', 'G2', 'H0', 'H1', 'H3', 'H2'))
-    >>> U.edges
-    EdgeView([('G0', 'G1'), ('G0', 'G2'), ('G1', 'G2'), ('H0', 'H1'), ('H0', 'H3'), ('H1', 'H3'), ('H1', 'H2')])
+    >>> edgelist = list(U.edges)
+    >>> pprint(edgelist)
+    [('G0', 'G1'),
+     ('G0', 'G2'),
+     ('G1', 'G2'),
+     ('H0', 'H1'),
+     ('H0', 'H3'),
+     ('H1', 'H3'),
+     ('H1', 'H2')]
 
 
     """
@@ -412,13 +420,23 @@ def full_join(G, H, rename=(None, None)):
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.Graph([(0, 1), (0, 2)])
     >>> H = nx.Graph([(3, 4)])
     >>> R = nx.full_join(G, H, rename=("G", "H"))
     >>> R.nodes
     NodeView(('G0', 'G1', 'G2', 'H3', 'H4'))
-    >>> R.edges
-    EdgeView([('G0', 'G1'), ('G0', 'G2'), ('G0', 'H3'), ('G0', 'H4'), ('G1', 'H3'), ('G1', 'H4'), ('G2', 'H3'), ('G2', 'H4'), ('H3', 'H4')])
+    >>> edgelist = list(R.edges)
+    >>> pprint(edgelist)
+    [('G0', 'G1'),
+     ('G0', 'G2'),
+     ('G0', 'H3'),
+     ('G0', 'H4'),
+     ('G1', 'H3'),
+     ('G1', 'H4'),
+     ('G2', 'H3'),
+     ('G2', 'H4'),
+     ('H3', 'H4')]
 
     See Also
     --------

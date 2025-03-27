@@ -259,24 +259,27 @@ def intersection_all(graphs):
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.
 
-    The resulting graph can be updated with attributes if desired. For example, code which adds the minimum attribute for each node across all graphs could work.
-    >>> g = nx.Graph()
-    >>> g.add_node(0, capacity=4)
-    >>> g.add_node(1, capacity=3)
-    >>> g.add_edge(0, 1)
+    The resulting graph can be updated with attributes if desired.
+    For example, code which adds the minimum attribute for each node across all
+    graphs could work::
 
-    >>> h = g.copy()
-    >>> h.nodes[0]["capacity"] = 2
+        >>> g = nx.Graph()
+        >>> g.add_node(0, capacity=4)
+        >>> g.add_node(1, capacity=3)
+        >>> g.add_edge(0, 1)
 
-    >>> gh = nx.intersection_all([g, h])
+        >>> h = g.copy()
+        >>> h.nodes[0]["capacity"] = 2
 
-    >>> new_node_attr = {
-    ...     n: min(*(anyG.nodes[n].get("capacity", float("inf")) for anyG in [g, h]))
-    ...     for n in gh
-    ... }
-    >>> nx.set_node_attributes(gh, new_node_attr, "new_capacity")
-    >>> gh.nodes(data=True)
-    NodeDataView({0: {'new_capacity': 2}, 1: {'new_capacity': 3}})
+        >>> gh = nx.intersection_all([g, h])
+
+        >>> new_node_attr = {
+        ...     n: min(*(anyG.nodes[n].get("capacity", float("inf")) for anyG in [g, h]))
+        ...     for n in gh
+        ... }
+        >>> nx.set_node_attributes(gh, new_node_attr, "new_capacity")
+        >>> gh.nodes(data=True)
+        NodeDataView({0: {'new_capacity': 2}, 1: {'new_capacity': 3}})
 
     Examples
     --------

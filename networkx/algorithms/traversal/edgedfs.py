@@ -57,6 +57,7 @@ def edge_dfs(G, source=None, orientation=None):
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> nodes = [0, 1, 2, 3]
     >>> edges = [(0, 1), (1, 0), (1, 0), (2, 1), (3, 1)]
 
@@ -75,8 +76,13 @@ def edge_dfs(G, source=None, orientation=None):
     >>> list(nx.edge_dfs(nx.DiGraph(edges), nodes, orientation="ignore"))
     [(0, 1, 'forward'), (1, 0, 'forward'), (2, 1, 'reverse'), (3, 1, 'reverse')]
 
-    >>> list(nx.edge_dfs(nx.MultiDiGraph(edges), nodes, orientation="ignore"))
-    [(0, 1, 0, 'forward'), (1, 0, 0, 'forward'), (1, 0, 1, 'reverse'), (2, 1, 0, 'reverse'), (3, 1, 0, 'reverse')]
+    >>> elist = list(nx.edge_dfs(nx.MultiDiGraph(edges), nodes, orientation="ignore"))
+    >>> pprint(elist)
+    [(0, 1, 0, 'forward'),
+     (1, 0, 0, 'forward'),
+     (1, 0, 1, 'reverse'),
+     (2, 1, 0, 'reverse'),
+     (3, 1, 0, 'reverse')]
 
     Notes
     -----
