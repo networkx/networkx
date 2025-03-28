@@ -68,7 +68,7 @@ def from_graph6_bytes(bytes_in):
     Parameters
     ----------
     bytes_in : bytes
-       Data in graph6 format, without a trailing newline.
+       Data in graph6 format
 
     Returns
     -------
