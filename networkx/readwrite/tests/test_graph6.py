@@ -14,6 +14,12 @@ def test_from_graph6_invariant_to_trailing_newline():
     assert nx.utils.graphs_equal(G, H)
 
 
+def test_from_graph6_raises_header_newline():
+    """graph6 headers must not be followed by a newline. See gh-7557."""
+    with pytest.raises(nx.NetworkXError):
+        G = nx.from_graph6_bytes(b">>graph6<<\nP~~~~~~~~~~~~~~~~~~~~~~{")
+
+
 class TestGraph6Utils:
     def test_n_data_n_conversion(self):
         for i in [0, 1, 42, 62, 63, 64, 258047, 258048, 7744773, 68719476735]:

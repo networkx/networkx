@@ -77,7 +77,7 @@ def from_graph6_bytes(bytes_in):
     Raises
     ------
     NetworkXError
-        If bytes_in is unable to be parsed in graph6 format
+        If `bytes_in` is unable to be parsed in graph6 format
 
     ValueError
         If any character ``c`` in bytes_in does not satisfy
@@ -88,6 +88,11 @@ def from_graph6_bytes(bytes_in):
     >>> G = nx.from_graph6_bytes(b"A_")
     >>> sorted(G.edges())
     [(0, 1)]
+
+    Notes
+    -----
+    Per the graph6 spec, the header (e.g. ``b'>>graph6<<'``) must not be
+    followed by a newline ``\n``.
 
     See Also
     --------
