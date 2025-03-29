@@ -1,22 +1,26 @@
 # Notes about NetworkX namespace objects set up here:
 #
-# nx.backends.backends: dict keyed by backend name to their entry point object.
-#   Filled using ``_get_backends("networkx.backends")`` during processing this module.
+# nx.utils.backends.backends:
+#   dict keyed by backend name to the backend entry point object.
+#   Filled using ``_get_backends("networkx.backends")`` during import of this module.
 #
-# nx.backends.backend_info: dict keyed by backend name to the
-#   "networkx.backend_info" entry point object.
-#   Created as empty dict while importing this module, but filled using
-#   ``_set_configs_from_environment()`` at end of importing ``__init__.py``.
+# nx.utils.backends.backend_info:
+#   dict keyed by backend name to the metadata returned by the function indicated
+#   by the "networkx.backend_info" entry point.
+#   Created as an empty dict while importing this module, but later filled using
+#   ``_set_configs_from_environment()`` at end of importing ``networkx/__init__.py``.
 #
-# nx.config: Config object for NetworkX config setting. Creating using
-#   ``_set_configs_from_environment()`` at end of importing ``__init__.py``.
+# nx.config:
+#   Config object for NetworkX config setting. Created using
+#   ``_set_configs_from_environment()`` at end of importing ``networkx/__init__.py``.
 #
 # private dicts:
-#     nx.backends._loaded_backends:
-#         dict keyed by backend name to loaded entry_point
+#   nx.utils.backends._loaded_backends:
+#       dict used to memoize loaded backends. Keyed by backend name to loaded backends.
 #
-#     nx.backends._registered_algorithms:
-#         dict keyed by function name to dispatch wrapped function
+#   nx.utils.backends._registered_algorithms:
+#       dict of all the dispatchable functions in networkx, keyed by _dispatchable
+#       function name to the wrapped function object.
 
 import inspect
 import itertools
@@ -145,7 +149,7 @@ def _set_configs_from_environment():
         ),
     )
 
-    # Add "networkx" entry to backend_info now b/c backend_config is done reading it
+    # Add "networkx" item to backend_info now b/c backend_config is set up
     backend_info["networkx"] = {}
 
     # NETWORKX_BACKEND_PRIORITY is the same as NETWORKX_BACKEND_PRIORITY_ALGOS
@@ -347,7 +351,7 @@ class _dispatchable:
         self.__name__ = func.__name__
         # self.__doc__ = func.__doc__  # __doc__ handled as cached property
         self.__defaults__ = func.__defaults__
-        # We quietly add `backend=` keyword argument to allow backend to be specified
+        # Add `backend=` keyword argument to allow backend choice at call-time
         if func.__kwdefaults__:
             self.__kwdefaults__ = {**func.__kwdefaults__, "backend": None}
         else:
