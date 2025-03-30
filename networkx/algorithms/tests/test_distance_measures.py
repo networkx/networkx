@@ -117,8 +117,24 @@ class TestDistance:
     def test_periphery(self):
         assert set(nx.periphery(self.G)) == {1, 4, 13, 16}
 
+    def test_center_simple_tree(self):
+        G = nx.Graph([(1, 2), (1, 3), (2, 4), (2, 5)])
+        assert nx.center(G) == [1, 2]
+
+    def test_center_balanced_tree(self):
+        for r in range(2, 5):
+            for h in range(1, 5):
+                G = nx.balanced_tree(r, h)
+                assert nx.center(G) == [0]
+
     def test_center(self):
         assert set(nx.center(self.G)) == {6, 7, 10, 11}
+
+    def test_center_path_graphs(self):
+        for n in range(1, 100):
+            G = nx.path_graph(n)
+            expected = {(n - 1) // 2, math.ceil((n - 1) / 2)}
+            assert set(nx.center(G)) == expected
 
     def test_bound_diameter(self):
         assert nx.diameter(self.G, usebounds=True) == 6
