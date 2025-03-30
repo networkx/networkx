@@ -19,6 +19,80 @@ __all__ = [
 ]
 
 
+@not_implemented_for("directed")
+def _tree_center(G):
+    """Returns the center of an undirected tree graph.
+
+    The center is the set of nodes that minimize the maximum distance to all other nodes.
+    In a tree, the center is the set of nodes from which the maximum eccentricity is minimized.
+
+    If input graph is not a tree, results are not guaranteed to be correct and method might raise
+    NetworkXError. This method must not be used if caller is unsure input graph is a tree. See
+    ``networkx.algorithms.tree.recognition`` for tree recognition methods.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A tree graph (undirected, acyclic graph).
+
+    Returns
+    -------
+    center : list
+        A list of nodes in the center of the tree. This could be one or two nodes.
+
+    Raises
+    ------
+    NetworkXError
+        If algorithm detects input graph is not a tree. There is no guarantee this error will
+        always raise if a non-tree is passed.
+
+    Notes
+    -----
+    This algorithm works by iteratively removing leaves (nodes with degree 1) from the tree until
+    there are only 1 or 2 nodes left. The remaining nodes form the center of the tree.
+
+    The time complexity of this algorithm is O(N), where N is the number of nodes in the tree,
+    as it involves processing each node once during the iterative leaf removal.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 4), (2, 5)])
+    >>> _tree_center(G)
+    [1, 2]
+
+    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 5)])
+    >>> _tree_center(G)
+    [3]
+    """
+    center_candidates_degree = {node: G.degree(node) for node in G}
+    leaves = {node for node, degree in center_candidates_degree.items() if degree == 1}
+
+    # It's better to fail than to enter an infinite loop, so we check that there are leaves to ensure progress
+    while len(center_candidates_degree) > 2 and leaves:
+        new_leaves = set()
+        for leaf in leaves:
+            del center_candidates_degree[leaf]
+            for neighbor in G.neighbors(leaf):
+                degree = center_candidates_degree.get(neighbor)
+                if degree is None:
+                    continue
+                new_degree = degree - 1
+                center_candidates_degree[neighbor] = new_degree
+                if new_degree == 1:
+                    new_leaves.add(neighbor)
+        leaves = new_leaves
+
+    if len(center_candidates_degree) > 2 or (
+        len(center_candidates_degree) == 2 and not leaves
+    ):
+        # We detected graph is not a tree. This check does not cover all cases.
+        # For example, it does not cover the case where we have two islands (A-B) and (B-C)
+        # where we might eliminate (B-C) leaves and return [A, B] as centers.
+        raise nx.NetworkXError("Input graph is not a tree")
+
+    return list(center_candidates_degree)
+
+
 def _extrema_bounding(G, compute="diameter", weight=None):
     """Compute requested extreme distance metric of undirected graph G
 
@@ -678,6 +752,8 @@ def center(G, e=None, usebounds=False, weight=None):
     """
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="center", weight=weight)
+    if e is None and weight is None and not G.is_directed() and nx.is_tree(G):
+        return _tree_center(G)
     if e is None:
         e = eccentricity(G, weight=weight)
     radius = min(e.values())
