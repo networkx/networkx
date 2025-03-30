@@ -152,7 +152,7 @@ def _extrema_bounding(G, compute="diameter", weight=None):
             ruled_out = {
                 i
                 for i in candidates
-                if ecc_upper[i] <= maxlower and 2 * ecc_lower[i] >= maxupper
+                if ecc_upper[i] <= maxlower and 2 * ecc_lower[i] >= minupper
             }
         elif compute == "radius":
             ruled_out = {
