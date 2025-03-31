@@ -322,6 +322,77 @@ class TestBetweennessCentrality:
         )
         assert b == pytest.approx(expected)
 
+    @pytest.mark.parametrize(
+        ("normalized", "endpoints", "is_directed", "k", "expected"),
+        [
+            (
+                *(True, True, True, None),  # Use *() splatting for better autoformat
+                {0: 14 / 20, 1: 14 / 20, 2: 14 / 20, 3: 14 / 20, 4: 14 / 20},
+            ),
+            (
+                *(True, True, True, 3),
+                {0: 9 / 12, 1: 11 / 12, 2: 9 / 12, 3: 6 / 12, 4: 7 / 12},
+            ),
+            (
+                *(True, True, False, None),
+                {0: 10 / 20, 1: 10 / 20, 2: 10 / 20, 3: 10 / 20, 4: 10 / 20},
+            ),
+            (
+                *(True, True, False, 3),
+                {0: 8 / 12, 1: 7 / 12, 2: 4 / 12, 3: 4 / 12, 4: 7 / 12},
+            ),
+            (
+                *(True, False, True, None),
+                {0: 6 / 12, 1: 6 / 12, 2: 6 / 12, 3: 6 / 12, 4: 6 / 12},
+            ),
+            (
+                *(True, False, True, 3),
+                # Use 6 instead of 9 for denominator for source nodes 0, 1, and 4
+                {0: 3 / 6, 1: 5 / 6, 2: 6 / 9, 3: 3 / 9, 4: 1 / 6},
+            ),
+            (
+                *(True, False, False, None),
+                {0: 2 / 12, 1: 2 / 12, 2: 2 / 12, 3: 2 / 12, 4: 2 / 12},
+            ),
+            (
+                *(True, False, False, 3),
+                # Use 6 instead of 9 for denominator for source nodes 0, 1, and 4
+                {0: 2 / 6, 1: 1 / 6, 2: 1 / 9, 3: 1 / 9, 4: 1 / 6},
+            ),
+            (*(False, True, True, None), {0: 14, 1: 14, 2: 14, 3: 14, 4: 14}),
+            (
+                *(False, True, True, 3),
+                {0: 9 * 5 / 3, 1: 11 * 5 / 3, 2: 9 * 5 / 3, 3: 6 * 5 / 3, 4: 7 * 5 / 3},
+            ),
+            (*(False, True, False, None), {0: 5, 1: 5, 2: 5, 3: 5, 4: 5}),
+            (
+                *(False, True, False, 3),
+                {0: 8 * 5 / 6, 1: 7 * 5 / 6, 2: 4 * 5 / 6, 3: 4 * 5 / 6, 4: 7 * 5 / 6},
+            ),
+            (*(False, False, True, None), {0: 6, 1: 6, 2: 6, 3: 6, 4: 6}),
+            (
+                *(False, False, True, 3),
+                # Use 2 instead of 3 for denominator for source nodes 0, 1, and 4
+                {0: 3 * 4 / 2, 1: 5 * 4 / 2, 2: 6 * 4 / 3, 3: 3 * 4 / 3, 4: 1 * 4 / 2},
+            ),
+            (*(False, False, False, None), {0: 1, 1: 1, 2: 1, 3: 1, 4: 1}),
+            (
+                *(False, False, False, 3),
+                # Use 4 instead of 6 for denominator for source nodes 0, 1, and 4
+                {0: 2 * 4 / 4, 1: 1 * 4 / 4, 2: 1 * 4 / 6, 3: 1 * 4 / 6, 4: 1 * 4 / 4},
+            ),
+        ],
+    )
+    def test_scale_with_k_on_cycle_graph(
+        self, normalized, endpoints, is_directed, k, expected
+    ):
+        # seed=1 selects nodes 0, 1, and 4 as the initial nodes when using k=3.
+        G = nx.cycle_graph(5, create_using=nx.DiGraph if is_directed else nx.Graph)
+        b = nx.betweenness_centrality(
+            G, k=k, seed=1, endpoints=endpoints, normalized=normalized
+        )
+        assert b == pytest.approx(expected)
+
     def test_k_out_of_bounds_raises(self):
         G = nx.cycle_graph(4)
         with pytest.raises(ValueError, match="larger"):
