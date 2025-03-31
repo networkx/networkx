@@ -297,10 +297,7 @@ def test_negative(maxk=11):
                 assert tree_isomorphism(test_trees[i], test_trees[j]) == []
 
 
-# test case where two path graphs are isomorphic. We test with long paths to
-# catch potential RecursionError
 def test_long_paths_graphs():
-    length = 10000
-    G1 = nx.path_graph(length)
-    G2 = nx.path_graph(length)
-    rooted_tree_isomorphism(G1, 0, G2, 0) == [(x, x) for x in range(length)]
+    """Smoke test for potential RecursionError. See gh-7945."""
+    G = nx.path_graph(10_000)
+    rooted_tree_isomorphism(G, 0, G, 0) == [(n, n) for n in G]
