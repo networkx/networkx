@@ -38,14 +38,26 @@ def cytoscape_data(G, name="name", ident="id"):
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.path_graph(2)
-    >>> nx.cytoscape_data(G)  # doctest: +SKIP
+    >>> cyto_data = nx.cytoscape_data(G)
+    >>> pprint(cyto_data, sort_dicts=False)
     {'data': [],
      'directed': False,
      'multigraph': False,
      'elements': {'nodes': [{'data': {'id': '0', 'value': 0, 'name': '0'}},
-       {'data': {'id': '1', 'value': 1, 'name': '1'}}],
-      'edges': [{'data': {'source': 0, 'target': 1}}]}}
+                            {'data': {'id': '1', 'value': 1, 'name': '1'}}],
+                  'edges': [{'data': {'source': 0, 'target': 1}}]}}
+
+    The :mod:`json` package can be used to serialize the resulting data
+
+    >>> import io, json
+    >>> with io.StringIO() as fh:  # replace io with `open(...)` to write to disk
+    ...     json.dump(cyto_data, fh)
+    ...     fh.seek(0)  # doctest: +SKIP
+    ...     print(fh.getvalue()[:64])  # View the first 64 characters
+    {"data": [], "directed": false, "multigraph": false, "elements":
+
     """
     if name == ident:
         raise nx.NetworkXError("name and ident must be different.")
