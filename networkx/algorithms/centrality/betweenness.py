@@ -402,21 +402,12 @@ def _rescale(betweenness, n, *, normalized, directed, k, endpoints, sampled_node
     # Without this, k == n would be a special case that would violate the
     # assumption that node `v` is not one of the (s, t) node pairs.
     if normalized:
-        if K_source > 1:
-            scale_source = 1 / ((K_source - 1) * (N - 1))
-        else:
-            # NaN for undefined 0/0; there is no data for source node when k=1
-            scale_source = math.nan
+        # NaN for undefined 0/0; there is no data for source node when k=1
+        scale_source = 1 / ((K_source - 1) * (N - 1)) if K_source > 1 else math.nan
         scale_nonsource = 1 / (K_source * (N - 1))
     else:
-        # Like above, we need to handle source nodes and non-source nodes
-        # differently when using k while excluding endpoints.
         correction = 1 if directed else 2
-        if K_source > 1:
-            scale_source = N / ((K_source - 1) * correction)
-        else:
-            # NaN for undefined 0/0; there is no data for source node when k=1
-            scale_source = math.nan
+        scale_source = N / ((K_source - 1) * correction) if K_source > 1 else math.nan
         scale_nonsource = N / (K_source * correction)
 
     sampled_nodes = set(sampled_nodes)
