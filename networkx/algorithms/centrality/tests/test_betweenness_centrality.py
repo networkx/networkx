@@ -359,23 +359,23 @@ class TestBetweennessCentrality:
                 # Use 6 instead of 9 for denominator for source nodes 0, 1, and 4
                 {0: 2 / 6, 1: 1 / 6, 2: 1 / 9, 3: 1 / 9, 4: 1 / 6},
             ),
-            (*(False, True, True, None), {0: 14, 1: 14, 2: 14, 3: 14, 4: 14}),
+            (False, True, True, None, {0: 14, 1: 14, 2: 14, 3: 14, 4: 14}),
             (
                 *(False, True, True, 3),
                 {0: 9 * 5 / 3, 1: 11 * 5 / 3, 2: 9 * 5 / 3, 3: 6 * 5 / 3, 4: 7 * 5 / 3},
             ),
-            (*(False, True, False, None), {0: 5, 1: 5, 2: 5, 3: 5, 4: 5}),
+            (False, True, False, None, {0: 5, 1: 5, 2: 5, 3: 5, 4: 5}),
             (
                 *(False, True, False, 3),
                 {0: 8 * 5 / 6, 1: 7 * 5 / 6, 2: 4 * 5 / 6, 3: 4 * 5 / 6, 4: 7 * 5 / 6},
             ),
-            (*(False, False, True, None), {0: 6, 1: 6, 2: 6, 3: 6, 4: 6}),
+            (False, False, True, None, {0: 6, 1: 6, 2: 6, 3: 6, 4: 6}),
             (
                 *(False, False, True, 3),
                 # Use 2 instead of 3 for denominator for source nodes 0, 1, and 4
                 {0: 3 * 4 / 2, 1: 5 * 4 / 2, 2: 6 * 4 / 3, 3: 3 * 4 / 3, 4: 1 * 4 / 2},
             ),
-            (*(False, False, False, None), {0: 1, 1: 1, 2: 1, 3: 1, 4: 1}),
+            (False, False, False, None, {0: 1, 1: 1, 2: 1, 3: 1, 4: 1}),
             (
                 *(False, False, False, 3),
                 # Use 4 instead of 6 for denominator for source nodes 0, 1, and 4
