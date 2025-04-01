@@ -6,10 +6,11 @@ import pytest
 import networkx as nx
 
 
-def test_long_paths_graphs():
-    """Smoke test for potential RecursionError. See gh-7945."""
-    G = nx.path_graph(10_000)
-    rooted_tree_isomorphism(G, 0, G, 0) == [(n, n) for n in G]
+def _check_isomorphism(t1, t2, isomorphism):
+    assert nx.is_directed(t1) == nx.is_directed(t2)
+    # Apply mapping and check for equality
+    H = nx.relabel_nodes(t1, dict(isomorphism))
+    return nx.utils.graphs_equal(t2, H)
 
 
 @pytest.mark.parametrize("graph_constructor", (nx.DiGraph, nx.MultiGraph))
@@ -35,13 +36,6 @@ def test_input_not_tree():
         nx.isomorphism.rooted_tree_isomorphism(not_tree, 0, tree, 0)
     with pytest.raises(nx.NetworkXError, match="t2 is not a tree"):
         nx.isomorphism.rooted_tree_isomorphism(tree, 0, not_tree, 0)
-
-
-def _check_isomorphism(t1, t2, isomorphism):
-    assert nx.is_directed(t1) == nx.is_directed(t2)
-    # Apply mapping and check for equality
-    H = nx.relabel_nodes(t1, dict(isomorphism))
-    return nx.utils.graphs_equal(t2, H)
 
 
 def test_hardcoded():
@@ -200,3 +194,9 @@ def test_tree_isomorphism_all_non_isomorphic_pairs(n):
         for i in range(len(test_trees) - 1)
         for j in range(i + 1, len(test_trees))
     )
+
+
+def test_long_paths_graphs():
+    """Smoke test for potential RecursionError. See gh-7945."""
+    G = nx.path_graph(10_000)
+    nx.isomorphism.rooted_tree_isomorphism(G, 0, G, 0) == [(n, n) for n in G]
