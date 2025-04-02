@@ -1,7 +1,5 @@
 import collections
-import os
 import typing
-import warnings
 from dataclasses import dataclass
 
 __all__ = ["Config"]
@@ -346,8 +344,11 @@ class NetworkXConfig(Config):
 
         if key == "backend_priority":
             if isinstance(value, list):
-                getattr(self, key).algos = value
-                value = getattr(self, key)
+                # `config.backend_priority = [backend]` sets `backend_priority.algos`
+                value = dict(
+                    self.backend_priority,
+                    algos=self.backend_priority._on_setattr("algos", value),
+                )
             elif isinstance(value, dict):
                 kwargs = value
                 value = BackendPriorities(algos=[], generators=[])

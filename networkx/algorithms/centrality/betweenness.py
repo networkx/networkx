@@ -127,6 +127,12 @@ def betweenness_centrality(
        https://doi.org/10.2307/3033543
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
+    if k == len(G):
+        # This is for performance and correctness. When `endpoints` is False
+        # and k is given, k == n is a special case that would violate the
+        # assumption that node `v` is not one of the (s, t) node pairs.
+        # Should this warn or raise instead?
+        k = None
     if k is None:
         nodes = G
     else:
@@ -357,25 +363,31 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
 
 
 def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False):
+    # N is used to count the number of valid (s, t) pairs where s != t that
+    # could have a path pass through v. If endpoints is False, then v must
+    # not be the target t, hence why we subtract by 1.
+    N = n if endpoints else n - 1
+    if N < 2:
+        # No rescaling necessary: b=0 for all nodes
+        return betweenness
+
+    K_source = N if k is None else k
     if normalized:
-        if endpoints:
-            if n < 2:
-                scale = None  # no normalization
-            else:
-                # Scale factor should include endpoint nodes
-                scale = 1 / (n * (n - 1))
-        elif n <= 2:
-            scale = None  # no normalization b=0 for all nodes
-        else:
-            scale = 1 / ((n - 1) * (n - 2))
-    else:  # rescale by 2 for undirected graphs
+        # Divide by the number of valid (s, t) node pairs that could have
+        # a path through v where s != t.
+        scale = 1 / (K_source * (N - 1))
+    else:
         if not directed:
-            scale = 0.5
-        else:
-            scale = None
-    if scale is not None:
-        if k is not None:
-            scale = scale * n / k
+            # The non-normalized BC values are computed the same way for
+            # directed and undirected graphs: shortest paths are computed and
+            # counted for each *ordered* (s, t) pair. Undirected graphs should
+            # only count valid *unordered* node pairs {s, t}; that is, (s, t)
+            # and (t, s) should be counted only once. We correct for this here.
+            K_source *= 2
+        # Scale to the full BC
+        scale = N / K_source
+
+    if scale != 1:
         for v in betweenness:
             betweenness[v] *= scale
     return betweenness

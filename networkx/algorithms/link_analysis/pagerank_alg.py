@@ -1,7 +1,5 @@
 """PageRank analysis of graph structure."""
 
-from warnings import warn
-
 import networkx as nx
 
 __all__ = ["pagerank", "google_matrix"]

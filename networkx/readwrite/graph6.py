@@ -192,7 +192,8 @@ def read_graph6(path):
     Parameters
     ----------
     path : file or string
-       File or filename to write.
+       Filename or file handle to read.
+       Filenames ending in .gz or .bz2 will be decompressed.
 
     Returns
     -------
@@ -258,8 +259,9 @@ def write_graph6(G, path, nodes=None, header=True):
     ----------
     G : Graph (undirected)
 
-    path : str
-       The path naming the file to which to write the graph.
+    path : file or string
+       File or filename to write.
+       Filenames ending in .gz or .bz2 will be compressed.
 
     nodes: list or iterable
        Nodes are labeled 0...n-1 in the order provided.  If None the ordering
