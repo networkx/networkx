@@ -23,12 +23,14 @@ __all__ = [
 def _tree_center(G):
     """Returns the center of an undirected tree graph.
 
-    The center is the set of nodes that minimize the maximum distance to all other nodes.
-    In a tree, the center is the set of nodes from which the maximum eccentricity is minimized.
+    The center of a tree consists of nodes that minimize the maximum eccentricity.
+    That is, these nodes minimize the maximum distance to all other nodes.
+    This implementation currently only works for unweighted edges.
 
-    If input graph is not a tree, results are not guaranteed to be correct and method might raise
-    NetworkXError. This method must not be used if caller is unsure input graph is a tree. See
-    ``networkx.algorithms.tree.recognition`` for tree recognition methods.
+    If the input graph is not a tree, results are not guaranteed to be correct and while
+    some non-trees will raise a ``NetworkXError`` not all non-trees will be discovered.
+    Thus, this function should not be used if caller is unsure whether the input graph
+    is a tree. Use ``networkx.is_tree(G)`` to check.
 
     Parameters
     ----------
@@ -43,15 +45,15 @@ def _tree_center(G):
     Raises
     ------
     NetworkXError
-        If algorithm detects input graph is not a tree. There is no guarantee this error will
-        always raise if a non-tree is passed.
+        If algorithm detects input graph is not a tree. There is no guarantee
+        this error will always raise if a non-tree is passed.
 
     Notes
     -----
-    This algorithm works by iteratively removing leaves (nodes with degree 1) from the tree until
+    This algorithm iteratively removes leaves (nodes with degree 1) from the tree until
     there are only 1 or 2 nodes left. The remaining nodes form the center of the tree.
 
-    The time complexity of this algorithm is O(N), where N is the number of nodes in the tree,
+    This algorithm's time complexity is O(N) where N is the number of nodes in the tree,
     as it involves processing each node once during the iterative leaf removal.
 
     Examples
@@ -64,10 +66,10 @@ def _tree_center(G):
     >>> _tree_center(G)
     [3]
     """
-    center_candidates_degree = {node: G.degree(node) for node in G}
+    center_candidates_degree = dict(G.degree)
     leaves = {node for node, degree in center_candidates_degree.items() if degree == 1}
 
-    # It's better to fail than to enter an infinite loop, so we check that there are leaves to ensure progress
+    # It's better to fail than an infinite loop, so check leaves to ensure progress
     while len(center_candidates_degree) > 2 and leaves:
         new_leaves = set()
         for leaf in leaves:
@@ -82,9 +84,7 @@ def _tree_center(G):
                     new_leaves.add(neighbor)
         leaves = new_leaves
 
-    if len(center_candidates_degree) > 2 or (
-        len(center_candidates_degree) == 2 and not leaves
-    ):
+    if not leaves and len(center_candidates_degree) >= 2:
         # We detected graph is not a tree. This check does not cover all cases.
         # For example, it does not cover the case where we have two islands (A-B) and (B-C)
         # where we might eliminate (B-C) leaves and return [A, B] as centers.
