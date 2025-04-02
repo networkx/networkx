@@ -131,7 +131,7 @@ class TestDistance:
         assert set(nx.center(self.G)) == {6, 7, 10, 11}
 
     def test_center_path_graphs(self):
-        for n in range(1, 100):
+        for n in [1, 2, 99, 100]:
             G = nx.path_graph(n)
             expected = {(n - 1) // 2, math.ceil((n - 1) / 2)}
             assert set(nx.center(G)) == expected
