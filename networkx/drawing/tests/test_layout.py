@@ -597,3 +597,12 @@ def test_mass_weighted_spring_layout():
     ) / len(same_mass_distances), (
         "The average distance to the 'heavy' node should be greater than it was when all nodes had the same mass."
     )
+
+
+def test_manual_sparse_algorithm_specification():
+    # Check that the sparse algorithm can be specified manually without error
+    G = nx.path_graph(4)
+    pos = nx.spring_layout(G, use_sparse_solver=True)
+    assert len(pos) == 4
+    pos = nx.spring_layout(G, use_sparse_solver=False)
+    assert len(pos) == 4
