@@ -1346,10 +1346,8 @@ class _dispatchable:
         use_cache,
         mutations,
     ):
-        if (
-            use_cache
-            and (nx_cache := getattr(graph, "__networkx_cache__", None)) is not None
-        ):
+        nx_cache = getattr(graph, "__networkx_cache__", None) if use_cache else None
+        if nx_cache is not None:
             cache = nx_cache.setdefault("backends", {}).setdefault(backend_name, {})
             key = _get_cache_key(
                 edge_attrs=edge_attrs,
@@ -1420,7 +1418,6 @@ class _dispatchable:
                 # This may fail, but let it fail in the networkx function
                 return graph
             backend = _load_backend(graph.__networkx_backend__)
-            rv = backend.convert_to_nx(graph)
             func = backend.convert_to_nx
             kwargs = {}
         else:
@@ -1434,17 +1431,17 @@ class _dispatchable:
                 # Always preserve graph attrs when we are caching b/c this should be
                 # cheap and may help prevent extra (unnecessary) conversions. Because
                 # we do this, we don't need `preserve_graph_attrs` in the cache key.
-                "preserve_graph_attrs": preserve_graph_attrs or use_cache,
+                "preserve_graph_attrs": preserve_graph_attrs or nx_cache is not None,
                 "name": self.name,
                 "graph_name": graph_name,
             }
         try:
             rv = func(graph, **kwargs)
         except Exception:
-            if use_cache and nx_cache is not None:
+            if nx_cache is not None:
                 _set_to_cache(cache, key, FAILED_TO_CONVERT)
             raise
-        if use_cache and nx_cache is not None and mutations is None:
+        if nx_cache is not None:
             _set_to_cache(cache, key, rv)
             _logger.debug(
                 "Caching converted graph (from '%s' to '%s' backend) "
