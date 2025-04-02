@@ -352,7 +352,7 @@ Creating a custom backend
           ``can_run``, it receives the original arguments so it can decide whether it
           should be run by inspecting the arguments. ``can_run`` runs before
           ``should_run``, so ``should_run`` may assume ``can_run`` is True. If not
-          implemented by the backend, ``can_run``and ``should_run`` are assumed to
+          implemented by the backend, ``can_run`` and ``should_run`` are assumed to
           always return True if the backend implements the algorithm.
 
     4. ``on_start_tests`` (Optional):

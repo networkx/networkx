@@ -19,6 +19,23 @@ def test_tree_isomorphism_raises_on_directed_and_multigraphs(graph_constructor):
         nx.isomorphism.tree_isomorphism(t1, t2)
 
 
+def test_input_not_tree():
+    tree = nx.Graph([(0, 1), (0, 2)])
+    not_tree = nx.cycle_graph(3)
+
+    # tree_isomorphism
+    with pytest.raises(nx.NetworkXError, match="t1 is not a tree"):
+        nx.isomorphism.tree_isomorphism(not_tree, tree)
+    with pytest.raises(nx.NetworkXError, match="t2 is not a tree"):
+        nx.isomorphism.tree_isomorphism(tree, not_tree)
+
+    # rooted_tree_isomorphism
+    with pytest.raises(nx.NetworkXError, match="t1 is not a tree"):
+        nx.isomorphism.rooted_tree_isomorphism(not_tree, 0, tree, 0)
+    with pytest.raises(nx.NetworkXError, match="t2 is not a tree"):
+        nx.isomorphism.rooted_tree_isomorphism(tree, 0, not_tree, 0)
+
+
 # have this work for graph
 # given two trees (either the directed or undirected)
 # transform t2 according to the isomorphism
@@ -278,3 +295,9 @@ def test_negative(maxk=11):
             for j in range(i + 1, len(test_trees)):
                 trial += 1
                 assert tree_isomorphism(test_trees[i], test_trees[j]) == []
+
+
+def test_long_paths_graphs():
+    """Smoke test for potential RecursionError. See gh-7945."""
+    G = nx.path_graph(10_000)
+    rooted_tree_isomorphism(G, 0, G, 0) == [(n, n) for n in G]
