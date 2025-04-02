@@ -2,7 +2,6 @@ import itertools
 import math
 from random import Random
 
-import numpy as np
 import pytest
 
 import networkx as nx
@@ -32,7 +31,7 @@ class TestDistance:
         methods = [nx.diameter, nx.radius, nx.periphery, nx.center]
         max_weight = [5, 10, 1000]
         for seed, n, prob in itertools.product(seeds, ns, probs):
-            rng = np.random.RandomState(seed=seed)
+            rng = Random(seed)
             # we compose it with a random tree to ensure graph is connected
             G = nx.compose(
                 nx.random_labeled_tree(n, seed=seed),
