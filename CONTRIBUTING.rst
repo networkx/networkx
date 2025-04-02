@@ -168,7 +168,7 @@ Development Workflow
       description or commit message.
 
 7. Document deprecations and API changes
-   
+
    If your change introduces any API modifications including deprecations,
    please make sure the PR has the ``type: API`` label.
 
@@ -310,7 +310,7 @@ Guidelines
           # function not for directed graphs *or* for multigraphs
           pass
 * Functions should avoid returning numpy scalars (e.g., `numpy.int64`, `numpy.float64`)
-  to ensure better compatibility and avoid issues with parts of the codebase that may 
+  to ensure better compatibility and avoid issues with parts of the codebase that may
   not recognize or handle numpy scalars properly. If a function returns a numpy scalar,
   it should be converted to a native Python type.
 
@@ -318,7 +318,7 @@ Guidelines
 
       def convert_to_python_type():
           # Perform some computation resulting in a numpy scalar
-          a = np.int64(42)  
+          a = np.int64(42)
           # Convert to a Python scalar before returning
           return a.item()
 
@@ -371,6 +371,15 @@ detailing the test coverage::
   networkx/algorithms/approximation/__init__.py       12      0      0      0   100%
   networkx/algorithms/approximation/clique.py         42      1     18      1    97%
   ...
+
+There are additional pytest plugins that provide enhanced features for running
+the test suite. These can be installed with
+``pip install -r requirements/test-extras.txt``.
+For example, with these plugins installed it is possible to run the tests
+(including doctests) with multiple cores in randomized order with::
+
+   pytest -n auto --doctest-modules --pyargs networkx
+
 
 Adding tests
 ~~~~~~~~~~~~
@@ -487,24 +496,24 @@ links from the documentation.
 Using Math Formulae and Latex Formatting in Documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 When working with docstrings that contain math symbols or formulae
-use raw strings (``r"""``) to ensure proper rendering. 
-While LaTeX formatting can improve the appearance of the rendered documentation, 
-it's best to keep it simple and readable. 
+use raw strings (``r"""``) to ensure proper rendering.
+While LaTeX formatting can improve the appearance of the rendered documentation,
+it's best to keep it simple and readable.
 
 An example of a math formula::
-      
-      .. math:: 
+
+      .. math::
           Ax = \lambda x
 
-.. math:: 
+.. math::
     Ax = \lambda x
 
 Some inline math::
-    
-    These are Cheeger's Inequalities for \d-Regular graphs: 
+
+    These are Cheeger's Inequalities for \d-Regular graphs:
     $\frac{d- \lambda_2}{2} \leq h(G) \leq \sqrt{2d(d- \lambda_2)}$
-   
-These are Cheeger's Inequalities for \d-Regular graphs: 
+
+These are Cheeger's Inequalities for \d-Regular graphs:
 $\frac{d- \lambda_2}{2} \leq h(G) \leq \sqrt{2d(d- \lambda_2)}$
 
 Bugs

@@ -459,7 +459,7 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     # Then, reachable and non reachable nodes from source in the
     # residual network form the node partition that defines
     # the minimum cut.
-    non_reachable = set(dict(nx.shortest_path_length(R, target=_t)))
+    non_reachable = set(nx.shortest_path_length(R, target=_t))
     partition = (set(flowG) - non_reachable, non_reachable)
     # Finally add again cutset edges to the residual network to make
     # sure that it is reusable.

@@ -10,9 +10,9 @@ import networkx as nx
 # cut algorithms.
 from networkx.algorithms.flow import build_residual_network, edmonds_karp
 
-default_flow_func = edmonds_karp
-
 from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_connectivity
+
+default_flow_func = edmonds_karp
 
 __all__ = [
     "minimum_st_node_cut",
@@ -207,6 +207,10 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
         Set of nodes that, if removed, would destroy all paths between
         source and target in G.
 
+        Returns an empty set if source and target are either in different
+        components or are directly connected by an edge, as no node removal
+        can destroy the path.
+
     Examples
     --------
     This function is not imported in the base NetworkX namespace, so you
@@ -291,7 +295,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     if mapping is None:
         raise nx.NetworkXError("Invalid auxiliary digraph.")
     if G.has_edge(s, t) or G.has_edge(t, s):
-        return {}
+        return set()
     kwargs = {"flow_func": flow_func, "residual": residual, "auxiliary": H}
 
     # The edge cut in the auxiliary digraph corresponds to the node cut in the

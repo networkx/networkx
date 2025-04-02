@@ -186,7 +186,8 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     node_index = {n: i for i, n in enumerate(G)}
 
     # Lift canonical representation of nodes to edges in line graph
-    edge_key_function = lambda edge: (node_index[edge[0]], node_index[edge[1]])
+    def edge_key_function(edge):
+        return node_index[edge[0]], node_index[edge[1]]
 
     edges = set()
     for u in G:

@@ -18,15 +18,13 @@ from networkx.algorithms.tournament import (
 
 
 def test_condition_not_satisfied():
-    condition = lambda x: x > 0
     iter_in = [0]
-    assert index_satisfying(iter_in, condition) == 1
+    assert index_satisfying(iter_in, lambda x: x > 0) == 1
 
 
 def test_empty_iterable():
-    condition = lambda x: x > 0
     with pytest.raises(ValueError):
-        index_satisfying([], condition)
+        index_satisfying([], lambda x: x > 0)
 
 
 def test_is_tournament():
