@@ -1,6 +1,8 @@
+import itertools
 import math
 from random import Random
 
+import numpy as np
 import pytest
 
 import networkx as nx
@@ -15,6 +17,26 @@ def test__extrema_bounding_invalid_compute_kwarg():
 
 
 class TestDistance:
+    def test_use_bounds_on_off_consistency(self):
+        """Test for consistency of distance metrics when using usebounds=True"""
+        seeds = list(range(10))
+        ns = list(range(10, 20))
+        probs = [x / 10 for x in range(0, 10, 2)]
+        methods = [nx.diameter, nx.radius, nx.periphery, nx.center]
+        max_weight = [5, 10, 1000]
+        for seed, n, prob in itertools.product(seeds, ns, probs):
+            rng = np.random.RandomState(seed=seed)
+            G = nx.compose(
+                nx.random_labeled_tree(n, seed=seed),
+                nx.erdos_renyi_graph(n, prob, seed=seed),
+            )
+            for f in methods:
+                assert f(G) == f(G, usebounds=True)
+                for w in max_weight:
+                    for u, v in G.edges():
+                        G[u][v]["w"] = rng.randint(0, w)
+                    assert f(G, weight="w") == f(G, weight="w", usebounds=True)
+
     def setup_method(self):
         self.G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
 
