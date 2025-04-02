@@ -426,7 +426,7 @@ def bipartite_layout(
     return pos
 
 
-@np_random_state(10)
+@np_random_state(11)
 def spring_layout(
     G,
     k=None,
@@ -435,11 +435,13 @@ def spring_layout(
     iterations=50,
     threshold=1e-4,
     weight="weight",
+    node_weight=None,
     scale=1,
     center=None,
     dim=2,
     seed=None,
     store_pos_as=None,
+    use_sparse_solver=None,
 ):
     """Position nodes using Fruchterman-Reingold force-directed algorithm.
 
@@ -490,6 +492,11 @@ def spring_layout(
         the edge weight.  Larger means a stronger attractive force.
         If None, then all edge weights are 1.
 
+    node_weight: string or None optional   (default=None)
+        The node attribute that holds the numerical value used for
+        the node weight.  Larger means a stronger repulsive force.
+        If None, then all node weights are 1.
+
     scale : number or None (default: 1)
         Scale factor for positions. Not used unless `fixed is None`.
         If scale is None, no rescaling is performed.
@@ -514,6 +521,11 @@ def spring_layout(
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
         ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
+
+    use_sparse_solver: bool or None, default None
+        Specify if the sparse solver should be used. If None, the solver
+        is chosen based on the degree of the graph, with over 499 nodes
+        being the threshold for use of the sparse solver.
 
     Returns
     -------
@@ -567,17 +579,27 @@ def spring_layout(
             nx.set_node_attributes(G, pos, store_pos_as)
         return pos
 
+    # Get node weights
+    if node_weight is not None:
+        mass_vector = np.asarray([node[1][node_weight] for node in G.nodes(data=True)])
+    else:
+        mass_vector = None
+
+    # Determine if we should use the sparse solver
+    if use_sparse_solver is None:
+        use_sparse_solver = not len(G) < 500
+
     try:
         # Sparse matrix
-        if len(G) < 500:  # sparse solver for large graphs
+        if not use_sparse_solver:  # sparse solver for large graphs
             raise ValueError
-        A = nx.to_scipy_sparse_array(G, weight=weight, dtype="f")
+        A = nx.to_scipy_sparse_array(G, weight=weight, dtype=float)
         if k is None and fixed is not None:
             # We must adjust k by domain size for layouts not near 1x1
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
         pos = _sparse_fruchterman_reingold(
-            A, k, pos_arr, fixed, iterations, threshold, dim, seed
+            A, mass_vector, k, pos_arr, fixed, iterations, threshold, dim, seed
         )
     except ValueError:
         A = nx.to_numpy_array(G, weight=weight)
@@ -586,7 +608,7 @@ def spring_layout(
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
         pos = _fruchterman_reingold(
-            A, k, pos_arr, fixed, iterations, threshold, dim, seed
+            A, mass_vector, k, pos_arr, fixed, iterations, threshold, dim, seed
         )
     if fixed is None and scale is not None:
         pos = rescale_layout(pos, scale=scale) + center
@@ -601,9 +623,17 @@ def spring_layout(
 fruchterman_reingold_layout = spring_layout
 
 
-@np_random_state(7)
+@np_random_state(8)
 def _fruchterman_reingold(
-    A, k=None, pos=None, fixed=None, iterations=50, threshold=1e-4, dim=2, seed=None
+    A,
+    mass_vector=None,
+    k=None,
+    pos=None,
+    fixed=None,
+    iterations=50,
+    threshold=1e-4,
+    dim=2,
+    seed=None,
 ):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
@@ -621,6 +651,16 @@ def _fruchterman_reingold(
     else:
         # make sure positions are of same type as matrix
         pos = pos.astype(A.dtype)
+
+    if mass_vector is None:
+        # Set B to a scalar 1 if mass_array is None (equivalent to all nodes having mass 1)
+        # This saves time and memory
+        B = 1
+    else:
+        B = np.outer(mass_vector, mass_vector)
+        # We can ignore what is effectively a "self attraction" force from the diagonal
+        np.fill_diagonal(B, 0)
+        B = B.astype(A.dtype)
 
     # optimal distance between nodes
     if k is None:
@@ -646,7 +686,7 @@ def _fruchterman_reingold(
         np.clip(distance, 0.01, None, out=distance)
         # displacement "force"
         displacement = np.einsum(
-            "ijk,ij->ik", delta, (k * k / distance**2 - A * distance / k)
+            "ijk,ij->ik", delta, (k * k * B / distance**2 - A * distance / k)
         )
         # update positions
         length = np.linalg.norm(displacement, axis=-1)
@@ -663,9 +703,17 @@ def _fruchterman_reingold(
     return pos
 
 
-@np_random_state(7)
+@np_random_state(8)
 def _sparse_fruchterman_reingold(
-    A, k=None, pos=None, fixed=None, iterations=50, threshold=1e-4, dim=2, seed=None
+    A,
+    mass_vector=None,
+    k=None,
+    pos=None,
+    fixed=None,
+    iterations=50,
+    threshold=1e-4,
+    dim=2,
+    seed=None,
 ):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
@@ -691,6 +739,21 @@ def _sparse_fruchterman_reingold(
         # make sure positions are of same type as matrix
         pos = pos.astype(A.dtype)
 
+    if mass_vector is None:
+        # Represent the mass as a scalar 1 to same time and memory
+        mass_vector = 1
+
+        # Define a function to get the ith node's mass (simply returns 1)
+        def get_mi(i):
+            return 1
+    else:
+        # make sure mass_vector is of same type as matrix A
+        mass_vector = mass_vector.astype(A.dtype)
+
+        # Define a function to get the ith node's mass
+        def get_mi(i):
+            return mass_vector[i]
+
     # no fixed nodes
     if fixed is None:
         fixed = []
@@ -707,9 +770,11 @@ def _sparse_fruchterman_reingold(
 
     displacement = np.zeros((dim, nnodes))
     for iteration in range(iterations):
+        # zero out displacement from previous iteration
         displacement *= 0
         # loop over rows
         for i in range(A.shape[0]):
+            # skip fixed postion nodes
             if i in fixed:
                 continue
             # difference between this row's node position and all others
@@ -718,11 +783,13 @@ def _sparse_fruchterman_reingold(
             distance = np.sqrt((delta**2).sum(axis=0))
             # enforce minimum distance of 0.01
             distance = np.where(distance < 0.01, 0.01, distance)
+            # retrieve the mass of the current node
+            mi = get_mi(i)
             # the adjacency matrix row
             Ai = A.getrowview(i).toarray()  # TODO: revisit w/ sparse 1D container
             # displacement "force"
             displacement[:, i] += (
-                delta * (k * k / distance**2 - Ai * distance / k)
+                delta * (k * k * mi * mass_vector / distance**2 - Ai * distance / k)
             ).sum(axis=1)
         # update positions
         length = np.sqrt((displacement**2).sum(axis=0))
