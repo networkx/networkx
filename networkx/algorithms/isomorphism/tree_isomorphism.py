@@ -93,20 +93,6 @@ def group_by_levels(levels):
     return L
 
 
-# now lets get the isomorphism by walking the ordered_children
-def generate_isomorphism(v, w, M, ordered_children):
-    # Start with the initial pair in the stack
-    stack = [(v, w)]
-    while stack:
-        curr_v, curr_w = stack.pop()
-        assert curr_v < curr_w
-        M.append((curr_v, curr_w))
-        # Zip children and push them in reverse order to maintain processing order.
-        stack.extend(
-            zip(reversed(ordered_children[curr_v]), reversed(ordered_children[curr_w]))
-        )
-
-
 @nx._dispatchable(graphs={"t1": 0, "t2": 2})
 def rooted_tree_isomorphism(t1, root1, t2, root2):
     """
@@ -188,9 +174,9 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
         for v in L[i]:
             # nothing to do if no children
             if dT.out_degree(v) > 0:
-                # get all the pairs of labels and nodes of children
-                # and sort by labels
-                s = sorted((label[u], u) for u in dT.successors(v))
+                # get all the pairs of labels and nodes of children and sort by labels
+                # reverse=True to preserve DFS order, see gh-7945
+                s = sorted(((label[u], u) for u in dT.successors(v)), reverse=True)
 
                 # invert to give a list of two tuples
                 # the sorted labels, and the corresponding children
@@ -212,7 +198,12 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
     # they are isomorphic if the labels of newroot1 and newroot2 are 0
     isomorphism = []
     if label[newroot1] == 0 and label[newroot2] == 0:
-        generate_isomorphism(newroot1, newroot2, isomorphism, ordered_children)
+        # now lets get the isomorphism by walking the ordered_children
+        stack = [(newroot1, newroot2)]
+        while stack:
+            curr_v, curr_w = stack.pop()
+            isomorphism.append((curr_v, curr_w))
+            stack.extend(zip(ordered_children[curr_v], ordered_children[curr_w]))
 
         # get the mapping back in terms of the old names
         # return in sorted order for neatness
