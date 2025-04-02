@@ -566,3 +566,34 @@ def test_bipartite_layout_default_nodes():
     for nodeset in nx.bipartite.sets(G):
         xs = [pos[k][0] for k in nodeset]
         assert all(x == pytest.approx(xs[0]) for x in xs)
+
+
+def test_mass_weighted_spring_layout():
+    # Construct a 5d hypercube graph
+    G = nx.hypercube_graph(5)
+    # Set all node weights 1
+    for node in G:
+        G.nodes[node]["node_weight"] = 1
+    # Run spring_layout with node weights
+    same_mass_pos = nx.spring_layout(G, node_weight="node_weight", seed=2)
+
+    # Set one node weight to 100
+    G.nodes[(0, 0, 0, 0, 0)]["node_weight"] = 100
+    # Run spring_layout with node weights
+    different_mass_pos = nx.spring_layout(G, node_weight="node_weight", seed=2)
+
+    # Compute distances to the "heavy" node when all nodes have the same mass
+    same_mass_distances = [
+        np.linalg.norm(same_mass_pos[node] - same_mass_pos[(0, 0, 0, 0, 0)])
+        for node in G.neighbors((0, 0, 0, 0, 0))
+    ]
+    # Do the same for when the node is actually "heavy"
+    different_mass_distances = [
+        np.linalg.norm(different_mass_pos[node] - different_mass_pos[(0, 0, 0, 0, 0)])
+        for node in G.neighbors((0, 0, 0, 0, 0))
+    ]
+    assert sum(different_mass_distances) / len(different_mass_distances) > sum(
+        same_mass_distances
+    ) / len(same_mass_distances), (
+        "The average distance to the 'heavy' node should be greater than it was when all nodes had the same mass."
+    )
