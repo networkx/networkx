@@ -95,11 +95,16 @@ def group_by_levels(levels):
 
 # now lets get the isomorphism by walking the ordered_children
 def generate_isomorphism(v, w, M, ordered_children):
-    # make sure tree1 comes first
-    assert v < w
-    M.append((v, w))
-    for i, (x, y) in enumerate(zip(ordered_children[v], ordered_children[w])):
-        generate_isomorphism(x, y, M, ordered_children)
+    # Start with the initial pair in the stack
+    stack = [(v, w)]
+    while stack:
+        curr_v, curr_w = stack.pop()
+        assert curr_v < curr_w
+        M.append((curr_v, curr_w))
+        # Zip children and push them in reverse order to maintain processing order.
+        stack.extend(
+            zip(reversed(ordered_children[curr_v]), reversed(ordered_children[curr_w]))
+        )
 
 
 @nx._dispatchable(graphs={"t1": 0, "t2": 2})
