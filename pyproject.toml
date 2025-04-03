@@ -112,7 +112,6 @@ packages = [
     'networkx.algorithms.components',
     'networkx.algorithms.connectivity',
     'networkx.algorithms.coloring',
-    'networkx.algorithms.decomposition',
     'networkx.algorithms.flow',
     'networkx.algorithms.minors',
     'networkx.algorithms.traversal',

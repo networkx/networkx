@@ -32,7 +32,6 @@ Algorithms
    cuts
    d_separation
    dag
-   decomposition
    distance_measures
    distance_regular
    dominance
@@ -52,6 +51,7 @@ Algorithms
    matching
    minors
    mis
+   modular
    non_randomness
    moral
    node_classification

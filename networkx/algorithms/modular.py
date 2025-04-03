@@ -10,6 +10,9 @@ from typing import Any
 import networkx as nx
 from networkx import DiGraph, Graph
 
+__all__ = ["Tree", "Node", "NodeType", "modular_decomposition"]
+
+
 NodeList = list[Any]
 ActiveEdges = dict[Any, list[Any]]
 LeftNodes = dict[Any, bool]

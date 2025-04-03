@@ -29,6 +29,7 @@ from networkx.algorithms.hybrid import *
 from networkx.algorithms.link_analysis import *
 from networkx.algorithms.link_prediction import *
 from networkx.algorithms.lowest_common_ancestors import *
+from networkx.algorithms.modular import *
 from networkx.algorithms.isolate import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.minors import *
@@ -104,7 +105,6 @@ from networkx.algorithms.connectivity import minimum_node_cut
 from networkx.algorithms.connectivity import node_connectivity
 from networkx.algorithms.connectivity import node_disjoint_paths
 from networkx.algorithms.connectivity import stoer_wagner
-from networkx.algorithms.decomposition import modular_decomposition
 from networkx.algorithms.flow import capacity_scaling
 from networkx.algorithms.flow import cost_of_flow
 from networkx.algorithms.flow import gomory_hu_tree
