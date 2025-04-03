@@ -13,4 +13,6 @@ References
 
 """
 
-from networkx.algorithms.decomposition.modular_decomposition import modular_decomposition
+from networkx.algorithms.decomposition.modular_decomposition import (
+    modular_decomposition,
+)

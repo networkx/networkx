@@ -1,16 +1,14 @@
 """Modular decomposition."""
 
-from typing import Any, Callable, Iterator
-
-from networkx import DiGraph, Graph
-
 import collections
 import dataclasses
 import enum
 import itertools
+from collections.abc import Callable, Iterator
+from typing import Any
 
 import networkx as nx
-
+from networkx import DiGraph, Graph
 
 NodeList = list[Any]
 ActiveEdges = dict[Any, list[Any]]
@@ -127,13 +125,13 @@ class NodeType(enum.IntEnum):
 
 
 @dataclasses.dataclass(slots=True)
-class NodeData(object):
+class NodeData:
     is_left: bool = False
     is_right: bool = False
     left_of_pivot: bool = False
 
 
-class Node(object):
+class Node:
     """Represents internal non-leaf nodes of MD-trees.
 
     We define a separate class for these nodes, which effectively creates a
@@ -214,7 +212,6 @@ def _dfs_preorder_leaves(md_tree: Tree, root: Any) -> Iterator[Any]:
 def _set_left_right_pointers(
     graph: Graph, md_tree: Tree, forest: NodeList
 ) -> dict[Any, tuple[int, int]]:
-
     indices = dict.fromkeys(graph, -1)
     for i, node in enumerate(forest):
         if isinstance(node, Node):
@@ -263,7 +260,6 @@ def _is_connected_to_pivot(
 
 
 def _assembly(graph: Graph, md_tree: Tree, pivot: Any, forest: NodeList) -> Node:
-
     #
     # Add pivot in the MD-tree.
     #
@@ -357,7 +353,6 @@ def _clear_left_right(md_tree: Tree, node: Any) -> None:
 
 
 def _get_promoted_tree(md_tree: Tree, node: Any) -> NodeList:
-
     forest = []
 
     data = md_tree.nodes[node]["data"]
@@ -522,7 +517,7 @@ def _refinement_prime(md_tree: Tree, node: Any, left_split: bool) -> None:
 
 
 def _mark(md_tree: Tree, nodes: NodeList) -> NodeList:
-    num_marked_children = collections.defaultdict(int)
+    num_marked_children: dict[Any, int] = collections.defaultdict(int)
     marked = []
 
     #
@@ -582,7 +577,7 @@ def _recursion(
     graph: Graph, md_tree: Tree, pivot_picker: Callable
 ) -> tuple[Any, ActiveEdges, LeftNodes, NodeList]:
     distances = dict.fromkeys(graph, -1)
-    active_edges = {u: [] for u in graph}
+    active_edges = collections.defaultdict(list)
     left_nodes = dict.fromkeys(graph, False)
     pivot = pivot_picker(graph)
     queue = [pivot]
@@ -608,9 +603,11 @@ def _recursion(
             if u == pivot:
                 left_nodes[v] = True
 
-    forest = []
-    sorter = lambda u: distances[u]
-    for distance, nodes in itertools.groupby(sorted(graph, key=sorter), sorter):
+    def _sorter(u: Any) -> int:
+        return distances[u]
+
+    forest: list[Any] = []
+    for distance, nodes in itertools.groupby(sorted(graph, key=_sorter), _sorter):
         if distance:
             subgraph = graph.subgraph(nodes)
             root = _modular_decomposition(subgraph, md_tree, pivot_picker)
@@ -668,10 +665,12 @@ def modular_decomposition(
 ) -> tuple[Tree, Any]:
     """Construct the modular decomposition [1]_ of an undirected graph.
 
-    Modular decomposition is a *unique* decomposition of a graph into *modules*
-    (a generalization of a connected component). Because of its uniqueness, a
-    graph's modular decomposition is particularly useful for studying further
-    properties of the input graph.
+    Modular decomposition is a *unique* decomposition of a graph into *modules*.
+    A module is a generalization of a connected component. More specifically,
+    for a module $X$, every node $v \\not\\in X$ is either a neighbor of all nodes
+    in $X$, or a non-neighbor of all nodes in $X$. Because of its uniqueness, a
+    graph's modular decomposition is particularly useful for isomorphism tests,
+    optimization problems and for studying further properties of the input graph.
 
     Parameters
     ----------
@@ -699,8 +698,12 @@ def modular_decomposition(
     .. [2] Goppel, Luis. "Efficient Implementation of Modular Graph Decomposition."
     .. [3] https://github.com/LuisGoeppel/ModularDecomposition_v4
     """
+
+    def _pivot_picker(graph: Graph) -> Any:
+        return next(iter(graph))
+
     if not pivot_picker:
-        pivot_picker = lambda graph: next(iter(graph))
+        pivot_picker = _pivot_picker
     md_tree = Tree()
     root = _modular_decomposition(graph, md_tree, pivot_picker)
 
