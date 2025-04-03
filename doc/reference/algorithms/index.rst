@@ -32,6 +32,7 @@ Algorithms
    cuts
    d_separation
    dag
+   decomposition
    distance_measures
    distance_regular
    dominance

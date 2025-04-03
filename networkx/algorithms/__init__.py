@@ -104,6 +104,7 @@ from networkx.algorithms.connectivity import minimum_node_cut
 from networkx.algorithms.connectivity import node_connectivity
 from networkx.algorithms.connectivity import node_disjoint_paths
 from networkx.algorithms.connectivity import stoer_wagner
+from networkx.algorithms.decomposition import modular_decomposition
 from networkx.algorithms.flow import capacity_scaling
 from networkx.algorithms.flow import cost_of_flow
 from networkx.algorithms.flow import gomory_hu_tree
