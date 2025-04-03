@@ -1418,29 +1418,32 @@ class _dispatchable:
                 # This may fail, but let it fail in the networkx function
                 return graph
             backend = _load_backend(graph.__networkx_backend__)
-            func = backend.convert_to_nx
-            kwargs = {}
+            try:
+                rv = backend.convert_to_nx(graph)
+            except Exception:
+                if nx_cache is not None:
+                    _set_to_cache(cache, key, FAILED_TO_CONVERT)
+                raise
         else:
             backend = _load_backend(backend_name)
-            func = backend.convert_from_nx
-            kwargs = {
-                "edge_attrs": edge_attrs,
-                "node_attrs": node_attrs,
-                "preserve_edge_attrs": preserve_edge_attrs,
-                "preserve_node_attrs": preserve_node_attrs,
-                # Always preserve graph attrs when we are caching b/c this should be
-                # cheap and may help prevent extra (unnecessary) conversions. Because
-                # we do this, we don't need `preserve_graph_attrs` in the cache key.
-                "preserve_graph_attrs": preserve_graph_attrs or nx_cache is not None,
-                "name": self.name,
-                "graph_name": graph_name,
-            }
-        try:
-            rv = func(graph, **kwargs)
-        except Exception:
-            if nx_cache is not None:
-                _set_to_cache(cache, key, FAILED_TO_CONVERT)
-            raise
+            try:
+                rv = backend.convert_from_nx(
+                    graph,
+                    edge_attrs=edge_attrs,
+                    node_attrs=node_attrs,
+                    preserve_edge_attrs=preserve_edge_attrs,
+                    preserve_node_attrs=preserve_node_attrs,
+                    # Always preserve graph attrs when we are caching b/c this should be
+                    # cheap and may help prevent extra (unnecessary) conversions. Because
+                    # we do this, we don't need `preserve_graph_attrs` in the cache key.
+                    preserve_graph_attrs=preserve_graph_attrs or nx_cache is not None,
+                    name=self.name,
+                    graph_name=graph_name,
+                )
+            except Exception:
+                if nx_cache is not None:
+                    _set_to_cache(cache, key, FAILED_TO_CONVERT)
+                raise
         if nx_cache is not None:
             _set_to_cache(cache, key, rv)
             _logger.debug(
