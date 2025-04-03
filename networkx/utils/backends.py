@@ -1720,6 +1720,10 @@ class _dispatchable:
                 ) from exc
             check_result(result)
 
+        if self.name.endswith("__new__"):
+            # Graph is not yet done initializing; no sense doing more here
+            return result
+
         if self.name in {
             "edmonds_karp",
             "barycenter",
