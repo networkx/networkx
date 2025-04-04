@@ -10,12 +10,9 @@ from typing import Any
 import networkx as nx
 from networkx import DiGraph, Graph
 
+
 __all__ = ["Tree", "Node", "NodeType", "modular_decomposition"]
 
-
-NodeList = list[Any]
-ActiveEdges = dict[Any, list[Any]]
-LeftNodes = dict[Any, bool]
 
 
 class Tree(DiGraph):
@@ -29,7 +26,7 @@ class Tree(DiGraph):
     (i.e. that all nodes have at most one parent).
     """
 
-    def root(self, node: Any) -> Any:
+    def root(self, node):
         """Return the root of the tree that contains `node`.
 
         Parameters
@@ -48,7 +45,7 @@ class Tree(DiGraph):
             parent = self.parent(node)
         return node
 
-    def parent(self, node: Any) -> Any | None:
+    def parent(self, node):
         """Return the unique parent of `node`, if one exists.
 
         Parameters
@@ -68,7 +65,7 @@ class Tree(DiGraph):
             )
         return next(iter(parents), None)
 
-    def set_parent(self, node: Any, parent: Any | None) -> None:
+    def set_parent(self, node, parent):
         """Make `parent` the single parent of `node`.
 
         If `parent` is `None`, the existing parent is removed and `node` becomes
@@ -87,7 +84,7 @@ class Tree(DiGraph):
         if parent is not None:
             self.add_edge(parent, node)
 
-    def children(self, node: Any) -> NodeList:
+    def children(self, node):
         """Return the list of children of `node`.
 
         Parameters
@@ -102,7 +99,7 @@ class Tree(DiGraph):
         """
         return list(self.successors(node))
 
-    def add_child(self, parent: Any, child: Any) -> None:
+    def add_child(self, parent, child):
         """Make `child` a child of `parent`.
 
         Parameters
@@ -129,9 +126,9 @@ class NodeType(enum.IntEnum):
 
 @dataclasses.dataclass(slots=True)
 class NodeData:
-    is_left: bool = False
-    is_right: bool = False
-    left_of_pivot: bool = False
+    is_left = False
+    is_right = False
+    left_of_pivot = False
 
 
 class Node:
@@ -151,27 +148,27 @@ class Node:
 
     __slots__ = ("_node_id", "_node_type")
 
-    _num_nodes: int = 0
+    _num_nodes = 0
 
-    def __init__(self, node_type: NodeType) -> None:
+    def __init__(self, node_type):
         super().__init__()
         self._node_id = Node._num_nodes
         self._node_type = node_type
         Node._num_nodes += 1
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f"Node[{self.node_id}, {self.node_type.name}]"
 
     @property
-    def node_id(self) -> int:
+    def node_id(self):
         return self._node_id
 
     @property
-    def node_type(self) -> NodeType:
+    def node_type(self):
         return self._node_type
 
 
-def _maybe_merge(md_tree: Tree, root: Any, node_type: NodeType, node: Any) -> None:
+def _maybe_merge(md_tree, root, node_type, node):
     parent = md_tree.parent(node)
     children = md_tree.children(root)
     if isinstance(root, Node) and root.node_type == node_type and children:
@@ -182,13 +179,7 @@ def _maybe_merge(md_tree: Tree, root: Any, node_type: NodeType, node: Any) -> No
         md_tree.add_edge(parent, root)
 
 
-def _check_for_parallel(
-    md_tree: Tree,
-    forest: NodeList,
-    pointers: dict[Any, tuple[int, int]],
-    left: int,
-    right: int,
-) -> bool:
+def _check_for_parallel(md_tree, forest, pointers, left, right):
     if right >= len(forest):
         return False
     i = right
@@ -204,7 +195,7 @@ def _check_for_parallel(
     return True
 
 
-def _dfs_preorder_leaves(md_tree: Tree, root: Any) -> Iterator[Any]:
+def _dfs_preorder_leaves(md_tree, root):
     yield from (
         node
         for node in nx.dfs_preorder_nodes(md_tree, source=root)
@@ -212,9 +203,7 @@ def _dfs_preorder_leaves(md_tree: Tree, root: Any) -> Iterator[Any]:
     )
 
 
-def _set_left_right_pointers(
-    graph: Graph, md_tree: Tree, forest: NodeList
-) -> dict[Any, tuple[int, int]]:
+def _set_left_right_pointers(graph, md_tree, forest):
     indices = dict.fromkeys(graph, -1)
     for i, node in enumerate(forest):
         if isinstance(node, Node):
@@ -249,9 +238,7 @@ def _set_left_right_pointers(
     return pointers
 
 
-def _is_connected_to_pivot(
-    graph: Graph, md_tree: Tree, root: Any, pivot_neighbors: NodeList
-) -> bool:
+def _is_connected_to_pivot(graph, md_tree, root, pivot_neighbors):
     if isinstance(root, int):
         r = root in pivot_neighbors
     else:
@@ -262,7 +249,7 @@ def _is_connected_to_pivot(
     return r
 
 
-def _assembly(graph: Graph, md_tree: Tree, pivot: Any, forest: NodeList) -> Node:
+def _assembly(graph, md_tree, pivot, forest):
     #
     # Add pivot in the MD-tree.
     #
@@ -347,7 +334,7 @@ def _assembly(graph: Graph, md_tree: Tree, pivot: Any, forest: NodeList) -> Node
     return parent
 
 
-def _clear_left_right(md_tree: Tree, node: Any) -> None:
+def _clear_left_right(md_tree, node):
     data = md_tree.nodes[node]["data"]
     data.is_left = False
     data.is_right = False
@@ -355,7 +342,7 @@ def _clear_left_right(md_tree: Tree, node: Any) -> None:
         _clear_left_right(md_tree, child)
 
 
-def _get_promoted_tree(md_tree: Tree, node: Any) -> NodeList:
+def _get_promoted_tree(md_tree, node):
     forest = []
 
     data = md_tree.nodes[node]["data"]
@@ -378,7 +365,7 @@ def _get_promoted_tree(md_tree: Tree, node: Any) -> NodeList:
     return forest
 
 
-def _promotion(md_tree: Tree, forest: NodeList) -> NodeList:
+def _promotion(md_tree, forest):
     roots = []
     for node in forest:
         root = md_tree.root(node)
@@ -424,19 +411,19 @@ def _promotion(md_tree: Tree, forest: NodeList) -> NodeList:
     return new_promoted_forest
 
 
-def _mark_lr_children(md_tree: Tree, node: Any, left: bool) -> None:
+def _mark_lr_children(md_tree, node, left):
     for child in md_tree.children(node):
         _mark_lr(md_tree, child, left)
 
 
-def _mark_lr_ancestors(md_tree: Tree, node: Any, left: bool) -> None:
+def _mark_lr_ancestors(md_tree, node, left):
     parent = md_tree.parent(node)
     if parent is not None:
         _mark_lr(md_tree, parent, left)
         _mark_lr_ancestors(md_tree, parent, left)
 
 
-def _mark_lr(md_tree: Tree, node: Any, left: bool) -> None:
+def _mark_lr(md_tree, node, left):
     data = md_tree.nodes[node]["data"]
     if left:
         data.is_left = True
@@ -444,7 +431,7 @@ def _mark_lr(md_tree: Tree, node: Any, left: bool) -> None:
         data.is_right = True
 
 
-def _construct_tree(md_tree: Tree, node: Any, children: NodeList) -> Any:
+def _construct_tree(md_tree, node, children):
     if len(children) > 1:
         assert isinstance(node, Node)
         root = Node(node.node_type)
@@ -458,13 +445,7 @@ def _construct_tree(md_tree: Tree, node: Any, children: NodeList) -> Any:
     return root
 
 
-def _refinement_non_prime(
-    forest: NodeList,
-    md_tree: Tree,
-    node: Any,
-    marked: NodeList,
-    left_split: bool,
-) -> None:
+def _refinement_non_prime(forest, md_tree, node, marked, left_split):
     a_set = []
     b_set = []
 
@@ -513,14 +494,14 @@ def _refinement_non_prime(
         _mark_lr_ancestors(md_tree, b_root, left_split)
 
 
-def _refinement_prime(md_tree: Tree, node: Any, left_split: bool) -> None:
+def _refinement_prime(md_tree, node, left_split):
     _mark_lr(md_tree, node, left_split)
     _mark_lr_ancestors(md_tree, node, left_split)
     _mark_lr_children(md_tree, node, left_split)
 
 
-def _mark(md_tree: Tree, nodes: NodeList) -> NodeList:
-    num_marked_children: dict[Any, int] = collections.defaultdict(int)
+def _mark(md_tree, nodes):
+    num_marked_children = collections.defaultdict(int)
     marked = []
 
     #
@@ -549,14 +530,7 @@ def _mark(md_tree: Tree, nodes: NodeList) -> NodeList:
     return nodes
 
 
-def _refinement(
-    graph: Graph,
-    md_tree: Tree,
-    pivot: Any,
-    active_edges: ActiveEdges,
-    left_nodes: LeftNodes,
-    forest: NodeList,
-) -> None:
+def _refinement(graph, md_tree, pivot, active_edges, left_nodes, forest):
     for u in (u for u in graph if u != pivot):
         marked = _mark(md_tree, [v for v in active_edges[u] if v in md_tree])
 
@@ -576,9 +550,7 @@ def _refinement(
                 _refinement_non_prime(forest, md_tree, v, marked, left_split)
 
 
-def _recursion(
-    graph: Graph, md_tree: Tree, pivot_picker: Callable
-) -> tuple[Any, ActiveEdges, LeftNodes, NodeList]:
+def _recursion(graph, md_tree, pivot_picker):
     distances = dict.fromkeys(graph, -1)
     active_edges = collections.defaultdict(list)
     left_nodes = dict.fromkeys(graph, False)
@@ -606,10 +578,10 @@ def _recursion(
             if u == pivot:
                 left_nodes[v] = True
 
-    def _sorter(u: Any) -> int:
+    def _sorter(u):
         return distances[u]
 
-    forest: list[Any] = []
+    forest = []
     for distance, nodes in itertools.groupby(sorted(graph, key=_sorter), _sorter):
         if distance:
             subgraph = graph.subgraph(nodes)
@@ -628,18 +600,14 @@ def _recursion(
     return pivot, active_edges, left_nodes, forest
 
 
-def _modular_decomposition_component(
-    graph: Graph, md_tree: Tree, pivot_picker: Callable
-) -> Node:
+def _modular_decomposition_component(graph, md_tree, pivot_picker):
     pivot, active_edges, left_nodes, forest = _recursion(graph, md_tree, pivot_picker)
     _refinement(graph, md_tree, pivot, active_edges, left_nodes, forest)
     forest = _promotion(md_tree, forest)
     return _assembly(graph, md_tree, pivot, forest)
 
 
-def _modular_decomposition_components(
-    graph: Graph, md_tree: Tree, pivot_picker: Callable
-) -> Node:
+def _modular_decomposition_components(graph, md_tree, pivot_picker):
     root = Node(NodeType.PARALLEL)
     md_tree.add_node(root, data=NodeData())
     for component in sorted(map(tuple, nx.connected_components(graph))):
@@ -649,7 +617,7 @@ def _modular_decomposition_components(
     return root
 
 
-def _modular_decomposition(graph: Graph, md_tree: Tree, pivot_picker: Callable) -> Any:
+def _modular_decomposition(graph, md_tree, pivot_picker):
     number_of_nodes = graph.number_of_nodes()
     if number_of_nodes == 0:
         raise ValueError("Graph has no vertices")
@@ -663,9 +631,7 @@ def _modular_decomposition(graph: Graph, md_tree: Tree, pivot_picker: Callable) 
     return root
 
 
-def modular_decomposition(
-    graph: Graph, pivot_picker: Callable | None = None
-) -> tuple[Tree, Any]:
+def modular_decomposition(graph, pivot_picker=None):
     """Construct the modular decomposition [1]_ of an undirected graph.
 
     Modular decomposition is a *unique* decomposition of a graph into *modules*.
@@ -702,7 +668,7 @@ def modular_decomposition(
     .. [3] https://github.com/LuisGoeppel/ModularDecomposition_v4
     """
 
-    def _pivot_picker(graph: Graph) -> Any:
+    def _pivot_picker(graph):
         return next(iter(graph))
 
     if not pivot_picker:
