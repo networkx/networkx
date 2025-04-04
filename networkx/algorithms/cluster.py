@@ -527,10 +527,20 @@ def square_clustering(G, nodes=None):
     else:
         node_iter = G.nbunch_iter(nodes)
     clustering = {}
-    G_adj = G._adj
+    _G_adj = G._adj
+
+    class GAdj(dict):
+        """Calculate (and cache) node neighbor sets excluding self-loops."""
+
+        def __missing__(self, v):
+            v_neighbors = self[v] = set(_G_adj[v])
+            v_neighbors.discard(v)  # Ignore self-loops
+            return v_neighbors
+
+    G_adj = GAdj()  # Values are sets of neighbors (no self-loops)
+
     for v in node_iter:
-        v_neighbors = set(G_adj[v])
-        v_neighbors.discard(v)  # Ignore self-loops
+        v_neighbors = G_adj[v]
         v_degrees_m1 = len(v_neighbors) - 1  # degrees[v] - 1 (used below)
         if v_degrees_m1 <= 0:
             # Can't form a square without at least two neighbors
@@ -550,8 +560,7 @@ def square_clustering(G, nodes=None):
 
         # Iterate over all neighbors
         for u in v_neighbors:
-            u_neighbors = set(G_adj[u])
-            u_neighbors.discard(u)  # Ignore self-loops
+            u_neighbors = G_adj[u]
             uw_degrees += len(u_neighbors) * v_degrees_m1
             # P2 from https://arxiv.org/abs/2007.11111
             p2 = len(u_neighbors & v_neighbors)
@@ -564,13 +573,11 @@ def square_clustering(G, nodes=None):
 
         # And iterate over all neighbors of neighbors.
         # These nodes x may be the corners opposite v in squares u-v-w-x.
-        two_hop_neighbors = set().union(*(G_adj[u] for u in v_neighbors))
+        two_hop_neighbors = set.union(*(G_adj[u] for u in v_neighbors))
         two_hop_neighbors -= v_neighbors  # Neighbors already counted above
         two_hop_neighbors.discard(v)
         for x in two_hop_neighbors:
-            x_neighbors = set(G_adj[x])
-            x_neighbors.discard(x)  # Ignore self-loops
-            p2 = len(v_neighbors & x_neighbors)
+            p2 = len(v_neighbors & G_adj[x])
             squares += p2 * (p2 - 1)  # Will divide by 2 later
 
         squares //= 2
