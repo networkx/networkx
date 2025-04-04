@@ -1,3 +1,4 @@
+import itertools
 import math
 from random import Random
 
@@ -17,6 +18,35 @@ def test__extrema_bounding_invalid_compute_kwarg():
 class TestDistance:
     def setup_method(self):
         self.G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
+
+    @pytest.mark.parametrize("seed", list(range(10)))
+    @pytest.mark.parametrize("n", list(range(10, 20)))
+    @pytest.mark.parametrize("prob", [x / 10 for x in range(0, 10, 2)])
+    def test_use_bounds_on_off_consistency(self, seed, n, prob):
+        """Test for consistency of distance metrics when using usebounds=True.
+
+        We validate consistency for `networkx.diameter`, `networkx.radius`, `networkx.periphery`
+        and `networkx.center` when passing `usebounds=True`. Expectation is that method
+        returns the same result whether we pass usebounds=True or not.
+
+        For this we generate random connected graphs and validate method returns the same.
+        """
+        metrics = [nx.diameter, nx.radius, nx.periphery, nx.center]
+        max_weight = [5, 10, 1000]
+        rng = Random(seed)
+        # we compose it with a random tree to ensure graph is connected
+        G = nx.compose(
+            nx.random_labeled_tree(n, seed=rng),
+            nx.erdos_renyi_graph(n, prob, seed=rng),
+        )
+        for metric in metrics:
+            # checking unweighted case
+            assert metric(G) == metric(G, usebounds=True)
+            for w in max_weight:
+                for u, v in G.edges():
+                    G[u][v]["w"] = rng.randint(0, w)
+                # checking weighted case
+                assert metric(G, weight="w") == metric(G, weight="w", usebounds=True)
 
     def test_eccentricity(self):
         assert nx.eccentricity(self.G, 1) == 6
