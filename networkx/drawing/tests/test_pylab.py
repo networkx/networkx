@@ -6,14 +6,14 @@ import warnings
 
 import pytest
 
+import networkx as nx
+
 mpl = pytest.importorskip("matplotlib")
 np = pytest.importorskip("numpy")
 mpl.use("PS")
 plt = pytest.importorskip("matplotlib.pyplot")
 plt.rcParams["text.usetex"] = False
 
-
-import networkx as nx
 
 barbell = nx.barbell_graph(4, 6)
 

@@ -13,7 +13,6 @@ General guidelines for writing good tests:
 """
 
 import os
-import sys
 import warnings
 from importlib.metadata import entry_points
 
@@ -112,12 +111,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\n`compute_v_structures"
     )
     warnings.filterwarnings(
@@ -194,6 +187,7 @@ needs_numpy = [
     "algorithms/non_randomness.py",
     "algorithms/polynomials.py",
     "algorithms/shortest_paths/dense.py",
+    "algorithms/structuralholes.py",
     "algorithms/tree/mst.py",
     "drawing/nx_latex.py",
     "generators/expanders.py",
@@ -222,6 +216,7 @@ needs_scipy = [
     "algorithms/link_analysis/pagerank_alg.py",
     "algorithms/node_classification.py",
     "algorithms/similarity.py",
+    "algorithms/structuralholes.py",
     "algorithms/tree/mst.py",
     "algorithms/walks.py",
     "convert_matrix.py",
