@@ -126,9 +126,9 @@ class NodeType(enum.IntEnum):
 
 @dataclasses.dataclass(slots=True)
 class NodeData:
-    is_left = False
-    is_right = False
-    left_of_pivot = False
+    is_left: bool = False
+    is_right: bool = False
+    left_of_pivot: bool = False
 
 
 class Node:
