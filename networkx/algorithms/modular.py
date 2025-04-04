@@ -40,7 +40,7 @@ class Tree(DiGraph):
             The root of tree that contains `node`.
         """
         parent = self.parent(node)
-        while parent:
+        while parent is not None:
             node = parent
             parent = self.parent(node)
         return node
@@ -199,7 +199,7 @@ def _dfs_preorder_leaves(md_tree, root):
     yield from (
         node
         for node in nx.dfs_preorder_nodes(md_tree, source=root)
-        if isinstance(node, int)
+        if not isinstance(node, Node)
     )
 
 
@@ -239,7 +239,7 @@ def _set_left_right_pointers(graph, md_tree, forest):
 
 
 def _is_connected_to_pivot(graph, md_tree, root, pivot_neighbors):
-    if isinstance(root, int):
+    if not isinstance(root, Node):
         r = root in pivot_neighbors
     else:
         r = any(
@@ -397,7 +397,7 @@ def _promotion(md_tree, forest):
                     new_promoted_forest.append(children[0])
                 else:
                     new_promoted_forest.append(root)
-            elif isinstance(root, int):
+            elif not isinstance(root, Node):
                 new_promoted_forest.append(root)
             else:
                 md_tree.remove_node(root)
