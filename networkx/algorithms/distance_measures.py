@@ -75,12 +75,10 @@ def _tree_center(G):
         for leaf in leaves:
             del center_candidates_degree[leaf]
             for neighbor in G.neighbors(leaf):
-                degree = center_candidates_degree.get(neighbor)
-                if degree is None:
+                if neighbor not in center_candidates_degree:
                     continue
-                new_degree = degree - 1
-                center_candidates_degree[neighbor] = new_degree
-                if new_degree == 1:
+                center_candidates_degree[neighbor] -= 1
+                if center_candidates_degree[neighbor] == 1:
                     new_leaves.add(neighbor)
         leaves = new_leaves
 
