@@ -7,7 +7,6 @@ Modular decomposition
    :toctree: generated/
 
    modular_decomposition
-   Tree
    Node
    NodeType
 

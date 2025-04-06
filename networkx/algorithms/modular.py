@@ -10,106 +10,7 @@ from typing import Any
 import networkx as nx
 from networkx import DiGraph, Graph
 
-
-__all__ = ["Tree", "Node", "NodeType", "modular_decomposition"]
-
-
-
-class Tree(DiGraph):
-    """Represents a MD-tree.
-
-    It's called a "tree", but basically represents a forest of MD-trees. When
-    the algorithm terminates, it should contain a single tree, hence the name.
-    Nodes in this tree are either nodes of the original graph, in which case
-    they are leaves, or instances of `Node`, in which case they are internal
-    non-leaf nodes. Methods of this class attempt to preserve the tree invariant
-    (i.e. that all nodes have at most one parent).
-    """
-
-    def root(self, node):
-        """Return the root of the tree that contains `node`.
-
-        Parameters
-        ----------
-        node : Any
-            Node to start traversing upwards from.
-
-        Returns
-        -------
-        Any
-            The root of tree that contains `node`.
-        """
-        parent = self.parent(node)
-        while parent is not None:
-            node = parent
-            parent = self.parent(node)
-        return node
-
-    def parent(self, node):
-        """Return the unique parent of `node`, if one exists.
-
-        Parameters
-        ----------
-        node : Any
-            Node whose parent to return.
-
-        Returns
-        -------
-        Any
-            The parent of `node`, or `None` if `node` has no parent.
-        """
-        parents = list(self.predecessors(node))
-        if len(parents) > 1:
-            raise ValueError(
-                f"Tree invariant violation (node {node} has parents {parents})"
-            )
-        return next(iter(parents), None)
-
-    def set_parent(self, node, parent):
-        """Make `parent` the single parent of `node`.
-
-        If `parent` is `None`, the existing parent is removed and `node` becomes
-        a root node. In any case, the previous parent edge, if any, is removed.
-
-        Parameters
-        ----------
-        node : Any
-            Node whose parent to set/unset.
-        parent : Any
-            New parent node or `None`.
-        """
-        prev_parent = self.parent(node)
-        if prev_parent is not None:
-            self.remove_edge(prev_parent, node)
-        if parent is not None:
-            self.add_edge(parent, node)
-
-    def children(self, node):
-        """Return the list of children of `node`.
-
-        Parameters
-        ----------
-        node : Any
-            Node whose children to return.
-
-        Returns
-        -------
-        list[Any]
-            List of children.
-        """
-        return list(self.successors(node))
-
-    def add_child(self, parent, child):
-        """Make `child` a child of `parent`.
-
-        Parameters
-        ----------
-        parent : Any
-            Parent node.
-        child : Any
-            Child node.
-        """
-        self.set_parent(child, parent)
+__all__ = ["Node", "NodeType", "modular_decomposition"]
 
 
 @enum.unique
@@ -168,9 +69,34 @@ class Node:
         return self._node_type
 
 
+def _set_parent(graph, node, parent):
+    prev_parent = _get_parent(graph, node)
+    if prev_parent is not None:
+        graph.remove_edge(prev_parent, node)
+    if parent is not None:
+        graph.add_edge(parent, node)
+
+
+def _get_parent(graph, node):
+    parents = list(graph.predecessors(node))
+    if len(parents) > 1:
+        raise ValueError(
+            f"Tree invariant violation (node {node} has parents {parents})"
+        )
+    return next(iter(parents), None)
+
+
+def _get_root(graph, node):
+    parent = _get_parent(graph, node)
+    while parent is not None:
+        node = parent
+        parent = _get_parent(graph, node)
+    return node
+
+
 def _maybe_merge(md_tree, root, node_type, node):
-    parent = md_tree.parent(node)
-    children = md_tree.children(root)
+    parent = _get_parent(md_tree, node)
+    children = list(md_tree.successors(root))
     if isinstance(root, Node) and root.node_type == node_type and children:
         md_tree.remove_node(root)
         for child in children:
@@ -214,7 +140,7 @@ def _set_left_right_pointers(graph, md_tree, forest):
 
     pointers = {}
     for i, node in enumerate(forest):
-        root = md_tree.root(node)
+        root = _get_root(md_tree, node)
         nodes = list(_dfs_preorder_leaves(md_tree, root))
 
         adjacencies = []
@@ -265,7 +191,7 @@ def _assembly(graph, md_tree, pivot, forest):
     i = 1
     for i in range(1, len(forest)):
         node = forest[i]
-        root = md_tree.root(node)
+        root = _get_root(md_tree, node)
         if not _is_connected_to_pivot(graph, md_tree, root, pivot_neighbors):
             break
     forest.insert(i, pivot)
@@ -316,12 +242,12 @@ def _assembly(graph, md_tree, pivot, forest):
 
         for i in range(current_left, included_left):
             n = forest[i]
-            rn = md_tree.root(n)
+            rn = _get_root(md_tree, n)
             _maybe_merge(md_tree, rn, node_type, parent)
 
         for i in range(included_right, current_right):
             n = forest[i]
-            rn = md_tree.root(n)
+            rn = _get_root(md_tree, n)
             _maybe_merge(md_tree, rn, node_type, parent)
 
         parent = node
@@ -338,7 +264,7 @@ def _clear_left_right(md_tree, node):
     data = md_tree.nodes[node]["data"]
     data.is_left = False
     data.is_right = False
-    for child in md_tree.children(node):
+    for child in md_tree.successors(node):
         _clear_left_right(md_tree, child)
 
 
@@ -347,19 +273,19 @@ def _get_promoted_tree(md_tree, node):
 
     data = md_tree.nodes[node]["data"]
     if data.is_left:
-        for child in md_tree.children(node):
+        for child in list(md_tree.successors(node)):
             child_data = md_tree.nodes[child]["data"]
             if child_data.is_left:
-                md_tree.set_parent(child, None)
+                _set_parent(md_tree, child, None)
                 forest += _get_promoted_tree(md_tree, child)
 
     forest.append(node)
 
     if data.is_right:
-        for child in md_tree.children(node):
+        for child in list(md_tree.successors(node)):
             child_data = md_tree.nodes[child]["data"]
             if child_data.is_right:
-                md_tree.set_parent(child, None)
+                _set_parent(md_tree, child, None)
                 forest += _get_promoted_tree(md_tree, child)
 
     return forest
@@ -368,7 +294,7 @@ def _get_promoted_tree(md_tree, node):
 def _promotion(md_tree, forest):
     roots = []
     for node in forest:
-        root = md_tree.root(node)
+        root = _get_root(md_tree, node)
         if root is not None and root not in roots:
             roots.append(root)
 
@@ -381,7 +307,7 @@ def _promotion(md_tree, forest):
     #
     roots = []
     for node in promoted_forest:
-        root = md_tree.root(node)
+        root = _get_root(md_tree, node)
         if root is not None and root not in roots:
             roots.append(root)
 
@@ -389,10 +315,10 @@ def _promotion(md_tree, forest):
     for root in roots:
         root_data = md_tree.nodes[root]["data"]
         if root_data.is_left or root_data.is_right:
-            children = md_tree.children(root)
+            children = list(md_tree.successors(root))
             if children:
                 if len(children) == 1:
-                    md_tree.set_parent(children[0], None)
+                    _set_parent(md_tree, children[0], None)
                     md_tree.remove_node(root)
                     new_promoted_forest.append(children[0])
                 else:
@@ -405,19 +331,19 @@ def _promotion(md_tree, forest):
             new_promoted_forest.append(root)
 
     for node in new_promoted_forest:
-        root = md_tree.root(node)
+        root = _get_root(md_tree, node)
         _clear_left_right(md_tree, root)
 
     return new_promoted_forest
 
 
 def _mark_lr_children(md_tree, node, left):
-    for child in md_tree.children(node):
+    for child in md_tree.successors(node):
         _mark_lr(md_tree, child, left)
 
 
 def _mark_lr_ancestors(md_tree, node, left):
-    parent = md_tree.parent(node)
+    parent = _get_parent(md_tree, node)
     if parent is not None:
         _mark_lr(md_tree, parent, left)
         _mark_lr_ancestors(md_tree, parent, left)
@@ -437,11 +363,11 @@ def _construct_tree(md_tree, node, children):
         root = Node(node.node_type)
         md_tree.add_node(root, data=NodeData())
         for child in children:
-            md_tree.add_child(root, child)
+            _set_parent(md_tree, child, root)
     else:
         root = children[0]
         root_data = md_tree.nodes[root]["data"]
-        md_tree.set_parent(root, None)
+        _set_parent(md_tree, root, None)
     return root
 
 
@@ -459,13 +385,13 @@ def _refinement_non_prime(forest, md_tree, node, marked, left_split):
         a_root = _construct_tree(md_tree, node, a_set)
         b_root = _construct_tree(md_tree, node, b_set)
 
-        parent = md_tree.parent(node)
+        parent = _get_parent(md_tree, node)
 
         if parent is not None:
-            md_tree.add_child(node, a_root)
-            md_tree.add_child(node, b_root)
+            _set_parent(md_tree, a_root, node)
+            _set_parent(md_tree, b_root, node)
         else:
-            root = md_tree.root(node)
+            root = _get_root(md_tree, node)
             root_data = md_tree.nodes[root]["data"]
             i = forest.index(root)
 
@@ -516,14 +442,14 @@ def _mark(md_tree, nodes):
         #
         if md_tree.out_degree(node) == num_marked_children[node]:
             marked.append(node)
-            parent = md_tree.parent(node)
+            parent = _get_parent(md_tree, node)
             if parent is not None:
                 num_marked_children[parent] += 1
                 if parent not in nodes:
                     nodes.append(parent)
 
     for node in marked:
-        parent = md_tree.parent(node)
+        parent = _get_parent(md_tree, node)
         if parent is None or parent not in marked:
             nodes.append(node)
 
@@ -536,12 +462,12 @@ def _refinement(graph, md_tree, pivot, active_edges, left_nodes, forest):
 
         marked_parents = []
         for v in marked:
-            parent = md_tree.parent(v)
+            parent = _get_parent(md_tree, v)
             if parent is not None and parent not in marked_parents:
                 marked_parents.append(parent)
 
         for v in marked_parents:
-            root = md_tree.root(v)
+            root = _get_root(md_tree, v)
             data = md_tree.nodes[root]["data"]
             left_split = left_nodes[u] or data.left_of_pivot
             if v.node_type == NodeType.PRIME:
@@ -652,7 +578,7 @@ def modular_decomposition(graph, pivot_picker=None):
 
     Returns
     -------
-    tuple[Tree, Any]
+    tuple[DiGraph, Any]
         A tuple holding the MD-tree of the input graph and its root node.
 
     Notes
@@ -673,7 +599,7 @@ def modular_decomposition(graph, pivot_picker=None):
 
     if not pivot_picker:
         pivot_picker = _pivot_picker
-    md_tree = Tree()
+    md_tree = DiGraph()
     root = _modular_decomposition(graph, md_tree, pivot_picker)
 
     #
