@@ -1031,22 +1031,28 @@ class _dispatchable:
     )
 
     def _will_call_mutate_input(self, args, kwargs):
-        return (mutates_input := self.mutates_input) and (
-            mutates_input is True
-            or any(
-                # If `mutates_input` begins with "not ", then assume the argument is bool,
-                # otherwise treat it as a node or edge attribute if it's not None.
-                not (
-                    args[arg_pos]
-                    if len(args) > arg_pos
-                    # This assumes that e.g. `copy=True` is the default
-                    else kwargs.get(arg_name[4:], True)
-                )
-                if arg_name.startswith("not ")
-                else (args[arg_pos] if len(args) > arg_pos else kwargs.get(arg_name))
-                is not None
-                for arg_name, arg_pos in mutates_input.items()
-            )
+        # Fairly few nx functions mutate the input graph. Most that do, always do.
+        # So a boolean input indicates "always" or "never".
+        if isinstance((mutates_input := self.mutates_input), bool):
+            return mutates_input
+
+        # The ~10 other nx functions either use "copy=True" to control mutation or
+        # an arg naming an edge/node attribute to mutate (None means no mutation).
+        # Now `mutates_input` is a dict keyed by arg_name to its func-sig position.
+        # The `copy=` args are keyed as "not copy" to mean "negate the copy argument".
+        # Keys w/o "not " mean the call mutates only when the arg value `is not None`.
+        #
+        # This section might need different code if new functions mutate in new ways.
+        #
+        # NetworkX doesn't have any `mutates_input` dicts with more than 1 item.
+        # But we treat it like it might have more than 1 item for generality.
+        n = len(args)
+        return any(
+            (args[arg_pos] if n > arg_pos else kwargs.get(arg_name)) is not None
+            if not arg_name.startswith("not ")
+            # This assumes that e.g. `copy=True` is the default
+            else not (args[arg_pos] if n > arg_pos else kwargs.get(arg_name[4:], True))
+            for arg_name, arg_pos in mutates_input.items()
         )
 
     def _can_convert(self, backend_name, graph_backend_names):
