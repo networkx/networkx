@@ -28,7 +28,7 @@ def trace(func):
         # print("Arguments:")
         # for name, value in bound_args.arguments.items():
         #     print(f"  {name} = {value}")
-
+        #
         return func(*args, **kwargs)
 
     return wrapper
