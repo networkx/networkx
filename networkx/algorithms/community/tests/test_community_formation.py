@@ -1,17 +1,17 @@
 """
 Testing the :mod:`networkx.algorithms.community.community_formation` module.
 
-Which is the implementation of the Social Aware Assignment of Passengers in Ridesharing
+Which is the implementation of the Social Aware Assignment of Passengers in Ridesharing, also known as coalition formation or graph partitioning in the literature.
 
 The social aware assignment problem belongs to the field of community formation, which is an important research branch
 within multiagent systems. It analyses the outcome that results when a set of agents is partitioned into communities.
 Actually, Match_And_Merge model is a special case of simple Additively Separable Hedonic Games (ASHGs).
 
 Which was described in the article:
-Levinger C., Hazon N., Azaria A. Social Aware Assignment of Passengers in Ridesharing. - 2022, https://github.com/VictoKu1/ResearchAlgorithmsCourse1/raw/main/Article/2022%2C%20Chaya%20Amos%20Noam%2C%20Socially%20aware%20assignment%20of%20passengers%20in%20ride%20sharing.pdf.
+Levinger C., Hazon N., Azaria A. Social Aware Assignment of Passengers in Ridesharing. - 2022,
 
 The match_and_merge algorithm is based on the pseudocode from the article
-which is written (as well as the tests) by Victor Kushnir.
+which is written (as well as the tests) by Victor Kushnir (@VictoKu1).
 """
 
 import math
