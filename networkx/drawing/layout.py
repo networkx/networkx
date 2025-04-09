@@ -1461,7 +1461,7 @@ def forceatlas2_layout(
     jitter_tolerance=1.0,
     scaling_ratio=2.0,
     gravity=1.0,
-    distributed_action=False,
+    distributed_attraction=False,
     strong_gravity=False,
     node_mass=None,
     node_size=None,
@@ -1670,7 +1670,7 @@ def forceatlas2_layout(
         else:
             attraction = -np.einsum("ijk, ij -> ik", diff, A)
 
-        if distributed_action:
+        if distributed_attraction:
             attraction /= mass[:, None]
 
         # repulsion
