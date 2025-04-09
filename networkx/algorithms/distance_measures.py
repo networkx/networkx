@@ -99,13 +99,13 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     high = False
     # status variables
     ecc_lower = dict.fromkeys(G, 0)
-    ecc_upper = dict.fromkeys(G, N)
+    ecc_upper = dict.fromkeys(G, math.inf)
     candidates = set(G)
 
     # (re)set bound extremes
-    minlower = N
+    minlower = math.inf
     maxlower = 0
-    minupper = N
+    minupper = math.inf
     maxupper = 0
 
     # repeat the following until there are no more candidates
