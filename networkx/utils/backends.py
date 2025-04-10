@@ -2078,8 +2078,8 @@ def _get_from_cache(cache, key, *, backend_name=None, mutations=None):
     if (rv := cache.get(key)) is not None:
         # Return FAILED_TO_CONVERT when a conversion previously failed for
         # this exact cache key. Instead of an exact key match, we could
-        # perhaps return FAILED_TO_CONVERT if any cache key dominated by
-        # the given cache key has previously failed to convert.
+        # perhaps return FAILED_TO_CONVERT if any cache key that requires all
+        # edge/node attributes of the given cache key has previously failed to convert.
         return key, rv
     return None, None
 
