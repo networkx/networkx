@@ -261,8 +261,8 @@ def tree_isomorphism(t1, t2):
         return []
 
     # Another shortcut is that the sorted degree sequences need to be the same.
-    degree_sequence1 = sorted(d for (n, d) in t1.degree())
-    degree_sequence2 = sorted(d for (n, d) in t2.degree())
+    degree_sequence1 = sorted(d for (_, d) in t1.degree())
+    degree_sequence2 = sorted(d for (_, d) in t2.degree())
 
     if degree_sequence1 != degree_sequence2:
         return []
