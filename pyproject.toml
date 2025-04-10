@@ -61,21 +61,21 @@ default = [
     'pandas>=2.0',
 ]
 developer = [
-    'pre-commit>=3.2',
-    'mypy>=1.1',
+    'pre-commit>=4.1',
+    'mypy>=1.15',
 ]
 doc = [
-    'sphinx>=7.3',
-    'pydata-sphinx-theme>=0.15',
-    'sphinx-gallery>=0.16',
+    'sphinx>=8.0',
+    'pydata-sphinx-theme>=0.16',
+    'sphinx-gallery>=0.18',
     'numpydoc>=1.8.0',
-    'pillow>=9.4',
+    'pillow>=10',
     'texext>=0.6.7',
     'myst-nb>=1.1',
-    'intersphinx_registry',
+    'intersphinx-registry',
 ]
 example = [
-    'osmnx>=1.9',
+    'osmnx>=2.0.0',
     'momepy>=0.7.2',
     'contextily>=1.6',
     'seaborn>=0.13',
@@ -92,6 +92,11 @@ extra = [
 test = [
     'pytest>=7.2',
     'pytest-cov>=4.0',
+]
+test-extras = [
+    'pytest-mpl',
+    'pytest-xdist',
+    'pytest-randomly',
 ]
 
 [tool.setuptools]
@@ -214,8 +219,9 @@ ignore = [
   "PLR09",    # Too many <...>
   "PLR2004",  # Magic value used in comparison
   "ISC001",   # Conflicts with formatter
+  "E741",     # Ambiguous variable name
+  "E722",     # Do not use bare `except`
   "F",        # pyflakes
-  "E",        # pycodestyle
   "EM101",    # Exception must not use a string literal
   "EM102",    # Exception must not use an f-string literal
   "PD",       # pandas-vet
@@ -223,6 +229,7 @@ ignore = [
   "PYI",      # flake8-pyi
   "NPY002",   # Replace legacy `np.random.random` call with `np.random.Generator`
 ]
+exclude=['doc/conf.py', '__init__.py']
 
 # Need to select D above
 #[tool.ruff.lint.pydocstyle]

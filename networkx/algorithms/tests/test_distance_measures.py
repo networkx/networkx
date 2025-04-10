@@ -1,3 +1,4 @@
+import itertools
 import math
 from random import Random
 
@@ -16,8 +17,36 @@ def test__extrema_bounding_invalid_compute_kwarg():
 
 class TestDistance:
     def setup_method(self):
-        G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
-        self.G = G
+        self.G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
+
+    @pytest.mark.parametrize("seed", list(range(10)))
+    @pytest.mark.parametrize("n", list(range(10, 20)))
+    @pytest.mark.parametrize("prob", [x / 10 for x in range(0, 10, 2)])
+    def test_use_bounds_on_off_consistency(self, seed, n, prob):
+        """Test for consistency of distance metrics when using usebounds=True.
+
+        We validate consistency for `networkx.diameter`, `networkx.radius`, `networkx.periphery`
+        and `networkx.center` when passing `usebounds=True`. Expectation is that method
+        returns the same result whether we pass usebounds=True or not.
+
+        For this we generate random connected graphs and validate method returns the same.
+        """
+        metrics = [nx.diameter, nx.radius, nx.periphery, nx.center]
+        max_weight = [5, 10, 1000]
+        rng = Random(seed)
+        # we compose it with a random tree to ensure graph is connected
+        G = nx.compose(
+            nx.random_labeled_tree(n, seed=rng),
+            nx.erdos_renyi_graph(n, prob, seed=rng),
+        )
+        for metric in metrics:
+            # checking unweighted case
+            assert metric(G) == metric(G, usebounds=True)
+            for w in max_weight:
+                for u, v in G.edges():
+                    G[u][v]["w"] = rng.randint(0, w)
+                # checking weighted case
+                assert metric(G, weight="w") == metric(G, weight="w", usebounds=True)
 
     def test_eccentricity(self):
         assert nx.eccentricity(self.G, 1) == 6
@@ -54,7 +83,8 @@ class TestDistance:
         assert nx.diameter(self.G) == 6
 
     def test_harmonic_diameter(self):
-        assert abs(nx.harmonic_diameter(self.G) - 2.0477815699658715) < 1e-12
+        assert nx.harmonic_diameter(self.G) == pytest.approx(2.0477815699658715)
+        assert nx.harmonic_diameter(nx.star_graph(3)) == pytest.approx(1.333333)
 
     def test_harmonic_diameter_empty(self):
         assert math.isnan(nx.harmonic_diameter(nx.empty_graph()))
@@ -69,6 +99,17 @@ class TestDistance:
         DG = nx.DiGraph()
         DG.add_edge(0, 1)
         assert nx.harmonic_diameter(DG) == 2
+
+    def test_harmonic_diameter_weighted_paths(self):
+        G = nx.star_graph(3)
+        # check defaults
+        G.add_weighted_edges_from([(*e, 1) for i, e in enumerate(G.edges)], "weight")
+        assert nx.harmonic_diameter(G) == pytest.approx(1.333333)
+        assert nx.harmonic_diameter(G, weight="weight") == pytest.approx(1.333333)
+
+        # check impact of weights and alternate weight name
+        G.add_weighted_edges_from([(*e, i) for i, e in enumerate(G.edges)], "dist")
+        assert nx.harmonic_diameter(G, weight="dist") == pytest.approx(1.8)
 
     def test_radius(self):
         assert nx.radius(self.G) == 4
@@ -419,7 +460,7 @@ class TestResistanceDistance:
         test_data[2] = 0.75
         test_data[3] = 1
         test_data[4] = 0.75
-        assert type(rd) == dict
+        assert isinstance(rd, dict)
         assert sorted(rd.keys()) == sorted(test_data.keys())
         for key in rd:
             assert np.isclose(rd[key], test_data[key])
@@ -431,14 +472,14 @@ class TestResistanceDistance:
         test_data[2] = 0.75
         test_data[3] = 1
         test_data[4] = 0.75
-        assert type(rd) == dict
+        assert isinstance(rd, dict)
         assert sorted(rd.keys()) == sorted(test_data.keys())
         for key in rd:
             assert np.isclose(rd[key], test_data[key])
 
     def test_resistance_distance_all(self):
         rd = nx.resistance_distance(self.G)
-        assert type(rd) == dict
+        assert isinstance(rd, dict)
         assert round(rd[1][3], 5) == 1
 
 

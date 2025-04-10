@@ -99,13 +99,13 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     high = False
     # status variables
     ecc_lower = dict.fromkeys(G, 0)
-    ecc_upper = dict.fromkeys(G, N)
+    ecc_upper = dict.fromkeys(G, math.inf)
     candidates = set(G)
 
     # (re)set bound extremes
-    minlower = N
+    minlower = math.inf
     maxlower = 0
-    minupper = N
+    minupper = math.inf
     maxupper = 0
 
     # repeat the following until there are no more candidates
@@ -321,7 +321,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
                     " strongly connected"
                 )
             else:
-                msg = "Found infinite path length because the graph is not" " connected"
+                msg = "Found infinite path length because the graph is not connected"
             raise nx.NetworkXError(msg)
 
         e[n] = max(length.values())
@@ -344,6 +344,12 @@ def diameter(G, e=None, usebounds=False, weight=None):
 
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
+
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the diameter
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
 
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
@@ -370,6 +376,13 @@ def diameter(G, e=None, usebounds=False, weight=None):
     d : integer
        Diameter of graph
 
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
+
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
@@ -387,8 +400,8 @@ def diameter(G, e=None, usebounds=False, weight=None):
     return max(e.values())
 
 
-@nx._dispatchable
-def harmonic_diameter(G, sp=None):
+@nx._dispatchable(edge_attrs="weight")
+def harmonic_diameter(G, sp=None, *, weight=None):
     """Returns the harmonic diameter of the graph G.
 
     The harmonic diameter of a graph is the harmonic mean of the distances
@@ -415,6 +428,15 @@ def harmonic_diameter(G, sp=None):
     sp : dict of dicts, optional
        All-pairs shortest path lengths as a dictionary of dictionaries
 
+    weight : string, function, or None (default=None)
+        If None, every edge has weight/distance 1.
+        If a string, use this edge attribute as the edge weight.
+        Any edge attribute not present defaults to 1.
+        If a function, the weight of an edge is the value returned by the function.
+        The function must accept exactly three positional arguments:
+        the two endpoints of an edge and the dictionary of edge attributes for
+        that edge. The function must return a number.
+
     Returns
     -------
     hd : float
@@ -432,7 +454,7 @@ def harmonic_diameter(G, sp=None):
     sum_invd = 0
     for n in G:
         if sp is None:
-            length = nx.single_source_shortest_path_length(G, n)
+            length = nx.single_source_dijkstra_path_length(G, n, weight=weight)
         else:
             try:
                 length = sp[n]
@@ -467,6 +489,12 @@ def periphery(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the periphery
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -491,6 +519,13 @@ def periphery(G, e=None, usebounds=False, weight=None):
     -------
     p : list
        List of nodes in periphery
+
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
 
     Examples
     --------
@@ -526,6 +561,12 @@ def radius(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the radius
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -550,6 +591,13 @@ def radius(G, e=None, usebounds=False, weight=None):
     -------
     r : integer
        Radius of graph
+
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
 
     Examples
     --------
@@ -579,6 +627,12 @@ def center(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the center
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -603,6 +657,13 @@ def center(G, e=None, usebounds=False, weight=None):
     -------
     c : list
        List of nodes in center
+
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
 
     Examples
     --------
