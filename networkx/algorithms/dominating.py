@@ -2,7 +2,7 @@
 
 import math
 from heapq import heappop, heappush
-from itertools import chain
+from itertools import chain, count
 
 import networkx as nx
 from networkx.utils import arbitrary_element
@@ -14,7 +14,6 @@ __all__ = [
     "is_dominating_set",
     "connected_dominating_set",
     "is_connected_dominating_set",
-    "interval_graph_min_connected_dominating_set",
 ]
 
 
@@ -156,9 +155,20 @@ def connected_dominating_set(G):
 
     Notes
     -----
-    This function implements Algorithm 1 in its basic version as specified
-    in [3]_.
-    Runtime complexity of the algorithm is $O(|E|)$.
+    This function implements Algorithm 1 in its basic version as described
+    in [3]_. The idea behind the algorithm is the following: grow a tree *T*,
+    starting from the vertex of maximum degree. At each step we pich a vertex
+    *v* in *T* with maximal number of white neighbors and "scan it." Scanning
+    a vertex add edges to *T* from *v* to all its neighbors not in *T*. In the
+    end we find a spanning tree *T*, and pick the nonleaf nodes as the connected
+    dominating set. Initially all vertices colored white. When we scan a vertex
+    (color it black), we mark all its neighbors that are not in *T* and and add
+    them to *T* (color them gray). Thus, marked nodes that have not been scanned
+    are leaves in *T* (gray nodes). All unmarked nodes are white. The algorithm
+    continues scanning marked nodes, until all the vertices are marked (gray or
+    black). The set of scanned nodes (black nodes) will form the connected
+    dominating set.
+    Runtime complexity of this implementation is $O(|E|*log|V|)$ (amortized).
 
     References
     ----------
@@ -169,7 +179,7 @@ def connected_dominating_set(G):
            Algorithmica, 20, 374-387, 1998.
 
     """
-    if len(G) == 0 or nx.is_connected(G) == False:
+    if len(G) == 0 or not nx.is_connected(G):
         return set()
 
     if len(G) == 1:
@@ -193,10 +203,13 @@ def connected_dominating_set(G):
     # This will be the CDS
     black_nodes = set()
 
+    # Use the count c to avoid comparing nodes (may not be able to)
+    c = count()
+
     def _update(node):
         white_nodes.remove(node)
-        push(gray_nodes, (-white_degree[node], node))
-        for nbr, _ in G_succ[node].items():
+        push(gray_nodes, (-white_degree[node], next(c), node))
+        for nbr in G_succ[node]:
             white_degree[nbr] -= 1
 
     # Find node with highest degree
@@ -204,13 +217,13 @@ def connected_dominating_set(G):
     _update(max_deg_node)
 
     while white_nodes:
-        (neg_deg, u) = pop(gray_nodes)
+        (neg_deg, _, u) = pop(gray_nodes)
         # Check if u's white-degree changed while in the heap
         if -neg_deg > white_degree[u]:
-            push(gray_nodes, (-white_degree[u], u))
+            push(gray_nodes, (-white_degree[u], next(c), u))
             continue
         # Color all u's white neighbors gray
-        for v, _ in G_succ[u].items():
+        for v in G_succ[u]:
             if v in white_nodes:
                 _update(v)
         black_nodes.add(u)
@@ -242,123 +255,4 @@ def is_connected_dominating_set(G, nbunch):
     .. [2] https://en.wikipedia.org/wiki/Connected_dominating_set
 
     """
-    if nx.is_dominating_set(G, nbunch) == False:
-        return False
-    SG = nx.subgraph(G, nbunch)
-    return nx.is_connected(SG)
-
-
-@not_implemented_for("directed")
-@nx._dispatchable
-def interval_graph_min_connected_dominating_set(G):
-    r"""Returns a minimum connected dominating set of an interval graph `G`.
-
-    A *dominating set* for a graph *G* with node set *V* is a subset *D* of
-    *V* such that every node not in *D* is adjacent to at least one
-    member of *D* [1]_. A *connected dominating set* is a dominating
-    set *C* that induces a connected subgraph of *G* [2]_. A minimum
-    connected dominating set is a connected dominating set with the
-    smallest possible cardinality among all connected dominating sets of *G*.
-
-    An *interval graph* *G* is an undirected graph formed from a set of
-    intervals on the real line, with a vertex for each interval and an
-    edge between vertices whose intervals intersect. It is the intersection
-    graph of the intervals [3]_.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        Undirected interval graph as specified in [4]_.
-
-    Returns
-    -------
-    min_dom_set: set
-        A connected dominating set with minimal cardinality.
-
-    Examples
-    --------
-    >>> intervals = [
-    ...     (30, 37),
-    ...     (52, 53),
-    ...     (24, 26),
-    ...     (64, 66),
-    ...     (7, 31),
-    ...     (38, 40),
-    ...     (9, 18),
-    ...     (37, 64),
-    ...     (15, 21),
-    ... ]
-    >>> G = nx.interval_graph(intervals)
-    >>> nx.interval_graph_min_connected_dominating_set(G)
-    {(7, 31), (30, 37), (37, 64)}
-
-    Raises
-    ------
-    :exc:`TypeError`
-        If `G` is not an a valid interval graph as specified in [4]_.
-
-    Notes
-    -----
-    This function is an implementation of the algorithm in [5]_.
-    Runtime complexity of the algorithm is $O(|E| + |V|)$.
-
-    References
-    ----------
-    .. [1] https://en.wikipedia.org/wiki/Dominating_set
-    .. [2] https://en.wikipedia.org/wiki/Connected_dominating_set
-    .. [3] https://en.wikipedia.org/wiki/Interval_graph
-    .. [4] https://networkx.org/documentation/stable/reference/generated/networkx.generators.interval_graph.interval_graph
-    .. [5] Ramalingam, G. and Rangan, C.Pandu
-           *A unified approach to domination problems of interval graphs*,
-           Information Processing Letters, Volume 27, Issue 5, 28 April 1988,
-           Pages 271-274.
-
-    """
-    # Convert the interval graph to a numbered graph
-    intervals = list(G.nodes)
-    intervals = sorted(intervals, key=lambda pair: pair[1])
-
-    ints_to_nums = {intervals[i - 1]: i for i in range(1, len(intervals) + 1)}
-    nums_to_ints = {ints_to_nums[i]: i for i in intervals}
-
-    H = nx.Graph()
-    for e in G.edges:
-        H.add_edge(ints_to_nums[e[0]], ints_to_nums[e[1]])
-
-    n = H.number_of_nodes()
-
-    # True if G is the null graph, G has a single node or G is disconnected
-    if n == 0:
-        return {}
-
-    # The lowest numbered node in each node's neighborhood
-    low = {i: min(i, min(H.adj[i])) for i in H.nodes}
-
-    # MCDSs
-    MCD = [set()]
-
-    # Main loop
-    for i in range(1, n + 1):
-        if low[i] == 1:
-            MCD.append({i})
-            continue
-
-        min_size = math.inf
-        min_j = -1
-        for j in H.adj[i]:
-            if j < i and low[j] < low[i] and MCD[j] and len(MCD[j]) < min_size:
-                min_size = len(MCD[j])
-                min_j = j
-
-        if min_j == -1:
-            MCD.append(set())
-        else:
-            MCD.append(MCD[min_j] | {i})
-
-    # Post-processing
-    maxlow = max([low[i] for i in range(low[n], n + 1)])
-    L = [MCD[i] for i in range(maxlow, n + 1) if MCD[i]]
-
-    min_dom_set_numbered = min(L, key=len)
-    min_dom_set = {nums_to_ints[i] for i in min_dom_set_numbered}
-    return min_dom_set
+    return nx.is_dominating_set(G, nbunch) and nx.is_connected(nx.subgraph(G, nbunch))
