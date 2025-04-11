@@ -254,26 +254,9 @@ class TestAStar:
         with pytest.raises(nx.NodeNotFound):
             nx.astar_path_length(G, 11, 9)
 
+    """IDA* TESTING"""
 
-class TestIDAStar:
-    @classmethod
-    def setup_class(cls):
-        edges = [
-            ("s", "u", 10),
-            ("s", "x", 5),
-            ("u", "v", 1),
-            ("u", "x", 2),
-            ("v", "y", 1),
-            ("x", "u", 3),
-            ("x", "v", 5),
-            ("x", "y", 2),
-            ("y", "s", 7),
-            ("y", "v", 6),
-        ]
-        cls.XG = nx.DiGraph()
-        cls.XG.add_weighted_edges_from(edges)
-
-    def test_multiple_optimal_paths(self):
+    def test_multiple_optimal_paths_idastar(self):
         """Tests that IDA* algorithm finds any of multiple optimal paths"""
         heuristic_values = {"a": 1.35, "b": 1.18, "c": 0.67, "d": 0}
 
@@ -465,12 +448,12 @@ class TestIDAStar:
         # optimal path_length in XG is 9. This heuristic gives over-estimate.
         assert idastar_path_length(self.XG, "s", "v", heuristic=h) == 10
 
-    def test_cycle(self):
+    def test_cycle_idastar(self):
         C = nx.cycle_graph(7)
         assert idastar_path(C, 0, 3) == [0, 1, 2, 3]
         assert nx.dijkstra_path(C, 0, 4) == [0, 6, 5, 4]
 
-    def test_unorderable_nodes(self):
+    def test_unorderable_nodes_idastar(self):
         """Tests that IDA* accommodates nodes that are not orderable."""
         # Create the cycle graph on four nodes, with nodes represented
         # as (unorderable) Python objects.
@@ -493,3 +476,20 @@ class TestIDAStar:
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NodeNotFound):
             idastar_path_length(G, 11, 9)
+
+    def test_idastar_tuple_nodes(self):
+        G = nx.grid_graph(dim=[3, 3])  # nodes are two-tuples (x,y)
+        nx.set_edge_attributes(G, {e: e[1][0] * 2 for e in G.edges()}, "cost")
+
+        def dist(a, b):
+            (x1, y1) = a
+            (x2, y2) = b
+            return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+
+        assert idastar_path(G, (0, 0), (2, 2), heuristic=dist, weight="cost") == [
+            (0, 0),
+            (0, 1),
+            (0, 2),
+            (1, 2),
+            (2, 2),
+        ]
