@@ -1495,7 +1495,7 @@ def forceatlas2_layout(
         Determines the amount of attraction on nodes to the center. Prevents islands
         (i.e. weakly connected or disconnected parts of the graph)
         from drifting away.
-    distributed_attraction : bool (default: False)
+    distributed_action : bool (default: False)
         Distributes the attraction force evenly among nodes.
     strong_gravity : bool (default: False)
         Applies a strong gravitational pull towards the center.
