@@ -53,8 +53,7 @@ def _tree_center(G):
     This algorithm iteratively removes leaves (nodes with degree 1) from the tree until
     there are only 1 or 2 nodes left. The remaining nodes form the center of the tree.
 
-    This algorithm's time complexity is O(N) where N is the number of nodes in the tree,
-    as it involves processing each node once during the iterative leaf removal.
+    This algorithm's time complexity is O(N) where N is the number of nodes in the tree.
 
     Examples
     --------
