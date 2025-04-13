@@ -77,7 +77,7 @@ def dominating_set(G, start_with=None):
 
 @nx._dispatchable
 def is_dominating_set(G, nbunch):
-    r"""Checks if `nbunch` is a dominating set for `G`.
+    """Check if `nbunch` is a dominating set for `G`.
 
     A *dominating set* for a graph with node set *V* is a subset *D* of
     *V* such that every node not in *D* is adjacent to at least one
@@ -107,7 +107,7 @@ def is_dominating_set(G, nbunch):
 @not_implemented_for("directed")
 @nx._dispatchable
 def connected_dominating_set(G):
-    r"""Returns a connected dominating set.
+    """Return a connected dominating set.
 
     A *dominating set* for a graph *G* with node set *V* is a subset *D* of
     *V* such that every node not in *D* is adjacent to at least one
@@ -117,12 +117,12 @@ def connected_dominating_set(G):
     Parameters
     ----------
     G : NewtorkX graph
-        Undirected graph.
+        Undirected connected graph.
 
     Returns
     -------
-    black_nodes : set
-        Returns a dominating set of nodes which induce a connected subgraph of G.
+    connected_dominating_set : set
+        A dominating set of nodes which induces a connected subgraph of G.
 
     Examples
     ________
@@ -157,7 +157,7 @@ def connected_dominating_set(G):
     -----
     This function implements Algorithm 1 in its basic version as described
     in [3]_. The idea behind the algorithm is the following: grow a tree *T*,
-    starting from the vertex of maximum degree. At each step we pich a vertex
+    starting from the vertex of maximum degree. At each step we pick a vertex
     *v* in *T* with maximal number of white neighbors and "scan it." Scanning
     a vertex add edges to *T* from *v* to all its neighbors not in *T*. In the
     end we find a spanning tree *T*, and pick the nonleaf nodes as the connected
@@ -181,6 +181,9 @@ def connected_dominating_set(G):
     """
     if len(G) == 0 or not nx.is_connected(G):
         return set()
+
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("G must be a connected graph")
 
     if len(G) == 1:
         return set(G)
@@ -234,7 +237,7 @@ def connected_dominating_set(G):
 @not_implemented_for("directed")
 @nx._dispatchable
 def is_connected_dominating_set(G, nbunch):
-    r"""Checks if `nbunch` is a connected dominating set for `G`.
+    """Check if `nbunch` is a connected dominating set for `G`.
 
     A *dominating set* for a graph *G* with node set *V* is a subset *D* of
     *V* such that every node not in *D* is adjacent to at least one

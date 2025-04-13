@@ -80,6 +80,29 @@ def test_complete_graph_connected_dominating_set():
     assert 1 == len(nx.connected_dominating_set(K7))
 
 
+def test_docstring_example_connected_dominating_set():
+    G = nx.Graph(
+        [
+            (1, 2),
+            (1, 3),
+            (1, 4),
+            (1, 5),
+            (1, 6),
+            (2, 7),
+            (3, 8),
+            (4, 9),
+            (5, 10),
+            (6, 11),
+            (7, 12),
+            (8, 12),
+            (9, 12),
+            (10, 12),
+            (11, 12),
+        ]
+    )
+    assert {1, 2, 3, 4, 5, 6, 7} == nx.connected_dominating_set(G)
+
+
 def test_small_connected_watts_strogatz_graph_connected_dominating_set():
     G = nx.connected_watts_strogatz_graph(10, 3, 0.5)
     D = nx.connected_dominating_set(G)
