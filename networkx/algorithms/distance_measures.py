@@ -27,10 +27,7 @@ def _tree_center(G):
     That is, these nodes minimize the maximum distance to all other nodes.
     This implementation currently only works for unweighted edges.
 
-    If the input graph is not a tree, results are not guaranteed to be correct and while
-    some non-trees will raise a ``NetworkXError`` not all non-trees will be discovered.
-    Thus, this function should not be used if caller is unsure whether the input graph
-    is a tree. Use ``networkx.is_tree(G)`` to check.
+    If the input graph is not a tree, function raises a ``NetworkXError``.
 
     Parameters
     ----------
@@ -45,8 +42,7 @@ def _tree_center(G):
     Raises
     ------
     NetworkXError
-        If algorithm detects input graph is not a tree. There is no guarantee
-        this error will always raise if a non-tree is passed.
+        If input graph is not a tree.
 
     Notes
     -----
@@ -75,16 +71,21 @@ def _tree_center(G):
             del center_candidates_degree[leaf]
             for neighbor in G.neighbors(leaf):
                 if neighbor not in center_candidates_degree:
-                    continue
+                    # If neighbor was already removed it means that neighbor is also a leaf.
+                    # Having two neighboring leaves in a graph means that the connected component
+                    # has only two nodes. However, since we checked for candidates lenght being
+                    # higher than 2, it means that G has nodes in a different connected component.
+                    # Trees only have one connected component so we raise an exception.
+                    raise nx.NetworkXError("Input graph is not a tree")
                 center_candidates_degree[neighbor] -= 1
                 if center_candidates_degree[neighbor] == 1:
                     new_leaves.add(neighbor)
         leaves = new_leaves
 
     if not leaves and len(center_candidates_degree) >= 2:
-        # We detected graph is not a tree. This check does not cover all cases.
-        # For example, it does not cover the case where we have two islands (A-B) and (B-C)
-        # where we might eliminate (B-C) leaves and return [A, B] as centers.
+        # If there are no more leaves to process but more than two candidates
+        # it means that graph has more than 1 connected component and therefore
+        # it is not a tree. We raise an exception.
         raise nx.NetworkXError("Input graph is not a tree")
 
     return list(center_candidates_degree)
