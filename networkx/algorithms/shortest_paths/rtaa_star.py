@@ -4,15 +4,25 @@
 
 """Shortest paths and path lengths using the Real-Time Adaptive A* (RTAA*) algorithm."""
 
-__all__ = ['rtaa_star_path', 'rtaa_star_path_length']
+__all__ = ["rtaa_star_path", "rtaa_star_path_length"]
 
 import heapq
 from math import sqrt
+
 from networkx.exception import NetworkXNoPath, NodeNotFound
 from networkx.utils import not_implemented_for
 
-def _rtaa_star_search(G, source, target, heuristic=None, weight='weight',
-                      lookahead=None, move_limit=1, landmarks=None):
+
+def _rtaa_star_search(
+    G,
+    source,
+    target,
+    heuristic=None,
+    weight="weight",
+    lookahead=None,
+    move_limit=1,
+    landmarks=None,
+):
     """
     Internal function that executes the enhanced RTAA* algorithm and returns a tuple (path, cost).
     """
@@ -23,18 +33,19 @@ def _rtaa_star_search(G, source, target, heuristic=None, weight='weight',
         raise NodeNotFound(f"Target {target} is not in the graph")
     if source == target:
         return [source], 0
-    
+
     # Validate that all landmarks exist in the graph
     if landmarks:
         if isinstance(landmarks, (list, tuple, set)):
             for node in landmarks:
                 if node not in G:
                     raise NodeNotFound(f"Landmark {node} is not in the graph")
-                
+
     # Function to retrieve edge weight (attribute or function)
     if callable(weight):
         weight_func = weight
     else:
+
         def weight_func(u, v):
             data = G.get_edge_data(u, v, default={})
             return data.get(weight, 1)  # assume weight 1 if attribute is missing
@@ -44,16 +55,21 @@ def _rtaa_star_search(G, source, target, heuristic=None, weight='weight',
         # Try to extract node coordinates (from 'pos' attribute or tuple)
         def get_coords(node):
             # If the node is directly a numeric tuple (e.g., (x, y))
-            if isinstance(node, tuple) and len(node) >= 2 and all(isinstance(c, (int, float)) for c in node):
+            if (
+                isinstance(node, tuple)
+                and len(node) >= 2
+                and all(isinstance(c, (int, float)) for c in node)
+            ):
                 return node
             # If the node has position attributes in the graph
             if node in G.nodes:
                 data = G.nodes[node]
-                if 'pos' in data:
-                    return data['pos']
-                if 'x' in data and 'y' in data:
-                    return (data['x'], data['y'])
+                if "pos" in data:
+                    return data["pos"]
+                if "x" in data and "y" in data:
+                    return (data["x"], data["y"])
             return None
+
         pu, pv = get_coords(u), get_coords(v)
         if pu is None or pv is None:
             return 0  # no coordinates found, return 0 (admissible zero heuristic)
@@ -84,11 +100,14 @@ def _rtaa_star_search(G, source, target, heuristic=None, weight='weight',
                         continue
                     for nbr in G[node]:
                         new_d = d + weight_func(node, nbr)
-                        if new_d < dist_map.get(nbr, float('inf')):
+                        if new_d < dist_map.get(nbr, float("inf")):
                             dist_map[nbr] = new_d
                             heapq.heappush(open_heap, (new_d, nbr))
                 # Farthest node found
-                farthest = max(dist_map, key=lambda x: dist_map[x] if dist_map[x] != float('inf') else -1)
+                farthest = max(
+                    dist_map,
+                    key=lambda x: dist_map[x] if dist_map[x] != float("inf") else -1,
+                )
                 if farthest not in landmark_list:
                     landmark_list.append(farthest)
             if num_landmarks >= 4:
@@ -101,10 +120,13 @@ def _rtaa_star_search(G, source, target, heuristic=None, weight='weight',
                         continue
                     for nbr in G[node]:
                         new_d = d + weight_func(node, nbr)
-                        if new_d < dist_map.get(nbr, float('inf')):
+                        if new_d < dist_map.get(nbr, float("inf")):
                             dist_map[nbr] = new_d
                             heapq.heappush(open_heap, (new_d, nbr))
-                farthest2 = max(dist_map, key=lambda x: dist_map[x] if dist_map[x] != float('inf') else -1)
+                farthest2 = max(
+                    dist_map,
+                    key=lambda x: dist_map[x] if dist_map[x] != float("inf") else -1,
+                )
                 if farthest2 not in landmark_list:
                     landmark_list.append(farthest2)
             # Limit to the requested number
@@ -122,13 +144,14 @@ def _rtaa_star_search(G, source, target, heuristic=None, weight='weight',
                     continue
                 for nbr in G[node]:
                     new_d = d + weight_func(node, nbr)
-                    if new_d < distances.get(nbr, float('inf')):
+                    if new_d < distances.get(nbr, float("inf")):
                         distances[nbr] = new_d
                         heapq.heappush(open_heap, (new_d, nbr))
             landmark_distances[L] = distances
 
     # Cache of base heuristic (geometric + ALT) for each node
     base_h_cache = {}
+
     def base_heuristic(n):
         # Use cache to avoid repeated calculations
         if n in base_h_cache:
@@ -144,8 +167,8 @@ def _rtaa_star_search(G, source, target, heuristic=None, weight='weight',
             for L, dist_map in landmark_distances.items():
                 if target in dist_map:
                     dLt = dist_map[target]
-                    dLn = dist_map.get(n, float('inf'))
-                    if dLn == float('inf'):
+                    dLn = dist_map.get(n, float("inf"))
+                    if dLn == float("inf"):
                         # if n is not reachable from L, skip this landmark
                         continue
                     diff = abs(dLt - dLn)
@@ -163,7 +186,7 @@ def _rtaa_star_search(G, source, target, heuristic=None, weight='weight',
     path_cost = 0.0
 
     # Determine expansion limit (lookahead); None/0 means full search
-    expansion_limit = float('inf') if not lookahead or lookahead <= 0 else lookahead
+    expansion_limit = float("inf") if not lookahead or lookahead <= 0 else lookahead
 
     # Current state of the agent (starting at source)
     current = source
@@ -201,7 +224,7 @@ def _rtaa_star_search(G, source, target, heuristic=None, weight='weight',
                 if nbr in closed_set:
                     continue
                 new_cost = g[node] + weight_func(node, nbr)
-                if new_cost < g.get(nbr, float('inf')):
+                if new_cost < g.get(nbr, float("inf")):
                     g[nbr] = new_cost
                     parent[nbr] = node
                     f_nbr = new_cost + adapt_h.get(nbr, base_heuristic(nbr))
@@ -209,7 +232,9 @@ def _rtaa_star_search(G, source, target, heuristic=None, weight='weight',
             # If expansion limit reached, set s_bar (best of frontier)
             if expansions >= expansion_limit:
                 if open_heap:
-                    s_bar = open_heap[0][2]  # node with smallest f remaining in the frontier
+                    s_bar = open_heap[0][
+                        2
+                    ]  # node with smallest f remaining in the frontier
                 else:
                     s_bar = node
                 break
@@ -226,7 +251,7 @@ def _rtaa_star_search(G, source, target, heuristic=None, weight='weight',
         # Update adaptive heuristics for all nodes expanded in this iteration using s_bar as reference
         # (Ensures admissibility and monotonicity)
         h_s_bar = adapt_h.get(s_bar, base_heuristic(s_bar))
-        g_s_bar = g.get(s_bar, float('inf'))
+        g_s_bar = g.get(s_bar, float("inf"))
         for s in closed_set:
             if s == s_bar:
                 continue  # do not update s_bar itself (it was not expanded)
@@ -279,9 +304,18 @@ def _rtaa_star_search(G, source, target, heuristic=None, weight='weight',
     # Return the complete path and its total cost
     return path, path_cost
 
-@not_implemented_for('multigraph')  
-def rtaa_star_path(G, source, target, heuristic=None, weight='weight',
-                   lookahead=None, move_limit=1, landmarks=None):
+
+@not_implemented_for("multigraph")
+def rtaa_star_path(
+    G,
+    source,
+    target,
+    heuristic=None,
+    weight="weight",
+    lookahead=None,
+    move_limit=1,
+    landmarks=None,
+):
     """Return a list of nodes in a path between source and target using the Real-Time Adaptive A* (RTAA*) algorithm.
 
     This algorithm searches for a path incrementally, making it suitable for real-time scenarios where only a limited search can be done per step.
@@ -351,12 +385,23 @@ def rtaa_star_path(G, source, target, heuristic=None, weight='weight',
     >>> nx.rtaa_star_path(G, 0, 4)
     [0, 1, 2, 3, 4]
     """
-    path, cost = _rtaa_star_search(G, source, target, heuristic, weight, lookahead, move_limit, landmarks)
+    path, cost = _rtaa_star_search(
+        G, source, target, heuristic, weight, lookahead, move_limit, landmarks
+    )
     return path
 
-@not_implemented_for('multigraph')
-def rtaa_star_path_length(G, source, target, heuristic=None, weight='weight',
-                          lookahead=None, move_limit=1, landmarks=None):
+
+@not_implemented_for("multigraph")
+def rtaa_star_path_length(
+    G,
+    source,
+    target,
+    heuristic=None,
+    weight="weight",
+    lookahead=None,
+    move_limit=1,
+    landmarks=None,
+):
     """Return the length (total weight) of a path between source and target using the Real-Time Adaptive A* (RTAA*) algorithm.
 
     The length is the sum of the weights of the edges in the path found by the algorithm.
@@ -400,5 +445,7 @@ def rtaa_star_path_length(G, source, target, heuristic=None, weight='weight',
         If no path exists between source and target.
 
     """
-    path, cost = _rtaa_star_search(G, source, target, heuristic, weight, lookahead, move_limit, landmarks)
+    path, cost = _rtaa_star_search(
+        G, source, target, heuristic, weight, lookahead, move_limit, landmarks
+    )
     return cost
