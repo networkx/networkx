@@ -52,6 +52,9 @@ def test_is_connected_dominating_set():
     assert nx.is_connected_dominating_set(G, D)
     D = {1, 3}
     assert not nx.is_connected_dominating_set(G, D)
+    D = {2, 3}
+    assert nx.is_connected(nx.subgraph(G, D))
+    assert not nx.is_connected_dominating_set(G, D)
 
 
 def test_null_graph_connected_dominating_set():
@@ -104,19 +107,14 @@ def test_docstring_example_connected_dominating_set():
     assert {1, 2, 3, 4, 5, 6, 7} == nx.connected_dominating_set(G)
 
 
-def test_small_connected_watts_strogatz_graph_connected_dominating_set():
-    G = nx.connected_watts_strogatz_graph(10, 3, 0.5)
-    D = nx.connected_dominating_set(G)
-    assert nx.is_connected_dominating_set(G, D)
+@pytest.mark.parametrize("seed", [1, 13, 29])
+@pytest.mark.parametrize(
+    "n,k,p",
+    [pytest.param(10, 3, 0.2), pytest.param(100, 10, 0.7), pytest.param(1000, 50, 0.5)],
+)
+def test_connected_watts_strogatz_graph_connected_dominating_set(seed, n, k, p):
+    import numpy as np
 
-
-def test_medium_connected_watts_strogatz_graph_connected_dominating_set():
-    G = nx.connected_watts_strogatz_graph(100, 10, 0.5)
-    D = nx.connected_dominating_set(G)
-    assert nx.is_connected_dominating_set(G, D)
-
-
-def test_large_connected_watts_strogatz_graph_connected_dominating_set():
-    G = nx.connected_watts_strogatz_graph(1000, 20, 0.5)
+    G = nx.connected_watts_strogatz_graph(n, k, p, seed=seed)
     D = nx.connected_dominating_set(G)
     assert nx.is_connected_dominating_set(G, D)
