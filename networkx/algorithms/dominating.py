@@ -182,7 +182,7 @@ def connected_dominating_set(G):
            Algorithmica, 20, 374-387, 1998.
 
     """
-    if len(G) == 0 or not nx.is_connected(G):
+    if len(G) == 0:
         return set()
 
     if not nx.is_connected(G):
