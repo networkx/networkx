@@ -153,6 +153,9 @@ def connected_dominating_set(G):
     NetworkXNotImplemented
         If G is directed.
 
+    NetworkXError
+        If G is disconnected.
+
     Notes
     -----
     This function implements Algorithm 1 in its basic version as described

@@ -66,11 +66,12 @@ def test_single_node_graph_connected_dominating_set():
     assert nx.is_connected_dominating_set(G, CD)
 
 
-def test_disconnected_graph_connected_dominating_set():
-    G = nx.Graph()
-    G.add_node(1)
-    G.add_node(2)
-    assert 0 == len(nx.connected_dominating_set(G))
+def test_raise_disconnected_graph_connected_dominating_set():
+    with pytest.raises(nx.NetworkXError):
+        G = nx.Graph()
+        G.add_node(1)
+        G.add_node(2)
+        nx.connected_dominating_set(G)
 
 
 def test_complete_graph_connected_dominating_set():
