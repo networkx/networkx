@@ -36,7 +36,7 @@ def _rtaa_star_search(
 
     # Validate that all landmarks exist in the graph
     if landmarks:
-        if isinstance(landmarks, (list, tuple, set)):
+        if isinstance(landmarks, list | tuple | set):
             for node in landmarks:
                 if node not in G:
                     raise NodeNotFound(f"Landmark {node} is not in the graph")
@@ -58,7 +58,7 @@ def _rtaa_star_search(
             if (
                 isinstance(node, tuple)
                 and len(node) >= 2
-                and all(isinstance(c, (int, float)) for c in node)
+                and all(isinstance(c, int | float) for c in node)
             ):
                 return node
             # If the node has position attributes in the graph
