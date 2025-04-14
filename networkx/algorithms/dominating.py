@@ -107,7 +107,7 @@ def is_dominating_set(G, nbunch):
 @not_implemented_for("directed")
 @nx._dispatchable
 def connected_dominating_set(G):
-    """Return a connected dominating set.
+    """Returns a connected dominating set.
 
     A *dominating set* for a graph *G* with node set *V* is a subset *D* of
     *V* such that every node not in *D* is adjacent to at least one
@@ -188,7 +188,7 @@ def connected_dominating_set(G):
 
     G_succ = G._adj  # For speed-up
 
-    # Use the count c to avoid comparing nodes (may not be able to)
+    # Use the count c to avoid comparing nodes
     c = count()
 
     # Keep track of the number of unseen nodes adjacent to each node
@@ -231,7 +231,7 @@ def connected_dominating_set(G):
 @not_implemented_for("directed")
 @nx._dispatchable
 def is_connected_dominating_set(G, nbunch):
-    """Check if `nbunch` is a connected dominating set for `G`.
+    """Checks if `nbunch` is a connected dominating set for `G`.
 
     A *dominating set* for a graph *G* with node set *V* is a subset *D* of
     *V* such that every node not in *D* is adjacent to at least one
