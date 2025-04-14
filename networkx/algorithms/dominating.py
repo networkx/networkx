@@ -158,19 +158,14 @@ def connected_dominating_set(G):
 
     Notes
     -----
-    This function implements Algorithm 1 in its basic version as described
+    This function implements Algorithm I in its basic version as described
     in [3]_. The idea behind the algorithm is the following: grow a tree *T*,
-    starting from the vertex of maximum degree. At each step we pick a vertex
-    *v* in *T* with maximal number of white neighbors and "scan it." Scanning
-    a vertex add edges to *T* from *v* to all its neighbors not in *T*. In the
-    end we find a spanning tree *T*, and pick the nonleaf nodes as the connected
-    dominating set. Initially all vertices colored white. When we scan a vertex
-    (color it black), we mark all its neighbors that are not in *T* and and add
-    them to *T* (color them gray). Thus, marked nodes that have not been scanned
-    are leaves in *T* (gray nodes). All unmarked nodes are white. The algorithm
-    continues scanning marked nodes, until all the vertices are marked (gray or
-    black). The set of scanned nodes (black nodes) will form the connected
-    dominating set.
+    starting from the node of maximum degree. Nonleaf nodes in *T* are our
+    connected dominating set (CDS), leaf nodes in *T* are marked as seen and all
+    other nodes are marked as unseen. At each step we pick a seen (leaf) node
+    with maximal number of unseen neighbors, add it to the CDS and mark all its
+    neighbors as seen. The algorithm terminates when there are no more unseen
+    nodes.
     Runtime complexity of this implementation is $O(|E|*log|V|)$ (amortized).
 
     References
@@ -193,48 +188,44 @@ def connected_dominating_set(G):
 
     G_succ = G._adj  # For speed-up
 
-    push = heappush
-    pop = heappop
-
-    # Keep track of the number of white nodes adjacent to each vertex
-    white_degree = {v: G.degree[v] for v in G}
-
-    # Initially all nodes are white
-    white_nodes = set(G)
-
-    # We want a max-heap of the white-degree using heapq, which is a min-heap
-    # So we store the negative of the white-degree
-    gray_nodes = []
-
-    # This will be the CDS
-    black_nodes = set()
-
     # Use the count c to avoid comparing nodes (may not be able to)
     c = count()
 
-    def _update(node):
-        white_nodes.remove(node)
-        push(gray_nodes, (-white_degree[node], next(c), node))
-        for nbr in G_succ[node]:
-            white_degree[nbr] -= 1
+    # Keep track of the number of unseen nodes adjacent to each node
+    unseen_degree = dict(G.degree)
 
-    # Find node with highest degree
-    max_deg_node = max(G, key=G.degree)
-    _update(max_deg_node)
+    # Find node with highest degree and update its neighbors
+    (max_deg_node, max_deg) = max(unseen_degree.items(), key=lambda x: x[1])
+    for nbr in G_succ[max_deg_node]:
+        unseen_degree[nbr] -= 1
 
-    while white_nodes:
-        (neg_deg, _, u) = pop(gray_nodes)
-        # Check if u's white-degree changed while in the heap
-        if -neg_deg > white_degree[u]:
-            push(gray_nodes, (-white_degree[u], next(c), u))
+    # Initially all nodes except max_deg_node are unseen
+    unseen = set(G) - {max_deg_node}
+
+    # We want a max-heap of the unseen-degree using heapq, which is a min-heap
+    # So we store the negative of the unseen-degree
+    seen = [(-max_deg, next(c), max_deg_node)]
+
+    connected_dominating_set = set()
+
+    # Main loop
+    while unseen:
+        (neg_deg, cnt, u) = heappop(seen)
+        # Check if u's unseen-degree changed while in the heap
+        if -neg_deg > unseen_degree[u]:
+            heappush(seen, (-unseen_degree[u], cnt, u))
             continue
-        # Color all u's white neighbors gray
+        # Mark all u's unseen neighbors as seen and add them to the heap
         for v in G_succ[u]:
-            if v in white_nodes:
-                _update(v)
-        black_nodes.add(u)
+            if v in unseen:
+                unseen.remove(v)
+                for nbr in G_succ[v]:
+                    unseen_degree[nbr] -= 1
+                heappush(seen, (-unseen_degree[v], next(c), v))
+        # Add u to the dominating set
+        connected_dominating_set.add(u)
 
-    return black_nodes
+    return connected_dominating_set
 
 
 @not_implemented_for("directed")
