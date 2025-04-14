@@ -237,8 +237,7 @@ class TestAStar:
         For more information, see issue #554.
 
         """
-        # Create the cycle graph on four nodes, with nodes represented
-        # as (unorderable) Python objects.
+        # Create the cycle graph on four nodes, with nodes represented as (unorderable) Python objects.
         nodes = [object() for n in range(4)]
         G = nx.Graph()
         G.add_edges_from(pairwise(nodes, cyclic=True))
@@ -258,6 +257,7 @@ class TestAStar:
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NodeNotFound):
             nx.astar_path_length(G, 11, 9)
+
 
 class TestRTAAStar:
     @staticmethod
@@ -279,7 +279,8 @@ class TestRTAAStar:
 
     @staticmethod
     def test_no_path_undirected():
-        """No path should raise NetworkXNoPath in an undirected graph."""
+        """No path should raise NetworkXNoPath 
+        in an undirected graph."""
         G = nx.Graph()
         G.add_edge("a", "b")
         G.add_node("c")  # 'c' is isolated
@@ -288,7 +289,8 @@ class TestRTAAStar:
 
     @staticmethod
     def test_no_path_directed():
-        """No path should raise NetworkXNoPath in a directed graph."""
+        """No path should raise NetworkXNoPath 
+        in a directed graph."""
         G = nx.DiGraph()
         G.add_edge(1, 2)
         G.add_node(3)  # 3 is present but unreachable from 1
@@ -305,11 +307,13 @@ class TestRTAAStar:
 
     @staticmethod
     def test_directed_simple_path():
-        """Find a simple path in a directed, unweighted graph."""
+        """Find a simple path in a directed, 
+        unweighted graph."""
         G = nx.DiGraph()
         G.add_edge("A", "B")
         G.add_edge("B", "C")
-        # In this simple chain, the path should be A -> B -> C
+        # In this simple chain, 
+        # the path should be A -> B -> C
         expected_path = ["A", "B", "C"]
         result_path = rtaa_star_path(G, "A", "C")
         result_length = rtaa_star_path_length(G, "A", "C")
@@ -321,7 +325,8 @@ class TestRTAAStar:
 
     @staticmethod
     def test_undirected_simple_path():
-        """Find a simple path in an undirected, unweighted graph."""
+        """Find a simple path in an undirected, 
+        unweighted graph."""
         G = nx.Graph()
         G.add_edge(1, 2)
         G.add_edge(2, 3)
@@ -336,13 +341,16 @@ class TestRTAAStar:
 
     @staticmethod
     def test_weighted_directed_path():
-        """Find shortest path in a directed graph with weighted edges."""
+        """Find shortest path in a directed graph 
+        with weighted edges."""
         G = nx.DiGraph()
-        # Two possible paths from A to C: A->C (cost 10) vs A->B->C (cost 2+2=4)
+        # Two possible paths from A to C: A->C 
+        # (cost 10) vs A->B->C (cost 2+2=4)
         G.add_edge("A", "C", weight=10)
         G.add_edge("A", "B", weight=2)
         G.add_edge("B", "C", weight=2)
-        # Expect the algorithm to choose A -> B -> C with total cost 4
+        # Expect the algorithm to choose 
+        # A -> B -> C with total cost 4
         result_path = rtaa_star_path(G, "A", "C")
         result_length = rtaa_star_path_length(G, "A", "C")
         expected_path = ["A", "B", "C"]
@@ -355,7 +363,8 @@ class TestRTAAStar:
 
     @staticmethod
     def test_null_heuristic_equivalence():
-        """With a null heuristic and unlimited lookahead, results match Dijkstra's algorithm."""
+        """With a null heuristic and unlimited lookahead, 
+        results match Dijkstra'salgorithm."""
         G = nx.Graph()
         # Create a weighted graph with a unique shortest path
         G.add_edge(1, 2, weight=5)
@@ -377,24 +386,29 @@ class TestRTAAStar:
         expected_length = nx.dijkstra_path_length(G, 1, 3)
         assert path_none == expected_path
         assert length_none == expected_length
-        # lookahead=0 or negative values should be treated as unlimited, so same path
+        # lookahead=0 or negative values should 
+        # be treated as unlimited, so same path
         assert path_zero == expected_path
         assert path_neg == expected_path
 
     @staticmethod
     def test_heuristic_function_manhattan():
-        """Use an explicit Manhattan distance heuristic and compare to astar_path."""
+        """Use an explicit Manhattan distance 
+        heuristic and compare to astar_path."""
         G = nx.Graph()
-        # Assign coordinates for Manhattan distance calculation
+        # Assign coordinates for Manhattan distance 
+        # calculation using node 'pos' attributes
         G.add_node("A", pos=(0, 0))
         G.add_node("B", pos=(1, 0))
         G.add_node("C", pos=(1, 1))
-        # Weighted edges (A-B and B-C small, A-C larger) to ensure A-B-C is optimal
+        # Weighted edges (A-B and B-C small, A-C larger) 
+        # to ensure A-B-C is optimal
         G.add_edge("A", "B", weight=1)
         G.add_edge("B", "C", weight=1)
         G.add_edge("A", "C", weight=3)
 
-        # Manhattan distance heuristic using node 'pos' attributes
+        # Manhattan distance heuristic 
+        # using node 'pos' attributes
         def manhattan(u, v):
             ux, uy = G.nodes[u]["pos"]
             vx, vy = G.nodes[v]["pos"]
@@ -402,31 +416,37 @@ class TestRTAAStar:
 
         result_path = rtaa_star_path(G, "A", "C", heuristic=manhattan)
         result_length = rtaa_star_path_length(G, "A", "C", heuristic=manhattan)
-        # Compute expected path and length using NetworkX A* for comparison
+        # Compute expected path and length 
+        # using NetworkX A* for comparison
         expected_path = nx.astar_path(G, "A", "C", heuristic=manhattan, weight="weight")
         expected_length = nx.astar_path_length(
             G, "A", "C", heuristic=manhattan, weight="weight"
         )
         assert result_path == expected_path
-        # The length returned by rtaa_star_path_length is float; compare with expected as numeric
+        # The length returned by rtaa_star_path_length is 
+        # float; compare with expected as numeric
         assert pytest.approx(result_length) == expected_length
 
     @staticmethod
     def test_landmarks_int_values():
-        """Test various integer values for landmarks parameter (including edge cases)."""
+        """Test various integer values for 
+        landmarks parameter (including edge cases)."""
         # Graph: 0--1--2--3--4 (line graph)
         G = nx.path_graph(5)  # nodes 0,1,2,3,4 in a line (unweighted)
         baseline_path = rtaa_star_path(G, 0, 2)  # shortest path without landmarks
-        # Try landmarks = 0 (no landmarks), positive ints, and a negative int
+        # Try landmarks = 0 (no landmarks), 
+        # positive ints, and a negative int
         for landmarks in [0, 1, 2, 3, 4, 5, -1]:
             path = rtaa_star_path(G, 0, 2, landmarks=landmarks)
             assert path == baseline_path
 
     @staticmethod
     def test_landmarks_list_valid():
-        """Use an explicit list of landmarks and verify correct path and length."""
+        """Use an explicit list of landmarks 
+        and verify correct path and length."""
         G = nx.path_graph(5)  # 0-1-2-3-4 line
-        # Provide landmarks that exist in G (not necessarily including source/target)
+        # Provide landmarks that exist in G 
+        # (not necessarily including source/target)
         landmarks_list = [1, 3]
         result_path = rtaa_star_path(G, 0, 2, landmarks=landmarks_list)
         result_length = rtaa_star_path_length(G, 0, 2, landmarks=landmarks_list)
@@ -438,7 +458,8 @@ class TestRTAAStar:
 
     @staticmethod
     def test_landmarks_list_invalid():
-        """Landmarks list containing a non-existent node should raise NodeNotFound."""
+        """Landmarks list containing a non-existent 
+        node should raise NodeNotFound."""
         G = nx.path_graph(5)  # nodes 0-4
         # Landmarks includes node '5' which is not in the graph
         with pytest.raises(nx.NodeNotFound):
@@ -446,13 +467,16 @@ class TestRTAAStar:
 
     @staticmethod
     def test_move_limit_effect():
-        """Different move_limit values should yield the same final path for a given lookahead."""
+        """Different move_limit values should 
+        yield the same final path for a given lookahead."""
         G = nx.path_graph(4)  # 0-1-2-3
         expected_path = [0, 1, 2, 3]
-        # Use a small lookahead (e.g., 2 expansions) and vary move_limit
+        # Use a small lookahead (e.g., 2 expansions) 
+        # and vary move_limit
         base_path = rtaa_star_path(G, 0, 3, lookahead=2, move_limit=1)
         assert base_path == expected_path
-        # move_limit=0 (treated as 1), move_limit=2, and a large move_limit should all give same path
+        # move_limit=0 (treated as 1), move_limit=2, 
+        # and a large move_limit should all give same path
         path_m0 = rtaa_star_path(G, 0, 3, lookahead=2, move_limit=0)
         path_m2 = rtaa_star_path(G, 0, 3, lookahead=2, move_limit=2)
         path_m_big = rtaa_star_path(G, 0, 3, lookahead=2, move_limit=10)
@@ -462,12 +486,15 @@ class TestRTAAStar:
 
     @staticmethod
     def test_partial_lookahead_steps():
-        """With limited lookahead, algorithm still reaches target with correct path."""
+        """With limited lookahead, algorithm 
+        still reaches target with correct path."""
         G = nx.path_graph(6)  # 0-1-2-3-4-5
-        # Limit lookahead to 1 expansion per iteration (most restrictive) and default move_limit=1
+        # Limit lookahead to 1 expansion per iteration 
+        # (most restrictive) and default move_limit=1
         result_path = rtaa_star_path(G, 0, 5, lookahead=1, move_limit=1)
         result_length = rtaa_star_path_length(G, 0, 5, lookahead=1, move_limit=1)
-        # Expected shortest path in this line graph is just the straight sequence of nodes
+        # Expected shortest path in this line 
+        # graph is just the straight sequence of nodes
         expected_path = list(range(6))  # [0,1,2,3,4,5]
         expected_length = 5  # 5 edges
         assert result_path == expected_path
@@ -477,7 +504,8 @@ class TestRTAAStar:
     def test_landmarks_with_lookahead():
         """Combine landmarks with limited lookahead and ensure correct behavior."""
         G = nx.path_graph(6)  # 0-1-2-3-4-5
-        # Use landmarks and a limited lookahead, compare with same lookahead without landmarks
+        # Use landmarks and a limited lookahead, 
+        # compare with same lookahead without landmarks
         path_with_lm = rtaa_star_path(G, 0, 5, lookahead=2, move_limit=1, landmarks=2)
         path_no_lm = rtaa_star_path(G, 0, 5, lookahead=2, move_limit=1, landmarks=None)
         assert path_with_lm == path_no_lm
@@ -486,7 +514,8 @@ class TestRTAAStar:
 
     @staticmethod
     def test_non_orderable_nodes():
-        """Ensure algorithm works with nodes that are not orderable (no __lt__ defined)."""
+        """Ensure algorithm works with nodes 
+        that are not orderable (no __lt__ defined)."""
 
         # Define a simple class for unorderable nodes
         class Unorderable:
