@@ -4,7 +4,7 @@ import networkx as nx
 from networkx.utils import pairwise
 
 
-from networkx.algorithms.shortest_paths.rtaa_star import (
+from networkx.algorithms.shortest_paths.astar import (
     rtaa_star_path,
     rtaa_star_path_length,
 )
@@ -237,7 +237,8 @@ class TestAStar:
         For more information, see issue #554.
 
         """
-        # Create the cycle graph on four nodes, with nodes represented as (unorderable) Python objects.
+        # Create the cycle graph on four nodes, with nodes represented
+        # as (unorderable) Python objects.
         nodes = [object() for n in range(4)]
         G = nx.Graph()
         G.add_edges_from(pairwise(nodes, cyclic=True))
