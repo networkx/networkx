@@ -359,18 +359,17 @@ def node_expansion(G, S):
     return len(neighborhood) / len(S)
 
 
-# TODO What is the generalization to two arguments, S and T? Does the
-# denominator become `min(len(S), len(T))`?
 @nx._dispatchable
 def boundary_expansion(G, S):
     """Returns the boundary expansion of the set `S`.
 
-    The *boundary expansion* is the quotient of the size
-    of the node boundary and the cardinality of *S*. [1]
+    The *boundary expansion* of a set `S` is the ratio between the size
+    of its node boundary and the cardinality of the set itself. [1]
 
     Parameters
     ----------
     G : NetworkX graph
+        The input graph.
 
     S : collection
         A collection of nodes in `G`.
@@ -378,13 +377,33 @@ def boundary_expansion(G, S):
     Returns
     -------
     number
-        The boundary expansion of the set `S`.
+        The boundary expansion ratio: size of node boundary / size of S
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (2, 3), (3, 0)])
+    >>> S = {0, 1}
+    >>> nx.boundary_expansion(G, S)
+    0.5  # Node boundary is {2, 3} (size 2), divided by |S|=4
+
+    For disconnected sets:
+    >>> G = nx.cycle_graph(6)
+    >>> S = {0, 2, 4}
+    >>> nx.boundary_expansion(G, S)
+    0.666...  # Boundary {1, 3, 5} (size 3) / |S|=3 = 1.0
 
     See also
     --------
     edge_expansion
     mixing_expansion
     node_expansion
+
+    Notes
+    -----
+    - Currently defined for a single set S. The generalization to two sets S and T
+      would consider the boundary between S and T, with denominator min(|S|, |T|).
+      This remains an open TODO for future implementation.
+    - The node boundary is defined as all nodes not in S that are adjacent to nodes in S
 
     References
     ----------
@@ -393,6 +412,5 @@ def boundary_expansion(G, S):
            *Foundations and Trends in Theoretical Computer Science*
            7.1–3 (2011): 1–336.
            <https://doi.org/10.1561/0400000010>
-
     """
     return len(nx.node_boundary(G, S)) / len(S)
