@@ -1,6 +1,5 @@
 """Shortest paths and path lengths using the A* ("A star") algorithm."""
 
-
 from heapq import heappop, heappush
 from itertools import count
 from math import sqrt
@@ -9,7 +8,6 @@ import networkx as nx
 from networkx.algorithms.shortest_paths.weighted import _weight_function
 from networkx.exception import NetworkXNoPath, NodeNotFound
 from networkx.utils import not_implemented_for
-
 
 __all__ = ["astar_path", "astar_path_length", "rtaa_star_path", "rtaa_star_path_length"]
 
@@ -245,10 +243,12 @@ def astar_path_length(
     path = astar_path(G, source, target, heuristic, weight, cutoff=cutoff)
     return sum(weight(u, v, G[u][v]) for u, v in zip(path[:-1], path[1:]))
 
+
 """
 Shortest paths and path lengths using the Real-Time Adaptive
 A* (RTAA*) algorithm.
 """
+
 
 def _rtaa_star_search(
     G,
