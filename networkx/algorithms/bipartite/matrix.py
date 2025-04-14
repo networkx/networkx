@@ -45,8 +45,8 @@ def biadjacency_matrix(
        The edge data key used to provide each value in the matrix.
        If None, then each edge has weight 1.
 
-    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'}
-        The type of the matrix to be returned (default 'csr').  For
+    format : str in {'dense', 'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'}
+        The type of the matrix to be returned (default 'csr'). For
         some algorithms different implementations of sparse matrices
         can perform better.  See [2]_ for details.
 
@@ -104,11 +104,16 @@ def biadjacency_matrix(
                 if u in row_index and v in col_index
             )
         )
-    A = sp.sparse.coo_array((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
-    try:
-        return A.asformat(format)
-    except ValueError as err:
-        raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
+    if format == "dense":
+        A = np.zeros((nlen, mlen), dtype=dtype)
+        A[row, col] = data
+        return A
+    else:
+        A = sp.sparse.coo_array((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
+        try:
+            return A.asformat(format)
+        except ValueError as err:
+            raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
