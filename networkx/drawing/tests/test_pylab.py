@@ -17,6 +17,711 @@ plt.rcParams["text.usetex"] = False
 
 barbell = nx.barbell_graph(4, 6)
 
+defaults = {
+    "node_pos": None,
+    "node_visible": True,
+    "node_color": "#1f78b4",
+    "node_size": 300,
+    "node_label": {
+        "size": 12,
+        "color": "#000000",
+        "family": "sans-serif",
+        "weight": "normal",
+        "alpha": 1.0,
+        "background_color": None,
+        "background_alpha": None,
+        "h_align": "center",
+        "v_align": "center",
+        "bbox": None,
+    },
+    "node_shape": "o",
+    "node_alpha": 1.0,
+    "node_border_width": 1.0,
+    "node_border_color": "face",
+    "edge_visible": True,
+    "edge_width": 1.0,
+    "edge_color": "#000000",
+    "edge_label": {
+        "size": 12,
+        "color": "#000000",
+        "family": "sans-serif",
+        "weight": "normal",
+        "alpha": 1.0,
+        "bbox": {"boxstyle": "round", "ec": (1.0, 1.0, 1.0), "fc": (1.0, 1.0, 1.0)},
+        "h_align": "center",
+        "v_align": "center",
+        "pos": 0.5,
+        "rotate": True,
+    },
+    "edge_style": "-",
+    "edge_alpha": 1.0,
+    # These are for undirected-graphs. Directed graphs shouls use "-|>" and 10, respectively
+    "edge_arrowstyle": "-",
+    "edge_arrowsize": 0,
+    "edge_curvature": "arc3",
+    "edge_source_margin": 0,
+    "edge_target_margin": 0,
+}
+
+
+@pytest.mark.parametrize(
+    ("param_name", "param_value", "expected"),
+    (
+        ("node_color", None, defaults["node_color"]),
+        ("node_color", "#FF0000", "red"),
+        ("node_color", "color", "lime"),
+    ),
+)
+def test_display_arg_handling_node_color(param_name, param_value, expected):
+    G = nx.path_graph(4)
+    nx.set_node_attributes(G, "#00FF00", "color")
+    canvas = plt.figure().add_subplot(111)
+    nx.display(G, canvas=canvas, **{param_name: param_value})
+    assert mpl.colors.same_color(canvas.get_children()[0].get_edgecolors()[0], expected)
+    plt.close()
+
+
+@pytest.mark.parametrize(
+    ("param_value", "expected"),
+    (
+        (None, (1, 1, 1, 1)),  # default value
+        (0.5, (0.5, 0.5, 0.5, 0.5)),
+        ("n_alpha", (1.0, 1 / 2, 1 / 3, 0.25)),
+    ),
+)
+def test_display_arg_handling_node_alpha(param_value, expected):
+    G = nx.path_graph(4)
+    nx.set_node_attributes(G, {n: 1 / (n + 1) for n in G.nodes()}, "n_alpha")
+    canvas = plt.figure().add_subplot(111)
+    nx.display(G, canvas=canvas, node_alpha=param_value)
+    assert all(
+        canvas.get_children()[0].get_fc()[:, 3] == expected
+    )  # Extract just the alpha from the node colors
+    plt.close()
+
+
+def test_display_node_position():
+    G = nx.path_graph(4)
+    nx.set_node_attributes(G, {n: (n, n) for n in G.nodes()}, "pos")
+    canvas = plt.figure().add_subplot(111)
+    nx.display(G, canvas=canvas, node_pos="pos")
+    assert np.all(
+        canvas.get_children()[0].get_offsets().data == [[0, 0], [1, 1], [2, 2], [3, 3]]
+    )
+    plt.close()
+
+
+@pytest.mark.mpl_image_compare
+def test_display_house_with_colors():
+    """
+    Originally, I wanted to use the exact samge image as test_house_with_colors.
+    But I can't seem to find the correct value for the margins to get the figures
+    to line up perfectly. To the human eye, these visualizations are basically the
+    same.
+    """
+    G = nx.house_graph()
+    fig, ax = plt.subplots()
+    nx.set_node_attributes(
+        G, {0: (0, 0), 1: (1, 0), 2: (0, 1), 3: (1, 1), 4: (0.5, 2.0)}, "pos"
+    )
+    nx.set_node_attributes(
+        G,
+        {
+            n: {
+                "size": 3000 if n != 4 else 2000,
+                "color": "tab:blue" if n != 4 else "tab:orange",
+            }
+            for n in G.nodes()
+        },
+    )
+    nx.display(
+        G,
+        node_pos="pos",
+        edge_alpha=0.5,
+        edge_width=6,
+        node_label=None,
+        node_border_color="k",
+    )
+    ax.margins(0.17)
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
+
+
+def test_display_line_collection():
+    G = nx.karate_club_graph()
+    nx.set_edge_attributes(
+        G, {(u, v): "-|>" if (u + v) % 2 else "-" for u, v in G.edges()}, "arrowstyle"
+    )
+    canvas = plt.figure().add_subplot(111)
+    nx.display(G, canvas=canvas, edge_arrowsize=10)
+    # There should only be one line collection in any given visualization
+    lc = [
+        l
+        for l in canvas.get_children()
+        if isinstance(l, mpl.collections.LineCollection)
+    ][0]
+    assert len(lc.get_paths()) == sum([1 for u, v in G.edges() if (u + v) % 2])
+    plt.close()
+
+
+@pytest.mark.mpl_image_compare
+def test_display_labels_and_colors():
+    """See 'Labels and Colors' gallery example"""
+    fig, ax = plt.subplots()
+    G = nx.cubical_graph()
+    pos = nx.spring_layout(G, seed=3113794652)  # positions for all nodes
+    nx.set_node_attributes(G, pos, "pos")  # Will not be needed after PR 7571
+    labels = iter(
+        [
+            r"$a$",
+            r"$b$",
+            r"$c$",
+            r"$d$",
+            r"$\alpha$",
+            r"$\beta$",
+            r"$\gamma$",
+            r"$\delta$",
+        ]
+    )
+    nx.set_node_attributes(
+        G,
+        {
+            n: {
+                "size": 800,
+                "alpha": 0.9,
+                "color": "tab:red" if n < 4 else "tab:blue",
+                "label": {"label": next(labels), "size": 22, "color": "whitesmoke"},
+            }
+            for n in G.nodes()
+        },
+    )
+
+    nx.display(G, node_pos="pos", edge_color="tab:grey")
+
+    # The tricky bit is the highlighted colors for the edges
+    edgelist = [(0, 1), (1, 2), (2, 3), (0, 3)]
+    nx.set_edge_attributes(
+        G,
+        {
+            (u, v): {
+                "width": 8,
+                "alpha": 0.5,
+                "color": "tab:red",
+                "visible": (u, v) in edgelist,
+            }
+            for u, v in G.edges()
+        },
+    )
+    nx.display(G, node_pos="pos", node_visible=False)
+    edgelist = [(4, 5), (5, 6), (6, 7), (4, 7)]
+    nx.set_edge_attributes(
+        G,
+        {
+            (u, v): {
+                "color": "tab:blue",
+                "visible": (u, v) in edgelist,
+            }
+            for u, v in G.edges()
+        },
+    )
+    nx.display(G, node_pos="pos", node_visible=False)
+
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
+
+
+@pytest.mark.mpl_image_compare
+def test_display_complex():
+    import itertools as it
+
+    fig, ax = plt.subplots()
+    G = nx.MultiDiGraph()
+    nodes = "ABC"
+    prod = list(it.product(nodes, repeat=2)) * 4
+    G = nx.MultiDiGraph()
+    for i, (u, v) in enumerate(prod):
+        G.add_edge(u, v, w=round(i / 3, 2))
+    nx.set_node_attributes(G, nx.spring_layout(G, seed=3113794652), "pos")
+    csi = it.cycle([f"arc3,rad={r}" for r in it.accumulate([0.15] * 4)])
+    nx.set_edge_attributes(G, {e: next(csi) for e in G.edges(keys=True)}, "curvature")
+    nx.set_edge_attributes(
+        G,
+        {
+            tuple(e): {"label": w, "bbox": {"alpha": 0}}
+            for *e, w in G.edges(keys=True, data="w")
+        },
+        "label",
+    )
+    nx.apply_matplotlib_colors(G, "w", "color", mpl.colormaps["inferno"], nodes=False)
+    nx.display(G, canvas=ax, node_pos="pos")
+
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
+
+
+@pytest.mark.mpl_image_compare
+def test_display_shortest_path():
+    fig, ax = plt.subplots()
+    G = nx.Graph()
+    G.add_nodes_from(["A", "B", "C", "D", "E", "F", "G", "H"])
+    G.add_edge("A", "B", weight=4)
+    G.add_edge("A", "H", weight=8)
+    G.add_edge("B", "C", weight=8)
+    G.add_edge("B", "H", weight=11)
+    G.add_edge("C", "D", weight=7)
+    G.add_edge("C", "F", weight=4)
+    G.add_edge("C", "I", weight=2)
+    G.add_edge("D", "E", weight=9)
+    G.add_edge("D", "F", weight=14)
+    G.add_edge("E", "F", weight=10)
+    G.add_edge("F", "G", weight=2)
+    G.add_edge("G", "H", weight=1)
+    G.add_edge("G", "I", weight=6)
+    G.add_edge("H", "I", weight=7)
+
+    # Find the shortest path from node A to node E
+    path = nx.shortest_path(G, "A", "E", weight="weight")
+
+    # Create a list of edges in the shortest path
+    path_edges = list(zip(path, path[1:]))
+    nx.set_node_attributes(G, nx.spring_layout(G, seed=37), "pos")
+    nx.set_edge_attributes(
+        G,
+        {
+            (u, v): {
+                "color": (
+                    "red"
+                    if (u, v) in path_edges or tuple(reversed((u, v))) in path_edges
+                    else "black"
+                ),
+                "label": {"label": d["weight"], "rotate": False},
+            }
+            for u, v, d in G.edges(data=True)
+        },
+    )
+    nx.display(G, canvas=ax)
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
+
+
+@pytest.mark.parametrize(
+    ("edge_color", "expected"),
+    (
+        (None, "black"),
+        ("r", "red"),
+        ((1.0, 1.0, 0.0), "yellow"),
+        ((0, 1, 0, 1), "lime"),
+        ("color", "blue"),
+        ("#0000FF", "blue"),
+    ),
+)
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_display_edge_single_color(edge_color, expected, graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_edge_attributes(G, "#0000FF", "color")
+    canvas = plt.figure().add_subplot(111)
+    nx.display(G, edge_color=edge_color, canvas=canvas)
+    if G.is_directed():
+        colors = [
+            f.get_fc()
+            for f in canvas.get_children()
+            if isinstance(f, mpl.patches.FancyArrowPatch)
+        ]
+    else:
+        colors = [
+            l
+            for l in canvas.collections
+            if isinstance(l, mpl.collections.LineCollection)
+        ][0].get_colors()
+    assert all(mpl.colors.same_color(c, expected) for c in colors)
+    plt.close()
+
+
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_display_edge_multiple_colors(graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_edge_attributes(G, {(0, 1): "#FF0000", (1, 2): (0, 0, 1)}, "color")
+    ax = plt.figure().add_subplot(111)
+    nx.display(G, canvas=ax)
+    expected = ["red", "blue"]
+    if G.is_directed():
+        colors = [
+            f.get_fc()
+            for f in ax.get_children()
+            if isinstance(f, mpl.patches.FancyArrowPatch)
+        ]
+    else:
+        colors = [
+            l for l in ax.collections if isinstance(l, mpl.collections.LineCollection)
+        ][0].get_colors()
+    assert mpl.colors.same_color(colors, expected)
+    plt.close()
+
+
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_display_edge_position(graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_node_attributes(G, {n: (n, n) for n in G.nodes()}, "pos")
+    ax = plt.figure().add_subplot(111)
+    nx.display(G, canvas=ax)
+    if G.is_directed():
+        end_points = [
+            (f.get_path().vertices[0, :], f.get_path().vertices[-2, :])
+            for f in ax.get_children()
+            if isinstance(f, mpl.patches.FancyArrowPatch)
+        ]
+    else:
+        line_collection = [
+            l for l in ax.collections if isinstance(l, mpl.collections.LineCollection)
+        ][0]
+        end_points = [
+            (p.vertices[0, :], p.vertices[-1, :]) for p in line_collection.get_paths()
+        ]
+    expected = [((0, 0), (1, 1)), ((1, 1), (2, 2))]
+    # Use the threshold to account for slight shifts in FancyArrowPatch margins to
+    # avoid covering the arrow head with the node.
+    threshold = 0.05
+    for a, e in zip(end_points, expected):
+        act_start, act_end = a
+        exp_start, exp_end = e
+        assert all(abs(act_start - exp_start) < (threshold, threshold)) and all(
+            abs(act_end - exp_end) < (threshold, threshold)
+        )
+    plt.close()
+
+
+def test_display_position_function():
+    G = nx.karate_club_graph()
+
+    def fixed_layout(G):
+        return nx.spring_layout(G, seed=314159)
+
+    pos = fixed_layout(G)
+    ax = plt.figure().add_subplot(111)
+    nx.display(G, node_pos=fixed_layout, canvas=ax)
+    # rebuild the position dictionary from the canvas
+    act_pos = {
+        n: tuple(p) for n, p in zip(G.nodes(), ax.get_children()[0].get_offsets().data)
+    }
+    for n in G.nodes():
+        assert all(pos[n] == act_pos[n])
+    plt.close()
+
+
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_display_edge_colormaps(graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_edge_attributes(G, {(0, 1): 0, (1, 2): 1}, "weight")
+    cmap = mpl.colormaps["plasma"]
+    nx.apply_matplotlib_colors(G, "weight", "color", cmap, nodes=False)
+    canvas = plt.figure().add_subplot(111)
+    nx.display(G, canvas=canvas)
+    mapper = mpl.cm.ScalarMappable(cmap=cmap)
+    mapper.set_clim(0, 1)
+    expected = [mapper.to_rgba(0), mapper.to_rgba(1)]
+    if G.is_directed():
+        colors = [
+            f.get_facecolor()
+            for f in canvas.get_children()
+            if isinstance(f, mpl.patches.FancyArrowPatch)
+        ]
+    else:
+        colors = [
+            l
+            for l in canvas.collections
+            if isinstance(l, mpl.collections.LineCollection)
+        ][0].get_colors()
+    assert mpl.colors.same_color(expected[0], G.edges[0, 1]["color"])
+    assert mpl.colors.same_color(expected[1], G.edges[1, 2]["color"])
+    assert mpl.colors.same_color(expected, colors)
+    plt.close()
+
+
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_display_node_colormaps(graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_node_attributes(G, {0: 0, 1: 0.5, 2: 1}, "weight")
+    cmap = mpl.colormaps["plasma"]
+    nx.apply_matplotlib_colors(G, "weight", "color", cmap)
+    canvas = plt.figure().add_subplot(111)
+    nx.display(G, canvas=canvas)
+    mapper = mpl.cm.ScalarMappable(cmap=cmap)
+    mapper.set_clim(0, 1)
+    expected = [mapper.to_rgba(0), mapper.to_rgba(0.5), mapper.to_rgba(1)]
+    colors = [
+        s for s in canvas.collections if isinstance(s, mpl.collections.PathCollection)
+    ][0].get_edgecolors()
+    assert mpl.colors.same_color(expected[0], G.nodes[0]["color"])
+    assert mpl.colors.same_color(expected[1], G.nodes[1]["color"])
+    assert mpl.colors.same_color(expected[2], G.nodes[2]["color"])
+    assert mpl.colors.same_color(expected, colors)
+    plt.close()
+
+
+@pytest.mark.parametrize(
+    ("param_value", "expected"),
+    (
+        (None, [defaults["edge_width"], defaults["edge_width"]]),
+        (5, [5, 5]),
+        ("width", [5, 10]),
+    ),
+)
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_display_edge_width(param_value, expected, graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_edge_attributes(G, {(0, 1): 5, (1, 2): 10}, "width")
+    canvas = plt.figure().add_subplot(111)
+    nx.display(G, edge_width=param_value, canvas=canvas)
+    if G.is_directed():
+        widths = [
+            f.get_linewidth()
+            for f in canvas.get_children()
+            if isinstance(f, mpl.patches.FancyArrowPatch)
+        ]
+    else:
+        widths = list(
+            [
+                l
+                for l in canvas.collections
+                if isinstance(l, mpl.collections.LineCollection)
+            ][0].get_linewidths()
+        )
+    assert widths == expected
+
+
+@pytest.mark.parametrize(
+    ("param_value", "expected"),
+    (
+        (None, [defaults["edge_style"], defaults["edge_style"]]),
+        (":", [":", ":"]),
+        ("style", ["-", ":"]),
+    ),
+)
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_display_edge_style(param_value, expected, graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_edge_attributes(G, {(0, 1): "-", (1, 2): ":"}, "style")
+    canvas = plt.figure().add_subplot(111)
+    nx.display(G, edge_style=param_value, canvas=canvas)
+    if G.is_directed():
+        styles = [
+            f.get_linestyle()
+            for f in canvas.get_children()
+            if isinstance(f, mpl.patches.FancyArrowPatch)
+        ]
+    else:
+        # Convert back from tuple description to character form
+        linestyles = {(0, None): "-", (0, (1, 1.65)): ":"}
+        styles = [
+            linestyles[(s[0], tuple(s[1]) if s[1] is not None else None)]
+            for s in [
+                l
+                for l in canvas.collections
+                if isinstance(l, mpl.collections.LineCollection)
+            ][0].get_linestyles()
+        ]
+    assert styles == expected
+    plt.close()
+
+
+def test_display_node_labels():
+    G = nx.path_graph(4)
+    canvas = plt.figure().add_subplot(111)
+    nx.display(G, canvas=canvas, node_label={"size": 20})
+    labels = [t for t in canvas.get_children() if isinstance(t, mpl.text.Text)]
+    for n, l in zip(G.nodes(), labels):
+        assert l.get_text() == str(n)
+        assert l.get_size() == 20.0
+    plt.close()
+
+
+def test_display_edge_labels():
+    G = nx.path_graph(4)
+    canvas = plt.figure().add_subplot(111)
+    # While we can pass in dicts for edge label defaults without errors,
+    # this isn't helpful unless we want one label for all edges.
+    nx.set_edge_attributes(G, {(u, v): {"label": u + v} for u, v in G.edges()})
+    nx.display(G, canvas=canvas, edge_label={"color": "r"}, node_label=None)
+    labels = [t for t in canvas.get_children() if isinstance(t, mpl.text.Text)]
+    print(labels)
+    for e, l in zip(G.edges(), labels):
+        assert l.get_text() == str(e[0] + e[1])
+        assert l.get_color() == "r"
+    plt.close()
+
+
+@pytest.mark.mpl_image_compare
+def test_display_empty_graph():
+    G = nx.empty_graph()
+    fig, ax = plt.subplots()
+    nx.display(G, canvas=ax)
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
+
+
+def test_display_multigraph_non_integer_keys():
+    G = nx.MultiGraph()
+    G.add_nodes_from(["A", "B", "C", "D"])
+    G.add_edges_from(
+        [
+            ("A", "B", "0"),
+            ("A", "B", "1"),
+            ("B", "C", "-1"),
+            ("B", "C", "1"),
+            ("C", "D", "-1"),
+            ("C", "D", "0"),
+        ]
+    )
+    nx.set_edge_attributes(
+        G, {e: f"arc3,rad={0.2 * int(e[2])}" for e in G.edges(keys=True)}, "curvature"
+    )
+    canvas = plt.figure().add_subplot(111)
+    nx.display(G, canvas=canvas)
+    rads = [
+        f.get_connectionstyle().rad
+        for f in canvas.get_children()
+        if isinstance(f, mpl.patches.FancyArrowPatch)
+    ]
+    assert rads == [0.0, 0.2, -0.2, 0.2, -0.2, 0.0]
+    plt.close()
+
+
+def test_display_raises_for_bad_arg():
+    G = nx.karate_club_graph()
+    with pytest.raises(nx.NetworkXError):
+        nx.display(G, bad_arg="bad_arg")
+        plt.close()
+
+
+def test_display_arrow_size():
+    G = nx.path_graph(4, create_using=nx.DiGraph)
+    nx.set_edge_attributes(
+        G, {(u, v): (u + v + 2) ** 2 for u, v in G.edges()}, "arrowsize"
+    )
+    ax = plt.axes()
+    nx.display(G, canvas=ax)
+    assert [9, 25, 49] == [
+        f.get_mutation_scale()
+        for f in ax.get_children()
+        if isinstance(f, mpl.patches.FancyArrowPatch)
+    ]
+    plt.close()
+
+
+def test_display_mismatched_edge_position():
+    """
+    This test ensures that a error is raised for incomplete position data.
+    """
+    G = nx.path_graph(5)
+    # Notice that there is no position for node 3
+    nx.set_node_attributes(G, {0: (0, 0), 1: (1, 1), 2: (2, 2), 4: (4, 4)}, "pos")
+    # But that's not a problem since we don't want to show node 4, right?
+    nx.set_node_attributes(G, {n: n < 4 for n in G.nodes()}, "visible")
+    # However, if we try to visualize every edge (including 3 -> 4)...
+    # That's a problem since node 4 doesn't have a position
+    with pytest.raises(nx.NetworkXError):
+        nx.display(G)
+
+
+# NOTE: parametrizing on marker to test both branches of internal
+# to_marker_edge function
+@pytest.mark.parametrize("node_shape", ("o", "s"))
+def test_display_edge_margins(node_shape):
+    """
+    Test that there is a wider gap between the node and the start of an
+    incident edge when min_source_margin is specified.
+
+    This test checks that the use os min_{source/target}_margin edge
+    attributes result is shorter (more padding) between the edges and
+    source and target nodes.
+
+
+    As a crude visual example, let 's' and 't' represent source and target
+    nodes, respectively:
+
+       Default:
+       s-----------------------------t
+
+       With margins:
+       s   -----------------------   t
+
+    """
+    ax = plt.figure().add_subplot(111)
+    G = nx.DiGraph([(0, 1)])
+    nx.set_node_attributes(G, {0: (0, 0), 1: (1, 1)}, "pos")
+    # Get the default patches from the regular visualization
+    nx.display(G, canvas=ax, node_shape=node_shape)
+    default_arrow = [
+        f for f in ax.get_children() if isinstance(f, mpl.patches.FancyArrowPatch)
+    ][0]
+    default_extent = default_arrow.get_extents().corners()[::2, 0]
+    # Now plot again with margins
+    ax = plt.figure().add_subplot(111)
+    nx.display(
+        G,
+        canvas=ax,
+        edge_source_margin=100,
+        edge_target_margin=100,
+        node_shape=node_shape,
+    )
+    padded_arrow = [
+        f for f in ax.get_children() if isinstance(f, mpl.patches.FancyArrowPatch)
+    ][0]
+    padded_extent = padded_arrow.get_extents().corners()[::2, 0]
+
+    # With padding, the left-most extent of the edge should be further to the right
+    assert padded_extent[0] > default_extent[0]
+    # And the rightmost extent of the edge, further to the left
+    assert padded_extent[1] < default_extent[1]
+    plt.close()
+
+
+@pytest.mark.parametrize("ticks", [False, True])
+def test_display_hide_ticks(ticks):
+    G = nx.path_graph(3)
+    nx.set_node_attributes(G, {n: (n, n) for n in G.nodes()}, "pos")
+    ax = plt.axes()
+    nx.display(G, hide_ticks=ticks)
+    for axis in [ax.xaxis, ax.yaxis]:
+        assert bool(axis.get_ticklabels()) != ticks
+
+    plt.close()
+
+
+def test_display_self_loop():
+    ax = plt.axes()
+    G = nx.DiGraph()
+    G.add_node(0)
+    G.add_edge(0, 0)
+    nx.set_node_attributes(G, {0: (0, 0)}, "pos")
+    nx.display(G, canvas=ax)
+    arrow = [
+        f for f in ax.get_children() if isinstance(f, mpl.patches.FancyArrowPatch)
+    ][0]
+    bbox = arrow.get_extents()
+    print(bbox.width)
+    print(bbox.height)
+    assert bbox.width > 0 and bbox.height > 0
+
+    plt.delaxes(ax)
+    plt.close()
+
+
+def test_display_remove_pos_attr():
+    """
+    If the pos attribute isn't provided or is a function, display computes the layout
+    and adds it to the graph. We need to ensure that this new attribute is removed from
+    the returned graph.
+    """
+    G = nx.karate_club_graph()
+    nx.display(G)
+    assert nx.get_node_attributes(G, "display's position attribute name") == {}
+
 
 @pytest.fixture
 def subplots():
@@ -992,6 +1697,7 @@ def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg, subplots):
     with warnings.catch_warnings():
         # Escalate warnings -> errors so tests fail if warnings are raised
         warnings.simplefilter("error")
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         nx.draw_networkx_edges(G, pos, ax=ax, arrows=True, **fap_only_kwarg)
 
 
