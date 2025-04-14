@@ -112,18 +112,6 @@ class TestAlphaCore:
         with pytest.raises(nx.NetworkXNotImplemented):
             alpha_core(undirected_G)
 
-        # Create a multigraph (should raise error)
-        multi_G = nx.MultiDiGraph()
-        multi_G.add_edges_from([(0, 1), (0, 1), (1, 2)])
-
-        # Add node attributes
-        for n in multi_G.nodes():
-            multi_G.nodes[n]["f1"] = float(n) / 3
-
-        # Should raise NetworkXNotImplemented for multigraphs
-        with pytest.raises(nx.NetworkXNotImplemented):
-            alpha_core(multi_G)
-
     def test_empty_graph(self):
         """Test alpha_core on an empty graph."""
         empty_G = nx.DiGraph()
@@ -148,3 +136,43 @@ class TestAlphaCore:
 
         # Dataframes should be identical
         pd.testing.assert_frame_equal(result1, result2)
+
+    def test_multigraph_support(self):
+        """Test that alpha_core works with directed multigraphs."""
+        # Create a directed multigraph
+        multi_G = nx.MultiDiGraph()
+        multi_G.add_edges_from([(0, 1), (0, 1), (1, 2), (2, 0)])
+
+        # Add node attributes
+        for n in multi_G.nodes():
+            multi_G.nodes[n]["f1"] = float(n) / 3
+
+        # Should work with multigraphs
+        result = alpha_core(multi_G)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == multi_G.number_of_nodes()
+
+        # Check all nodes get a ranking
+        assert set(result["nodeID"]) == set(multi_G.nodes())
+
+    def test_weighted_multigraph(self):
+        """Test alpha_core on a weighted directed multigraph."""
+        # Create a weighted directed multigraph
+        weighted_multi_G = nx.MultiDiGraph()
+        weighted_multi_G.add_weighted_edges_from(
+            [
+                (0, 1, 1.5),
+                (0, 1, 2.5),  # Multiple edges between same nodes
+                (1, 2, 3.0),
+                (2, 0, 1.0),
+            ]
+        )
+
+        # Add node attributes
+        for n in weighted_multi_G.nodes():
+            weighted_multi_G.nodes[n]["f1"] = float(n) / 2
+
+        result = alpha_core(weighted_multi_G)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == weighted_multi_G.number_of_nodes()
+        assert set(result["nodeID"]) == set(weighted_multi_G.nodes())

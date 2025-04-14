@@ -15,7 +15,7 @@ import networkx as nx
 __all__ = ["alpha_core"]
 
 
-@nx.utils.not_implemented_for("undirected", "multigraph")
+@nx.utils.not_implemented_for("undirected")
 @nx._dispatchable
 def alpha_core(G, features=None, step_size=0.1, start_epsi=1, expo_decay=False):
     """Compute the AlphaCore node ranking in a directed network.
@@ -77,15 +77,6 @@ def alpha_core(G, features=None, step_size=0.1, start_epsi=1, expo_decay=False):
     0       0    0.9        0
     1       1    0.9        0
     """
-    # Explicitly check if the graph is undirected or a multigraph
-    if not G.is_directed():
-        raise nx.NetworkXNotImplemented(
-            "alpha_core is not implemented for undirected graphs."
-        )
-    if G.is_multigraph():
-        raise nx.NetworkXNotImplemented(
-            "alpha_core is not implemented for multigraphs."
-        )
 
     # Make a copy of the graph to avoid modifying the input
     graph = G.copy()
@@ -237,18 +228,7 @@ def _extract_features(graph, features=None):
 
 
 def _compute_node_features(graph):
-    """Compute default node features for a graph.
-
-    Parameters
-    ----------
-    graph : NetworkX graph
-        A directed graph.
-
-    Returns
-    -------
-    pandas.DataFrame
-        DataFrame containing computed node features.
-    """
+    """Compute default node features for a graph."""
     nodeID = []
     inDegree = []
     outDegree = []
@@ -258,8 +238,15 @@ def _compute_node_features(graph):
         nodeID.append(node)
         inDegree.append(graph.in_degree(node))
         outDegree.append(graph.out_degree(node))
-        inStrength.append(graph.in_degree(node, "value"))
-        outStrength.append(graph.out_degree(node, "value"))
+
+        # Safely get weighted degrees
+        try:
+            inStrength.append(graph.in_degree(node, weight="value"))
+            outStrength.append(graph.out_degree(node, weight="value"))
+        except:
+            # Fallback if 'value' attribute not present
+            inStrength.append(graph.in_degree(node))
+            outStrength.append(graph.out_degree(node))
 
     # Currently adding inDegree, outDegree, inStrength, and outStrength to dataframe
     df = pd.DataFrame(
