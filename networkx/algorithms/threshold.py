@@ -879,7 +879,7 @@ def right_d_threshold_sequence(n, m):
 
     Returns
     -------
-    A list containing 'd' and 'i' nodes.
+    A list of 'd' (dominant) and 'i' (isolated) forming a right-dominated threshold sequence.
 
     Raises
     ------
@@ -934,7 +934,7 @@ def left_d_threshold_sequence(n, m):
 
     Returns
     -------
-    A list containing 'd' and 'i' nodes.
+    A list of 'd' (dominant) and 'i' (isolated) forming a left-dominated threshold sequence.
 
     Raises
     ------
