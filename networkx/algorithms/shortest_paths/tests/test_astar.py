@@ -1,9 +1,8 @@
 import pytest
 
 import networkx as nx
-from networkx.utils import pairwise
 from networkx.algorithms.shortest_paths.astar import bidirectional_astar
-
+from networkx.utils import pairwise
 
 
 class TestAStar:
@@ -255,6 +254,7 @@ class TestAStar:
         with pytest.raises(nx.NodeNotFound):
             nx.astar_path_length(G, 11, 9)
 
+
 class TestBidirectionalAStar:
     def test_bidirectional_astar_basic(self):
         G = nx.Graph()
@@ -273,21 +273,25 @@ class TestBidirectionalAStar:
 
     def test_bidirectional_astar_directed(self):
         G = nx.DiGraph()
-        G.add_weighted_edges_from([
-            ("s", "u", 10),
-            ("s", "x", 5),
-            ("u", "v", 1),
-            ("u", "x", 2),
-            ("v", "y", 1),
-            ("x", "u", 3),
-            ("x", "v", 5),
-            ("x", "y", 2),
-            ("y", "s", 7),
-            ("y", "v", 6),
-        ])
+        G.add_weighted_edges_from(
+            [
+                ("s", "u", 10),
+                ("s", "x", 5),
+                ("u", "v", 1),
+                ("u", "x", 2),
+                ("v", "y", 1),
+                ("x", "u", 3),
+                ("x", "v", 5),
+                ("x", "y", 2),
+                ("y", "s", 7),
+                ("y", "v", 6),
+            ]
+        )
         cost, path, stats = bidirectional_astar(G, "s", "v")
         assert path[0] == "s" and path[-1] == "v"
-        assert cost == sum(G[path[i]][path[i + 1]]['weight'] for i in range(len(path) - 1))
+        assert cost == sum(
+            G[path[i]][path[i + 1]]["weight"] for i in range(len(path) - 1)
+        )
 
     def test_bidirectional_astar_nopath(self):
         G = nx.Graph()

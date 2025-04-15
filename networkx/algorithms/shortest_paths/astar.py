@@ -1,8 +1,8 @@
 """Shortest paths and path lengths using the A* ("A star") algorithm."""
 
+import heapq
 import math
 from functools import cache, lru_cache
-import heapq
 from heapq import heappop, heappush
 from itertools import count
 
@@ -347,6 +347,7 @@ def bidirectional_astar(
 
     def h_forward(n):
         return heuristic(n, target)
+
     def h_backward(n):
         return heuristic(n, source)
 
