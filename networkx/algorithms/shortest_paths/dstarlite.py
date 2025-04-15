@@ -50,7 +50,7 @@ def new_dstar_lite_instance(G, source, target, heuristic=None, weight="weight"):
     ... ]
     >>> for u, v, w in edges:
     ...     G.add_edge(u, v, weight=w)
-    >>> dstar = new_dstar_lite_instance(G, "A", "E")
+    >>> dstar = new_dstar_lite_instance(G, "A", "E", weight="weight")
     >>>
     >>> print(dstar.get_path())
     ['A', 'B', 'C', 'E']
