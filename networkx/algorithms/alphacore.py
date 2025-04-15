@@ -74,8 +74,8 @@ def alpha_core(G, features=None, step_size=0.1, start_epsi=1, expo_decay=False):
     ... )
     >>> df
        nodeID  alpha  batchID
-    0       0    0.2        3
-    1       1    0.7        9
+    0       0    0.3        4
+    1       1    0.3        4
     """
 
     # Make a copy of the graph to avoid modifying the input
@@ -160,7 +160,6 @@ def alpha_core(G, features=None, step_size=0.1, start_epsi=1, expo_decay=False):
 
 def _extract_features(graph, features=None):
     """Extract numerical node features from the graph.
-
     Parameters
     ----------
     graph : NetworkX graph
@@ -168,7 +167,6 @@ def _extract_features(graph, features=None):
     features : list, optional (default=None)
         A list of feature names to extract. If None or ["all"], uses all
         numerical node attributes or computes default features.
-
     Returns
     -------
     pandas.DataFrame
@@ -197,9 +195,14 @@ def _extract_features(graph, features=None):
             return _compute_node_features(graph)
         selected_features = numeric_features  # Use all numeric features
     else:
+        if len(all_features) == 0:
+            warnings.warn(
+                f"Requested features {features} not found. Reverting to default AlphaCore node features."
+            )
+            return _compute_node_features(graph)
+
         for feature in features:
             if feature not in all_features:
-                print(f"Debug: Available features: {all_features}")
                 raise ValueError(
                     f"Feature '{feature}' not found in graph nodes. Please check your graph."
                 )
@@ -228,7 +231,29 @@ def _extract_features(graph, features=None):
 
 
 def _compute_node_features(graph):
-    """Compute default node features for a graph."""
+    """Compute default structural features for nodes in a directed graph.
+
+    Calculates the following features for each node:
+    - In-degree: Number of incoming edges.
+    - Out-degree: Number of outgoing edges.
+    - In-strength: Sum of weights of incoming edges (or in-degree if no weights).
+    - Out-strength: Sum of weights of outgoing edges (or out-degree if no weights).
+
+    Parameters
+    ----------
+    graph : NetworkX graph
+        A directed graph for which node features are computed.
+
+    Returns
+    -------
+    pandas.DataFrame
+        A DataFrame with columns:
+        - 'nodeID': Node identifier.
+        - 'inDegree': In-degree of the node.
+        - 'outDegree': Out-degree of the node.
+        - 'inStrength': Weighted in-degree.
+        - 'outStrength': Weighted out-degree.
+    """
     nodeID = []
     inDegree = []
     outDegree = []
