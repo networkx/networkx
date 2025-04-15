@@ -14,7 +14,7 @@ __all__ = [
 
 
 @nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
-def new_dstar_lite_instance(G, source, target, heuristic=None, weight="weight"):
+def new_dstar_lite_instance(G, source, target, weight="weight", heuristic=None):
     """
     Initializes a new instance of the D* Lite algorithm for a NetworkX graph.
 
@@ -50,7 +50,7 @@ def new_dstar_lite_instance(G, source, target, heuristic=None, weight="weight"):
     ... ]
     >>> for u, v, w in edges:
     ...     G.add_edge(u, v, weight=w)
-    >>> dstar = new_dstar_lite_instance(G, "A", "E", weight="weight")
+    >>> dstar = new_dstar_lite_instance(G, "A", "E")
     >>>
     >>> print(dstar.get_path())
     ['A', 'B', 'C', 'E']
@@ -66,14 +66,12 @@ def new_dstar_lite_instance(G, source, target, heuristic=None, weight="weight"):
     return DStarLite(G, source, target, heuristic, weight)
 
 
-@nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
-def d_star_modify_edge(instance, u, v, new_weight, weight="weight"):
+def d_star_modify_edge(instance, u, v, new_weight):
     """
     Dynamically modifies the weight of an edge and updates the path.
 
     Parameters
     ----------
-    weight
     instance : DStarLite
         The active instance of the algorithm.
     u : hashable
@@ -91,14 +89,12 @@ def d_star_modify_edge(instance, u, v, new_weight, weight="weight"):
     return instance.modify_edge(u, v, new_weight)
 
 
-@nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
-def d_star_recalculate_path(instance, weight="weight"):
+def d_star_recalculate_path(instance):
     """
     Recalculates the shortest path after modifications in the graph.
 
     Parameters
     ----------
-    weight
     instance : DStarLite
         The active instance of the algorithm.
 
@@ -111,8 +107,7 @@ def d_star_recalculate_path(instance, weight="weight"):
     return instance.get_path()
 
 
-@nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
-def d_star_get_path_cost(instance, weight="weight"):
+def d_star_get_path_cost(instance):
     """
     Returns the total cost of the last computed path.
 
@@ -122,7 +117,6 @@ def d_star_get_path_cost(instance, weight="weight"):
 
     Parameters
     ----------
-    weight
     instance : DStarLite
         The active instance of the D* Lite algorithm.
 
@@ -134,8 +128,7 @@ def d_star_get_path_cost(instance, weight="weight"):
     return instance.get_path_cost()
 
 
-@nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
-def d_star_get_path_length(instance, weight="weight"):
+def d_star_get_path_length(instance):
     """
     Returns the length (number of edges) of the last computed path.
 
@@ -145,7 +138,6 @@ def d_star_get_path_length(instance, weight="weight"):
 
     Parameters
     ----------
-    weight
     instance : DStarLite
         The active instance of the D* Lite algorithm.
 
