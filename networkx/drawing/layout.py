@@ -520,10 +520,10 @@ def spring_layout(
 
     method : str  optional (default='auto')
         The method to compute the layout.
-        If 'force', the force-directed Fruchterman-Reingold algorithm [1] is used.
-        If 'energy', the energy-based optimization algorithm [2] is used with absolute
+        If 'force', the force-directed Fruchterman-Reingold algorithm [1]_ is used.
+        If 'energy', the energy-based optimization algorithm [2]_ is used with absolute
         values of edge weights and gravitational forces acting on each connected component.
-        If 'auto', we use 'force' if len(G) < 500 and 'energy' otherwise.
+        If 'auto', we use 'force' if ``len(G) < 500`` and 'energy' otherwise.
 
     gravity: float optional (default=1.0)
         Used only for the method='energy'.
