@@ -57,7 +57,7 @@ def new_dstar_lite_instance(G, source, target, heuristic=None, weight="weight"):
     >>> print(dstar.get_path_cost())
     6
     >>>
-    >>> newGraph = d_star_modify_edge(dstar, "B", "C", 10, weight="weight")
+    >>> newGraph = d_star_modify_edge(dstar, "B", "C", 10)
     >>> d_star_recalculate_path(dstar)
     ['A', 'B', 'E']
     >>> print(dstar.get_path_cost())
@@ -67,12 +67,13 @@ def new_dstar_lite_instance(G, source, target, heuristic=None, weight="weight"):
 
 
 @nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
-def d_star_modify_edge(instance, u, v, new_weight):
+def d_star_modify_edge(instance, u, v, new_weight, weight="weight"):
     """
     Dynamically modifies the weight of an edge and updates the path.
 
     Parameters
     ----------
+    weight
     instance : DStarLite
         The active instance of the algorithm.
     u : hashable
@@ -91,12 +92,13 @@ def d_star_modify_edge(instance, u, v, new_weight):
 
 
 @nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
-def d_star_recalculate_path(instance):
+def d_star_recalculate_path(instance, weight="weight"):
     """
     Recalculates the shortest path after modifications in the graph.
 
     Parameters
     ----------
+    weight
     instance : DStarLite
         The active instance of the algorithm.
 
@@ -110,7 +112,7 @@ def d_star_recalculate_path(instance):
 
 
 @nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
-def d_star_get_path_cost(instance):
+def d_star_get_path_cost(instance, weight="weight"):
     """
     Returns the total cost of the last computed path.
 
@@ -120,6 +122,7 @@ def d_star_get_path_cost(instance):
 
     Parameters
     ----------
+    weight
     instance : DStarLite
         The active instance of the D* Lite algorithm.
 
@@ -132,7 +135,7 @@ def d_star_get_path_cost(instance):
 
 
 @nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
-def d_star_get_path_length(instance):
+def d_star_get_path_length(instance, weight="weight"):
     """
     Returns the length (number of edges) of the last computed path.
 
@@ -142,6 +145,7 @@ def d_star_get_path_length(instance):
 
     Parameters
     ----------
+    weight
     instance : DStarLite
         The active instance of the D* Lite algorithm.
 
