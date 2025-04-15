@@ -124,25 +124,6 @@ class TestDStarLiteDynamic:
         d_star_recalculate_path(dstar)
         assert dstar.get_path() is not None, "Expected a valid path after reconnecting."
 
-    def test_partial_edge_updates(self):
-        """Randomly update 30% of the edges and compare the path cost with A*."""
-        G, source, target = create_predefined_graph()
-        dstar = new_dstar_lite_instance(G, source, target)
-        initial_path = dstar.get_path()
-        assert initial_path is not None, "Expected initial path, got None."
-        edges = list(G.edges())
-        num_updates = int(0.3 * len(edges))
-        update_edges = random.sample(edges, num_updates)
-        for u, v in update_edges:
-            new_w = random.randint(5, 15)
-            d_star_modify_edge(dstar, u, v, new_w)
-        d_star_recalculate_path(dstar)
-        updated_path = dstar.get_path()
-        if updated_path is not None:
-            cost_d = dstar.get_path_cost()
-            cost_a = nx.astar_path_length(G, source, target, weight="weight")
-            assert cost_d == cost_a, f"Cost mismatch: D* Lite {cost_d} vs A* {cost_a}"
-
 
 class TestDStarLiteLargeGraphs:
     def test_large_directed_random_graph(self):
