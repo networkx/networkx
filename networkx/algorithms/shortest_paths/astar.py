@@ -1,8 +1,8 @@
 """Shortest paths and path lengths using the A* ("A star") algorithm."""
 
-import heapq
 import math
-from functools import lru_cache
+from functools import cache, lru_cache
+import heapq
 from heapq import heappop, heappush
 from itertools import count
 
@@ -248,9 +248,6 @@ def astar_path_length(
 
 # === Bidirectional A* Search ===
 
-import math
-from functools import cache, lru_cache
-
 
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
@@ -348,8 +345,10 @@ def bidirectional_astar(
     if heuristic is None:
         heuristic = _euclidean_heuristic
 
-    h_forward = lambda n: heuristic(n, target)
-    h_backward = lambda n: heuristic(n, source)
+    def h_forward(n):
+        return heuristic(n, target)
+    def h_backward(n):
+        return heuristic(n, source)
 
     weight_fn = _weight_function(G, weight)
 
