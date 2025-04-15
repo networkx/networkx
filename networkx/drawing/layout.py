@@ -440,6 +440,7 @@ def spring_layout(
     dim=2,
     seed=None,
     store_pos_as=None,
+    *,
     method="auto",
     gravity=1.0,
 ):
