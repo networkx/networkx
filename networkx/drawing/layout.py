@@ -1452,7 +1452,7 @@ def arf_layout(
         Scales the radius of the circular layout space.
 
     a : float
-        Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation ofunconnected sub clusters.
+        Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation of unconnected sub clusters.
 
     etol : float
         Gradient sum of spring forces must be larger than `etol` before successful termination.
@@ -1601,7 +1601,7 @@ def forceatlas2_layout(
         Determines the amount of attraction on nodes to the center. Prevents islands
         (i.e. weakly connected or disconnected parts of the graph)
         from drifting away.
-    distributed_attraction : bool (default: False)
+    distributed_action : bool (default: False)
         Distributes the attraction force evenly among nodes.
     strong_gravity : bool (default: False)
         Applies a strong gravitational pull towards the center.
