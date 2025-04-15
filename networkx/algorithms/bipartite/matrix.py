@@ -77,7 +77,6 @@ def biadjacency_matrix(
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     import scipy as sp
-    import numpy as np
 
     nlen = len(row_order)
     if nlen == 0:
@@ -105,16 +104,11 @@ def biadjacency_matrix(
                 if u in row_index and v in col_index
             )
         )
-    if format == "dense":
-        A = np.zeros((nlen, mlen), dtype=dtype)
-        A[row, col] = data
-        return A
-    else:
-        A = sp.sparse.coo_array((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
-        try:
-            return A.asformat(format)
-        except ValueError as err:
-            raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
+    A = sp.sparse.coo_array((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
+    try:
+        return A.asformat(format)
+    except ValueError as err:
+        raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
