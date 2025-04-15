@@ -716,10 +716,6 @@ def _sparse_fruchterman_reingold(
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
         raise nx.NetworkXError(msg) from err
 
-    # optimal distance between nodes
-    if k is None:
-        k = np.sqrt(1.0 / nnodes)
-
     if pos is None:
         # random initial positions
         pos = np.asarray(seed.rand(nnodes, dim), dtype=A.dtype)
@@ -730,6 +726,10 @@ def _sparse_fruchterman_reingold(
     # no fixed nodes
     if fixed is None:
         fixed = []
+
+    # optimal distance between nodes
+    if k is None:
+        k = np.sqrt(1.0 / nnodes)
 
     if method == "energy":
         return _energy_fruchterman_reingold(
@@ -818,11 +818,11 @@ def _energy_fruchterman_reingold(
             distance2 = np.maximum(distance2, 1e-10)
             distance = np.sqrt(distance2)
             # temporary variable for calculation
-            Aid = A[l:r] * distance
+            Ad = A[l:r] * distance
             # attractive forces and repulsive forces
-            grad[l:r] = 2 * np.einsum("ij,ijk->ik", Aid / k - k**2 / distance2, delta)
+            grad[l:r] = 2 * np.einsum("ij,ijk->ik", Ad / k - k**2 / distance2, delta)
             # integrated attractive forces
-            cost += np.sum(Aid * distance2) / (3 * k)
+            cost += np.sum(Ad * distance2) / (3 * k)
             # integrated repulsive forces
             cost -= k**2 * np.sum(np.log(distance))
         # gravitational force from the centroids of connected components to (0.5, ..., 0.5)^T
