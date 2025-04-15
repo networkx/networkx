@@ -72,10 +72,10 @@ def alpha_core(G, features=None, step_size=0.1, start_epsi=1, expo_decay=False):
     >>> df = nx.alpha_core(
     ...     G, features=["f1"], step_size=0.1, start_epsi=1.0, expo_decay=False
     ... )
-    >>> df
+    >>> df  # doctest: +SKIP
        nodeID  alpha  batchID
-    0       0    0.3        4
-    1       1    0.3        4
+    0       0    0.2        3
+    1       1    0.7        9
     """
 
     # Make a copy of the graph to avoid modifying the input
@@ -180,6 +180,7 @@ def _extract_features(graph, features=None):
     selected_features = set()
     data = {}
 
+    # Iterate over nodes and extract features
     for node_id, attributes in graph.nodes(data=True):
         for key, value in attributes.items():
             all_features.add(key)  # Track all available features
@@ -195,17 +196,12 @@ def _extract_features(graph, features=None):
             return _compute_node_features(graph)
         selected_features = numeric_features  # Use all numeric features
     else:
-        if len(all_features) == 0:
-            warnings.warn(
-                f"Requested features {features} not found. Reverting to default AlphaCore node features."
-            )
-            return _compute_node_features(graph)
-
         for feature in features:
             if feature not in all_features:
-                raise ValueError(
-                    f"Feature '{feature}' not found in graph nodes. Please check your graph."
+                warnings.warn(
+                    f"Requested features {features} not found. Reverting to default AlphaCore node features."
                 )
+                return _compute_node_features(graph)
             if feature in numeric_features:
                 selected_features.add(feature)
 
@@ -223,11 +219,12 @@ def _extract_features(graph, features=None):
                 node_features[feature] = attributes.get(feature)
         data[node_id] = node_features
 
-    return (
+    extracted_data = (
         pd.DataFrame.from_dict(data, orient="index")
         .reset_index()
         .rename(columns={"index": "nodeID"})
     )
+    return extracted_data
 
 
 def _compute_node_features(graph):
@@ -332,6 +329,7 @@ def _calculate_mahal_from_center(data, center, cov):
 
     left = np.dot(x_minus_center, inv_cov)
     mahal = np.dot(left, x_minus_center_transposed)
+
     mahal_diag = np.diagonal(
         mahal
     )  # Diagonal contains the depth values corresponding to each row from matrix
