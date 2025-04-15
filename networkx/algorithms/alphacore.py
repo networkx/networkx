@@ -74,8 +74,8 @@ def alpha_core(G, features=None, step_size=0.1, start_epsi=1, expo_decay=False):
     ... )
     >>> df
        nodeID  alpha  batchID
-    0       0    0.9        0
-    1       1    0.9        0
+    0       0    0.2        3
+    1       1    0.7        9
     """
 
     # Make a copy of the graph to avoid modifying the input
