@@ -57,7 +57,7 @@ def new_dstar_lite_instance(G, source, target, heuristic=None, weight="weight"):
     >>> print(dstar.get_path_cost())
     6
     >>>
-    >>> newGraph = d_star_modify_edge(dstar, "B", "C", 10)
+    >>> newGraph = d_star_modify_edge(dstar, "B", "C", 10, weight="weight")
     >>> d_star_recalculate_path(dstar)
     ['A', 'B', 'E']
     >>> print(dstar.get_path_cost())
