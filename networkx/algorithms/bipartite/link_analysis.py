@@ -106,35 +106,6 @@ def birank(
         within the specified number of iterations of the power iteration
         method.
 
-    Examples
-    --------
-    >>> elist = [
-        ("u1", "p1", 5),
-        ("u2", "p1", 5),
-        ("u2", "p2", 4),
-        ("u3", "p1", 3),
-        ("u3", "p3", 2)
-    ]
-    >>> G = nx.Graph()
-    >>> G.add_weighted_edges_from(elist, weight="rating")
-    >>> product_nodes = ("p1", "p2", "p3")
-    >>> u1_query = {product: rating
-            for _, product, rating
-            in item_recommendation_graph.edges(nbunch="u1", data="rating")
-        }
-    >>> u1_birank_results = nx.bipartite.birank(G, product_nodes,
-                                alpha=0.8, beta=1.0,
-                                top_personalization=u1_query
-                            )
-    >>> u1_recommendations = dict(
-    ...     filter(
-    ...         lambda item: item[0][0] == "p"
-    ...         and user_node not in item_recommendation_graph.neighbors(item[0]),
-    ...         u1_birank_results.items(),
-    ...     )
-    ... )
-    >>> print(u1_recommendations)
-
     See Also
     --------
     :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
