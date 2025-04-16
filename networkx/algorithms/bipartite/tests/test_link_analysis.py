@@ -51,9 +51,9 @@ class TestBipartiteLinkAnalysis:
 
     def test_davis_birank(self):
         G = nx.davis_southern_women_graph()
-        women = set(
-            [node for node, bipartite in G.nodes(data="bipartite") if bipartite == 0]
-        )
+        women = {
+            node for node, bipartite in G.nodes(data="bipartite") if bipartite == 0
+        }
         scores = bipartite.birank(G, women)
         answer = {
             "Nora Fayette": 0.08,
