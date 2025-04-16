@@ -33,14 +33,8 @@ class TestBipartiteLinkAnalysis:
             top_personalization=u1_query,
             weight="rating",
         )
-        u1_recommendations = dict(
-            filter(
-                lambda item: item[0][0] == "p"
-                and "u1" not in item_recommendation_graph.neighbors(item[0]),
-                u1_birank_results.items(),
-            )
-        )
-        assert u1_recommendations["p2"] > u1_recommendations["p3"] + 2 * 1e-6
+
+        assert u1_birank_results["p2"] > u1_birank_results["p3"] + 2 * 1e-6
 
         u1_birank_results_unweighted = bipartite.birank(
             item_recommendation_graph,
@@ -51,16 +45,8 @@ class TestBipartiteLinkAnalysis:
             weight=None,
         )
 
-        u1_recommendations_unweighted = dict(
-            filter(
-                lambda item: item[0][0] == "p"
-                and "u1" not in item_recommendation_graph.neighbors(item[0]),
-                u1_birank_results_unweighted.items(),
-            )
-        )
-
-        assert u1_recommendations["p2"] == pytest.approx(
-            u1_recommendations["p3"], rel=1e-6
+        assert u1_birank_results_unweighted["p2"] == pytest.approx(
+            u1_birank_results_unweighted["p3"], rel=1e-6
         )
 
     def test_davis_birank(self):
