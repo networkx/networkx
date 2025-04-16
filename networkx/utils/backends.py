@@ -1591,6 +1591,7 @@ class _dispatchable:
                 msg += " with the given arguments"
             pytest.xfail(msg)
 
+        import re
         from collections.abc import Iterable, Iterator, Mapping
         from copy import copy, deepcopy
         from io import BufferedReader, BytesIO, StringIO, TextIOWrapper
@@ -1663,6 +1664,142 @@ class _dispatchable:
             pytest.xfail(
                 exc.args[0] if exc.args else f"{self.name} raised {type(exc).__name__}"
             )
+
+        if self.__doc__ and backend_name == "nx_loopback":
+            # Checks below will test whether these `should_be_*` sets are correct
+            should_be_returns = set()
+            should_be_yields_has_returns = {
+                # Generator functions
+                "all_node_cuts",
+                "all_pairs_all_shortest_paths",
+                "all_pairs_bellman_ford_path",
+                "all_pairs_bellman_ford_path_length",
+                "all_pairs_dijkstra_path",
+                "all_pairs_dijkstra_path_length",
+                "all_pairs_shortest_path",
+                "all_pairs_shortest_path_length",
+                "all_simple_edge_paths",
+                "all_simple_paths",
+                "all_triads",
+                "asyn_lpa_communities",
+                "attracting_components",
+                "bfs_predecessors",
+                "bfs_successors",
+                "biconnected_component_edges",
+                "biconnected_components",
+                "bridge_components",
+                "connected_components",
+                "dfs_labeled_edges",
+                "edge_disjoint_paths",
+                "enumerate_all_cliques",
+                "eulerian_circuit",
+                "fast_label_propagation_communities",
+                "find_cliques",
+                "generate_random_paths",
+                "girvan_newman",
+                "k_clique_communities",
+                "kosaraju_strongly_connected_components",
+                "node_disjoint_paths",
+                "optimize_edit_paths",
+                "optimize_graph_edit_distance",
+                "shortest_simple_paths",
+                "single_source_all_shortest_paths",
+                "strongly_connected_components",
+                "strongly_connected_components_recursive",
+                "tree_all_pairs_lowest_common_ancestor",
+                "weakly_connected_components",
+                # Returns generators
+                "adamic_adar_index",
+                "all_shortest_paths",
+                "cn_soundarajan_hopcroft",
+                "common_neighbor_centrality",
+                "dfs_postorder_nodes",
+                "dfs_preorder_nodes",
+                "edge_boundary",
+                "isolates",
+                "jaccard_coefficient",
+                "k_edge_components",
+                "k_edge_subgraphs",
+                "maximum_spanning_edges",
+                "minimum_spanning_edges",
+                "preferential_attachment",
+                "ra_index_soundarajan_hopcroft",
+                "resource_allocation_index",
+                # "shortest_path",  # ignore
+                # "shortest_path_length",  # ignore
+                "within_inter_cluster",
+                # Returns iterators
+                "all_triplets",
+                "asyn_fluidc",
+                # Returns generators and iterators
+                "find_cliques_recursive",
+            }
+            should_be_yields_no_returns = {
+                # Generator functions
+                "boruvka_mst_edges",
+                "prim_mst_edges",
+                "strategy_connected_sequential",
+                "strategy_independent_set",
+                "strategy_saturation_largest_first",
+                # Returns generators
+                "strategy_connected_sequential_bfs",
+                "strategy_connected_sequential_dfs",
+                # Returns iterators
+                "root_to_leaf_paths",
+            }
+            ignore = {
+                # Returns iterator and non-iterator values
+                "shortest_path_length",
+                "shortest_path",
+            }
+            has_returns = bool(re.findall(r"\n *Returns\n *-------\n", self.__doc__))
+            has_yields = bool(re.findall(r"\n *Yields\n *------\n", self.__doc__))
+            if has_returns and has_yields:
+                raise RuntimeError(
+                    f"{self.name} should not use both Yields and Returns in docstring"
+                )
+            if self.name in ignore:
+                pass
+            elif isinstance(result, Iterator):
+                if has_returns and self.name not in should_be_yields_has_returns:
+                    raise RuntimeError(f"{self.name} should use Yields, not Returns")
+                if has_yields and self.name in should_be_yields_has_returns:
+                    raise RuntimeError(
+                        f"{self.name} correctly uses Yields, so it should be "
+                        "removed from `should_be_yields_has_returns` set"
+                    )
+                if has_yields and self.name in should_be_yields_no_returns:
+                    raise RuntimeError(
+                        f"{self.name} correctly uses Yields, so it should be "
+                        "removed from `should_be_yields_no_returns` set"
+                    )
+                if (
+                    not has_yields
+                    and self.name not in should_be_yields_has_returns
+                    and self.name not in should_be_yields_no_returns
+                ):
+                    raise RuntimeError(f"{self.name} is missing Yields")
+                if self.name in should_be_returns:
+                    raise RuntimeError(
+                        f"{self.name} does not belong in `should_be_returns`!"
+                    )
+            else:
+                if has_yields and self.name not in should_be_returns:
+                    raise RuntimeError(f"{self.name} should use Returns, not Yields")
+                if has_returns and self.name in should_be_returns:
+                    raise RuntimeError(
+                        f"{self.name} correctly uses Returns, so it should be "
+                        "removed from `should_be_returns` set"
+                    )
+                if self.name in should_be_yields_has_returns:
+                    raise RuntimeError(
+                        f"{self.name} does not belong in `should_be_yields_has_returns`!"
+                    )
+                if self.name in should_be_yields_no_returns:
+                    raise RuntimeError(
+                        f"{self.name} does not belong in `should_be_yields_no_returns`!"
+                    )
+
         # Verify that `self._returns_graph` is correct. This compares the return type
         # to the type expected from `self._returns_graph`. This handles tuple and list
         # return types, but *does not* catch functions that yield graphs.
