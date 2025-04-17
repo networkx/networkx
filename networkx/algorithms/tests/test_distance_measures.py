@@ -2,11 +2,14 @@ import itertools
 import math
 from random import Random
 
+from hypothesis import given, reproduce_failure, settings, strategies as st
 import pytest
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 from networkx.algorithms.distance_measures import _extrema_bounding
+
+from networkx.hypothesis import edge_data_st, graph_st
 
 
 def test__extrema_bounding_invalid_compute_kwarg():
@@ -15,14 +18,19 @@ def test__extrema_bounding_invalid_compute_kwarg():
         _extrema_bounding(G, compute="spam")
 
 
+def _random_connected_graph(n, prob, seed):
+    return nx.compose(
+        nx.random_labeled_tree(n, seed=seed),
+        nx.erdos_renyi_graph(n, prob, seed=seed),
+    )
+
 class TestDistance:
     def setup_method(self):
         self.G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
 
-    @pytest.mark.parametrize("seed", list(range(10)))
-    @pytest.mark.parametrize("n", list(range(10, 20)))
-    @pytest.mark.parametrize("prob", [x / 10 for x in range(0, 10, 2)])
-    def test_use_bounds_on_off_consistency(self, seed, n, prob):
+    @settings(print_blob=True)
+    @given(graph_st(_random_connected_graph, n=st.integers(10, 20), prob=st.floats(0, 1), edge_data_st=edge_data_st(w=st.integers(1, 1000))))
+    def test_use_bounds_on_off_consistency(self, G):
         """Test for consistency of distance metrics when using usebounds=True.
 
         We validate consistency for `networkx.diameter`, `networkx.radius`, `networkx.periphery`
@@ -32,21 +40,10 @@ class TestDistance:
         For this we generate random connected graphs and validate method returns the same.
         """
         metrics = [nx.diameter, nx.radius, nx.periphery, nx.center]
-        max_weight = [5, 10, 1000]
-        rng = Random(seed)
-        # we compose it with a random tree to ensure graph is connected
-        G = nx.compose(
-            nx.random_labeled_tree(n, seed=rng),
-            nx.erdos_renyi_graph(n, prob, seed=rng),
-        )
         for metric in metrics:
             # checking unweighted case
             assert metric(G) == metric(G, usebounds=True)
-            for w in max_weight:
-                for u, v in G.edges():
-                    G[u][v]["w"] = rng.randint(0, w)
-                # checking weighted case
-                assert metric(G, weight="w") == metric(G, weight="w", usebounds=True)
+            assert metric(G, weight="w") == metric(G, weight="w", usebounds=True)
 
     def test_eccentricity(self):
         assert nx.eccentricity(self.G, 1) == 6
