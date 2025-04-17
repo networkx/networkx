@@ -1601,13 +1601,47 @@ class _dispatchable:
         from numpy.random import Generator, RandomState
         from scipy.sparse import sparray
 
-        # We sometimes compare the backend result to the original result,
-        # so we need two sets of arguments. We tee iterators and copy
-        # random state so that they may be used twice.
-        if not args:
-            args1 = args2 = args
+        # We sometimes compare the backend result (or input graphs) to the
+        # original result (or input graphs), so we need two sets of arguments.
+        compare_result_to_nx = (
+            self._returns_graph
+            and "networkx" in self.backends
+            and self.name
+            not in {
+                # These need `nx.algorithms.flow.utils.CurrentEdge` to define __eq__
+                # "boykov_kolmogorov",
+                # "preflow_push",
+                # "shortest_augmenting_path",
+                # "spectral_graph_forge",
+                # Has graphs as node values (unable to compare)
+                "quotient_graph",
+                # We don't handle tempfile.NamedTemporaryFile arguments
+                "read_gml",
+                "read_graph6",
+                "read_sparse6",
+                # We don't handle io.BufferedReader or io.TextIOWrapper arguments
+                "bipartite_read_edgelist",
+                "read_adjlist",
+                "read_edgelist",
+                "read_graphml",
+                "read_multiline_adjlist",
+                "read_pajek",
+                "from_pydot",
+                "pydot_read_dot",
+                "agraph_read_dot",
+                # graph comparison fails b/c of nan values
+                "read_gexf",
+            }
+        )
+        compare_inputs_to_nx = (
+            "networkx" in self.backends and self._will_call_mutate_input(args, kwargs)
+        )
+
+        # Tee iterators and copy random state so that they may be used twice.
+        if not args or not compare_result_to_nx and not compare_inputs_to_nx:
+            args_to_convert = args_nx = args
         else:
-            args1, args2 = zip(
+            args_to_convert, args_nx = zip(
                 *(
                     (arg, deepcopy(arg))
                     if isinstance(arg, RandomState)
@@ -1620,10 +1654,10 @@ class _dispatchable:
                     for arg in args
                 )
             )
-        if not kwargs:
-            kwargs1 = kwargs2 = kwargs
+        if not kwargs or not compare_result_to_nx and not compare_inputs_to_nx:
+            kwargs_to_convert = kwargs_nx = kwargs
         else:
-            kwargs1, kwargs2 = zip(
+            kwargs_to_convert, kwargs_nx = zip(
                 *(
                     ((k, v), (k, deepcopy(v)))
                     if isinstance(v, RandomState)
@@ -1636,19 +1670,17 @@ class _dispatchable:
                     for k, v in kwargs.items()
                 )
             )
-            kwargs1 = dict(kwargs1)
-            kwargs2 = dict(kwargs2)
+            kwargs_to_convert = dict(kwargs_to_convert)
+            kwargs_nx = dict(kwargs_nx)
+
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args1, kwargs1, use_cache=False, mutations=None
-            )
-            _logger.debug(
-                "Using backend '%s' for call to '%s' with arguments: %s",
                 backend_name,
-                self.name,
-                _LazyArgsRepr(self, converted_args, converted_kwargs),
+                args_to_convert,
+                kwargs_to_convert,
+                use_cache=False,
+                mutations=None,
             )
-            result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except NotImplementedError as exc:
             if fallback_to_nx:
                 _logger.debug(
@@ -1657,12 +1689,51 @@ class _dispatchable:
                     backend_name,
                     self.name,
                 )
-                return self.orig_func(*args2, **kwargs2)
+                return self.orig_func(*args_nx, **kwargs_nx)
             import pytest
 
             pytest.xfail(
                 exc.args[0] if exc.args else f"{self.name} raised {type(exc).__name__}"
             )
+
+        if compare_inputs_to_nx:
+            # Ensure input graphs are different if the function mutates an input graph.
+            bound_backend = self.__signature__.bind(*converted_args, **converted_kwargs)
+            bound_backend.apply_defaults()
+            bound_nx = self.__signature__.bind(*args_nx, **kwargs_nx)
+            bound_nx.apply_defaults()
+            for gname in self.graphs:
+                graph_nx = bound_nx.arguments[gname]
+                if bound_backend.arguments[gname] is graph_nx is not None:
+                    bound_nx.arguments[gname] = graph_nx.copy()
+            args_nx = bound_nx.args
+            kwargs_nx = bound_nx.kwargs
+            kwargs_nx.pop("backend", None)
+
+        _logger.debug(
+            "Using backend '%s' for call to '%s' with arguments: %s",
+            backend_name,
+            self.name,
+            _LazyArgsRepr(self, converted_args, converted_kwargs),
+        )
+        try:
+            result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
+        except NotImplementedError as exc:
+            if fallback_to_nx:
+                _logger.debug(
+                    "Backend '%s' raised when calling '%s': %s; "
+                    "falling back to use 'networkx' instead.",
+                    backend_name,
+                    self.name,
+                    exc,
+                )
+                return self.orig_func(*args_nx, **kwargs_nx)
+            import pytest
+
+            pytest.xfail(
+                exc.args[0] if exc.args else f"{self.name} raised {type(exc).__name__}"
+            )
+
         # Verify that `self._returns_graph` is correct. This compares the return type
         # to the type expected from `self._returns_graph`. This handles tuple and list
         # return types, but *does not* catch functions that yield graphs.
@@ -1742,147 +1813,41 @@ class _dispatchable:
                 ) from exc
             check_result(result)
 
-        if self.name in {
-            "edmonds_karp",
-            "barycenter",
-            "contracted_edge",
-            "contracted_nodes",
-            "stochastic_graph",
-            "relabel_nodes",
-            "maximum_branching",
-            "incremental_closeness_centrality",
-            "minimal_branching",
-            "minimum_spanning_arborescence",
-            "recursive_simple_cycles",
-            "connected_double_edge_swap",
-            "set_node_attributes",
-            "remove_node_attributes",
-            "set_edge_attributes",
-            "remove_edge_attributes",
-        }:
+        def assert_graphs_equal(G1, G2, strict=True):
+            assert G1.number_of_nodes() == G2.number_of_nodes()
+            assert G1.number_of_edges() == G2.number_of_edges()
+            assert G1.is_directed() is G2.is_directed()
+            assert G1.is_multigraph() is G2.is_multigraph()
+            if strict:
+                assert G1.graph == G2.graph
+                assert G1._node == G2._node
+                assert G1._adj == G2._adj
+            else:
+                assert set(G1) == set(G2)
+                assert set(G1.edges) == set(G2.edges)
+
+        if compare_inputs_to_nx:
             # Special-case algorithms that mutate input graphs
-            bound = self.__signature__.bind(*converted_args, **converted_kwargs)
-            bound.apply_defaults()
-            bound2 = self.__signature__.bind(*args2, **kwargs2)
-            bound2.apply_defaults()
-            if self.name in {
-                "minimal_branching",
-                "minimum_spanning_arborescence",
-                "recursive_simple_cycles",
-                "connected_double_edge_swap",
-                "set_edge_attributes",
-                "remove_edge_attributes",
-            }:
-                G1 = backend.convert_to_nx(bound.arguments["G"])
-                G2 = bound2.arguments["G"]
-                G2._adj = G1._adj
-                if G2.is_directed():
-                    G2._pred = G1._pred
-                nx._clear_cache(G2)
-            elif self.name in {
-                "set_node_attributes",
-                "remove_node_attributes",
-            }:
-                G1 = backend.convert_to_nx(bound.arguments["G"])
-                G2 = bound2.arguments["G"]
-                G2._node = G1._node
-                nx._clear_cache(G2)
-            elif self.name == "edmonds_karp":
-                R1 = backend.convert_to_nx(bound.arguments["residual"])
-                R2 = bound2.arguments["residual"]
-                if R1 is not None and R2 is not None:
-                    for k, v in R1.edges.items():
-                        R2.edges[k]["flow"] = v["flow"]
-                    R2.graph.update(R1.graph)
-                    nx._clear_cache(R2)
-            elif self.name == "barycenter" and bound.arguments["attr"] is not None:
-                G1 = backend.convert_to_nx(bound.arguments["G"])
-                G2 = bound2.arguments["G"]
-                attr = bound.arguments["attr"]
-                for k, v in G1.nodes.items():
-                    G2.nodes[k][attr] = v[attr]
-                nx._clear_cache(G2)
-            elif (
-                self.name in {"contracted_nodes", "contracted_edge"}
-                and not bound.arguments["copy"]
-            ):
-                # Edges and nodes changed; node "contraction" and edge "weight" attrs
-                G1 = backend.convert_to_nx(bound.arguments["G"])
-                G2 = bound2.arguments["G"]
-                G2.__dict__.update(G1.__dict__)
-                nx._clear_cache(G2)
-            elif self.name == "stochastic_graph" and not bound.arguments["copy"]:
-                G1 = backend.convert_to_nx(bound.arguments["G"])
-                G2 = bound2.arguments["G"]
-                for k, v in G1.edges.items():
-                    G2.edges[k]["weight"] = v["weight"]
-                nx._clear_cache(G2)
-            elif (
-                self.name == "relabel_nodes"
-                and not bound.arguments["copy"]
-                or self.name in {"incremental_closeness_centrality"}
-            ):
-                G1 = backend.convert_to_nx(bound.arguments["G"])
-                G2 = bound2.arguments["G"]
-                if G1 is G2:
-                    return G2
-                G2._node.clear()
-                G2._node.update(G1._node)
-                G2._adj.clear()
-                G2._adj.update(G1._adj)
-                if hasattr(G1, "_pred") and hasattr(G2, "_pred"):
-                    G2._pred.clear()
-                    G2._pred.update(G1._pred)
-                if hasattr(G1, "_succ") and hasattr(G2, "_succ"):
-                    G2._succ.clear()
-                    G2._succ.update(G1._succ)
-                nx._clear_cache(G2)
-                if self.name == "relabel_nodes":
-                    return G2
-            return backend.convert_to_nx(result)
+            result_nx = self.orig_func(*args_nx, **kwargs_nx)
+            for gname in self.graphs:
+                G0 = bound_backend.arguments[gname]
+                G1 = bound_nx.arguments[gname]
+                if G0 is not None or G1 is not None:
+                    G1 = backend.convert_to_nx(G1)
+                    assert_graphs_equal(G0, G1, strict=False)
 
         converted_result = backend.convert_to_nx(result)
-        if (
-            isinstance(converted_result, nx.Graph)
-            and "networkx" in self.backends
-            and self.name
-            not in {
-                "boykov_kolmogorov",
-                "preflow_push",
-                "quotient_graph",
-                "shortest_augmenting_path",
-                "spectral_graph_forge",
-                # We don't handle tempfile.NamedTemporaryFile arguments
-                "read_gml",
-                "read_graph6",
-                "read_sparse6",
-                # We don't handle io.BufferedReader or io.TextIOWrapper arguments
-                "bipartite_read_edgelist",
-                "read_adjlist",
-                "read_edgelist",
-                "read_graphml",
-                "read_multiline_adjlist",
-                "read_pajek",
-                "from_pydot",
-                "pydot_read_dot",
-                "agraph_read_dot",
-                # graph comparison fails b/c of nan values
-                "read_gexf",
-            }
-        ):
+        if compare_result_to_nx and isinstance(converted_result, nx.Graph):
             # For graph return types (e.g. generators), we compare that results are
             # the same between the backend and networkx, then return the original
             # networkx result so the iteration order will be consistent in tests.
-            G = self.orig_func(*args2, **kwargs2)
-            if not nx.utils.graphs_equal(G, converted_result):
-                assert G.number_of_nodes() == converted_result.number_of_nodes()
-                assert G.number_of_edges() == converted_result.number_of_edges()
-                assert G.graph == converted_result.graph
-                assert G.nodes == converted_result.nodes
-                assert G.adj == converted_result.adj
-                assert type(G) is type(converted_result)
-                raise AssertionError("Graphs are not equal")
+            if compare_inputs_to_nx:
+                G = result_nx
+            else:
+                G = self.orig_func(*args_nx, **kwargs_nx)
+            assert_graphs_equal(G, converted_result)
             return G
+
         return converted_result
 
     def _make_doc(self):
