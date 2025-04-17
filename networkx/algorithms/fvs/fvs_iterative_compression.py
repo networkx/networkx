@@ -138,7 +138,18 @@ def _fvs_disjoint_compression_branching(G, k, X, Y, r_1):
     if not is_k_fvs_possible:
         return False, set()
 
-    v = Y.pop()
+    v = None
+    # pick a degree 1 vertex (wrt Y)
+    for vertex in Y:
+        cnt = 0
+        for neighbour in G.neighbors(vertex):
+            if neighbour in Y:
+                cnt += 1
+        if cnt <= 1:
+            v = vertex
+            break
+
+    # v = Y.pop()
     # either v is in the solution or v is not in the solution
 
     # case 1 : v is in the solution
