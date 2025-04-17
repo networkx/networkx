@@ -112,7 +112,8 @@ def biadjacency_matrix(
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
-def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
+def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight",
+                            top_nodelist=None, bottom_nodelist=None):
     r"""Creates a new bipartite graph from a biadjacency matrix given as a
     SciPy sparse array.
 
@@ -150,6 +151,9 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
     """
     G = nx.empty_graph(0, create_using)
     n, m = A.shape
+    # Check lengths of nodelists match dimensions of A, if not specified set them to []
+    top_nodelist, bottom_nodelist = _validate_initialize_bipartite_nodelists(A, top_nodelist, bottom_nodelist)
+
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n), bipartite=0)
     G.add_nodes_from(range(n, n + m), bipartite=1)
@@ -165,4 +169,26 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
         chain = itertools.chain.from_iterable
         triples = chain(((u, v, 1) for d in range(w)) for (u, v, w) in triples)
     G.add_weighted_edges_from(triples, weight=edge_attribute)
+
+    # If the user provided nodelists, relabel the nodes of the graph inplace
+    mapping = dict(itertools.chain(zip(range(n), top_nodelist), zip(range(n, n + m), bottom_nodelist)))
+    if len(mapping):
+        nx.relabel_nodes(G, mapping, copy=False)
     return G
+
+def _validate_initialize_bipartite_nodelists(A, top_nodelist, bottom_nodelist):
+    n, m = A.shape
+    # Validate nodelists if provided
+    if top_nodelist is not None:
+        if len(top_nodelist) != n:
+            raise ValueError("Length of top_nodelist does not match number of rows in A ({n})")
+    else:
+        top_nodelist = []
+    
+    if bottom_nodelist is not None:
+        if len(bottom_nodelist) != m:
+            raise ValueError("Length of bottom_nodelist does not match number of columns in A ({m})")
+    else:
+        bottom_nodelist = []
+
+    return top_nodelist, bottom_nodelist
