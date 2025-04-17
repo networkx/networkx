@@ -118,10 +118,8 @@ class TestDistance:
         G = nx.Graph([(1, 2), (1, 3), (2, 4), (2, 5)])
         assert nx.center(G) == [1, 2]
 
-    @pytest.mark.parametrize("r", range(2, 5))
-    @pytest.mark.parametrize("h", range(1, 5))
-    def test_center_balanced_tree(self, r, h):
-        G = nx.balanced_tree(r, h)
+    @given(graph_st(nx.balanced_tree, r=st.integers(2, 5), h=st.integers(2, 5)))
+    def test_center_balanced_tree(self, G):
         assert nx.center(G) == [0]
 
     def test_center(self):
