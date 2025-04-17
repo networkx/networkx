@@ -33,7 +33,7 @@ def birank(
     * $p_j$ and $u_i$ are the BiRank scores of nodes $j \in P$ and $i \in U$.
     * $w_{ij}$ is the weight of the edge between nodes $i \in U$ and $j \in P$ (With a value of 0 if no edge exists).
     * $d_i$ and $d_j$ are the weighted degrees of nodes $i \in U$ and $j \in P$, respectively.
-    * $p_j^0$ and $u_i^0$ are personalization values that can encode a priori weights for the nodes $j \in P$ and $i \in U$, respectively. Akin to the query vector used by PageRank.
+    * $p_j^0$ and $u_i^0$ are personalization values that can encode a priori weights for the nodes $j \in P$ and $i \in U$, respectively. Akin to the personalization vector used by PageRank.
     * $\alpha$ and $\beta$ are damping hyperparameters applying to nodes in $P$ and $U$ respectively. They have values in the interval $[0, 1]$ and are analogous to those used by PageRank.
 
     Below are two use cases for this algorithm.
@@ -106,6 +106,67 @@ def birank(
         within the specified number of iterations of the power iteration
         method.
 
+    Examples
+     --------
+     Construct a bipartite graph with user-item ratings and use BiRank to
+     recommend items to a user (user 1). The example below uses the `rating` edge
+     attribute as the weight of the edges. The `top_personalization` vector
+     is used to encode the user's previous ratings on items.
+
+     Creation of graph, bipartite sets for the example.
+
+     >>> elist = [ \
+     ...  ("u1", "p1", 5), \
+     ...  ("u2", "p1", 5), \
+     ...  ("u2", "p2", 4), \
+     ...  ("u3", "p1", 3), \
+     ...  ("u3", "p3", 2) \
+     ... ]
+     >>> G = nx.Graph()
+     >>> G.add_weighted_edges_from(elist, weight="rating")
+     >>> product_nodes = ("p1", "p2", "p3")
+     >>> user = "u1"
+
+     First, we create a personalization vector for the user based on on their ratings of past items.
+     In this case they have only rated one item (p1, with a rating of 5) in the past.
+
+     >>> user_personalization = {
+     ...  product: rating \
+     ...  for _, product, rating \
+     ...  in G.edges(nbunch=user, data="rating") \
+     ... }
+     >>> user_personalization
+     {'p1': 5}
+
+     Calculate the BiRank score of all nodes in the graph, filter for the items that the
+     user has not rated yet, and sort the results by score.
+
+     >>> user_birank_results = nx.bipartite.birank(
+     ...  G, product_nodes, \
+     ...  top_personalization=user_personalization, \
+     ...  weight="rating" \
+     ... )
+     >>> user_birank_results = filter( \
+     ...  lambda item: item[0][0] == "p" \
+     ...  and user not in G.neighbors(item[0]), \
+     ...  user_birank_results.items() \
+     ... )
+     >>> user_birank_results = sorted( \
+     ...  user_birank_results, \
+     ...  key=lambda item: item[1], \
+     ...  reverse=True \
+     ... )
+     >>> user_recommendations = { \
+     ...  product: round(score, 5) \
+     ...  for product, score in user_birank_results \
+     ... }
+     >>> user_recommendations
+     {'p2': 1.44818, 'p3': 1.04811}
+
+     We find that user 1 should be recommended item p2 over item p3. This is due to the fact that user 2
+     rated also rated p1 highly, while user 3 did not. Thus user 2's tastes are inferred to be similar
+     to user 1's, and carry more weight in the recommendation.
+
     See Also
     --------
     :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
@@ -121,6 +182,11 @@ def birank(
     bipartite node sets. See :mod:`bipartite documentation
     <networkx.algorithms.bipartite>` for further details on how
     bipartite graphs are handled in NetworkX.
+
+    In the case a personalization dictionary is not provided for top(bottom)
+    `alpha`(`beta`) will default to 1. This is because a damping factor
+    without a non-zero entry in the personalization vector will lead to the
+    algorithm converging to the zero vector.
 
     References
     ----------
