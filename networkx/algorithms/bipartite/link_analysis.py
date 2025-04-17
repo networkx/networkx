@@ -159,7 +159,7 @@ def birank(
     p0 = np.array([top_personalization.get(n, 0) for n in top], dtype=float)
     u0 = np.array([bottom_personalization.get(n, 0) for n in bottom], dtype=float)
 
-    # Construct weight biadjacency matrix `S`
+    # Construct degree normalized biadjacency matrix `S`
     W = nx.bipartite.biadjacency_matrix(G, bottom, top, weight=weight, dtype=float)
     D_p = sp.sparse.dia_array(
         ([1.0 / np.sqrt(W.sum(axis=0))], [0]), shape=(top_count, top_count), dtype=float
