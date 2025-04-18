@@ -3,12 +3,11 @@ import pytest
 import networkx as nx
 from networkx.algorithms import bipartite
 
-np = pytest.importorskip("numpy")
-sp = pytest.importorskip("scipy")
-
 
 class TestBipartiteLinkAnalysis:
     def test_collaborative_filtering_birank(self):
+        pytest.importorskip("numpy")
+        pytest.importorskip("scipy")
         elist = [
             ("u1", "p1", 5),
             ("u2", "p1", 5),
@@ -50,6 +49,8 @@ class TestBipartiteLinkAnalysis:
         )
 
     def test_davis_birank(self):
+        pytest.importorskip("numpy")
+        pytest.importorskip("scipy")
         G = nx.davis_southern_women_graph()
         women = {
             node for node, bipartite in G.nodes(data="bipartite") if bipartite == 0
