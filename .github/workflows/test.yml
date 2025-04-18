@@ -23,12 +23,12 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[test]
+          python -m pip install .[test] pytest-xdist
           python -m pip list
 
       - name: Test NetworkX
         run: |
-          pytest --durations=10 --pyargs networkx
+          pytest -n auto --durations=10 --pyargs networkx
 
   default:
     runs-on: ${{ matrix.os }}-latest
@@ -46,7 +46,7 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[default,test]
+          python -m pip install .[default,test] pytest-xdist
           python -m pip list
 
       - name: Test for warnings at import time
@@ -54,7 +54,7 @@ jobs:
 
       - name: Test NetworkX
         run: |
-          pytest --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
 
   default-without-scipy:
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[default,test]
+          python -m pip install .[default,test] pytest-xdist
           python -m pip uninstall -y scipy  # All default dependencies except scipy
           python -m pip list
 
@@ -77,7 +77,7 @@ jobs:
 
       - name: Test NetworkX
         run: |
-          pytest --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
 
   dispatch:
     runs-on: ubuntu-latest
@@ -94,8 +94,7 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[default,test]
-          python -m pip install pytest-xdist
+          python -m pip install .[default,test] pytest-xdist
           python -m pip list
 
       - name: Test Dispatching
@@ -157,12 +156,12 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          python -m pip install .[default,test,extra]
+          python -m pip install .[default,test,extra] pytest-xdist
           python -m pip list
 
       - name: Test NetworkX
         run: |
-          pytest --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
 
   prerelease:
     runs-on: ${{ matrix.os }}-latest
@@ -180,9 +179,9 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip
-          pip install --pre .[default,test]
+          pip install --pre .[default,test] pytest-xdist
           pip list
 
       - name: Test NetworkX
         run: |
-          pytest --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
