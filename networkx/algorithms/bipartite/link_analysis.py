@@ -116,7 +116,7 @@ def birank(
      Scipy is required to run this example
 
      >>> import pytest
-     >>> pytest.importorskip("scipy")
+     >>> sp = pytest.importorskip("scipy")
 
      Creation of graph, bipartite sets for the example.
 
