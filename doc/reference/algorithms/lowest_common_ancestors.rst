@@ -6,6 +6,7 @@ Lowest Common Ancestor
 .. autosummary::
    :toctree: generated/
 
+   all_pairs_all_lowest_common_ancestors
    all_pairs_lowest_common_ancestor
    tree_all_pairs_lowest_common_ancestor
    lowest_common_ancestor

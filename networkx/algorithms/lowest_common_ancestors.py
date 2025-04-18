@@ -8,10 +8,116 @@ import networkx as nx
 from networkx.utils import UnionFind, arbitrary_element, not_implemented_for
 
 __all__ = [
+    "all_pairs_all_lowest_common_ancestors",
     "all_pairs_lowest_common_ancestor",
     "tree_all_pairs_lowest_common_ancestor",
     "lowest_common_ancestor",
 ]
+
+
+@not_implemented_for("undirected")
+@nx._dispatchable
+def all_pairs_all_lowest_common_ancestors(G, pairs=None):
+    """Return lists of lowest common ancestors of all pairs or the provided pairs
+
+    Parameters
+    ----------
+    G : NetworkX directed graph
+
+    pairs : iterable of pairs of nodes, optional (default: all pairs)
+        The pairs of nodes of interest.
+        If None, will find the LCAs of all pairs of nodes.
+
+    Yields
+    ------
+    ((node1, node2), [lca1, lca2, ...]) : 2-tuple
+        Where [lca1, lca2, ...] are the least common ancestors of node1 and node2.
+        Note that for the default case, the order of the node pair is not considered,
+        e.g. you will not get both ``(a, b)`` and ``(b, a)``
+
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If `G` is null.
+    NetworkXError
+        If `G` is not a DAG.
+
+    Examples
+    --------
+    The default behavior is to yield the lowest common ancestor for all
+    possible combinations of nodes in `G`, including self-pairings:
+
+    >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
+    >>> dict(nx.all_pairs_all_lowest_common_ancestors(G))
+    {(0, 0): [0], (0, 1): [0], (0, 3): [0], (0, 2): [0], (1, 1): [1], (1, 3): [0], (1, 2): [1], (3, 3): [3], (3, 2): [0], (2, 2): [2]}
+
+    The pairs argument can be used to limit the output to only the
+    specified node pairings:
+
+    >>> dict(nx.all_pairs_all_lowest_common_ancestors(G, pairs=[(1, 2), (2, 3)]))
+    {(1, 2): [1], (2, 3): [0]}
+
+    If a pair has multiple lowest common ancestors, all are returned:
+
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)])
+    >>> dict(nx.all_pairs_all_lowest_common_ancestors(G, pairs=[(3, 4)]))
+    {(3, 4): [1, 2]}
+
+    If a pair has no common ancestors, an empty list is returned:
+
+    >>> G = nx.DiGraph([(0, 1), (2, 3)])
+    >>> dict(nx.all_pairs_all_lowest_common_ancestors(G, pairs=[(1, 3)]))
+    {(1, 3): []}
+
+    Notes
+    -----
+    Only defined on non-null directed acyclic graphs.
+
+    See Also
+    --------
+    all_pairs_lowest_common_ancestor
+    """
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
+
+    if pairs is None:
+        pairs = combinations_with_replacement(G, 2)
+    else:
+        # Convert iterator to iterable, if necessary. Trim duplicates.
+        pairs = dict.fromkeys(pairs)
+        # Verify that each of the nodes in the provided pairs is in G
+        nodeset = set(G)
+        for pair in pairs:
+            if set(pair) - nodeset:
+                raise nx.NodeNotFound(
+                    f"Node(s) {set(pair) - nodeset} from pair {pair} not in G."
+                )
+
+    # Once input validation is done, construct the generator
+    def generate_lcas_from_pairs(G, pairs):
+        ancestor_cache = {}
+
+        for v, w in pairs:
+            if v not in ancestor_cache:
+                ancestor_cache[v] = nx.ancestors(G, v)
+                ancestor_cache[v].add(v)
+            if w not in ancestor_cache:
+                ancestor_cache[w] = nx.ancestors(G, w)
+                ancestor_cache[w].add(w)
+
+            common_ancestors = ancestor_cache[v] & ancestor_cache[w]
+            lowest_common_ancestors = []
+            for common_ancestor in common_ancestors:
+                if all(
+                    successor not in common_ancestors
+                    for successor in G.successors(common_ancestor)
+                ):
+                    lowest_common_ancestors.append(common_ancestor)
+            yield ((v, w), lowest_common_ancestors)
+
+    return generate_lcas_from_pairs(G, pairs)
 
 
 @not_implemented_for("undirected")
