@@ -160,11 +160,15 @@ def connected_dominating_set(G):
     -----
     This function implements Algorithm I in its basic version as described
     in [3]_. The idea behind the algorithm is the following: grow a tree *T*,
-    starting from the node of maximum degree. Nonleaf nodes in *T* are our
-    connected dominating set (CDS), leaf nodes in *T* are marked as seen and all
-    other nodes are marked as unseen. At each step we pick a seen (leaf) node
-    with maximal number of unseen neighbors, add it to the CDS and mark all its
-    neighbors as seen. The algorithm terminates when there are no more unseen
+    starting from a node with maximum degree. Throughout the growing process,
+    nonleaf nodes in *T* are our connected dominating set (CDS), leaf nodes in
+    *T* are marked as "seen" and nodes in G that are not yet in *T* are marked as
+    "unseen". We maintain a max-heap of all "seen" nodes, and track the number
+    of "unseen" neighbors for each node. At each step we pop the heap top -- a
+    "seen" (leaf) node with maximal number of "unseen" neighbors, add it to the
+    CDS and mark all its "unseen" neighbors as "seen". For each one of the newly
+    created "seen" nodes, we also decrement the number of "unseen" neighbors for
+    all its neighbors. The algorithm terminates when there are no more "unseen"
     nodes.
     Runtime complexity of this implementation is $O(|E|*log|V|)$ (amortized).
 
