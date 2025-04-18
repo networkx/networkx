@@ -1,3 +1,4 @@
+import random
 from itertools import chain, combinations, product
 
 import pytest
@@ -15,7 +16,7 @@ def get_pair(dictionary, n1, n2):
         return dictionary[n2, n1]
 
 
-def assert_is_a_lca(G, u, v, lca):
+def is_lca(G, u, v, lca):
     """Assert that node lca is a valid lowest common ancestor for nodes u and v.
 
     A node is a lowest common ancestor of two nodes if:
@@ -33,12 +34,14 @@ def assert_is_a_lca(G, u, v, lca):
     v_ancestors = nx.ancestors(G, v).union({v})
 
     # lca must be an ancestor of both u and v
-    assert lca in u_ancestors, f"Node {lca} is not an ancestor of {u}"
-    assert lca in v_ancestors, f"Node {lca} is not an ancestor of {v}"
+    if lca not in u_ancestors or lca not in v_ancestors:
+        return False
 
     # None of lca's descendants can be ancestors of both u and v
     for successor in G.successors(lca):
-        assert not (successor in u_ancestors and successor in v_ancestors)
+        if successor in u_ancestors and successor in v_ancestors:
+            return False
+    return True
 
 
 class TestTreeLCA:
@@ -259,19 +262,19 @@ class TestDAGLCA:
     def test_all_pairs_lca_gold_example(self):
         result = dict(all_pairs_lca(self.DG))
         for (u, v), lca in result.items():
-            assert_is_a_lca(self.DG, u, v, lca)
+            assert is_lca(self.DG, u, v, lca)
 
     def test_all_pairs_lca_all_pairs_given(self):
         all_pairs = list(product(self.DG.nodes(), self.DG.nodes()))
         result = dict(all_pairs_lca(self.DG, pairs=all_pairs))
         for (u, v), lca in result.items():
-            assert_is_a_lca(self.DG, u, v, lca)
+            assert is_lca(self.DG, u, v, lca)
 
     def test_all_pairs_lca_generator(self):
         all_pairs = product(self.DG.nodes(), self.DG.nodes())
         result = dict(all_pairs_lca(self.DG, pairs=all_pairs))
         for (u, v), lca in result.items():
-            assert_is_a_lca(self.DG, u, v, lca)
+            assert is_lca(self.DG, u, v, lca)
 
     def test_all_pairs_lca_input_graph_with_two_roots(self):
         G = self.DG.copy()
@@ -289,7 +292,7 @@ class TestDAGLCA:
         testing = dict(all_pairs_lca(G))
 
         for (u, v), lca in testing.items():
-            assert_is_a_lca(G, u, v, lca)
+            assert is_lca(G, u, v, lca)
 
     def test_all_pairs_lca_nonexisting_pairs_exception(self):
         pytest.raises(nx.NodeNotFound, all_pairs_lca, self.DG, [(-1, -1)])
@@ -364,7 +367,7 @@ class TestDAGLCA:
 
         lca = nx.lowest_common_ancestor(G, 1, 3)
         assert lca == 2
-        assert_is_a_lca(G, 1, 3, lca)
+        assert is_lca(G, 1, 3, lca)
 
 
 class TestMultiDiGraph_DAGLCA(TestDAGLCA):
@@ -459,7 +462,7 @@ def test_lca_multiple_valid_solutions():
     G.add_edges_from([(2, 0), (3, 0), (2, 1), (3, 1)])
     lca = nx.lowest_common_ancestor(G, 0, 1)
     assert lca in {2, 3}
-    assert_is_a_lca(G, 0, 1, lca)
+    assert is_lca(G, 0, 1, lca)
 
 
 def test_lca_dont_rely_on_single_successor():
@@ -470,4 +473,65 @@ def test_lca_dont_rely_on_single_successor():
     G.add_edges_from([(2, 0), (2, 1), (3, 1), (3, 0), (3, 2)])
     lca = nx.lowest_common_ancestor(G, 0, 1)
     assert lca == 2
-    assert_is_a_lca(G, 0, 1, lca)
+    assert is_lca(G, 0, 1, lca)
+
+
+class TestAllPairsAllLowestCommonAncestors:
+    """Test the all_pairs_all_lowest_common_ancestors function."""
+
+    def test_empty_graph(self):
+        # Test that empty graph raises PointlessConcept
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.all_pairs_all_lowest_common_ancestors(nx.DiGraph())
+
+    def test_nonexistent_pairs(self):
+        # Test that non-existent node pairs raise NodeNotFound
+        G = nx.DiGraph()
+        G.add_nodes_from([1, 2])
+        with pytest.raises(nx.NodeNotFound):
+            list(nx.all_pairs_all_lowest_common_ancestors(G, pairs=[(1, 3)]))
+
+    def test_self_pairing(self):
+        # Test that self-pairing returns the node itself
+        G = nx.DiGraph()
+        G.add_node(3)
+        result = dict(nx.all_pairs_all_lowest_common_ancestors(G))
+        assert result == {(3, 3): [3]}
+        result2 = dict(nx.all_pairs_all_lowest_common_ancestors(G, pairs=[(3, 3)]))
+        assert result2 == {(3, 3): [3]}
+
+    def test_non_dag_raises(self):
+        # Test that non-DAG graph raises NetworkXError
+        G = nx.DiGraph([(1, 2), (2, 1)])
+        with pytest.raises(nx.NetworkXError):
+            list(nx.all_pairs_all_lowest_common_ancestors(G))
+
+    def test_multiple_lcas(self):
+        # Test graph with multiple lowest common ancestors
+        G = nx.DiGraph()
+        edges = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)]
+        G.add_edges_from(edges)
+        result = dict(nx.all_pairs_all_lowest_common_ancestors(G, pairs=[(3, 4)]))
+        lcas = result.get((3, 4), result.get((4, 3)))
+        assert sorted(lcas) == [1, 2]
+        for lca in lcas:
+            assert is_lca(G, 3, 4, lca)
+
+
+@pytest.mark.parametrize("seed", [0, 1, 2, 3, 4])
+def test_random_dag_all_pairs_all_lcas(seed):
+    # Test random DAGs for correctness of LCAs
+    rng = random.Random(seed)
+    n = 20
+    nodes = list(range(n))
+    edges = [(u, v) for u in nodes for v in nodes if u < v and rng.random() < 0.2]
+    G = nx.DiGraph(edges)
+    assert nx.is_directed_acyclic_graph(G)
+    result = dict(nx.all_pairs_all_lowest_common_ancestors(G))
+    for (u, v), lcas in result.items():
+        lcas = set(lcas)
+        for node in G.nodes():
+            if node not in lcas:
+                assert not is_lca(G, u, v, node)
+            else:
+                assert is_lca(G, u, v, node)
