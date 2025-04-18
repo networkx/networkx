@@ -252,8 +252,8 @@ def birank(
         u_last = u
         p = alpha * (S.T @ u) + (1 - alpha) * p0
         u = beta * (S @ p) + (1 - beta) * u0
-        err_p = np.absolute(p - p_last).sum()
-        err_u = np.absolute(u - u_last).sum()
+        err_p = np.absolute(1 - p_last / p).sum()
+        err_u = np.absolute(1 - u_last / u).sum()
         if err_p < top_count * tol and err_u < bottom_count * tol:
             return dict(
                 zip(itertools.chain(top, bottom), map(float, itertools.chain(p, u)))
