@@ -188,8 +188,8 @@ def birank(
     <networkx.algorithms.bipartite>` for further details on how
     bipartite graphs are handled in NetworkX.
 
-    In the case a personalization dictionary is not provided for top(bottom)
-    `alpha`(`beta`) will default to 1. This is because a damping factor
+    In the case a personalization dictionary is not provided for top (bottom)
+    `alpha` (`beta`) will default to 1. This is because a damping factor
     without a non-zero entry in the personalization vector will lead to the
     algorithm converging to the zero vector.
 
