@@ -1608,11 +1608,6 @@ class _dispatchable:
             and "networkx" in self.backends
             and self.name
             not in {
-                # These need `nx.algorithms.flow.utils.CurrentEdge` to define __eq__
-                # "boykov_kolmogorov",
-                # "preflow_push",
-                # "shortest_augmenting_path",
-                # "spectral_graph_forge",
                 # Has graphs as node values (unable to compare)
                 "quotient_graph",
                 # We don't handle tempfile.NamedTemporaryFile arguments
