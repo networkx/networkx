@@ -563,7 +563,7 @@ identified_nodes = contracted_nodes
 
 
 @nx._dispatchable(
-    preserve_edge_attrs=True, mutates_input={"not copy": 3}, returns_graph=True
+    preserve_all_attrs=True, mutates_input={"not copy": 3}, returns_graph=True
 )
 def contracted_edge(G, edge, self_loops=True, copy=True):
     """Returns the graph that results from contracting the specified edge.
