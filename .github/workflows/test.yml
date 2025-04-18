@@ -130,7 +130,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           pip install --upgrade pip
-          pip install .[default,test,extra]
+          pip install .[default,test,extra] pytest-xdist
           pip list
       - name: Install packages (macOS)
         if: runner.os == 'macOS'
@@ -141,7 +141,7 @@ jobs:
                       --config-settings="--global-option=-I$(brew --prefix graphviz)/include/" \
                       --config-settings="--global-option=-L$(brew --prefix graphviz)/lib/" \
                       pygraphviz
-          pip install .[default,test,extra]
+          pip install .[default,test,extra] pytest-xdist
           pip list
       - name: Install Pygraphviz packages  (windows)
         if: runner.os == 'Windows'
