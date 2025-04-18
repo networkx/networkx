@@ -108,10 +108,7 @@ def test_docstring_example_connected_dominating_set():
 
 
 @pytest.mark.parametrize("seed", [1, 13, 29])
-@pytest.mark.parametrize(
-    "n,k,p",
-    [pytest.param(10, 3, 0.2), pytest.param(100, 10, 0.7), pytest.param(1000, 50, 0.5)],
-)
+@pytest.mark.parametrize("n,k,p", [(10, 3, 0.2), (100, 10, 0.7), (1000, 50, 0.5)])
 def test_connected_watts_strogatz_graph_connected_dominating_set(n, k, p, seed):
     G = nx.connected_watts_strogatz_graph(n, k, p, seed=seed)
     D = nx.connected_dominating_set(G)
