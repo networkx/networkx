@@ -43,7 +43,9 @@ class CurrentEdge:
         self._curr = next(self._it)
 
     def __eq__(self, other):
-        return self._edges == other._edges
+        return (getattr(self, "_curr", None), self._edges) == (
+            (getattr(other, "_curr", None), other._edges)
+        )
 
 
 class Level:
