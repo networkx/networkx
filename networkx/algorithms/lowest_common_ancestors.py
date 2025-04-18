@@ -18,7 +18,11 @@ __all__ = [
 @not_implemented_for("undirected")
 @nx._dispatchable
 def all_pairs_all_lowest_common_ancestors(G, pairs=None):
-    """Return lists of lowest common ancestors of all pairs or the provided pairs
+    """Return lists of lowest common ancestors of all pairs or the provided pairs.
+
+    The lowest common ancestor of a pair of nodes is a node that is an ancestor
+    of both nodes and has no descendants that are also ancestors of both nodes.
+    Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
 
     Parameters
     ----------
@@ -41,6 +45,8 @@ def all_pairs_all_lowest_common_ancestors(G, pairs=None):
         If `G` is null.
     NetworkXError
         If `G` is not a DAG.
+    NodeNotFound
+        If any node in the provided pairs is not in `G`.
 
     Examples
     --------
@@ -75,7 +81,7 @@ def all_pairs_all_lowest_common_ancestors(G, pairs=None):
 
     See Also
     --------
-    all_pairs_lowest_common_ancestor
+    all_pairs_lowest_common_ancestor, lowest_common_ancestor
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
@@ -122,8 +128,16 @@ def all_pairs_all_lowest_common_ancestors(G, pairs=None):
 
 @not_implemented_for("undirected")
 @nx._dispatchable
-def all_pairs_lowest_common_ancestor(G, pairs=None):
-    """Return the lowest common ancestor of all pairs or the provided pairs
+def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
+    """Return the lowest common ancestor of all pairs or the provided pairs.
+
+    The lowest common ancestor of a pair of nodes is a node that is an ancestor
+    of both nodes and has no descendants that are also ancestors of both nodes.
+    Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
+
+    If there are multiple LCAs, the minimal one according to the key
+    function is returned. If you want to get all LCAs, use
+    :func:`all_pairs_all_lowest_common_ancestors`.
 
     Parameters
     ----------
@@ -133,12 +147,19 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
         The pairs of nodes of interest.
         If None, will find the LCA of all pairs of nodes.
 
+    key : callable, optional
+        Function to choose among multiple LCAs; the returned LCA is the minimal
+        element in the set of LCAs according to this key. If None, the default
+        ordering of nodes is used.
+
     Yields
     ------
     ((node1, node2), lca) : 2-tuple
-        Where lca is least common ancestor of node1 and node2.
-        Note that for the default case, the order of the node pair is not considered,
-        e.g. you will not get both ``(a, b)`` and ``(b, a)``
+        lca is the lowest common ancestor of node1 and node2. Pairs with no
+        common ancestors are omitted. For the default case, ordering of pairs
+        is not considered (i.e. yields only one of (a, b) and (b, a)).
+        If there are multiple LCAs, the minimal one according to the key
+        function is returned.
 
     Raises
     ------
@@ -146,6 +167,8 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
         If `G` is null.
     NetworkXError
         If `G` is not a DAG.
+    NodeNotFound
+        If any node in the provided pairs is not in `G`.
 
     Examples
     --------
@@ -168,59 +191,21 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
 
     See Also
     --------
-    lowest_common_ancestor
+    all_pairs_all_lowest_common_ancestors, lowest_common_ancestor
     """
-    if not nx.is_directed_acyclic_graph(G):
-        raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
-    if len(G) == 0:
-        raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
+    if key is None:
 
-    if pairs is None:
-        pairs = combinations_with_replacement(G, 2)
-    else:
-        # Convert iterator to iterable, if necessary. Trim duplicates.
-        pairs = dict.fromkeys(pairs)
-        # Verify that each of the nodes in the provided pairs is in G
-        nodeset = set(G)
-        for pair in pairs:
-            if set(pair) - nodeset:
-                raise nx.NodeNotFound(
-                    f"Node(s) {set(pair) - nodeset} from pair {pair} not in G."
-                )
+        def key(lca):
+            return lca
 
-    # Once input validation is done, construct the generator
-    def generate_lca_from_pairs(G, pairs):
-        ancestor_cache = {}
-
-        for v, w in pairs:
-            if v not in ancestor_cache:
-                ancestor_cache[v] = nx.ancestors(G, v)
-                ancestor_cache[v].add(v)
-            if w not in ancestor_cache:
-                ancestor_cache[w] = nx.ancestors(G, w)
-                ancestor_cache[w].add(w)
-
-            common_ancestors = ancestor_cache[v] & ancestor_cache[w]
-
-            if common_ancestors:
-                common_ancestor = next(iter(common_ancestors))
-                while True:
-                    successor = None
-                    for lower_ancestor in G.successors(common_ancestor):
-                        if lower_ancestor in common_ancestors:
-                            successor = lower_ancestor
-                            break
-                    if successor is None:
-                        break
-                    common_ancestor = successor
-                yield ((v, w), common_ancestor)
-
-    return generate_lca_from_pairs(G, pairs)
+    for (u, v), lca in all_pairs_all_lowest_common_ancestors(G, pairs):
+        if len(lca) > 0:
+            yield ((u, v), min(lca, key=key))
 
 
 @not_implemented_for("undirected")
 @nx._dispatchable
-def lowest_common_ancestor(G, node1, node2, default=None):
+def lowest_common_ancestor(G, node1, node2, default=None, key=None):
     """Compute the lowest common ancestor of the given pair of nodes.
 
     Parameters
@@ -229,13 +214,19 @@ def lowest_common_ancestor(G, node1, node2, default=None):
 
     node1, node2 : nodes in the graph.
 
-    default : object
-        Returned if no common ancestor between `node1` and `node2`
+    default : object, optional
+        Returned if no common ancestor between `node1` and `node2`.
+
+    key : callable, optional
+        Function to choose among multiple LCAs; if multiple LCAs exist, the one
+        with the minimal key value is returned. If None, default ordering is used.
 
     Returns
     -------
     The lowest common ancestor of node1 and node2,
     or default if they have no common ancestors.
+    If there are multiple LCAs, the minimal one according to the key
+    function is returned.
 
     Examples
     --------
@@ -247,9 +238,10 @@ def lowest_common_ancestor(G, node1, node2, default=None):
 
     See Also
     --------
-    all_pairs_lowest_common_ancestor"""
+    all_pairs_lowest_common_ancestor, all_pairs_all_lowest_common_ancestors
+    """
 
-    ans = list(all_pairs_lowest_common_ancestor(G, pairs=[(node1, node2)]))
+    ans = list(all_pairs_lowest_common_ancestor(G, pairs=[(node1, node2)], key=key))
     if ans:
         assert len(ans) == 1
         return ans[0][1]
