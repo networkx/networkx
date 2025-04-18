@@ -15,6 +15,32 @@ def get_pair(dictionary, n1, n2):
         return dictionary[n2, n1]
 
 
+def assert_is_a_lca(G, u, v, lca):
+    """Assert that node lca is a valid lowest common ancestor for nodes u and v.
+
+    A node is a lowest common ancestor of two nodes if:
+    1. It is an ancestor of both nodes
+    2. None of its descendants is a common ancestor of both nodes
+
+    Parameters
+    ----------
+    G : NetworkX directed graph
+    u, v : nodes in the graph G
+    lca : the node to verify as a possible lowest common ancestor
+    """
+    # Check if lca is an ancestor of both u and v
+    u_ancestors = nx.ancestors(G, u).union({u})
+    v_ancestors = nx.ancestors(G, v).union({v})
+
+    # lca must be an ancestor of both u and v
+    assert lca in u_ancestors, f"Node {lca} is not an ancestor of {u}"
+    assert lca in v_ancestors, f"Node {lca} is not an ancestor of {v}"
+
+    # None of lca's descendants can be ancestors of both u and v
+    for successor in G.successors(lca):
+        assert not (successor in u_ancestors and successor in v_ancestors)
+
+
 class TestTreeLCA:
     @classmethod
     def setup_class(cls):
@@ -190,8 +216,6 @@ class TestDAGLCA:
         cls.DG.add_edge(6, 2)
         cls.DG.add_edge(7, 2)
 
-        cls.root_distance = nx.shortest_path_length(cls.DG, source=0)
-
         cls.gold = {
             (1, 1): 1,
             (1, 2): 1,
@@ -232,35 +256,22 @@ class TestDAGLCA:
         }
         cls.gold.update(((0, n), 0) for n in cls.DG)
 
-    def assert_lca_dicts_same(self, d1, d2, G=None):
-        """Checks if d1 and d2 contain the same pairs and
-        have a node at the same distance from root for each.
-        If G is None use self.DG."""
-        if G is None:
-            G = self.DG
-            root_distance = self.root_distance
-        else:
-            roots = [n for n, deg in G.in_degree if deg == 0]
-            assert len(roots) == 1
-            root_distance = nx.shortest_path_length(G, source=roots[0])
-
-        for a, b in ((min(pair), max(pair)) for pair in chain(d1, d2)):
-            assert (
-                root_distance[get_pair(d1, a, b)] == root_distance[get_pair(d2, a, b)]
-            )
-
     def test_all_pairs_lca_gold_example(self):
-        self.assert_lca_dicts_same(dict(all_pairs_lca(self.DG)), self.gold)
+        result = dict(all_pairs_lca(self.DG))
+        for (u, v), lca in result.items():
+            assert_is_a_lca(self.DG, u, v, lca)
 
     def test_all_pairs_lca_all_pairs_given(self):
         all_pairs = list(product(self.DG.nodes(), self.DG.nodes()))
-        ans = all_pairs_lca(self.DG, pairs=all_pairs)
-        self.assert_lca_dicts_same(dict(ans), self.gold)
+        result = dict(all_pairs_lca(self.DG, pairs=all_pairs))
+        for (u, v), lca in result.items():
+            assert_is_a_lca(self.DG, u, v, lca)
 
     def test_all_pairs_lca_generator(self):
         all_pairs = product(self.DG.nodes(), self.DG.nodes())
-        ans = all_pairs_lca(self.DG, pairs=all_pairs)
-        self.assert_lca_dicts_same(dict(ans), self.gold)
+        result = dict(all_pairs_lca(self.DG, pairs=all_pairs))
+        for (u, v), lca in result.items():
+            assert_is_a_lca(self.DG, u, v, lca)
 
     def test_all_pairs_lca_input_graph_with_two_roots(self):
         G = self.DG.copy()
@@ -277,9 +288,8 @@ class TestDAGLCA:
 
         testing = dict(all_pairs_lca(G))
 
-        G.add_edge(-1, 9)
-        G.add_edge(-1, 0)
-        self.assert_lca_dicts_same(testing, gold, G)
+        for (u, v), lca in testing.items():
+            assert_is_a_lca(G, u, v, lca)
 
     def test_all_pairs_lca_nonexisting_pairs_exception(self):
         pytest.raises(nx.NodeNotFound, all_pairs_lca, self.DG, [(-1, -1)])
@@ -352,7 +362,9 @@ class TestDAGLCA:
         G.add_edge(4, 0)
         G.add_edge(5, 2)
 
-        assert nx.lowest_common_ancestor(G, 1, 3) == 2
+        lca = nx.lowest_common_ancestor(G, 1, 3)
+        assert lca == 2
+        assert_is_a_lca(G, 1, 3, lca)
 
 
 class TestMultiDiGraph_DAGLCA(TestDAGLCA):
@@ -367,8 +379,6 @@ class TestMultiDiGraph_DAGLCA(TestDAGLCA):
         nx.add_path(cls.DG, (5, 7, 8))
         cls.DG.add_edge(6, 2)
         cls.DG.add_edge(7, 2)
-
-        cls.root_distance = nx.shortest_path_length(cls.DG, source=0)
 
         cls.gold = {
             (1, 1): 1,
@@ -447,7 +457,9 @@ def test_lca_multiple_valid_solutions():
     G = nx.DiGraph()
     G.add_nodes_from(range(4))
     G.add_edges_from([(2, 0), (3, 0), (2, 1), (3, 1)])
-    assert nx.lowest_common_ancestor(G, 0, 1) in {2, 3}
+    lca = nx.lowest_common_ancestor(G, 0, 1)
+    assert lca in {2, 3}
+    assert_is_a_lca(G, 0, 1, lca)
 
 
 def test_lca_dont_rely_on_single_successor():
@@ -456,4 +468,6 @@ def test_lca_dont_rely_on_single_successor():
     G = nx.DiGraph()
     G.add_nodes_from(range(4))
     G.add_edges_from([(2, 0), (2, 1), (3, 1), (3, 0), (3, 2)])
-    assert nx.lowest_common_ancestor(G, 0, 1) == 2
+    lca = nx.lowest_common_ancestor(G, 0, 1)
+    assert lca == 2
+    assert_is_a_lca(G, 0, 1, lca)
