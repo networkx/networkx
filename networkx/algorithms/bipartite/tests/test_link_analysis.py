@@ -1,3 +1,5 @@
+import itertools
+
 import pytest
 
 import networkx as nx
@@ -5,9 +7,21 @@ from networkx.algorithms import bipartite
 
 
 class TestBipartiteLinkAnalysis:
+    @classmethod
+    def setup_class(cls):
+        cls.davis_southern_women_graph = nx.davis_southern_women_graph()
+        cls.women_bipartite_set = {
+            node
+            for node, bipartite in cls.davis_southern_women_graph.nodes(
+                data="bipartite"
+            )
+            if bipartite == 0
+        }
+
     def test_collaborative_filtering_birank(self):
         pytest.importorskip("numpy")
         pytest.importorskip("scipy")
+
         elist = [
             ("u1", "p1", 5),
             ("u2", "p1", 5),
@@ -51,11 +65,10 @@ class TestBipartiteLinkAnalysis:
     def test_davis_birank(self):
         pytest.importorskip("numpy")
         pytest.importorskip("scipy")
-        G = nx.davis_southern_women_graph()
-        women = {
-            node for node, bipartite in G.nodes(data="bipartite") if bipartite == 0
-        }
-        scores = bipartite.birank(G, women)
+
+        scores = bipartite.birank(
+            self.davis_southern_women_graph, self.women_bipartite_set
+        )
         answer = {
             "Nora Fayette": 0.08,
             "Flora Price": 0.04,
@@ -93,3 +106,37 @@ class TestBipartiteLinkAnalysis:
 
         for node, value in answer.items():
             assert value == pytest.approx(scores[node], abs=1e-2)
+
+    def test_birank_empty_bipartite_set(self):
+        pytest.importorskip("numpy")
+        pytest.importorskip("scipy")
+
+        G = nx.Graph()
+        all_nodes = [1, 2, 3]
+        G.add_nodes_from(all_nodes)
+
+        # Test with empty bipartite set
+        with pytest.raises(nx.NetworkXAlgorithmError):
+            bipartite.birank(G, [1, 2, 3])
+
+    @pytest.mark.parametrize(
+        "damping_factor,value", itertools.product(["alpha", "beta"], [-0.1, 1.1])
+    )
+    def test_birank_invalid_alpha_beta(self, damping_factor, value):
+        pytest.importorskip("numpy")
+        pytest.importorskip("scipy")
+
+        kwargs = {damping_factor: value}
+        with pytest.raises(nx.NetworkXAlgorithmError):
+            bipartite.birank(
+                self.davis_southern_women_graph, self.women_bipartite_set, **kwargs
+            )
+
+    def test_birank_power_iteration_failed_convergence(self):
+        pytest.importorskip("numpy")
+        pytest.importorskip("scipy")
+
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            bipartite.birank(
+                self.davis_southern_women_graph, self.women_bipartite_set, max_iter=1
+            )
