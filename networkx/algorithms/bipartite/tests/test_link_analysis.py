@@ -101,7 +101,7 @@ class TestBipartiteLinkAnalysis:
         }
 
         for node, value in answer.items():
-            assert value == pytest.approx(scores[node], abs=1e-2)
+            assert scores[node] == pytest.approx(value, abs=1e-2)
 
     def test_birank_empty_bipartite_set(self):
         G = nx.Graph()
