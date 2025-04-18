@@ -95,6 +95,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install .[default,test]
+          python -m pip install pytest-xdist
           python -m pip list
 
       - name: Test Dispatching

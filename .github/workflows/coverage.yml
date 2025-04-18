@@ -33,6 +33,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install .[default,extra,test]
+          pip install pytest-xdist
           pip list
 
       - name: Test NetworkX
