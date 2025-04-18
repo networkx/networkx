@@ -113,11 +113,6 @@ def birank(
      attribute as the weight of the edges. The `top_personalization` vector
      is used to encode the user's previous ratings on items.
 
-     Scipy is required to run this example
-
-     >>> import pytest
-     >>> sp = pytest.importorskip("scipy")
-
      Creation of graph, bipartite sets for the example.
 
      >>> elist = [ \
