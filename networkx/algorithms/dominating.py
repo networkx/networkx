@@ -5,9 +5,6 @@ from heapq import heappop, heappush
 from itertools import chain, count
 
 import networkx as nx
-from networkx.utils import arbitrary_element
-
-from ..utils import not_implemented_for
 
 __all__ = [
     "dominating_set",
@@ -56,7 +53,7 @@ def dominating_set(G, start_with=None):
     """
     all_nodes = set(G)
     if start_with is None:
-        start_with = arbitrary_element(all_nodes)
+        start_with = nx.utils.arbitrary_element(all_nodes)
     if start_with not in G:
         raise nx.NetworkXError(f"node {start_with} is not in G")
     dominating_set = {start_with}
@@ -104,7 +101,7 @@ def is_dominating_set(G, nbunch):
     return len(set(G) - testset - nbrs) == 0
 
 
-@not_implemented_for("directed")
+@nx.utils.not_implemented_for("directed")
 @nx._dispatchable
 def connected_dominating_set(G):
     """Returns a connected dominating set.
@@ -232,7 +229,7 @@ def connected_dominating_set(G):
     return connected_dominating_set
 
 
-@not_implemented_for("directed")
+@nx.utils.not_implemented_for("directed")
 @nx._dispatchable
 def is_connected_dominating_set(G, nbunch):
     """Checks if `nbunch` is a connected dominating set for `G`.
