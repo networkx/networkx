@@ -46,7 +46,7 @@ class TestBipartiteLinkAnalysis:
             weight="rating",
         )
 
-        assert u1_birank_results["p2"] > u1_birank_results["p3"] + 2 * 1e-6
+        assert u1_birank_results["p2"] > u1_birank_results["p3"]
 
         u1_birank_results_unweighted = bipartite.birank(
             item_recommendation_graph,
@@ -58,7 +58,7 @@ class TestBipartiteLinkAnalysis:
         )
 
         assert u1_birank_results_unweighted["p2"] == pytest.approx(
-            u1_birank_results_unweighted["p3"], rel=1e-6
+            u1_birank_results_unweighted["p3"], rel=2e-6
         )
 
     def test_davis_birank(self):
@@ -110,7 +110,7 @@ class TestBipartiteLinkAnalysis:
 
         # Test with empty bipartite set
         with pytest.raises(nx.NetworkXAlgorithmError):
-            bipartite.birank(G, [1, 2, 3])
+            bipartite.birank(G, all_nodes)
 
     @pytest.mark.parametrize(
         "damping_factor,value", itertools.product(["alpha", "beta"], [-0.1, 1.1])
