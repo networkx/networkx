@@ -194,6 +194,7 @@ needs_numpy = [
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
+    "algorithms/alphacore.py",
 ]
 needs_scipy = [
     "algorithms/approximation/traveling_salesman.py",
@@ -235,7 +236,10 @@ needs_scipy = [
     "utils/rcm.py",
 ]
 needs_matplotlib = ["drawing/nx_pylab.py", "generators/classic.py"]
-needs_pandas = ["convert_matrix.py"]
+needs_pandas = [
+    "convert_matrix.py",
+    "algorithms/alphacore.py",
+]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
 needs_sympy = ["algorithms/polynomials.py"]
