@@ -62,7 +62,7 @@ def weakly_connected_components(G):
     n = len(G)  # must be outside the loop to avoid performance hit with graph views
     for v in G:
         if v not in seen:
-            c = set(_plain_bfs(G, n, v))
+            c = set(_plain_bfs(G, n - len(seen), v))
             seen.update(c)
             yield c
 
