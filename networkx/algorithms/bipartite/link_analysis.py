@@ -108,7 +108,7 @@ def birank(
     Returns
     -------
     birank : dictionary
-       Dictionary keyed by node with the BiRank score as the value.
+       Dictionary keyed by node to that node's BiRank score.
 
     Raises
     ------
