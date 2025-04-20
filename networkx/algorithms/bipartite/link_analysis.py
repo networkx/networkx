@@ -70,7 +70,7 @@ def birank(
     G : graph
        A bipartite network
 
-    nodes : list or container
+    nodes : iterable of nodes
       Container with all nodes belonging to the first bipartite node set
       ('top'). The nodes in this set use the hyperparameter `alpha`, and the
       personalization dictionary `top_personalization`. The nodes in the second
