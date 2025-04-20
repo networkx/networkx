@@ -74,7 +74,7 @@ def dominating_set(G, start_with=None):
 
 @nx._dispatchable
 def is_dominating_set(G, nbunch):
-    """Check if `nbunch` is a dominating set for `G`.
+    """Checks if `nbunch` is a dominating set for `G`.
 
     A *dominating set* for a graph with node set *V* is a subset *D* of
     *V* such that every node not in *D* is adjacent to at least one
@@ -86,6 +86,11 @@ def is_dominating_set(G, nbunch):
 
     nbunch : iterable
         An iterable of nodes in the graph `G`.
+
+    Returns
+    -------
+    dominating : bool
+        True if `nbunch` is a dominating set of `G`, false otherwise.
 
     See also
     --------
@@ -106,10 +111,12 @@ def is_dominating_set(G, nbunch):
 def connected_dominating_set(G):
     """Returns a connected dominating set.
 
-    A *dominating set* for a graph *G* with node set *V* is a subset *D* of
-    *V* such that every node not in *D* is adjacent to at least one
-    member of *D* [1]_. A *connected dominating set* is a dominating
-    set *C* that induces a connected subgraph of *G* [2]_.
+    A *dominating set* for a graph *G* with node set *V* is a subset *D* of *V*
+    such that every node not in *D* is adjacent to at least one member of *D*
+    [1]_. A *connected dominating set* is a dominating set *C* that induces a
+    connected subgraph of *G* [2]_.
+    Note that connected dominating sets are not unique in general and that there
+    may be other connected dominating sets.
 
     Parameters
     ----------
@@ -120,6 +127,14 @@ def connected_dominating_set(G):
     -------
     connected_dominating_set : set
         A dominating set of nodes which induces a connected subgraph of G.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
+
+    NetworkXError
+        If G is disconnected.
 
     Examples
     ________
@@ -144,14 +159,6 @@ def connected_dominating_set(G):
     ... )
     >>> nx.connected_dominating_set(G)
     {1, 2, 3, 4, 5, 6, 7}
-
-    Raises
-    ------
-    NetworkXNotImplemented
-        If G is directed.
-
-    NetworkXError
-        If G is disconnected.
 
     Notes
     -----
@@ -246,6 +253,11 @@ def is_connected_dominating_set(G, nbunch):
 
     nbunch : iterable
         An iterable of nodes in the graph `G`.
+
+    Returns
+    -------
+    connected_dominating : bool
+        True if `nbunch` is connected dominating set of `G`, false otherwise.
 
     References
     ----------
