@@ -560,3 +560,39 @@ def test_random_dag_all_pairs_all_lcas(seed):
                 assert not is_lca(G, u, v, node)
             else:
                 assert is_lca(G, u, v, node)
+
+
+def test_all_lowest_common_ancestors_simple():
+    G = nx.DiGraph()
+    nx.add_path(G, (0, 1, 2, 3))
+    nx.add_path(G, (0, 4, 3))
+    assert nx.all_lowest_common_ancestors(G, 2, 4) == [0]
+
+
+def test_all_lowest_common_ancestors_multiple():
+    G = nx.DiGraph()
+    edges = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)]
+    G.add_edges_from(edges)
+    lcas = nx.all_lowest_common_ancestors(G, 3, 4)
+    assert sorted(lcas) == [1, 2]
+    for lca in lcas:
+        assert is_lca(G, 3, 4, lca)
+
+
+def test_all_lowest_common_ancestors_node_not_found():
+    G = nx.DiGraph()
+    G.add_nodes_from([1, 2])
+    with pytest.raises(nx.NodeNotFound):
+        nx.all_lowest_common_ancestors(G, 1, 3)
+
+
+def test_all_lowest_common_ancestors_empty_graph():
+    G = nx.DiGraph()
+    with pytest.raises(nx.NetworkXPointlessConcept):
+        nx.all_lowest_common_ancestors(G, 0, 0)
+
+
+def test_all_lowest_common_ancestors_non_dag():
+    G = nx.DiGraph([(1, 2), (2, 1)])
+    with pytest.raises(nx.NetworkXError):
+        nx.all_lowest_common_ancestors(G, 1, 2)
