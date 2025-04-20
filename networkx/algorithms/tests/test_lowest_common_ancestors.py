@@ -369,6 +369,19 @@ class TestDAGLCA:
         assert lca == 2
         assert is_lca(G, 1, 3, lca)
 
+    def test_all_pairs_lca_key_parameter(self):
+        # Test that key parameter selects among multiple LCAs for all_pairs_lowest_common_ancestor
+        G = nx.DiGraph()
+        edges = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)]
+        G.add_edges_from(edges)
+        # nodes 3 and 4 have LCAs {1, 2}
+        # default yields smallest id
+        result_default = dict(all_pairs_lca(G, pairs=[(3, 4)]))
+        assert result_default[(3, 4)] == 1
+        # with key chooses largest id
+        result_key = dict(all_pairs_lca(G, pairs=[(3, 4)], key=lambda x: -x))
+        assert result_key[(3, 4)] == 2
+
 
 class TestMultiDiGraph_DAGLCA(TestDAGLCA):
     @classmethod
@@ -474,6 +487,18 @@ def test_lca_dont_rely_on_single_successor():
     lca = nx.lowest_common_ancestor(G, 0, 1)
     assert lca == 2
     assert is_lca(G, 0, 1, lca)
+
+
+def test_lowest_common_ancestor_key_parameter():
+    # Test that key parameter selects among multiple LCAs
+    G = nx.DiGraph()
+    edges = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)]
+    G.add_edges_from(edges)
+    # nodes 3 and 4 have LCAs {1, 2}
+    # default returns smallest by node id
+    assert nx.lowest_common_ancestor(G, 3, 4) == 1
+    # key parameter to choose largest id
+    assert nx.lowest_common_ancestor(G, 3, 4, key=lambda x: -x) == 2
 
 
 class TestAllPairsAllLowestCommonAncestors:
