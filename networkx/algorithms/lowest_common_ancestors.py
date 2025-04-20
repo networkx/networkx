@@ -198,9 +198,14 @@ def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
         def key(lca):
             return lca
 
-    for (u, v), lca in all_pairs_all_lowest_common_ancestors(G, pairs):
-        if len(lca) > 0:
-            yield ((u, v), min(lca, key=key))
+    all_pairs_all_lca = all_pairs_all_lowest_common_ancestors(G, pairs)
+
+    def generate_lca():
+        for (u, v), lca in all_pairs_all_lca:
+            if len(lca) > 0:
+                yield ((u, v), min(lca, key=key))
+
+    return generate_lca()
 
 
 @not_implemented_for("undirected")
