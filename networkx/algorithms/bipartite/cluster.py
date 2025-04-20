@@ -68,7 +68,7 @@ def latapy_clustering(G, nodes=None, mode="dot"):
     G : graph
         A bipartite graph
 
-    nodes : list or iterable (optional)
+    nodes : iterable of nodes (optional)
         Compute bipartite clustering for these nodes. The default
         is all nodes in G.
 
@@ -157,7 +157,7 @@ def average_clustering(G, nodes=None, mode="dot"):
     G : graph
         a bipartite graph
 
-    nodes : list or iterable, optional
+    nodes : iterable of nodes, optional
         A container of nodes to use in computing the average.
         The nodes should be either the entire graph (the default) or one of the
         bipartite sets.

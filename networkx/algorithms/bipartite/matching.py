@@ -73,9 +73,9 @@ def hopcroft_karp_matching(G, top_nodes=None):
 
       Undirected bipartite graph
 
-    top_nodes : container of nodes
+    top_nodes : iterable of nodes
 
-      Container with all nodes in one bipartite node set. If not supplied
+      Iterable with all nodes in one bipartite node set. If not supplied
       it will be computed. But if more than one solution exists an exception
       will be raised.
 
@@ -192,9 +192,9 @@ def eppstein_matching(G, top_nodes=None):
 
       Undirected bipartite graph
 
-    top_nodes : container
+    top_nodes : iterable of nodes
 
-      Container with all nodes in one bipartite node set. If not supplied
+      Iterable with all nodes in one bipartite node set. If not supplied
       it will be computed. But if more than one solution exists an exception
       will be raised.
 
@@ -439,9 +439,9 @@ def to_vertex_cover(G, matching, top_nodes=None):
       by, for example, :func:`maximum_matching`. The dictionary *must*
       represent the maximum matching.
 
-    top_nodes : container
+    top_nodes : iterable of nodes
 
-      Container with all nodes in one bipartite node set. If not supplied
+      Iterable with all nodes in one bipartite node set. If not supplied
       it will be computed. But if more than one solution exists an exception
       will be raised.
 
@@ -528,9 +528,9 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
 
       Undirected bipartite graph
 
-    top_nodes : container
+    top_nodes : iterable of nodes
 
-      Container with all nodes in one bipartite node set. If not supplied
+      Iterable of nodes with all nodes in one bipartite node set. If not supplied
       it will be computed.
 
     weight : string, optional (default='weight')

@@ -28,8 +28,8 @@ def projected_graph(B, nodes, multigraph=False):
     B : NetworkX graph
       The input graph should be bipartite.
 
-    nodes : list or iterable
-      Nodes to project onto (the "bottom" nodes).
+    nodes : iterable of nodes
+      Iterable of nodes to project onto (the "bottom" nodes).
 
     multigraph: bool (default=False)
        If True return a multigraph where the multiple edges represent multiple
