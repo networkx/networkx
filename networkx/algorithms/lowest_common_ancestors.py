@@ -81,7 +81,7 @@ def all_pairs_all_lowest_common_ancestors(G, pairs=None):
 
     See Also
     --------
-    all_pairs_lowest_common_ancestor, lowest_common_ancestor
+    all_pairs_lowest_common_ancestor
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
@@ -191,7 +191,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
 
     See Also
     --------
-    all_pairs_all_lowest_common_ancestors, lowest_common_ancestor
+    all_pairs_all_lowest_common_ancestors
     """
     if key is None:
 
@@ -210,8 +210,58 @@ def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
 
 @not_implemented_for("undirected")
 @nx._dispatchable
+def all_lowest_common_ancestors(G, node1, node2):
+    """Compute all lowest common ancestors for the given pair of nodes.
+
+    The lowest common ancestor of a pair of nodes is a node that is an ancestor
+    of both nodes and has no descendants that are also ancestors of both nodes.
+    Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
+
+    Parameters
+    ----------
+    G : NetworkX directed graph
+
+    node1, node2 : nodes in the graph
+
+    Returns
+    -------
+    list
+        A list containing all lowest common ancestors of node1 and node2.
+        Returns an empty list if they have no common ancestors.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> nx.add_path(G, (0, 1, 2, 3))
+    >>> nx.add_path(G, (0, 4, 3))
+    >>> nx.all_lowest_common_ancestors(G, 2, 4)
+    [0]
+
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)])
+    >>> nx.all_lowest_common_ancestors(G, 3, 4)
+    [1, 2]
+
+    See Also
+    --------
+    lowest_common_ancestor, all_pairs_all_lowest_common_ancestors
+    """
+    ans = list(all_pairs_all_lowest_common_ancestors(G, pairs=[(node1, node2)]))
+
+    return ans[0][1]
+
+
+@not_implemented_for("undirected")
+@nx._dispatchable
 def lowest_common_ancestor(G, node1, node2, default=None, key=None):
     """Compute the lowest common ancestor of the given pair of nodes.
+
+    The lowest common ancestor of a pair of nodes is a node that is an ancestor
+    of both nodes and has no descendants that are also ancestors of both nodes.
+    Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
+
+    If there are multiple LCAs, the minimal one according to the key
+    function is returned. If you want to get all LCAs, use
+    :func:`all_lowest_common_ancestors`.
 
     Parameters
     ----------
@@ -243,7 +293,7 @@ def lowest_common_ancestor(G, node1, node2, default=None, key=None):
 
     See Also
     --------
-    all_pairs_lowest_common_ancestor, all_pairs_all_lowest_common_ancestors
+    all_lowest_common_ancestors, all_pairs_lowest_common_ancestor
     """
 
     ans = list(all_pairs_lowest_common_ancestor(G, pairs=[(node1, node2)], key=key))
