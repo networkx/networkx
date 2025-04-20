@@ -195,7 +195,7 @@ def birank(
 
     Notes
     -----
-    The nodes input parameter must contain all nodes in one bipartite
+    The `nodes` input parameter must contain all nodes in one bipartite
     node set, but the dictionary returned contains all nodes from both
     bipartite node sets. See :mod:`bipartite documentation
     <networkx.algorithms.bipartite>` for further details on how
