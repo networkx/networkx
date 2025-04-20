@@ -90,9 +90,8 @@ def birank(
       Unspecified nodes in 'top' will be assigned a personalization value of 0.
 
     bottom_personalization : dict, optional (default={})
-      Dictionary keyed by nodes in 'bottom' with the personalization value as
-      the value. Unspecified nodes will be assigned a personalization value of
-      0.
+      Dictionary keyed by nodes in 'bottom' to that node's personalization value.
+      Unspecified nodes in 'bottom' will be assigned a personalization value of 0.
 
     max_iter : int, optional (default=100)
       Maximum number of iterations in power method eigenvalue solver.
