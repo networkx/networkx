@@ -33,6 +33,22 @@ def is_lca(G, u, v, lca):
     -------
     bool
         True if lca is a lowest common ancestor of u and v, False otherwise.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> nx.add_path(G, [0, 1, 3])
+    >>> nx.add_path(G, [0, 2, 3])
+    >>> is_lca(G, 1, 2, 0)  # 0 is a common ancestor of 1 and 2
+    True
+    >>> is_lca(G, 1, 2, 3)  # 3 is not an ancestor of 1 or 2
+    False
+    >>> is_lca(G, 3, 3, 3)  # A node is its own LCA
+    True
+    >>> is_lca(G, 1, 3, 0)  # 0 is an ancestor of both 1 and 3
+    False
+    >>> is_lca(G, 1, 3, 1)  # 1 is an ancestor of both 1 and 3
+    True
     """
     # Check if lca is an ancestor of both u and v
     u_ancestors = nx.ancestors(G, u).union({u})
