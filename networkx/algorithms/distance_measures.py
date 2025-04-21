@@ -19,6 +19,77 @@ __all__ = [
 ]
 
 
+@not_implemented_for("directed")
+def _tree_center(G):
+    """Returns the center of an undirected tree graph.
+
+    The center of a tree consists of nodes that minimize the maximum eccentricity.
+    That is, these nodes minimize the maximum distance to all other nodes.
+    This implementation currently only works for unweighted edges.
+
+    If the input graph is not a tree, results are not guaranteed to be correct and while
+    some non-trees will raise a ``NetworkXError`` not all non-trees will be discovered.
+    Thus, this function should not be used if caller is unsure whether the input graph
+    is a tree. Use ``networkx.is_tree(G)`` to check.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A tree graph (undirected, acyclic graph).
+
+    Returns
+    -------
+    center : list
+        A list of nodes in the center of the tree. This could be one or two nodes.
+
+    Raises
+    ------
+    NetworkXError
+        If algorithm detects input graph is not a tree. There is no guarantee
+        this error will always raise if a non-tree is passed.
+
+    Notes
+    -----
+    This algorithm iteratively removes leaves (nodes with degree 1) from the tree until
+    there are only 1 or 2 nodes left. The remaining nodes form the center of the tree.
+
+    This algorithm's time complexity is O(N) where N is the number of nodes in the tree.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 4), (2, 5)])
+    >>> _tree_center(G)
+    [1, 2]
+
+    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 5)])
+    >>> _tree_center(G)
+    [3]
+    """
+    center_candidates_degree = dict(G.degree)
+    leaves = {node for node, degree in center_candidates_degree.items() if degree == 1}
+
+    # It's better to fail than an infinite loop, so check leaves to ensure progress
+    while len(center_candidates_degree) > 2 and leaves:
+        new_leaves = set()
+        for leaf in leaves:
+            del center_candidates_degree[leaf]
+            for neighbor in G.neighbors(leaf):
+                if neighbor not in center_candidates_degree:
+                    continue
+                center_candidates_degree[neighbor] -= 1
+                if center_candidates_degree[neighbor] == 1:
+                    new_leaves.add(neighbor)
+        leaves = new_leaves
+
+    if not leaves and len(center_candidates_degree) >= 2:
+        # We detected graph is not a tree. This check does not cover all cases.
+        # For example, it does not cover the case where we have two islands (A-B) and (B-C)
+        # where we might eliminate (B-C) leaves and return [A, B] as centers.
+        raise nx.NetworkXError("Input graph is not a tree")
+
+    return list(center_candidates_degree)
+
+
 def _extrema_bounding(G, compute="diameter", weight=None):
     """Compute requested extreme distance metric of undirected graph G
 
@@ -99,13 +170,13 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     high = False
     # status variables
     ecc_lower = dict.fromkeys(G, 0)
-    ecc_upper = dict.fromkeys(G, N)
+    ecc_upper = dict.fromkeys(G, math.inf)
     candidates = set(G)
 
     # (re)set bound extremes
-    minlower = N
+    minlower = math.inf
     maxlower = 0
-    minupper = N
+    minupper = math.inf
     maxupper = 0
 
     # repeat the following until there are no more candidates
@@ -345,6 +416,12 @@ def diameter(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the diameter
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -369,6 +446,13 @@ def diameter(G, e=None, usebounds=False, weight=None):
     -------
     d : integer
        Diameter of graph
+
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
 
     Examples
     --------
@@ -476,6 +560,12 @@ def periphery(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the periphery
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -500,6 +590,13 @@ def periphery(G, e=None, usebounds=False, weight=None):
     -------
     p : list
        List of nodes in periphery
+
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
 
     Examples
     --------
@@ -535,6 +632,12 @@ def radius(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the radius
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -559,6 +662,13 @@ def radius(G, e=None, usebounds=False, weight=None):
     -------
     r : integer
        Radius of graph
+
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
 
     Examples
     --------
@@ -588,6 +698,12 @@ def center(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the center
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -613,6 +729,13 @@ def center(G, e=None, usebounds=False, weight=None):
     c : list
        List of nodes in center
 
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
+
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
@@ -626,6 +749,8 @@ def center(G, e=None, usebounds=False, weight=None):
     """
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="center", weight=weight)
+    if e is None and weight is None and not G.is_directed() and nx.is_tree(G):
+        return _tree_center(G)
     if e is None:
         e = eccentricity(G, weight=weight)
     radius = min(e.values())

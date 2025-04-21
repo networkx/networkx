@@ -440,6 +440,9 @@ def spring_layout(
     dim=2,
     seed=None,
     store_pos_as=None,
+    *,
+    method="auto",
+    gravity=1.0,
 ):
     """Position nodes using Fruchterman-Reingold force-directed algorithm.
 
@@ -515,6 +518,17 @@ def spring_layout(
         an attribute with this string as its name, which can be accessed with
         ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
+    method : str  optional (default='auto')
+        The method to compute the layout.
+        If 'force', the force-directed Fruchterman-Reingold algorithm [1]_ is used.
+        If 'energy', the energy-based optimization algorithm [2]_ is used with absolute
+        values of edge weights and gravitational forces acting on each connected component.
+        If 'auto', we use 'force' if ``len(G) < 500`` and 'energy' otherwise.
+
+    gravity: float optional (default=1.0)
+        Used only for the method='energy'.
+        The positive coefficient of gravitational forces per connected component.
+
     Returns
     -------
     pos : dict
@@ -531,8 +545,22 @@ def spring_layout(
 
     # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
+
+    References
+    ----------
+    .. [1] Fruchterman, Thomas MJ, and Edward M. Reingold.
+           "Graph drawing by force-directed placement."
+           Software: Practice and experience 21, no. 11 (1991): 1129-1164.
+           http://dx.doi.org/10.1002/spe.4380211102
+    .. [2] Hamaguchi, Hiroki, Naoki Marumo, and Akiko Takeda.
+           "Initial Placement for Fruchterman--Reingold Force Model With Coordinate Newton Direction."
+           arXiv preprint arXiv:2412.20317 (2024).
+           https://arxiv.org/abs/2412.20317
     """
     import numpy as np
+
+    if method not in ("auto", "force", "energy"):
+        raise ValueError("the method must be either auto, force, or energy.")
 
     G, center = _process_params(G, center, dim)
 
@@ -569,7 +597,7 @@ def spring_layout(
 
     try:
         # Sparse matrix
-        if len(G) < 500:  # sparse solver for large graphs
+        if method in ["auto", "force"] and len(G) < 500:
             raise ValueError
         A = nx.to_scipy_sparse_array(G, weight=weight, dtype="f")
         if k is None and fixed is not None:
@@ -577,7 +605,7 @@ def spring_layout(
             nnodes, _ = A.shape
             k = dom_size / np.sqrt(nnodes)
         pos = _sparse_fruchterman_reingold(
-            A, k, pos_arr, fixed, iterations, threshold, dim, seed
+            A, k, pos_arr, fixed, iterations, threshold, dim, seed, method, gravity
         )
     except ValueError:
         A = nx.to_numpy_array(G, weight=weight)
@@ -665,7 +693,16 @@ def _fruchterman_reingold(
 
 @np_random_state(7)
 def _sparse_fruchterman_reingold(
-    A, k=None, pos=None, fixed=None, iterations=50, threshold=1e-4, dim=2, seed=None
+    A,
+    k=None,
+    pos=None,
+    fixed=None,
+    iterations=50,
+    threshold=1e-4,
+    dim=2,
+    seed=None,
+    method="energy",
+    gravity=1.0,
 ):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
@@ -678,11 +715,6 @@ def _sparse_fruchterman_reingold(
     except AttributeError as err:
         msg = "fruchterman_reingold() takes an adjacency matrix as input"
         raise nx.NetworkXError(msg) from err
-    # make sure we have a LIst of Lists representation
-    try:
-        A = A.tolil()
-    except AttributeError:
-        A = (sp.sparse.coo_array(A)).tolil()
 
     if pos is None:
         # random initial positions
@@ -698,6 +730,18 @@ def _sparse_fruchterman_reingold(
     # optimal distance between nodes
     if k is None:
         k = np.sqrt(1.0 / nnodes)
+
+    if method == "energy":
+        return _energy_fruchterman_reingold(
+            A, nnodes, k, pos, fixed, iterations, threshold, dim, gravity
+        )
+
+    # make sure we have a LIst of Lists representation
+    try:
+        A = A.tolil()
+    except AttributeError:
+        A = (sp.sparse.coo_array(A)).tolil()
+
     # the initial "temperature"  is about .1 of domain area (=1x1)
     # this is the largest step allowed in the dynamics.
     t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1])) * 0.1
@@ -734,6 +778,68 @@ def _sparse_fruchterman_reingold(
         if (np.linalg.norm(delta_pos) / nnodes) < threshold:
             break
     return pos
+
+
+def _energy_fruchterman_reingold(
+    A, nnodes, k, pos, fixed, iterations, threshold, dim, gravity
+):
+    # Entry point for NetworkX graph is fruchterman_reingold_layout()
+    # energy-based version
+    import numpy as np
+    import scipy as sp
+
+    if gravity <= 0:
+        raise ValueError(f"the gravity must be positive.")
+
+    # make sure we have a Compressed Sparse Row format
+    try:
+        A = A.tocsr()
+    except AttributeError:
+        A = sp.sparse.csr_array(A)
+
+    # Take absolute values of edge weights and symmetrize it
+    A = np.abs(A)
+    A = (A + A.T) / 2
+
+    n_components, labels = sp.sparse.csgraph.connected_components(A, directed=False)
+    bincount = np.bincount(labels)
+    batchsize = 500
+
+    def _cost_FR(x):
+        pos = x.reshape((nnodes, dim))
+        grad = np.zeros((nnodes, dim))
+        cost = 0.0
+        for l in range(0, nnodes, batchsize):
+            r = min(l + batchsize, nnodes)
+            # difference between selected node positions and all others
+            delta = pos[l:r, np.newaxis, :] - pos[np.newaxis, :, :]
+            # distance between points with a minimum distance of 1e-5
+            distance2 = np.sum(delta * delta, axis=2)
+            distance2 = np.maximum(distance2, 1e-10)
+            distance = np.sqrt(distance2)
+            # temporary variable for calculation
+            Ad = A[l:r] * distance
+            # attractive forces and repulsive forces
+            grad[l:r] = 2 * np.einsum("ij,ijk->ik", Ad / k - k**2 / distance2, delta)
+            # integrated attractive forces
+            cost += np.sum(Ad * distance2) / (3 * k)
+            # integrated repulsive forces
+            cost -= k**2 * np.sum(np.log(distance))
+        # gravitational force from the centroids of connected components to (0.5, ..., 0.5)^T
+        centers = np.zeros((n_components, dim))
+        np.add.at(centers, labels, pos)
+        delta0 = centers / bincount[:, np.newaxis] - 0.5
+        grad += gravity * delta0[labels]
+        cost += gravity * 0.5 * np.sum(bincount * np.linalg.norm(delta0, axis=1) ** 2)
+        # fix positions of fixed nodes
+        grad[fixed] = 0.0
+        return cost, grad.ravel()
+
+    # Optimization of the energy function by L-BFGS algorithm
+    options = {"maxiter": iterations, "gtol": threshold}
+    return sp.optimize.minimize(
+        _cost_FR, pos.ravel(), method="L-BFGS-B", jac=True, options=options
+    ).x.reshape((nnodes, dim))
 
 
 def kamada_kawai_layout(
@@ -1346,7 +1452,7 @@ def arf_layout(
         Scales the radius of the circular layout space.
 
     a : float
-        Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation ofunconnected sub clusters.
+        Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation of unconnected sub clusters.
 
     etol : float
         Gradient sum of spring forces must be larger than `etol` before successful termination.
@@ -1452,7 +1558,7 @@ def arf_layout(
 
 
 @np_random_state("seed")
-@nx._dispatchable(mutates_input={"store_pos_as": 15})
+@nx._dispatchable(edge_attrs="weight", mutates_input={"store_pos_as": 15})
 def forceatlas2_layout(
     G,
     pos=None,
@@ -1491,7 +1597,11 @@ def forceatlas2_layout(
         Controls the tolerance for adjusting the speed of layout generation.
     scaling_ratio : float (default: 2.0)
         Determines the scaling of attraction and repulsion forces.
-    distributed_attraction : bool (default: False)
+    gravity : float (default: 1.0)
+        Determines the amount of attraction on nodes to the center. Prevents islands
+        (i.e. weakly connected or disconnected parts of the graph)
+        from drifting away.
+    distributed_action : bool (default: False)
         Distributes the attraction force evenly among nodes.
     strong_gravity : bool (default: False)
         Applies a strong gravitational pull towards the center.
@@ -1499,6 +1609,9 @@ def forceatlas2_layout(
         Maps nodes to their masses, influencing the attraction to other nodes.
     node_size : dict or None, optional
         Maps nodes to their sizes, preventing crowding by creating a halo effect.
+    weight : string or None, optional (default: None)
+        The edge attribute that holds the numerical value used for
+        the edge weight. If None, then all edge weights are 1.
     dissuade_hubs : bool (default: False)
         Prevents the clustering of hub nodes.
     linlog : bool (default: False)
