@@ -283,7 +283,7 @@ def degrees(B, nodes, weight=None):
     ----------
     B : NetworkX graph
 
-    nodes: iterable of nodes
+    nodes : iterable of nodes
       Nodes in one node set of the bipartite graph.
 
     weight : string or None, optional (default=None)
