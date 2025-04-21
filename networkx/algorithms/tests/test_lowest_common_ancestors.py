@@ -514,15 +514,33 @@ def test_lca_dont_rely_on_single_successor():
 
 
 def test_lowest_common_ancestor_key_parameter():
-    # Test that key parameter selects among multiple LCAs
+    # Test behavior of key parameter and arbitrary selection
     G = nx.DiGraph()
     edges = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)]
     G.add_edges_from(edges)
     # nodes 3 and 4 have LCAs {1, 2}
-    # default returns smallest by node id
-    assert nx.lowest_common_ancestor(G, 3, 4) == 1
-    # key parameter to choose largest id
+    # without key, returns arbitrary LCA
+    lca = nx.lowest_common_ancestor(G, 3, 4)
+    assert lca in {1, 2}
+    # with key, returns specific LCA
+    assert nx.lowest_common_ancestor(G, 3, 4, key=lambda x: x) == 1
     assert nx.lowest_common_ancestor(G, 3, 4, key=lambda x: -x) == 2
+
+
+def test_all_pairs_lca_key_parameter():
+    # Test behavior of key parameter and arbitrary selection
+    G = nx.DiGraph()
+    edges = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)]
+    G.add_edges_from(edges)
+    # nodes 3 and 4 have LCAs {1, 2}
+    # without key, returns arbitrary LCA
+    result = dict(all_pairs_lca(G, pairs=[(3, 4)]))
+    assert result[(3, 4)] in {1, 2}
+    # with key chooses specific LCA
+    result_min = dict(all_pairs_lca(G, pairs=[(3, 4)], key=lambda x: x))
+    assert result_min[(3, 4)] == 1
+    result_max = dict(all_pairs_lca(G, pairs=[(3, 4)], key=lambda x: -x))
+    assert result_max[(3, 4)] == 2
 
 
 class TestAllPairsAllLowestCommonAncestors:

@@ -136,8 +136,11 @@ def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
     of both nodes and has no descendants that are also ancestors of both nodes.
     Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
 
-    If there are multiple LCAs, the minimal one according to the key
-    function is returned. If you want to get all LCAs, use
+    If there are multiple LCAs and key is provided, returns the LCA that has the
+    minimal value according to the key function. If key is None, returns an
+    arbitrary LCA.
+
+    If you want to get all LCAs, use
     :func:`all_pairs_all_lowest_common_ancestors`.
 
     Parameters
@@ -150,8 +153,8 @@ def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
 
     key : callable, optional
         Function to choose among multiple LCAs; the returned LCA is the minimal
-        element in the set of LCAs according to this key. If None, the default
-        ordering of nodes is used.
+        element in the set of LCAs according to this key. If None, an arbitrary
+        LCA is returned.
 
     Yields
     ------
@@ -195,16 +198,18 @@ def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
     all_pairs_all_lowest_common_ancestors
     """
     if key is None:
+        select_lca = nx.utils.arbitrary_element
+    else:
 
-        def key(lca):
-            return lca
+        def select_lca(lca):
+            return min(lca, key=key)
 
     all_pairs_all_lca = all_pairs_all_lowest_common_ancestors(G, pairs)
 
     def generate_lca():
         for (u, v), lca in all_pairs_all_lca:
             if len(lca) > 0:
-                yield ((u, v), min(lca, key=key))
+                yield ((u, v), select_lca(lca))
 
     return generate_lca()
 
@@ -262,8 +267,11 @@ def lowest_common_ancestor(G, node1, node2, default=None, key=None):
     of both nodes and has no descendants that are also ancestors of both nodes.
     Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
 
-    If there are multiple LCAs, the minimal one according to the key
-    function is returned. If you want to get all LCAs, use
+    If there are multiple LCAs and key is provided, returns the LCA that has the
+    minimal value according to the key function. If key is None, returns an
+    arbitrary LCA.
+
+    If you want to get all LCAs, use
     :func:`all_lowest_common_ancestors`.
 
     Parameters
@@ -277,7 +285,7 @@ def lowest_common_ancestor(G, node1, node2, default=None, key=None):
 
     key : callable, optional
         Function to choose among multiple LCAs; if multiple LCAs exist, the one
-        with the minimal key value is returned. If None, default ordering is used.
+        with the minimal key value is returned. If None, an arbitrary LCA is returned.
 
     Returns
     -------
