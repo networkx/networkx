@@ -33,10 +33,6 @@ __all__ = [
 ]
 
 
-def debug_print(*args, **kwargs):
-    print(*args, **kwargs)
-
-
 @nx._dispatchable(
     graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
 )
@@ -972,21 +968,6 @@ def optimize_edit_paths(
                 cost: total cost of edit path
             NOTE: path costs are non-increasing
         """
-        # debug_print('matched-uv:', matched_uv)
-        # debug_print('matched-gh:', matched_gh)
-        # debug_print('matched-cost:', matched_cost)
-        # debug_print('pending-u:', pending_u)
-        # debug_print('pending-v:', pending_v)
-        # debug_print(Cv.C)
-        # assert list(sorted(G1.nodes)) == list(sorted(list(u for u, v in matched_uv if u is not None) + pending_u))
-        # assert list(sorted(G2.nodes)) == list(sorted(list(v for u, v in matched_uv if v is not None) + pending_v))
-        # debug_print('pending-g:', pending_g)
-        # debug_print('pending-h:', pending_h)
-        # debug_print(Ce.C)
-        # assert list(sorted(G1.edges)) == list(sorted(list(g for g, h in matched_gh if g is not None) + pending_g))
-        # assert list(sorted(G2.edges)) == list(sorted(list(h for g, h in matched_gh if h is not None) + pending_h))
-        # debug_print()
-
         if prune(matched_cost + Cv.ls + Ce.ls):
             return
 
@@ -1128,8 +1109,6 @@ def optimize_edit_paths(
         [ins_costs[i] if i == j else inf for i in range(n) for j in range(n)]
     ).reshape(n, n)
     Cv = make_CostMatrix(C, m, n)
-    # debug_print(f"Cv: {m} x {n}")
-    # debug_print(Cv.C)
 
     pending_g = list(G1.edges)
     pending_h = list(G2.edges)
@@ -1176,9 +1155,6 @@ def optimize_edit_paths(
         [ins_costs[i] if i == j else inf for i in range(n) for j in range(n)]
     ).reshape(n, n)
     Ce = make_CostMatrix(C, m, n)
-    # debug_print(f'Ce: {m} x {n}')
-    # debug_print(Ce.C)
-    # debug_print()
 
     maxcost_value = Cv.C.sum() + Ce.C.sum() + 1
 
