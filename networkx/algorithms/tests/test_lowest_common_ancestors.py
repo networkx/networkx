@@ -17,7 +17,7 @@ def get_pair(dictionary, n1, n2):
 
 
 def is_lca(G, u, v, lca):
-    """Assert that node lca is a valid lowest common ancestor for nodes u and v.
+    """Returns True if lca is a lowest common ancestor of u and v.
 
     A node is a lowest common ancestor of two nodes if:
     1. It is an ancestor of both nodes
@@ -28,6 +28,11 @@ def is_lca(G, u, v, lca):
     G : NetworkX directed graph
     u, v : nodes in the graph G
     lca : the node to verify as a possible lowest common ancestor
+
+    Returns
+    -------
+    bool
+        True if lca is a lowest common ancestor of u and v, False otherwise.
     """
     # Check if lca is an ancestor of both u and v
     u_ancestors = nx.ancestors(G, u).union({u})
@@ -38,10 +43,29 @@ def is_lca(G, u, v, lca):
         return False
 
     # None of lca's descendants can be ancestors of both u and v
-    for successor in G.successors(lca):
-        if successor in u_ancestors and successor in v_ancestors:
-            return False
+    if any(
+        successor in u_ancestors and successor in v_ancestors
+        for successor in G.successors(lca)
+    ):
+        return False
+
     return True
+
+
+def test_is_lca():
+    G = nx.DiGraph()
+    nx.add_path(G, (0, 1, 3))
+    nx.add_path(G, (0, 2, 3))
+
+    # Case 1: 1 and 2's lowest common ancestor is 0
+    assert is_lca(G, 1, 2, 0)
+    # Case 2: 1/2 is not the lowest common ancestor of 1 and 2
+    assert not is_lca(G, 1, 2, 1)
+    assert not is_lca(G, 1, 2, 2)
+    # Case 3: A non-ancestor node (3) will return False for 1 and 2
+    assert not is_lca(G, 1, 2, 3)
+    # Case 4: The same node is its own ancestor
+    assert is_lca(G, 3, 3, 3)
 
 
 class TestTreeLCA:
@@ -543,7 +567,7 @@ class TestAllPairsAllLowestCommonAncestors:
             assert is_lca(G, 3, 4, lca)
 
 
-@pytest.mark.parametrize("seed", [0, 1, 2, 3, 4])
+@pytest.mark.parametrize("seed", range(5))
 def test_random_dag_all_pairs_all_lcas(seed):
     # Test random DAGs for correctness of LCAs
     rng = random.Random(seed)
@@ -556,10 +580,10 @@ def test_random_dag_all_pairs_all_lcas(seed):
     for (u, v), lcas in result.items():
         lcas = set(lcas)
         for node in G.nodes():
-            if node not in lcas:
-                assert not is_lca(G, u, v, node)
-            else:
+            if node in lcas:
                 assert is_lca(G, u, v, node)
+            else:
+                assert not is_lca(G, u, v, node)
 
 
 def test_all_lowest_common_ancestors_simple():
