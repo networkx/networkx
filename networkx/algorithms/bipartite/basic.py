@@ -230,7 +230,7 @@ def density(B, nodes):
     ----------
     B : NetworkX graph
 
-    nodes: iterable of nodes
+    nodes : iterable of nodes
       Nodes in one node set of the bipartite graph.
 
     Returns
