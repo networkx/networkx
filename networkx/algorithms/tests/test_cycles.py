@@ -1,6 +1,6 @@
+import random
 from itertools import chain, islice, tee
 from math import inf
-from random import shuffle
 
 import pytest
 
@@ -277,7 +277,8 @@ class TestCycleEnumeration:
         # enumeration algorithms
 
         relabel = list(range(len(g)))
-        shuffle(relabel)
+        rng = random.Random(42)
+        rng.shuffle(relabel)
         label = dict(zip(g, relabel))
         unlabel = dict(zip(relabel, g))
         h = nx.relabel_nodes(g, label, copy=True)
@@ -344,6 +345,15 @@ class TestCycleEnumeration:
 
         expected_cycles = [c for c in expected_cycles if len(c) < 2]
         self.check_cycle_algorithm(g, expected_cycles, chordless=True, length_bound=1)
+
+    def test_chordless_cycles_multigraph_self_loops(self):
+        G = nx.MultiGraph([(1, 1), (2, 2), (1, 2), (1, 2)])
+        expected_cycles = [[1], [2]]
+        self.check_cycle_algorithm(G, expected_cycles, chordless=True)
+
+        G.add_edges_from([(2, 3), (3, 4), (3, 4), (1, 3)])
+        expected_cycles = [[1], [2], [3, 4]]
+        self.check_cycle_algorithm(G, expected_cycles, chordless=True)
 
     def test_directed_chordless_cycle_undirected(self):
         g = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 5), (5, 0), (5, 1), (0, 2)])

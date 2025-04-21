@@ -42,6 +42,10 @@ class TestGeneratorNonIsomorphicTrees:
         assert nx.number_of_nonisomorphic_trees(6) == 6
         assert nx.number_of_nonisomorphic_trees(7) == 11
         assert nx.number_of_nonisomorphic_trees(8) == 23
+        assert nx.number_of_nonisomorphic_trees(9) == 47
+        assert nx.number_of_nonisomorphic_trees(10) == 106
+        assert nx.number_of_nonisomorphic_trees(20) == 823065
+        assert nx.number_of_nonisomorphic_trees(30) == 14830871802
 
     def test_nonisomorphic_trees(self):
         def f(x):
