@@ -118,7 +118,7 @@ def is_bipartite_node_set(G, nodes):
     ----------
     G : NetworkX graph
 
-    nodes: iterable of nodes
+    nodes : iterable of nodes
       Check if nodes are a one of a bipartite set.
 
     Examples
