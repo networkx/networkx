@@ -586,6 +586,12 @@ def test_random_dag_all_pairs_all_lcas(seed):
                 assert not is_lca(G, u, v, node)
 
 
+def test_all_lowest_common_ancestors_no_lca():
+    G = nx.DiGraph()
+    G.add_nodes_from([1, 2])
+    assert nx.all_lowest_common_ancestors(G, 1, 2) == []
+
+
 def test_all_lowest_common_ancestors_simple():
     G = nx.DiGraph()
     nx.add_path(G, (0, 1, 2, 3))

@@ -247,6 +247,8 @@ def all_lowest_common_ancestors(G, node1, node2):
     lowest_common_ancestor, all_pairs_all_lowest_common_ancestors
     """
     ans = list(all_pairs_all_lowest_common_ancestors(G, pairs=[(node1, node2)]))
+    assert len(ans) == 1
+    assert len(ans[0]) == 2
 
     return ans[0][1]
 
