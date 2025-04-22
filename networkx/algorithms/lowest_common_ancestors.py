@@ -87,7 +87,7 @@ def all_pairs_all_lowest_common_ancestors(G, pairs=None):
 
     The LCA (Lowest Common Ancestor) of a pair of nodes is a node that is an ancestor
     of both nodes and has no descendants that are also ancestors of both nodes.
-    Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
+    Nodes may have multiple LCAs in a DAG (Directed Acyclic Graph).
 
     Parameters
     ----------
@@ -198,7 +198,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
 
     The LCA (Lowest Common Ancestor) of a pair of nodes is a node that is an ancestor
     of both nodes and has no descendants that are also ancestors of both nodes.
-    Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
+    Nodes may have multiple LCAs in a DAG (Directed Acyclic Graph).
 
     If there are multiple LCAs and key is provided, returns the LCA that has the
     minimal value according to the key function. If key is None, returns an
@@ -285,7 +285,7 @@ def all_lowest_common_ancestors(G, node1, node2):
 
     The LCA (Lowest Common Ancestor) of a pair of nodes is a node that is an ancestor
     of both nodes and has no descendants that are also ancestors of both nodes.
-    Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
+    Nodes may have multiple LCAs in a DAG (Directed Acyclic Graph).
 
     Parameters
     ----------
@@ -329,7 +329,7 @@ def lowest_common_ancestor(G, node1, node2, default=None, key=None):
 
     The LCA (Lowest Common Ancestor) of a pair of nodes is a node that is an ancestor
     of both nodes and has no descendants that are also ancestors of both nodes.
-    Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
+    Nodes may have multiple LCAs in a DAG (Directed Acyclic Graph).
 
     If there are multiple LCAs and key is provided, returns the LCA that has the
     minimal value according to the key function. If key is None, returns an
