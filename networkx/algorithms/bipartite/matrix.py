@@ -124,20 +124,49 @@ def from_biadjacency_matrix(
 
     Parameters
     ----------
-    A: scipy sparse array
+    A : scipy sparse array
       A biadjacency matrix representation of a graph
 
-    create_using: NetworkX graph
+    create_using : NetworkX graph
        Use specified graph for result.  The default is Graph()
 
-    edge_attribute: string
+    edge_attribute : string
        Name of edge attribute to store matrix numeric value. The data will
        have the same type as the matrix entry (int, float, (real,imag)).
+
+    top_nodelist : list, optional
+        A nodelist for the nodes represented by the rows of the matrix `A`. Will
+        be represented in the graph as nodes with the `bipartite` attribute set
+        to 0. Must be the same length as the number of rows in `A`.
+
+    bottom_nodelist : list, optional
+        A nodelist for the nodes represented by the columns of the matrix `A`. Will
+        be represented in the graph as nodes with the `bipartite` attribute set
+        to 1. Must be the same length as the number of columns in `A`.
+
+    Returns
+    ---------
+    G : NetworkX graph
+        A bipartite graph with edges from the biadjacency matrix `A`, and
+        nodes from the nodelists if provided.
+
+    Raises
+    --------
+    ValueError
+        If `top_nodelist` or `bottom_nodelist` are provided and are not the same
+        length as the number of rows or columns in `A`, respectively.
 
     Notes
     -----
     The nodes are labeled with the attribute `bipartite` set to an integer
-    0 or 1 representing membership in part 0 or part 1 of the bipartite graph.
+    0 or 1 representing membership in the `top` set (`bipartite=0`) or `bottom`
+    set (`bipartite=1`) of the bipartite graph.
+
+    If `top_nodelist` is not specified, the `top` nodes will be labeled with
+    integers from $0$ to $n-1$, where $n$ is the number of rows in `A`.
+
+    If `bottom_nodelist` is not specified, the `bottom` nodes will be labeled with
+    integers from $n$ to $n+m-1$, where $m$ is the number of columns in `A`.
 
     If `create_using` is an instance of :class:`networkx.MultiGraph` or
     :class:`networkx.MultiDiGraph` and the entries of `A` are of
