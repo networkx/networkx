@@ -41,7 +41,7 @@ def is_lowest_common_ancestor(G, u, v, x):
     Raises
     ------
     NetworkXError
-        If G is not a DAG.
+        If G is not a DAG (Directed Acyclic Graph).
 
     Examples
     --------
