@@ -8,6 +8,7 @@ import networkx as nx
 from networkx.utils import UnionFind, arbitrary_element, not_implemented_for
 
 __all__ = [
+    "is_lowest_common_ancestor",
     "all_pairs_all_lowest_common_ancestors",
     "all_pairs_lowest_common_ancestor",
     "tree_all_pairs_lowest_common_ancestor",
@@ -312,6 +313,69 @@ def lowest_common_ancestor(G, node1, node2, default=None, key=None):
         assert len(ans) == 1
         return ans[0][1]
     return default
+
+
+@not_implemented_for("undirected")
+@nx._dispatchable
+def is_lowest_common_ancestor(G, u, v, x):
+    """Return True if x is a lowest common ancestor of u and v.
+
+    A node is a lowest common ancestor of two nodes if:
+
+    1. It is an ancestor of both nodes
+    2. None of its descendants is a common ancestor of both nodes
+
+    Parameters
+    ----------
+    G : NetworkX directed graph
+    u, v : nodes in the graph G
+    x : the node to verify as a possible lowest common ancestor
+
+    Returns
+    -------
+    bool
+        True if x is a lowest common ancestor of u and v, False otherwise.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> nx.add_path(G, [0, 1, 3])
+    >>> nx.add_path(G, [0, 2, 3])
+    >>> nx.is_lowest_common_ancestor(G, 1, 2, 0)  # 0 is a common ancestor of 1 and 2
+    True
+    >>> nx.is_lowest_common_ancestor(G, 1, 2, 3)  # 3 is not an ancestor of 1 or 2
+    False
+    >>> nx.is_lowest_common_ancestor(G, 3, 3, 3)  # A node is its own LCA
+    True
+    >>> nx.is_lowest_common_ancestor(G, 1, 3, 0)  # 0 is an ancestor of both 1 and 3
+    False
+    >>> nx.is_lowest_common_ancestor(G, 1, 3, 1)  # 1 is an ancestor of both 1 and 3
+    True
+
+    Notes
+    -----
+    Only defined on non-null directed acyclic graphs.
+    Raises NetworkXError if G is not a DAG.
+    """
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
+
+    # Check if x is an ancestor of both u and v
+    u_ancestors = nx.ancestors(G, u).union({u})
+    v_ancestors = nx.ancestors(G, v).union({v})
+
+    # x must be an ancestor of both u and v
+    if x not in u_ancestors or x not in v_ancestors:
+        return False
+
+    # None of x's descendants can be ancestors of both u and v
+    if any(
+        successor in u_ancestors and successor in v_ancestors
+        for successor in G.successors(x)
+    ):
+        return False
+
+    return True
 
 
 @not_implemented_for("undirected")
