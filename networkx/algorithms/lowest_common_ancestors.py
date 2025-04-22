@@ -21,7 +21,7 @@ __all__ = [
 def all_pairs_all_lowest_common_ancestors(G, pairs=None):
     """Return lists of lowest common ancestors of all pairs or the provided pairs.
 
-    The lowest common ancestor of a pair of nodes is a node that is an ancestor
+    The LCA (Lowest Common Ancestor) of a pair of nodes is a node that is an ancestor
     of both nodes and has no descendants that are also ancestors of both nodes.
     Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
 
@@ -132,7 +132,7 @@ def all_pairs_all_lowest_common_ancestors(G, pairs=None):
 def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
     """Return the lowest common ancestor of all pairs or the provided pairs.
 
-    The lowest common ancestor of a pair of nodes is a node that is an ancestor
+    The LCA (Lowest Common Ancestor) of a pair of nodes is a node that is an ancestor
     of both nodes and has no descendants that are also ancestors of both nodes.
     Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
 
@@ -219,7 +219,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
 def all_lowest_common_ancestors(G, node1, node2):
     """Compute all lowest common ancestors for the given pair of nodes.
 
-    The lowest common ancestor of a pair of nodes is a node that is an ancestor
+    The LCA (Lowest Common Ancestor) of a pair of nodes is a node that is an ancestor
     of both nodes and has no descendants that are also ancestors of both nodes.
     Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
 
@@ -263,7 +263,7 @@ def all_lowest_common_ancestors(G, node1, node2):
 def lowest_common_ancestor(G, node1, node2, default=None, key=None):
     """Compute the lowest common ancestor of the given pair of nodes.
 
-    The lowest common ancestor of a pair of nodes is a node that is an ancestor
+    The LCA (Lowest Common Ancestor) of a pair of nodes is a node that is an ancestor
     of both nodes and has no descendants that are also ancestors of both nodes.
     Nodes may have multiple lowest common ancestors in a DAG (Directed Acyclic Graph).
 
