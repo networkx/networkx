@@ -80,3 +80,37 @@ class TestBiadjacencyMatrix:
         M = sp.sparse.csc_array([[1, 2], [0, 3]])
         B = bipartite.from_biadjacency_matrix(M, create_using=nx.MultiGraph())
         assert edges_equal(B.edges(), [(0, 2), (0, 3), (0, 3), (1, 3), (1, 3), (1, 3)])
+
+    def test_from_biadjacency_nodelist(self):
+        M = sp.sparse.csc_array([[1, 2], [0, 3]])
+        top_nodelist = ["a", "b"]
+        bottom_nodelist = ["c", "d"]
+        B = bipartite.from_biadjacency_matrix(
+            M,
+            create_using=nx.MultiGraph(),
+            top_nodelist=top_nodelist,
+            bottom_nodelist=bottom_nodelist,
+        )
+        assert edges_equal(
+            B.edges(),
+            [("a", "c"), ("a", "d"), ("a", "d"), ("b", "d"), ("b", "d"), ("b", "d")],
+        )
+
+    def test_invalid_from_biadjacency_nodelist(self):
+        M = sp.sparse.csc_array([[1, 2], [0, 3]])
+        # For when top nodelist has the wrong length
+        top_nodelist_invalid = ["a", "b", "c"]
+        # For when bottom nodelist has the wrong length
+        bottom_nodelist_invalid = ["c", "d", "e"]
+        with pytest.raises(ValueError):
+            bipartite.from_biadjacency_matrix(
+                M,
+                create_using=nx.MultiGraph(),
+                top_nodelist=top_nodelist_invalid,
+            )
+        with pytest.raises(ValueError):
+            bipartite.from_biadjacency_matrix(
+                M,
+                create_using=nx.MultiGraph(),
+                bottom_nodelist=bottom_nodelist_invalid,
+            )
