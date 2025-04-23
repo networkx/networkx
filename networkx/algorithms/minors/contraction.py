@@ -452,7 +452,7 @@ def contracted_nodes(
         If this is True (default True), make a copy of
         `G` and return that instead of directly changing `G`.
 
-    store_contraction_as : str, default="contraction"
+    store_contraction_as : str or None, default="contraction"
         Name of the node/edge attribute where information about the contraction
         should be stored. By default information about the contracted node and
         any contracted edges is stored in a ``"contraction"`` attribute on the
@@ -608,7 +608,7 @@ def contracted_edge(
         If this is True, a the contraction will be performed on a copy of `G`,
         otherwise the contraction will happen in place.
 
-    store_contraction_as : str, default="contraction"
+    store_contraction_as : str or None, default="contraction"
         Name of the node/edge attribute where information about the contraction
         should be stored. By default information about the contracted node and
         any contracted edges is stored in a ``"contraction"`` attribute on the
