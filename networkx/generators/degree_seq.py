@@ -757,10 +757,10 @@ class DegreeSequenceRandomGraph:
     # class to generate random graphs with a given degree sequence
     # use random_degree_sequence_graph()
     def __init__(self, degree, rng):
-        if not nx.is_graphical(degree):
-            raise nx.NetworkXUnfeasible("degree sequence is not graphical")
         self.rng = rng
         self.degree = list(degree)
+        if not nx.is_graphical(self.degree):
+            raise nx.NetworkXUnfeasible("degree sequence is not graphical")
         # node labels are integers 0,...,n-1
         self.m = sum(self.degree) / 2.0  # number of edges
         try:

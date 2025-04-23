@@ -1,7 +1,15 @@
+from functools import partial
+
 import pytest
 
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
+
+# Convenience functions for testing that the behavior of `could_be_isomorphic`
+# with the "properties" kwarg is equivalent to the corresponding function (i.e.
+# nx.fast_could_be_isomorphic or nx.faster_could_be_isomorphic)
+fast_cbi = partial(nx.could_be_isomorphic, properties="dt")
+faster_cbi = partial(nx.could_be_isomorphic, properties="d")
 
 
 def test_graph_could_be_isomorphic_variants_deprecated():
@@ -16,6 +24,43 @@ def test_graph_could_be_isomorphic_variants_deprecated():
     with pytest.deprecated_call():
         result = nx.isomorphism.isomorph.faster_graph_could_be_isomorphic(G1, G2)
     assert nx.faster_could_be_isomorphic(G1, G2) == result
+
+
+@pytest.mark.parametrize("atlas_ids", [(699, 706), (864, 870)])
+def test_could_be_isomorphic_combined_properties(atlas_ids):
+    """There are two pairs of graphs from the graph atlas that have the same
+    combined degree-triangle distribution, but a different maximal clique
+    distribution. See gh-7852."""
+    G, H = (nx.graph_atlas(idx) for idx in atlas_ids)
+
+    assert not nx.is_isomorphic(G, H)
+
+    # Degree only
+    assert nx.faster_could_be_isomorphic(G, H)
+    assert nx.could_be_isomorphic(G, H, properties="d")
+    # Degrees & triangles
+    assert nx.fast_could_be_isomorphic(G, H)
+    assert nx.could_be_isomorphic(G, H, properties="dt")
+    # Full properties table (degrees, triangles, cliques)
+    assert not nx.could_be_isomorphic(G, H)
+    assert not nx.could_be_isomorphic(G, H, properties="dtc")
+    # For these two cases, the clique distribution alone is enough to verify
+    # the graphs can't be isomorphic
+    assert not nx.could_be_isomorphic(G, H, properties="c")
+
+
+def test_could_be_isomorphic_individual_vs_combined_dt():
+    """A test case where G and H have identical degree and triangle distributions,
+    but are different when compared together"""
+    G = nx.Graph([(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (3, 4), (4, 5), (4, 6)])
+    H = G.copy()
+    # Modify graphs to produce different clique distributions
+    G.add_edge(0, 7)
+    H.add_edge(4, 7)
+    assert nx.could_be_isomorphic(G, H, properties="d")
+    assert nx.could_be_isomorphic(G, H, properties="t")
+    assert not nx.could_be_isomorphic(G, H, properties="dt")
+    assert not nx.could_be_isomorphic(G, H, properties="c")
 
 
 class TestIsomorph:
@@ -41,15 +86,17 @@ class TestIsomorph:
         assert iso.could_be_isomorphic(self.G3, self.G2)
         assert not iso.could_be_isomorphic(self.G1, self.G6)
 
-    def test_fast_could_be_isomorphic(self):
-        assert iso.fast_could_be_isomorphic(self.G3, self.G2)
-        assert not iso.fast_could_be_isomorphic(self.G3, self.G5)
-        assert not iso.fast_could_be_isomorphic(self.G1, self.G6)
+    @pytest.mark.parametrize("fn", (iso.fast_could_be_isomorphic, fast_cbi))
+    def test_fast_could_be_isomorphic(self, fn):
+        assert fn(self.G3, self.G2)
+        assert not fn(self.G3, self.G5)
+        assert not fn(self.G1, self.G6)
 
-    def test_faster_could_be_isomorphic(self):
-        assert iso.faster_could_be_isomorphic(self.G3, self.G2)
-        assert not iso.faster_could_be_isomorphic(self.G3, self.G5)
-        assert not iso.faster_could_be_isomorphic(self.G1, self.G6)
+    @pytest.mark.parametrize("fn", (iso.faster_could_be_isomorphic, faster_cbi))
+    def test_faster_could_be_isomorphic(self, fn):
+        assert fn(self.G3, self.G2)
+        assert not fn(self.G3, self.G5)
+        assert not fn(self.G1, self.G6)
 
     def test_is_isomorphic(self):
         assert iso.is_isomorphic(self.G1, self.G2)
