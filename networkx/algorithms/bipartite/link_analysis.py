@@ -255,9 +255,7 @@ def birank(
         shape=(bottom_count, bottom_count),
         dtype=float,
     )
-    D_u.tocsr()
-    D_p.tocsr()
-    S = D_u @ W @ D_p
+    S = D_u.tocsr() @ W @ D_p.tocsr()
     S_T = S.T
 
     # Initialize birank vectors for iteration
