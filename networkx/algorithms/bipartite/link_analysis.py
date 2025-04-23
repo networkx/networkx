@@ -268,12 +268,21 @@ def birank(
         u_last = u
         p = alpha * (S_T @ u) + (1 - alpha) * p0
         u = beta * (S @ p) + (1 - beta) * u0
+
+        # Continue iterating if the error is above the tolerance threshold for
+        # either p or u
         err_p = np.absolute(1 - p_last / p).sum()
+        if err_p >= len(p) * tol:
+            continue
         err_u = np.absolute(1 - u_last / u).sum()
-        if err_p < top_count * tol and err_u < bottom_count * tol:
-            return dict(
-                zip(itertools.chain(top, bottom), map(float, itertools.chain(p, u)))
-            )
+        if err_u >= len(u) * tol:
+            continue
+
+        # If both error thresholds pass, return a single dictionary mapping
+        # nodes to their scores
+        return dict(
+            zip(itertools.chain(top, bottom), map(float, itertools.chain(p, u)))
+        )
 
     # If we reach this point, we have not converged
     raise nx.PowerIterationFailedConvergence(max_iter)
