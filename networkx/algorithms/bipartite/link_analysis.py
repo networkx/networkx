@@ -243,7 +243,7 @@ def birank(
     p0 = np.array([top_personalization.get(n, 0) for n in top], dtype=float)
     u0 = np.array([bottom_personalization.get(n, 0) for n in bottom], dtype=float)
 
-    # Construct degree normalized biadjacency matrix `S`
+    # Construct degree normalized biadjacency matrix `S` and its transpose
     W = nx.bipartite.biadjacency_matrix(G, bottom, top, weight=weight, dtype=float)
     D_p = sp.sparse.dia_array(
         ([1.0 / np.sqrt(W.sum(axis=0))], [0]), shape=(top_count, top_count), dtype=float
@@ -254,6 +254,7 @@ def birank(
         dtype=float,
     )
     S = D_u @ W @ D_p
+    S_T = S.T
 
     # Initialize birank vectors for iteration
     p = np.ones(top_count, dtype=float) / top_count
@@ -263,7 +264,7 @@ def birank(
     for _ in range(max_iter):
         p_last = p
         u_last = u
-        p = alpha * (S.T @ u) + (1 - alpha) * p0
+        p = alpha * (S_T @ u) + (1 - alpha) * p0
         u = beta * (S @ p) + (1 - beta) * u0
         err_p = np.absolute(1 - p_last / p).sum()
         err_u = np.absolute(1 - u_last / u).sum()
