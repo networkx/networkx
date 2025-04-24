@@ -259,11 +259,11 @@ def birank(
     S_T = S.T
 
     # Initialize birank vectors for iteration
-    p = np.ones(top_count, dtype=float) / top_count
-    u = np.ones(bottom_count, dtype=float) / bottom_count
+    p = np.ones(top_count, dtype=float)
+    u = beta * (S @ p) + (1 - beta) * u0
 
     # Iterate until convergence
-    for _ in range(max_iter):
+    for i in range(max_iter):
         p_last = p
         u_last = u
         p = alpha * (S_T @ u) + (1 - alpha) * p0
@@ -277,6 +277,12 @@ def birank(
         err_u = np.absolute(1 - u_last / u).sum()
         if err_u >= len(u) * tol:
             continue
+
+        # Handle edge case where if both alpha and beta are 1, scale is
+        # indeterminate, so normalization is required to return consistent results
+        if alpha == 1 and beta == 1:
+            p = p / np.linalg.norm(p, 1)
+            u = u / np.linalg.norm(u, 1)
 
         # If both error thresholds pass, return a single dictionary mapping
         # nodes to their scores
