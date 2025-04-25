@@ -9,6 +9,7 @@ __all__ = ["birank"]
 def birank(
     G,
     nodes,
+    *,
     alpha=None,
     beta=None,
     top_personalization={},
