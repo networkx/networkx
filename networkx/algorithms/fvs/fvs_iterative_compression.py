@@ -226,11 +226,40 @@ def _guess_intersection_and_fvs(G, k, S):
 @not_implemented_for("directed")
 @trace
 def feedback_vertex_set(G, k):
-    """
-    Returns a boolean (is_k_fvs_exists, fvs) where `is_k_fvs_exists` denotes
+    r"""Returns a tuple (is_k_fvs_exists, fvs) where `is_k_fvs_exists` is a boolean denoting
     if a feedback vertex set of size at most `k` exists and
-    if it exists, fvs denotes a feedback_vertex_set of size at most `k`
+    if True, `fvs` denotes a feedback vertex set of size at most `k`
     else fvs is an empty set
+
+    A *feedback vertex set* of a graph is a set of vertices whose removal makes
+    the graph acyclic
+
+    Parameters
+    ----------
+    G : Networkx Graph
+
+    k : integer
+        Maximum Size for the Feedback Vertex Set
+
+    Returns
+    -------
+    is_k_fvs_exists : bool
+
+    fvs : set
+        A Feedback Vertex Set for the graph *G* of size at most *k* if one exists
+        else an empty set
+
+    Notes
+    -----
+    This function is the implementation of the parameterized algorithm for feedback vertex set in [2]_ in the chapter ***
+    including kernelization procedures
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Feedback_vertex_set
+
+    .. [2] Marek Cygan, Fedor V. Fomin, Lukasz Kowalik, Daniel Lokshtanov, Daniel Marx, Marcin Pilipczuk, Michal Pilipczuk, and Saket Saurabh. 2015. Parameterized Algorithms (1st. ed.). Springer Publishing Company, Incorporated.
+    https://dl.acm.org/doi/book/10.5555/2815661#
     """
 
     if len(G) == 0:

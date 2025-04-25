@@ -7,6 +7,8 @@ from networkx.utils.decorators import not_implemented_for
 def is_fvs(G, fvs):
     """
     Checks if a given set `fvs` is a feedback vertex set of `G`
+    A feedback vertex set of a graph is a set of vertices whose removal makes
+    the graph acyclic
     """
     H = G.subgraph(set(G.nodes) - fvs)
 
