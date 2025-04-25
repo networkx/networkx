@@ -264,23 +264,23 @@ def birank(
     S_T = S.T
 
     # Initialize birank vectors for iteration
-    p = np.ones(top_count, dtype=float)
+    p = np.ones(top_count, dtype=float) / top_count
     u = beta * (S @ p) + (1 - beta) * u0
 
     # Iterate until convergence
-    for i in range(max_iter):
+    for _ in range(max_iter):
         p_last = p
         u_last = u
         p = alpha * (S_T @ u) + (1 - alpha) * p0
         u = beta * (S @ p) + (1 - beta) * u0
 
-        # Continue iterating if the error is above the tolerance threshold for
-        # either p or u
-        err_p = np.absolute(1 - p_last / p).sum()
-        if err_p >= len(p) * tol:
-            continue
-        err_u = np.absolute(1 - u_last / u).sum()
+        # Continue iterating if the error (absolute if less than 1, relative otherwise)
+        # is above the tolerance threshold for either p or u
+        err_u = np.absolute((u_last - u) / np.maximum(1.0, u_last)).sum()
         if err_u >= len(u) * tol:
+            continue
+        err_p = np.absolute((p_last - p) / np.maximum(1.0, p_last)).sum()
+        if err_p >= len(p) * tol:
             continue
 
         # Handle edge case where if both alpha and beta are 1, scale is
