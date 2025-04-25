@@ -245,13 +245,18 @@ def birank(
 
     # Construct degree normalized biadjacency matrix `S` and its transpose
     W = nx.bipartite.biadjacency_matrix(G, bottom, top, weight=weight, dtype=float)
+    p_degrees = W.sum(axis=0, dtype=float)
+    # Handle case where the node is disconnected - avoids warning
+    p_degrees[p_degrees == 0] = 1.0
     D_p = sp.sparse.dia_array(
-        ([1.0 / np.sqrt(W.sum(axis=0))], [0]),
+        ([1.0 / np.sqrt(p_degrees)], [0]),
         shape=(top_count, top_count),
         dtype=float,
     )
+    u_degrees = W.sum(axis=1, dtype=float)
+    u_degrees[u_degrees == 0] = 1.0
     D_u = sp.sparse.dia_array(
-        ([1.0 / np.sqrt(W.sum(axis=1))], [0]),
+        ([1.0 / np.sqrt(u_degrees)], [0]),
         shape=(bottom_count, bottom_count),
         dtype=float,
     )
