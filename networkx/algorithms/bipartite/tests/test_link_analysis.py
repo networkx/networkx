@@ -19,6 +19,14 @@ class TestBipartiteLinkAnalysis:
             )
             if bipartite == 0
         }
+        cls.gnmk_random_graph = nx.bipartite.generators.gnmk_random_graph(
+            5 * 10**2, 10**2, 5 * 10**2, seed=27
+        )
+        cls.gnmk_random_graph_top_nodes = {
+            node
+            for node, bipartite in cls.gnmk_random_graph.nodes(data="bipartite")
+            if bipartite == 0
+        }
 
     def test_collaborative_filtering_birank(self):
         elist = [
@@ -172,3 +180,32 @@ class TestBipartiteLinkAnalysis:
             bipartite.birank(
                 self.davis_southern_women_graph, self.women_bipartite_set, max_iter=1
             )
+
+    @pytest.mark.parametrize(
+        "personalization,alpha,beta",
+        itertools.product(
+            [
+                # Concentrated case
+                lambda x: 1000 if x == 0 else 0,
+                # Uniform case
+                lambda x: 5,
+                # Zero case
+                lambda x: 0,
+            ],
+            [i / 2 for i in range(1, 3)],
+            [i / 2 for i in range(1, 3)],
+        ),
+    )
+    def test_gnmk_convergence_birank(self, personalization, alpha, beta):
+        top_personalization_dict = {
+            node: personalization(node)
+            for node in self.gnmk_random_graph
+            if personalization(node) > 0
+        }
+        bipartite.birank(
+            self.gnmk_random_graph,
+            self.gnmk_random_graph_top_nodes,
+            top_personalization=top_personalization_dict,
+            alpha=alpha,
+            beta=beta,
+        )
