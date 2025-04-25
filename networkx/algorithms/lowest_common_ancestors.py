@@ -22,10 +22,9 @@ __all__ = [
 def is_lowest_common_ancestor(G, u, v, x):
     """Return True if x is a lowest common ancestor of u and v.
 
-    A node is a lowest common ancestor of two nodes if:
-
-    1. It is an ancestor of both nodes
-    2. None of its descendants is a common ancestor of both nodes
+    The LCA (Lowest Common Ancestor) of a pair of nodes is a node that is an ancestor
+    of both nodes and has no descendants that are also ancestors of both nodes.
+    Nodes may have multiple LCAs in a DAG (Directed Acyclic Graph).
 
     Parameters
     ----------
@@ -118,9 +117,19 @@ def all_pairs_all_lowest_common_ancestors(G, pairs=None):
     The default behavior is to yield the lowest common ancestor for all
     possible combinations of nodes in `G`, including self-pairings:
 
+    >>> from pprint import pprint
     >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
-    >>> dict(nx.all_pairs_all_lowest_common_ancestors(G))
-    {(0, 0): [0], (0, 1): [0], (0, 3): [0], (0, 2): [0], (1, 1): [1], (1, 3): [0], (1, 2): [1], (3, 3): [3], (3, 2): [0], (2, 2): [2]}
+    >>> pprint(dict(nx.all_pairs_all_lowest_common_ancestors(G)))
+    {(0, 0): [0],
+     (0, 1): [0],
+     (0, 2): [0],
+     (0, 3): [0],
+     (1, 1): [1],
+     (1, 2): [1],
+     (1, 3): [0],
+     (2, 2): [2],
+     (3, 2): [0],
+     (3, 3): [3]}
 
     The pairs argument can be used to limit the output to only the
     specified node pairings:
@@ -243,9 +252,19 @@ def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
     The default behavior is to yield the lowest common ancestor for all
     possible combinations of nodes in `G`, including self-pairings:
 
+    >>> from pprint import pprint
     >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
-    >>> dict(nx.all_pairs_lowest_common_ancestor(G))
-    {(0, 0): 0, (0, 1): 0, (0, 3): 0, (0, 2): 0, (1, 1): 1, (1, 3): 0, (1, 2): 1, (3, 3): 3, (3, 2): 0, (2, 2): 2}
+    >>> pprint(dict(nx.all_pairs_lowest_common_ancestor(G)))
+    {(0, 0): 0,
+     (0, 1): 0,
+     (0, 2): 0,
+     (0, 3): 0,
+     (1, 1): 1,
+     (1, 2): 1,
+     (1, 3): 0,
+     (2, 2): 2,
+     (3, 2): 0,
+     (3, 3): 3}
 
     The pairs argument can be used to limit the output to only the
     specified node pairings:
