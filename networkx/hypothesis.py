@@ -141,7 +141,7 @@ def graph_st(draw, graph_generator, edge_data_st=None, **kwargs) -> nx.Graph:
 
 
 def _repr_pretty_(G, p, cycle):
-    p.text(f"{type(G).__name__}();")
+    p.text(f"nx.{type(G).__name__}();")
     p.breakable()
 
     for node in G.nodes():
