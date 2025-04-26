@@ -3,14 +3,17 @@ graph.
 
 """
 
-from networkx.classes import DiGraph
-from networkx.classes import MultiDiGraph
+import networkx as nx
+from networkx.classes import DiGraph, MultiDiGraph
 from networkx.utils import not_implemented_for
 
 __all__ = ["stochastic_graph"]
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable(
+    edge_attrs="weight", mutates_input={"not copy": 1}, returns_graph=True
+)
 def stochastic_graph(G, copy=True, weight="weight"):
     """Returns a right-stochastic representation of directed graph `G`.
 
@@ -33,7 +36,7 @@ def stochastic_graph(G, copy=True, weight="weight"):
         Edge attribute key used for reading the existing weight and
         setting the new weight.  If no attribute with this key is found
         for an edge, then the edge weight is assumed to be 1. If an edge
-        has a weight, it must be a a positive number.
+        has a weight, it must be a positive number.
 
     """
     if copy:
@@ -47,4 +50,5 @@ def stochastic_graph(G, copy=True, weight="weight"):
             d[weight] = 0
         else:
             d[weight] = d.get(weight, 1) / degree[u]
+    nx._clear_cache(G)
     return G

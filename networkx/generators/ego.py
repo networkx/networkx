@@ -1,11 +1,13 @@
 """
 Ego graph.
 """
+
 __all__ = ["ego_graph"]
 
 import networkx as nx
 
 
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def ego_graph(G, n, radius=1, center=True, undirected=False, distance=None):
     """Returns induced subgraph of neighbors centered at node n within
     a given radius.
@@ -56,7 +58,7 @@ def ego_graph(G, n, radius=1, center=True, undirected=False, distance=None):
         if distance is not None:
             sp, _ = nx.single_source_dijkstra(G, n, cutoff=radius, weight=distance)
         else:
-            sp = dict(nx.single_source_shortest_path_length(G, n, cutoff=radius))
+            sp = nx.single_source_shortest_path_length(G, n, cutoff=radius)
 
     H = G.subgraph(sp).copy()
     if not center:

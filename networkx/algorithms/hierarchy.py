@@ -1,11 +1,13 @@
 """
 Flow Hierarchy.
 """
+
 import networkx as nx
 
 __all__ = ["flow_hierarchy"]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def flow_hierarchy(G, weight=None):
     """Returns the flow hierarchy of a directed network.
 
@@ -17,13 +19,18 @@ def flow_hierarchy(G, weight=None):
     G : DiGraph or MultiDiGraph
        A directed graph
 
-    weight : key,optional (default=None)
-       Attribute to use for node weights. If None the weight defaults to 1.
+    weight : string, optional (default=None)
+       Attribute to use for edge weights. If None the weight defaults to 1.
 
     Returns
     -------
     h : float
        Flow hierarchy value
+
+    Raises
+    ------
+    NetworkXError
+       If `G` is not a directed graph or if `G` has no edges.
 
     Notes
     -----
@@ -41,7 +48,10 @@ def flow_hierarchy(G, weight=None):
        DOI: 10.1002/cplx.20368
        http://web.mit.edu/~cmagee/www/documents/28-DetectingEvolvingPatterns_FlowHierarchy.pdf
     """
+    # corner case: G has no edges
+    if nx.is_empty(G):
+        raise nx.NetworkXError("flow_hierarchy not applicable to empty graphs")
     if not G.is_directed():
         raise nx.NetworkXError("G must be a digraph in flow_hierarchy")
     scc = nx.strongly_connected_components(G)
-    return 1.0 - sum(G.subgraph(c).size(weight) for c in scc) / float(G.size(weight))
+    return 1 - sum(G.subgraph(c).size(weight) for c in scc) / G.size(weight)

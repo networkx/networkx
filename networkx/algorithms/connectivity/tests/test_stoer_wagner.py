@@ -1,6 +1,8 @@
 from itertools import chain
-import networkx as nx
+
 import pytest
+
+import networkx as nx
 
 
 def _check_partition(G, cut_value, partition, weight):

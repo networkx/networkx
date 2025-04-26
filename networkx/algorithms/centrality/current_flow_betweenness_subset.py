@@ -1,4 +1,5 @@
 """Current-flow betweenness centrality measures for subsets of nodes."""
+
 import networkx as nx
 from networkx.algorithms.centrality.flow_matrix import flow_matrix_row
 from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
@@ -10,6 +11,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight")
 def current_flow_betweenness_centrality_subset(
     G, sources, targets, normalized=True, weight=None, dtype=float, solver="lu"
 ):
@@ -40,6 +42,8 @@ def current_flow_betweenness_centrality_subset(
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype: data type (float)
       Default data type for internal matrices.
@@ -82,40 +86,42 @@ def current_flow_betweenness_centrality_subset(
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
-    from networkx.utils import reverse_cuthill_mckee_ordering
     import numpy as np
+
+    from networkx.utils import reverse_cuthill_mckee_ordering
 
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
-    n = G.number_of_nodes()
+    N = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
-    mapping = dict(zip(ordering, range(n)))
+    mapping = dict(zip(ordering, range(N)))
     H = nx.relabel_nodes(G, mapping)
-    betweenness = dict.fromkeys(H, 0.0)  # b[v]=0 for v in H
+    betweenness = dict.fromkeys(H, 0.0)  # b[n]=0 for n in H
     for row, (s, t) in flow_matrix_row(H, weight=weight, dtype=dtype, solver=solver):
         for ss in sources:
             i = mapping[ss]
             for tt in targets:
                 j = mapping[tt]
-                betweenness[s] += 0.5 * np.abs(row[i] - row[j])
-                betweenness[t] += 0.5 * np.abs(row[i] - row[j])
+                betweenness[s] += 0.5 * abs(row.item(i) - row.item(j))
+                betweenness[t] += 0.5 * abs(row.item(i) - row.item(j))
     if normalized:
-        nb = (n - 1.0) * (n - 2.0)  # normalization factor
+        nb = (N - 1.0) * (N - 2.0)  # normalization factor
     else:
         nb = 2.0
-    for v in H:
-        betweenness[v] = betweenness[v] / nb + 1.0 / (2 - n)
-    return {ordering[k]: v for k, v in betweenness.items()}
+    for node in H:
+        betweenness[node] = betweenness[node] / nb + 1.0 / (2 - N)
+    return {ordering[node]: value for node, value in betweenness.items()}
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight")
 def edge_current_flow_betweenness_centrality_subset(
     G, sources, targets, normalized=True, weight=None, dtype=float, solver="lu"
 ):
@@ -147,6 +153,8 @@ def edge_current_flow_betweenness_centrality_subset(
     weight : string or None, optional (default=None)
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+      The weight reflects the capacity or the strength of the
+      edge.
 
     dtype: data type (float)
       Default data type for internal matrices.
@@ -188,7 +196,7 @@ def edge_current_flow_betweenness_centrality_subset(
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
@@ -197,16 +205,16 @@ def edge_current_flow_betweenness_centrality_subset(
 
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
-    n = G.number_of_nodes()
+    N = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
-    mapping = dict(zip(ordering, range(n)))
+    mapping = dict(zip(ordering, range(N)))
     H = nx.relabel_nodes(G, mapping)
     edges = (tuple(sorted((u, v))) for u, v in H.edges())
     betweenness = dict.fromkeys(edges, 0.0)
     if normalized:
-        nb = (n - 1.0) * (n - 2.0)  # normalization factor
+        nb = (N - 1.0) * (N - 2.0)  # normalization factor
     else:
         nb = 2.0
     for row, (e) in flow_matrix_row(H, weight=weight, dtype=dtype, solver=solver):
@@ -214,6 +222,6 @@ def edge_current_flow_betweenness_centrality_subset(
             i = mapping[ss]
             for tt in targets:
                 j = mapping[tt]
-                betweenness[e] += 0.5 * np.abs(row[i] - row[j])
+                betweenness[e] += 0.5 * abs(row.item(i) - row.item(j))
         betweenness[e] /= nb
-    return {(ordering[s], ordering[t]): v for (s, t), v in betweenness.items()}
+    return {(ordering[s], ordering[t]): value for (s, t), value in betweenness.items()}

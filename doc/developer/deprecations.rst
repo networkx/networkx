@@ -41,30 +41,15 @@ Todo
 
 Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 
-Version 3.0
+Version 3.6
 ~~~~~~~~~~~
+* Remove ``compute_v_structures`` from ``algorithms/dag.py``.
+* Remove ``link`` kwarg from ``readwrite/json_graph/node_link.py``;
+  Remove the ``FutureWarning`` re: the default value of ``edges`` and change the
+  default value to ``"edges"``.
 
-* In ``readwrite/gml.py`` remove ``literal_stringizer`` and related tests.
-* In ``readwrite/gml.py`` remove ``literal_destringizer`` and related tests.
-* In ``utils/misc.py`` remove ``is_string_like`` and related tests.
-* In ``utils/misc.py`` remove ``make_str`` and related tests.
-* In ``utils/misc.py`` remove ``is_iterator``.
-* In ``utils/misc.py`` remove ``is_list_of_ints``.
-* Remove ``utils/contextmanagers.py`` and related tests.
-* In ``drawing/nx_agraph.py`` remove ``display_pygraphviz`` and related tests.
-* In ``algorithms/chordal.py`` replace ``chordal_graph_cliques`` with ``_chordal_graph_cliques``.
-* In ``algorithms/centrality/betweenness_centrality_subset.py`` remove ``betweenness_centrality_source``.
-* In ``algorithms/centrality/betweenness.py`` remove ``edge_betweeness``.
-* In ``algorithms/community_modularity_max.py`` remove old name ``_naive_greedy_modularity_communities``.
-* In ``linalg/algebraicconnectivity.py`` remove ``_CholeskySolver`` and related code.
-* In ``convert_matrix.py`` remove ``to_numpy_matrix`` and ``from_numpy_matrix``.
-* In ``readwrite/json_graph/cytoscape.py``, change function signature for
-  ``cytoscape_graph`` and ``cytoscape_data`` to replace the ``attrs`` keyword.
-  argument with explicit ``name`` and ``ident`` keyword args.
-* Remove ``networkx/readwrite/nx_yaml.py`` and related tests.
-* Remove ``networkx/readwrite/gpickle.py`` and related tests.
-* Remove ``networkx/readwrite/nx_shp.py`` and related tests (add info in alternatives).
-* Remove ``copy`` method in the coreview Filtered-related classes and related tests.
-* In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
-* In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
-* In ``convert_matrix.py`` remove ``order`` kwarg from ``to_pandas_edgelist`` and docstring
+Version 3.7
+~~~~~~~~~~~
+* Remove ``graph_could_be_isomorphic``, ``fast_graph_could_be_isomorphic``, and
+  ``faster_graph_could_be_isomorphic``, from
+  ``networkx.algorithms.isomorphism.isomorph``.

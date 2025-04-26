@@ -22,6 +22,11 @@ a format that can be read by those tools. For example, Cytoscape can read the
 GraphML format, and so, ``networkx.write_graphml(G, path)`` might be an appropriate
 choice.
 
+More information on the features provided here are available at
+ - matplotlib:  http://matplotlib.org/
+ - pygraphviz:  http://pygraphviz.github.io/
+
+
 Matplotlib
 ==========
 .. automodule:: networkx.drawing.nx_pylab
@@ -34,6 +39,7 @@ Matplotlib
    draw_networkx_edges
    draw_networkx_labels
    draw_networkx_edge_labels
+   draw_bipartite
    draw_circular
    draw_kamada_kawai
    draw_planar
@@ -78,8 +84,11 @@ Graph Layout
 .. autosummary::
    :toctree: generated/
 
+   arf_layout
    bipartite_layout
+   bfs_layout
    circular_layout
+   forceatlas2_layout
    kamada_kawai_layout
    planar_layout
    random_layout
@@ -90,4 +99,14 @@ Graph Layout
    spectral_layout
    spiral_layout
    multipartite_layout
-   
+
+
+LaTeX Code
+==========
+.. automodule:: networkx.drawing.nx_latex
+.. autosummary::
+   :toctree: generated/
+
+   to_latex_raw
+   to_latex
+   write_latex

@@ -7,15 +7,23 @@ Import and export NetworkX graphs in Graphviz dot format using pydot.
 
 Either this module or nx_agraph can be used to interface with graphviz.
 
+Examples
+--------
+>>> G = nx.complete_graph(5)
+>>> PG = nx.nx_pydot.to_pydot(G)
+>>> H = nx.nx_pydot.from_pydot(PG)
+
 See Also
 --------
-pydot:         https://github.com/erocarrera/pydot
-Graphviz:      https://www.graphviz.org
-DOT Language:  http://www.graphviz.org/doc/info/lang.html
+ - pydot:         https://github.com/erocarrera/pydot
+ - Graphviz:      https://www.graphviz.org
+ - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
+
 from locale import getpreferredencoding
-from networkx.utils import open_file
+
 import networkx as nx
+from networkx.utils import open_file
 
 __all__ = [
     "write_dot",
@@ -31,7 +39,13 @@ __all__ = [
 def write_dot(G, path):
     """Write NetworkX graph G to Graphviz dot format on path.
 
-    Path can be a string or a file handle.
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    path : string or file
+       Filename or file handle for data output.
+       Filenames ending in .gz or .bz2 will be compressed.
     """
     P = to_pydot(G)
     path.write(P.to_string())
@@ -39,6 +53,7 @@ def write_dot(G, path):
 
 
 @open_file(0, mode="r")
+@nx._dispatchable(name="pydot_read_dot", graphs=None, returns_graph=True)
 def read_dot(path):
     """Returns a NetworkX :class:`MultiGraph` or :class:`MultiDiGraph` from the
     dot file with the passed path.
@@ -49,7 +64,8 @@ def read_dot(path):
     Parameters
     ----------
     path : str or file
-        Filename or file handle.
+        Filename or file handle to read.
+        Filenames ending in .gz or .bz2 will be decompressed.
 
     Returns
     -------
@@ -58,7 +74,7 @@ def read_dot(path):
 
     Notes
     -----
-    Use `G = nx.Graph(read_dot(path))` to return a :class:`Graph` instead of a
+    Use `G = nx.Graph(nx.nx_pydot.read_dot(path))` to return a :class:`Graph` instead of a
     :class:`MultiGraph`.
     """
     import pydot
@@ -72,6 +88,7 @@ def read_dot(path):
     return from_pydot(P_list[0])
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_pydot(P):
     """Returns a NetworkX graph from a Pydot graph.
 
@@ -95,6 +112,7 @@ def from_pydot(P):
     >>> G = nx.Graph(nx.nx_pydot.from_pydot(A))
 
     """
+
     if P.get_strict(None):  # pydot bug: get_strict() shouldn't take argument
         multiedges = False
     else:
@@ -206,20 +224,23 @@ def to_pydot(N):
         pass
 
     for n, nodedata in N.nodes(data=True):
-        str_nodedata = {k: str(v) for k, v in nodedata.items()}
-        p = pydot.Node(str(n), **str_nodedata)
+        str_nodedata = {str(k): str(v) for k, v in nodedata.items()}
+        n = str(n)
+        p = pydot.Node(n, **str_nodedata)
         P.add_node(p)
 
     if N.is_multigraph():
         for u, v, key, edgedata in N.edges(data=True, keys=True):
-            str_edgedata = {k: str(v) for k, v in edgedata.items() if k != "key"}
-            edge = pydot.Edge(str(u), str(v), key=str(key), **str_edgedata)
+            str_edgedata = {str(k): str(v) for k, v in edgedata.items() if k != "key"}
+            u, v = str(u), str(v)
+            edge = pydot.Edge(u, v, key=str(key), **str_edgedata)
             P.add_edge(edge)
 
     else:
         for u, v, edgedata in N.edges(data=True):
-            str_edgedata = {k: str(v) for k, v in edgedata.items()}
-            edge = pydot.Edge(str(u), str(v), **str_edgedata)
+            str_edgedata = {str(k): str(v) for k, v in edgedata.items()}
+            u, v = str(u), str(v)
+            edge = pydot.Edge(u, v, **str_edgedata)
             P.add_edge(edge)
     return P
 
@@ -261,7 +282,7 @@ def pydot_layout(G, prog="neato", root=None):
     """Create node positions using :mod:`pydot` and Graphviz.
 
     Parameters
-    --------
+    ----------
     G : Graph
         NetworkX graph to be laid out.
     prog : string  (default: 'neato')
@@ -272,7 +293,7 @@ def pydot_layout(G, prog="neato", root=None):
         The node of G from which to start some layout algorithms.
 
     Returns
-    --------
+    -------
     dict
         Dictionary of positions keyed by node.
 
@@ -288,11 +309,11 @@ def pydot_layout(G, prog="neato", root=None):
     representation and GraphViz could treat them as the same node.
     The layout may assign both nodes a single location. See Issue #1568
     If this occurs in your case, consider relabeling the nodes just
-    for the layout computation using something similar to:
+    for the layout computation using something similar to::
 
-        H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
-        H_layout = nx.nx_pydot.pydot_layout(G, prog='dot')
-        G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
+        H = nx.convert_node_labels_to_integers(G, label_attribute="node_label")
+        H_layout = nx.nx_pydot.pydot_layout(H, prog="dot")
+        G_layout = {H.nodes[n]["node_label"]: p for n, p in H_layout.items()}
 
     """
     import pydot
@@ -326,8 +347,8 @@ def pydot_layout(G, prog="neato", root=None):
 
     node_pos = {}
     for n in G.nodes():
-        pydot_node = pydot.Node(str(n)).get_name()
-        node = Q.get_node(pydot_node)
+        str_n = str(n)
+        node = Q.get_node(pydot.quote_id_if_necessary(str_n))
 
         if isinstance(node, list):
             node = node[0]

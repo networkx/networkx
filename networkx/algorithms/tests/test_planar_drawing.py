@@ -1,7 +1,9 @@
+import math
+
 import pytest
+
 import networkx as nx
 from networkx.algorithms.planar_drawing import triangulate_embedding
-import math
 
 
 def test_graph1():
@@ -105,13 +107,13 @@ def test_triangulate_embedding2():
 
 def check_triangulation(embedding, expected_embedding):
     res_embedding, _ = triangulate_embedding(embedding, True)
-    assert (
-        res_embedding.get_data() == expected_embedding
-    ), "Expected embedding incorrect"
+    assert res_embedding.get_data() == expected_embedding, (
+        "Expected embedding incorrect"
+    )
     res_embedding, _ = triangulate_embedding(embedding, False)
-    assert (
-        res_embedding.get_data() == expected_embedding
-    ), "Expected embedding incorrect"
+    assert res_embedding.get_data() == expected_embedding, (
+        "Expected embedding incorrect"
+    )
 
 
 def check_embedding_data(embedding_data):
@@ -119,11 +121,11 @@ def check_embedding_data(embedding_data):
     embedding = nx.PlanarEmbedding()
     embedding.set_data(embedding_data)
     pos_fully = nx.combinatorial_embedding_to_pos(embedding, False)
-    msg = "Planar drawing does not conform to the embedding (fully " "triangulation)"
+    msg = "Planar drawing does not conform to the embedding (fully triangulation)"
     assert planar_drawing_conforms_to_embedding(embedding, pos_fully), msg
     check_edge_intersections(embedding, pos_fully)
     pos_internally = nx.combinatorial_embedding_to_pos(embedding, True)
-    msg = "Planar drawing does not conform to the embedding (internal " "triangulation)"
+    msg = "Planar drawing does not conform to the embedding (internal triangulation)"
     assert planar_drawing_conforms_to_embedding(embedding, pos_internally), msg
     check_edge_intersections(embedding, pos_internally)
 
@@ -171,10 +173,10 @@ def check_edge_intersections(G, pos):
                     # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
                     px = (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (
                         x3 * y4 - y3 * x4
-                    ) / float(determinant)
+                    ) / determinant
                     py = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (
                         x3 * y4 - y3 * x4
-                    ) / float(determinant)
+                    ) / determinant
 
                     # Check if intersection lies between the points
                     if point_in_between(pos[a], pos[b], (px, py)) and point_in_between(
@@ -229,7 +231,7 @@ class Vector:
             return self.x * other.y < self.y * other.x
 
     def __ne__(self, other):
-        return not self == other
+        return self != other
 
     def __le__(self, other):
         return not other < self

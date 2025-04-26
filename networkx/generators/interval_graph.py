@@ -1,12 +1,15 @@
 """
 Generators for interval graph.
 """
+
 from collections.abc import Sequence
+
 import networkx as nx
 
 __all__ = ["interval_graph"]
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def interval_graph(intervals):
     """Generates an interval graph for a list of intervals given.
 
@@ -35,7 +38,7 @@ def interval_graph(intervals):
     [((-2, 3), (1, 4)), ((-2, 3), (2, 3)), ((1, 4), (2, 3)), ((1, 4), (4, 6))]
 
     Raises
-    --------
+    ------
     :exc:`TypeError`
         if `intervals` contains None or an element which is not
         collections.abc.Sequence or not a length of 2.
@@ -51,9 +54,7 @@ def interval_graph(intervals):
                 "collections.abc.Sequence such as tuple or list."
             )
         if interval[0] > interval[1]:
-            raise ValueError(
-                f"Interval must have lower value first. " f"Got {interval}"
-            )
+            raise ValueError(f"Interval must have lower value first. Got {interval}")
 
     graph = nx.Graph()
 

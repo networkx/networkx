@@ -25,22 +25,23 @@ There are two different functions for computing a tree decomposition:
       http://www.cs.uu.nl
 
 .. [3] K. Wang, Z. Lu, and J. Hicks *Treewidth*.
-      http://web.eecs.utk.edu/~cphillip/cs594_spring2015_projects/treewidth.pdf
+      https://web.archive.org/web/20210507025929/http://web.eecs.utk.edu/~cphill25/cs594_spring2015_projects/treewidth.pdf
 
 """
 
+import itertools
 import sys
+from heapq import heapify, heappop, heappush
 
 import networkx as nx
 from networkx.utils import not_implemented_for
-from heapq import heappush, heappop, heapify
-import itertools
 
 __all__ = ["treewidth_min_degree", "treewidth_min_fill_in"]
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(returns_graph=True)
 def treewidth_min_degree(G):
     """Returns a treewidth decomposition using the Minimum Degree heuristic.
 
@@ -64,11 +65,12 @@ def treewidth_min_degree(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(returns_graph=True)
 def treewidth_min_fill_in(G):
     """Returns a treewidth decomposition using the Minimum Fill-in heuristic.
 
     The heuristic chooses a node from the graph, where the number of edges
-    added turning the neighbourhood of the chosen node into clique is as
+    added turning the neighborhood of the chosen node into clique is as
     small as possible.
 
     Parameters
@@ -87,7 +89,7 @@ class MinDegreeHeuristic:
     """Implements the Minimum Degree heuristic.
 
     The heuristic chooses the nodes according to their degree
-    (number of neighbours), i.e., first the node with the lowest degree is
+    (number of neighbors), i.e., first the node with the lowest degree is
     chosen, then the graph is updated and the corresponding node is
     removed. Next, a new node with the lowest degree is chosen, and so on.
     """
@@ -98,22 +100,23 @@ class MinDegreeHeuristic:
         # nodes that have to be updated in the heap before each iteration
         self._update_nodes = []
 
-        self._degreeq = []  # a heapq with 2-tuples (degree,node)
+        self._degreeq = []  # a heapq with 3-tuples (degree,unique_id,node)
+        self.count = itertools.count()
 
         # build heap with initial degrees
         for n in graph:
-            self._degreeq.append((len(graph[n]), n))
+            self._degreeq.append((len(graph[n]), next(self.count), n))
         heapify(self._degreeq)
 
     def best_node(self, graph):
         # update nodes in self._update_nodes
         for n in self._update_nodes:
             # insert changed degrees into degreeq
-            heappush(self._degreeq, (len(graph[n]), n))
+            heappush(self._degreeq, (len(graph[n]), next(self.count), n))
 
         # get the next valid (minimum degree) node
         while self._degreeq:
-            (min_degree, elim_node) = heappop(self._degreeq)
+            (min_degree, _, elim_node) = heappop(self._degreeq)
             if elim_node not in graph or len(graph[elim_node]) != min_degree:
                 # outdated entry in degreeq
                 continue
@@ -129,38 +132,40 @@ class MinDegreeHeuristic:
         return None
 
 
-def min_fill_in_heuristic(graph):
+def min_fill_in_heuristic(graph_dict):
     """Implements the Minimum Degree heuristic.
 
+    graph_dict: dict keyed by node to sets of neighbors (no self-loops)
+
     Returns the node from the graph, where the number of edges added when
-    turning the neighbourhood of the chosen node into clique is as small as
+    turning the neighborhood of the chosen node into clique is as small as
     possible. This algorithm chooses the nodes using the Minimum Fill-In
     heuristic. The running time of the algorithm is :math:`O(V^3)` and it uses
-    additional constant memory."""
+    additional constant memory.
+    """
 
-    if len(graph) == 0:
+    if len(graph_dict) == 0:
         return None
 
     min_fill_in_node = None
 
     min_fill_in = sys.maxsize
 
-    # create sorted list of (degree, node)
-    degree_list = [(len(graph[node]), node) for node in graph]
-    degree_list.sort()
+    # sort nodes by degree
+    nodes_by_degree = sorted(graph_dict, key=lambda x: len(graph_dict[x]))
+    min_degree = len(graph_dict[nodes_by_degree[0]])
 
-    # abort condition
-    min_degree = degree_list[0][0]
-    if min_degree == len(graph) - 1:
+    # abort condition (handle complete graph)
+    if min_degree == len(graph_dict) - 1:
         return None
 
-    for (_, node) in degree_list:
+    for node in nodes_by_degree:
         num_fill_in = 0
-        nbrs = graph[node]
+        nbrs = graph_dict[node]
         for nbr in nbrs:
             # count how many nodes in nbrs current nbr is not connected to
             # subtract 1 for the node itself
-            num_fill_in += len(nbrs - graph[nbr]) - 1
+            num_fill_in += len(nbrs - graph_dict[nbr]) - 1
             if num_fill_in >= 2 * min_fill_in:
                 break
 
@@ -175,6 +180,7 @@ def min_fill_in_heuristic(graph):
     return min_fill_in_node
 
 
+@nx._dispatchable(returns_graph=True)
 def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
     """Returns a treewidth decomposition using the passed heuristic.
 
@@ -190,33 +196,33 @@ def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
     """
 
     # make dict-of-sets structure
-    graph = {n: set(G[n]) - {n} for n in G}
+    graph_dict = {n: set(G[n]) - {n} for n in G}
 
     # stack containing nodes and neighbors in the order from the heuristic
     node_stack = []
 
     # get first node from heuristic
-    elim_node = heuristic(graph)
+    elim_node = heuristic(graph_dict)
     while elim_node is not None:
-        # connect all neighbours with each other
-        nbrs = graph[elim_node]
+        # connect all neighbors with each other
+        nbrs = graph_dict[elim_node]
         for u, v in itertools.permutations(nbrs, 2):
-            if v not in graph[u]:
-                graph[u].add(v)
+            if v not in graph_dict[u]:
+                graph_dict[u].add(v)
 
         # push node and its current neighbors on stack
         node_stack.append((elim_node, nbrs))
 
-        # remove node from graph
-        for u in graph[elim_node]:
-            graph[u].remove(elim_node)
+        # remove node from graph_dict
+        for u in graph_dict[elim_node]:
+            graph_dict[u].remove(elim_node)
 
-        del graph[elim_node]
-        elim_node = heuristic(graph)
+        del graph_dict[elim_node]
+        elim_node = heuristic(graph_dict)
 
     # the abort condition is met; put all remaining nodes into one bag
     decomp = nx.Graph()
-    first_bag = frozenset(graph.keys())
+    first_bag = frozenset(graph_dict.keys())
     decomp.add_node(first_bag)
 
     treewidth = len(first_bag) - 1

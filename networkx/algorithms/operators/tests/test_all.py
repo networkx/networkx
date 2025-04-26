@@ -1,6 +1,7 @@
 import pytest
+
 import networkx as nx
-from networkx.testing import assert_edges_equal
+from networkx.utils import edges_equal
 
 
 def test_union_all_attributes():
@@ -27,13 +28,13 @@ def test_union_all_attributes():
         assert ghj.nodes[n] == eval(graph).nodes[int(node)]
 
     assert ghj.graph["attr"] == "attr"
-    assert ghj.graph["name"] == "j"  # j graph attributes take precendent
+    assert ghj.graph["name"] == "j"  # j graph attributes take precedent
 
 
 def test_intersection_all():
     G = nx.Graph()
     H = nx.Graph()
-    R = nx.Graph()
+    R = nx.Graph(awesome=True)
     G.add_nodes_from([1, 2, 3, 4])
     G.add_edge(1, 2)
     G.add_edge(2, 3)
@@ -43,6 +44,27 @@ def test_intersection_all():
     R.add_nodes_from([1, 2, 3, 4])
     R.add_edge(2, 3)
     R.add_edge(4, 1)
+    I = nx.intersection_all([G, H, R])
+    assert set(I.nodes()) == {1, 2, 3, 4}
+    assert sorted(I.edges()) == [(2, 3)]
+    assert I.graph == {}
+
+
+def test_intersection_all_different_node_sets():
+    G = nx.Graph()
+    H = nx.Graph()
+    R = nx.Graph()
+    G.add_nodes_from([1, 2, 3, 4, 6, 7])
+    G.add_edge(1, 2)
+    G.add_edge(2, 3)
+    G.add_edge(6, 7)
+    H.add_nodes_from([1, 2, 3, 4])
+    H.add_edge(2, 3)
+    H.add_edge(3, 4)
+    R.add_nodes_from([1, 2, 3, 4, 8, 9])
+    R.add_edge(2, 3)
+    R.add_edge(4, 1)
+    R.add_edge(8, 9)
     I = nx.intersection_all([G, H, R])
     assert set(I.nodes()) == {1, 2, 3, 4}
     assert sorted(I.edges()) == [(2, 3)]
@@ -65,8 +87,23 @@ def test_intersection_all_attributes():
     assert set(gh.nodes()) == set(h.nodes())
     assert sorted(gh.edges()) == sorted(g.edges())
 
-    h.remove_node(0)
-    pytest.raises(nx.NetworkXError, nx.intersection, g, h)
+
+def test_intersection_all_attributes_different_node_sets():
+    g = nx.Graph()
+    g.add_node(0, x=4)
+    g.add_node(1, x=5)
+    g.add_edge(0, 1, size=5)
+    g.graph["name"] = "g"
+
+    h = g.copy()
+    g.add_node(2)
+    h.graph["name"] = "h"
+    h.graph["attr"] = "attr"
+    h.nodes[0]["x"] = 7
+
+    gh = nx.intersection_all([g, h])
+    assert set(gh.nodes()) == set(h.nodes())
+    assert sorted(gh.edges()) == sorted(g.edges())
 
 
 def test_intersection_all_multigraph_attributes():
@@ -84,6 +121,32 @@ def test_intersection_all_multigraph_attributes():
     assert sorted(gh.edges(keys=True)) == [(0, 1, 0)]
 
 
+def test_intersection_all_multigraph_attributes_different_node_sets():
+    g = nx.MultiGraph()
+    g.add_edge(0, 1, key=0)
+    g.add_edge(0, 1, key=1)
+    g.add_edge(0, 1, key=2)
+    g.add_edge(1, 2, key=1)
+    g.add_edge(1, 2, key=2)
+    h = nx.MultiGraph()
+    h.add_edge(0, 1, key=0)
+    h.add_edge(0, 1, key=2)
+    h.add_edge(0, 1, key=3)
+    gh = nx.intersection_all([g, h])
+    assert set(gh.nodes()) == set(h.nodes())
+    assert sorted(gh.edges()) == [(0, 1), (0, 1)]
+    assert sorted(gh.edges(keys=True)) == [(0, 1, 0), (0, 1, 2)]
+
+
+def test_intersection_all_digraph():
+    g = nx.DiGraph()
+    g.add_edges_from([(1, 2), (2, 3)])
+    h = nx.DiGraph()
+    h.add_edges_from([(2, 1), (2, 3)])
+    gh = nx.intersection_all([g, h])
+    assert sorted(gh.edges()) == [(2, 3)]
+
+
 def test_union_all_and_compose_all():
     K3 = nx.complete_graph(3)
     P3 = nx.path_graph(3)
@@ -99,7 +162,7 @@ def test_union_all_and_compose_all():
 
     G = nx.union_all([G1, G2])
     H = nx.compose_all([G1, G2])
-    assert_edges_equal(G.edges(), H.edges())
+    assert edges_equal(G.edges(), H.edges())
     assert not G.has_edge("A", "1")
     pytest.raises(nx.NetworkXError, nx.union, K3, P3)
     H1 = nx.union_all([H, G1], rename=("H", "G1"))
@@ -137,7 +200,7 @@ def test_union_all_and_compose_all():
     assert not H1.has_edge("NB", "NA")
 
     G = nx.compose_all([G, G])
-    assert_edges_equal(G.edges(), H.edges())
+    assert edges_equal(G.edges(), H.edges())
 
     G2 = nx.union_all([G2, G2], rename=("", "copy"))
     assert sorted(G2.nodes()) == [
@@ -186,9 +249,10 @@ def test_union_all_multigraph():
 
 
 def test_input_output():
-    l = [nx.Graph([(1, 2)]), nx.Graph([(3, 4)])]
+    l = [nx.Graph([(1, 2)]), nx.Graph([(3, 4)], awesome=True)]
     U = nx.disjoint_union_all(l)
     assert len(l) == 2
+    assert U.graph["awesome"]
     C = nx.compose_all(l)
     assert len(l) == 2
     l = [nx.Graph([(1, 2)]), nx.Graph([(1, 2)])]
@@ -202,6 +266,10 @@ def test_mixed_type_union():
         H = nx.MultiGraph()
         I = nx.Graph()
         U = nx.union_all([G, H, I])
+    with pytest.raises(nx.NetworkXError):
+        X = nx.Graph()
+        Y = nx.DiGraph()
+        XY = nx.union_all([X, Y])
 
 
 def test_mixed_type_disjoint_union():
@@ -210,6 +278,10 @@ def test_mixed_type_disjoint_union():
         H = nx.MultiGraph()
         I = nx.Graph()
         U = nx.disjoint_union_all([G, H, I])
+    with pytest.raises(nx.NetworkXError):
+        X = nx.Graph()
+        Y = nx.DiGraph()
+        XY = nx.disjoint_union_all([X, Y])
 
 
 def test_mixed_type_intersection():
@@ -218,6 +290,10 @@ def test_mixed_type_intersection():
         H = nx.MultiGraph()
         I = nx.Graph()
         U = nx.intersection_all([G, H, I])
+    with pytest.raises(nx.NetworkXError):
+        X = nx.Graph()
+        Y = nx.DiGraph()
+        XY = nx.intersection_all([X, Y])
 
 
 def test_mixed_type_compose():
@@ -226,6 +302,10 @@ def test_mixed_type_compose():
         H = nx.MultiGraph()
         I = nx.Graph()
         U = nx.compose_all([G, H, I])
+    with pytest.raises(nx.NetworkXError):
+        X = nx.Graph()
+        Y = nx.DiGraph()
+        XY = nx.compose_all([X, Y])
 
 
 def test_empty_union():

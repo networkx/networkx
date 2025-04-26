@@ -1,11 +1,13 @@
 """
 Spectral bipartivity measure.
 """
+
 import networkx as nx
 
 __all__ = ["spectral_bipartivity"]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def spectral_bipartivity(G, nodes=None, weight="weight"):
     """Returns the spectral bipartivity.
 
@@ -47,21 +49,21 @@ def spectral_bipartivity(G, nodes=None, weight="weight"):
     .. [1] E. Estrada and J. A. Rodríguez-Velázquez, "Spectral measures of
        bipartivity in complex networks", PhysRev E 72, 046105 (2005)
     """
-    import scipy.linalg
+    import scipy as sp
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist, weight=weight)
-    expA = scipy.linalg.expm(A)
-    expmA = scipy.linalg.expm(-A)
+    expA = sp.linalg.expm(A)
+    expmA = sp.linalg.expm(-A)
     coshA = 0.5 * (expA + expmA)
     if nodes is None:
         # return single number for entire graph
-        return coshA.diagonal().sum() / expA.diagonal().sum()
+        return float(coshA.diagonal().sum() / expA.diagonal().sum())
     else:
         # contribution for individual nodes
         index = dict(zip(nodelist, range(len(nodelist))))
         sb = {}
         for n in nodes:
             i = index[n]
-            sb[n] = coshA[i, i] / expA[i, i]
+            sb[n] = coshA.item(i, i) / expA.item(i, i)
         return sb

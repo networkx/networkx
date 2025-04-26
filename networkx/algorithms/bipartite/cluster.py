@@ -1,8 +1,7 @@
-"""Functions for computing clustering of pairs
-
-"""
+"""Functions for computing clustering of pairs"""
 
 import itertools
+
 import networkx as nx
 
 __all__ = [
@@ -14,24 +13,25 @@ __all__ = [
 
 
 def cc_dot(nu, nv):
-    return float(len(nu & nv)) / len(nu | nv)
+    return len(nu & nv) / len(nu | nv)
 
 
 def cc_max(nu, nv):
-    return float(len(nu & nv)) / max(len(nu), len(nv))
+    return len(nu & nv) / max(len(nu), len(nv))
 
 
 def cc_min(nu, nv):
-    return float(len(nu & nv)) / min(len(nu), len(nv))
+    return len(nu & nv) / min(len(nu), len(nv))
 
 
 modes = {"dot": cc_dot, "min": cc_min, "max": cc_max}
 
 
+@nx._dispatchable
 def latapy_clustering(G, nodes=None, mode="dot"):
     r"""Compute a bipartite clustering coefficient for nodes.
 
-    The bipartie clustering coefficient is a measure of local density
+    The bipartite clustering coefficient is a measure of local density
     of connections defined as [1]_:
 
     .. math::
@@ -73,7 +73,7 @@ def latapy_clustering(G, nodes=None, mode="dot"):
         is all nodes in G.
 
     mode : string
-        The pariwise bipartite clustering method to be used in the computation.
+        The pairwise bipartite clustering method to be used in the computation.
         It must be "dot", "max", or "min".
 
     Returns
@@ -96,8 +96,8 @@ def latapy_clustering(G, nodes=None, mode="dot"):
     See Also
     --------
     robins_alexander_clustering
-    square_clustering
     average_clustering
+    networkx.algorithms.cluster.square_clustering
 
     References
     ----------
@@ -110,10 +110,10 @@ def latapy_clustering(G, nodes=None, mode="dot"):
 
     try:
         cc_func = modes[mode]
-    except KeyError as e:
+    except KeyError as err:
         raise nx.NetworkXError(
             "Mode for bipartite clustering must be: dot, min or max"
-        ) from e
+        ) from err
 
     if nodes is None:
         nodes = G
@@ -132,6 +132,7 @@ def latapy_clustering(G, nodes=None, mode="dot"):
 clustering = latapy_clustering
 
 
+@nx._dispatchable(name="bipartite_average_clustering")
 def average_clustering(G, nodes=None, mode="dot"):
     r"""Compute the average bipartite clustering coefficient.
 
@@ -162,7 +163,7 @@ def average_clustering(G, nodes=None, mode="dot"):
         bipartite sets.
 
     mode : string
-        The pariwise bipartite clustering method.
+        The pairwise bipartite clustering method.
         It must be "dot", "max", or "min"
 
     Returns
@@ -205,9 +206,10 @@ def average_clustering(G, nodes=None, mode="dot"):
     if nodes is None:
         nodes = G
     ccs = latapy_clustering(G, nodes=nodes, mode=mode)
-    return float(sum(ccs[v] for v in nodes)) / len(nodes)
+    return sum(ccs[v] for v in nodes) / len(nodes)
 
 
+@nx._dispatchable
 def robins_alexander_clustering(G):
     r"""Compute the bipartite clustering of G.
 
@@ -239,7 +241,7 @@ def robins_alexander_clustering(G):
     See Also
     --------
     latapy_clustering
-    square_clustering
+    networkx.algorithms.cluster.square_clustering
 
     References
     ----------
@@ -258,10 +260,21 @@ def robins_alexander_clustering(G):
 
 
 def _four_cycles(G):
+    # Also see `square_clustering` which counts squares in a similar way
     cycles = 0
+    seen = set()
+    G_adj = G._adj
     for v in G:
-        for u, w in itertools.combinations(G[v], 2):
-            cycles += len((set(G[u]) & set(G[w])) - {v})
+        seen.add(v)
+        v_neighbors = set(G_adj[v])
+        if len(v_neighbors) < 2:
+            # Can't form a square without at least two neighbors
+            continue
+        two_hop_neighbors = set().union(*(G_adj[u] for u in v_neighbors))
+        two_hop_neighbors -= seen
+        for x in two_hop_neighbors:
+            p2 = len(v_neighbors.intersection(G_adj[x]))
+            cycles += p2 * (p2 - 1)
     return cycles / 4
 
 

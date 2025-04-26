@@ -1,6 +1,7 @@
 import pytest
+
 import networkx as nx
-from networkx.testing import assert_edges_equal
+from networkx.utils import edges_equal
 
 
 def test_tensor_product_raises():
@@ -89,8 +90,8 @@ def test_tensor_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.0)
     GH = nx.tensor_product(G, H)
 
-    for (u_G, u_H) in GH.nodes():
-        for (v_G, v_H) in GH.nodes():
+    for u_G, u_H in GH.nodes():
+        for v_G, v_H in GH.nodes():
             if H.has_edge(u_H, v_H) and G.has_edge(u_G, v_G):
                 assert GH.has_edge((u_G, u_H), (v_G, v_H))
             else:
@@ -195,8 +196,8 @@ def test_cartesian_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.0)
     GH = nx.cartesian_product(G, H)
 
-    for (u_G, u_H) in GH.nodes():
-        for (v_G, v_H) in GH.nodes():
+    for u_G, u_H in GH.nodes():
+        for v_G, v_H in GH.nodes():
             if (u_G == v_G and H.has_edge(u_H, v_H)) or (
                 u_H == v_H and G.has_edge(u_G, v_G)
             ):
@@ -273,8 +274,8 @@ def test_lexicographic_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.0)
     GH = nx.lexicographic_product(G, H)
 
-    for (u_G, u_H) in GH.nodes():
-        for (v_G, v_H) in GH.nodes():
+    for u_G, u_H in GH.nodes():
+        for v_G, v_H in GH.nodes():
             if G.has_edge(u_G, v_G) or (u_G == v_G and H.has_edge(u_H, v_H)):
                 assert GH.has_edge((u_G, u_H), (v_G, v_H))
             else:
@@ -349,8 +350,8 @@ def test_strong_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.0)
     GH = nx.strong_product(G, H)
 
-    for (u_G, u_H) in GH.nodes():
-        for (v_G, v_H) in GH.nodes():
+    for u_G, u_H in GH.nodes():
+        for v_G, v_H in GH.nodes():
             if (
                 (u_G == v_G and H.has_edge(u_H, v_H))
                 or (u_H == v_H and G.has_edge(u_G, v_G))
@@ -375,7 +376,7 @@ def test_graph_power():
     G.add_edge(9, 2)
     H = nx.power(G, 2)
 
-    assert_edges_equal(
+    assert edges_equal(
         list(H.edges()),
         [
             (0, 1),
@@ -413,7 +414,7 @@ def test_graph_power_negative():
 
 
 def test_rooted_product_raises():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NodeNotFound):
         nx.rooted_product(nx.Graph(), nx.path_graph(2), 10)
 
 
@@ -424,3 +425,67 @@ def test_rooted_product():
     R = nx.rooted_product(G, H, "a")
     assert len(R) == len(G) * len(H)
     assert R.size() == G.size() + len(G) * H.size()
+
+
+def test_corona_product():
+    G = nx.cycle_graph(3)
+    H = nx.path_graph(2)
+    C = nx.corona_product(G, H)
+    assert len(C) == (len(G) * len(H)) + len(G)
+    assert C.size() == G.size() + len(G) * H.size() + len(G) * len(H)
+
+
+def test_modular_product():
+    G = nx.path_graph(3)
+    H = nx.path_graph(4)
+    M = nx.modular_product(G, H)
+    assert len(M) == len(G) * len(H)
+
+    assert edges_equal(
+        list(M.edges()),
+        [
+            ((0, 0), (1, 1)),
+            ((0, 0), (2, 2)),
+            ((0, 0), (2, 3)),
+            ((0, 1), (1, 0)),
+            ((0, 1), (1, 2)),
+            ((0, 1), (2, 3)),
+            ((0, 2), (1, 1)),
+            ((0, 2), (1, 3)),
+            ((0, 2), (2, 0)),
+            ((0, 3), (1, 2)),
+            ((0, 3), (2, 0)),
+            ((0, 3), (2, 1)),
+            ((1, 0), (2, 1)),
+            ((1, 1), (2, 0)),
+            ((1, 1), (2, 2)),
+            ((1, 2), (2, 1)),
+            ((1, 2), (2, 3)),
+            ((1, 3), (2, 2)),
+        ],
+    )
+
+
+def test_modular_product_raises():
+    G = nx.Graph([(0, 1), (1, 2), (2, 0)])
+    H = nx.Graph([(0, 1), (1, 2), (2, 0)])
+    DG = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+    DH = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.modular_product(G, DH)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.modular_product(DG, H)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.modular_product(DG, DH)
+
+    MG = nx.MultiGraph([(0, 1), (1, 2), (2, 0), (0, 1)])
+    MH = nx.MultiGraph([(0, 1), (1, 2), (2, 0), (0, 1)])
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.modular_product(G, MH)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.modular_product(MG, H)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.modular_product(MG, MH)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        # check multigraph with no multiedges
+        nx.modular_product(nx.MultiGraph(G), H)

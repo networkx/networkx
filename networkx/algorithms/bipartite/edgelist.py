@@ -22,10 +22,11 @@ Arbitrary data::
 
 For each edge (u, v) the node u is assigned to part 0 and the node v to part 1.
 """
+
 __all__ = ["generate_edgelist", "write_edgelist", "parse_edgelist", "read_edgelist"]
 
 import networkx as nx
-from networkx.utils import open_file, not_implemented_for
+from networkx.utils import not_implemented_for, open_file
 
 
 @open_file(1, mode="wb")
@@ -70,8 +71,8 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
 
     See Also
     --------
-    write_edgelist()
-    generate_edgelist()
+    write_edgelist
+    generate_edgelist
     """
     for line in generate_edgelist(G, delimiter, data):
         line += "\n"
@@ -129,23 +130,24 @@ def generate_edgelist(G, delimiter=" ", data=True):
     """
     try:
         part0 = [n for n, d in G.nodes.items() if d["bipartite"] == 0]
-    except BaseException as e:
-        raise AttributeError("Missing node attribute `bipartite`") from e
+    except BaseException as err:
+        raise AttributeError("Missing node attribute `bipartite`") from err
     if data is True or data is False:
         for n in part0:
-            for e in G.edges(n, data=data):
-                yield delimiter.join(map(str, e))
+            for edge in G.edges(n, data=data):
+                yield delimiter.join(map(str, edge))
     else:
         for n in part0:
             for u, v, d in G.edges(n, data=True):
-                e = [u, v]
+                edge = [u, v]
                 try:
-                    e.extend(d[k] for k in data)
+                    edge.extend(d[k] for k in data)
                 except KeyError:
                     pass  # missing data for this edge, should warn?
-                yield delimiter.join(map(str, e))
+                yield delimiter.join(map(str, edge))
 
 
+@nx._dispatchable(name="bipartite_parse_edgelist", graphs=None, returns_graph=True)
 def parse_edgelist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None, data=True
 ):
@@ -218,7 +220,7 @@ def parse_edgelist(
         if not len(line):
             continue
         # split line, should have 2 or more
-        s = line.strip().split(delimiter)
+        s = line.rstrip("\n").split(delimiter)
         if len(s) < 2:
             continue
         u = s.pop(0)
@@ -228,10 +230,10 @@ def parse_edgelist(
             try:
                 u = nodetype(u)
                 v = nodetype(v)
-            except BaseException as e:
+            except BaseException as err:
                 raise TypeError(
-                    f"Failed to convert nodes {u},{v} " f"to type {nodetype}."
-                ) from e
+                    f"Failed to convert nodes {u},{v} to type {nodetype}."
+                ) from err
 
         if len(d) == 0 or data is False:
             # no data or data type specified
@@ -240,10 +242,10 @@ def parse_edgelist(
             # no edge types specified
             try:  # try to evaluate as dictionary
                 edgedata = dict(literal_eval(" ".join(d)))
-            except BaseException as e:
+            except BaseException as err:
                 raise TypeError(
-                    f"Failed to convert edge data ({d})" f"to dictionary."
-                ) from e
+                    f"Failed to convert edge data ({d}) to dictionary."
+                ) from err
         else:
             # convert edge data to dictionary with specified keys and type
             if len(d) != len(data):
@@ -254,11 +256,11 @@ def parse_edgelist(
             for (edge_key, edge_type), edge_value in zip(data, d):
                 try:
                     edge_value = edge_type(edge_value)
-                except BaseException as e:
+                except BaseException as err:
                     raise TypeError(
                         f"Failed to convert {edge_key} data "
                         f"{edge_value} to type {edge_type}."
-                    ) from e
+                    ) from err
                 edgedata.update({edge_key: edge_value})
         G.add_node(u, bipartite=0)
         G.add_node(v, bipartite=1)
@@ -267,6 +269,7 @@ def parse_edgelist(
 
 
 @open_file(0, mode="rb")
+@nx._dispatchable(name="bipartite_read_edgelist", graphs=None, returns_graph=True)
 def read_edgelist(
     path,
     comments="#",
@@ -284,7 +287,7 @@ def read_edgelist(
     path : file or string
        File or filename to read. If a file is provided, it must be
        opened in 'rb' mode.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filenames ending in .gz or .bz2 will be decompressed.
     comments : string, optional
        The character used to indicate the start of a comment.
     delimiter : string, optional

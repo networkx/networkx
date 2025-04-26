@@ -1,6 +1,7 @@
 """
 Communicability.
 """
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -9,6 +10,7 @@ __all__ = ["communicability", "communicability_exp"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def communicability(G):
     r"""Returns communicability between all pairs of nodes in G.
 
@@ -36,7 +38,7 @@ def communicability(G):
        Communicability between all pairs of nodes in G  using spectral
        decomposition.
     communicability_betweenness_centrality:
-       Communicability betweeness centrality for each node in G.
+       Communicability betweenness centrality for each node in G.
 
     Notes
     -----
@@ -90,6 +92,7 @@ def communicability(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def communicability_exp(G):
     r"""Returns communicability between all pairs of nodes in G.
 
@@ -116,7 +119,7 @@ def communicability_exp(G):
     communicability:
        Communicability between pairs of nodes in G.
     communicability_betweenness_centrality:
-       Communicability betweeness centrality for each node in G.
+       Communicability betweenness centrality for each node in G.
 
     Notes
     -----
@@ -143,14 +146,14 @@ def communicability_exp(G):
     >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
     >>> c = nx.communicability_exp(G)
     """
-    import scipy.linalg
+    import scipy as sp
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
     # communicability matrix
-    expA = scipy.linalg.expm(A)
+    expA = sp.linalg.expm(A)
     mapping = dict(zip(nodelist, range(len(nodelist))))
     c = {}
     for u in G:

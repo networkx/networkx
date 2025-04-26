@@ -1,4 +1,5 @@
 """Load centrality."""
+
 from operator import itemgetter
 
 import networkx as nx
@@ -6,6 +7,7 @@ import networkx as nx
 __all__ = ["load_centrality", "edge_load_centrality"]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weight=None):
     """Compute load centrality for nodes.
 
@@ -24,6 +26,7 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
     weight : None or string, optional (default=None)
       If None, edge weights are ignored.
       Otherwise holds the name of the edge attribute used as weight.
+      The weight of an edge is treated as the length or distance between the two sides.
 
     cutoff : bool, optional (default=None)
       If specified, only consider paths of length <= cutoff.
@@ -35,7 +38,7 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
 
     See Also
     --------
-    betweenness_centrality()
+    betweenness_centrality
 
     Notes
     -----
@@ -52,7 +55,7 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
     .. [2] Kwang-Il Goh, Byungnam Kahng and Doochul Kim
        Universal behavior of Load Distribution in Scale-Free Networks.
        Physical Review Letters 87(27):1–4, 2001.
-       http://phya.snu.ac.kr/~dkim/PRL87278701.pdf
+       https://doi.org/10.1103/PhysRevLett.87.278701
     """
     if v is not None:  # only one node
         betweenness = 0.0
@@ -64,7 +67,6 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
             if order <= 2:
                 return betweenness  # no normalization b=0 for all nodes
             betweenness *= 1.0 / ((order - 1) * (order - 2))
-        return betweenness
     else:
         betweenness = {}.fromkeys(G, 0.0)
         for source in betweenness:
@@ -78,7 +80,7 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
             scale = 1.0 / ((order - 1) * (order - 2))
             for v in betweenness:
                 betweenness[v] *= scale
-        return betweenness  # all nodes
+    return betweenness  # all nodes
 
 
 def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
@@ -117,7 +119,7 @@ def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
             for x in pred[v]:  # one shortest path.
                 if x == source:  # stop if hit source because all remaining v
                     break  # also have pred[v]==[source]
-                between[x] += between[v] / float(num_paths)
+                between[x] += between[v] / num_paths
     #  remove source
     for v in between:
         between[v] -= 1
@@ -126,7 +128,7 @@ def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
         l = len(between)
         if l > 2:
             # scale by 1/the number of possible paths
-            scale = 1.0 / float((l - 1) * (l - 2))
+            scale = 1 / ((l - 1) * (l - 2))
             for v in between:
                 between[v] *= scale
     return between
@@ -135,6 +137,7 @@ def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
 load_centrality = newman_betweenness_centrality
 
 
+@nx._dispatchable
 def edge_load_centrality(G, cutoff=False):
     """Compute edge load.
 

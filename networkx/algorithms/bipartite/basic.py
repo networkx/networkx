@@ -3,8 +3,10 @@
 Bipartite Graph Algorithms
 ==========================
 """
+
 import networkx as nx
 from networkx.algorithms.components import connected_components
+from networkx.exception import AmbiguousSolution
 
 __all__ = [
     "is_bipartite",
@@ -16,6 +18,7 @@ __all__ = [
 ]
 
 
+@nx._dispatchable
 def color(G):
     """Returns a two-coloring of the graph.
 
@@ -43,7 +46,7 @@ def color(G):
     >>> print(c)
     {0: 1, 1: 0, 2: 1, 3: 0}
 
-    You can use this to set a node attribute indicating the biparite set:
+    You can use this to set a node attribute indicating the bipartite set:
 
     >>> nx.set_node_attributes(G, c, "bipartite")
     >>> print(G.nodes[0]["bipartite"])
@@ -81,6 +84,7 @@ def color(G):
     return color
 
 
+@nx._dispatchable
 def is_bipartite(G):
     """Returns True if graph G is bipartite, False if not.
 
@@ -106,6 +110,7 @@ def is_bipartite(G):
         return False
 
 
+@nx._dispatchable
 def is_bipartite_node_set(G, nodes):
     """Returns True if nodes and G/nodes are a bipartition of G.
 
@@ -126,10 +131,21 @@ def is_bipartite_node_set(G, nodes):
 
     Notes
     -----
+    An exception is raised if the input nodes are not distinct, because in this
+    case some bipartite algorithms will yield incorrect results.
     For connected graphs the bipartite sets are unique.  This function handles
     disconnected graphs.
     """
     S = set(nodes)
+
+    if len(S) < len(nodes):
+        # this should maybe just return False?
+        raise AmbiguousSolution(
+            "The input node set contains duplicates.\n"
+            "This may lead to incorrect results when using it in bipartite algorithms.\n"
+            "Consider using set(nodes) as the input"
+        )
+
     for CC in (G.subgraph(c).copy() for c in connected_components(G)):
         X, Y = sets(CC)
         if not (
@@ -139,6 +155,7 @@ def is_bipartite_node_set(G, nodes):
     return True
 
 
+@nx._dispatchable
 def sets(G, top_nodes=None):
     """Returns bipartite node sets of graph G.
 
@@ -205,12 +222,13 @@ def sets(G, top_nodes=None):
     return (X, Y)
 
 
+@nx._dispatchable(graphs="B")
 def density(B, nodes):
     """Returns density of bipartite graph B.
 
     Parameters
     ----------
-    G : NetworkX graph
+    B : NetworkX graph
 
     nodes: list or container
       Nodes in one node set of the bipartite graph.
@@ -251,18 +269,19 @@ def density(B, nodes):
         d = 0.0
     else:
         if B.is_directed():
-            d = m / (2.0 * float(nb * nt))
+            d = m / (2 * nb * nt)
         else:
-            d = m / float(nb * nt)
+            d = m / (nb * nt)
     return d
 
 
+@nx._dispatchable(graphs="B", edge_attrs="weight")
 def degrees(B, nodes, weight=None):
     """Returns the degrees of the two node sets in the bipartite graph B.
 
     Parameters
     ----------
-    G : NetworkX graph
+    B : NetworkX graph
 
     nodes: list or container
       Nodes in one node set of the bipartite graph.

@@ -13,13 +13,14 @@ each node is determined, and a figure is generated showing three things:
 2. The degree-rank plot for the Graph, and
 3. The degree histogram
 """
+
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 
 G = nx.gnp_random_graph(100, 0.02, seed=10374196)
 
-degree_sequence = sorted([d for n, d in G.degree()], reverse=True)
+degree_sequence = sorted((d for n, d in G.degree()), reverse=True)
 dmax = max(degree_sequence)
 
 fig = plt.figure("Degree of a random graph", figsize=(8, 8))

@@ -19,14 +19,15 @@ from networkx.utils import open_file
 
 
 @open_file(0, mode="rb")
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_leda(path, encoding="UTF-8"):
     """Read graph in LEDA format from path.
 
     Parameters
     ----------
     path : file or string
-       File or filename to read.  Filenames ending in .gz or .bz2  will be
-       uncompressed.
+       Filename or file handle to read.
+       Filenames ending in .gz or .bz2 will be decompressed.
 
     Returns
     -------
@@ -34,7 +35,7 @@ def read_leda(path, encoding="UTF-8"):
 
     Examples
     --------
-    G=nx.read_leda('file.leda')
+    >>> G = nx.read_leda("file.leda")  # doctest: +SKIP
 
     References
     ----------
@@ -45,6 +46,7 @@ def read_leda(path, encoding="UTF-8"):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_leda(lines):
     """Read graph in LEDA format from string or iterable.
 
@@ -59,7 +61,7 @@ def parse_leda(lines):
 
     Examples
     --------
-    G=nx.parse_leda(string)
+    >>> G = nx.parse_leda(string)  # doctest: +SKIP
 
     References
     ----------
@@ -71,7 +73,7 @@ def parse_leda(lines):
         [
             line.rstrip("\n")
             for line in lines
-            if not (line.startswith("#") or line.startswith("\n") or line == "")
+            if not (line.startswith(("#", "\n")) or line == "")
         ]
     )
     for i in range(3):
@@ -99,8 +101,8 @@ def parse_leda(lines):
     for i in range(m):
         try:
             s, t, reversal, label = next(lines).split()
-        except BaseException as e:
-            raise NetworkXError(f"Too few fields in LEDA.GRAPH edge {i+1}") from e
+        except BaseException as err:
+            raise NetworkXError(f"Too few fields in LEDA.GRAPH edge {i + 1}") from err
         # BEWARE: no handling of reversal edges
         G.add_edge(node[int(s)], node[int(t)], label=label[2:-2])
     return G

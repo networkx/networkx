@@ -1,23 +1,29 @@
 """Flow based node and edge disjoint paths."""
-import networkx as nx
-from networkx.exception import NetworkXNoPath
-
-# Define the default maximum flow function to use for the undelying
-# maximum flow computations
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import preflow_push
-from networkx.algorithms.flow import shortest_augmenting_path
-
-default_flow_func = edmonds_karp
-# Functions to build auxiliary data structures.
-from .utils import build_auxiliary_node_connectivity
-from .utils import build_auxiliary_edge_connectivity
 
 from itertools import filterfalse as _filterfalse
 
+import networkx as nx
+
+# Define the default maximum flow function to use for the underlying
+# maximum flow computations
+from networkx.algorithms.flow import (
+    edmonds_karp,
+    preflow_push,
+    shortest_augmenting_path,
+)
+from networkx.exception import NetworkXNoPath
+
+# Functions to build auxiliary data structures.
+from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_connectivity
+
 __all__ = ["edge_disjoint_paths", "node_disjoint_paths"]
+default_flow_func = edmonds_karp
 
 
+@nx._dispatchable(
+    graphs={"G": 0, "auxiliary?": 5},
+    preserve_edge_attrs={"auxiliary": {"capacity": float("inf")}},
+)
 def edge_disjoint_paths(
     G, s, t, flow_func=None, cutoff=None, auxiliary=None, residual=None
 ):
@@ -47,13 +53,11 @@ def edge_disjoint_paths(
         may change from version to version and should not be relied on.
         Default value: None.
 
-    cutoff : int
-        Maximum number of paths to yield. Some of the maximum flow
-        algorithms, such as :meth:`edmonds_karp` (the default) and
-        :meth:`shortest_augmenting_path` support the cutoff parameter,
-        and will terminate when the flow value reaches or exceeds the
-        cutoff. Other algorithms will ignore this parameter.
-        Default value: None.
+    cutoff : integer or None (default: None)
+        Maximum number of paths to yield. If specified, the maximum flow
+        algorithm will terminate when the flow value reaches or exceeds the
+        cutoff. This only works for flows that support the cutoff parameter
+        (most do) and is ignored otherwise.
 
     auxiliary : NetworkX DiGraph
         Auxiliary digraph to compute flow based edge connectivity. It has
@@ -174,9 +178,12 @@ def edge_disjoint_paths(
 
     # Compute maximum flow between source and target. Flow functions in
     # NetworkX return a residual network.
-    kwargs = dict(
-        capacity="capacity", residual=residual, cutoff=cutoff, value_only=True
-    )
+    kwargs = {
+        "capacity": "capacity",
+        "residual": residual,
+        "cutoff": cutoff,
+        "value_only": True,
+    }
     if flow_func is preflow_push:
         del kwargs["cutoff"]
     if flow_func is shortest_augmenting_path:
@@ -224,6 +231,11 @@ def edge_disjoint_paths(
             paths_found += 1
 
 
+@nx._dispatchable(
+    graphs={"G": 0, "auxiliary?": 5},
+    preserve_node_attrs={"auxiliary": {"id": None}},
+    preserve_graph_attrs={"auxiliary"},
+)
 def node_disjoint_paths(
     G, s, t, flow_func=None, cutoff=None, auxiliary=None, residual=None
 ):
@@ -253,13 +265,11 @@ def node_disjoint_paths(
         of the default function may change from version to version and
         should not be relied on. Default value: None.
 
-    cutoff : int
-        Maximum number of paths to yield. Some of the maximum flow
-        algorithms, such as :meth:`edmonds_karp` (the default) and
-        :meth:`shortest_augmenting_path` support the cutoff parameter,
-        and will terminate when the flow value reaches or exceeds the
-        cutoff. Other algorithms will ignore this parameter.
-        Default value: None.
+    cutoff : integer or None (default: None)
+        Maximum number of paths to yield. If specified, the maximum flow
+        algorithm will terminate when the flow value reaches or exceeds the
+        cutoff. This only works for flows that support the cutoff parameter
+        (most do) and is ignored otherwise.
 
     auxiliary : NetworkX DiGraph
         Auxiliary digraph to compute flow based node connectivity. It has
@@ -287,8 +297,8 @@ def node_disjoint_paths(
     Examples
     --------
     We use in this example the platonic icosahedral graph, which has node
-    node connectivity 5, thus there are 5 node disjoint paths between any
-    pair of non neighbor nodes.
+    connectivity 5, thus there are 5 node disjoint paths between any pair
+    of non neighbor nodes.
 
     >>> G = nx.icosahedral_graph()
     >>> len(list(nx.node_disjoint_paths(G, 0, 6)))
@@ -372,7 +382,12 @@ def node_disjoint_paths(
     else:
         cutoff = min(cutoff, possible)
 
-    kwargs = dict(flow_func=flow_func, residual=residual, auxiliary=H, cutoff=cutoff)
+    kwargs = {
+        "flow_func": flow_func,
+        "residual": residual,
+        "auxiliary": H,
+        "cutoff": cutoff,
+    }
 
     # The edge disjoint paths in the auxiliary digraph correspond to the node
     # disjoint paths in the original graph.

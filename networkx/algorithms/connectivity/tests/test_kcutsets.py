@@ -1,6 +1,7 @@
 # Jordi Torrents
 # Test for k-cutsets
 import itertools
+
 import pytest
 
 import networkx as nx
@@ -185,7 +186,7 @@ def test_articulation_points():
     Ggen = _generate_no_biconnected()
     for i in range(1):  # change 1 to 3 or more for more realizations.
         G = next(Ggen)
-        articulation_points = list({a} for a in nx.articulation_points(G))
+        articulation_points = [{a} for a in nx.articulation_points(G)]
         for cut in nx.all_node_cuts(G):
             assert cut in articulation_points
 
@@ -239,10 +240,6 @@ def test_non_repeated_cuts():
     G = K.subgraph(bcc)
     solution = [{32, 33}, {2, 33}, {0, 3}, {0, 1}, {29, 33}]
     cuts = list(nx.all_node_cuts(G))
-    if len(solution) != len(cuts):
-        print(nx.info(G))
-        print(f"Solution: {solution}")
-        print(f"Result: {cuts}")
     assert len(solution) == len(cuts)
     for cut in cuts:
         assert cut in solution
@@ -259,8 +256,15 @@ def test_cycle_graph():
 
 def test_complete_graph():
     G = nx.complete_graph(5)
-    solution = [{0, 1, 2, 3}, {0, 1, 2, 4}, {0, 1, 3, 4}, {0, 2, 3, 4}, {1, 2, 3, 4}]
-    cuts = list(nx.all_node_cuts(G))
-    assert len(solution) == len(cuts)
-    for cut in cuts:
-        assert cut in solution
+    assert nx.node_connectivity(G) == 4
+    assert list(nx.all_node_cuts(G)) == []
+
+
+def test_all_node_cuts_simple_case():
+    G = nx.complete_graph(5)
+    G.remove_edges_from([(0, 1), (3, 4)])
+    expected = [{0, 1, 2}, {2, 3, 4}]
+    actual = list(nx.all_node_cuts(G))
+    assert len(actual) == len(expected)
+    for cut in actual:
+        assert cut in expected

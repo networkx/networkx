@@ -2,7 +2,6 @@
 Link prediction algorithms.
 """
 
-
 from math import log
 
 import networkx as nx
@@ -37,11 +36,18 @@ def _apply_prediction(G, func, ebunch=None):
     """
     if ebunch is None:
         ebunch = nx.non_edges(G)
+    else:
+        for u, v in ebunch:
+            if u not in G:
+                raise nx.NodeNotFound(f"Node {u} not in G.")
+            if v not in G:
+                raise nx.NodeNotFound(f"Node {v} not in G.")
     return ((u, v, func(u, v)) for u, v in ebunch)
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def resource_allocation_index(G, ebunch=None):
     r"""Compute the resource allocation index of all node pairs in ebunch.
 
@@ -62,7 +68,7 @@ def resource_allocation_index(G, ebunch=None):
         Resource allocation index will be computed for each pair of
         nodes given in the iterable. The pairs must be given as
         2-tuples (u, v) where u and v are nodes in the graph. If ebunch
-        is None then all non-existent edges in the graph will be used.
+        is None then all nonexistent edges in the graph will be used.
         Default value: None.
 
     Returns
@@ -70,6 +76,14 @@ def resource_allocation_index(G, ebunch=None):
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their resource allocation index.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
 
     Examples
     --------
@@ -96,6 +110,7 @@ def resource_allocation_index(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def jaccard_coefficient(G, ebunch=None):
     r"""Compute the Jaccard coefficient of all node pairs in ebunch.
 
@@ -116,7 +131,7 @@ def jaccard_coefficient(G, ebunch=None):
         Jaccard coefficient will be computed for each pair of nodes
         given in the iterable. The pairs must be given as 2-tuples
         (u, v) where u and v are nodes in the graph. If ebunch is None
-        then all non-existent edges in the graph will be used.
+        then all nonexistent edges in the graph will be used.
         Default value: None.
 
     Returns
@@ -124,6 +139,14 @@ def jaccard_coefficient(G, ebunch=None):
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their Jaccard coefficient.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
 
     Examples
     --------
@@ -145,13 +168,14 @@ def jaccard_coefficient(G, ebunch=None):
         union_size = len(set(G[u]) | set(G[v]))
         if union_size == 0:
             return 0
-        return len(list(nx.common_neighbors(G, u, v))) / union_size
+        return len(nx.common_neighbors(G, u, v)) / union_size
 
     return _apply_prediction(G, predict, ebunch)
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def adamic_adar_index(G, ebunch=None):
     r"""Compute the Adamic-Adar index of all node pairs in ebunch.
 
@@ -174,7 +198,7 @@ def adamic_adar_index(G, ebunch=None):
         Adamic-Adar index will be computed for each pair of nodes given
         in the iterable. The pairs must be given as 2-tuples (u, v)
         where u and v are nodes in the graph. If ebunch is None then all
-        non-existent edges in the graph will be used.
+        nonexistent edges in the graph will be used.
         Default value: None.
 
     Returns
@@ -182,6 +206,14 @@ def adamic_adar_index(G, ebunch=None):
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their Adamic-Adar index.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
 
     Examples
     --------
@@ -207,6 +239,7 @@ def adamic_adar_index(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
     r"""Return the CCPA score for each pair of nodes.
 
@@ -242,11 +275,12 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
         Preferential attachment score will be computed for each pair of
         nodes given in the iterable. The pairs must be given as
         2-tuples (u, v) where u and v are nodes in the graph. If ebunch
-        is None then all non-existent edges in the graph will be used.
+        is None then all nonexistent edges in the graph will be used.
         Default value: None.
 
     alpha : Parameter defined for participation of Common Neighbor
-            and Centrality Algorithm share. Default value set to 0.8
+            and Centrality Algorithm share. Values for alpha should
+            normally be between 0 and 1. Default value set to 0.8
             because author found better performance at 0.8 for all the
             dataset.
             Default value: 0.8
@@ -258,6 +292,17 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their Common Neighbor and Centrality based
         Parameterized Algorithm(CCPA) score.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NetworkXAlgorithmError
+        If self loops exist in `ebunch` or in `G` (if `ebunch` is `None`).
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
 
     Examples
     --------
@@ -275,18 +320,34 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
            Sci Rep 10, 364 (2020).
            https://doi.org/10.1038/s41598-019-57304-y
     """
-    shortest_path = nx.shortest_path(G)
 
-    def predict(u, v):
-        return alpha * len(list(nx.common_neighbors(G, u, v))) + (1 - alpha) * (
-            G.number_of_nodes() / (len(shortest_path[u][v]) - 1)
-        )
+    # When alpha == 1, the CCPA score simplifies to the number of common neighbors.
+    if alpha == 1:
+
+        def predict(u, v):
+            if u == v:
+                raise nx.NetworkXAlgorithmError("Self loops are not supported")
+
+            return len(nx.common_neighbors(G, u, v))
+
+    else:
+        spl = dict(nx.shortest_path_length(G))
+        inf = float("inf")
+
+        def predict(u, v):
+            if u == v:
+                raise nx.NetworkXAlgorithmError("Self loops are not supported")
+            path_len = spl[u].get(v, inf)
+
+            n_nbrs = len(nx.common_neighbors(G, u, v))
+            return alpha * n_nbrs + (1 - alpha) * len(G) / path_len
 
     return _apply_prediction(G, predict, ebunch)
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def preferential_attachment(G, ebunch=None):
     r"""Compute the preferential attachment score of all node pairs in ebunch.
 
@@ -307,7 +368,7 @@ def preferential_attachment(G, ebunch=None):
         Preferential attachment score will be computed for each pair of
         nodes given in the iterable. The pairs must be given as
         2-tuples (u, v) where u and v are nodes in the graph. If ebunch
-        is None then all non-existent edges in the graph will be used.
+        is None then all nonexistent edges in the graph will be used.
         Default value: None.
 
     Returns
@@ -315,6 +376,14 @@ def preferential_attachment(G, ebunch=None):
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their preferential attachment score.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
 
     Examples
     --------
@@ -340,6 +409,7 @@ def preferential_attachment(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(node_attrs="community")
 def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
     r"""Count the number of common neighbors of all node pairs in ebunch
         using community information.
@@ -365,7 +435,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
         The score will be computed for each pair of nodes given in the
         iterable. The pairs must be given as 2-tuples (u, v) where u
         and v are nodes in the graph. If ebunch is None then all
-        non-existent edges in the graph will be used.
+        nonexistent edges in the graph will be used.
         Default value: None.
 
     community : string, optional (default = 'community')
@@ -378,6 +448,17 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their score.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NetworkXAlgorithmError
+        If no community information is available for a node in `ebunch` or in `G` (if `ebunch` is `None`).
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
 
     Examples
     --------
@@ -403,7 +484,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
     def predict(u, v):
         Cu = _community(G, u, community)
         Cv = _community(G, v, community)
-        cnbors = list(nx.common_neighbors(G, u, v))
+        cnbors = nx.common_neighbors(G, u, v)
         neighbors = (
             sum(_community(G, w, community) == Cu for w in cnbors) if Cu == Cv else 0
         )
@@ -414,6 +495,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(node_attrs="community")
 def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
     r"""Compute the resource allocation index of all node pairs in
     ebunch using community information.
@@ -439,7 +521,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
         The score will be computed for each pair of nodes given in the
         iterable. The pairs must be given as 2-tuples (u, v) where u
         and v are nodes in the graph. If ebunch is None then all
-        non-existent edges in the graph will be used.
+        nonexistent edges in the graph will be used.
         Default value: None.
 
     community : string, optional (default = 'community')
@@ -452,6 +534,17 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their score.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NetworkXAlgorithmError
+        If no community information is available for a node in `ebunch` or in `G` (if `ebunch` is `None`).
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
 
     Examples
     --------
@@ -489,6 +582,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(node_attrs="community")
 def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
     """Compute the ratio of within- and inter-cluster common neighbors
     of all node pairs in ebunch.
@@ -509,7 +603,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
         The WIC measure will be computed for each pair of nodes given in
         the iterable. The pairs must be given as 2-tuples (u, v) where
         u and v are nodes in the graph. If ebunch is None then all
-        non-existent edges in the graph will be used.
+        nonexistent edges in the graph will be used.
         Default value: None.
 
     delta : float, optional (default = 0.001)
@@ -527,6 +621,18 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their WIC measure.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NetworkXAlgorithmError
+        - If `delta` is less than or equal to zero.
+        - If no community information is available for a node in `ebunch` or in `G` (if `ebunch` is `None`).
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
 
     Examples
     --------
@@ -562,7 +668,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
         Cv = _community(G, v, community)
         if Cu != Cv:
             return 0
-        cnbors = set(nx.common_neighbors(G, u, v))
+        cnbors = nx.common_neighbors(G, u, v)
         within = {w for w in cnbors if _community(G, w, community) == Cu}
         inter = cnbors - within
         return len(within) / (len(inter) + delta)
@@ -575,5 +681,7 @@ def _community(G, u, community):
     node_u = G.nodes[u]
     try:
         return node_u[community]
-    except KeyError as e:
-        raise nx.NetworkXAlgorithmError("No community information") from e
+    except KeyError as err:
+        raise nx.NetworkXAlgorithmError(
+            f"No community information available for Node {u}"
+        ) from err

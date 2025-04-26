@@ -1,7 +1,6 @@
 """Functions for computing reaching centrality of a node or a graph."""
 
 import networkx as nx
-
 from networkx.utils import pairwise
 
 __all__ = ["global_reaching_centrality", "local_reaching_centrality"]
@@ -32,6 +31,7 @@ def _average_weight(G, path, weight=None):
     return total_weight / path_length
 
 
+@nx._dispatchable(edge_attrs="weight")
 def global_reaching_centrality(G, weight=None, normalized=True):
     """Returns the global reaching centrality of a directed graph.
 
@@ -89,7 +89,6 @@ def global_reaching_centrality(G, weight=None, normalized=True):
     total_weight = G.size(weight=weight)
     if total_weight <= 0:
         raise nx.NetworkXError("Size of G must be positive")
-
     # If provided, weights must be interpreted as connection strength
     # (so higher weights are more likely to be chosen). However, the
     # shortest path algorithms in NetworkX assume the provided "weight"
@@ -104,9 +103,9 @@ def global_reaching_centrality(G, weight=None, normalized=True):
         def as_distance(u, v, d):
             return total_weight / d.get(weight, 1)
 
-        shortest_paths = nx.shortest_path(G, weight=as_distance)
+        shortest_paths = dict(nx.shortest_path(G, weight=as_distance))
     else:
-        shortest_paths = nx.shortest_path(G)
+        shortest_paths = dict(nx.shortest_path(G))
 
     centrality = local_reaching_centrality
     # TODO This can be trivially parallelized.
@@ -119,6 +118,7 @@ def global_reaching_centrality(G, weight=None, normalized=True):
     return sum(max_lrc - c for c in lrc) / (len(G) - 1)
 
 
+@nx._dispatchable(edge_attrs="weight")
 def local_reaching_centrality(G, v, paths=None, weight=None, normalized=True):
     """Returns the local reaching centrality of a node in a directed
     graph.
@@ -177,10 +177,14 @@ def local_reaching_centrality(G, v, paths=None, weight=None, normalized=True):
            *PLoS ONE* 7.3 (2012): e33799.
            https://doi.org/10.1371/journal.pone.0033799
     """
+    # Corner case: graph with single node containing a self-loop
+    if (total_weight := G.size(weight=weight)) > 0 and len(G) == 1:
+        raise nx.NetworkXError(
+            "local_reaching_centrality of a single node with self-loop not well-defined"
+        )
     if paths is None:
         if nx.is_negatively_weighted(G, weight=weight):
             raise nx.NetworkXError("edge weights must be positive")
-        total_weight = G.size(weight=weight)
         if total_weight <= 0:
             raise nx.NetworkXError("Size of G must be positive")
         if weight is not None:

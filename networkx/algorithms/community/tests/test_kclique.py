@@ -3,33 +3,32 @@ from itertools import combinations
 import pytest
 
 import networkx as nx
-from networkx.algorithms.community import k_clique_communities
 
 
 def test_overlapping_K5():
     G = nx.Graph()
     G.add_edges_from(combinations(range(5), 2))  # Add a five clique
     G.add_edges_from(combinations(range(2, 7), 2))  # Add another five clique
-    c = list(k_clique_communities(G, 4))
+    c = list(nx.community.k_clique_communities(G, 4))
     assert c == [frozenset(range(7))]
-    c = set(k_clique_communities(G, 5))
+    c = set(nx.community.k_clique_communities(G, 5))
     assert c == {frozenset(range(5)), frozenset(range(2, 7))}
 
 
 def test_isolated_K5():
     G = nx.Graph()
-    G.add_edges_from(combinations(range(0, 5), 2))  # Add a five clique
+    G.add_edges_from(combinations(range(5), 2))  # Add a five clique
     G.add_edges_from(combinations(range(5, 10), 2))  # Add another five clique
-    c = set(k_clique_communities(G, 5))
+    c = set(nx.community.k_clique_communities(G, 5))
     assert c == {frozenset(range(5)), frozenset(range(5, 10))}
 
 
 class TestZacharyKarateClub:
-    def setup(self):
+    def setup_method(self):
         self.G = nx.karate_club_graph()
 
     def _check_communities(self, k, expected):
-        communities = set(k_clique_communities(self.G, k))
+        communities = set(nx.community.k_clique_communities(self.G, k))
         assert communities == expected
 
     def test_k2(self):
@@ -89,4 +88,4 @@ class TestZacharyKarateClub:
 
 def test_bad_k():
     with pytest.raises(nx.NetworkXError):
-        list(k_clique_communities(nx.Graph(), 1))
+        list(nx.community.k_clique_communities(nx.Graph(), 1))

@@ -1,6 +1,7 @@
 """
 Subraph centrality and communicability betweenness.
 """
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -14,6 +15,7 @@ __all__ = [
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def subgraph_centrality_exp(G):
     r"""Returns the subgraph centrality for each node of G.
 
@@ -62,6 +64,7 @@ def subgraph_centrality_exp(G):
     Examples
     --------
     (Example from [1]_)
+
     >>> G = nx.Graph(
     ...     [
     ...         (1, 2),
@@ -83,13 +86,13 @@ def subgraph_centrality_exp(G):
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
     """
     # alternative implementation that calculates the matrix exponential
-    import scipy.linalg
+    import scipy as sp
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
-    expA = scipy.linalg.expm(A)
+    expA = sp.linalg.expm(A)
     # convert diagonal to dictionary keyed by node
     sc = dict(zip(nodelist, map(float, expA.diagonal())))
     return sc
@@ -97,6 +100,7 @@ def subgraph_centrality_exp(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def subgraph_centrality(G):
     r"""Returns subgraph centrality for each node in G.
 
@@ -137,11 +141,12 @@ def subgraph_centrality(G):
        SC(u)=\sum_{j=1}^{N}(v_{j}^{u})^2 e^{\lambda_{j}},
 
     where `v_j` is an eigenvector of the adjacency matrix `A` of G
-    corresponding corresponding to the eigenvalue `\lambda_j`.
+    corresponding to the eigenvalue `\lambda_j`.
 
     Examples
     --------
     (Example from [1]_)
+
     >>> G = nx.Graph(
     ...     [
     ...         (1, 2),
@@ -187,7 +192,8 @@ def subgraph_centrality(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def communicability_betweenness_centrality(G, normalized=True):
+@nx._dispatchable
+def communicability_betweenness_centrality(G):
     r"""Returns subgraph communicability for all pairs of nodes in G.
 
     Communicability betweenness measure makes use of the number of walks
@@ -253,14 +259,14 @@ def communicability_betweenness_centrality(G, normalized=True):
     ['0 0.03', '1 0.45', '2 0.51', '3 0.45', '4 0.40', '5 0.19', '6 0.03']
     """
     import numpy as np
-    import scipy.linalg
+    import scipy as sp
 
     nodelist = list(G)  # ordering of nodes in matrix
     n = len(nodelist)
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[np.nonzero(A)] = 1
-    expA = scipy.linalg.expm(A)
+    expA = sp.linalg.expm(A)
     mapping = dict(zip(nodelist, range(n)))
     cbc = {}
     for v in G:
@@ -270,7 +276,7 @@ def communicability_betweenness_centrality(G, normalized=True):
         col = A[:, i].copy()
         A[i, :] = 0
         A[:, i] = 0
-        B = (expA - scipy.linalg.expm(A)) / expA
+        B = (expA - sp.linalg.expm(A)) / expA
         # sum with row/col of node v and diag set to zero
         B[i, :] = 0
         B[:, i] = 0
@@ -279,25 +285,15 @@ def communicability_betweenness_centrality(G, normalized=True):
         # put row and col back
         A[i, :] = row
         A[:, i] = col
-    # rescaling
-    cbc = _rescale(cbc, normalized=normalized)
+    # rescale when more than two nodes
+    order = len(cbc)
+    if order > 2:
+        scale = 1.0 / ((order - 1.0) ** 2 - (order - 1.0))
+        cbc = {node: value * scale for node, value in cbc.items()}
     return cbc
 
 
-def _rescale(cbc, normalized):
-    # helper to rescale betweenness centrality
-    if normalized is True:
-        order = len(cbc)
-        if order <= 2:
-            scale = None
-        else:
-            scale = 1.0 / ((order - 1.0) ** 2 - (order - 1.0))
-    if scale is not None:
-        for v in cbc:
-            cbc[v] *= scale
-    return cbc
-
-
+@nx._dispatchable
 def estrada_index(G):
     r"""Returns the Estrada index of a the graph G.
 

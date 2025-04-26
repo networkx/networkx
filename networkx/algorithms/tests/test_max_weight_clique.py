@@ -1,9 +1,8 @@
-"""Maximum weight clique test suite.
+"""Maximum weight clique test suite."""
 
-"""
+import pytest
 
 import networkx as nx
-import pytest
 
 
 class TestMaximumWeightClique:
@@ -22,7 +21,7 @@ class TestMaximumWeightClique:
     def test_key_error(self):
         graph = two_node_graph()
         with pytest.raises(KeyError):
-            nx.algorithms.max_weight_clique(graph, "non-existent-key")
+            nx.algorithms.max_weight_clique(graph, "nonexistent-key")
 
     def test_error_on_non_integer_weight(self):
         graph = two_node_graph()

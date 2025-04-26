@@ -6,6 +6,8 @@ Shortest Paths
 
    shortest_path
    all_shortest_paths
+   all_pairs_all_shortest_paths
+   single_source_all_shortest_paths
    shortest_path_length
    average_shortest_path_length
    has_path
@@ -55,6 +57,7 @@ Advanced Interface
    bellman_ford_predecessor_and_distance
 
    negative_edge_cycle
+   find_negative_cycle
    goldberg_radzik
    johnson
 

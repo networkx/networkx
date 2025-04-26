@@ -1,6 +1,8 @@
 """Unit tests for the chain decomposition functions."""
-from itertools import cycle
-from itertools import islice
+
+from itertools import cycle, islice
+
+import pytest
 
 import networkx as nx
 
@@ -83,11 +85,6 @@ class TestChainDecomposition:
         chains = list(nx.chain_decomposition(G, root=1))
         assert len(chains) == len(expected)
 
-    # This chain decomposition isn't unique
-    #        for chain in chains:
-    #            print(chain)
-    #            self.assertContainsChain(chain, expected)
-
     def test_barbell_graph(self):
         # The (3, 0) barbell graph has two triangles joined by a single edge.
         G = nx.barbell_graph(3, 0)
@@ -130,3 +127,10 @@ class TestChainDecomposition:
         assert len(chains) == len(expected)
         for chain in chains:
             self.assertContainsChain(chain, expected)
+
+    def test_chain_decomposition_root_not_in_G(self):
+        """Test chain decomposition when root is not in graph"""
+        G = nx.Graph()
+        G.add_nodes_from([1, 2, 3])
+        with pytest.raises(nx.NodeNotFound):
+            nx.has_bridges(G, root=6)

@@ -5,6 +5,7 @@ import networkx as nx
 __all__ = ["constraint", "local_constraint", "effective_size"]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def mutual_weight(G, u, v, weight=None):
     """Returns the sum of the weights of the edge from `u` to `v` and
     the edge from `v` to `u` in `G`.
@@ -27,6 +28,7 @@ def mutual_weight(G, u, v, weight=None):
     return a_uv + a_vu
 
 
+@nx._dispatchable(edge_attrs="weight")
 def normalized_mutual_weight(G, u, v, norm=sum, weight=None):
     """Returns normalized mutual weight of the edges from `u` to `v`
     with respect to the mutual weights of the neighbors of `u` in `G`.
@@ -47,13 +49,14 @@ def normalized_mutual_weight(G, u, v, norm=sum, weight=None):
     return 0 if scale == 0 else mutual_weight(G, u, v, weight) / scale
 
 
+@nx._dispatchable(edge_attrs="weight")
 def effective_size(G, nodes=None, weight=None):
     r"""Returns the effective size of all nodes in the graph ``G``.
 
     The *effective size* of a node's ego network is based on the concept
     of redundancy. A person's ego network has redundancy to the extent
     that her contacts are connected to each other as well. The
-    nonredundant part of a person's relationships it's the effective
+    nonredundant part of a person's relationships is the effective
     size of her ego network [1]_.  Formally, the effective size of a
     node $u$, denoted $e(u)$, is defined by
 
@@ -101,6 +104,14 @@ def effective_size(G, nodes=None, weight=None):
 
     Notes
     -----
+    Isolated nodes, including nodes which only have self-loop edges, do not
+    have a well-defined effective size::
+
+        >>> G = nx.path_graph(3)
+        >>> G.add_edge(4, 4)
+        >>> nx.effective_size(G)
+        {0: 1.0, 1: 2.0, 2: 1.0, 4: nan}
+
     Burt also defined the related concept of *efficiency* of a node's ego
     network, which is its effective size divided by the degree of that
     node [1]_. So you can easily compute efficiency:
@@ -135,22 +146,66 @@ def effective_size(G, nodes=None, weight=None):
         )
         return 1 - r
 
+    # Check if scipy is available
+    try:
+        # Needed for errstate
+        import numpy as np
+
+        # make sure nx.adjacency_matrix will not raise
+        import scipy as sp
+
+        has_scipy = True
+    except:
+        has_scipy = False
+
+    if nodes is None and has_scipy:
+        # In order to compute constraint of all nodes,
+        # algorithms based on sparse matrices can be much faster
+
+        # Obtain the adjacency matrix
+        P = nx.adjacency_matrix(G, weight=weight)
+
+        # Calculate mutual weights
+        mutual_weights1 = P + P.T
+        mutual_weights2 = mutual_weights1.copy()
+
+        with np.errstate(divide="ignore"):
+            # Mutual_weights1 = Normalize mutual weights by row sums
+            mutual_weights1 /= mutual_weights1.sum(axis=1)[:, np.newaxis]
+
+            # Mutual_weights2 = Normalize mutual weights by row max
+            mutual_weights2 /= mutual_weights2.max(axis=1).toarray()
+
+        # Calculate effective sizes
+        r = 1 - (mutual_weights1 @ mutual_weights2.T).toarray()
+        effective_size = ((mutual_weights1 > 0) * r).sum(axis=1)
+
+        # Special treatment: isolated nodes (ignoring selfloops) marked with "nan"
+        sum_mutual_weights = mutual_weights1.sum(axis=1) - mutual_weights1.diagonal()
+        isolated_nodes = sum_mutual_weights == 0
+        effective_size[isolated_nodes] = float("nan")
+        # Use tolist() to automatically convert numpy scalars -> Python scalars
+        return dict(zip(G, effective_size.tolist()))
+
+    # Results for only requested nodes
     effective_size = {}
     if nodes is None:
         nodes = G
     # Use Borgatti's simplified formula for unweighted and undirected graphs
     if not G.is_directed() and weight is None:
         for v in nodes:
-            # Effective size is not defined for isolated nodes
-            if len(G[v]) == 0:
+            # Effective size is not defined for isolated nodes, including nodes
+            # with only self-edges
+            if all(u == v for u in G[v]):
                 effective_size[v] = float("nan")
                 continue
             E = nx.ego_graph(G, v, center=False, undirected=True)
             effective_size[v] = len(E) - (2 * E.size()) / len(E)
     else:
         for v in nodes:
-            # Effective size is not defined for isolated nodes
-            if len(G[v]) == 0:
+            # Effective size is not defined for isolated nodes, including nodes
+            # with only self-edges
+            if all(u == v for u in G[v]):
                 effective_size[v] = float("nan")
                 continue
             effective_size[v] = sum(
@@ -159,6 +214,7 @@ def effective_size(G, nodes=None, weight=None):
     return effective_size
 
 
+@nx._dispatchable(edge_attrs="weight")
 def constraint(G, nodes=None, weight=None):
     r"""Returns the constraint on all nodes in the graph ``G``.
 
@@ -171,8 +227,8 @@ def constraint(G, nodes=None, weight=None):
 
        c(v) = \sum_{w \in N(v) \setminus \{v\}} \ell(v, w)
 
-    where `N(v)` is the subset of the neighbors of `v` that are either
-    predecessors or successors of `v` and `\ell(v, w)` is the local
+    where $N(v)$ is the subset of the neighbors of `v` that are either
+    predecessors or successors of `v` and $\ell(v, w)$ is the local
     constraint on `v` with respect to `w` [1]_. For the definition of local
     constraint, see :func:`local_constraint`.
 
@@ -205,9 +261,48 @@ def constraint(G, nodes=None, weight=None):
            American Journal of Sociology (110): 349–399.
 
     """
+
+    # Check if scipy is available
+    try:
+        # Needed for errstate
+        import numpy as np
+
+        # make sure nx.adjacency_matrix will not raise
+        import scipy as sp
+
+        has_scipy = True
+    except:
+        has_scipy = False
+
+    if nodes is None and has_scipy:
+        # In order to compute constraint of all nodes,
+        # algorithms based on sparse matrices can be much faster
+
+        # Obtain the adjacency matrix
+        P = nx.adjacency_matrix(G, weight=weight)
+
+        # Calculate mutual weights
+        mutual_weights = P + P.T
+
+        # Normalize mutual weights by row sums
+        sum_mutual_weights = mutual_weights.sum(axis=1)
+        with np.errstate(divide="ignore"):
+            mutual_weights /= sum_mutual_weights[:, np.newaxis]
+
+        # Calculate local constraints and constraints
+        local_constraints = (mutual_weights + mutual_weights @ mutual_weights) ** 2
+        constraints = ((mutual_weights > 0) * local_constraints).sum(axis=1)
+
+        # Special treatment: isolated nodes marked with "nan"
+        isolated_nodes = sum_mutual_weights - 2 * mutual_weights.diagonal() == 0
+        constraints[isolated_nodes] = float("nan")
+        # Use tolist() to automatically convert numpy scalars -> Python scalars
+        return dict(zip(G, constraints.tolist()))
+
+    # Result for only requested nodes
+    constraint = {}
     if nodes is None:
         nodes = G
-    constraint = {}
     for v in nodes:
         # Constraint is not defined for isolated nodes
         if len(G[v]) == 0:
@@ -219,16 +314,17 @@ def constraint(G, nodes=None, weight=None):
     return constraint
 
 
+@nx._dispatchable(edge_attrs="weight")
 def local_constraint(G, u, v, weight=None):
     r"""Returns the local constraint on the node ``u`` with respect to
     the node ``v`` in the graph ``G``.
 
     Formally, the *local constraint on u with respect to v*, denoted
-    $\ell(v)$, is defined by
+    $\ell(u, v)$, is defined by
 
     .. math::
 
-       \ell(u, v) = \left(p_{uv} + \sum_{w \in N(v)} p_{uw} p{wv}\right)^2,
+       \ell(u, v) = \left(p_{uv} + \sum_{w \in N(v)} p_{uw} p_{wv}\right)^2,
 
     where $N(v)$ is the set of neighbors of $v$ and $p_{uv}$ is the
     normalized mutual weight of the (directed or undirected) edges

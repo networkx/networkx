@@ -1,6 +1,7 @@
 from networkx.algorithms.assortativity import *
 from networkx.algorithms.asteroidal import *
 from networkx.algorithms.boundary import *
+from networkx.algorithms.broadcasting import *
 from networkx.algorithms.bridges import *
 from networkx.algorithms.chains import *
 from networkx.algorithms.centrality import *
@@ -37,6 +38,7 @@ from networkx.algorithms.non_randomness import *
 from networkx.algorithms.operators import *
 from networkx.algorithms.planarity import *
 from networkx.algorithms.planar_drawing import *
+from networkx.algorithms.polynomials import *
 from networkx.algorithms.reciprocity import *
 from networkx.algorithms.regular import *
 from networkx.algorithms.richclub import *
@@ -50,40 +52,42 @@ from networkx.algorithms.structuralholes import *
 from networkx.algorithms.sparsifiers import *
 from networkx.algorithms.summarization import *
 from networkx.algorithms.swap import *
+from networkx.algorithms.time_dependent import *
 from networkx.algorithms.traversal import *
 from networkx.algorithms.triads import *
 from networkx.algorithms.vitality import *
 from networkx.algorithms.voronoi import *
+from networkx.algorithms.walks import *
 from networkx.algorithms.wiener import *
 
 # Make certain subpackages available to the user as direct imports from
 # the `networkx` namespace.
-import networkx.algorithms.assortativity
-import networkx.algorithms.bipartite
-import networkx.algorithms.node_classification
-import networkx.algorithms.centrality
-import networkx.algorithms.chordal
-import networkx.algorithms.cluster
-import networkx.algorithms.clique
-import networkx.algorithms.components
-import networkx.algorithms.connectivity
-import networkx.algorithms.community
-import networkx.algorithms.coloring
-import networkx.algorithms.flow
-import networkx.algorithms.isomorphism
-import networkx.algorithms.link_analysis
-import networkx.algorithms.lowest_common_ancestors
-import networkx.algorithms.operators
-import networkx.algorithms.shortest_paths
-import networkx.algorithms.tournament
-import networkx.algorithms.traversal
-import networkx.algorithms.tree
+from networkx.algorithms import approximation
+from networkx.algorithms import assortativity
+from networkx.algorithms import bipartite
+from networkx.algorithms import node_classification
+from networkx.algorithms import centrality
+from networkx.algorithms import chordal
+from networkx.algorithms import cluster
+from networkx.algorithms import clique
+from networkx.algorithms import components
+from networkx.algorithms import connectivity
+from networkx.algorithms import community
+from networkx.algorithms import coloring
+from networkx.algorithms import flow
+from networkx.algorithms import isomorphism
+from networkx.algorithms import link_analysis
+from networkx.algorithms import lowest_common_ancestors
+from networkx.algorithms import operators
+from networkx.algorithms import shortest_paths
+from networkx.algorithms import tournament
+from networkx.algorithms import traversal
+from networkx.algorithms import tree
 
 # Make certain functions from some of the previous subpackages available
 # to the user as direct imports from the `networkx` namespace.
 from networkx.algorithms.bipartite import complete_bipartite_graph
 from networkx.algorithms.bipartite import is_bipartite
-from networkx.algorithms.bipartite import project
 from networkx.algorithms.bipartite import projected_graph
 from networkx.algorithms.connectivity import all_pairs_node_connectivity
 from networkx.algorithms.connectivity import all_node_cuts
@@ -115,12 +119,15 @@ from networkx.algorithms.isomorphism import could_be_isomorphic
 from networkx.algorithms.isomorphism import fast_could_be_isomorphic
 from networkx.algorithms.isomorphism import faster_could_be_isomorphic
 from networkx.algorithms.isomorphism import is_isomorphic
+from networkx.algorithms.isomorphism.vf2pp import *
 from networkx.algorithms.tree.branchings import maximum_branching
 from networkx.algorithms.tree.branchings import maximum_spanning_arborescence
 from networkx.algorithms.tree.branchings import minimum_branching
 from networkx.algorithms.tree.branchings import minimum_spanning_arborescence
+from networkx.algorithms.tree.branchings import ArborescenceIterator
 from networkx.algorithms.tree.coding import *
 from networkx.algorithms.tree.decomposition import *
 from networkx.algorithms.tree.mst import *
 from networkx.algorithms.tree.operations import *
 from networkx.algorithms.tree.recognition import *
+from networkx.algorithms.tournament import is_tournament

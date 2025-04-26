@@ -1,9 +1,45 @@
 from collections import defaultdict
+from copy import deepcopy
+
 import networkx as nx
 
-__all__ = ["check_planarity", "PlanarEmbedding"]
+__all__ = ["check_planarity", "is_planar", "PlanarEmbedding"]
 
 
+@nx._dispatchable
+def is_planar(G):
+    """Returns True if and only if `G` is planar.
+
+    A graph is *planar* iff it can be drawn in a plane without
+    any edge intersections.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    Returns
+    -------
+    bool
+       Whether the graph is planar.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2)])
+    >>> nx.is_planar(G)
+    True
+    >>> nx.is_planar(nx.complete_graph(5))
+    False
+
+    See Also
+    --------
+    check_planarity :
+        Check if graph is planar *and* return a `PlanarEmbedding` instance if True.
+    """
+
+    return check_planarity(G, counterexample=False)[0]
+
+
+@nx._dispatchable(returns_graph=True)
 def check_planarity(G, counterexample=False):
     """Check if a graph is planar and return a counterexample or an embedding.
 
@@ -24,6 +60,18 @@ def check_planarity(G, counterexample=False):
         If the graph is planar `certificate` is a PlanarEmbedding
         otherwise it is a Kuratowski subgraph.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2)])
+    >>> is_planar, P = nx.check_planarity(G)
+    >>> print(is_planar)
+    True
+
+    When `G` is planar, a `PlanarEmbedding` instance is returned:
+
+    >>> P.get_data()
+    {0: [1, 2], 1: [0], 2: [0]}
+
     Notes
     -----
     A (combinatorial) embedding consists of cyclic orderings of the incident
@@ -36,6 +84,11 @@ def check_planarity(G, counterexample=False):
 
     A counterexample is only generated if the corresponding parameter is set,
     because the complexity of the counterexample generation is higher.
+
+    See also
+    --------
+    is_planar :
+        Check for planarity without creating a `PlanarEmbedding` or counterexample.
 
     References
     ----------
@@ -62,6 +115,7 @@ def check_planarity(G, counterexample=False):
         return True, embedding
 
 
+@nx._dispatchable(returns_graph=True)
 def check_planarity_recursive(G, counterexample=False):
     """Recursive version of :meth:`check_planarity`."""
     planarity_state = LRPlanarity(G)
@@ -77,6 +131,7 @@ def check_planarity_recursive(G, counterexample=False):
         return True, embedding
 
 
+@nx._dispatchable(returns_graph=True)
 def get_counterexample(G):
     """Obtains a Kuratowski subgraph.
 
@@ -115,6 +170,7 @@ def get_counterexample(G):
     return subgraph
 
 
+@nx._dispatchable(returns_graph=True)
 def get_counterexample_recursive(G):
     """Recursive version of :meth:`get_counterexample`."""
 
@@ -321,7 +377,7 @@ class LRPlanarity:
             # initialize the embedding
             previous_node = None
             for w in self.ordered_adjs[v]:
-                self.embedding.add_half_edge_cw(v, w, previous_node)
+                self.embedding.add_half_edge(v, w, ccw=previous_node)
                 previous_node = w
 
         # Free no longer used variables
@@ -381,7 +437,7 @@ class LRPlanarity:
             # initialize the embedding
             previous_node = None
             for w in self.ordered_adjs[v]:
-                self.embedding.add_half_edge_cw(v, w, previous_node)
+                self.embedding.add_half_edge(v, w, ccw=previous_node)
                 previous_node = w
 
         # compute the complete embedding
@@ -659,9 +715,9 @@ class LRPlanarity:
                     break  # handle next node in dfs_stack (i.e. w)
                 else:  # back edge
                     if self.side[ei] == 1:
-                        self.embedding.add_half_edge_cw(w, v, self.right_ref[w])
+                        self.embedding.add_half_edge(w, v, ccw=self.right_ref[w])
                     else:
-                        self.embedding.add_half_edge_ccw(w, v, self.left_ref[w])
+                        self.embedding.add_half_edge(w, v, cw=self.left_ref[w])
                         self.left_ref[w] = v
 
     def dfs_embedding_recursive(self, v):
@@ -676,10 +732,10 @@ class LRPlanarity:
             else:  # back edge
                 if self.side[ei] == 1:
                     # place v directly after right_ref[w] in embed. list of w
-                    self.embedding.add_half_edge_cw(w, v, self.right_ref[w])
+                    self.embedding.add_half_edge(w, v, ccw=self.right_ref[w])
                 else:
                     # place v directly before left_ref[w] in embed. list of w
-                    self.embedding.add_half_edge_ccw(w, v, self.left_ref[w])
+                    self.embedding.add_half_edge(w, v, cw=self.left_ref[w])
                     self.left_ref[w] = v
 
     def sign(self, e):
@@ -716,6 +772,8 @@ class PlanarEmbedding(nx.DiGraph):
     The planar embedding is given by a `combinatorial embedding
     <https://en.wikipedia.org/wiki/Graph_embedding#Combinatorial_embedding>`_.
 
+    .. note:: `check_planarity` is the preferred way to check if a graph is planar.
+
     **Neighbor ordering:**
 
     In comparison to a usual graph structure, the embedding also stores the
@@ -734,15 +792,12 @@ class PlanarEmbedding(nx.DiGraph):
     * Edges must go in both directions (because the edge attributes differ)
     * Every edge must have a 'cw' and 'ccw' attribute which corresponds to a
       correct planar embedding.
-    * A node with non zero degree must have a node attribute 'first_nbr'.
 
     As long as a PlanarEmbedding is invalid only the following methods should
     be called:
 
-    * :meth:`add_half_edge_ccw`
-    * :meth:`add_half_edge_cw`
+    * :meth:`add_half_edge`
     * :meth:`connect_components`
-    * :meth:`add_half_edge_first`
 
     Even though the graph is a subclass of nx.DiGraph, it can still be used
     for algorithms that require undirected graphs, because the method
@@ -751,15 +806,24 @@ class PlanarEmbedding(nx.DiGraph):
 
     **Half edges:**
 
-    In methods like `add_half_edge_ccw` the term "half-edge" is used, which is
+    In methods like `add_half_edge` the term "half-edge" is used, which is
     a term that is used in `doubly connected edge lists
     <https://en.wikipedia.org/wiki/Doubly_connected_edge_list>`_. It is used
     to emphasize that the edge is only in one direction and there exists
     another half-edge in the opposite direction.
     While conventional edges always have two faces (including outer face) next
     to them, it is possible to assign each half-edge *exactly one* face.
-    For a half-edge (u, v) that is orientated such that u is below v then the
+    For a half-edge (u, v) that is oriented such that u is below v then the
     face that belongs to (u, v) is to the right of this half-edge.
+
+    See Also
+    --------
+    is_planar :
+        Preferred way to check if an existing graph is planar.
+
+    check_planarity :
+        A convenient way to create a `PlanarEmbedding`. If not planar,
+        it returns a subgraph that shows this.
 
     Examples
     --------
@@ -767,23 +831,23 @@ class PlanarEmbedding(nx.DiGraph):
     Create an embedding of a star graph (compare `nx.star_graph(3)`):
 
     >>> G = nx.PlanarEmbedding()
-    >>> G.add_half_edge_cw(0, 1, None)
-    >>> G.add_half_edge_cw(0, 2, 1)
-    >>> G.add_half_edge_cw(0, 3, 2)
-    >>> G.add_half_edge_cw(1, 0, None)
-    >>> G.add_half_edge_cw(2, 0, None)
-    >>> G.add_half_edge_cw(3, 0, None)
+    >>> G.add_half_edge(0, 1)
+    >>> G.add_half_edge(0, 2, ccw=1)
+    >>> G.add_half_edge(0, 3, ccw=2)
+    >>> G.add_half_edge(1, 0)
+    >>> G.add_half_edge(2, 0)
+    >>> G.add_half_edge(3, 0)
 
     Alternatively the same embedding can also be defined in counterclockwise
     orientation. The following results in exactly the same PlanarEmbedding:
 
     >>> G = nx.PlanarEmbedding()
-    >>> G.add_half_edge_ccw(0, 1, None)
-    >>> G.add_half_edge_ccw(0, 3, 1)
-    >>> G.add_half_edge_ccw(0, 2, 3)
-    >>> G.add_half_edge_ccw(1, 0, None)
-    >>> G.add_half_edge_ccw(2, 0, None)
-    >>> G.add_half_edge_ccw(3, 0, None)
+    >>> G.add_half_edge(0, 1)
+    >>> G.add_half_edge(0, 3, cw=1)
+    >>> G.add_half_edge(0, 2, cw=3)
+    >>> G.add_half_edge(1, 0)
+    >>> G.add_half_edge(2, 0)
+    >>> G.add_half_edge(3, 0)
 
     After creating a graph, it is possible to validate that the PlanarEmbedding
     object is correct:
@@ -791,6 +855,22 @@ class PlanarEmbedding(nx.DiGraph):
     >>> G.check_structure()
 
     """
+
+    def __init__(self, incoming_graph_data=None, **attr):
+        super().__init__(incoming_graph_data=incoming_graph_data, **attr)
+        self.add_edge = self.__forbidden
+        self.add_edges_from = self.__forbidden
+        self.add_weighted_edges_from = self.__forbidden
+
+    def __forbidden(self, *args, **kwargs):
+        """Forbidden operation
+
+        Any edge additions to a PlanarEmbedding should be done using
+        method `add_half_edge`.
+        """
+        raise NotImplementedError(
+            "Use `add_half_edge` method to add edges to a PlanarEmbedding."
+        )
 
     def get_data(self):
         """Converts the adjacency structure into a better readable structure.
@@ -806,7 +886,7 @@ class PlanarEmbedding(nx.DiGraph):
         set_data
 
         """
-        embedding = dict()
+        embedding = {}
         for v in self:
             embedding[v] = list(self.neighbors_cw_order(v))
         return embedding
@@ -828,8 +908,80 @@ class PlanarEmbedding(nx.DiGraph):
 
         """
         for v in data:
+            ref = None
             for w in reversed(data[v]):
-                self.add_half_edge_first(v, w)
+                self.add_half_edge(v, w, cw=ref)
+                ref = w
+
+    def remove_node(self, n):
+        """Remove node n.
+
+        Removes the node n and all adjacent edges, updating the
+        PlanarEmbedding to account for any resulting edge removal.
+        Attempting to remove a non-existent node will raise an exception.
+
+        Parameters
+        ----------
+        n : node
+           A node in the graph
+
+        Raises
+        ------
+        NetworkXError
+           If n is not in the graph.
+
+        See Also
+        --------
+        remove_nodes_from
+
+        """
+        try:
+            for u in self._pred[n]:
+                succs_u = self._succ[u]
+                un_cw = succs_u[n]["cw"]
+                un_ccw = succs_u[n]["ccw"]
+                del succs_u[n]
+                del self._pred[u][n]
+                if n != un_cw:
+                    succs_u[un_cw]["ccw"] = un_ccw
+                    succs_u[un_ccw]["cw"] = un_cw
+            del self._node[n]
+            del self._succ[n]
+            del self._pred[n]
+        except KeyError as err:  # NetworkXError if n not in self
+            raise nx.NetworkXError(
+                f"The node {n} is not in the planar embedding."
+            ) from err
+        nx._clear_cache(self)
+
+    def remove_nodes_from(self, nodes):
+        """Remove multiple nodes.
+
+        Parameters
+        ----------
+        nodes : iterable container
+            A container of nodes (list, dict, set, etc.).  If a node
+            in the container is not in the graph it is silently ignored.
+
+        See Also
+        --------
+        remove_node
+
+        Notes
+        -----
+        When removing nodes from an iterator over the graph you are changing,
+        a `RuntimeError` will be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.remove_nodes_from`.
+
+        """
+        for n in nodes:
+            if n in self._node:
+                self.remove_node(n)
+            # silently skip non-existing nodes
 
     def neighbors_cw_order(self, v):
         """Generator for the neighbors of v in clockwise order.
@@ -843,15 +995,91 @@ class PlanarEmbedding(nx.DiGraph):
         node
 
         """
-        if len(self[v]) == 0:
+        succs = self._succ[v]
+        if not succs:
             # v has no neighbors
             return
-        start_node = self.nodes[v]["first_nbr"]
+        start_node = next(reversed(succs))
         yield start_node
-        current_node = self[v][start_node]["cw"]
+        current_node = succs[start_node]["cw"]
         while start_node != current_node:
             yield current_node
-            current_node = self[v][current_node]["cw"]
+            current_node = succs[current_node]["cw"]
+
+    def add_half_edge(self, start_node, end_node, *, cw=None, ccw=None):
+        """Adds a half-edge from `start_node` to `end_node`.
+
+        If the half-edge is not the first one out of `start_node`, a reference
+        node must be provided either in the clockwise (parameter `cw`) or in
+        the counterclockwise (parameter `ccw`) direction. Only one of `cw`/`ccw`
+        can be specified (or neither in the case of the first edge).
+        Note that specifying a reference in the clockwise (`cw`) direction means
+        inserting the new edge in the first counterclockwise position with
+        respect to the reference (and vice-versa).
+
+        Parameters
+        ----------
+        start_node : node
+            Start node of inserted edge.
+        end_node : node
+            End node of inserted edge.
+        cw, ccw: node
+            End node of reference edge.
+            Omit or pass `None` if adding the first out-half-edge of `start_node`.
+
+
+        Raises
+        ------
+        NetworkXException
+            If the `cw` or `ccw` node is not a successor of `start_node`.
+            If `start_node` has successors, but neither `cw` or `ccw` is provided.
+            If both `cw` and `ccw` are specified.
+
+        See Also
+        --------
+        connect_components
+        """
+
+        succs = self._succ.get(start_node)
+        if succs:
+            # there is already some edge out of start_node
+            leftmost_nbr = next(reversed(self._succ[start_node]))
+            if cw is not None:
+                if cw not in succs:
+                    raise nx.NetworkXError("Invalid clockwise reference node.")
+                if ccw is not None:
+                    raise nx.NetworkXError("Only one of cw/ccw can be specified.")
+                ref_ccw = succs[cw]["ccw"]
+                super().add_edge(start_node, end_node, cw=cw, ccw=ref_ccw)
+                succs[ref_ccw]["cw"] = end_node
+                succs[cw]["ccw"] = end_node
+                # when (cw == leftmost_nbr), the newly added neighbor is
+                # already at the end of dict self._succ[start_node] and
+                # takes the place of the former leftmost_nbr
+                move_leftmost_nbr_to_end = cw != leftmost_nbr
+            elif ccw is not None:
+                if ccw not in succs:
+                    raise nx.NetworkXError("Invalid counterclockwise reference node.")
+                ref_cw = succs[ccw]["cw"]
+                super().add_edge(start_node, end_node, cw=ref_cw, ccw=ccw)
+                succs[ref_cw]["ccw"] = end_node
+                succs[ccw]["cw"] = end_node
+                move_leftmost_nbr_to_end = True
+            else:
+                raise nx.NetworkXError(
+                    "Node already has out-half-edge(s), either cw or ccw reference node required."
+                )
+            if move_leftmost_nbr_to_end:
+                # LRPlanarity (via self.add_half_edge_first()) requires that
+                # we keep track of the leftmost neighbor, which we accomplish
+                # by keeping it as the last key in dict self._succ[start_node]
+                succs[leftmost_nbr] = succs.pop(leftmost_nbr)
+
+        else:
+            if cw is not None or ccw is not None:
+                raise nx.NetworkXError("Invalid reference node.")
+            # adding the first edge out of start_node
+            super().add_edge(start_node, end_node, ccw=end_node, cw=end_node)
 
     def check_structure(self):
         """Runs without exceptions if this object is valid.
@@ -861,7 +1089,6 @@ class PlanarEmbedding(nx.DiGraph):
         * Edges go in both directions (because the edge attributes differ).
         * Every edge has a 'cw' and 'ccw' attribute which corresponds to a
           correct planar embedding.
-        * A node with a degree larger than 0 has a node attribute 'first_nbr'.
 
         Running this method verifies that the underlying Graph must be planar.
 
@@ -875,9 +1102,9 @@ class PlanarEmbedding(nx.DiGraph):
         for v in self:
             try:
                 sorted_nbrs = set(self.neighbors_cw_order(v))
-            except KeyError as e:
+            except KeyError as err:
                 msg = f"Bad embedding. Missing orientation for a neighbor of {v}"
-                raise nx.NetworkXException(msg) from e
+                raise nx.NetworkXException(msg) from err
 
             unsorted_nbrs = set(self[v])
             if sorted_nbrs != unsorted_nbrs:
@@ -934,24 +1161,12 @@ class PlanarEmbedding(nx.DiGraph):
 
         See Also
         --------
+        add_half_edge
         add_half_edge_cw
         connect_components
-        add_half_edge_first
 
         """
-        if reference_neighbor is None:
-            # The start node has no neighbors
-            self.add_edge(start_node, end_node)  # Add edge to graph
-            self[start_node][end_node]["cw"] = end_node
-            self[start_node][end_node]["ccw"] = end_node
-            self.nodes[start_node]["first_nbr"] = end_node
-        else:
-            ccw_reference = self[start_node][reference_neighbor]["ccw"]
-            self.add_half_edge_cw(start_node, end_node, ccw_reference)
-
-            if reference_neighbor == self.nodes[start_node].get("first_nbr", None):
-                # Update first neighbor
-                self.nodes[start_node]["first_nbr"] = end_node
+        self.add_half_edge(start_node, end_node, cw=reference_neighbor)
 
     def add_half_edge_cw(self, start_node, end_node, reference_neighbor):
         """Adds a half-edge from start_node to end_node.
@@ -975,31 +1190,85 @@ class PlanarEmbedding(nx.DiGraph):
 
         See Also
         --------
+        add_half_edge
         add_half_edge_ccw
         connect_components
-        add_half_edge_first
         """
-        self.add_edge(start_node, end_node)  # Add edge to graph
+        self.add_half_edge(start_node, end_node, ccw=reference_neighbor)
 
-        if reference_neighbor is None:
-            # The start node has no neighbors
-            self[start_node][end_node]["cw"] = end_node
-            self[start_node][end_node]["ccw"] = end_node
-            self.nodes[start_node]["first_nbr"] = end_node
-            return
+    def remove_edge(self, u, v):
+        """Remove the edge between u and v.
 
-        if reference_neighbor not in self[start_node]:
-            raise nx.NetworkXException(
-                "Cannot add edge. Reference neighbor does not exist"
-            )
+        Parameters
+        ----------
+        u, v : nodes
+        Remove the half-edges (u, v) and (v, u) and update the
+        edge ordering around the removed edge.
 
-        # Get half-edge at the other side
-        cw_reference = self[start_node][reference_neighbor]["cw"]
-        # Alter half-edge data structures
-        self[start_node][reference_neighbor]["cw"] = end_node
-        self[start_node][end_node]["cw"] = cw_reference
-        self[start_node][cw_reference]["ccw"] = end_node
-        self[start_node][end_node]["ccw"] = reference_neighbor
+        Raises
+        ------
+        NetworkXError
+        If there is not an edge between u and v.
+
+        See Also
+        --------
+        remove_edges_from : remove a collection of edges
+        """
+        try:
+            succs_u = self._succ[u]
+            succs_v = self._succ[v]
+            uv_cw = succs_u[v]["cw"]
+            uv_ccw = succs_u[v]["ccw"]
+            vu_cw = succs_v[u]["cw"]
+            vu_ccw = succs_v[u]["ccw"]
+            del succs_u[v]
+            del self._pred[v][u]
+            del succs_v[u]
+            del self._pred[u][v]
+            if v != uv_cw:
+                succs_u[uv_cw]["ccw"] = uv_ccw
+                succs_u[uv_ccw]["cw"] = uv_cw
+            if u != vu_cw:
+                succs_v[vu_cw]["ccw"] = vu_ccw
+                succs_v[vu_ccw]["cw"] = vu_cw
+        except KeyError as err:
+            raise nx.NetworkXError(
+                f"The edge {u}-{v} is not in the planar embedding."
+            ) from err
+        nx._clear_cache(self)
+
+    def remove_edges_from(self, ebunch):
+        """Remove all edges specified in ebunch.
+
+        Parameters
+        ----------
+        ebunch: list or container of edge tuples
+            Each pair of half-edges between the nodes given in the tuples
+            will be removed from the graph. The nodes can be passed as:
+
+                - 2-tuples (u, v) half-edges (u, v) and (v, u).
+                - 3-tuples (u, v, k) where k is ignored.
+
+        See Also
+        --------
+        remove_edge : remove a single edge
+
+        Notes
+        -----
+        Will fail silently if an edge in ebunch is not in the graph.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> ebunch = [(1, 2), (2, 3)]
+        >>> G.remove_edges_from(ebunch)
+        """
+        for e in ebunch:
+            u, v = e[:2]  # ignore edge data
+            # assuming that the PlanarEmbedding is valid, if the half_edge
+            # (u, v) is in the graph, then so is half_edge (v, u)
+            if u in self._succ and v in self._succ[u]:
+                self.remove_edge(u, v)
 
     def connect_components(self, v, w):
         """Adds half-edges for (v, w) and (w, v) at some position.
@@ -1018,15 +1287,24 @@ class PlanarEmbedding(nx.DiGraph):
 
         See Also
         --------
-        add_half_edge_ccw
-        add_half_edge_cw
-        add_half_edge_first
+        add_half_edge
         """
-        self.add_half_edge_first(v, w)
-        self.add_half_edge_first(w, v)
+        if v in self._succ and self._succ[v]:
+            ref = next(reversed(self._succ[v]))
+        else:
+            ref = None
+        self.add_half_edge(v, w, cw=ref)
+        if w in self._succ and self._succ[w]:
+            ref = next(reversed(self._succ[w]))
+        else:
+            ref = None
+        self.add_half_edge(w, v, cw=ref)
 
     def add_half_edge_first(self, start_node, end_node):
-        """The added half-edge is inserted at the first position in the order.
+        """Add a half-edge and set end_node as start_node's leftmost neighbor.
+
+        The new edge is inserted counterclockwise with respect to the current
+        leftmost neighbor, if there is one.
 
         Parameters
         ----------
@@ -1035,15 +1313,14 @@ class PlanarEmbedding(nx.DiGraph):
 
         See Also
         --------
-        add_half_edge_ccw
-        add_half_edge_cw
+        add_half_edge
         connect_components
         """
-        if start_node in self and "first_nbr" in self.nodes[start_node]:
-            reference = self.nodes[start_node]["first_nbr"]
-        else:
-            reference = None
-        self.add_half_edge_ccw(start_node, end_node, reference)
+        succs = self._succ.get(start_node)
+        # the leftmost neighbor is the last entry in the
+        # self._succ[start_node] dict
+        leftmost_nbr = next(reversed(succs)) if succs else None
+        self.add_half_edge(start_node, end_node, cw=leftmost_nbr)
 
     def next_face_half_edge(self, v, w):
         """Returns the following half-edge left of a face.
@@ -1111,3 +1388,76 @@ class PlanarEmbedding(nx.DiGraph):
         contained.
         """
         return False
+
+    def copy(self, as_view=False):
+        if as_view is True:
+            return nx.graphviews.generic_graph_view(self)
+        G = self.__class__()
+        G.graph.update(self.graph)
+        G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
+        super(self.__class__, G).add_edges_from(
+            (u, v, datadict.copy())
+            for u, nbrs in self._adj.items()
+            for v, datadict in nbrs.items()
+        )
+        return G
+
+    def to_undirected(self, reciprocal=False, as_view=False):
+        """
+        Returns a non-embedding undirected representation of the graph.
+
+        This method strips the planar embedding information and provides
+        a simple undirected graph representation. While creating the undirected graph,
+        all edge attributes are retained except the ``"cw"`` and ``"ccw"`` attributes
+        which are removed from the edge data. Those attributes are specific to
+        the requirements of planar embeddings.
+
+        Parameters
+        ----------
+        reciprocal : bool (optional)
+            Not supported for PlanarEmbedding. This parameter raises an exception
+            if used. All valid embeddings include reciprocal half-edges by definition,
+            making this parameter unnecessary.
+        as_view : bool (optional, default=False)
+            Not supported for PlanarEmbedding. This parameter raises an exception
+            if used.
+
+        Returns
+        -------
+        G : Graph
+            An undirected graph with the same name and nodes as the PlanarEmbedding.
+            Edges are included with their data, except for the ``"cw"`` and ``"ccw"``
+            attributes, which are omitted.
+
+
+        Notes
+        -----
+        - If edges exist in both directions ``(u, v)`` and ``(v, u)`` in the PlanarEmbedding,
+          attributes for the resulting undirected edge will be combined, excluding ``"cw"``
+          and ``"ccw"``.
+        - A deep copy is made of the other edge attributes as well as the
+          node and graph attributes, ensuring independence of the resulting graph.
+        - Subclass-specific data structures used in the original graph may not transfer
+          to the undirected graph. The resulting graph will be of type ``nx.Graph``.
+        """
+
+        if reciprocal:
+            raise ValueError(
+                "'reciprocal=True' is not supported for PlanarEmbedding.\n"
+                "All valid embeddings include reciprocal half-edges by definition,\n"
+                "making this parameter unnecessary."
+            )
+
+        if as_view:
+            raise ValueError("'as_view=True' is not supported for PlanarEmbedding.")
+
+        graph_class = self.to_undirected_class()
+        G = graph_class()
+        G.graph.update(deepcopy(self.graph))
+        G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
+        G.add_edges_from(
+            (u, v, {k: deepcopy(v) for k, v in d.items() if k not in {"cw", "ccw"}})
+            for u, nbrs in self._adj.items()
+            for v, d in nbrs.items()
+        )
+        return G

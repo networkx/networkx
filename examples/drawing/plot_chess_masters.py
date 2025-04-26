@@ -36,7 +36,7 @@ game_details = ["Event", "Date", "Result", "ECO", "Site"]
 def chess_pgn_graph(pgn_file="chess_masters_WCC.pgn.bz2"):
     """Read chess games in pgn format in pgn_file.
 
-    Filenames ending in .bz2 will be uncompressed.
+    Filenames ending in .bz2 will be decompressed.
 
     Return the MultiDiGraph of players connected by a chess game.
     Edges contain game data in a dict.
@@ -81,7 +81,7 @@ print(f"\nFrom a total of {len(openings)} different openings,")
 print("the following games used the Sicilian opening")
 print('with the Najdorff 7...Qb6 "Poisoned Pawn" variation.\n')
 
-for (white, black, game_info) in G.edges(data=True):
+for white, black, game_info in G.edges(data=True):
     if game_info["ECO"] == "B97":
         summary = f"{white} vs {black}\n"
         for k, v in game_info.items():
@@ -97,7 +97,7 @@ edgewidth = [len(G.get_edge_data(u, v)) for u, v in H.edges()]
 
 # node size is proportional to number of games won
 wins = dict.fromkeys(G.nodes(), 0.0)
-for (u, v, d) in G.edges(data=True):
+for u, v, d in G.edges(data=True):
     r = d["Result"].split("-")
     if r[0] == "1":
         wins[u] += 1.0
@@ -145,7 +145,7 @@ ax.text(
     fontdict=font,
 )
 
-# Resize figure for label readibility
+# Resize figure for label readability
 ax.margins(0.1, 0.05)
 fig.tight_layout()
 plt.axis("off")

@@ -1,8 +1,9 @@
 """Unit tests for the sparsifier computation functions."""
+
 import pytest
+
 import networkx as nx
 from networkx.utils import py_random_state
-
 
 _seed = 2
 

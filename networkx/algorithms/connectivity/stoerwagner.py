@@ -1,18 +1,19 @@
 """
 Stoer-Wagner minimum cut algorithm.
 """
+
 from itertools import islice
 
 import networkx as nx
-from ...utils import BinaryHeap
-from ...utils import not_implemented_for
-from ...utils import arbitrary_element
+
+from ...utils import BinaryHeap, arbitrary_element, not_implemented_for
 
 __all__ = ["stoer_wagner"]
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
 def stoer_wagner(G, weight="weight", heap=BinaryHeap):
     r"""Returns the weighted minimum edge cut using the Stoer-Wagner algorithm.
 
@@ -94,6 +95,7 @@ def stoer_wagner(G, weight="weight", heap=BinaryHeap):
     G = nx.Graph(
         (u, v, {"weight": e.get(weight, 1)}) for u, v, e in G.edges(data=True) if u != v
     )
+    G.__networkx_cache__ = None  # Disable caching
 
     for u, v, e in G.edges(data=True):
         if e["weight"] < 0:

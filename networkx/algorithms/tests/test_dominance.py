@@ -1,5 +1,6 @@
-import networkx as nx
 import pytest
+
+import networkx as nx
 
 
 class TestImmediateDominators:
@@ -38,19 +39,20 @@ class TestImmediateDominators:
         }
 
     def test_irreducible1(self):
-        # Graph taken from Figure 2 of
-        # K. D. Cooper, T. J. Harvey, and K. Kennedy.
-        # A simple, fast dominance algorithm.
-        # Software Practice & Experience, 4:110, 2001.
+        """
+        Graph taken from figure 2 of "A simple, fast dominance algorithm." (2006).
+        https://hdl.handle.net/1911/96345
+        """
         edges = [(1, 2), (2, 1), (3, 2), (4, 1), (5, 3), (5, 4)]
         G = nx.DiGraph(edges)
         assert nx.immediate_dominators(G, 5) == {i: 5 for i in range(1, 6)}
 
     def test_irreducible2(self):
-        # Graph taken from Figure 4 of
-        # K. D. Cooper, T. J. Harvey, and K. Kennedy.
-        # A simple, fast dominance algorithm.
-        # Software Practice & Experience, 4:110, 2001.
+        """
+        Graph taken from figure 4 of "A simple, fast dominance algorithm." (2006).
+        https://hdl.handle.net/1911/96345
+        """
+
         edges = [(1, 2), (2, 1), (2, 3), (3, 2), (4, 2), (4, 3), (5, 1), (6, 4), (6, 5)]
         G = nx.DiGraph(edges)
         result = nx.immediate_dominators(G, 6)
@@ -112,13 +114,13 @@ class TestDominanceFrontiers:
         assert nx.dominance_frontiers(G, n // 2) == {i: set() for i in range(n // 2, n)}
 
     def test_irreducible1(self):
-        # Graph taken from Figure 2 of
-        # K. D. Cooper, T. J. Harvey, and K. Kennedy.
-        # A simple, fast dominance algorithm.
-        # Software Practice & Experience, 4:110, 2001.
+        """
+        Graph taken from figure 2 of "A simple, fast dominance algorithm." (2006).
+        https://hdl.handle.net/1911/96345
+        """
         edges = [(1, 2), (2, 1), (3, 2), (4, 1), (5, 3), (5, 4)]
         G = nx.DiGraph(edges)
-        assert {u: df for u, df in nx.dominance_frontiers(G, 5).items()} == {
+        assert nx.dominance_frontiers(G, 5) == {
             1: {2},
             2: {1},
             3: {2},
@@ -127,10 +129,10 @@ class TestDominanceFrontiers:
         }
 
     def test_irreducible2(self):
-        # Graph taken from Figure 4 of
-        # K. D. Cooper, T. J. Harvey, and K. Kennedy.
-        # A simple, fast dominance algorithm.
-        # Software Practice & Experience, 4:110, 2001.
+        """
+        Graph taken from figure 4 of "A simple, fast dominance algorithm." (2006).
+        https://hdl.handle.net/1911/96345
+        """
         edges = [(1, 2), (2, 1), (2, 3), (3, 2), (4, 2), (4, 3), (5, 1), (6, 4), (6, 5)]
         G = nx.DiGraph(edges)
         assert nx.dominance_frontiers(G, 6) == {
