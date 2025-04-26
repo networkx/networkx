@@ -120,10 +120,16 @@ def girvan_newman(G, most_valuable_edge=None):
     result can be depicted as a dendrogram.
 
     """
+    # The copy of G here must include the edge weight data.
+    g = G.copy().to_undirected()
+    # Self-loops must be removed because their removal has no effect on
+    # the connected components of the graph.
+    g.remove_edges_from(nx.selfloop_edges(g))
+    number_of_edges = g.number_of_edges()
     # If the graph is already empty, simply return its connected
     # components.
-    if G.number_of_edges() == 0:
-        yield tuple(nx.connected_components(G))
+    if number_of_edges == 0:
+        yield tuple({n} for n in g)
         return
     # If no function is provided for computing the most valuable edge,
     # use the edge betweenness centrality.
@@ -139,21 +145,26 @@ def girvan_newman(G, most_valuable_edge=None):
             betweenness = nx.edge_betweenness_centrality(G)
             return max(betweenness, key=betweenness.get)
 
-    # The copy of G here must include the edge weight data.
-    g = G.copy().to_undirected()
-    # Self-loops must be removed because their removal has no effect on
-    # the connected components of the graph.
-    g.remove_edges_from(nx.selfloop_edges(g))
-    while g.number_of_edges() > 0:
-        yield _without_most_central_edges(g, most_valuable_edge)
+    number_of_components = nx.number_connected_components(g)
+    while number_of_edges > 0:
+        component, number_of_edges = _without_most_central_edges(g, number_of_edges, number_of_components, most_valuable_edge)
+        number_of_components = len(component)
+        yield component
 
 
-def _without_most_central_edges(G, most_valuable_edge):
-    """Returns the connected components of the graph that results from
-    repeatedly removing the most "valuable" edge in the graph.
+def _without_most_central_edges(G, number_of_edges, number_of_components, most_valuable_edge):
+    """Returns a tuple (C, E). C is the connected components of the graph
+    that results from repeatedly removing the most "valuable" edge in the graph.
+    E is the number of edges in the graph `G` after removing the most
+    valuable edges.
 
     `G` must be a non-empty graph. This function modifies the graph `G`
     in-place; that is, it removes edges on the graph `G`.
+
+    `number_of_edges` is the number of edges in the graph `G`.
+
+    `number_of_components` is the number of connected components in the
+    graph `G`.
 
     `most_valuable_edge` is a function that takes the graph `G` as input
     (or a subgraph with one or more edges of `G` removed) and returns an
@@ -161,11 +172,11 @@ def _without_most_central_edges(G, most_valuable_edge):
     until the number of connected components in the graph increases.
 
     """
-    original_num_components = nx.number_connected_components(G)
-    num_new_components = original_num_components
-    while num_new_components <= original_num_components:
+    num_new_components = number_of_components
+    while num_new_components == number_of_components:
         edge = most_valuable_edge(G)
         G.remove_edge(*edge)
+        number_of_edges -= 1
         new_components = tuple(nx.connected_components(G))
         num_new_components = len(new_components)
-    return new_components
+    return new_components, number_of_edges
