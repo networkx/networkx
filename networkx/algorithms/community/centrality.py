@@ -6,7 +6,7 @@ __all__ = ["girvan_newman"]
 
 
 @nx._dispatchable(preserve_edge_attrs="most_valuable_edge")
-def girvan_newman(G, most_valuable_edge=None):
+def girvan_newman(G, most_valuable_edge=None, component_wise_computing=False):
     """Finds communities in a graph using the Girvan–Newman method.
 
     Parameters
@@ -20,6 +20,15 @@ def girvan_newman(G, most_valuable_edge=None):
 
         If not specified, the edge with the highest
         :func:`networkx.edge_betweenness_centrality` will be used.
+
+    component_wise_computing : bool
+        If component_wise_computing is True, the edge to remove is selected by:
+        1. Local Selection: Select a candidate edge to remove from the subgraph of each connected component of G.
+        2. Global Selection: Select a single edge from all candidate edges.
+
+        In this scenario, the function most_valuable_edge should return a tuple of `(*edge_to_remove, metric)`, such that
+        it is possible to compute the `metric` of each candidate.
+        Note that the Global Selection phase will select the candidate edge with the highest `metric`.
 
     Returns
     -------
@@ -120,32 +129,57 @@ def girvan_newman(G, most_valuable_edge=None):
     result can be depicted as a dendrogram.
 
     """
+
     # If the graph is already empty, simply return its connected
     # components.
     if G.number_of_edges() == 0:
         yield tuple(nx.connected_components(G))
         return
+
     # If no function is provided for computing the most valuable edge,
     # use the edge betweenness centrality.
     if most_valuable_edge is None:
+        if component_wise_computing:
 
-        def most_valuable_edge(G):
-            """Returns the edge with the highest betweenness centrality
-            in the graph `G`.
+            def most_valuable_edge(G):
+                """Returns the edge with the highest betweenness centrality
+                in the graph `G`.
+                """
+                # We have guaranteed that the graph is non-empty, so this
+                # dictionary will never be empty.
+                betweenness = nx.edge_betweenness_centrality(G, normalized=False)
+                edge_highest_centrality = max(betweenness, key=betweenness.get)
+                return edge_highest_centrality, betweenness[edge_highest_centrality]
+        else:
 
-            """
-            # We have guaranteed that the graph is non-empty, so this
-            # dictionary will never be empty.
-            betweenness = nx.edge_betweenness_centrality(G)
-            return max(betweenness, key=betweenness.get)
+            def most_valuable_edge(G):
+                """Returns the edge with the highest betweenness centrality
+                in the graph `G`.
+                """
+                # We have guaranteed that the graph is non-empty, so this
+                # dictionary will never be empty.
+                betweenness = nx.edge_betweenness_centrality(G)
+                return max(betweenness, key=betweenness.get)
 
     # The copy of G here must include the edge weight data.
     g = G.copy().to_undirected()
+
     # Self-loops must be removed because their removal has no effect on
     # the connected components of the graph.
     g.remove_edges_from(nx.selfloop_edges(g))
+
+    # Initialize the cache of all connected components if we are doing component wise computing
+    if component_wise_computing:
+        current_components = list(nx.connected_components(g))
+        current_subgraphs = [g.subgraph(c).copy() for c in current_components]
+
     while g.number_of_edges() > 0:
-        yield _without_most_central_edges(g, most_valuable_edge)
+        if component_wise_computing:
+            yield _without_most_central_edges_component_wise(
+                g, most_valuable_edge, current_subgraphs
+            )
+        else:
+            yield _without_most_central_edges(g, most_valuable_edge)
 
 
 def _without_most_central_edges(G, most_valuable_edge):
@@ -169,3 +203,59 @@ def _without_most_central_edges(G, most_valuable_edge):
         new_components = tuple(nx.connected_components(G))
         num_new_components = len(new_components)
     return new_components
+
+
+def _without_most_central_edges_component_wise(
+    G, most_valuable_edge, current_subgraphs
+):
+    """Returns the connected components of the graph that results from
+    repeatedly removing the most "valuable" edge in the graph.
+
+    Each connected component generates the most "valuable" edge in its own subgraph as a candidate,
+    and a single most "valuable" edge is selected from the candidates.
+    This allows for potential parallel computing.
+
+    `G` must be a non-empty graph. This function modifies the graph `G`
+    in-place; that is, it removes edges on the graph `G`.
+
+    `most_valuable_edge` is a function that takes the graph `G` as input
+    (or a subgraph with one or more edges of `G` removed) and returns an
+    edge. That edge will be removed and this process will be repeated
+    until the number of connected components in the graph increases.
+
+    """
+
+    # Loop until there is a component split
+    while True:
+        candidates = {}
+
+        # Obtain a candidate edge from each subgraph
+        for sg in current_subgraphs:
+            if sg.number_of_edges() == 0:
+                continue
+            edge_value_result = most_valuable_edge(sg)
+
+            assert (
+                isinstance(edge_value_result, tuple) and len(edge_value_result) == 3
+            ), (
+                "If component_wise computing is True, most_valuable_edge must return a tuple (most valuable edge, value of most valuable edge)"
+            )
+
+            edge, centrality = edge_value_result
+            candidates[(edge, sg)] = centrality
+
+        # Select globally most valuable edge, remove edge from main graph and component
+        edge_to_remove, source_sg = max(candidates, key=candidates.get)
+        G.remove_edge(*edge_to_remove)
+        source_sg.remove_edge(*edge_to_remove)
+
+        # Check if component split
+        new_comps = list(nx.connected_components(source_sg))
+        if len(new_comps) > 1:
+            # Update our component tracking
+            comp_index = current_subgraphs.index(source_sg)
+            current_subgraphs.pop(comp_index)
+            for c in new_comps:
+                current_subgraphs.append(G.subgraph(c).copy())
+
+            return tuple(map(set, [sg.nodes() for sg in current_subgraphs]))
