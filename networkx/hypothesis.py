@@ -135,7 +135,7 @@ def graph_st(draw, graph_generator, edge_data_st=None, **kwargs) -> nx.Graph:
         for u, v in G.edges():
             G[u][v].update(draw(edge_data_st))
 
-    # Set the graph's pretty reprsentation to improve hypothesis output
+    # Set the graph's pretty representation to improve hypothesis output
     G._repr_pretty_ = lambda p, cycle: _repr_pretty_(G, p, cycle)
     return G
 
