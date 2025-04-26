@@ -86,11 +86,11 @@ def birank(
 
       Damping factor for the 'bottom' nodes. Must be in the interval $[0, 1]$.
 
-    top_personalization : dict, optional (default={})
+    top_personalization : dict, optional (default=None)
       Dictionary keyed by nodes in 'top' to that node's personalization value.
       Unspecified nodes in 'top' will be assigned a personalization value of 0.
 
-    bottom_personalization : dict, optional (default={})
+    bottom_personalization : dict, optional (default=None)
       Dictionary keyed by nodes in 'bottom' to that node's personalization value.
       Unspecified nodes in 'bottom' will be assigned a personalization value of 0.
 
