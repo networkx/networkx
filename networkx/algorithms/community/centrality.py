@@ -177,6 +177,7 @@ def _without_most_central_edges(G, number_of_edges, number_of_components, most_v
         edge = most_valuable_edge(G)
         G.remove_edge(*edge)
         number_of_edges -= 1
-        new_components = tuple(nx.connected_components(G))
-        num_new_components = len(new_components)
-    return new_components, number_of_edges
+        if not nx.has_path(G, *edge):
+            # a component has been disconnected
+            num_new_components += 1
+    return tuple(nx.connected_components(G)), number_of_edges
