@@ -147,12 +147,16 @@ def girvan_newman(G, most_valuable_edge=None):
 
     number_of_components = nx.number_connected_components(g)
     while number_of_edges > 0:
-        component, number_of_edges = _without_most_central_edges(g, number_of_edges, number_of_components, most_valuable_edge)
+        component, number_of_edges = _without_most_central_edges(
+            g, number_of_edges, number_of_components, most_valuable_edge
+        )
         number_of_components = len(component)
         yield component
 
 
-def _without_most_central_edges(G, number_of_edges, number_of_components, most_valuable_edge):
+def _without_most_central_edges(
+    G, number_of_edges, number_of_components, most_valuable_edge
+):
     """Returns a tuple (C, E). C is the connected components of the graph
     that results from repeatedly removing the most "valuable" edge in the graph.
     E is the number of edges in the graph `G` after removing the most
