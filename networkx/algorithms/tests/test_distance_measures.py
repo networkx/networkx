@@ -2,7 +2,8 @@ import itertools
 import math
 from random import Random
 
-from hypothesis import given, reproduce_failure, settings, strategies as st
+from hypothesis import given, settings
+from hypothesis import strategies as st
 import pytest
 
 import networkx as nx
