@@ -12,8 +12,8 @@ def birank(
     *,
     alpha=None,
     beta=None,
-    top_personalization={},
-    bottom_personalization={},
+    top_personalization=None,
+    bottom_personalization=None,
     max_iter=100,
     tol=1.0e-6,
     weight="weight",
@@ -229,6 +229,10 @@ def birank(
             "node in each set."
         )
 
+    # Clean the personalization dictionaries
+    top_personalization = _clean_personalization_dict(top_personalization)
+    bottom_personalization = _clean_personalization_dict(bottom_personalization)
+
     # Set default values for alpha and beta if not provided
     if alpha is None:
         alpha = 0.8 if top_personalization else 1
@@ -298,3 +302,11 @@ def birank(
 
     # If we reach this point, we have not converged
     raise nx.PowerIterationFailedConvergence(max_iter)
+
+
+def _clean_personalization_dict(personalization):
+    """Filter out zero values from the personalization dictionary,
+    handle case where None is passed."""
+    if personalization is None:
+        return {}
+    return {node: value for node, value in personalization.items() if value != 0}
