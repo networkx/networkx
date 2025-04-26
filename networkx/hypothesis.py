@@ -135,4 +135,23 @@ def graph_st(draw, graph_generator, edge_data_st=None, **kwargs) -> nx.Graph:
         for u, v in G.edges():
             G[u][v].update(draw(edge_data_st))
 
+    # Set the graph's pretty reprsentation to improve hypothesis output
+    G._repr_pretty_ = lambda p, cycle: _repr_pretty_(G, p, cycle)
     return G
+
+
+def _repr_pretty_(G, p, cycle):
+    p.text(f"{type(G).__name__}();")
+    p.breakable()
+
+    for node in G.nodes():
+        p.text(f"G.add_node({repr(node)});")
+        p.breakable()
+
+    for u, v, data in G.edges(data=True):
+        p.text(f"G.add_edge({repr(u)}, {repr(v)}")
+        if data:
+            p.text(", ")
+            p.text(", ".join(f"{k}={repr(v)}" for k, v in data.items()))
+        p.text(");")
+        p.breakable()

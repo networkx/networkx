@@ -29,11 +29,12 @@ class TestDistance:
     def setup_method(self):
         self.G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
 
+    @pytest.mark.slow
     @settings(print_blob=True)
     @given(
         graph_st(
             _random_connected_graph,
-            n=st.integers(10, 20),
+            n=st.integers(2, 20),
             prob=st.floats(0, 1),
             edge_data_st=edge_data_st(w=st.integers(1, 1000)),
         )
@@ -135,7 +136,8 @@ class TestDistance:
     def test_center(self):
         assert set(nx.center(self.G)) == {6, 7, 10, 11}
 
-    @given(graph_st(nx.path_graph, n=st.integers(1, 100)))
+    @pytest.mark.slow
+    @given(graph_st(nx.path_graph, n=st.integers(1, 1000)))
     def test_center_path_graphs(self, G):
         expected = {(len(G) - 1) // 2, math.ceil((len(G) - 1) / 2)}
         assert set(nx.center(G)) == expected
