@@ -82,6 +82,7 @@ example = [
     'cairocffi>=1.7',
     'igraph>=0.11',
     'scikit-learn>=1.5',
+    'hypothesis>=6.1',
 ]
 extra = [
     'lxml>=4.6',
@@ -93,7 +94,7 @@ test = [
     'pytest>=7.2',
     'pytest-cov>=4.0',
     'pytest-xdist>=3.0',
-    'hypothesis>=6.1'
+    'hypothesis>=6.1',
 ]
 test-extras = [
     'pytest-mpl',

@@ -27,8 +27,9 @@ def edge_data_st(draw, **kwargs):
 
     Examples
     --------
+    >>> from hypothesis import strategies as st
     >>> edge_data_st(weight=st.integers(1, 10), label="A")
-    Might return: {"weight": 5, "label": "A"}
+    edge_data_st(label='A', weight=integers(min_value=1, max_value=10))
     """
     return {
         k: draw(v) if isinstance(v, st.SearchStrategy) else v for k, v in kwargs.items()
@@ -67,6 +68,9 @@ def graph_st(draw, graph_generator, edge_data_st=None, **kwargs) -> nx.Graph:
 
     Examples
     --------
+    >>> from hypothesis import strategies as st
+    >>> from hypothesis import given
+
     Using a random generator:
 
     >>> @given(
@@ -90,26 +94,28 @@ def graph_st(draw, graph_generator, edge_data_st=None, **kwargs) -> nx.Graph:
     Other supported examples:
 
     - Balanced trees:
-      >>> graph_st(nx.balanced_tree, r=st.integers(2, 3), h=st.integers(1, 4))
+      >>> strat = graph_st(nx.balanced_tree, r=st.integers(2, 3), h=st.integers(1, 4))
 
     - Grid graphs:
-      >>> graph_st(nx.grid_2d_graph, m=st.integers(2, 4), n=st.integers(2, 4))
+      >>> strat = graph_st(nx.grid_2d_graph, m=st.integers(2, 4), n=st.integers(2, 4))
 
     - Complete graphs:
-      >>> graph_st(
+      >>> strat = graph_st(
       ...     nx.complete_graph,
       ...     n=st.integers(1, 10),
       ...     edge_data_st=edge_data_st(val=st.just(1)),
       ... )
 
     - Small-world and scale-free graphs:
-      >>> graph_st(
+      >>> strat = graph_st(
       ...     nx.watts_strogatz_graph,
       ...     n=st.integers(10, 30),
       ...     k=st.integers(2, 6),
       ...     p=st.floats(0, 1),
       ... )
-      >>> graph_st(nx.barabasi_albert_graph, n=st.integers(10, 30), m=st.integers(1, 5))
+      >>> strat = graph_st(
+      ...     nx.barabasi_albert_graph, n=st.integers(10, 30), m=st.integers(1, 5)
+      ... )
     """
     # Prepare parameters for the graph generator
     params = {}
