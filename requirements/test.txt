@@ -3,3 +3,4 @@
 pytest>=7.2
 pytest-cov>=4.0
 pytest-xdist>=3.0
+hypothesis>=6.1

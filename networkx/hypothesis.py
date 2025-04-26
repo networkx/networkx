@@ -2,8 +2,9 @@
 
 import inspect
 
-import networkx as nx
 from hypothesis import strategies as st
+
+import networkx as nx
 
 __all__ = ["edge_data_st", "graph_st"]
 
@@ -30,8 +31,7 @@ def edge_data_st(draw, **kwargs):
     Might return: {"weight": 5, "label": "A"}
     """
     return {
-        k: draw(v) if isinstance(v, st.SearchStrategy) else v
-        for k, v in kwargs.items()
+        k: draw(v) if isinstance(v, st.SearchStrategy) else v for k, v in kwargs.items()
     }
 
 
@@ -69,22 +69,21 @@ def graph_st(draw, graph_generator, edge_data_st=None, **kwargs) -> nx.Graph:
     --------
     Using a random generator:
 
-    >>> @given(graph_st(
-    ...     nx.erdos_renyi_graph,
-    ...     n=st.integers(5, 10),
-    ...     p=st.floats(0.1, 0.5),
-    ...     edge_data_st=edge_data_st(weight=st.integers(1, 100))
-    ... ))
+    >>> @given(
+    ...     graph_st(
+    ...         nx.erdos_renyi_graph,
+    ...         n=st.integers(5, 10),
+    ...         p=st.floats(0.1, 0.5),
+    ...         edge_data_st=edge_data_st(weight=st.integers(1, 100)),
+    ...     )
+    ... )
     ... def test_weighted_erdos_renyi(G):
     ...     for u, v, d in G.edges(data=True):
     ...         assert "weight" in d
 
     Using a deterministic generator:
 
-    >>> @given(graph_st(
-    ...     nx.path_graph,
-    ...     n=st.integers(2, 20)
-    ... ))
+    >>> @given(graph_st(nx.path_graph, n=st.integers(2, 20)))
     ... def test_path_graph(G):
     ...     assert nx.diameter(G) == G.number_of_nodes() - 1
 
@@ -97,10 +96,19 @@ def graph_st(draw, graph_generator, edge_data_st=None, **kwargs) -> nx.Graph:
       >>> graph_st(nx.grid_2d_graph, m=st.integers(2, 4), n=st.integers(2, 4))
 
     - Complete graphs:
-      >>> graph_st(nx.complete_graph, n=st.integers(1, 10), edge_data_st=edge_data_st(val=st.just(1)))
+      >>> graph_st(
+      ...     nx.complete_graph,
+      ...     n=st.integers(1, 10),
+      ...     edge_data_st=edge_data_st(val=st.just(1)),
+      ... )
 
     - Small-world and scale-free graphs:
-      >>> graph_st(nx.watts_strogatz_graph, n=st.integers(10, 30), k=st.integers(2, 6), p=st.floats(0, 1))
+      >>> graph_st(
+      ...     nx.watts_strogatz_graph,
+      ...     n=st.integers(10, 30),
+      ...     k=st.integers(2, 6),
+      ...     p=st.floats(0, 1),
+      ... )
       >>> graph_st(nx.barabasi_albert_graph, n=st.integers(10, 30), m=st.integers(1, 5))
     """
     # Prepare parameters for the graph generator

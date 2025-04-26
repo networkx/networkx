@@ -2,14 +2,13 @@ import itertools
 import math
 from random import Random
 
+import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
-import pytest
 
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 from networkx.algorithms.distance_measures import _extrema_bounding
-
 from networkx.hypothesis import edge_data_st, graph_st
 
 
@@ -25,12 +24,20 @@ def _random_connected_graph(n, prob, seed):
         nx.erdos_renyi_graph(n, prob, seed=seed),
     )
 
+
 class TestDistance:
     def setup_method(self):
         self.G = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
 
     @settings(print_blob=True)
-    @given(graph_st(_random_connected_graph, n=st.integers(10, 20), prob=st.floats(0, 1), edge_data_st=edge_data_st(w=st.integers(1, 1000))))
+    @given(
+        graph_st(
+            _random_connected_graph,
+            n=st.integers(10, 20),
+            prob=st.floats(0, 1),
+            edge_data_st=edge_data_st(w=st.integers(1, 1000)),
+        )
+    )
     def test_use_bounds_on_off_consistency(self, G):
         """Test for consistency of distance metrics when using usebounds=True.
 
