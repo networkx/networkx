@@ -148,10 +148,11 @@ def _repr_pretty_(G, p, cycle):
         p.text(f"G.add_node({repr(node)});")
         p.breakable()
 
-    for u, v, data in G.edges(data=True):
+    for i, (u, v, data) in enumerate(G.edges(data=True)):
+        if i > 0:
+            p.breakable()
         p.text(f"G.add_edge({repr(u)}, {repr(v)}")
         if data:
             p.text(", ")
             p.text(", ".join(f"{k}={repr(v)}" for k, v in data.items()))
         p.text(");")
-        p.breakable()
