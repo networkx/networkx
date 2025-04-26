@@ -118,17 +118,18 @@ class TestDistance:
         G = nx.Graph([(1, 2), (1, 3), (2, 4), (2, 5)])
         assert nx.center(G) == [1, 2]
 
-    @given(graph_st(nx.balanced_tree, r=st.integers(2, 5), h=st.integers(2, 5)))
-    def test_center_balanced_tree(self, G):
+    @pytest.mark.parametrize("r", range(2, 5))
+    @pytest.mark.parametrize("h", range(1, 5))
+    def test_center_balanced_tree(self, r, h):
+        G = nx.balanced_tree(r, h)
         assert nx.center(G) == [0]
 
     def test_center(self):
         assert set(nx.center(self.G)) == {6, 7, 10, 11}
 
-    @pytest.mark.parametrize("n", [1, 2, 99, 100])
-    def test_center_path_graphs(self, n):
-        G = nx.path_graph(n)
-        expected = {(n - 1) // 2, math.ceil((n - 1) / 2)}
+    @given(graph_st(nx.path_graph, n=st.integers(1, 100)))
+    def test_center_path_graphs(self, G):
+        expected = {(len(G) - 1) // 2, math.ceil((len(G) - 1) / 2)}
         assert set(nx.center(G)) == expected
 
     def test_bound_diameter(self):

@@ -4,4 +4,3 @@ numpy>=1.25
 scipy>=1.11.2
 matplotlib>=3.8
 pandas>=2.0
-hypothesis>=6.1

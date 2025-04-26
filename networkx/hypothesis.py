@@ -42,9 +42,9 @@ def graph_st(draw, graph_generator, edge_data_st=None, **kwargs) -> nx.Graph:
     generated unless provided in `kwargs`.
     The edge attributes are generated using the `edge_data_st` strategy.
 
-    For more details on the hypothesis library, see: https://hypothesis.readthedocs.io.
-    All off-the-shelf graph generators from NetworkX are supported, see: 
-    https://networkx.org/documentation/stable/reference/generators.html.
+    All graph generators from NetworkX are off-the-shelf supported. For more details,
+    see the `generators module documentation <https://networkx.org/documentation/stable/reference/generators.html>`_.
+    For more details on the hypothesis framework, see library `documentation <https://hypothesis.readthedocs.io>`_.
 
     Parameters
     ----------
@@ -109,7 +109,7 @@ def graph_st(draw, graph_generator, edge_data_st=None, **kwargs) -> nx.Graph:
 
     # If the graph generator accepts a 'seed' and none is provided, generate one
     if "seed" not in kwargs and "seed" in signature.parameters:
-        params["seed"] = draw(st.integers())
+        params["seed"] = draw(st.randoms())
 
     for k, v in kwargs.items():
         params[k] = draw(v) if isinstance(v, st.SearchStrategy) else v
