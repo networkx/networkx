@@ -1643,6 +1643,7 @@ def panther_similarity(
     return top_k_with_val
 
 
+@nx._dispatchable(edge_attrs="weight")
 def panther_vector_similarity(
     G, source, D=50, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
 ):
