@@ -82,7 +82,6 @@ example = [
     'cairocffi>=1.7',
     'igraph>=0.11',
     'scikit-learn>=1.5',
-    'hypothesis>=6.1',
 ]
 extra = [
     'lxml>=4.6',

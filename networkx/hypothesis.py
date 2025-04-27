@@ -37,7 +37,7 @@ def edge_data_st(draw, **kwargs):
 
 
 @st.composite
-def graph_st(draw, graph_generator, edge_data_st=None, **kwargs) -> nx.Graph:
+def graph_st(draw, graph_generator, *, edge_data_st=None, **kwargs) -> nx.Graph:
     """Draws a NetworkX graph from a generator function and optionally adds edge data.
     If the generator function accepts a 'seed' parameter, it will be automatically
     generated unless provided in `kwargs`.
@@ -53,8 +53,9 @@ def graph_st(draw, graph_generator, edge_data_st=None, **kwargs) -> nx.Graph:
         A function that returns a NetworkX graph (e.g., `nx.erdos_renyi_graph`, `nx.random_labeled_tree`).
         In case of being a random generator, it must accept a `seed` parameter to ensure reproducibility.
 
-    edge_data_st : SearchStrategy, optional
-        A strategy (typically created by `edge_data_st(...)`) to generate edge attribute dictionaries.
+    edge_data_st : SearchStrategy or constant value, optional
+        If constant value is passsed, it will be used as the edge attribute for all edges.
+        If a `hypothesis` strategy is passed, it will be used to generate edge attributes (typically created by `edge_data_st(...)`).
 
     **kwargs : dict
         Additional arguments passed to `graph_generator`. Each argument may be:
@@ -136,23 +137,51 @@ def graph_st(draw, graph_generator, edge_data_st=None, **kwargs) -> nx.Graph:
             G[u][v].update(draw(edge_data_st))
 
     # Set the graph's pretty representation to improve hypothesis output
-    G._repr_pretty_ = lambda p, cycle: _repr_pretty_(G, p, cycle)
+    G._repr_pretty_ = lambda p, cycle: graph_repr_pretty(G, p, cycle)
     return G
 
 
-def _repr_pretty_(G, p, cycle):
-    p.text(f"nx.{type(G).__name__}();")
-    p.breakable()
+def graph_repr_pretty(G, p, cycle):
+    """
+    Custom pretty-printing function for NetworkX graph objects.
 
-    for node in G.nodes():
-        p.text(f"G.add_node({repr(node)});")
-        p.breakable()
+    This method formats the graph `G` in a human-readable way for pretty printing,
+    using the `pretty` library. It generates a string representation of the graph
+    using `nx.from_edgelist` with the appropriate graph type and edge data if available.
+
+    This method is used in conjunction with the Hypothesis framework, which leverages
+    the `_repr_pretty_` method to generate clear string representations of graph
+    structures, helping to provide visibility into edge cases and falsifying examples
+    that do not meet the desired properties or invariants.
+
+    Args:
+        G (networkx.Graph): The graph object to be pretty-printed.
+        p (pretty.Printer): The printer object used to build the string output.
+        cycle (bool): A flag indicating whether there is a cycle in the graph.
+                      If `True`, a shortened representation is generated.
+
+    Returns:
+        None: This method modifies the output via the `p` printer directly.
+    """
+    assert not cycle, (
+        "Method is not calling pprint so it is impossible to have a pprint call cycle"
+    )
+
+    p.text("nx.from_edgelist([")
 
     for i, (u, v, data) in enumerate(G.edges(data=True)):
         if i > 0:
+            p.text(",")
             p.breakable()
-        p.text(f"G.add_edge({repr(u)}, {repr(v)}")
         if data:
-            p.text(", ")
-            p.text(", ".join(f"{k}={repr(v)}" for k, v in data.items()))
-        p.text(");")
+            p.text(f"({repr(u)}, {repr(v)}, {repr(data)})")
+        else:
+            p.text(f"({repr(u)}, {repr(v)})")
+
+    p.text("]")
+    if type(G) is not nx.Graph:
+        # If the graph is not default type Graph, we need to pass create_using
+        p.text(",")
+        p.breakable()
+        p.text(f"create_using=nx.{type(G).__name__}")
+    p.text(")")
