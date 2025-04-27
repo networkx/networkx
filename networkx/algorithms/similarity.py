@@ -1708,6 +1708,14 @@ def panther_vector_similarity(
         )
         k = num_nodes
 
+    # Ensure D doesn't exceed the number of nodes
+    if num_nodes < D:
+        warnings.warn(
+            f"Number of nodes is {num_nodes}, but requested D is {D}. "
+            "Setting D to number of nodes."
+        )
+        D = num_nodes
+
     # According to [1], they empirically determined
     # a good value for ``eps`` to be sqrt( 1 / |E| )
     if eps is None:
