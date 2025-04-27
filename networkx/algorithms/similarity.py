@@ -1788,13 +1788,15 @@ def panther_vector_similarity(
     neighbor_distances = np.maximum(neighbor_distances, eps)
     similarities = np.reciprocal(neighbor_distances)
 
-    # Always normalize to ensure values are between 0 and 1
-    max_sim = np.max(similarities) if len(similarities) > 0 else 1
-    similarities = similarities / max_sim  # Normalize to [0, 1]
-
-    # Replace any remaining NaN values with a positive value (1.0) to ensure tests pass
-    # This is reasonable since NaN typically occurs when nodes are very similar (distance near zero)
+    # Replace any NaN values with a reasonable value (1.0)
+    # This can happen in very small graphs where the source node is similar to itself
     similarities = np.nan_to_num(similarities, nan=1.0)
+
+    # Always normalize to ensure values are between 0 and 1
+    if len(similarities) > 0:
+        max_sim = np.max(similarities)
+        if max_sim > 0:  # Avoid division by zero
+            similarities = similarities / max_sim  # Normalize to [0, 1]
 
     # Add back the similarity scores (i.e., distances)
     top_k_sorted_names = (node_map[n] for n in nearest_neighbors)
@@ -1872,7 +1874,18 @@ def generate_random_paths(
     # Calculate transition probabilities between
     # every pair of vertices according to Eq. (3)
     adj_mat = nx.to_numpy_array(G, weight=weight)
-    inv_row_sums = np.reciprocal(adj_mat.sum(axis=1)).reshape(-1, 1)
+
+    # Handle isolated nodes by checking for zero row sums
+    row_sums = adj_mat.sum(axis=1).reshape(-1, 1)
+    # Check for zero row sums (isolated nodes)
+    if np.any(row_sums == 0):
+        # For generate_random_paths function, we just handle this with a generic message
+        # since we don't know which node is the source
+        raise nx.NetworkXUnfeasible(
+            "Panther random paths generation is not defined for graphs with isolated nodes."
+        )
+
+    inv_row_sums = np.reciprocal(row_sums)
     transition_probabilities = adj_mat * inv_row_sums
 
     node_map = list(G)
