@@ -844,6 +844,48 @@ class TestSimilarity:
         ):
             nx.panther_similarity(G, source=1)
 
+    def test_generate_random_paths_with_start(self):
+        index_map = {}
+        num_paths = 10
+        path_length = 2
+        initial_node = 1
+        G = nx.Graph()
+        G.add_edge(0, 1)
+        G.add_edge(0, 2)
+        G.add_edge(0, 3)
+        G.add_edge(1, 2)
+        G.add_edge(2, 4)
+        paths = nx.generate_random_paths(
+            G,
+            num_paths,
+            path_length=path_length,
+            index_map=index_map,
+            seed=42,
+            initial_node=initial_node,
+        )
+        expected_paths = [
+            [1, 0, 3],
+            [1, 2, 1],
+            [1, 0, 1],
+            [1, 0, 3],
+            [1, 2, 4],
+            [1, 0, 3],
+            [1, 2, 0],
+            [1, 0, 1],
+            [1, 0, 2],
+            [1, 0, 1],
+        ]
+        expected_map = {
+            0: {0, 2, 3, 5, 6, 7, 8, 9},
+            1: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+            2: {1, 4, 6, 8},
+            3: {0, 3, 5},
+            4: {4},
+        }
+
+        assert expected_paths == list(paths)
+        assert expected_map == index_map
+
     def test_generate_random_paths_unweighted(self):
         index_map = {}
         num_paths = 10
