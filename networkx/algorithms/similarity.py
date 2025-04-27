@@ -1644,7 +1644,7 @@ def panther_similarity(
 
 
 def panther_vector_similarity(
-    G, source, D=50, k=5, path_length=5, c=0.5, delta=0.1, eps=None
+    G, source, D=50, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
 ):
     """Returns the Panther vector similarity of nodes in the graph ``G``
     to node ``v``. Panther is a similarity metric that says
@@ -1671,6 +1671,9 @@ def panther_vector_similarity(
     eps : float
         The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``. Therefore,
         if no value is provided, the recommended computed value will be used.
+    weight : string or None, optional (default="weight")
+        The name of an edge attribute that holds the numerical value
+        used as a weight. If None then each edge has weight 1.
 
     Returns
     -------
@@ -1694,8 +1697,8 @@ def panther_vector_similarity(
            on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).
            Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
-    from scipy.spatial import cKDTree as KDTree
     import numpy as np
+    from scipy.spatial import cKDTree as KDTree
 
     num_nodes = G.number_of_nodes()
     if num_nodes < k:
@@ -1715,15 +1718,15 @@ def panther_vector_similarity(
 
     # Calculate the sample size ``R`` for how many paths
     # to randomly generate
-    t_choose_2 = _n_choose_k(path_length, 2)
-    sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
+    t_choose_2 = math.comb(path_length, 2)
+    sample_size = int((c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
     index_map = {}
     _ = list(
         generate_random_paths(
-            G, sample_size, path_length=path_length, index_map=index_map
+            G, sample_size, path_length=path_length, index_map=index_map, weight=weight
         )
     )
-    S = np.zeros((num_nodes, D))
+    S = np.zeros((num_nodes, num_nodes))
 
     theta = np.zeros((num_nodes, D))
     inv_sample_size = 1 / sample_size
@@ -1751,14 +1754,16 @@ def panther_vector_similarity(
 
     # Retrieve top ``k`` similar vertices (i.e., vectors)
     # (based on their Euclidean distance)
-    neighbor_distances, nearest_neighbors = kdtree.query(theta[source], k=k)
+    neighbor_distances, nearest_neighbors = kdtree.query(
+        theta[inv_node_map[source]], k=k
+    )
 
     # The paper defines the similarity S(v_i, v_j) as
     # 1 / || Theta(v_i) - Theta(v_j) ||
     similarities = np.reciprocal(neighbor_distances)
 
     # Add back the similarity scores (i.e., distances)
-    top_k_sorted_names = map(lambda n: node_map[n], nearest_neighbors)
+    top_k_sorted_names = (node_map[n] for n in nearest_neighbors)
     top_k_with_val = dict(zip(top_k_sorted_names, similarities))
 
     # Remove the self-similarity
