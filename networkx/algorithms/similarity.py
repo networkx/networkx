@@ -1800,7 +1800,7 @@ def panther_vector_similarity(
 
     # Add back the similarity scores (i.e., distances)
     top_k_sorted_names = (node_map[n] for n in nearest_neighbors)
-    top_k_with_val = dict(zip(top_k_sorted_names, similarities))
+    top_k_with_val = dict(zip(top_k_sorted_names.tolist(), similarities.tolist()))
 
     # Remove the self-similarity
     top_k_with_val.pop(source, None)
