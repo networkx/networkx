@@ -1770,7 +1770,10 @@ def panther_vector_similarity(
 
     # The paper defines the similarity S(v_i, v_j) as
     # 1 / || Theta(v_i) - Theta(v_j) ||
+    # Calculate reciprocals and normalize to [0, 1] range
     similarities = np.reciprocal(neighbor_distances)
+    if len(similarities) > 0:
+        similarities = similarities / np.max(similarities)  # Normalize to [0, 1]
 
     # Add back the similarity scores (i.e., distances)
     top_k_sorted_names = (node_map[n] for n in nearest_neighbors)
