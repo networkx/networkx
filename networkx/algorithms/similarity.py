@@ -1735,7 +1735,7 @@ def panther_vector_similarity(
         eps = np.sqrt(1.0 / G.number_of_edges())
 
     inv_node_map = {name: index for index, name in enumerate(G.nodes)}
-    node_map = np.array(G)
+    node_map = list(G)
 
     # Calculate the sample size ``R`` for how many paths
     # to randomly generate
@@ -1800,7 +1800,7 @@ def panther_vector_similarity(
 
     # Add back the similarity scores (i.e., distances)
     top_k_sorted_names = (node_map[n] for n in nearest_neighbors)
-    top_k_with_val = dict(zip(top_k_sorted_names.tolist(), similarities.tolist()))
+    top_k_with_val = dict(zip(top_k_sorted_names, similarities.tolist()))
 
     # Remove the self-similarity
     top_k_with_val.pop(source, None)
