@@ -17,11 +17,11 @@ def method(request):
 class TestIntervalGraph:
     """Unit tests for :func:`networkx.generators.interval_graph.interval_graph`"""
 
-    def testempty(self, method):
+    def test_empty(self, method):
         """Tests for trivial case of empty input"""
         assert len(interval_graph([], method)) == 0
 
-    def testinterval_graph_check_invalid(self, method):
+    def test_interval_graph_check_invalid(self, method):
         """Tests for conditions that raise Exceptions"""
 
         invalids_having_none = [None, (1, 2)]
@@ -40,7 +40,7 @@ class TestIntervalGraph:
         with pytest.raises(ValueError):
             interval_graph(invalids_interval, method)
 
-    def testinterval_graph_0(self, method):
+    def test_interval_graph_0(self, method):
         intervals = [(1, 2), (1, 3)]
 
         expected_graph = nx.Graph()
@@ -51,7 +51,7 @@ class TestIntervalGraph:
         assert set(actual_g.nodes) == set(expected_graph.nodes)
         assert edges_equal(expected_graph, actual_g)
 
-    def testinterval_graph_1(self, method):
+    def test_interval_graph_1(self, method):
         intervals = [(1, 2), (2, 3), (3, 4), (1, 4)]
 
         expected_graph = nx.Graph()
@@ -69,7 +69,7 @@ class TestIntervalGraph:
         assert set(actual_g.nodes) == set(expected_graph.nodes)
         assert edges_equal(expected_graph, actual_g)
 
-    def testinterval_graph_2(self, method):
+    def test_interval_graph_2(self, method):
         intervals = [(1, 2), [3, 5], [6, 8], (9, 10)]
 
         expected_graph = nx.Graph()
@@ -80,7 +80,7 @@ class TestIntervalGraph:
         assert set(actual_g.nodes) == set(expected_graph.nodes)
         assert edges_equal(expected_graph, actual_g)
 
-    def testinterval_graph_3(self, method):
+    def test_interval_graph_3(self, method):
         intervals = [(1, 4), [3, 5], [2.5, 4]]
 
         expected_graph = nx.Graph()
@@ -96,7 +96,7 @@ class TestIntervalGraph:
         assert set(actual_g.nodes) == set(expected_graph.nodes)
         assert edges_equal(expected_graph, actual_g)
 
-    def testinterval_graph_4(self, method):
+    def test_interval_graph_4(self, method):
         """test all possible overlaps"""
         intervals = [
             (0, 2),
@@ -133,7 +133,7 @@ class TestIntervalGraph:
 
         assert set(actual_nbrs) == expected_nbrs
 
-    def testinterval_graph_5(self, method):
+    def test_interval_graph_5(self, method):
         """this test is to see that an interval supports infinite number"""
         intervals = {(-math.inf, 0), (-1, -1), (0.5, 0.5), (1, 1), (1, math.inf)}
 
