@@ -1651,7 +1651,7 @@ def generate_random_paths(
     index_map=None,
     weight="weight",
     seed=None,
-    initial_node=None,
+    source=None,
 ):
     """Randomly generate `sample_size` paths of length `path_length`.
 
