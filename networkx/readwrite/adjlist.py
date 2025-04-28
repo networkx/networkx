@@ -111,12 +111,12 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_adjlist(G, "test.adjlist")
+    >>> nx.write_adjlist(G, "path4.adjlist")
 
     The path can be a filehandle or a string with the name of the file. If a
     filehandle is provided, it has to be opened in 'wb' mode.
 
-    >>> fh = open("test.adjlist", "wb")
+    >>> fh = open("path4.adjlist2", "wb")
     >>> nx.write_adjlist(G, fh)
 
     Notes

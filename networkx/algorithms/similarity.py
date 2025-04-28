@@ -1842,20 +1842,30 @@ def generate_random_paths(
 
     Examples
     --------
-    Note that the return value is the list of paths:
+    The generator yields `sample_size` number of paths of length `path_length`
+    drawn from `G`:
 
-    >>> G = nx.star_graph(3)
-    >>> random_path = nx.generate_random_paths(G, 2)
+    >>> G = nx.complete_graph(5)
+    >>> next(nx.generate_random_paths(G, sample_size=1, path_length=3, seed=42))
+    [3, 4, 2, 3]
+    >>> list(nx.generate_random_paths(G, sample_size=3, path_length=4, seed=42))
+    [[3, 4, 2, 3, 0], [2, 0, 2, 1, 0], [2, 0, 4, 3, 0]]
 
     By passing a dictionary into `index_map`, it will build an
     inverted index mapping of nodes to the paths in which that node is present:
 
-    >>> G = nx.star_graph(3)
+    >>> G = nx.wheel_graph(10)
     >>> index_map = {}
-    >>> random_paths = list(nx.generate_random_paths(G, 3, index_map=index_map))
+    >>> random_paths = list(
+    ...     nx.generate_random_paths(G, sample_size=3, index_map=index_map, seed=2771)
+    ... )
+    >>> random_paths
+    [[3, 2, 1, 9, 8, 7], [4, 0, 5, 6, 7, 8], [3, 0, 5, 0, 9, 8]]
     >>> paths_containing_node_0 = [
     ...     random_paths[path_idx] for path_idx in index_map.get(0, [])
     ... ]
+    >>> paths_containing_node_0
+    [[4, 0, 5, 6, 7, 8], [3, 0, 5, 0, 9, 8]]
 
     References
     ----------
