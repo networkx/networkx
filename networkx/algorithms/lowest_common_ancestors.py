@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 from collections.abc import Mapping, Set
-from itertools import combinations_with_replacement
+from itertools import chain, combinations_with_replacement
 
 import networkx as nx
 from networkx.utils import UnionFind, arbitrary_element, not_implemented_for
@@ -229,6 +229,65 @@ def all_pairs_all_lowest_common_ancestors(G, pairs=None):
     return generate_lcas_from_pairs(G, pairs)
 
 
+def _all_pairs_lca(G, pairs=None):
+    """Helper function to find a single lowest common ancestor for each pair of nodes.
+
+    This function serves as a helper for `all_pairs_lowest_common_ancestor`
+    when no key function is provided. It returns a single (arbitrary) lowest
+    common ancestor for each pair of nodes.
+
+    Parameters
+    ----------
+    G : NetworkX directed graph
+        A directed acyclic graph (DAG).
+
+    pairs : iterable of pairs of nodes, optional (default: None)
+        The pairs of nodes for which to find the lowest common ancestor.
+        If None, all pairs of nodes in the graph are used.
+
+    Yields
+    ------
+    ((node1, node2), lca) : 2-tuple
+        A tuple containing a pair of nodes and their lowest common ancestor.
+        If the pair has no common ancestors, it is omitted from the results.
+    """
+    pairs = _validate_lca_inputs(G, pairs)
+
+    # Compute the topological rank of each node
+    rank = {}
+    for i, generation in enumerate(nx.topological_generations(G)):
+        for node in generation:
+            rank[node] = i
+
+    ancestors = {}
+
+    def ensure_ancestors(node):
+        if node not in ancestors:
+            # Use bucket sort for linear time complexity
+            bucket = [[] for _ in range(rank[node] + 1)]
+            for x in nx.ancestors(G, node):
+                bucket[rank[x]].append(x)
+            bucket[rank[node]].append(node)
+
+            # Ancestors are sorted in reversed topological order
+            bucket.reverse()
+            ancestors[node] = dict.fromkeys(chain(*bucket))
+
+    def generate_lca():
+        for u, v in pairs:
+            ensure_ancestors(u)
+            ensure_ancestors(v)
+
+            # The first common ancestor found has the lowest topological rank
+            # and is thus a lowest common ancestor
+            for x in ancestors[u]:
+                if x in ancestors[v]:
+                    yield ((u, v), x)
+                    break
+
+    return generate_lca()
+
+
 @not_implemented_for("undirected")
 @nx._dispatchable
 def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
@@ -310,18 +369,15 @@ def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
     all_pairs_all_lowest_common_ancestors
     """
     if key is None:
-        select_lca = nx.utils.arbitrary_element
-    else:
-
-        def select_lca(lca):
-            return min(lca, key=key)
+        # Use specialized algorithm when key is None for better performance
+        return _all_pairs_lca(G, pairs)
 
     all_pairs_all_lca = all_pairs_all_lowest_common_ancestors(G, pairs)
 
     def generate_lca():
         for (u, v), lca in all_pairs_all_lca:
             if len(lca) > 0:
-                yield ((u, v), select_lca(lca))
+                yield ((u, v), min(lca, key=key))
 
     return generate_lca()
 
