@@ -848,7 +848,7 @@ class TestSimilarity:
         index_map = {}
         num_paths = 10
         path_length = 2
-        initial_node = 1
+        source = 1
         G = nx.Graph()
         G.add_edge(0, 1)
         G.add_edge(0, 2)
@@ -861,7 +861,7 @@ class TestSimilarity:
             path_length=path_length,
             index_map=index_map,
             seed=42,
-            initial_node=initial_node,
+            source=source,
         )
         expected_paths = [
             [1, 0, 3],

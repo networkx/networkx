@@ -1651,6 +1651,7 @@ def generate_random_paths(
     index_map=None,
     weight="weight",
     seed=None,
+    *,
     source=None,
 ):
     """Randomly generate `sample_size` paths of length `path_length`.
@@ -1675,7 +1676,7 @@ def generate_random_paths(
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-    initial_node : node, optional
+    source : node, optional
         Node to use as the starting point for all generated paths.
         If None then starting nodes are selected at random with uniform probability.
 
@@ -1725,15 +1726,15 @@ def generate_random_paths(
     num_nodes = G.number_of_nodes()
 
     for path_index in range(sample_size):
-        if initial_node is None:
+        if source is None:
             # Sample current vertex v = v_i uniformly at random
             node_index = randint_fn(num_nodes)
             node = node_map[node_index]
         else:
-            if initial_node not in node_map:
-                raise nx.NodeNotFound(f"Initial node {initial_node} not in G")
+            if source not in node_map:
+                raise nx.NodeNotFound(f"Initial node {source} not in G")
 
-            node = initial_node
+            node = source
             node_index = node_map.index(node)
 
         # Add v into p_r and add p_r into the path set
