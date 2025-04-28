@@ -364,6 +364,13 @@ def all_pairs_lowest_common_ancestor(G, pairs=None, key=None):
     -----
     Only defined on non-null directed acyclic graphs.
 
+    When `key` is None, the implementation uses a more efficient algorithm
+    that returns a single, arbitrary LCA for pairs with multiple LCAs. The
+    returned LCA in this case is implementation-dependent and should not be
+    relied upon to be consistent across different runs.
+    Additionally, isomorphic graphs with different construction orders
+    may yield different results.
+
     See Also
     --------
     all_pairs_all_lowest_common_ancestors
@@ -469,6 +476,15 @@ def lowest_common_ancestor(G, node1, node2, default=None, key=None):
     >>> nx.add_path(G, (0, 4, 3))
     >>> nx.lowest_common_ancestor(G, 2, 4)
     0
+
+    Notes
+    -----
+    When `key` is None, the implementation uses a more efficient algorithm
+    that returns a single, arbitrary LCA for pairs with multiple LCAs. The
+    returned LCA in this case is implementation-dependent and should not be
+    relied upon to be consistent across different runs.
+    Additionally, isomorphic graphs with different construction orders
+    may yield different results.
 
     See Also
     --------
