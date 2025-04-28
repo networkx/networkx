@@ -17,6 +17,51 @@ __all__ = [
 ]
 
 
+def _validate_lca_inputs(G, pairs=None):
+    """Validate the input parameters for LCA algorithms and process the pairs parameter.
+
+    Parameters
+    ----------
+    G : NetworkX directed graph
+    pairs : iterable of pairs of nodes, optional (default: None)
+        The node pairs to validate.
+        If None, generates all combinations of nodes in the graph.
+
+    Returns
+    -------
+    pairs : iterable
+        The processed node pairs
+
+    Raises
+    ------
+    NetworkXError
+        If G is not a directed acyclic graph
+    NetworkXPointlessConcept
+        If G is an empty graph
+    NodeNotFound
+        If any node in the pairs is not in graph G
+    """
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
+
+    if pairs is None:
+        pairs = combinations_with_replacement(G, 2)
+    else:
+        # Convert iterator to iterable, if necessary. Trim duplicates.
+        pairs = dict.fromkeys(pairs)
+        # Verify that each of the nodes in the provided pairs is in G
+        nodeset = set(G)
+        for pair in pairs:
+            if set(pair) - nodeset:
+                raise nx.NodeNotFound(
+                    f"Node(s) {set(pair) - nodeset} from pair {pair} not in G."
+                )
+
+    return pairs
+
+
 @not_implemented_for("undirected")
 @nx._dispatchable
 def is_lowest_common_ancestor(G, u, v, x):
@@ -157,23 +202,7 @@ def all_pairs_all_lowest_common_ancestors(G, pairs=None):
     --------
     all_pairs_lowest_common_ancestor
     """
-    if not nx.is_directed_acyclic_graph(G):
-        raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
-    if len(G) == 0:
-        raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
-
-    if pairs is None:
-        pairs = combinations_with_replacement(G, 2)
-    else:
-        # Convert iterator to iterable, if necessary. Trim duplicates.
-        pairs = dict.fromkeys(pairs)
-        # Verify that each of the nodes in the provided pairs is in G
-        nodeset = set(G)
-        for pair in pairs:
-            if set(pair) - nodeset:
-                raise nx.NodeNotFound(
-                    f"Node(s) {set(pair) - nodeset} from pair {pair} not in G."
-                )
+    pairs = _validate_lca_inputs(G, pairs)
 
     # Once input validation is done, construct the generator
     def generate_lcas_from_pairs(G, pairs):
