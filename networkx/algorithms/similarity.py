@@ -1647,12 +1647,13 @@ def panther_similarity(
 def panther_vector_similarity(
     G, source, D=50, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
 ):
-    r"""Returns the Panther vector similarity of nodes in the graph ``G``
-    to node ``v``. This is known as "Panther++".
+    r"""Returns the Panther vector similarity of nodes in `G`.
 
-    Panther is a similarity metric that says
-    "two objects are considered to be similar if their structures
-    are similar" [1]_.
+     This approach to similarity is often called "Panther++" and the notion of
+     similarity referred to here is low "graph edit distance". Panther is a
+     similarity metric that says "two objects are considered to be similar
+     if their structures are similar" [1]_. In this case, if their graph edit
+     distances are small.
 
     Parameters
     ----------
