@@ -1681,10 +1681,9 @@ def panther_vector_similarity(
 
     Returns
     -------
-    similarity : dictionary
-        Dictionary of nodes to similarity scores (as floats). Note:
-        the self-similarity (i.e., ``v``) will not be included in
-        the returned dictionary.
+    similarity : dict
+        Dict of nodes to similarity scores (as floats).
+        Note: the self-similarity (i.e., `node`) is not included in the dict.
 
     Examples
     --------
