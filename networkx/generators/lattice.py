@@ -147,33 +147,33 @@ def grid_graph(dim, periodic=False):
 def hypercube_graph(n):
     """Return the n-dimensional hypercube graph.
 
-An n-dimensional hypercube graph has 2^n nodes. Each node represents an
-n-bit binary string. Two nodes are adjacent if and only if their binary
-representations differ by exactly one bit.
+    An n-dimensional hypercube graph has 2^n nodes. Each node represents an
+    n-bit binary string. Two nodes are adjacent if and only if their binary
+    representations differ by exactly one bit.
 
-Parameters
-----------
-n : int
-    The dimension of the hypercube.
+    Parameters
+    ----------
+    n : int
+        The dimension of the hypercube.
 
-Returns
--------
-G : Graph
-    The n-dimensional hypercube graph.
+    Returns
+    -------
+    G : Graph
+        The n-dimensional hypercube graph.
 
-Examples
---------
->>> G = nx.hypercube_graph(3)
->>> print(G.nodes())
-[0, 1, 2, 3, 4, 5, 6, 7]
->>> print(G.edges(0))
-[(0, 1), (0, 2), (0, 4)]
+    Examples
+    --------
+    >>> G = nx.hypercube_graph(3)
+    >>> list(G.nodes())
+    [0, 1, 2, 3, 4, 5, 6, 7]
+    >>> list(G.edges(0))
+    [(0, 1), (0, 2), (0, 4)]
 
-Notes
------
-Nodes are labeled as integers from 0 to 2**n - 1, where each integer
-represents a binary string of length n.
-"""
+    Notes
+    -----
+    Nodes are labeled as integers from 0 to 2**n - 1, where each integer
+    represents a binary string of length n.
+    """
 
 
 
