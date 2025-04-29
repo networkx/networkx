@@ -171,12 +171,12 @@ def girvan_newman(G, most_valuable_edge=None, component_wise_computing=False):
     # Initialize the cache of all connected components if we are doing component wise computing
     if component_wise_computing:
         current_components = list(nx.connected_components(g))
-        current_subgraphs = [g.subgraph(c).copy() for c in current_components]
+        candidates = {g.subgraph(c).copy(): None for c in current_components}
 
     while g.number_of_edges() > 0:
         if component_wise_computing:
             yield _without_most_central_edges_component_wise(
-                g, most_valuable_edge, current_subgraphs
+                g, most_valuable_edge, candidates
             )
         else:
             yield _without_most_central_edges(g, most_valuable_edge)
@@ -205,9 +205,7 @@ def _without_most_central_edges(G, most_valuable_edge):
     return new_components
 
 
-def _without_most_central_edges_component_wise(
-    G, most_valuable_edge, current_subgraphs
-):
+def _without_most_central_edges_component_wise(G, most_valuable_edge, candidates):
     """Returns the connected components of the graph that results from
     repeatedly removing the most "valuable" edge in the graph.
 
@@ -227,35 +225,53 @@ def _without_most_central_edges_component_wise(
 
     # Loop until there is a component split
     while True:
-        candidates = {}
+        optimal_centrality = None
+        global_optimal_edge = None
+        affected_subgraph = None
 
         # Obtain a candidate edge from each subgraph
-        for sg in current_subgraphs:
+        for sg in candidates:
             if sg.number_of_edges() == 0:
                 continue
-            edge_value_result = most_valuable_edge(sg)
 
-            assert (
-                isinstance(edge_value_result, tuple) and len(edge_value_result) == 3
-            ), (
-                "If component_wise computing is True, most_valuable_edge must return a tuple (most valuable edge, value of most valuable edge)"
-            )
+            # If the (candidate_edge, centrality) of the current subgraph is not recorded, compute it
+            if candidates[sg] is None:
+                edge_value_result = most_valuable_edge(sg)
+                assert (
+                    isinstance(edge_value_result, tuple)
+                    and len(edge_value_result) == 2
+                    and isinstance(edge_value_result[0], tuple)
+                    and len(edge_value_result[0]) == 2
+                ), (
+                    "If component_wise computing is True, most_valuable_edge must return a tuple (most valuable edge, value of most valuable edge)"
+                )
 
-            edge, centrality = edge_value_result
-            candidates[(edge, sg)] = centrality
+                candidate_edge, centrality = edge_value_result
+                candidates[sg] = (candidate_edge, centrality)
+            # Otherwise, read from cache
+            else:
+                candidate_edge, centrality = candidates[sg]
+
+            # Update globally most valuable edge and the affected subgraph
+            if optimal_centrality is None or centrality > optimal_centrality:
+                optimal_centrality = centrality
+                global_optimal_edge = candidate_edge
+                affected_subgraph = sg
 
         # Select globally most valuable edge, remove edge from main graph and component
-        edge_to_remove, source_sg = max(candidates, key=candidates.get)
-        G.remove_edge(*edge_to_remove)
-        source_sg.remove_edge(*edge_to_remove)
+        G.remove_edge(*global_optimal_edge)
+        affected_subgraph.remove_edge(*global_optimal_edge)
 
-        # Check if component split
-        new_comps = list(nx.connected_components(source_sg))
+        # Set the cache to None, such that the candidate edge and centrality will be recomputed for this subgraph in the next iteration
+        candidates[affected_subgraph] = None
+
+        # Check if removing the global_optimal_edge results in the affected subgraph being split
+        new_comps = list(nx.connected_components(affected_subgraph))
         if len(new_comps) > 1:
-            # Update our component tracking
-            comp_index = current_subgraphs.index(source_sg)
-            current_subgraphs.pop(comp_index)
-            for c in new_comps:
-                current_subgraphs.append(G.subgraph(c).copy())
+            # Update cache: replace the affected (split) subgraph with the newly generated subgraphs
+            del candidates[affected_subgraph]
 
-            return tuple(map(set, [sg.nodes() for sg in current_subgraphs]))
+            for new_comp in new_comps:
+                candidates[G.subgraph(new_comp).copy()] = None
+
+            return tuple(map(set, [sg.nodes() for sg in candidates]))
