@@ -192,15 +192,13 @@ class TestBipartiteLinkAnalysis:
                 # Zero case
                 lambda x: 0,
             ],
-            [i / 2 for i in range(1, 3)],
-            [i / 2 for i in range(1, 3)],
+            [i / 2 for i in range(3)],
+            [i / 2 for i in range(3)],
         ),
     )
     def test_gnmk_convergence_birank(self, personalization, alpha, beta):
         top_personalization_dict = {
-            node: personalization(node)
-            for node in self.gnmk_random_graph
-            if personalization(node) > 0
+            node: personalization(node) for node in self.gnmk_random_graph_top_nodes
         }
         bipartite.birank(
             self.gnmk_random_graph,
