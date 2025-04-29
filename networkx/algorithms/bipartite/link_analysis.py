@@ -79,20 +79,26 @@ def birank(
       complement of 'top' with respect to the graph `G`.
 
     alpha : float, optional (default=0.80 if top_personalization not empty, else 1)
-
       Damping factor for the 'top' nodes. Must be in the interval $[0, 1]$.
+      Choice of value is largely dependent on use case, and experimentation is
+      recommended.
 
     beta : float, optional (default=0.80 if bottom_personalization not empty, else 1)
-
       Damping factor for the 'bottom' nodes. Must be in the interval $[0, 1]$.
+      Choice of value is largely dependent on use case, and experimentation is
+      recommended.
 
     top_personalization : dict, optional (default=None)
       Dictionary keyed by nodes in 'top' to that node's personalization value.
       Unspecified nodes in 'top' will be assigned a personalization value of 0.
+      Personalization values are used to encode a priori weights for a given node,
+      and should be non-negative.
 
     bottom_personalization : dict, optional (default=None)
       Dictionary keyed by nodes in 'bottom' to that node's personalization value.
       Unspecified nodes in 'bottom' will be assigned a personalization value of 0.
+      Personalization values are used to encode a priori weights for a given node,
+      and should be non-negative.
 
     max_iter : int, optional (default=100)
       Maximum number of iterations in power method eigenvalue solver.
