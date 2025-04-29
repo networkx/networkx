@@ -1,6 +1,7 @@
 NetworkX
 ========
-
+ WELCOME TO NETWORKX 
+                -🚀 a natural choice for model relationships between things.
 
 .. image::
     https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
@@ -29,7 +30,10 @@ NetworkX
 
 NetworkX is a Python package for the creation, manipulation,
 and study of the structure, dynamics, and functions
-of complex networks.
+of complex networks.NetworkX acts a s a poerful python libraray for 
+working with graphs-networks of connected items,these will help in social networkings
+,computer networking and fruad detection.
+
 
 - **Website (including documentation):** https://networkx.org
 - **Mailing list:** https://groups.google.com/forum/#!forum/networkx-discuss
@@ -44,7 +48,7 @@ of complex networks.
 Simple example
 --------------
 
-Find the shortest path between two nodes in an undirected graph:
+Find the shortest path 🔀➡️🛣️📍between two nodes in an undirected graph:
 
 .. code:: pycon
 
