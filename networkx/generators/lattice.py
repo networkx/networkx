@@ -145,29 +145,36 @@ def grid_graph(dim, periodic=False):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def hypercube_graph(n):
-    """Returns the *n*-dimensional hypercube graph.
+    """Return the n-dimensional hypercube graph.
 
-    The nodes are the integers between 0 and ``2 ** n - 1``, inclusive.
+An n-dimensional hypercube graph has 2^n nodes. Each node represents an n-bit binary string.
+Two nodes are adjacent if and only if their binary representations differ by exactly one bit.
 
-    For more information on the hypercube graph, see the Wikipedia
-    article `Hypercube graph`_.
+Parameters
+----------
+n : int
+    The dimension of the hypercube.
+create_using : NetworkX graph constructor, optional (default: None)
+    If provided, this graph is cleared and used to build the new graph.
 
-    .. _Hypercube graph: https://en.wikipedia.org/wiki/Hypercube_graph
+Returns
+-------
+G : Graph
+    The n-dimensional hypercube graph.
 
-    Parameters
-    ----------
-    n : int
-        The dimension of the hypercube.
-        The number of nodes in the graph will be ``2 ** n``.
+Examples
+--------
+>>> G = nx.hypercube_graph(3)
+>>> print(G.nodes())
+[0, 1, 2, 3, 4, 5, 6, 7]
+>>> print(G.edges(0))
+[(0, 1), (0, 2), (0, 4)]
 
-    Returns
-    -------
-    NetworkX graph
-        The hypercube graph of dimension *n*.
-    """
-    dim = n * [2]
-    G = grid_graph(dim)
-    return G
+Notes
+-----
+Nodes are labeled as integers from 0 to 2**n - 1, where each integer
+represents a binary string of length n.
+"""
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
