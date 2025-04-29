@@ -29,14 +29,13 @@ def approximate_current_flow_betweenness_centrality(
     weight=None,
     dtype=float,
     solver="full",
-    epsilon=0.5,
-    kmax=10000,
+    k=None,
     seed=None,
 ):
     r"""Compute the approximate current-flow betweenness centrality for nodes.
 
-    Approximates the current-flow betweenness centrality within absolute
-    error of epsilon with high probability [1]_.
+    Approximates the current-flow betweenness centrality for a sample of
+    node pairs with high probability [1]_.
 
 
     Parameters
@@ -63,11 +62,11 @@ def approximate_current_flow_betweenness_centrality(
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
 
-    epsilon: float
-        Absolute error tolerance.
-
-    kmax: int
-       Maximum number of sample node pairs to use for approximation.
+    k : int, optional (default=None)
+       Number of sample node pairs to use for approximation.
+       If None, a default value is used that should provide reasonable
+       approximation for most networks: $k = \lceil(c^*/\epsilon)^2 \log n\rceil$ where
+       c* is a derived constant and n is the number of nodes.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -84,8 +83,14 @@ def approximate_current_flow_betweenness_centrality(
 
     Notes
     -----
-    The running time is $O((1/\epsilon^2)m{\sqrt k} \log n)$
-    and the space required is $O(m)$ for $n$ nodes and $m$ edges.
+    The running time is $O(km{\sqrt k} \log n)$ where $k$ is the number of
+    sample pairs used for approximation and the space required is $O(m)$
+    for $n$ nodes and $m$ edges.
+
+    When k is not specified, it is computed using the formula:
+    $k = \lceil(c^*/\epsilon)^2 \log n\rceil$
+    where $c^*$ is a constant, $n$ is the number of nodes, and $\epsilon=0.5$
+    is used for the error tolerance.
 
     If the edges have a 'weight' attribute they will be used as
     weights in this algorithm.  Unspecified weights are set to 1.
@@ -119,10 +124,13 @@ def approximate_current_flow_betweenness_centrality(
     nb = (n - 1.0) * (n - 2.0)  # normalization factor
     cstar = n * (n - 1) / nb
     l = 1  # parameter in approximation, adjustable
-    k = l * int(np.ceil((cstar / epsilon) ** 2 * np.log(n)))
-    if k > kmax:
-        msg = f"Number random pairs k>kmax ({k}>{kmax}) "
-        raise nx.NetworkXError(msg, "Increase kmax or epsilon")
+
+    # Compute k if not provided
+    if k is None:
+        # Default error tolerance of 0.5
+        epsilon = 0.5
+        k = l * int(np.ceil((cstar / epsilon) ** 2 * np.log(n)))
+
     cstar2k = cstar / (2 * k)
     for _ in range(k):
         s, t = pair = seed.sample(range(n), 2)
