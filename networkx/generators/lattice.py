@@ -176,7 +176,6 @@ def hypercube_graph(n):
     """
 
 
-
 @nx._dispatchable(graphs=None, returns_graph=True)
 def triangular_lattice_graph(
     m, n, periodic=False, with_positions=True, create_using=None
