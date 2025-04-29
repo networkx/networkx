@@ -121,7 +121,8 @@ def birank(
     ------
     NetworkXAlgorithmError
         If the parameters `alpha` or `beta` are not in the interval [0, 1],
-        or if either of the bipartite sets are empty.
+        if either of the bipartite sets are empty, or if negative values are
+        provided in the personalization dictionaries.
 
     PowerIterationFailedConvergence
         If the algorithm fails to converge to the specified tolerance
@@ -312,7 +313,9 @@ def birank(
 
 def _clean_personalization_dict(personalization):
     """Filter out zero values from the personalization dictionary,
-    handle case where None is passed."""
+    handle case where None is passed, ensure values are non-negative."""
     if personalization is None:
         return {}
+    if any(value < 0 for value in personalization.values()):
+        raise nx.NetworkXAlgorithmError("Personalization values must be non-negative.")
     return {node: value for node, value in personalization.items() if value != 0}

@@ -207,3 +207,12 @@ class TestBipartiteLinkAnalysis:
             alpha=alpha,
             beta=beta,
         )
+
+    def test_negative_personalization(self):
+        top_personalization_dict = {0: -1}
+        with pytest.raises(nx.NetworkXAlgorithmError):
+            bipartite.birank(
+                self.gnmk_random_graph,
+                self.gnmk_random_graph_top_nodes,
+                top_personalization=top_personalization_dict,
+            )
