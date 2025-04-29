@@ -136,7 +136,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
     B : NetworkX graph
         The input graph should be bipartite.
 
-    nodes : list or iterable
+    nodes : iterable of nodes
         Distinct nodes to project onto (the "bottom" nodes).
 
     ratio: Bool (default=False)
@@ -248,7 +248,7 @@ def collaboration_weighted_projected_graph(B, nodes):
     B : NetworkX graph
       The input graph should be bipartite.
 
-    nodes : list or iterable
+    nodes : iterable of nodes
       Nodes to project onto (the "bottom" nodes).
 
     Returns
@@ -344,7 +344,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     B : NetworkX graph
         The input graph should be bipartite.
 
-    nodes : list or iterable
+    nodes : iterable of nodes
         Nodes to project onto (the "bottom" nodes).
 
     jaccard: Bool (default=True)
@@ -432,7 +432,7 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     B : NetworkX graph
         The input graph should be bipartite.
 
-    nodes : list or iterable
+    nodes : iterable of nodes
         Nodes to project onto (the "bottom" nodes).
 
     weight_function : function

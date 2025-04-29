@@ -34,7 +34,7 @@ def node_redundancy(G, nodes=None):
     G : graph
         A bipartite graph
 
-    nodes : list or iterable (optional)
+    nodes : iterable of nodes (optional)
         Compute redundancy for these nodes. The default is all nodes in G.
 
     Returns

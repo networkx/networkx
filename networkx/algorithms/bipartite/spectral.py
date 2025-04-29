@@ -15,7 +15,7 @@ def spectral_bipartivity(G, nodes=None, weight="weight"):
     ----------
     G : NetworkX graph
 
-    nodes : list or container  optional(default is all nodes)
+    nodes : iterable of nodes  optional(default is all nodes)
       Nodes to return value of spectral bipartivity contribution.
 
     weight : string or None  optional (default = 'weight')
