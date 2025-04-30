@@ -169,8 +169,8 @@ def hypercube_graph(n):
     Examples
     --------
     >>> G = nx.hypercube_graph(3)
-    >>> list(G.edges(0))
-    [(0,1), (0,2), (0,4)]
+    >>> list(G.edges(0,0,0))
+    [((0,0,0), (1,0,0)), ((0,0,0), (0,1,0)), ((0,0,0), (0,0,1))]
 
     Notes
     -----
