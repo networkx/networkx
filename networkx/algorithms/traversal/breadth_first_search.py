@@ -417,7 +417,7 @@ def bfs_layers(G, sources):
 
     Yields
     ------
-    layers: list of nodes
+    layer : list of nodes
         Yields list of nodes at the same distance from `sources`.
 
     Examples
