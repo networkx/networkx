@@ -152,26 +152,26 @@ def hypercube_graph(n):
     a binary string of length 'n'. Two nodes are connected if their binary
     representations differ in exactly one bit.
 
-    
+
     Parameters
     ----------
     n : int
         The dimension of the hypercube. Must be a non-negative integer.
-    create_using : Networkx graph constructor, optional (default: None)  
-        Graph type to create. For example, 'nx.DiGraph' or 'nx.Graph'. If None, 
+    create_using : Networkx graph constructor, optional (default: None)
+        Graph type to create. For example, 'nx.DiGraph' or 'nx.Graph'. If None,
         a simple undirected Graph is used.
-        
+
     Returns
     -------
     G : NetworkX graph
         The n-dimensional hypercube graph with 2^n nodes.
-        
+
     Examples
     --------
     >>> G = nx.hypercube_graph(3)
     >>> list(G.edges(0))
     [(0,1), (0,2), (0,4)]
-    
+
     Notes
     -----
     Nodes are labeled as integers from 0 to 2^n - 1. The binary representation
