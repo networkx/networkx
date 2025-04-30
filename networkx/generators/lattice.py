@@ -145,36 +145,36 @@ def grid_graph(dim, periodic=False):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def hypercube_graph(n):
-    """Returns the n-dimensional hypercube graph.
+    """
+    Returns the n-dimensional hypercube graph.
 
-    The n-dimensional hypercube graph has 2^n nodes.Each node represents
-    a binary string of length 'n'.Two nodes are connected if their binary
+    The n-dimensional hypercube graph has 2^n nodes. Each node represents
+    a binary string of length 'n'. Two nodes are connected if their binary
     representations differ in exactly one bit.
 
     
     Parameters
     ----------
     n : int
-        The dimension of the hypercube.must be a non-negative integer.
-    creating_using : Networkx graph constructor,optional (default: None) 
-        Graph type to create.For example,'nx.DiGraph' or 'nx.Graph'.If None, 
+        The dimension of the hypercube. Must be a non-negative integer.
+    create_using : Networkx graph constructor, optional (default: None)  
+        Graph type to create. For example, 'nx.DiGraph' or 'nx.Graph'. If None, 
         a simple undirected Graph is used.
         
     Returns
     -------
     G : NetworkX graph
-        The n-dimensional hypercube graph with 2^n Nodes.
+        The n-dimensional hypercube graph with 2^n nodes.
         
-    examples
-    
+    Examples
     --------
     >>> G = nx.hypercube_graph(3)
     >>> list(G.edges(0))
-    [(0,1),(0,2),(0,4)]
+    [(0,1), (0,2), (0,4)]
     
-    notes
+    Notes
     -----
-    Nodes are labeled as integers from 0 to 2^n - 1.The binary representation
+    Nodes are labeled as integers from 0 to 2^n - 1. The binary representation
     of each node's label is used to determine edges.
     """
     dim = n * [2]
