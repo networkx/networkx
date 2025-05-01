@@ -116,6 +116,7 @@ def from_biadjacency_matrix(
     A,
     create_using=None,
     edge_attribute="weight",
+    *,
     top_nodelist=None,
     bottom_nodelist=None,
 ):
