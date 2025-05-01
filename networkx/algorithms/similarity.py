@@ -1647,13 +1647,24 @@ def panther_similarity(
 def panther_vector_similarity(
     G, source, *, D=50, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
 ):
-    r"""Returns the Panther vector similarity of nodes in `G`.
+    r"""Returns the Panther vector similarity (Panther++) of nodes in `G`.
 
-     This approach to similarity is often called "Panther++" and the notion of
-     similarity referred to here is low "graph edit distance". Panther is a
-     similarity metric that says "two objects are considered to be similar
-     if their structures are similar" [1]_. In this case, if their graph edit
-     distances are small.
+    Computes similarity between nodes based on the "Panther++" algorithm [1]_, which extends
+    the basic Panther algorithm by using feature vectors to better capture structural
+    similarity.
+
+    While basic Panther similarity measures how often two nodes appear on the same paths,
+    Panther vector similarity (Panther++) creates a D-dimensional feature vector for each
+    node using its top similarity scores with other nodes, then computes similarity based
+    on the Euclidean distance between these feature vectors. This approach better captures
+    structural similarity and addresses the bias towards close neighbors present in
+    the original Panther algorithm.
+
+    This approach is preferred when:
+    1. You need better structural similarity than basic path co-occurrence
+    2. You want to overcome the close-neighbor bias of standard Panther
+    3. You're working with large graphs where k-d tree indexing would be beneficial
+    4. Graph edit distance-like similarity is more appropriate than path co-occurrence
 
     Parameters
     ----------
@@ -1669,12 +1680,18 @@ def panther_vector_similarity(
     path_length : int
         How long the randomly generated paths should be (``T`` in [1]_)
     c : float
-        A universal positive constant. Defaults to 0.5 per [1]_
+        A universal constant that controls the number of random paths to generate.
+        Higher values increase the number of sample paths and potentially improve
+        accuracy at the cost of more computation. Defaults to 0.5 as recommended
+        in [1]_.
     delta : float
         The probability that $S$ is not an epsilon-approximation to (R, phi)
     eps : float
-        The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``. Therefore,
-        if no value is provided, the recommended computed value will be used.
+        The error bound for similarity approximation. This controls the accuracy
+        of the sampled paths in representing the true similarity. Smaller values
+        yield more accurate results but require more sample paths. If None, a
+        value of ``sqrt(1/|E|)`` is used, which the authors found empirically
+        effective.
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
