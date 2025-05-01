@@ -961,7 +961,6 @@ class TestSimilarity:
         G.add_edge(1, 2)
         G.add_edge(2, 4)
 
-        # Just verify that the function works and returns results
         sim = nx.panther_vector_similarity(G, 0, D=3, k=4, path_length=2)
 
         assert len(sim) > 0
