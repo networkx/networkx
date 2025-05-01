@@ -1606,7 +1606,9 @@ def panther_similarity(
     t_choose_2 = math.comb(path_length, 2)
     sample_size = int((c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
     index_map = {}
-    _ = list(
+
+    # Generate the random paths and populate the index_map
+    list(
         generate_random_paths(
             G, sample_size, path_length=path_length, index_map=index_map, weight=weight
         )
