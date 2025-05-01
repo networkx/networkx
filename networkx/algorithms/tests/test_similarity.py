@@ -979,17 +979,13 @@ class TestSimilarity:
 
         sim = nx.panther_vector_similarity(G, 0, D=3, k=4, path_length=2)
 
-        # Check that we get the expected number of results
         assert len(sim) == 3
 
-        # Check that source is not in results
         assert 0 not in sim
 
-        # Check that all the neighbors are included in results
         for node in [1, 2, 3]:
             assert node in sim
 
-        # Check that similarity values are between 0 and 1
         for node, score in sim.items():
             assert 0 <= score <= 1
 
@@ -1006,17 +1002,13 @@ class TestSimilarity:
             G, "v1", D=3, k=4, path_length=2, weight="weight"
         )
 
-        # Check that we get the expected number of results
         assert len(sim) == 3
 
-        # Check that source is not in results
         assert "v1" not in sim
 
-        # Check that similarity values are between 0 and 1
         for node, score in sim.items():
             assert 0 <= score <= 1
 
-        # Check that all closest neighbors are included in results
         for node in ["v2", "v3", "v4"]:
             assert node in sim
 
@@ -1039,30 +1031,23 @@ class TestSimilarity:
 
     def test_panther_vector_similarity_D_adjustment(self):
         """Test D parameter adjustment when D > number of nodes."""
-        G = nx.star_graph(3)  # 4 nodes total
+        G = nx.star_graph(3)
 
-        # D=5 should be adjusted to D=4
         sim = nx.panther_vector_similarity(G, 0, D=5, k=3)
 
-        # Check that results make sense
-        assert len(sim) == 2  # Should return 2 nodes (k=3 minus source)
-        assert 0 not in sim  # Source should not be included
+        assert len(sim) == 2
+        assert 0 not in sim
 
-        # All nodes except source should have similar scores
         scores = list(sim.values())
-        # The scores should be very close to each other
         assert abs(scores[0] - scores[1]) < 0.1
 
     def test_panther_vector_similarity_small_graph(self):
         """Test panther_vector_similarity with a very small graph."""
-        # Create a small graph with just 2 nodes
         G = nx.Graph()
         G.add_edge(0, 1)
 
-        # D and k should automatically adjust to number of nodes
         sim = nx.panther_vector_similarity(G, 0, D=10, k=5)
 
-        # Should have only one result (node 1)
         assert len(sim) == 1
         assert 1 in sim
         assert sim[1] > 0
@@ -1072,12 +1057,10 @@ class TestSimilarity:
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 2), (2, 4)])
 
-        # Run with same seed twice
         np.random.seed(42)
         sim1 = nx.panther_vector_similarity(G, 0, path_length=2)
 
         np.random.seed(42)
         sim2 = nx.panther_vector_similarity(G, 0, path_length=2)
 
-        # Results should be identical
         assert sim1 == sim2
