@@ -1029,24 +1029,26 @@ class TestSimilarity:
         with pytest.raises(nx.NetworkXUnfeasible):
             nx.panther_vector_similarity(G, source=2)
 
-    def test_panther_vector_similarity_D_adjustment(self):
-        """Test D parameter adjustment when D > number of nodes."""
+    def test_panther_vector_similarity_too_large_D(self):
+        """Test raises when D > number of nodes."""
         G = nx.star_graph(3)
 
-        sim = nx.panther_vector_similarity(G, 0, D=5, k=3)
+        with pytest.raises(nx.NetworkXUnfeasible):
+            nx.panther_vector_similarity(G, 0, D=5, k=3)
 
-        assert len(sim) == 2
-        assert 0 not in sim
+    def test_panther_vector_similarity_too_large_k(self):
+        """Test raises when k > number of nodes."""
+        G = nx.star_graph(3)
 
-        scores = list(sim.values())
-        assert abs(scores[0] - scores[1]) < 0.1
+        with pytest.raises(nx.NetworkXUnfeasible):
+            nx.panther_vector_similarity(G, 0, D=2, k=5)
 
     def test_panther_vector_similarity_small_graph(self):
         """Test panther_vector_similarity with a very small graph."""
         G = nx.Graph()
         G.add_edge(0, 1)
 
-        sim = nx.panther_vector_similarity(G, 0, D=10, k=5)
+        sim = nx.panther_vector_similarity(G, 0, D=2, k=2)
 
         assert len(sim) == 1
         assert 1 in sim
@@ -1058,9 +1060,9 @@ class TestSimilarity:
         G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 2), (2, 4)])
 
         np.random.seed(42)
-        sim1 = nx.panther_vector_similarity(G, 0, path_length=2)
+        sim1 = nx.panther_vector_similarity(G, 0, D=3, path_length=2)
 
         np.random.seed(42)
-        sim2 = nx.panther_vector_similarity(G, 0, path_length=2)
+        sim2 = nx.panther_vector_similarity(G, 0, D=3, path_length=2)
 
         assert sim1 == sim2

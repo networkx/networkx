@@ -1732,19 +1732,15 @@ def panther_vector_similarity(
 
     num_nodes = G.number_of_nodes()
     if num_nodes < k:
-        warnings.warn(
-            f"Number of nodes is {num_nodes}, but requested k is {k}. "
-            "Setting k to number of nodes."
+        raise nx.NetworkXUnfeasible(
+            f"The number of requested nodes {k} is greater than the number of nodes {num_nodes}."
         )
-        k = num_nodes
 
     # Ensure D doesn't exceed the number of nodes
     if num_nodes < D:
-        warnings.warn(
-            f"Number of nodes is {num_nodes}, but requested D is {D}. "
-            "Setting D to number of nodes."
+        raise nx.NetworkXUnfeasible(
+            f"The number of requested similarity scores {D} is greater than the number of nodes {num_nodes}."
         )
-        D = num_nodes
 
     # In [1], an empirically good value for ``eps`` is sqrt( 1 / |E| )
     if eps is None:
