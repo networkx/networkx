@@ -1645,7 +1645,7 @@ def panther_similarity(
 
 @nx._dispatchable(edge_attrs="weight")
 def panther_vector_similarity(
-    G, source, D=50, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
+    G, source, *, D=50, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
 ):
     r"""Returns the Panther vector similarity of nodes in `G`.
 
