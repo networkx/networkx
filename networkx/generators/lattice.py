@@ -147,7 +147,10 @@ def grid_graph(dim, periodic=False):
 def hypercube_graph(n):
     """
     Return the n-dimensional hypercube graph.
-
+    
+    For more information on the hypercube graph, see the Wikipedia
+    article `Hypercube graph`_. 
+    
     The n-dimensional hypercube graph has 2^n nodes, each represented as an n-tuple
     of binary values (0 or 1). Edges exist between nodes that differ in exactly one bit.
 
