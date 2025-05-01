@@ -1729,8 +1729,7 @@ def panther_vector_similarity(
         )
         D = num_nodes
 
-    # According to [1], they empirically determined
-    # a good value for ``eps`` to be sqrt( 1 / |E| )
+    # In [1], an empirically good value for ``eps`` is sqrt( 1 / |E| )
     if eps is None:
         eps = np.sqrt(1.0 / G.number_of_edges())
 
