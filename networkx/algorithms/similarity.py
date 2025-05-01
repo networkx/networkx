@@ -1708,7 +1708,7 @@ def panther_vector_similarity(
     --------
 
         >>> import networkx as nx
-        >>> G = nx.star_graph(10)
+        >>> G = nx.star_graph(100)
         >>> sim = nx.panther_vector_similarity(G, 0)
 
     References
