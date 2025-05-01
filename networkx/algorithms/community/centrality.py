@@ -301,7 +301,7 @@ def _without_most_central_edges_betweenness(
         # Select edge to remove with largest betweenness centrality, do tie-breaking with the node numbers
         edge_to_remove = max(
             edge_betweenness,
-            key=lambda edge: (edge_betweenness[edge], edge[0], edge[1]),
+            key=lambda edge: (edge_betweenness[edge], -edge[0], -edge[1]),
         )
 
         # The new components after removing edge
