@@ -1719,11 +1719,9 @@ def panther_similarity(
 
     # If there aren't enough nodes for the requested k, adjust k with a warning
     if num_nodes < k:
-        warnings.warn(
-            f"Number of nodes is {num_nodes}, but requested k is {k}. "
-            "Setting k to number of nodes."
+        raise nx.NetworkXUnfeasible(
+            f"The number of requested nodes {k} is greater than the number of nodes {num_nodes}."
         )
-        k = num_nodes
 
     S = np.zeros(num_nodes)
     source_paths = set(index_map[source])

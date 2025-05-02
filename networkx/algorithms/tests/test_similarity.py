@@ -1041,7 +1041,7 @@ class TestSimilarity:
         G = nx.star_graph(3)
 
         with pytest.raises(nx.NetworkXUnfeasible):
-            nx.panther_vector_similarity(G, 0, D=2, k=5)
+            nx.panther_vector_similarity(G, 0, k=5)
 
     def test_panther_vector_similarity_small_graph(self):
         """Test panther_vector_similarity with a very small graph."""
