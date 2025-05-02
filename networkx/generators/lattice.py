@@ -146,7 +146,7 @@ def grid_graph(dim, periodic=False):
 @nx._dispatchable(graphs=None, returns_graph=True)
 def hypercube_graph(n):
     """
-    Return the n-dimensional hypercube graph.
+    Return the *n*-dimensional hypercube graph.
 
 
     The n-dimensional hypercube graph has 2^n nodes, each represented as an n-tuple
@@ -155,7 +155,7 @@ def hypercube_graph(n):
     Parameters
     ----------
     n : int
-        Dimension of the hypercube.
+        Dimension of the hypercube, must be a positive integer.
 
     Returns
     -------
@@ -168,7 +168,7 @@ def hypercube_graph(n):
     >>> list(G.edges((0, 0, 0)))
     [((0, 0, 0), (1, 0, 0)), ((0, 0, 0), (0, 1, 0)), ((0, 0, 0), (0, 0, 1))]
 
-    For more information on the hypercube graph, see the Wikipedia article `Hypercube graph <https://en.wikipedia.org/wiki/Hypercube_graph>`_.
+    For more information on the hypercube graph, see the Wikipedia article `Hypercube graph <https://en.wikipedia.org/wiki/Hypercube_graph>`.
     """
     dim = n * [2]
     G = grid_graph(dim)
