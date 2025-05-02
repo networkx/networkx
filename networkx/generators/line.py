@@ -293,7 +293,7 @@ def inverse_line_graph(G):
     starting_cell = _select_starting_cell(G)
     P = _find_partition(G, starting_cell)
     # count how many times each vertex appears in the partition set
-    P_count = dict.fromkeys(G.nodes, 0)
+    P_count = {u: 0 for u in G.nodes}
     for p in P:
         for u in p:
             P_count[u] += 1
