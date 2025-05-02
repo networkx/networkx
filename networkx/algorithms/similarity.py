@@ -1531,6 +1531,7 @@ def _prepare_panther_paths(
     eps=None,
     weight="weight",
     remove_isolates=True,
+    k=None,
 ):
     """Common preparation code for Panther similarity algorithms.
 
@@ -1552,6 +1553,9 @@ def _prepare_panther_paths(
         The name of an edge attribute that holds the numerical value used as a weight
     remove_isolates : bool
         Whether to remove isolated nodes from graph processing
+    k : int or None
+        The number of most similar nodes to return. If provided, validates that
+        k is not greater than the number of nodes in the graph.
 
     Returns
     -------
@@ -1584,6 +1588,15 @@ def _prepare_panther_paths(
     # a good value for ``eps`` to be sqrt( 1 / |E| )
     if eps is None:
         eps = np.sqrt(1.0 / G.number_of_edges())
+
+    num_nodes = G.number_of_nodes()
+
+    # Check if k is provided and validate it against the number of nodes
+    if k is not None and not remove_isolates:  # For panther_vector_similarity
+        if num_nodes < k:
+            raise nx.NetworkXUnfeasible(
+                f"The number of requested nodes {k} is greater than the number of nodes {num_nodes}."
+            )
 
     inv_node_map = {name: index for index, name in enumerate(G.nodes)}
 
@@ -1687,7 +1700,14 @@ def panther_similarity(
 
     # Use helper method to prepare common data structures
     paths = _prepare_panther_paths(
-        G, source, path_length=path_length, c=c, delta=delta, eps=eps, weight=weight
+        G,
+        source,
+        path_length=path_length,
+        c=c,
+        delta=delta,
+        eps=eps,
+        weight=weight,
+        k=k,
     )
 
     G = paths.G
@@ -1695,8 +1715,9 @@ def panther_similarity(
     node_map = np.array(paths.node_map)  # Convert to numpy array for indexing
     index_map = paths.index_map
     inv_sample_size = paths.inv_sample_size
-
     num_nodes = G.number_of_nodes()
+
+    # If there aren't enough nodes for the requested k, adjust k with a warning
     if num_nodes < k:
         warnings.warn(
             f"Number of nodes is {num_nodes}, but requested k is {k}. "
@@ -1820,6 +1841,7 @@ def panther_vector_similarity(
         eps=eps,
         weight=weight,
         remove_isolates=False,
+        k=k,
     )
 
     G = paths.G
@@ -1828,12 +1850,7 @@ def panther_vector_similarity(
     index_map = paths.index_map
     inv_sample_size = paths.inv_sample_size
     eps = paths.eps
-
     num_nodes = G.number_of_nodes()
-    if num_nodes < k:
-        raise nx.NetworkXUnfeasible(
-            f"The number of requested nodes {k} is greater than the number of nodes {num_nodes}."
-        )
 
     # Ensure D doesn't exceed the number of nodes
     if num_nodes < D:
