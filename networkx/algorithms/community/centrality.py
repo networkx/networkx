@@ -143,8 +143,7 @@ def girvan_newman(G, most_valuable_edge=None, most_valuable_edge_metric=None):
         yield tuple(nx.connected_components(G))
         return
 
-    # If no function is provided for computing the most valuable edge,
-    # use the edge betweenness centrality.
+    # Determine which computation approach to adopt
     component_wise_computing = False
     fast_betweenness_centrality = False
     if most_valuable_edge is None and most_valuable_edge_metric is None:
@@ -161,7 +160,7 @@ def girvan_newman(G, most_valuable_edge=None, most_valuable_edge_metric=None):
 
     if fast_betweenness_centrality:
         edge_betweenness = {}  #
-        edge_sources = {}  # edge_sources[edge] = [nodes which has shortest paths that go through edge]
+        edge_sources = {}  # edge_sources[edge] = {nodes which has shortest paths that go through edge}
         node_contributions = {}  # contribution of a node to each edge's centrality
 
         # Initial full betweenness calculation
@@ -174,8 +173,8 @@ def girvan_newman(G, most_valuable_edge=None, most_valuable_edge_metric=None):
                 edge_betweenness[edge] += score
 
                 if edge not in edge_sources:
-                    edge_sources[edge] = []
-                edge_sources[edge].append(node)
+                    edge_sources[edge] = set()
+                edge_sources[edge].add(node)
 
     # Initialize the cache of all connected components if we are doing component wise computing
     elif component_wise_computing:
@@ -189,7 +188,7 @@ def girvan_newman(G, most_valuable_edge=None, most_valuable_edge_metric=None):
             )
         elif component_wise_computing:
             yield _without_most_central_edges_component_wise(
-                g, most_valuable_edge, candidates
+                g, most_valuable_edge_metric, candidates
             )
         else:
             yield _without_most_central_edges(g, most_valuable_edge)
@@ -218,7 +217,9 @@ def _without_most_central_edges(G, most_valuable_edge):
     return new_components
 
 
-def _without_most_central_edges_component_wise(G, most_valuable_edge, candidates):
+def _without_most_central_edges_component_wise(
+    G, most_valuable_edge_metric, candidates
+):
     """Returns the connected components of the graph that results from
     repeatedly removing the most "valuable" edge in the graph.
 
@@ -249,7 +250,7 @@ def _without_most_central_edges_component_wise(G, most_valuable_edge, candidates
 
             # If the (candidate_edge, centrality) of the current subgraph is not recorded, compute it
             if candidates[sg] is None:
-                edge_value_result = most_valuable_edge(sg)
+                edge_value_result = most_valuable_edge_metric(sg)
                 assert (
                     isinstance(edge_value_result, tuple)
                     and len(edge_value_result) == 2
@@ -301,7 +302,7 @@ def _without_most_central_edges_betweenness(
         # Select edge to remove with largest betweenness centrality, do tie-breaking with the node numbers
         edge_to_remove = max(
             edge_betweenness,
-            key=lambda edge: edge_betweenness[edge],
+            key=edge_betweenness.get,
         )
 
         # The new components after removing edge
@@ -338,7 +339,7 @@ def _update_after_removal(
         # Add new contribution
         for edge, score in node_contributions[node].items():
             edge_betweenness[edge] += score
-            edge_sources[edge].append(node)
+            edge_sources[edge].add(node)
 
     return tuple(nx.connected_components(G))
 
