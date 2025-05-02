@@ -3,7 +3,7 @@
 
 repos:
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: bc7af46104f0f5368b95878decf720f9f00c2559 # frozen: v3.4.2
+    rev: 787fb9f542b140ba0b2aced38e6a3e68021647a3 # frozen: v3.5.3
     hooks:
       - id: prettier
         files: \.(html|md|toml|yml|yaml)
@@ -36,7 +36,7 @@ repos:
         exclude: test_p2g.py
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 73413df07b4ab0bf103ca1ae73c7cec5c0ace593 # frozen: v0.9.2
+    rev: f0fe93c067104b76ffb58852abe79673a8429bd1 # frozen: v0.11.8
     hooks:
       - id: ruff
         args: ["--fix", "--show-fixes", "--exit-non-zero-on-fix"]
