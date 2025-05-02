@@ -1238,7 +1238,8 @@ class TestGraphISOFeasibility:
         u, v = 10, "k"
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G1[u] and T1, so it's not the same as the one between G2[v] and T2
+        # Change intersection between G1[u] and T1, so it's not the same as the
+        # one between G2[v] and T2
         G1.remove_edge(u, 4)
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -1246,7 +1247,8 @@ class TestGraphISOFeasibility:
         G2.remove_edge(v, mapped[4])
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G2[v] and T2_tilde, so it's not the same as the one between G1[u] and T1_tilde
+        # Change intersection between G2[v] and T2_tilde, so it's not the same
+        # as the one between G1[u] and T1_tilde
         G2.remove_edge(v, mapped[6])
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -1392,7 +1394,8 @@ class TestGraphISOFeasibility:
         u, v = 20, "x"
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change the orientation of the labels on neighbors of u compared to neighbors of v. Leave the structure intact
+        # Change the orientation of the labels on neighbors of u compared to
+        # neighbors of v. Leave the structure intact
         l1.update({9: "red"})
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -1753,13 +1756,16 @@ class TestMultiGraphISOFeasibility:
         u, v = 10, "k"
         assert _consistent_PT(u, v, gparams, sparams)
 
-        # Delete one uncovered neighbor of u. Notice how it still passes the test. Two reasons for this:
-        # 1. If u, v had different degrees from the beginning, they wouldn't be selected as candidates in the first
-        #    place.
-        # 2. Even if they are selected, consistency is basically 1-look-ahead, meaning that we take into consideration
-        #    the relation of the candidates with their mapped neighbors. The node we deleted is not a covered neighbor.
-        #    Such nodes will be checked by the cut_PT function, which is basically the 2-look-ahead, checking the
-        #    relation of the candidates with T1, T2 (in which belongs the node we just deleted).
+        # Delete one uncovered neighbor of u. Notice how it still passes the test.
+        # Two reasons for this:
+        # 1. If u, v had different degrees from the beginning, they wouldn't be
+        #    selected as candidates in the first place.
+        # 2. Even if they are selected, consistency is basically 1-look-ahead,
+        #    meaning that we take into consideration the relation of the candidates
+        #    with their mapped neighbors. The node we deleted is not a covered
+        #    neighbor. Such nodes will be checked by the cut_PT function, which
+        #    is basically the 2-look-ahead, checking the relation of the candidates
+        #    with T1, T2 (in which belongs the node we just deleted).
         G1.remove_node(6)
         assert _consistent_PT(u, v, gparams, sparams)
 
@@ -1853,7 +1859,8 @@ class TestMultiGraphISOFeasibility:
         G2.remove_edges_from([(v, mapped[4]), (v, mapped[4])])
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G2[v] and T2_tilde, so it's not the same as the one between G1[u] and T1_tilde
+        # Change intersection between G2[v] and T2_tilde, so it's not the same
+        # as the one between G1[u] and T1_tilde
         G2.remove_edge(v, mapped[6])
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -2026,7 +2033,8 @@ class TestMultiGraphISOFeasibility:
         u, v = 20, "x"
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change the orientation of the labels on neighbors of u compared to neighbors of v. Leave the structure intact
+        # Change the orientation of the labels on neighbors of u compared to
+        # neighbors of v. Leave the structure intact
         l1.update({9: "red"})
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -2573,7 +2581,8 @@ class TestDiGraphISOFeasibility:
         u, v = 10, "k"
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G1[u] and T1_out, so it's not the same as the one between G2[v] and T2_out
+        # Change intersection between G1[u] and T1_out, so it's not the same as
+        # the one between G2[v] and T2_out
         G1.remove_edge(u, 4)
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -2581,7 +2590,8 @@ class TestDiGraphISOFeasibility:
         G2.remove_edge(v, mapped[4])
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G1[u] and T1_in, so it's not the same as the one between G2[v] and T2_in
+        # Change intersection between G1[u] and T1_in, so it's not the same as
+        # the one between G2[v] and T2_in
         G1.remove_edge(5, u)
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -2589,7 +2599,8 @@ class TestDiGraphISOFeasibility:
         G2.remove_edge(mapped[5], v)
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G2[v] and T2_tilde, so it's not the same as the one between G1[u] and T1_tilde
+        # Change intersection between G2[v] and T2_tilde, so it's not the same
+        # as the one between G1[u] and T1_tilde
         G2.remove_edge(v, mapped[6])
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -2694,7 +2705,8 @@ class TestDiGraphISOFeasibility:
         u, v = 20, "x"
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change the orientation of the labels on neighbors of u compared to neighbors of v. Leave the structure intact
+        # Change the orientation of the labels on neighbors of u compared to
+        # neighbors of v. Leave the structure intact
         l1.update({9: "red"})
         assert _cut_PT(u, v, gparams, sparams)
 
