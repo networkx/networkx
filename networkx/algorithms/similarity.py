@@ -16,6 +16,7 @@ alternative GED algorithms, in order to improve the choices available.
 import math
 import time
 import warnings
+from collections import namedtuple
 from dataclasses import dataclass
 from itertools import product
 
@@ -1506,6 +1507,111 @@ def _simrank_similarity_numpy(
     return newsim
 
 
+# Define a named tuple for Panther paths data
+PantherPaths = namedtuple(
+    "PantherPaths",
+    [
+        "G",
+        "inv_node_map",
+        "node_map",
+        "sample_size",
+        "index_map",
+        "inv_sample_size",
+        "eps",
+    ],
+)
+
+
+def _prepare_panther_paths(
+    G,
+    source,
+    path_length=5,
+    c=0.5,
+    delta=0.1,
+    eps=None,
+    weight="weight",
+    remove_isolates=True,
+):
+    """Common preparation code for Panther similarity algorithms.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A NetworkX graph
+    source : node
+        Source node for similarity calculation
+    path_length : int
+        How long the randomly generated paths should be
+    c : float
+        A universal constant that controls the number of random paths to generate
+    delta : float
+        The probability parameter for similarity approximation
+    eps : float or None
+        The error bound for similarity approximation
+    weight : string or None
+        The name of an edge attribute that holds the numerical value used as a weight
+    remove_isolates : bool
+        Whether to remove isolated nodes from graph processing
+
+    Returns
+    -------
+    PantherPaths
+        A named tuple containing the prepared data:
+        - G: The graph (possibly with isolates removed)
+        - inv_node_map: Dictionary mapping node names to indices
+        - node_map: Array or list of node names
+        - sample_size: Number of paths to generate
+        - index_map: Populated index map of paths
+        - inv_sample_size: Inverse of sample size (for fast calculation)
+        - eps: Error bound for similarity approximation
+    """
+    import numpy as np
+
+    if source not in G:
+        raise nx.NodeNotFound(f"Source node {source} not in G")
+
+    isolates = set(nx.isolates(G))
+
+    if source in isolates:
+        raise nx.NetworkXUnfeasible(
+            f"Panther similarity is not defined for the isolated source node {source}."
+        )
+
+    if remove_isolates:
+        G = G.subgraph([node for node in G.nodes if node not in isolates]).copy()
+
+    # According to [1], they empirically determined
+    # a good value for ``eps`` to be sqrt( 1 / |E| )
+    if eps is None:
+        eps = np.sqrt(1.0 / G.number_of_edges())
+
+    inv_node_map = {name: index for index, name in enumerate(G.nodes)}
+
+    # Calculate the sample size ``R`` for how many paths
+    # to randomly generate
+    t_choose_2 = math.comb(path_length, 2)
+    sample_size = int((c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
+    index_map = {}
+
+    # Generate the random paths and populate the index_map
+    list(
+        generate_random_paths(
+            G, sample_size, path_length=path_length, index_map=index_map, weight=weight
+        )
+    )
+
+    # Return a named tuple with all the required data
+    return PantherPaths(
+        G=G,
+        inv_node_map=inv_node_map,
+        node_map=list(G),
+        sample_size=sample_size,
+        index_map=index_map,
+        inv_sample_size=1 / sample_size,
+        eps=eps,
+    )
+
+
 @nx._dispatchable(edge_attrs="weight")
 def panther_similarity(
     G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
@@ -1526,15 +1632,20 @@ def panther_similarity(
     path_length : int (default = 5)
         How long the randomly generated paths should be (``T`` in [1]_)
     c : float (default = 0.5)
-        A universal positive constant used to scale the number
-        of sample random paths to generate.
+        A universal constant that controls the number of random paths to generate.
+        Higher values increase the number of sample paths and potentially improve
+        accuracy at the cost of more computation. Defaults to 0.5 as recommended
+        in [1]_.
     delta : float (default = 0.1)
         The probability that the similarity $S$ is not an epsilon-approximation to (R, phi),
         where $R$ is the number of random paths and $\phi$ is the probability
         that an element sampled from a set $A \subseteq D$, where $D$ is the domain.
     eps : float or None (default = None)
-        The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``. Therefore,
-        if no value is provided, the recommended computed value will be used.
+        The error bound for similarity approximation. This controls the accuracy
+        of the sampled paths in representing the true similarity. Smaller values
+        yield more accurate results but require more sample paths. If None, a
+        value of ``sqrt(1/|E|)`` is used, which the authors found empirically
+        effective.
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
@@ -1574,17 +1685,16 @@ def panther_similarity(
     """
     import numpy as np
 
-    if source not in G:
-        raise nx.NodeNotFound(f"Source node {source} not in G")
+    # Use helper method to prepare common data structures
+    paths = _prepare_panther_paths(
+        G, source, path_length=path_length, c=c, delta=delta, eps=eps, weight=weight
+    )
 
-    isolates = set(nx.isolates(G))
-
-    if source in isolates:
-        raise nx.NetworkXUnfeasible(
-            f"Panther similarity is not defined for the isolated source node {source}."
-        )
-
-    G = G.subgraph([node for node in G.nodes if node not in isolates]).copy()
+    G = paths.G
+    inv_node_map = paths.inv_node_map
+    node_map = np.array(paths.node_map)  # Convert to numpy array for indexing
+    index_map = paths.index_map
+    inv_sample_size = paths.inv_sample_size
 
     num_nodes = G.number_of_nodes()
     if num_nodes < k:
@@ -1593,30 +1703,8 @@ def panther_similarity(
             "Setting k to number of nodes."
         )
         k = num_nodes
-    # According to [1], they empirically determined
-    # a good value for ``eps`` to be sqrt( 1 / |E| )
-    if eps is None:
-        eps = np.sqrt(1.0 / G.number_of_edges())
 
-    inv_node_map = {name: index for index, name in enumerate(G.nodes)}
-    node_map = np.array(G)
-
-    # Calculate the sample size ``R`` for how many paths
-    # to randomly generate
-    t_choose_2 = math.comb(path_length, 2)
-    sample_size = int((c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
-    index_map = {}
-
-    # Generate the random paths and populate the index_map
-    list(
-        generate_random_paths(
-            G, sample_size, path_length=path_length, index_map=index_map, weight=weight
-        )
-    )
     S = np.zeros(num_nodes)
-
-    inv_sample_size = 1 / sample_size
-
     source_paths = set(index_map[source])
 
     # Calculate the path similarities
@@ -1722,15 +1810,24 @@ def panther_vector_similarity(
     import numpy as np
     from scipy.spatial import cKDTree as KDTree
 
-    if source not in G:
-        raise nx.NodeNotFound(f"Source node {source} not in G")
+    # Use helper method to prepare common data structures but keep isolates in the graph
+    paths = _prepare_panther_paths(
+        G,
+        source,
+        path_length=path_length,
+        c=c,
+        delta=delta,
+        eps=eps,
+        weight=weight,
+        remove_isolates=False,
+    )
 
-    isolates = set(nx.isolates(G))
-
-    if source in isolates:
-        raise nx.NetworkXUnfeasible(
-            f"Panther similarity is not defined for the isolated source node {source}."
-        )
+    G = paths.G
+    inv_node_map = paths.inv_node_map
+    node_map = paths.node_map
+    index_map = paths.index_map
+    inv_sample_size = paths.inv_sample_size
+    eps = paths.eps
 
     num_nodes = G.number_of_nodes()
     if num_nodes < k:
@@ -1744,29 +1841,8 @@ def panther_vector_similarity(
             f"The number of requested similarity scores {D} is greater than the number of nodes {num_nodes}."
         )
 
-    # In [1], an empirically good value for ``eps`` is sqrt( 1 / |E| )
-    if eps is None:
-        eps = np.sqrt(1.0 / G.number_of_edges())
-
-    inv_node_map = {name: index for index, name in enumerate(G.nodes)}
-    node_map = list(G)
-
-    # Calculate the sample size ``R`` for how many paths
-    # to randomly generate
-    t_choose_2 = math.comb(path_length, 2)
-    sample_size = int((c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
-    index_map = {}
-
-    # Generate random paths and populate the index_map
-    list(
-        generate_random_paths(
-            G, sample_size, path_length=path_length, index_map=index_map, weight=weight
-        )
-    )
     S = np.zeros((num_nodes, num_nodes))
-
     theta = np.zeros((num_nodes, D))
-    inv_sample_size = 1 / sample_size
 
     # Calculate the path similarities
     # for each node against each other node
