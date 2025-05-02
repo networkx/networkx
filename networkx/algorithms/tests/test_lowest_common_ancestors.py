@@ -1,3 +1,4 @@
+import random
 from itertools import chain, combinations, product
 
 import pytest
@@ -6,6 +7,7 @@ import networkx as nx
 
 tree_all_pairs_lca = nx.tree_all_pairs_lowest_common_ancestor
 all_pairs_lca = nx.all_pairs_lowest_common_ancestor
+is_lca = nx.is_lowest_common_ancestor
 
 
 def get_pair(dictionary, n1, n2):
@@ -13,6 +15,22 @@ def get_pair(dictionary, n1, n2):
         return dictionary[n1, n2]
     else:
         return dictionary[n2, n1]
+
+
+def test_is_lca():
+    G = nx.DiGraph()
+    nx.add_path(G, (0, 1, 3))
+    nx.add_path(G, (0, 2, 3))
+
+    # Case 1: 1 and 2's lowest common ancestor is 0
+    assert is_lca(G, 1, 2, 0)
+    # Case 2: 1/2 is not the lowest common ancestor of 1 and 2
+    assert not is_lca(G, 1, 2, 1)
+    assert not is_lca(G, 1, 2, 2)
+    # Case 3: A non-ancestor node (3) will return False for 1 and 2
+    assert not is_lca(G, 1, 2, 3)
+    # Case 4: The same node is its own ancestor
+    assert is_lca(G, 3, 3, 3)
 
 
 class TestTreeLCA:
@@ -190,8 +208,6 @@ class TestDAGLCA:
         cls.DG.add_edge(6, 2)
         cls.DG.add_edge(7, 2)
 
-        cls.root_distance = nx.shortest_path_length(cls.DG, source=0)
-
         cls.gold = {
             (1, 1): 1,
             (1, 2): 1,
@@ -232,35 +248,22 @@ class TestDAGLCA:
         }
         cls.gold.update(((0, n), 0) for n in cls.DG)
 
-    def assert_lca_dicts_same(self, d1, d2, G=None):
-        """Checks if d1 and d2 contain the same pairs and
-        have a node at the same distance from root for each.
-        If G is None use self.DG."""
-        if G is None:
-            G = self.DG
-            root_distance = self.root_distance
-        else:
-            roots = [n for n, deg in G.in_degree if deg == 0]
-            assert len(roots) == 1
-            root_distance = nx.shortest_path_length(G, source=roots[0])
-
-        for a, b in ((min(pair), max(pair)) for pair in chain(d1, d2)):
-            assert (
-                root_distance[get_pair(d1, a, b)] == root_distance[get_pair(d2, a, b)]
-            )
-
     def test_all_pairs_lca_gold_example(self):
-        self.assert_lca_dicts_same(dict(all_pairs_lca(self.DG)), self.gold)
+        result = dict(all_pairs_lca(self.DG))
+        for (u, v), lca in result.items():
+            assert is_lca(self.DG, u, v, lca)
 
     def test_all_pairs_lca_all_pairs_given(self):
         all_pairs = list(product(self.DG.nodes(), self.DG.nodes()))
-        ans = all_pairs_lca(self.DG, pairs=all_pairs)
-        self.assert_lca_dicts_same(dict(ans), self.gold)
+        result = dict(all_pairs_lca(self.DG, pairs=all_pairs))
+        for (u, v), lca in result.items():
+            assert is_lca(self.DG, u, v, lca)
 
     def test_all_pairs_lca_generator(self):
         all_pairs = product(self.DG.nodes(), self.DG.nodes())
-        ans = all_pairs_lca(self.DG, pairs=all_pairs)
-        self.assert_lca_dicts_same(dict(ans), self.gold)
+        result = dict(all_pairs_lca(self.DG, pairs=all_pairs))
+        for (u, v), lca in result.items():
+            assert is_lca(self.DG, u, v, lca)
 
     def test_all_pairs_lca_input_graph_with_two_roots(self):
         G = self.DG.copy()
@@ -277,9 +280,8 @@ class TestDAGLCA:
 
         testing = dict(all_pairs_lca(G))
 
-        G.add_edge(-1, 9)
-        G.add_edge(-1, 0)
-        self.assert_lca_dicts_same(testing, gold, G)
+        for (u, v), lca in testing.items():
+            assert is_lca(G, u, v, lca)
 
     def test_all_pairs_lca_nonexisting_pairs_exception(self):
         pytest.raises(nx.NodeNotFound, all_pairs_lca, self.DG, [(-1, -1)])
@@ -352,7 +354,22 @@ class TestDAGLCA:
         G.add_edge(4, 0)
         G.add_edge(5, 2)
 
-        assert nx.lowest_common_ancestor(G, 1, 3) == 2
+        lca = nx.lowest_common_ancestor(G, 1, 3)
+        assert lca == 2
+        assert is_lca(G, 1, 3, lca)
+
+    def test_all_pairs_lca_key_parameter(self):
+        # Test that key parameter selects among multiple LCAs for all_pairs_lowest_common_ancestor
+        G = nx.DiGraph()
+        edges = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)]
+        G.add_edges_from(edges)
+        # nodes 3 and 4 have LCAs {1, 2}
+        # default yields smallest id
+        result_default = dict(all_pairs_lca(G, pairs=[(3, 4)]))
+        assert result_default[(3, 4)] == 1
+        # with key chooses largest id
+        result_key = dict(all_pairs_lca(G, pairs=[(3, 4)], key=lambda x: -x))
+        assert result_key[(3, 4)] == 2
 
 
 class TestMultiDiGraph_DAGLCA(TestDAGLCA):
@@ -367,8 +384,6 @@ class TestMultiDiGraph_DAGLCA(TestDAGLCA):
         nx.add_path(cls.DG, (5, 7, 8))
         cls.DG.add_edge(6, 2)
         cls.DG.add_edge(7, 2)
-
-        cls.root_distance = nx.shortest_path_length(cls.DG, source=0)
 
         cls.gold = {
             (1, 1): 1,
@@ -447,7 +462,9 @@ def test_lca_multiple_valid_solutions():
     G = nx.DiGraph()
     G.add_nodes_from(range(4))
     G.add_edges_from([(2, 0), (3, 0), (2, 1), (3, 1)])
-    assert nx.lowest_common_ancestor(G, 0, 1) in {2, 3}
+    lca = nx.lowest_common_ancestor(G, 0, 1)
+    assert lca in {2, 3}
+    assert is_lca(G, 0, 1, lca)
 
 
 def test_lca_dont_rely_on_single_successor():
@@ -456,4 +473,139 @@ def test_lca_dont_rely_on_single_successor():
     G = nx.DiGraph()
     G.add_nodes_from(range(4))
     G.add_edges_from([(2, 0), (2, 1), (3, 1), (3, 0), (3, 2)])
-    assert nx.lowest_common_ancestor(G, 0, 1) == 2
+    lca = nx.lowest_common_ancestor(G, 0, 1)
+    assert lca == 2
+    assert is_lca(G, 0, 1, lca)
+
+
+def test_lowest_common_ancestor_key_parameter():
+    # Test behavior of key parameter and arbitrary selection
+    G = nx.DiGraph()
+    edges = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)]
+    G.add_edges_from(edges)
+    # nodes 3 and 4 have LCAs {1, 2}
+    # without key, returns arbitrary LCA
+    lca = nx.lowest_common_ancestor(G, 3, 4)
+    assert lca in {1, 2}
+    # with key, returns specific LCA
+    assert nx.lowest_common_ancestor(G, 3, 4, key=lambda x: x) == 1
+    assert nx.lowest_common_ancestor(G, 3, 4, key=lambda x: -x) == 2
+
+
+def test_all_pairs_lca_key_parameter():
+    # Test behavior of key parameter and arbitrary selection
+    G = nx.DiGraph()
+    edges = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)]
+    G.add_edges_from(edges)
+    # nodes 3 and 4 have LCAs {1, 2}
+    # without key, returns arbitrary LCA
+    result = dict(all_pairs_lca(G, pairs=[(3, 4)]))
+    assert result[(3, 4)] in {1, 2}
+    # with key chooses specific LCA
+    result_min = dict(all_pairs_lca(G, pairs=[(3, 4)], key=lambda x: x))
+    assert result_min[(3, 4)] == 1
+    result_max = dict(all_pairs_lca(G, pairs=[(3, 4)], key=lambda x: -x))
+    assert result_max[(3, 4)] == 2
+
+
+class TestAllPairsAllLowestCommonAncestors:
+    """Test the all_pairs_all_lowest_common_ancestors function."""
+
+    def test_empty_graph(self):
+        # Test that empty graph raises PointlessConcept
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.all_pairs_all_lowest_common_ancestors(nx.DiGraph())
+
+    def test_nonexistent_pairs(self):
+        # Test that non-existent node pairs raise NodeNotFound
+        G = nx.DiGraph()
+        G.add_nodes_from([1, 2])
+        with pytest.raises(nx.NodeNotFound):
+            list(nx.all_pairs_all_lowest_common_ancestors(G, pairs=[(1, 3)]))
+
+    def test_self_pairing(self):
+        # Test that self-pairing returns the node itself
+        G = nx.DiGraph()
+        G.add_node(3)
+        result = dict(nx.all_pairs_all_lowest_common_ancestors(G))
+        assert result == {(3, 3): [3]}
+        result2 = dict(nx.all_pairs_all_lowest_common_ancestors(G, pairs=[(3, 3)]))
+        assert result2 == {(3, 3): [3]}
+
+    def test_non_dag_raises(self):
+        # Test that non-DAG graph raises NetworkXError
+        G = nx.DiGraph([(1, 2), (2, 1)])
+        with pytest.raises(nx.NetworkXError):
+            list(nx.all_pairs_all_lowest_common_ancestors(G))
+
+    def test_multiple_lcas(self):
+        # Test graph with multiple lowest common ancestors
+        G = nx.DiGraph()
+        edges = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)]
+        G.add_edges_from(edges)
+        result = dict(nx.all_pairs_all_lowest_common_ancestors(G, pairs=[(3, 4)]))
+        lcas = result.get((3, 4), result.get((4, 3)))
+        assert sorted(lcas) == [1, 2]
+        for lca in lcas:
+            assert is_lca(G, 3, 4, lca)
+
+
+@pytest.mark.parametrize("seed", range(5))
+def test_random_dag_all_pairs_all_lcas(seed):
+    # Test random DAGs for correctness of LCAs
+    rng = random.Random(seed)
+    n = 20
+    nodes = list(range(n))
+    edges = [(u, v) for u in nodes for v in nodes if u < v and rng.random() < 0.2]
+    G = nx.DiGraph(edges)
+    assert nx.is_directed_acyclic_graph(G)
+    result = dict(nx.all_pairs_all_lowest_common_ancestors(G))
+    for (u, v), lcas in result.items():
+        lcas = set(lcas)
+        for node in G.nodes():
+            if node in lcas:
+                assert is_lca(G, u, v, node)
+            else:
+                assert not is_lca(G, u, v, node)
+
+
+def test_all_lowest_common_ancestors_no_lca():
+    G = nx.DiGraph()
+    G.add_nodes_from([1, 2])
+    assert nx.all_lowest_common_ancestors(G, 1, 2) == []
+
+
+def test_all_lowest_common_ancestors_simple():
+    G = nx.DiGraph()
+    nx.add_path(G, (0, 1, 2, 3))
+    nx.add_path(G, (0, 4, 3))
+    assert nx.all_lowest_common_ancestors(G, 2, 4) == [0]
+
+
+def test_all_lowest_common_ancestors_multiple():
+    G = nx.DiGraph()
+    edges = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4)]
+    G.add_edges_from(edges)
+    lcas = nx.all_lowest_common_ancestors(G, 3, 4)
+    assert sorted(lcas) == [1, 2]
+    for lca in lcas:
+        assert is_lca(G, 3, 4, lca)
+
+
+def test_all_lowest_common_ancestors_node_not_found():
+    G = nx.DiGraph()
+    G.add_nodes_from([1, 2])
+    with pytest.raises(nx.NodeNotFound):
+        nx.all_lowest_common_ancestors(G, 1, 3)
+
+
+def test_all_lowest_common_ancestors_empty_graph():
+    G = nx.DiGraph()
+    with pytest.raises(nx.NetworkXPointlessConcept):
+        nx.all_lowest_common_ancestors(G, 0, 0)
+
+
+def test_all_lowest_common_ancestors_non_dag():
+    G = nx.DiGraph([(1, 2), (2, 1)])
+    with pytest.raises(nx.NetworkXError):
+        nx.all_lowest_common_ancestors(G, 1, 2)
