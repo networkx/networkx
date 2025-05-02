@@ -130,67 +130,60 @@ def birank(
         method.
 
     Examples
-     --------
-     Construct a bipartite graph with user-item ratings and use BiRank to
-     recommend items to a user (user 1). The example below uses the `rating`
-     edge attribute as the weight of the edges. The `top_personalization` vector
-     is used to encode the user's previous ratings on items.
+    --------
+    Construct a bipartite graph with user-item ratings and use BiRank to
+    recommend items to a user (user 1). The example below uses the `rating`
+    edge attribute as the weight of the edges. The `top_personalization` vector
+    is used to encode the user's previous ratings on items.
 
-     Creation of graph, bipartite sets for the example.
+    Creation of graph, bipartite sets for the example.
 
-     >>> elist = [ \
-     ...  ("u1", "p1", 5), \
-     ...  ("u2", "p1", 5), \
-     ...  ("u2", "p2", 4), \
-     ...  ("u3", "p1", 3), \
-     ...  ("u3", "p3", 2) \
-     ... ]
-     >>> G = nx.Graph()
-     >>> G.add_weighted_edges_from(elist, weight="rating")
-     >>> product_nodes = ("p1", "p2", "p3")
-     >>> user = "u1"
+    >>> elist = [
+    ...     ("u1", "p1", 5),
+    ...     ("u2", "p1", 5),
+    ...     ("u2", "p2", 4),
+    ...     ("u3", "p1", 3),
+    ...     ("u3", "p3", 2),
+    ... ]
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from(elist, weight="rating")
+    >>> product_nodes = ("p1", "p2", "p3")
+    >>> user = "u1"
 
-     First, we create a personalization vector for the user based on on their
-     ratings of past items. In this case they have only rated one item (p1, with
-     a rating of 5) in the past.
+    First, we create a personalization vector for the user based on on their
+    ratings of past items. In this case they have only rated one item (p1, with
+    a rating of 5) in the past.
 
-     >>> user_personalization = {
-     ...  product: rating \
-     ...  for _, product, rating \
-     ...  in G.edges(nbunch=user, data="rating") \
-     ... }
-     >>> user_personalization
-     {'p1': 5}
+    >>> user_personalization = {
+    ...     product: rating
+    ...     for _, product, rating in G.edges(nbunch=user, data="rating")
+    ... }
+    >>> user_personalization
+    {'p1': 5}
 
-     Calculate the BiRank score of all nodes in the graph, filter for the items
-     that the user has not rated yet, and sort the results by score.
+    Calculate the BiRank score of all nodes in the graph, filter for the items
+    that the user has not rated yet, and sort the results by score.
 
-     >>> user_birank_results = nx.bipartite.birank(
-     ...  G, product_nodes, \
-     ...  top_personalization=user_personalization, \
-     ...  weight="rating" \
-     ... )
-     >>> user_birank_results = filter( \
-     ...  lambda item: item[0][0] == "p" \
-     ...  and user not in G.neighbors(item[0]), \
-     ...  user_birank_results.items() \
-     ... )
-     >>> user_birank_results = sorted( \
-     ...  user_birank_results, \
-     ...  key=lambda item: item[1], \
-     ...  reverse=True \
-     ... )
-     >>> user_recommendations = { \
-     ...  product: round(score, 5) \
-     ...  for product, score in user_birank_results \
-     ... }
-     >>> user_recommendations
-     {'p2': 1.44818, 'p3': 1.04811}
+    >>> user_birank_results = nx.bipartite.birank(
+    ...     G, product_nodes, top_personalization=user_personalization, weight="rating"
+    ... )
+    >>> user_birank_results = filter(
+    ...     lambda item: item[0][0] == "p" and user not in G.neighbors(item[0]),
+    ...     user_birank_results.items(),
+    ... )
+    >>> user_birank_results = sorted(
+    ...     user_birank_results, key=lambda item: item[1], reverse=True
+    ... )
+    >>> user_recommendations = {
+    ...     product: round(score, 5) for product, score in user_birank_results
+    ... }
+    >>> user_recommendations
+    {'p2': 1.44818, 'p3': 1.04811}
 
-     We find that user 1 should be recommended item p2 over item p3. This is due
-     to the fact that user 2 rated also rated p1 highly, while user 3 did not.
-     Thus user 2's tastes are inferred to be similar to user 1's, and carry more
-     weight in the recommendation.
+    We find that user 1 should be recommended item p2 over item p3. This is due
+    to the fact that user 2 rated also rated p1 highly, while user 3 did not.
+    Thus user 2's tastes are inferred to be similar to user 1's, and carry more
+    weight in the recommendation.
 
     See Also
     --------
@@ -216,9 +209,9 @@ def birank(
     References
     ----------
     .. [1] Xiangnan He, Ming Gao, Min-Yen Kan, and Dingxian Wang. 2017.
-    BiRank: Towards Ranking on Bipartite Graphs. IEEE Trans. on Knowl.
-    and Data Eng. 29, 1 (January 2017), 57–71.
-    https://arxiv.org/pdf/1708.04396
+       BiRank: Towards Ranking on Bipartite Graphs. IEEE Trans. on Knowl.
+       and Data Eng. 29, 1 (January 2017), 57–71.
+       https://arxiv.org/pdf/1708.04396
 
     """
     import numpy as np
