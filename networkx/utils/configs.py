@@ -77,7 +77,7 @@ class Config:
             cls = type(
                 cls.__name__,
                 (cls,),
-                {"__annotations__": {key: typing.Any for key in kwargs}},
+                {"__annotations__": dict.fromkeys(kwargs, typing.Any)},
             )
         cls = dataclass(
             eq=False,
