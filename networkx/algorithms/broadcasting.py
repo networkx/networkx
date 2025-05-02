@@ -75,7 +75,7 @@ def tree_broadcast_center(G):
 
     # step 1
     U = {node for node, deg in G.degree if deg == 1}
-    values = {n: 0 for n in U}
+    values = dict.fromkeys(U, 0)
     T = G.copy()
     T.remove_nodes_from(U)
 

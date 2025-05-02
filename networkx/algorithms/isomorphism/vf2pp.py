@@ -404,7 +404,7 @@ def _matching_order(graph_params):
 
     V1_unordered = set(G1.nodes())
     label_rarity = {label: len(nodes) for label, nodes in nodes_of_G2Labels.items()}
-    used_degrees = {node: 0 for node in G1}
+    used_degrees = dict.fromkeys(G1, 0)
     node_order = []
 
     while V1_unordered:

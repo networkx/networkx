@@ -631,7 +631,7 @@ class MaxWeightClique:
         self.incumbent_weight = 0
 
         if weight is None:
-            self.node_weights = {v: 1 for v in G.nodes()}
+            self.node_weights = dict.fromkeys(G.nodes(), 1)
         else:
             for v in G.nodes():
                 if weight not in G.nodes[v]:
