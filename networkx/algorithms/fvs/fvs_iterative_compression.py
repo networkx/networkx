@@ -152,6 +152,8 @@ def _fvs_disjoint_compression_branching(G, k, X, Y, r_1):
     # v = Y.pop()
     # either v is in the solution or v is not in the solution
 
+    if v is not None and v in Y:
+        Y.remove(v)
     # case 1 : v is in the solution
     is_fvs_exists, fvs_sub = _fvs_disjoint_compression_branching(
         G, k - 1, X, Y, r_1 - 1
