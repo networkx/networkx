@@ -28,14 +28,17 @@ def girvan_newman(G, most_valuable_edge=None, most_valuable_edge_metric=None):
         Function that takes a graph as input and outputs a tuple of `(*edge_to_remove, metric)`.
 
         If this function is defined, the edge to remove is selected by:
-        1. Local Selection: Select a candidate edge to remove from the subgraph of each connected component of G.
-        2. Global Selection: Select a single edge from all candidate edges, based on the metric of each edge returned by `most_valuable_edge_metric`
+        1. Local Selection: Select a candidate edge to remove from the subgraph of
+        each connected component of G.
+        2. Global Selection: Select a single edge from all candidate edges,
+        based on the metric of each edge returned by `most_valuable_edge_metric`
 
         Note that the Global Selection phase will select the candidate edge with the highest `metric`.
 
     Note
     --------
-    If none of `most_valuable_edge` and `most_valuable_edge_metric` is defined, this function selects the edge with the highest betweenness centrality to remove.
+    If none of `most_valuable_edge` and `most_valuable_edge_metric` is defined,
+    this function removes the edge with the highest betweenness centrality.
 
     Returns
     -------
@@ -230,7 +233,8 @@ def _without_most_central_edges_component_wise(
     `G` must be a non-empty graph. This function modifies the graph `G`
     in-place; that is, it removes edges on the graph `G`.
 
-    `most_valuable_edge_metric` is a function that takes a subgraph of `G` and returns a candidate edge from this subgraph and a comparable metric.
+    `most_valuable_edge_metric` is a function that takes a subgraph of `G`
+    and returns a candidate edge from this subgraph and a comparable metric.
     The candidate edge with the highest metric will be removed from `G`.
     This process loops until the number of connected components in the graph increases.
 
@@ -275,7 +279,8 @@ def _without_most_central_edges_component_wise(
         G.remove_edge(*global_optimal_edge)
         affected_subgraph.remove_edge(*global_optimal_edge)
 
-        # Set the cache to None, such that the candidate edge and centrality will be recomputed for this subgraph in the next iteration
+        # Set the cache to None, such that the candidate edge
+        # and centrality will be recomputed for this subgraph in the next iteration
         candidates[affected_subgraph] = None
 
         # Check if removing the global_optimal_edge results in the affected subgraph being split
