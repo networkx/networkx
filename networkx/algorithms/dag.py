@@ -576,8 +576,16 @@ def all_topological_sorts(G):
 def is_aperiodic(G):
     """Returns True if `G` is aperiodic.
 
-    A directed graph is aperiodic if there is no integer k > 1 that
-    divides the length of every cycle in the graph.
+    A strongly connected directed graph is aperiodic if there is no integer k > 1
+    that divides the length of every cycle in the graph.
+
+    This function requires the graph `G` to be strongly connected and will raise
+    an error if it's not. For graphs that are not strongly connected, you should
+    first identify their strongly connected components
+    (using :func:`~networkx.algorithms.components.strongly_connected_components`)
+    or attracting components
+    (using :func:`~networkx.algorithms.components.attracting_components`),
+    and then apply this function to those individual components.
 
     Parameters
     ----------
@@ -593,44 +601,79 @@ def is_aperiodic(G):
     ------
     NetworkXError
         If `G` is not directed
+    NetworkXError
+        If `G` is not strongly connected
+    NetworkXPointlessConcept
+        If `G` has no nodes
 
     Examples
     --------
-    A graph consisting of one cycle, the length of which is 2. Therefore ``k = 2``
+    A graph consisting of a length-2 cycle. Therefore ``k = 2``
     divides the length of every cycle in the graph and thus the graph
-    is *not aperiodic*::
+    is *not aperiodic*.
 
-        >>> DG = nx.DiGraph([(1, 2), (2, 1)])
-        >>> nx.is_aperiodic(DG)
-        False
+    >>> G = nx.DiGraph([(1, 2), (2, 1)])
+    >>> nx.is_aperiodic(G)
+    False
 
-    A graph consisting of two cycles: one of length 2 and the other of length 3.
-    The cycle lengths are coprime, so there is no single value of k where ``k > 1``
-    that divides each cycle length and therefore the graph is *aperiodic*::
+    A graph consisting of two length-3 cycles that share a common edge. One can
+    find two cycles of [1, 2, 3] and [1, 4, 2, 3] of length 3 and length 4,
+    respectively. There is no single value of ``k > 1`` that divides the length
+    of every cycle in the graph and thus the graph is *aperiodic*.
 
-        >>> DG = nx.DiGraph([(1, 2), (2, 3), (3, 1), (1, 4), (4, 1)])
-        >>> nx.is_aperiodic(DG)
-        True
+    >>> G = nx.DiGraph()
+    >>> nx.add_cycle(G, [1, 2, 3])
+    >>> nx.add_cycle(G, [2, 1, 4])
+    >>> nx.is_aperiodic(G)
+    True
 
-    A graph consisting of two cycles: one of length 2 and the other of length 4.
-    The lengths of the cycles share a common factor ``k = 2``, and therefore
-    the graph is *not aperiodic*::
+    A single-node graph's aperiodicity depends on whether it has a self-loop:
+    it is aperiodic if a self-loop exists, and periodic otherwise.
 
-        >>> DG = nx.DiGraph([(1, 2), (2, 1), (3, 4), (4, 5), (5, 6), (6, 3)])
-        >>> nx.is_aperiodic(DG)
-        False
+    >>> G = nx.DiGraph()
+    >>> G.add_node(1)
+    >>> nx.is_aperiodic(G)
+    False
+    >>> G.add_edge(1, 1)
+    >>> nx.is_aperiodic(G)
+    True
 
-    An acyclic graph, therefore the graph is *not aperiodic*::
+    A Markov chain can be modeled as a directed graph, with nodes representing
+    states and edges representing transitions with non-zero probability.
+    Aperiodicity is typically considered for irreducible Markov chains,
+    which are those that are *strongly connected* as graphs.
 
-        >>> DG = nx.DiGraph([(1, 2), (2, 3)])
-        >>> nx.is_aperiodic(DG)
-        False
+    The following Markov chain is irreducible and aperiodic, and thus
+    ergodic. It is guaranteed to have a unique stationary distribution.
+
+    >>> G = nx.DiGraph()
+    >>> nx.add_cycle(G, [1, 2, 3, 4])
+    >>> G.add_edge(1, 3)
+    >>> nx.is_aperiodic(G)
+    True
+
+    Reducible Markov chains can sometimes have a unique stationary distribution.
+    This occurs if the chain has exactly one closed communicating class and
+    that class itself is aperiodic (see [1]_). You can use
+    :func:`~networkx.algorithms.components.attracting_components`
+    to find these closed communicating classes.
+
+    >>> G = nx.DiGraph([(1, 3), (2, 3)])
+    >>> nx.add_cycle(G, [3, 4, 5, 6])
+    >>> nx.add_cycle(G, [3, 5, 6])
+    >>> communicating_classes = list(nx.strongly_connected_components(G))
+    >>> len(communicating_classes)
+    3
+    >>> closed_communicating_classes = list(nx.attracting_components(G))
+    >>> len(closed_communicating_classes)
+    1
+    >>> nx.is_aperiodic(G.subgraph(closed_communicating_classes[0]))
+    True
 
     Notes
     -----
     This uses the method outlined in [1]_, which runs in $O(m)$ time
-    given $m$ edges in `G`. Note that a graph is not aperiodic if it is
-    acyclic as every integer trivial divides length 0 cycles.
+    given $m$ edges in `G`.
 
     References
     ----------
@@ -643,6 +686,8 @@ def is_aperiodic(G):
         raise nx.NetworkXError("is_aperiodic not defined for undirected graphs")
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("Graph has no nodes.")
+    if not nx.is_strongly_connected(G):
+        raise nx.NetworkXError("Graph is not strongly connected.")
     s = arbitrary_element(G)
     levels = {s: 0}
     this_level = [s]
