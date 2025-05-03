@@ -359,7 +359,8 @@ def _update_after_removal(
             edge_sources[edge].add(node)
 
         # Determines whether there is a component split
-        # if removing this edge blocks the affected nodes from reaching either end point, there is a component split
+        # check if removing this edge blocks the affected nodes
+        # from reaching either end point
         if edge_to_remove[0] not in D or edge_to_remove[1] not in D:
             component_split = True
 
