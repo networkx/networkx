@@ -21,7 +21,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
-@py_random_state(7)
+@py_random_state(8)
 @nx._dispatchable(edge_attrs="weight")
 def approximate_current_flow_betweenness_centrality(
     G,
@@ -31,6 +31,7 @@ def approximate_current_flow_betweenness_centrality(
     solver="full",
     epsilon=0.5,
     kmax=10000,
+    sample_weight=1,
     seed=None,
 ):
     r"""Compute the approximate current-flow betweenness centrality for nodes.
@@ -71,6 +72,10 @@ def approximate_current_flow_betweenness_centrality(
 
     kmax: int
        Maximum number of sample node pairs to use for approximation.
+
+    sample_weight: float (default=1)
+       Multiplicative factor for the number of sample node pairs used in approximation.
+       Higher values may improve accuracy at the expense of increased computation time.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -121,8 +126,8 @@ def approximate_current_flow_betweenness_centrality(
     betweenness = dict.fromkeys(H, 0.0)
     nb = (n - 1.0) * (n - 2.0)  # normalization factor
     cstar = n * (n - 1) / nb
-    l = 1  # parameter in approximation, adjustable
-    k = l * int(np.ceil((cstar / epsilon) ** 2 * np.log(n)))
+    # Use the provided sample_weight parameter instead of hardcoded value
+    k = sample_weight * int(np.ceil((cstar / epsilon) ** 2 * np.log(n)))
     if k > kmax:
         msg = f"Number random pairs k>kmax ({k}>{kmax}) "
         raise nx.NetworkXError(msg, "Increase kmax or epsilon")
