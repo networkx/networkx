@@ -21,10 +21,11 @@ __all__ = [
 
 
 @not_implemented_for("directed")
-@py_random_state(8)
+@py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
 def approximate_current_flow_betweenness_centrality(
     G,
+    *,
     normalized=True,
     weight=None,
     dtype=float,
