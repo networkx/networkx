@@ -67,7 +67,7 @@ def girvan_newman(G, most_valuable_edge=None, most_valuable_edge_metric=None):
         ...     print(tuple(sorted(c) for c in communities))
         ...
         ([0, 1, 2, 3], [4, 5, 6, 7])
-        ([0, 1], [2, 3], [4, 5, 6, 7])
+        ([0, 1, 2, 3], [4, 5], [6, 7])
 
     To stop getting tuples of communities once the number of communities
     is greater than *k*, use :func:`itertools.takewhile`::
@@ -81,7 +81,7 @@ def girvan_newman(G, most_valuable_edge=None, most_valuable_edge_metric=None):
         ...     print(tuple(sorted(c) for c in communities))
         ...
         ([0, 1, 2, 3], [4, 5, 6, 7])
-        ([0, 1], [2, 3], [4, 5, 6, 7])
+        ([0, 1, 2, 3], [4, 5], [6, 7])
         ([0, 1], [2, 3], [4, 5], [6, 7])
 
     To just choose an edge to remove based on the weight::
