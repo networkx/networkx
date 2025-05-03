@@ -4,14 +4,14 @@ Classes solving a Linear Sum Assignment Problem (*LSAP*)
 Solving a *LSAP* allows to compute an optimum assignment
 of each element from the two sets $A$ and $B$,
 given a cost matrix $C$ where $C_{i, j}$ represents
-the matching cost between $a_i \in A$ and $b_j \in B$
+the matching cost between $a_i \\in A$ and $b_j \\in B$
 
 Sets $A$ and $B$ must have the same size ($|A| = |B| = n$).
-Let $\{ \phi_1, \dots, \phi_{n} \}$ be the solution of the *LSAP*
-where element $a_i$ is matched with the element $b_{\phi_i}$.
+Let $\\{ \\phi_1, \\dots, \\phi_{n} \\}$ be the solution of the *LSAP*
+where element $a_i$ is matched with the element $b_{\\phi_i}$.
 
 This solution minimizes the
-matching cost $\sum_{i = 1}^n C_{i, \phi_i}$
+matching cost $\\sum_{i = 1}^n C_{i, \\phi_i}$
 """
 
 from typing import Protocol

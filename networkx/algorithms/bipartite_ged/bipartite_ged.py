@@ -48,19 +48,19 @@ class BipartiteGED:
     _valid_cf = {"const", "riesen", "neighborhood"}
     _valid_solver = {"lsap"}
     _valid_cf_params = {
-        "cns": (int | float, 0),
-        "cni": (int | float, 1),
-        "ces": (int | float, 0),
-        "cei": (int | float, 1),
+        "cns": (int, 0),
+        "cni": (int, 1),
+        "ces": (int, 0),
+        "cei": (int, 1),
     }
 
     def __init__(
         self,
         cost_function: str | CostFunction = "const",
-        cns: int | float = 1,
-        cni: int | float = 1,
-        ces: int | float = 1,
-        cei: int | float = 1,
+        cns: int = 1,
+        cni: int = 1,
+        ces: int = 1,
+        cei: int = 1,
         compare_nodes: Callable | None = None,
         compare_edges: Callable | None = None,
         solver: str | Solver = "lsap",
@@ -198,6 +198,8 @@ class BipartiteGED:
                     )
 
             # Every other CostFunction is based on a ConstantCostFunction
+            self.cf: CostFunction
+            self.solver: Solver
             ccf = ConstantCostFunction(cns, cni, ces, cei, compare_nodes, compare_edges)
             if cost_function == "riesen":
                 self.cf = RiesenCostFunction(ccf)
@@ -257,7 +259,7 @@ class BipartiteGED:
         rho: dict[Any, Any | None] | None = None,
         varrho: dict[Any, Any | None] | None = None,
         return_mapping: bool = False,
-    ) -> int | float | tuple:
+    ) -> int | tuple:
         """Approximate Graph Edit Distance between `g1` and `g2`.
 
         The calculation can be performed based on a provided mapping.
@@ -281,7 +283,7 @@ class BipartiteGED:
 
         Returns
         -------
-        ged : int or float
+        ged : int
             The upper bound of the Graph Edit Distance
         rho, varrho : dictionnries of nodes to nodes
             Result of the mapping between nodes.
@@ -351,6 +353,7 @@ class BipartiteGED:
             rho, varrho = convert_mapping(r, v, g1, g2)
         else:
             self._valid_mapping(rho, varrho, g1, g2)
+        assert (rho is not None) and (varrho is not None)
 
         # The final cost is based on elementary costs
         # If improved cost functions are used, the result will be overestimaed.
@@ -378,7 +381,7 @@ class BipartiteGED:
             phi_j = rho[j]
             if (phi_i is not None) and (phi_j is not None):
                 if any(x == phi_j for x in g2[phi_i]):
-                    e2 = [phi_i, phi_j]
+                    e2 = (phi_i, phi_j)
                     min_cost = min(
                         ccf.ces(e, e2, g1, g2), ccf.ced(e, g1) + ccf.cei(e2, g2)
                     )

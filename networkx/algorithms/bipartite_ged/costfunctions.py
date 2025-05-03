@@ -35,7 +35,7 @@ class CostFunction(Protocol):
     Edges' type used in these methods are a 2-tuple of nodes.
     """
 
-    def cns(self, node_u: Any, node_v: Any, g1: nx.Graph, g2: nx.Graph) -> int | float:
+    def cns(self, node_u: Any, node_v: Any, g1: nx.Graph, g2: nx.Graph) -> int:
         """Computes the substitution cost between
         `node_u` from `g1` and `node_v` from `g2`.
 
@@ -52,11 +52,11 @@ class CostFunction(Protocol):
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         ...
 
-    def cnd(self, node_u: Any, g1: nx.Graph) -> int | float:
+    def cnd(self, node_u: Any, g1: nx.Graph) -> int:
         """Computes the deletion cost of `node_u` in `g1`.
 
         Parameters
@@ -68,11 +68,11 @@ class CostFunction(Protocol):
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         ...
 
-    def cni(self, node_v: Any, g2: nx.Graph) -> int | float:
+    def cni(self, node_v: Any, g2: nx.Graph) -> int:
         """Computes the insertion cost of `node_v` in `g2`.
 
         Parameters
@@ -84,11 +84,11 @@ class CostFunction(Protocol):
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         ...
 
-    def ces(self, e1: tuple, e2: tuple, g1: nx.Graph, g2: nx.Graph) -> int | float:
+    def ces(self, e1: tuple, e2: tuple, g1: nx.Graph, g2: nx.Graph) -> int:
         """Computes the substitution cost between edge
         `e1` from `g1` and edge `e2` from `g2`.
 
@@ -105,11 +105,11 @@ class CostFunction(Protocol):
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         ...
 
-    def ced(self, e1: tuple, g1: nx.Graph) -> int | float:
+    def ced(self, e1: tuple, g1: nx.Graph) -> int:
         """Computes the deletion cost of edge `e1` in `g1`.
 
         Parameters
@@ -121,11 +121,11 @@ class CostFunction(Protocol):
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         ...
 
-    def cei(self, e2: tuple, g2: nx.Graph) -> int | float:
+    def cei(self, e2: tuple, g2: nx.Graph) -> int:
         """Computes the insertion cost of edge `e2` in `g2`.
 
         Parameters
@@ -137,7 +137,7 @@ class CostFunction(Protocol):
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         ...
 
@@ -147,10 +147,10 @@ class ConstantCostFunction:
 
     def __init__(
         self,
-        cns: int | float,
-        cni: int | float,
-        ces: int | float,
-        cei: int | float,
+        cns: int,
+        cni: int,
+        ces: int,
+        cei: int,
         node_comp: Callable | None = None,
         edge_comp: Callable | None = None,
     ):
@@ -158,13 +158,13 @@ class ConstantCostFunction:
 
         Parameters
         ----------
-        cns : int|float
+        cns : int
             Node substitution cost
-        cni : int|float
+        cni : int
             Node insertion and deletion cost
-        ces : int|float
+        ces : int
             Edge substitution cost
-        cei : int|float
+        cei : int
             Edge insertion and deletion cost
         node_comp : Callable(Any, Any, nx.Graph, nx.Graph) -> bool, optional
             Boolean function for node comparison. The function will be called this way :
@@ -279,7 +279,7 @@ class ConstantCostFunction:
             edge_comp if edge_comp is not None else (lambda e1, e2, g1, g2: False)
         )
 
-    def cns(self, node_u: Any, node_v: Any, g1: nx.Graph, g2: nx.Graph) -> int | float:
+    def cns(self, node_u: Any, node_v: Any, g1: nx.Graph, g2: nx.Graph) -> int:
         """Computes the substitution cost between
         `node_u` from `g1` and `node_v` from `g2`.
 
@@ -296,11 +296,11 @@ class ConstantCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         return 0 if self.compare_nodes(node_u, node_v, g1, g2) else self.cns_
 
-    def cnd(self, node_u: Any, g1: nx.Graph) -> int | float:
+    def cnd(self, node_u: Any, g1: nx.Graph) -> int:
         """Computes the deletion cost of `node_u` in `g1`.
 
         Parameters
@@ -312,11 +312,11 @@ class ConstantCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         return self.cnd_
 
-    def cni(self, node_v: Any, g2: nx.Graph) -> int | float:
+    def cni(self, node_v: Any, g2: nx.Graph) -> int:
         """Computes the insertion cost of `node_v` in `g2`.
 
         Parameters
@@ -328,11 +328,11 @@ class ConstantCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         return self.cni_
 
-    def ces(self, e1: tuple, e2: tuple, g1: nx.Graph, g2: nx.Graph) -> int | float:
+    def ces(self, e1: tuple, e2: tuple, g1: nx.Graph, g2: nx.Graph) -> int:
         """Computes the substitution cost between edge
         `e1` from `g1` and edge `e2` from `g2`.
 
@@ -349,11 +349,11 @@ class ConstantCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         return 0 if self.compare_edges(e1, e2, g1, g2) else self.ces_
 
-    def ced(self, e1: tuple, g1: nx.Graph) -> int | float:
+    def ced(self, e1: tuple, g1: nx.Graph) -> int:
         """Computes the deletion cost of edge `e1` in `g1`.
 
         Parameters
@@ -365,11 +365,11 @@ class ConstantCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         return self.ced_
 
-    def cei(self, e2: tuple, g2: nx.Graph) -> int | float:
+    def cei(self, e2: tuple, g2: nx.Graph) -> int:
         """Computes the insertion cost of edge `e2` in `g2`.
 
         Parameters
@@ -381,7 +381,7 @@ class ConstantCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         return self.cei_
 
@@ -480,7 +480,7 @@ class RiesenCostFunction:
             else sp.optimize.linear_sum_assignment
         )
 
-    def cns(self, node_u: Any, node_v: Any, g1: nx.Graph, g2: nx.Graph) -> int | float:
+    def cns(self, node_u: Any, node_v: Any, g1: nx.Graph, g2: nx.Graph) -> int:
         """Computes the substitution cost between
         `node_u` from `g1` and `node_v` from `g2`.
 
@@ -501,7 +501,7 @@ class RiesenCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         n = len(g1[node_u])
         m = len(g2[node_v])
@@ -512,27 +512,27 @@ class RiesenCostFunction:
         l_nbr_v = g2[node_v]
         for nbr_u in l_nbr_u:
             j = 0
-            e1 = [node_u, nbr_u, g1[node_u][nbr_u]]
+            e1 = (node_u, nbr_u)
             for nbr_v in g2[node_v]:
-                e2 = [node_v, nbr_v, g2[node_v][nbr_v]]
+                e2 = (node_v, nbr_v)
                 sub_C[i, j] = self.cf_.ces(e1, e2, g1, g2)
                 j += 1
             i += 1
 
         i = 0
         for nbr_u in l_nbr_u:
-            sub_C[i, m + i] = self.cf_.ced([node_u, nbr_u], g1)
+            sub_C[i, m + i] = self.cf_.ced((node_u, nbr_u), g1)
             i += 1
 
         j = 0
         for nbr_v in l_nbr_v:
-            sub_C[n + j, j] = self.cf_.cei([node_v, nbr_v], g2)
+            sub_C[n + j, j] = self.cf_.cei((node_v, nbr_v), g2)
             j += 1
         row_ind, col_ind = self.lsap_solver_(sub_C)
         cost = np.sum(sub_C[row_ind, col_ind])
         return self.cf_.cns(node_u, node_v, g1, g2) + cost.item()
 
-    def cnd(self, node_u: Any, g1: nx.Graph) -> int | float:
+    def cnd(self, node_u: Any, g1: nx.Graph) -> int:
         """Computes the deletion cost of `node_u` in `g1`.
 
         The result is based on the existing adjacent edges deletion costs,
@@ -548,15 +548,15 @@ class RiesenCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         cost = 0
         for nbr in g1[node_u]:
-            cost += self.cf_.ced([node_u, nbr], g1)
+            cost += self.cf_.ced((node_u, nbr), g1)
 
         return self.cf_.cnd(node_u, g1) + cost
 
-    def cni(self, node_v: Any, g2: nx.Graph) -> int | float:
+    def cni(self, node_v: Any, g2: nx.Graph) -> int:
         """Computes the insertion cost of `node_v` in `g2`.
 
         The result is based on the existing adjacent edges insertion costs,
@@ -572,14 +572,14 @@ class RiesenCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         cost = 0
         for nbr in g2[node_v]:
-            cost += self.cf_.cei([node_v, nbr], g2)
+            cost += self.cf_.cei((node_v, nbr), g2)
         return self.cf_.cni(node_v, g2) + cost
 
-    def ces(self, e1: tuple, e2: tuple, g1: nx.Graph, g2: nx.Graph) -> int | float:
+    def ces(self, e1: tuple, e2: tuple, g1: nx.Graph, g2: nx.Graph) -> int:
         """Computes the substitution cost between edge
         `e1` from `g1` and edge `e2` from `g2`.
 
@@ -598,11 +598,11 @@ class RiesenCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         return self.cf_.ces(e1, e2, g1, g2)
 
-    def ced(self, e1: tuple, g1: nx.Graph) -> int | float:
+    def ced(self, e1: tuple, g1: nx.Graph) -> int:
         """Computes the deletion cost of edge `e1` in `g1`.
 
         This deletion cost is provided by the given `CostFunction`
@@ -616,11 +616,11 @@ class RiesenCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         return self.cf_.ced(e1, g1)
 
-    def cei(self, e2: tuple, g2: nx.Graph) -> int | float:
+    def cei(self, e2: tuple, g2: nx.Graph) -> int:
         """Computes the insertion cost of edge `e2` in `g2`.
 
         This insertion cost is provided by the given `CostFunction`
@@ -634,7 +634,7 @@ class RiesenCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         return self.cf_.cei(e2, g2)
 
@@ -736,7 +736,7 @@ class NeighborhoodCostFunction:
             else sp.optimize.linear_sum_assignment
         )
 
-    def cns(self, node_u: Any, node_v: Any, g1: nx.Graph, g2: nx.Graph) -> int | float:
+    def cns(self, node_u: Any, node_v: Any, g1: nx.Graph, g2: nx.Graph) -> int:
         """Computes the substitution cost between
         `node_u` from `g1` and `node_v` from `g2`.
 
@@ -757,7 +757,7 @@ class NeighborhoodCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         n = len(g1[node_u])
         m = len(g2[node_v])
@@ -768,9 +768,9 @@ class NeighborhoodCostFunction:
         l_nbr_v = g2[node_v]
         for nbr_u in l_nbr_u:
             j = 0
-            e1 = [node_u, nbr_u]
+            e1 = (node_u, nbr_u)
             for nbr_v in g2[node_v]:
-                e2 = [node_v, nbr_v]
+                e2 = (node_v, nbr_v)
                 sub_C[i, j] = self.cf_.ces(e1, e2, g1, g2)
                 sub_C[i, j] += self.cf_.cns(nbr_u, nbr_v, g1, g2)
                 j += 1
@@ -778,13 +778,13 @@ class NeighborhoodCostFunction:
 
         i = 0
         for nbr_u in l_nbr_u:
-            sub_C[i, m + i] = self.cf_.ced([node_u, nbr_u], g1)
+            sub_C[i, m + i] = self.cf_.ced((node_u, nbr_u), g1)
             sub_C[i, m + i] += self.cf_.cnd(nbr_u, g1)
             i += 1
 
         j = 0
         for nbr_v in l_nbr_v:
-            sub_C[n + j, j] = self.cf_.cei([node_v, nbr_v], g2)
+            sub_C[n + j, j] = self.cf_.cei((node_v, nbr_v), g2)
             sub_C[n + j, j] += self.cf_.cni(nbr_v, g2)
             j += 1
 
@@ -792,7 +792,7 @@ class NeighborhoodCostFunction:
         cost = np.sum(sub_C[row_ind, col_ind])
         return self.cf_.cns(node_u, node_v, g1, g2) + cost.item()
 
-    def cnd(self, node_u: Any, g1: nx.Graph) -> int | float:
+    def cnd(self, node_u: Any, g1: nx.Graph) -> int:
         """Computes the deletion cost of `node_u` in `g1`.
 
         In the same way as `RiesenCostFunction`, the result is based on
@@ -809,14 +809,14 @@ class NeighborhoodCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         cost = 0
         for nbr in g1[node_u]:
-            cost += self.cf_.ced([node_u, nbr], g1)
+            cost += self.cf_.ced((node_u, nbr), g1)
         return self.cf_.cnd(node_u, g1) + cost
 
-    def cni(self, node_v: Any, g2: nx.Graph) -> int | float:
+    def cni(self, node_v: Any, g2: nx.Graph) -> int:
         """Computes the insertion cost of `node_v` in `g2`.
 
         In the same way as `RiesenCostFunction`, the result is based on
@@ -833,14 +833,14 @@ class NeighborhoodCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         cost = 0
         for nbr in g2[node_v]:
-            cost += self.cf_.cei([node_v, nbr, g2], g2)
+            cost += self.cf_.cei((node_v, nbr, g2), g2)
         return self.cf_.cni(node_v, g2) + cost
 
-    def ces(self, e1: tuple, e2: tuple, g1: nx.Graph, g2: nx.Graph) -> int | float:
+    def ces(self, e1: tuple, e2: tuple, g1: nx.Graph, g2: nx.Graph) -> int:
         """Computes the substitution cost between edge
         `e1` from `g1` and edge `e2` from `g2`.
 
@@ -859,11 +859,11 @@ class NeighborhoodCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         return self.cf_.ces(e1, e2, g1, g2)
 
-    def ced(self, e1: tuple, g1: nx.Graph) -> int | float:
+    def ced(self, e1: tuple, g1: nx.Graph) -> int:
         """Computes the deletion cost of edge `e1` in `g1`.
 
         This deletion cost is provided by the given `CostFunction`
@@ -877,11 +877,11 @@ class NeighborhoodCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         return self.cf_.ced(e1, g1)
 
-    def cei(self, e2: tuple, g2: nx.Graph) -> int | float:
+    def cei(self, e2: tuple, g2: nx.Graph) -> int:
         """Computes the insertion cost of edge `e2` in `g2`.
 
         This insertion cost is provided by the given `CostFunction`
@@ -895,7 +895,7 @@ class NeighborhoodCostFunction:
 
         Returns
         -------
-        A positive int or float value
+        A positive int value
         """
         return self.cf_.cei(e2, g2)
 

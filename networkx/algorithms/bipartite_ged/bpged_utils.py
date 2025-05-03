@@ -5,8 +5,7 @@ Utility functions for the algorithm :
 * A function to convert the index mapping into a node mapping
 """
 
-from collections.abc import Iterable
-from typing import Any
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -47,13 +46,13 @@ def compute_bipartite_cost_matrix(
     * The upper right submatrix of size $n * n$ represents the assignment
       costs of real nodes from `g1` with the empty nodes from `g2`. It
       corresponds to the deletion edit operation. For $i < n$ and
-      $m \leqslant j < n + m$, $C_{i, j}$ represents the deletion cost of
+      $m \\leqslant j < n + m$, $C_{i, j}$ represents the deletion cost of
       node $i$ from `g1`. Note that every cost outside the diagonal of
       the submatrix is infinite. It means a node can only be deleted once.
 
     * The lower left submatrix of size $m * m$ represents the assignment
       costs of empty nodes from `g1` with real nodes from `g2`. It corresponds
-      to the insertion edit operation. For $n \leqslant i < n + m$ and
+      to the insertion edit operation. For $n \\leqslant i < n + m$ and
       $j < m$, $C_{i, j}$ represents the insertion cost of node $j$ in `g2`.
       Note that like the deletion submatrix, every value outside the
       submatrix's diagonal is infinite as we can't insert the same node twice.
@@ -142,7 +141,10 @@ def compute_bipartite_cost_matrix(
 
 
 def convert_mapping(
-    rho: Iterable[int], varrho: Iterable[int], g1: nx.Graph, g2: nx.Graph
+    rho: Sequence[int] | np.ndarray,
+    varrho: Sequence[int] | np.ndarray,
+    g1: nx.Graph,
+    g2: nx.Graph,
 ) -> tuple:
     """Converts a node indices assignment to a
     node mapping using the networkx nodes IDs.
@@ -164,7 +166,7 @@ def convert_mapping(
 
     Parameters
     ----------
-    rho, varrho: Iterable of ints
+    rho, varrho: Sequence or array of ints
         Lists of indices representing the results of nodes matching.
 
         For each node of index `i` in `g1`, `rho[i]`
