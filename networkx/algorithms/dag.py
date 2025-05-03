@@ -643,13 +643,12 @@ def is_aperiodic(G):
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("Graph has no nodes.")
 
-    seen = set()
-    g = 0
+    scc = nx.strongly_connected_components(G)
+    sg = (G.subgraph(c) for c in scc)
 
-    for s in G:
-        if s in seen:
-            continue
-        seen.add(s)
+    g = 0
+    for H in sg:
+        s = nx.utils.arbitrary_element(H)
 
         current_layer = [s]
         level = {s: 0}
@@ -658,17 +657,18 @@ def is_aperiodic(G):
         while current_layer:
             next_layer = []
             for u in current_layer:
-                for v in G.successors(u):
+                for v in H.successors(u):
                     if v in level:  # Non-Tree Edge
                         g = gcd(g, level[u] - level[v] + 1)
-                    elif v not in seen:  # Tree Edge
+                        if g == 1:
+                            return True
+                    else:  # Tree Edge
                         next_layer.append(v)
                         level[v] = level_count
-                        seen.add(v)
             current_layer = next_layer
             level_count += 1
 
-    return g == 1
+    return False
 
 
 @nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
