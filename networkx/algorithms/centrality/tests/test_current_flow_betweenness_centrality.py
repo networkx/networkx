@@ -82,10 +82,8 @@ class TestApproximateFlowBetweennessCentrality:
         "Approximate current-flow betweenness centrality: K4 normalized"
         G = nx.complete_graph(4)
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
-        # Use large k for accuracy
-        k = 100
-        ba = approximate_cfbc(G, normalized=True, k=k)
-        epsilon = 0.1  # tolerance for comparison
+        epsilon = 0.1
+        ba = approximate_cfbc(G, normalized=True, epsilon=0.5 * epsilon)
         for n in sorted(G):
             np.testing.assert_allclose(b[n], ba[n], atol=epsilon)
 
@@ -93,10 +91,8 @@ class TestApproximateFlowBetweennessCentrality:
         "Approximate current-flow betweenness centrality: K4"
         G = nx.complete_graph(4)
         b = nx.current_flow_betweenness_centrality(G, normalized=False)
-        # Use large k for accuracy
-        k = 100
-        ba = approximate_cfbc(G, normalized=False, k=k)
-        epsilon = 0.1  # tolerance for comparison
+        epsilon = 0.1
+        ba = approximate_cfbc(G, normalized=False, epsilon=0.5 * epsilon)
         for n in sorted(G):
             np.testing.assert_allclose(b[n], ba[n], atol=epsilon * len(G) ** 2)
 
@@ -105,10 +101,8 @@ class TestApproximateFlowBetweennessCentrality:
         G = nx.Graph()
         nx.add_star(G, ["a", "b", "c", "d"])
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
-        # Use large k for accuracy
-        k = 100
-        ba = approximate_cfbc(G, normalized=True, k=k)
-        epsilon = 0.1  # tolerance for comparison
+        epsilon = 0.1
+        ba = approximate_cfbc(G, normalized=True, epsilon=0.5 * epsilon)
         for n in sorted(G):
             np.testing.assert_allclose(b[n], ba[n], atol=epsilon)
 
@@ -116,17 +110,14 @@ class TestApproximateFlowBetweennessCentrality:
         "Approximate current-flow betweenness centrality: 2d grid"
         G = nx.grid_2d_graph(4, 4)
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
-        # Use large k for accuracy
-        k = 100
-        ba = approximate_cfbc(G, normalized=True, k=k)
-        epsilon = 0.1  # tolerance for comparison
+        epsilon = 0.1
+        ba = approximate_cfbc(G, normalized=True, epsilon=0.5 * epsilon)
         for n in sorted(G):
             np.testing.assert_allclose(b[n], ba[n], atol=epsilon)
 
     def test_seed(self):
         G = nx.complete_graph(4)
-        # Set explicit k value with specific seed
-        b = approximate_cfbc(G, normalized=False, k=50, seed=1)
+        b = approximate_cfbc(G, normalized=False, epsilon=0.05, seed=1)
         b_answer = {0: 0.75, 1: 0.75, 2: 0.75, 3: 0.75}
         for n in sorted(G):
             np.testing.assert_allclose(b[n], b_answer[n], atol=0.1)
@@ -134,23 +125,19 @@ class TestApproximateFlowBetweennessCentrality:
     def test_solvers(self):
         "Approximate current-flow betweenness centrality: solvers"
         G = nx.complete_graph(4)
-        # Use large k for accuracy
-        k = 100
-        epsilon = 0.1  # tolerance for comparison
+        epsilon = 0.1
         for solver in ["full", "lu", "cg"]:
-            b = approximate_cfbc(G, normalized=False, solver=solver, k=k)
+            b = approximate_cfbc(
+                G, normalized=False, solver=solver, epsilon=0.5 * epsilon
+            )
             b_answer = {0: 0.75, 1: 0.75, 2: 0.75, 3: 0.75}
             for n in sorted(G):
                 np.testing.assert_allclose(b[n], b_answer[n], atol=epsilon)
 
-    def test_small_k(self):
-        """Test with a very small k value"""
+    def test_lower_kmax(self):
         G = nx.complete_graph(4)
-        # Test with a very small k which should still work but with less accuracy
-        b = approximate_cfbc(G, k=1)
-        # Just verify we get values without error
-        for n in sorted(G):
-            assert b[n] >= 0
+        with pytest.raises(nx.NetworkXError, match="Increase kmax or epsilon"):
+            nx.approximate_current_flow_betweenness_centrality(G, kmax=4)
 
 
 class TestWeightedFlowBetweennessCentrality:
