@@ -631,7 +631,7 @@ def is_aperiodic(G):
     -----
     This uses the method outlined in [1]_, which runs in $O(n + m)$ time
     given $n$ nodes and $m$ edges in `G`. Note that a graph is not aperiodic
-    if it is acyclic as every integer trivial divides length 0 cycles.
+    if it is acyclic as every integer trivially divides length 0 cycles.
 
     References
     ----------
