@@ -665,7 +665,7 @@ def test_is_aperiodic_disconnected2():
     G = nx.DiGraph()
     nx.add_cycle(G, [0, 1, 2])
     G.add_edge(3, 3)
-    assert not nx.is_aperiodic(G)
+    assert nx.is_aperiodic(G)
 
 
 def test_is_aperiodic_acyclic_component():
