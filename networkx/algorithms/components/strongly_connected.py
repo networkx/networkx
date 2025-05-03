@@ -74,21 +74,21 @@ def strongly_connected_components(G):
     preorder = {}
     lowlink = {}
     scc_found = set()
-    scc_queue = []
+    scc_stack = []
     i = 0  # Preorder counter
     neighbors = {v: iter(G[v]) for v in G}
     for source in G:
         if source not in scc_found:
-            queue = [source]
-            while queue:
-                v = queue[-1]
+            stack = [source]
+            while stack:
+                v = stack[-1]
                 if v not in preorder:
                     i = i + 1
                     preorder[v] = i
                 done = True
                 for w in neighbors[v]:
                     if w not in preorder:
-                        queue.append(w)
+                        stack.append(w)
                         done = False
                         break
                 if done:
@@ -96,19 +96,19 @@ def strongly_connected_components(G):
                     for w in G[v]:
                         if w not in scc_found:
                             if preorder[w] > preorder[v]:
-                                lowlink[v] = min([lowlink[v], lowlink[w]])
+                                lowlink[v] = min(lowlink[v], lowlink[w])
                             else:
-                                lowlink[v] = min([lowlink[v], preorder[w]])
-                    queue.pop()
+                                lowlink[v] = min(lowlink[v], preorder[w])
+                    stack.pop()
                     if lowlink[v] == preorder[v]:
                         scc = {v}
-                        while scc_queue and preorder[scc_queue[-1]] > preorder[v]:
-                            k = scc_queue.pop()
+                        while scc_stack and preorder[scc_stack[-1]] > preorder[v]:
+                            k = scc_stack.pop()
                             scc.add(k)
                         scc_found.update(scc)
                         yield scc
                     else:
-                        scc_queue.append(v)
+                        scc_stack.append(v)
 
 
 @not_implemented_for("undirected")
