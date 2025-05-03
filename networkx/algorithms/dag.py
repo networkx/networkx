@@ -572,6 +572,7 @@ def all_topological_sorts(G):
             break
 
 
+@not_implemented_for("undirected")
 @nx._dispatchable
 def is_aperiodic(G):
     """Returns True if `G` is aperiodic.
@@ -639,8 +640,6 @@ def is_aperiodic(G):
        in Shier, D. R.; Wallenius, K. T., Applied Mathematical Modeling:
        A Multidisciplinary Approach, CRC Press.
     """
-    if not G.is_directed():
-        raise nx.NetworkXError("is_aperiodic not defined for undirected graphs")
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("Graph has no nodes.")
 
