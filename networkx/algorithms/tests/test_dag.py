@@ -1,9 +1,9 @@
-import random
 from collections import deque
 from itertools import combinations, permutations
 from math import gcd
 
 import pytest
+from numpy.random import default_rng
 
 import networkx as nx
 from networkx.utils import edges_equal, pairwise
@@ -685,18 +685,18 @@ def test_is_aperiodic_acyclic_component2():
 
 @pytest.mark.parametrize("seed", range(10))
 def test_is_aperiodic_random(seed):
-    rng = random.Random(seed)
+    rng = default_rng(seed)
 
-    cycles = [rng.randint(3, 10) for _ in range(2)]
+    cycles = list(rng.integers(3, 11, size=2))
     g = gcd(*cycles)
     while g != 1:
-        new_cycle = rng.randint(3, 10)
+        new_cycle = rng.integers(3, 11)
         cycles.append(new_cycle)
         g = gcd(g, new_cycle)
 
     G = nx.DiGraph()
     for cycle in cycles:
-        cycle_nodes = [rng.randint(0, 10) for _ in range(cycle)]
+        cycle_nodes = rng.integers(0, 11, size=cycle)
         nx.add_cycle(G, cycle_nodes)
 
     assert nx.is_aperiodic(G)
