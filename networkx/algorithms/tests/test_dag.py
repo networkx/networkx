@@ -630,7 +630,7 @@ def test_is_aperiodic_selfloop():
 
 def test_is_aperiodic_undirected_raises():
     G = nx.Graph()
-    pytest.raises(nx.NetworkXError, nx.is_aperiodic, G)
+    pytest.raises(nx.NetworkXNotImplemented, nx.is_aperiodic, G)
 
 
 def test_is_aperiodic_empty_graph():
