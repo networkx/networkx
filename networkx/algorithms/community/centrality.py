@@ -230,10 +230,9 @@ def _without_most_central_edges_component_wise(
     `G` must be a non-empty graph. This function modifies the graph `G`
     in-place; that is, it removes edges on the graph `G`.
 
-    `most_valuable_edge` is a function that takes the graph `G` as input
-    (or a subgraph with one or more edges of `G` removed) and returns an
-    edge. That edge will be removed and this process will be repeated
-    until the number of connected components in the graph increases.
+    `most_valuable_edge_metric` is a function that takes a subgraph of `G` and returns a candidate edge from this subgraph and a comparable metric.
+    The candidate edge with the highest metric will be removed from `G`.
+    This process loops until the number of connected components in the graph increases.
 
     """
 
@@ -294,28 +293,39 @@ def _without_most_central_edges_component_wise(
 def _without_most_central_edges_betweenness(
     G, edge_betweenness, edge_sources, node_contributions
 ):
-    original_num_components = nx.number_connected_components(G)
+    components = tuple(nx.connected_components(G))
+    original_num_components = len(components)
     num_new_components = original_num_components
 
     # Cut edge until the component is split
     while num_new_components <= original_num_components:
-        # Select edge to remove with largest betweenness centrality, do tie-breaking with the node numbers
+        # Select edge to remove with largest betweenness centrality
         edge_to_remove = max(
             edge_betweenness,
             key=edge_betweenness.get,
         )
 
         # The new components after removing edge
-        new_components = _update_after_removal(
-            G, edge_to_remove, edge_betweenness, edge_sources, node_contributions
+        components = _update_after_removal(
+            G,
+            edge_to_remove,
+            edge_betweenness,
+            edge_sources,
+            node_contributions,
+            components,
         )
-        num_new_components = len(new_components)
+        num_new_components = len(components)
 
-    return new_components
+    return components
 
 
 def _update_after_removal(
-    G, edge_to_remove, edge_betweenness, edge_sources, node_contributions
+    G,
+    edge_to_remove,
+    edge_betweenness,
+    edge_sources,
+    node_contributions,
+    original_components,
 ):
     """Update betweenness after edge removal using cached contributions."""
     G.remove_edge(*edge_to_remove)
@@ -323,6 +333,8 @@ def _update_after_removal(
     affected_nodes = edge_sources[edge_to_remove]
     del edge_betweenness[edge_to_remove]
     del edge_sources[edge_to_remove]
+
+    component_split = False
 
     for node in affected_nodes:
         # Remove old contribution
@@ -333,13 +345,21 @@ def _update_after_removal(
             edge_sources[edge].remove(node)
 
         # Recompute shortest paths and contributions
-        S, P, sigma, _ = _single_source_shortest_path_basic(G, node)
+        S, P, sigma, D = _single_source_shortest_path_basic(G, node)
         node_contributions[node] = _compute_node_contributions(S, P, sigma)
 
         # Add new contribution
         for edge, score in node_contributions[node].items():
             edge_betweenness[edge] += score
             edge_sources[edge].add(node)
+
+        # Determines whether there is a component split
+        # if removing this edge blocks the affected nodes from reaching either end point, there is a component split
+        if edge_to_remove[0] not in D or edge_to_remove[1] not in D:
+            component_split = True
+
+    if not component_split:
+        return original_components
 
     return tuple(nx.connected_components(G))
 
