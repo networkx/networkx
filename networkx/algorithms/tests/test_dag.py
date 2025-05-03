@@ -1,5 +1,7 @@
+import random
 from collections import deque
 from itertools import combinations, permutations
+from math import gcd
 
 import pytest
 
@@ -611,6 +613,14 @@ def test_is_aperiodic_cycle4():
     assert nx.is_aperiodic(G)
 
 
+def test_is_aperiodic_cycle5():
+    G = nx.DiGraph()
+    nx.add_cycle(G, [1, 2, 3, 4])
+    nx.add_cycle(G, [5, 6, 7])
+    G.add_edge(5, 1)
+    assert nx.is_aperiodic(G)
+
+
 def test_is_aperiodic_selfloop():
     G = nx.DiGraph()
     nx.add_cycle(G, [1, 2, 3, 4])
@@ -656,6 +666,40 @@ def test_is_aperiodic_disconnected2():
     nx.add_cycle(G, [0, 1, 2])
     G.add_edge(3, 3)
     assert not nx.is_aperiodic(G)
+
+
+def test_is_aperiodic_acyclic_component():
+    G = nx.DiGraph()
+    G.add_node(0)
+    G.add_edge(1, 1)
+    assert nx.is_aperiodic(G)
+
+
+def test_is_aperiodic_acyclic_component2():
+    G = nx.DiGraph()
+    G.add_node(0)
+    nx.add_cycle(G, [1, 2, 3])
+    nx.add_cycle(G, [2, 3, 4, 5])
+    assert nx.is_aperiodic(G)
+
+
+@pytest.mark.parametrize("seed", range(10))
+def test_is_aperiodic_random(seed):
+    rng = random.Random(seed)
+
+    cycles = [rng.randint(3, 10) for _ in range(2)]
+    g = gcd(*cycles)
+    while g != 1:
+        new_cycle = rng.randint(3, 10)
+        cycles.append(new_cycle)
+        g = gcd(g, new_cycle)
+
+    G = nx.DiGraph()
+    for cycle in cycles:
+        cycle_nodes = [rng.randint(0, 10) for _ in range(cycle)]
+        nx.add_cycle(G, cycle_nodes)
+
+    assert nx.is_aperiodic(G)
 
 
 class TestDagToBranching:
