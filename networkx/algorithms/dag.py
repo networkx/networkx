@@ -649,24 +649,15 @@ def is_aperiodic(G):
     g = 0
     for H in sg:
         s = nx.utils.arbitrary_element(H)
-
-        current_layer = [s]
         level = {s: 0}
-        level_count = 1
 
-        while current_layer:
-            next_layer = []
-            for u in current_layer:
-                for v in H.successors(u):
-                    if v in level:  # Non-Tree Edge
-                        g = gcd(g, level[u] - level[v] + 1)
-                        if g == 1:
-                            return True
-                    else:  # Tree Edge
-                        next_layer.append(v)
-                        level[v] = level_count
-            current_layer = next_layer
-            level_count += 1
+        for u, v, d in nx.bfs_labeled_edges(H, s):
+            if d == "tree":
+                level[v] = level[u] + 1
+            else:
+                g = gcd(g, level[u] - level[v] + 1)
+                if g == 1:
+                    return True
 
     return False
 
