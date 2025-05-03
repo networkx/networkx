@@ -168,6 +168,8 @@ def hypercube_graph(n):
     >>> list(G.edges((0, 0, 0)))
     [((0, 0, 0), (1, 0, 0)), ((0, 0, 0), (0, 1, 0)), ((0, 0, 0), (0, 0, 1))]
 
+    Notes
+    --------
     For more information on the hypercube graph, see the Wikipedia article `Hypercube graph <https://en.wikipedia.org/wiki/Hypercube_graph>`.
     """
     dim = n * [2]
