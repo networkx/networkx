@@ -65,7 +65,7 @@ def connected_components(G):
     n = len(G)
     for v in G:
         if v not in seen:
-            c = _plain_bfs(G, n, v)
+            c = _plain_bfs(G, n - len(seen), v)
             seen.update(c)
             yield c
 

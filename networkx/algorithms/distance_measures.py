@@ -151,14 +151,17 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     ----------
     .. [1] F. W. Takes, W. A. Kosters,
        "Determining the diameter of small world networks."
-       Proceedings of the 20th ACM international conference on Information and knowledge management, 2011
+       Proceedings of the 20th ACM international conference on Information and
+       knowledge management, 2011
        https://dl.acm.org/doi/abs/10.1145/2063576.2063748
     .. [2] F. W. Takes, W. A. Kosters,
        "Computing the Eccentricity Distribution of Large Graphs."
        Algorithms, 2013
        https://www.mdpi.com/1999-4893/6/1/100
     .. [3] M. Borassi, P. Crescenzi, M. Habib, W. A. Kosters, A. Marino, F. W. Takes,
-       "Fast diameter and radius BFS-based computation in (weakly connected) real-world graphs: With an application to the six degrees of separation games. "
+       "Fast diameter and radius BFS-based computation in (weakly connected)
+       real-world graphs: With an application to the six degrees of separation
+       games."
        Theoretical Computer Science, 2015
        https://www.sciencedirect.com/science/article/pii/S0304397515001644
     """

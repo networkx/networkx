@@ -77,7 +77,7 @@ class Config:
             cls = type(
                 cls.__name__,
                 (cls,),
-                {"__annotations__": {key: typing.Any for key in kwargs}},
+                {"__annotations__": dict.fromkeys(kwargs, typing.Any)},
             )
         cls = dataclass(
             eq=False,
@@ -328,7 +328,8 @@ class NetworkXConfig(Config):
 
     and can be used for finer control of ``backend_priority`` such as:
 
-    - ``NETWORKX_BACKEND_PRIORITY_ALGOS``: same as ``NETWORKX_BACKEND_PRIORITY`` to set ``backend_priority.algos``.
+    - ``NETWORKX_BACKEND_PRIORITY_ALGOS``: same as ``NETWORKX_BACKEND_PRIORITY``
+      to set ``backend_priority.algos``.
 
     This is a global configuration. Use with caution when using from multiple threads.
     """

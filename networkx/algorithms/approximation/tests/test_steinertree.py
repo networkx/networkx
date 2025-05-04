@@ -205,7 +205,7 @@ class TestSteinerTree:
 def test_steiner_tree_weight_attribute(method):
     G = nx.star_graph(4)
     # Add an edge attribute that is named something other than "weight"
-    nx.set_edge_attributes(G, {e: 10 for e in G.edges}, name="distance")
+    nx.set_edge_attributes(G, dict.fromkeys(G.edges, 10), name="distance")
     H = nx.approximation.steiner_tree(G, [1, 3], method=method, weight="distance")
     assert nx.utils.edges_equal(H.edges, [(0, 1), (0, 3)])
 
@@ -213,7 +213,7 @@ def test_steiner_tree_weight_attribute(method):
 @pytest.mark.parametrize("method", ("kou", "mehlhorn"))
 def test_steiner_tree_multigraph_weight_attribute(method):
     G = nx.cycle_graph(3, create_using=nx.MultiGraph)
-    nx.set_edge_attributes(G, {e: 10 for e in G.edges}, name="distance")
+    nx.set_edge_attributes(G, dict.fromkeys(G.edges, 10), name="distance")
     G.add_edge(2, 0, distance=5)
     H = nx.approximation.steiner_tree(G, list(G), method=method, weight="distance")
     assert len(H.edges) == 2 and H.has_edge(2, 0, key=1)

@@ -15,7 +15,7 @@ class TestKatzCentrality:
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
-        nstart = {n: 1 for n in G}
+        nstart = dict.fromkeys(G, 1)
         b = nx.katz_centrality(G, alpha, nstart=nstart)
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
