@@ -1607,10 +1607,10 @@ def _prepare_panther_paths(
     index_map = {}
 
     # Generate the random paths and populate the index_map
-        for _ in generate_random_paths( 
-             G, sample_size, path_length=path_length, index_map=index_map, weight=weight
-        ):
-            pass
+    for _ in generate_random_paths(
+        G, sample_size, path_length=path_length, index_map=index_map, weight=weight
+    ):
+        pass
 
     # Return a named tuple with all the required data
     return PantherPaths(
