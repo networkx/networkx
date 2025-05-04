@@ -111,12 +111,27 @@ def approximate_current_flow_betweenness_centrality(
 
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
+
+    n = G.number_of_nodes()
+    if n < 3 and normalized:
+        raise nx.NetworkXError(
+            "Graph has fewer than 3 nodes. Normalization factor [(n-1)(n-2)] would be zero. "
+            "To avoid a divide-by-zero, add more nodes or set normalized=False."
+        )
+
+    if epsilon <= 0:
+        raise nx.NetworkXError(f"Epsilon must be positive. Got epsilon={epsilon}.")
+
+    if sample_weight <= 0:
+        raise nx.NetworkXError(
+            f"Sample weight must be positive. Got sample_weight={sample_weight}."
+        )
+
     solvername = {
         "full": FullInverseLaplacian,
         "lu": SuperLUInverseLaplacian,
         "cg": CGInverseLaplacian,
     }
-    n = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
