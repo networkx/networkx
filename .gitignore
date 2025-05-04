@@ -60,3 +60,5 @@ networkx-dev/
 # Benchmark products
 benchmarks/env
 benchmarks/results
+networkx/algorithms/shortest_paths/bidirectionalAStar.py
+networkx/algorithms/shortest_paths/tests/test_bidirectionalAStar.py
