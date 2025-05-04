@@ -1581,7 +1581,7 @@ def _prepare_panther_paths(
         )
 
     if remove_isolates:
-        G = G.subgraph([node for node in G.nodes if node not in isolates]).copy()
+        G = G.subgraph(node for node in G.nodes if node not in isolates).copy()
 
     # According to [1], they empirically determined
     # a good value for ``eps`` to be sqrt( 1 / |E| )
