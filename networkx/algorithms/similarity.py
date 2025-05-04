@@ -15,7 +15,6 @@ alternative GED algorithms, in order to improve the choices available.
 
 import math
 import time
-import warnings
 from collections import namedtuple
 from dataclasses import dataclass
 from itertools import product
