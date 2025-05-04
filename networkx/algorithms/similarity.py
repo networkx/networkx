@@ -1863,11 +1863,12 @@ def panther_vector_similarity(
         # between ``source`` (v) and ``node`` (v_j)
         # using our inverted index mapping of
         # vertices to paths
+        index_map_set = set(index_map[vi])
         for node, paths in index_map.items():
             # Only consider paths where both
             # ``node`` and ``source`` are present
-            common_paths = set(index_map[vi]).intersection(paths)
-            S[vi_idx, inv_node_map[node]] = len(common_paths) * inv_sample_size
+            common_path_count = len(index_map_set.intersection(paths))
+            S[vi_idx, inv_node_map[node]] = common_path_count * inv_sample_size
 
         # Build up the feature vector using the
         # largest ``D`` similarity scores
