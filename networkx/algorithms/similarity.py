@@ -13,6 +13,7 @@ At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
 
+import heapq
 import math
 import time
 from collections import namedtuple
@@ -1852,26 +1853,44 @@ def panther_vector_similarity(
             f"The number of requested similarity scores {D} is greater than the number of nodes {num_nodes}."
         )
 
-    S = np.zeros((num_nodes, num_nodes))
+    # We'll use heaps to track the top D similarity scores for each node
+    # This avoids allocating the full n×n similarity matrix
     theta = np.zeros((num_nodes, D))
 
-    # Calculate the path similarities
-    # for each node against each other node
-    for vi_idx, vi in enumerate(G.nodes):
-        # Calculate the path similarities
-        # between ``source`` (v) and ``node`` (v_j)
-        # using our inverted index mapping of
-        # vertices to paths
-        index_map_set = set(index_map[vi])
-        for node, paths in index_map.items():
-            # Only consider paths where both
-            # ``node`` and ``source`` are present
-            common_path_count = len(index_map_set.intersection(paths))
-            S[vi_idx, inv_node_map[node]] = common_path_count * inv_sample_size
+    # Pre-convert index_map values to sets for faster intersection
+    index_map_sets = {node: set(paths) for node, paths in index_map.items()}
 
-        # Build up the feature vector using the
-        # largest ``D`` similarity scores
-        theta[vi_idx] = np.sort(np.partition(S[vi_idx], -D)[-D:])[::-1]
+    # Calculate the path similarities for each node
+    for vi_idx, vi in enumerate(G.nodes):
+        # Get the set of paths for the current node
+        vi_paths = index_map_sets[vi]
+
+        # Use a min heap to track the top D scores
+        # Since heapq is a min heap, we negate scores to track largest values
+        top_d_heap = []
+
+        # Calculate similarities with all other nodes
+        for node, node_paths in index_map_sets.items():
+            # Calculate similarity score
+            common_path_count = len(vi_paths.intersection(node_paths))
+            similarity = common_path_count * inv_sample_size
+
+            # Add to heap if we haven't reached D items yet
+            if len(top_d_heap) < D:
+                heapq.heappush(top_d_heap, (-similarity, inv_node_map[node]))
+            # Otherwise, replace the smallest value if new score is larger
+            elif -similarity > top_d_heap[0][0]:
+                heapq.heappushpop(top_d_heap, (-similarity, inv_node_map[node]))
+
+        # Extract the top D scores in descending order
+        # Convert min heap to sorted list by popping all elements
+        # Then negate back to positive values
+        scores = []
+        for _ in range(len(top_d_heap)):
+            scores.append(-heapq.heappop(top_d_heap)[0])
+
+        # Set the feature vector with scores in descending order
+        theta[vi_idx] = np.array(scores)
 
     # Insert the feature vectors into a k-d tree
     # for fast retrieval
