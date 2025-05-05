@@ -307,6 +307,9 @@ class BetweennessCache:
     def __init__(self, G, weight=None):
         self.G = G
         self.weight = weight
+
+        # Caches
+        # For consistency, edges are recorded in ascending order when used as key
         self.edge_betweenness = {
             tuple(sorted(edge)): 0.0 for edge in list(self.G.edges())
         }
