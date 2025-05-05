@@ -1866,28 +1866,23 @@ def panther_vector_similarity(
         vi_paths = index_map_sets[vi]
 
         # Use a min heap to track the top D scores
-        # Since heapq is a min heap, we negate scores to track largest values
         top_d_heap = []
 
         # Calculate similarities with all other nodes
-        for node, node_paths in index_map_sets.items():
+        for _, node_paths in index_map_sets.items():
             # Calculate similarity score
             common_path_count = len(vi_paths.intersection(node_paths))
             similarity = common_path_count * inv_sample_size
 
             # Add to heap if we haven't reached D items yet
             if len(top_d_heap) < D:
-                heapq.heappush(top_d_heap, (-similarity, inv_node_map[node]))
+                heapq.heappush(top_d_heap, similarity)
             # Otherwise, replace the smallest value if new score is larger
-            elif -similarity > top_d_heap[0][0]:
-                heapq.heappushpop(top_d_heap, (-similarity, inv_node_map[node]))
+            elif similarity > top_d_heap[0]:
+                heapq.heapreplace(top_d_heap, similarity)
 
         # Extract the top D scores in descending order
-        # Convert min heap to sorted list by popping all elements
-        # Then negate back to positive values
-        scores = []
-        for _ in range(len(top_d_heap)):
-            scores.append(-heapq.heappop(top_d_heap)[0])
+        scores = heapq.nlargest(D, top_d_heap)
 
         # Set the feature vector with scores in descending order
         theta[vi_idx] = np.array(scores)
