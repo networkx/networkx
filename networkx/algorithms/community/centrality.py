@@ -2,6 +2,7 @@
 
 import networkx as nx
 from networkx.algorithms.centrality.betweenness import (
+    _single_source_dijkstra_path_basic,
     _single_source_shortest_path_basic,
 )
 
@@ -9,7 +10,9 @@ __all__ = ["girvan_newman"]
 
 
 @nx._dispatchable(preserve_edge_attrs="most_valuable_edge")
-def girvan_newman(G, most_valuable_edge=None, most_valuable_edge_metric=None):
+def girvan_newman(
+    G, most_valuable_edge=None, most_valuable_edge_metric=None, weight=None
+):
     """Finds communities in a graph using the Girvan–Newman method.
 
     Parameters
@@ -34,6 +37,12 @@ def girvan_newman(G, most_valuable_edge=None, most_valuable_edge_metric=None):
         based on the metric of each edge returned by `most_valuable_edge_metric`
 
         Note that the Global Selection phase will select the candidate edge with the highest `metric`.
+
+    weight : string, optional (default= None)
+        If None, all edge weights are considered equal.
+        Weights are used to calculate weighted shortest paths, so they are
+        interpreted as distances.
+
 
     Note
     --------
@@ -162,23 +171,7 @@ def girvan_newman(G, most_valuable_edge=None, most_valuable_edge_metric=None):
     g.remove_edges_from(nx.selfloop_edges(g))
 
     if fast_betweenness_centrality:
-        edge_betweenness = {}  #
-        edge_sources = {}  # edge_sources[edge] = {nodes which has shortest paths that go through edge}
-        node_contributions = {}  # contribution of a node to each edge's centrality
-
-        # Initial full betweenness calculation
-        for node in G.nodes():
-            S, P, sigma, _ = _single_source_shortest_path_basic(G, node)
-            node_contributions[node] = _compute_node_contributions(S, P, sigma)
-            for edge, score in node_contributions[node].items():
-                if edge not in edge_betweenness:
-                    edge_betweenness[edge] = 0.0
-                edge_betweenness[edge] += score
-
-                if edge not in edge_sources:
-                    edge_sources[edge] = set()
-                edge_sources[edge].add(node)
-
+        betweenness_cache = BetweennessCache(g, weight=weight)
     # Initialize the cache of all connected components if we are doing component wise computing
     elif component_wise_computing:
         current_components = list(nx.connected_components(g))
@@ -186,18 +179,16 @@ def girvan_newman(G, most_valuable_edge=None, most_valuable_edge_metric=None):
 
     while g.number_of_edges() > 0:
         if fast_betweenness_centrality:
-            yield _without_most_central_edges_betweenness(
-                g, edge_betweenness, edge_sources, node_contributions
-            )
+            yield _without_most_central_edges_betweenness(betweenness_cache)
         elif component_wise_computing:
             yield _without_most_central_edges_component_wise(
-                g, most_valuable_edge_metric, candidates
+                g, most_valuable_edge_metric, candidates, weight=weight
             )
         else:
-            yield _without_most_central_edges(g, most_valuable_edge)
+            yield _without_most_central_edges(g, most_valuable_edge, weight=weight)
 
 
-def _without_most_central_edges(G, most_valuable_edge):
+def _without_most_central_edges(G, most_valuable_edge, weight=None):
     """Returns the connected components of the graph that results from
     repeatedly removing the most "valuable" edge in the graph.
 
@@ -213,7 +204,7 @@ def _without_most_central_edges(G, most_valuable_edge):
     original_num_components = nx.number_connected_components(G)
     num_new_components = original_num_components
     while num_new_components <= original_num_components:
-        edge = most_valuable_edge(G)
+        edge = most_valuable_edge(G, weight=weight)
         G.remove_edge(*edge)
         new_components = tuple(nx.connected_components(G))
         num_new_components = len(new_components)
@@ -221,7 +212,7 @@ def _without_most_central_edges(G, most_valuable_edge):
 
 
 def _without_most_central_edges_component_wise(
-    G, most_valuable_edge_metric, candidates
+    G, most_valuable_edge_metric, candidates, weight=None
 ):
     """Returns the connected components of the graph that results from
     repeatedly removing the most "valuable" edge in the graph.
@@ -242,38 +233,37 @@ def _without_most_central_edges_component_wise(
 
     # Loop until there is a component split
     while True:
-        optimal_centrality = None
-        global_optimal_edge = None
-        affected_subgraph = None
+        edge_metric = {}
 
         # Obtain a candidate edge from each subgraph
         for sg in candidates:
             if sg.number_of_edges() == 0:
                 continue
 
-            # If the (candidate_edge, centrality) of the current subgraph is not recorded, compute it
+            # If the (candidate_edge, metric) of the current subgraph is not recorded, compute it
             if candidates[sg] is None:
-                edge_value_result = most_valuable_edge_metric(sg)
+                edge_value_result = most_valuable_edge_metric(sg, weight=weight)
                 assert (
                     isinstance(edge_value_result, tuple)
                     and len(edge_value_result) == 2
                     and isinstance(edge_value_result[0], tuple)
                     and len(edge_value_result[0]) == 2
                 ), (
-                    "If component_wise computing is True, most_valuable_edge must return a tuple (most valuable edge, value of most valuable edge)"
+                    "If component_wise computing is True, most_valuable_edge_metric must return a tuple (most valuable edge, value of most valuable edge)"
                 )
 
-                candidate_edge, centrality = edge_value_result
-                candidates[sg] = (candidate_edge, centrality)
+                candidate_edge, metric = edge_value_result
+                candidates[sg] = (candidate_edge, metric)
             # Otherwise, read from cache
             else:
-                candidate_edge, centrality = candidates[sg]
+                candidate_edge, metric = candidates[sg]
 
-            # Update globally most valuable edge and the affected subgraph
-            if optimal_centrality is None or centrality > optimal_centrality:
-                optimal_centrality = centrality
-                global_optimal_edge = candidate_edge
-                affected_subgraph = sg
+            edge_metric[(candidate_edge, sg)] = metric
+
+        # Select globally most valuable edge and the affected subgraph
+        global_optimal_edge, affected_subgraph = max(
+            edge_metric, key=lambda edge_sg: (edge_metric[edge_sg], max(edge_sg[0]))
+        )
 
         # Select globally most valuable edge, remove edge from main graph and component
         G.remove_edge(*global_optimal_edge)
@@ -292,97 +282,125 @@ def _without_most_central_edges_component_wise(
             for new_comp in new_comps:
                 candidates[G.subgraph(new_comp).copy()] = None
 
-            return tuple(map(set, [sg.nodes() for sg in candidates]))
+            return tuple([set(sg.nodes()) for sg in candidates])
 
 
-def _without_most_central_edges_betweenness(
-    G, edge_betweenness, edge_sources, node_contributions
-):
-    components = tuple(nx.connected_components(G))
+def _without_most_central_edges_betweenness(betweenness_cache):
+    components = betweenness_cache.current_components
     original_num_components = len(components)
     num_new_components = original_num_components
 
     # Cut edge until the component is split
     while num_new_components <= original_num_components:
         # Select edge to remove with largest betweenness centrality
-        edge_to_remove = max(
-            edge_betweenness,
-            key=edge_betweenness.get,
-        )
+        edge_to_remove = betweenness_cache.select_edge_to_remove()
+        betweenness_cache.remove_edge(edge_to_remove)
 
         # The new components after removing edge
-        components = _update_after_removal(
-            G,
-            edge_to_remove,
-            edge_betweenness,
-            edge_sources,
-            node_contributions,
-            components,
-        )
+        components = betweenness_cache.current_components
         num_new_components = len(components)
 
     return components
 
 
-def _update_after_removal(
-    G,
-    edge_to_remove,
-    edge_betweenness,
-    edge_sources,
-    node_contributions,
-    original_components,
-):
-    """Update betweenness after edge removal using cached contributions."""
-    G.remove_edge(*edge_to_remove)
+class BetweennessCache:
+    def __init__(self, G, weight=None):
+        self.G = G
+        self.weight = weight
+        self.edge_betweenness = {
+            tuple(sorted(edge)): 0.0 for edge in list(self.G.edges())
+        }
+        self.edge_sources = {
+            tuple(sorted(edge)): set() for edge in list(self.G.edges())
+        }  # edge_sources[edge] = {nodes which has shortest paths that go through edge}
+        self.node_contributions = dict.fromkeys(
+            self.G.nodes(), 0.0
+        )  # contribution of a node to each edge's centrality
+        self.current_components = tuple(nx.connected_components(self.G))
 
-    affected_nodes = edge_sources[edge_to_remove]
-    del edge_betweenness[edge_to_remove]
-    del edge_sources[edge_to_remove]
+        # Initial full betweenness calculation
+        for node in self.G.nodes():
+            S, P, sigma, _ = self._compute_shortest_path(node)
 
-    component_split = False
+            self.node_contributions[node] = self._compute_node_contributions(
+                S, P, sigma
+            )
+            for edge, score in self.node_contributions[node].items():
+                self.edge_betweenness[edge] += score / 2
+                self.edge_sources[edge].add(node)
 
-    for node in affected_nodes:
-        # Remove old contribution
-        for edge, score in node_contributions[node].items():
-            if edge == edge_to_remove:
-                continue
-            edge_betweenness[edge] -= score
-            edge_sources[edge].remove(node)
+    def select_edge_to_remove(self):
+        return max(
+            self.edge_betweenness,
+            key=lambda edge: (self.edge_betweenness[edge], max(edge)),
+        )
 
-        # Recompute shortest paths and contributions
-        S, P, sigma, D = _single_source_shortest_path_basic(G, node)
-        node_contributions[node] = _compute_node_contributions(S, P, sigma)
+    def remove_edge(
+        self,
+        edge_to_remove,
+    ):
+        """Update betweenness after edge removal using cached contributions."""
+        self.G.remove_edge(*edge_to_remove)
 
-        # Add new contribution
-        for edge, score in node_contributions[node].items():
-            edge_betweenness[edge] += score
-            edge_sources[edge].add(node)
+        affected_nodes = self.edge_sources[edge_to_remove]
+        del self.edge_betweenness[edge_to_remove]
+        del self.edge_sources[edge_to_remove]
 
-        # Determines whether there is a component split
-        # check if removing this edge blocks the affected nodes
-        # from reaching either end point
-        if edge_to_remove[0] not in D or edge_to_remove[1] not in D:
-            component_split = True
+        component_split = False
 
-    if not component_split:
-        return original_components
+        for node in affected_nodes:
+            # Remove old contribution
+            for edge, score in self.node_contributions[node].items():
+                if edge == edge_to_remove:
+                    continue
+                self.edge_betweenness[edge] -= score / 2
+                self.edge_sources[edge].remove(node)
 
-    return tuple(nx.connected_components(G))
+            # Recompute shortest paths and contributions
+            S, P, sigma, D = self._compute_shortest_path(node)
+            self.node_contributions[node] = self._compute_node_contributions(
+                S, P, sigma
+            )
 
+            # Add new contribution
+            for edge, score in self.node_contributions[node].items():
+                self.edge_betweenness[edge] += score / 2
+                self.edge_sources[edge].add(node)
 
-def _compute_node_contributions(S, P, sigma):
-    """Precompute and cache contributions for all edges from a single source."""
-    contributions = {}
-    delta = dict.fromkeys(S, 0)
+            # Determines whether there is a component split
+            # check if removing this edge blocks the affected nodes
+            # from reaching either end point
+            if edge_to_remove[0] not in D or edge_to_remove[1] not in D:
+                component_split = True
 
-    while S:
-        w = S.pop()
-        coeff = (1 + delta[w]) / sigma[w]
+        # Update components if needed
+        if component_split:
+            self.current_components = tuple(nx.connected_components(self.G))
 
-        # Compute sigma(s, w | edge v-w) / sigma(s, w)
-        for v in P[w]:
-            edge = (v, w) if v < w else (w, v)
-            contributions[edge] = sigma[v] * coeff
-            delta[v] += sigma[v] * coeff
+    def _compute_shortest_path(self, node):
+        """Compute shortest path starting from a node"""
+        if self.weight:
+            S, P, sigma, D = _single_source_dijkstra_path_basic(
+                self.G, node, self.weight
+            )
+        else:
+            S, P, sigma, D = _single_source_shortest_path_basic(self.G, node)
 
-    return contributions
+        return S, P, sigma, D
+
+    def _compute_node_contributions(self, S, P, sigma):
+        """Precompute and cache contributions for all edges from a single source."""
+        contributions = {}
+        delta = dict.fromkeys(S, 0)
+
+        while S:
+            w = S.pop()
+            coeff = (1 + delta[w]) / sigma[w]
+
+            # Compute sigma(s, w | edge v-w) / sigma(s, w)
+            for v in P[w]:
+                edge = (v, w) if v < w else (w, v)
+                contributions[edge] = sigma[v] * coeff
+                delta[v] += sigma[v] * coeff
+
+        return contributions
