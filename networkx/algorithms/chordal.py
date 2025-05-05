@@ -18,7 +18,11 @@ __all__ = [
     "chordal_graph_cliques",
     "chordal_graph_treewidth",
     "NetworkXTreewidthBoundExceeded",
+    "triangulate",
     "complete_to_chordal_graph",
+    "minimal_elimination_order",
+    "perfect_elimination_order",
+    "is_perfect_elimination_graph",
 ]
 
 
