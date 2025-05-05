@@ -683,23 +683,42 @@ def test_is_aperiodic_acyclic_component2():
     assert nx.is_aperiodic(G)
 
 
-@pytest.mark.parametrize("seed", range(10))
-def test_is_aperiodic_random(seed):
+def random_aperiodic_graph(seed, n, n_cycle, l, r):
     rng = random.Random(seed)
 
-    cycles = [rng.randint(3, 10) for _ in range(2)]
+    cycles = [rng.randint(l, r) for _ in range(n_cycle)]
     g = gcd(*cycles)
     while g != 1:
-        new_cycle = rng.randint(3, 10)
+        new_cycle = rng.randint(l, r)
         cycles.append(new_cycle)
         g = gcd(g, new_cycle)
 
     G = nx.DiGraph()
     for cycle in cycles:
-        cycle_nodes = [rng.randint(0, 10) for _ in range(cycle)]
+        cycle_nodes = [rng.randint(0, n - 1) for _ in range(cycle)]
         nx.add_cycle(G, cycle_nodes)
 
+    return G
+
+
+def to_periodic_graph(G, k):
+    n = max(G.nodes()) + 1
+    H = nx.DiGraph()
+
+    for u, v in G.edges():
+        x = [u] + [n + i for i in range(k - 1)] + [v]
+        n += k - 1
+        H.add_edges_from(nx.utils.pairwise(x))
+
+    return H
+
+
+@pytest.mark.parametrize("seed", range(10))
+def test_is_aperiodic_random(seed):
+    G = random_aperiodic_graph(seed, n=10, n_cycle=3, l=3, r=6)
     assert nx.is_aperiodic(G)
+    for k in range(2, 5):
+        assert not nx.is_aperiodic(to_periodic_graph(G, k))
 
 
 class TestDagToBranching:
