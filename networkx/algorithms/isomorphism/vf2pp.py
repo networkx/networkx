@@ -223,7 +223,8 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=None):
         G1, G2, G2_degree, node_label, default_label
     )
 
-    # Check if G1 and G2 have the same labels, and that number of nodes per label is equal between the two graphs
+    # Check if G1 and G2 have the same labels, and that number of nodes per label
+    # is equal between the two graphs
     if not _precheck_label_properties(graph_params):
         return False
 
@@ -319,14 +320,16 @@ def _initialize_parameters(G1, G2, G2_degree, node_label=None, default_label=-1)
             The mapping as extended so far. Maps nodes of G1 to nodes of G2
 
         reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1.
+            It's basically "mapping" reversed
 
         T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
-            neighbors of nodes that are.
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
+            that are not in the mapping, but are neighbors of nodes that are.
 
         T1_out, T2_out: set
-            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
+            Ti_out contains all the nodes from Gi, that are neither in the mapping
+            nor in Ti
     """
     G1_labels = dict(G1.nodes(data=node_label, default=default_label))
     G2_labels = dict(G2.nodes(data=node_label, default=default_label))
@@ -374,10 +377,12 @@ def _matching_order(graph_params):
 
     Notes
     -----
-    Taking into account the structure of the Graph and the node labeling, the nodes are placed in an order such that,
-    most of the unfruitful/infeasible branches of the search space can be pruned on high levels, significantly
-    decreasing the number of visited states. The premise is that, the algorithm will be able to recognize
-    inconsistencies early, proceeding to go deep into the search tree only if it's needed.
+    Taking into account the structure of the Graph and the node labeling, the
+    nodes are placed in an order such that, most of the unfruitful/infeasible
+    branches of the search space can be pruned on high levels, significantly
+    decreasing the number of visited states. The premise is that, the algorithm
+    will be able to recognize inconsistencies early, proceeding to go deep into
+    the search tree only if it's needed.
 
     Parameters
     ----------
@@ -404,7 +409,7 @@ def _matching_order(graph_params):
 
     V1_unordered = set(G1.nodes())
     label_rarity = {label: len(nodes) for label, nodes in nodes_of_G2Labels.items()}
-    used_degrees = {node: 0 for node in G1}
+    used_degrees = dict.fromkeys(G1, 0)
     node_order = []
 
     while V1_unordered:
@@ -466,14 +471,16 @@ def _find_candidates(
             The mapping as extended so far. Maps nodes of G1 to nodes of G2
 
         reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes
+            of G1. It's basically "mapping" reversed
 
         T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
-            neighbors of nodes that are.
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
+            that are not in the mapping, but are neighbors of nodes that are.
 
         T1_tilde, T2_tilde: set
-            Ti_tilde contains all the nodes from Gi, that are neither in the mapping nor in Ti
+            Ti_tilde contains all the nodes from Gi, that are neither in the
+            mapping nor in Ti
 
     Returns
     -------
@@ -569,12 +576,13 @@ def _find_candidates_Di(u, graph_params, state_params, G1_degree):
 
 
 def _feasibility(node1, node2, graph_params, state_params):
-    """Given a candidate pair of nodes u and v from G1 and G2 respectively, checks if it's feasible to extend the
-    mapping, i.e. if u and v can be matched.
+    """Given a candidate pair of nodes u and v from G1 and G2 respectively,
+    checks if it's feasible to extend the mapping, i.e. if u and v can be matched.
 
     Notes
     -----
-    This function performs all the necessary checking by applying both consistency and cutting rules.
+    This function performs all the necessary checking by applying both consistency
+    and cutting rules.
 
     Parameters
     ----------
@@ -597,14 +605,16 @@ def _feasibility(node1, node2, graph_params, state_params):
             The mapping as extended so far. Maps nodes of G1 to nodes of G2
 
         reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes
+            of G1. It's basically "mapping" reversed
 
         T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
-            neighbors of nodes that are.
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
+            that are not in the mapping, but are neighbors of nodes that are.
 
         T1_out, T2_out: set
-            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
+            Ti_out contains all the nodes from Gi, that are neither in the mapping
+            nor in Ti
 
     Returns
     -------
@@ -646,14 +656,16 @@ def _cut_PT(u, v, graph_params, state_params):
             The mapping as extended so far. Maps nodes of G1 to nodes of G2
 
         reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes
+            of G1. It's basically "mapping" reversed
 
         T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
-            neighbors of nodes that are.
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
+            that are not in the mapping, but are neighbors of nodes that are.
 
         T1_tilde, T2_tilde: set
-            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
+            Ti_out contains all the nodes from Gi, that are neither in the
+            mapping nor in Ti
 
     Returns
     -------
@@ -764,14 +776,16 @@ def _consistent_PT(u, v, graph_params, state_params):
             The mapping as extended so far. Maps nodes of G1 to nodes of G2
 
         reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1.
+            It's basically "mapping" reversed
 
         T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
-            neighbors of nodes that are.
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
+            that are not in the mapping, but are neighbors of nodes that are.
 
         T1_out, T2_out: set
-            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
+            Ti_out contains all the nodes from Gi, that are neither in the mapping
+            nor in Ti
 
     Returns
     -------
@@ -819,10 +833,12 @@ def _update_Tinout(new_node1, new_node2, graph_params, state_params):
 
     Notes
     -----
-    This function should be called right after the feasibility checks are passed, and node1 is mapped to node2. The
-    purpose of this function is to avoid brute force computing of Ti/Ti_out by iterating over all nodes of the graph
-    and checking which nodes satisfy the necessary conditions. Instead, in every step of the algorithm we focus
-    exclusively on the two nodes that are being added to the mapping, incrementally updating Ti/Ti_out.
+    This function should be called right after the feasibility checks are passed,
+    and node1 is mapped to node2. The purpose of this function is to avoid brute
+    force computing of Ti/Ti_out by iterating over all nodes of the graph and
+    checking which nodes satisfy the necessary conditions. Instead, in every step
+    of the algorithm we focus exclusively on the two nodes that are being added
+    to the mapping, incrementally updating Ti/Ti_out.
 
     Parameters
     ----------
@@ -845,11 +861,12 @@ def _update_Tinout(new_node1, new_node2, graph_params, state_params):
             The mapping as extended so far. Maps nodes of G1 to nodes of G2
 
         reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1.
+            It's basically "mapping" reversed
 
         T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
-            neighbors of nodes that are.
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
+            that are not in the mapping, but are neighbors of nodes that are.
 
         T1_tilde, T2_tilde: set
             Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
@@ -906,7 +923,8 @@ def _update_Tinout(new_node1, new_node2, graph_params, state_params):
 
 
 def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
-    """Restores the previous version of Ti/Ti_out when a node pair is deleted from the mapping.
+    """Restores the previous version of Ti/Ti_out when a node pair is deleted
+    from the mapping.
 
     Parameters
     ----------
@@ -929,16 +947,19 @@ def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
             The mapping as extended so far. Maps nodes of G1 to nodes of G2
 
         reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It's basically "mapping" reversed
+            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1.
+            It's basically "mapping" reversed
 
         T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are
-            neighbors of nodes that are.
+            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
+            that are not in the mapping, but are neighbors of nodes that are.
 
         T1_tilde, T2_tilde: set
-            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
+            Ti_out contains all the nodes from Gi, that are neither in the mapping
+            nor in Ti
     """
-    # If the node we want to remove from the mapping, has at least one covered neighbor, add it to T1.
+    # If the node we want to remove from the mapping, has at least one covered
+    # neighbor, add it to T1.
     G1, G2, _, _, _, _, _ = graph_params
     (
         mapping,
@@ -960,13 +981,15 @@ def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
             is_added = True
             T1.add(popped_node1)
         else:
-            # check if its neighbor has another connection with a covered node. If not, only then exclude it from T1
+            # check if its neighbor has another connection with a covered node.
+            # If not, only then exclude it from T1
             if any(nbr in mapping for nbr in G1[neighbor]):
                 continue
             T1.discard(neighbor)
             T1_tilde.add(neighbor)
 
-    # Case where the node is not present in neither the mapping nor T1. By definition, it should belong to T1_tilde
+    # Case where the node is not present in neither the mapping nor T1.
+    # By definition, it should belong to T1_tilde
     if not is_added:
         T1_tilde.add(popped_node1)
 
@@ -1008,7 +1031,8 @@ def _restore_Tinout_Di(popped_node1, popped_node2, graph_params, state_params):
             is_added = True
             T1_in.add(popped_node1)
         else:
-            # check if its neighbor has another connection with a covered node. If not, only then exclude it from T1
+            # check if its neighbor has another connection with a covered node.
+            # If not, only then exclude it from T1
             if not any(pred in mapping for pred in G1.pred[successor]):
                 T1.discard(successor)
 
@@ -1025,7 +1049,8 @@ def _restore_Tinout_Di(popped_node1, popped_node2, graph_params, state_params):
             is_added = True
             T1.add(popped_node1)
         else:
-            # check if its neighbor has another connection with a covered node. If not, only then exclude it from T1
+            # check if its neighbor has another connection with a covered node.
+            # If not, only then exclude it from T1
             if not any(pred in mapping for pred in G1.pred[predecessor]):
                 T1.discard(predecessor)
 
@@ -1035,7 +1060,8 @@ def _restore_Tinout_Di(popped_node1, popped_node2, graph_params, state_params):
             if not (predecessor in T1 or predecessor in T1_in):
                 T1_tilde.add(predecessor)
 
-    # Case where the node is not present in neither the mapping nor T1. By definition it should belong to T1_tilde
+    # Case where the node is not present in neither the mapping nor T1.
+    # By definition it should belong to T1_tilde
     if not is_added:
         T1_tilde.add(popped_node1)
 
@@ -1061,7 +1087,8 @@ def _restore_Tinout_Di(popped_node1, popped_node2, graph_params, state_params):
             is_added = True
             T2.add(popped_node2)
         else:
-            # check if its neighbor has another connection with a covered node. If not, only then exclude it from T1
+            # check if its neighbor has another connection with a covered node.
+            # If not, only then exclude it from T1
             if not any(pred in reverse_mapping for pred in G2.pred[predecessor]):
                 T2.discard(predecessor)
 

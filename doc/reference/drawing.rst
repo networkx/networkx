@@ -33,6 +33,8 @@ Matplotlib
 .. autosummary::
    :toctree: generated/
 
+   display
+   apply_matplotlib_colors
    draw
    draw_networkx
    draw_networkx_nodes

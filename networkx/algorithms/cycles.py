@@ -439,7 +439,7 @@ def _bounded_cycle_search(G, path, length_bound):
 
     """
     G = _NeighborhoodCache(G)
-    lock = {v: 0 for v in path}
+    lock = dict.fromkeys(path, 0)
     B = defaultdict(set)
     start = path[0]
     stack = [iter(G[path[-1]])]
