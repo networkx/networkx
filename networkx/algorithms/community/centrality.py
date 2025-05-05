@@ -182,13 +182,13 @@ def girvan_newman(
             yield _without_most_central_edges_betweenness(betweenness_cache)
         elif component_wise_computing:
             yield _without_most_central_edges_component_wise(
-                g, most_valuable_edge_metric, candidates, weight=weight
+                g, most_valuable_edge_metric, candidates
             )
         else:
-            yield _without_most_central_edges(g, most_valuable_edge, weight=weight)
+            yield _without_most_central_edges(g, most_valuable_edge)
 
 
-def _without_most_central_edges(G, most_valuable_edge, weight=None):
+def _without_most_central_edges(G, most_valuable_edge):
     """Returns the connected components of the graph that results from
     repeatedly removing the most "valuable" edge in the graph.
 
@@ -204,7 +204,7 @@ def _without_most_central_edges(G, most_valuable_edge, weight=None):
     original_num_components = nx.number_connected_components(G)
     num_new_components = original_num_components
     while num_new_components <= original_num_components:
-        edge = most_valuable_edge(G, weight=weight)
+        edge = most_valuable_edge(G)
         G.remove_edge(*edge)
         new_components = tuple(nx.connected_components(G))
         num_new_components = len(new_components)
@@ -212,7 +212,7 @@ def _without_most_central_edges(G, most_valuable_edge, weight=None):
 
 
 def _without_most_central_edges_component_wise(
-    G, most_valuable_edge_metric, candidates, weight=None
+    G, most_valuable_edge_metric, candidates
 ):
     """Returns the connected components of the graph that results from
     repeatedly removing the most "valuable" edge in the graph.
@@ -242,7 +242,7 @@ def _without_most_central_edges_component_wise(
 
             # If the (candidate_edge, metric) of the current subgraph is not recorded, compute it
             if candidates[sg] is None:
-                edge_value_result = most_valuable_edge_metric(sg, weight=weight)
+                edge_value_result = most_valuable_edge_metric(sg)
                 assert (
                     isinstance(edge_value_result, tuple)
                     and len(edge_value_result) == 2
