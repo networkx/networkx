@@ -369,6 +369,56 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
     return ()
 
 
+def _triangulate_to_perfect_elimination_graph(G):
+    # TODO: Add docstring
+    H = G.copy()
+    alpha = dict.fromkeys(H, 0)
+    chords = set()
+    weight = dict.fromkeys(H.nodes(), 0)
+    unnumbered_nodes = list(H.nodes())
+    for i in range(len(H.nodes()), 0, -1):
+        # get the node in unnumbered_nodes with the maximum weight
+        z = max(unnumbered_nodes, key=lambda node: weight[node])
+        unnumbered_nodes.remove(z)
+        alpha[z] = i
+        update_nodes = []
+        for y in unnumbered_nodes:
+            if G.has_edge(y, z):
+                update_nodes.append(y)
+            else:
+                # y_weight will be bigger than node weights between y and z
+                y_weight = weight[y]
+                lower_nodes = [
+                    node for node in unnumbered_nodes if weight[node] < y_weight
+                ]
+                if nx.has_path(H.subgraph(lower_nodes + [z, y]), y, z):
+                    update_nodes.append(y)
+                    chords.add((z, y))
+        # during calculation of paths the weights should not be updated
+        for node in update_nodes:
+            weight[node] += 1
+    H.add_edges_from(chords)
+    return H, alpha
+
+
+is_perfect_elimination_graph = is_chordal
+is_perfect_elimination_graph.__doc__ = """
+Return True if the graph has a perfect elimination ordering.
+
+This is equivalent to being chordal.
+
+Parameters
+----------
+G : NetworkX graph
+    Undirected graph
+
+Returns
+-------
+bool
+    True if the graph is chordal (i.e., has a perfect elimination ordering)
+"""
+
+
 @not_implemented_for("directed")
 @nx._dispatchable(returns_graph=True)
 def complete_to_chordal_graph(G):
@@ -411,33 +461,29 @@ def complete_to_chordal_graph(G):
     >>> G = nx.wheel_graph(10)
     >>> H, alpha = complete_to_chordal_graph(G)
     """
-    H = G.copy()
-    alpha = dict.fromkeys(H, 0)
-    if nx.is_chordal(H):
-        return H, alpha
-    chords = set()
-    weight = dict.fromkeys(H.nodes(), 0)
-    unnumbered_nodes = list(H.nodes())
-    for i in range(len(H.nodes()), 0, -1):
-        # get the node in unnumbered_nodes with the maximum weight
-        z = max(unnumbered_nodes, key=lambda node: weight[node])
-        unnumbered_nodes.remove(z)
-        alpha[z] = i
-        update_nodes = []
-        for y in unnumbered_nodes:
-            if G.has_edge(y, z):
-                update_nodes.append(y)
-            else:
-                # y_weight will be bigger than node weights between y and z
-                y_weight = weight[y]
-                lower_nodes = [
-                    node for node in unnumbered_nodes if weight[node] < y_weight
-                ]
-                if nx.has_path(H.subgraph(lower_nodes + [z, y]), y, z):
-                    update_nodes.append(y)
-                    chords.add((z, y))
-        # during calculation of paths the weights should not be updated
-        for node in update_nodes:
-            weight[node] += 1
-    H.add_edges_from(chords)
+    if is_perfect_elimination_graph(G):
+        H = G.copy()
+        alpha = dict.fromkeys(H, 0)
+    else:
+        H, alpha = _triangulate_to_perfect_elimination_graph(G)
+
     return H, alpha
+
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
+def minimal_elimination_order(G):
+    # TODO: Add docstring
+    return _triangulate_to_perfect_elimination_graph(G)
+
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
+def perfect_elimination_order(G):
+    # TODO: Add docstring
+    if not is_perfect_elimination_graph(G):
+        raise nx.NetworkXError("Input graph is not chordal.")
+
+    return _triangulate_to_perfect_elimination_graph(G)
