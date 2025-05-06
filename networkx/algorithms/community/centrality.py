@@ -56,6 +56,13 @@ def girvan_newman(
         is a community, each tuple is a sequence of communities at a
         particular level of the algorithm.
 
+    Raises
+    ------
+    NetworkXError
+        If `most_valuable_edge_metric` is defined but does not return
+        a tuple of format `(edge, metric)`, where `edge` is a tuple
+        of two nodes.
+
     Examples
     --------
     To get the first pair of communities::
@@ -243,14 +250,15 @@ def _without_most_central_edges_component_wise(
             # If the (candidate_edge, metric) of the current subgraph is not recorded, compute it
             if candidates[sg] is None:
                 edge_value_result = most_valuable_edge_metric(sg)
-                assert (
+                if not (
                     isinstance(edge_value_result, tuple)
                     and len(edge_value_result) == 2
                     and isinstance(edge_value_result[0], tuple)
                     and len(edge_value_result[0]) == 2
-                ), (
-                    "If component_wise computing is True, most_valuable_edge_metric must return a tuple (most valuable edge, value of most valuable edge)"
-                )
+                ):
+                    raise nx.NetworkXError(
+                        "If component_wise computing is True, most_valuable_edge_metric must return a tuple (most valuable edge, value of most valuable edge)"
+                    )
 
                 candidate_edge, metric = edge_value_result
                 candidates[sg] = (candidate_edge, metric)
