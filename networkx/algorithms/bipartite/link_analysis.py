@@ -80,8 +80,9 @@ def birank(
 
     alpha : float, optional (default=0.80 if top_personalization not empty, else 1)
       Damping factor for the 'top' nodes. Must be in the interval $[0, 1]$.
-      Choice of value is largely dependent on use case, and experimentation is
-      recommended.
+      Larger alpha and beta generally reduce the effect of the personalizations
+      and increase the number of iterations before convergence. Choice of value
+      is largely dependent on use case, and experimentation is recommended.
 
     beta : float, optional (default=0.80 if bottom_personalization not empty, else 1)
       Damping factor for the 'bottom' nodes. Must be in the interval $[0, 1]$.
