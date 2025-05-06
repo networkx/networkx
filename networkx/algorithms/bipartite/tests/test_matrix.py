@@ -120,10 +120,7 @@ class TestBiadjacencyMatrix:
             return [(top_map[u], bottom_map[v]) for u, v in edges]
 
         mapped_edges = map_edges(B_default.edges())
-        assert edges_equal(
-            mapped_edges,
-            B.edges(),
-        )
+        assert edges_equal(mapped_edges, B.edges())
 
     def test_invalid_from_biadjacency_nodelist(self):
         M = sp.sparse.csc_array([[1, 2], [0, 3]])
