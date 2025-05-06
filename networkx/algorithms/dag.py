@@ -592,7 +592,7 @@ def is_aperiodic(G):
 
     Raises
     ------
-    NetworkXError
+    NetworkXNotImplemented
         If `G` is not directed
 
     Examples
