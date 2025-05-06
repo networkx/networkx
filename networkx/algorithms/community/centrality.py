@@ -270,7 +270,12 @@ def _without_most_central_edges_component_wise(
 
         # Select globally most valuable edge and the affected subgraph
         global_optimal_edge, affected_subgraph = max(
-            edge_metric, key=lambda edge_sg: (edge_metric[edge_sg], max(edge_sg[0]))
+            edge_metric,
+            key=lambda edge_sg: (
+                round(edge_metric[edge_sg], 8),
+                max(edge_sg[0]),
+                min(edge_sg[0]),
+            ),
         )
 
         # Select globally most valuable edge, remove edge from main graph and component
@@ -342,7 +347,11 @@ class BetweennessCache:
     def select_edge_to_remove(self):
         return max(
             self.edge_betweenness,
-            key=lambda edge: (self.edge_betweenness[edge], max(edge)),
+            key=lambda edge: (
+                round(self.edge_betweenness[edge], 8),
+                max(edge),
+                min(edge),
+            ),
         )
 
     def remove_edge(
