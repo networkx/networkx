@@ -86,8 +86,9 @@ def birank(
 
     beta : float, optional (default=0.80 if bottom_personalization not empty, else 1)
       Damping factor for the 'bottom' nodes. Must be in the interval $[0, 1]$.
-      Choice of value is largely dependent on use case, and experimentation is
-      recommended.
+      Larger alpha and beta generally reduce the effect of the personalizations
+      and increase the number of iterations before convergence. Choice of value
+      is largely dependent on use case, and experimentation is recommended.
 
     top_personalization : dict, optional (default=None)
       Dictionary keyed by nodes in 'top' to that node's personalization value.
