@@ -294,8 +294,7 @@ def _without_most_central_edges_component_wise(
 
 
 def _without_most_central_edges_betweenness(betweenness_cache):
-    components = betweenness_cache.current_components
-    original_num_components = len(components)
+    original_num_components = len(betweenness_cache.current_components)
     num_new_components = original_num_components
 
     # Cut edge until the component is split
@@ -308,7 +307,7 @@ def _without_most_central_edges_betweenness(betweenness_cache):
         components = betweenness_cache.current_components
         num_new_components = len(components)
 
-    return components
+    return betweenness_cache.current_components
 
 
 class BetweennessCache:
