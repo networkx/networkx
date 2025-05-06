@@ -26,11 +26,11 @@ def birank(
 
     .. math::
 
-       p_j = \alpha \sum_{i \in U} \frac{w_{ij}}{\sqrt{d_i}\sqrt{d_j}} u_i
-       + (1 - \alpha) p_j^0
+        p_j = \alpha \sum_{i \in U} \frac{w_{ij}}{\sqrt{d_i}\sqrt{d_j}} u_i
+        + (1 - \alpha) p_j^0
 
-       u_i = \beta \sum_{j \in P} \frac{w_{ij}}{\sqrt{d_i}\sqrt{d_j}} p_j
-       + (1 - \beta) u_i^0
+        u_i = \beta \sum_{j \in P} \frac{w_{ij}}{\sqrt{d_i}\sqrt{d_j}} p_j
+        + (1 - \beta) u_i^0
 
     where
 
@@ -69,55 +69,55 @@ def birank(
     Parameters
     ----------
     G : graph
-       A bipartite network
+        A bipartite network
 
     nodes : iterable of nodes
-      Container with all nodes belonging to the first bipartite node set
-      ('top'). The nodes in this set use the hyperparameter `alpha`, and the
-      personalization dictionary `top_personalization`. The nodes in the second
-      bipartite node set ('bottom') are automatically determined by taking the
-      complement of 'top' with respect to the graph `G`.
+        Container with all nodes belonging to the first bipartite node set
+        ('top'). The nodes in this set use the hyperparameter `alpha`, and the
+        personalization dictionary `top_personalization`. The nodes in the second
+        bipartite node set ('bottom') are automatically determined by taking the
+        complement of 'top' with respect to the graph `G`.
 
     alpha : float, optional (default=0.80 if top_personalization not empty, else 1)
-      Damping factor for the 'top' nodes. Must be in the interval $[0, 1]$.
-      Larger alpha and beta generally reduce the effect of the personalizations
-      and increase the number of iterations before convergence. Choice of value
-      is largely dependent on use case, and experimentation is recommended.
+        Damping factor for the 'top' nodes. Must be in the interval $[0, 1]$.
+        Larger alpha and beta generally reduce the effect of the personalizations
+        and increase the number of iterations before convergence. Choice of value
+        is largely dependent on use case, and experimentation is recommended.
 
     beta : float, optional (default=0.80 if bottom_personalization not empty, else 1)
-      Damping factor for the 'bottom' nodes. Must be in the interval $[0, 1]$.
-      Larger alpha and beta generally reduce the effect of the personalizations
-      and increase the number of iterations before convergence. Choice of value
-      is largely dependent on use case, and experimentation is recommended.
+        Damping factor for the 'bottom' nodes. Must be in the interval $[0, 1]$.
+        Larger alpha and beta generally reduce the effect of the personalizations
+        and increase the number of iterations before convergence. Choice of value
+        is largely dependent on use case, and experimentation is recommended.
 
     top_personalization : dict, optional (default=None)
-      Dictionary keyed by nodes in 'top' to that node's personalization value.
-      Unspecified nodes in 'top' will be assigned a personalization value of 0.
-      Personalization values are used to encode a priori weights for a given node,
-      and should be non-negative.
+        Dictionary keyed by nodes in 'top' to that node's personalization value.
+        Unspecified nodes in 'top' will be assigned a personalization value of 0.
+        Personalization values are used to encode a priori weights for a given node,
+        and should be non-negative.
 
     bottom_personalization : dict, optional (default=None)
-      Dictionary keyed by nodes in 'bottom' to that node's personalization value.
-      Unspecified nodes in 'bottom' will be assigned a personalization value of 0.
-      Personalization values are used to encode a priori weights for a given node,
-      and should be non-negative.
+        Dictionary keyed by nodes in 'bottom' to that node's personalization value.
+        Unspecified nodes in 'bottom' will be assigned a personalization value of 0.
+        Personalization values are used to encode a priori weights for a given node,
+        and should be non-negative.
 
     max_iter : int, optional (default=100)
-      Maximum number of iterations in power method eigenvalue solver.
+        Maximum number of iterations in power method eigenvalue solver.
 
     tol : float, optional (default=1.0e-6)
-      Error tolerance used to check convergence in power method solver. The
-      iteration will stop after a tolerance of both ``len(top) * tol`` and
-      ``len(bottom) * tol`` is reached for nodes in 'top' and 'bottom'
-      respectively.
+        Error tolerance used to check convergence in power method solver. The
+        iteration will stop after a tolerance of both ``len(top) * tol`` and
+        ``len(bottom) * tol`` is reached for nodes in 'top' and 'bottom'
+        respectively.
 
     weight : string or None, optional (default='weight')
-      Edge data key to use as weight.
+        Edge data key to use as weight.
 
     Returns
     -------
     birank : dictionary
-       Dictionary keyed by node to that node's BiRank score.
+        Dictionary keyed by node to that node's BiRank score.
 
     Raises
     ------
