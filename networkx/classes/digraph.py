@@ -1,4 +1,5 @@
 """Base class for directed graphs."""
+
 from copy import deepcopy
 from functools import cached_property
 

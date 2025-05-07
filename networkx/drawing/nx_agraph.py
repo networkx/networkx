@@ -17,7 +17,7 @@ See Also
  - Graphviz:      https://www.graphviz.org
  - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
-import os
+
 import tempfile
 
 import networkx as nx
@@ -137,12 +137,6 @@ def to_agraph(N):
     directed = N.is_directed()
     strict = nx.number_of_selfloops(N) == 0 and not N.is_multigraph()
 
-    for node in N:
-        if "pos" in N.nodes[node]:
-            N.nodes[node]["pos"] = "{},{}!".format(
-                N.nodes[node]["pos"][0], N.nodes[node]["pos"][1]
-            )
-
     A = pygraphviz.AGraph(name=N.name, strict=strict, directed=directed)
 
     # default graph attributes
@@ -159,7 +153,11 @@ def to_agraph(N):
         A.add_node(n)
         # Add node data
         a = A.get_node(n)
-        a.attr.update({k: str(v) for k, v in nodedata.items()})
+        for key, val in nodedata.items():
+            if key == "pos":
+                a.attr["pos"] = f"{val[0]},{val[1]}!"
+            else:
+                a.attr[key] = str(val)
 
     # loop over edges
     if N.is_multigraph():
@@ -292,7 +290,7 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
     for the layout computation using something similar to::
 
         >>> H = nx.convert_node_labels_to_integers(G, label_attribute="node_label")
-        >>> H_layout = nx.nx_agraph.pygraphviz_layout(G, prog="dot")
+        >>> H_layout = nx.nx_agraph.pygraphviz_layout(H, prog="dot")
         >>> G_layout = {H.nodes[n]["node_label"]: p for n, p in H_layout.items()}
 
     Note that some graphviz layouts are not guaranteed to be deterministic,
@@ -344,6 +342,7 @@ def view_pygraphviz(
     path : str, None
         The filename used to save the image.  If None, save to a temporary
         file.  File formats are the same as those from pygraphviz.agraph.draw.
+        Filenames ending in .gz or .bz2 will be compressed.
     show : bool, default = True
         Whether to display the graph with :mod:`PIL.Image.show`,
         default is `True`. If `False`, the rendered graph is still available

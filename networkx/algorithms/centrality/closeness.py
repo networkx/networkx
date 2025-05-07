@@ -1,6 +1,7 @@
 """
 Closeness centrality measures.
 """
+
 import functools
 
 import networkx as nx

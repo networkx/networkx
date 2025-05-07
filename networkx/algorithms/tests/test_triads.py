@@ -9,18 +9,6 @@ import pytest
 import networkx as nx
 
 
-def test_all_triplets_deprecated():
-    G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
-    with pytest.deprecated_call():
-        nx.all_triplets(G)
-
-
-def test_random_triad_deprecated():
-    G = nx.path_graph(3, create_using=nx.DiGraph)
-    with pytest.deprecated_call():
-        nx.random_triad(G)
-
-
 def test_triadic_census():
     """Tests the triadic_census function."""
     G = nx.DiGraph()
@@ -57,23 +45,8 @@ def test_is_triad():
         assert nx.is_triad(G2)
 
 
-def test_all_triplets():
-    """Tests the all_triplets function."""
-    G = nx.DiGraph()
-    G.add_edges_from(["01", "02", "03", "04", "05", "12", "16", "51", "56", "65"])
-    expected = [
-        f"{i},{j},{k}"
-        for i in range(7)
-        for j in range(i + 1, 7)
-        for k in range(j + 1, 7)
-    ]
-    expected = [set(x.split(",")) for x in expected]
-    actual = [set(x) for x in nx.all_triplets(G)]
-    assert all(any(s1 == s2 for s1 in expected) for s2 in actual)
-
-
 def test_all_triads():
-    """Tests the all_triplets function."""
+    """Tests the all_triads function."""
     G = nx.DiGraph()
     G.add_edges_from(["01", "02", "03", "04", "05", "12", "16", "51", "56", "65"])
     expected = [
@@ -131,7 +104,6 @@ def test_triad_type():
 
 
 def test_triads_by_type():
-    """Tests the all_triplets function."""
     G = nx.DiGraph()
     G.add_edges_from(["01", "02", "03", "04", "05", "12", "16", "51", "56", "65"])
     all_triads = nx.all_triads(G)
@@ -145,19 +117,6 @@ def test_triads_by_type():
         expected_Gs = expected[tri_type]
         for a in actual_Gs:
             assert any(nx.is_isomorphic(a, e) for e in expected_Gs)
-
-
-def test_random_triad():
-    """Tests the random_triad function"""
-    G = nx.karate_club_graph()
-    G = G.to_directed()
-    for i in range(100):
-        assert nx.is_triad(nx.random_triad(G))
-
-    G = nx.DiGraph()
-    msg = "at least 3 nodes to form a triad"
-    with pytest.raises(nx.NetworkXError, match=msg):
-        nx.random_triad(G)
 
 
 def test_triadic_census_short_path_nodelist():
@@ -248,7 +207,7 @@ def test_triadic_census_nodelist():
         "120D": 0,
         "021C": 2,
     }
-    actual = {k: 0 for k in expected}
+    actual = dict.fromkeys(expected, 0)
     for node in G.nodes():
         node_triad_census = nx.triadic_census(G, nodelist=[node])
         for triad_key in expected:

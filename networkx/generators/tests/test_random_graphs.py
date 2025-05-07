@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`networkx.generators.random_graphs` module."""
+
 import pytest
 
 import networkx as nx
@@ -346,3 +347,132 @@ def test_connected_watts_strogatz():
 def test_connected_watts_strogatz_zero_tries():
     with pytest.raises(nx.NetworkXError, match="Maximum number of tries exceeded"):
         nx.connected_watts_strogatz_graph(10, 2, 0.1, tries=0)
+
+
+@pytest.mark.parametrize(
+    "generator, kwargs",
+    [
+        (nx.fast_gnp_random_graph, {"n": 20, "p": 0.2, "directed": False}),
+        (nx.fast_gnp_random_graph, {"n": 20, "p": 0.2, "directed": True}),
+        (nx.gnp_random_graph, {"n": 20, "p": 0.2, "directed": False}),
+        (nx.gnp_random_graph, {"n": 20, "p": 0.2, "directed": True}),
+        (nx.dense_gnm_random_graph, {"n": 30, "m": 4}),
+        (nx.gnm_random_graph, {"n": 30, "m": 4, "directed": False}),
+        (nx.gnm_random_graph, {"n": 30, "m": 4, "directed": True}),
+        (nx.newman_watts_strogatz_graph, {"n": 50, "k": 5, "p": 0.1}),
+        (nx.watts_strogatz_graph, {"n": 50, "k": 5, "p": 0.1}),
+        (nx.connected_watts_strogatz_graph, {"n": 50, "k": 5, "p": 0.1}),
+        (nx.random_regular_graph, {"d": 5, "n": 20}),
+        (nx.barabasi_albert_graph, {"n": 40, "m": 3}),
+        (nx.dual_barabasi_albert_graph, {"n": 40, "m1": 3, "m2": 2, "p": 0.1}),
+        (nx.extended_barabasi_albert_graph, {"n": 40, "m": 3, "p": 0.1, "q": 0.2}),
+        (nx.powerlaw_cluster_graph, {"n": 40, "m": 3, "p": 0.1}),
+        (nx.random_lobster, {"n": 40, "p1": 0.1, "p2": 0.2}),
+        (nx.random_shell_graph, {"constructor": [(10, 20, 0.8), (20, 40, 0.8)]}),
+        (nx.random_powerlaw_tree, {"n": 10, "seed": 14, "tries": 1}),
+        (
+            nx.random_kernel_graph,
+            {
+                "n": 10,
+                "kernel_integral": lambda u, w, z: z - w,
+                "kernel_root": lambda u, w, r: r + w,
+            },
+        ),
+    ],
+)
+@pytest.mark.parametrize("create_using_instance", [False, True])
+def test_create_using(generator, kwargs, create_using_instance):
+    class DummyGraph(nx.Graph):
+        pass
+
+    class DummyDiGraph(nx.DiGraph):
+        pass
+
+    create_using_type = DummyDiGraph if kwargs.get("directed") else DummyGraph
+    create_using = create_using_type() if create_using_instance else create_using_type
+    graph = generator(**kwargs, create_using=create_using)
+    assert isinstance(graph, create_using_type)
+
+
+@pytest.mark.parametrize("directed", [True, False])
+@pytest.mark.parametrize("fn", (nx.fast_gnp_random_graph, nx.gnp_random_graph))
+def test_gnp_fns_disallow_multigraph(fn, directed):
+    with pytest.raises(nx.NetworkXError, match="must not be a multi-graph"):
+        fn(20, 0.2, create_using=nx.MultiGraph)
+
+
+@pytest.mark.parametrize("fn", (nx.gnm_random_graph, nx.dense_gnm_random_graph))
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_gnm_fns_disallow_directed_and_multigraph(fn, graphtype):
+    with pytest.raises(nx.NetworkXError, match="must not be"):
+        fn(10, 20, create_using=graphtype)
+
+
+@pytest.mark.parametrize(
+    "fn",
+    (
+        nx.newman_watts_strogatz_graph,
+        nx.watts_strogatz_graph,
+        nx.connected_watts_strogatz_graph,
+    ),
+)
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_watts_strogatz_disallow_directed_and_multigraph(fn, graphtype):
+    with pytest.raises(nx.NetworkXError, match="must not be"):
+        fn(10, 2, 0.2, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_random_regular_graph_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(nx.NetworkXError, match="must not be"):
+        nx.random_regular_graph(2, 10, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_barabasi_albert_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(nx.NetworkXError, match="must not be"):
+        nx.barabasi_albert_graph(10, 3, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_dual_barabasi_albert_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(nx.NetworkXError, match="must not be"):
+        nx.dual_barabasi_albert_graph(10, 2, 1, 0.4, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_extended_barabasi_albert_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(nx.NetworkXError, match="must not be"):
+        nx.extended_barabasi_albert_graph(10, 2, 0.2, 0.3, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_powerlaw_cluster_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(nx.NetworkXError, match="must not be"):
+        nx.powerlaw_cluster_graph(10, 5, 0.2, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_random_lobster_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(nx.NetworkXError, match="must not be"):
+        nx.random_lobster(10, 0.1, 0.1, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_random_shell_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(nx.NetworkXError, match="must not be"):
+        nx.random_shell_graph([(10, 20, 2), (10, 20, 5)], create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_random_powerlaw_tree_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(nx.NetworkXError, match="must not be"):
+        nx.random_powerlaw_tree(10, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_random_kernel_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(nx.NetworkXError, match="must not be"):
+        nx.random_kernel_graph(
+            10, lambda y, a, b: a + b, lambda u, w, r: r + w, create_using=graphtype
+        )

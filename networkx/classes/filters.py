@@ -2,6 +2,7 @@
 
 These filters return the function used when creating `SubGraph`.
 """
+
 __all__ = [
     "no_filter",
     "hide_nodes",

@@ -1,6 +1,5 @@
-"""Provides explicit constructions of expander graphs.
+"""Provides explicit constructions of expander graphs."""
 
-"""
 import itertools
 
 import networkx as nx
@@ -161,14 +160,16 @@ def paley_graph(p, create_using=None):
     The returned graph is a graph on $\mathbb{Z}/p\mathbb{Z}$ with edges between $x$ and $y$
     if and only if $x-y$ is a nonzero square in $\mathbb{Z}/p\mathbb{Z}$.
 
-    If $p \equiv 1  \pmod 4$, $-1$ is a square in $\mathbb{Z}/p\mathbb{Z}$ and therefore $x-y$ is a square if and
+    If $p \equiv 1  \pmod 4$, $-1$ is a square in
+    $\mathbb{Z}/p\mathbb{Z}$ and therefore $x-y$ is a square if and
     only if $y-x$ is also a square, i.e the edges in the Paley graph are symmetric.
 
-    If $p \equiv 3 \pmod 4$, $-1$ is not a square in $\mathbb{Z}/p\mathbb{Z}$ and therefore either $x-y$ or $y-x$
-    is a square in $\mathbb{Z}/p\mathbb{Z}$ but not both.
+    If $p \equiv 3 \pmod 4$, $-1$ is not a square in $\mathbb{Z}/p\mathbb{Z}$
+    and therefore either $x-y$ or $y-x$ is a square in $\mathbb{Z}/p\mathbb{Z}$ but not both.
 
     Note that a more general definition of Paley graphs extends this construction
-    to graphs over $q=p^n$ vertices, by using the finite field $F_q$ instead of $\mathbb{Z}/p\mathbb{Z}$.
+    to graphs over $q=p^n$ vertices, by using the finite field $F_q$ instead of
+    $\mathbb{Z}/p\mathbb{Z}$.
     This construction requires to compute squares in general finite fields and is
     not what is implemented here (i.e `paley_graph(25)` does not return the true
     Paley graph associated with $5^2$).
@@ -289,7 +290,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
 
     if not (n - 1 >= d):
         raise nx.NetworkXError(
-            f"Need n-1>= d to have room for {d//2} independent cycles with {n} nodes"
+            f"Need n-1>= d to have room for {d // 2} independent cycles with {n} nodes"
         )
 
     G = nx.empty_graph(n, create_using)
@@ -380,7 +381,7 @@ def is_regular_expander(G, *, epsilon=0):
     """
 
     import numpy as np
-    from scipy.sparse.linalg import eigsh
+    import scipy as sp
 
     if epsilon < 0:
         raise nx.NetworkXError("epsilon must be non negative")
@@ -391,13 +392,13 @@ def is_regular_expander(G, *, epsilon=0):
     _, d = nx.utils.arbitrary_element(G.degree)
 
     A = nx.adjacency_matrix(G, dtype=float)
-    lams = eigsh(A, which="LM", k=2, return_eigenvectors=False)
+    lams = sp.sparse.linalg.eigsh(A, which="LM", k=2, return_eigenvectors=False)
 
     # lambda2 is the second biggest eigenvalue
     lambda2 = min(lams)
 
     # Use bool() to convert numpy scalar to Python Boolean
-    return bool(abs(lambda2) < 2 ** np.sqrt(d - 1) + epsilon)
+    return bool(abs(lambda2) < 2 * np.sqrt(d - 1) + epsilon)
 
 
 @nx.utils.decorators.np_random_state("seed")

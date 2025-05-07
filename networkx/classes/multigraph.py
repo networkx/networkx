@@ -1,4 +1,5 @@
 """Base class for MultiGraph."""
+
 from copy import deepcopy
 from functools import cached_property
 

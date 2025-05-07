@@ -17,4 +17,4 @@ print("Degree histogram")
 print("degree (#nodes) ****")
 dh = nx.degree_histogram(G)
 for i, d in enumerate(dh):
-    print(f"{i:2} ({d:2}) {'*'*d}")
+    print(f"{i:2} ({d:2}) {'*' * d}")

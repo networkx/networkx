@@ -2,8 +2,6 @@ import pytest
 
 pytest.importorskip("numpy")
 
-import random
-
 import networkx as nx
 from networkx import lattice_reference, omega, random_reference, sigma
 

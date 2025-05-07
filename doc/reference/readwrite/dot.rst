@@ -1,4 +1,4 @@
-DOT 
+DOT
 ===
 
 The `DOT graph description language <https://graphviz.org/doc/info/lang.html>`__

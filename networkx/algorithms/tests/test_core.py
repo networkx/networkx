@@ -116,7 +116,7 @@ class TestCore:
     def test_k_core_multigraph(self):
         core_number = nx.core_number(self.H)
         H = nx.MultiGraph(self.H)
-        with pytest.deprecated_call():
+        with pytest.raises(nx.NetworkXNotImplemented):
             nx.k_core(H, k=0, core_number=core_number)
 
     def test_main_crust(self):
@@ -137,7 +137,7 @@ class TestCore:
     def test_k_crust_multigraph(self):
         core_number = nx.core_number(self.H)
         H = nx.MultiGraph(self.H)
-        with pytest.deprecated_call():
+        with pytest.raises(nx.NetworkXNotImplemented):
             nx.k_crust(H, k=0, core_number=core_number)
 
     def test_main_shell(self):
@@ -158,7 +158,7 @@ class TestCore:
     def test_k_shell_multigraph(self):
         core_number = nx.core_number(self.H)
         H = nx.MultiGraph(self.H)
-        with pytest.deprecated_call():
+        with pytest.raises(nx.NetworkXNotImplemented):
             nx.k_shell(H, k=0, core_number=core_number)
 
     def test_k_corona(self):
@@ -175,7 +175,7 @@ class TestCore:
     def test_k_corona_multigraph(self):
         core_number = nx.core_number(self.H)
         H = nx.MultiGraph(self.H)
-        with pytest.deprecated_call():
+        with pytest.raises(nx.NetworkXNotImplemented):
             nx.k_corona(H, k=0, core_number=core_number)
 
     def test_k_truss(self):

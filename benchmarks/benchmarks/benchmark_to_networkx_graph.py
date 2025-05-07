@@ -19,7 +19,7 @@ class ToNetworkXGraphBenchmark:
     # analysis. The reason why multi-instance is explicitly probed (rather than
     # relying solely on the number of repeats/runs from `timeit` in the benchmark
     # suite) is to capture/amplify any distinctions from potential import
-    # cacheing of the try-excepts in the *same* run
+    # caching of the try-excepts in the *same* run
 
     def time_to_networkx_graph_direct_multi_instance(self, graph_type):
         for _ in range(500):  # Creating many graph instances

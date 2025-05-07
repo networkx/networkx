@@ -1,6 +1,7 @@
 """
 Kanevsky all minimum node k cutsets algorithm.
 """
+
 import copy
 from collections import defaultdict
 from itertools import combinations

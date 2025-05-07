@@ -118,7 +118,7 @@ class TestWeightedPath(WeightedTestBase):
         validate_path(
             self.XG, "s", "v", 9, nx.single_source_dijkstra_path(self.XG, "s")["v"]
         )
-        assert dict(nx.single_source_dijkstra_path_length(self.XG, "s"))["v"] == 9
+        assert nx.single_source_dijkstra_path_length(self.XG, "s")["v"] == 9
 
         validate_path(
             self.XG, "s", "v", 9, nx.single_source_dijkstra(self.XG, "s")[1]["v"]

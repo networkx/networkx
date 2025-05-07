@@ -1,7 +1,6 @@
 """
 Algebraic connectivity and Fiedler vectors of undirected graphs.
 """
-from functools import partial
 
 import networkx as nx
 from networkx.utils import (

@@ -23,6 +23,7 @@ the chain is tricky and much harder with restricted_views than
 with induced subgraphs.
 Often it is easiest to use .copy() to avoid chains.
 """
+
 import networkx as nx
 from networkx.classes.coreviews import (
     FilterAdjacency,
@@ -33,7 +34,7 @@ from networkx.classes.coreviews import (
 )
 from networkx.classes.filters import no_filter
 from networkx.exception import NetworkXError
-from networkx.utils import deprecate_positional_args, not_implemented_for
+from networkx.utils import not_implemented_for
 
 __all__ = ["generic_graph_view", "subgraph_view", "reverse_view"]
 
@@ -132,7 +133,6 @@ def generic_graph_view(G, create_using=None):
     return newG
 
 
-@deprecate_positional_args(version="3.4")
 def subgraph_view(G, *, filter_node=no_filter, filter_edge=no_filter):
     """View of `G` applying a filter on nodes and edges.
 

@@ -104,6 +104,14 @@ def effective_size(G, nodes=None, weight=None):
 
     Notes
     -----
+    Isolated nodes, including nodes which only have self-loop edges, do not
+    have a well-defined effective size::
+
+        >>> G = nx.path_graph(3)
+        >>> G.add_edge(4, 4)
+        >>> nx.effective_size(G)
+        {0: 1.0, 1: 2.0, 2: 1.0, 4: nan}
+
     Burt also defined the related concept of *efficiency* of a node's ego
     network, which is its effective size divided by the degree of that
     node [1]_. So you can easily compute efficiency:
@@ -138,22 +146,66 @@ def effective_size(G, nodes=None, weight=None):
         )
         return 1 - r
 
+    # Check if scipy is available
+    try:
+        # Needed for errstate
+        import numpy as np
+
+        # make sure nx.adjacency_matrix will not raise
+        import scipy as sp
+
+        has_scipy = True
+    except:
+        has_scipy = False
+
+    if nodes is None and has_scipy:
+        # In order to compute constraint of all nodes,
+        # algorithms based on sparse matrices can be much faster
+
+        # Obtain the adjacency matrix
+        P = nx.adjacency_matrix(G, weight=weight)
+
+        # Calculate mutual weights
+        mutual_weights1 = P + P.T
+        mutual_weights2 = mutual_weights1.copy()
+
+        with np.errstate(divide="ignore"):
+            # Mutual_weights1 = Normalize mutual weights by row sums
+            mutual_weights1 /= mutual_weights1.sum(axis=1)[:, np.newaxis]
+
+            # Mutual_weights2 = Normalize mutual weights by row max
+            mutual_weights2 /= mutual_weights2.max(axis=1).toarray()
+
+        # Calculate effective sizes
+        r = 1 - (mutual_weights1 @ mutual_weights2.T).toarray()
+        effective_size = ((mutual_weights1 > 0) * r).sum(axis=1)
+
+        # Special treatment: isolated nodes (ignoring selfloops) marked with "nan"
+        sum_mutual_weights = mutual_weights1.sum(axis=1) - mutual_weights1.diagonal()
+        isolated_nodes = sum_mutual_weights == 0
+        effective_size[isolated_nodes] = float("nan")
+        # Use tolist() to automatically convert numpy scalars -> Python scalars
+        return dict(zip(G, effective_size.tolist()))
+
+    # Results for only requested nodes
     effective_size = {}
     if nodes is None:
         nodes = G
     # Use Borgatti's simplified formula for unweighted and undirected graphs
     if not G.is_directed() and weight is None:
         for v in nodes:
-            # Effective size is not defined for isolated nodes
-            if len(G[v]) == 0:
+            # Effective size is not defined for isolated nodes, including nodes
+            # with only self-edges
+            if all(u == v for u in G[v]):
                 effective_size[v] = float("nan")
                 continue
             E = nx.ego_graph(G, v, center=False, undirected=True)
             effective_size[v] = len(E) - (2 * E.size()) / len(E)
     else:
         for v in nodes:
-            # Effective size is not defined for isolated nodes
-            if len(G[v]) == 0:
+            # Effective size is not defined for isolated nodes, including nodes
+            # with only self-edges
+            if all(u == v for u in G[v]):
                 effective_size[v] = float("nan")
                 continue
             effective_size[v] = sum(
@@ -209,9 +261,48 @@ def constraint(G, nodes=None, weight=None):
            American Journal of Sociology (110): 349–399.
 
     """
+
+    # Check if scipy is available
+    try:
+        # Needed for errstate
+        import numpy as np
+
+        # make sure nx.adjacency_matrix will not raise
+        import scipy as sp
+
+        has_scipy = True
+    except:
+        has_scipy = False
+
+    if nodes is None and has_scipy:
+        # In order to compute constraint of all nodes,
+        # algorithms based on sparse matrices can be much faster
+
+        # Obtain the adjacency matrix
+        P = nx.adjacency_matrix(G, weight=weight)
+
+        # Calculate mutual weights
+        mutual_weights = P + P.T
+
+        # Normalize mutual weights by row sums
+        sum_mutual_weights = mutual_weights.sum(axis=1)
+        with np.errstate(divide="ignore"):
+            mutual_weights /= sum_mutual_weights[:, np.newaxis]
+
+        # Calculate local constraints and constraints
+        local_constraints = (mutual_weights + mutual_weights @ mutual_weights) ** 2
+        constraints = ((mutual_weights > 0) * local_constraints).sum(axis=1)
+
+        # Special treatment: isolated nodes marked with "nan"
+        isolated_nodes = sum_mutual_weights - 2 * mutual_weights.diagonal() == 0
+        constraints[isolated_nodes] = float("nan")
+        # Use tolist() to automatically convert numpy scalars -> Python scalars
+        return dict(zip(G, constraints.tolist()))
+
+    # Result for only requested nodes
+    constraint = {}
     if nodes is None:
         nodes = G
-    constraint = {}
     for v in nodes:
         # Constraint is not defined for isolated nodes
         if len(G[v]) == 0:

@@ -95,7 +95,7 @@ This means that calling ``nx.pagerank`` now requires SciPy to be installed.
 The original Python implementation is still available for pedagogical
 purposes as ``networkx.algorithms.link_analysis.pagerank_alg._pagerank_python``
 but is not exposed publicly to discourage it's use.
-  
+
 Supporting `numpy.random.Generator`
 -----------------------------------
 
@@ -183,10 +183,10 @@ You can read and write NetworkX graphs as Python pickles.
 >>> G = nx.path_graph(4)
 >>> with open('test.gpickle', 'wb') as f:
 ...     pickle.dump(G, f, pickle.HIGHEST_PROTOCOL)
-... 
+...
 >>> with open('test.gpickle', 'rb') as f:
 ...     G = pickle.load(f)
-... 
+...
 
 The functions `read_yaml` and `write_yaml` were removed in 3.0.
 You can read and write NetworkX graphs in YAML format
@@ -196,6 +196,6 @@ using pyyaml.
 >>> G = nx.path_graph(4)
 >>> with open('test.yaml', 'w') as f:
 ...     yaml.dump(G, f)
-... 
+...
 >>> with open('test.yaml', 'r') as f:
 ...     G = yaml.load(f, Loader=yaml.Loader)

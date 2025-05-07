@@ -1,4 +1,5 @@
 from collections import defaultdict
+from copy import deepcopy
 
 import networkx as nx
 
@@ -1398,5 +1399,65 @@ class PlanarEmbedding(nx.DiGraph):
             (u, v, datadict.copy())
             for u, nbrs in self._adj.items()
             for v, datadict in nbrs.items()
+        )
+        return G
+
+    def to_undirected(self, reciprocal=False, as_view=False):
+        """
+        Returns a non-embedding undirected representation of the graph.
+
+        This method strips the planar embedding information and provides
+        a simple undirected graph representation. While creating the undirected graph,
+        all edge attributes are retained except the ``"cw"`` and ``"ccw"`` attributes
+        which are removed from the edge data. Those attributes are specific to
+        the requirements of planar embeddings.
+
+        Parameters
+        ----------
+        reciprocal : bool (optional)
+            Not supported for PlanarEmbedding. This parameter raises an exception
+            if used. All valid embeddings include reciprocal half-edges by definition,
+            making this parameter unnecessary.
+        as_view : bool (optional, default=False)
+            Not supported for PlanarEmbedding. This parameter raises an exception
+            if used.
+
+        Returns
+        -------
+        G : Graph
+            An undirected graph with the same name and nodes as the PlanarEmbedding.
+            Edges are included with their data, except for the ``"cw"`` and ``"ccw"``
+            attributes, which are omitted.
+
+
+        Notes
+        -----
+        - If edges exist in both directions ``(u, v)`` and ``(v, u)`` in the PlanarEmbedding,
+          attributes for the resulting undirected edge will be combined, excluding ``"cw"``
+          and ``"ccw"``.
+        - A deep copy is made of the other edge attributes as well as the
+          node and graph attributes, ensuring independence of the resulting graph.
+        - Subclass-specific data structures used in the original graph may not transfer
+          to the undirected graph. The resulting graph will be of type ``nx.Graph``.
+        """
+
+        if reciprocal:
+            raise ValueError(
+                "'reciprocal=True' is not supported for PlanarEmbedding.\n"
+                "All valid embeddings include reciprocal half-edges by definition,\n"
+                "making this parameter unnecessary."
+            )
+
+        if as_view:
+            raise ValueError("'as_view=True' is not supported for PlanarEmbedding.")
+
+        graph_class = self.to_undirected_class()
+        G = graph_class()
+        G.graph.update(deepcopy(self.graph))
+        G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
+        G.add_edges_from(
+            (u, v, {k: deepcopy(v) for k, v in d.items() if k not in {"cw", "ccw"}})
+            for u, nbrs in self._adj.items()
+            for v, d in nbrs.items()
         )
         return G

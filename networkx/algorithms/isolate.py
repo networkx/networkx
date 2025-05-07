@@ -1,6 +1,7 @@
 """
 Functions for identifying isolate (degree zero) nodes.
 """
+
 import networkx as nx
 
 __all__ = ["is_isolate", "isolates", "number_of_isolates"]
@@ -103,5 +104,4 @@ def number_of_isolates(G):
         The number of degree zero nodes in the graph `G`.
 
     """
-    # TODO This can be parallelized.
     return sum(1 for v in isolates(G))

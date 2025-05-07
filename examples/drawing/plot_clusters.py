@@ -10,6 +10,7 @@ The approach used here can be generalized to visualize hierarchical clustering
 e.g. clusters-of-clusters of nodes by combining layouts with varying scale
 factors.
 """
+
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -19,7 +20,7 @@ communities = nx.community.greedy_modularity_communities(G)
 # Compute positions for the node clusters as if they were themselves nodes in a
 # supergraph using a larger scale factor
 supergraph = nx.cycle_graph(len(communities))
-superpos = nx.spring_layout(G, scale=50, seed=429)
+superpos = nx.spring_layout(supergraph, scale=2, seed=429)
 
 # Use the "supernode" positions as the center of each node cluster
 centers = list(superpos.values())

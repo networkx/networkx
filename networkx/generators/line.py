@@ -1,4 +1,5 @@
 """Functions for generating line graphs."""
+
 from collections import defaultdict
 from functools import partial
 from itertools import combinations
@@ -185,7 +186,8 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     node_index = {n: i for i, n in enumerate(G)}
 
     # Lift canonical representation of nodes to edges in line graph
-    edge_key_function = lambda edge: (node_index[edge[0]], node_index[edge[1]])
+    def edge_key_function(edge):
+        return node_index[edge[0]], node_index[edge[1]]
 
     edges = set()
     for u in G:
@@ -291,7 +293,7 @@ def inverse_line_graph(G):
     starting_cell = _select_starting_cell(G)
     P = _find_partition(G, starting_cell)
     # count how many times each vertex appears in the partition set
-    P_count = {u: 0 for u in G.nodes}
+    P_count = dict.fromkeys(G.nodes, 0)
     for p in P:
         for u in p:
             P_count[u] += 1

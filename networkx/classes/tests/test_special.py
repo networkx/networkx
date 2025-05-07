@@ -25,7 +25,7 @@ def test_factories():
         pass
 
     for Graph in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
-        # print("testing class: ", Graph.__name__)
+
         class MyGraph(Graph):
             node_dict_factory = mydict1
             adjlist_outer_dict_factory = mydict2

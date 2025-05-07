@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`networkx.generators.triads` module."""
+
 import pytest
 
 from networkx import triad_graph

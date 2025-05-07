@@ -1,4 +1,5 @@
 """Unit tests for layout functions."""
+
 import pytest
 
 import networkx as nx
@@ -55,6 +56,7 @@ class TestLayout:
         nx.circular_layout(G)
         nx.planar_layout(G)
         nx.spring_layout(G)
+        nx.forceatlas2_layout(G)
         nx.fruchterman_reingold_layout(G)
         nx.fruchterman_reingold_layout(self.bigG)
         nx.spectral_layout(G)
@@ -74,6 +76,7 @@ class TestLayout:
         nx.circular_layout(G)
         nx.planar_layout(G)
         nx.spring_layout(G)
+        nx.forceatlas2_layout(G)
         nx.fruchterman_reingold_layout(G)
         nx.spectral_layout(G)
         nx.shell_layout(G)
@@ -173,6 +176,10 @@ class TestLayout:
         vpos = nx.shell_layout(G, [[0], [1, 2], [3]], rotate=0)
         assert np.linalg.norm(vpos[3]) <= 1  # ensure node 3 fits (#3753)
 
+    def test_smoke_initial_pos_forceatlas2(self):
+        pos = nx.circular_layout(self.Gi)
+        npos = nx.forceatlas2_layout(self.Gi, pos=pos)
+
     def test_smoke_initial_pos_fruchterman_reingold(self):
         pos = nx.circular_layout(self.Gi)
         npos = nx.fruchterman_reingold_layout(self.Gi, pos=pos)
@@ -247,6 +254,8 @@ class TestLayout:
         vpos = nx.multipartite_layout(G, center=(1, 1))
         assert vpos == {}
         vpos = nx.kamada_kawai_layout(G, center=(1, 1))
+        assert vpos == {}
+        vpos = nx.forceatlas2_layout(G)
         assert vpos == {}
         vpos = nx.arf_layout(G)
         assert vpos == {}
@@ -380,12 +389,22 @@ class TestLayout:
 
     def test_spiral_layout_equidistant(self):
         G = nx.path_graph(10)
-        pos = nx.spiral_layout(G, equidistant=True)
+        nx.spiral_layout(G, equidistant=True, store_pos_as="pos")
+        pos = nx.get_node_attributes(G, "pos")
         # Extract individual node positions as an array
         p = np.array(list(pos.values()))
         # Elementwise-distance between node positions
         dist = np.linalg.norm(p[1:] - p[:-1], axis=1)
         assert np.allclose(np.diff(dist), 0, atol=1e-3)
+
+    def test_forceatlas2_layout_partial_input_test(self):
+        # check whether partial pos input still returns a full proper position
+        G = self.Gs
+        node = nx.utils.arbitrary_element(G)
+        pos = nx.circular_layout(G)
+        del pos[node]
+        pos = nx.forceatlas2_layout(G, pos=pos)
+        assert len(pos) == len(G)
 
     def test_rescale_layout_dict(self):
         G = nx.empty_graph()
@@ -418,9 +437,7 @@ class TestLayout:
             assert (s_vpos[k] == v).all()
 
     def test_arf_layout_partial_input_test(self):
-        """
-        Checks whether partial pos input still returns a proper position.
-        """
+        # Checks whether partial pos input still returns a proper position.
         G = self.Gs
         node = nx.utils.arbitrary_element(G)
         pos = nx.circular_layout(G)
@@ -434,6 +451,24 @@ class TestLayout:
         """
         G = self.Gs
         pytest.raises(ValueError, nx.arf_layout, G=G, a=-1)
+
+    def test_smoke_seed_input(self):
+        G = self.Gs
+        nx.random_layout(G, seed=42)
+        nx.spring_layout(G, seed=42)
+        nx.arf_layout(G, seed=42)
+        nx.forceatlas2_layout(G, seed=42)
+
+    def test_node_at_center(self):
+        # see gh-7791 avoid divide by zero
+        G = nx.path_graph(3)
+        orig_pos = {i: [i - 1, 0.0] for i in range(3)}
+        new_pos = nx.forceatlas2_layout(G, pos=orig_pos)
+
+    def test_initial_only_some_pos(self):
+        G = nx.path_graph(3)
+        orig_pos = {i: [i - 1, 0.0] for i in range(2)}
+        new_pos = nx.forceatlas2_layout(G, pos=orig_pos, seed=42)
 
 
 def test_multipartite_layout_nonnumeric_partition_labels():
@@ -487,7 +522,8 @@ def test_bfs_layout_complete_graph(n):
     """The complete graph should result in two layers: the starting node and
     a second layer containing all neighbors."""
     G = nx.complete_graph(n)
-    pos = nx.bfs_layout(G, start=0)
+    nx.bfs_layout(G, start=0, store_pos_as="pos")
+    pos = nx.get_node_attributes(G, "pos")
     assert np.array_equal(_num_nodes_per_bfs_layer(pos), [1, n - 1])
 
 
@@ -513,3 +549,20 @@ def test_bfs_layout_disconnected():
     G.add_edges_from([(10, 11), (11, 12)])
     with pytest.raises(nx.NetworkXError, match="bfs_layout didn't include all nodes"):
         nx.bfs_layout(G, start=0)
+
+
+def test_bipartite_layout_default_nodes_raises_non_bipartite_input():
+    G = nx.complete_graph(5)
+    with pytest.raises(nx.NetworkXError, match="Graph is not bipartite"):
+        nx.bipartite_layout(G)
+    # No exception if nodes are explicitly specified
+    pos = nx.bipartite_layout(G, nodes=[2, 3])
+
+
+def test_bipartite_layout_default_nodes():
+    G = nx.complete_bipartite_graph(3, 3)
+    pos = nx.bipartite_layout(G)  # no nodes specified
+    # X coords of nodes should be the same within the bipartite sets
+    for nodeset in nx.bipartite.sets(G):
+        xs = [pos[k][0] for k in nodeset]
+        assert all(x == pytest.approx(xs[0]) for x in xs)

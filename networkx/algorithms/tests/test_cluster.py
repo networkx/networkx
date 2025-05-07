@@ -3,6 +3,38 @@ import pytest
 import networkx as nx
 
 
+def test_square_clustering_adjacent_squares():
+    G = nx.Graph([(1, 2), (1, 3), (2, 4), (3, 4), (3, 5), (4, 6), (5, 6)])
+    # Corner nodes: C_4 == 0.5, central face nodes: C_4 = 1 / 3
+    expected = {1: 0.5, 2: 0.5, 3: 1 / 3, 4: 1 / 3, 5: 0.5, 6: 0.5}
+    assert nx.square_clustering(G) == expected
+
+
+def test_square_clustering_2d_grid():
+    G = nx.grid_2d_graph(3, 3)
+    # Central node: 4 squares out of 20 potential
+    expected = {
+        (0, 0): 1 / 3,
+        (0, 1): 0.25,
+        (0, 2): 1 / 3,
+        (1, 0): 0.25,
+        (1, 1): 0.2,
+        (1, 2): 0.25,
+        (2, 0): 1 / 3,
+        (2, 1): 0.25,
+        (2, 2): 1 / 3,
+    }
+    assert nx.square_clustering(G) == expected
+
+
+def test_square_clustering_multiple_squares_non_complete():
+    """An example where all nodes are part of all squares, but not every node
+    is connected to every other."""
+    G = nx.Graph([(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5)])
+    expected = dict.fromkeys(G, 1)
+    assert nx.square_clustering(G) == expected
+
+
 class TestTriangles:
     def test_empty(self):
         G = nx.Graph()
@@ -454,14 +486,17 @@ class TestSquareClustering:
 
     def test_peng_square_clustering(self):
         """Test eq2 for figure 1 Peng et al (2008)"""
+        # Example graph from figure 1b
         G = nx.Graph([(1, 2), (1, 3), (2, 4), (3, 4), (3, 5), (3, 6)])
-        assert nx.square_clustering(G, [1])[1] == 1 / 3
+        # From table 1, row 2
+        expected = {1: 1 / 3, 2: 1, 3: 0.2, 4: 1 / 3, 5: 0, 6: 0}
+        assert nx.square_clustering(G) == expected
 
     def test_self_loops_square_clustering(self):
         G = nx.path_graph(5)
-        assert nx.square_clustering(G) == {0: 0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0}
+        assert nx.square_clustering(G) == {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
         G.add_edges_from([(0, 0), (1, 1), (2, 2)])
-        assert nx.square_clustering(G) == {0: 1, 1: 0.5, 2: 0.2, 3: 0.0, 4: 0}
+        assert nx.square_clustering(G) == {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
 
 
 class TestAverageClustering:

@@ -110,7 +110,7 @@ Without any knowledge about the system (candidate d-separating set is empty)
 a causal graph ``u -> v -> w`` allows all three nodes to be dependent. But
 if we know the outcome of ``v``, the conditional probabilities of outcomes for
 ``u`` and ``w`` are independent of each other. That is, once we know the outcome
-for ```v`, the probabilities for ``w`` do not depend on the outcome for ``u``.
+for ``v``, the probabilities for ``w`` do not depend on the outcome for ``u``.
 This is the idea behind ``v`` blocking the path if it is "known" (in the candidate
 d-separating set).
 
@@ -121,7 +121,7 @@ make the conditional probabilities independent.
 
 The direction of the causal edges does impact dependence precisely in the
 case of a collider e.g. ``u -> v <- w``. In that situation, both ``u`` and ``w``
-influence ``v```. But they do not directly influence each other. So without any
+influence ``v``. But they do not directly influence each other. So without any
 knowledge of any outcomes, ``u`` and ``w`` are independent. That is the idea behind
 colliders blocking the path. But, if ``v`` is known, the conditional probabilities
 of ``u`` and ``w`` can be dependent. This is the heart of Berkson's Paradox [6]_.
@@ -223,8 +223,6 @@ __all__ = [
     "is_d_separator",
     "is_minimal_d_separator",
     "find_minimal_d_separator",
-    "d_separated",
-    "minimal_d_separator",
 ]
 
 
@@ -677,46 +675,3 @@ def _reachable(G, x, a, z):
                 processed.append((f, n))
 
     return {w for (_, w) in processed}
-
-
-# Deprecated functions:
-def d_separated(G, x, y, z):
-    """Return whether nodes sets ``x`` and ``y`` are d-separated by ``z``.
-
-    .. deprecated:: 3.3
-
-        This function is deprecated and will be removed in NetworkX v3.5.
-        Please use `is_d_separator(G, x, y, z)`.
-
-    """
-    import warnings
-
-    warnings.warn(
-        "d_separated is deprecated and will be removed in NetworkX v3.5."
-        "Please use `is_d_separator(G, x, y, z)`.",
-        category=DeprecationWarning,
-        stacklevel=2,
-    )
-    return nx.is_d_separator(G, x, y, z)
-
-
-def minimal_d_separator(G, u, v):
-    """Returns a minimal_d-separating set between `x` and `y` if possible
-
-    .. deprecated:: 3.3
-
-        minimal_d_separator is deprecated and will be removed in NetworkX v3.5.
-        Please use `find_minimal_d_separator(G, x, y)`.
-
-    """
-    import warnings
-
-    warnings.warn(
-        (
-            "This function is deprecated and will be removed in NetworkX v3.5."
-            "Please use `is_d_separator(G, x, y)`."
-        ),
-        category=DeprecationWarning,
-        stacklevel=2,
-    )
-    return nx.find_minimal_d_separator(G, u, v)

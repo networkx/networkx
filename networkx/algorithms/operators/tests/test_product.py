@@ -415,8 +415,8 @@ def test_graph_power_negative():
         nx.power(nx.Graph(), -1)
 
 
-def test_rooted_product_raises_root():
-    with pytest.raises(nx.NetworkXError):
+def test_rooted_product_raises():
+    with pytest.raises(nx.NodeNotFound):
         nx.rooted_product(nx.Graph(), nx.path_graph(2), 10)
 
 

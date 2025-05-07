@@ -1,6 +1,7 @@
 """
 Subraph centrality and communicability betweenness.
 """
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -63,6 +64,7 @@ def subgraph_centrality_exp(G):
     Examples
     --------
     (Example from [1]_)
+
     >>> G = nx.Graph(
     ...     [
     ...         (1, 2),
@@ -144,6 +146,7 @@ def subgraph_centrality(G):
     Examples
     --------
     (Example from [1]_)
+
     >>> G = nx.Graph(
     ...     [
     ...         (1, 2),

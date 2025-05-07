@@ -84,28 +84,6 @@ def test_implementations_consistent(strings):
     assert graphs_equal(nx.prefix_tree(strings), nx.prefix_tree_recursive(strings))
 
 
-@pytest.mark.filterwarnings("ignore")
-def test_random_tree():
-    """Tests that a random tree is in fact a tree."""
-    T = nx.random_tree(10, seed=1234)
-    assert nx.is_tree(T)
-
-
-@pytest.mark.filterwarnings("ignore")
-def test_random_directed_tree():
-    """Generates a directed tree."""
-    T = nx.random_tree(10, seed=1234, create_using=nx.DiGraph())
-    assert T.is_directed()
-
-
-@pytest.mark.filterwarnings("ignore")
-def test_random_tree_using_generator():
-    """Tests that creating a random tree with a generator works"""
-    G = nx.Graph()
-    T = nx.random_tree(10, seed=1234, create_using=G)
-    assert nx.is_tree(T)
-
-
 def test_random_labeled_rooted_tree():
     for i in range(1, 10):
         t1 = nx.random_labeled_rooted_tree(i, seed=42)

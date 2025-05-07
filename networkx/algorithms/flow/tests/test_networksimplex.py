@@ -1,6 +1,5 @@
 import bz2
 import importlib.resources
-import os
 import pickle
 
 import pytest
@@ -48,15 +47,25 @@ def get_flowcost_from_flowdict(G, flowDict):
 def test_infinite_demand_raise(simple_flow_graph):
     G = simple_flow_graph
     inf = float("inf")
-    nx.set_node_attributes(G, {"a": {"demand": inf}})
-    pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+    node_name = "a"
+    nx.set_node_attributes(G, {node_name: {"demand": inf}})
+    with pytest.raises(
+        nx.NetworkXError,
+        match=f"node '{node_name}' has infinite demand",
+    ):
+        nx.network_simplex(G)
 
 
 def test_neg_infinite_demand_raise(simple_flow_graph):
     G = simple_flow_graph
     inf = float("inf")
-    nx.set_node_attributes(G, {"a": {"demand": -inf}})
-    pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+    node_name = "a"
+    nx.set_node_attributes(G, {node_name: {"demand": -inf}})
+    with pytest.raises(
+        nx.NetworkXError,
+        match=f"node '{node_name}' has infinite demand",
+    ):
+        nx.network_simplex(G)
 
 
 def test_infinite_weight_raise(simple_flow_graph):
@@ -65,30 +74,50 @@ def test_infinite_weight_raise(simple_flow_graph):
     nx.set_edge_attributes(
         G, {("a", "b"): {"weight": inf}, ("b", "d"): {"weight": inf}}
     )
-    pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+    with pytest.raises(
+        nx.NetworkXError,
+        match=r"edge .* has infinite weight",
+    ):
+        nx.network_simplex(G)
 
 
 def test_nonzero_net_demand_raise(simple_flow_graph):
     G = simple_flow_graph
     nx.set_node_attributes(G, {"b": {"demand": -4}})
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    with pytest.raises(
+        nx.NetworkXUnfeasible,
+        match="total node demand is not zero",
+    ):
+        nx.network_simplex(G)
 
 
 def test_negative_capacity_raise(simple_flow_graph):
     G = simple_flow_graph
     nx.set_edge_attributes(G, {("a", "b"): {"weight": 1}, ("b", "d"): {"capacity": -9}})
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    with pytest.raises(
+        nx.NetworkXUnfeasible,
+        match=r"edge .* has negative capacity",
+    ):
+        nx.network_simplex(G)
 
 
 def test_no_flow_satisfying_demands(simple_no_flow_graph):
     G = simple_no_flow_graph
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    with pytest.raises(
+        nx.NetworkXUnfeasible,
+        match="no flow satisfies all node demands",
+    ):
+        nx.network_simplex(G)
 
 
 def test_sum_demands_not_zero(simple_no_flow_graph):
     G = simple_no_flow_graph
     nx.set_node_attributes(G, {"t": {"demand": 4}})
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    with pytest.raises(
+        nx.NetworkXUnfeasible,
+        match="total node demand is not zero",
+    ):
+        nx.network_simplex(G)
 
 
 def test_google_or_tools_example():
@@ -385,3 +414,68 @@ def test_graphs_type_exceptions():
     pytest.raises(nx.NetworkXNotImplemented, nx.network_simplex, G)
     G = nx.DiGraph()
     pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+
+
+@pytest.fixture()
+def faux_inf_example():
+    """Base test graph for probing faux_infinity bound. See gh-7562"""
+    G = nx.DiGraph()
+
+    # Add nodes with demands
+    G.add_node("s0", demand=-4)
+    G.add_node("s1", demand=-4)
+    G.add_node("ns", demand=0)
+    G.add_node("nc", demand=0)
+    G.add_node("c0", demand=4)
+    G.add_node("c1", demand=4)
+
+    # Uniformly weighted edges
+    G.add_edge("s0", "ns", weight=1)
+    G.add_edge("s1", "ns", weight=1)
+    G.add_edge("ns", "nc", weight=1)
+    G.add_edge("nc", "c0", weight=1)
+    G.add_edge("nc", "c1", weight=1)
+
+    return G
+
+
+@pytest.mark.parametrize("large_capacity", [True, False])
+@pytest.mark.parametrize("large_demand", [True, False])
+@pytest.mark.parametrize("large_weight", [True, False])
+def test_network_simplex_faux_infinity(
+    faux_inf_example, large_capacity, large_demand, large_weight
+):
+    """network_simplex should not raise an exception as a result of faux_infinity
+    for these cases. See gh-7562"""
+    G = faux_inf_example
+    lv = 1_000_000_000
+
+    # Modify the base graph with combinations of large values for capacity,
+    # demand, and weight to probe faux_inifity
+    if large_capacity:
+        G["s0"]["ns"]["capacity"] = lv
+    if large_demand:
+        G.nodes["s0"]["demand"] = -lv
+        G.nodes["c1"]["demand"] = lv
+    if large_weight:
+        G["s1"]["ns"]["weight"] = lv
+
+    # Execute without raising
+    fc, fd = nx.network_simplex(G)
+
+
+def test_network_simplex_unbounded_flow():
+    G = nx.DiGraph()
+    # Add nodes
+    G.add_node("A")
+    G.add_node("B")
+    G.add_node("C")
+
+    # Add edges forming a negative cycle
+    G.add_weighted_edges_from([("A", "B", -5), ("B", "C", -5), ("C", "A", -5)])
+
+    with pytest.raises(
+        nx.NetworkXUnbounded,
+        match="negative cycle with infinite capacity found",
+    ):
+        nx.network_simplex(G)

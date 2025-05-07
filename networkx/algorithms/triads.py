@@ -13,11 +13,9 @@ from networkx.utils import not_implemented_for, py_random_state
 __all__ = [
     "triadic_census",
     "is_triad",
-    "all_triplets",
     "all_triads",
     "triads_by_type",
     "triad_type",
-    "random_triad",
 ]
 
 #: The integer codes representing each type of triad.
@@ -229,7 +227,7 @@ def triadic_census(G, nodelist=None):
         dbl_edges_outside = dbl // 2
 
     # Initialize the count for each triad to be zero.
-    census = {name: 0 for name in TRIAD_NAMES}
+    census = dict.fromkeys(TRIAD_NAMES, 0)
     # Main loop over nodes
     for v in nodeset:
         vnbrs = nbrs[v]
@@ -308,49 +306,6 @@ def is_triad(G):
             if not any((n, n) in G.edges() for n in G.nodes()):
                 return True
     return False
-
-
-@not_implemented_for("undirected")
-@nx._dispatchable
-def all_triplets(G):
-    """Returns a generator of all possible sets of 3 nodes in a DiGraph.
-
-    .. deprecated:: 3.3
-
-       all_triplets is deprecated and will be removed in NetworkX version 3.5.
-       Use `itertools.combinations` instead::
-
-          all_triplets = itertools.combinations(G, 3)
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-
-    Returns
-    -------
-    triplets : generator of 3-tuples
-       Generator of tuples of 3 nodes
-
-    Examples
-    --------
-    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
-    >>> list(nx.all_triplets(G))
-    [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4)]
-
-    """
-    import warnings
-
-    warnings.warn(
-        (
-            "\n\nall_triplets is deprecated and will be removed in v3.5.\n"
-            "Use `itertools.combinations(G, 3)` instead."
-        ),
-        category=DeprecationWarning,
-        stacklevel=4,
-    )
-    triplets = combinations(G.nodes(), 3)
-    return triplets
 
 
 @not_implemented_for("undirected")
@@ -543,62 +498,3 @@ def triad_type(G):
         return "210"
     elif num_edges == 6:
         return "300"
-
-
-@not_implemented_for("undirected")
-@py_random_state(1)
-@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
-def random_triad(G, seed=None):
-    """Returns a random triad from a directed graph.
-
-    .. deprecated:: 3.3
-
-       random_triad is deprecated and will be removed in version 3.5.
-       Use random sampling directly instead::
-
-          G.subgraph(random.sample(list(G), 3))
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-    seed : integer, random_state, or None (default)
-        Indicator of random number generation state.
-        See :ref:`Randomness<randomness>`.
-
-    Returns
-    -------
-    G2 : subgraph
-       A randomly selected triad (order-3 NetworkX DiGraph)
-
-    Raises
-    ------
-    NetworkXError
-        If the input Graph has less than 3 nodes.
-
-    Examples
-    --------
-    >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
-    >>> triad = nx.random_triad(G, seed=1)
-    >>> triad.edges
-    OutEdgeView([(1, 2)])
-
-    """
-    import warnings
-
-    warnings.warn(
-        (
-            "\n\nrandom_triad is deprecated and will be removed in NetworkX v3.5.\n"
-            "Use random.sample instead, e.g.::\n\n"
-            "\tG.subgraph(random.sample(list(G), 3))\n"
-        ),
-        category=DeprecationWarning,
-        stacklevel=5,
-    )
-    if len(G) < 3:
-        raise nx.NetworkXError(
-            f"G needs at least 3 nodes to form a triad; (it has {len(G)} nodes)"
-        )
-    nodes = seed.sample(list(G.nodes()), 3)
-    G2 = G.subgraph(nodes)
-    return G2

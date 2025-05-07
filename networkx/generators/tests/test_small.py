@@ -1,15 +1,6 @@
 import pytest
 
 import networkx as nx
-from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
-
-is_isomorphic = graph_could_be_isomorphic
-
-"""Generators - Small
-=====================
-
-Some small graphs
-"""
 
 null = nx.null_graph()
 
@@ -18,21 +9,21 @@ class TestGeneratorsSmall:
     def test__LCF_graph(self):
         # If n<=0, then return the null_graph
         G = nx.LCF_graph(-10, [1, 2], 100)
-        assert is_isomorphic(G, null)
+        assert nx.could_be_isomorphic(G, null)
         G = nx.LCF_graph(0, [1, 2], 3)
-        assert is_isomorphic(G, null)
+        assert nx.could_be_isomorphic(G, null)
         G = nx.LCF_graph(0, [1, 2], 10)
-        assert is_isomorphic(G, null)
+        assert nx.could_be_isomorphic(G, null)
 
         # Test that LCF(n,[],0) == cycle_graph(n)
         for a, b, c in [(5, [], 0), (10, [], 0), (5, [], 1), (10, [], 10)]:
             G = nx.LCF_graph(a, b, c)
-            assert is_isomorphic(G, nx.cycle_graph(a))
+            assert nx.could_be_isomorphic(G, nx.cycle_graph(a))
 
         # Generate the utility graph K_{3,3}
         G = nx.LCF_graph(6, [3, -3], 3)
         utility_graph = nx.complete_bipartite_graph(3, 3)
-        assert is_isomorphic(G, utility_graph)
+        assert nx.could_be_isomorphic(G, utility_graph)
 
         with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
             G = nx.LCF_graph(6, [3, -3], 3, create_using=nx.DiGraph)
@@ -206,3 +197,6 @@ class TestGeneratorsSmall:
 def tests_raises_with_directed_create_using(fn, create_using):
     with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
         fn(create_using=create_using)
+    # All these functions have `create_using` as the first positional argument too
+    with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
+        fn(create_using)

@@ -48,3 +48,31 @@ class AlgorithmBenchmarks:
 
     def time_average_clustering(self, graph):
         _ = nx.average_clustering(self.graphs_dict[graph])
+
+
+class AlgorithmBenchmarksConnectedGraphsOnly:
+    timeout = 120
+    nodes = 100
+    _graphs = [
+        nx.erdos_renyi_graph(nodes, 0.1),
+        nx.erdos_renyi_graph(nodes, 0.5),
+        nx.erdos_renyi_graph(nodes, 0.9),
+    ]
+    params = [
+        "Erdos Renyi (100, 0.1)",
+        "Erdos Renyi (100, 0.5)",
+        "Erdos Renyi (100, 0.9)",
+    ]
+
+    param_names = ["graph"]
+
+    def setup(self, graph):
+        self.graphs_dict = dict(zip(self.params, self._graphs))
+
+    def time_eigenvector_centrality_numpy(self, graph):
+        # Added to ensure the connectivity check doesn't affect
+        # performance too much (see gh-6888, gh-7549).
+        _ = nx.eigenvector_centrality_numpy(self.graphs_dict[graph])
+
+    def time_square_clustering(self, graph):
+        _ = nx.square_clustering(self.graphs_dict[graph])

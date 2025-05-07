@@ -5,7 +5,7 @@ Subgraphs
 Example of partitioning a directed graph with nodes labeled as
 supported and unsupported nodes into a list of subgraphs
 that contain only entirely supported or entirely unsupported nodes.
-Adopted from 
+Adopted from
 https://github.com/lobpcg/python_examples/blob/master/networkx_example.py
 """
 

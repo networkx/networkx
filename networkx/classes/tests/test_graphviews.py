@@ -45,10 +45,9 @@ class TestReverseView:
         M = MyGraph()
         M.add_edge(1, 2)
         RM = nx.reverse_view(M)
-        print("RM class", RM.__class__)
+        assert RM.__class__ == MyGraph
         RMC = RM.copy()
-        print("RMC class", RMC.__class__)
-        print(RMC.edges)
+        assert RMC.__class__ == MyGraph
         assert RMC.has_edge(2, 1)
         assert RMC.my_method() == "me"
 
@@ -256,7 +255,7 @@ class TestChainsOfViews:
             G = nx.Graph(origG)
             SG = G.subgraph([4, 5, 6])
             H = SG.copy()
-            assert type(G) == type(H)
+            assert type(G) is type(H)
 
     def test_subgraph_todirected(self):
         SG = nx.induced_subgraph(self.G, [4, 5, 6])

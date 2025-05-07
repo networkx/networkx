@@ -267,7 +267,8 @@ def partition_quality(G, partition):
     intra-community edges plus inter-community non-edges divided by the total
     number of potential edges.
 
-    This algorithm has complexity $O(C^2 + L)$ where C is the number of communities and L is the number of links.
+    This algorithm has complexity $O(C^2 + L)$ where C is the number of
+    communities and L is the number of links.
 
     Parameters
     ----------

@@ -82,6 +82,7 @@ EdgeDataView
 
     The argument `nbunch` restricts edges to those incident to nodes in nbunch.
 """
+
 from abc import ABC
 from collections.abc import Mapping, Set
 

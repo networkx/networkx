@@ -4,7 +4,7 @@ Cycle finding algorithms
 ========================
 """
 
-from collections import Counter, defaultdict
+from collections import defaultdict
 from itertools import combinations, product
 from math import inf
 
@@ -439,7 +439,7 @@ def _bounded_cycle_search(G, path, length_bound):
 
     """
     G = _NeighborhoodCache(G)
-    lock = {v: 0 for v in path}
+    lock = dict.fromkeys(path, 0)
     B = defaultdict(set)
     start = path[0]
     stack = [iter(G[path[-1]])]
@@ -585,11 +585,13 @@ def chordless_cycles(G, length_bound=None):
     # Nodes with loops cannot belong to longer cycles.  Let's delete them here.
     # also, we implicitly reduce the multiplicity of edges down to 1 in the case
     # of multiedges.
+    loops = set(nx.nodes_with_selfloops(G))
+    edges = ((u, v) for u in G if u not in loops for v in G._adj[u] if v not in loops)
     if directed:
-        F = nx.DiGraph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
+        F = nx.DiGraph(edges)
         B = F.to_undirected(as_view=False)
     else:
-        F = nx.Graph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
+        F = nx.Graph(edges)
         B = None
 
     # If we're given a multigraph, we have a few cases to consider with parallel
@@ -614,6 +616,8 @@ def chordless_cycles(G, length_bound=None):
             B = F.copy()
             visited = set()
         for u, Gu in G.adj.items():
+            if u in loops:
+                continue
             if directed:
                 multiplicity = ((v, len(Guv)) for v, Guv in Gu.items())
                 for v, m in multiplicity:

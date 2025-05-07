@@ -988,7 +988,9 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
 
     Examples
     --------
-    >>> DG = nx.DiGraph([(0, 1, {"cost": 1}), (1, 2, {"cost": 1}), (0, 2, {"cost": 42})])
+    >>> DG = nx.DiGraph(
+    ...     [(0, 1, {"cost": 1}), (1, 2, {"cost": 1}), (0, 2, {"cost": 42})]
+    ... )
     >>> list(nx.all_simple_paths(DG, 0, 2))
     [[0, 1, 2], [0, 2]]
     >>> nx.dag_longest_path(DG)
@@ -1078,7 +1080,9 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
 
     Examples
     --------
-    >>> DG = nx.DiGraph([(0, 1, {"cost": 1}), (1, 2, {"cost": 1}), (0, 2, {"cost": 42})])
+    >>> DG = nx.DiGraph(
+    ...     [(0, 1, {"cost": 1}), (1, 2, {"cost": 1}), (0, 2, {"cost": 42})]
+    ... )
     >>> list(nx.all_simple_paths(DG, 0, 2))
     [[0, 1, 2], [0, 2]]
     >>> nx.dag_longest_path_length(DG)
@@ -1224,36 +1228,191 @@ def dag_to_branching(G):
 @not_implemented_for("undirected")
 @nx._dispatchable
 def compute_v_structures(G):
-    """Iterate through the graph to compute all v-structures.
+    """Yields 3-node tuples that represent the v-structures in `G`.
 
-    V-structures are triples in the directed graph where
-    two parent nodes point to the same child and the two parent nodes
-    are not adjacent.
+    .. deprecated:: 3.4
+
+       `compute_v_structures` actually yields colliders. It will be removed in
+       version 3.6. Use `nx.dag.v_structures` or `nx.dag.colliders` instead.
+
+    Colliders are triples in the directed acyclic graph (DAG) where two parent nodes
+    point to the same child node. V-structures are colliders where the two parent
+    nodes are not adjacent. In a causal graph setting, the parents do not directly
+    depend on each other, but conditioning on the child node provides an association.
 
     Parameters
     ----------
     G : graph
-        A networkx DiGraph.
+        A networkx `~networkx.DiGraph`.
 
-    Returns
-    -------
-    vstructs : iterator of tuples
-        The v structures within the graph. Each v structure is a 3-tuple with the
-        parent, collider, and other parent.
+    Yields
+    ------
+    A 3-tuple representation of a v-structure
+        Each v-structure is a 3-tuple with the parent, collider, and other parent.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is an undirected graph.
 
     Examples
     --------
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5)])
-    >>> sorted(nx.compute_v_structures(G))
-    [(0, 5, 1), (0, 5, 4), (1, 5, 4)]
+    >>> G = nx.DiGraph([(1, 2), (0, 4), (3, 1), (2, 4), (0, 5), (4, 5), (1, 5)])
+    >>> nx.is_directed_acyclic_graph(G)
+    True
+    >>> list(nx.compute_v_structures(G))
+    [(0, 4, 2), (0, 5, 4), (0, 5, 1), (4, 5, 1)]
+
+    See Also
+    --------
+    v_structures
+    colliders
 
     Notes
     -----
-    `Wikipedia: Collider in causal graphs <https://en.wikipedia.org/wiki/Collider_(statistics)>`_
+    This function was written to be used on DAGs, however it works on cyclic graphs
+    too. Since colliders are referred to in the cyclic causal graph literature
+    [2]_ we allow cyclic graphs in this function. It is suggested that you test if
+    your input graph is acyclic as in the example if you want that property.
+
+    References
+    ----------
+    .. [1]  `Pearl's PRIMER <https://bayes.cs.ucla.edu/PRIMER/primer-ch2.pdf>`_
+            Ch-2 page 50: v-structures def.
+    .. [2] A Hyttinen, P.O. Hoyer, F. Eberhardt, M J ̈arvisalo, (2013)
+           "Discovering cyclic causal models with latent variables:
+           a general SAT-based procedure", UAI'13: Proceedings of the Twenty-Ninth
+           Conference on Uncertainty in Artificial Intelligence, pg 301–310,
+           `doi:10.5555/3023638.3023669 <https://dl.acm.org/doi/10.5555/3023638.3023669>`_
     """
-    for collider, preds in G.pred.items():
-        for common_parents in combinations(preds, r=2):
-            # ensure that the colliders are the same
-            common_parents = sorted(common_parents)
-            yield (common_parents[0], collider, common_parents[1])
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\n`compute_v_structures` actually yields colliders. It will be\n"
+            "removed in version 3.6. Use `nx.dag.v_structures` or `nx.dag.colliders`\n"
+            "instead.\n"
+        ),
+        category=DeprecationWarning,
+        stacklevel=5,
+    )
+
+    return colliders(G)
+
+
+@not_implemented_for("undirected")
+@nx._dispatchable
+def v_structures(G):
+    """Yields 3-node tuples that represent the v-structures in `G`.
+
+    Colliders are triples in the directed acyclic graph (DAG) where two parent nodes
+    point to the same child node. V-structures are colliders where the two parent
+    nodes are not adjacent. In a causal graph setting, the parents do not directly
+    depend on each other, but conditioning on the child node provides an association.
+
+    Parameters
+    ----------
+    G : graph
+        A networkx `~networkx.DiGraph`.
+
+    Yields
+    ------
+    A 3-tuple representation of a v-structure
+        Each v-structure is a 3-tuple with the parent, collider, and other parent.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is an undirected graph.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (0, 4), (3, 1), (2, 4), (0, 5), (4, 5), (1, 5)])
+    >>> nx.is_directed_acyclic_graph(G)
+    True
+    >>> list(nx.dag.v_structures(G))
+    [(0, 4, 2), (0, 5, 1), (4, 5, 1)]
+
+    See Also
+    --------
+    colliders
+
+    Notes
+    -----
+    This function was written to be used on DAGs, however it works on cyclic graphs
+    too. Since colliders are referred to in the cyclic causal graph literature
+    [2]_ we allow cyclic graphs in this function. It is suggested that you test if
+    your input graph is acyclic as in the example if you want that property.
+
+    References
+    ----------
+    .. [1]  `Pearl's PRIMER <https://bayes.cs.ucla.edu/PRIMER/primer-ch2.pdf>`_
+            Ch-2 page 50: v-structures def.
+    .. [2] A Hyttinen, P.O. Hoyer, F. Eberhardt, M J ̈arvisalo, (2013)
+           "Discovering cyclic causal models with latent variables:
+           a general SAT-based procedure", UAI'13: Proceedings of the Twenty-Ninth
+           Conference on Uncertainty in Artificial Intelligence, pg 301–310,
+           `doi:10.5555/3023638.3023669 <https://dl.acm.org/doi/10.5555/3023638.3023669>`_
+    """
+    for p1, c, p2 in colliders(G):
+        if not (G.has_edge(p1, p2) or G.has_edge(p2, p1)):
+            yield (p1, c, p2)
+
+
+@not_implemented_for("undirected")
+@nx._dispatchable
+def colliders(G):
+    """Yields 3-node tuples that represent the colliders in `G`.
+
+    In a Directed Acyclic Graph (DAG), if you have three nodes A, B, and C, and
+    there are edges from A to C and from B to C, then C is a collider [1]_ . In
+    a causal graph setting, this means that both events A and B are "causing" C,
+    and conditioning on C provide an association between A and B even if
+    no direct causal relationship exists between A and B.
+
+    Parameters
+    ----------
+    G : graph
+        A networkx `~networkx.DiGraph`.
+
+    Yields
+    ------
+    A 3-tuple representation of a collider
+        Each collider is a 3-tuple with the parent, collider, and other parent.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is an undirected graph.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (0, 4), (3, 1), (2, 4), (0, 5), (4, 5), (1, 5)])
+    >>> nx.is_directed_acyclic_graph(G)
+    True
+    >>> list(nx.dag.colliders(G))
+    [(0, 4, 2), (0, 5, 4), (0, 5, 1), (4, 5, 1)]
+
+    See Also
+    --------
+    v_structures
+
+    Notes
+    -----
+    This function was written to be used on DAGs, however it works on cyclic graphs
+    too. Since colliders are referred to in the cyclic causal graph literature
+    [2]_ we allow cyclic graphs in this function. It is suggested that you test if
+    your input graph is acyclic as in the example if you want that property.
+
+    References
+    ----------
+    .. [1] `Wikipedia: Collider in causal graphs <https://en.wikipedia.org/wiki/Collider_(statistics)>`_
+    .. [2] A Hyttinen, P.O. Hoyer, F. Eberhardt, M J ̈arvisalo, (2013)
+           "Discovering cyclic causal models with latent variables:
+           a general SAT-based procedure", UAI'13: Proceedings of the Twenty-Ninth
+           Conference on Uncertainty in Artificial Intelligence, pg 301–310,
+           `doi:10.5555/3023638.3023669 <https://dl.acm.org/doi/10.5555/3023638.3023669>`_
+    """
+    for node in G.nodes:
+        for p1, p2 in combinations(G.predecessors(node), 2):
+            yield (p1, node, p2)

@@ -1,4 +1,5 @@
 """Unit tests for pydot drawing functions."""
+
 from io import StringIO
 
 import pytest
@@ -89,58 +90,23 @@ class TestPydot:
         assert graphs_equal(G, H)
 
 
-def test_pydot_issue_258():
-    G = nx.Graph([("Example:A", 1)])
-    with pytest.raises(ValueError):
-        nx.nx_pydot.to_pydot(G)
-    with pytest.raises(ValueError):
-        nx.nx_pydot.pydot_layout(G)
+def test_pydot_issue_7581(tmp_path):
+    """Validate that `nx_pydot.pydot_layout` handles nodes
+    with characters like "\n", " ".
 
+    Those characters cause `pydot` to escape and quote them on output,
+    which caused #7581.
+    """
     G = nx.Graph()
-    G.add_node("1.2", style="filled", fillcolor="red:yellow")
-    with pytest.raises(ValueError):
-        nx.nx_pydot.to_pydot(G)
-    G.remove_node("1.2")
-    G.add_node("1.2", style="filled", fillcolor='"red:yellow"')
-    assert (
-        G.nodes.data() == nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G)).nodes.data()
-    )
+    G.add_edges_from([("A\nbig test", "B"), ("A\nbig test", "C"), ("B", "C")])
 
-    G = nx.DiGraph()
-    G.add_edge("1", "2", foo="bar:1")
-    with pytest.raises(ValueError):
-        nx.nx_pydot.to_pydot(G)
-    G = nx.DiGraph()
-    G.add_edge("1", "2", foo='"bar:1"')
-    assert G["1"]["2"] == nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G))["1"]["2"]
+    graph_layout = nx.nx_pydot.pydot_layout(G, prog="dot")
+    assert isinstance(graph_layout, dict)
 
-    G = nx.MultiGraph()
-    G.add_edge("1", "2", foo="b:1")
-    G.add_edge("1", "2", bar="foo:foo")
-    with pytest.raises(ValueError):
-        nx.nx_pydot.to_pydot(G)
-    G = nx.MultiGraph()
-    G.add_edge("1", "2", foo='"b:1"')
-    G.add_edge("1", "2", bar='"foo:foo"')
-    # Keys as integers aren't preserved in the conversion. They are read as strings.
-    assert [attr for _, _, attr in G.edges.data()] == [
-        attr
-        for _, _, attr in nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G)).edges.data()
-    ]
-
-    G = nx.Graph()
-    G.add_edge("1", "2")
-    G["1"]["2"]["f:oo"] = "bar"
-    with pytest.raises(ValueError):
-        nx.nx_pydot.to_pydot(G)
-    G = nx.Graph()
-    G.add_edge("1", "2")
-    G["1"]["2"]['"f:oo"'] = "bar"
-    assert G["1"]["2"] == nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G))["1"]["2"]
-
-    G = nx.Graph([('"Example:A"', 1)])
-    layout = nx.nx_pydot.pydot_layout(G)
-    assert isinstance(layout, dict)
+    # Convert the graph to pydot and back into a graph. There should be no difference.
+    P = nx.nx_pydot.to_pydot(G)
+    G2 = nx.Graph(nx.nx_pydot.from_pydot(P))
+    assert graphs_equal(G, G2)
 
 
 @pytest.mark.parametrize(

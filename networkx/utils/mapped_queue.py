@@ -1,5 +1,4 @@
-"""Priority queue class with updatable priorities.
-"""
+"""Priority queue class with updatable priorities."""
 
 import heapq
 

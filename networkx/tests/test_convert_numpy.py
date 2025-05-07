@@ -2,23 +2,22 @@ import itertools
 
 import pytest
 
+import networkx as nx
+from networkx.utils import graphs_equal
+
 np = pytest.importorskip("numpy")
 npt = pytest.importorskip("numpy.testing")
-
-import networkx as nx
-from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
-from networkx.utils import graphs_equal
 
 
 class TestConvertNumpyArray:
     def setup_method(self):
-        self.G1 = barbell_graph(10, 3)
-        self.G2 = cycle_graph(10, create_using=nx.DiGraph)
+        self.G1 = nx.barbell_graph(10, 3)
+        self.G2 = nx.cycle_graph(10, create_using=nx.DiGraph)
         self.G3 = self.create_weighted(nx.Graph())
         self.G4 = self.create_weighted(nx.DiGraph())
 
     def create_weighted(self, G):
-        g = cycle_graph(4)
+        g = nx.cycle_graph(4)
         G.add_nodes_from(g)
         G.add_weighted_edges_from((u, v, 10 + u) for u, v in g.edges())
         return G
@@ -63,8 +62,8 @@ class TestConvertNumpyArray:
 
     def test_nodelist(self):
         """Conversion from graph to array to graph with nodelist."""
-        P4 = path_graph(4)
-        P3 = path_graph(3)
+        P4 = nx.path_graph(4)
+        P3 = nx.path_graph(3)
         nodelist = list(P3)
         A = nx.to_numpy_array(P4, nodelist=nodelist)
         GA = nx.Graph(A)
@@ -85,7 +84,7 @@ class TestConvertNumpyArray:
     def test_weight_keyword(self):
         WP4 = nx.Graph()
         WP4.add_edges_from((n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3))
-        P4 = path_graph(4)
+        P4 = nx.path_graph(4)
         A = nx.to_numpy_array(P4)
         np.testing.assert_equal(A, nx.to_numpy_array(WP4, weight=None))
         np.testing.assert_equal(0.5 * A, nx.to_numpy_array(WP4))
@@ -94,23 +93,23 @@ class TestConvertNumpyArray:
     def test_from_numpy_array_type(self):
         A = np.array([[1]])
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == int
+        assert isinstance(G[0][0]["weight"], int)
 
         A = np.array([[1]]).astype(float)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == float
+        assert isinstance(G[0][0]["weight"], float)
 
         A = np.array([[1]]).astype(str)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == str
+        assert isinstance(G[0][0]["weight"], str)
 
         A = np.array([[1]]).astype(bool)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == bool
+        assert isinstance(G[0][0]["weight"], bool)
 
         A = np.array([[1]]).astype(complex)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == complex
+        assert isinstance(G[0][0]["weight"], complex)
 
         A = np.array([[1]]).astype(object)
         pytest.raises(TypeError, nx.from_numpy_array, A)
@@ -125,8 +124,8 @@ class TestConvertNumpyArray:
         dt = [("weight", float), ("cost", int)]
         A = np.array([[(1.0, 2)]], dtype=dt)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == float
-        assert type(G[0][0]["cost"]) == int
+        assert isinstance(G[0][0]["weight"], float)
+        assert isinstance(G[0][0]["cost"], int)
         assert G[0][0]["cost"] == 2
         assert G[0][0]["weight"] == 1.0
 

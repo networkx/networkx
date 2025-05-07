@@ -7,7 +7,6 @@ import pytest
 
 import networkx as nx
 import networkx.algorithms.threshold as nxt
-from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
 
 cnlti = nx.convert_node_labels_to_integers
 
@@ -50,14 +49,14 @@ class TestGeneratorThreshold:
         H2 = nxt.threshold_graph(cs2)
         assert cs2 == [2, 1, 1]
         assert "".join(nxt.uncompact(cs2)) == "ddid"
-        assert graph_could_be_isomorphic(H0, G)
-        assert graph_could_be_isomorphic(H0, H1)
-        assert graph_could_be_isomorphic(H0, H2)
+        assert nx.could_be_isomorphic(H0, G)
+        assert nx.could_be_isomorphic(H0, H1)
+        assert nx.could_be_isomorphic(H0, H2)
 
     def test_make_compact(self):
         assert nxt.make_compact(["d", "d", "d", "i", "d", "d"]) == [3, 1, 2]
         assert nxt.make_compact([3, 1, 2]) == [3, 1, 2]
-        assert pytest.raises(TypeError, nxt.make_compact, [3.0, 1.0, 2.0])
+        pytest.raises(TypeError, nxt.make_compact, [3.0, 1.0, 2.0])
 
     def test_uncompact(self):
         assert nxt.uncompact([3, 1, 2]) == ["d", "d", "d", "i", "d", "d"]
@@ -65,7 +64,7 @@ class TestGeneratorThreshold:
         assert nxt.uncompact(
             nxt.uncompact([(1, "d"), (2, "d"), (3, "i"), (0, "d")])
         ) == nxt.uncompact([(1, "d"), (2, "d"), (3, "i"), (0, "d")])
-        assert pytest.raises(TypeError, nxt.uncompact, [3.0, 1.0, 2.0])
+        pytest.raises(TypeError, nxt.uncompact, [3.0, 1.0, 2.0])
 
     def test_creation_sequence_to_weights(self):
         assert nxt.creation_sequence_to_weights([3, 1, 2]) == [
@@ -76,9 +75,7 @@ class TestGeneratorThreshold:
             0.75,
             0.75,
         ]
-        assert pytest.raises(
-            TypeError, nxt.creation_sequence_to_weights, [3.0, 1.0, 2.0]
-        )
+        pytest.raises(TypeError, nxt.creation_sequence_to_weights, [3.0, 1.0, 2.0])
 
     def test_weights_to_creation_sequence(self):
         deg = [3, 2, 2, 1]
@@ -116,9 +113,9 @@ class TestGeneratorThreshold:
 
         assert nxt.shortest_path(["d", "d", "d", "i", "d", "d"], 1, 2) == [1, 2]
         assert nxt.shortest_path([3, 1, 2], 1, 2) == [1, 2]
-        assert pytest.raises(TypeError, nxt.shortest_path, [3.0, 1.0, 2.0], 1, 2)
-        assert pytest.raises(ValueError, nxt.shortest_path, [3, 1, 2], "a", 2)
-        assert pytest.raises(ValueError, nxt.shortest_path, [3, 1, 2], 1, "b")
+        pytest.raises(TypeError, nxt.shortest_path, [3.0, 1.0, 2.0], 1, 2)
+        pytest.raises(ValueError, nxt.shortest_path, [3, 1, 2], "a", 2)
+        pytest.raises(ValueError, nxt.shortest_path, [3, 1, 2], 1, "b")
         assert nxt.shortest_path([3, 1, 2], 1, 1) == [1]
 
     def test_shortest_path_length(self):
@@ -139,7 +136,7 @@ class TestGeneratorThreshold:
             1,
             1,
         ]
-        assert pytest.raises(TypeError, nxt.shortest_path, [3.0, 1.0, 2.0], 1)
+        pytest.raises(TypeError, nxt.shortest_path, [3.0, 1.0, 2.0], 1)
 
     def test_random_threshold_sequence(self):
         assert len(nxt.random_threshold_sequence(10, 0.5)) == 10
@@ -155,15 +152,15 @@ class TestGeneratorThreshold:
             "d",
             "d",
         ]
-        assert pytest.raises(ValueError, nxt.random_threshold_sequence, 10, 1.5)
+        pytest.raises(ValueError, nxt.random_threshold_sequence, 10, 1.5)
 
     def test_right_d_threshold_sequence(self):
         assert nxt.right_d_threshold_sequence(3, 2) == ["d", "i", "d"]
-        assert pytest.raises(ValueError, nxt.right_d_threshold_sequence, 2, 3)
+        pytest.raises(ValueError, nxt.right_d_threshold_sequence, 2, 3)
 
     def test_left_d_threshold_sequence(self):
         assert nxt.left_d_threshold_sequence(3, 2) == ["d", "i", "d"]
-        assert pytest.raises(ValueError, nxt.left_d_threshold_sequence, 2, 3)
+        pytest.raises(ValueError, nxt.left_d_threshold_sequence, 2, 3)
 
     def test_weights_thresholds(self):
         wseq = [3, 4, 3, 3, 5, 6, 5, 4, 5, 6]
@@ -259,7 +256,7 @@ class TestGeneratorThreshold:
     def test_create_using(self):
         cs = "ddiiddid"
         G = nxt.threshold_graph(cs)
-        assert pytest.raises(
+        pytest.raises(
             nx.exception.NetworkXError,
             nxt.threshold_graph,
             cs,

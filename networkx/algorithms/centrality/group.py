@@ -1,4 +1,5 @@
 """Group centrality measures."""
+
 from copy import deepcopy
 
 import networkx as nx
@@ -356,8 +357,8 @@ def prominent_group(
     if C is not None:
         for node in C:
             # remove from the betweenness all the nodes not part of the group
-            betweenness.drop(index=node, inplace=True)
-            betweenness.drop(columns=node, inplace=True)
+            betweenness = betweenness.drop(index=node)
+            betweenness = betweenness.drop(columns=node)
     CL = [node for _, node in sorted(zip(np.diag(betweenness), nodes), reverse=True)]
     max_GBC = 0
     max_group = []
@@ -408,7 +409,7 @@ def prominent_group(
     # If undirected then count only the undirected edges
     elif not G.is_directed():
         max_GBC /= 2
-    max_GBC = float("%.2f" % max_GBC)
+    max_GBC = float(f"{max_GBC:.2f}")
     return max_GBC, max_group
 
 

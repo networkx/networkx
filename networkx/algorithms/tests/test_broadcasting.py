@@ -1,4 +1,5 @@
 """Unit tests for the broadcasting module."""
+
 import math
 
 import networkx as nx

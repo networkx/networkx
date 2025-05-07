@@ -381,7 +381,6 @@ class TestGeneratorsBipartite:
         assert len(G) == n + m
         assert nx.is_bipartite(G)
         X, Y = nx.algorithms.bipartite.sets(G)
-        # print(X)
         assert set(range(n)) == X
         assert set(range(n, n + m)) == Y
         assert edges == len(list(G.edges()))
@@ -394,7 +393,6 @@ class TestGeneratorsBipartite:
         assert len(G) == n + m
         assert nx.is_bipartite(G)
         X, Y = nx.algorithms.bipartite.sets(G)
-        # print(X)
         assert set(range(n)) == X
         assert set(range(n, n + m)) == Y
         assert edges == len(list(G.edges()))

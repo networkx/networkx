@@ -1,6 +1,4 @@
-"""Unit tests for the :mod:`networkx.generators.expanders` module.
-
-"""
+"""Unit tests for the :mod:`networkx.generators.expanders` module."""
 
 import pytest
 
@@ -79,10 +77,10 @@ def test_is_regular_expander(n):
     pytest.importorskip("scipy")
     G = nx.complete_graph(n)
 
-    assert nx.is_regular_expander(G) == True, "Should be a regular expander"
+    assert nx.is_regular_expander(G), "Should be a regular expander"
 
 
-@pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
+@pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16), (4, 2000)])
 def test_random_regular_expander(d, n):
     pytest.importorskip("numpy")
     pytest.importorskip("scipy")
@@ -91,7 +89,7 @@ def test_random_regular_expander(d, n):
     assert len(G) == n, "Should have n nodes"
     assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
     assert nx.is_k_regular(G, d), "Should be d-regular"
-    assert nx.is_regular_expander(G) == True, "Should be a regular expander"
+    assert nx.is_regular_expander(G), "Should be a regular expander"
 
 
 def test_random_regular_expander_explicit_construction():

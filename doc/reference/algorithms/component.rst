@@ -25,7 +25,6 @@ Strong connectivity
    is_strongly_connected
    number_strongly_connected_components
    strongly_connected_components
-   strongly_connected_components_recursive
    kosaraju_strongly_connected_components
    condensation
 

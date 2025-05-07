@@ -5,6 +5,7 @@ A graph is chordal if every cycle of length at least 4 has a chord
 (an edge joining two nodes not adjacent in the cycle).
 https://en.wikipedia.org/wiki/Chordal_graph
 """
+
 import sys
 
 import networkx as nx
@@ -411,11 +412,11 @@ def complete_to_chordal_graph(G):
     >>> H, alpha = complete_to_chordal_graph(G)
     """
     H = G.copy()
-    alpha = {node: 0 for node in H}
+    alpha = dict.fromkeys(H, 0)
     if nx.is_chordal(H):
         return H, alpha
     chords = set()
-    weight = {node: 0 for node in H.nodes()}
+    weight = dict.fromkeys(H.nodes(), 0)
     unnumbered_nodes = list(H.nodes())
     for i in range(len(H.nodes()), 0, -1):
         # get the node in unnumbered_nodes with the maximum weight

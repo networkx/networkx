@@ -1,5 +1,5 @@
-"""Floyd-Warshall algorithm for shortest paths.
-"""
+"""Floyd-Warshall algorithm for shortest paths."""
+
 import networkx as nx
 
 __all__ = [
@@ -43,7 +43,9 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from([(0, 1, 5), (1, 2, 2), (2, 3, -3), (1, 3, 10), (3, 2, 8)])
+    >>> G.add_weighted_edges_from(
+    ...     [(0, 1, 5), (1, 2, 2), (2, 3, -3), (1, 3, 10), (3, 2, 8)]
+    ... )
     >>> nx.floyd_warshall_numpy(G)
     array([[ 0.,  5.,  7.,  4.],
            [inf,  0.,  2., -1.],
@@ -231,12 +233,18 @@ def floyd_warshall(G, weight="weight"):
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from([(0, 1, 5), (1, 2, 2), (2, 3, -3), (1, 3, 10), (3, 2, 8)])
+    >>> G.add_weighted_edges_from(
+    ...     [(0, 1, 5), (1, 2, 2), (2, 3, -3), (1, 3, 10), (3, 2, 8)]
+    ... )
     >>> fw = nx.floyd_warshall(G, weight="weight")
     >>> results = {a: dict(b) for a, b in fw.items()}
-    >>> print(results)
-    {0: {0: 0, 1: 5, 2: 7, 3: 4}, 1: {1: 0, 2: 2, 3: -1, 0: inf}, 2: {2: 0, 3: -3, 0: inf, 1: inf}, 3: {3: 0, 2: 8, 0: inf, 1: inf}}
+    >>> pprint(results)
+    {0: {0: 0, 1: 5, 2: 7, 3: 4},
+     1: {0: inf, 1: 0, 2: 2, 3: -1},
+     2: {0: inf, 1: inf, 2: 0, 3: -3},
+     3: {0: inf, 1: inf, 2: 8, 3: 0}}
 
     Notes
     -----

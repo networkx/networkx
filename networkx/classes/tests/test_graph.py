@@ -9,6 +9,13 @@ import networkx as nx
 from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
+def test_degree_node_not_found_exception_message():
+    """See gh-7740"""
+    G = nx.path_graph(5)
+    with pytest.raises(nx.NetworkXError, match="Node.*is not in the graph"):
+        G.degree(100)
+
+
 class BaseGraphTester:
     """Tests for data-structure independent graph class features."""
 
@@ -139,7 +146,7 @@ class BaseGraphTester:
         # node not in graph doesn't get caught upon creation of iterator
         bunch = G.nbunch_iter(-1)
         # but gets caught when iterator used
-        with pytest.raises(nx.NetworkXError, match="is not a node or a sequence"):
+        with pytest.raises(nx.NetworkXError, match="is not in the graph"):
             list(bunch)
         # unhashable doesn't get caught upon creation of iterator
         bunch = G.nbunch_iter([0, 1, 2, {}])

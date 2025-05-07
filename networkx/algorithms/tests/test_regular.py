@@ -1,6 +1,5 @@
 import pytest
 
-import networkx
 import networkx as nx
 import networkx.algorithms.regular as reg
 import networkx.generators as gen

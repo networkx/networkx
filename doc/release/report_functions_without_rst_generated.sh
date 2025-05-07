@@ -1,5 +1,5 @@
 #!/bin/bash
-# Authored-by: James Trimble <james.trimble@yahoo.co.uk> 
+# Authored-by: James Trimble <james.trimble@yahoo.co.uk>
 # expanded beyond /algorithms/ by Dan Schult <dschult@colgate.edu>
 
 echo ALGORITHMS

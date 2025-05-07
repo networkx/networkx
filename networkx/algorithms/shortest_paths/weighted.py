@@ -1340,7 +1340,7 @@ def _bellman_ford(
         pred = {v: [] for v in source}
 
     if dist is None:
-        dist = {v: 0 for v in source}
+        dist = dict.fromkeys(source, 0)
 
     negative_cycle_found = _inner_bellman_ford(
         G,
@@ -1421,12 +1421,12 @@ def _inner_bellman_ford(
         pred = {v: [] for v in sources}
 
     if dist is None:
-        dist = {v: 0 for v in sources}
+        dist = dict.fromkeys(sources, 0)
 
     # Heuristic Storage setup. Note: use None because nodes cannot be None
     nonexistent_edge = (None, None)
-    pred_edge = {v: None for v in sources}
-    recent_update = {v: nonexistent_edge for v in sources}
+    pred_edge = dict.fromkeys(sources)
+    recent_update = dict.fromkeys(sources, nonexistent_edge)
 
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
     inf = float("inf")
@@ -1930,7 +1930,6 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
 
     """
     path = single_source_bellman_ford_path
-    # TODO This can be trivially parallelized.
     for n in G:
         yield (n, path(G, n, weight=weight))
 
@@ -2035,7 +2034,7 @@ def goldberg_radzik(G, source, weight="weight"):
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
     inf = float("inf")
-    d = {u: inf for u in G}
+    d = dict.fromkeys(G, inf)
     d[source] = 0
     pred = {source: None}
 
@@ -2232,7 +2231,9 @@ def find_negative_cycle(G, source, weight="weight"):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from([(0, 1, 2), (1, 2, 2), (2, 0, 1), (1, 4, 2), (4, 0, -5)])
+    >>> G.add_weighted_edges_from(
+    ...     [(0, 1, 2), (1, 2, 2), (2, 0, 1), (1, 4, 2), (4, 0, -5)]
+    ... )
     >>> nx.find_negative_cycle(G, 0)
     [4, 0, 1, 4]
 
@@ -2322,7 +2323,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     Raises
     ------
     NodeNotFound
-        If either `source` or `target` is not in `G`.
+        If `source` or `target` is not in `G`.
 
     NetworkXNoPath
         If no path exists between source and target.
@@ -2364,9 +2365,11 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     shortest_path
     shortest_path_length
     """
-    if source not in G or target not in G:
-        msg = f"Either source {source} or target {target} is not in G"
-        raise nx.NodeNotFound(msg)
+    if source not in G:
+        raise nx.NodeNotFound(f"Source {source} is not in G")
+
+    if target not in G:
+        raise nx.NodeNotFound(f"Target {target} is not in G")
 
     if source == target:
         return (0, [source])
@@ -2497,7 +2500,7 @@ def johnson(G, weight="weight"):
     all_pairs_bellman_ford_path_length
 
     """
-    dist = {v: 0 for v in G}
+    dist = dict.fromkeys(G, 0)
     pred = {v: [] for v in G}
     weight = _weight_function(G, weight)
 

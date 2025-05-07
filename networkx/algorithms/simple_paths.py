@@ -429,7 +429,10 @@ def shortest_simple_paths(G, source, target, weight=None):
         If it is a function, the weight of an edge is the value returned
         by the function. The function must accept exactly three positional
         arguments: the two endpoints of an edge and the dictionary of edge
-        attributes for that edge. The function must return a number.
+        attributes for that edge. The function must return a number or None.
+        The weight function can be used to hide edges by returning None.
+        So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+        will find the shortest red path.
 
         If None all edges are considered to have unit weight. Default
         value None.
@@ -756,19 +759,24 @@ def _bidirectional_dijkstra(
     G : NetworkX graph
 
     source : node
-       Starting node.
+        Starting node.
 
     target : node
-       Ending node.
+        Ending node.
 
     weight: string, function, optional (default='weight')
-       Edge data key or weight function corresponding to the edge weight
+        Edge data key or weight function corresponding to the edge weight
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     ignore_nodes : container of nodes
-       nodes to ignore, optional
+        nodes to ignore, optional
 
     ignore_edges : container of edges
-       edges to ignore, optional
+        edges to ignore, optional
 
     Returns
     -------
@@ -788,6 +796,10 @@ def _bidirectional_dijkstra(
     -----
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
+
+    The weight function can be used to hide edges by returning None.
+    So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+    will find the shortest red path.
 
     In practice  bidirectional Dijkstra is much more than twice as fast as
     ordinary Dijkstra.
@@ -873,6 +885,7 @@ def _bidirectional_dijkstra(
             Gpred = filter_iter(Gpred)
             Gsucc = filter_iter(Gsucc)
 
+    wt = _weight_function(G, weight)
     push = heappush
     pop = heappop
     # Init:   Forward             Backward
@@ -908,14 +921,14 @@ def _bidirectional_dijkstra(
             # we have now discovered the shortest path
             return (finaldist, finalpath)
 
-        wt = _weight_function(G, weight)
         for w in neighs[dir](v):
             if dir == 0:  # forward
                 minweight = wt(v, w, G.get_edge_data(v, w))
-                vwLength = dists[dir][v] + minweight
             else:  # back, must remember to change v,w->w,v
                 minweight = wt(w, v, G.get_edge_data(w, v))
-                vwLength = dists[dir][v] + minweight
+            if minweight is None:
+                continue
+            vwLength = dists[dir][v] + minweight
 
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:

@@ -7,6 +7,7 @@ A self-loop is an edge that originates from and terminates the same node.
 This example shows how to draw self-loops with `nx_pylab`.
 
 """
+
 import networkx as nx
 import matplotlib.pyplot as plt
 

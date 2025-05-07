@@ -36,6 +36,7 @@ the smaller of the two partitions, and for which the sum of the weights of the
 edges included in the matching is minimal.
 
 """
+
 import collections
 import itertools
 
@@ -154,8 +155,8 @@ def hopcroft_karp_matching(G, top_nodes=None):
 
     # Initialize the "global" variables that maintain state during the search.
     left, right = bipartite_sets(G, top_nodes)
-    leftmatches = {v: None for v in left}
-    rightmatches = {v: None for v in right}
+    leftmatches = dict.fromkeys(left)
+    rightmatches = dict.fromkeys(right)
     distances = {}
     queue = collections.deque()
 
@@ -249,7 +250,7 @@ def eppstein_matching(G, top_nodes=None):
         # layer
         preds = {}
         unmatched = []
-        pred = {u: unmatched for u in G}
+        pred = dict.fromkeys(G, unmatched)
         for v in matching:
             del pred[matching[v]]
         layer = list(pred)
