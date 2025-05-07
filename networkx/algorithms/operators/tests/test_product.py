@@ -1,3 +1,5 @@
+from contextlib import nullcontext as does_not_raise
+
 import pytest
 
 import networkx as nx
@@ -413,9 +415,21 @@ def test_graph_power_negative():
         nx.power(nx.Graph(), -1)
 
 
-def test_rooted_product_raises():
+def test_rooted_product_raises_root():
     with pytest.raises(nx.NetworkXError):
         nx.rooted_product(nx.Graph(), nx.path_graph(2), 10)
+
+
+def test_rooted_product_raises_multigraph():
+    G1 = nx.Graph([(0, 1)])
+    G2 = nx.MultiGraph([(0, 1), (0, 1)])
+
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.rooted_product(G1, G2, 0)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.rooted_product(G2, G1, 0)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.rooted_product(G2, G2, 0)
 
 
 def test_rooted_product():
@@ -427,12 +441,42 @@ def test_rooted_product():
     assert R.size() == G.size() + len(G) * H.size()
 
 
+def test_corona_product_raises_not_implemented():
+    G1 = nx.Graph([(0, 1)])
+    G2 = nx.DiGraph([(0, 1)])
+    G3 = nx.MultiGraph([(0, 1), (0, 1)])
+
+    with pytest.raises(nx.NetworkXError):
+        nx.corona_product(G1, G2)
+    with pytest.raises(nx.NetworkXError):
+        nx.corona_product(G2, G1)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.corona_product(G1, G3)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.corona_product(G3, G1)
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.corona_product(G3, G3)
+
+
 def test_corona_product():
     G = nx.cycle_graph(3)
     H = nx.path_graph(2)
     C = nx.corona_product(G, H)
     assert len(C) == (len(G) * len(H)) + len(G)
     assert C.size() == G.size() + len(G) * H.size() + len(G) * len(H)
+
+
+def test_modular_product_raises_not_implemented():
+    G = nx.Graph([(0, 1)])
+    DG = nx.DiGraph([(0, 1)])
+    MG = nx.MultiGraph([(0, 1), (0, 1)])
+
+    for i, G in enumerate([G, DG, MG]):
+        for j, H in enumerate([G, DG, MG]):
+            if i == j == 0:  # both are undirected simple graphs
+                continue
+            with pytest.raises(nx.NetworkXNotImplemented):
+                nx.modular_product(G, H)
 
 
 def test_modular_product():
@@ -464,28 +508,3 @@ def test_modular_product():
             ((1, 3), (2, 2)),
         ],
     )
-
-
-def test_modular_product_raises():
-    G = nx.Graph([(0, 1), (1, 2), (2, 0)])
-    H = nx.Graph([(0, 1), (1, 2), (2, 0)])
-    DG = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
-    DH = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
-    with pytest.raises(nx.NetworkXNotImplemented):
-        nx.modular_product(G, DH)
-    with pytest.raises(nx.NetworkXNotImplemented):
-        nx.modular_product(DG, H)
-    with pytest.raises(nx.NetworkXNotImplemented):
-        nx.modular_product(DG, DH)
-
-    MG = nx.MultiGraph([(0, 1), (1, 2), (2, 0), (0, 1)])
-    MH = nx.MultiGraph([(0, 1), (1, 2), (2, 0), (0, 1)])
-    with pytest.raises(nx.NetworkXNotImplemented):
-        nx.modular_product(G, MH)
-    with pytest.raises(nx.NetworkXNotImplemented):
-        nx.modular_product(MG, H)
-    with pytest.raises(nx.NetworkXNotImplemented):
-        nx.modular_product(MG, MH)
-    with pytest.raises(nx.NetworkXNotImplemented):
-        # check multigraph with no multiedges
-        nx.modular_product(nx.MultiGraph(G), H)
