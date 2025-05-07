@@ -1242,8 +1242,8 @@ class FractionalMatchingSolver:
                 else:
                     # step 4
                     # Found a potential type 2 augmentation or need to label more nodes
-                    self._label_or_augment(u, v)
-                    
+                    if self._label_or_augment(u, v):
+                        self._augment(u, v)
             # If we couldn't augment in this phase, we're done
             if not augmented:
                 break
@@ -1277,7 +1277,9 @@ class FractionalMatchingSolver:
                 self.labels[node] = "+"
             else:
                 self.labels[node] = None
-            self.preds[node] = None
+            if node not in self.preds:
+                self.preds[node] = None
+            # self.preds[node] = None
     
     def _edge_scan(self) -> Optional[Tuple[Any, Any]]:
         """
@@ -1388,18 +1390,19 @@ class FractionalMatchingSolver:
                 self.labels[w] = "+"
                 self.preds[v] = u
                 self.preds[w] = v
-                return
+                return False
         
         # If we get here, v must be on a ½-cycle (type 2 augmentation)
         # Find the 1/2 -cycle by tracing from v
         cycle = [v]
         visited = {v}
-        
+        # self.labels[v] = "+"
+
         while True:
             # Find the next node in the cycle (connected by a ½ edge)
             current = cycle[-1]
             next_node_found = False
-            
+
             for next_node in self.G.neighbors(current):
                 if self.x.get((current, next_node), 0) == 0.5 and next_node not in visited:
                     cycle.append(next_node)
@@ -1416,12 +1419,12 @@ class FractionalMatchingSolver:
                             a = cycle[i]
                             b = cycle[(i + 1) % len(cycle)]
                             # Change 0.5 edges to 0 or 1 alternately
-                            new_val = 1 if i % 2 == 0 else 0
+                            new_val = 0 if i % 2 == 0 else 1
                             self.x[(a, b)] = new_val
                             self.x[(b, a)] = new_val
-                        return
+                        return True
                 # If we get here, no cycle was found - this shouldn't happen in theory
-                return
+                return False
             
 if __name__ == '__main__':
 #    import doctest 
