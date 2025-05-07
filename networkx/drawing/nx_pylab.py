@@ -1056,6 +1056,11 @@ def draw(G, pos=None, ax=None, **kwds):
     kwds : optional keywords
         See networkx.draw_networkx() for a description of optional keywords.
 
+    Returns
+    -------
+    matplotlib.collections.PathCollection
+        `PathCollection` of the nodes.
+    
     Examples
     --------
     >>> G = nx.dodecahedral_graph()
@@ -1104,10 +1109,10 @@ def draw(G, pos=None, ax=None, **kwds):
     if "with_labels" not in kwds:
         kwds["with_labels"] = "labels" in kwds
 
-    draw_networkx(G, pos=pos, ax=ax, **kwds)
+    node_collection = draw_networkx(G, pos=pos, ax=ax, **kwds)
     ax.set_axis_off()
     plt.draw_if_interactive()
-    return
+    return node_collection
 
 
 def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
@@ -1236,6 +1241,11 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
         See networkx.draw_networkx_nodes(), networkx.draw_networkx_edges(), and
         networkx.draw_networkx_labels() for a description of optional keywords.
 
+    Returns
+    -------
+    matplotlib.collections.PathCollection
+        `PathCollection` of the nodes.
+
     Notes
     -----
     For directed graphs, arrows  are drawn at the head end.  Arrows can be
@@ -1292,12 +1302,13 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
     if pos is None:
         pos = nx.drawing.spring_layout(G)  # default to spring layout
 
-    draw_networkx_nodes(G, pos, **node_kwds)
+    node_collection = draw_networkx_nodes(G, pos, **node_kwds)
     draw_networkx_edges(G, pos, arrows=arrows, **edge_kwds)
     if with_labels:
         draw_networkx_labels(G, pos, **label_kwds)
     plt.draw_if_interactive()
 
+    return node_collection
 
 def draw_networkx_nodes(
     G,
