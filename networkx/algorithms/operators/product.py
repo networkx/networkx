@@ -459,7 +459,7 @@ def rooted_product(G, H, root):
 
     Raises
     ------
-    NetworkXError
+    NodeNotFound
         If `root` is not a node in `H`.
 
     NetworkXNotImplemented
