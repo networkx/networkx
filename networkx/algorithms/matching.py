@@ -6,19 +6,19 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = [
-    # "is_matching",
-    # "is_maximal_matching",
-    # "is_perfect_matching",
-    # "max_weight_matching",
-    # "min_weight_matching",
-    # "maximal_matching",
-    # "fractional_matching"
+    "is_matching",
+    "is_maximal_matching",
+    "is_perfect_matching",
+    "max_weight_matching",
+    "min_weight_matching",
+    "maximal_matching",
+    "fractional_matching"
 ]
 
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
-# @nx._dispatchable
+@nx._dispatchable
 def maximal_matching(G):
     r"""Find a maximal matching in the graph.
 
@@ -83,7 +83,7 @@ def matching_dict_to_set(matching):
     return edges
 
 
-# @nx._dispatchable
+@nx._dispatchable
 def is_matching(G, matching):
     """Return True if ``matching`` is a valid matching of ``G``
 
@@ -144,7 +144,7 @@ def is_matching(G, matching):
     return True
 
 
-# @nx._dispatchable
+@nx._dispatchable
 def is_maximal_matching(G, matching):
     """Return True if ``matching`` is a maximal matching of ``G``
 
@@ -206,7 +206,7 @@ def is_maximal_matching(G, matching):
     return True
 
 
-# @nx._dispatchable
+@nx._dispatchable
 def is_perfect_matching(G, matching):
     """Return True if ``matching`` is a perfect matching for ``G``
 
@@ -260,7 +260,7 @@ def is_perfect_matching(G, matching):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
-# @nx._dispatchable(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def min_weight_matching(G, weight="weight"):
     """Computing a minimum-weight maximal matching of G.
 
@@ -321,7 +321,7 @@ def min_weight_matching(G, weight="weight"):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
-# @nx._dispatchable(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def max_weight_matching(G, maxcardinality=False, weight="weight"):
     """Compute a maximum-weighted matching of G.
 
@@ -1152,9 +1152,9 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     return matching_dict_to_set(mate)
 
 
-# @not_implemented_for("multigraph")
-# @not_implemented_for("directed")
-# @nx._dispatchable
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
+@nx._dispatchable
 def fractional_matching(G: nx.Graph, initial_matching: Optional[Dict[Tuple[Any, Any], float]] = None) -> Dict[Tuple[Any, Any], float]:
     """Find a maximum fractional matching in the graph.
 
@@ -1192,8 +1192,9 @@ def fractional_matching(G: nx.Graph, initial_matching: Optional[Dict[Tuple[Any, 
     Proggramer: Roi Sibony
     Date: 2025-01-01
     """
-    solver = FractionalMatchingSolver(G, initial_matching)
-    return solver.solve()
+    pass
+    # solver = FractionalMatchingSolver(G, initial_matching)
+    # return solver.solve() # It doesn't fully works there's a bug in the augmentation type 3 for some reason,gets 0.5 also to 5,6 edge
 
 
 class FractionalMatchingSolver:
@@ -1244,6 +1245,7 @@ class FractionalMatchingSolver:
                     # Found a potential type 2 augmentation or need to label more nodes
                     if self._label_or_augment(u, v):
                         self._augment(u, v)
+                        augmented = True
             # If we couldn't augment in this phase, we're done
             if not augmented:
                 break
@@ -1425,9 +1427,3 @@ class FractionalMatchingSolver:
                         return True
                 # If we get here, no cycle was found - this shouldn't happen in theory
                 return False
-            
-if __name__ == '__main__':
-#    import doctest 
-#    doctest.testmod()
-    G  = nx.Graph([(1, 2), (1, 3), (2, 3),(3,4)])
-    print(fractional_matching(G))
