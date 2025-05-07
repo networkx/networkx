@@ -19,6 +19,8 @@ __all__ = [
     "chordal_graph_treewidth",
     "NetworkXTreewidthBoundExceeded",
     "complete_to_chordal_graph",
+    "minimal_elimination_order",
+    "perfect_elimination_order",
 ]
 
 
@@ -31,10 +33,12 @@ class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def is_chordal(G):
+    # TODO: Add source for `chordal ⟺ has PEO`?
     """Checks whether G is a chordal graph.
 
-    A graph is chordal if every cycle of length at least 4 has a chord
-    (an edge joining two nodes not adjacent in the cycle).
+    A graph is chordal if every cycle of length at least 4 has a chord (an edge
+    joining two nodes not adjacent in the cycle). This condition is exactly
+    equivalent to the graph having a perfect elimination ordering.
 
     Parameters
     ----------
@@ -84,9 +88,7 @@ def is_chordal(G):
        selectively reduce acyclic hypergraphs, SIAM J. Comput., 13 (1984),
        pp. 566–579.
     """
-    if len(G.nodes) <= 3:
-        return True
-    return len(_find_chordality_breaker(G)) == 0
+    return len(G.nodes) <= 3 or len(_find_chordality_breaker(G)) == 0
 
 
 @nx._dispatchable
@@ -369,56 +371,6 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
     return ()
 
 
-def _triangulate_to_perfect_elimination_graph(G):
-    # TODO: Add docstring
-    H = G.copy()
-    alpha = dict.fromkeys(H, 0)
-    chords = set()
-    weight = dict.fromkeys(H.nodes(), 0)
-    unnumbered_nodes = list(H.nodes())
-    for i in range(len(H.nodes()), 0, -1):
-        # get the node in unnumbered_nodes with the maximum weight
-        z = max(unnumbered_nodes, key=lambda node: weight[node])
-        unnumbered_nodes.remove(z)
-        alpha[z] = i
-        update_nodes = []
-        for y in unnumbered_nodes:
-            if G.has_edge(y, z):
-                update_nodes.append(y)
-            else:
-                # y_weight will be bigger than node weights between y and z
-                y_weight = weight[y]
-                lower_nodes = [
-                    node for node in unnumbered_nodes if weight[node] < y_weight
-                ]
-                if nx.has_path(H.subgraph(lower_nodes + [z, y]), y, z):
-                    update_nodes.append(y)
-                    chords.add((z, y))
-        # during calculation of paths the weights should not be updated
-        for node in update_nodes:
-            weight[node] += 1
-    H.add_edges_from(chords)
-    return H, alpha
-
-
-is_perfect_elimination_graph = is_chordal
-is_perfect_elimination_graph.__doc__ = """
-Return True if the graph has a perfect elimination ordering.
-
-This is equivalent to being chordal.
-
-Parameters
-----------
-G : NetworkX graph
-    Undirected graph
-
-Returns
--------
-bool
-    True if the graph is chordal (i.e., has a perfect elimination ordering)
-"""
-
-
 @not_implemented_for("directed")
 @nx._dispatchable(returns_graph=True)
 def complete_to_chordal_graph(G):
@@ -461,11 +413,11 @@ def complete_to_chordal_graph(G):
     >>> G = nx.wheel_graph(10)
     >>> H, alpha = complete_to_chordal_graph(G)
     """
-    if is_perfect_elimination_graph(G):
+    if is_chordal(G):
         H = G.copy()
         alpha = dict.fromkeys(H, 0)
     else:
-        H, alpha = _triangulate_to_perfect_elimination_graph(G)
+        H, alpha = _triangulate_fully(G)
 
     return H, alpha
 
@@ -475,7 +427,7 @@ def complete_to_chordal_graph(G):
 @nx._dispatchable
 def minimal_elimination_order(G):
     # TODO: Add docstring
-    return _triangulate_to_perfect_elimination_graph(G)
+    return _triangulate_fully(G)
 
 
 @not_implemented_for("directed")
@@ -483,7 +435,46 @@ def minimal_elimination_order(G):
 @nx._dispatchable
 def perfect_elimination_order(G):
     # TODO: Add docstring
-    if not is_perfect_elimination_graph(G):
+    if not is_chordal(G):
         raise nx.NetworkXError("Input graph is not chordal.")
 
-    return _triangulate_to_perfect_elimination_graph(G)
+    return _triangulate_fully(G)
+
+
+def _triangulate_fully(G):
+    # TODO: Add docstring
+    H = G.copy()
+    alpha = dict.fromkeys(H, 0)
+    chords = set()
+
+    nodes = H.nodes()
+    weights = dict.fromkeys(nodes, 0)
+    unnumbered_nodes = list(nodes)
+    n = len(unnumbered_nodes)
+
+    for k in range(n):
+        # get the node in unnumbered_nodes with the maximum weight
+        z = max(unnumbered_nodes, key=lambda node: weights[node])
+        unnumbered_nodes.remove(z)
+        alpha[z] = n - k
+        update_nodes = []
+
+        for y in unnumbered_nodes:
+            if G.has_edge(y, z):
+                update_nodes.append(y)
+            else:
+                # y_weight will be bigger than node weights between y and z
+                y_weight = weights[y]
+                lower_nodes = [
+                    node for node in unnumbered_nodes if weights[node] < y_weight
+                ]
+                if nx.has_path(H.subgraph(lower_nodes + [z, y]), y, z):
+                    update_nodes.append(y)
+                    chords.add((z, y))
+
+        # during calculation of paths the weights should not be updated
+        for node in update_nodes:
+            weights[node] += 1
+
+    H.add_edges_from(chords)
+    return H, alpha
