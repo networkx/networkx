@@ -1383,7 +1383,7 @@ class FractionalMatchingSolver:
           • set label[v] = "–", label[w] = "+" for that neighbor w,
           • set preds[w] = v, preds[v] = u,
           • return to edge_scan.
-        Otherwise v lies on a ½‑cycle: do the type‑2 augmentation on that cycle,
+        Otherwise v lies on a 1/2‑cycle: do the type‑2 augmentation on that cycle,
         then clear labels/preds for a fresh start.
         """
         # Check if v has a neighbor w with edge value 1
@@ -1396,14 +1396,14 @@ class FractionalMatchingSolver:
                 self.preds[w] = v
                 return False
         
-        # If we get here, v must be on a ½-cycle (type 2 augmentation)
+        # If we get here, v must be on a 1/2-cycle (type 2 augmentation)
         # Find the 1/2 -cycle by tracing from v
         cycle = [v]
         visited = {v}
         # self.labels[v] = "+"
 
         while True:
-            # Find the next node in the cycle (connected by a ½ edge)
+            # Find the next node in the cycle (connected by a 1/2 edge)
             current = cycle[-1]
             next_node_found = False
 
