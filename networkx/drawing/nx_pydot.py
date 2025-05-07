@@ -113,7 +113,7 @@ def from_pydot(P):
 
     """
 
-    if P.get_strict(None):  # pydot bug: get_strict() shouldn't take argument
+    if P.get_strict():  # pydot bug: get_strict() shouldn't take argument
         multiedges = False
     else:
         multiedges = True
