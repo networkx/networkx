@@ -1791,7 +1791,7 @@ def panther_vector_similarity(
         accuracy at the cost of more computation. Defaults to 0.5 as recommended
         in [1]_.
     delta : float
-        The probability that $S$ is not an epsilon-approximation to (R, phi)
+        The probability that ``S`` is not an epsilon-approximation to (R, phi)
     eps : float
         The error bound for similarity approximation. This controls the accuracy
         of the sampled paths in representing the true similarity. Smaller values
