@@ -21,7 +21,7 @@ def _init_node_labels(G, edge_attr, node_attr):
     if node_attr:
         return {u: str(dd[node_attr]) for u, dd in G.nodes(data=True)}
     elif edge_attr:
-        return {u: "" for u in G}
+        return dict.fromkeys(G, "")
     else:
         warnings.warn(
             "The hashes produced for graphs without node or edge attributes"

@@ -107,7 +107,7 @@ def laplacian_centrality(
     if G.size(weight=weight) == 0:
         if normalized:
             raise ZeroDivisionError("graph with no edges has zero full energy")
-        return {n: 0 for n in G}
+        return dict.fromkeys(G, 0)
 
     if nodelist is not None:
         nodeset = set(G.nbunch_iter(nodelist))
