@@ -1800,7 +1800,7 @@ def panther_vector_similarity(
         effective.
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
-        used as a weight. If None then each edge has weight 1.
+        used as a weight. If `None` then each edge has weight 1.
 
     Returns
     -------
