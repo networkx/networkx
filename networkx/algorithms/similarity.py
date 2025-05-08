@@ -1869,7 +1869,7 @@ def panther_vector_similarity(
         top_d_heap = []
 
         # Calculate similarities with all other nodes
-        for _, node_paths in index_map_sets.items():
+        for node_paths in index_map_sets.values():
             # Calculate similarity score
             common_path_count = len(vi_paths.intersection(node_paths))
             similarity = common_path_count * inv_sample_size
