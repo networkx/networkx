@@ -302,7 +302,7 @@ Creating a custom backend
 
 1.  Defining a ``BackendInterface`` object:
 
-    Note that the ``BackendInterface`` doesn't need to must be a class. It can be an
+    Note that the ``BackendInterface`` doesn't need to be a class. It can be an
     instance of a class, or a module as well. You can define the following methods or
     functions in your backend's ``BackendInterface`` object.:
 
@@ -428,6 +428,16 @@ Creating a custom backend
         class BackendGraph:
             __networkx_backend__ = "backend_name"
             ...
+
+    Backend graph objects are also required to implement the methods ``is_directed()`` and
+    ``is_multigraph()``. These methods return boolean values indicating the type of the graph:
+        - ``is_directed()`` should return True if the graph is directed, and False otherwise.
+        - ``is_multigraph()`` should return True if the graph allows multiple (parallel) edges
+          between node pairs, and False otherwise.
+
+    These methods are used by NetworkX utilities such as the ``@not_implemented_for`` decorator
+    to determine whether a graph meets certain type constraints and to raise an error if the
+    function is not applicable to that graph type.
 
     A backend graph instance may have a ``G.__networkx_cache__`` dict to enable
     caching, and care should be taken to clear the cache when appropriate.
