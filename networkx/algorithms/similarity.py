@@ -1760,7 +1760,7 @@ def panther_vector_similarity(
     similarity.
 
     While basic Panther similarity measures how often two nodes appear on the same paths,
-    Panther vector similarity (Panther++) creates a D-dimensional feature vector for each
+    Panther vector similarity (Panther++) creates a ``D``-dimensional feature vector for each
     node using its top similarity scores with other nodes, then computes similarity based
     on the Euclidean distance between these feature vectors. This approach better captures
     structural similarity and addresses the bias towards close neighbors present in
