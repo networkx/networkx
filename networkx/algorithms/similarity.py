@@ -1597,7 +1597,7 @@ def _prepare_panther_paths(
                 f"The number of requested nodes {k} is greater than the number of nodes {num_nodes}."
             )
 
-    inv_node_map = {name: index for index, name in enumerate(G.nodes)}
+    inv_node_map = {name: index for index, name in enumerate(G)}
 
     # Calculate the sample size ``R`` for how many paths
     # to randomly generate
