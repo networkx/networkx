@@ -1777,7 +1777,7 @@ def panther_vector_similarity(
     G : NetworkX graph
         A NetworkX graph
     source : node
-        Source node for whom to find the top ``k`` similar other nodes
+        Source node for which to find the top ``k`` similar other nodes
     D : int
         The number of similarity scores to use (in descending order)
         for each feature vector. Defaults to 50 per [1]_
