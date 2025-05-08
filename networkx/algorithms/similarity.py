@@ -1861,7 +1861,7 @@ def panther_vector_similarity(
     index_map_sets = {node: set(paths) for node, paths in index_map.items()}
 
     # Calculate the path similarities for each node
-    for vi_idx, vi in enumerate(G.nodes):
+    for vi_idx, vi in enumerate(G):
         # Get the set of paths for the current node
         vi_paths = index_map_sets[vi]
 
