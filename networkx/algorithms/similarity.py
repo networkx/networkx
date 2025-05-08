@@ -1653,7 +1653,7 @@ def panther_similarity(
     eps : float or None (default = None)
         The error bound for similarity approximation. This controls the accuracy
         of the sampled paths in representing the true similarity. Smaller values
-        yield more accurate results but require more sample paths. If None, a
+        yield more accurate results but require more sample paths. If `None`, a
         value of ``sqrt(1/|E|)`` is used, which the authors found empirically
         effective.
     weight : string or None, optional (default="weight")
