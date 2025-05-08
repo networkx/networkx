@@ -1554,7 +1554,7 @@ def _prepare_panther_paths(
         Whether to remove isolated nodes from graph processing
     k : int or None
         The number of most similar nodes to return. If provided, validates that
-        k is not greater than the number of nodes in the graph.
+       ``k`` is not greater than the number of nodes in the graph.
 
     Returns
     -------
