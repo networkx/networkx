@@ -38,7 +38,7 @@ def is_chordal(G):
 
     A graph is chordal if every cycle of length at least 4 has a chord (an edge
     joining two nodes not adjacent in the cycle). This condition is exactly
-    equivalent to the graph having a perfect elimination ordering.
+    equivalent to the graph having a perfect elimination ordering, as per [1]_.
 
     Parameters
     ----------
@@ -77,16 +77,21 @@ def is_chordal(G):
     -----
     The routine tries to go through every node following maximum cardinality
     search. It returns False when it finds that the separator for any node
-    is not a clique.  Based on the algorithms in [1]_.
+    is not a clique. Based on the algorithms in [2]_.
 
-    Self loops are ignored.
+    Self-loops are ignored.
 
     References
     ----------
-    .. [1] R. E. Tarjan and M. Yannakakis, Simple linear-time algorithms
-       to test chordality of graphs, test acyclicity of hypergraphs, and
-       selectively reduce acyclic hypergraphs, SIAM J. Comput., 13 (1984),
-       pp. 566–579.
+    .. [1] Chandra, L. S., L. Ibarra, F. Ruskey, and J. Sawada. "Generating and
+           characterizing the perfect elimination orderings of a chordal graph."
+           Theoretical Computer Science 307, no. 2 (2003): 303--317.
+           https://doi.org/10.1016/S0304-3975(03)00221-4.
+    .. [2] Tarjan, Robert E., and Mihalis Yannakakis. "Simple Linear-Time
+           Algorithms to Test Chordality of Graphs, Test Acyclicity of
+           Hypergraphs, and Selectively Reduce Acyclic Hypergraphs." SIAM
+           Journal on Computing 13, no. 3 (1984): 566--79.
+           https://doi.org/10.1137/0213035.
     """
     return len(G.nodes) <= 3 or len(_find_chordality_breaker(G)) == 0
 
@@ -139,13 +144,13 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
     The algorithm is inspired by Algorithm 4 in [1]_.
     A formal definition of induced node can also be found on that reference.
 
-    Self Loops are ignored
+    Self-loops are ignored.
 
     References
     ----------
-    .. [1] Learning Bounded Treewidth Bayesian Networks.
-       Gal Elidan, Stephen Gould; JMLR, 9(Dec):2699--2731, 2008.
-       http://jmlr.csail.mit.edu/papers/volume9/elidan08a/elidan08a.pdf
+    .. [1] Elidan, Gal and Stephen Gould. "Learning Bounded Treewidth Bayesian
+           Networks." Journal of Machine Learning Research 9, no. 91 (2008):
+           2699--731. http://jmlr.org/papers/v9/elidan08a.html.
     """
     if not is_chordal(G):
         raise nx.NetworkXError("Input graph is not chordal.")
@@ -285,9 +290,15 @@ def chordal_graph_treewidth(G):
     >>> nx.chordal_graph_treewidth(G)
     3
 
+    Notes
+    -----
+    See [1]_ for a definition of and further information on treewidth.
+
     References
     ----------
-    .. [1] https://en.wikipedia.org/wiki/Tree_decomposition#Treewidth
+    .. [1] Wikipedia contributors. "Tree decomposition." Wikipedia. Accessed
+           May 8, 2025.
+           https://en.wikipedia.org/wiki/Tree_decomposition#Treewidth
     """
     if not is_chordal(G):
         raise nx.NetworkXError("Input graph is not chordal.")
@@ -301,7 +312,7 @@ def chordal_graph_treewidth(G):
 def _is_complete_graph(G):
     """Returns True if G is a complete graph."""
     if nx.number_of_selfloops(G) > 0:
-        raise nx.NetworkXError("Self loop found in _is_complete_graph()")
+        raise nx.NetworkXError("Self-loop found in _is_complete_graph()")
     n = G.number_of_nodes()
     if n < 2:
         return True
@@ -340,7 +351,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
     If it does find one, it returns (u,v,w) where u,v,w are the three
     nodes that together with s are involved in the cycle.
 
-    It ignores any self loops.
+    It ignores any self-loops.
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("Graph has no nodes.")
@@ -397,16 +408,14 @@ def complete_to_chordal_graph(G):
     There are different approaches to calculate the chordal
     enhancement of a graph. The algorithm used here is called
     MCS-M and gives at least minimal (local) triangulation of graph. Note
-    that this triangulation is not necessarily a global minimum.
-
-    https://en.wikipedia.org/wiki/Chordal_graph
+    that this triangulation is not necessarily a global minimum [1]_.
 
     References
     ----------
-    .. [1] Berry, Anne & Blair, Jean & Heggernes, Pinar & Peyton, Barry. (2004)
-           Maximum Cardinality Search for Computing Minimal Triangulations of
-           Graphs.  Algorithmica. 39. 287-298. 10.1007/s00453-004-1084-3.
-
+    .. [1] Berry, Anne, Jean R. S. Blair, Pinar Heggernes, and Barry W. Peyton.
+           "Maximum Cardinality Search for Computing Minimal Triangulations of
+           Graphs." Algorithmica 39, no. 4: 287--98.
+           https://doi.org/10.1007/s00453-004-1084-3.
     Examples
     --------
     >>> from networkx.algorithms.chordal import complete_to_chordal_graph
@@ -447,9 +456,8 @@ def _triangulate_fully(G):
     alpha = dict.fromkeys(H, 0)
     chords = set()
 
-    nodes = H.nodes()
-    weights = dict.fromkeys(nodes, 0)
-    unnumbered_nodes = list(nodes)
+    weights = dict.fromkeys(H, 0)
+    unnumbered_nodes = list(H)
     n = len(unnumbered_nodes)
 
     for k in range(n):
