@@ -30,7 +30,6 @@ import typing
 import warnings
 from functools import partial
 from importlib.metadata import entry_points
-from types import MethodType
 
 import networkx as nx
 
@@ -462,6 +461,8 @@ class _dispatchable:
         # in small additional overhead compared to calling `_dispatchable` directly,
         # but `argmap` has the property that it can stack with other `argmap`
         # decorators "for free". Being a function is better for REPRs and type-checkers.
+        # It also allows `_dispatchable` to be used on class methods, since functions
+        # define `__get__`. Without using `argmap`, we would need to define `__get__`.
         self = argmap(_do_nothing)(self)
         _registered_algorithms[name] = self
         return self
@@ -1946,11 +1947,6 @@ class _dispatchable:
             lines.insert(index, to_add)
             new_doc = "\n".join(lines)
         return new_doc
-
-    def __get__(self, obj, objtype=None):
-        if obj is None:
-            return self
-        return MethodType(self, obj)
 
     def __reduce__(self):
         """Allow this object to be serialized with pickle.
