@@ -385,7 +385,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 @not_implemented_for("directed")
 @nx._dispatchable(returns_graph=True)
 def complete_to_chordal_graph(G):
-    """Return a copy of G completed to a chordal graph
+    """Return a copy of G completed to a chordal graph.
 
     Adds edges to a copy of G to create a chordal graph. A graph G=(V,E) is
     called chordal if for each cycle with length bigger than 3, there exist
@@ -410,12 +410,18 @@ def complete_to_chordal_graph(G):
     MCS-M and gives at least minimal (local) triangulation of graph. Note
     that this triangulation is not necessarily a global minimum [1]_.
 
+    Moreover, if G is already chordal, then this function will return early
+    before running MCS-M, and alpha will consist entirely of zeros. To avoid
+    this behavior, use `minimal_elimination_order` instead (or
+    `perfect_elimination_order` if G is known to be chordal).
+
     References
     ----------
     .. [1] Berry, Anne, Jean R. S. Blair, Pinar Heggernes, and Barry W. Peyton.
            "Maximum Cardinality Search for Computing Minimal Triangulations of
            Graphs." Algorithmica 39, no. 4: 287--98.
            https://doi.org/10.1007/s00453-004-1084-3.
+
     Examples
     --------
     >>> from networkx.algorithms.chordal import complete_to_chordal_graph
@@ -435,7 +441,24 @@ def complete_to_chordal_graph(G):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def minimal_elimination_order(G):
-    # TODO: Add docstring
+    """Return a copy of G triangulated to a minimal elimination ordering.
+
+    Does the same thing as `complete_to_chordal_graph`, but ensures that the
+    MCS-M algorithm is always run even if the graph is already chordal, in
+    contrast to the early return in `complete_to_chordal_graph`.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+
+    Returns
+    -------
+    H : NetworkX graph
+        The chordal enhancement of G
+    alpha : Dictionary
+            The elimination ordering of nodes of G
+    """
     return _triangulate_fully(G)
 
 
@@ -443,7 +466,29 @@ def minimal_elimination_order(G):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def perfect_elimination_order(G):
-    # TODO: Add docstring
+    """Return a copy of G triangulated to a perfect elimination ordering.
+
+    A graph has a perfect elimination ordering if and only if it is chordal
+    (see the `is_chordal` documentation for more details); thus, an error is
+    raised if G is not chordal.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+
+    Returns
+    -------
+    H : NetworkX graph
+        The chordal enhancement of G
+    alpha : Dictionary
+            The elimination ordering of nodes of G
+
+    Raises
+    ------
+    NetworkXError
+        If the input graph is not chordal, a :exc:`NetworkXError` is raised.
+    """
     if not is_chordal(G):
         raise nx.NetworkXError("Input graph is not chordal.")
 
