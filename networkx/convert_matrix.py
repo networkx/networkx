@@ -1307,8 +1307,12 @@ def from_numpy_array(
     if G.is_multigraph() and not G.is_directed():
         triples = ((u, v, d) for u, v, d in triples if u <= v)
     # Remap nodes if user provided custom `nodelist`
+    # Also handles the case where nodelist is provided as a container of (node, attribute dict) tuples
     if not _default_nodes:
-        idx_to_node = dict(enumerate(nodelist))
+        if type(nodelist[0]) != tuple:
+            idx_to_node = dict(enumerate(nodelist))
+        else:
+            idx_to_node = dict(enumerate([node for node, attr in nodelist]))
         triples = ((idx_to_node[u], idx_to_node[v], d) for u, v, d in triples)
     G.add_edges_from(triples)
     return G
