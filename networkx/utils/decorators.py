@@ -81,8 +81,8 @@ def not_implemented_for(*graph_types):
     errmsg = f"not implemented for {' '.join(graph_types)} type"
 
     def _not_implemented_for(g):
-        if (mval is None or mval == g.is_multigraph()) and (
-            dval is None or dval == g.is_directed()
+        if (mval is None or mval == nx.is_multigraph(g)) and (
+            dval is None or dval == nx.is_directed(g)
         ):
             raise nx.NetworkXNotImplemented(errmsg)
 
