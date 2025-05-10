@@ -7,8 +7,6 @@ Utility functions for the algorithm :
 
 from collections.abc import Sequence
 
-import numpy as np
-
 import networkx as nx
 from networkx.algorithms.bipartite_ged.costfunctions import (
     ConstantCostFunction,
@@ -18,7 +16,7 @@ from networkx.algorithms.bipartite_ged.costfunctions import (
 
 def compute_bipartite_cost_matrix(
     g1: nx.Graph, g2: nx.Graph, cf: CostFunction | None = None
-) -> np.ndarray:
+) -> "np.ndarray":
     """Compute a cost matrix according to cost function `cf`
 
     Let $n$ and $m$ be the number of nodes of `g1` and `g2` respectively,
@@ -120,6 +118,8 @@ def compute_bipartite_cost_matrix(
     :mod:`.solvers` : More details about the solution of the *LSAP*
     :mod:`.costfunctions` : Edit cost function to build the assignment cost matrix
     """
+    import numpy as np
+
     if cf is None:
         cf = ConstantCostFunction(1, 3, 1, 3)
 
@@ -141,8 +141,8 @@ def compute_bipartite_cost_matrix(
 
 
 def convert_mapping(
-    rho: Sequence[int] | np.ndarray,
-    varrho: Sequence[int] | np.ndarray,
+    rho: Sequence[int],
+    varrho: Sequence[int],
     g1: nx.Graph,
     g2: nx.Graph,
 ) -> tuple:

@@ -9,6 +9,9 @@ from networkx.algorithms.bipartite_ged.bipartite_ged import BipartiteGED
 from networkx.algorithms.bipartite_ged.costfunctions import ConstantCostFunction
 from networkx.algorithms.bipartite_ged.tests.test_utils import *
 
+pytest.importorskip("numpy")
+pytest.importorskip("scipy")
+
 
 def test_wrong_mapping_missing_node_u():
     g1, g2 = load_test_graphs()

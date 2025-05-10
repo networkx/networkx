@@ -9,8 +9,6 @@ between two graphs by computing an upper bound.
 from collections.abc import Callable
 from typing import Any
 
-import numpy as np
-
 import networkx as nx
 from networkx.algorithms.bipartite_ged.bpged_utils import (
     compute_bipartite_cost_matrix,

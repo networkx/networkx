@@ -17,9 +17,6 @@ import sys
 from collections.abc import Callable
 from typing import Any, Protocol
 
-import numpy as np
-import scipy as sp
-
 import networkx as nx
 
 
@@ -473,6 +470,10 @@ class RiesenCostFunction:
         Hence, it is important for this given cost function to be able to
         compare edges (ie, by providing an edges comparison function).
         """
+        import numpy as np
+        import scipy as sp
+
+        self.np = np
         self.cf_ = cf
         self.lsap_solver_ = (
             lsap_solver
@@ -505,7 +506,7 @@ class RiesenCostFunction:
         """
         n = len(g1[node_u])
         m = len(g2[node_v])
-        sub_C = np.ones([n + m, n + m]) * sys.maxsize
+        sub_C = self.np.ones([n + m, n + m]) * sys.maxsize
         sub_C[n:, m:] = 0
         i = 0
         l_nbr_u = g1[node_u]
@@ -529,7 +530,7 @@ class RiesenCostFunction:
             sub_C[n + j, j] = self.cf_.cei((node_v, nbr_v), g2)
             j += 1
         row_ind, col_ind = self.lsap_solver_(sub_C)
-        cost = np.sum(sub_C[row_ind, col_ind])
+        cost = self.np.sum(sub_C[row_ind, col_ind])
         return self.cf_.cns(node_u, node_v, g1, g2) + cost.item()
 
     def cnd(self, node_u: Any, g1: nx.Graph) -> int:
@@ -729,6 +730,10 @@ class NeighborhoodCostFunction:
         Hence, it is important for this given cost function to be able to
         compare edges (ie, by providing an edges comparison function).
         """
+        import numpy as np
+        import scipy as sp
+
+        self.np = np
         self.cf_ = cf
         self.lsap_solver_ = (
             lsap_solver
@@ -761,7 +766,7 @@ class NeighborhoodCostFunction:
         """
         n = len(g1[node_u])
         m = len(g2[node_v])
-        sub_C = np.ones([n + m, n + m]) * sys.maxsize
+        sub_C = self.np.ones([n + m, n + m]) * sys.maxsize
         sub_C[n:, m:] = 0
         i = 0
         l_nbr_u = g1[node_u]
@@ -789,7 +794,7 @@ class NeighborhoodCostFunction:
             j += 1
 
         row_ind, col_ind = self.lsap_solver_(sub_C)
-        cost = np.sum(sub_C[row_ind, col_ind])
+        cost = self.np.sum(sub_C[row_ind, col_ind])
         return self.cf_.cns(node_u, node_v, g1, g2) + cost.item()
 
     def cnd(self, node_u: Any, g1: nx.Graph) -> int:

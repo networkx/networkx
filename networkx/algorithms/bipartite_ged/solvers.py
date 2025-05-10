@@ -16,9 +16,6 @@ matching cost $\\sum_{i = 1}^n C_{i, \\phi_i}$
 
 from typing import Protocol
 
-import numpy as np
-import scipy as sp
-
 
 class Solver(Protocol):
     """`Solver` Protocol
@@ -28,7 +25,7 @@ class Solver(Protocol):
     Any custom solver must implement the `solve` method.
     """
 
-    def solve(self, cost_matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def solve(self, cost_matrix: "np.ndarray") -> tuple["np.ndarray", "np.ndarray"]:
         """Compute optimum assignment between two sets where
         `cost_matrix` encodes the assignment costs : `cost_matrix[i, j]`
         contains the assignment cost between element of index `i` in $A$
@@ -81,7 +78,7 @@ class SolverLSAP:
     def __init__(self):
         pass
 
-    def solve(self, C: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def solve(self, C: "np.ndarray") -> tuple["np.ndarray", "np.ndarray"]:
         """Solves the LSAP using the Jonker-Volgenant Algorithm from `scipy` [1]_.
 
         Compute optimum assignment between two sets where
@@ -166,5 +163,7 @@ class SolverLSAP:
            scipy.optimize.linear_sum_assignment,
            https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html
         """
+        import scipy as sp
+
         row_ind, col_ind = sp.optimize.linear_sum_assignment(C)
         return row_ind, col_ind

@@ -4,9 +4,12 @@ Function making tests code simple
 
 from typing import Any
 
-import numpy as np
+import pytest
 
 import networkx as nx
+
+np = pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 
 def load_test_graphs() -> tuple[nx.Graph, nx.Graph]:
@@ -50,7 +53,7 @@ def comp_edges(
     return g1[e1[0]][e1[1]]["edge_attr"] == g2[e2[0]][e2[1]]["edge_attr"]
 
 
-def constant_cost_matrix() -> np.ndarray:
+def constant_cost_matrix():
     """Cost matrix for `ConstantCostFunction`"""
     return np.array(
         [
@@ -65,7 +68,7 @@ def constant_cost_matrix() -> np.ndarray:
     )
 
 
-def riesen_cost_matrix() -> np.ndarray:
+def riesen_cost_matrix():
     """Cost matrix for `RiesenCostFunction`"""
     return np.array(
         [
@@ -80,7 +83,7 @@ def riesen_cost_matrix() -> np.ndarray:
     )
 
 
-def neighborhood_cost_matrix() -> np.ndarray:
+def neighborhood_cost_matrix():
     """Cost matrix for `NeighborhoodCostFunction`"""
     return np.array(
         [

@@ -2,13 +2,15 @@
 Tests for module `costfunctions`
 """
 
-import networkx as nx
 from networkx.algorithms.bipartite_ged.costfunctions import (
     ConstantCostFunction,
     NeighborhoodCostFunction,
     RiesenCostFunction,
 )
 from networkx.algorithms.bipartite_ged.tests.test_utils import *
+
+pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 
 class TestConstantCostFunction:

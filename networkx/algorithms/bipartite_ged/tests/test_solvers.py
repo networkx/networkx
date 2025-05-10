@@ -8,6 +8,7 @@ from networkx.algorithms.bipartite_ged.solvers import SolverLSAP
 from networkx.algorithms.bipartite_ged.tests.test_utils import *
 
 np = pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 
 class TestSolverLSAP:

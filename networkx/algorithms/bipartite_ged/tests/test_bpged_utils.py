@@ -13,6 +13,7 @@ from networkx.algorithms.bipartite_ged.costfunctions import *
 from networkx.algorithms.bipartite_ged.tests.test_utils import *
 
 np = pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 
 class TestComputeBipartiteCostMatrix:

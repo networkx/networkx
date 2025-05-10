@@ -181,6 +181,10 @@ collect_ignore = []
 
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
+    "algorithms/bipartite_ged/costfunctions.py",
+    "algorithms/bipartite_ged/solvers.py",
+    "algorithms/bipartite_ged/bpged_utils.py",
+    "algorithms/bipartite_ged/bipartite_ged.py",
     "algorithms/centrality/current_flow_closeness.py",
     "algorithms/centrality/laplacian.py",
     "algorithms/node_classification.py",
@@ -201,6 +205,10 @@ needs_scipy = [
     "algorithms/assortativity/pairs.py",
     "algorithms/bipartite/matrix.py",
     "algorithms/bipartite/spectral.py",
+    "algorithms/bipartite_ged/costfunctions.py",
+    "algorithms/bipartite_ged/solvers.py",
+    "algorithms/bipartite_ged/bpged_utils.py",
+    "algorithms/bipartite_ged/bipartite_ged.py",
     "algorithms/centrality/current_flow_betweenness.py",
     "algorithms/centrality/current_flow_betweenness_subset.py",
     "algorithms/centrality/eigenvector.py",
