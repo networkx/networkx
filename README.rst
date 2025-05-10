@@ -87,9 +87,9 @@ see the `contributor guide <https://networkx.org/documentation/latest/developer/
 License
 -------
 
-Released under the `3-Clause BSD license <https://github.com/networkx/networkx/blob/main/LICENSE.txt>`_::
+Released under the `3-clause BSD license <https://github.com/networkx/networkx/blob/main/LICENSE.txt>`_::
 
-    Copyright (C) 2004-2024 NetworkX Developers
+    Copyright (c) 2004-2024, NetworkX Developers
     Aric Hagberg <hagberg@lanl.gov>
     Dan Schult <dschult@colgate.edu>
     Pieter Swart <swart@lanl.gov>
