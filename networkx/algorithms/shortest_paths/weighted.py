@@ -834,6 +834,14 @@ def _dijkstra_multisource(
     as arguments. No need to explicitly return pred or paths.
 
     """
+    if target is None:
+        paths_dict = paths
+    else:
+        # computing paths is expensive, we compute pred instad since we only need it
+        # for one specific target
+        paths_dict = None
+        if pred is None:
+            pred = {}
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
     push = heappush
@@ -871,14 +879,23 @@ def _dijkstra_multisource(
             elif u not in seen or vu_dist < seen[u]:
                 seen[u] = vu_dist
                 push(fringe, (vu_dist, next(c), u))
-                if paths is not None:
-                    paths[u] = paths[v] + [u]
+                if paths_dict is not None:
+                    paths_dict[u] = paths_dict[v] + [u]
                 if pred is not None:
                     pred[u] = [v]
             elif vu_dist == seen[u]:
                 if pred is not None:
                     pred[u].append(v)
 
+    if target is not None and paths is not None:
+        # reconstruct the path from source to target
+        reversed_target_path = []
+        next_node = target
+        while next_node is not None:
+            reversed_target_path.append(next_node)
+            next_nodes = pred.get(next_node)
+            next_node = next_nodes and next_nodes[0]
+        paths[target] = list(reversed(reversed_target_path))
     # The optional predecessor and path dictionaries can be accessed
     # by the caller via the pred and paths objects passed as arguments.
     return dist
