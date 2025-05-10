@@ -202,6 +202,7 @@ needs_scipy = [
     "algorithms/assortativity/pairs.py",
     "algorithms/bipartite/matrix.py",
     "algorithms/bipartite/spectral.py",
+    "algorithms/bipartite/link_analysis.py",
     "algorithms/centrality/current_flow_betweenness.py",
     "algorithms/centrality/current_flow_betweenness_subset.py",
     "algorithms/centrality/eigenvector.py",
