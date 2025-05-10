@@ -131,6 +131,7 @@ def _set_configs_from_environment():
             if not isinstance(cfg, Config):
                 cfg = Config(**cfg)
         backend_config[backend] = cfg
+
     backend_config = Config(**backend_config)
     # Setting doc of backends_config type is not setting doc of Config
     # Config has __new__ method that returns instance with a unique type!
@@ -141,6 +142,7 @@ def _set_configs_from_environment():
     config = NetworkXConfig(
         backend_priority=backend_priority,
         backends=backend_config,
+        graph_type_backends_map={},
         cache_converted_graphs=bool(
             os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", True)
         ),
@@ -149,6 +151,9 @@ def _set_configs_from_environment():
             _comma_sep_to_list(os.environ.get("NETWORKX_WARNINGS_TO_IGNORE", ""))
         ),
     )
+    for backend, cfg in backend_config.items():
+        for graph_type in getattr(cfg, "graph_types", []):
+            config.graph_type_backends_map.setdefault(graph_type, []).append(backend)
 
     # Add "networkx" item to backend_info now b/c backend_config is set up
     backend_info["networkx"] = {}
@@ -202,6 +207,17 @@ def _load_backend(backend_name):
     if not hasattr(rv, "should_run"):
         rv.should_run = _always_run
     return rv
+
+
+def _graph_backends(g, default=None):
+    ret = [
+        getattr(g, "__networkx_backend__", None),
+    ] + nx.config.graph_type_backends_map.get(type(g), [])
+    return [x for x in ret if x is not None] or ([default] if default else [])
+
+
+def _needs_conversion(g, backend_name):
+    return all(b != backend_name for b in _graph_backends(g, "networkx"))
 
 
 class _dispatchable:
@@ -587,19 +603,22 @@ class _dispatchable:
                     args[self.graphs[gname]] = list_of_graphs
 
             graph_backend_names = {
-                getattr(g, "__networkx_backend__", None)
+                backend
                 for gname, g in graphs_resolved.items()
                 if gname not in self.list_graphs
+                for backend in _graph_backends(g)
             }
             for gname in self.list_graphs & graphs_resolved.keys():
                 graph_backend_names.update(
-                    getattr(g, "__networkx_backend__", None)
+                    backend
                     for g in graphs_resolved[gname]
+                    for backend in _graph_backends(g)
                 )
         else:
             graph_backend_names = {
-                getattr(g, "__networkx_backend__", None)
+                backend
                 for g in graphs_resolved.values()
+                for backend in _graph_backends(g)
             }
 
         backend_priority = nx.config.backend_priority.get(
@@ -1287,7 +1306,7 @@ class _dispatchable:
                         use_cache=use_cache,
                         mutations=mutations,
                     )
-                    if getattr(g, "__networkx_backend__", "networkx") != backend_name
+                    if _needs_conversion(g, backend_name)
                     else g
                     for g in bound.arguments[gname]
                 ]
@@ -1315,7 +1334,7 @@ class _dispatchable:
                     preserve_graph = gname in preserve_graph_attrs
                 else:
                     preserve_graph = preserve_graph_attrs
-                if getattr(graph, "__networkx_backend__", "networkx") != backend_name:
+                if _needs_conversion(graph, backend_name):
                     bound.arguments[gname] = self._convert_graph(
                         backend_name,
                         graph,
@@ -1395,7 +1414,7 @@ class _dispatchable:
                 _logger.debug(
                     "Using cached converted graph (from '%s' to '%s' backend) "
                     "in call to '%s' for '%s' argument",
-                    getattr(graph, "__networkx_backend__", None),
+                    _graph_backends(graph),
                     backend_name,
                     self.name,
                     graph_name,
@@ -1403,9 +1422,10 @@ class _dispatchable:
                 return rv
 
         if backend_name == "networkx":
+            backend_names = _graph_backends(graph)
             # Perhaps we should check that "__networkx_backend__" attribute exists
             # and return the original object if not.
-            if not hasattr(graph, "__networkx_backend__"):
+            if not backend_names:
                 _logger.debug(
                     "Unable to convert input to 'networkx' backend in call to '%s' for "
                     "'%s argument, because it is not from a backend (i.e., it does not "
@@ -1417,13 +1437,15 @@ class _dispatchable:
                 )
                 # This may fail, but let it fail in the networkx function
                 return graph
-            backend = _load_backend(graph.__networkx_backend__)
-            try:
-                rv = backend.convert_to_nx(graph)
-            except Exception:
-                if nx_cache is not None:
-                    _set_to_cache(cache, key, FAILED_TO_CONVERT)
-                raise
+            for backend_name in backend_names:
+                backend = _load_backend(backend_name)
+                try:
+                    rv = backend.convert_to_nx(graph)
+                    break
+                except Exception:
+                    if nx_cache is not None:
+                        _set_to_cache(cache, key, FAILED_TO_CONVERT)
+                    raise
         else:
             backend = _load_backend(backend_name)
             try:
@@ -1449,7 +1471,7 @@ class _dispatchable:
             _logger.debug(
                 "Caching converted graph (from '%s' to '%s' backend) "
                 "in call to '%s' for '%s' argument",
-                getattr(graph, "__networkx_backend__", None),
+                _graph_backends(graph),
                 backend_name,
                 self.name,
                 graph_name,
@@ -1730,11 +1752,10 @@ class _dispatchable:
             self._returns_graph
             != (
                 isinstance(result, nx.Graph)
-                or hasattr(result, "__networkx_backend__")
+                or _graph_backends(result)
                 or isinstance(result, tuple | list)
                 and any(
-                    isinstance(x, nx.Graph) or hasattr(x, "__networkx_backend__")
-                    for x in result
+                    isinstance(x, nx.Graph) or _graph_backends(result) for x in result
                 )
             )
             and not (
