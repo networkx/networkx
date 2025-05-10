@@ -611,6 +611,14 @@ def test_is_aperiodic_cycle4():
     assert nx.is_aperiodic(G)
 
 
+def test_is_aperiodic_cycle5():
+    G = nx.DiGraph()
+    nx.add_cycle(G, [1, 2, 3, 4])
+    nx.add_cycle(G, [5, 6, 7])
+    G.add_edge(5, 1)
+    assert nx.is_aperiodic(G)
+
+
 def test_is_aperiodic_selfloop():
     G = nx.DiGraph()
     nx.add_cycle(G, [1, 2, 3, 4])
@@ -655,6 +663,39 @@ def test_is_aperiodic_disconnected2():
     G = nx.DiGraph()
     nx.add_cycle(G, [0, 1, 2])
     G.add_edge(3, 3)
+    assert nx.is_aperiodic(G)
+
+
+def test_is_aperiodic_acyclic_component():
+    G = nx.DiGraph()
+    G.add_node(0)
+    G.add_edge(1, 1)
+    assert nx.is_aperiodic(G)
+
+
+def test_is_aperiodic_acyclic_component2():
+    G = nx.DiGraph()
+    G.add_node(0)
+    nx.add_cycle(G, [1, 2, 3])
+    nx.add_cycle(G, [2, 3, 4, 5])
+    assert nx.is_aperiodic(G)
+
+
+def test_is_aperiodic_scc_division():
+    """Tests that `is_aperiodic` correctly divides the graph into
+    SCCs (Strongly Connected Components) before checking for aperiodicity.
+    """
+    G = nx.DiGraph()
+
+    # Would detect a length-2 cycle if not divided into SCCs
+    # The subgraph is actually acyclic
+    nx.add_path(G, [1, 2])
+    nx.add_path(G, [1, 3, 4])
+    G.add_edge(4, 2)
+
+    # A length-3 cycle
+    nx.add_cycle(G, [5, 6, 7])
+
     assert not nx.is_aperiodic(G)
 
 
