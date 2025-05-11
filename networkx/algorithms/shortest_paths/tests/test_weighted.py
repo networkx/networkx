@@ -1,3 +1,5 @@
+from random import Random
+
 import pytest
 
 import networkx as nx
@@ -110,6 +112,45 @@ class WeightedTestBase:
 
 
 class TestWeightedPath(WeightedTestBase):
+    @pytest.mark.parametrize("seed", list(range(10)))
+    @pytest.mark.parametrize("n", list(range(10, 20)))
+    @pytest.mark.parametrize("prob", [x / 10 for x in range(0, 10, 2)])
+    def test_shortest_paths_properties(self, seed, n, prob):
+        max_weight = [5, 10, 1000]
+        rng = Random(seed)
+        # we compose it with a random tree to ensure graph is connected
+        G = nx.compose(
+            nx.random_labeled_tree(n, seed=rng),
+            nx.erdos_renyi_graph(n, prob, seed=rng),
+        )
+        for w in max_weight:
+            for u, v in G.edges():
+                G[u][v]["w"] = rng.randint(1, w)
+
+            for source in G:
+                pred, dist = nx.dijkstra_predecessor_and_distance(G, source, weight="w")
+                dist2, paths = nx.single_source_dijkstra(G, source, weight="w")
+
+                # Check consistency
+                assert dist == dist2
+
+                # Check base case
+                assert dist[source] == 0
+                assert pred[source] == []
+                assert paths[source] == [source]
+
+                # Check inductive step
+                for v in sorted(set(G) - {source}):
+                    assert dist[v] == min(
+                        dist[u] + G[u][v]["w"] for u in G.neighbors(v)
+                    )
+
+                    assert sorted(pred[v]) == [
+                        u for u in sorted(G.neighbors(v)) if dist[v] == dist[u] + G[u][v]["w"]
+                    ]
+
+                    assert any(paths[v] == paths[pred_v] + [v] for pred_v in pred[v])
+
     def test_dijkstra(self):
         (D, P) = nx.single_source_dijkstra(self.XG, "s")
         validate_path(self.XG, "s", "v", 9, P["v"])
