@@ -615,8 +615,7 @@ class MultiGraph(Graph):
                 if ne != 3:
                     raise
                 key = dd  # ne == 3 with 3rd value not dict, must be a key
-            key = self.add_edge(u, v, key)
-            self[u][v][key].update(ddd)
+            key = self.add_edge(u, v, key, **ddd)
             keylist.append(key)
         nx._clear_cache(self)
         return keylist
