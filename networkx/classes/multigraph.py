@@ -307,6 +307,12 @@ class MultiGraph(Graph):
         """
         return MultiGraph
 
+    # This __new__ method just does what Python itself does automatically.
+    # We include it here as part of the dispatchable/backend interface.
+    # If your goal is to understand how the graph classes work, you can ignore
+    # this method, even when subclassing the base classes. If you are subclassing
+    # in order to provide a backend that allows class instantiation, this method
+    # can be overridden to return your own backend graph class.
     @nx._dispatchable(name="multigraph__new__", graphs=None, returns_graph=True)
     def __new__(cls, incoming_graph_data=None, multigraph_input=None, **attr):
         return object.__new__(cls)
