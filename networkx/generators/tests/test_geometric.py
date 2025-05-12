@@ -402,7 +402,7 @@ def test_mean_kappas_mean_degree_S1():
 
 
 def test_dict_kappas_S1():
-    kappas = {i: 10 for i in range(1000)}
+    kappas = dict.fromkeys(range(1000), 10)
     G = nx.geometric_soft_configuration_graph(beta=1, kappas=kappas)
     assert len(G) == 1000
     kappas = nx.get_node_attributes(G, "kappa")
@@ -432,7 +432,7 @@ def test_wrong_parameters_S1():
         nx.NetworkXError,
         match="When kappas is input, n, gamma and mean_degree must not be.",
     ):
-        kappas = {i: 10 for i in range(1000)}
+        kappas = dict.fromkeys(range(1000), 10)
         G = nx.geometric_soft_configuration_graph(
             beta=1.5, kappas=kappas, gamma=2.3, seed=42
         )

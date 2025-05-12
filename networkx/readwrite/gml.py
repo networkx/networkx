@@ -163,18 +163,18 @@ def read_gml(path, label="label", destringizer=None):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_gml(G, "test.gml")
+    >>> nx.write_gml(G, "test_path4.gml")
 
     GML values are interpreted as strings by default:
 
-    >>> H = nx.read_gml("test.gml")
+    >>> H = nx.read_gml("test_path4.gml")
     >>> H.nodes
     NodeView(('0', '1', '2', '3'))
 
     When a `destringizer` is provided, GML values are converted to the provided type.
     For example, integer nodes can be recovered as shown below:
 
-    >>> J = nx.read_gml("test.gml", destringizer=int)
+    >>> J = nx.read_gml("test_path4.gml", destringizer=int)
     >>> J.nodes
     NodeView((0, 1, 2, 3))
 
@@ -868,12 +868,12 @@ def write_gml(G, path, stringizer=None):
 
     Examples
     --------
-    >>> G = nx.path_graph(4)
-    >>> nx.write_gml(G, "test.gml")
+    >>> G = nx.path_graph(5)
+    >>> nx.write_gml(G, "test_path5.gml")
 
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> nx.write_gml(G, "test.gml.gz")
+    >>> nx.write_gml(G, "test_path5.gml.gz")
     """
     for line in generate_gml(G, stringizer):
         path.write((line + "\n").encode("ascii"))

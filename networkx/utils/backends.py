@@ -1192,9 +1192,7 @@ class _dispatchable:
             if edge_attrs[0] == "[":
                 # e.g. `edge_attrs="[edge_attributes]"` (argument of list of attributes)
                 # e.g. `func(edge_attributes=["foo", "bar"])`
-                edge_attrs = {
-                    edge_attr: 1 for edge_attr in bound.arguments[edge_attrs[1:-1]]
-                }
+                edge_attrs = dict.fromkeys(bound.arguments[edge_attrs[1:-1]], 1)
             elif callable(bound.arguments[edge_attrs]):
                 # e.g. `edge_attrs="weight"` and `func(weight=myfunc)`
                 preserve_edge_attrs = True
@@ -1206,9 +1204,7 @@ class _dispatchable:
                 bound.arguments["dtype"], "names"
             ):
                 # Custom handling: attributes may be obtained from `dtype`
-                edge_attrs = {
-                    edge_attr: 1 for edge_attr in bound.arguments["dtype"].names
-                }
+                edge_attrs = dict.fromkeys(bound.arguments["dtype"].names, 1)
             else:
                 # e.g. `edge_attrs="weight"` and `func(weight=None)`
                 edge_attrs = None
@@ -1258,9 +1254,7 @@ class _dispatchable:
             if node_attrs[0] == "[":
                 # e.g. `node_attrs="[node_attributes]"` (argument of list of attributes)
                 # e.g. `func(node_attributes=["foo", "bar"])`
-                node_attrs = {
-                    node_attr: None for node_attr in bound.arguments[node_attrs[1:-1]]
-                }
+                node_attrs = dict.fromkeys(bound.arguments[node_attrs[1:-1]])
             elif callable(bound.arguments[node_attrs]):
                 # e.g. `node_attrs="weight"` and `func(weight=myfunc)`
                 preserve_node_attrs = True

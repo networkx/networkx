@@ -1645,7 +1645,14 @@ def panther_similarity(
 @np_random_state(5)
 @nx._dispatchable(edge_attrs="weight")
 def generate_random_paths(
-    G, sample_size, path_length=5, index_map=None, weight="weight", seed=None
+    G,
+    sample_size,
+    path_length=5,
+    index_map=None,
+    weight="weight",
+    seed=None,
+    *,
+    source=None,
 ):
     """Randomly generate `sample_size` paths of length `path_length`.
 
@@ -1669,6 +1676,9 @@ def generate_random_paths(
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    source : node, optional
+        Node to use as the starting point for all generated paths.
+        If None then starting nodes are selected at random with uniform probability.
 
     Returns
     -------
@@ -1677,20 +1687,30 @@ def generate_random_paths(
 
     Examples
     --------
-    Note that the return value is the list of paths:
+    The generator yields `sample_size` number of paths of length `path_length`
+    drawn from `G`:
 
-    >>> G = nx.star_graph(3)
-    >>> random_path = nx.generate_random_paths(G, 2)
+    >>> G = nx.complete_graph(5)
+    >>> next(nx.generate_random_paths(G, sample_size=1, path_length=3, seed=42))
+    [3, 4, 2, 3]
+    >>> list(nx.generate_random_paths(G, sample_size=3, path_length=4, seed=42))
+    [[3, 4, 2, 3, 0], [2, 0, 2, 1, 0], [2, 0, 4, 3, 0]]
 
     By passing a dictionary into `index_map`, it will build an
     inverted index mapping of nodes to the paths in which that node is present:
 
-    >>> G = nx.star_graph(3)
+    >>> G = nx.wheel_graph(10)
     >>> index_map = {}
-    >>> random_paths = list(nx.generate_random_paths(G, 3, index_map=index_map))
+    >>> random_paths = list(
+    ...     nx.generate_random_paths(G, sample_size=3, index_map=index_map, seed=2771)
+    ... )
+    >>> random_paths
+    [[3, 2, 1, 9, 8, 7], [4, 0, 5, 6, 7, 8], [3, 0, 5, 0, 9, 8]]
     >>> paths_containing_node_0 = [
     ...     random_paths[path_idx] for path_idx in index_map.get(0, [])
     ... ]
+    >>> paths_containing_node_0
+    [[4, 0, 5, 6, 7, 8], [3, 0, 5, 0, 9, 8]]
 
     References
     ----------
@@ -1716,9 +1736,16 @@ def generate_random_paths(
     num_nodes = G.number_of_nodes()
 
     for path_index in range(sample_size):
-        # Sample current vertex v = v_i uniformly at random
-        node_index = randint_fn(num_nodes)
-        node = node_map[node_index]
+        if source is None:
+            # Sample current vertex v = v_i uniformly at random
+            node_index = randint_fn(num_nodes)
+            node = node_map[node_index]
+        else:
+            if source not in node_map:
+                raise nx.NodeNotFound(f"Initial node {source} not in G")
+
+            node = source
+            node_index = node_map.index(node)
 
         # Add v into p_r and add p_r into the path set
         # of v, i.e., P_v
