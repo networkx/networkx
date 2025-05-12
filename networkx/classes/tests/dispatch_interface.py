@@ -58,7 +58,7 @@ class LoopbackBackendInterface:
 
     @staticmethod
     def graph__new__(cls, incoming_graph_data=None, **attr):
-        # nx.Graph.__init__ will be called next since a LoopbackGraph
+        # LoopbackGraph.__init__ will be called next since the returned
         # object is an instance of an nx.Graph. For more details, see:
         # https://docs.python.org/3/reference/datamodel.html#object.__new__
         return object.__new__(LoopbackGraph)

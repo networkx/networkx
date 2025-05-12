@@ -382,6 +382,7 @@ class DiGraph(Graph):
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
         # load graph attributes (must be after convert)
+        attr.pop("backend", None)  # Ignore explicit `backend="networkx"`
         self.graph.update(attr)
 
     @cached_property

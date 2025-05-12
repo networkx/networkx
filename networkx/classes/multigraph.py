@@ -357,6 +357,7 @@ class MultiGraph(Graph):
         {'day': 'Friday'}
 
         """
+        attr.pop("backend", None)  # Ignore explicit `backend="networkx"`
         # multigraph_input can be None/True/False. So check "is not False"
         if isinstance(incoming_graph_data, dict) and multigraph_input is not False:
             Graph.__init__(self)
