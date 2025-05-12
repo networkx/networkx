@@ -757,7 +757,7 @@ def _sparse_fruchterman_reingold(
     if k is None:
         k = np.sqrt(1.0 / nnodes)
 
-    if method == "energy":
+    if method != "force":
         return _energy_fruchterman_reingold(
             A, nnodes, k, pos, fixed, iterations, threshold, dim, gravity
         )
