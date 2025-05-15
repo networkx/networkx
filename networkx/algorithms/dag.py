@@ -572,6 +572,7 @@ def all_topological_sorts(G):
             break
 
 
+@not_implemented_for("undirected")
 @nx._dispatchable
 def is_aperiodic(G):
     """Returns True if `G` is aperiodic.
@@ -591,7 +592,7 @@ def is_aperiodic(G):
 
     Raises
     ------
-    NetworkXError
+    NetworkXNotImplemented
         If `G` is not directed
 
     Examples
@@ -628,9 +629,13 @@ def is_aperiodic(G):
 
     Notes
     -----
-    This uses the method outlined in [1]_, which runs in $O(m)$ time
-    given $m$ edges in `G`. Note that a graph is not aperiodic if it is
-    acyclic as every integer trivial divides length 0 cycles.
+    This uses the method outlined in [1]_, which runs in $O(n + m)$ time
+    given $n$ nodes and $m$ edges in `G`. Note that a graph is not aperiodic
+    if it is acyclic, as every integer divides all cycles (because there are
+    no cycles to divide).
+
+    Self-loops (edges from a node to itself) are considered as cycles of length 1
+    in this implementation.
 
     References
     ----------
@@ -639,30 +644,26 @@ def is_aperiodic(G):
        in Shier, D. R.; Wallenius, K. T., Applied Mathematical Modeling:
        A Multidisciplinary Approach, CRC Press.
     """
-    if not G.is_directed():
-        raise nx.NetworkXError("is_aperiodic not defined for undirected graphs")
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("Graph has no nodes.")
-    s = arbitrary_element(G)
-    levels = {s: 0}
-    this_level = [s]
+
+    scc = nx.strongly_connected_components(G)
+    sg = (G.subgraph(c) for c in scc)
+
     g = 0
-    lev = 1
-    while this_level:
-        next_level = []
-        for u in this_level:
-            for v in G[u]:
-                if v in levels:  # Non-Tree Edge
-                    g = gcd(g, levels[u] - levels[v] + 1)
-                else:  # Tree Edge
-                    next_level.append(v)
-                    levels[v] = lev
-        this_level = next_level
-        lev += 1
-    if len(levels) == len(G):  # All nodes in tree
-        return g == 1
-    else:
-        return g == 1 and nx.is_aperiodic(G.subgraph(set(G) - set(levels)))
+    for H in sg:
+        s = nx.utils.arbitrary_element(H)
+        level = {s: 0}
+
+        for u, v, d in nx.bfs_labeled_edges(H, s):
+            if d == "tree":
+                level[v] = level[u] + 1
+            else:
+                g = gcd(g, level[u] - level[v] + 1)
+                if g == 1:
+                    return True
+
+    return False
 
 
 @nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
