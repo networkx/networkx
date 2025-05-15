@@ -236,6 +236,8 @@ class BackendPriorities(Config, strict=False):
         This controls "algorithms" such as ``nx.pagerank`` that don't return a graph.
     generators : list of backend names
         This controls "generators" such as ``nx.from_pandas_edgelist`` that return a graph.
+    classes : list of backend names
+        This controls graph classes such as ``nx.Graph()``.
     kwargs : variadic keyword arguments of function name to list of backend names
         This allows each function to be configured separately and will override the config
         in ``algos`` or ``generators`` if present. The dispatchable function name may be
@@ -245,16 +247,18 @@ class BackendPriorities(Config, strict=False):
 
     algos: list[str]
     generators: list[str]
+    classes: list[str]
 
     def _on_setattr(self, key, value):
         from .backends import _registered_algorithms, backend_info
 
-        if key in {"algos", "generators"}:
+        if key in {"algos", "generators", "classes"}:
             pass
         elif key not in _registered_algorithms:
             raise AttributeError(
-                f"Invalid config name: {key!r}. Expected 'algos', 'generators', or a name "
-                "of a dispatchable function (e.g. `.name` attribute of the function)."
+                f"Invalid config name: {key!r}. Expected 'algos', 'generators', "
+                "'classes', or a name of a dispatchable function "
+                "(e.g. `.name` attribute of the function)."
             )
         if not (isinstance(value, list) and all(isinstance(x, str) for x in value)):
             raise TypeError(
@@ -266,7 +270,7 @@ class BackendPriorities(Config, strict=False):
         return value
 
     def _on_delattr(self, key):
-        if key in {"algos", "generators"}:
+        if key in {"algos", "generators", "classes"}:
             raise TypeError(f"{key!r} configuration item can't be deleted.")
 
 
@@ -283,10 +287,11 @@ class NetworkXConfig(Config):
     backend_priority : list of backend names or dict or BackendPriorities
         Enable automatic conversion of graphs to backend graphs for functions
         implemented by the backend. Priority is given to backends listed earlier.
-        This is a nested configuration with keys ``algos``, ``generators``, and,
-        optionally, function names. Setting this value to a list of backend names
-        will set ``nx.config.backend_priority.algos``. For more information, see
-        ``help(nx.config.backend_priority)``. Default is empty list.
+        This is a nested configuration with keys ``algos``, ``generators``,
+        ``classes``, and, optionally, function names. Setting this value to a
+        list of backend names will set ``nx.config.backend_priority.algos``.
+        For more information, see ``help(nx.config.backend_priority)``.
+        Default is empty list.
 
     backends : Config mapping of backend names to backend Config
         The keys of the Config mapping are names of all installed NetworkX backends,
@@ -354,7 +359,7 @@ class NetworkXConfig(Config):
                 )
             elif isinstance(value, dict):
                 kwargs = value
-                value = BackendPriorities(algos=[], generators=[])
+                value = BackendPriorities(algos=[], generators=[], classes=[])
                 for key, val in kwargs.items():
                     setattr(value, key, val)
             elif not isinstance(value, BackendPriorities):
