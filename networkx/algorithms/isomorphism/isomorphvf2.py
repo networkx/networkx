@@ -174,16 +174,21 @@ class GraphMatcher:
         >>> G2 = nx.path_graph(4)
         >>> GM = isomorphism.GraphMatcher(G1, G2)
         """
-        if G1.is_directed() and G2.is_directed():
+        if G1.is_directed() != G2.is_directed():
+            raise nx.NetworkXError("G1 and G2 must have the same directedness")
+
+        is_directed_matcher = self._is_directed_matcher()
+        if not is_directed_matcher and (G1.is_directed() or G2.is_directed()):
             raise nx.NetworkXError(
                 "(Multi-)GraphMatcher() not defined for directed graphs. "
                 "Use (Multi-)DiGraphMatcher() instead."
             )
-        self._init(G1, G2)
 
-    def _init(self, G1, G2):
-        if G1.is_directed() != G2.is_directed():
-            raise nx.NetworkXError("G1 and G2 must have the same directedness")
+        if is_directed_matcher and not (G1.is_directed() and G2.is_directed()):
+            raise nx.NetworkXError(
+                "(Multi-)DiGraphMatcher() not defined for undirected graphs. "
+                "Use (Multi-)GraphMatcher() instead."
+            )
 
         self.G1 = G1
         self.G2 = G2
@@ -203,6 +208,9 @@ class GraphMatcher:
 
         # Initialize state
         self.initialize()
+
+    def _is_directed_matcher(self):
+        return False
 
     def reset_recursion_limit(self):
         """Restores the recursion limit."""
@@ -631,12 +639,10 @@ class DiGraphMatcher(GraphMatcher):
         >>> G2 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
         >>> DiGM = isomorphism.DiGraphMatcher(G1, G2)
         """
-        if not G1.is_directed() and not G2.is_directed():
-            raise nx.NetworkXError(
-                "(Multi-)DiGraphMatcher() not defined for undirected graphs. "
-                "Use (Multi-)GraphMatcher() instead."
-            )
-        super()._init(G1, G2)
+        super().__init__(G1, G2)
+
+    def _is_directed_matcher(self):
+        return True
 
     def candidate_pairs_iter(self):
         """Iterator over candidate pairs of nodes in G1 and G2."""
