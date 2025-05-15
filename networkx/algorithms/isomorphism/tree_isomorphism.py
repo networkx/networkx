@@ -160,11 +160,11 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
     L = group_by_levels(levels)
 
     # each node has a label, initially set to 0
-    label = {v: 0 for v in dT}
+    label = dict.fromkeys(dT, 0)
     # and also ordered_labels and ordered_children
     # which will store ordered tuples
-    ordered_labels = {v: () for v in dT}
-    ordered_children = {v: () for v in dT}
+    ordered_labels = dict.fromkeys(dT, ())
+    ordered_children = dict.fromkeys(dT, ())
 
     # nothing to do on last level so start on h-1
     # also nothing to do for our fake level 0, so skip that
@@ -261,8 +261,8 @@ def tree_isomorphism(t1, t2):
         return []
 
     # Another shortcut is that the sorted degree sequences need to be the same.
-    degree_sequence1 = sorted(d for (n, d) in t1.degree())
-    degree_sequence2 = sorted(d for (n, d) in t2.degree())
+    degree_sequence1 = sorted(d for (_, d) in t1.degree())
+    degree_sequence2 = sorted(d for (_, d) in t2.degree())
 
     if degree_sequence1 != degree_sequence2:
         return []

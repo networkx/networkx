@@ -68,7 +68,7 @@ def harmonic_centrality(G, nbunch=None, distance=None, sources=None):
     nbunch = set(G.nbunch_iter(nbunch) if nbunch is not None else G.nodes)
     sources = set(G.nbunch_iter(sources) if sources is not None else G.nodes)
 
-    centrality = {u: 0 for u in nbunch}
+    centrality = dict.fromkeys(nbunch, 0)
 
     transposed = False
     if len(nbunch) < len(sources):

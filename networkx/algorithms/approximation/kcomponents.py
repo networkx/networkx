@@ -230,9 +230,7 @@ class _AntiGraph(nx.Graph):
 
         """
         all_edge_dict = self.all_edge_dict
-        return {
-            node: all_edge_dict for node in set(self._adj) - set(self._adj[n]) - {n}
-        }
+        return dict.fromkeys(set(self._adj) - set(self._adj[n]) - {n}, all_edge_dict)
 
     def neighbors(self, n):
         """Returns an iterator over all neighbors of node n in the
