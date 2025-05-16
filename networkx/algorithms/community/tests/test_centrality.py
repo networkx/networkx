@@ -20,6 +20,14 @@ def validate_possible_communities(result, *expected):
     assert any(set_of_sets(result) == set_of_sets(p) for p in expected)
 
 
+def compare_all_depth_communities(com1, com2):
+    assert len(com1) == len(com2)
+
+    depth = len(com1)
+    for d in range(depth):
+        assert set_of_sets(com1[d]) == set_of_sets(com2[d])
+
+
 class TestGirvanNewman:
     """Unit tests for the
     :func:`networkx.algorithms.community.centrality.girvan_newman`
@@ -83,3 +91,43 @@ class TestGirvanNewman:
         validate_communities(communities[0], [{0}, {1, 2, 3}])
         validate_communities(communities[1], [{0}, {1}, {2, 3}])
         validate_communities(communities[2], [{0}, {1}, {2}, {3}])
+
+    def test_diff_approach_same_result(self):
+        """
+        Test whether different computing approaches yield identical result
+        under the traditional betweenness-centrality based edge selection setting
+        """
+        G = nx.complete_graph(25)
+
+        def most_valuable_edge(G, weight=None):
+            betweenness = nx.edge_betweenness_centrality(
+                G, normalized=False, weight=weight
+            )
+            return max(
+                betweenness,
+                key=lambda edge: (round(betweenness[edge], 8), max(edge), min(edge)),
+            )
+
+        def most_valuable_edge_metric(G, weight=None):
+            betweenness = nx.edge_betweenness_centrality(
+                G, normalized=False, weight=weight
+            )
+            edge = max(
+                betweenness,
+                key=lambda edge: (round(betweenness[edge], 8), max(edge), min(edge)),
+            )
+            metric = betweenness[edge]
+            return edge, metric
+
+        fast_communities = list(nx.community.girvan_newman(G))
+        old_communities = list(
+            nx.community.girvan_newman(G, most_valuable_edge=most_valuable_edge)
+        )
+        compo_communities = list(
+            nx.community.girvan_newman(
+                G, most_valuable_edge_metric=most_valuable_edge_metric
+            )
+        )
+
+        compare_all_depth_communities(fast_communities, old_communities)
+        compare_all_depth_communities(fast_communities, compo_communities)
