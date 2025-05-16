@@ -431,9 +431,10 @@ Creating a custom backend
 
     Backend graph objects are also required to implement the methods ``is_directed()`` and
     ``is_multigraph()``. These methods return boolean values indicating the type of the graph:
-        - ``is_directed()`` should return True if the graph is directed, and False otherwise.
-        - ``is_multigraph()`` should return True if the graph allows multiple (parallel) edges
-          between node pairs, and False otherwise.
+
+    - ``is_directed()`` should return True if the graph is directed, and False otherwise.
+    - ``is_multigraph()`` should return True if the graph allows multiple (parallel) edges
+      between node pairs, and False otherwise.
 
     These methods are used by NetworkX utilities such as the ``@not_implemented_for`` decorator
     to determine whether a graph meets certain type constraints and to raise an error if the
