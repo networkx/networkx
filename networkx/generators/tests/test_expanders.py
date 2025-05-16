@@ -64,7 +64,7 @@ def test_paley_graph(p):
 @pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
 def test_maybe_regular_expander(d, n):
     pytest.importorskip("numpy")
-    G = nx.maybe_regular_expander(n, d)
+    G = nx.maybe_regular_expander(n, d, seed=1729)
 
     assert len(G) == n, "Should have n nodes"
     assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
@@ -84,7 +84,7 @@ def test_is_regular_expander(n):
 def test_random_regular_expander(d, n):
     pytest.importorskip("numpy")
     pytest.importorskip("scipy")
-    G = nx.random_regular_expander_graph(n, d)
+    G = nx.random_regular_expander_graph(n, d, seed=1729)
 
     assert len(G) == n, "Should have n nodes"
     assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
@@ -95,7 +95,7 @@ def test_random_regular_expander(d, n):
 def test_random_regular_expander_explicit_construction():
     pytest.importorskip("numpy")
     pytest.importorskip("scipy")
-    G = nx.random_regular_expander_graph(d=4, n=5)
+    G = nx.random_regular_expander_graph(d=4, n=5, seed=1729)
 
     assert len(G) == 5 and len(G.edges) == 10, "Should be a complete graph"
 
