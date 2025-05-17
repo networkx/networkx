@@ -1031,14 +1031,9 @@ class TestSimilarity:
         )
 
         assert len(sim) == 3
-
         assert "v1" not in sim
-
-        for node, score in sim.items():
-            assert 0 <= score <= 1
-
-        for node in ["v2", "v3", "v4"]:
-            assert node in sim
+        assert all(0 <= score <= 1 for score in sim.values())
+        assert all(node in sim for node in ["v2", "v3", "v4"])
 
     def test_panther_vector_similarity_source_not_found(self):
         """Test panther_vector_similarity with non-existent source node."""
