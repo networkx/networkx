@@ -272,7 +272,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
     References
     ----------
     .. [1] Joel Friedman,
-       A Proof of Alon’s Second Eigenvalue Conjecture and Related Problems, 2004
+       A Proof of Alon's Second Eigenvalue Conjecture and Related Problems, 2004
        https://arxiv.org/abs/cs/0405020
 
     """
