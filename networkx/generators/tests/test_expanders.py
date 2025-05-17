@@ -125,7 +125,6 @@ def test_paley_graph_badinput():
 
 def test_maybe_regular_expander_badinput():
     pytest.importorskip("numpy")
-    pytest.importorskip("scipy")
 
     with pytest.raises(nx.NetworkXError, match="n must be a positive integer"):
         nx.maybe_regular_expander(n=-1, d=2)
