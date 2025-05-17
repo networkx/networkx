@@ -1563,7 +1563,6 @@ def _prepare_panther_paths(
         - G: The graph (possibly with isolates removed)
         - inv_node_map: Dictionary mapping node names to indices
         - node_map: Array or list of node names
-        - sample_size: Number of paths to generate
         - index_map: Populated index map of paths
         - inv_sample_size: Inverse of sample size (for fast calculation)
         - eps: Error bound for similarity approximation
