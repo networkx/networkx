@@ -1881,7 +1881,7 @@ def panther_vector_similarity(
                 heapq.heapreplace(top_d_heap, similarity)
 
         # Extract the top D scores in descending order
-        scores = heapq.nlargest(D, top_d_heap)
+        scores = sorted(top_d_heap)
 
         # Set the feature vector with scores in descending order
         theta[vi_idx] = np.array(scores)
