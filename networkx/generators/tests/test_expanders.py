@@ -71,6 +71,16 @@ def test_maybe_regular_expander(d, n):
     assert nx.is_k_regular(G, d), "Should be d-regular"
 
 
+def test_maybe_regular_expander_max_tries():
+    pytest.importorskip("numpy")
+    d, n = 4, 10
+    msg = "Too many iterations in maybe_regular_expander"
+    with pytest.raises(nx.NetworkXError, match=msg):
+        nx.maybe_regular_expander(n, d, max_tries=100, seed=6818)  # See gh-8048
+
+    nx.maybe_regular_expander(n, d, max_tries=130, seed=6818)
+
+
 @pytest.mark.parametrize("n", (3, 5, 6, 10))
 def test_is_regular_expander(n):
     pytest.importorskip("numpy")
