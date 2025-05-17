@@ -18,10 +18,18 @@ class TestLayout:
 
     def test_spring_fixed_without_pos(self):
         G = nx.path_graph(4)
-        pytest.raises(ValueError, nx.spring_layout, G, fixed=[0])
+        # No pos dict at all
+        with pytest.raises(ValueError, match="nodes are fixed without positions"):
+            nx.spring_layout(G, fixed=[0])
+
         pos = {0: (1, 1), 2: (0, 0)}
-        pytest.raises(ValueError, nx.spring_layout, G, fixed=[0, 1], pos=pos)
-        nx.spring_layout(G, fixed=[0, 2], pos=pos)  # No ValueError
+        # Node 1 not in pos dict
+        with pytest.raises(ValueError, match="nodes are fixed without positions"):
+            nx.spring_layout(G, fixed=[0, 1], pos=pos)
+
+        # All fixed nodes in pos dict
+        out = nx.spring_layout(G, fixed=[0, 2], pos=pos)  # No ValueError
+        assert all(np.array_equal(out[n], pos[n]) for n in (0, 2))
 
     def test_spring_init_pos(self):
         # Tests GH #2448
