@@ -205,7 +205,7 @@ def display(
           - 1.0
         * - arrowstyle
           - `"arrowstyle"`
-          - "-|>" if `G` is directed else "-"
+          - ``"-|>"`` if `G` is directed else ``"-"``
         * - arrowsize
           - `"arrowsize"`
           - 10 if `G` is directed else 0
@@ -335,8 +335,8 @@ def display(
 
     arrowstyle : string, default "arrow"
         A string naming the edge attribute which stores the type of arrowhead to use for
-        each edge. Visible edges without this attribute use "-" for undirected graphs
-        and "-|>" for directed graphs.
+        each edge. Visible edges without this attribute use ``"-"`` for undirected graphs
+        and ``"-|>"`` for directed graphs.
 
         See `matplotlib.patches.ArrowStyle` for more options
 
