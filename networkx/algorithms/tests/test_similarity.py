@@ -1013,14 +1013,9 @@ class TestSimilarity:
         sim = nx.panther_vector_similarity(G, 0, D=3, k=4, path_length=2)
 
         assert len(sim) == 3
-
         assert 0 not in sim
-
-        for node in [1, 2, 3]:
-            assert node in sim
-
-        for node, score in sim.items():
-            assert 0 <= score <= 1
+        assert all(node in sim for node in [1, 2, 3])
+        assert all(0 <= score <= 1 for score in sim.values())
 
     def test_panther_vector_similarity_weighted(self):
         """Test panther_vector_similarity with weighted graph."""
