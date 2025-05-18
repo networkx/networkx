@@ -1149,3 +1149,245 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
         verifyOptimum()
 
     return matching_dict_to_set(mate)
+
+
+def count_planar_perfect_matchings(G):
+    """Counts perfect matchings of planar graph G.
+
+    Counts the number of perfect matchings using the Fisher-Kasteleyn-Temperley
+    (FKT) algorithm. `G` must be planar in order to use the FKT algorithm.
+
+    If `G` is a weighted graph, each matching is counted with weight equal to
+    the product of weights of edges included in the matching. Edges without
+    weights default to having weight 1.
+
+    Technically, the FKT algorithm only returns the absolute value of the sum
+    of perfect matchings. Generally one can tell for other reasons whether the
+    sum of perfect matchings should be positive or negative for their problem.
+
+    If `G` is a directed graph, this ignores the edge directions and considers
+    `G` as undirected.
+
+    Raises NetworkXError if `G` is not planar.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    Returns
+    ----------
+    float
+        Sum (possibly weighted) of perfect matchings in `G`.
+
+    Raises
+    ----------
+    NetworkXError
+        If `G` is not planar.
+
+    References
+    ----------
+    The first 3 references are the 3 papers by F, K, and T (Fisher, Kasteleyn,
+    and Temperley) that pieced together the FKT algorithm in 1961--1963. They
+    are not the most accessible reads, but historically significant.
+
+    .. [1] Fisher, Michael E. "Statistical mechanics of dimers on a plane
+        lattice." Physical Review 124.6 (1961): 1664.
+        https://doi.org/10.1103/PhysRev.124.1664
+    .. [2] Kasteleyn, Pieter W. "Dimer statistics and phase transitions."
+        Journal of Mathematical Physics 4.2 (1963): 287-293.
+        https://doi.org/10.1063/1.1703953
+    .. [3] Temperley, Harold NV, and Michael E. Fisher. "Dimer problem in
+        statistical mechanics-an exact result." Philosophical Magazine 6.68
+        (1961): 1061-1063.
+        https://doi.org/10.1080/14786436108243366
+
+    For a more accessible overview of the FKT algorithm, see Section 1.2 of
+
+    .. [4] Jerrum, Mark. "Counting, sampling and integrating: algorithms and
+        complexity." Springer Science & Business Media, 2003.
+        https://doi.org/10.1007/978-3-0348-8005-3
+
+    """
+
+    if G.is_directed():
+        G = nx.Graph.to_undirected(G)
+
+    # If the graph has multiple connected components, handle each component
+    # separately. Return the product of matching sums for all components.
+    connected_components = list(nx.connected_components(G))
+    if len(connected_components) > 1:
+        result = 1
+        for component in connected_components:
+            result *= count_planar_perfect_matchings(G.subgraph(component))
+        return result
+
+    planar, embedding = nx.check_planarity(G)
+    if not planar:
+        raise nx.NetworkXError("Graph is not planar, so FKT algorithm cannot be used.")
+
+    if isinstance(G, nx.MultiGraph):
+        # convert graph into non-multi graph, by adding repeated edge weights.
+        newG = nx.Graph()
+        for edge in G.edges(data=True):
+            edgeWeight = edge[2].get("weight", 1)
+            if newG.has_edge(edge[0], edge[1]):
+                newG[edge[0]][edge[1]]["weight"] += edgeWeight
+            else:
+                newG.add_edge(edge[0], edge[1], weight=edgeWeight)
+
+        G = newG
+
+    # Construct list of faces. Each face is a list of edges, in
+    # counterclockwise order. Each edge also has its nodes in counterclockwise
+    # order.
+    visited_half_edges: set = set()
+    faces: list = []
+    for halfedge in embedding.edges():
+        if halfedge not in visited_half_edges:
+            face_nodes = embedding.traverse_face(
+                halfedge[0], halfedge[1], mark_half_edges=visited_half_edges
+            )
+            face_nodes.reverse()  # traverse_face goes in clockwise order, but we want counterclockwise
+            face_edges = []
+            for i, node in enumerate(face_nodes):
+                face_edges.append((node, face_nodes[(i + 1) % len(face_nodes)]))
+            faces.append(tuple(face_edges))
+
+    # This will have one too many faces, because it will include the extra face
+    # you get if you embed the graph in a sphere, not a plane. So, remove the
+    # last face.
+    faces_missing_one = []
+    for i in range(len(faces) - 1):
+        faces_missing_one.append(faces[i])
+
+    return _fkt_with_embedding(G, faces_missing_one)
+
+
+def _fkt_with_embedding(G, faces, numerical_stability_threshold=1e-5):
+    """Uses the FKT algorithm and list of faces to count perfect matchings.
+
+    Counts the number of perfect matchings using the FKT algorithm, using
+    an already-computed planar embedding that is a list of faces, rather than
+    computing it from scratch.
+
+    Parameters
+    ----------
+    G : NetworkX Graph.
+        This method assumes G is undirected.
+
+    faces : list
+        A list of faces of the graph corresponding to some planar
+        embedding. Each face should be a tuple of edges in counterclockwise
+        order. Each edge should have its nodes ordered counterclockwise.
+
+    numerical_stability_threshold : float
+        Tolerance to negative determinants due to numerical instability.
+        Sometimes the FKT algorithm (which returns the suqre root of a
+        determinant) will get a small negative determinant. This should never
+        happen in principle, but may happen due to numerical instability. This
+        parameter is the tolerance of what negative determinants we round to 0.
+
+    Returns
+    ----------
+    float
+        Sum (possibly weighted) of perfect matchings in `G`.
+
+    Raises
+    ----------
+    NetworkXAlgorithmError
+        If a negative determinant is encountered that is more negative than
+        -numerical_stability_threshold. This indicates severe numerical
+        instability.
+    """
+
+    import numpy as np
+
+    oriented_graph = kasteleyn_orientation(G, faces)
+
+    # Now make the weights of the oriented graph equal to the weights of the
+    # original graph, with appropriate signs.
+    for edge in G.edges(data=True):
+        edge_weight = edge[2].get("weight", 1)
+        oriented_graph[edge[0]][edge[1]]["weight"] *= edge_weight
+        oriented_graph[edge[1]][edge[0]]["weight"] *= edge_weight
+
+    adj = nx.adjacency_matrix(oriented_graph)
+    determinant = np.linalg.det(adj.toarray())
+    if determinant < 0:
+        if determinant > -numerical_stability_threshold:
+            # Sometimes the determinant is negative, which should be
+            # impossible, but this just because of numerical instability. It
+            # really should be zero.
+            determinant = 0
+        else:
+            raise nx.NetworkXAlgorithmError(
+                f"Error: got negative determinant, which should be impossible. Determinant is {determinant}. This likely indicates severe numerical instability."
+            )
+    return np.sqrt(determinant)
+
+
+def kasteleyn_orientation(G, faces):
+    """Returns a Kasteleyn orientation of `G`.
+
+    A Kasteleyn orientation of a graph is an assignment of directions to the
+    edges such that every face has an odd number of edges oriented clockwise.
+    `faces` is a list of faces corresponding to some planar embedding of `G`.
+
+    Parameters
+    ----------
+    G : NetworkX graph.
+
+    faces : list
+        A list of faces of the graph corresponding to some planar
+        embedding. Each face should be a tuple of edges in counterclockwise
+        order. Each edge should have its nodes ordered counterclockwise.
+
+    Returns
+    -------
+    NetworkX DiGraph
+        A directed graph indicating directions for each edge in `G`. Each edge
+        in will have weight +1 or -1 indicating the direction of the
+        corresponding edge in `G`. Edge (u, v) having weight +1 means the
+        direction is from u to v. And having weight -1 means the direction is
+        from v to u. If the result has edge (u, v) with weight +1, then it will
+        also have an edge (v, u) with weight -1, and vice versa.
+    """
+
+    result = nx.DiGraph()
+
+    # Make some spanning tree of the graph, and arbitrarily set orientation of
+    # edges along that spanning tree.
+    spanning_tree = nx.minimum_spanning_tree(G)
+    for edge in spanning_tree.edges(data=True):
+        result.add_edge(edge[0], edge[1], weight=1)
+        result.add_edge(edge[1], edge[0], weight=-1)
+
+    unfinished_faces = set()  # set of faces where not all orientations are set
+    for face in faces:
+        unfinished_faces.add(face)
+
+    while len(unfinished_faces) > 0:
+        # Find a face where there is one edge not yet oriented, and orient it.
+        for face in unfinished_faces:
+            num_unoriented_edges = 0
+            num_clockwise_edges = 0
+            unoriented_edge: tuple = ()
+            for edge in face:
+                if not result.has_edge(edge[0], edge[1]):
+                    num_unoriented_edges += 1
+                    unoriented_edge = edge
+                else:
+                    if result[edge[0]][edge[1]]["weight"] == -1:
+                        num_clockwise_edges += 1
+
+            if num_unoriented_edges == 1:
+                unfinished_faces.remove(face)
+                if num_clockwise_edges % 2 == 0:
+                    result.add_edge(unoriented_edge[0], unoriented_edge[1], weight=-1)
+                    result.add_edge(unoriented_edge[1], unoriented_edge[0], weight=1)
+                else:
+                    result.add_edge(unoriented_edge[0], unoriented_edge[1], weight=1)
+                    result.add_edge(unoriented_edge[1], unoriented_edge[0], weight=-1)
+                break
+
+    return result
