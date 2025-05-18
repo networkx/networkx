@@ -48,13 +48,13 @@ def metric_closure(G, weight="weight"):
 
 
 def _mehlhorn_steiner_tree(G, terminal_nodes, weight):
-    paths = nx.multi_source_dijkstra_path(G, terminal_nodes)
+    distances, paths = nx.multi_source_dijkstra(G, terminal_nodes)
 
     d_1 = {}
     s = {}
     for v in G.nodes():
         s[v] = paths[v][0]
-        d_1[(v, s[v])] = len(paths[v]) - 1
+        d_1[(v, s[v])] = distances[v]
 
     # G1-G4 names match those from the Mehlhorn 1988 paper.
     G_1_prime = nx.Graph()
