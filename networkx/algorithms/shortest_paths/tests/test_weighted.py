@@ -1,5 +1,3 @@
-from random import Random
-
 import pytest
 
 import networkx as nx
