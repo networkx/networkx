@@ -834,14 +834,16 @@ def _dijkstra_multisource(
     as arguments. No need to explicitly return pred or paths.
 
     """
-    if target is None:
-        paths_dict = paths
-    else:
-        # computing paths is expensive, we compute pred instad since we only need it
-        # for one specific target
-        paths_dict = None
-        if pred is None:
-            pred = {}
+    # If a target is specified, we only need the path to that target,
+    # so we skip building the full paths dictionary.
+    paths_dict = paths if target is None else None
+
+    # If a target is specified, we only need the predecessors for the path to that target,
+    # so we use a temporary internal dictionary (`pred_dict`). However, if the caller
+    # passed in a `pred` dictionary, we must compute *all* predecessors, even if a
+    # target is given, since the caller expects the full predecessor structure.
+    pred_dict = pred if target is None else (pred or {})
+
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
     push = heappush
@@ -875,27 +877,29 @@ def _dijkstra_multisource(
                 if vu_dist < u_dist:
                     raise ValueError("Contradictory paths found:", "negative weights?")
                 elif pred is not None and vu_dist == u_dist:
+                    # Found another shortest path to u with equal distance (including zero-weight edges).
+                    # We must store *all* predecessors because `pred` was provided by the caller.
                     pred[u].append(v)
             elif u not in seen or vu_dist < seen[u]:
                 seen[u] = vu_dist
                 push(fringe, (vu_dist, next(c), u))
                 if paths_dict is not None:
                     paths_dict[u] = paths_dict[v] + [u]
-                if pred is not None:
-                    pred[u] = [v]
-            elif vu_dist == seen[u]:
-                if pred is not None:
-                    pred[u].append(v)
+                if pred_dict is not None:
+                    pred_dict[u] = [v]
+            elif pred is not None and vu_dist == seen[u]:
+                # Found another shortest path to u
+                # We must store *all* predecessors because `pred` was provided by the caller.
+                pred[u].append(v)
 
     if target is not None and paths is not None:
-        # reconstruct the path from source to target
-        reversed_target_path = []
-        next_node = target
-        while next_node is not None:
-            reversed_target_path.append(next_node)
-            next_nodes = pred.get(next_node)
-            next_node = next_nodes and next_nodes[0]
-        paths[target] = list(reversed(reversed_target_path))
+        # Caller requested the path to a specific target node.
+        # Reconstruct the path from source to target using the predecessor dictionary.
+        path = paths[target] = [target]
+        while (current_preds := pred_dict.get(path[-1])) is not None:
+            path.append(current_preds[0])
+        # The path was built in reverse order, so reverse it at the end.
+        path.reverse()
     # The optional predecessor and path dictionaries can be accessed
     # by the caller via the pred and paths objects passed as arguments.
     return dist
