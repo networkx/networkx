@@ -574,3 +574,31 @@ def test_bipartite_layout_default_nodes():
     for nodeset in nx.bipartite.sets(G):
         xs = [pos[k][0] for k in nodeset]
         assert all(x == pytest.approx(xs[0]) for x in xs)
+
+
+@pytest.mark.parametrize(
+    "layout",
+    [
+        nx.random_layout,
+        nx.circular_layout,
+        nx.shell_layout,
+        nx.spring_layout,
+        nx.kamada_kawai_layout,
+        nx.spectral_layout,
+        nx.planar_layout,
+        nx.spiral_layout,
+        nx.forceatlas2_layout,
+    ],
+)
+def test_layouts_negative_dim(layout):
+    """Test all layouts that support dim kwarg handle invalid inputs."""
+    G = nx.path_graph(4)
+    valid_err_msgs = "|".join(
+        [
+            "negative dimensions.*not allowed",
+            "can only handle 2",
+            "cannot handle.*2",
+        ]
+    )
+    with pytest.raises(ValueError, match=valid_err_msgs):
+        layout(G, dim=-1)
