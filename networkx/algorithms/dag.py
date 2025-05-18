@@ -576,7 +576,7 @@ def all_topological_sorts(G):
 def is_aperiodic(G):
     """Returns True if `G` is aperiodic.
 
-    A strongly connected directed graph is aperiodic if there is no integer k > 1
+    A strongly connected directed graph is aperiodic if there is no integer ``k > 1``
     that divides the length of every cycle in the graph.
 
     This function requires the graph `G` to be strongly connected and will raise
@@ -626,7 +626,7 @@ def is_aperiodic(G):
 
     A graph created from cycles of the same length can still be aperiodic since
     the cycles can overlap and form new cycles of different lengths. For example,
-    the following graph contains a cycle [4, 2, 3, 1] of length 4, which is coprime
+    the following graph contains a cycle ``[4, 2, 3, 1]`` of length 4, which is coprime
     with the explicitly added cycles of length 3, so the graph is aperiodic::
 
         >>> DG = nx.DiGraph()
