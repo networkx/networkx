@@ -1521,6 +1521,7 @@ PantherPaths = namedtuple(
 )
 
 
+@np_random_state("seed")
 def _prepare_panther_paths(
     G,
     source,
@@ -1531,6 +1532,7 @@ def _prepare_panther_paths(
     weight="weight",
     remove_isolates=True,
     k=None,
+    seed=None,
 ):
     """Common preparation code for Panther similarity algorithms.
 
@@ -1555,6 +1557,9 @@ def _prepare_panther_paths(
     k : int or None
         The number of most similar nodes to return. If provided, validates that
        ``k`` is not greater than the number of nodes in the graph.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -1606,7 +1611,12 @@ def _prepare_panther_paths(
 
     # Generate the random paths and populate the index_map
     for _ in generate_random_paths(
-        G, sample_size, path_length=path_length, index_map=index_map, weight=weight
+        G,
+        sample_size,
+        path_length=path_length,
+        index_map=index_map,
+        weight=weight,
+        seed=seed,
     ):
         pass
 
@@ -1621,9 +1631,18 @@ def _prepare_panther_paths(
     )
 
 
+@np_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
 def panther_similarity(
-    G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
+    G,
+    source,
+    k=5,
+    path_length=5,
+    c=0.5,
+    delta=0.1,
+    eps=None,
+    weight="weight",
+    seed=None,
 ):
     r"""Returns the Panther similarity of nodes in the graph `G` to node ``v``.
 
@@ -1658,6 +1677,9 @@ def panther_similarity(
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -1704,6 +1726,7 @@ def panther_similarity(
         eps=eps,
         weight=weight,
         k=k,
+        seed=seed,
     )
 
     G = paths.G
@@ -1748,9 +1771,20 @@ def panther_similarity(
     return top_k_with_val
 
 
+@np_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
 def panther_vector_similarity(
-    G, source, *, D=50, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
+    G,
+    source,
+    *,
+    D=50,
+    k=5,
+    path_length=5,
+    c=0.5,
+    delta=0.1,
+    eps=None,
+    weight="weight",
+    seed=None,
 ):
     r"""Returns the Panther vector similarity (Panther++) of nodes in `G`.
 
@@ -1800,6 +1834,9 @@ def panther_vector_similarity(
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If `None` then each edge has weight 1.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -1836,6 +1873,7 @@ def panther_vector_similarity(
         weight=weight,
         remove_isolates=False,
         k=k,
+        seed=seed,
     )
 
     G = paths.G
@@ -1924,7 +1962,7 @@ def panther_vector_similarity(
     return top_k_with_val
 
 
-@np_random_state(5)
+@np_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
 def generate_random_paths(
     G,
