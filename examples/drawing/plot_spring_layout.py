@@ -16,23 +16,20 @@ NetworkX offers mainly three different kinds of methods based on the same theore
 
   * The default for graphs with fewer than 500 nodes in `nx.spring_layout`.
   * Direct implementation of the Fruchterman--Reingold force-directed algorithm.
-  * Can handle negative edge weights.
+  * Can handle negative edge weights as they are.
 
 * `nx.spring_layout(G, method="energy")`
 
   * The default for graphs with more than or equal to 500 nodes in `nx.spring_layout`.
   * It solves an energy-based optimization problem, taking the absolute value of negative edge weights.
-  * Generally produces higher-quality layouts compared to `force`.
   * Uses gravitational forces acting on each connected component to prevent divergence.
 
 * `nx.nx_agraph.graphviz_layout(G, prog="sfdp")`
 
   * Uses `sfdp` from GraphViz to compute the layout.
-  * Can also be done with `nx.nx_pydot.graphviz_layout(G, prog="sfdp")`.
-  * Employs the multilevel approach to apply force-directed graph drawing progressively.
+  * Employs a multilevel approach for faster force-directed graph drawing.
   * Requires separate installation of GraphViz. For details, see
     `here <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.nx_agraph>`_.
-  * Especially fast for large graphs.
 """
 
 import time
@@ -40,26 +37,30 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import networkx as nx
 
+
+negative_weight_graph = nx.complete_graph(4)
+negative_weight_graph[0][2]["weight"] = -1
+
 graphs = [
-    (nx.cycle_graph(100), "cycle"),
-    (nx.grid_2d_graph(25, 25), "grid_2d"),
+    (nx.grid_2d_graph(15, 15), "grid_2d"),
+    (negative_weight_graph, "negative_weight"),
     (nx.gnp_random_graph(100, 0.005, seed=0), "gnp_random"),
 ]
 
-colors = {"force": "tab:blue", "energy": "tab:orange", "sfdp": "tab:green"}
 
 fig, axes = plt.subplots(3, 3, figsize=(9, 9))
+colors = {"force": "tab:blue", "energy": "tab:orange", "sfdp": "tab:green"}
 
 for i, (G, name) in enumerate(graphs):
     results = []
 
     t0 = time.perf_counter()
-    pos = nx.spring_layout(G, method="force", seed=0, iterations=100)
+    pos = nx.spring_layout(G, method="force", seed=0)
     dt = time.perf_counter() - t0
     results.append(("force", pos, dt))
 
     t0 = time.perf_counter()
-    pos = nx.spring_layout(G, method="energy", seed=0, iterations=100)
+    pos = nx.spring_layout(G, method="energy", seed=0)
     dt = time.perf_counter() - t0
     results.append(("energy", pos, dt))
 
@@ -70,7 +71,7 @@ for i, (G, name) in enumerate(graphs):
 
     for j, (mname, pos, dt) in enumerate(results):
         nx.draw(G, pos=pos, ax=axes[j, i], node_color=colors[mname], node_size=20)
-        title = (f"{name}\n" if i == 0 else "") + f"{dt:.2f}s"
+        title = (f"{name}\n" if j == 0 else "") + f"{dt:.2f}s"
         axes[j, i].set_title(title, fontsize=20)
 
 handles = [mpatches.Patch(color=color, label=key) for key, color in colors.items()]
