@@ -1,7 +1,7 @@
 """
-===================
+=============
 Spring Layout
-===================
+=============
 
 Draw graphs using the three different spring layout algorithms.
 
@@ -12,24 +12,23 @@ The algorithm also terminates when it reaches a maximum number of iterations.
 
 NetworkX offers mainly three different kinds of methods based on the same theoretical foundation:
 
-* `nx.spring_layout(G, method="force")`
+* ``nx.spring_layout(G, method="force")``
 
-  * The default for graphs with fewer than 500 nodes in `nx.spring_layout`.
+  * The default for graphs with fewer than 500 nodes in ``nx.spring_layout``.
   * Direct implementation of the Fruchterman--Reingold force-directed algorithm.
   * Can handle negative edge weights as they are.
 
-* `nx.spring_layout(G, method="energy")`
+* ``nx.spring_layout(G, method="energy")``
 
-  * The default for graphs with more than or equal to 500 nodes in `nx.spring_layout`.
+  * The default for graphs with more than or equal to 500 nodes in ``nx.spring_layout``.
   * It solves an energy-based optimization problem, taking the absolute value of negative edge weights.
   * Uses gravitational forces acting on each connected component to prevent divergence.
 
-* `nx.nx_agraph.graphviz_layout(G, prog="sfdp")`
+* ``nx.nx_agraph.graphviz_layout(G, prog="sfdp")``
 
   * Uses `sfdp` from GraphViz to compute the layout.
   * Employs a multilevel approach for faster force-directed graph drawing.
-  * Requires separate installation of GraphViz. For details, see
-    `here <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.nx_agraph>`_.
+  * Requires separate installation of GraphViz. For details, see :mod:`networkx.drawing.nx_agraph`
 """
 
 import time
