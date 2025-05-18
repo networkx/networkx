@@ -814,8 +814,6 @@ class TestSimilarity:
         np.testing.assert_allclose(expected, actual, atol=1e-7)
 
     def test_panther_similarity_unweighted(self):
-        np.random.seed(42)
-
         G = nx.Graph()
         G.add_edge(0, 1)
         G.add_edge(0, 2)
@@ -823,12 +821,10 @@ class TestSimilarity:
         G.add_edge(1, 2)
         G.add_edge(2, 4)
         expected = {3: 0.5, 2: 0.5, 1: 0.5, 4: 0.125}
-        sim = nx.panther_similarity(G, 0, path_length=2)
+        sim = nx.panther_similarity(G, 0, path_length=2, seed=42)
         assert sim == expected
 
     def test_panther_similarity_weighted(self):
-        np.random.seed(42)
-
         G = nx.Graph()
         G.add_edge("v1", "v2", w=5)
         G.add_edge("v1", "v3", w=1)
@@ -836,7 +832,7 @@ class TestSimilarity:
         G.add_edge("v2", "v3", w=0.1)
         G.add_edge("v3", "v5", w=1)
         expected = {"v3": 0.75, "v4": 0.5, "v2": 0.5, "v5": 0.25}
-        sim = nx.panther_similarity(G, "v1", path_length=2, weight="w")
+        sim = nx.panther_similarity(G, "v1", path_length=2, weight="w", seed=42)
         assert sim == expected
 
     def test_panther_similarity_source_not_found(self):
@@ -914,8 +910,6 @@ class TestSimilarity:
         assert expected_map == index_map
 
     def test_generate_random_paths_weighted(self):
-        np.random.seed(42)
-
         index_map = {}
         num_paths = 10
         path_length = 6
@@ -927,7 +921,7 @@ class TestSimilarity:
         G.add_edge("c", "f", weight=0.9)
         G.add_edge("a", "d", weight=0.3)
         paths = nx.generate_random_paths(
-            G, num_paths, path_length=path_length, index_map=index_map
+            G, num_paths, path_length=path_length, index_map=index_map, seed=42
         )
 
         expected_paths = [
@@ -985,8 +979,6 @@ class TestSimilarity:
 
     def test_panther_vector_similarity_basic(self):
         """Basic test for panther_vector_similarity function."""
-        np.random.seed(42)
-
         G = nx.Graph()
         G.add_edge(0, 1)
         G.add_edge(0, 2)
@@ -994,7 +986,7 @@ class TestSimilarity:
         G.add_edge(1, 2)
         G.add_edge(2, 4)
 
-        sim = nx.panther_vector_similarity(G, 0, D=3, k=4, path_length=2)
+        sim = nx.panther_vector_similarity(G, 0, D=3, k=4, path_length=2, seed=42)
 
         assert len(sim) > 0
         assert 0 not in sim  # Source node should not be included
@@ -1010,7 +1002,7 @@ class TestSimilarity:
         G.add_edge(1, 2)
         G.add_edge(2, 4)
 
-        sim = nx.panther_vector_similarity(G, 0, D=3, k=4, path_length=2)
+        sim = nx.panther_vector_similarity(G, 0, D=3, k=4, path_length=2, seed=42)
 
         assert len(sim) == 3
         assert 0 not in sim
@@ -1027,7 +1019,7 @@ class TestSimilarity:
         G.add_edge("v3", "v5", weight=1)
 
         sim = nx.panther_vector_similarity(
-            G, "v1", D=3, k=4, path_length=2, weight="weight"
+            G, "v1", D=3, k=4, path_length=2, weight="weight", seed=42
         )
 
         assert len(sim) == 3
@@ -1071,7 +1063,7 @@ class TestSimilarity:
         G = nx.Graph()
         G.add_edge(0, 1)
 
-        sim = nx.panther_vector_similarity(G, 0, D=2, k=2)
+        sim = nx.panther_vector_similarity(G, 0, D=2, k=2, seed=42)
 
         assert len(sim) == 1
         assert 1 in sim
@@ -1082,10 +1074,8 @@ class TestSimilarity:
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 2), (2, 4)])
 
-        np.random.seed(42)
-        sim1 = nx.panther_vector_similarity(G, 0, D=3, path_length=2)
+        sim1 = nx.panther_vector_similarity(G, 0, D=3, path_length=2, seed=42)
 
-        np.random.seed(42)
-        sim2 = nx.panther_vector_similarity(G, 0, D=3, path_length=2)
+        sim2 = nx.panther_vector_similarity(G, 0, D=3, path_length=2, seed=42)
 
         assert sim1 == sim2
