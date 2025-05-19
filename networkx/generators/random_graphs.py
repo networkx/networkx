@@ -337,8 +337,10 @@ def newman_watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
     is odd).  Then shortcuts are created by adding new edges as follows: for
     each edge $(u, v)$ in the underlying "$n$-ring with $k$ nearest
     neighbors" with probability $p$ add a new edge $(u, w)$ with
-    randomly-chosen existing node $w$.  In contrast with
-    :func:`watts_strogatz_graph`, no edges are removed.
+    randomly-chosen existing node $w$,
+    disallowing self-loops and multi-edges.
+    In contrast with :func:`watts_strogatz_graph`,
+    the edges $(u, v)$ are not removed.
 
     See Also
     --------
@@ -417,7 +419,8 @@ def watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
     Then shortcuts are created by replacing some edges as follows: for each
     edge $(u, v)$ in the underlying "$n$-ring with $k$ nearest neighbors"
     with probability $p$ replace it with a new edge $(u, w)$ with uniformly
-    random choice of existing node $w$.
+    random choice of existing node $w$,
+    disallowing self-loops and multi-edges.
 
     In contrast with :func:`newman_watts_strogatz_graph`, the random rewiring
     does not increase the number of edges. The rewired graph is not guaranteed
