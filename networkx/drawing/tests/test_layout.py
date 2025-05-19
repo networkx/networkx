@@ -603,7 +603,7 @@ def test_layouts_negative_dim(layout):
     with pytest.raises(ValueError, match=valid_err_msgs):
         layout(G, dim=-1)
 
-        
+
 @pytest.mark.parametrize(
     ("num_nodes", "expected_method"), [(100, "force"), (501, "energy")]
 )
