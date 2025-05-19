@@ -18,10 +18,18 @@ class TestLayout:
 
     def test_spring_fixed_without_pos(self):
         G = nx.path_graph(4)
-        pytest.raises(ValueError, nx.spring_layout, G, fixed=[0])
+        # No pos dict at all
+        with pytest.raises(ValueError, match="nodes are fixed without positions"):
+            nx.spring_layout(G, fixed=[0])
+
         pos = {0: (1, 1), 2: (0, 0)}
-        pytest.raises(ValueError, nx.spring_layout, G, fixed=[0, 1], pos=pos)
-        nx.spring_layout(G, fixed=[0, 2], pos=pos)  # No ValueError
+        # Node 1 not in pos dict
+        with pytest.raises(ValueError, match="nodes are fixed without positions"):
+            nx.spring_layout(G, fixed=[0, 1], pos=pos)
+
+        # All fixed nodes in pos dict
+        out = nx.spring_layout(G, fixed=[0, 2], pos=pos)  # No ValueError
+        assert all(np.array_equal(out[n], pos[n]) for n in (0, 2))
 
     def test_spring_init_pos(self):
         # Tests GH #2448
@@ -566,6 +574,34 @@ def test_bipartite_layout_default_nodes():
     for nodeset in nx.bipartite.sets(G):
         xs = [pos[k][0] for k in nodeset]
         assert all(x == pytest.approx(xs[0]) for x in xs)
+
+
+@pytest.mark.parametrize(
+    "layout",
+    [
+        nx.random_layout,
+        nx.circular_layout,
+        nx.shell_layout,
+        nx.spring_layout,
+        nx.kamada_kawai_layout,
+        nx.spectral_layout,
+        nx.planar_layout,
+        nx.spiral_layout,
+        nx.forceatlas2_layout,
+    ],
+)
+def test_layouts_negative_dim(layout):
+    """Test all layouts that support dim kwarg handle invalid inputs."""
+    G = nx.path_graph(4)
+    valid_err_msgs = "|".join(
+        [
+            "negative dimensions.*not allowed",
+            "can only handle 2",
+            "cannot handle.*2",
+        ]
+    )
+    with pytest.raises(ValueError, match=valid_err_msgs):
+        layout(G, dim=-1)
 
 
 @pytest.mark.parametrize(
