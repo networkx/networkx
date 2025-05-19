@@ -582,7 +582,7 @@ def test_bipartite_layout_default_nodes():
 def test_spring_layout_graph_size_heuristic(
     num_nodes, expected_method, extra_layout_kwargs
 ):
-    """Expect 'force' layout for n < 500 and 'energy' for n > 500"""
+    """Expect 'force' layout for n < 500 and 'energy' for n >= 500"""
     G = nx.cycle_graph(num_nodes)
     # Seeded layout to compare explicit method to one determined by "auto"
     seed = 163674319
