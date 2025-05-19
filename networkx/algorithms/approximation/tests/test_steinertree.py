@@ -65,12 +65,22 @@ class TestSteinerTree:
         G3.add_edge(13, 15, weight=1)
         G3.add_edge(14, 15, weight=2)
 
+        G4 = nx.Graph()
+        G4.add_edge(0, 2, weight=2)
+        G4.add_edge(0, 1, weight=0.1)
+        G4.add_edge(1, 2, weight=0.1)
+        G4.add_edge(2, 3, weight=1)
+        G4.add_edge(2, 4, weight=1)
+
         cls.G1 = G1
         cls.G2 = G2
         cls.G3 = G3
+        cls.G4 = G4
+
         cls.G1_term_nodes = [1, 2, 3, 4, 5]
         cls.G2_term_nodes = [0, 2, 3]
         cls.G3_term_nodes = [1, 3, 5, 6, 8, 10, 11, 12, 13]
+        cls.G4_term_nodes = [0, 3, 4]
 
         cls.methods = ["kou", "mehlhorn"]
 
@@ -199,6 +209,35 @@ class TestSteinerTree:
         _remove_nonterminal_leaves(G, [4, 5, 6])
 
         assert list(G) == [4, 5, 6]  # only the terminal nodes are left
+
+    def test_weighted_mehlorn(self):
+        G = self.G4
+        terminal_nodes = self.G4_term_nodes
+
+        no_weights_expected_edges = [
+            (0, 2, {"weight": 2}),
+            (2, 3, {"weight": 1}),
+            (2, 4, {"weight": 1}),
+        ]
+        for method in self.methods:
+            S_no_weights = steiner_tree(G, terminal_nodes, method=method, weight=None)
+            assert edges_equal(
+                list(S_no_weights.edges(data=True)), no_weights_expected_edges
+            ), S_no_weights.edges(data=True)
+
+        with_weights_expected_edges = [
+            (0, 1, {"weight": 0.1}),
+            (1, 2, {"weight": 0.1}),
+            (2, 3, {"weight": 1}),
+            (2, 4, {"weight": 1}),
+        ]
+        for method in self.methods:
+            S_with_weights = steiner_tree(
+                G, terminal_nodes, method=method, weight="weight"
+            )
+            assert edges_equal(
+                list(S_with_weights.edges(data=True)), with_weights_expected_edges
+            ), S_with_weights.edges(data=True)
 
 
 @pytest.mark.parametrize("method", ("kou", "mehlhorn"))
