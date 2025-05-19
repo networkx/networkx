@@ -115,6 +115,7 @@ Random Graphs
    gnm_random_graph
    erdos_renyi_graph
    binomial_graph
+   newman_watts_graph
    newman_watts_strogatz_graph
    watts_strogatz_graph
    connected_watts_strogatz_graph
