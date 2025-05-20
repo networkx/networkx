@@ -6,19 +6,19 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = [
-    "is_matching",
-    "is_maximal_matching",
-    "is_perfect_matching",
-    "max_weight_matching",
-    "min_weight_matching",
-    "maximal_matching",
-    "fractional_matching"
+    # "is_matching",
+    # "is_maximal_matching",
+    # "is_perfect_matching",
+    # "max_weight_matching",
+    # "min_weight_matching",
+    # "maximal_matching",
+    # "fractional_matching"
 ]
 
 
-@not_implemented_for("multigraph")
-@not_implemented_for("directed")
-@nx._dispatchable
+# @not_implemented_for("multigraph")
+# @not_implemented_for("directed")
+# @nx._dispatchable
 def maximal_matching(G):
     r"""Find a maximal matching in the graph.
 
@@ -83,7 +83,7 @@ def matching_dict_to_set(matching):
     return edges
 
 
-@nx._dispatchable
+# @nx._dispatchable
 def is_matching(G, matching):
     """Return True if ``matching`` is a valid matching of ``G``
 
@@ -144,7 +144,7 @@ def is_matching(G, matching):
     return True
 
 
-@nx._dispatchable
+# @nx._dispatchable
 def is_maximal_matching(G, matching):
     """Return True if ``matching`` is a maximal matching of ``G``
 
@@ -206,7 +206,7 @@ def is_maximal_matching(G, matching):
     return True
 
 
-@nx._dispatchable
+# @nx._dispatchable
 def is_perfect_matching(G, matching):
     """Return True if ``matching`` is a perfect matching for ``G``
 
@@ -258,9 +258,9 @@ def is_perfect_matching(G, matching):
     return len(nodes) == len(G)
 
 
-@not_implemented_for("multigraph")
-@not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight")
+# @not_implemented_for("multigraph")
+# @not_implemented_for("directed")
+# @nx._dispatchable(edge_attrs="weight")
 def min_weight_matching(G, weight="weight"):
     """Computing a minimum-weight maximal matching of G.
 
@@ -319,9 +319,9 @@ def min_weight_matching(G, weight="weight"):
     return max_weight_matching(InvG, maxcardinality=True, weight=weight)
 
 
-@not_implemented_for("multigraph")
-@not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight")
+# @not_implemented_for("multigraph")
+# @not_implemented_for("directed")
+# @nx._dispatchable(edge_attrs="weight")
 def max_weight_matching(G, maxcardinality=False, weight="weight"):
     """Compute a maximum-weighted matching of G.
 
@@ -1180,11 +1180,14 @@ def fractional_matching(G: nx.Graph, initial_matching: Optional[Dict[Tuple[Any, 
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1,3),(2,3)])
-    {(1,2):0.5,(2,3):0.5,(1,3):0.5}
+    >>> fractional_matching(G)
+    {(1, 2): 0.5, (1, 3): 0.5, (2, 3): 0.5}
     >>> G =  nx.Graph([(1, 2), (1,3),(2,3),(3,4)])
-    {(1, 3): 0,(1,2):1, (2, 3): 0, (3, 4): 1}
+    >>> fractional_matching(G)
+    {(1, 2): 1, (3, 4): 1}
     >>> G = nx.Graph([(1, 2), (1,3),(2,4),(3,5),(4,5),(5,6),(6,7)])
-    {(1, 2): 0.5, (1, 3): 0.5, (2, 4): 0.5, (3, 5): 0.5, (4, 5): 0.5,(5,6): 0,(6,7): 1}
+    >>> fractional_matching(G)
+    {(1, 2): 0.5, (1, 3): 0.5, (2, 4): 0.5, (3, 5): 0.5, (4, 5): 0.5, (6, 7): 1}
 
     Notes
     -----
@@ -1194,9 +1197,9 @@ def fractional_matching(G: nx.Graph, initial_matching: Optional[Dict[Tuple[Any, 
     Proggramer: Roi Sibony
     Date: 2025-01-01
     """
-    pass
-    # solver = FractionalMatchingSolver(G, initial_matching)
-    # return solver.solve() # It doesn't fully works there's a bug in the augmentation type 3 for some reason,gets 0.5 also to 5,6 edge
+    # pass
+    solver = FractionalMatchingSolver(G, initial_matching)
+    return solver.solve() # It doesn't fully works there's a bug in the augmentation type 3 for some reason,gets 0.5 also to 5,6 edge
 
 
 class FractionalMatchingSolver:
@@ -1289,9 +1292,9 @@ class FractionalMatchingSolver:
         """
         Step 2 (Edge scan).
         Scan every edge [u,v] with u labelled "+". 
-        - If v is "–", termination condition reached (matching is max).
+        - If v is "-", termination condition reached (matching is max).
         - Otherwise return a pair (u,v) to indicate where to go next:
-            • if v is "+", caller should perform the type‑1/3 augment; 
+            • if v is "+", caller should perform the type-1/3 augment; 
             • if v is None, caller should do label_or_augment.
         """
         # Scan all edges where one endpoint is labeled "+"
@@ -1317,13 +1320,30 @@ class FractionalMatchingSolver:
         
         # No augmenting structure found
         return None
-    
+    def _build_cycle(self,path_u: list[Any], path_v: list[Any]) -> list[Any]:
+        """
+        Return the ordered list of vertices that form the simple cycle
+        u → … → v → u (edge v-u closes it).
+        Both paths run from the vertex to the common root,
+        so they always share at least that root.
+        """
+        set_u = set(path_u)
+        # first common vertex when climbing from v towards the root
+        lca = next(node for node in path_v if node in set_u)
+
+        idx_u = path_u.index(lca)   # where LCA sits inside path_u
+        idx_v = path_v.index(lca)   #               inside path_v
+
+        # u … lca   +   lca-1 … v   (second part reversed)
+        cycle = path_u[:idx_u + 1] + list(reversed(path_v[:idx_v]))
+        return cycle            # starts with u, ends with v
+
     def _augment(self, u: Any, v: Any) -> None:
         """
         Step 3 (Augment).
         Trace back from u and v via preds to their respective unsaturated roots,
-        classify it as type 1 or type 3, flip x‐values along the cycle/path,
-        then clear all labels and preds so we can re‑initialize.
+        classify it as type 1 or type 3, flip x-values along the cycle/path,
+        then clear all labels and preds so we can re-initialize.
         """
         # Construct paths from u and v back to their roots
         path_u = [u]
@@ -1367,13 +1387,22 @@ class FractionalMatchingSolver:
             # Find the edges in the cycle and flip their x-values
             
             # Form the cycle by joining the paths
-            cycle = path_u[:-1] + [path_v[0]] + path_v[1:-1]
-            
+            # cycle = nx.find_cycle(G,path_u[1])
+            cycle = self._build_cycle(path_u, path_v)
+            # cycle = find_cycle_through_verts_undirected(self.G, path_u)
+            if not cycle:
+                print ("No cycle found through vertices:", path_u)
             # Flip x-values around the cycle
             for i in range(len(cycle)):
                 a = cycle[i]
-                b = cycle[(i + 1) % len(cycle)]
+                b = cycle[(i + 1) % len(cycle)] #why is there a lenght of the cycle?
                 self.x[(a, b)] = 0.5 if self.x.get((a, b), 0) != 0.5 else 0
+                self.x[(b, a)] = self.x[(a, b)]
+            path_v = path_v[::-1]
+            # I need i and i+1 to turn on the corresponding edge to 1 depending on if odd or even index
+            for i in range(len(path_v) - 1):
+                a, b = path_v[i], path_v[i+1]
+                self.x[(a, b)] = 1 if i % 2 == 0 else 0
                 self.x[(b, a)] = self.x[(a, b)]
     
     def _label_or_augment(self, u: Any, v: Any) -> None:
@@ -1394,8 +1423,8 @@ class FractionalMatchingSolver:
                 self.labels[w] = "+"
                 self.preds[v] = u
                 self.preds[w] = v
-                return False
-        
+                return False #return to step 2 (edge scan)
+            
         # If we get here, v must be on a 1/2-cycle (type 2 augmentation)
         # Find the 1/2 -cycle by tracing from v
         cycle = [v]
@@ -1429,3 +1458,12 @@ class FractionalMatchingSolver:
                         return True
                 # If we get here, no cycle was found - this shouldn't happen in theory
                 return False
+            
+if __name__ == "__main__":
+    # Example usage
+
+    # G = nx.Graph([(1, 2), (1,3),(2,4),(3,5),(4,5),(5,6),(6,7)])
+    # matching = fractional_matching(G)
+    # print(matching)  # Output: {(1, 2): 0.5, (2, 3): 0.5, (1, 3): 0.5}
+    import doctest 
+    doctest.testmod()
