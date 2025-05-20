@@ -24,7 +24,7 @@ def test_non_randomness(k, weight, expected):
 def test_non_connected():
     G = nx.Graph([(1, 2)])
     G.add_node(3)
-    with pytest.raises(nx.NetworkXException, match="Non connected"):
+    with pytest.raises(nx.NetworkXException, match=r"not connected"):
         nx.non_randomness(G)
 
 
@@ -32,11 +32,20 @@ def test_self_loops():
     G = nx.Graph()
     G.add_edge(1, 2)
     G.add_edge(1, 1)
-    with pytest.raises(nx.NetworkXError, match="Graph must not contain self-loops"):
+    with pytest.raises(nx.NetworkXError, match=r"contains self-loops"):
         nx.non_randomness(G)
 
 
 def test_empty_graph():
     G = nx.empty_graph(1)
-    with pytest.raises(nx.NetworkXError, match=".*not applicable to empty graphs"):
+    with pytest.raises(nx.NetworkXError, match=r"has no edges"):
         nx.non_randomness(G)
+
+
+@pytest.mark.parametrize("k", [-1, 0, 3, 4])
+def test_k(k):
+    G = nx.path_graph(3)
+    with pytest.raises(
+        ValueError, match=r"invalid number of communities for graph with 3 nodes:"
+    ):
+        nx.non_randomness(G, k=k)
