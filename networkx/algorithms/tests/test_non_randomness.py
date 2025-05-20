@@ -45,7 +45,11 @@ def test_empty_graph():
 @pytest.mark.parametrize("k", [-1, 0, 3, 4])
 def test_k(k):
     G = nx.path_graph(3)
-    with pytest.raises(
-        ValueError, match=r"invalid number of communities for graph with 3 nodes:"
-    ):
+    with pytest.raises(ValueError, match=r"invalid.*graph with 3 nodes:"):
         nx.non_randomness(G, k=k)
+
+
+def test_k_probability():
+    G = nx.Graph([(0, 1), (1, 3), (1, 2), (3, 4)])
+    with pytest.raises(ValueError, match=r"invalid.*graph with 5 nodes and 4 edges: 2"):
+        nx.non_randomness(G, k=2)
