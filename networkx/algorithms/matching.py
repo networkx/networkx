@@ -6,19 +6,19 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = [
-    # "is_matching",
-    # "is_maximal_matching",
-    # "is_perfect_matching",
-    # "max_weight_matching",
-    # "min_weight_matching",
-    # "maximal_matching",
-    # "fractional_matching"
+    "is_matching",
+    "is_maximal_matching",
+    "is_perfect_matching",
+    "max_weight_matching",
+    "min_weight_matching",
+    "maximal_matching",
+    "minimal_fraction_max_matching"
 ]
 
 
-# @not_implemented_for("multigraph")
-# @not_implemented_for("directed")
-# @nx._dispatchable
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
+@nx._dispatchable
 def maximal_matching(G):
     r"""Find a maximal matching in the graph.
 
@@ -83,7 +83,7 @@ def matching_dict_to_set(matching):
     return edges
 
 
-# @nx._dispatchable
+@nx._dispatchable
 def is_matching(G, matching):
     """Return True if ``matching`` is a valid matching of ``G``
 
@@ -144,7 +144,7 @@ def is_matching(G, matching):
     return True
 
 
-# @nx._dispatchable
+@nx._dispatchable
 def is_maximal_matching(G, matching):
     """Return True if ``matching`` is a maximal matching of ``G``
 
@@ -206,7 +206,7 @@ def is_maximal_matching(G, matching):
     return True
 
 
-# @nx._dispatchable
+@nx._dispatchable
 def is_perfect_matching(G, matching):
     """Return True if ``matching`` is a perfect matching for ``G``
 
@@ -258,9 +258,9 @@ def is_perfect_matching(G, matching):
     return len(nodes) == len(G)
 
 
-# @not_implemented_for("multigraph")
-# @not_implemented_for("directed")
-# @nx._dispatchable(edge_attrs="weight")
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight")
 def min_weight_matching(G, weight="weight"):
     """Computing a minimum-weight maximal matching of G.
 
@@ -319,9 +319,9 @@ def min_weight_matching(G, weight="weight"):
     return max_weight_matching(InvG, maxcardinality=True, weight=weight)
 
 
-# @not_implemented_for("multigraph")
-# @not_implemented_for("directed")
-# @nx._dispatchable(edge_attrs="weight")
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight")
 def max_weight_matching(G, maxcardinality=False, weight="weight"):
     """Compute a maximum-weighted matching of G.
 
@@ -1155,7 +1155,7 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
 @nx._dispatchable
-def fractional_matching(G: nx.Graph, initial_matching: Optional[Dict[Tuple[Any, Any], float]] = None) -> Dict[Tuple[Any, Any], float]:
+def minimal_fraction_max_matching(G: nx.Graph, initial_matching: Optional[Dict[Tuple[Any, Any], float]] = None) -> Dict[Tuple[Any, Any], float]:
     """Find a maximum fractional matching in the graph.
 
     A fractional matching is a generalization of a matching where each edge
@@ -1464,91 +1464,3 @@ class FractionalMatchingSolver:
                 # If we get here, no cycle was found - this shouldn't happen in theory
                 print("No cycle found, this shouldn't happen. WTH")
                 return False
-
-
-
-def solve_fractional_matching_lp(G):
-    """
-    Solve the fractional matching problem using linear programming.
-    Constrains edge values to be in {0, 0.5, 1}.
-    Returns the total weight of the maximum matching.
-    """
-    # Create the LP problem
-    prob = pulp.LpProblem("FractionalMatching", pulp.LpMaximize)
-    
-    # Create a variable for each edge, constrained to {0, 0.5, 1}
-    edges = list(G.edges())
-    edge_vars = {}
-    for u, v in edges:
-        # Variables for each possible value (0, 0.5, 1)
-        edge_vars[(u, v, 0)] = pulp.LpVariable(f"x_{u}_{v}_0", cat=pulp.LpBinary)
-        edge_vars[(u, v, 0.5)] = pulp.LpVariable(f"x_{u}_{v}_0.5", cat=pulp.LpBinary)
-        edge_vars[(u, v, 1)] = pulp.LpVariable(f"x_{u}_{v}_1", cat=pulp.LpBinary)
-        
-        # Each edge must have exactly one value assigned
-        prob += edge_vars[(u, v, 0)] + edge_vars[(u, v, 0.5)] + edge_vars[(u, v, 1)] == 1
-    
-    # Objective: maximize the sum of edge values
-    prob += pulp.lpSum([0.5 * edge_vars[(u, v, 0.5)] + 1 * edge_vars[(u, v, 1)] for u, v in edges])
-    
-    # Constraint: sum of incident edge values for each vertex must be ≤ 1
-    for node in G.nodes():
-        incident_edges = [(u, v) for u, v in edges if u == node or v == node]
-        prob += pulp.lpSum([0.5 * edge_vars[(u, v, 0.5)] + 1 * edge_vars[(u, v, 1)] 
-                            for u, v in incident_edges]) <= 1
-    
-    # Solve the problem
-    prob.solve(pulp.PULP_CBC_CMD(msg=False))
-    
-    # Return zero if the problem was not solved
-    if prob.status != pulp.LpStatusOptimal:
-        return 0
-    
-    # Calculate the total weight
-    total_weight = sum(0.5 * edge_vars[(u, v, 0.5)].value() + 1 * edge_vars[(u, v, 1)].value() 
-                        for u, v in edges)
-    
-    return total_weight
-
-def compare_with_lp(n: int, p: float) -> None:
-    """
-    Generate G(n,p), run both your algo and the LP solver,
-    then report whether the total weights match.
-    """
-    G = nx.fast_gnp_random_graph(n, p, seed=42)
-    
-    # Run specialized algorithm
-    match = fractional_matching(G)
-    algo_weight = sum(match.values())
-    
-    # Run LP-based solver
-    lp_weight = solve_fractional_matching_lp(G)
-    
-    # Compare with tolerance
-    if abs(algo_weight - lp_weight) < 1e-6:
-        print(f"PASS: n={n}, p={p:.3f} → weight={algo_weight:.6f}")
-    else:
-        print(f"FAIL: n={n}, p={p:.3f} → algo={algo_weight:.6f}, lp={lp_weight:.6f}")
-
-def main():
-    test_cases = [
-        (30, 0.1),
-        (50, 0.05),
-    ]
-    
-    for n, p in test_cases:
-        try:
-            compare_with_lp(n, p)
-        except Exception as exc:
-            print(f"ERROR: n={n}, p={p:.3f} → {exc!r}")
-
-
-if __name__ == "__main__":
-    # Example usage
-
-    # G = nx.Graph([(1, 2), (1,3),(2,4),(3,5),(4,5),(5,6),(6,7)])
-    # matching = fractional_matching(G)
-    # print(matching)  # Output: {(1, 2): 0.5, (2, 3): 0.5, (1, 3): 0.5}
-    import doctest 
-    doctest.testmod()
-    main()

@@ -1,29 +1,29 @@
 import random
-import pulp  # You may need to install this: pip install pulp
+import pulp  
 
 import pytest
 import networkx as nx
-from networkx.algorithms.matching import fractional_matching
+from networkx.algorithms.matching import minimal_fraction_max_matching
 
 #1 
 def test_empty_graph():
     """Test that an empty graph returns an empty matching."""
     G = nx.Graph()
-    m = fractional_matching(G)
+    m = minimal_fraction_max_matching(G)
     assert m == {}  # no edges at all
 #2
 def test_single_edge():
     """Test that a single edge gets value 1."""
     G = nx.Graph()
     G.add_edge(1, 2)
-    m = fractional_matching(G)
+    m = minimal_fraction_max_matching(G)
     assert m == {(1, 2): 1}
 # 3
 def test_triangle():
     """Test that a triangle graph has a valid fractional matching."""
     # A 3-cycle must have values of 0.5 on each edge to be optimal
     G = nx.cycle_graph(3)
-    m = fractional_matching(G)
+    m = minimal_fraction_max_matching(G)
     
     # Each edge should have value 0.5 in the optimal solution
     edges = list(G.edges())
@@ -41,7 +41,7 @@ def test_path_graph():
     """Test a simple path graph where optimal matching is known."""
     # A path of length 3 (4 nodes) should have alternating 1s
     G = nx.path_graph(4)  # 0-1-2-3
-    m = fractional_matching(G)
+    m = minimal_fraction_max_matching(G)
     
     # Optimal solution should be matching edges 0-1 and 2-3
     # or equivalently, edges 1-2 with value 1
@@ -57,7 +57,7 @@ def test_cycle_graph():
     """Test a cycle graph with even number of nodes."""
     # A cycle with even length should have a perfect matching
     G = nx.cycle_graph(6)
-    m = fractional_matching(G)
+    m = minimal_fraction_max_matching(G)
     
     # Total weight should be n/2 for perfect matching
     total_weight = sum(m.values())
@@ -72,7 +72,7 @@ def test_bipartite_graph():
     """Test a complete bipartite graph."""
     # K3,3 should have a perfect matching
     G = nx.complete_bipartite_graph(3, 3)
-    m = fractional_matching(G)
+    m = minimal_fraction_max_matching(G)
     
     # Total weight should be min(left_size, right_size)
     total_weight = sum(m.values())
@@ -82,13 +82,13 @@ def test_directed_raises():
     """Test that directed graphs raise appropriate exceptions."""
     D = nx.DiGraph([(1, 2)])
     with pytest.raises(nx.NetworkXNotImplemented):
-        fractional_matching(D)
+        minimal_fraction_max_matching(D)
 # 8
 def test_k4_complete_graph():
     """Test K4 complete graph which requires fractional values."""
     # K4 requires fractional matching for optimality
     G = nx.complete_graph(4)
-    m = fractional_matching(G)
+    m = minimal_fraction_max_matching(G)
     
     # Optimal solution should have total weight of 2
     total_weight = sum(m.values())
@@ -104,7 +104,7 @@ def test_property_on_random():
     """Test with small random graphs and verify constraints."""
     for _ in range(10):
         G = nx.gnp_random_graph(5, 0.5, seed=42)
-        m = fractional_matching(G)
+        m = minimal_fraction_max_matching(G)
         
         # Check fractional constraints
         for node in G:
@@ -127,7 +127,7 @@ def test_large_random_graph_constraints(n, p):
     """On moderately large graphs the solution must still satisfy
     0 ≤ x_e ≤ 1 and Σ_e incident to v x_e ≤ 1 for every vertex."""
     G = nx.fast_gnp_random_graph(n, p, seed=42)
-    match = fractional_matching(G)
+    match = minimal_fraction_max_matching(G)
 
     # Check edge values and build per-node sums
     node_load = {v: 0.0 for v in G}
@@ -147,7 +147,7 @@ def test_large_random_graph_constraints(n, p):
 def test_powerlaw_graph_constraints():
     """Stress the solver on a 1,000-node graph but only check feasibility."""
     G = nx.powerlaw_cluster_graph(1000, 3, 0.1, seed=7)
-    frac = fractional_matching(G)
+    frac = minimal_fraction_max_matching(G)
 
     # Quick feasibility scan
     node_load = {v: 0.0 for v in G}
@@ -157,7 +157,6 @@ def test_powerlaw_graph_constraints():
         node_load[u] += val
         node_load[v] += val
     assert all(load <= 1.0 + 1e-8 for load in node_load.values())
-
 
 def solve_fractional_matching_lp(G):
     """
@@ -216,7 +215,7 @@ def test_compare_with_linear_programming(n, p):
     G = nx.fast_gnp_random_graph(n, p, seed=42)
     
     # Solve using the fractional_matching algorithm
-    match = fractional_matching(G)
+    match = minimal_fraction_max_matching(G)
     algo_weight = sum(match.values())
     
     # Solve using linear programming
