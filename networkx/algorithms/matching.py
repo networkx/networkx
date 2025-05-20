@@ -1195,7 +1195,7 @@ def minimal_fraction_max_matching(G: nx.Graph, initial_matching: Optional[Dict[T
     "Konig-Egervary graphs, 2-bicritical graphs and fractional matchings"
     by Jean-Marie Bourjolly and William R. Pulleyblank
     Proggramer: Roi Sibony
-    Date: 2025-01-01
+    Date: 20.05.2024
     """
     # pass
     solver = FractionalMatchingSolver(G, initial_matching)
@@ -1321,6 +1321,7 @@ class FractionalMatchingSolver:
         
         # No augmenting structure found
         return None
+    # Helper function to build the cycle
     def _build_cycle(self,path_u: list[Any], path_v: list[Any]) -> list[Any]:
         """
         Return the ordered list of vertices that form the simple cycle
@@ -1404,7 +1405,6 @@ class FractionalMatchingSolver:
             # I need i and i+1 to turn on the corresponding edge to 1 depending on if odd or even index
             for i in range(len(path_v) - 1):
                 a, b = path_v[i], path_v[i+1]
-                # flip 0 ↔ 1 instead of forcing a fixed pattern
                 self.x[(a, b)] = 1 - self.x.get((a, b), 0)
                 self.x[(b, a)] = self.x[(a, b)]
 
@@ -1413,10 +1413,10 @@ class FractionalMatchingSolver:
         """
         Step 4 (Label or augment).
         If v is saturated but has an incident edge j with x[j]==1, then
-          • set label[v] = "–", label[w] = "+" for that neighbor w,
+          • set label[v] = "-", label[w] = "+" for that neighbor w,
           • set preds[w] = v, preds[v] = u,
           • return to edge_scan.
-        Otherwise v lies on a 1/2‑cycle: do the type‑2 augmentation on that cycle,
+        Otherwise v lies on a 1/2-cycle: do the type-2 augmentation on that cycle,
         then clear labels/preds for a fresh start.
         """
         # Check if v has a neighbor w with edge value 1
@@ -1433,7 +1433,6 @@ class FractionalMatchingSolver:
         # Find the 1/2 -cycle by tracing from v
         cycle = [v]
         visited = {v}
-        # self.labels[v] = "+"
 
         while True:
             # Find the next node in the cycle (connected by a 1/2 edge)
@@ -1462,5 +1461,4 @@ class FractionalMatchingSolver:
                             self.x[(b, a)] = new_val
                         return True
                 # If we get here, no cycle was found - this shouldn't happen in theory
-                print("No cycle found, this shouldn't happen. WTH")
                 return False
