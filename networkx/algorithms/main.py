@@ -255,11 +255,14 @@ class FractionalMatchingSolver:
                 self.x[(a, b)] = 0.5 if self.x.get((a, b), 0) != 0.5 else 0
                 self.x[(b, a)] = self.x[(a, b)]
             path_v = path_v[::-1]
+          
             # I need i and i+1 to turn on the corresponding edge to 1 depending on if odd or even index
             for i in range(len(path_v) - 1):
                 a, b = path_v[i], path_v[i+1]
-                self.x[(a, b)] = 1 if i % 2 == 0 else 0
+                # flip 0 ↔ 1 instead of forcing a fixed pattern
+                self.x[(a, b)] = 1 - self.x.get((a, b), 0)
                 self.x[(b, a)] = self.x[(a, b)]
+
     
     def _label_or_augment(self, u: Any, v: Any) -> None:
         """
@@ -293,6 +296,7 @@ class FractionalMatchingSolver:
             next_node_found = False
 
             for next_node in self.G.neighbors(current):
+                # print("hello")
                 if self.x.get((current, next_node), 0) == 0.5 and next_node not in visited:
                     cycle.append(next_node)
                     visited.add(next_node)
@@ -400,6 +404,6 @@ if __name__ == "__main__":
     # G = nx.Graph([(1, 2), (1,3),(2,4),(3,5),(4,5),(5,6),(6,7)])
     # matching = fractional_matching(G)
     # print(matching)  # Output: {(1, 2): 0.5, (2, 3): 0.5, (1, 3): 0.5}
-    # import doctest 
-    # doctest.testmod()
+    import doctest 
+    doctest.testmod()
     main()

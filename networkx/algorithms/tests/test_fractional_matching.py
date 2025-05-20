@@ -83,67 +83,67 @@ def test_directed_raises():
     D = nx.DiGraph([(1, 2)])
     with pytest.raises(nx.NetworkXNotImplemented):
         fractional_matching(D)
-
-# def test_k4_complete_graph():
-#     """Test K4 complete graph which requires fractional values."""
-#     # K4 requires fractional matching for optimality
-#     G = nx.complete_graph(4)
-#     m = fractional_matching(G)
+# 8
+def test_k4_complete_graph():
+    """Test K4 complete graph which requires fractional values."""
+    # K4 requires fractional matching for optimality
+    G = nx.complete_graph(4)
+    m = fractional_matching(G)
     
-#     # Optimal solution should have total weight of 2
-#     total_weight = sum(m.values())
-#     assert abs(total_weight - 2) < 1e-8
+    # Optimal solution should have total weight of 2
+    total_weight = sum(m.values())
+    assert abs(total_weight - 2) < 1e-8
     
-#     # In the optimal solution, all edges should have value 1/3
-#     # or a different pattern with sum 2 that satisfies constraints
-#     for node in G:
-#         incident_sum = sum(val for (u, v), val in m.items() if u == node or v == node)
-#         assert abs(incident_sum - 1.0) < 1e-8
-
-# def test_property_on_random():
-#     """Test with small random graphs and verify constraints."""
-#     for _ in range(10):
-#         G = nx.gnp_random_graph(5, 0.5, seed=42)
-#         m = fractional_matching(G)
+    # In the optimal solution, all edges should have value 1/3
+    # or a different pattern with sum 2 that satisfies constraints
+    for node in G:
+        incident_sum = sum(val for (u, v), val in m.items() if u == node or v == node)
+        assert abs(incident_sum - 1.0) < 1e-8
+# 9
+def test_property_on_random():
+    """Test with small random graphs and verify constraints."""
+    for _ in range(10):
+        G = nx.gnp_random_graph(5, 0.5, seed=42)
+        m = fractional_matching(G)
         
-#         # Check fractional constraints
-#         for node in G:
-#             # Sum of weights incident to each node must be ≤ 1
-#             incident_sum = sum(m.get((u, v), m.get((v, u), 0)) for u, v in G.edges(node))
-#             assert incident_sum <= 1 + 1e-8
+        # Check fractional constraints
+        for node in G:
+            # Sum of weights incident to each node must be ≤ 1
+            incident_sum = sum(m.get((u, v), m.get((v, u), 0)) for u, v in G.edges(node))
+            assert incident_sum <= 1 + 1e-8
         
-#         # Check that edge values are only 0, 0.5, or 1
-#         for val in m.values():
-#             assert abs(val - 0.5) < 1e-8 or abs(val - 1.0) < 1e-8
+        # Check that edge values are only 0, 0.5, or 1
+        for val in m.values():
+            assert abs(val - 0.5) < 1e-8 or abs(val - 1.0) < 1e-8
 
 # --------------------------------------------------------------------
 # 1. Larger random graphs — verify constraints only (fast, O(E)).
 
-# 8
-# @pytest.mark.parametrize(
-#     "n, p", [(50, 0.08), (120, 0.04), (250, 0.02)]
-# )
-# def test_large_random_graph_constraints(n, p):
-#     """On moderately large graphs the solution must still satisfy
-#     0 ≤ x_e ≤ 1 and Σ_e incident to v x_e ≤ 1 for every vertex."""
-#     G = nx.fast_gnp_random_graph(n, p, seed=42)
-#     match = fractional_matching(G)
+# 10
+@pytest.mark.parametrize(
+    "n, p", [(50, 0.08), (120, 0.04), (250, 0.02)]
+)
+def test_large_random_graph_constraints(n, p):
+    """On moderately large graphs the solution must still satisfy
+    0 ≤ x_e ≤ 1 and Σ_e incident to v x_e ≤ 1 for every vertex."""
+    G = nx.fast_gnp_random_graph(n, p, seed=42)
+    match = fractional_matching(G)
 
-#     # Check edge values and build per-node sums
-#     node_load = {v: 0.0 for v in G}
-#     for (u, v), val in match.items():
-#         # Values can only be 0.5 or 1 (never store 0)
-#         assert val in (0.5, 1.0) or abs(val - 0.5) < 1e-8 or abs(val - 1.0) < 1e-8
-#         # Only store one orientation
-#         assert (v, u) not in match
-#         node_load[u] += val
-#         node_load[v] += val
+    # Check edge values and build per-node sums
+    node_load = {v: 0.0 for v in G}
+    for (u, v), val in match.items():
+        # Values can only be 0.5 or 1 (never store 0)
+        assert val in (0.5, 1.0) or abs(val - 0.5) < 1e-8 or abs(val - 1.0) < 1e-8
+        # Only store one orientation
+        assert (v, u) not in match
+        node_load[u] += val
+        node_load[v] += val
 
-#     # Every vertex load ≤ 1
-#     assert all(load <= 1.0 + 1e-8 for load in node_load.values())
+    # Every vertex load ≤ 1
+    assert all(load <= 1.0 + 1e-8 for load in node_load.values())
 
-# 9
-@pytest.mark.slow
+# 11
+# @pytest.mark.slow
 def test_powerlaw_graph_constraints():
     """Stress the solver on a 1,000-node graph but only check feasibility."""
     G = nx.powerlaw_cluster_graph(1000, 3, 0.1, seed=7)
@@ -157,43 +157,6 @@ def test_powerlaw_graph_constraints():
         node_load[u] += val
         node_load[v] += val
     assert all(load <= 1.0 + 1e-8 for load in node_load.values())
-
-
-# def test_initial_matching():
-#     """Test providing an initial matching."""
-#     G = nx.cycle_graph(4)
-    
-#     # Create an initial matching (not optimal)
-#     initial = {(0, 1): 0.5, (1, 0): 0.5, (2, 3): 0.5, (3, 2): 0.5}
-    
-#     # The algorithm should improve this to a perfect matching
-#     m = fractional_matching(G, initial_matching=initial)
-#     total_weight = sum(m.values())
-    
-#     # Optimal solution should have total weight of 2
-#     assert abs(total_weight - 2) < 1e-8
-
-
-@pytest.mark.parametrize(
-    "n, p", [(30, 0.1), (50, 0.05)]  # Small enough for LP to solve in reasonable time
-)
-def test_compare_with_linear_programming(n, p):
-    """
-    Compare the fractional matching algorithm with a linear programming solution.
-    The LP solution constrains values to {0, 0.5, 1} and should produce
-    the same total weight as our specialized algorithm.
-    """
-    G = nx.fast_gnp_random_graph(n, p, seed=42)
-    
-    # Solve using the fractional_matching algorithm
-    match = fractional_matching(G)
-    algo_weight = sum(match.values())
-    
-    # Solve using linear programming
-    lp_weight = solve_fractional_matching_lp(G)
-    
-    # The weights should be very close (allowing for small floating point differences)
-    assert abs(algo_weight - lp_weight) < 1e-6, f"Algorithm: {algo_weight}, LP: {lp_weight}"
 
 
 def solve_fractional_matching_lp(G):
@@ -238,3 +201,30 @@ def solve_fractional_matching_lp(G):
                         for u, v in edges)
     
     return total_weight
+
+
+
+@pytest.mark.parametrize(
+    "n, p", [(30, 0.1), (50, 0.05)]  # Small enough for LP to solve in reasonable time
+)# 13
+def test_compare_with_linear_programming(n, p):
+    """
+    Compare the fractional matching algorithm with a linear programming solution.
+    The LP solution constrains values to {0, 0.5, 1} and should produce
+    the same total weight as our specialized algorithm.
+    """
+    G = nx.fast_gnp_random_graph(n, p, seed=42)
+    
+    # Solve using the fractional_matching algorithm
+    match = fractional_matching(G)
+    algo_weight = sum(match.values())
+    
+    # Solve using linear programming
+    lp_weight = solve_fractional_matching_lp(G)
+    
+    # The weights should be very close (allowing for small floating point differences)
+    assert abs(algo_weight - lp_weight) < 1e-6, f"Algorithm: {algo_weight}, LP: {lp_weight}"
+
+if __name__ == "__main__":
+    pytest.main([__file__])
+
