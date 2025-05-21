@@ -1,6 +1,6 @@
 import random
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 import pandas as pd
 
@@ -36,8 +36,8 @@ class BenchmarkGraph:
             BenchmarkGraph: An instance with the generated name and graph.
         """
         return cls(
-            name = _benchmark_name_from_func_call(func, *args, **kwargs),
-            graph = lambda: func(*args, **kwargs)
+            name=_benchmark_name_from_func_call(func, *args, **kwargs),
+            graph=lambda: func(*args, **kwargs),
         )
 
 

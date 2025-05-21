@@ -1,6 +1,7 @@
 """Benchmarks for a certain set of algorithms"""
 
 import random
+
 import networkx as nx
 from benchmarks.utils import (
     BenchmarkGraph,
@@ -90,16 +91,11 @@ def _make_weighted_benchmark_graphs(seed):
         for p in [0.1, 0.5, 0.9]
     ]
 
-    path_graphs = [
-        (nx.path_graph, (nodes,), {})
-        for nodes in [1_000, 10_000, 20_000]
-    ]
+    path_graphs = [(nx.path_graph, (nodes,), {}) for nodes in [1_000, 10_000, 20_000]]
 
     all_graphs = {}
     for graph_func, args, kwargs in path_graphs + erdos_renyi_graphs:
-        g = BenchmarkGraph.from_func(
-            weighted_graph, seed, graph_func, *args, **kwargs
-        )
+        g = BenchmarkGraph.from_func(weighted_graph, seed, graph_func, *args, **kwargs)
         all_graphs[g.name] = g
     return all_graphs
 
