@@ -846,8 +846,6 @@ def _dijkstra_multisource(
 
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
-    push = heappush
-    pop = heappop
     dist = {}  # dictionary of final distances
     seen = {}
     # fringe is heapq with 3-tuples (distance,c,node)
@@ -856,9 +854,9 @@ def _dijkstra_multisource(
     fringe = []
     for source in sources:
         seen[source] = 0
-        push(fringe, (0, next(c), source))
+        heappush(fringe, (0, next(c), source))
     while fringe:
-        (d, _, v) = pop(fringe)
+        (d, _, v) = heappop(fringe)
         if v in dist:
             continue  # already searched this node.
         dist[v] = d
@@ -882,7 +880,7 @@ def _dijkstra_multisource(
                     pred[u].append(v)
             elif u not in seen or vu_dist < seen[u]:
                 seen[u] = vu_dist
-                push(fringe, (vu_dist, next(c), u))
+                heappush(fringe, (vu_dist, next(c), u))
                 if paths_dict is not None:
                     paths_dict[u] = paths_dict[v] + [u]
                 if pred_dict is not None:
@@ -900,6 +898,7 @@ def _dijkstra_multisource(
             path.append(current_preds[0])
         # The path was built in reverse order, so reverse it at the end.
         path.reverse()
+
     # The optional predecessor and path dictionaries can be accessed
     # by the caller via the pred and paths objects passed as arguments.
     return dist
@@ -2396,8 +2395,6 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
         return (0, [source])
 
     weight = _weight_function(G, weight)
-    push = heappush
-    pop = heappop
     # Init:  [Forward, Backward]
     dists = [{}, {}]  # dictionary of final distances
     paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
@@ -2405,8 +2402,8 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     seen = [{source: 0}, {target: 0}]  # dict of distances to seen nodes
     c = count()
     # initialize fringe heap
-    push(fringe[0], (0, next(c), source))
-    push(fringe[1], (0, next(c), target))
+    heappush(fringe[0], (0, next(c), source))
+    heappush(fringe[1], (0, next(c), target))
     # neighs for extracting correct neighbor information
     if G.is_directed():
         neighs = [G._succ, G._pred]
@@ -2421,7 +2418,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
         # dir == 0 is forward direction and dir == 1 is back
         dir = 1 - dir
         # extract closest to expand
-        (dist, _, v) = pop(fringe[dir])
+        (dist, _, v) = heappop(fringe[dir])
         if v in dists[dir]:
             # Shortest path to v has already been found
             continue
@@ -2444,7 +2441,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
             elif w not in seen[dir] or vwLength < seen[dir][w]:
                 # relaxing
                 seen[dir][w] = vwLength
-                push(fringe[dir], (vwLength, next(c), w))
+                heappush(fringe[dir], (vwLength, next(c), w))
                 paths[dir][w] = paths[dir][v] + [w]
                 if w in seen[0] and w in seen[1]:
                     # see if this path is better than the already
