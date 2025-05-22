@@ -1387,9 +1387,8 @@ class FractionalMatchingSolver:
             # Find the edges in the cycle and flip their x-values
             
             # Form the cycle by joining the paths
-            # cycle = nx.find_cycle(G,path_u[1])
             cycle = self._build_cycle(path_u, path_v)
-            # cycle = find_cycle_through_verts_undirected(self.G, path_u)
+            
             if not cycle:
                 print ("No cycle found through vertices:", path_u)
             # Flip x-values around the cycle
