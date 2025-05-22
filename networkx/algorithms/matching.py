@@ -1197,9 +1197,8 @@ def minimal_fraction_max_matching(G: nx.Graph, initial_matching: Optional[Dict[T
     Proggramer: Roi Sibony
     Date: 20.05.2024
     """
-    # pass
     solver = FractionalMatchingSolver(G, initial_matching)
-    return solver.solve() # It doesn't fully works there's a bug in the augmentation type 3 for some reason,gets 0.5 also to 5,6 edge
+    return solver.solve() 
 
 
 class FractionalMatchingSolver:
