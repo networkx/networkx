@@ -1384,8 +1384,6 @@ class FractionalMatchingSolver:
                 self.x[(b, a)] = self.x[(a, b)]
         else:
             # Type 3: augmenting cycle with a common root
-            # Find the edges in the cycle and flip their x-values
-            
             # Form the cycle by joining the paths
             cycle = self._build_cycle(path_u, path_v)
             
