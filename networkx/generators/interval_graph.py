@@ -3,6 +3,7 @@ Generators for interval graph.
 """
 
 from collections.abc import Sequence
+from heapq import heappop, heappush
 
 import networkx as nx
 
@@ -10,7 +11,7 @@ __all__ = ["interval_graph"]
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
-def interval_graph(intervals):
+def interval_graph(intervals, method="dense"):
     """Generates an interval graph for a list of intervals given.
 
     In graph theory, an interval graph is an undirected graph formed from a set
@@ -56,8 +57,16 @@ def interval_graph(intervals):
         if interval[0] > interval[1]:
             raise ValueError(f"Interval must have lower value first. Got {interval}")
 
-    graph = nx.Graph()
+    if method == "dense":
+        return _interval_graph_dense(intervals)
+    elif method == "sparse":
+        return _interval_graph_sparse(intervals)
+    else:
+        raise ValueError(f"Method not supported: {method}")
 
+
+def _interval_graph_dense(intervals):
+    graph = nx.Graph()
     tupled_intervals = [tuple(interval) for interval in intervals]
     graph.add_nodes_from(tupled_intervals)
 
@@ -67,4 +76,31 @@ def interval_graph(intervals):
             min2, max2 = interval2
             if max1 >= min2 and max2 >= min1:
                 graph.add_edge(interval1, interval2)
+    return graph
+
+
+def _interval_graph_sparse(intervals):
+    """A "sweep line"-like algorithm to find intersections of intervals."""
+    graph = nx.Graph()
+
+    # Sort by starting point.
+    tupled_intervals = sorted(tuple(interval) for interval in intervals)
+    graph.add_nodes_from(tupled_intervals)
+
+    # Keeps all intervals that intersect with the current interval,
+    # sorted by ending point.
+    heap = []
+
+    for i1, interval1 in enumerate(tupled_intervals):
+        start1, end1 = interval1
+
+        # Remove intervals that don't intersect anymore.
+        while heap and heap[0][0] < start1:
+            heappop(heap)
+
+        graph.add_edges_from((interval1, tupled_intervals[i2]) for _, i2 in heap)
+
+        # Add the current interval to intersection list.
+        heappush(heap, (end1, i1))
+
     return graph
