@@ -1269,8 +1269,7 @@ class FractionalMatchingSolver:
         Initialize all predecessor pointers to None.
         """
         self.labels = {}
-        # self.preds = {}
-        self.preds = {v: None for v in self.G.nodes}   # ← ADD THIS LINE
+        self.preds = {v: None for v in self.G.nodes}   
 
         # Calculate saturation for each node
         node_values = {}
