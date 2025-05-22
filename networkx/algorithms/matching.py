@@ -1435,7 +1435,6 @@ class FractionalMatchingSolver:
             next_node_found = False
 
             for next_node in self.G.neighbors(current):
-                # print("hello")
                 if self.x.get((current, next_node), 0) == 0.5 and next_node not in visited:
                     cycle.append(next_node)
                     visited.add(next_node)
