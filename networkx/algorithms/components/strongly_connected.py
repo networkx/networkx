@@ -167,9 +167,16 @@ def kosaraju_strongly_connected_components(G, source=None):
         r = post.pop()
         if r in seen:
             continue
-        c = nx.dfs_preorder_nodes(G, r)
-        new = {v for v in c if v not in seen}
-        seen.update(new)
+        new = {r}
+        seen.add(r)
+        stack = [r]
+        while stack:
+            v = stack.pop()
+            for w in G._adj[v]:
+                if w not in seen:
+                    new.add(w)
+                    seen.add(w)
+                    stack.append(w)
         yield new
 
 
