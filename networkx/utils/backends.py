@@ -209,10 +209,15 @@ def _load_backend(backend_name):
     return rv
 
 
+def _get_fully_qualified_type_name(obj):
+    cls = type(obj)
+    return f"{cls.__module__}.{cls.__qualname__}"
+
+
 def _graph_backends(g, default=None):
     ret = [
         getattr(g, "__networkx_backend__", None),
-    ] + nx.config.graph_type_backends_map.get(type(g), [])
+    ] + nx.config.graph_type_backends_map.get(_get_fully_qualified_type_name(g), [])
     return [x for x in ret if x is not None] or ([default] if default else [])
 
 

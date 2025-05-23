@@ -72,11 +72,11 @@ def pytest_configure(config):
         nx.config.backends = nx.utils.Config(
             nx_loopback=nx.utils.Config(
                 graph_types=[
-                    LoopbackGraphTypeBased,
-                    LoopbackDiGraphTypeBased,
-                    LoopbackMultiGraphTypeBased,
-                    LoopbackMultiDiGraphTypeBased,
-                    LoopbackPlanarEmbeddingTypeBased,
+                    "networkx.classes.tests.dispatch_interface.LoopbackGraphTypeBased",
+                    "networkx.classes.tests.dispatch_interface.LoopbackDiGraphTypeBased",
+                    "networkx.classes.tests.dispatch_interface.LoopbackMultiGraphTypeBased",
+                    "networkx.classes.tests.dispatch_interface.LoopbackMultiDiGraphTypeBased",
+                    "networkx.classes.tests.dispatch_interface.LoopbackPlanarEmbeddingTypeBased",
                 ]
             ),
             **nx.config.backends,
