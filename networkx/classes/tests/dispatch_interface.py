@@ -17,7 +17,7 @@ from networkx.utils.configs import Config
 
 
 class LoopbackGraphTypeBased(Graph):
-    __networkx_backend__ = None
+    __networkx_backend__ = None  # type: ignore[assignment]
 
 
 class LoopbackGraph(Graph):
@@ -25,7 +25,7 @@ class LoopbackGraph(Graph):
 
 
 class LoopbackDiGraphTypeBased(DiGraph):
-    __networkx_backend__ = None
+    __networkx_backend__ = None  # type: ignore[assignment]
 
 
 class LoopbackDiGraph(DiGraph):
@@ -33,7 +33,7 @@ class LoopbackDiGraph(DiGraph):
 
 
 class LoopbackMultiGraphTypeBased(MultiGraph):
-    __networkx_backend__ = None
+    __networkx_backend__ = None  # type: ignore[assignment]
 
 
 class LoopbackMultiGraph(MultiGraph):
@@ -41,7 +41,7 @@ class LoopbackMultiGraph(MultiGraph):
 
 
 class LoopbackMultiDiGraphTypeBased(MultiDiGraph):
-    __networkx_backend__ = None
+    __networkx_backend__ = None  # type: ignore[assignment]
 
 
 class LoopbackMultiDiGraph(MultiDiGraph):
@@ -49,7 +49,7 @@ class LoopbackMultiDiGraph(MultiDiGraph):
 
 
 class LoopbackPlanarEmbeddingTypeBased(PlanarEmbedding):
-    __networkx_backend__ = None
+    __networkx_backend__ = None  # type: ignore[assignment]
 
 
 class LoopbackPlanarEmbedding(PlanarEmbedding):
