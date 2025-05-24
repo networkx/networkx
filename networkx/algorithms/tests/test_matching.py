@@ -58,13 +58,18 @@ class TestMaxWeightMatching:
             nx.max_weight_matching(G), matching_dict_to_set({2: 3, 3: 2})
         )
         assert edges_equal(
-            nx.max_weight_matching(G, 1), matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3})
+            nx.max_weight_matching(G, True),
+            matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3}),
+        )
+        assert edges_equal(
+            nx.max_weight_matching(G, weight=None),
+            matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3}),
         )
         assert edges_equal(
             nx.min_weight_matching(G), matching_dict_to_set({1: 2, 3: 4})
         )
         assert edges_equal(
-            nx.min_weight_matching(G, 1), matching_dict_to_set({1: 2, 3: 4})
+            nx.min_weight_matching(G, weight=None), matching_dict_to_set({1: 2, 3: 4})
         )
 
     def test_square(self):
@@ -399,6 +404,14 @@ class TestMaxWeightMatching:
         raises(error, nx.max_weight_matching, nx.MultiDiGraph())
         raises(error, nx.max_weight_matching, nx.DiGraph())
         raises(error, nx.min_weight_matching, nx.DiGraph())
+
+    def test_min_weight_matching_max_cardinality(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from([(1, 2, 1000), (2, 3, 2), (3, 4, 3000)])
+        # The minimum-weight maximal matching is {(2, 3)}; the minimum weight
+        # maximum-cardinality matching is {(1, 2), (3, 4)}. See gh-8062.
+        answer = matching_dict_to_set({1: 2, 3: 4})
+        assert edges_equal(nx.min_weight_matching(G), answer)
 
 
 class TestIsMatching:
