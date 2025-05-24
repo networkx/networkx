@@ -58,10 +58,18 @@ class TestMaxWeightMatching:
             nx.max_weight_matching(G), matching_dict_to_set({2: 3, 3: 2})
         )
         assert edges_equal(
-            nx.max_weight_matching(G, 1), matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3})
+            nx.max_weight_matching(G, True),
+            matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3}),
+        )
+        assert edges_equal(
+            nx.max_weight_matching(G, weight=None),
+            matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3}),
         )
         assert edges_equal(
             nx.min_weight_matching(G), matching_dict_to_set({1: 2, 3: 4})
+        )
+        assert edges_equal(
+            nx.min_weight_matching(G, weight=None), matching_dict_to_set({1: 2, 3: 4})
         )
 
     def test_square(self):
