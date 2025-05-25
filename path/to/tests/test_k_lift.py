@@ -4,14 +4,16 @@ from k_lift import k_lift
 
 # Test structure and connectivity for multiple (d, n, k) combinations
 @pytest.mark.parametrize(
-    "d, n, k", [
+    "d, n, k",
+    [
         (2, 5, 2), # Edge case
         (4, 8, 4), # Balanced
         (3, 6, 5), # Stress test on k
         (1, 2, 1), # Tiny graph
         (6, 20, 3), # Higher n with moderate d
         (80,100,10) #Large-scale performance & correctness
-    ])
+    ],
+)
 def test_k_lift_size_and_structure(d, n, k):
     G = nx.random_regular_graph(d, n, seed = 42)
     H = k_lift(G, k)
@@ -20,14 +22,16 @@ def test_k_lift_size_and_structure(d, n, k):
 
 # Test that degrees stay close to expected range across various graphs
 @pytest.mark.parametrize(
-    "d, n, k", [
+    "d, n, k",
+    [
         (2, 5, 2), # Edge case
         (4, 8, 4), # Balanced
         (3, 6, 5), # Stress test on k
         (1, 2, 1), # Tiny graph
         (6, 20, 3), # Higher n with moderate d
         (80,100,10) #Large-scale performance & correctness
-    ])
+    ],
+)
 def test_degrees_near_regular(d, n, k):
     G = nx.random_regular_graph(d, n, seed=1)
     H = k_lift(G, k)

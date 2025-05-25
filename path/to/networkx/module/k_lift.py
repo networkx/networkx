@@ -8,7 +8,7 @@ import random
 import networkx as nx
 
 def k_lift(G, k):
-    r""" Performs a k-lift of a d-regular graph using random permutations
+    r"""Performs a k-lift of a d-regular graph using random permutations
 
     The resulting graph H has k copies of each node from G.
     For each edge (u, v) in G, a random permutation is used to connect the i-th copy of u
@@ -48,7 +48,8 @@ def k_lift(G, k):
 
     [2] A. Valadarsky, G. Shahaf, M. Dinitz, and M. Schapira.
         "Xpander: Towards Optimal-Performance Datacenters."
-        In Proceedings of the 12th International Conference on Emerging Networking EXperiments and Technologies (CoNEXT), 2016.
+        In Proceedings of the 12th International Conference on
+        Emerging Networking EXperiments and Technologies (CoNEXT), 2016.
         https://dl.acm.org/doi/pdf/10.1145/2999572.2999580
 
     Examples
@@ -66,7 +67,7 @@ def k_lift(G, k):
     # Create k copies of each node
     for v in G.nodes:
         for i in range(k):
-             H.add_node((v, i))
+            H.add_node((v, i))
 
     # Apply random permutation to edges
     for u, v in G.edges():
@@ -78,5 +79,4 @@ def k_lift(G, k):
     # Raise exception if disconnected
     if not nx.is_connected(H):
         raise ValueError("The lifted graph is not connected")
-
     return H
