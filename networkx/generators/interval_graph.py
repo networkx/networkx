@@ -4,6 +4,7 @@ Generators for interval graph.
 
 from collections.abc import Sequence
 from heapq import heappop, heappush
+from random import sample
 
 import networkx as nx
 
@@ -61,8 +62,19 @@ def interval_graph(intervals, method="dense"):
         return _interval_graph_dense(intervals)
     elif method == "sparse":
         return _interval_graph_sparse(intervals)
+    elif method == "auto":
+        return _interval_graph_auto(intervals)
     else:
         raise ValueError(f"Method not supported: {method}")
+
+
+def _interval_graph_auto(intervals):
+    sampled_intervals = sample(intervals, len(intervals) // 20)
+    graph = _interval_graph_dense(sampled_intervals)
+    if len(graph.edges) > len(sampled_intervals) ** 2 // 4:
+        return _interval_graph_dense(intervals)
+    else:
+        return _interval_graph_sparse(intervals)
 
 
 def _interval_graph_dense(intervals):
