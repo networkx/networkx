@@ -3,6 +3,7 @@ module.
 
 """
 
+import itertools
 from operator import itemgetter
 
 import networkx as nx
@@ -131,3 +132,159 @@ class TestGirvanNewman:
 
         compare_all_depth_communities(fast_communities, old_communities)
         compare_all_depth_communities(fast_communities, compo_communities)
+
+    def test_benchmark_graphs(self):
+        """
+        Test the implementation on benchmark datasets
+        used in the [original paper](https://arxiv.org/abs/cond-mat/0112110)
+        introducing the Girvan Newman algorithm.
+
+        The results of the implementation are expected to
+        match that of the original paper.
+
+        The datasets include:
+          - [Zachary Karate Club](http://konect.cc/networks/ucidata-zachary/) (Unweighted version)
+        """
+
+        graphs = {"ZKC": nx.karate_club_graph()}
+        ground_truth = {
+            "ZKC": [
+                (
+                    {0, 1, 3, 4, 5, 6, 7, 10, 11, 12, 13, 16, 17, 19, 21},
+                    {
+                        2,
+                        8,
+                        9,
+                        14,
+                        15,
+                        18,
+                        20,
+                        22,
+                        23,
+                        24,
+                        25,
+                        26,
+                        27,
+                        28,
+                        29,
+                        30,
+                        31,
+                        32,
+                        33,
+                    },
+                ),
+                (
+                    {0, 1, 3, 4, 5, 6, 7, 10, 11, 12, 13, 16, 17, 19, 21},
+                    {
+                        2,
+                        8,
+                        14,
+                        15,
+                        18,
+                        20,
+                        22,
+                        23,
+                        24,
+                        25,
+                        26,
+                        27,
+                        28,
+                        29,
+                        30,
+                        31,
+                        32,
+                        33,
+                    },
+                    {9},
+                ),
+                (
+                    {0, 1, 3, 7, 11, 12, 13, 17, 19, 21},
+                    {
+                        2,
+                        8,
+                        14,
+                        15,
+                        18,
+                        20,
+                        22,
+                        23,
+                        24,
+                        25,
+                        26,
+                        27,
+                        28,
+                        29,
+                        30,
+                        31,
+                        32,
+                        33,
+                    },
+                    {4, 5, 6, 10, 16},
+                    {9},
+                ),
+                (
+                    {0, 1, 3, 7, 11, 12, 13, 17, 19, 21},
+                    {2, 24, 25, 27, 28, 31},
+                    {4, 5, 6, 10, 16},
+                    {8, 14, 15, 18, 20, 22, 23, 26, 29, 30, 32, 33},
+                    {9},
+                ),
+                (
+                    {0, 1, 3, 7, 12, 13, 17, 19, 21},
+                    {2, 24, 25, 27, 28, 31},
+                    {4, 5, 6, 10, 16},
+                    {8, 14, 15, 18, 20, 22, 23, 26, 29, 30, 32, 33},
+                    {9},
+                    {11},
+                ),
+                (
+                    {0, 1, 3, 7, 12, 13, 17, 19, 21},
+                    {2, 24, 25, 27, 28, 31},
+                    {4, 5, 6, 10, 16},
+                    {8, 14, 15, 18, 20, 22, 23, 29, 30, 32, 33},
+                    {9},
+                    {11},
+                    {26},
+                ),
+                (
+                    {0, 1, 3, 7, 13, 17, 19, 21},
+                    {2, 24, 25, 27, 28, 31},
+                    {4, 5, 6, 10, 16},
+                    {8, 14, 15, 18, 20, 22, 23, 29, 30, 32, 33},
+                    {9},
+                    {11},
+                    {12},
+                    {26},
+                ),
+                (
+                    {0, 1, 3, 7, 13, 17, 19, 21},
+                    {2, 24, 25, 27, 28, 31},
+                    {4, 5, 6, 10, 16},
+                    {8, 15, 18, 20, 22, 23, 29, 30, 32, 33},
+                    {9},
+                    {11},
+                    {12},
+                    {14},
+                    {26},
+                ),
+                (
+                    {0, 1, 3, 7, 13, 17, 19, 21},
+                    {2, 24, 25, 27, 28, 31},
+                    {4, 5, 6, 10, 16},
+                    {8, 18, 20, 22, 23, 29, 30, 32, 33},
+                    {9},
+                    {11},
+                    {12},
+                    {14},
+                    {15},
+                    {26},
+                ),
+            ]
+        }
+
+        for g_name, G in graphs.items():
+            max_depth_to_compare = len(ground_truth[g_name])
+            comp = nx.community.girvan_newman(G)
+            compare_all_depth_communities(
+                list(itertools.islice(comp, max_depth_to_compare)), ground_truth[g_name]
+            )
