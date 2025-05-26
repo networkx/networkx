@@ -45,6 +45,16 @@ def test_is_matching_invalid_edge(fn, edgeset):
         fn(G, edgeset)
 
 
+@pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.DiGraph, nx.MultiDiGraph))
+@pytest.mark.parametrize(
+    "fn", (nx.max_weight_matching, nx.min_weight_matching, nx.maximal_matching)
+)
+def test_wrong_graph_type(fn, graph_type):
+    G = graph_type()
+    with pytest.raises(nx.NetworkXNotImplemented):
+        fn(G)
+
+
 class TestMaxWeightMatching:
     """Unit tests for the
     :func:`~networkx.algorithms.matching.max_weight_matching` function.
@@ -375,13 +385,6 @@ class TestMaxWeightMatching:
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
-    @pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.DiGraph, nx.MultiDiGraph))
-    @pytest.mark.parametrize("f", (nx.max_weight_matching, nx.min_weight_matching))
-    def test_wrong_graph_type(self, f, graph_type):
-        G = graph_type()
-        with pytest.raises(nx.NetworkXNotImplemented):
-            f(G)
-
 
 class TestIsMatching:
     """Unit tests for the
@@ -543,9 +546,3 @@ class TestMaximalMatching:
             matching = nx.maximal_matching(G)
             assert len(matching) == 1
             assert nx.is_maximal_matching(G, matching)
-
-    @pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.DiGraph, nx.MultiDiGraph))
-    def test_wrong_graph_type(self, graph_type):
-        G = graph_type()
-        with pytest.raises(nx.NetworkXNotImplemented):
-            nx.maximal_matching(G)
