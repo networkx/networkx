@@ -1,7 +1,7 @@
 import math
 from itertools import permutations
 
-from pytest import raises
+import pytest
 
 import networkx as nx
 from networkx.utils import edges_equal
@@ -337,12 +337,12 @@ class TestMaxWeightMatching:
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
-    def test_wrong_graph_type(self):
-        error = nx.NetworkXNotImplemented
-        raises(error, nx.max_weight_matching, nx.MultiGraph())
-        raises(error, nx.max_weight_matching, nx.MultiDiGraph())
-        raises(error, nx.max_weight_matching, nx.DiGraph())
-        raises(error, nx.min_weight_matching, nx.DiGraph())
+    @pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.DiGraph, nx.MultiDiGraph))
+    @pytest.mark.parametrize("f", (nx.max_weight_matching, nx.min_weight_matching))
+    def test_wrong_graph_type(self, f, graph_type):
+        G = graph_type()
+        with pytest.raises(nx.NetworkXNotImplemented):
+            f(G)
 
 
 class TestIsMatching:
@@ -375,19 +375,19 @@ class TestIsMatching:
         assert nx.is_matching(G, {(0, 1), (2, 3)})
 
     def test_invalid_input(self):
-        error = nx.NetworkXError
         G = nx.path_graph(4)
-        # edge to node not in G
-        raises(error, nx.is_matching, G, {(0, 5), (2, 3)})
-        # edge not a 2-tuple
-        raises(error, nx.is_matching, G, {(0, 1, 2), (2, 3)})
-        raises(error, nx.is_matching, G, {(0,), (2, 3)})
+        with pytest.raises(nx.NetworkXError, match="matching.*with node not in G"):
+            nx.is_matching(G, {(0, 5), (2, 3)})
+        with pytest.raises(nx.NetworkXError, match=".*non-2-tuple edge.*"):
+            nx.is_matching(G, {(0, 1, 2), (2, 3)})
+        with pytest.raises(nx.NetworkXError, match=".*non-2-tuple edge.*"):
+            nx.is_matching(G, {(0,), (2, 3)})
 
     def test_selfloops(self):
-        error = nx.NetworkXError
         G = nx.path_graph(4)
-        # selfloop for node not in G
-        raises(error, nx.is_matching, G, {(5, 5), (2, 3)})
+        # Node 5 not in G
+        with pytest.raises(nx.NetworkXError, match="matching.*with node not in G"):
+            nx.is_matching(G, {(5, 5), (2, 3)})
         # selfloop edge not in G
         assert not nx.is_matching(G, {(0, 0), (1, 2), (2, 3)})
         # selfloop edge in G
@@ -401,7 +401,8 @@ class TestIsMatching:
     def test_invalid_edge(self):
         G = nx.path_graph(4)
         assert not nx.is_matching(G, {(0, 3), (1, 2)})
-        raises(nx.NetworkXError, nx.is_matching, G, {(0, 55)})
+        with pytest.raises(nx.NetworkXError, match="matching.*with node not in G"):
+            nx.is_matching(G, {(0, 55)})
 
         G = nx.DiGraph(G.edges)
         assert nx.is_matching(G, {(0, 1)})
@@ -419,14 +420,17 @@ class TestIsMaximalMatching:
         assert nx.is_maximal_matching(G, {0: 1, 1: 0, 2: 3, 3: 2})
 
     def test_invalid_input(self):
-        error = nx.NetworkXError
         G = nx.path_graph(4)
         # edge to node not in G
-        raises(error, nx.is_maximal_matching, G, {(0, 5)})
-        raises(error, nx.is_maximal_matching, G, {(5, 0)})
+        with pytest.raises(nx.NetworkXError, match="matching.*with node not in G"):
+            nx.is_maximal_matching(G, {(0, 5)})
+        with pytest.raises(nx.NetworkXError, match="matching.*with node not in G"):
+            nx.is_maximal_matching(G, {(5, 0)})
         # edge not a 2-tuple
-        raises(error, nx.is_maximal_matching, G, {(0, 1, 2), (2, 3)})
-        raises(error, nx.is_maximal_matching, G, {(0,), (2, 3)})
+        with pytest.raises(nx.NetworkXError, match=".*non-2-tuple edge.*"):
+            nx.is_maximal_matching(G, {(0, 1, 2), (2, 3)})
+        with pytest.raises(nx.NetworkXError, match=".*non-2-tuple edge.*"):
+            nx.is_maximal_matching(G, {(0,), (2, 3)})
 
     def test_valid(self):
         G = nx.path_graph(4)
@@ -467,20 +471,23 @@ class TestIsPerfectMatching:
         assert nx.is_perfect_matching(G, {(1, 4), (0, 3), (5, 2)})
 
     def test_invalid_input(self):
-        error = nx.NetworkXError
         G = nx.path_graph(4)
         # edge to node not in G
-        raises(error, nx.is_perfect_matching, G, {(0, 5)})
-        raises(error, nx.is_perfect_matching, G, {(5, 0)})
+        with pytest.raises(nx.NetworkXError, match="matching.*with node not in G"):
+            nx.is_perfect_matching(G, {(0, 5)})
+        with pytest.raises(nx.NetworkXError, match="matching.*with node not in G"):
+            nx.is_perfect_matching(G, {(5, 0)})
         # edge not a 2-tuple
-        raises(error, nx.is_perfect_matching, G, {(0, 1, 2), (2, 3)})
-        raises(error, nx.is_perfect_matching, G, {(0,), (2, 3)})
+        with pytest.raises(nx.NetworkXError, match=".*non-2-tuple edge.*"):
+            nx.is_perfect_matching(G, {(0, 1, 2), (2, 3)})
+        with pytest.raises(nx.NetworkXError, match=".*non-2-tuple edge.*"):
+            nx.is_perfect_matching(G, {(0,), (2, 3)})
 
     def test_selfloops(self):
-        error = nx.NetworkXError
         G = nx.path_graph(4)
         # selfloop for node not in G
-        raises(error, nx.is_perfect_matching, G, {(5, 5), (2, 3)})
+        with pytest.raises(nx.NetworkXError, match="matching.*with node not in G"):
+            nx.is_perfect_matching(G, {(5, 5), (2, 3)})
         # selfloop edge not in G
         assert not nx.is_perfect_matching(G, {(0, 0), (1, 2), (2, 3)})
         # selfloop edge in G
@@ -542,8 +549,8 @@ class TestMaximalMatching:
             assert len(matching) == 1
             assert nx.is_maximal_matching(G, matching)
 
-    def test_wrong_graph_type(self):
-        error = nx.NetworkXNotImplemented
-        raises(error, nx.maximal_matching, nx.MultiGraph())
-        raises(error, nx.maximal_matching, nx.MultiDiGraph())
-        raises(error, nx.maximal_matching, nx.DiGraph())
+    @pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.DiGraph, nx.MultiDiGraph))
+    def test_wrong_graph_type(self, graph_type):
+        G = graph_type()
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.maximal_matching(G)
