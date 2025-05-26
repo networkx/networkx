@@ -161,16 +161,16 @@ def kosaraju_strongly_connected_components(G, source=None):
 
     """
     post = list(nx.dfs_postorder_nodes(G.reverse(copy=False), source=source))
-
+    n = len(post)
     seen = set()
-    while post:
+    while post and len(seen) < n:
         r = post.pop()
         if r in seen:
             continue
         new = {r}
         seen.add(r)
         stack = [r]
-        while stack:
+        while stack and len(seen) < n:
             v = stack.pop()
             for w in G._adj[v]:
                 if w not in seen:
