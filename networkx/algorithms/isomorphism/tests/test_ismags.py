@@ -49,6 +49,10 @@ class TestSelfIsomorphism:
         ),
         ([], [(0, 1), (1, 2), (1, 4), (2, 3), (3, 5), (3, 6)]),
         (
+            # 5 - 4 \     / 12 - 13
+            #        0 - 3
+            # 9 - 8 /     \ 16 - 17
+            # Assume 0 and 3 are coupled and no longer equivalent.
             # Coupling node 4 to 8 means that 5 and 9
             # are no longer equivalent, pushing them in their own partitions.
             # However, {5, 9} was considered equivalent to {13, 17}, which is *not*
