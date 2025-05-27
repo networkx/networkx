@@ -40,13 +40,9 @@ Basic graph types
 
 .. note:: 
    NetworkX guarantees that the order of nodes and edges reflects the order 
-   in which they were added, provided that the graph is used with CPython 3.7 
-   or later, where insertion order is a language guarantee. This ordering is 
-   preserved across all base graph types and is considered part of the 
-   NetworkX API contract.
-
-   In earlier versions of Python or alternative Python implementations,
-   insertion order is not guaranteed.
+   in which they were added across all base graph types, provided that the
+   graph is used with CPython 3.7.  Prior to this version, order
+   preservation is not guaranteed.
 
 Graph Views
 ===========
