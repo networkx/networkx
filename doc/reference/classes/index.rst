@@ -38,10 +38,9 @@ Basic graph types
    multigraph
    multidigraph
 
-.. note:: 
-   NetworkX guarantees that the order of nodes and edges reflects the order 
-   in which they were added across all base graph types, provided that the
-   graph is used with CPython 3.7.  Prior to this version, order
+.. note:: NetworkX guarantees that the order of nodes and edges reflects the
+   order in which they were added across all base graph types, provided that
+   the graph is used with CPython 3.7.  Prior to this version, order
    preservation is not guaranteed.
 
 Graph Views
