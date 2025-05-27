@@ -136,9 +136,9 @@ def _check_matching(G, matching, *, track_edges=False):
     for u, v in matching:
         if u == v or not G.has_edge(u, v) or u in nodes or v in nodes:
             return False, edges, nodes
-        nodes.update(edge)
+        nodes.update((u, v))
         if track_edges:
-            edges.add(edge)
+            edges.add((u, v))
             edges.add((v, u))
 
     return True, edges, nodes
