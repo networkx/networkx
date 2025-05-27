@@ -5,7 +5,9 @@ based on a given d-regular graph.
 """
 
 import random
+
 import networkx as nx
+
 
 def k_lift(G, k):
     r"""Performs a k-lift of a d-regular graph using random permutations
