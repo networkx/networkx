@@ -226,4 +226,3 @@ def test_compare_with_linear_programming(n, p):
 
 if __name__ == "__main__":
     pytest.main([__file__])
-

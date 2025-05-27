@@ -4,7 +4,7 @@ from itertools import combinations, repeat
 from typing import Any, Dict, List, Optional, Tuple, Union
 import networkx as nx
 from networkx.utils import not_implemented_for
-
+import logging 
 __all__ = [
     "is_matching",
     "is_maximal_matching",
@@ -15,6 +15,14 @@ __all__ = [
     "minimal_fraction_max_matching"
 ]
 
+# ---------------------------------------------------------------------------
+# Logging setup
+# ---------------------------------------------------------------------------
+logging.basicConfig(level=logging.DEBUG, force=True,  # force = reconfigure
+                    format="%(levelname)s | %(name)s | %(message)s",
+                    )
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG) 
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
@@ -1155,7 +1163,8 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
 @nx._dispatchable
-def minimal_fraction_max_matching(G: nx.Graph, initial_matching: Optional[Dict[Tuple[Any, Any], float]] = None) -> Dict[Tuple[Any, Any], float]:
+
+def minimal_fraction_max_matching(G: nx.Graph):
     """Find a maximum fractional matching in the graph.
 
     A fractional matching is a generalization of a matching where each edge
@@ -1180,13 +1189,13 @@ def minimal_fraction_max_matching(G: nx.Graph, initial_matching: Optional[Dict[T
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1,3),(2,3)])
-    >>> fractional_matching(G)
+    >>> minimal_fraction_max_matching(G)
     {(1, 2): 0.5, (1, 3): 0.5, (2, 3): 0.5}
     >>> G =  nx.Graph([(1, 2), (1,3),(2,3),(3,4)])
-    >>> fractional_matching(G)
+    >>> minimal_fraction_max_matching(G)
     {(1, 2): 1, (3, 4): 1}
     >>> G = nx.Graph([(1, 2), (1,3),(2,4),(3,5),(4,5),(5,6),(6,7)])
-    >>> fractional_matching(G)
+    >>> minimal_fraction_max_matching(G)
     {(1, 2): 0.5, (1, 3): 0.5, (2, 4): 0.5, (3, 5): 0.5, (4, 5): 0.5, (6, 7): 1}
 
     Notes
@@ -1197,18 +1206,21 @@ def minimal_fraction_max_matching(G: nx.Graph, initial_matching: Optional[Dict[T
     Proggramer: Roi Sibony
     Date: 20.05.2024
     """
-    solver = FractionalMatchingSolver(G, initial_matching)
+    solver = FractionalMatchingSolver(G)
+    log.debug("#"*20 + " Starting the solver for minimal_fractoin_max_matching " + "#"*20)
+    log.info("Starting fractional matching solver.")
+    log.debug("Initial Graph" ":%s", G.edges(data=True))
     return solver.solve() 
 
 
 class FractionalMatchingSolver:
     """Class for finding a maximum fractional matching in a graph."""
     
-    def __init__(self, G: nx.Graph, initial_matching: Optional[Dict[Tuple[Any, Any], float]] = None):
+    def __init__(self, G: nx.Graph):
         """Initialize with a graph and optional initial matching."""
         self.G = G
         # Initialize the matching if not provided
-        self.x = {} if initial_matching is None else initial_matching.copy()
+        self.x = {} 
         
         # Ensure symmetric representation (if (u,v):val then also (v,u):val)
         for (u, v), val in list(self.x.items()):
@@ -1231,23 +1243,27 @@ class FractionalMatchingSolver:
             while not augmented:
                 # Step 2: Scan edges to find potential augmentation
                 result = self._edge_scan()
-                
+
+                log.info("Edge scan result: %s", result)
                 # If no augmenting structure found, we're done with this phase
                 if result is None:
+                    log.debug("#"*20 + " Finished the current iteration " + "#"*20)
                     break
                     
                 u, v = result
-                
                 # Step 3: Check the labels of the vertices
                 # Handle based on the type of augmenting structure found
                 if self.labels.get(v) == "+":
                     # Found an augmenting path/cycle of type 1 or 3
+                    log.info("V is labeled '+', performing type 1/3 augmentation.")
                     self._augment(u, v)
                     augmented = True
                 else:
                     # step 4
                     # Found a potential type 2 augmentation or need to label more nodes
+                    log.info("V is unlabeled, checking for type 2 augmentation or labeling.")
                     if self._label_or_augment(u, v):
+                        log.info("Type 2 augmentation possible, augmenting.")
                         self._augment(u, v)
                         augmented = True
             # If we couldn't augment in this phase, we're done
@@ -1270,7 +1286,7 @@ class FractionalMatchingSolver:
         """
         self.labels = {}
         self.preds = {v: None for v in self.G.nodes}   
-
+        log.debug("Initializing labels and predecessors.")
         # Calculate saturation for each node
         node_values = {}
         for (u, v), val in self.x.items():
@@ -1285,8 +1301,8 @@ class FractionalMatchingSolver:
                 self.labels[node] = None
             if node not in self.preds:
                 self.preds[node] = None
-            # self.preds[node] = None
-    
+        log.debug("Labels initialized: %s \n finshed the initilization", self.labels)
+
     def _edge_scan(self) -> Optional[Tuple[Any, Any]]:
         """
         Step 2 (Edge scan).
@@ -1296,6 +1312,7 @@ class FractionalMatchingSolver:
             • if v is "+", caller should perform the type-1/3 augment; 
             • if v is None, caller should do label_or_augment.
         """
+        log.debug("Scanning edges for potential augmenting structures.")
         # Scan all edges where one endpoint is labeled "+"
         for u in self.G:
             if self.labels.get(u) == "+":
@@ -1367,9 +1384,11 @@ class FractionalMatchingSolver:
             # Flip x-values along the path
             
             # Path from u's root to u
+            log.debug("Type 1 augmentation: flipping edges along path from u to its root.")
             path_u.reverse()
             for i in range(len(path_u) - 1):
                 a, b = path_u[i], path_u[i+1]
+                log.debug("Flipping edge (%s, %s)", a, b)
                 self.x[(a, b)] = 1 - self.x.get((a, b), 0)
                 self.x[(b, a)] = self.x[(a, b)]
             
@@ -1386,20 +1405,22 @@ class FractionalMatchingSolver:
             # Type 3: augmenting cycle with a common root
             # Form the cycle by joining the paths
             cycle = self._build_cycle(path_u, path_v)
-            
+            log.debug("Type 3 augmentation: found cycle %s", cycle)
             if not cycle:
                 print ("No cycle found through vertices:", path_u)
             # Flip x-values around the cycle
             for i in range(len(cycle)):
                 a = cycle[i]
-                b = cycle[(i + 1) % len(cycle)] #why is there a lenght of the cycle?
+                b = cycle[(i + 1) % len(cycle)] 
+                log.debug("Flipping edge (%s, %s)", a, b)
                 self.x[(a, b)] = 0.5 if self.x.get((a, b), 0) != 0.5 else 0
                 self.x[(b, a)] = self.x[(a, b)]
+            
             path_v = path_v[::-1]
-          
             # I need i and i+1 to turn on the corresponding edge to 1 depending on if odd or even index
             for i in range(len(path_v) - 1):
                 a, b = path_v[i], path_v[i+1]
+                log.debug("Final step of the augmentation for the path\nFlipping edge (%s, %s)", a, b)
                 self.x[(a, b)] = 1 - self.x.get((a, b), 0)
                 self.x[(b, a)] = self.x[(a, b)]
 
@@ -1417,6 +1438,8 @@ class FractionalMatchingSolver:
         # Check if v has a neighbor w with edge value 1
         for w in self.G.neighbors(v):
             if self.x.get((v, w), 0) == 1:
+                log.info("Found saturated neighbor w with edge value 1: %s", w)
+                log.debug("Setting labels and predecessors for v=%s, w=%s", v, w)
                 # Set labels and predecessors
                 self.labels[v] = "-"
                 self.labels[w] = "+"
@@ -1451,8 +1474,10 @@ class FractionalMatchingSolver:
                             b = cycle[(i + 1) % len(cycle)]
                             # Change 0.5 edges to 0 or 1 alternately
                             new_val = 0 if i % 2 == 0 else 1
+                            log.debug("Augmenting edge (%s, %s) to value %s", a, b, new_val)
                             self.x[(a, b)] = new_val
                             self.x[(b, a)] = new_val
                         return True
                 # If we get here, no cycle was found - this shouldn't happen in theory
+                log.error("No cycle found in type-2 augmentation step. This should not happen.")
                 return False
