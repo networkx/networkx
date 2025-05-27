@@ -1163,7 +1163,6 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
 @nx._dispatchable
-
 def minimal_fraction_max_matching(G: nx.Graph):
     """Find a maximum fractional matching in the graph.
 
