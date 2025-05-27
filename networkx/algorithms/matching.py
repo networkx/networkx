@@ -57,31 +57,6 @@ def maximal_matching(G):
     return matching
 
 
-def matching_dict_to_set(matching):
-    """Converts matching dict format to matching set format
-
-    Converts a dictionary representing a matching (as returned by
-    :func:`max_weight_matching`) to a set representing a matching (as
-    returned by :func:`maximal_matching`).
-
-    In the definition of maximal matching adopted by NetworkX,
-    self-loops are not allowed, so the provided dictionary is expected
-    to never have any mapping from a key to itself. However, the
-    dictionary is expected to have mirrored key/value pairs, for
-    example, key ``u`` with value ``v`` and key ``v`` with value ``u``.
-
-    """
-    edges = set()
-    for edge in matching.items():
-        u, v = edge
-        if (v, u) in edges or edge in edges:
-            continue
-        if u == v:
-            raise nx.NetworkXError(f"matching contains self-loop {edge}")
-        edges.add(edge)
-    return edges
-
-
 def _check_matching(G, matching, *, track_edges=False):
     """
     Common checking step for `is_*matching` functions.
@@ -121,22 +96,26 @@ def _check_matching(G, matching, *, track_edges=False):
     NetworkXError
         If `matching` is not a valid matching candidate.
     """
-    if isinstance(matching, dict):
-        matching = matching_dict_to_set(matching)
+    if isinstance(matching, set):
+        matching_edges = matching
+    else:
+        matching_edges = {(min(edge), max(edge)) for edge in set(matching.items())}
 
-    for edge in matching:
+    for edge in matching_edges:
         if len(edge) != 2:
             raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
         u, v = edge
         if u not in G or v not in G:
             raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
+        if not G.has_edge(u, v):
+            raise nx.NetworkXError(f"matching contains edge {edge} not in G")
         if u == v:
-            raise nx.NetworkXError(f"matching contains self-loop {edge}")
+            raise nx.NetworkXError(f"matching contains self-loop edge {edge}")
 
     edges = set()
     nodes = set()
-    for u, v in matching:
-        if not G.has_edge(u, v) or u in nodes or v in nodes:
+    for u, v in matching_edges:
+        if u in nodes or v in nodes:
             return False, edges, nodes
         nodes.update((u, v))
         if track_edges:
@@ -1163,4 +1142,5 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     if allinteger:
         verifyOptimum()
 
-    return matching_dict_to_set(mate)
+    _, edges, _ = _check_matching(G, mate, track_edges=True)
+    return edges
