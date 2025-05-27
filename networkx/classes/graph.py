@@ -1838,7 +1838,7 @@ class Graph:
                 )
             SG.graph.update(G.graph)
 
-        Subgraphs are not guaranteed to preserve the order of nodes or edges
+        Subgraphs preserve the order of nodes
         as they appear in the original graph. For example:
 
         >>> G = nx.Graph()
@@ -1846,7 +1846,7 @@ class Graph:
         >>> list(G)
         [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
         >>> list(G.subgraph([1, 3, 2]))
-        [1, 2, 3]
+        [3, 2, 1]
 
         Examples
         --------
