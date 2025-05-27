@@ -1855,7 +1855,8 @@ class Graph:
         >>> list(H.edges)
         [(0, 1), (1, 2)]
         """
-        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nodes))
+        induced_nodes = set(self.nbunch_iter(nodes))
+        induced_nodes = nx.filters.show_nodes(n for n in self if n in induced_nodes)
         # if already a subgraph, don't make a chain
         subgraph = nx.subgraph_view
         if hasattr(self, "_NODE_OK"):
