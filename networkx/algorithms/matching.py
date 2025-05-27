@@ -77,7 +77,7 @@ def matching_dict_to_set(matching):
         if (v, u) in edges or edge in edges:
             continue
         if u == v:
-            raise nx.NetworkXError(f"Selfloops cannot appear in matchings {edge}")
+            raise nx.NetworkXError(f"matching contains self-loop {edge}")
         edges.add(edge)
     return edges
 
@@ -130,11 +130,13 @@ def _check_matching(G, matching, *, track_edges=False):
         u, v = edge
         if u not in G or v not in G:
             raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
+        if u == v:
+            raise nx.NetworkXError(f"matching contains self-loop {edge}")
 
     edges = set()
     nodes = set()
     for u, v in matching:
-        if u == v or not G.has_edge(u, v) or u in nodes or v in nodes:
+        if not G.has_edge(u, v) or u in nodes or v in nodes:
             return False, edges, nodes
         nodes.update((u, v))
         if track_edges:
