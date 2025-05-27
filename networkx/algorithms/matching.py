@@ -82,6 +82,58 @@ def matching_dict_to_set(matching):
     return edges
 
 
+def _check_matching(G, matching, *, track_edges=False):
+    """
+    Common checking step for `is_*matching` functions.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    matching : dict or set
+        A dictionary or set representing a matching. If a dictionary, it
+        must have ``matching[u] == v`` and ``matching[v] == u`` for each
+        edge ``(u, v)`` in the matching. If a set, it must have elements
+        of the form ``(u, v)``, where ``(u, v)`` is an edge in the
+        matching.
+
+    track_edges : bool
+        Whether to track the set of edges in the matching.
+        If `False`, an empty set is returned.
+
+    Returns
+    -------
+    b : bool
+        `True` if the matching is valid.
+        `False` if not.
+
+    edges : set
+        The set of edges in the matching.
+
+    nodes : set
+        The set of nodes in the matching.
+    """
+    if isinstance(matching, dict):
+        matching = matching_dict_to_set(matching)
+
+    edges = set()
+    nodes = set()
+    for edge in matching:
+        if len(edge) != 2:
+            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
+        u, v = edge
+        if u not in G or v not in G:
+            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
+        if u == v or not G.has_edge(u, v) or u in nodes or v in nodes:
+            return False, edges, set()
+        nodes.update(edge)
+        if track_edges:
+            edges.add(edge)
+            edges.add((v, u))
+
+    return True, edges, nodes
+
+
 @nx._dispatchable
 def is_matching(G, matching):
     """Return True if ``matching`` is a valid matching of ``G``
@@ -123,24 +175,8 @@ def is_matching(G, matching):
     True
 
     """
-    if isinstance(matching, dict):
-        matching = matching_dict_to_set(matching)
-
-    nodes = set()
-    for edge in matching:
-        if len(edge) != 2:
-            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
-        u, v = edge
-        if u not in G or v not in G:
-            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
-        if u == v:
-            return False
-        if not G.has_edge(u, v):
-            return False
-        if u in nodes or v in nodes:
-            return False
-        nodes.update(edge)
-    return True
+    b, _, _ = _check_matching(G, matching)
+    return b
 
 
 @nx._dispatchable
@@ -174,26 +210,11 @@ def is_maximal_matching(G, matching):
     True
 
     """
-    if isinstance(matching, dict):
-        matching = matching_dict_to_set(matching)
-    # If the given set is not a matching, then it is not a maximal matching.
-    edges = set()
-    nodes = set()
-    for edge in matching:
-        if len(edge) != 2:
-            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
-        u, v = edge
-        if u not in G or v not in G:
-            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
-        if u == v:
-            return False
-        if not G.has_edge(u, v):
-            return False
-        if u in nodes or v in nodes:
-            return False
-        nodes.update(edge)
-        edges.add(edge)
-        edges.add((v, u))
+    b, edges, nodes = _check_matching(G, matching, track_edges=True)
+
+    if not b:
+        return False
+
     # A matching is maximal if adding any new edge from G to it
     # causes the resulting set to match some node twice.
     # Be careful to check for adding selfloops
@@ -237,24 +258,8 @@ def is_perfect_matching(G, matching):
     True
 
     """
-    if isinstance(matching, dict):
-        matching = matching_dict_to_set(matching)
-
-    nodes = set()
-    for edge in matching:
-        if len(edge) != 2:
-            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
-        u, v = edge
-        if u not in G or v not in G:
-            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
-        if u == v:
-            return False
-        if not G.has_edge(u, v):
-            return False
-        if u in nodes or v in nodes:
-            return False
-        nodes.update(edge)
-    return len(nodes) == len(G)
+    b, _, nodes = _check_matching(G, matching)
+    return b and len(nodes) == len(G)
 
 
 @not_implemented_for("multigraph")
