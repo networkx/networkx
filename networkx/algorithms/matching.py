@@ -65,11 +65,15 @@ def _matching_to_set(matching, is_directed=False):
     matching_edges = matching if isinstance(matching, set) else matching.items()
     if is_directed:
         return matching_edges
-    else:
-        for edge in matching_edges:
-            if len(edge) != 2:
-                raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
-        return {(min(u, v), max(u, v)) for u, v in matching_edges}
+
+    edges = set()
+    for edge in matching_edges:
+        if len(edge) != 2:
+            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
+        u, v = edge
+        if (v, u) not in edges:
+            edges.add(edge)
+    return edges
 
 
 def _check_matching(G, matching):
@@ -346,7 +350,7 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     >>> edges = [(1, 2, 6), (1, 3, 2), (2, 3, 1), (2, 4, 7), (3, 5, 9), (4, 5, 3)]
     >>> G.add_weighted_edges_from(edges)
     >>> sorted(nx.max_weight_matching(G))
-    [(2, 4), (3, 5)]
+    [(2, 4), (5, 3)]
 
     Notes
     -----
