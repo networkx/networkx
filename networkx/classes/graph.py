@@ -286,7 +286,7 @@ class Graph:
         Class to create a new graph structure in the `to_undirected` method.
         If `None`, a NetworkX class (Graph or MultiGraph) is used.
 
-    **Subclassing Example**
+    **Subclassing Examples**
 
     Create a low memory graph class that effectively disallows edge
     attributes by using a single attribute dict for all edges.
@@ -306,6 +306,50 @@ class Graph:
     >>> G.add_edge(2, 2)
     >>> G[2][1] is G[2][2]
     True
+
+    Create a graph class that enforces sorted iteration order by using a
+    shared, sorted dictionary type for internal storage.
+
+    Base NetworkX graphs do not guarantee iteration of nodes or edges in
+    sorted order by value, and nodes may not be comparable (e.g., mixing
+    types like integers and strings). However, you can create subclasses to
+    enforce iteration in sorted order (by using a sorted container),
+    provided that the nodes are comparable.
+
+    The following is a basic example that iterates over nodes and edges
+    in sorted order. It is not optimized for performance. For more efficient
+    sorted data structures, consider libraries such as
+    `sortedcontainers <https://pypi.org/project/sortedcontainers>`_.
+
+    >>> class SortedDict(dict):
+    ...     def items(self):
+    ...         return sorted(super().items())
+    ...
+    ...     def keys(self):
+    ...         return sorted(super().keys())
+    ...
+    ...     def values(self):
+    ...         return [self[k] for k in sorted(self)]
+    ...
+    ...     def __iter__(self):
+    ...         return iter(sorted(super().keys()))
+    ...
+    ...     def __repr__(self):
+    ...         return (
+    ...             "{" + ", ".join(f"{k!r}: {self[k]!r}" for k in sorted(self)) + "}"
+    ...         )
+    >>> class SortedGraph(nx.Graph):
+    ...     node_dict_factory = SortedDict
+    ...     adjlist_inner_dict_factory = SortedDict
+    ...     adjlist_outer_dict_factory = SortedDict
+    >>> G = SortedGraph()
+    >>> G.add_edges_from([(3, 2), (2, 1), (4, 1)])
+    >>> list(G.nodes)
+    [1, 2, 3, 4]
+    >>> list(G.edges)
+    [(1, 2), (1, 4), (2, 3)]
+    >>> list(G[1])
+    [2, 4]
     """
 
     __networkx_backend__ = "networkx"
