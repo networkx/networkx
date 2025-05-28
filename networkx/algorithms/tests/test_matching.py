@@ -13,27 +13,6 @@ from networkx.utils import edges_equal
 @pytest.mark.parametrize(
     "edgeset",
     (
-        {(0, 5)},  # Single edge, node not in G
-        {(5, 0)},  # for both edge orders
-        {(0, 5), (2, 3)},  # node not in G, but other edge is valid matching
-        {(5, 5), (2, 3)},  # Self-loop hits node not in G validation first
-        {(0, 1), (1, 2), (0, 5)},  # Ensure validity gets checked before returning
-    ),
-)
-def test_is_matching_node_not_in_G(fn, edgeset):
-    """All is_*matching functions have consistent exception message for node
-    not in G."""
-    G = nx.path_graph(4)
-    with pytest.raises(nx.NetworkXError, match="matching.*with node not in G"):
-        fn(G, edgeset)
-
-
-@pytest.mark.parametrize(
-    "fn", (nx.is_matching, nx.is_maximal_matching, nx.is_perfect_matching)
-)
-@pytest.mark.parametrize(
-    "edgeset",
-    (
         {(0, 1, 2), (2, 3)},  # 3-tuple
         {(0,), (2, 3)},  # 1-tuple
         {(0, 1), (1, 2), (0,)},  # Ensure validity gets checked before returning
@@ -53,6 +32,47 @@ def test_is_matching_invalid_edge(fn, edgeset):
 @pytest.mark.parametrize(
     "edgeset",
     (
+        {(0, 2)},  # Edge not in G
+        {(2, 0)},  # Edge not in G
+        {(0, 0)},  # Invalid edge is checked before self-loop edge
+        {(0, 5)},  # Single edge, node not in G
+        {(5, 0)},  # for both edge orders
+        {(0, 5), (2, 3)},  # node not in G, but other edge is valid matching
+        {(5, 5), (2, 3)},  # Self-loop hits node not in G validation first
+        {(0, 1), (1, 2), (0, 5)},  # Ensure validity gets checked before returning
+    ),
+)
+def test_is_matching_nonexistent_edge(fn, edgeset):
+    """All is_*matching functions have consistent exception message for nonexistent
+    edges in matching."""
+    G = nx.path_graph(4)
+    with pytest.raises(nx.NetworkXError, match=r".*contains edge.*not in G"):
+        fn(G, edgeset)
+
+
+@pytest.mark.parametrize(
+    "fn", (nx.is_matching, nx.is_maximal_matching, nx.is_perfect_matching)
+)
+@pytest.mark.parametrize(
+    "edgeset",
+    ({(1, 0)}, {(0, 1), (2, 1)}, {(2, 1), (0, 1)}),
+)
+def test_is_matching_directed(fn, edgeset):
+    """All is_*matching functions have consistent behavior for directed graphs."""
+    G = nx.path_graph(4)
+    fn(G, edgeset)
+
+    DG = nx.path_graph(4, create_using=nx.DiGraph)
+    with pytest.raises(nx.NetworkXError, match=r".*contains edge.*not in G"):
+        fn(DG, edgeset)
+
+
+@pytest.mark.parametrize(
+    "fn", (nx.is_matching, nx.is_maximal_matching, nx.is_perfect_matching)
+)
+@pytest.mark.parametrize(
+    "edgeset",
+    (
         {(0, 0)},
         {(0, 1), (0, 0)},  # 3-tuple
     ),
@@ -61,6 +81,7 @@ def test_is_matching_self_loop_edge(fn, edgeset):
     """All is_*matching functions have consistent exception message for self-loop
     edges in matching."""
     G = nx.path_graph(4)
+    G.add_edge(0, 0)
     with pytest.raises(nx.NetworkXError, match=".*contains self-loop edge.*"):
         fn(G, edgeset)
 
@@ -439,13 +460,8 @@ class TestIsMatching:
         G = nx.path_graph(4)
         assert not nx.is_matching(G, {(0, 1), (1, 2), (2, 3)})
 
-    def test_invalid_edge(self):
-        G = nx.path_graph(4)
-        assert not nx.is_matching(G, {(0, 3), (1, 2)})
-
         G = nx.DiGraph(G.edges)
         assert nx.is_matching(G, {(0, 1)})
-        assert not nx.is_matching(G, {(1, 0)})
 
 
 class TestIsMaximalMatching:
@@ -491,7 +507,6 @@ class TestIsPerfectMatching:
 
     def test_not_matching(self):
         G = nx.path_graph(4)
-        assert not nx.is_perfect_matching(G, {(0, 3)})
         assert not nx.is_perfect_matching(G, {(0, 1), (1, 2), (2, 3)})
 
     def test_maximal_but_not_perfect(self):
