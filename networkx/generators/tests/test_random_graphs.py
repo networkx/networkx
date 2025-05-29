@@ -291,6 +291,9 @@ class TestGeneratorsRandom:
         pytest.raises(nx.NetworkXError, nx.watts_strogatz_graph, 10, 11, 0.25)
         pytest.raises(nx.NetworkXError, nx.newman_watts_strogatz_graph, 10, 11, 0.25)
         pytest.raises(nx.NetworkXError, nx.newman_watts_graph, 10, 11, 0.25)
+        pytest.raises(nx.NetworkXError, nx.watts_strogatz_graph, 10, 10, 0.25)
+        pytest.raises(nx.NetworkXError, nx.newman_watts_strogatz_graph, 10, 10, 0.25)
+        pytest.raises(nx.NetworkXError, nx.newman_watts_graph, 10, 10, 0.25)
 
         # could create an infinite loop, now doesn't
         # infinite loop used to occur when a node has degree n-1 and needs to rewire
@@ -298,10 +301,13 @@ class TestGeneratorsRandom:
         nx.newman_watts_strogatz_graph(10, 9, 0.5, seed=0)
         nx.newman_watts_graph(10, 9, 0.5, seed=0)
 
-        # Test k==n scenario
-        nx.watts_strogatz_graph(10, 10, 0.25, seed=0)
-        nx.newman_watts_strogatz_graph(10, 10, 0.25, seed=0)
-        nx.newman_watts_graph(10, 10, 0.25, seed=0)
+        # Test k==n-1 (complete graph) scenario
+        K10 = nx.complete_graph(10)
+        assert nx.is_isomorphic(K10, nx.watts_strogatz_graph(10, 9, 0.25, seed=0))
+        assert nx.is_isomorphic(
+            K10, nx.newman_watts_strogatz_graph(10, 9, 0.25, seed=0)
+        )
+        assert nx.is_isomorphic(K10, nx.newman_watts_graph(10, 9, 0.25, seed=0))
 
     def test_random_kernel_graph(self):
         def integral(u, w, z):
