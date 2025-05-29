@@ -286,28 +286,41 @@ class TestGeneratorsRandom:
         assert len(G) == 10
         assert G.number_of_edges() == 0
 
-    def test_watts_strogatz_big_k(self):
-        # Test to make sure than n <= k
-        pytest.raises(nx.NetworkXError, nx.watts_strogatz_graph, 10, 11, 0.25)
-        pytest.raises(nx.NetworkXError, nx.newman_watts_strogatz_graph, 10, 11, 0.25)
-        pytest.raises(nx.NetworkXError, nx.newman_watts_graph, 10, 11, 0.25)
-        pytest.raises(nx.NetworkXError, nx.watts_strogatz_graph, 10, 10, 0.25)
-        pytest.raises(nx.NetworkXError, nx.newman_watts_strogatz_graph, 10, 10, 0.25)
-        pytest.raises(nx.NetworkXError, nx.newman_watts_graph, 10, 10, 0.25)
+    @pytest.mark.parametrize(
+        "fn",
+        [
+            nx.watts_strogatz_graph,
+            nx.newman_watts_strogatz_graph,
+            nx.newman_watts_graph,
+        ],
+    )
+    @pytest.mark.parametrize("n", [5, 10])
+    def test_nws_big_k(self, fn, n):
+        """
+        Ensure NWS functions raise when the number of neighbors is not strictly less
+        than the number of nodes.
+        """
+        with pytest.raises(nx.NetworkXError, match=r".*choose smaller k or larger n"):
+            fn(n, n + 1, 0.25)
 
-        # could create an infinite loop, now doesn't
-        # infinite loop used to occur when a node has degree n-1 and needs to rewire
-        nx.watts_strogatz_graph(10, 9, 0.25, seed=0)
-        nx.newman_watts_strogatz_graph(10, 9, 0.5, seed=0)
-        nx.newman_watts_graph(10, 9, 0.5, seed=0)
+        with pytest.raises(nx.NetworkXError, match=r".*choose smaller k or larger n"):
+            fn(n, n, 0.25)
 
-        # Test k==n-1 (complete graph) scenario
-        K10 = nx.complete_graph(10)
-        assert nx.is_isomorphic(K10, nx.watts_strogatz_graph(10, 9, 0.25, seed=0))
-        assert nx.is_isomorphic(
-            K10, nx.newman_watts_strogatz_graph(10, 9, 0.25, seed=0)
-        )
-        assert nx.is_isomorphic(K10, nx.newman_watts_graph(10, 9, 0.25, seed=0))
+    @pytest.mark.parametrize(
+        "fn",
+        [
+            nx.watts_strogatz_graph,
+            nx.newman_watts_strogatz_graph,
+            nx.newman_watts_graph,
+        ],
+    )
+    @pytest.mark.parametrize("n", [5, 10])
+    @pytest.mark.parametrize("p", [0.25, 0.5])
+    def test_nws_complete(self, fn, n, p):
+        """
+        Ensure NWS functions return a complete graph when k = n - 1.
+        """
+        assert nx.is_isomorphic(nx.complete_graph(n), fn(n, n - 1, p, seed=0))
 
     def test_random_kernel_graph(self):
         def integral(u, w, z):
