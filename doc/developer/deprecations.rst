@@ -53,3 +53,4 @@ Version 3.7
 * Remove ``graph_could_be_isomorphic``, ``fast_graph_could_be_isomorphic``, and
   ``faster_graph_could_be_isomorphic``, from
   ``networkx.algorithms.isomorphism.isomorph``.
+* Remove ``maybe_regular_expander`` from ``networkx/generators/expanders.py``.
