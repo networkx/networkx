@@ -92,9 +92,9 @@ class TestMaxWeightMatching:
         G.add_edge(2, 3, weight=11)
         G.add_edge(3, 4, weight=5)
         assert edges_equal(nx.max_weight_matching(G), {(2, 3)})
-        assert edges_equal(nx.max_weight_matching(G, 1), {(1, 2), (3, 4)})
+        assert edges_equal(nx.max_weight_matching(G, weight=None), {(1, 2), (3, 4)})
         assert edges_equal(nx.min_weight_matching(G), {(1, 2), (3, 4)})
-        assert edges_equal(nx.min_weight_matching(G, 1), {(1, 2), (3, 4)})
+        assert edges_equal(nx.min_weight_matching(G, weight=None), {(1, 2), (3, 4)})
 
     def test_square(self):
         G = nx.Graph()
