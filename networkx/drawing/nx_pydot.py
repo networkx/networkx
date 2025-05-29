@@ -350,7 +350,32 @@ def pydot_layout(G, prog="neato", root=None):
     node_pos = {}
     for n in G.nodes():
         str_n = str(n)
-        node = Q.get_node(pydot.quote_id_if_necessary(str_n))
+        if len(str_n) > 120:
+
+            def _try_conversion(node):
+                """
+                Let pydot tell us how it will mangle the node name.
+                See gh-7648.
+                """
+                if G.is_directed():
+                    NG = nx.MultiDiGraph() if G.is_multigraph() else nx.DiGraph()
+                else:
+                    NG = nx.MultiGraph() if G.is_multigraph() else nx.Graph()
+                NG.add_node(node)
+                NP = to_pydot(NG)
+                if root is not None:
+                    NP.set("root", str(root))
+                ND_bytes = NP.create_dot(prog=prog)
+                ND = str(ND_bytes, encoding=getpreferredencoding())
+                NQ_list = pydot.graph_from_dot_data(ND)
+                assert len(NQ_list) == 1
+                NQ = NQ_list[0]
+                return NQ.get_nodes()[-1].get_name()
+
+            name = _try_conversion(n)
+            node = Q.get_node(name)
+        else:
+            node = Q.get_node(pydot.quote_id_if_necessary(str_n))
 
         if isinstance(node, list):
             node = node[0]
