@@ -348,9 +348,8 @@ def pydot_layout(G, prog="neato", root=None):
     Q = Q_list[0]
 
     node_pos = {}
-    for n in G.nodes():
+    for n, node in zip(G.nodes(), Q.get_nodes()[-len(G) :]):
         str_n = str(n)
-        node = Q.get_node(pydot.quote_id_if_necessary(str_n))
 
         if isinstance(node, list):
             node = node[0]
