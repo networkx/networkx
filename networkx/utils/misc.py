@@ -15,7 +15,7 @@ import random
 import warnings
 from collections import defaultdict
 from collections.abc import Iterable, Iterator, Sized
-from itertools import chain, tee
+from itertools import chain, tee, zip_longest
 
 import networkx as nx
 
@@ -522,50 +522,42 @@ def edges_equal(edges1, edges2):
 
     Parameters
     ----------
-    edges1, edges2 : iterables of with u, v nodes as
-        edge tuples (u, v), or
-        edge tuples with data dicts (u, v, d), or
-        edge tuples with keys and data dicts (u, v, k, d)
+    edges1, edges2 : iterables of tuples
+        Each tuple can be
+        an edge tuple ``(u, v)``, or
+        an edge tuple with data `dict`s ``(u, v, d)``, or
+        an edge tuple with keys and data `dict`s ``(u, v, k, d)``.
 
     Returns
     -------
     bool
-        True if edges are equal, False otherwise.
+        `True` if edges are equal, `False` otherwise.
     """
     from collections import defaultdict
 
     d1 = defaultdict(dict)
     d2 = defaultdict(dict)
-    c1 = 0
-    for c1, e in enumerate(edges1):
-        u, v = e[0], e[1]
-        data = [e[2:]]
-        if v in d1[u]:
-            data = d1[u][v] + data
-        d1[u][v] = data
-        d1[v][u] = data
-    c2 = 0
-    for c2, e in enumerate(edges2):
-        u, v = e[0], e[1]
-        data = [e[2:]]
-        if v in d2[u]:
-            data = d2[u][v] + data
-        d2[u][v] = data
-        d2[v][u] = data
-    if c1 != c2:
-        return False
-    # can check one direction because lengths are the same.
-    for n, nbrdict in d1.items():
-        for nbr, datalist in nbrdict.items():
-            if n not in d2:
-                return False
-            if nbr not in d2[n]:
-                return False
-            d2datalist = d2[n][nbr]
-            for data in datalist:
-                if datalist.count(data) != d2datalist.count(data):
-                    return False
-    return True
+
+    def _update_dict(d, e):
+        (u, v), data = e[:2], [e[2:]]
+        if v in d[u]:
+            data = d[u][v] + data
+        d[u][v] = data
+        d[v][u] = data
+
+    for e1, e2 in zip_longest(edges1, edges2, fillvalue=None):
+        if e1 is None or e2 is None:
+            return False  # One is longer.
+        _update_dict(d1, e1)
+        _update_dict(d2, e2)
+
+    # Can check one direction because lengths are the same.
+    return all(
+        nbr in d2[n] and datalist.count(data) == d2[n][nbr].count(data)
+        for n, nbrdict in d1.items()
+        for nbr, datalist in nbrdict.items()
+        for data in datalist
+    )
 
 
 def graphs_equal(graph1, graph2):
