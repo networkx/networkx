@@ -72,11 +72,11 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     >>> G = nx.Graph([(1, 2), (2, 3), (4, 5)])
     >>> print(nx.laplacian_matrix(G).toarray())
-    [[ 1 -1  0  0  0]
-     [-1  2 -1  0  0]
-     [ 0 -1  1  0  0]
-     [ 0  0  0  1 -1]
-     [ 0  0  0 -1  1]]
+    [[ 1. -1.  0.  0.  0.]
+     [-1.  2. -1.  0.  0.]
+     [ 0. -1.  1.  0.  0.]
+     [ 0.  0.  0.  1. -1.]
+     [ 0.  0.  0. -1.  1.]]
 
     >>> edges = [
     ...     (1, 2),
@@ -87,10 +87,10 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     ... ]
     >>> DiG = nx.DiGraph(edges)
     >>> print(nx.laplacian_matrix(DiG).toarray())
-    [[ 1 -1  0  0]
-     [-1  2 -1  0]
-     [ 0  0  1 -1]
-     [ 0  0 -1  1]]
+    [[ 1. -1.  0.  0.]
+     [-1.  2. -1.  0.]
+     [ 0.  0.  1. -1.]
+     [ 0.  0. -1.  1.]]
 
     Notice that node 4 is represented by the third column and row. This is because
     by default the row/column order is the order of `G.nodes` (i.e. the node added
@@ -98,20 +98,20 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     To control the node order of the matrix, use the `nodelist` argument.
 
     >>> print(nx.laplacian_matrix(DiG, nodelist=[1, 2, 3, 4]).toarray())
-    [[ 1 -1  0  0]
-     [-1  2  0 -1]
-     [ 0  0  1 -1]
-     [ 0  0 -1  1]]
+    [[ 1. -1.  0.  0.]
+     [-1.  2.  0. -1.]
+     [ 0.  0.  1. -1.]
+     [ 0.  0. -1.  1.]]
 
     This calculation uses the out-degree of the graph `G`. To use the
     in-degree for calculations instead, use `G.reverse(copy=False)` and
     take the transpose.
 
     >>> print(nx.laplacian_matrix(DiG.reverse(copy=False)).toarray().T)
-    [[ 1 -1  0  0]
-     [-1  1 -1  0]
-     [ 0  0  2 -1]
-     [ 0  0 -1  1]]
+    [[ 1. -1.  0.  0.]
+     [-1.  1. -1.  0.]
+     [ 0.  0.  2. -1.]
+     [ 0.  0. -1.  1.]]
 
     References
     ----------
