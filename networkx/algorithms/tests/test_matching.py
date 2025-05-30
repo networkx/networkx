@@ -1,11 +1,58 @@
 import math
 from itertools import permutations
 
-from pytest import raises
+import pytest
 
 import networkx as nx
-from networkx.algorithms.matching import matching_dict_to_set
 from networkx.utils import edges_equal
+
+
+@pytest.mark.parametrize(
+    "fn", (nx.is_matching, nx.is_maximal_matching, nx.is_perfect_matching)
+)
+@pytest.mark.parametrize(
+    "edgeset",
+    (
+        {(0, 5)},  # Single edge, node not in G
+        {(5, 0)},  # for both edge orders
+        {(0, 5), (2, 3)},  # node not in G, but other edge is valid matching
+        {(5, 5), (2, 3)},  # Self-loop hits node not in G validation first
+    ),
+)
+def test_is_matching_node_not_in_G(fn, edgeset):
+    """All is_*matching functions have consistent exception message for node
+    not in G."""
+    G = nx.path_graph(4)
+    with pytest.raises(nx.NetworkXError, match="matching.*with node not in G"):
+        fn(G, edgeset)
+
+
+@pytest.mark.parametrize(
+    "fn", (nx.is_matching, nx.is_maximal_matching, nx.is_perfect_matching)
+)
+@pytest.mark.parametrize(
+    "edgeset",
+    (
+        {(0, 1, 2), (2, 3)},  # 3-tuple
+        {(0,), (2, 3)},  # 1-tuple
+    ),
+)
+def test_is_matching_invalid_edge(fn, edgeset):
+    """All is_*matching functions have consistent exception message for invalid
+    edges in matching."""
+    G = nx.path_graph(4)
+    with pytest.raises(nx.NetworkXError, match=".*non-2-tuple edge.*"):
+        fn(G, edgeset)
+
+
+@pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.DiGraph, nx.MultiDiGraph))
+@pytest.mark.parametrize(
+    "fn", (nx.max_weight_matching, nx.min_weight_matching, nx.maximal_matching)
+)
+def test_wrong_graph_type(fn, graph_type):
+    G = graph_type()
+    with pytest.raises(nx.NetworkXNotImplemented):
+        fn(G)
 
 
 class TestMaxWeightMatching:
@@ -29,43 +76,25 @@ class TestMaxWeightMatching:
     def test_single_edge(self):
         G = nx.Graph()
         G.add_edge(0, 1)
-        assert edges_equal(
-            nx.max_weight_matching(G), matching_dict_to_set({0: 1, 1: 0})
-        )
-        assert edges_equal(
-            nx.min_weight_matching(G), matching_dict_to_set({0: 1, 1: 0})
-        )
+        assert edges_equal(nx.max_weight_matching(G), {(0, 1)})
+        assert edges_equal(nx.min_weight_matching(G), {(0, 1)})
 
     def test_two_path(self):
         G = nx.Graph()
         G.add_edge("one", "two", weight=10)
         G.add_edge("two", "three", weight=11)
-        assert edges_equal(
-            nx.max_weight_matching(G),
-            matching_dict_to_set({"three": "two", "two": "three"}),
-        )
-        assert edges_equal(
-            nx.min_weight_matching(G),
-            matching_dict_to_set({"one": "two", "two": "one"}),
-        )
+        assert edges_equal(nx.max_weight_matching(G), {("two", "three")})
+        assert edges_equal(nx.min_weight_matching(G), {("one", "two")})
 
     def test_path(self):
         G = nx.Graph()
         G.add_edge(1, 2, weight=5)
         G.add_edge(2, 3, weight=11)
         G.add_edge(3, 4, weight=5)
-        assert edges_equal(
-            nx.max_weight_matching(G), matching_dict_to_set({2: 3, 3: 2})
-        )
-        assert edges_equal(
-            nx.max_weight_matching(G, 1), matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3})
-        )
-        assert edges_equal(
-            nx.min_weight_matching(G), matching_dict_to_set({1: 2, 3: 4})
-        )
-        assert edges_equal(
-            nx.min_weight_matching(G, 1), matching_dict_to_set({1: 2, 3: 4})
-        )
+        assert edges_equal(nx.max_weight_matching(G), {(2, 3)})
+        assert edges_equal(nx.max_weight_matching(G, 1), {(1, 2), (3, 4)})
+        assert edges_equal(nx.min_weight_matching(G), {(1, 2), (3, 4)})
+        assert edges_equal(nx.min_weight_matching(G, 1), {(1, 2), (3, 4)})
 
     def test_square(self):
         G = nx.Graph()
@@ -73,25 +102,15 @@ class TestMaxWeightMatching:
         G.add_edge(2, 3, weight=2)
         G.add_edge(1, 2, weight=1)
         G.add_edge(3, 4, weight=4)
-        assert edges_equal(
-            nx.max_weight_matching(G), matching_dict_to_set({1: 2, 3: 4})
-        )
-        assert edges_equal(
-            nx.min_weight_matching(G), matching_dict_to_set({1: 4, 2: 3})
-        )
+        assert edges_equal(nx.max_weight_matching(G), {(1, 2), (3, 4)})
+        assert edges_equal(nx.min_weight_matching(G), {(1, 4), (2, 3)})
 
     def test_edge_attribute_name(self):
         G = nx.Graph()
         G.add_edge("one", "two", weight=10, abcd=11)
         G.add_edge("two", "three", weight=11, abcd=10)
-        assert edges_equal(
-            nx.max_weight_matching(G, weight="abcd"),
-            matching_dict_to_set({"one": "two", "two": "one"}),
-        )
-        assert edges_equal(
-            nx.min_weight_matching(G, weight="abcd"),
-            matching_dict_to_set({"three": "two"}),
-        )
+        assert edges_equal(nx.max_weight_matching(G, weight="abcd"), {("one", "two")})
+        assert edges_equal(nx.min_weight_matching(G, weight="abcd"), {("two", "three")})
 
     def test_floating_point_weights(self):
         G = nx.Graph()
@@ -99,12 +118,8 @@ class TestMaxWeightMatching:
         G.add_edge(2, 3, weight=math.exp(1))
         G.add_edge(1, 3, weight=3.0)
         G.add_edge(1, 4, weight=math.sqrt(2.0))
-        assert edges_equal(
-            nx.max_weight_matching(G), matching_dict_to_set({1: 4, 2: 3, 3: 2, 4: 1})
-        )
-        assert edges_equal(
-            nx.min_weight_matching(G), matching_dict_to_set({1: 4, 2: 3, 3: 2, 4: 1})
-        )
+        assert edges_equal(nx.max_weight_matching(G), {(1, 4), (2, 3)})
+        assert edges_equal(nx.min_weight_matching(G), {(1, 4), (2, 3)})
 
     def test_negative_weights(self):
         G = nx.Graph()
@@ -113,27 +128,22 @@ class TestMaxWeightMatching:
         G.add_edge(2, 3, weight=1)
         G.add_edge(2, 4, weight=-1)
         G.add_edge(3, 4, weight=-6)
+        assert edges_equal(nx.max_weight_matching(G), {(1, 2)})
         assert edges_equal(
-            nx.max_weight_matching(G), matching_dict_to_set({1: 2, 2: 1})
+            nx.max_weight_matching(G, maxcardinality=True), {(1, 3), (2, 4)}
         )
-        assert edges_equal(
-            nx.max_weight_matching(G, maxcardinality=True),
-            matching_dict_to_set({1: 3, 2: 4, 3: 1, 4: 2}),
-        )
-        assert edges_equal(
-            nx.min_weight_matching(G), matching_dict_to_set({1: 2, 3: 4})
-        )
+        assert edges_equal(nx.min_weight_matching(G), {(1, 2), (3, 4)})
 
     def test_s_blossom(self):
         """Create S-blossom and use it for augmentation:"""
         G = nx.Graph()
         G.add_weighted_edges_from([(1, 2, 8), (1, 3, 9), (2, 3, 10), (3, 4, 7)])
-        answer = matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3})
+        answer = {(1, 2), (3, 4)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
         G.add_weighted_edges_from([(1, 6, 5), (4, 5, 6)])
-        answer = matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 5, 5: 4, 6: 1})
+        answer = {(1, 6), (2, 3), (4, 5)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
@@ -143,7 +153,7 @@ class TestMaxWeightMatching:
         G.add_weighted_edges_from(
             [(1, 2, 9), (1, 3, 8), (2, 3, 10), (1, 4, 5), (4, 5, 4), (1, 6, 3)]
         )
-        answer = matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 5, 5: 4, 6: 1})
+        answer = {(1, 6), (2, 3), (4, 5)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
@@ -154,7 +164,7 @@ class TestMaxWeightMatching:
 
         G.remove_edge(1, 6)
         G.add_edge(3, 6, weight=4)
-        answer = matching_dict_to_set({1: 2, 2: 1, 3: 6, 4: 5, 5: 4, 6: 3})
+        answer = {(1, 2), (3, 6), (4, 5)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
@@ -173,8 +183,8 @@ class TestMaxWeightMatching:
                 (5, 6, 6),
             ]
         )
-        dict_format = {1: 3, 2: 4, 3: 1, 4: 2, 5: 6, 6: 5}
-        expected = {frozenset(e) for e in matching_dict_to_set(dict_format)}
+        expected_edgeset = {(1, 3), (2, 4), (5, 6)}
+        expected = {frozenset(e) for e in expected_edgeset}
         answer = {frozenset(e) for e in nx.max_weight_matching(G)}
         assert answer == expected
         answer = {frozenset(e) for e in nx.min_weight_matching(G)}
@@ -196,7 +206,7 @@ class TestMaxWeightMatching:
                 (7, 8, 8),
             ]
         )
-        answer = matching_dict_to_set({1: 2, 2: 1, 3: 4, 4: 3, 5: 6, 6: 5, 7: 8, 8: 7})
+        answer = {(1, 2), (3, 4), (5, 6), (7, 8)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
@@ -217,7 +227,7 @@ class TestMaxWeightMatching:
                 (7, 8, 12),
             ]
         )
-        answer = matching_dict_to_set({1: 2, 2: 1, 3: 5, 4: 6, 5: 3, 6: 4, 7: 8, 8: 7})
+        answer = {(1, 2), (3, 5), (4, 6), (7, 8)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
@@ -236,7 +246,7 @@ class TestMaxWeightMatching:
                 (5, 7, 13),
             ]
         )
-        answer = matching_dict_to_set({1: 6, 2: 3, 3: 2, 4: 8, 5: 7, 6: 1, 7: 5, 8: 4})
+        answer = {(1, 6), (2, 3), (4, 8), (5, 7)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
@@ -256,7 +266,7 @@ class TestMaxWeightMatching:
                 (5, 6, 7),
             ]
         )
-        answer = matching_dict_to_set({1: 8, 2: 3, 3: 2, 4: 7, 5: 6, 6: 5, 7: 4, 8: 1})
+        answer = {(1, 8), (2, 3), (4, 7), (5, 6)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
@@ -279,8 +289,7 @@ class TestMaxWeightMatching:
                 (9, 10, 5),
             ]
         )
-        ansdict = {1: 6, 2: 3, 3: 2, 4: 8, 5: 7, 6: 1, 7: 5, 8: 4, 9: 10, 10: 9}
-        answer = matching_dict_to_set(ansdict)
+        answer = {(1, 6), (2, 3), (4, 8), (5, 7), (9, 10)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
@@ -301,8 +310,7 @@ class TestMaxWeightMatching:
                 (9, 10, 5),
             ]
         )
-        ans = {1: 6, 2: 3, 3: 2, 4: 8, 5: 7, 6: 1, 7: 5, 8: 4, 9: 10, 10: 9}
-        answer = matching_dict_to_set(ans)
+        answer = {(1, 6), (2, 3), (4, 8), (5, 7), (9, 10)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
@@ -325,8 +333,7 @@ class TestMaxWeightMatching:
                 (9, 10, 5),
             ]
         )
-        ans = {1: 6, 2: 3, 3: 2, 4: 8, 5: 7, 6: 1, 7: 5, 8: 4, 9: 10, 10: 9}
-        answer = matching_dict_to_set(ans)
+        answer = {(1, 6), (2, 3), (4, 8), (5, 7), (9, 10)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
@@ -352,21 +359,7 @@ class TestMaxWeightMatching:
                 (11, 12, 5),
             ]
         )
-        ans = {
-            1: 8,
-            2: 3,
-            3: 2,
-            4: 6,
-            5: 9,
-            6: 4,
-            7: 10,
-            8: 1,
-            9: 5,
-            10: 7,
-            11: 12,
-            12: 11,
-        }
-        answer = matching_dict_to_set(ans)
+        answer = {(1, 8), (2, 3), (4, 6), (5, 9), (7, 10), (11, 12)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
 
@@ -388,17 +381,9 @@ class TestMaxWeightMatching:
                 (4, 9, 30),
             ]
         )
-        ans = {1: 2, 2: 1, 3: 5, 4: 9, 5: 3, 6: 7, 7: 6, 8: 10, 9: 4, 10: 8}
-        answer = matching_dict_to_set(ans)
+        answer = {(1, 2), (3, 5), (4, 9), (6, 7), (8, 10)}
         assert edges_equal(nx.max_weight_matching(G), answer)
         assert edges_equal(nx.min_weight_matching(G), answer)
-
-    def test_wrong_graph_type(self):
-        error = nx.NetworkXNotImplemented
-        raises(error, nx.max_weight_matching, nx.MultiGraph())
-        raises(error, nx.max_weight_matching, nx.MultiDiGraph())
-        raises(error, nx.max_weight_matching, nx.DiGraph())
-        raises(error, nx.min_weight_matching, nx.DiGraph())
 
 
 class TestIsMatching:
@@ -430,20 +415,8 @@ class TestIsMatching:
         G = nx.path_graph(4)
         assert nx.is_matching(G, {(0, 1), (2, 3)})
 
-    def test_invalid_input(self):
-        error = nx.NetworkXError
-        G = nx.path_graph(4)
-        # edge to node not in G
-        raises(error, nx.is_matching, G, {(0, 5), (2, 3)})
-        # edge not a 2-tuple
-        raises(error, nx.is_matching, G, {(0, 1, 2), (2, 3)})
-        raises(error, nx.is_matching, G, {(0,), (2, 3)})
-
     def test_selfloops(self):
-        error = nx.NetworkXError
         G = nx.path_graph(4)
-        # selfloop for node not in G
-        raises(error, nx.is_matching, G, {(5, 5), (2, 3)})
         # selfloop edge not in G
         assert not nx.is_matching(G, {(0, 0), (1, 2), (2, 3)})
         # selfloop edge in G
@@ -457,7 +430,6 @@ class TestIsMatching:
     def test_invalid_edge(self):
         G = nx.path_graph(4)
         assert not nx.is_matching(G, {(0, 3), (1, 2)})
-        raises(nx.NetworkXError, nx.is_matching, G, {(0, 55)})
 
         G = nx.DiGraph(G.edges)
         assert nx.is_matching(G, {(0, 1)})
@@ -473,16 +445,6 @@ class TestIsMaximalMatching:
     def test_dict(self):
         G = nx.path_graph(4)
         assert nx.is_maximal_matching(G, {0: 1, 1: 0, 2: 3, 3: 2})
-
-    def test_invalid_input(self):
-        error = nx.NetworkXError
-        G = nx.path_graph(4)
-        # edge to node not in G
-        raises(error, nx.is_maximal_matching, G, {(0, 5)})
-        raises(error, nx.is_maximal_matching, G, {(5, 0)})
-        # edge not a 2-tuple
-        raises(error, nx.is_maximal_matching, G, {(0, 1, 2), (2, 3)})
-        raises(error, nx.is_maximal_matching, G, {(0,), (2, 3)})
 
     def test_valid(self):
         G = nx.path_graph(4)
@@ -522,21 +484,8 @@ class TestIsPerfectMatching:
 
         assert nx.is_perfect_matching(G, {(1, 4), (0, 3), (5, 2)})
 
-    def test_invalid_input(self):
-        error = nx.NetworkXError
-        G = nx.path_graph(4)
-        # edge to node not in G
-        raises(error, nx.is_perfect_matching, G, {(0, 5)})
-        raises(error, nx.is_perfect_matching, G, {(5, 0)})
-        # edge not a 2-tuple
-        raises(error, nx.is_perfect_matching, G, {(0, 1, 2), (2, 3)})
-        raises(error, nx.is_perfect_matching, G, {(0,), (2, 3)})
-
     def test_selfloops(self):
-        error = nx.NetworkXError
         G = nx.path_graph(4)
-        # selfloop for node not in G
-        raises(error, nx.is_perfect_matching, G, {(5, 5), (2, 3)})
         # selfloop edge not in G
         assert not nx.is_perfect_matching(G, {(0, 0), (1, 2), (2, 3)})
         # selfloop edge in G
@@ -597,9 +546,3 @@ class TestMaximalMatching:
             matching = nx.maximal_matching(G)
             assert len(matching) == 1
             assert nx.is_maximal_matching(G, matching)
-
-    def test_wrong_graph_type(self):
-        error = nx.NetworkXNotImplemented
-        raises(error, nx.maximal_matching, nx.MultiGraph())
-        raises(error, nx.maximal_matching, nx.MultiDiGraph())
-        raises(error, nx.maximal_matching, nx.DiGraph())

@@ -618,8 +618,25 @@ def test_is_aperiodic_selfloop():
     assert nx.is_aperiodic(G)
 
 
+def test_is_aperiodic_null_graph_raises():
+    G = nx.DiGraph()
+    pytest.raises(nx.NetworkXPointlessConcept, nx.is_aperiodic, G)
+
+
 def test_is_aperiodic_undirected_raises():
-    G = nx.Graph()
+    G = nx.Graph([(1, 2), (2, 3), (3, 1)])
+    pytest.raises(nx.NetworkXError, nx.is_aperiodic, G)
+
+
+def test_is_aperiodic_disconnected_raises():
+    G = nx.DiGraph()
+    nx.add_cycle(G, [0, 1, 2])
+    G.add_edge(3, 3)
+    pytest.raises(nx.NetworkXError, nx.is_aperiodic, G)
+
+
+def test_is_aperiodic_weakly_connected_raises():
+    G = nx.DiGraph([(1, 2), (2, 3)])
     pytest.raises(nx.NetworkXError, nx.is_aperiodic, G)
 
 
@@ -635,27 +652,12 @@ def test_is_aperiodic_bipartite():
     assert not nx.is_aperiodic(G)
 
 
-def test_is_aperiodic_rary_tree():
-    G = nx.full_rary_tree(3, 27, create_using=nx.DiGraph())
-    assert not nx.is_aperiodic(G)
-
-
-def test_is_aperiodic_disconnected():
-    # disconnected graph
+def test_is_aperiodic_single_node():
     G = nx.DiGraph()
-    nx.add_cycle(G, [1, 2, 3, 4])
-    nx.add_cycle(G, [5, 6, 7, 8])
+    G.add_node(0)
     assert not nx.is_aperiodic(G)
-    G.add_edge(1, 3)
-    G.add_edge(5, 7)
+    G.add_edge(0, 0)
     assert nx.is_aperiodic(G)
-
-
-def test_is_aperiodic_disconnected2():
-    G = nx.DiGraph()
-    nx.add_cycle(G, [0, 1, 2])
-    G.add_edge(3, 3)
-    assert not nx.is_aperiodic(G)
 
 
 class TestDagToBranching:
