@@ -537,7 +537,8 @@ def edges_equal(edges1, edges2):
     d1 = defaultdict(dict)
     d2 = defaultdict(dict)
 
-    def _update_dict(d, u, v, data):
+    def _update_dict(d, e):
+        (u, v), data = e[:2], [e[2:]]
         if v in d[u]:
             data = d[u][v] + data
         d[u][v] = data
@@ -545,13 +546,13 @@ def edges_equal(edges1, edges2):
 
     for e1, e2 in zip_longest(edges1, edges2, fillvalue=None):
         if e1 is None or e2 is None:
-            return False  # one is longer
-        _update_dict(d1, *e1[:2], tuple(e1[2:]))
-        _update_dict(d2, *e2[:2], tuple(e2[2:]))
+            return False  # One is longer.
+        _update_dict(d1, e1)
+        _update_dict(d2, e2)
 
-    # can check one direction because lengths are the same.
+    # Can check one direction because lengths are the same.
     return all(
-        n in d2 and nbr in d2[n] and datalist.count(data) == d2[n][nbr].count(data)
+        nbr in d2[n] and datalist.count(data) == d2[n][nbr].count(data)
         for n, nbrdict in d1.items()
         for nbr, datalist in nbrdict.items()
         for data in datalist

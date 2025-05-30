@@ -289,7 +289,7 @@ def test_edges_equal(n, gen, create_using):
 @pytest.mark.parametrize("gen", [nx.complete_graph, nx.path_graph, nx.cycle_graph])
 @pytest.mark.parametrize("create_using", [nx.MultiGraph, nx.MultiDiGraph])
 def test_edges_equal_multiedge(n, gen, create_using):
-    """Test whether edges_equal properly compares edges in multigraphs."""
+    """Test whether ``edges_equal`` properly compares edges in multigraphs."""
     G = gen(n, create_using=create_using)
     H = gen(n, create_using=create_using)
 
@@ -307,7 +307,7 @@ def test_edges_equal_multiedge(n, gen, create_using):
 @pytest.mark.parametrize("gen", [nx.complete_graph, nx.path_graph, nx.cycle_graph])
 @pytest.mark.parametrize("weight", [1, 2, 3])
 def test_edges_equal_weighted(n, gen, weight):
-    """Test whether edges_equal properly compares edges with weight data."""
+    """Test whether ``edges_equal`` properly compares edges with weight data."""
     G = gen(n)
     H = gen(n)
 
@@ -320,10 +320,11 @@ def test_edges_equal_weighted(n, gen, weight):
     assert not edges_equal(G.edges(data=True), H.edges(data=True))
 
 
-def test_edges_equal_with_data():
-    """Test whether edges_equal properly compares edges with attribute dictionaries."""
+def test_edges_equal_data():
+    """Test whether ``edges_equal`` properly compares edges with attribute dictionaries."""
     G = nx.path_graph(3)
     H = nx.path_graph(3)
+    I = nx.path_graph(3, create_using=nx.MultiGraph)
 
     attrs = {(0, 1): {"attr1": 20, "attr2": "nothing"}, (1, 2): {"attr2": 3}}
     nx.set_edge_attributes(G, attrs)
@@ -337,3 +338,19 @@ def test_edges_equal_with_data():
     H[0][1]["attr2"] = "something"
     assert edges_equal(G.edges(), H.edges())
     assert not edges_equal(G.edges(data=True), H.edges(data=True))
+
+
+def test_edges_equal_multigraph_data():
+    """Test whether ``edges_equal`` properly compares edges with attribute dictionaries in ``MultiGraphs``."""
+    G = nx.path_graph(3, create_using=nx.MultiGraph)
+    I = nx.path_graph(3, create_using=nx.MultiGraph)
+
+    G.add_edge(0, 1, 0, attr1="blue")
+    G.add_edge(1, 2, 1, attr2="green")
+    I.add_edge(0, 1, 0, attr1="blue")
+    I.add_edge(0, 1, 1, attr2="green")
+    assert edges_equal(G.edges(data=True), G.edges(data=True))
+    assert not edges_equal(G.edges(), I.edges())
+    assert not edges_equal(G.edges(data=True), I.edges(data=True))
+    assert not edges_equal(G.edges(keys=True), I.edges(keys=True))
+    assert not edges_equal(G.edges(keys=True, data=True), I.edges(keys=True, data=True))
