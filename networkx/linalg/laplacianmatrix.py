@@ -493,7 +493,6 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
         if walk_type == "random":
             P = DI @ A
         else:
-            # TODO: Rm csr_array wrapper when identity array creation becomes available
             I = sp.sparse.eye_array(n, format="csr")
             P = (I + DI @ A) / 2.0
 
