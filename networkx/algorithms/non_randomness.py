@@ -88,7 +88,7 @@ def non_randomness(G, k=None, weight="weight"):
     ValueError: invalid number of communities for graph with 5 nodes and 4 edges: 2
 
     This is because the community detection algorithm finds
-    1 community in ``G1`` and 2 communities in ``G2``.
+    1 community in `G1` and 2 communities in `G2`.
     This can be resolved by specifying the number of communities `k`:
 
     >>> [round(r, 6) for r in nx.non_randomness(G2, k=1)]
@@ -139,7 +139,7 @@ def non_randomness(G, k=None, weight="weight"):
 
     if k is None:
         k = len(tuple(nx.community.label_propagation_communities(G)))
-    elif not 1 <= k < n:
+    if not 1 <= k < n:
         err = f"invalid number of communities for graph with {n} nodes: {k}"
         raise ValueError(err)
 
