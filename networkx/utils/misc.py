@@ -522,15 +522,16 @@ def edges_equal(edges1, edges2):
 
     Parameters
     ----------
-    edges1, edges2 : iterables of with u, v nodes as
-        edge tuples (u, v), or
-        edge tuples with data dicts (u, v, d), or
-        edge tuples with keys and data dicts (u, v, k, d)
+    edges1, edges2 : iterables of tuples
+        Each tuple can be
+        an edge tuple ``(u, v)``, or
+        an edge tuple with data `dict`s ``(u, v, d)``, or
+        an edge tuple with keys and data `dict`s ``(u, v, k, d)``.
 
     Returns
     -------
     bool
-        True if edges are equal, False otherwise.
+        `True` if edges are equal, `False` otherwise.
     """
     from collections import defaultdict
 
