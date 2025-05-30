@@ -1149,7 +1149,7 @@ def kemeny_constant(G, *, weight=None):
     with np.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
-    DH = sp.sparse.csr_array(sp.sparse.spdiags(diags_sqrt, 0, m, n, format="csr"))
+    DH = sp.sparse.diags_array(diags_sqrt, shape=(m, n), format="csr")
     H = DH @ (A @ DH)
 
     # Compute eigenvalues of H
