@@ -72,11 +72,11 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     >>> G = nx.Graph([(1, 2), (2, 3), (4, 5)])
     >>> print(nx.laplacian_matrix(G).toarray())
-    [[ 1 -1  0  0  0]
-     [-1  2 -1  0  0]
-     [ 0 -1  1  0  0]
-     [ 0  0  0  1 -1]
-     [ 0  0  0 -1  1]]
+    [[ 1. -1.  0.  0.  0.]
+     [-1.  2. -1.  0.  0.]
+     [ 0. -1.  1.  0.  0.]
+     [ 0.  0.  0.  1. -1.]
+     [ 0.  0.  0. -1.  1.]]
 
     >>> edges = [
     ...     (1, 2),
@@ -87,10 +87,10 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     ... ]
     >>> DiG = nx.DiGraph(edges)
     >>> print(nx.laplacian_matrix(DiG).toarray())
-    [[ 1 -1  0  0]
-     [-1  2 -1  0]
-     [ 0  0  1 -1]
-     [ 0  0 -1  1]]
+    [[ 1. -1.  0.  0.]
+     [-1.  2. -1.  0.]
+     [ 0.  0.  1. -1.]
+     [ 0.  0. -1.  1.]]
 
     Notice that node 4 is represented by the third column and row. This is because
     by default the row/column order is the order of `G.nodes` (i.e. the node added
@@ -98,20 +98,20 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     To control the node order of the matrix, use the `nodelist` argument.
 
     >>> print(nx.laplacian_matrix(DiG, nodelist=[1, 2, 3, 4]).toarray())
-    [[ 1 -1  0  0]
-     [-1  2  0 -1]
-     [ 0  0  1 -1]
-     [ 0  0 -1  1]]
+    [[ 1. -1.  0.  0.]
+     [-1.  2.  0. -1.]
+     [ 0.  0.  1. -1.]
+     [ 0.  0. -1.  1.]]
 
     This calculation uses the out-degree of the graph `G`. To use the
     in-degree for calculations instead, use `G.reverse(copy=False)` and
     take the transpose.
 
     >>> print(nx.laplacian_matrix(DiG.reverse(copy=False)).toarray().T)
-    [[ 1 -1  0  0]
-     [-1  1 -1  0]
-     [ 0  0  2 -1]
-     [ 0  0 -1  1]]
+    [[ 1. -1.  0.  0.]
+     [-1.  1. -1.  0.]
+     [ 0.  0.  2. -1.]
+     [ 0.  0. -1.  1.]]
 
     References
     ----------
@@ -125,8 +125,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
         nodelist = list(G)
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
-    # TODO: rm csr_array wrapper when spdiags can produce arrays
-    D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, m, n, format="csr"))
+    D = sp.sparse.diags_array(A.sum(axis=1), shape=(m, n), format="csr")
     return D - A
 
 
@@ -235,14 +234,12 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     n, _ = A.shape
     diags = A.sum(axis=1)
-    # TODO: rm csr_array wrapper when spdiags can produce arrays
-    D = sp.sparse.csr_array(sp.sparse.spdiags(diags, 0, n, n, format="csr"))
+    D = sp.sparse.diags_array(diags, shape=(n, n), format="csr")
     L = D - A
     with np.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
-    # TODO: rm csr_array wrapper when spdiags can produce arrays
-    DH = sp.sparse.csr_array(sp.sparse.spdiags(diags_sqrt, 0, n, n, format="csr"))
+    DH = sp.sparse.diags_array(diags_sqrt, shape=(n, n), format="csr")
     return DH @ (L @ DH)
 
 
@@ -338,11 +335,9 @@ def directed_laplacian_matrix(
     # p>=0 by Perron-Frobenius Thm. Use abs() to fix roundoff across zero gh-6865
     sqrtp = np.sqrt(np.abs(p))
     Q = (
-        # TODO: rm csr_array wrapper when spdiags creates arrays
-        sp.sparse.csr_array(sp.sparse.spdiags(sqrtp, 0, n, n))
+        sp.sparse.diags_array(sqrtp, shape=(n, n), format="csr")
         @ P
-        # TODO: rm csr_array wrapper when spdiags creates arrays
-        @ sp.sparse.csr_array(sp.sparse.spdiags(1.0 / sqrtp, 0, n, n))
+        @ sp.sparse.diags_array(1.0 / sqrtp, shape=(n, n), format="csr")
     )
     # NOTE: This could be sparsified for the non-pagerank cases
     I = np.identity(len(G))
@@ -433,8 +428,7 @@ def directed_combinatorial_laplacian_matrix(
     v = evecs.flatten().real
     p = v / v.sum()
     # NOTE: could be improved by not densifying
-    # TODO: Rm csr_array wrapper when spdiags array creation becomes available
-    Phi = sp.sparse.csr_array(sp.sparse.spdiags(p, 0, n, n)).toarray()
+    Phi = sp.sparse.diags_array(p, shape=(n, n), format="csr").toarray()
 
     return Phi - (Phi @ P + P.T @ Phi) / 2.0
 
@@ -495,13 +489,11 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
     n, m = A.shape
     if walk_type in ["random", "lazy"]:
-        # TODO: Rm csr_array wrapper when spdiags array creation becomes available
-        DI = sp.sparse.csr_array(sp.sparse.spdiags(1.0 / A.sum(axis=1), 0, n, n))
+        DI = sp.sparse.diags_array(1.0 / A.sum(axis=1), shape=(n, n), format="csr")
         if walk_type == "random":
             P = DI @ A
         else:
-            # TODO: Rm csr_array wrapper when identity array creation becomes available
-            I = sp.sparse.csr_array(sp.sparse.identity(n))
+            I = sp.sparse.eye_array(n, format="csr")
             P = (I + DI @ A) / 2.0
 
     elif walk_type == "pagerank":
