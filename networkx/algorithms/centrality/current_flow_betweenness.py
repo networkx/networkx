@@ -127,6 +127,13 @@ def approximate_current_flow_betweenness_centrality(
             f"Sample weight must be positive. Got sample_weight={sample_weight}."
         )
 
+    nb = (n - 1.0) * (n - 2.0)  # normalization factor
+    cstar = n * (n - 1) / nb
+    k = sample_weight * int(np.ceil((cstar / epsilon) ** 2 * np.log(n)))
+    if k > kmax:
+        msg = f"Number random pairs k>kmax ({k}>{kmax}) "
+        raise nx.NetworkXError(msg, "Increase kmax or epsilon")
+
     solvername = {
         "full": FullInverseLaplacian,
         "lu": SuperLUInverseLaplacian,
@@ -140,13 +147,6 @@ def approximate_current_flow_betweenness_centrality(
     L = L.astype(dtype)
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     betweenness = dict.fromkeys(H, 0.0)
-    nb = (n - 1.0) * (n - 2.0)  # normalization factor
-    cstar = n * (n - 1) / nb
-    # Use the provided sample_weight parameter instead of hardcoded value
-    k = sample_weight * int(np.ceil((cstar / epsilon) ** 2 * np.log(n)))
-    if k > kmax:
-        msg = f"Number random pairs k>kmax ({k}>{kmax}) "
-        raise nx.NetworkXError(msg, "Increase kmax or epsilon")
     cstar2k = cstar / (2 * k)
     for _ in range(k):
         s, t = pair = seed.sample(range(n), 2)
