@@ -25,15 +25,15 @@ __all__ = [
 @nx._dispatchable(edge_attrs="weight")
 def approximate_current_flow_betweenness_centrality(
     G,
-    *,
     normalized=True,
     weight=None,
     dtype=float,
     solver="full",
     epsilon=0.5,
     kmax=10000,
-    sample_weight=1,
     seed=None,
+    *,
+    sample_weight=1,
 ):
     r"""Compute the approximate current-flow betweenness centrality for nodes.
 
