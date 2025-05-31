@@ -30,34 +30,37 @@ def _get_max_broadcast_value(G, U, v, values):
 def _get_broadcast_centers(G, v, values, target):
     adj = sorted(G.neighbors(v), key=values.get, reverse=True)
     j = next(i for i, u in enumerate(adj, start=1) if values[u] + i == target)
-    return set([v] + adj[:j])
+    return {v} | set(adj[:j])
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def tree_broadcast_center(G):
-    """Return the Broadcast Center of the tree `G`.
+    """Return the broadcast center of the tree `G`.
 
-    The broadcast center of a graph G denotes the set of nodes having
-    minimum broadcast time [1]_. This is a linear algorithm for determining
-    the broadcast center of a tree with ``N`` nodes, as a by-product it also
-    determines the broadcast time from the broadcast center.
+    The broadcast center of a graph `G` denotes the set of nodes having
+    minimum broadcast time [1]_. This function implements a linear algorithm
+    for determining the broadcast center of a tree with `n` nodes, as a
+    by-product it also determines the broadcast time from the broadcast centers.
 
     Parameters
     ----------
-    G : undirected graph
-        The graph should be an undirected tree
+    G : Graph
+        The graph should be an undirected tree.
 
     Returns
     -------
-    BC : (int, set) tuple
-        minimum broadcast number of the tree, set of broadcast centers
+    b_T, b_C : (int, set) tuple
+        Minimum broadcast time of the tree, set of broadcast centers.
 
     Raises
     ------
     NetworkXNotImplemented
-        If the graph is directed or is a multigraph.
+        If `G` is directed or is a multigraph.
+
+    NetworkXError
+        If `G` is not a tree.
 
     References
     ----------
@@ -68,10 +71,8 @@ def tree_broadcast_center(G):
     if not nx.is_tree(G):
         raise NetworkXError("input graph is not a tree")
     # step 0
-    if G.number_of_nodes() == 2:
-        return 1, set(G.nodes())
-    if G.number_of_nodes() == 1:
-        return 0, set(G.nodes())
+    if len(G) in {1, 2}:
+        return len(G) - 1, set(G.nodes())
 
     # step 1
     U = {node for node, deg in G.degree if deg == 1}
@@ -84,9 +85,9 @@ def tree_broadcast_center(G):
     values.update((w, G.degree[w] - 1) for w in W)
 
     # step 3
-    while T.number_of_nodes() >= 2:
+    while len(T) >= 2:
         # step 4
-        w = min(W, key=lambda n: values[n])
+        w = min(W, key=values.get)
         v = next(T.neighbors(w))
 
         # step 5
