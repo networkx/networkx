@@ -28,9 +28,15 @@ def nonisomorphic_trees(order):
     list of `networkx.Graph` instances
        A list of nonisomorphic trees
     """
-
-    if order < 2:
-        raise ValueError
+    if order < 0:
+        raise ValueError("order must be non-negative")
+    if order == 0:
+        # Idiom for empty generator, i.e. list(nonisomorphic_trees(0)) == []
+        return
+        yield
+    if order == 1:
+        yield nx.empty_graph(0)
+        return
     # start at the path graph rooted at its center
     layout = list(range(order // 2 + 1)) + list(range(1, (order + 1) // 2))
 
@@ -58,8 +64,8 @@ def number_of_nonisomorphic_trees(order):
     int
        Number of nonisomorphic graphs for the given order
     """
-    if order < 2:
-        raise ValueError
+    if order < 0:
+        raise ValueError("order must be non-negative")
     return _unlabeled_trees(order)
 
 
