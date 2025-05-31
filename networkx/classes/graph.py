@@ -2089,11 +2089,11 @@ class Graph:
         return bunch
 
     def _inc_number_of_edges_by(self, delta):
-        number_of_edges = getattr(self, '_number_of_edges', None)
+        number_of_edges = getattr(self, "_number_of_edges", None)
         if number_of_edges is not None:
             self._number_of_edges = number_of_edges + delta
 
     def _clear_number_of_edges(self):
-        number_of_edges = getattr(self, '_number_of_edges', None)
+        number_of_edges = getattr(self, "_number_of_edges", None)
         if number_of_edges is not None:
             self._number_of_edges = 0
