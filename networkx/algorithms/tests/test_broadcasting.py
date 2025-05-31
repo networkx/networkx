@@ -82,19 +82,21 @@ def test_binomial_tree_broadcast():
         assert nx.tree_broadcast_time(G) == 2 * i - 1
 
 
+@pytest.mark.parametrize("fn", [nx.tree_broadcast_center, nx.tree_broadcast_time])
 @pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
-def test_raises_graph_type(graph_type):
+def test_raises_graph_type(fn, graph_type):
     """Check that `tree_broadcast_time` properly raises for directed and multigraph types."""
     G = nx.path_graph(5, create_using=graph_type)
     with pytest.raises(nx.NetworkXNotImplemented, match=r"not implemented for"):
-        nx.tree_broadcast_time(G)
+        fn(G)
 
 
-def test_raises_not_tree():
-    """Check that `tree_broadcast_time` properly raises for nontree graphs."""
+@pytest.mark.parametrize("fn", [nx.tree_broadcast_center, nx.tree_broadcast_time])
+def test_raises_not_tree(fn):
+    """Check that broadcast functions properly raise for nontree graphs."""
     G = nx.empty_graph(5)
     with pytest.raises(nx.NetworkXError, match=r"not a tree"):
-        nx.tree_broadcast_time(G)
+        fn(G)
 
 
 def test_raises_node_not_in_G():
