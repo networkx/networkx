@@ -138,10 +138,11 @@ def tree_broadcast_time(G, node=None):
     NetworkXNotImplemented
         If `G` is directed or is a multigraph.
 
+    NodeNotFound
+        If `node` is not a node in `G`.
+
     NetworkXError
         If `G` is not a tree.
-
-        If `node` is not a node in `G`.
 
     References
     ----------
@@ -150,6 +151,9 @@ def tree_broadcast_time(G, node=None):
         In Computing and Combinatorics. COCOON 2019
         (Ed. D. Z. Du and C. Tian.) Springer, pp. 240-253, 2019.
     """
+    if node is not None and node not in G:
+        err = f"node {node} not in G"
+        raise nx.NodeNotFound(err)
     b_T, b_C = tree_broadcast_center(G)
     if node is None:
         return b_T + len(list(nx.bfs_layers(G, sources=b_C))) - 1
