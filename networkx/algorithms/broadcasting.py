@@ -13,7 +13,6 @@ following constraints:
 """
 
 import networkx as nx
-from networkx import NetworkXError
 from networkx.utils import not_implemented_for
 
 __all__ = [
@@ -69,7 +68,7 @@ def tree_broadcast_center(G):
     """
     # Assert that the graph G is a tree
     if not nx.is_tree(G):
-        raise NetworkXError("input graph is not a tree")
+        raise nx.NetworkXError("input graph is not a tree")
     # step 0
     if len(G) in {1, 2}:
         return len(G) - 1, set(G.nodes())
