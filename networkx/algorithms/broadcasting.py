@@ -145,11 +145,8 @@ def tree_broadcast_time(G, node=None):
         (Ed. D. Z. Du and C. Tian.) Springer, pp. 240-253, 2019.
     """
     b_T, b_C = tree_broadcast_center(G)
-    if node is not None:
-        return b_T + min(nx.shortest_path_length(G, node, u) for u in b_C)
-    dist_from_center = dict.fromkeys(G, len(G))
-    for u in b_C:
-        for v, dist in nx.shortest_path_length(G, u).items():
-            if dist < dist_from_center[v]:
-                dist_from_center[v] = dist
-    return b_T + max(dist_from_center.values())
+    if node is None:
+        return b_T + len(list(nx.bfs_layers(G, sources=b_C))) - 1
+    for depth, layer in enumerate(nx.bfs_layers(G, sources=b_C)):
+        if node in layer:
+            return b_T + depth
