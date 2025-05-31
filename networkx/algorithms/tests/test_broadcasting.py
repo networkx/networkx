@@ -1,6 +1,8 @@
 """Unit tests for the broadcasting module."""
-import pytest
+
 import math
+
+import pytest
 
 import networkx as nx
 
