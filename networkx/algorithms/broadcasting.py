@@ -66,7 +66,7 @@ def tree_broadcast_center(G):
     """
     # Assert that the graph G is a tree
     if not nx.is_tree(G):
-        NetworkXError("Input graph is not a tree")
+        raise NetworkXError("input graph is not a tree")
     # step 0
     if G.number_of_nodes() == 2:
         return 1, set(G.nodes())
