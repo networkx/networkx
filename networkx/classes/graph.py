@@ -372,6 +372,8 @@ class Graph:
         self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
+        # subclasses have to initialize edge cache if desired
+        self._number_of_edges = 0 if type(self) is Graph else None
         self.__networkx_cache__ = {}
         # attempt to load graph with data
         if incoming_graph_data is not None:
@@ -681,6 +683,7 @@ class Graph:
         adj = self._adj
         try:
             nbrs = list(adj[n])  # list handles self-loops (allows mutation)
+            self._inc_number_of_edges_by(-len(nbrs))
             del self._node[n]
         except KeyError as err:  # NetworkXError if n not in self
             raise NetworkXError(f"The node {n} is not in the graph.") from err
@@ -735,7 +738,9 @@ class Graph:
         for n in nodes:
             try:
                 del self._node[n]
-                for u in list(adj[n]):  # list handles self-loops
+                nbrs = list(adj[n])
+                self._inc_number_of_edges_by(-len(nbrs))
+                for u in nbrs:  # list handles self-loops
                     del adj[u][n]  # (allows mutation of dict in loop)
                 del adj[n]
             except KeyError:
@@ -966,7 +971,11 @@ class Graph:
             self._adj[v] = self.adjlist_inner_dict_factory()
             self._node[v] = self.node_attr_dict_factory()
         # add the edge
-        datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
+
+        datadict = self._adj[u].get(v)
+        if datadict is None:
+            datadict = self.edge_attr_dict_factory()
+            self._inc_number_of_edges_by(1)
         datadict.update(attr)
         self._adj[u][v] = datadict
         self._adj[v][u] = datadict
@@ -1046,7 +1055,10 @@ class Graph:
                     raise ValueError("None cannot be a node")
                 self._adj[v] = self.adjlist_inner_dict_factory()
                 self._node[v] = self.node_attr_dict_factory()
-            datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
+            datadict = self._adj[u].get(v)
+            if datadict is None:
+                datadict = self.edge_attr_dict_factory()
+                self._inc_number_of_edges_by(1)
             datadict.update(attr)
             datadict.update(dd)
             self._adj[u][v] = datadict
@@ -1136,6 +1148,7 @@ class Graph:
                 del self._adj[v][u]
         except KeyError as err:
             raise NetworkXError(f"The edge {u}-{v} is not in the graph") from err
+        self._inc_number_of_edges_by(-1)
         nx._clear_cache(self)
 
     def remove_edges_from(self, ebunch):
@@ -1171,6 +1184,7 @@ class Graph:
                 del adj[u][v]
                 if u != v:  # self loop needs only one entry removed
                     del adj[v][u]
+                self._inc_number_of_edges_by(-1)
         nx._clear_cache(self)
 
     def update(self, edges=None, nodes=None):
@@ -1552,6 +1566,7 @@ class Graph:
         self._adj.clear()
         self._node.clear()
         self.graph.clear()
+        self._clear_number_of_edges()
         nx._clear_cache(self)
 
     def clear_edges(self):
@@ -1568,6 +1583,7 @@ class Graph:
         """
         for nbr_dict in self._adj.values():
             nbr_dict.clear()
+        self._clear_number_of_edges()
         nx._clear_cache(self)
 
     def is_multigraph(self):
@@ -1940,6 +1956,8 @@ class Graph:
         >>> G.size(weight="weight")
         6.0
         """
+        if weight is None and getattr(self, "_number_of_edges", None) is not None:
+            return self._number_of_edges
         s = sum(d for v, d in self.degree(weight=weight))
         # If `weight` is None, the sum of the degrees is guaranteed to be
         # even, so we can perform integer division and hence return an
@@ -2069,3 +2087,13 @@ class Graph:
 
             bunch = bunch_iter(nbunch, self._adj)
         return bunch
+
+    def _inc_number_of_edges_by(self, delta):
+        number_of_edges = getattr(self, '_number_of_edges', None)
+        if number_of_edges is not None:
+            self._number_of_edges = number_of_edges + delta
+
+    def _clear_number_of_edges(self):
+        number_of_edges = getattr(self, '_number_of_edges', None)
+        if number_of_edges is not None:
+            self._number_of_edges = 0
