@@ -1079,3 +1079,25 @@ class TestSimilarity:
         sim2 = nx.panther_vector_similarity(G, 0, D=3, path_length=2, seed=42)
 
         assert sim1 == sim2
+
+    def test_panther_similarity_string_nodes(self):
+        """Test panther_similarity with string node names."""
+        pytest.importorskip("numpy")
+        G = nx.Graph()
+        G.add_edges_from([("A", "B"), ("A", "C"), ("A", "D"), ("B", "C")])
+
+        sim = nx.panther_similarity(G, "A", k=2, path_length=2, seed=42)
+
+        assert "A" not in sim  # Source node should not be included
+        assert all(isinstance(node, str) for node in sim)  # Nodes should remain strings
+
+    def test_panther_vector_similarity_string_nodes(self):
+        """Test panther_vector_similarity with string node names."""
+        pytest.importorskip("numpy")
+        G = nx.Graph()
+        G.add_edges_from([("A", "B"), ("A", "C"), ("A", "D"), ("B", "C")])
+
+        sim = nx.panther_vector_similarity(G, "A", D=3, k=2, path_length=2, seed=42)
+
+        assert "A" not in sim  # Source node should not be included
+        assert all(isinstance(node, str) for node in sim)  # Nodes should remain strings
