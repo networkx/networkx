@@ -1742,8 +1742,9 @@ def panther_similarity(
     top_k_sorted = top_k_unsorted[np.argsort(S[top_k_unsorted])][::-1]
 
     # Add back the similarity scores
+    # Convert numpy scalars to native Python types for dispatch compatibility
     top_k_with_val = dict(
-        zip(node_map[top_k_sorted].tolist(), S[top_k_sorted].tolist())
+        zip((node_map[i].item() for i in top_k_sorted), S[top_k_sorted].tolist())
     )
 
     # Remove the self-similarity
@@ -1924,8 +1925,10 @@ def panther_vector_similarity(
             similarities = similarities / max_sim  # Normalize to [0, 1]
 
     # Add back the similarity scores (i.e., distances)
-    top_k_sorted_names = (node_map[n] for n in nearest_neighbors)
-    top_k_with_val = dict(zip(top_k_sorted_names, similarities.tolist()))
+    # Convert numpy scalars to native Python types for dispatch compatibility
+    top_k_with_val = dict(
+        zip((node_map[n].item() for n in nearest_neighbors), similarities.tolist())
+    )
 
     # Remove the self-similarity
     top_k_with_val.pop(source, None)
