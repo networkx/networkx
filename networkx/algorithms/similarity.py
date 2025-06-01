@@ -1507,20 +1507,6 @@ def _simrank_similarity_numpy(
     return newsim
 
 
-# Define a named tuple for Panther paths data
-PantherPaths = namedtuple(
-    "PantherPaths",
-    [
-        "G",
-        "inv_node_map",
-        "node_map",
-        "index_map",
-        "inv_sample_size",
-        "eps",
-    ],
-)
-
-
 @np_random_state("seed")
 def _prepare_panther_paths(
     G,
@@ -1564,10 +1550,9 @@ def _prepare_panther_paths(
     Returns
     -------
     PantherPaths
-        A named tuple containing the prepared data:
+        A tuple containing the prepared data:
         - G: The graph (possibly with isolates removed)
         - inv_node_map: Dictionary mapping node names to indices
-        - node_map: Array or list of node names
         - index_map: Populated index map of paths
         - inv_sample_size: Inverse of sample size (for fast calculation)
         - eps: Error bound for similarity approximation
@@ -1621,13 +1606,12 @@ def _prepare_panther_paths(
         pass
 
     # Return a named tuple with all the required data
-    return PantherPaths(
-        G=G,
-        inv_node_map=inv_node_map,
-        node_map=list(G),
-        index_map=index_map,
-        inv_sample_size=1 / sample_size,
-        eps=eps,
+    return (
+        G,  # The graph with isolated nodes removed
+        inv_node_map,
+        index_map,
+        1 / sample_size,
+        eps,
     )
 
 
@@ -1717,7 +1701,7 @@ def panther_similarity(
     import numpy as np
 
     # Use helper method to prepare common data structures
-    paths = _prepare_panther_paths(
+    G, inv_node_map, index_map, inv_sample_size, eps = _prepare_panther_paths(
         G,
         source,
         path_length=path_length,
@@ -1729,11 +1713,7 @@ def panther_similarity(
         seed=seed,
     )
 
-    G = paths.G
-    inv_node_map = paths.inv_node_map
-    node_map = np.array(paths.node_map)  # Convert to numpy array for indexing
-    index_map = paths.index_map
-    inv_sample_size = paths.inv_sample_size
+    node_map = np.array(G.nodes)
     num_nodes = G.number_of_nodes()
 
     # If there aren't enough nodes for the requested k, adjust k with a warning
@@ -1863,7 +1843,7 @@ def panther_vector_similarity(
     from scipy.spatial import cKDTree as KDTree
 
     # Use helper method to prepare common data structures but keep isolates in the graph
-    paths = _prepare_panther_paths(
+    G, inv_node_map, index_map, inv_sample_size, eps = _prepare_panther_paths(
         G,
         source,
         path_length=path_length,
@@ -1875,13 +1855,7 @@ def panther_vector_similarity(
         k=k,
         seed=seed,
     )
-
-    G = paths.G
-    inv_node_map = paths.inv_node_map
-    node_map = paths.node_map
-    index_map = paths.index_map
-    inv_sample_size = paths.inv_sample_size
-    eps = paths.eps
+    node_map = np.array(G.nodes)
     num_nodes = G.number_of_nodes()
 
     # Ensure D doesn't exceed the number of nodes
