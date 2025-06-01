@@ -1917,10 +1917,6 @@ def panther_vector_similarity(
     neighbor_distances = np.maximum(neighbor_distances, eps)
     similarities = np.reciprocal(neighbor_distances)
 
-    # Replace any NaN values with a reasonable value (1.0)
-    # This can happen in very small graphs where the source node is similar to itself
-    similarities = np.nan_to_num(similarities, nan=1.0)
-
     # Always normalize to ensure values are between 0 and 1
     if len(similarities) > 0:
         max_sim = np.max(similarities)
