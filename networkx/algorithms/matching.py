@@ -261,9 +261,9 @@ def is_perfect_matching(G, matching):
 @not_implemented_for("directed")
 @nx._dispatchable(edge_attrs="weight")
 def min_weight_matching(G, weight="weight"):
-    """Compute a minimum-weighted maximum-cardinality matching of G.
+    """Compute a minimum-weight maximum-cardinality matching of `G`.
 
-    The minimum-weighted maximum-cardinality matching is the matching
+    The minimum-weight maximum-cardinality matching is the matching
     that has the minimum weight among all maximum-cardinality matchings.
 
     Use the maximum-weight algorithm with edge weights subtracted

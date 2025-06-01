@@ -388,7 +388,7 @@ class TestMaxWeightMatching:
     def test_min_weight_matching_max_cardinality(self):
         G = nx.Graph()
         G.add_weighted_edges_from([(1, 2, 1000), (2, 3, 2), (3, 4, 3000)])
-        # The minimum-weight maximal matching is {(2, 3)}; the minimum weight
+        # The minimum-weight maximal matching is {(2, 3)}; the minimum-weight
         # maximum-cardinality matching is {(1, 2), (3, 4)}. See gh-8062.
         answer = {(1, 2), (3, 4)}
         assert edges_equal(nx.min_weight_matching(G), answer)
