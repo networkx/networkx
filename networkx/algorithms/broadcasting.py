@@ -40,7 +40,7 @@ def tree_broadcast_center(G):
 
     The broadcast center of a graph `G` denotes the set of nodes having
     minimum broadcast time [1]_. This function implements a linear algorithm
-    for determining the broadcast center of a tree with `n` nodes, as a
+    for determining the broadcast center of a tree with ``n`` nodes, as a
     by-product it also determines the broadcast time from the broadcast centers.
 
     Parameters
@@ -68,10 +68,10 @@ def tree_broadcast_center(G):
     """
     # Assert that the graph G is a tree
     if not nx.is_tree(G):
-        raise nx.NetworkXError("input graph is not a tree")
+        raise nx.NetworkXError("G is not a tree")
     # step 0
-    if len(G) in {1, 2}:
-        return len(G) - 1, set(G.nodes())
+    if (n := len(G)) < 3:
+        return n - 1, set(G)
 
     # step 1
     U = {node for node, deg in G.degree if deg == 1}
@@ -124,7 +124,7 @@ def tree_broadcast_time(G, node=None):
     G : Graph
         The graph should be an undirected tree.
 
-    node: node, optional (default=None)
+    node : node, optional (default=None)
         Starting node for the broadcasting. If `None`, the algorithm returns the broadcast
         time of the graph instead.
 
