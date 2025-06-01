@@ -32,7 +32,7 @@ def nonisomorphic_trees(order):
     Raises
     ------
     ValueError
-        If `order` is negative
+        If `order` is negative.
 
     Examples
     --------
@@ -65,7 +65,7 @@ def nonisomorphic_trees(order):
         return
         yield
     if order == 1:
-        yield nx.empty_graph(0)
+        yield nx.empty_graph(1)
         return
     # start at the path graph rooted at its center
     layout = list(range(order // 2 + 1)) + list(range(1, (order + 1) // 2))
