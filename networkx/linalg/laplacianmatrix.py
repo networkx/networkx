@@ -125,7 +125,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
         nodelist = list(G)
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
-    D = sp.sparse.diags_array(A.sum(axis=1), shape=(m, n), format="csr")
+    D = sp.sparse.diags_array(A.sum(axis=1), shape=(m, n), format="csr", dtype=A.dtype)
     return D - A
 
 
