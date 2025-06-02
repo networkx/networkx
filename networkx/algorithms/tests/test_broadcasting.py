@@ -94,9 +94,10 @@ def test_raises_graph_type(fn, graph_type):
 
 
 @pytest.mark.parametrize("fn", [nx.tree_broadcast_center, nx.tree_broadcast_time])
-def test_raises_not_tree(fn):
+@pytest.mark.parametrize("gen", [nx.empty_graph, nx.cycle_graph])
+def test_raises_not_tree(fn, gen):
     """Check that broadcast functions properly raise for nontree graphs."""
-    G = nx.empty_graph(5)
+    G = gen(5)
     with pytest.raises(nx.NetworkXError, match=r"not a tree"):
         fn(G)
 
