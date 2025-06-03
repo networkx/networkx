@@ -136,26 +136,6 @@ class TestDistance:
         expected = {(n - 1) // 2, math.ceil((n - 1) / 2)}
         assert set(nx.center(G)) == expected
 
-    @pytest.mark.parametrize("n", [1, 2, 99, 100])
-    def test_tree_centroid_path_graphs(self, n):
-        G = nx.path_graph(n)
-        expected = {(n - 1) // 2, math.ceil((n - 1) / 2)}
-        assert set(nx.tree_centroid(G)) == expected
-
-    @pytest.mark.parametrize("r", range(2, 5))
-    @pytest.mark.parametrize("h", range(1, 5))
-    def test_tree_centroid_balanced_tree(self, r, h):
-        G = nx.balanced_tree(r, h)
-        assert nx.tree_centroid(G) == [0]
-
-    def test_tree_centroid_multiple_centroids(self):
-        G = nx.full_rary_tree(2, 8)
-        assert nx.tree_centroid(G) == [0, 1]
-
-    def test_tree_centroid_not_a_tree(self):
-        with pytest.raises(nx.NotATree):
-            nx.tree_centroid(self.G)
-
     def test_bound_diameter(self):
         assert nx.diameter(self.G, usebounds=True) == 6
 
