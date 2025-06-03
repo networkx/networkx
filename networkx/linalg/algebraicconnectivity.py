@@ -189,7 +189,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # Form the normalized Laplacian matrix and determine the eigenvector of
         # its nullspace.
         e = np.sqrt(L.diagonal())
-        D = sp.sparse.diags_array(1 / e, shape=(n, n), format="csr")
+        D = sp.sparse.dia_array((1 / e, 0), shape=(n, n)).tocsr()
         L = D @ L @ D
         e *= 1.0 / np.linalg.norm(e, 2)
 
@@ -275,9 +275,9 @@ def _get_fiedler_func(method):
             L = sp.sparse.csc_array(L, dtype=float)
             n = L.shape[0]
             if normalized:
-                D = sp.sparse.diags_array(
-                    1.0 / np.sqrt(L.diagonal()), shape=(n, n), format="csc"
-                )
+                D = sp.sparse.dia_array(
+                    (1.0 / np.sqrt(L.diagonal()), 0), shape=(n, n)
+                ).tocsc()
                 L = D @ L @ D
             if method == "lanczos" or n < 10:
                 # Avoid LOBPCG when n < 10 due to

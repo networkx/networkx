@@ -72,6 +72,6 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
         r = sum(d**2 for v, d in nx.degree(G)) / sum(d for v, d in nx.degree(G)) - 1
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, format="csr")
     n, m = A.shape
-    D = sp.sparse.diags_array(A.sum(axis=1), shape=(m, n), format="csr")
+    D = sp.sparse.dia_array((A.sum(axis=1), 0), shape=(m, n)).tocsr()
     I = sp.sparse.eye_array(m, n, format="csr")
     return (r**2 - 1) * I - r * A + D

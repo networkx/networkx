@@ -1149,7 +1149,7 @@ def _sparse_spectral(A, dim=2):
         raise nx.NetworkXError(msg) from err
 
     # form Laplacian matrix
-    D = sp.sparse.diags_array(A.sum(axis=1), shape=(nnodes, nnodes), format="csr")
+    D = sp.sparse.dia_array((A.sum(axis=1), 0), shape=(nnodes, nnodes)).tocsr()
     L = D - A
 
     k = dim + 1
