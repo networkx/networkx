@@ -32,12 +32,12 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip
-          pip install .[default,extra,test]
+          pip install .[default,extra,test,test-extras]
           pip list
 
       - name: Test NetworkX
         run: |
-          pytest --cov=networkx --runslow -n auto --doctest-modules --durations=20 --pyargs networkx
+          pytest --cov=networkx --runslow -n auto --doctest-modules --durations=20 --pyargs --mpl networkx
 
       - name: Upload to codecov
         uses: codecov/codecov-action@v3

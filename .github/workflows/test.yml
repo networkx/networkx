@@ -54,7 +54,7 @@ jobs:
 
       - name: Test NetworkX
         run: |
-          pytest -n auto --mpl --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --doctest-modules --durations=10 --pyargs --mpl networkx
 
   default-without-scipy:
     runs-on: ubuntu-latest
@@ -130,7 +130,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           pip install --upgrade pip
-          pip install .[default,test,extra]
+          pip install .[default,test,extra,test-extras]
           pip list
       - name: Install packages (macOS)
         if: runner.os == 'macOS'
@@ -141,7 +141,7 @@ jobs:
                       --config-settings="--global-option=-I$(brew --prefix graphviz)/include/" \
                       --config-settings="--global-option=-L$(brew --prefix graphviz)/lib/" \
                       pygraphviz
-          pip install .[default,test,extra]
+          pip install .[default,test,extra,test-extras]
           pip list
       - name: Install Pygraphviz packages  (windows)
         if: runner.os == 'Windows'
@@ -156,12 +156,12 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          python -m pip install .[default,test,extra]
+          python -m pip install .[default,test,extra,test-extras]
           python -m pip list
 
       - name: Test NetworkX
         run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --doctest-modules --durations=10 --pyargs --mpl networkx
 
   prerelease:
     runs-on: ${{ matrix.os }}-latest
