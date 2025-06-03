@@ -116,7 +116,7 @@ def _kou_steiner_tree(G, terminal_nodes, weight):
     mst_all_edges = chain.from_iterable(pairwise(d["path"]) for u, v, d in mst_edges)
     if G.is_multigraph():
         mst_all_edges = (
-            (u, v, min(G[u][v], key=lambda k: G[u][v][k][weight]))
+            (u, v, min(G[u][v], key=lambda k: G[u][v][k].get(weight, 1)))
             for u, v in mst_all_edges
         )
 
