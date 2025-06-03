@@ -54,7 +54,7 @@ Documentation = 'https://networkx.org/documentation/stable/'
 nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
-default = ['numpy>=1.25', 'matplotlib>=3.8', 'scipy>=1.11.2', 'pandas>=2.0']
+default = ['numpy>=1.25', 'scipy>=1.11.2', 'matplotlib>=3.8', 'pandas>=2.0']
 developer = ['pre-commit>=4.1', 'mypy>=1.15']
 doc = [
     'sphinx>=8.0',

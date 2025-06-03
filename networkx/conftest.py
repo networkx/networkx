@@ -116,6 +116,12 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="Keyword argument 'link'"
     )
+    warnings.filterwarnings(
+        "ignore", category=UserWarning, message=r".*hashes produced for"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message=r"\nThe default value will be"
+    )
 
 
 @pytest.fixture(autouse=True)
