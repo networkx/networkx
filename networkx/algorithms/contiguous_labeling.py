@@ -12,69 +12,40 @@ This module provides functions to:
 2. Construct a contiguous oriented labeling for almost bridgeless graphs
 
 The output format of contiguous_oriented_labeling is:
-    (label, i_minus, i_plus)
+   (label, i_minus, i_plus)
 Where:
 - 'label' is an integer index starting from 1
 - 'i_minus' (or i⁻) is the source vertex of a directed edge
 - 'i_plus' (or i⁺) is the target vertex of a directed edge
 
 This corresponds to the contiguous oriented labeling definition from the paper:
-    For each edge i, it is directed from vertex i⁻ to i⁺.
-    You can transform the output tuples into readable format like:
-        f"Edge {label}: {i_minus}⁻ → {i_plus}⁺"
+   For each edge i, it is directed from vertex i⁻ to i⁺.
+   You can transform the output tuples into readable format like:
+       f"Edge {label}: {i_minus}⁻ → {i_plus}⁺"
 """
 
 import networkx as nx
 from typing import List, Tuple, Dict, Set, Optional
 
 
-def is_bridgeless(G: nx.Graph) -> bool:
-    """
-    Check if a graph is bridgeless (contains no bridges).
-    """
-    return len(list(nx.bridges(G))) == 0
-
-
-def is_almost_bridgeless(G: nx.Graph) -> bool:
-    """
-    Check if a graph is almost bridgeless.
-    
-    A graph is almost bridgeless if we can add an edge so that the resulting graph is bridgeless.
-    """
-    # If the graph is already bridgeless, it's also almost bridgeless
-    if is_bridgeless(G):
-        return True
-    
-    # Try adding an edge between any pair of vertices
-    nodes = list(G.nodes())
-    for i in range(len(nodes)):
-        for j in range(i + 1, len(nodes)):
-            u, v = nodes[i], nodes[j]
-            
-            # Skip if the edge already exists
-            if G.has_edge(u, v):
-                continue
-            
-            # Add the edge temporarily
-            G_temp = G.copy()
-            G_temp.add_edge(u, v)
-            
-            # Check if the graph is now bridgeless
-            if is_bridgeless(G_temp):
-                return True
-    
-    # If no way to add an edge to make the graph bridgeless, return False
-    return False
-
-
 def find_uv_to_make_bridgeless(G: nx.Graph) -> Optional[Tuple]:
     """
-    Find vertices u and v such that adding edge (u,v) makes G bridgeless.
+    Find vertices u and v such that adding edge (u,v) makes the graph G bridgeless.
     
-    Returns None if G is already bridgeless or cannot be made bridgeless by adding one edge.
+    A bridge is an edge whose removal increases the number of connected components.
+    A bridgeless graph has no bridges. This function searches for a pair of non-adjacent
+    vertices such that adding an edge between them eliminates all bridges in the graph.
+    
+    Args:
+        G (nx.Graph): The input graph to analyze
+        
+    Returns:
+        Optional[Tuple]: A tuple (u, v) of vertices such that adding edge (u,v) makes
+                        G bridgeless, or None if G is already bridgeless or cannot
+                        be made bridgeless by adding a single edge
     """
     # If the graph is already bridgeless, return None
-    if is_bridgeless(G):
+    if not nx.has_bridges(G):
         return None
     
     # Try adding an edge between any pair of vertices
@@ -92,7 +63,7 @@ def find_uv_to_make_bridgeless(G: nx.Graph) -> Optional[Tuple]:
             G_temp.add_edge(u, v)
             
             # Check if the graph is now bridgeless
-            if is_bridgeless(G_temp):
+            if not nx.has_bridges(G_temp):
                 return (u, v)
     
     # If no way to add an edge to make the graph bridgeless, return None
@@ -103,13 +74,29 @@ def contiguous_oriented_labeling(G: nx.Graph) -> Optional[List[Tuple[int, any, a
     """
     Create a contiguous oriented labeling for an almost bridgeless graph.
     
-    Returns a list of tuples: (label, from_node, to_node)
-    where label is an integer, from_node is i⁻, and to_node is i⁺
+    This function implements the constructive algorithm from Lemma 4.3 of the paper.
+    A contiguous oriented labeling is an ordering of edges with orientation such that
+    for any prefix of edges, they form a connected subgraph, and for any suffix of
+    edges, they also form a connected subgraph with specific connectivity conditions.
     
-    If the graph is not almost bridgeless, returns None.
+    The algorithm works by:
+    1. Starting with an initial ear (path between vertices u and v)
+    2. Iteratively adding new ears that connect to previously added edges
+    3. Maintaining the contiguous property throughout the construction
+    
+    Args:
+        G (nx.Graph): The input graph, must be almost bridgeless (bridgeless or
+                     can be made bridgeless by adding one edge)
+                     
+    Returns:
+        Optional[List[Tuple[int, any, any]]]: A list of tuples (label, from_node, to_node)
+                                            where label is an integer starting from 1,
+                                            from_node is i⁻, and to_node is i⁺.
+                                            Returns None if the graph is not almost bridgeless
+                                            or not connected.
     """
     # Check if the graph is almost bridgeless
-    if not is_almost_bridgeless(G):
+    if find_uv_to_make_bridgeless(G) is None and nx.has_bridges(G):
         return None
     
     # If the graph is not connected, return None
@@ -122,7 +109,7 @@ def contiguous_oriented_labeling(G: nx.Graph) -> Optional[List[Tuple[int, any, a
     H = G.copy()
     
     # If G is already bridgeless, choose any edge as the first ear
-    if is_bridgeless(G):
+    if not nx.has_bridges(G):
         # Choose any edge for the first ear
         first_edge = list(H.edges())[0]
         u, v = first_edge
@@ -265,24 +252,42 @@ def contiguous_oriented_labeling(G: nx.Graph) -> Optional[List[Tuple[int, any, a
 
 def dfs_labeling(G: nx.Graph) -> List[Tuple[int, any, any]]:
     """
-    Create a simple DFS-based labeling as a fallback.
-    This may not be contiguous but serves as a backup.
+    Create a simple DFS-based labeling as a fallback when the main algorithm fails.
+    
+    This function performs a depth-first search traversal of the graph and assigns
+    labels to edges in the order they are encountered. While this labeling may not
+    satisfy the contiguous property, it serves as a backup solution to ensure the
+    function always returns a valid edge labeling.
+    
+    Args:
+        G (nx.Graph): The input graph
+        
+    Returns:
+        List[Tuple[int, any, any]]: A list of tuples (label, from_node, to_node)
+                                   representing the DFS-based edge labeling
     """
     visited_edges = set()
     labeling = []
     label = 1
     
     def dfs(u):
+        """
+        Recursive DFS helper function.
+        
+        Args:
+            u: Current vertex being visited
+        """
         nonlocal label
         for v in G.neighbors(u):
             edge = (u, v)
             rev_edge = (v, u)
+            # Skip if edge already visited (considering undirected nature)
             if edge in visited_edges or rev_edge in visited_edges:
                 continue
             visited_edges.add(edge)
             labeling.append((label, u, v))
             label += 1
-            dfs(v)
+            dfs(v)  # Recursively visit the neighbor
     
     # Start DFS from any node
     dfs(list(G.nodes())[0])
@@ -292,7 +297,21 @@ def dfs_labeling(G: nx.Graph) -> List[Tuple[int, any, any]]:
 
 def verify_contiguous_labeling(G: nx.Graph, labeling: List[Tuple[int, any, any]]) -> bool:
     """
-    Verify if the given labeling is contiguous according to Definition 4.2.
+    Verify if the given labeling satisfies the contiguous property according to Definition 4.2.
+    
+    A contiguous oriented labeling must satisfy two conditions:
+    1. For each 2 ≤ i ≤ m, the edges 1,...,i-1 form a connected subgraph,
+       and vertex i⁻ belongs to one of these edges
+    2. For each 1 ≤ i ≤ m-1, the edges i+1,...,m form a connected subgraph,
+       and vertex i⁺ belongs to one of these edges
+    
+    Args:
+        G (nx.Graph): The original graph
+        labeling (List[Tuple[int, any, any]]): The labeling to verify, where each tuple
+                                              is (label, from_node, to_node)
+                                              
+    Returns:
+        bool: True if the labeling is contiguous, False otherwise
     """
     # If the graph or labeling is empty, it's trivially contiguous
     if len(labeling) == 0:
@@ -300,7 +319,7 @@ def verify_contiguous_labeling(G: nx.Graph, labeling: List[Tuple[int, any, any]]
     
     m = len(labeling)
     
-    # Create mappings
+    # Create mappings from label to source and target vertices
     i_minus = {}
     i_plus = {}
     
@@ -345,7 +364,14 @@ def verify_contiguous_labeling(G: nx.Graph, labeling: List[Tuple[int, any, any]]
 
 def show_labeling(labeling: List[Tuple[int, any, any]]) -> None:
     """
-    Print a readable representation of the labeling.
+    Print a human-readable representation of the edge labeling.
+    
+    Displays each edge in the format "Edge {label}: {source}⁻ → {target}⁺"
+    to show the oriented labeling clearly.
+    
+    Args:
+        labeling (List[Tuple[int, any, any]]): The labeling to display, where each tuple
+                                              is (label, from_node, to_node)
     """
     for label, i_minus, i_plus in labeling:
         print(f"Edge {label}: {i_minus}⁻ → {i_plus}⁺")
@@ -356,7 +382,7 @@ if __name__ == "__main__":
     # Test 1: Cycle graph
     print("===== Test 1: Cycle Graph =====")
     G1 = nx.cycle_graph(4)
-    print(f"Is bridgeless: {is_bridgeless(G1)}")
+    print(f"Is bridgeless: {not nx.has_bridges(G1)}")
     labeling1 = contiguous_oriented_labeling(G1)
     print("Labeling:")
     show_labeling(labeling1)
@@ -366,8 +392,8 @@ if __name__ == "__main__":
     # Test 2: Path graph
     print("===== Test 2: Path Graph =====")
     G2 = nx.path_graph(4)
-    print(f"Is bridgeless: {is_bridgeless(G2)}")
-    print(f"Is almost bridgeless: {is_almost_bridgeless(G2)}")
+    print(f"Is bridgeless: {not nx.has_bridges(G2)}")
+    print(f"Is almost bridgeless: {find_uv_to_make_bridgeless(G2) is not None or not nx.has_bridges(G2)}")
     labeling2 = contiguous_oriented_labeling(G2)
     print("Labeling:")
     show_labeling(labeling2)
@@ -378,7 +404,7 @@ if __name__ == "__main__":
     print("===== Test 3: Triangle with Tail =====")
     G3 = nx.Graph()
     G3.add_edges_from([("A", "B"), ("B", "C"), ("C", "A"), ("A", "D")])
-    print(f"Is bridgeless: {is_bridgeless(G3)}")
+    print(f"Is bridgeless: {not nx.has_bridges(G3)}")
     labeling3 = contiguous_oriented_labeling(G3)
     print("Labeling:")
     show_labeling(labeling3)
@@ -389,7 +415,7 @@ if __name__ == "__main__":
     print("===== Test 4: Star with Center =====")
     G4 = nx.Graph()
     G4.add_edges_from([("A", "B"), ("A", "C"), ("A", "D"), ("B", "D"), ("C", "D")])
-    print(f"Is bridgeless: {is_bridgeless(G4)}")
+    print(f"Is bridgeless: {not nx.has_bridges(G4)}")
     labeling4 = contiguous_oriented_labeling(G4)
     print("Labeling:")
     show_labeling(labeling4)
