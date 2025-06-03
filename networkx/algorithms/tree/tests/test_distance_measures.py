@@ -80,6 +80,13 @@ class TestDistance:
         G = nx.full_rary_tree(2, 8)
         assert nx.tree.centroid(G) == [0, 1]
 
+    def test_tree_centroid_different_from_graph_center(self):
+        G = nx.Graph()
+        nx.add_star(G, [0, 1, 2, 3, 4, 5, 6])
+        nx.add_path(G, [6, 7, 8, 9, 10])
+        # nx.center(G) would be [7]
+        assert nx.tree_centroid(G) == [0]
+
     def test_tree_centroid_not_a_tree(self):
         with pytest.raises(nx.NotATree):
             nx.tree.centroid(self.G)
