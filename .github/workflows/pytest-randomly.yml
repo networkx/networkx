@@ -18,8 +18,7 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip
-          pip install .[default,test]
-          pip install pytest-randomly
+          pip install .[default,test,test-extras]
           pip list
 
       - name: Run tests
