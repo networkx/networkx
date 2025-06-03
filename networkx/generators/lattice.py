@@ -124,15 +124,15 @@ def grid_graph(dim, periodic=False):
     >>> len(G)
     6
     """
+    from collections.abc import Iterable
+
     from networkx.algorithms.operators.product import cartesian_product
 
     if not dim:
         return empty_graph(0)
 
-    try:
-        func = (cycle_graph if p else path_graph for p in periodic)
-    except TypeError:
-        func = repeat(cycle_graph if periodic else path_graph)
+    periodic = repeat(periodic) if not isinstance(periodic, Iterable) else periodic
+    func = (cycle_graph if p else path_graph for p in periodic)
 
     G = next(func)(dim[0])
     for current_dim in dim[1:]:
