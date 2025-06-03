@@ -16,7 +16,7 @@ from networkx.algorithms.bipartite_ged.costfunctions import (
 
 def compute_bipartite_cost_matrix(
     g1: nx.Graph, g2: nx.Graph, cf: CostFunction | None = None
-) -> "np.ndarray":
+):
     """Compute a cost matrix according to cost function `cf`
 
     Let $n$ and $m$ be the number of nodes of `g1` and `g2` respectively,

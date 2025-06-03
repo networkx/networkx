@@ -25,7 +25,7 @@ class Solver(Protocol):
     Any custom solver must implement the `solve` method.
     """
 
-    def solve(self, cost_matrix: "np.ndarray") -> tuple["np.ndarray", "np.ndarray"]:
+    def solve(self, cost_matrix) -> tuple:
         """Compute optimum assignment between two sets where
         `cost_matrix` encodes the assignment costs : `cost_matrix[i, j]`
         contains the assignment cost between element of index `i` in $A$
@@ -78,7 +78,7 @@ class SolverLSAP:
     def __init__(self):
         pass
 
-    def solve(self, C: "np.ndarray") -> tuple["np.ndarray", "np.ndarray"]:
+    def solve(self, C) -> tuple:
         """Solves the LSAP using the Jonker-Volgenant Algorithm from `scipy` [1]_.
 
         Compute optimum assignment between two sets where

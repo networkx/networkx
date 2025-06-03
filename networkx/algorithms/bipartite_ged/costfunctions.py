@@ -261,7 +261,8 @@ class ConstantCostFunction:
         Notes
         -----
         * An edge is a `tuple` of 2 nodes (`Any`)
-        * `node_comp` and `edge_comp` should return `True` whether the nodes/edges can be considered as equivalent
+        * `node_comp` and `edge_comp` should return `True`
+          whether the nodes/edges can be considered as equivalent
         * Equivalent nodes or edges do not require a substitution, thus the substitution cost becomes 0
         * If a comparison function is not given, nodes/edges cannot considered equivalent
         """
