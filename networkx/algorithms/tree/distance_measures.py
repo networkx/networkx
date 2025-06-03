@@ -129,7 +129,9 @@ def centroid(T):
 
     The centroid is the set of nodes where if any one is removed from
     the tree it would split the tree into a forest of trees of size no
-    more than N / 2.
+    more than N / 2, where N is the number of nodes in the
+    original tree.  This may wind up being two nodes if removal of an
+    edge would result in two trees of size exactly N / 2.
 
     Parameters
     ----------

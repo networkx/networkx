@@ -678,6 +678,7 @@ def center(G, e=None, usebounds=False, weight=None):
     --------
     barycenter
     periphery
+    :func:`~networkx.algorithms.tree.distance_measures.tree_centroid`
     """
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="center", weight=weight)
