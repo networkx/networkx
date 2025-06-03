@@ -46,7 +46,7 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[default,test]
+          python -m pip install .[default,test,test-extras]
           python -m pip list
 
       - name: Test for warnings at import time
@@ -54,7 +54,7 @@ jobs:
 
       - name: Test NetworkX
         run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --mpl --doctest-modules --durations=10 --pyargs networkx
 
   default-without-scipy:
     runs-on: ubuntu-latest
