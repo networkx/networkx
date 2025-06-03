@@ -1974,7 +1974,7 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None, store_pos_as
 
     align : string (default='vertical')
         The alignment of nodes within a layer, either `"vertical"` or
-        `"horizontal"`
+        `"horizontal"`.
 
     scale : number (default: 1)
         Scale factor for positions.
