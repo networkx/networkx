@@ -54,8 +54,16 @@ Documentation = 'https://networkx.org/documentation/stable/'
 nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
-default = ['numpy>=1.25', 'scipy>=1.11.2', 'matplotlib>=3.8', 'pandas>=2.0']
-developer = ['pre-commit>=4.1', 'mypy>=1.15']
+default = [
+    'numpy>=1.25',
+    'scipy>=1.11.2',
+    'matplotlib>=3.8',
+    'pandas>=2.0',
+]
+developer = [
+    'pre-commit>=4.1',
+    'mypy>=1.15',
+]
 doc = [
     'sphinx>=8.0',
     'pydata-sphinx-theme>=0.16',
@@ -75,9 +83,21 @@ example = [
     'igraph>=0.11',
     'scikit-learn>=1.5',
 ]
-extra = ['lxml>=4.6', 'pygraphviz>=1.14', 'pydot>=3.0.1', 'sympy>=1.10']
-test = ['pytest>=7.2', 'pytest-cov>=4.0', 'pytest-mpl', 'pytest-xdist>=3.0']
-test-extras = ['pytest-randomly']
+extra = [
+    'lxml>=4.6',
+    'pygraphviz>=1.14',
+    'pydot>=3.0.1',
+    'sympy>=1.10',
+]
+test = [
+    'pytest>=7.2',
+    'pytest-cov>=4.0',
+    'pytest-mpl',
+    'pytest-xdist>=3.0',
+]
+test-extras = [
+    'pytest-randomly',
+]
 
 [tool.setuptools]
 zip-safe = false
@@ -110,7 +130,12 @@ packages = [
     'networkx.tests',
     'networkx.utils',
 ]
-platforms = ['Linux', 'Mac OSX', 'Windows', 'Unix']
+platforms = [
+    'Linux',
+    'Mac OSX',
+    'Windows',
+    'Unix',
+]
 
 [tool.setuptools.dynamic.version]
 attr = 'networkx.__version__'
@@ -148,15 +173,15 @@ ignored_user_logins = ["dependabot[bot]", "pre-commit-ci[bot]", "web-flow"]
 [tool.ruff.lint]
 extend-select = [
     #  "B",        # flake8-bugbear
-    "I", # isort
+    "I",        # isort
     #  "ARG",      # flake8-unused-arguments
-    "C4", # flake8-comprehensions
+    "C4",       # flake8-comprehensions
     #  "D",        # pydocstyle (see tool.ruff.lint.pydocstyle below)
-    "EM",  # flake8-errmsg
-    "ICN", # flake8-import-conventions
+    "EM",       # flake8-errmsg
+    "ICN",      # flake8-import-conventions
     #  "G",        # flake8-logging-format
-    "PGH", # pygrep-hooks
-    "PIE", # flake8-pie
+    "PGH",      # pygrep-hooks
+    "PIE",      # flake8-pie
     #  "PL",       # pylint
     "PLR0402",
     #  "PT",       # flake8-pytest-style
@@ -170,29 +195,29 @@ extend-select = [
     "SIM118",
     "SIM2",
     #  "T20",      # flake8-print
-    "UP",  # pyupgrade
-    "YTT", # flake8-2020
-    "EXE", # flake8-executable
-    "NPY", # NumPy specific rules
-    "PD",  # pandas-vet
+    "UP",       # pyupgrade
+    "YTT",      # flake8-2020
+    "EXE",      # flake8-executable
+    "NPY",      # NumPy specific rules
+    "PD",       # pandas-vet
     #  "FURB",     # refurb
-    "PYI",  # flake8-pyi
-    "W505", # pycodestyle docstring/comment line length (see config below)
+    "PYI",      # flake8-pyi
+    "W505",     # pycodestyle docstring/comment line length (see config below)
 ]
 ignore = [
-    "PLR09",   # Too many <...>
-    "PLR2004", # Magic value used in comparison
-    "ISC001",  # Conflicts with formatter
-    "E741",    # Ambiguous variable name
-    "E722",    # Do not use bare `except`
-    "F",       # pyflakes
-    "EM101",   # Exception must not use a string literal
-    "EM102",   # Exception must not use an f-string literal
-    "PD",      # pandas-vet
-    "ICN",     # flake8-import-conventions
-    "PYI",     # flake8-pyi
-    "NPY002",  # Replace legacy `np.random.random` call with `np.random.Generator`
-    "W291",    # Trailing white space
+    "PLR09",    # Too many <...>
+    "PLR2004",  # Magic value used in comparison
+    "ISC001",   # Conflicts with formatter
+    "E741",     # Ambiguous variable name
+    "E722",     # Do not use bare `except`
+    "F",        # pyflakes
+    "EM101",    # Exception must not use a string literal
+    "EM102",    # Exception must not use an f-string literal
+    "PD",       # pandas-vet
+    "ICN",      # flake8-import-conventions
+    "PYI",      # flake8-pyi
+    "NPY002",   # Replace legacy `np.random.random` call with `np.random.Generator`
+    "W291",     # Trailing white space
 ]
 exclude = ['doc/conf.py', '__init__.py']
 
