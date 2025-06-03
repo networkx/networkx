@@ -114,8 +114,7 @@ Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 
 - Complexity: Depending on the algorithms you are interested to work on.
 
-- Interested Mentors: `@MridulS <https://github.com/MridulS/>`__,
-  `@rossbar <https://github.com/rossbar/>`__,
+- Interested Mentors: `@rossbar <https://github.com/rossbar/>`__,
   `@Schefflera-Arboricola <https://github.com/Schefflera-Arboricola>`__
 
 - Expected time commitment: This project can be either a medium project (~175 hours)

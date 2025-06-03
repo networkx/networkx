@@ -40,7 +40,7 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
     assert set(G) == set(flowDict), errmsg
     for u in G:
         assert set(G[u]) == set(flowDict[u]), errmsg
-    excess = {u: 0 for u in flowDict}
+    excess = dict.fromkeys(flowDict, 0)
     for u in flowDict:
         for v, flow in flowDict[u].items():
             if capacity in G[u][v]:
@@ -559,7 +559,7 @@ class TestCutoff:
 
     def test_complete_graph_cutoff(self):
         G = nx.complete_graph(5)
-        nx.set_edge_attributes(G, {(u, v): 1 for u, v in G.edges()}, "capacity")
+        nx.set_edge_attributes(G, dict.fromkeys(G.edges(), 1), "capacity")
         for flow_func in [
             shortest_augmenting_path,
             edmonds_karp,

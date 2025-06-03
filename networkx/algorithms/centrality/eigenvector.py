@@ -165,7 +165,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
         )
     # If no initial vector is provided, start with the all-ones vector.
     if nstart is None:
-        nstart = {v: 1 for v in G}
+        nstart = dict.fromkeys(G, 1)
     if all(v == 0 for v in nstart.values()):
         raise nx.NetworkXError("initial vector cannot have all zero values")
     # Normalize the initial vector so that each entry is in [0, 1]. This is

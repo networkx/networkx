@@ -205,6 +205,7 @@ needs_scipy = [
     "algorithms/assortativity/pairs.py",
     "algorithms/bipartite/matrix.py",
     "algorithms/bipartite/spectral.py",
+    "algorithms/bipartite/link_analysis.py",
     "algorithms/bipartite_ged/costfunctions.py",
     "algorithms/bipartite_ged/solvers.py",
     "algorithms/bipartite_ged/bpged_utils.py",

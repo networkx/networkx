@@ -1127,8 +1127,8 @@ class TestGraphISOFeasibility:
             ]
         )
 
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
         l1.update({6: "green"})  # Change the label of one neighbor of u
 
         gparams = _GraphParameters(
@@ -1178,8 +1178,8 @@ class TestGraphISOFeasibility:
             ]
         )
 
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
 
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
@@ -1216,8 +1216,8 @@ class TestGraphISOFeasibility:
         )
         mapped = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g", 10: "k"}
         G2 = nx.relabel_nodes(G1, mapped)
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
 
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
@@ -1238,7 +1238,8 @@ class TestGraphISOFeasibility:
         u, v = 10, "k"
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G1[u] and T1, so it's not the same as the one between G2[v] and T2
+        # Change intersection between G1[u] and T1, so it's not the same as the
+        # one between G2[v] and T2
         G1.remove_edge(u, 4)
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -1246,7 +1247,8 @@ class TestGraphISOFeasibility:
         G2.remove_edge(v, mapped[4])
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G2[v] and T2_tilde, so it's not the same as the one between G1[u] and T1_tilde
+        # Change intersection between G2[v] and T2_tilde, so it's not the same
+        # as the one between G1[u] and T1_tilde
         G2.remove_edge(v, mapped[6])
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -1260,8 +1262,8 @@ class TestGraphISOFeasibility:
         sparams.T1_tilde.update({6, 7, 8})
         sparams.T2_tilde.update({"g", "y", "z"})
 
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
         )
@@ -1288,8 +1290,8 @@ class TestGraphISOFeasibility:
         # Add nodes from the new T1 and T2, as neighbors of u and v respectively
         G1.add_edges_from([(u, 20), (u, 21)])
         G2.add_edges_from([(v, "i"), (v, "j")])
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
         )
@@ -1356,7 +1358,7 @@ class TestGraphISOFeasibility:
         }
         G2 = nx.relabel_nodes(G1, mapped)
 
-        l1 = {n: "none" for n in G1.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "none")
         l2 = {}
 
         l1.update(
@@ -1392,7 +1394,8 @@ class TestGraphISOFeasibility:
         u, v = 20, "x"
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change the orientation of the labels on neighbors of u compared to neighbors of v. Leave the structure intact
+        # Change the orientation of the labels on neighbors of u compared to
+        # neighbors of v. Leave the structure intact
         l1.update({9: "red"})
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -1485,7 +1488,7 @@ class TestGraphISOFeasibility:
         }
         G2 = nx.relabel_nodes(G1, mapped)
 
-        l1 = {n: "blue" for n in G1.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
         l2 = {mapped[n]: "blue" for n in G1.nodes()}
 
         gparams = _GraphParameters(
@@ -1573,7 +1576,7 @@ class TestGraphISOFeasibility:
         }
         G2 = nx.relabel_nodes(G1, mapped)
 
-        l1 = {n: "none" for n in G1.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "none")
         l2 = {}
 
         l1.update(
@@ -1753,13 +1756,16 @@ class TestMultiGraphISOFeasibility:
         u, v = 10, "k"
         assert _consistent_PT(u, v, gparams, sparams)
 
-        # Delete one uncovered neighbor of u. Notice how it still passes the test. Two reasons for this:
-        # 1. If u, v had different degrees from the beginning, they wouldn't be selected as candidates in the first
-        #    place.
-        # 2. Even if they are selected, consistency is basically 1-look-ahead, meaning that we take into consideration
-        #    the relation of the candidates with their mapped neighbors. The node we deleted is not a covered neighbor.
-        #    Such nodes will be checked by the cut_PT function, which is basically the 2-look-ahead, checking the
-        #    relation of the candidates with T1, T2 (in which belongs the node we just deleted).
+        # Delete one uncovered neighbor of u. Notice how it still passes the test.
+        # Two reasons for this:
+        # 1. If u, v had different degrees from the beginning, they wouldn't be
+        #    selected as candidates in the first place.
+        # 2. Even if they are selected, consistency is basically 1-look-ahead,
+        #    meaning that we take into consideration the relation of the candidates
+        #    with their mapped neighbors. The node we deleted is not a covered
+        #    neighbor. Such nodes will be checked by the cut_PT function, which
+        #    is basically the 2-look-ahead, checking the relation of the candidates
+        #    with T1, T2 (in which belongs the node we just deleted).
         G1.remove_node(6)
         assert _consistent_PT(u, v, gparams, sparams)
 
@@ -1822,8 +1828,8 @@ class TestMultiGraphISOFeasibility:
         )
         mapped = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g", 10: "k"}
         G2 = nx.relabel_nodes(G1, mapped)
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
 
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
@@ -1853,7 +1859,8 @@ class TestMultiGraphISOFeasibility:
         G2.remove_edges_from([(v, mapped[4]), (v, mapped[4])])
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G2[v] and T2_tilde, so it's not the same as the one between G1[u] and T1_tilde
+        # Change intersection between G2[v] and T2_tilde, so it's not the same
+        # as the one between G1[u] and T1_tilde
         G2.remove_edge(v, mapped[6])
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -1878,8 +1885,8 @@ class TestMultiGraphISOFeasibility:
         sparams.T1_tilde.update({6, 7, 8})
         sparams.T2_tilde.update({"g", "y", "z"})
 
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
         )
@@ -1913,8 +1920,8 @@ class TestMultiGraphISOFeasibility:
         # Add nodes from the new T1 and T2, as neighbors of u and v respectively
         G1.add_edges_from([(u, 20), (u, 20), (u, 20), (u, 21)])
         G2.add_edges_from([(v, "i"), (v, "i"), (v, "i"), (v, "j")])
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
         )
@@ -1990,7 +1997,7 @@ class TestMultiGraphISOFeasibility:
         }
         G2 = nx.relabel_nodes(G1, mapped)
 
-        l1 = {n: "none" for n in G1.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "none")
         l2 = {}
 
         l1.update(
@@ -2026,7 +2033,8 @@ class TestMultiGraphISOFeasibility:
         u, v = 20, "x"
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change the orientation of the labels on neighbors of u compared to neighbors of v. Leave the structure intact
+        # Change the orientation of the labels on neighbors of u compared to
+        # neighbors of v. Leave the structure intact
         l1.update({9: "red"})
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -2135,7 +2143,7 @@ class TestMultiGraphISOFeasibility:
             20: "x",
         }
         G2 = nx.relabel_nodes(G1, mapped)
-        l1 = {n: "blue" for n in G1.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
         l2 = {mapped[n]: "blue" for n in G1.nodes()}
 
         gparams = _GraphParameters(
@@ -2240,7 +2248,7 @@ class TestMultiGraphISOFeasibility:
             20: "x",
         }
         G2 = nx.relabel_nodes(G1, mapped)
-        l1 = {n: "none" for n in G1.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "none")
         l2 = {}
 
         l1.update(
@@ -2462,8 +2470,8 @@ class TestDiGraphISOFeasibility:
             ]
         )
 
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
         l1.update({5: "green"})  # Change the label of one neighbor of u
 
         gparams = _GraphParameters(
@@ -2513,8 +2521,8 @@ class TestDiGraphISOFeasibility:
             ]
         )
 
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
 
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
@@ -2551,8 +2559,8 @@ class TestDiGraphISOFeasibility:
         )
         mapped = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g", 10: "k"}
         G2 = nx.relabel_nodes(G1, mapped)
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
 
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
@@ -2573,7 +2581,8 @@ class TestDiGraphISOFeasibility:
         u, v = 10, "k"
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G1[u] and T1_out, so it's not the same as the one between G2[v] and T2_out
+        # Change intersection between G1[u] and T1_out, so it's not the same as
+        # the one between G2[v] and T2_out
         G1.remove_edge(u, 4)
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -2581,7 +2590,8 @@ class TestDiGraphISOFeasibility:
         G2.remove_edge(v, mapped[4])
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G1[u] and T1_in, so it's not the same as the one between G2[v] and T2_in
+        # Change intersection between G1[u] and T1_in, so it's not the same as
+        # the one between G2[v] and T2_in
         G1.remove_edge(5, u)
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -2589,7 +2599,8 @@ class TestDiGraphISOFeasibility:
         G2.remove_edge(mapped[5], v)
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change intersection between G2[v] and T2_tilde, so it's not the same as the one between G1[u] and T1_tilde
+        # Change intersection between G2[v] and T2_tilde, so it's not the same
+        # as the one between G1[u] and T1_tilde
         G2.remove_edge(v, mapped[6])
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -2603,8 +2614,8 @@ class TestDiGraphISOFeasibility:
         sparams.T1_tilde.update({6, 7, 8})
         sparams.T2_tilde.update({"g", "y", "z"})
 
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
         )
@@ -2658,7 +2669,7 @@ class TestDiGraphISOFeasibility:
         }
         G2 = nx.relabel_nodes(G1, mapped)
 
-        l1 = {n: "none" for n in G1.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "none")
         l2 = {}
 
         l1.update(
@@ -2694,7 +2705,8 @@ class TestDiGraphISOFeasibility:
         u, v = 20, "x"
         assert not _cut_PT(u, v, gparams, sparams)
 
-        # Change the orientation of the labels on neighbors of u compared to neighbors of v. Leave the structure intact
+        # Change the orientation of the labels on neighbors of u compared to
+        # neighbors of v. Leave the structure intact
         l1.update({9: "red"})
         assert _cut_PT(u, v, gparams, sparams)
 
@@ -2754,8 +2766,8 @@ class TestDiGraphISOFeasibility:
         )
         mapped = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g"}
         G2 = nx.relabel_nodes(G1, mapped)
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
+        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l2 = dict.fromkeys(G2.nodes(), "blue")
 
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
