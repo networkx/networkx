@@ -56,3 +56,30 @@ class TestCenter:
             nx.NetworkXNotImplemented, match=r"not implemented for directed"
         ):
             nx.tree.center(G)
+
+
+class TestDistance:
+    def setup_method(self):
+        self.G = nx.convert_node_labels_to_integers(
+            nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted"
+        )
+
+    @pytest.mark.parametrize("n", [1, 2, 99, 100])
+    def test_tree_centroid_path_graphs(self, n):
+        G = nx.path_graph(n)
+        expected = {(n - 1) // 2, math.ceil((n - 1) / 2)}
+        assert set(nx.tree.centroid(G)) == expected
+
+    @pytest.mark.parametrize("r", range(2, 5))
+    @pytest.mark.parametrize("h", range(1, 5))
+    def test_tree_centroid_balanced_tree(self, r, h):
+        G = nx.balanced_tree(r, h)
+        assert nx.tree.centroid(G) == [0]
+
+    def test_tree_centroid_multiple_centroids(self):
+        G = nx.full_rary_tree(2, 8)
+        assert nx.tree.centroid(G) == [0, 1]
+
+    def test_tree_centroid_not_a_tree(self):
+        with pytest.raises(nx.NotATree):
+            nx.tree.centroid(self.G)
