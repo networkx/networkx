@@ -67,10 +67,10 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
     G.add_edges_from(((i, j), (pi, j)) for pi, i in pairwise(rows) for j in cols)
     G.add_edges_from(((i, j), (i, pj)) for i in rows for pj, j in pairwise(cols))
 
-    try:
-        periodic_r, periodic_c = periodic
-    except TypeError:
+    if isinstance(periodic, bool):
         periodic_r = periodic_c = periodic
+    else:
+        periodic_r, periodic_c = periodic
 
     if periodic_r and len(rows) > 2:
         first = rows[0]
@@ -129,10 +129,10 @@ def grid_graph(dim, periodic=False):
     if not dim:
         return empty_graph(0)
 
-    try:
-        func = (cycle_graph if p else path_graph for p in periodic)
-    except TypeError:
+    if isinstance(periodic, bool):
         func = repeat(cycle_graph if periodic else path_graph)
+    else:
+        func = (cycle_graph if p else path_graph for p in periodic)
 
     G = next(func)(dim[0])
     for current_dim in dim[1:]:
