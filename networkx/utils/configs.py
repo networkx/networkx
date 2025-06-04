@@ -77,7 +77,7 @@ class Config:
             cls = type(
                 cls.__name__,
                 (cls,),
-                {"__annotations__": {key: typing.Any for key in kwargs}},
+                {"__annotations__": dict.fromkeys(kwargs, typing.Any)},
             )
         cls = dataclass(
             eq=False,
@@ -328,7 +328,8 @@ class NetworkXConfig(Config):
 
     and can be used for finer control of ``backend_priority`` such as:
 
-    - ``NETWORKX_BACKEND_PRIORITY_ALGOS``: same as ``NETWORKX_BACKEND_PRIORITY`` to set ``backend_priority.algos``.
+    - ``NETWORKX_BACKEND_PRIORITY_ALGOS``: same as ``NETWORKX_BACKEND_PRIORITY``
+      to set ``backend_priority.algos``.
 
     This is a global configuration. Use with caution when using from multiple threads.
     """
@@ -345,9 +346,11 @@ class NetworkXConfig(Config):
         if key == "backend_priority":
             if isinstance(value, list):
                 # `config.backend_priority = [backend]` sets `backend_priority.algos`
-                value = dict(
-                    self.backend_priority,
-                    algos=self.backend_priority._on_setattr("algos", value),
+                value = BackendPriorities(
+                    **dict(
+                        self.backend_priority,
+                        algos=self.backend_priority._on_setattr("algos", value),
+                    )
                 )
             elif isinstance(value, dict):
                 kwargs = value

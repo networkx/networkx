@@ -86,14 +86,17 @@ def node_link_data(
 
     >>> import json
     >>> s1 = json.dumps(data1)
-    >>> s1
-    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "edges": [{"source": "A", "target": "B"}]}'
+    >>> pprint(s1)
+    ('{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, '
+     '{"id": "B"}], "edges": [{"source": "A", "target": "B"}]}')
+
 
     A graph can also be serialized by passing `node_link_data` as an encoder function.
 
     >>> s1 = json.dumps(G, default=nx.node_link_data)
-    >>> s1
-    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "links": [{"source": "A", "target": "B"}]}'
+    >>> pprint(s1)
+    ('{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, '
+     '{"id": "B"}], "links": [{"source": "A", "target": "B"}]}')
 
     The attribute names for storing NetworkX-internal graph data can
     be specified as keyword options.
