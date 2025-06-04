@@ -59,11 +59,6 @@ class TestCenter:
 
 
 class TestDistance:
-    def setup_method(self):
-        self.G = nx.convert_node_labels_to_integers(
-            nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted"
-        )
-
     @pytest.mark.parametrize("n", [1, 2, 99, 100])
     def test_tree_centroid_path_graphs(self, n):
         G = nx.path_graph(n)
@@ -81,12 +76,17 @@ class TestDistance:
         assert nx.tree.centroid(G) == [0, 1]
 
     def test_tree_centroid_different_from_graph_center(self):
-        G = nx.Graph()
-        nx.add_star(G, [0, 1, 2, 3, 4, 5, 6])
+        G = nx.star_graph(6)
         nx.add_path(G, [6, 7, 8, 9, 10])
         # nx.center(G) would be [7]
-        assert nx.tree_centroid(G) == [0]
+        assert nx.tree.centroid(G) == [0]
 
     def test_tree_centroid_not_a_tree(self):
-        with pytest.raises(nx.NotATree):
-            nx.tree.centroid(self.G)
+        G = nx.cycle_graph(3)
+        with pytest.raises(nx.NotATree, match=r"not a tree"):
+            nx.tree.centroid(G)
+
+    def test_tree_centroid_empty(self):
+        G = nx.Graph()
+        with pytest.raises(nx.NetworkXPointlessConcept, match=r"has no nodes"):
+            nx.tree.centroid(G)

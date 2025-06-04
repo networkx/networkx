@@ -87,19 +87,20 @@ def center(G):
 
 
 def _subtree_sizes(T, root):
-    """Returns a dict of the subtree sizes, taken considering `root` as the root of the tree `T`.
+    """Return a `dict` of subtree sizes in a tree rooted at a given node.
 
     Parameters
     ----------
     T : NetworkX graph
-       A graph
+       A tree.
 
-    root : node label
-       A node in T
+    root : node
+       A node in `T`.
 
     Returns
     -------
-    s : a dict keyed on node labels to its integer subtree size value
+    s : dict
+       Dictionary of subtree sizes keyed on nodes.
 
     Examples
     --------
@@ -117,7 +118,7 @@ def _subtree_sizes(T, root):
             sizes[stack[-1]] += sizes[x]
         stack.append(b)
         sizes[b] = 1
-    for a, b in zip(stack[-2::-1], stack[-1::-1]):
+    for b, a in nx.utils.pairwise(reversed(stack)):
         sizes[a] += sizes[b]
     return sizes
 
@@ -125,44 +126,63 @@ def _subtree_sizes(T, root):
 @nx.utils.not_implemented_for("directed")
 @nx._dispatchable
 def centroid(T):
-    """Returns the centroid of the tree T.
+    """Return the centroid of a tree.
 
     The centroid is the set of nodes where if any one is removed from
     the tree it would split the tree into a forest of trees of size no
-    more than N / 2, where N is the number of nodes in the
-    original tree.  This may wind up being two nodes if removal of an
-    edge would result in two trees of size exactly N / 2.
+    more than ``N / 2``, where ``N`` is the number of nodes in the
+    original tree. This may wind up being two nodes if removal of an
+    edge would result in two trees of size exactly ``N / 2``.
+
+    This is different from the concept of the graph center, which is
+    the set of nodes that minimize the maximum distance to all other
+    nodes.
+
+    A good example of where these measures diverge is with a star
+    graph with one long branch. The center doesn't care that there are
+    a bunch of length 1 branches, it will wind up being near the
+    middle of the long branch.  The centroid, however, puts a hard
+    limit on the number of nodes down any given branch from the chosen
+    centroid. If the star has enough branches, the center of the star
+    is forced to be the centroid.
 
     Parameters
     ----------
     T : NetworkX graph
-       A graph
+       A tree.
 
     Returns
     -------
     c : list
-       List of nodes in centroid of the tree.  This could be one or two nodes.
+       List of nodes in centroid of the tree. This could be one or two nodes.
 
     Raises
     ------
-    NetworkXError
-        If algorithm detects input graph is not a tree.
+    NotATree
+        If the input graph is not a tree.
+    NotImplementedException
+        If the input graph is directed.
     NetworkXPointlessConcept
-        If T is empty
+        If `T` has no nodes or edges.
 
     Notes
     -----
-    This algorithm's time complexity is O(N) where N is the number of nodes in the tree.
+    This algorithm's time complexity is ``O(N)`` where ``N`` is the number of nodes in the tree.
 
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> centroid(G)
+    >>> nx.tree.centroid(G)
     [1, 2]
 
-    >>> G = nx.Graph([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (4, 6), (5, 7), (5, 8)])
-    >>> centroid(G)
-    [0]
+    >>> G = nx.star_graph(6)
+    >>> nx.add_path(G, [6, 7, 8, 9, 10])
+    >>> nx.tree.centroid(G), nx.tree.center(G)
+    ([0], [7])
+
+    See Also
+    --------
+    :func:`~networkx.algorithms.distance_measures.center`
 
     """
     if not nx.is_tree(T):
@@ -171,14 +191,15 @@ def centroid(T):
     sizes = _subtree_sizes(T, root)
     total_size = T.number_of_nodes()
 
-    while (
-        max(
-            total_size - sizes[root],
-            max((sizes[x] for x in T.neighbors(root) if x != prev), default=0),
+    def _heaviest_child(prev, root):
+        return max(
+            (x for x in T.neighbors(root) if x != prev), key=sizes.get, default=None
         )
-        > total_size / 2
-    ):
-        prev, root = root, max((sizes[x], x) for x in T.neighbors(root) if x != prev)[1]
+
+    hc = _heaviest_child(prev, root)
+    while max(total_size - sizes[root], sizes.get(hc, 0)) > total_size / 2:
+        prev, root = root, hc
+        hc = _heaviest_child(prev, root)
 
     return [root] + [
         x for x in T.neighbors(root) if x != prev and sizes[x] == total_size / 2
