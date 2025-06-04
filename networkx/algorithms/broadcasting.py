@@ -59,7 +59,7 @@ def tree_broadcast_center(G):
     NetworkXNotImplemented
         If `G` is directed or is a multigraph.
 
-    NetworkXError
+    NotATree
         If `G` is not a tree.
 
     References
@@ -69,7 +69,7 @@ def tree_broadcast_center(G):
     """
     # Assert that the graph G is a tree
     if not nx.is_tree(G):
-        raise nx.NetworkXError("G is not a tree")
+        raise nx.NotATree("G is not a tree")
     # step 0
     if (n := len(G)) < 3:
         return n - 1, set(G)
@@ -143,7 +143,7 @@ def tree_broadcast_time(G, node=None):
     NodeNotFound
         If `node` is not a node in `G`.
 
-    NetworkXError
+    NotATree
         If `G` is not a tree.
 
     References

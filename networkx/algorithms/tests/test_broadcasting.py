@@ -98,7 +98,7 @@ def test_raises_graph_type(fn, graph_type):
 def test_raises_not_tree(fn, gen):
     """Check that broadcast functions properly raise for nontree graphs."""
     G = gen(5)
-    with pytest.raises(nx.NetworkXError, match=r"not a tree"):
+    with pytest.raises(nx.NotATree, match=r"not a tree"):
         fn(G)
 
 
