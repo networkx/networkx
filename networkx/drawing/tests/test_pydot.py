@@ -109,6 +109,17 @@ def test_pydot_issue_7581(tmp_path):
     assert graphs_equal(G, G2)
 
 
+def test_pydot_long_node_name(tmp_path):
+    """Validate that `nx_pydot.pydot_layout` handles long node names correctly. See gh-7648."""
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            # Lines longer than ~130 chars get split
+            ("=10chars= " * 14, "D"),
+        ]
+    )
+
+
 @pytest.mark.parametrize(
     "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 )
