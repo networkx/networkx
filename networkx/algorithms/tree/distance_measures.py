@@ -138,14 +138,6 @@ def centroid(T):
     the set of nodes that minimize the maximum distance to all other
     nodes.
 
-    A good example of where these measures diverge is with a star
-    graph with one long branch. The center doesn't care that there are
-    a bunch of length 1 branches, it will wind up being near the
-    middle of the long branch.  The centroid, however, puts a hard
-    limit on the number of nodes down any given branch from the chosen
-    centroid. If the star has enough branches, the center of the star
-    is forced to be the centroid.
-
     Parameters
     ----------
     T : NetworkX graph
@@ -174,6 +166,14 @@ def centroid(T):
     >>> G = nx.path_graph(4)
     >>> nx.tree.centroid(G)
     [1, 2]
+
+    A good example of where the tree_centroid diverges from the center
+    is with a star graph with one long branch. The center doesn't care
+    that there are a bunch of length 1 branches, it will wind up being
+    near the middle of the long branch.  The centroid, however, puts a
+    hard limit on the number of nodes down any given branch from the
+    chosen centroid. If the star has enough branches, the center of
+    the star is forced to be the centroid.
 
     >>> G = nx.star_graph(6)
     >>> nx.add_path(G, [6, 7, 8, 9, 10])
