@@ -1,6 +1,6 @@
 [build-system]
 build-backend = 'setuptools.build_meta'
-requires = ['setuptools>=61.2']
+requires = ['setuptools>=77']
 
 [project]
 name = 'networkx'
@@ -17,11 +17,12 @@ keywords = [
     'discrete mathematics',
     'math',
 ]
+license = "BSD-3-Clause"
+license-files = ["LICENSE.txt"]
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
-    'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.11',
