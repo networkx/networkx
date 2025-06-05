@@ -33,6 +33,13 @@ class TestDistance:
         with pytest.raises(nx.NotATree, match=r"not a tree"):
             nx.tree_centroid(G)
 
+    @pytest.mark.parametrize("G", [nx.DiGraph([(0, 1)]), nx.MultiDiGraph([(0, 1)])])
+    def test_tree_centroid_direct_raises(self, G):
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match=r"not implemented for directed type"
+        ):
+            nx.tree_centroid(G)
+
     def test_tree_centroid_empty(self):
         G = nx.Graph()
         with pytest.raises(nx.NetworkXPointlessConcept, match=r"has no nodes"):
