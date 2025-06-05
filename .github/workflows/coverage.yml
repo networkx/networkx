@@ -28,6 +28,7 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
+          cache-dependency-glob: "uv.lock"
           activate-environment: true
 
       - name: Before install
