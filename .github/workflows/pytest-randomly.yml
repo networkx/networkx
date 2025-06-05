@@ -15,12 +15,17 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          activate-environment: true
+
       - name: Install packages
         run: |
-          pip install --upgrade pip
-          pip install .[default,test]
-          pip install pytest-randomly
-          pip list
+          uv pip install -e .[default,test]
+          uv pip install pytest-randomly
+          uv pip list
 
       - name: Run tests
         run: pytest --doctest-modules --durations=10 --pyargs networkx

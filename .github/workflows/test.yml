@@ -20,11 +20,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          activate-environment: true
+
       - name: Install packages
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install .[test]
-          python -m pip list
+          uv pip install -e .[test]
+          uv pip list
 
       - name: Test NetworkX
         run: |
@@ -43,11 +48,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          activate-environment: true
+
       - name: Install packages
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install .[default,test]
-          python -m pip list
+          uv pip install -e .[default,test]
+          uv pip list
 
       - name: Test for warnings at import time
         run: python -Werror -c "import networkx"
@@ -65,12 +75,17 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          activate-environment: true
+
       - name: Install packages
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install .[default,test]
-          python -m pip uninstall -y scipy  # All default dependencies except scipy
-          python -m pip list
+          uv pip install -e .[default,test]
+          uv pip uninstall scipy  # All default dependencies except scipy
+          uv pip list
 
       - name: Test for warnings at import time
         run: python -Werror -c "import networkx"
@@ -91,11 +106,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          activate-environment: true
+
       - name: Install packages
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install .[default,test]
-          python -m pip list
+          uv pip install -e .[default,test]
+          uv pip list
 
       - name: Test Dispatching
         run: |
@@ -126,29 +146,32 @@ jobs:
         if: runner.os == 'Windows'
         run: choco install graphviz
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          activate-environment: true
+
       - name: Install packages (Linux)
         if: runner.os == 'Linux'
         run: |
-          pip install --upgrade pip
-          pip install .[default,test,extra]
-          pip list
+          uv pip install -e .[default,test,extra]
+          uv pip list
       - name: Install packages (macOS)
         if: runner.os == 'macOS'
         run: |
-          pip install --upgrade pip
-          pip install --no-cache-dir \
+          uv pip install --no-cache \
                       --config-settings="--global-option=build_ext" \
                       --config-settings="--global-option=-I$(brew --prefix graphviz)/include/" \
                       --config-settings="--global-option=-L$(brew --prefix graphviz)/lib/" \
                       pygraphviz
-          pip install .[default,test,extra]
-          pip list
+          uv pip install -e .[default,test,extra]
+          uv pip list
       - name: Install Pygraphviz packages  (windows)
         if: runner.os == 'Windows'
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          python -m pip install --upgrade pip
-          python -m pip install --config-settings="--global-option=build_ext" `
+          uv pip install --config-settings="--global-option=build_ext" `
               --config-settings="--global-option=-IC:\Program Files\Graphviz\include" `
               --config-settings="--global-option=-LC:\Program Files\Graphviz\lib" `
               pygraphviz
@@ -156,8 +179,8 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          python -m pip install .[default,test,extra]
-          python -m pip list
+          uv pip install -e .[default,test,extra]
+          uv pip list
 
       - name: Test NetworkX
         run: |
@@ -176,11 +199,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          activate-environment: true
+
       - name: Install packages
         run: |
-          pip install --upgrade pip
-          pip install --pre .[default,test]
-          pip list
+          uv pip install --prerelease=allow -e .[default,test]
+          uv pip list
 
       - name: Test NetworkX
         run: |

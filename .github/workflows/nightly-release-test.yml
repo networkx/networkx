@@ -19,11 +19,16 @@ jobs:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          activate-environment: true
+
       - name: Install packages
         run: |
-          pip install --upgrade pip
-          pip install -U --pre --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple .[test,default]
-          pip list
+          uv pip install --upgrade --prerelease=allow --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple -e .[test,default]
+          uv pip list
 
       - name: Test NetworkX
         run: |

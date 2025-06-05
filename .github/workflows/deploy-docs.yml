@@ -18,6 +18,12 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          activate-environment: true
+
       - name: Before install
         run: |
           sudo apt-get update
@@ -26,18 +32,17 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install --upgrade pip
-          pip install -r requirements/example.txt
-          pip install --upgrade .[default,tests,extra,doc]
+          uv pip install -r requirements/example.txt
+          uv pip install -e .[default,tests,extra,doc]
           # Install trusted backends, but not their dependencies.
           # We only need to use the "networkx.backend_info" entry-point.
           # This is the nightly wheel for nx-cugraph.
-          pip install nx-cugraph-cu11 --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple --no-deps --pre
+          uv pip install nx-cugraph-cu11 --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple --no-deps --prerelease=allow
           # Development version of GraphBLAS backend
-          pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
+          uv pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
           # Development version of nx-parallel backend
-          pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
-          pip list
+          uv pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
+          uv pip list
 
       # To set up a cross-repository deploy key:
       # 1. Create a key pair:

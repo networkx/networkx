@@ -24,6 +24,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          activate-environment: true
+
       - name: Before install
         run: |
           sudo apt-get update
@@ -31,9 +37,8 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install --upgrade pip
-          pip install .[default,extra,test]
-          pip list
+          uv pip install -e .[default,extra,test]
+          uv pip list
 
       - name: Test NetworkX
         run: |
