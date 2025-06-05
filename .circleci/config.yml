@@ -26,42 +26,36 @@ jobs:
 
       - restore_cache:
           keys:
-            - pip-cache-v1
+            - uv-cache-v1
 
       - run:
-          name: Install Python dependencies
+          name: Install uv
           command: |
-            python3 -m venv venv
-            source venv/bin/activate
-            pip install --upgrade pip
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $BASH_ENV
+
+      - run:
+          name: Install dependencies and build docs
+          command: |
+            uv sync --extra default --extra test --extra extra --extra example --extra doc
+            source .venv/bin/activate
             # Install trusted backends, but not their dependencies.
             # We only need to use the "networkx.backend_info" entry-point.
             # This is the nightly wheel for nx-cugraph.
-            pip install nx-cugraph-cu11 --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple --no-deps --pre
+            uv pip install nx-cugraph-cu11 --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple --no-deps --prerelease=allow
             # Development version of GraphBLAS backend
-            pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
+            uv pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
             # Development version of nx-parallel backend
-            pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
-            pip list
-
-      - save_cache:
-          key: pip-cache-v1
-          paths:
-            - ~/.cache/pip
-
-      - run:
-          name: Install
-          command: |
-            source venv/bin/activate
-            pip install -e '.[default,test,extra,example,doc]'
-
-      - run:
-          name: Build docs
-          command: |
+            uv pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
+            # Build docs
             # NOTE: bad interaction w/ blas multithreading on circleci
             export OMP_NUM_THREADS=1
-            source venv/bin/activate
             make -C doc/ html
+
+      - save_cache:
+          key: uv-cache-v1
+          paths:
+            - ~/.cache/uv
 
       - store_artifacts:
           path: doc/build/html
@@ -74,24 +68,17 @@ jobs:
       - checkout
 
       - run:
-          name: Install Python dependencies
+          name: Install uv
           command: |
-            python -m venv venv
-            source venv/bin/activate
-            pip install --upgrade pip
-            pip install pytest-mpl  # NOTE: specified here to avoid confusing conda
-            pip list
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $BASH_ENV
 
       - run:
-          name: Install
+          name: Install dependencies and test drawing
           command: |
-            source venv/bin/activate
-            pip install -e .[default,test]
-
-      - run:
-          name: Test NetworkX drawing
-          command: |
-            source venv/bin/activate
+            uv sync --extra default --extra test
+            source .venv/bin/activate
+            uv pip install pytest-mpl  # NOTE: specified here to avoid confusing conda
             pytest --mpl --mpl-generate-summary=html --mpl-results-path=results --pyargs networkx.drawing
 
       - store_artifacts:
