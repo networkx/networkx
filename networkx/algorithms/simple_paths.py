@@ -886,8 +886,6 @@ def _bidirectional_dijkstra(
             Gsucc = filter_iter(Gsucc)
 
     wt = _weight_function(G, weight)
-    push = heappush
-    pop = heappop
     # Init:   Forward             Backward
     dists = [{}, {}]  # dictionary of final distances
     paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
@@ -897,8 +895,8 @@ def _bidirectional_dijkstra(
     # nodes seen
     c = count()
     # initialize fringe heap
-    push(fringe[0], (0, next(c), source))
-    push(fringe[1], (0, next(c), target))
+    heappush(fringe[0], (0, next(c), source))
+    heappush(fringe[1], (0, next(c), target))
     # neighs for extracting correct neighbor information
     neighs = [Gsucc, Gpred]
     # variables to hold shortest discovered path
@@ -910,7 +908,7 @@ def _bidirectional_dijkstra(
         # dir == 0 is forward direction and dir == 1 is back
         dir = 1 - dir
         # extract closest to expand
-        (dist, _, v) = pop(fringe[dir])
+        (dist, _, v) = heappop(fringe[dir])
         if v in dists[dir]:
             # Shortest path to v has already been found
             continue
@@ -936,7 +934,7 @@ def _bidirectional_dijkstra(
             elif w not in seen[dir] or vwLength < seen[dir][w]:
                 # relaxing
                 seen[dir][w] = vwLength
-                push(fringe[dir], (vwLength, next(c), w))
+                heappush(fringe[dir], (vwLength, next(c), w))
                 paths[dir][w] = paths[dir][v] + [w]
                 if w in seen[0] and w in seen[1]:
                     # see if this path is better than the already
