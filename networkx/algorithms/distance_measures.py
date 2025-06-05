@@ -745,6 +745,7 @@ def barycenter(G, weight=None, attr=None, sp=None):
     --------
     center
     periphery
+    :func:`~networkx.algorithms.tree.distance_measures.tree_centroid`
     """
     if weight is None and attr is None and nx.is_tree(G):
         return nx.tree.centroid(G)

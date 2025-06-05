@@ -112,31 +112,28 @@ def _subtree_sizes(G, root):
     """
     sizes = {root: 1}
     stack = [root]
-    for a, b in nx.dfs_edges(G, root):
-        while stack[-1] != a:
-            x = stack.pop()
-            sizes[stack[-1]] += sizes[x]
-        stack.append(b)
-        sizes[b] = 1
-    for b, a in nx.utils.pairwise(reversed(stack)):
-        sizes[a] += sizes[b]
+    for parent, child in nx.dfs_edges(G, root):
+        while stack[-1] != parent:
+            descendant = stack.pop()
+            sizes[stack[-1]] += sizes[descendant]
+        stack.append(child)
+        sizes[child] = 1
+    for child, parent in nx.utils.pairwise(reversed(stack)):
+        sizes[parent] += sizes[child]
     return sizes
 
 
 @nx.utils.not_implemented_for("directed")
 @nx._dispatchable
 def centroid(G):
-    """Return the centroid of a tree.
+    """Return the centroid of an unweighted tree.
 
-    The centroid is the set of nodes where if any one is removed from
-    the tree it would split the tree into a forest of trees of size no
-    more than ``N / 2``, where ``N`` is the number of nodes in the
-    original tree. This may wind up being two nodes if removal of an
-    edge would result in two trees of size exactly ``N / 2``.
-
-    This is different from the concept of the graph center, which is
-    the set of nodes that minimize the maximum distance to all other
-    nodes.
+    The centroid of a tree is the set of nodes such that removing any
+    one of them would split the tree into a forest of subtrees, each
+    with at most ``N / 2`` nodes, where ``N`` is the number of nodes
+    in the original tree. This set may contain two nodes if removing
+    an edge between them results in two trees of size exactly ``N /
+    2``.
 
     Parameters
     ----------
@@ -159,7 +156,14 @@ def centroid(G):
 
     Notes
     -----
-    This algorithm's time complexity is ``O(N)`` where ``N`` is the number of nodes in the tree.
+    This algorithm's time complexity is ``O(N)`` where ``N`` is the
+    number of nodes in the tree.
+
+    In unweighted trees the centroid coincides with the barycenter,
+    the node or nodes that minimize the sum of distances to all other
+    nodes. However, this concept is different from that of the graph
+    center, which is the set of nodes minimizing the maximum distance
+    to all other nodes.
 
     Examples
     --------
@@ -167,13 +171,12 @@ def centroid(G):
     >>> nx.tree.centroid(G)
     [1, 2]
 
-    A good example of where the tree_centroid diverges from the center
-    is with a star graph with one long branch. The center doesn't care
-    that there are a bunch of length 1 branches, it will wind up being
-    near the middle of the long branch.  The centroid, however, puts a
-    hard limit on the number of nodes down any given branch from the
-    chosen centroid. If the star has enough branches, the center of
-    the star is forced to be the centroid.
+    A star-shaped tree with one long branch illustrates the difference
+    between the centroid and the center. The center lies near the
+    middle of the long branch, minimizing maximum distance. The
+    centroid, however, limits the size of any resulting subtree to at
+    most half the total nodes, forcing it to remain near the hub when
+    enough short branches are present.
 
     >>> G = nx.star_graph(6)
     >>> nx.add_path(G, [6, 7, 8, 9, 10])
@@ -182,12 +185,13 @@ def centroid(G):
 
     See Also
     --------
+    :func:`~networkx.algorithms.distance_measures.barycenter`
     :func:`~networkx.algorithms.distance_measures.center`
 
     """
     if not nx.is_tree(G):
         raise nx.NotATree("provided graph is not a tree")
-    prev, root = None, next(iter(G.nodes))
+    prev, root = None, nx.utils.arbitrary_element(G)
     sizes = _subtree_sizes(G, root)
     total_size = G.number_of_nodes()
 
