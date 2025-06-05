@@ -22,7 +22,9 @@ jobs:
           activate-environment: true
 
       - name: Sync dependencies
-        run: uv sync --extra default --extra test --extra test-extras
+        run: |
+          uv sync --extra default --extra test --extra test-extras
+          uv pip list
 
       - name: Run tests
         run: pytest --doctest-modules --durations=10 --pyargs networkx

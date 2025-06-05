@@ -27,7 +27,9 @@ jobs:
           activate-environment: true
 
       - name: Sync dependencies
-        run: uv sync --extra test
+        run: |
+          uv sync --extra test
+          uv pip list
 
       - name: Test NetworkX
         run: pytest -n auto --durations=10 --pyargs networkx
@@ -52,7 +54,9 @@ jobs:
           activate-environment: true
 
       - name: Sync dependencies
-        run: uv sync --extra default --extra test
+        run: |
+          uv sync --extra default --extra test
+          uv pip list
 
       - name: Test for warnings at import time
         run: python -Werror -c "import networkx"
@@ -79,7 +83,9 @@ jobs:
         run: uv sync --extra default --extra test
 
       - name: Remove scipy
-        run: uv pip uninstall scipy # All default dependencies except scipy
+        run: |
+          uv pip uninstall scipy # All default dependencies except scipy
+          uv pip list
 
       - name: Test for warnings at import time
         run: python -Werror -c "import networkx"
@@ -106,7 +112,9 @@ jobs:
           activate-environment: true
 
       - name: Sync dependencies
-        run: uv sync --extra default --extra test
+        run: |
+          uv sync --extra default --extra test
+          uv pip list
 
       - name: Test Dispatching
         run: pytest -n auto --doctest-modules --durations=10 --pyargs networkx
@@ -146,7 +154,9 @@ jobs:
 
       - name: Sync dependencies (Linux)
         if: runner.os == 'Linux'
-        run: uv sync --extra default --extra test --extra extra
+        run: |
+          uv sync --extra default --extra test --extra extra
+          uv pip list
 
       - name: Install Pygraphviz (macOS)
         if: runner.os == 'macOS'
@@ -159,7 +169,9 @@ jobs:
 
       - name: Sync dependencies (macOS)
         if: runner.os == 'macOS'
-        run: uv sync --extra default --extra test --extra extra
+        run: |
+          uv sync --extra default --extra test --extra extra
+          uv pip list
 
       - name: Install Pygraphviz (Windows)
         if: runner.os == 'Windows'
@@ -175,6 +187,7 @@ jobs:
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           uv sync --extra default --extra test --extra extra
+          uv pip list
 
       - name: Test NetworkX
         run: pytest -n auto --doctest-modules --durations=10 --pyargs networkx
@@ -199,7 +212,9 @@ jobs:
           activate-environment: true
 
       - name: Sync dependencies
-        run: uv sync --extra default --extra test --prerelease=allow
+        run: |
+          uv sync --extra default --extra test --prerelease=allow
+          uv pip list
 
       - name: Test NetworkX
         run: pytest -n auto --doctest-modules --durations=10 --pyargs networkx

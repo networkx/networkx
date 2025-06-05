@@ -47,6 +47,7 @@ jobs:
             uv pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
             # Development version of nx-parallel backend
             uv pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
+            uv pip list
             # Build docs
             # NOTE: bad interaction w/ blas multithreading on circleci
             export OMP_NUM_THREADS=1
@@ -79,6 +80,7 @@ jobs:
             uv sync --extra default --extra test
             source .venv/bin/activate
             uv pip install pytest-mpl  # NOTE: specified here to avoid confusing conda
+            uv pip list
             pytest --mpl --mpl-generate-summary=html --mpl-results-path=results --pyargs networkx.drawing
 
       - store_artifacts:

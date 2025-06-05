@@ -26,7 +26,9 @@ jobs:
           activate-environment: true
 
       - name: Sync dependencies
-        run: uv sync --extra test --extra default --prerelease=allow --upgrade --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple
+        run: |
+          uv sync --extra test --extra default --prerelease=allow --upgrade --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple
+          uv pip list
 
       - name: Test NetworkX
         run: pytest -n auto --doctest-modules --durations=10 --pyargs networkx

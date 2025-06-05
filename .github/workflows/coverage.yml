@@ -36,7 +36,9 @@ jobs:
           sudo apt-get install graphviz graphviz-dev
 
       - name: Sync dependencies
-        run: uv sync --extra default --extra extra --extra test
+        run: |
+          uv sync --extra default --extra extra --extra test
+          uv pip list
 
       - name: Test NetworkX
         run: pytest --cov=networkx --runslow -n auto --doctest-modules --durations=20 --pyargs networkx

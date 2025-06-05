@@ -28,7 +28,9 @@ jobs:
           activate-environment: true
 
       - name: Sync dependencies
-        run: uv sync --extra developer
+        run: |
+          uv sync --extra developer
+          uv pip list
 
       - name: run mypy
         run: mypy -p networkx
