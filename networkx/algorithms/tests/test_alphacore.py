@@ -1,11 +1,13 @@
 import warnings
 
-import numpy as np
-import pandas as pd
 import pytest
 
 import networkx as nx
 from networkx.algorithms.alphacore import alpha_core
+
+# Use importorskip for optional dependencies
+np = pytest.importorskip("numpy")
+pd = pytest.importorskip("pandas")
 
 
 class TestAlphaCore:

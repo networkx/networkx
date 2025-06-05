@@ -7,9 +7,6 @@ using the Mahalanobis data depth function at the origin.
 import math
 import warnings
 
-import numpy as np
-import pandas as pd
-
 import networkx as nx
 
 __all__ = ["alpha_core"]
@@ -77,6 +74,8 @@ def alpha_core(G, features=None, step_size=0.1, start_epsi=1, expo_decay=False):
     0       0    0.2        3
     1       1    0.7        9
     """
+    import numpy as np
+    import pandas as pd
 
     # Make a copy of the graph to avoid modifying the input
     graph = G.copy()
@@ -160,6 +159,7 @@ def alpha_core(G, features=None, step_size=0.1, start_epsi=1, expo_decay=False):
 
 def _extract_features(graph, features=None):
     """Extract numerical node features from the graph.
+
     Parameters
     ----------
     graph : NetworkX graph
@@ -167,67 +167,70 @@ def _extract_features(graph, features=None):
     features : list, optional (default=None)
         A list of feature names to extract. If None or ["all"], uses all
         numerical node attributes or computes default features.
+
     Returns
     -------
     pandas.DataFrame
         DataFrame containing extracted numerical node features.
     """
+    import numpy as np
+    import pandas as pd
+
     if features is None:
         features = ["all"]
 
-    all_features = set()
-    numeric_features = set()
-    selected_features = set()
-    data = {}
+    # Handle empty graph case
+    if graph.number_of_nodes() == 0:
+        return pd.DataFrame(columns=["nodeID"])
 
-    # Iterate over nodes and extract features
-    for node_id, attributes in graph.nodes(data=True):
-        for key, value in attributes.items():
-            all_features.add(key)  # Track all available features
-            if isinstance(value, int | float):
-                numeric_features.add(key)  # Track only numeric features
+    # Convert node attributes to DataFrame efficiently
+    node_data_df = pd.DataFrame.from_dict(dict(graph.nodes(data=True)), orient="index")
+    node_data_df["nodeID"] = node_data_df.index
 
-    # Determine the features to extract
+    # Get all features excluding nodeID
+    all_features = set(node_data_df.columns) - {"nodeID"}
+
+    # If no features found, use default features
+    if not all_features:
+        warnings.warn("No node features found. Using default AlphaCore node features.")
+        return _compute_default_node_features(graph)
+
+    # More efficient numeric type checking using pandas' select_dtypes
+    numeric_df = node_data_df.select_dtypes(include=[np.number])
+    numeric_features = set(numeric_df.columns) - {"nodeID"}
+
+    # Handle feature selection
     if features == ["all"]:
         if not numeric_features:
             warnings.warn(
-                "No numerical node features found. Reverting to default AlphaCore node features."
+                "No numerical node features found. Using default AlphaCore node features."
             )
-            return _compute_node_features(graph)
-        selected_features = numeric_features  # Use all numeric features
+            return _compute_default_node_features(graph)
+        selected_features = numeric_features
     else:
-        for feature in features:
-            if feature not in all_features:
-                warnings.warn(
-                    f"Requested features {features} not found. Reverting to default AlphaCore node features."
-                )
-                return _compute_node_features(graph)
-            if feature in numeric_features:
-                selected_features.add(feature)
+        # Check for missing features
+        missing_features = set(features) - all_features
+        if missing_features:
+            warnings.warn(f"Requested features {missing_features} not found in graph.")
+            return _compute_default_node_features(graph)
 
-    if not selected_features:
-        warnings.warn(
-            "None of the selected features contain numerical values. Reverting to default AlphaCore node features."
-        )
-        return _compute_node_features(graph)
+        # Check for non-numeric features
+        non_numeric_features = set(features) - numeric_features
+        if non_numeric_features:
+            warnings.warn(
+                f"Features {non_numeric_features} are not numeric. Using default AlphaCore node features."
+            )
+            return _compute_default_node_features(graph)
 
-    # Extract feature values for each node
-    for node_id, attributes in graph.nodes(data=True):
-        node_features = {}
-        for feature in selected_features:
-            if feature in attributes:
-                node_features[feature] = attributes.get(feature)
-        data[node_id] = node_features
+        selected_features = set(features)
 
-    extracted_data = (
-        pd.DataFrame.from_dict(data, orient="index")
-        .reset_index()
-        .rename(columns={"index": "nodeID"})
-    )
-    return extracted_data
+    # Return selected features with nodeID
+    result_df = node_data_df[list(selected_features)].copy()
+    result_df["nodeID"] = node_data_df["nodeID"]
+    return result_df
 
 
-def _compute_node_features(graph):
+def _compute_default_node_features(graph, weight="value"):
     """Compute default structural features for nodes in a directed graph.
 
     Calculates the following features for each node:
@@ -240,6 +243,9 @@ def _compute_node_features(graph):
     ----------
     graph : NetworkX graph
         A directed graph for which node features are computed.
+    weight : string, optional (default='value')
+        The edge attribute to use as weight for strength calculations.
+        If the attribute doesn't exist, falls back to unweighted degree.
 
     Returns
     -------
@@ -251,35 +257,20 @@ def _compute_node_features(graph):
         - 'inStrength': Weighted in-degree.
         - 'outStrength': Weighted out-degree.
     """
-    nodeID = []
-    inDegree = []
-    outDegree = []
-    inStrength = []
-    outStrength = []
-    for node in graph:
-        nodeID.append(node)
-        inDegree.append(graph.in_degree(node))
-        outDegree.append(graph.out_degree(node))
+    import pandas as pd
 
-        # Safely get weighted degrees
-        try:
-            inStrength.append(graph.in_degree(node, weight="value"))
-            outStrength.append(graph.out_degree(node, weight="value"))
-        except:
-            # Fallback if 'value' attribute not present
-            inStrength.append(graph.in_degree(node))
-            outStrength.append(graph.out_degree(node))
-
-    # Currently adding inDegree, outDegree, inStrength, and outStrength to dataframe
+    # Create DataFrame directly from NetworkX's dictionary-like views
     df = pd.DataFrame(
         {
-            "nodeID": nodeID,
-            "inDegree": inDegree,
-            "outDegree": outDegree,
-            "inStrength": inStrength,
-            "outStrength": outStrength,
+            "inDegree": dict(graph.in_degree()),
+            "outDegree": dict(graph.out_degree()),
+            "inStrength": dict(graph.in_degree(weight=weight)),
+            "outStrength": dict(graph.out_degree(weight=weight)),
         }
     )
+
+    # Add nodeID column
+    df["nodeID"] = df.index
     return df
 
 
@@ -300,6 +291,8 @@ def _calculate_mahal_from_center(data, center, cov):
     array
         Array containing Mahalanobis depth of each node.
     """
+    import numpy as np
+
     matrix = data.drop(
         "nodeID", axis=1
     )  # Convert dataframe to numeric matrix by removing first column containing nodeID
@@ -318,7 +311,8 @@ def _calculate_mahal_from_center(data, center, cov):
     elif cov.ndim == 1:
         cov = np.array([cov]).T @ np.array([cov])
 
-    # Try computing the inverse of the covariance matrix; if it fails, fall back to the pseudo-inverse for stability.
+    # Try computing the inverse of the covariance matrix; if it fails,
+    # fall back to the pseudo-inverse for stability.
     try:
         inv_cov = np.linalg.inv(cov)
     except np.linalg.LinAlgError:
