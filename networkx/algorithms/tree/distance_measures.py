@@ -5,16 +5,16 @@ __all__ = [
 ]
 
 
-def _subtree_sizes(T, root):
+def _subtree_sizes(G, root):
     """Return a `dict` of subtree sizes in a tree rooted at a given node.
 
     Parameters
     ----------
-    T : NetworkX graph
+    G : NetworkX graph
        A tree.
 
     root : node
-       A node in `T`.
+       A node in `G`.
 
     Returns
     -------
@@ -31,7 +31,7 @@ def _subtree_sizes(T, root):
     """
     sizes = {root: 1}
     stack = [root]
-    for a, b in nx.dfs_edges(T, root):
+    for a, b in nx.dfs_edges(G, root):
         while stack[-1] != a:
             x = stack.pop()
             sizes[stack[-1]] += sizes[x]
@@ -44,7 +44,7 @@ def _subtree_sizes(T, root):
 
 @nx.utils.not_implemented_for("directed")
 @nx._dispatchable
-def tree_centroid(T):
+def tree_centroid(G):
     """Return the centroid of a tree.
 
     The centroid is the set of nodes where if any one is removed from
@@ -59,7 +59,7 @@ def tree_centroid(T):
 
     Parameters
     ----------
-    T : NetworkX graph
+    G : NetworkX graph
        A tree.
 
     Returns
@@ -74,7 +74,7 @@ def tree_centroid(T):
     NotImplementedException
         If the input graph is directed.
     NetworkXPointlessConcept
-        If `T` has no nodes or edges.
+        If `G` has no nodes or edges.
 
     Notes
     -----
@@ -104,15 +104,15 @@ def tree_centroid(T):
     :func:`~networkx.algorithms.distance_measures.center`
 
     """
-    if not nx.is_tree(T):
+    if not nx.is_tree(G):
         raise nx.NotATree("provided graph is not a tree")
-    prev, root = None, next(iter(T.nodes))
-    sizes = _subtree_sizes(T, root)
-    total_size = T.number_of_nodes()
+    prev, root = None, next(iter(G.nodes))
+    sizes = _subtree_sizes(G, root)
+    total_size = G.number_of_nodes()
 
     def _heaviest_child(prev, root):
         return max(
-            (x for x in T.neighbors(root) if x != prev), key=sizes.get, default=None
+            (x for x in G.neighbors(root) if x != prev), key=sizes.get, default=None
         )
 
     hc = _heaviest_child(prev, root)
@@ -121,5 +121,5 @@ def tree_centroid(T):
         hc = _heaviest_child(prev, root)
 
     return [root] + [
-        x for x in T.neighbors(root) if x != prev and sizes[x] == total_size / 2
+        x for x in G.neighbors(root) if x != prev and sizes[x] == total_size / 2
     ]
