@@ -20,7 +20,7 @@ jobs:
           enable-cache: true
           activate-environment: true
       - name: Sync release dependencies
-        run: uv sync --extra release
+        run: uv sync --group release
       - name: Build a wheel and a sdist
         run: |
           python -m build .

@@ -34,6 +34,9 @@ def main() -> None:
     for key, opt_list in pyproject["project"]["optional-dependencies"].items():
         generate_requirement_file(key, opt_list)
 
+    for key, opt_list in pyproject["dependency-groups"].items():
+        generate_requirement_file(key, opt_list)
+
 
 if __name__ == "__main__":
     main()

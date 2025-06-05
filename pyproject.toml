@@ -54,10 +54,6 @@ Documentation = 'https://networkx.org/documentation/stable/'
 nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
-benchmarking = [
-    'asv',
-    'virtualenv',
-]
 default = [
     'numpy>=1.25',
     'scipy>=1.11.2',
@@ -93,12 +89,6 @@ extra = [
     'pydot>=3.0.1',
     'sympy>=1.10',
 ]
-release = [
-    'build>=0.10',
-    'twine>=4.0',
-    'wheel>=0.40',
-    'changelist==0.5',
-]
 test = [
     'pytest>=7.2',
     'pytest-cov>=4.0',
@@ -107,6 +97,18 @@ test = [
 test-extras = [
     'pytest-mpl',
     'pytest-randomly',
+]
+
+[dependency-groups]
+benchmarking = [
+    'asv',
+    'virtualenv',
+]
+release = [
+    'build>=0.10',
+    'twine>=4.0',
+    'wheel>=0.40',
+    'changelist==0.5',
 ]
 
 [tool.setuptools]

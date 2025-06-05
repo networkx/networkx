@@ -76,7 +76,7 @@ jobs:
             ccache-${{ secrets.CACHE_VERSION }}-${{ steps.prepare-ccache.outputs.key }}-
 
       - name: Sync dependencies
-        run: uv sync --extra default --extra benchmarking
+        run: uv sync --extra default --group benchmarking
 
       - name: Run benchmarks
         shell: bash -l {0}
