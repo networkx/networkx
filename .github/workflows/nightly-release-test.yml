@@ -25,11 +25,8 @@ jobs:
           enable-cache: true
           activate-environment: true
 
-      - name: Install packages
-        run: |
-          uv pip install --upgrade --prerelease=allow --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple -e .[test,default]
-          uv pip list
+      - name: Sync dependencies
+        run: uv sync --extra test --extra default --prerelease=allow --upgrade --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple
 
       - name: Test NetworkX
-        run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        run: pytest -n auto --doctest-modules --durations=10 --pyargs networkx

@@ -35,14 +35,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install graphviz graphviz-dev
 
-      - name: Install packages
-        run: |
-          uv pip install -e .[default,extra,test]
-          uv pip list
+      - name: Sync dependencies
+        run: uv sync --extra default --extra extra --extra test
 
       - name: Test NetworkX
-        run: |
-          pytest --cov=networkx --runslow -n auto --doctest-modules --durations=20 --pyargs networkx
+        run: pytest --cov=networkx --runslow -n auto --doctest-modules --durations=20 --pyargs networkx
 
       - name: Upload to codecov
         uses: codecov/codecov-action@v3

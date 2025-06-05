@@ -19,9 +19,8 @@ jobs:
         with:
           enable-cache: true
           activate-environment: true
-      - name: Install Python requirements
-        run: |
-          uv pip install -r requirements/release.txt
+      - name: Sync release dependencies
+        run: uv sync --extra release
       - name: Build a wheel and a sdist
         run: |
           python -m build .

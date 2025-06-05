@@ -26,14 +26,11 @@ jobs:
           enable-cache: true
           activate-environment: true
 
-      - name: Install packages
-        run: |
-          uv pip install -e .[test]
-          uv pip list
+      - name: Sync dependencies
+        run: uv sync --extra test
 
       - name: Test NetworkX
-        run: |
-          pytest -n auto --durations=10 --pyargs networkx
+        run: pytest -n auto --durations=10 --pyargs networkx
 
   default:
     runs-on: ${{ matrix.os }}-latest
@@ -54,17 +51,14 @@ jobs:
           enable-cache: true
           activate-environment: true
 
-      - name: Install packages
-        run: |
-          uv pip install -e .[default,test]
-          uv pip list
+      - name: Sync dependencies
+        run: uv sync --extra default --extra test
 
       - name: Test for warnings at import time
         run: python -Werror -c "import networkx"
 
       - name: Test NetworkX
-        run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        run: pytest -n auto --doctest-modules --durations=10 --pyargs networkx
 
   default-without-scipy:
     runs-on: ubuntu-latest
@@ -81,18 +75,17 @@ jobs:
           enable-cache: true
           activate-environment: true
 
-      - name: Install packages
-        run: |
-          uv pip install -e .[default,test]
-          uv pip uninstall scipy  # All default dependencies except scipy
-          uv pip list
+      - name: Sync dependencies
+        run: uv sync --extra default --extra test
+
+      - name: Remove scipy
+        run: uv pip uninstall scipy # All default dependencies except scipy
 
       - name: Test for warnings at import time
         run: python -Werror -c "import networkx"
 
       - name: Test NetworkX
-        run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        run: pytest -n auto --doctest-modules --durations=10 --pyargs networkx
 
   dispatch:
     runs-on: ubuntu-latest
@@ -112,14 +105,13 @@ jobs:
           enable-cache: true
           activate-environment: true
 
-      - name: Install packages
-        run: |
-          uv pip install -e .[default,test]
-          uv pip list
+      - name: Sync dependencies
+        run: uv sync --extra default --extra test
 
       - name: Test Dispatching
-        run: |
-          NETWORKX_TEST_BACKEND=nx_loopback pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        run: pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        env:
+          NETWORKX_TEST_BACKEND: nx_loopback
 
   extra:
     runs-on: ${{ matrix.os }}
@@ -152,12 +144,11 @@ jobs:
           enable-cache: true
           activate-environment: true
 
-      - name: Install packages (Linux)
+      - name: Sync dependencies (Linux)
         if: runner.os == 'Linux'
-        run: |
-          uv pip install -e .[default,test,extra]
-          uv pip list
-      - name: Install packages (macOS)
+        run: uv sync --extra default --extra test --extra extra
+
+      - name: Install Pygraphviz (macOS)
         if: runner.os == 'macOS'
         run: |
           uv pip install --no-cache \
@@ -165,9 +156,12 @@ jobs:
                       --config-settings="--global-option=-I$(brew --prefix graphviz)/include/" \
                       --config-settings="--global-option=-L$(brew --prefix graphviz)/lib/" \
                       pygraphviz
-          uv pip install -e .[default,test,extra]
-          uv pip list
-      - name: Install Pygraphviz packages  (windows)
+
+      - name: Sync dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: uv sync --extra default --extra test --extra extra
+
+      - name: Install Pygraphviz (Windows)
         if: runner.os == 'Windows'
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
@@ -175,16 +169,15 @@ jobs:
               --config-settings="--global-option=-IC:\Program Files\Graphviz\include" `
               --config-settings="--global-option=-LC:\Program Files\Graphviz\lib" `
               pygraphviz
-      - name: Install packages (windows)
+
+      - name: Sync dependencies (Windows)
         if: runner.os == 'Windows'
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          uv pip install -e .[default,test,extra]
-          uv pip list
+          uv sync --extra default --extra test --extra extra
 
       - name: Test NetworkX
-        run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        run: pytest -n auto --doctest-modules --durations=10 --pyargs networkx
 
   prerelease:
     runs-on: ${{ matrix.os }}-latest
@@ -205,11 +198,8 @@ jobs:
           enable-cache: true
           activate-environment: true
 
-      - name: Install packages
-        run: |
-          uv pip install --prerelease=allow -e .[default,test]
-          uv pip list
+      - name: Sync dependencies
+        run: uv sync --extra default --extra test --prerelease=allow
 
       - name: Test NetworkX
-        run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        run: pytest -n auto --doctest-modules --durations=10 --pyargs networkx

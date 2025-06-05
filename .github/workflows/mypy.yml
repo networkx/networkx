@@ -27,10 +27,8 @@ jobs:
           enable-cache: true
           activate-environment: true
 
-      - name: Install packages
-        run: |
-          uv pip install -e .[developer]
-          uv pip list
+      - name: Sync dependencies
+        run: uv sync --extra developer
 
       - name: run mypy
         run: mypy -p networkx

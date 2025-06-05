@@ -21,11 +21,8 @@ jobs:
           enable-cache: true
           activate-environment: true
 
-      - name: Install packages
-        run: |
-          uv pip install -e .[default,test]
-          uv pip install pytest-randomly
-          uv pip list
+      - name: Sync dependencies
+        run: uv sync --extra default --extra test --extra test-extras
 
       - name: Run tests
         run: pytest --doctest-modules --durations=10 --pyargs networkx

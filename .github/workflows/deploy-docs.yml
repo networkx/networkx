@@ -30,19 +30,19 @@ jobs:
           sudo apt-get install graphviz graphviz-dev
           sudo apt-get install libspatialindex-dev
 
-      - name: Install packages
+      - name: Sync dependencies
+        run: uv sync --extra default --extra test --extra extra --extra doc --extra example
+
+      - name: Install trusted backends
         run: |
-          uv pip install -r requirements/example.txt
-          uv pip install -e .[default,tests,extra,doc]
           # Install trusted backends, but not their dependencies.
           # We only need to use the "networkx.backend_info" entry-point.
           # This is the nightly wheel for nx-cugraph.
-          uv pip install nx-cugraph-cu11 --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple --no-deps --prerelease=allow
+          uv pip install --system nx-cugraph-cu11 --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple --no-deps --prerelease=allow
           # Development version of GraphBLAS backend
-          uv pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
+          uv pip install --system git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
           # Development version of nx-parallel backend
-          uv pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
-          uv pip list
+          uv pip install --system git+https://github.com/networkx/nx-parallel.git@main --no-deps
 
       # To set up a cross-repository deploy key:
       # 1. Create a key pair:
