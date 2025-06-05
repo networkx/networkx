@@ -1534,10 +1534,6 @@ name = "networkx"
 source = { editable = "." }
 
 [package.optional-dependencies]
-benchmarking = [
-    { name = "asv" },
-    { name = "virtualenv" },
-]
 default = [
     { name = "matplotlib" },
     { name = "numpy" },
@@ -1573,12 +1569,6 @@ extra = [
     { name = "pygraphviz" },
     { name = "sympy" },
 ]
-release = [
-    { name = "build" },
-    { name = "changelist" },
-    { name = "twine" },
-    { name = "wheel" },
-]
 test = [
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -1589,12 +1579,21 @@ test-extras = [
     { name = "pytest-randomly" },
 ]
 
+[package.dev-dependencies]
+benchmarking = [
+    { name = "asv" },
+    { name = "virtualenv" },
+]
+release = [
+    { name = "build" },
+    { name = "changelist" },
+    { name = "twine" },
+    { name = "wheel" },
+]
+
 [package.metadata]
 requires-dist = [
-    { name = "asv", marker = "extra == 'benchmarking'" },
-    { name = "build", marker = "extra == 'release'", specifier = ">=0.10" },
     { name = "cairocffi", marker = "extra == 'example'", specifier = ">=1.7" },
-    { name = "changelist", marker = "extra == 'release'", specifier = "==0.5" },
     { name = "contextily", marker = "extra == 'example'", specifier = ">=1.6" },
     { name = "igraph", marker = "extra == 'example'", specifier = ">=0.11" },
     { name = "intersphinx-registry", marker = "extra == 'doc'" },
@@ -1624,11 +1623,20 @@ requires-dist = [
     { name = "sphinx-gallery", marker = "extra == 'doc'", specifier = ">=0.18" },
     { name = "sympy", marker = "extra == 'extra'", specifier = ">=1.10" },
     { name = "texext", marker = "extra == 'doc'", specifier = ">=0.6.7" },
-    { name = "twine", marker = "extra == 'release'", specifier = ">=4.0" },
-    { name = "virtualenv", marker = "extra == 'benchmarking'" },
-    { name = "wheel", marker = "extra == 'release'", specifier = ">=0.40" },
 ]
-provides-extras = ["benchmarking", "default", "developer", "doc", "example", "extra", "release", "test", "test-extras"]
+provides-extras = ["default", "developer", "doc", "example", "extra", "test", "test-extras"]
+
+[package.metadata.requires-dev]
+benchmarking = [
+    { name = "asv" },
+    { name = "virtualenv" },
+]
+release = [
+    { name = "build", specifier = ">=0.10" },
+    { name = "changelist", specifier = "==0.5" },
+    { name = "twine", specifier = ">=4.0" },
+    { name = "wheel", specifier = ">=0.40" },
+]
 
 [[package]]
 name = "nh3"
