@@ -179,6 +179,11 @@ def _extract_features(graph, features=None):
     if features is None:
         features = ["all"]
 
+    # Add check for empty feature list
+    if not features:
+        warnings.warn("No node features found. Using default AlphaCore node features.")
+        return _compute_default_node_features(graph)
+
     # Handle empty graph case
     if graph.number_of_nodes() == 0:
         return pd.DataFrame(columns=["nodeID"])
@@ -211,7 +216,9 @@ def _extract_features(graph, features=None):
         # Check for missing features
         missing_features = set(features) - all_features
         if missing_features:
-            warnings.warn(f"Requested features {missing_features} not found in graph.")
+            warnings.warn(
+                "No node features found. Using default AlphaCore node features."
+            )
             return _compute_default_node_features(graph)
 
         # Check for non-numeric features

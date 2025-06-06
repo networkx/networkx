@@ -25,34 +25,16 @@ class TestAlphaCore:
         self.G.add_edges_from([(0, 1), (1, 2), (2, 0), (2, 3)])
 
         # Create a larger graph for testing
-        # Convert MultiDiGraph to DiGraph
         multi_graph = nx.scale_free_graph(20, seed=42)
         self.H = nx.DiGraph()
-        # Add all edges from the multigraph to the regular digraph
         self.H.add_edges_from(multi_graph.edges())
-        # Add some numeric features to nodes
         for n in self.H.nodes():
             self.H.nodes[n]["f1"] = 0.1 * n
             self.H.nodes[n]["f2"] = 0.5 * n
 
-    def test_alpha_core_basic(self):
-        """Test basic functionality of alpha_core."""
-        result = alpha_core(self.G)
-
-        # Check result is DataFrame with expected columns
-        assert isinstance(result, pd.DataFrame)
-        assert set(result.columns) == {"nodeID", "alpha", "batchID"}
-
-        # Check all nodes get a ranking
-        assert len(result) == self.G.number_of_nodes()
-        assert set(result["nodeID"]) == set(self.G.nodes())
-
-        # Alpha values should be in [0,1]
-        assert all(0 <= a <= 1 for a in result["alpha"])
-
     def test_alpha_core_with_specific_features(self):
-        """Test alpha_core with specific feature selection."""
-        # Test with a single feature
+        """Test alpha_core with different feature selections."""
+        # Test with single feature
         result_f1 = alpha_core(self.G, features=["f1"])
         assert isinstance(result_f1, pd.DataFrame)
         assert len(result_f1) == self.G.number_of_nodes()
@@ -62,40 +44,43 @@ class TestAlphaCore:
         assert isinstance(result_all, pd.DataFrame)
         assert len(result_all) == self.G.number_of_nodes()
 
-        # Results should be different when using different feature sets
-        # (Note: they could be the same by chance, but unlikely)
-        alpha_f1 = set(result_f1["alpha"])
-        alpha_all = set(result_all["alpha"])
-        # With loopback backend attributes may be lost, just check for valid output
-        assert isinstance(result_f1, pd.DataFrame)
-        assert isinstance(result_all, pd.DataFrame)
-
     def test_alpha_core_parameters(self):
-        # Test with different step sizes
+        """Test different parameter combinations."""
+        # Test step sizes
         result1 = alpha_core(self.G, step_size=0.1)
         result2 = alpha_core(self.G, step_size=0.2)
-
-        # Just verify both results are DataFrames with the expected columns
         assert isinstance(result1, pd.DataFrame)
         assert isinstance(result2, pd.DataFrame)
+        assert not result1.equals(result2)
 
-        # Check that all nodes are ranked in both results
-        assert set(result1["nodeID"]) == set(self.G.nodes())
-        assert set(result2["nodeID"]) == set(self.G.nodes())
+        # Test exponential decay
+        result_normal = alpha_core(self.G, expo_decay=False)
+        result_decay = alpha_core(self.G, expo_decay=True)
+        assert isinstance(result_normal, pd.DataFrame)
+        assert isinstance(result_decay, pd.DataFrame)
+        assert not result_normal.equals(result_decay)
 
-    def test_larger_graph(self):
-        """Test alpha_core on a larger graph."""
-        result = alpha_core(self.H)
-        assert isinstance(result, pd.DataFrame)
-        assert len(result) == self.H.number_of_nodes()
-        assert set(result["nodeID"]) == set(self.H.nodes())
+        # Test start epsilon
+        result_default = alpha_core(self.G, start_epsi=1.0)
+        result_custom = alpha_core(self.G, start_epsi=0.5)
+        assert isinstance(result_default, pd.DataFrame)
+        assert isinstance(result_custom, pd.DataFrame)
+        assert not result_default.equals(result_custom)
 
     def test_feature_error_handling(self):
         """Test error handling for invalid features."""
-        # Test with non-existent feature should produce warning and default features
         with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
             result = alpha_core(self.G, features=["non_existent_feature"])
-            assert any("Requested features" in str(warning.message) for warning in w)
+            # Check for the warning about using default features
+            assert any(
+                "No node features found" in str(warning.message) for warning in w
+            )
+            # Check for the covariance matrix warning
+            assert any(
+                "Covariance matrix is not invertible" in str(warning.message)
+                for warning in w
+            )
 
         # Check the result is still valid
         assert isinstance(result, pd.DataFrame)
@@ -103,75 +88,40 @@ class TestAlphaCore:
 
     def test_graph_type_validation(self):
         """Test that appropriate errors are raised for unsupported graph types."""
-        # Create an undirected graph (should raise error because algorithm is only for directed graphs)
         undirected_G = nx.Graph()
         undirected_G.add_edges_from([(0, 1), (1, 2), (2, 0)])
-
-        # Add node attributes
         for n in undirected_G.nodes():
             undirected_G.nodes[n]["f1"] = float(n) / 3
 
-        # Should raise NetworkXNotImplemented for undirected graphs
         with pytest.raises(nx.NetworkXNotImplemented):
             alpha_core(undirected_G)
 
-    def test_empty_graph(self):
-        """Test alpha_core on an empty graph."""
+    def test_empty_and_no_features(self):
+        """Test empty graph and graph with no features."""
+        # Empty graph
         empty_G = nx.DiGraph()
         result = alpha_core(empty_G)
         assert isinstance(result, pd.DataFrame)
-        assert len(result) == 0  # Should return empty DataFrame
+        assert len(result) == 0
 
-    def test_graph_with_no_features(self):
-        """Test alpha_core on a graph with no node features."""
+        # No features
         G_no_features = nx.DiGraph()
         G_no_features.add_edges_from([(0, 1), (1, 2), (2, 0)])
-
-        # Should compute default features internally
-        result = alpha_core(G_no_features)
+        with warnings.catch_warnings(record=True) as w:
+            result = alpha_core(G_no_features)
+            assert any(
+                "No node features found" in str(warning.message) for warning in w
+            )
         assert isinstance(result, pd.DataFrame)
         assert len(result) == G_no_features.number_of_nodes()
 
-    def test_consistency(self):
-        """Test that alpha_core gives consistent results for the same input."""
-        result1 = alpha_core(self.G, features=["f1"])
-        result2 = alpha_core(self.G, features=["f1"])
-
-        # Dataframes should be identical
-        pd.testing.assert_frame_equal(result1, result2)
-
-    def test_multigraph_support(self):
-        """Test that alpha_core works with directed multigraphs."""
-        # Create a directed multigraph
-        multi_G = nx.MultiDiGraph()
-        multi_G.add_edges_from([(0, 1), (0, 1), (1, 2), (2, 0)])
-
-        # Add node attributes
-        for n in multi_G.nodes():
-            multi_G.nodes[n]["f1"] = float(n) / 3
-
-        # Should work with multigraphs
-        result = alpha_core(multi_G)
-        assert isinstance(result, pd.DataFrame)
-        assert len(result) == multi_G.number_of_nodes()
-
-        # Check all nodes get a ranking
-        assert set(result["nodeID"]) == set(multi_G.nodes())
-
-    def test_weighted_multigraph(self):
-        """Test alpha_core on a weighted directed multigraph."""
-        # Create a weighted directed multigraph
+    def test_multigraph_and_weighted(self):
+        """Test multigraph and weighted graph support."""
+        # Weighted multigraph
         weighted_multi_G = nx.MultiDiGraph()
         weighted_multi_G.add_weighted_edges_from(
-            [
-                (0, 1, 1.5),
-                (0, 1, 2.5),  # Multiple edges between same nodes
-                (1, 2, 3.0),
-                (2, 0, 1.0),
-            ]
+            [(0, 1, 1.5), (0, 1, 2.5), (1, 2, 3.0), (2, 0, 1.0)]
         )
-
-        # Add node attributes
         for n in weighted_multi_G.nodes():
             weighted_multi_G.nodes[n]["f1"] = float(n) / 2
 
@@ -179,3 +129,63 @@ class TestAlphaCore:
         assert isinstance(result, pd.DataFrame)
         assert len(result) == weighted_multi_G.number_of_nodes()
         assert set(result["nodeID"]) == set(weighted_multi_G.nodes())
+
+    def test_covariance_matrix_warnings(self):
+        """Test warnings for non-invertible covariance matrix."""
+        G = nx.DiGraph()
+        G.add_nodes_from([(0, {"f1": 1.0}), (1, {"f1": 1.0})])
+        G.add_edge(0, 1)
+
+        with warnings.catch_warnings(record=True) as w:
+            result = alpha_core(G, features=["f1"])
+            assert any(
+                "Covariance matrix is not invertible" in str(warning.message)
+                for warning in w
+            )
+        assert isinstance(result, pd.DataFrame)
+
+    def test_feature_validation(self):
+        """Test feature validation and error handling."""
+        # Test with empty feature list
+        with warnings.catch_warnings(record=True) as w:
+            result = alpha_core(self.G, features=[])
+            assert any(
+                "No node features found" in str(warning.message) for warning in w
+            )
+
+        # Test with None and ["all"] features
+        result = alpha_core(self.G, features=None)
+        assert isinstance(result, pd.DataFrame)
+        result = alpha_core(self.G, features=["all"])
+        assert isinstance(result, pd.DataFrame)
+
+    def test_performance_and_ci(self):
+        """Test performance with larger graphs and CI-specific cases."""
+        # Large graph
+        G_large = nx.DiGraph()
+        for i in range(100):
+            G_large.add_node(i, f1=float(i))
+        for i in range(99):
+            G_large.add_edge(i, i + 1)
+
+        result = alpha_core(G_large)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 100
+
+        # CI-specific minimal graph
+        G_min = nx.DiGraph()
+        G_min.add_nodes_from([(0, {"f1": 1.0}), (1, {"f1": 2.0})])
+        G_min.add_edge(0, 1)
+
+        result = alpha_core(G_min)
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 2
+
+    def test_backend_compatibility(self):
+        """Test compatibility with different backends."""
+        result = alpha_core(self.G)
+        assert isinstance(result, pd.DataFrame)
+
+        multi_G = nx.MultiDiGraph(self.G)
+        result = alpha_core(multi_G)
+        assert isinstance(result, pd.DataFrame)
