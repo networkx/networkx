@@ -1,6 +1,6 @@
 [build-system]
 build-backend = 'setuptools.build_meta'
-requires = ['setuptools>=77']
+requires = ['setuptools>=77.0.3']
 
 [project]
 name = 'networkx'
