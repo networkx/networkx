@@ -17,7 +17,7 @@ keywords = [
     'discrete mathematics',
     'math',
 ]
-license = "BSD-3-Clause"
+license-expression = "BSD-3-Clause"
 license-files = ["LICENSE.txt"]
 classifiers = [
     'Development Status :: 5 - Production/Stable',
