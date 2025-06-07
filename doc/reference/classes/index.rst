@@ -38,10 +38,10 @@ Basic graph types
    multigraph
    multidigraph
 
-.. note:: NetworkX uses `dicts` to store the nodes and neighbors in a graph.
-   So the reporting of nodes and edges for the base graph classes may not
-   necessarily be consistent across versions and platforms; however, the reporting
-   for CPython is consistent across platforms and versions after 3.6.
+.. note:: NetworkX guarantees that the order of nodes and edges reflects the
+   order in which they were added across all base graph types, provided that
+   the graph is used with CPython 3.7.  Prior to this version, order
+   preservation is not guaranteed.
 
 Graph Views
 ===========
