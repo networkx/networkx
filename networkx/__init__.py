@@ -51,3 +51,12 @@ from networkx.linalg import *
 
 from networkx import drawing
 from networkx.drawing import *
+
+
+def __getattr__(name):
+    if name == "random_tree":
+        raise AttributeError(
+            "`networkx.random_tree` was removed in version 3.4. Use `networkx.random_labeled_tree` instead.\n"
+            "See: https://networkx.org/documentation/networkx-3.5/release/release_3.4.html"
+        )
+    raise AttributeError(f"module 'networkx' has no attribute '{name}'")
