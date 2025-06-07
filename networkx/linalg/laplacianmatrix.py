@@ -125,8 +125,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
         nodelist = list(G)
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
-    # TODO: rm csr_array wrapper when spdiags can produce arrays
-    D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, m, n, format="csr"))
+    D = sp.sparse.dia_array((A.sum(axis=1), 0), shape=(m, n)).tocsr()
     return D - A
 
 
@@ -235,14 +234,12 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     n, _ = A.shape
     diags = A.sum(axis=1)
-    # TODO: rm csr_array wrapper when spdiags can produce arrays
-    D = sp.sparse.csr_array(sp.sparse.spdiags(diags, 0, n, n, format="csr"))
+    D = sp.sparse.dia_array((diags, 0), shape=(n, n)).tocsr()
     L = D - A
     with np.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
-    # TODO: rm csr_array wrapper when spdiags can produce arrays
-    DH = sp.sparse.csr_array(sp.sparse.spdiags(diags_sqrt, 0, n, n, format="csr"))
+    DH = sp.sparse.dia_array((diags_sqrt, 0), shape=(n, n)).tocsr()
     return DH @ (L @ DH)
 
 
@@ -338,11 +335,9 @@ def directed_laplacian_matrix(
     # p>=0 by Perron-Frobenius Thm. Use abs() to fix roundoff across zero gh-6865
     sqrtp = np.sqrt(np.abs(p))
     Q = (
-        # TODO: rm csr_array wrapper when spdiags creates arrays
-        sp.sparse.csr_array(sp.sparse.spdiags(sqrtp, 0, n, n))
+        sp.sparse.dia_array((sqrtp, 0), shape=(n, n)).tocsr()
         @ P
-        # TODO: rm csr_array wrapper when spdiags creates arrays
-        @ sp.sparse.csr_array(sp.sparse.spdiags(1.0 / sqrtp, 0, n, n))
+        @ sp.sparse.dia_array((1.0 / sqrtp, 0), shape=(n, n)).tocsr()
     )
     # NOTE: This could be sparsified for the non-pagerank cases
     I = np.identity(len(G))
@@ -433,8 +428,7 @@ def directed_combinatorial_laplacian_matrix(
     v = evecs.flatten().real
     p = v / v.sum()
     # NOTE: could be improved by not densifying
-    # TODO: Rm csr_array wrapper when spdiags array creation becomes available
-    Phi = sp.sparse.csr_array(sp.sparse.spdiags(p, 0, n, n)).toarray()
+    Phi = sp.sparse.dia_array((p, 0), shape=(n, n)).toarray()
 
     return Phi - (Phi @ P + P.T @ Phi) / 2.0
 
@@ -495,13 +489,11 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
     n, m = A.shape
     if walk_type in ["random", "lazy"]:
-        # TODO: Rm csr_array wrapper when spdiags array creation becomes available
-        DI = sp.sparse.csr_array(sp.sparse.spdiags(1.0 / A.sum(axis=1), 0, n, n))
+        DI = sp.sparse.dia_array((1.0 / A.sum(axis=1), 0), shape=(n, n)).tocsr()
         if walk_type == "random":
             P = DI @ A
         else:
-            # TODO: Rm csr_array wrapper when identity array creation becomes available
-            I = sp.sparse.csr_array(sp.sparse.identity(n))
+            I = sp.sparse.eye_array(n, format="csr")
             P = (I + DI @ A) / 2.0
 
     elif walk_type == "pagerank":
