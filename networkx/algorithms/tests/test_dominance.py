@@ -59,8 +59,10 @@ class TestImmediateDominators:
             ),
         ],
     )
-    def test_irreducible1(self, edgelist, start):
+    def test_irreducible(self, edgelist, start):
         """
+        Check `immediate_dominators` on irreducible reference graphs.
+
         Graphs taken from figures 2 and 4 of "A simple, fast dominance algorithm." (2006).
         https://hdl.handle.net/1911/96345
         """
@@ -112,20 +114,17 @@ class TestDominanceFrontiers:
         G.add_edge(0, 0)
         assert nx.dominance_frontiers(G, 0) == {0: {0}}
 
-    def test_path(self):
-        n = 5
-        G = nx.path_graph(n, create_using=nx.DiGraph())
-        assert nx.dominance_frontiers(G, 0) == {i: set() for i in range(n)}
-
-    def test_cycle(self):
-        n = 5
-        G = nx.cycle_graph(n, create_using=nx.DiGraph())
-        assert nx.dominance_frontiers(G, 0) == {i: {0} for i in range(n)}
+    @pytest.mark.parametrize("gen, df", [(nx.path_graph, set()), (nx.cycle_graph, {0})])
+    @pytest.mark.parametrize("n", [5, 10, 20])
+    def test_path_and_cycle(self, gen, df, n):
+        """Check that `dominance_frontiers` is correct for path and cycle graphs."""
+        G = gen(n, create_using=nx.DiGraph())
+        assert nx.dominance_frontiers(G, 0) == dict.fromkeys(range(n), df)
 
     def test_unreachable(self):
         n = 5
         G = nx.path_graph(n, create_using=nx.DiGraph())
-        assert nx.dominance_frontiers(G, n // 2) == {i: set() for i in range(n // 2, n)}
+        assert nx.dominance_frontiers(G, 1) == {i: set() for i in range(1, n)}
 
     def test_irreducible1(self):
         """
