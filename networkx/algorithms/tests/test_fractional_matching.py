@@ -36,6 +36,24 @@ def test_triangle():
     for node in G:
         incident_sum = sum(val for (u, v), val in m.items() if u == node or v == node)
         assert abs(incident_sum - 1.0) < 1e-8
+
+def test_minimal_fraction_max_matching():
+    """Test the minimal_fraction_max_matching function to show that it does return a valid matching with the smallest amount of 0.5 edges."""
+    G = nx.Graph()
+    G.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 1)])
+    
+    # The optimal matching should be {(1, 2): 0.5, (3, 4): 0.5}
+    m = minimal_fraction_max_matching(G)
+    
+    # Check that the total weight is correct
+    total_weight = sum(m.values())
+    assert abs(total_weight - 2.0) < 1e-8
+    
+    # Check that each node has at most one incident edge with value > 0
+    for node in G:
+        incident_sum = sum(val for (u, v), val in m.items() if u == node or v == node)
+        assert incident_sum <= 1 + 1e-8
+
 # 4
 def test_path_graph():
     """Test a simple path graph where optimal matching is known."""
@@ -201,6 +219,38 @@ def solve_fractional_matching_lp(G):
     
     return total_weight
 
+def solve_fractional_matching_lp_with_edges(G):
+    """
+    Solve the fractional matching problem using linear programming.
+    Constrains edge values to be in {0, 0.5, 1}.
+    Returns a dictionary mapping edges to their assigned value.
+    """
+    prob = pulp.LpProblem("FractionalMatching", pulp.LpMaximize)
+    edges = list(G.edges())
+    edge_vars = {}
+    for u, v in edges:
+        edge_vars[(u, v, 0)] = pulp.LpVariable(f"x_{u}_{v}_0", cat=pulp.LpBinary)
+        edge_vars[(u, v, 0.5)] = pulp.LpVariable(f"x_{u}_{v}_0.5", cat=pulp.LpBinary)
+        edge_vars[(u, v, 1)] = pulp.LpVariable(f"x_{u}_{v}_1", cat=pulp.LpBinary)
+        prob += edge_vars[(u, v, 0)] + edge_vars[(u, v, 0.5)] + edge_vars[(u, v, 1)] == 1
+    prob += pulp.lpSum([0.5 * edge_vars[(u, v, 0.5)] + 1 * edge_vars[(u, v, 1)] for u, v in edges])
+    for node in G.nodes():
+        incident_edges = [(u, v) for u, v in edges if u == node or v == node]
+        prob += pulp.lpSum([0.5 * edge_vars[(u, v, 0.5)] + 1 * edge_vars[(u, v, 1)] 
+                            for u, v in incident_edges]) <= 1
+    prob.solve(pulp.PULP_CBC_CMD(msg=False))
+    if prob.status != pulp.LpStatusOptimal:
+        return {}
+    result = {}
+    for u, v in edges:
+        if edge_vars[(u, v, 1)].value() > 0.5:
+            result[(u, v)] = 1.0
+        elif edge_vars[(u, v, 0.5)].value() > 0.5:
+            result[(u, v)] = 0.5
+        else:
+            result[(u, v)] = 0.0
+    return result
+
 
 
 @pytest.mark.parametrize(
@@ -224,5 +274,58 @@ def test_compare_with_linear_programming(n, p):
     # The weights should be very close (allowing for small floating point differences)
     assert abs(algo_weight - lp_weight) < 1e-6, f"Algorithm: {algo_weight}, LP: {lp_weight}"
 
+def test_smaller_than_linear_random():
+    """
+    Test that minimal_fraction_max_matching produces solutions with fewer or equal
+    0.5-valued edges compared to a generic LP solution on random graphs of
+    medium size.
+    """
+    # Test parameters for different graph types and sizes
+    random_graph_params = [
+        # (graph_type, params, seed)
+        ("erdos_renyi", {"n": 20, "p": 0.15}, 42),
+        ("erdos_renyi", {"n": 30, "p": 0.1}, 43),
+        ("watts_strogatz", {"n": 25, "k": 4, "p": 0.2}, 44),
+        ("barabasi_albert", {"n": 30, "m": 3}, 45),
+        ("powerlaw_cluster", {"n": 25, "m": 3, "p": 0.1}, 46),
+    ]
+    
+    for i, (graph_type, params, seed) in enumerate(random_graph_params):
+        # Generate the random graph
+        if graph_type == "erdos_renyi":
+            G = nx.fast_gnp_random_graph(params["n"], params["p"], seed=seed)
+        elif graph_type == "watts_strogatz":
+            G = nx.watts_strogatz_graph(params["n"], params["k"], params["p"], seed=seed)
+        elif graph_type == "barabasi_albert":
+            G = nx.barabasi_albert_graph(params["n"], params["m"], seed=seed)
+        elif graph_type == "powerlaw_cluster":
+            G = nx.powerlaw_cluster_graph(params["n"], params["m"], params["p"], seed=seed)
+            
+        # Get algorithm solution
+        algo_match = minimal_fraction_max_matching(G)
+        algo_weight = sum(algo_match.values())
+        
+        # Count 0.5 edges in algorithm solution
+        algo_half_edges = sum(1 for val in algo_match.values() if abs(val - 0.5) < 1e-8)
+        
+        # Get LP solution with edge assignments
+        lp_match = solve_fractional_matching_lp_with_edges(G)
+        lp_weight = sum(lp_match.values())
+        
+        # Count 0.5 edges in LP solution
+        lp_half_edges = sum(1 for val in lp_match.values() if abs(val - 0.5) < 1e-8)
+        
+        # Verify same total weight (optimal solutions)
+        assert abs(algo_weight - lp_weight) < 1e-6, \
+            f"Graph {i} ({graph_type}): Algorithm weight {algo_weight} != LP weight {lp_weight}"
+        
+        # Verify our algorithm uses fewer or equal 0.5 edges
+        assert algo_half_edges <= lp_half_edges, \
+            f"Graph {i} ({graph_type}): Algorithm used {algo_half_edges} half-edges, LP used {lp_half_edges}"
+        
+        # For debugging - uncomment if needed
+        print(f"Graph {i} ({graph_type}, n={params['n']}): " 
+              f"Algorithm: {algo_half_edges} half-edges, LP: {lp_half_edges} half-edges, "
+              f"Weight: {algo_weight}")    
 if __name__ == "__main__":
     pytest.main([__file__])
