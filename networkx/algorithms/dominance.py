@@ -27,7 +27,7 @@ def immediate_dominators(G, start):
     -------
     idom : dict keyed by nodes
         A dict containing the immediate dominators of each node reachable from
-        `start`. The immediate dominator of `start` is `None`.
+        `start`, except for `start` itself.
 
     Raises
     ------
