@@ -124,7 +124,7 @@ class TestDominanceFrontiers:
     def test_unreachable(self):
         n = 5
         G = nx.path_graph(n, create_using=nx.DiGraph())
-        assert nx.dominance_frontiers(G, 1) == {i: set() for i in range(1, n)}
+        assert nx.dominance_frontiers(G, 1) == dict.fromkeys(range(1, n), set())
 
     def test_irreducible1(self):
         """
