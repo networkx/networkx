@@ -323,9 +323,6 @@ def test_smaller_than_linear_random():
         assert algo_half_edges <= lp_half_edges, \
             f"Graph {i} ({graph_type}): Algorithm used {algo_half_edges} half-edges, LP used {lp_half_edges}"
         
-        # For debugging - uncomment if needed
-        print(f"Graph {i} ({graph_type}, n={params['n']}): " 
-              f"Algorithm: {algo_half_edges} half-edges, LP: {lp_half_edges} half-edges, "
-              f"Weight: {algo_weight}")    
+        
 if __name__ == "__main__":
     pytest.main([__file__])
