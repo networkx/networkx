@@ -1865,39 +1865,23 @@ def panther_vector_similarity(
             f"The number of requested similarity scores {D} is greater than the number of nodes {num_nodes}."
         )
 
-    # We'll use heaps to track the top D similarity scores for each node
-    # This avoids allocating the full n×n similarity matrix
+    similarities = np.zeros((num_nodes, num_nodes))
     theta = np.zeros((num_nodes, D))
-
-    # Pre-convert index_map values to sets for faster intersection
     index_map_sets = {node: set(paths) for node, paths in index_map.items()}
 
     # Calculate the path similarities for each node
-    for vi_idx, vi in enumerate(G):
-        # Get the set of paths for the current node
+    for vi_idx, vi in enumerate(G.nodes):
         vi_paths = index_map_sets[vi]
 
-        # Use a min heap to track the top D scores
-        top_d_heap = []
-
-        # Calculate similarities with all other nodes
-        for node_paths in index_map_sets.values():
+        for node, node_paths in index_map_sets.items():
             # Calculate similarity score
             common_path_count = len(vi_paths.intersection(node_paths))
-            similarity = common_path_count * inv_sample_size
+            similarities[vi_idx, inv_node_map[node]] = (
+                common_path_count * inv_sample_size
+            )
 
-            # Add to heap if we haven't reached D items yet
-            if len(top_d_heap) < D:
-                heapq.heappush(top_d_heap, similarity)
-            # Otherwise, replace the smallest value if new score is larger
-            elif similarity > top_d_heap[0]:
-                heapq.heapreplace(top_d_heap, similarity)
-
-        # Extract the top D scores in descending order
-        scores = sorted(top_d_heap, reverse=True)
-
-        # Set the feature vector with scores in descending order
-        theta[vi_idx] = np.array(scores)
+        # Build up the feature vector using the largest D similarity scores
+        theta[vi_idx] = np.sort(np.partition(similarities[vi_idx], -D)[-D:])[::-1]
 
     # Insert the feature vectors into a k-d tree
     # for fast retrieval
@@ -1909,6 +1893,10 @@ def panther_vector_similarity(
         theta[inv_node_map[source]], k=k
     )
 
+    # Ensure results are always arrays (KDTree returns scalars when k=1)
+    neighbor_distances = np.atleast_1d(neighbor_distances)
+    nearest_neighbors = np.atleast_1d(nearest_neighbors)
+
     # The paper defines the similarity S(v_i, v_j) as
     # 1 / || Theta(v_i) - Theta(v_j) ||
     # Calculate reciprocals and normalize to [0, 1] range
@@ -1919,7 +1907,7 @@ def panther_vector_similarity(
     similarities = np.reciprocal(neighbor_distances)
 
     # Always normalize to ensure values are between 0 and 1
-    if len(similarities) > 0:
+    if similarities.size > 0:
         max_sim = np.max(similarities)
         if max_sim > 0:  # Avoid division by zero
             similarities = similarities / max_sim  # Normalize to [0, 1]
