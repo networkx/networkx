@@ -4,14 +4,19 @@ import networkx as nx
 
 
 class TestImmediateDominators:
-    def test_exceptions(self):
-        G = nx.Graph()
-        G.add_node(0)
-        pytest.raises(nx.NetworkXNotImplemented, nx.immediate_dominators, G, 0)
-        G = nx.MultiGraph(G)
-        pytest.raises(nx.NetworkXNotImplemented, nx.immediate_dominators, G, 0)
-        G = nx.DiGraph([[0, 0]])
-        pytest.raises(nx.NetworkXError, nx.immediate_dominators, G, 1)
+    @pytest.mark.parametrize("G", [nx.Graph(), nx.MultiGraph()])
+    def test_raises_undirected(self, G):
+        """Check that `immediate_dominators` raises for undirected graphs."""
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match=r"not implemented for undirected"
+        ):
+            nx.immediate_dominators(G, 0)
+
+    def test_raises_node(self):
+        """Check that `immediate_dominators` raises when `start` is not in the graph."""
+        G = nx.empty_graph(1, create_using=nx.DiGraph)
+        with pytest.raises(nx.NetworkXError, match=r"not in G"):
+            nx.immediate_dominators(G, 1)
 
     def test_singleton(self):
         G = nx.DiGraph()
@@ -20,15 +25,11 @@ class TestImmediateDominators:
         G.add_edge(0, 0)
         assert nx.immediate_dominators(G, 0) == {}
 
-    def test_path(self):
-        n = 5
-        G = nx.path_graph(n, create_using=nx.DiGraph())
-        idom = nx.immediate_dominators(G, 0)
-        assert idom == {i: i - 1 for i in range(1, n)}
-
-    def test_cycle(self):
-        n = 5
-        G = nx.cycle_graph(n, create_using=nx.DiGraph())
+    @pytest.mark.parametrize("gen", [nx.path_graph, nx.cycle_graph])
+    @pytest.mark.parametrize("n", [5, 10, 20])
+    def test_path_and_cycle(self, gen, n):
+        """Check `immediate_dominators` is correct for path and cycle graphs."""
+        G = gen(n, create_using=nx.DiGraph())
         idom = nx.immediate_dominators(G, 0)
         assert idom == {i: i - 1 for i in range(1, n)}
 
@@ -38,26 +39,34 @@ class TestImmediateDominators:
         idom = nx.immediate_dominators(G, 1)
         assert idom == {i: i - 1 for i in range(2, n)}
 
-    def test_irreducible1(self):
+    @pytest.mark.parametrize(
+        ["edgelist", "start"],
+        [
+            ([(1, 2), (2, 1), (3, 2), (4, 1), (5, 3), (5, 4)], 5),
+            (
+                [
+                    (1, 2),
+                    (2, 1),
+                    (2, 3),
+                    (3, 2),
+                    (4, 2),
+                    (4, 3),
+                    (5, 1),
+                    (6, 4),
+                    (6, 5),
+                ],
+                6,
+            ),
+        ],
+    )
+    def test_irreducible1(self, edgelist, start):
         """
-        Graph taken from figure 2 of "A simple, fast dominance algorithm." (2006).
+        Graphs taken from figures 2 and 4 of "A simple, fast dominance algorithm." (2006).
         https://hdl.handle.net/1911/96345
         """
-        edges = [(1, 2), (2, 1), (3, 2), (4, 1), (5, 3), (5, 4)]
-        G = nx.DiGraph(edges)
-        idom = nx.immediate_dominators(G, 5)
-        assert idom == dict.fromkeys(range(1, 5), 5)
-
-    def test_irreducible2(self):
-        """
-        Graph taken from figure 4 of "A simple, fast dominance algorithm." (2006).
-        https://hdl.handle.net/1911/96345
-        """
-
-        edges = [(1, 2), (2, 1), (2, 3), (3, 2), (4, 2), (4, 3), (5, 1), (6, 4), (6, 5)]
-        G = nx.DiGraph(edges)
-        result = nx.immediate_dominators(G, 6)
-        assert result == dict.fromkeys(range(1, 6), 6)
+        G = nx.DiGraph(edgelist)
+        idom = nx.immediate_dominators(G, start)
+        assert idom == dict.fromkeys(range(1, start), start)
 
     def test_domrel_png(self):
         # Graph taken from https://commons.wikipedia.org/wiki/File:Domrel.png
@@ -82,14 +91,19 @@ class TestImmediateDominators:
 
 
 class TestDominanceFrontiers:
-    def test_exceptions(self):
-        G = nx.Graph()
-        G.add_node(0)
-        pytest.raises(nx.NetworkXNotImplemented, nx.dominance_frontiers, G, 0)
-        G = nx.MultiGraph(G)
-        pytest.raises(nx.NetworkXNotImplemented, nx.dominance_frontiers, G, 0)
-        G = nx.DiGraph([[0, 0]])
-        pytest.raises(nx.NetworkXError, nx.dominance_frontiers, G, 1)
+    @pytest.mark.parametrize("G", [nx.Graph(), nx.MultiGraph()])
+    def test_raises_undirected(self, G):
+        """Check that `dominance_frontiers` raises for undirected graphs."""
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match=r"not implemented for undirected"
+        ):
+            nx.dominance_frontiers(G, 0)
+
+    def test_raises_node(self):
+        """Check that `dominance_frontiers` raises when `start` is not in the graph."""
+        G = nx.empty_graph(1, create_using=nx.DiGraph)
+        with pytest.raises(nx.NetworkXError, match=r"not in G"):
+            nx.dominance_frontiers(G, 1)
 
     def test_singleton(self):
         G = nx.DiGraph()

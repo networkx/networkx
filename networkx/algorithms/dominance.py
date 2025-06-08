@@ -90,6 +90,7 @@ def immediate_dominators(G, start):
     return idom
 
 
+@not_implemented_for("undirected")
 @nx._dispatchable
 def dominance_frontiers(G, start):
     """Returns the dominance frontiers of all nodes of a directed graph.
