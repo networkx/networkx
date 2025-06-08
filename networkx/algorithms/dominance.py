@@ -39,16 +39,15 @@ def immediate_dominators(G, start):
 
     Notes
     -----
-    Except for `start`, the immediate dominators are the parents of their
-    corresponding nodes in the dominator tree.
-    Every node reachable from `start` has an immediate dominator
-    (except `start`, for which the function returns `None`).
+    The immediate dominators are the parents of their corresponding nodes in
+    the dominator tree. Every node reachable from `start` has an immediate
+    dominator, except for `start` itself.
 
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 5), (3, 4), (4, 5)])
     >>> sorted(nx.immediate_dominators(G, 1).items())
-    [(1, None), (2, 1), (3, 1), (4, 3), (5, 1)]
+    [(2, 1), (3, 1), (4, 3), (5, 1)]
 
     References
     ----------
@@ -87,6 +86,7 @@ def immediate_dominators(G, start):
                 idom[u] = new_idom
                 changed = True
 
+    del idom[start]
     return idom
 
 
@@ -128,7 +128,7 @@ def dominance_frontiers(G, start):
            "A simple, fast dominance algorithm." (2006).
            https://hdl.handle.net/1911/96345
     """
-    idom = nx.immediate_dominators(G, start)
+    idom = nx.immediate_dominators(G, start) | {start: None}
 
     df = {u: set() for u in idom}
     for u in idom:
