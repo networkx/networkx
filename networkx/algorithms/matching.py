@@ -1164,7 +1164,7 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
 @not_implemented_for("directed")
 @nx._dispatchable
 def minimal_fraction_max_matching(G: nx.Graph):
-    """Find a maximum fractional matching in the graph.
+    """Find a maximum fractional matching in the graph with the minimum 0.5 edges.
 
     A fractional matching is a generalization of a matching where each edge
     can have a value of 0, 1/2, or 1. The sum of edge values incident to any
