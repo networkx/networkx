@@ -1274,7 +1274,7 @@ class FractionalMatchingSolver:
         for (u, v), val in self.x.items():
             if val > 0 and u < v:  # Only keep one direction and non-zero edges
                 result[(u, v)] = val
-                
+        log.info("Final matching: %s", result)  
         return result
     
     def _initialize_labels(self) -> None:
@@ -1361,6 +1361,7 @@ class FractionalMatchingSolver:
         classify it as type 1 or type 3, flip x-values along the cycle/path,
         then clear all labels and preds so we can re-initialize.
         """
+        log.debug("Augmenting matching between vertices %s and %s", u, v)
         # Construct paths from u and v back to their roots
         path_u = [u]
         path_v = [v]
@@ -1406,7 +1407,7 @@ class FractionalMatchingSolver:
             cycle = self._build_cycle(path_u, path_v)
             log.debug("Type 3 augmentation: found cycle %s", cycle)
             if not cycle:
-                print ("No cycle found through vertices:", path_u)
+                log.info("No cycle found through vertices:", path_u)
             # Flip x-values around the cycle
             for i in range(len(cycle)):
                 a = cycle[i]
