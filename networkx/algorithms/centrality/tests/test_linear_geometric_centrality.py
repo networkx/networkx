@@ -6,6 +6,7 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms.centrality import (
+    closeness_centrality,
     harmonic_centrality,
     linear_geometric_centrality,
 )
@@ -59,6 +60,22 @@ class TestLinearGeometricCentrality:
             for n in sorted(G):
                 assert cfharm[n] == pytest.approx(ch[n], abs=1e-3)
                 assert cfindeg[n] == pytest.approx(cd[n], abs=1e-3)
+
+    def test_all_undir_str(self):
+        for G in [self.P3, self.P4, self.K5, self.C4, self.C5, self.T]:
+            ch = harmonic_centrality(G)
+            cd = G.degree()
+            ccl = closeness_centrality(G, wf_improved=False)
+            print(ccl)
+            cfharm = linear_geometric_centrality(G, "harmonic")
+            cfindeg = linear_geometric_centrality(G, "indegree")
+            cfnecc = linear_geometric_centrality(G, "negecc")
+            for n in sorted(G):
+                assert cfharm[n] == pytest.approx(ch[n], abs=1e-3)
+                assert cfindeg[n] == pytest.approx(cd[n], abs=1e-3)
+                assert cfnecc[n] == pytest.approx(
+                    -(G.number_of_nodes() - 1) / ccl[n], abs=1e-3
+                )
 
     def test_exampleGraph(self):
         ch = harmonic_centrality(self.Gb)
