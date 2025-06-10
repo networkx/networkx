@@ -19,6 +19,7 @@ See Also
 
 import collections
 import itertools
+import math
 from numbers import Number
 
 import networkx as nx
@@ -2392,27 +2393,66 @@ def draw_networkx_edge_labels(
             t = self.label_pos
             tt = 1 - t
             path_disp = self._get_arrow_path_disp(arrow)
-            is_bar_style = isinstance(
-                arrow.get_connectionstyle(), mpl.patches.ConnectionStyle.Bar
-            )
+            conn = arrow.get_connectionstyle()
+            is_line = True
             # 1. Calculate x and y
-            if is_bar_style:
-                # Bar Connection Style - straight line
-                _, (cx1, cy1), (cx2, cy2), _ = path_disp.vertices
-                x = cx1 * tt + cx2 * t
-                y = cy1 * tt + cy2 * t
-            else:
-                # Arc or Angle type Connection Styles - Bezier curve
-                (x1, y1), (cx, cy), (x2, y2) = path_disp.vertices
+            points = path_disp.vertices
+            if isinstance(
+                conn,
+                mpl.patches.ConnectionStyle.Arc3 | mpl.patches.ConnectionStyle.Angle3,
+            ):
+                # Arc3 or Angle3 type Connection Styles - Bezier curve
+                (x1, y1), (cx, cy), (x2, y2) = points
                 x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
                 y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
+                is_line = False
+            else:
+                if isinstance(conn, mpl.patches.ConnectionStyle.Bar):
+                    # Bar Connection Style - straight line
+                    assert len(points) == 4
+                    lines = [points[1:3]]
+                else:
+                    if isinstance(conn, mpl.patches.ConnectionStyle.Angle):
+                        assert len(points) in {3, 5}
+                        lines = [points[:2], points[-2:]]
+                    else:
+                        assert isinstance(conn, mpl.patches.ConnectionStyle.Arc)
+                        if len(points) == 2:
+                            lines = [points]
+                        elif len(points) == 5:
+                            lines = [points[:2], points[-2:]]
+                        else:
+                            assert len(points) == 8
+                            lines = [points[:2], points[3:5], points[-2:]]
+
+                    if len(lines) != 1:
+                        assert len(lines) in {2, 3}
+                        dists = [math.dist(*line) for line in lines]
+                        dist_tot = sum(dists)
+                        cdist = 0
+                        last_cut = 0
+                        for i, dist in enumerate(dists):
+                            cdist += dist
+                            cut = cdist / dist_tot
+                            if t <= cut:
+                                t = (t - last_cut) / (dist / dist_tot)
+                                tt = 1 - t
+                                lines = [lines[i]]
+                                break
+                            last_cut = cut
+                        else:
+                            raise ValueError(f"not 0 <= label_pos={t} <= 1")
+                [[(cx1, cy1), (cx2, cy2)]] = lines
+                x = cx1 * tt + cx2 * t
+                y = cy1 * tt + cy2 * t
+
             # 2. Calculate Angle
             if self.labels_horizontal:
                 # Horizontal text labels
                 angle = 0
             else:
                 # Labels parallel to curve
-                if is_bar_style:
+                if is_line:
                     change_x = (cx2 - cx1) / 2
                     change_y = (cy2 - cy1) / 2
                 else:
