@@ -1339,7 +1339,7 @@ class FractionalMatchingSolver:
     def _build_cycle(self,path_u: list[Any], path_v: list[Any]) -> list[Any]:
         """
         Return the ordered list of vertices that form the simple cycle
-        u → … → v → u (edge v-u closes it).
+        u → ... → v → u (edge v-u closes it).
         Both paths run from the vertex to the common root,
         so they always share at least that root.
         """
@@ -1350,7 +1350,7 @@ class FractionalMatchingSolver:
         idx_u = path_u.index(lca)   # where LCA sits inside path_u
         idx_v = path_v.index(lca)   #               inside path_v
 
-        # u … lca   +   lca-1 … v   (second part reversed)
+        # u ... lca   +   lca-1 ... v   (second part reversed)
         cycle = path_u[:idx_u + 1] + list(reversed(path_v[:idx_v]))
         return cycle            # starts with u, ends with v
 
@@ -1382,9 +1382,8 @@ class FractionalMatchingSolver:
         if path_u[-1] != path_v[-1]:
             # Type 1: augmenting path between two different roots
             # Flip x-values along the path
-            
             # Path from u's root to u
-            log.debug("Type 1 augmentation: flipping edges along path from u to its root.")
+            log.info("Type 1 augmentation: flipping edges along path from u to its root.")
             path_u.reverse()
             for i in range(len(path_u) - 1):
                 a, b = path_u[i], path_u[i+1]
@@ -1404,6 +1403,7 @@ class FractionalMatchingSolver:
         else:
             # Type 3: augmenting cycle with a common root
             # Form the cycle by joining the paths
+            log.info("Type 3 augmentation: found common root, building cycle.")
             cycle = self._build_cycle(path_u, path_v)
             log.debug("Type 3 augmentation: found cycle %s", cycle)
             if not cycle:
@@ -1438,6 +1438,7 @@ class FractionalMatchingSolver:
         # Check if v has a neighbor w with edge value 1
         for w in self.G.neighbors(v):
             if self.x.get((v, w), 0) == 1:
+                log.info("We are in the labeling part of the algorithm.")
                 log.info("Found saturated neighbor w with edge value 1: %s", w)
                 log.debug("Setting labels and predecessors for v=%s, w=%s", v, w)
                 # Set labels and predecessors
@@ -1451,12 +1452,12 @@ class FractionalMatchingSolver:
         # Find the 1/2 -cycle by tracing from v
         cycle = [v]
         visited = {v}
-
+        log.info("No saturated neighbor found, looking for 1/2-cycle starting from v: %s", v)
         while True:
             # Find the next node in the cycle (connected by a 1/2 edge)
             current = cycle[-1]
             next_node_found = False
-
+            log.debug("Looking for next node in 1/2-cycle from current: %s", current)
             for next_node in self.G.neighbors(current):
                 if self.x.get((current, next_node), 0) == 0.5 and next_node not in visited:
                     cycle.append(next_node)
