@@ -181,11 +181,19 @@ class TestApproximateFlowBetweennessCentrality:
 
     def test_normalization_edge_case_small_graph(self):
         G = nx.path_graph(2)
-        with pytest.raises(nx.NetworkXError, match="Graph has fewer than 3 nodes"):
-            approximate_cfbc(G, normalized=True)
 
-        result = approximate_cfbc(G, normalized=False, seed=42)
-        assert len(result) == 2
+        result_norm = approximate_cfbc(G, normalized=True, seed=42)
+        result_unnorm = approximate_cfbc(G, normalized=False, seed=42)
+
+        assert len(result_norm) == 2
+        assert len(result_unnorm) == 2
+        assert all(v == 0.0 for v in result_norm.values())
+        assert all(v == 0.0 for v in result_unnorm.values())
+
+        G1 = nx.Graph()
+        G1.add_node(0)
+        result1 = approximate_cfbc(G1, normalized=True, seed=42)
+        assert result1 == {0: 0.0}
 
     def test_sample_weight_interaction_with_kmax(self):
         G = nx.complete_graph(4)
