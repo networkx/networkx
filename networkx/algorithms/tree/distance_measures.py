@@ -87,7 +87,13 @@ def center(G):
 
 
 def _subtree_sizes(G, root):
-    """Return a `dict` of subtree sizes in a tree rooted at a given node.
+    """Return a `dict` of the size of each subtree, for every subtree
+    of a tree rooted at a given node.
+
+    For every node in the given tree, consider the new tree that would
+    be created by detaching it from its parent node (if any). The
+    number of nodes in the resulting tree rooted at that node is then
+    assigned as the value for that node in the return dictionary.
 
     Parameters
     ----------
@@ -100,7 +106,8 @@ def _subtree_sizes(G, root):
     Returns
     -------
     s : dict
-       Dictionary of subtree sizes keyed on nodes.
+       Dictionary of number of nodes in every subtree of this tree,
+       keyed on the root node for each subtree.
 
     Examples
     --------
@@ -109,6 +116,7 @@ def _subtree_sizes(G, root):
 
     >>> _subtree_sizes(nx.path_graph(4), 2)
     {2: 4, 1: 2, 0: 1, 3: 1}
+
     """
     sizes = {root: 1}
     stack = [root]
