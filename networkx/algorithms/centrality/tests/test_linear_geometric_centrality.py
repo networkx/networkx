@@ -135,20 +135,20 @@ class TestLinearGeometricCentrality:
             ]
         )
         ch = harmonic_centrality(XG, distance="weight")
-        cfharm = linear_geometric_centrality(XG, self.fharm, distance="weight")
+        cfharm = linear_geometric_centrality(XG, self.fharm, weight="weight")
         for n in sorted(XG):
             assert cfharm[n] == pytest.approx(ch[n], abs=1e-3)
 
     def test_empty(self):
         G = nx.DiGraph()
-        c = linear_geometric_centrality(G, self.fharm, distance="weight")
+        c = linear_geometric_centrality(G, self.fharm, weight="weight")
         d = {}
         assert c == d
 
     def test_singleton(self):
         G = nx.DiGraph()
         G.add_node(0)
-        c = linear_geometric_centrality(G, self.fharm, distance="weight")
+        c = linear_geometric_centrality(G, self.fharm, weight="weight")
         d = {0: 0}
         assert c == d
 

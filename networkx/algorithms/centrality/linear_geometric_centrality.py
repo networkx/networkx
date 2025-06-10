@@ -8,7 +8,7 @@ __all__ = ["linear_geometric_centrality"]
 
 
 @nx._dispatchable(edge_attrs="distance")
-def linear_geometric_centrality(G, f, nbunch=None, sources=None, distance=None):
+def linear_geometric_centrality(G, f, *, nbunch=None, sources=None, weight=None):
     r"""Compute a linear geometric centrality for nodes.
 
     Linear geometric centrality [1]_ of a node `u` is the sum of some function `f(-)`
@@ -74,8 +74,8 @@ def linear_geometric_centrality(G, f, nbunch=None, sources=None, distance=None):
       Container of nodes `v` over which distances are computed.
       Nodes not in `G` are silently ignored.
 
-    distance : edge attribute key, optional (default=None)
-      Use the specified edge attribute as the edge distance in shortest
+    weight : edge attribute key, optional (default=None)
+      Use the specified edge attribute as the edge length in shortest
       path calculations.  If `None`, then each edge will have distance equal to 1.
 
     Returns
@@ -90,9 +90,9 @@ def linear_geometric_centrality(G, f, nbunch=None, sources=None, distance=None):
 
     Notes
     -----
-    If the 'distance' keyword is set to an edge attribute key then the
+    If the 'weight' keyword is set to an edge attribute key then the
     shortest-path length will be computed using Dijkstra's algorithm with
-    that edge attribute as the edge weight.
+    that edge attribute as the edge length.
 
     References
     ----------
@@ -131,13 +131,14 @@ def linear_geometric_centrality(G, f, nbunch=None, sources=None, distance=None):
     transposed = False
     if (
         len(nbunch) < len(sources)
-    ):  # Optimize: if there are fewer nodes for which we want to compute centrality than sources, just reverse the computation
+    ):  # Optimize: if there are fewer nodes for which we want to compute centrality than
+        # sources, just reverse the computation
         transposed = True
         nbunch, sources = sources, nbunch
         if nx.is_directed(G):
             G = nx.reverse(G, copy=False)
 
-    spl = partial(nx.shortest_path_length, G, weight=distance)
+    spl = partial(nx.shortest_path_length, G, weight=weight)
     for v in sources:
         dist = spl(v)
         for u in nbunch & dist.keys():
