@@ -1523,7 +1523,7 @@ def test_edge_label_all_connectionstyles(subplots):
     fig, ax = subplots
     edge = (0, 1)
     G = nx.DiGraph([edge])
-    pos = nx.spring_layout(G)
+    pos = nx.spring_layout(G, k=1, seed=42)
 
     styles = ["angle", "angle3", "arc", "arc3,rad=0.0", "bar,fraction=0.1"]
     labels = {}
