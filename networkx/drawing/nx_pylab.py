@@ -2431,17 +2431,16 @@ def draw_networkx_edge_labels(
                         dist_tot = sum(dists)
                         cdist = 0
                         last_cut = 0
+                        last_i = len(dists) - 1
                         for i, dist in enumerate(dists):
                             cdist += dist
                             cut = cdist / dist_tot
-                            if t <= cut:
+                            if i == last_i or t <= cut:
                                 t = (t - last_cut) / (dist / dist_tot)
                                 tt = 1 - t
                                 lines = [lines[i]]
                                 break
                             last_cut = cut
-                        else:
-                            raise ValueError(f"not 0 <= label_pos={t} <= 1")
                 [[(cx1, cy1), (cx2, cy2)]] = lines
                 x = cx1 * tt + cx2 * t
                 y = cy1 * tt + cy2 * t
