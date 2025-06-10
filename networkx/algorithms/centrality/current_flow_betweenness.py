@@ -113,11 +113,11 @@ def approximate_current_flow_betweenness_centrality(
         raise nx.NetworkXError("Graph not connected.")
 
     n = G.number_of_nodes()
-    if n < 3 and normalized:
-        raise nx.NetworkXError(
-            "Graph has fewer than 3 nodes. Normalization factor [(n-1)(n-2)] would be zero. "
-            "To avoid a divide-by-zero, add more nodes or set normalized=False."
-        )
+
+    # For small graphs (n < 3), betweenness centrality is always 0 for all nodes
+    # since no node can be "between" any pair of other nodes
+    if n < 3:
+        return dict.fromkeys(G, 0.0)
 
     if epsilon <= 0:
         raise nx.NetworkXError(f"Epsilon must be positive. Got epsilon={epsilon}.")
@@ -129,7 +129,7 @@ def approximate_current_flow_betweenness_centrality(
 
     nb = (n - 1.0) * (n - 2.0)  # normalization factor
     cstar = n * (n - 1) / nb
-    k = sample_weight * int(np.ceil((cstar / epsilon) ** 2 * np.log(n)))
+    k = int(sample_weight * np.ceil((cstar / epsilon) ** 2 * np.log(n)))
     if k > kmax:
         msg = f"Number random pairs k>kmax ({k}>{kmax}) "
         raise nx.NetworkXError(msg, "Increase kmax or epsilon")
