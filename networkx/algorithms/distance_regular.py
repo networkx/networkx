@@ -169,9 +169,9 @@ def intersection_array(G):
     bint = {}  # 'b' intersection array
     cint = {}  # 'c' intersection array
 
-    # see https://doi.org/10.1016/j.ejc.2004.07.004, Theorem 1.5 page 81: the
-    # diameter of a distance-regular graph is at most (8 log_2 n) / 3, so let's
-    # compute it as we go in the hope that we can stop early
+    # see https://doi.org/10.1016/j.ejc.2004.07.004, Theorem 1.5, page 81:
+    # the diameter of a distance-regular graph is at most (8 log_2 n) / 3,
+    # so let's compute it as we go in the hope that we can stop early
     diam = 0
     max_diameter_for_dr_graphs = (8 * log(G.number_of_nodes(), 2)) / 3
     for u, v in combinations_with_replacement(G, 2):
