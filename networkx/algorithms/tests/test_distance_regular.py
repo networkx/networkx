@@ -4,6 +4,16 @@ import networkx as nx
 from networkx import is_strongly_regular
 
 
+@pytest.mark.parametrize(
+    "f", (nx.is_distance_regular, nx.intersection_array, nx.is_strongly_regular)
+)
+@pytest.mark.parametrize("graph_constructor", (nx.DiGraph, nx.MultiGraph))
+def test_raises_on_directed_and_multigraphs(f, graph_constructor):
+    G = graph_constructor([(0, 1), (1, 2)])
+    with pytest.raises(nx.NetworkXNotImplemented):
+        f(G)
+
+
 class TestDistanceRegular:
     def test_is_distance_regular(self):
         assert nx.is_distance_regular(nx.icosahedral_graph())

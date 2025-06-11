@@ -20,7 +20,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch
+@nx._dispatchable
 def is_distance_regular(G):
     """Returns True if the graph is distance regular, False otherwise.
 
@@ -112,8 +112,9 @@ def global_parameters(b, c):
     return ((y, b[0] - x - y, x) for x, y in zip(b + [0], [0] + c))
 
 
-@not_implemented_for("directed", "multigraph")
-@nx._dispatch
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
 def intersection_array(G):
     """Returns the intersection array of a distance-regular graph.
 
@@ -211,8 +212,9 @@ def intersection_array(G):
 
 
 # TODO There is a definition for directed strongly regular graphs.
-@not_implemented_for("directed", "multigraph")
-@nx._dispatch
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
 def is_strongly_regular(G):
     """Returns True if and only if the given graph is strongly
     regular.

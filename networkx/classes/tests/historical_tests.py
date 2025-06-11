@@ -1,4 +1,5 @@
 """Original NetworkX graph tests"""
+
 import pytest
 
 import networkx as nx

@@ -1,12 +1,11 @@
-"""PageRank analysis of graph structure. """
-from warnings import warn
+"""PageRank analysis of graph structure."""
 
 import networkx as nx
 
 __all__ = ["pagerank", "google_matrix"]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def pagerank(
     G,
     alpha=0.85,
@@ -89,6 +88,7 @@ def pagerank(
     See Also
     --------
     google_matrix
+    :func:`~networkx.algorithms.bipartite.link_analysis.birank`
 
     Raises
     ------
@@ -172,7 +172,7 @@ def _pagerank_python(
     raise nx.PowerIterationFailedConvergence(max_iter)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def google_matrix(
     G, alpha=0.85, personalization=None, nodelist=None, weight="weight", dangling=None
 ):

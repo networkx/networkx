@@ -111,12 +111,12 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_adjlist(G, "test.adjlist")
+    >>> nx.write_adjlist(G, "path4.adjlist")
 
     The path can be a filehandle or a string with the name of the file. If a
     filehandle is provided, it has to be opened in 'wb' mode.
 
-    >>> fh = open("test.adjlist", "wb")
+    >>> fh = open("path4.adjlist2", "wb")
     >>> nx.write_adjlist(G, fh)
 
     Notes
@@ -150,7 +150,7 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
         path.write(line.encode(encoding))
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_adjlist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None
 ):
@@ -201,7 +201,7 @@ def parse_adjlist(
             line = line[:p]
         if not len(line):
             continue
-        vlist = line.strip().split(delimiter)
+        vlist = line.rstrip("\n").split(delimiter)
         u = vlist.pop(0)
         # convert types
         if nodetype is not None:
@@ -224,7 +224,7 @@ def parse_adjlist(
 
 
 @open_file(0, mode="rb")
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_adjlist(
     path,
     comments="#",
@@ -239,7 +239,7 @@ def read_adjlist(
     ----------
     path : string or file
        Filename or file handle to read.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filenames ending in .gz or .bz2 will be decompressed.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.

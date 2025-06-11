@@ -1,6 +1,7 @@
 """
 Eigenvalue spectrum of graphs.
 """
+
 import networkx as nx
 
 __all__ = [
@@ -12,7 +13,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def laplacian_spectrum(G, weight="weight"):
     """Returns eigenvalues of the Laplacian of G
 
@@ -56,7 +57,7 @@ def laplacian_spectrum(G, weight="weight"):
     return sp.linalg.eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def normalized_laplacian_spectrum(G, weight="weight"):
     """Return eigenvalues of the normalized Laplacian of G
 
@@ -90,7 +91,7 @@ def normalized_laplacian_spectrum(G, weight="weight"):
     )
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def adjacency_spectrum(G, weight="weight"):
     """Returns eigenvalues of the adjacency matrix of G.
 
@@ -122,7 +123,7 @@ def adjacency_spectrum(G, weight="weight"):
     return sp.linalg.eigvals(nx.adjacency_matrix(G, weight=weight).todense())
 
 
-@nx._dispatch
+@nx._dispatchable
 def modularity_spectrum(G):
     """Returns eigenvalues of the modularity matrix of G.
 
@@ -153,7 +154,7 @@ def modularity_spectrum(G):
         return sp.linalg.eigvals(nx.modularity_matrix(G))
 
 
-@nx._dispatch
+@nx._dispatchable
 def bethe_hessian_spectrum(G, r=None):
     """Returns eigenvalues of the Bethe Hessian matrix of G.
 

@@ -1,4 +1,4 @@
-""" Functions related to graph covers."""
+"""Functions related to graph covers."""
 
 import networkx as nx
 from networkx.algorithms.bipartite.matching import hopcroft_karp_matching
@@ -10,7 +10,7 @@ __all__ = ["min_edge_cover"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(name="bipartite_min_edge_cover")
+@nx._dispatchable(name="bipartite_min_edge_cover")
 def min_edge_cover(G, matching_algorithm=None):
     """Returns a set of edges which constitutes
     the minimum edge cover of the graph.

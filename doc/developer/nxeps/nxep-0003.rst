@@ -290,7 +290,7 @@ Related Work
 
 This proposal is based on ideas and discussions from #3036 and #1393.
 
-This proposal does not delve into backends using the `_dispatch` functionality
+This proposal does not delve into backends using the `_dispatchable` functionality
 and whether we should be providing or allowing control over the builder
 functions for backend libraries. This is a potentially helpful discussion
 but is beyond the scope of this NXEP.
@@ -427,9 +427,9 @@ Discussion
 ----------
 
 Most of the ideas here are from
-- [`#3036 <https://github.com/networkx/networkx/pull/3036>`]
+- [`#3036 <https://github.com/networkx/networkx/pull/3036>`_]
 which built on discussion from
-- [`#1393 <https://github.com/networkx/networkx/pull/1393>`]
+- [`#1393 <https://github.com/networkx/networkx/pull/1393>`_]
 
 Over a year of occasional thought and more occasional mentioning-in-passing,
 most core developers feel that the `create_using` parameter should be retained.

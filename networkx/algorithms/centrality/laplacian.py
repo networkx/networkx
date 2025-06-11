@@ -1,12 +1,13 @@
 """
 Laplacian centrality measures.
 """
+
 import networkx as nx
 
 __all__ = ["laplacian_centrality"]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def laplacian_centrality(
     G, normalized=True, nodelist=None, weight="weight", walk_type=None, alpha=0.95
 ):
@@ -106,7 +107,7 @@ def laplacian_centrality(
     if G.size(weight=weight) == 0:
         if normalized:
             raise ZeroDivisionError("graph with no edges has zero full energy")
-        return {n: 0 for n in G}
+        return dict.fromkeys(G, 0)
 
     if nodelist is not None:
         nodeset = set(G.nbunch_iter(nodelist))
@@ -121,7 +122,7 @@ def laplacian_centrality(
     else:
         lap_matrix = nx.laplacian_matrix(G, nodes, weight).toarray()
 
-    full_energy = np.power(sp.linalg.eigh(lap_matrix, eigvals_only=True), 2).sum()
+    full_energy = np.sum(lap_matrix**2)
 
     # calculate laplacian centrality
     laplace_centralities_dict = {}
@@ -136,7 +137,7 @@ def laplacian_centrality(
         np.fill_diagonal(A_2, new_diag[all_but_i])
 
         if len(all_but_i) > 0:  # catches degenerate case of single node
-            new_energy = np.power(sp.linalg.eigh(A_2, eigvals_only=True), 2).sum()
+            new_energy = np.sum(A_2**2)
         else:
             new_energy = 0.0
 
@@ -144,6 +145,6 @@ def laplacian_centrality(
         if normalized:
             lapl_cent = lapl_cent / full_energy
 
-        laplace_centralities_dict[node] = lapl_cent
+        laplace_centralities_dict[node] = float(lapl_cent)
 
     return laplace_centralities_dict

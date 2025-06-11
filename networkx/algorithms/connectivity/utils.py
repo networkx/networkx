@@ -1,12 +1,13 @@
 """
 Utilities for connectivity package
 """
+
 import networkx as nx
 
 __all__ = ["build_auxiliary_node_connectivity", "build_auxiliary_edge_connectivity"]
 
 
-@nx._dispatch
+@nx._dispatchable(returns_graph=True)
 def build_auxiliary_node_connectivity(G):
     r"""Creates a directed graph D from an undirected graph G to compute flow
     based node connectivity.
@@ -59,7 +60,7 @@ def build_auxiliary_node_connectivity(G):
     return H
 
 
-@nx._dispatch
+@nx._dispatchable(returns_graph=True)
 def build_auxiliary_edge_connectivity(G):
     """Auxiliary digraph for computing flow based edge connectivity
 

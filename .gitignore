@@ -11,6 +11,7 @@ doc/networkx_reference.pdf
 doc/networkx_tutorial.pdf
 doc/build
 doc/ghpages_build
+doc/sg_execution_times.rst
 .coverage
 *.class
 
@@ -56,3 +57,7 @@ networkx.egg-info/
 
 # Virtual environment directory
 networkx-dev/
+
+# Benchmark products
+benchmarks/env
+benchmarks/results

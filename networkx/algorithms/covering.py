@@ -1,4 +1,4 @@
-""" Functions related to graph covers."""
+"""Functions related to graph covers."""
 
 from functools import partial
 from itertools import chain
@@ -11,7 +11,7 @@ __all__ = ["min_edge_cover", "is_edge_cover"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def min_edge_cover(G, matching_algorithm=None):
     """Returns the min cardinality edge cover of the graph as a set of edges.
 
@@ -66,10 +66,10 @@ def min_edge_cover(G, matching_algorithm=None):
     is bounded by the worst-case running time of the function
     ``matching_algorithm``.
 
-    Minimum edge cover for `G` can also be found using the `min_edge_covering`
-    function in :mod:`networkx.algorithms.bipartite.covering` which is
+    Minimum edge cover for `G` can also be found using
+    :func:`~networkx.algorithms.bipartite.covering.min_edge_covering` which is
     simply this function with a default matching algorithm of
-    :func:`~networkx.algorithms.bipartite.matching.hopcraft_karp_matching`
+    :func:`~networkx.algorithms.bipartite.matching.hopcroft_karp_matching`
     """
     if len(G) == 0:
         return set()
@@ -106,7 +106,7 @@ def min_edge_cover(G, matching_algorithm=None):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def is_edge_cover(G, cover):
     """Decides whether a set of edges is a valid edge cover of the graph.
 

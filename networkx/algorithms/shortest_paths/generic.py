@@ -4,7 +4,6 @@ Compute the shortest paths and path lengths between nodes in the graph.
 These algorithms work with undirected and directed graphs.
 
 """
-import warnings
 
 import networkx as nx
 
@@ -19,7 +18,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch
+@nx._dispatchable
 def has_path(G, source, target):
     """Returns *True* if *G* has a path from *source* to *target*.
 
@@ -40,7 +39,7 @@ def has_path(G, source, target):
     return True
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     """Compute shortest paths in the graph.
 
@@ -75,7 +74,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
 
     Returns
     -------
-    path: list or dictionary
+    path: list or dictionary or iterator
         All returned paths include both the source and target in the path.
 
         If the source and target are both specified, return a single list
@@ -89,8 +88,9 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
         sources with a list of nodes in a shortest path from one of the
         sources to the target.
 
-        If neither the source nor target are specified return a dictionary
-        of dictionaries with path[source][target]=[list of nodes in path].
+        If neither the source nor target are specified, return an iterator
+        over (source, dictionary) where dictionary is keyed by target to
+        list of nodes in a shortest path from the source to the target.
 
     Raises
     ------
@@ -106,13 +106,13 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     >>> print(nx.shortest_path(G, source=0, target=4))
     [0, 1, 2, 3, 4]
     >>> p = nx.shortest_path(G, source=0)  # target not specified
-    >>> p[3] # shortest path from source=0 to target=3
+    >>> p[3]  # shortest path from source=0 to target=3
     [0, 1, 2, 3]
     >>> p = nx.shortest_path(G, target=4)  # source not specified
-    >>> p[1] # shortest path from source=1 to target=4
+    >>> p[1]  # shortest path from source=1 to target=4
     [1, 2, 3, 4]
     >>> p = dict(nx.shortest_path(G))  # source, target not specified
-    >>> p[2][4] # shortest path from source=2 to target=4
+    >>> p[2][4]  # shortest path from source=2 to target=4
     [2, 3, 4]
 
     Notes
@@ -135,19 +135,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     method = "unweighted" if weight is None else method
     if source is None:
         if target is None:
-            warnings.warn(
-                (
-                    "\n\nshortest_path will return an iterator that yields\n"
-                    "(node, path) pairs instead of a dictionary when source\n"
-                    "and target are unspecified beginning in version 3.5\n\n"
-                    "To keep the current behavior, use:\n\n"
-                    "\tdict(nx.shortest_path(G))"
-                ),
-                FutureWarning,
-                stacklevel=3,
-            )
-
-            # Find paths between all pairs.
+            # Find paths between all pairs. Iterator of dicts.
             if method == "unweighted":
                 paths = nx.all_pairs_shortest_path(G)
             elif method == "dijkstra":
@@ -187,7 +175,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     return paths
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def shortest_path_length(G, source=None, target=None, weight=None, method="dijkstra"):
     """Compute shortest path lengths in the graph.
 
@@ -224,7 +212,7 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
 
     Returns
     -------
-    length: int or iterator
+    length: number or iterator
         If the source and target are both specified, return the length of
         the shortest path from the source to the target.
 
@@ -331,7 +319,7 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
     return paths
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def average_shortest_path_length(G, weight=None, method=None):
     r"""Returns the average shortest path length.
 
@@ -413,8 +401,7 @@ def average_shortest_path_length(G, weight=None, method=None):
     # there are no paths in the null graph.
     if n == 0:
         msg = (
-            "the null graph has no paths, thus there is no average "
-            "shortest path length"
+            "the null graph has no paths, thus there is no average shortest path length"
         )
         raise nx.NetworkXPointlessConcept(msg)
     # For the special case of the trivial graph, return zero immediately.
@@ -444,11 +431,11 @@ def average_shortest_path_length(G, weight=None, method=None):
             all_pairs = nx.floyd_warshall(G, weight=weight)
             s = sum(sum(t.values()) for t in all_pairs.values())
         elif method == "floyd-warshall-numpy":
-            s = nx.floyd_warshall_numpy(G, weight=weight).sum()
+            s = float(nx.floyd_warshall_numpy(G, weight=weight).sum())
     return s / (n * (n - 1))
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
     """Compute all shortest simple paths in the graph.
 
@@ -526,7 +513,7 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
     return _build_paths_from_predecessors({source}, target, pred)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     """Compute all shortest simple paths from the given source in the graph.
 
@@ -569,7 +556,7 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     >>> G = nx.Graph()
     >>> nx.add_path(G, [0, 1, 2, 3, 0])
     >>> dict(nx.single_source_all_shortest_paths(G, source=0))
-    {0: [[0]], 1: [[0, 1]], 2: [[0, 1, 2], [0, 3, 2]], 3: [[0, 3]]}
+    {0: [[0]], 1: [[0, 1]], 3: [[0, 3]], 2: [[0, 1, 2], [0, 3, 2]]}
 
     Notes
     -----
@@ -595,14 +582,11 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
         pred, dist = nx.bellman_ford_predecessor_and_distance(G, source, weight=weight)
     else:
         raise ValueError(f"method not supported: {method}")
-    for n in G:
-        try:
-            yield n, list(_build_paths_from_predecessors({source}, n, pred))
-        except nx.NetworkXNoPath:
-            pass
+    for n in pred:
+        yield n, list(_build_paths_from_predecessors({source}, n, pred))
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
     """Compute all shortest paths between all nodes.
 

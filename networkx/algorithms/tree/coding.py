@@ -8,6 +8,7 @@ applied to unrooted trees. Furthermore, there is a bijection from Prüfer
 sequences to labeled trees.
 
 """
+
 from collections import Counter
 from itertools import chain
 
@@ -32,7 +33,7 @@ class NotATree(nx.NetworkXException):
 
 
 @not_implemented_for("directed")
-@nx._dispatch(graphs="T")
+@nx._dispatchable(graphs="T")
 def to_nested_tuple(T, root, canonical_form=False):
     """Returns a nested tuple representation of the given tree.
 
@@ -128,7 +129,7 @@ def to_nested_tuple(T, root, canonical_form=False):
     return _make_tuple(T, root, None)
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_nested_tuple(sequence, sensible_relabeling=False):
     """Returns the rooted tree corresponding to the given nested tuple.
 
@@ -213,7 +214,7 @@ def from_nested_tuple(sequence, sensible_relabeling=False):
 
 
 @not_implemented_for("directed")
-@nx._dispatch(graphs="T")
+@nx._dispatchable(graphs="T")
 def to_prufer_sequence(T):
     r"""Returns the Prüfer sequence of the given tree.
 
@@ -314,7 +315,7 @@ def to_prufer_sequence(T):
     return result
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_prufer_sequence(sequence):
     r"""Returns the tree corresponding to the given Prüfer sequence.
 
@@ -396,7 +397,7 @@ def from_prufer_sequence(sequence):
         # check the validity of the prufer sequence
         if v < 0 or v > n - 1:
             raise nx.NetworkXError(
-                f"Invalid Prufer sequence: Values must be between 0 and {n-1}, got {v}"
+                f"Invalid Prufer sequence: Values must be between 0 and {n - 1}, got {v}"
             )
         T.add_edge(u, v)
         not_orphaned.add(u)

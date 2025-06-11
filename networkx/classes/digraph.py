@@ -1,4 +1,5 @@
 """Base class for directed graphs."""
+
 from copy import deepcopy
 from functools import cached_property
 
@@ -25,6 +26,9 @@ class _CachedPropertyResetterAdjAndSucc:
     are set to new objects. In addition, the attributes `_succ` and `_adj`
     are synced so these two names point to the same object.
 
+    Warning: most of the time, when ``G._adj`` is set, ``G._pred`` should also
+    be set to maintain a valid data structure. They share datadicts.
+
     This object sits on a class and ensures that any instance of that
     class clears its cached properties "succ" and "adj" whenever the
     underlying instance attributes "_succ" or "_adj" are set to a new object.
@@ -39,10 +43,18 @@ class _CachedPropertyResetterAdjAndSucc:
         od["_adj"] = value
         od["_succ"] = value
         # reset cached properties
-        if "adj" in od:
-            del od["adj"]
-        if "succ" in od:
-            del od["succ"]
+        props = [
+            "adj",
+            "succ",
+            "edges",
+            "out_edges",
+            "degree",
+            "out_degree",
+            "in_degree",
+        ]
+        for prop in props:
+            if prop in od:
+                del od[prop]
 
 
 class _CachedPropertyResetterPred:
@@ -50,6 +62,9 @@ class _CachedPropertyResetterPred:
 
     This assumes that the ``cached_property`` ``G.pred`` should be reset whenever
     ``G._pred`` is set to a new value.
+
+    Warning: most of the time, when ``G._pred`` is set, ``G._adj`` should also
+    be set to maintain a valid data structure. They share datadicts.
 
     This object sits on a class and ensures that any instance of that
     class clears its cached property "pred" whenever the underlying
@@ -63,8 +78,11 @@ class _CachedPropertyResetterPred:
     def __set__(self, obj, value):
         od = obj.__dict__
         od["_pred"] = value
-        if "pred" in od:
-            del od["pred"]
+        # reset cached properties
+        props = ["pred", "in_edges", "degree", "out_degree", "in_degree"]
+        for prop in props:
+            if prop in od:
+                del od[prop]
 
 
 class DiGraph(Graph):
@@ -355,6 +373,7 @@ class DiGraph(Graph):
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
         # Note: self._succ = self._adj  # successor
 
+        self.__networkx_cache__ = {}
         # attempt to load graph with data
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
@@ -465,6 +484,7 @@ class DiGraph(Graph):
             attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
+        nx._clear_cache(self)
 
     def add_nodes_from(self, nodes_for_adding, **attr):
         """Add multiple nodes.
@@ -543,6 +563,7 @@ class DiGraph(Graph):
                 self._pred[n] = self.adjlist_inner_dict_factory()
                 self._node[n] = self.node_attr_dict_factory()
             self._node[n].update(newdict)
+        nx._clear_cache(self)
 
     def remove_node(self, n):
         """Remove node n.
@@ -585,6 +606,7 @@ class DiGraph(Graph):
         for u in self._pred[n]:
             del self._succ[u][n]  # remove all edges n-u in digraph
         del self._pred[n]  # remove node from pred
+        nx._clear_cache(self)
 
     def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
@@ -639,6 +661,7 @@ class DiGraph(Graph):
                 del self._pred[n]  # now remove node
             except KeyError:
                 pass  # silent failure on remove
+        nx._clear_cache(self)
 
     def add_edge(self, u_of_edge, v_of_edge, **attr):
         """Add an edge between u and v.
@@ -709,6 +732,7 @@ class DiGraph(Graph):
         datadict.update(attr)
         self._succ[u][v] = datadict
         self._pred[v][u] = datadict
+        nx._clear_cache(self)
 
     def add_edges_from(self, ebunch_to_add, **attr):
         """Add all the edges in ebunch_to_add.
@@ -791,6 +815,7 @@ class DiGraph(Graph):
             datadict.update(dd)
             self._succ[u][v] = datadict
             self._pred[v][u] = datadict
+        nx._clear_cache(self)
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.
@@ -824,6 +849,7 @@ class DiGraph(Graph):
             del self._pred[v][u]
         except KeyError as err:
             raise NetworkXError(f"The edge {u}-{v} not in graph.") from err
+        nx._clear_cache(self)
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -856,6 +882,7 @@ class DiGraph(Graph):
             if u in self._succ and v in self._succ[u]:
                 del self._succ[u][v]
                 del self._pred[v][u]
+        nx._clear_cache(self)
 
     def has_successor(self, u, v):
         """Returns True if node u has successor v.
@@ -1026,7 +1053,7 @@ class DiGraph(Graph):
         Examples
         --------
         >>> G = nx.DiGraph()
-        >>> G.add_edge(1, 2, color='blue')
+        >>> G.add_edge(1, 2, color="blue")
         >>> G.in_edges()
         InEdgeView([(1, 2)])
         >>> G.in_edges(nbunch=2)
@@ -1195,6 +1222,7 @@ class DiGraph(Graph):
         self._pred.clear()
         self._node.clear()
         self.graph.clear()
+        nx._clear_cache(self)
 
     def clear_edges(self):
         """Remove all edges from the graph without altering nodes.
@@ -1213,6 +1241,7 @@ class DiGraph(Graph):
             predecessor_dict.clear()
         for successor_dict in self._succ.values():
             successor_dict.clear()
+        nx._clear_cache(self)
 
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""

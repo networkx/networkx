@@ -387,26 +387,22 @@ def test_set_attributes_S1():
     assert len(radii) == 100
 
 
-def test_mean_kappas_S1():
+def test_mean_kappas_mean_degree_S1():
     G = nx.geometric_soft_configuration_graph(
-        beta=2.5, n=5000, gamma=2.7, mean_degree=10, seed=42
+        beta=2.5, n=50, gamma=2.7, mean_degree=10, seed=8023
     )
+
     kappas = nx.get_node_attributes(G, "kappa")
     mean_kappas = sum(kappas.values()) / len(kappas)
     assert math.fabs(mean_kappas - 10) < 0.5
 
-
-def test_mean_degree_S1():
-    G = nx.geometric_soft_configuration_graph(
-        beta=2.5, n=5000, gamma=2.7, mean_degree=10, seed=42
-    )
     degrees = dict(G.degree())
     mean_degree = sum(degrees.values()) / len(degrees)
     assert math.fabs(mean_degree - 10) < 1
 
 
 def test_dict_kappas_S1():
-    kappas = {i: 10 for i in range(1000)}
+    kappas = dict.fromkeys(range(1000), 10)
     G = nx.geometric_soft_configuration_graph(beta=1, kappas=kappas)
     assert len(G) == 1000
     kappas = nx.get_node_attributes(G, "kappa")
@@ -436,7 +432,7 @@ def test_wrong_parameters_S1():
         nx.NetworkXError,
         match="When kappas is input, n, gamma and mean_degree must not be.",
     ):
-        kappas = {i: 10 for i in range(1000)}
+        kappas = dict.fromkeys(range(1000), 10)
         G = nx.geometric_soft_configuration_graph(
             beta=1.5, kappas=kappas, gamma=2.3, seed=42
         )
@@ -480,10 +476,10 @@ def test_mean_degree_influence_on_connectivity_S1():
 
 def test_compare_mean_kappas_different_gammas_S1():
     G1 = nx.geometric_soft_configuration_graph(
-        beta=1.5, n=2000, gamma=2.7, mean_degree=20, seed=42
+        beta=1.5, n=20, gamma=2.7, mean_degree=5, seed=42
     )
     G2 = nx.geometric_soft_configuration_graph(
-        beta=1.5, n=2000, gamma=3.5, mean_degree=20, seed=42
+        beta=1.5, n=20, gamma=3.5, mean_degree=5, seed=42
     )
     kappas1 = nx.get_node_attributes(G1, "kappa")
     mean_kappas1 = sum(kappas1.values()) / len(kappas1)

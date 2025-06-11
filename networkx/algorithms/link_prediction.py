@@ -2,7 +2,6 @@
 Link prediction algorithms.
 """
 
-
 from math import log
 
 import networkx as nx
@@ -48,7 +47,7 @@ def _apply_prediction(G, func, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def resource_allocation_index(G, ebunch=None):
     r"""Compute the resource allocation index of all node pairs in ebunch.
 
@@ -111,7 +110,7 @@ def resource_allocation_index(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def jaccard_coefficient(G, ebunch=None):
     r"""Compute the Jaccard coefficient of all node pairs in ebunch.
 
@@ -169,14 +168,14 @@ def jaccard_coefficient(G, ebunch=None):
         union_size = len(set(G[u]) | set(G[v]))
         if union_size == 0:
             return 0
-        return len(list(nx.common_neighbors(G, u, v))) / union_size
+        return len(nx.common_neighbors(G, u, v)) / union_size
 
     return _apply_prediction(G, predict, ebunch)
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def adamic_adar_index(G, ebunch=None):
     r"""Compute the Adamic-Adar index of all node pairs in ebunch.
 
@@ -240,7 +239,7 @@ def adamic_adar_index(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
     r"""Return the CCPA score for each pair of nodes.
 
@@ -300,7 +299,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
         If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
 
     NetworkXAlgorithmError
-        If self loops exsists in `ebunch` or in `G` (if `ebunch` is `None`).
+        If self loops exist in `ebunch` or in `G` (if `ebunch` is `None`).
 
     NodeNotFound
         If `ebunch` has a node that is not in `G`.
@@ -329,7 +328,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
             if u == v:
                 raise nx.NetworkXAlgorithmError("Self loops are not supported")
 
-            return sum(1 for _ in nx.common_neighbors(G, u, v))
+            return len(nx.common_neighbors(G, u, v))
 
     else:
         spl = dict(nx.shortest_path_length(G))
@@ -340,16 +339,15 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
                 raise nx.NetworkXAlgorithmError("Self loops are not supported")
             path_len = spl[u].get(v, inf)
 
-            return alpha * sum(1 for _ in nx.common_neighbors(G, u, v)) + (
-                1 - alpha
-            ) * (G.number_of_nodes() / path_len)
+            n_nbrs = len(nx.common_neighbors(G, u, v))
+            return alpha * n_nbrs + (1 - alpha) * len(G) / path_len
 
     return _apply_prediction(G, predict, ebunch)
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def preferential_attachment(G, ebunch=None):
     r"""Compute the preferential attachment score of all node pairs in ebunch.
 
@@ -411,7 +409,7 @@ def preferential_attachment(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(node_attrs="community")
+@nx._dispatchable(node_attrs="community")
 def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
     r"""Count the number of common neighbors of all node pairs in ebunch
         using community information.
@@ -486,7 +484,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
     def predict(u, v):
         Cu = _community(G, u, community)
         Cv = _community(G, v, community)
-        cnbors = list(nx.common_neighbors(G, u, v))
+        cnbors = nx.common_neighbors(G, u, v)
         neighbors = (
             sum(_community(G, w, community) == Cu for w in cnbors) if Cu == Cv else 0
         )
@@ -497,7 +495,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(node_attrs="community")
+@nx._dispatchable(node_attrs="community")
 def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
     r"""Compute the resource allocation index of all node pairs in
     ebunch using community information.
@@ -584,7 +582,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(node_attrs="community")
+@nx._dispatchable(node_attrs="community")
 def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
     """Compute the ratio of within- and inter-cluster common neighbors
     of all node pairs in ebunch.
@@ -670,7 +668,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
         Cv = _community(G, v, community)
         if Cu != Cv:
             return 0
-        cnbors = set(nx.common_neighbors(G, u, v))
+        cnbors = nx.common_neighbors(G, u, v)
         within = {w for w in cnbors if _community(G, w, community) == Cu}
         inter = cnbors - within
         return len(within) / (len(inter) + delta)

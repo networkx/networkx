@@ -1,5 +1,5 @@
-"""Shortest paths and path lengths using the A* ("A star") algorithm.
-"""
+"""Shortest paths and path lengths using the A* ("A star") algorithm."""
+
 from heapq import heappop, heappush
 from itertools import count
 
@@ -9,7 +9,7 @@ from networkx.algorithms.shortest_paths.weighted import _weight_function
 __all__ = ["astar_path", "astar_path_length"]
 
 
-@nx._dispatch(edge_attrs="weight", preserve_node_attrs="heuristic")
+@nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
 def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=None):
     """Returns a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
@@ -91,17 +91,17 @@ def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=Non
     shortest_path, dijkstra_path
 
     """
-    if source not in G or target not in G:
-        msg = f"Either source {source} or target {target} is not in G"
-        raise nx.NodeNotFound(msg)
+    if source not in G:
+        raise nx.NodeNotFound(f"Source {source} is not in G")
+
+    if target not in G:
+        raise nx.NodeNotFound(f"Target {target} is not in G")
 
     if heuristic is None:
         # The default heuristic is h=0 - same as Dijkstra's algorithm
         def heuristic(u, v):
             return 0
 
-    push = heappush
-    pop = heappop
     weight = _weight_function(G, weight)
 
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
@@ -123,7 +123,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=Non
 
     while queue:
         # Pop the smallest item from queue.
-        _, __, curnode, dist, parent = pop(queue)
+        _, __, curnode, dist, parent = heappop(queue)
 
         if curnode == target:
             path = [curnode]
@@ -166,12 +166,12 @@ def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=Non
                 continue
 
             enqueued[neighbor] = ncost, h
-            push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
+            heappush(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
     raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 
-@nx._dispatch(edge_attrs="weight", preserve_node_attrs="heuristic")
+@nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
 def astar_path_length(
     G, source, target, heuristic=None, weight="weight", *, cutoff=None
 ):

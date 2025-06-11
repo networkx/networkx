@@ -1,4 +1,4 @@
-""" Functions measuring similarity using graph edit distance.
+"""Functions measuring similarity using graph edit distance.
 
 The graph edit distance is the number of edge/node changes needed
 to make two graphs isomorphic.
@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from itertools import product
 
 import networkx as nx
+from networkx.utils import np_random_state
 
 __all__ = [
     "graph_edit_distance",
@@ -32,11 +33,7 @@ __all__ = [
 ]
 
 
-def debug_print(*args, **kwargs):
-    print(*args, **kwargs)
-
-
-@nx._dispatch(
+@nx._dispatchable(
     graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
 )
 def graph_edit_distance(
@@ -210,7 +207,7 @@ def graph_edit_distance(
     return bestcost
 
 
-@nx._dispatch(graphs={"G1": 0, "G2": 1})
+@nx._dispatchable(graphs={"G1": 0, "G2": 1})
 def optimal_edit_paths(
     G1,
     G2,
@@ -318,11 +315,16 @@ def optimal_edit_paths(
     Returns
     -------
     edit_paths : list of tuples (node_edit_path, edge_edit_path)
-        node_edit_path : list of tuples (u, v)
-        edge_edit_path : list of tuples ((u1, v1), (u2, v2))
+       - node_edit_path : list of tuples ``(u, v)`` indicating node transformations
+         between `G1` and `G2`. ``u`` is `None` for insertion, ``v`` is `None`
+         for deletion.
+       - edge_edit_path : list of tuples ``((u1, v1), (u2, v2))`` indicating edge
+         transformations between `G1` and `G2`. ``(None, (u2,v2))`` for insertion
+         and ``((u1,v1), None)`` for deletion.
 
     cost : numeric
-        Optimal edit path cost (graph edit distance).
+        Optimal edit path cost (graph edit distance). When the cost
+        is zero, it indicates that `G1` and `G2` are isomorphic.
 
     Examples
     --------
@@ -333,6 +335,14 @@ def optimal_edit_paths(
     40
     >>> cost
     5.0
+
+    Notes
+    -----
+    To transform `G1` into a graph isomorphic to `G2`, apply the node
+    and edge edits in the returned ``edit_paths``.
+    In the case of isomorphic graphs, the cost is zero, and the paths
+    represent different isomorphic mappings (isomorphisms). That is, the
+    edits involve renaming nodes and edges to match the structure of `G2`.
 
     See Also
     --------
@@ -373,7 +383,7 @@ def optimal_edit_paths(
     return paths, bestcost
 
 
-@nx._dispatch(graphs={"G1": 0, "G2": 1})
+@nx._dispatchable(graphs={"G1": 0, "G2": 1})
 def optimize_graph_edit_distance(
     G1,
     G2,
@@ -524,7 +534,7 @@ def optimize_graph_edit_distance(
         yield cost
 
 
-@nx._dispatch(
+@nx._dispatchable(
     graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
 )
 def optimize_edit_paths(
@@ -692,14 +702,13 @@ def optimize_edit_paths(
         # Fixup dummy assignments:
         # each substitution i<->j should have dummy assignment m+j<->n+i
         # NOTE: fast reduce of Cv relies on it
-        # assert len(lsa_row_ind) == len(lsa_col_ind)
-        indexes = zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
-        subst_ind = [k for k, i, j in indexes if i < m and j < n]
-        indexes = zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
-        dummy_ind = [k for k, i, j in indexes if i >= m and j >= n]
-        # assert len(subst_ind) == len(dummy_ind)
-        lsa_row_ind[dummy_ind] = lsa_col_ind[subst_ind] + m
-        lsa_col_ind[dummy_ind] = lsa_row_ind[subst_ind] + n
+        # Create masks for substitution and dummy indices
+        is_subst = (lsa_row_ind < m) & (lsa_col_ind < n)
+        is_dummy = (lsa_row_ind >= m) & (lsa_col_ind >= n)
+
+        # Map dummy assignments to the correct indices
+        lsa_row_ind[is_dummy] = lsa_col_ind[is_subst] + m
+        lsa_col_ind[is_dummy] = lsa_row_ind[is_subst] + n
 
         return CostMatrix(
             C, lsa_row_ind, lsa_col_ind, C[lsa_row_ind, lsa_col_ind].sum()
@@ -959,21 +968,6 @@ def optimize_edit_paths(
                 cost: total cost of edit path
             NOTE: path costs are non-increasing
         """
-        # debug_print('matched-uv:', matched_uv)
-        # debug_print('matched-gh:', matched_gh)
-        # debug_print('matched-cost:', matched_cost)
-        # debug_print('pending-u:', pending_u)
-        # debug_print('pending-v:', pending_v)
-        # debug_print(Cv.C)
-        # assert list(sorted(G1.nodes)) == list(sorted(list(u for u, v in matched_uv if u is not None) + pending_u))
-        # assert list(sorted(G2.nodes)) == list(sorted(list(v for u, v in matched_uv if v is not None) + pending_v))
-        # debug_print('pending-g:', pending_g)
-        # debug_print('pending-h:', pending_h)
-        # debug_print(Ce.C)
-        # assert list(sorted(G1.edges)) == list(sorted(list(g for g, h in matched_gh if g is not None) + pending_g))
-        # assert list(sorted(G2.edges)) == list(sorted(list(h for g, h in matched_gh if h is not None) + pending_h))
-        # debug_print()
-
         if prune(matched_cost + Cv.ls + Ce.ls):
             return
 
@@ -1115,8 +1109,6 @@ def optimize_edit_paths(
         [ins_costs[i] if i == j else inf for i in range(n) for j in range(n)]
     ).reshape(n, n)
     Cv = make_CostMatrix(C, m, n)
-    # debug_print(f"Cv: {m} x {n}")
-    # debug_print(Cv.C)
 
     pending_g = list(G1.edges)
     pending_h = list(G2.edges)
@@ -1163,9 +1155,6 @@ def optimize_edit_paths(
         [ins_costs[i] if i == j else inf for i in range(n) for j in range(n)]
     ).reshape(n, n)
     Ce = make_CostMatrix(C, m, n)
-    # debug_print(f'Ce: {m} x {n}')
-    # debug_print(Ce.C)
-    # debug_print()
 
     maxcost_value = Cv.C.sum() + Ce.C.sum() + 1
 
@@ -1200,10 +1189,10 @@ def optimize_edit_paths(
         # assert sorted(G2.edges) == sorted(h for g, h in edge_path if h is not None)
         # print(vertex_path, edge_path, cost, file = sys.stderr)
         # assert cost == maxcost_value
-        yield list(vertex_path), list(edge_path), cost
+        yield list(vertex_path), list(edge_path), float(cost)
 
 
-@nx._dispatch
+@nx._dispatchable
 def simrank_similarity(
     G,
     source=None,
@@ -1223,9 +1212,9 @@ def simrank_similarity(
             in_neighbors_u = G.predecessors(u)
             in_neighbors_v = G.predecessors(v)
             scale = C / (len(in_neighbors_u) * len(in_neighbors_v))
-            return scale * sum(simrank(G, w, x)
-                               for w, x in product(in_neighbors_u,
-                                                   in_neighbors_v))
+            return scale * sum(
+                simrank(G, w, x) for w, x in product(in_neighbors_u, in_neighbors_v)
+            )
 
     where ``G`` is the graph, ``u`` is the source, ``v`` is the target,
     and ``C`` is a float decay or importance factor between 0 and 1.
@@ -1276,7 +1265,7 @@ def simrank_similarity(
         the similarity value for the given pair of nodes.
 
     Raises
-    -------
+    ------
     ExceededMaxIterations
         If the algorithm does not converge within ``max_iterations``.
 
@@ -1341,10 +1330,10 @@ def simrank_similarity(
 
     if isinstance(x, np.ndarray):
         if x.ndim == 1:
-            return dict(zip(G, x))
+            return dict(zip(G, x.tolist()))
         # else x.ndim == 2
-        return {u: dict(zip(G, row)) for u, row in zip(G, x)}
-    return x
+        return {u: dict(zip(G, row)) for u, row in zip(G, x.tolist())}
+    return float(x)
 
 
 def _simrank_similarity_python(
@@ -1510,13 +1499,13 @@ def _simrank_similarity_numpy(
         )
 
     if source is not None and target is not None:
-        return newsim[source, target]
+        return float(newsim[source, target])
     if source is not None:
         return newsim[source]
     return newsim
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def panther_similarity(
     G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
 ):
@@ -1532,7 +1521,7 @@ def panther_similarity(
     source : node
         Source node for which to find the top `k` similar other nodes
     k : int (default = 5)
-        The number of most similar nodes to return
+        The number of most similar nodes to return.
     path_length : int (default = 5)
         How long the randomly generated paths should be (``T`` in [1]_)
     c : float (default = 0.5)
@@ -1554,10 +1543,11 @@ def panther_similarity(
     similarity : dictionary
         Dictionary of nodes to similarity scores (as floats). Note:
         the self-similarity (i.e., ``v``) will not be included in
-        the returned dictionary.
+        the returned dictionary. So, for ``k = 5``, a dictionary of
+        top 4 nodes and their similarity scores will be returned.
 
     Raises
-    -------
+    ------
     NetworkXUnfeasible
         If `source` is an isolated node.
 
@@ -1565,7 +1555,7 @@ def panther_similarity(
         If `source` is not in `G`.
 
     Notes
-    -------
+    -----
         The isolated nodes in `G` are ignored.
 
     Examples
@@ -1643,17 +1633,26 @@ def panther_similarity(
     top_k_sorted = top_k_unsorted[np.argsort(S[top_k_unsorted])][::-1]
 
     # Add back the similarity scores
-    top_k_sorted_names = (node_map[n] for n in top_k_sorted)
-    top_k_with_val = dict(zip(top_k_sorted_names, S[top_k_sorted]))
+    top_k_with_val = dict(
+        zip(node_map[top_k_sorted].tolist(), S[top_k_sorted].tolist())
+    )
 
     # Remove the self-similarity
     top_k_with_val.pop(source, None)
     return top_k_with_val
 
 
-@nx._dispatch(edge_attrs="weight")
+@np_random_state(5)
+@nx._dispatchable(edge_attrs="weight")
 def generate_random_paths(
-    G, sample_size, path_length=5, index_map=None, weight="weight"
+    G,
+    sample_size,
+    path_length=5,
+    index_map=None,
+    weight="weight",
+    seed=None,
+    *,
+    source=None,
 ):
     """Randomly generate `sample_size` paths of length `path_length`.
 
@@ -1674,6 +1673,12 @@ def generate_random_paths(
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+    source : node, optional
+        Node to use as the starting point for all generated paths.
+        If None then starting nodes are selected at random with uniform probability.
 
     Returns
     -------
@@ -1682,18 +1687,30 @@ def generate_random_paths(
 
     Examples
     --------
-    Note that the return value is the list of paths:
+    The generator yields `sample_size` number of paths of length `path_length`
+    drawn from `G`:
 
-    >>> G = nx.star_graph(3)
-    >>> random_path = nx.generate_random_paths(G, 2)
+    >>> G = nx.complete_graph(5)
+    >>> next(nx.generate_random_paths(G, sample_size=1, path_length=3, seed=42))
+    [3, 4, 2, 3]
+    >>> list(nx.generate_random_paths(G, sample_size=3, path_length=4, seed=42))
+    [[3, 4, 2, 3, 0], [2, 0, 2, 1, 0], [2, 0, 4, 3, 0]]
 
     By passing a dictionary into `index_map`, it will build an
     inverted index mapping of nodes to the paths in which that node is present:
 
-    >>> G = nx.star_graph(3)
+    >>> G = nx.wheel_graph(10)
     >>> index_map = {}
-    >>> random_path = nx.generate_random_paths(G, 3, index_map=index_map)
-    >>> paths_containing_node_0 = [random_path[path_idx] for path_idx in index_map.get(0, [])]
+    >>> random_paths = list(
+    ...     nx.generate_random_paths(G, sample_size=3, index_map=index_map, seed=2771)
+    ... )
+    >>> random_paths
+    [[3, 2, 1, 9, 8, 7], [4, 0, 5, 6, 7, 8], [3, 0, 5, 0, 9, 8]]
+    >>> paths_containing_node_0 = [
+    ...     random_paths[path_idx] for path_idx in index_map.get(0, [])
+    ... ]
+    >>> paths_containing_node_0
+    [[4, 0, 5, 6, 7, 8], [3, 0, 5, 0, 9, 8]]
 
     References
     ----------
@@ -1705,19 +1722,30 @@ def generate_random_paths(
     """
     import numpy as np
 
+    randint_fn = (
+        seed.integers if isinstance(seed, np.random.Generator) else seed.randint
+    )
+
     # Calculate transition probabilities between
     # every pair of vertices according to Eq. (3)
     adj_mat = nx.to_numpy_array(G, weight=weight)
     inv_row_sums = np.reciprocal(adj_mat.sum(axis=1)).reshape(-1, 1)
     transition_probabilities = adj_mat * inv_row_sums
 
-    node_map = np.array(G)
+    node_map = list(G)
     num_nodes = G.number_of_nodes()
 
     for path_index in range(sample_size):
-        # Sample current vertex v = v_i uniformly at random
-        node_index = np.random.randint(0, high=num_nodes)
-        node = node_map[node_index]
+        if source is None:
+            # Sample current vertex v = v_i uniformly at random
+            node_index = randint_fn(num_nodes)
+            node = node_map[node_index]
+        else:
+            if source not in node_map:
+                raise nx.NodeNotFound(f"Initial node {source} not in G")
+
+            node = source
+            node_index = node_map.index(node)
 
         # Add v into p_r and add p_r into the path set
         # of v, i.e., P_v
@@ -1734,7 +1762,7 @@ def generate_random_paths(
         for _ in range(path_length):
             # Randomly sample a neighbor (v_j) according
             # to transition probabilities from ``node`` (v) to its neighbors
-            nbr_index = np.random.choice(
+            nbr_index = seed.choice(
                 num_nodes, p=transition_probabilities[starting_index]
             )
 

@@ -1,4 +1,5 @@
 """Bethe Hessian or deformed Laplacian matrix of graphs."""
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -7,7 +8,7 @@ __all__ = ["bethe_hessian_matrix"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def bethe_hessian_matrix(G, r=None, nodelist=None):
     r"""Returns the Bethe Hessian matrix of G.
 

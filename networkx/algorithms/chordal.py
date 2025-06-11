@@ -5,6 +5,7 @@ A graph is chordal if every cycle of length at least 4 has a chord
 (an edge joining two nodes not adjacent in the cycle).
 https://en.wikipedia.org/wiki/Chordal_graph
 """
+
 import sys
 
 import networkx as nx
@@ -28,7 +29,7 @@ class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def is_chordal(G):
     """Checks whether G is a chordal graph.
 
@@ -88,7 +89,7 @@ def is_chordal(G):
     return len(_find_chordality_breaker(G)) == 0
 
 
-@nx._dispatch
+@nx._dispatchable
 def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
     """Returns the set of induced nodes in the path from s to t.
 
@@ -168,7 +169,7 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
     return induced_nodes
 
 
-@nx._dispatch
+@nx._dispatchable
 def chordal_graph_cliques(G):
     """Returns all maximal cliques of a chordal graph.
 
@@ -241,7 +242,7 @@ def chordal_graph_cliques(G):
             yield frozenset(clique_wanna_be)
 
 
-@nx._dispatch
+@nx._dispatchable
 def chordal_graph_treewidth(G):
     """Returns the treewidth of the chordal graph G.
 
@@ -369,7 +370,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable(returns_graph=True)
 def complete_to_chordal_graph(G):
     """Return a copy of G completed to a chordal graph
 
@@ -411,11 +412,11 @@ def complete_to_chordal_graph(G):
     >>> H, alpha = complete_to_chordal_graph(G)
     """
     H = G.copy()
-    alpha = {node: 0 for node in H}
+    alpha = dict.fromkeys(H, 0)
     if nx.is_chordal(H):
         return H, alpha
     chords = set()
-    weight = {node: 0 for node in H.nodes()}
+    weight = dict.fromkeys(H.nodes(), 0)
     unnumbered_nodes = list(H.nodes())
     for i in range(len(H.nodes()), 0, -1):
         # get the node in unnumbered_nodes with the maximum weight

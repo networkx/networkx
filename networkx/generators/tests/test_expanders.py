@@ -1,6 +1,4 @@
-"""Unit tests for the :mod:`networkx.generators.expanders` module.
-
-"""
+"""Unit tests for the :mod:`networkx.generators.expanders` module."""
 
 import pytest
 
@@ -66,11 +64,21 @@ def test_paley_graph(p):
 @pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
 def test_maybe_regular_expander(d, n):
     pytest.importorskip("numpy")
-    G = nx.maybe_regular_expander(n, d)
+    G = nx.maybe_regular_expander(n, d, seed=1729)
 
     assert len(G) == n, "Should have n nodes"
     assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
     assert nx.is_k_regular(G, d), "Should be d-regular"
+
+
+def test_maybe_regular_expander_max_tries():
+    pytest.importorskip("numpy")
+    d, n = 4, 10
+    msg = "Too many iterations in maybe_regular_expander"
+    with pytest.raises(nx.NetworkXError, match=msg):
+        nx.maybe_regular_expander(n, d, max_tries=100, seed=6818)  # See gh-8048
+
+    nx.maybe_regular_expander(n, d, max_tries=130, seed=6818)
 
 
 @pytest.mark.parametrize("n", (3, 5, 6, 10))
@@ -79,25 +87,25 @@ def test_is_regular_expander(n):
     pytest.importorskip("scipy")
     G = nx.complete_graph(n)
 
-    assert nx.is_regular_expander(G) == True, "Should be a regular expander"
+    assert nx.is_regular_expander(G), "Should be a regular expander"
 
 
-@pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
+@pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16), (4, 2000)])
 def test_random_regular_expander(d, n):
     pytest.importorskip("numpy")
     pytest.importorskip("scipy")
-    G = nx.random_regular_expander_graph(n, d)
+    G = nx.random_regular_expander_graph(n, d, seed=1729)
 
     assert len(G) == n, "Should have n nodes"
     assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
     assert nx.is_k_regular(G, d), "Should be d-regular"
-    assert nx.is_regular_expander(G) == True, "Should be a regular expander"
+    assert nx.is_regular_expander(G), "Should be a regular expander"
 
 
 def test_random_regular_expander_explicit_construction():
     pytest.importorskip("numpy")
     pytest.importorskip("scipy")
-    G = nx.random_regular_expander_graph(d=4, n=5)
+    G = nx.random_regular_expander_graph(d=4, n=5, seed=1729)
 
     assert len(G) == 5 and len(G.edges) == 10, "Should be a complete graph"
 
@@ -127,7 +135,6 @@ def test_paley_graph_badinput():
 
 def test_maybe_regular_expander_badinput():
     pytest.importorskip("numpy")
-    pytest.importorskip("scipy")
 
     with pytest.raises(nx.NetworkXError, match="n must be a positive integer"):
         nx.maybe_regular_expander(n=-1, d=2)

@@ -1,6 +1,6 @@
+import random
 from itertools import chain, islice, tee
 from math import inf
-from random import shuffle
 
 import pytest
 
@@ -11,10 +11,9 @@ from networkx.algorithms.traversal.edgedfs import FORWARD, REVERSE
 def check_independent(basis):
     if len(basis) == 0:
         return
-    try:
-        import numpy as np
-    except ImportError:
-        return
+
+    np = pytest.importorskip("numpy")
+    sp = pytest.importorskip("scipy")  # Required by incidence_matrix
 
     H = nx.Graph()
     for b in basis:
@@ -278,7 +277,8 @@ class TestCycleEnumeration:
         # enumeration algorithms
 
         relabel = list(range(len(g)))
-        shuffle(relabel)
+        rng = random.Random(42)
+        rng.shuffle(relabel)
         label = dict(zip(g, relabel))
         unlabel = dict(zip(relabel, g))
         h = nx.relabel_nodes(g, label, copy=True)
@@ -345,6 +345,15 @@ class TestCycleEnumeration:
 
         expected_cycles = [c for c in expected_cycles if len(c) < 2]
         self.check_cycle_algorithm(g, expected_cycles, chordless=True, length_bound=1)
+
+    def test_chordless_cycles_multigraph_self_loops(self):
+        G = nx.MultiGraph([(1, 1), (2, 2), (1, 2), (1, 2)])
+        expected_cycles = [[1], [2]]
+        self.check_cycle_algorithm(G, expected_cycles, chordless=True)
+
+        G.add_edges_from([(2, 3), (3, 4), (3, 4), (1, 3)])
+        expected_cycles = [[1], [2], [3, 4]]
+        self.check_cycle_algorithm(G, expected_cycles, chordless=True)
 
     def test_directed_chordless_cycle_undirected(self):
         g = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 5), (5, 0), (5, 1), (0, 2)])
@@ -948,7 +957,7 @@ class TestGirth:
             (nx.petersen_graph(), 5),
             (nx.heawood_graph(), 6),
             (nx.pappus_graph(), 6),
-            (nx.random_tree(10, seed=42), inf),
+            (nx.random_labeled_tree(10, seed=42), inf),
             (nx.empty_graph(10), inf),
             (nx.Graph(chain(cycle_edges(range(5)), cycle_edges(range(6, 10)))), 4),
             (

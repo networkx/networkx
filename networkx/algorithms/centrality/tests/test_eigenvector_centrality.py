@@ -2,11 +2,10 @@ import math
 
 import pytest
 
+import networkx as nx
+
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
-
-
-import networkx as nx
 
 
 class TestEigenvectorCentrality:
@@ -18,7 +17,7 @@ class TestEigenvectorCentrality:
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
-        nstart = {n: 1 for n in G}
+        nstart = dict.fromkeys(G, 1)
         b = nx.eigenvector_centrality(G, nstart=nstart)
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
@@ -159,17 +158,29 @@ class TestEigenvectorCentralityExceptions:
         with pytest.raises(nx.NetworkXException):
             nx.eigenvector_centrality_numpy(nx.MultiGraph())
 
-    def test_empty(self):
+    def test_null(self):
         with pytest.raises(nx.NetworkXException):
             nx.eigenvector_centrality(nx.Graph())
 
-    def test_empty_numpy(self):
+    def test_null_numpy(self):
         with pytest.raises(nx.NetworkXException):
             nx.eigenvector_centrality_numpy(nx.Graph())
+
+    @pytest.mark.parametrize(
+        "G",
+        [
+            nx.empty_graph(3),
+            nx.DiGraph([(0, 1), (1, 2)]),
+        ],
+    )
+    def test_disconnected_numpy(self, G):
+        msg = "does not give consistent results for disconnected"
+        with pytest.raises(nx.AmbiguousSolution, match=msg):
+            nx.eigenvector_centrality_numpy(G)
 
     def test_zero_nstart(self):
         G = nx.Graph([(1, 2), (1, 3), (2, 3)])
         with pytest.raises(
             nx.NetworkXException, match="initial vector cannot have all zero values"
         ):
-            nx.eigenvector_centrality(G, nstart={v: 0 for v in G})
+            nx.eigenvector_centrality(G, nstart=dict.fromkeys(G, 0))

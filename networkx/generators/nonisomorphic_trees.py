@@ -9,32 +9,24 @@ the root.
 
 __all__ = ["nonisomorphic_trees", "number_of_nonisomorphic_trees"]
 
+from functools import lru_cache
+
 import networkx as nx
 
 
-@nx._dispatch(graphs=None)
-def nonisomorphic_trees(order, create="graph"):
-    """Returns a list of nonisomorphic trees
+@nx._dispatchable(graphs=None, returns_graph=True)
+def nonisomorphic_trees(order):
+    """Generates lists of nonisomorphic trees
 
     Parameters
     ----------
     order : int
-      order of the desired tree(s)
+       order of the desired tree(s)
 
-    create : graph or matrix (default="Graph)
-      If graph is selected a list of trees will be returned,
-      if matrix is selected a list of adjacency matrix will
-      be returned
-
-    Returns
-    -------
-    G : List of NetworkX Graphs
-
-    M : List of Adjacency matrices
-
-    References
-    ----------
-
+    Yields
+    ------
+    list of `networkx.Graph` instances
+       A list of nonisomorphic trees
     """
 
     if order < 2:
@@ -45,16 +37,16 @@ def nonisomorphic_trees(order, create="graph"):
     while layout is not None:
         layout = _next_tree(layout)
         if layout is not None:
-            if create == "graph":
-                yield _layout_to_graph(layout)
-            elif create == "matrix":
-                yield _layout_to_matrix(layout)
+            yield _layout_to_graph(layout)
             layout = _next_rooted_tree(layout)
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def number_of_nonisomorphic_trees(order):
     """Returns the number of nonisomorphic trees
+
+    Based on an algorithm by Alois P. Heinz in
+    `OEIS entry A000055 <https://oeis.org/A000055>`_. Complexity is ``O(n ** 3)``
 
     Parameters
     ----------
@@ -63,13 +55,38 @@ def number_of_nonisomorphic_trees(order):
 
     Returns
     -------
-    length : Number of nonisomorphic graphs for the given order
-
-    References
-    ----------
-
+    int
+       Number of nonisomorphic graphs for the given order
     """
-    return sum(1 for _ in nonisomorphic_trees(order))
+    if order < 2:
+        raise ValueError
+    return _unlabeled_trees(order)
+
+
+@lru_cache(None)
+def _unlabeled_trees(n):
+    """Implements OEIS A000055 (number of unlabeled trees)."""
+
+    value = 0
+    for k in range(n + 1):
+        value += _rooted_trees(k) * _rooted_trees(n - k)
+    if n % 2 == 0:
+        value -= _rooted_trees(n // 2)
+    return _rooted_trees(n) - value // 2
+
+
+@lru_cache(None)
+def _rooted_trees(n):
+    """Implements OEIS A000081 (number of unlabeled rooted trees)."""
+
+    if n < 2:
+        return n
+    value = 0
+    for j in range(1, n):
+        for d in range(1, n):
+            if j % d == 0:
+                value += d * _rooted_trees(d) * _rooted_trees(n - j)
+    return value // (n - 1)
 
 
 def _next_rooted_tree(predecessor, p=None):

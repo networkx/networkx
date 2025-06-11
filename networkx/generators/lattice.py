@@ -32,7 +32,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 @nodes_or_number([0, 1])
 def grid_2d_graph(m, n, periodic=False, create_using=None):
     """Returns the two-dimensional grid graph.
@@ -86,7 +86,7 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def grid_graph(dim, periodic=False):
     """Returns the *n*-dimensional grid graph.
 
@@ -124,15 +124,15 @@ def grid_graph(dim, periodic=False):
     >>> len(G)
     6
     """
+    from collections.abc import Iterable
+
     from networkx.algorithms.operators.product import cartesian_product
 
     if not dim:
         return empty_graph(0)
 
-    try:
-        func = (cycle_graph if p else path_graph for p in periodic)
-    except TypeError:
-        func = repeat(cycle_graph if periodic else path_graph)
+    periodic = repeat(periodic) if not isinstance(periodic, Iterable) else periodic
+    func = (cycle_graph if p else path_graph for p in periodic)
 
     G = next(func)(dim[0])
     for current_dim in dim[1:]:
@@ -143,7 +143,7 @@ def grid_graph(dim, periodic=False):
     return H
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def hypercube_graph(n):
     """Returns the *n*-dimensional hypercube graph.
 
@@ -170,7 +170,7 @@ def hypercube_graph(n):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def triangular_lattice_graph(
     m, n, periodic=False, with_positions=True, create_using=None
 ):
@@ -271,7 +271,7 @@ def triangular_lattice_graph(
     return H
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def hexagonal_lattice_graph(
     m, n, periodic=False, with_positions=True, create_using=None
 ):

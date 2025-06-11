@@ -1,4 +1,3 @@
-import tempfile
 from io import BytesIO
 
 import pytest
@@ -6,6 +5,19 @@ import pytest
 import networkx as nx
 import networkx.readwrite.graph6 as g6
 from networkx.utils import edges_equal, nodes_equal
+
+
+def test_from_graph6_invariant_to_trailing_newline():
+    """See gh-7557"""
+    G = nx.from_graph6_bytes(b">>graph6<<P~~~~~~~~~~~~~~~~~~~~~~{\n")
+    H = nx.from_graph6_bytes(b">>graph6<<P~~~~~~~~~~~~~~~~~~~~~~{")
+    assert nx.utils.graphs_equal(G, H)
+
+
+def test_from_graph6_raises_header_newline():
+    """graph6 headers must not be followed by a newline. See gh-7557."""
+    with pytest.raises(nx.NetworkXError):
+        G = nx.from_graph6_bytes(b">>graph6<<\nP~~~~~~~~~~~~~~~~~~~~~~{")
 
 
 class TestGraph6Utils:
@@ -104,8 +116,8 @@ class TestWriteGraph6:
             assert nodes_equal(G.nodes(), H.nodes())
             assert edges_equal(G.edges(), H.edges())
 
-    def test_write_path(self):
-        with tempfile.NamedTemporaryFile() as f:
+    def test_write_path(self, tmp_path):
+        with open(tmp_path / "test.g6", "w+b") as f:
             g6.write_graph6_file(nx.null_graph(), f)
             f.seek(0)
             assert f.read() == b">>graph6<<?\n"

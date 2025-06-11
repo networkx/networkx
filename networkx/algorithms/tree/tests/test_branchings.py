@@ -3,10 +3,10 @@ from operator import itemgetter
 
 import pytest
 
-np = pytest.importorskip("numpy")
-
 import networkx as nx
 from networkx.algorithms.tree import branchings, recognition
+
+np = pytest.importorskip("numpy")
 
 #
 # Explicitly discussed examples from Edmonds paper.
@@ -470,40 +470,6 @@ def test_edge_attribute_preservation_multigraph():
     assert B[0][1][0]["otherattr2"] == 3
 
 
-# TODO remove with Edmonds
-def test_Edmond_kind():
-    G = nx.MultiGraph()
-
-    edgelist = [
-        (0, 1, [("weight", 5), ("otherattr", 1), ("otherattr2", 3)]),
-        (0, 2, [("weight", 5), ("otherattr", 2), ("otherattr2", 2)]),
-        (1, 2, [("weight", 6), ("otherattr", 3), ("otherattr2", 1)]),
-    ]
-    G.add_edges_from(edgelist * 2)  # Make sure we have duplicate edge paths
-    ed = branchings.Edmonds(G)
-    with pytest.raises(nx.NetworkXException, match="Unknown value for `kind`."):
-        ed.find_optimum(kind="lol", preserve_attrs=True)
-
-
-# TODO remove with MultiDiGraph_EdgeKey
-def test_MultiDiGraph_EdgeKey():
-    # test if more than one edges has the same key
-    G = branchings.MultiDiGraph_EdgeKey()
-    G.add_edge(1, 2, "A")
-    with pytest.raises(Exception, match="Key 'A' is already in use."):
-        G.add_edge(3, 4, "A")
-    # test if invalid edge key was specified
-    with pytest.raises(KeyError, match="Invalid edge key 'B'"):
-        G.remove_edge_with_key("B")
-    # test remove_edge_with_key works
-    if G.remove_edge_with_key("A"):
-        assert list(G.edges(data=True)) == []
-    # test that remove_edges_from doesn't work
-    G.add_edge(1, 3, "A")
-    with pytest.raises(NotImplementedError):
-        G.remove_edges_from([(1, 3)])
-
-
 def test_edge_attribute_discard():
     # Test that edge attributes are discarded if we do not specify to keep them
     G = nx.Graph()
@@ -630,3 +596,29 @@ def test_arborescence_iterator_initial_partition():
         for e in excluded_edges:
             assert e not in B.edges
     assert arborescence_count == 16
+
+
+def test_branchings_with_default_weights():
+    """
+    Tests that various branching algorithms work on graphs without weights.
+    For more information, see issue #7279.
+    """
+    graph = nx.erdos_renyi_graph(10, p=0.2, directed=True, seed=123)
+
+    assert all("weight" not in d for (u, v, d) in graph.edges(data=True)), (
+        "test is for graphs without a weight attribute"
+    )
+
+    # Calling these functions will modify graph inplace to add weights
+    # copy the graph to avoid this.
+    nx.minimum_spanning_arborescence(graph.copy())
+    nx.maximum_spanning_arborescence(graph.copy())
+    nx.minimum_branching(graph.copy())
+    nx.maximum_branching(graph.copy())
+    nx.algorithms.tree.minimal_branching(graph.copy())
+    nx.algorithms.tree.branching_weight(graph.copy())
+    nx.algorithms.tree.greedy_branching(graph.copy())
+
+    assert all("weight" not in d for (u, v, d) in graph.edges(data=True)), (
+        "The above calls should not modify the initial graph in-place"
+    )

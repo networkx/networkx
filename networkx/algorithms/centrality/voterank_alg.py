@@ -1,10 +1,11 @@
 """Algorithm to select influential nodes in a graph using VoteRank."""
+
 import networkx as nx
 
 __all__ = ["voterank"]
 
 
-@nx._dispatch
+@nx._dispatchable
 def voterank(G, number_of_nodes=None):
     """Select a list of influential nodes in a graph using VoteRank algorithm
 

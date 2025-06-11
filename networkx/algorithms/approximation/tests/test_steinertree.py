@@ -1,7 +1,11 @@
 import pytest
 
 import networkx as nx
-from networkx.algorithms.approximation.steinertree import metric_closure, steiner_tree
+from networkx.algorithms.approximation.steinertree import (
+    _remove_nonterminal_leaves,
+    metric_closure,
+    steiner_tree,
+)
 from networkx.utils import edges_equal
 
 
@@ -189,3 +193,73 @@ class TestSteinerTree:
         for method in self.methods:
             S = steiner_tree(G, terminal_nodes, method=method)
             assert edges_equal(S.edges(data=True, keys=True), expected_edges)
+
+    def test_remove_nonterminal_leaves(self):
+        G = nx.path_graph(10)
+        _remove_nonterminal_leaves(G, [4, 5, 6])
+
+        assert list(G) == [4, 5, 6]  # only the terminal nodes are left
+
+
+@pytest.mark.parametrize("method", ("kou", "mehlhorn"))
+def test_steiner_tree_weight_attribute(method):
+    G = nx.star_graph(4)
+    # Add an edge attribute that is named something other than "weight"
+    nx.set_edge_attributes(G, dict.fromkeys(G.edges, 10), name="distance")
+    H = nx.approximation.steiner_tree(G, [1, 3], method=method, weight="distance")
+    assert nx.utils.edges_equal(H.edges, [(0, 1), (0, 3)])
+
+
+@pytest.mark.parametrize("method", ("kou", "mehlhorn"))
+def test_steiner_tree_multigraph_weight_attribute(method):
+    G = nx.cycle_graph(3, create_using=nx.MultiGraph)
+    nx.set_edge_attributes(G, dict.fromkeys(G.edges, 10), name="distance")
+    G.add_edge(2, 0, distance=5)
+    H = nx.approximation.steiner_tree(G, list(G), method=method, weight="distance")
+    assert len(H.edges) == 2 and H.has_edge(2, 0, key=1)
+    assert sum(dist for *_, dist in H.edges(data="distance")) == 15
+
+
+@pytest.mark.parametrize("method", (None, "mehlhorn", "kou"))
+def test_steiner_tree_methods(method):
+    G = nx.star_graph(4)
+    expected = nx.Graph([(0, 1), (0, 3)])
+    st = nx.approximation.steiner_tree(G, [1, 3], method=method)
+    assert nx.utils.edges_equal(st.edges, expected.edges)
+
+
+def test_steiner_tree_method_invalid():
+    G = nx.star_graph(4)
+    with pytest.raises(
+        ValueError, match="invalid_method is not a valid choice for an algorithm."
+    ):
+        nx.approximation.steiner_tree(G, terminal_nodes=[1, 3], method="invalid_method")
+
+
+def test_steiner_tree_remove_non_terminal_leaves_self_loop_edges():
+    # To verify that the last step of the steiner tree approximation
+    # behaves in the case where a non-terminal leaf has a self loop edge
+    G = nx.path_graph(10)
+
+    # Add self loops to the terminal nodes
+    G.add_edges_from([(2, 2), (3, 3), (4, 4), (7, 7), (8, 8)])
+
+    # Remove non-terminal leaves
+    _remove_nonterminal_leaves(G, [4, 5, 6, 7])
+
+    # The terminal nodes should be left
+    assert list(G) == [4, 5, 6, 7]  # only the terminal nodes are left
+
+
+def test_steiner_tree_non_terminal_leaves_multigraph_self_loop_edges():
+    # To verify that the last step of the steiner tree approximation
+    # behaves in the case where a non-terminal leaf has a self loop edge
+    G = nx.MultiGraph()
+    G.add_edges_from([(i, i + 1) for i in range(10)])
+    G.add_edges_from([(2, 2), (3, 3), (4, 4), (4, 4), (7, 7)])
+
+    # Remove non-terminal leaves
+    _remove_nonterminal_leaves(G, [4, 5, 6, 7])
+
+    # Only the terminal nodes should be left
+    assert list(G) == [4, 5, 6, 7]

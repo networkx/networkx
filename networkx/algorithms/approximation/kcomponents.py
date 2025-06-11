@@ -1,5 +1,5 @@
-""" Fast approximation for k-component structure
-"""
+"""Fast approximation for k-component structure"""
+
 import itertools
 from collections import defaultdict
 from collections.abc import Mapping
@@ -14,7 +14,7 @@ __all__ = ["k_components"]
 
 
 @not_implemented_for("directed")
-@nx._dispatch(name="approximate_k_components")
+@nx._dispatchable(name="approximate_k_components")
 def k_components(G, min_density=0.95):
     r"""Returns the approximate k-component structure of a graph G.
 
@@ -230,9 +230,7 @@ class _AntiGraph(nx.Graph):
 
         """
         all_edge_dict = self.all_edge_dict
-        return {
-            node: all_edge_dict for node in set(self._adj) - set(self._adj[n]) - {n}
-        }
+        return dict.fromkeys(set(self._adj) - set(self._adj[n]) - {n}, all_edge_dict)
 
     def neighbors(self, n):
         """Returns an iterator over all neighbors of node n in the

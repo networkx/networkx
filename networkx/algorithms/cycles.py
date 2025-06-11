@@ -4,7 +4,7 @@ Cycle finding algorithms
 ========================
 """
 
-from collections import Counter, defaultdict
+from collections import defaultdict
 from itertools import combinations, product
 from math import inf
 
@@ -24,7 +24,7 @@ __all__ = [
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def cycle_basis(G, root=None):
     """Returns a list of cycles which form a basis for cycles of G.
 
@@ -66,6 +66,7 @@ def cycle_basis(G, root=None):
     See Also
     --------
     simple_cycles
+    minimum_cycle_basis
     """
     gnodes = dict.fromkeys(G)  # set-like object that maintains node order
     cycles = []
@@ -101,11 +102,11 @@ def cycle_basis(G, root=None):
     return cycles
 
 
-@nx._dispatch
+@nx._dispatchable
 def simple_cycles(G, length_bound=None):
     """Find simple cycles (elementary circuits) of a graph.
 
-    A `simple cycle`, or `elementary circuit`, is a closed path where
+    A "simple cycle", or "elementary circuit", is a closed path where
     no node appears twice.  In a directed graph, two simple cycles are distinct
     if they are not cyclic permutations of each other.  In an undirected graph,
     two simple cycles are distinct if they are not cyclic permutations of each
@@ -114,13 +115,13 @@ def simple_cycles(G, length_bound=None):
     Optionally, the cycles are bounded in length.  In the unbounded case, we use
     a nonrecursive, iterator/generator version of Johnson's algorithm [1]_.  In
     the bounded case, we use a version of the algorithm of Gupta and
-    Suzumura[2]_. There may be better algorithms for some cases [3]_ [4]_ [5]_.
+    Suzumura [2]_. There may be better algorithms for some cases [3]_ [4]_ [5]_.
 
     The algorithms of Johnson, and Gupta and Suzumura, are enhanced by some
-    well-known preprocessing techniques.  When G is directed, we restrict our
-    attention to strongly connected components of G, generate all simple cycles
+    well-known preprocessing techniques.  When `G` is directed, we restrict our
+    attention to strongly connected components of `G`, generate all simple cycles
     containing a certain node, remove that node, and further decompose the
-    remainder into strongly connected components.  When G is undirected, we
+    remainder into strongly connected components.  When `G` is undirected, we
     restrict our attention to biconnected components, generate all simple cycles
     containing a particular edge, remove that edge, and further decompose the
     remainder into biconnected components.
@@ -133,12 +134,12 @@ def simple_cycles(G, length_bound=None):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-       A directed graph
+    G : NetworkX Graph
+       A networkx graph. Undirected, directed, and multigraphs are all supported.
 
     length_bound : int or None, optional (default=None)
-       If length_bound is an int, generate all simple cycles of G with length at
-       most length_bound.  Otherwise, generate all simple cycles of G.
+       If `length_bound` is an int, generate all simple cycles of `G` with length at
+       most `length_bound`.  Otherwise, generate all simple cycles of `G`.
 
     Yields
     ------
@@ -147,8 +148,7 @@ def simple_cycles(G, length_bound=None):
 
     Examples
     --------
-    >>> edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]
-    >>> G = nx.DiGraph(edges)
+    >>> G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
     >>> sorted(nx.simple_cycles(G))
     [[0], [0, 1, 2], [0, 2], [1, 2], [2]]
 
@@ -163,15 +163,15 @@ def simple_cycles(G, length_bound=None):
 
     Notes
     -----
-    When length_bound is None, the time complexity is $O((n+e)(c+1))$ for $n$
-    nodes, $e$ edges and $c$ simple circuits.  Otherwise, when length_bound > 1,
+    When `length_bound` is None, the time complexity is $O((n+e)(c+1))$ for $n$
+    nodes, $e$ edges and $c$ simple circuits.  Otherwise, when ``length_bound > 1``,
     the time complexity is $O((c+n)(k-1)d^k)$ where $d$ is the average degree of
-    the nodes of G and $k$ = length_bound.
+    the nodes of `G` and $k$ = `length_bound`.
 
     Raises
     ------
     ValueError
-        when length_bound < 0.
+        when ``length_bound < 0``.
 
     References
     ----------
@@ -439,7 +439,7 @@ def _bounded_cycle_search(G, path, length_bound):
 
     """
     G = _NeighborhoodCache(G)
-    lock = {v: 0 for v in path}
+    lock = dict.fromkeys(path, 0)
     B = defaultdict(set)
     start = path[0]
     stack = [iter(G[path[-1]])]
@@ -474,7 +474,7 @@ def _bounded_cycle_search(G, path, length_bound):
                     B[w].add(v)
 
 
-@nx._dispatch
+@nx._dispatchable
 def chordless_cycles(G, length_bound=None):
     """Find simple chordless cycles of a graph.
 
@@ -585,11 +585,13 @@ def chordless_cycles(G, length_bound=None):
     # Nodes with loops cannot belong to longer cycles.  Let's delete them here.
     # also, we implicitly reduce the multiplicity of edges down to 1 in the case
     # of multiedges.
+    loops = set(nx.nodes_with_selfloops(G))
+    edges = ((u, v) for u in G if u not in loops for v in G._adj[u] if v not in loops)
     if directed:
-        F = nx.DiGraph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
+        F = nx.DiGraph(edges)
         B = F.to_undirected(as_view=False)
     else:
-        F = nx.Graph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
+        F = nx.Graph(edges)
         B = None
 
     # If we're given a multigraph, we have a few cases to consider with parallel
@@ -614,6 +616,8 @@ def chordless_cycles(G, length_bound=None):
             B = F.copy()
             visited = set()
         for u, Gu in G.adj.items():
+            if u in loops:
+                continue
             if directed:
                 multiplicity = ((v, len(Guv)) for v, Guv in Gu.items())
                 for v, m in multiplicity:
@@ -763,7 +767,7 @@ def _chordless_cycle_search(F, B, path, length_bound):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable(mutates_input=True)
 def recursive_simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
@@ -873,7 +877,7 @@ def recursive_simple_cycles(G):
     return result
 
 
-@nx._dispatch
+@nx._dispatchable
 def find_cycle(G, source=None, orientation=None):
     """Returns a cycle found via depth-first traversal.
 
@@ -1035,7 +1039,7 @@ def find_cycle(G, source=None, orientation=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def minimum_cycle_basis(G, weight=None):
     """Returns a minimum weight cycle basis for G
 
@@ -1165,7 +1169,7 @@ def _min_cycle(G, orth, weight):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def girth(G):
     """Returns the girth of the graph.
 

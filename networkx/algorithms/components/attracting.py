@@ -1,4 +1,5 @@
 """Attracting components."""
+
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -10,7 +11,7 @@ __all__ = [
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def attracting_components(G):
     """Generates the attracting components in `G`.
 
@@ -54,7 +55,7 @@ def attracting_components(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def number_attracting_components(G):
     """Returns the number of attracting components in `G`.
 
@@ -83,7 +84,7 @@ def number_attracting_components(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def is_attracting_component(G):
     """Returns True if `G` consists of a single attracting component.
 

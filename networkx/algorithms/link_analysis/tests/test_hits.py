@@ -1,15 +1,14 @@
 import pytest
 
 import networkx as nx
-
-np = pytest.importorskip("numpy")
-sp = pytest.importorskip("scipy")
-
 from networkx.algorithms.link_analysis.hits_alg import (
     _hits_numpy,
     _hits_python,
     _hits_scipy,
 )
+
+np = pytest.importorskip("numpy")
+sp = pytest.importorskip("scipy")
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
@@ -48,7 +47,7 @@ class TestHITS:
             assert h[n] == pytest.approx(G.h[n], abs=1e-4)
         for n in G:
             assert a[n] == pytest.approx(G.a[n], abs=1e-4)
-        nstart = {i: 1.0 / 2 for i in G}
+        nstart = dict.fromkeys(G, 1.0 / 2)
         h, a = hits_alg(G, nstart=nstart)
         for n in G:
             assert h[n] == pytest.approx(G.h[n], abs=1e-4)

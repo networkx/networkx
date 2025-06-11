@@ -15,6 +15,7 @@ and biconnected_components algorithms but might also work for other
 algorithms.
 
 """
+
 import matplotlib.pyplot as plt
 import networkx as nx
 from networkx import Graph
@@ -54,9 +55,7 @@ class AntiGraph(Graph):
            The adjacency dictionary for nodes connected to n.
 
         """
-        return {
-            node: self.all_edge_dict for node in set(self.adj) - set(self.adj[n]) - {n}
-        }
+        return dict.fromkeys(set(self.adj) - set(self.adj[n]) - {n}, self.all_edge_dict)
 
     def neighbors(self, n):
         """Return an iterator over all neighbors of node n in the
@@ -106,10 +105,9 @@ class AntiGraph(Graph):
             nodes_nbrs = (
                 (
                     n,
-                    {
-                        v: self.all_edge_dict
-                        for v in set(self.adj) - set(self.adj[n]) - {n}
-                    },
+                    dict.fromkeys(
+                        set(self.adj) - set(self.adj[n]) - {n}, self.all_edge_dict
+                    ),
                 )
                 for n in self.nodes()
             )
@@ -120,10 +118,9 @@ class AntiGraph(Graph):
             nodes_nbrs = (
                 (
                     n,
-                    {
-                        v: self.all_edge_dict
-                        for v in set(self.nodes()) - set(self.adj[n]) - {n}
-                    },
+                    dict.fromkeys(
+                        set(self.nodes()) - set(self.adj[n]) - {n}, self.all_edge_dict
+                    ),
                 )
                 for n in self.nbunch_iter(nbunch)
             )

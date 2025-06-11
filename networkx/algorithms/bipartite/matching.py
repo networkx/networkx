@@ -36,6 +36,7 @@ the smaller of the two partitions, and for which the sum of the weights of the
 edges included in the matching is minimal.
 
 """
+
 import collections
 import itertools
 
@@ -54,7 +55,7 @@ __all__ = [
 INFINITY = float("inf")
 
 
-@nx._dispatch
+@nx._dispatchable
 def hopcroft_karp_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
@@ -154,8 +155,8 @@ def hopcroft_karp_matching(G, top_nodes=None):
 
     # Initialize the "global" variables that maintain state during the search.
     left, right = bipartite_sets(G, top_nodes)
-    leftmatches = {v: None for v in left}
-    rightmatches = {v: None for v in right}
+    leftmatches = dict.fromkeys(left)
+    rightmatches = dict.fromkeys(right)
     distances = {}
     queue = collections.deque()
 
@@ -181,7 +182,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
     return dict(itertools.chain(leftmatches.items(), rightmatches.items()))
 
 
-@nx._dispatch
+@nx._dispatchable
 def eppstein_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
@@ -249,7 +250,7 @@ def eppstein_matching(G, top_nodes=None):
         # layer
         preds = {}
         unmatched = []
-        pred = {u: unmatched for u in G}
+        pred = dict.fromkeys(G, unmatched)
         for v in matching:
             del pred[matching[v]]
         layer = list(pred)
@@ -420,7 +421,7 @@ def _connected_by_alternating_paths(G, matching, targets):
     }
 
 
-@nx._dispatch
+@nx._dispatchable
 def to_vertex_cover(G, matching, top_nodes=None):
     """Returns the minimum vertex cover corresponding to the given maximum
     matching of the bipartite graph `G`.
@@ -501,7 +502,7 @@ def to_vertex_cover(G, matching, top_nodes=None):
 maximum_matching = hopcroft_karp_matching
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     r"""Returns a minimum weight full matching of the bipartite graph `G`.
 

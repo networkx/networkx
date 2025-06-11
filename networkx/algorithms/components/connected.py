@@ -1,4 +1,5 @@
 """Connected components."""
+
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -13,7 +14,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def connected_components(G):
     """Generate connected components.
 
@@ -61,15 +62,16 @@ def connected_components(G):
 
     """
     seen = set()
+    n = len(G)
     for v in G:
         if v not in seen:
-            c = _plain_bfs(G, v)
+            c = _plain_bfs(G, n - len(seen), v)
             seen.update(c)
             yield c
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def number_connected_components(G):
     """Returns the number of connected components.
 
@@ -109,7 +111,7 @@ def number_connected_components(G):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def is_connected(G):
     """Returns True if the graph is connected, False otherwise.
 
@@ -147,15 +149,16 @@ def is_connected(G):
     For undirected graphs only.
 
     """
-    if len(G) == 0:
+    n = len(G)
+    if n == 0:
         raise nx.NetworkXPointlessConcept(
             "Connectivity is undefined for the null graph."
         )
-    return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
+    return sum(1 for node in _plain_bfs(G, n, arbitrary_element(G))) == len(G)
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def node_connected_component(G, n):
     """Returns the set of nodes in the component of graph containing node n.
 
@@ -192,13 +195,12 @@ def node_connected_component(G, n):
     For undirected graphs only.
 
     """
-    return _plain_bfs(G, n)
+    return _plain_bfs(G, len(G), n)
 
 
-def _plain_bfs(G, source):
+def _plain_bfs(G, n, source):
     """A fast BFS node generator"""
     adj = G._adj
-    n = len(adj)
     seen = {source}
     nextlevel = [source]
     while nextlevel:
