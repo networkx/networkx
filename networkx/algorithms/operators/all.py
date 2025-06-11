@@ -4,6 +4,8 @@ from itertools import chain, repeat
 
 import networkx as nx
 
+"""Operations on many graphs."""
+
 __all__ = ["union_all", "compose_all", "disjoint_union_all", "intersection_all"]
 
 
@@ -152,14 +154,39 @@ def disjoint_union_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
+    _graphs = list(graphs)
+    if not _graphs:
+        raise ValueError("cannot apply disjoint_union_all to an empty list")
 
-    def yield_relabeled(graphs):
-        first_label = 0
-        for G in graphs:
-            yield nx.convert_node_labels_to_integers(G, first_label=first_label)
-            first_label += len(G)
+    # Fast relabeling: flatten all nodes into consecutive ints in one pass
+    result_graph_type = _graphs[0].__class__
+    is_multi = _graphs[0].is_multigraph()
+    is_directed = _graphs[0].is_directed()
+    R = result_graph_type()
+    start = 0
 
-    R = union_all(yield_relabeled(graphs))
+    for G in _graphs:
+        if G.is_directed() != is_directed:
+            raise nx.NetworkXError("All graphs must be directed or undirected.")
+        if G.is_multigraph() != is_multi:
+            raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
+
+        mapping = {node: i for i, node in enumerate(G.nodes, start)}
+        start += len(G)
+
+        # node/edge relabeling is efficiently handled here, avoiding copies where possible
+        R.add_nodes_from((mapping[n], d) for n, d in G.nodes(data=True))
+        if is_multi:
+            R.add_edges_from(
+                (mapping[u], mapping[v], k, datadict)
+                for u, v, k, datadict in G.edges(keys=True, data=True)
+            )
+        else:
+            R.add_edges_from(
+                (mapping[u], mapping[v], datadict)
+                for u, v, datadict in G.edges(data=True)
+            )
+        R.graph.update(G.graph)  # Last-wins for graph attributes
 
     return R
 
