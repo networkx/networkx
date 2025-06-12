@@ -75,10 +75,10 @@ class DirectedAlgorithmBenchmarks:
         self.graphs_dict = dict(zip(self.params, self._graphs))
 
     def time_tarjan_scc(self, graph):
-        _ = nx.strongly_connected_components(self.graphs_dict[graph])
+        _ = list(nx.strongly_connected_components(self.graphs_dict[graph]))
 
     def time_kosaraju_scc(self, graph):
-        _ = nx.kosaraju_strongly_connected_components(self.graphs_dict[graph])
+        _ = list(nx.kosaraju_strongly_connected_components(self.graphs_dict[graph]))
 
 
 class AlgorithmBenchmarksConnectedGraphsOnly:
