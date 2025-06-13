@@ -318,7 +318,7 @@ def is_reachable(G, s, t):
            <http://eccc.hpi-web.de/report/2001/092/>
     """
 
-    def two_neighborhood(G, v):
+    def two_neighborhood(adj_matrix, v, node_indices):
         """Returns the set of nodes at distance at most two from `v`.
 
         `G` must be a graph and `v` a node in that graph.
@@ -329,10 +329,14 @@ def is_reachable(G, s, t):
 
         """
         return {
-            x for x in G if x == v or x in G[v] or any(is_path(G, [v, z, x]) for z in G)
+            x
+            for x in node_indices
+            if x == v
+            or adj_matrix[v, x]
+            or any(adj_matrix[v, z] and adj_matrix[z, x] for z in node_indices)
         }
 
-    def is_closed(G, nodes):
+    def is_closed(adj_matrix, nodes, node_indices):
         """Decides whether the given set of nodes is closed.
 
         A set *S* of nodes is *closed* if for each node *u* in the graph
@@ -340,10 +344,21 @@ def is_reachable(G, s, t):
         *u* to *v*.
 
         """
-        return all(v in G[u] for u in set(G) - nodes for v in nodes)
+        return all(adj_matrix[u, v] for u in set(node_indices) - nodes for v in nodes)
 
-    neighborhoods = [two_neighborhood(G, v) for v in G]
-    return all(not (is_closed(G, S) and s in S and t not in S) for S in neighborhoods)
+    adj_matrix = nx.to_numpy_array(G, dtype=bool)
+    node_map = {node: i for i, node in enumerate(G.nodes)}
+    node_indices = range(adj_matrix.shape[0])
+    s = node_map[s]
+    t = node_map[t]
+
+    neighborhoods = [
+        two_neighborhood(adj_matrix, v, node_indices) for v in node_indices
+    ]
+    return all(
+        not (is_closed(adj_matrix, S, node_indices) and s in S and t not in S)
+        for S in neighborhoods
+    )
 
 
 @not_implemented_for("undirected")
