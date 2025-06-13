@@ -23,8 +23,6 @@ To access the functions in this module, you must access them through the
 
 from itertools import combinations
 
-import numpy as np
-
 import networkx as nx
 from networkx.algorithms.simple_paths import is_simple_path as is_path
 from networkx.utils import arbitrary_element, not_implemented_for, py_random_state
@@ -319,6 +317,8 @@ def is_reachable(G, s, t):
            *Electronic Colloquium on Computational Complexity*. 2001.
            <http://eccc.hpi-web.de/report/2001/092/>
     """
+
+    import numpy as np
 
     def two_neighborhood(adj_matrix, v, node_indices):
         """Returns the set of nodes at distance at most two from `v`.
