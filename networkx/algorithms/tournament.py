@@ -321,7 +321,9 @@ def is_reachable(G, s, t):
     def two_neighborhood(adj_matrix, v, node_indices):
         """Returns the set of nodes at distance at most two from `v`.
 
-        `G` must be a graph and `v` a node in that graph.
+        `adj_matrix` must be a numpy 2D boolean array representing the
+        adjacency matrix of the graph, `v` is the index of a node in the graph,
+        and `node_indices` is an iterable of all node indices in the graph.
 
         The returned set includes the nodes at distance zero (that is,
         the node `v` itself), the nodes at distance one (that is, the
