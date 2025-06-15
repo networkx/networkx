@@ -227,7 +227,7 @@ def triadic_census(G, nodelist=None):
         dbl_edges_outside = dbl // 2
 
     # Initialize the count for each triad to be zero.
-    census = dict.fromkeys(TRIAD_NAMES, 0)
+    census = {name: 0 for name in TRIAD_NAMES}
     # Main loop over nodes
     for v in nodeset:
         vnbrs = nbrs[v]

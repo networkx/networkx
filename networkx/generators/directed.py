@@ -549,8 +549,8 @@ def _random_k_out_graph_numpy(n, k, alpha, self_loops=True, seed=None):
 @py_random_state(4)
 def _random_k_out_graph_python(n, k, alpha, self_loops=True, seed=None):
     G = nx.empty_graph(n, create_using=nx.MultiDiGraph)
-    weights = Counter(dict.fromkeys(G, alpha))
-    out_strengths = Counter(dict.fromkeys(G, 0))
+    weights = Counter({v: alpha for v in G})
+    out_strengths = Counter({v: 0 for v in G})
 
     for i in range(k * n):
         u = seed.choice(list(out_strengths.keys()))

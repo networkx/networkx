@@ -47,7 +47,7 @@ class TestHITS:
             assert h[n] == pytest.approx(G.h[n], abs=1e-4)
         for n in G:
             assert a[n] == pytest.approx(G.a[n], abs=1e-4)
-        nstart = dict.fromkeys(G, 1.0 / 2)
+        nstart = {i: 1.0 / 2 for i in G}
         h, a = hits_alg(G, nstart=nstart)
         for n in G:
             assert h[n] == pytest.approx(G.h[n], abs=1e-4)

@@ -420,7 +420,7 @@ def _check_augmentations(G, avail=None, max_k=None, weight=None, verbose=False):
     if max_k is None:
         max_k = min(4, max_aug_k)
 
-    avail_uniform = dict.fromkeys(complement_edges(G), 1)
+    avail_uniform = {e: 1 for e in complement_edges(G)}
 
     if verbose:
         print("\n=== CHECK_AUGMENTATION ===")
