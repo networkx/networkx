@@ -13,7 +13,6 @@ following constraints:
 """
 
 import networkx as nx
-from networkx import NetworkXError
 from networkx.utils import not_implemented_for
 
 __all__ = [
@@ -37,27 +36,31 @@ def _get_broadcast_centers(G, v, values, target):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def tree_broadcast_center(G):
-    """Return the Broadcast Center of the tree `G`.
+    """Return the broadcast center of a tree.
 
-    The broadcast center of a graph G denotes the set of nodes having
-    minimum broadcast time [1]_. This is a linear algorithm for determining
-    the broadcast center of a tree with ``N`` nodes, as a by-product it also
-    determines the broadcast time from the broadcast center.
+    The broadcast center of a graph `G` denotes the set of nodes having
+    minimum broadcast time [1]_. This function implements a linear algorithm
+    for determining the broadcast center of a tree with ``n`` nodes. As a
+    by-product, it also determines the broadcast time from the broadcast center.
 
     Parameters
     ----------
-    G : undirected graph
-        The graph should be an undirected tree
+    G : Graph
+        The graph should be an undirected tree.
 
     Returns
     -------
-    BC : (int, set) tuple
-        minimum broadcast number of the tree, set of broadcast centers
+    b_T, b_C : (int, set) tuple
+        Minimum broadcast time of the broadcast center in `G`, set of nodes
+        in the broadcast center.
 
     Raises
     ------
     NetworkXNotImplemented
-        If the graph is directed or is a multigraph.
+        If `G` is directed or is a multigraph.
+
+    NotATree
+        If `G` is not a tree.
 
     References
     ----------
@@ -66,12 +69,10 @@ def tree_broadcast_center(G):
     """
     # Assert that the graph G is a tree
     if not nx.is_tree(G):
-        NetworkXError("Input graph is not a tree")
+        raise nx.NotATree("G is not a tree")
     # step 0
-    if G.number_of_nodes() == 2:
-        return 1, set(G.nodes())
-    if G.number_of_nodes() == 1:
-        return 0, set(G.nodes())
+    if (n := len(G)) < 3:
+        return n - 1, set(G)
 
     # step 1
     U = {node for node, deg in G.degree if deg == 1}
@@ -84,9 +85,9 @@ def tree_broadcast_center(G):
     values.update((w, G.degree[w] - 1) for w in W)
 
     # step 3
-    while T.number_of_nodes() >= 2:
+    while len(T) >= 2:
         # step 4
-        w = min(W, key=lambda n: values[n])
+        w = min(W, key=values.get)
         v = next(T.neighbors(w))
 
         # step 5
@@ -110,32 +111,40 @@ def tree_broadcast_center(G):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def tree_broadcast_time(G, node=None):
-    """Return the Broadcast Time of the tree `G`.
+    """Return the minimum broadcast time of a (node in a) tree.
 
     The minimum broadcast time of a node is defined as the minimum amount
-    of time required to complete broadcasting starting from the
-    originator. The broadcast time of a graph is the maximum over
+    of time required to complete broadcasting starting from that node.
+    The broadcast time of a graph is the maximum over
     all nodes of the minimum broadcast time from that node [1]_.
     This function returns the minimum broadcast time of `node`.
-    If `node` is None the broadcast time for the graph is returned.
+    If `node` is `None`, the broadcast time for the graph is returned.
 
     Parameters
     ----------
-    G : undirected graph
-        The graph should be an undirected tree
-    node: int, optional
-        index of starting node. If `None`, the algorithm returns the broadcast
-        time of the tree.
+    G : Graph
+        The graph should be an undirected tree.
+
+    node : node, optional (default=None)
+        Starting node for the broadcasting. If `None`, the algorithm
+        returns the broadcast time of the graph instead.
 
     Returns
     -------
-    BT : int
-        Broadcast Time of a node in a tree
+    int
+        Minimum broadcast time of `node` in `G`, or broadcast time of `G`
+        if no node is provided.
 
     Raises
     ------
     NetworkXNotImplemented
-        If the graph is directed or is a multigraph.
+        If `G` is directed or is a multigraph.
+
+    NodeNotFound
+        If `node` is not a node in `G`.
+
+    NotATree
+        If `G` is not a tree.
 
     References
     ----------
@@ -144,12 +153,12 @@ def tree_broadcast_time(G, node=None):
         In Computing and Combinatorics. COCOON 2019
         (Ed. D. Z. Du and C. Tian.) Springer, pp. 240-253, 2019.
     """
+    if node is not None and node not in G:
+        err = f"node {node} not in G"
+        raise nx.NodeNotFound(err)
     b_T, b_C = tree_broadcast_center(G)
-    if node is not None:
-        return b_T + min(nx.shortest_path_length(G, node, u) for u in b_C)
-    dist_from_center = dict.fromkeys(G, len(G))
-    for u in b_C:
-        for v, dist in nx.shortest_path_length(G, u).items():
-            if dist < dist_from_center[v]:
-                dist_from_center[v] = dist
-    return b_T + max(dist_from_center.values())
+    if node is None:
+        return b_T + sum(1 for _ in nx.bfs_layers(G, b_C)) - 1
+    return b_T + next(
+        d for d, layer in enumerate(nx.bfs_layers(G, b_C)) if node in layer
+    )
