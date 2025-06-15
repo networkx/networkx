@@ -128,9 +128,10 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         G = self.Graph()
         G.add_edge(1, 2, key="k1", foo="bar")
         G.add_edge(1, 2, key="k2", foo="baz")
-        assert isinstance(G.get_edge_data(1, 2), G.edge_key_dict_factory)
+        assert isinstance(G.get_edge_data(1, 2), type(G.edge_key_dict_factory()))
         assert all(
-            isinstance(d, G.edge_attr_dict_factory) for u, v, d in G.edges(data=True)
+            isinstance(d, type(G.edge_attr_dict_factory()))
+            for u, v, d in G.edges(data=True)
         )
         assert edges_equal(
             G.edges(keys=True, data=True),
