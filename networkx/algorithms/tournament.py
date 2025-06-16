@@ -350,8 +350,9 @@ def is_reachable(G, s, t):
         """
         return all(adj_matrix[u, v] for u in set(node_indices) - nodes for v in nodes)
 
-    adj_matrix = nx.to_numpy_array(G, dtype=bool)
-    node_map = {node: i for i, node in enumerate(G.nodes)}
+    nodelist = list(G)
+    adj_matrix = nx.to_numpy_array(G, dtype=bool, nodelist=nodelist)
+    node_map = {node: i for i, node in enumerate(nodelist)}
     node_indices = range(adj_matrix.shape[0])
     s = node_map[s]
     t = node_map[t]
