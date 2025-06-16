@@ -747,8 +747,10 @@ def barycenter(G, weight=None, attr=None, sp=None):
     periphery
     :func:`~networkx.algorithms.tree.distance_measures.tree_centroid`
     """
-    if weight is None and attr is None and nx.is_tree(G):
-        return nx.tree.centroid(G)
+    if weight is None and attr is None and sp is None:
+        if not G.is_directed() and nx.is_tree(G):
+            return nx.tree.centroid(G)
+
     if sp is None:
         sp = nx.shortest_path_length(G, weight=weight)
     else:
