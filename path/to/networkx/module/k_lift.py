@@ -5,10 +5,12 @@ based on a given d-regular graph.
 """
 
 import random
+
 import networkx as nx
 
+
 def k_lift(G, k):
-    r""" Performs a k-lift of a d-regular graph using random permutations
+    r"""Performs a k-lift of a d-regular graph using random permutations
 
     The resulting graph H has k copies of each node from G.
     For each edge (u, v) in G, a random permutation is used to connect the i-th copy of u
@@ -66,7 +68,7 @@ def k_lift(G, k):
     # Create k copies of each node
     for v in G.nodes:
         for i in range(k):
-             H.add_node((v, i))
+            H.add_node((v, i))
 
     # Apply random permutation to edges
     for u, v in G.edges():
