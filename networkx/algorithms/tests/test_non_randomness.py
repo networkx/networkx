@@ -51,3 +51,10 @@ def test_value_error(k):
     G = nx.path_graph(5)
     with pytest.raises(ValueError, match=r"invalid number of communities"):
         nx.non_randomness(G, k=k)
+
+
+@pytest.mark.parametrize("G", [nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()])
+def test_not_implemented(G):
+    """Check that non-randomness is not implemented for directed or multigraphs."""
+    with pytest.raises(nx.NetworkXNotImplemented, match=r"not implemented for"):
+        nx.non_randomness(G)
