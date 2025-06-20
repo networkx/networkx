@@ -319,11 +319,11 @@ def is_reachable(G, s, t):
     False
 
     # Uses the numpy-based implementation (raises ImportError if numpy not installed)
-    >>> nx.generators.directed._is_reachable_numpy(G, 1, 3)
+    >>> nx.tournament._is_reachable_numpy(G, 1, 3)
     True
 
     # Uses the Python-based implementation
-    >>> nx.generators.directed._is_reachable_python(G, 1, 3)
+    >>> nx.tournament._is_reachable_python(G, 1, 3)
     True
 
     References
