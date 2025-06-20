@@ -169,9 +169,9 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     # Build propagation matrix
     degrees = X.sum(axis=0)
     degrees[degrees == 0] = 1  # Avoid division by 0
-    D2 = np.sqrt(
-        sp.sparse.dia_array((1.0 / degrees, 0), shape=(n_samples, n_samples)).tocsr()
-    )
+    D2 = sp.sparse.dia_array(
+        (1.0 / np.sqrt(degrees), 0), shape=(n_samples, n_samples)
+    ).tocsr()
     P = alpha * ((D2 @ X) @ D2)
     # Build base matrix
     B = np.zeros((n_samples, n_classes))
