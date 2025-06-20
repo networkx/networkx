@@ -289,9 +289,9 @@ def _get_fiedler_func(method):
                 return sigma[1], X[:, 1]
             else:
                 X = np.asarray(np.atleast_2d(x).T)
-                M = sp.sparse.diags_array(
-                    1.0 / L.diagonal(), shape=(n, n), format="csr"
-                )
+                M = sp.sparse.dia_array(
+                    (1.0 / L.diagonal(), 0), shape=(n, n)
+                ).tocsr()
                 Y = np.ones(n)
                 if normalized:
                     Y /= D.diagonal()
