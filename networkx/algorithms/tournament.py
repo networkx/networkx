@@ -290,16 +290,6 @@ def is_reachable(G, s, t):
     bool
         Whether there is a path from `s` to `t` in `G`.
 
-    Examples
-    --------
-    >>> G = nx.DiGraph([(1, 0), (1, 3), (1, 2), (2, 3), (2, 0), (3, 0)])
-    >>> nx.is_tournament(G)
-    True
-    >>> nx.tournament.is_reachable(G, 1, 3)
-    True
-    >>> nx.tournament.is_reachable(G, 3, 2)
-    False
-
     Notes
     -----
     Although this function is more theoretically efficient than the
@@ -307,7 +297,34 @@ def is_reachable(G, s, t):
     parallelism. Though it may in the future, the current implementation
     does not use parallelism, thus you may not see much of a speedup.
 
+    `is_reachable` has two implementations: an array-based formulation that
+    uses `numpy` (``_is_reachable_numpy``), and a pure-Python
+    implementation (``_is_reachable_python``).
+    The NumPy implementation is more performant, and is therefore used by
+    default. If NumPy is not installed in the environment, then the pure
+    Python implementation is executed.
+    However, you can explicitly control which implementation is executed by
+    directly calling the corresponding function.
+
     This algorithm comes from [1].
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 0), (1, 3), (1, 2), (2, 3), (2, 0), (3, 0)])
+
+    # Uses numpy if available, else Python
+    >>> nx.tournament.is_reachable(G, 1, 3)
+    True
+    >>> nx.tournament.is_reachable(G, 3, 2)
+    False
+
+    # Uses the numpy-based implementation (raises ImportError if numpy not installed)
+    >>> nx.generators.directed._is_reachable_numpy(G, 1, 3)
+    True
+
+    # Uses the Python-based implementation
+    >>> nx.generators.directed._is_reachable_python(G, 1, 3)
+    True
 
     References
     ----------
