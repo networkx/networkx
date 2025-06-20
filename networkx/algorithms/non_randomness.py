@@ -12,7 +12,7 @@ __all__ = ["non_randomness"]
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 def non_randomness(G, k=None, weight="weight"):
-    """Compute the non-randomness of graph `G`.
+    """Compute the non-randomness of a graph.
 
     The first value $R_G$ is the sum of non-randomness values of all
     edges within the graph (where the non-randomness of an edge tends to be
@@ -96,7 +96,7 @@ def non_randomness(G, k=None, weight="weight"):
 
     Notes
     -----
-    If a `weight` field is passed, this algorithm will use the eigenvalues
+    If a `weight` argument is passed, this algorithm will use the eigenvalues
     of the weighted adjacency matrix instead.
 
     The output of this function corresponds to (4.4) and (4.5) in [1]_.
@@ -128,33 +128,26 @@ def non_randomness(G, k=None, weight="weight"):
 
     # corner case: graph has no edges
     if nx.is_empty(G):
-        raise nx.NetworkXError("graph has no edges")
+        raise nx.NetworkXError("non_randomness not applicable to empty graphs")
     if not nx.is_connected(G):
-        raise nx.NetworkXException("graph is not connected")
+        raise nx.NetworkXException("Non connected graph.")
     if len(list(nx.selfloop_edges(G))) > 0:
-        raise nx.NetworkXError("graph contains self-loops")
+        raise nx.NetworkXError("Graph must not contain self-loops")
 
     n = G.number_of_nodes()
     m = G.number_of_edges()
 
     if k is None:
         k = len(tuple(nx.community.label_propagation_communities(G)))
-    if not 1 <= k < n:
-        err = f"invalid number of communities for graph with {n} nodes: {k}"
+    if not 1 <= k < n or not 0 < (p := (2 * k * m) / (n * (n - k))) < 1:
+        err = (
+            f"invalid number of communities for graph with {n} nodes and {m} edges: {k}"
+        )
         raise ValueError(err)
 
     # eq. 4.4
     eigenvalues = np.linalg.eigvals(nx.to_numpy_array(G, weight=weight))
     nr = float(np.real(np.sum(eigenvalues[:k])))
-
-    p = (2 * k * m) / (n * (n - k))
-
-    if not 0 < p < 1:
-        # See gh-4115
-        err = (
-            f"invalid number of communities for graph with {n} nodes and {m} edges: {k}"
-        )
-        raise ValueError(err)
 
     # eq. 4.5
     nr_rd = (nr - ((n - 2 * k) * p + k)) / math.sqrt(2 * k * p * (1 - p))
