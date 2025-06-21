@@ -28,7 +28,7 @@ jobs:
 
       - name: Test NetworkX
         run: |
-          pytest -n auto --durations=10 --pyargs --mpl networkx
+          pytest -n auto --durations=10 --pyargs networkx
 
   default:
     runs-on: ${{ matrix.os }}-latest
