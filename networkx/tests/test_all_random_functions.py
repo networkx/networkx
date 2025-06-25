@@ -190,7 +190,7 @@ def run_all_random_functions(seed):
     t(nx.barabasi_albert_graph, n, m, seed=seed)
     t(nx.extended_barabasi_albert_graph, n, m, p, q, seed=seed)
     t(nx.powerlaw_cluster_graph, n, m, p, seed=seed)
-    t(nx.random_lobster, n, p1, p2, seed=seed)
+    t(nx.random_lobster_graph, n, p1, p2, seed=seed)
     t(nx.random_powerlaw_tree, n, seed=seed, tries=5000)
     t(nx.random_powerlaw_tree_sequence, 10, seed=seed, tries=5000)
     t(nx.random_labeled_tree, n, seed=seed)
