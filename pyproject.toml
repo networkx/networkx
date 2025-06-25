@@ -172,35 +172,35 @@ ignored_user_logins = ["dependabot[bot]", "pre-commit-ci[bot]", "web-flow"]
 
 [tool.ruff.lint]
 extend-select = [
-    #  "B",        # flake8-bugbear
+#    "B",        # flake8-bugbear
     "I",        # isort
-    #  "ARG",      # flake8-unused-arguments
+#    "ARG",      # flake8-unused-arguments
     "C4",       # flake8-comprehensions
-    #  "D",        # pydocstyle (see tool.ruff.lint.pydocstyle below)
+#    "D",        # pydocstyle (see tool.ruff.lint.pydocstyle below)
     "EM",       # flake8-errmsg
     "ICN",      # flake8-import-conventions
-    #  "G",        # flake8-logging-format
+#    "G",        # flake8-logging-format
     "PGH",      # pygrep-hooks
     "PIE",      # flake8-pie
-    #  "PL",       # pylint
+#    "PL",       # pylint
     "PLR0402",
-    #  "PT",       # flake8-pytest-style
-    #  "PTH",      # flake8-use-pathlib
-    #  "RET",      # flake8-return
-    #  "RUF",      # Ruff-specific
-    #  "SIM",      # flake8-simplify
+#    "PT",       # flake8-pytest-style
+#    "PTH",      # flake8-use-pathlib
+#    "RET",      # flake8-return
+#    "RUF",      # Ruff-specific
+#    "SIM",      # flake8-simplify
     "SIM101",
     "SIM109",
     "SIM110",
     "SIM118",
     "SIM2",
-    #  "T20",      # flake8-print
+#    "T20",      # flake8-print
     "UP",       # pyupgrade
     "YTT",      # flake8-2020
     "EXE",      # flake8-executable
     "NPY",      # NumPy specific rules
     "PD",       # pandas-vet
-    #  "FURB",     # refurb
+#    "FURB",     # refurb
     "PYI",      # flake8-pyi
     "W505",     # pycodestyle docstring/comment line length (see config below)
 ]
