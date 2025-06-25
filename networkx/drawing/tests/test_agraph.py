@@ -174,13 +174,10 @@ class TestAGraph:
         G = nx.Graph()
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
-        # assert graphs_equal(G, H)
+        assert graphs_equal(G, H)
         AA = nx.nx_agraph.to_agraph(H)
         HH = nx.nx_agraph.from_agraph(AA)
         assert graphs_equal(H, HH)
-        G.graph["graph"] = {}
-        G.graph["node"] = {}
-        G.graph["edge"] = {}
         assert graphs_equal(G, HH)
 
     @pytest.mark.xfail(reason="integer->string node conversion in round trip")
