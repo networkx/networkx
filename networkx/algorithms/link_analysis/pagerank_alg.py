@@ -460,8 +460,7 @@ def _pagerank_scipy(
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
     S = A.sum(axis=1)
     S[S != 0] = 1.0 / S[S != 0]
-    # TODO: csr_array
-    Q = sp.sparse.csr_array(sp.sparse.spdiags(S.T, 0, *A.shape))
+    Q = sp.sparse.dia_array((S.T, 0), shape=A.shape).tocsr()
     A = Q @ A
 
     # initial vector
