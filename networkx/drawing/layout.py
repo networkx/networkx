@@ -448,7 +448,7 @@ def bipartite_layout(
     return pos
 
 
-@np_random_state(10)
+@np_random_state("seed")
 def spring_layout(
     G,
     k=None,
