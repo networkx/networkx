@@ -123,9 +123,7 @@ def approximate_current_flow_betweenness_centrality(
         raise nx.NetworkXError(f"Epsilon must be positive. Got {epsilon=}.")
 
     if sample_weight <= 0:
-        raise nx.NetworkXError(
-            f"Sample weight must be positive. Got {sample_weight=}."
-        )
+        raise nx.NetworkXError(f"Sample weight must be positive. Got {sample_weight=}.")
 
     nb = (n - 1.0) * (n - 2.0)  # normalization factor
     cstar = n * (n - 1) / nb
