@@ -19,6 +19,8 @@ __all__ = [
     "chordal_graph_treewidth",
     "NetworkXTreewidthBoundExceeded",
     "complete_to_chordal_graph",
+    "minimal_elimination_order",
+    "perfect_elimination_order",
 ]
 
 
@@ -33,8 +35,9 @@ class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
 def is_chordal(G):
     """Checks whether G is a chordal graph.
 
-    A graph is chordal if every cycle of length at least 4 has a chord
-    (an edge joining two nodes not adjacent in the cycle).
+    A graph is chordal if every cycle of length at least 4 has a chord (an edge
+    joining two nodes not adjacent in the cycle). This condition is exactly
+    equivalent to the graph having a perfect elimination ordering, as per [1]_.
 
     Parameters
     ----------
@@ -73,20 +76,23 @@ def is_chordal(G):
     -----
     The routine tries to go through every node following maximum cardinality
     search. It returns False when it finds that the separator for any node
-    is not a clique.  Based on the algorithms in [1]_.
+    is not a clique. Based on the algorithms in [2]_.
 
-    Self loops are ignored.
+    Self-loops are ignored.
 
     References
     ----------
-    .. [1] R. E. Tarjan and M. Yannakakis, Simple linear-time algorithms
-       to test chordality of graphs, test acyclicity of hypergraphs, and
-       selectively reduce acyclic hypergraphs, SIAM J. Comput., 13 (1984),
-       pp. 566–579.
+    .. [1] Chandra, L. S., L. Ibarra, F. Ruskey, and J. Sawada. "Generating and
+           characterizing the perfect elimination orderings of a chordal graph."
+           Theoretical Computer Science 307, no. 2 (2003): 303--317.
+           https://doi.org/10.1016/S0304-3975(03)00221-4.
+    .. [2] Tarjan, Robert E., and Mihalis Yannakakis. "Simple Linear-Time
+           Algorithms to Test Chordality of Graphs, Test Acyclicity of
+           Hypergraphs, and Selectively Reduce Acyclic Hypergraphs." SIAM
+           Journal on Computing 13, no. 3 (1984): 566--79.
+           https://doi.org/10.1137/0213035.
     """
-    if len(G.nodes) <= 3:
-        return True
-    return len(_find_chordality_breaker(G)) == 0
+    return len(G.nodes) <= 3 or len(_find_chordality_breaker(G)) == 0
 
 
 @nx._dispatchable
@@ -372,7 +378,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 @not_implemented_for("directed")
 @nx._dispatchable(returns_graph=True)
 def complete_to_chordal_graph(G):
-    """Return a copy of G completed to a chordal graph
+    """Return a copy of G completed to a chordal graph.
 
     Adds edges to a copy of G to create a chordal graph. A graph G=(V,E) is
     called chordal if for each cycle with length bigger than 3, there exist
@@ -395,15 +401,19 @@ def complete_to_chordal_graph(G):
     There are different approaches to calculate the chordal
     enhancement of a graph. The algorithm used here is called
     MCS-M and gives at least minimal (local) triangulation of graph. Note
-    that this triangulation is not necessarily a global minimum.
+    that this triangulation is not necessarily a global minimum [1]_.
 
-    https://en.wikipedia.org/wiki/Chordal_graph
+    Moreover, if G is already chordal, then this function will return early
+    before running MCS-M, and alpha will consist entirely of zeros. To avoid
+    this behavior, use `minimal_elimination_order` instead (or
+    `perfect_elimination_order` if G is known to be chordal).
 
     References
     ----------
-    .. [1] Berry, Anne & Blair, Jean & Heggernes, Pinar & Peyton, Barry. (2004)
-           Maximum Cardinality Search for Computing Minimal Triangulations of
-           Graphs.  Algorithmica. 39. 287-298. 10.1007/s00453-004-1084-3.
+    .. [1] Berry, Anne, Jean R. S. Blair, Pinar Heggernes, and Barry W. Peyton.
+           "Maximum Cardinality Search for Computing Minimal Triangulations of
+           Graphs." Algorithmica 39, no. 4: 287--98.
+           https://doi.org/10.1007/s00453-004-1084-3.
 
     Examples
     --------
@@ -411,19 +421,57 @@ def complete_to_chordal_graph(G):
     >>> G = nx.wheel_graph(10)
     >>> H, alpha = complete_to_chordal_graph(G)
     """
+    if is_chordal(G):
+        H = G.copy()
+        alpha = dict.fromkeys(H, 0)
+    else:
+        H, alpha = minimal_elimination_order(G)
+
+    return H, alpha
+
+
+@not_implemented_for("directed")
+@nx._dispatchable(returns_graph=True)
+def minimal_elimination_order(G):
+    """Return a copy of G triangulated to a minimal elimination ordering (MEO).
+
+    An MEO of a graph G is a perfect elimination ordering (PEO) of some minimal
+    triangulation to a chordal graph. That is, if H is a (not necessarily
+    unique) graph obtained by adding the minimum number of edges to G to make it
+    chordal, then for each node v in H, the set of all neighbors of v that come
+    later in the MEO forms a clique.
+
+    Does the same thing as `complete_to_chordal_graph`, but ensures that the
+    MCS-M algorithm is always run even if the graph is already chordal, in
+    contrast to the early return in `complete_to_chordal_graph`.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+
+    Returns
+    -------
+    H : NetworkX graph
+        The chordal enhancement of G
+    alpha : Dictionary
+            The elimination ordering of nodes of G
+    """
     H = G.copy()
     alpha = dict.fromkeys(H, 0)
-    if nx.is_chordal(H):
-        return H, alpha
     chords = set()
-    weight = dict.fromkeys(H.nodes(), 0)
-    unnumbered_nodes = list(H.nodes())
-    for i in range(len(H.nodes()), 0, -1):
+
+    weight = dict.fromkeys(H, 0)
+    unnumbered_nodes = list(H)
+    n = len(unnumbered_nodes)
+
+    for k in range(n):
         # get the node in unnumbered_nodes with the maximum weight
         z = max(unnumbered_nodes, key=lambda node: weight[node])
         unnumbered_nodes.remove(z)
-        alpha[z] = i
+        alpha[z] = n - k
         update_nodes = []
+
         for y in unnumbered_nodes:
             if G.has_edge(y, z):
                 update_nodes.append(y)
@@ -436,8 +484,44 @@ def complete_to_chordal_graph(G):
                 if nx.has_path(H.subgraph(lower_nodes + [z, y]), y, z):
                     update_nodes.append(y)
                     chords.add((z, y))
+
         # during calculation of paths the weights should not be updated
         for node in update_nodes:
             weight[node] += 1
+
     H.add_edges_from(chords)
     return H, alpha
+
+
+@not_implemented_for("directed")
+@nx._dispatchable(returns_graph=True)
+def perfect_elimination_order(G):
+    """Return a copy of G triangulated to a perfect elimination ordering (PEO).
+
+    A PEO of a graph G is an ordering of the nodes of G such that, for each node
+    v, the set of all neighbors of v that come later in the PEO forms a clique.
+
+    A graph has a PEO if and only if it is chordal (see also the `is_chordal`
+    documentation); thus, an error is raised if G is not chordal.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+
+    Returns
+    -------
+    H : NetworkX graph
+        The chordal enhancement of G
+    alpha : Dictionary
+            The elimination ordering of nodes of G
+
+    Raises
+    ------
+    NetworkXError
+        If the input graph is not chordal, a :exc:`NetworkXError` is raised.
+    """
+    if not is_chordal(G):
+        raise nx.NetworkXError("Input graph is not chordal.")
+
+    return minimal_elimination_order(G)
