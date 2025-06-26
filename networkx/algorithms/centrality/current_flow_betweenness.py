@@ -66,15 +66,15 @@ def approximate_current_flow_betweenness_centrality(
        "cg" (uses least memory).
 
     epsilon: float
-        Absolute error tolerance. Note that smaller values of epsilon lead to
-        higher numbers of sample pairs (`k`) and thus more computation time. The number
-        of sample pairs is approximately `(c/epsilon)^2 * log(n)` where `n` is the
+        Absolute error tolerance. Note that smaller values of `epsilon` lead to
+        higher numbers of sample pairs (``k``) and thus more computation time. The number
+        of sample pairs is approximately ``(c/epsilon)^2 * log(n)`` where ``n`` is the
         number of nodes.
 
     kmax: int
        Maximum number of sample node pairs to use for approximation.
 
-    sample_weight: float (default=1)
+    sample_weight : float (default=1)
        Multiplicative factor for the number of sample node pairs used in approximation.
        Higher values may improve accuracy at the expense of increased computation time.
 
@@ -120,11 +120,11 @@ def approximate_current_flow_betweenness_centrality(
         return dict.fromkeys(G, 0.0)
 
     if epsilon <= 0:
-        raise nx.NetworkXError(f"Epsilon must be positive. Got epsilon={epsilon}.")
+        raise nx.NetworkXError(f"Epsilon must be positive. Got {epsilon=}.")
 
     if sample_weight <= 0:
         raise nx.NetworkXError(
-            f"Sample weight must be positive. Got sample_weight={sample_weight}."
+            f"Sample weight must be positive. Got {sample_weight=}."
         )
 
     nb = (n - 1.0) * (n - 2.0)  # normalization factor
