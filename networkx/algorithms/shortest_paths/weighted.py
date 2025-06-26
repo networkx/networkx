@@ -1338,7 +1338,7 @@ def _bellman_ford(
         pred = {v: [] for v in source}
 
     if dist is None:
-        dist = dict.fromkeys(source, 0)
+        dist = {v: 0 for v in source}
 
     negative_cycle_found = _inner_bellman_ford(
         G,
@@ -1419,12 +1419,12 @@ def _inner_bellman_ford(
         pred = {v: [] for v in sources}
 
     if dist is None:
-        dist = dict.fromkeys(sources, 0)
+        dist = {v: 0 for v in sources}
 
     # Heuristic Storage setup. Note: use None because nodes cannot be None
     nonexistent_edge = (None, None)
-    pred_edge = dict.fromkeys(sources)
-    recent_update = dict.fromkeys(sources, nonexistent_edge)
+    pred_edge = {v: None for v in sources}
+    recent_update = {v: nonexistent_edge for v in sources}
 
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
     inf = float("inf")
@@ -2032,7 +2032,7 @@ def goldberg_radzik(G, source, weight="weight"):
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
     inf = float("inf")
-    d = dict.fromkeys(G, inf)
+    d = {u: inf for u in G}
     d[source] = 0
     pred = {source: None}
 
@@ -2496,7 +2496,7 @@ def johnson(G, weight="weight"):
     all_pairs_bellman_ford_path_length
 
     """
-    dist = dict.fromkeys(G, 0)
+    dist = {v: 0 for v in G}
     pred = {v: [] for v in G}
     weight = _weight_function(G, weight)
 

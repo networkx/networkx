@@ -513,7 +513,7 @@ def bfs_labeled_edges(G, sources):
     # directed case and level edges are reported on their first occurrence in
     # the undirected case.  Note our use of visited.discard -- this is built-in
     # thus somewhat faster than a python-defined def nop(x): pass
-    depth = dict.fromkeys(sources, 0)
+    depth = {s: 0 for s in sources}
     queue = deque(depth.items())
     push = queue.append
     pop = queue.popleft
