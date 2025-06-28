@@ -1,5 +1,7 @@
+from split_graph import is_complete_split_graph, is_split_graph
+
 import networkx as nx
-from split_graph import is_split_graph, is_complete_split_graph
+
 
 def test_is_split_graph():
     G1 = nx.complete_graph(4)
@@ -16,6 +18,7 @@ def test_is_split_graph():
 
     G5 = nx.cycle_graph(4)
     assert not is_split_graph(G5)
+
 
 def test_is_complete_split_graph():
     G1 = nx.star_graph(3)

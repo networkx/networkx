@@ -61,3 +61,5 @@ networkx-dev/
 # Benchmark products
 benchmarks/env
 benchmarks/results
+"test examples.ipynb"
+"test examples.ipynb"
