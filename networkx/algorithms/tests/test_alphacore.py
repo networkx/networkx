@@ -7,7 +7,6 @@ from networkx.algorithms.alphacore import alpha_core
 
 # Use importorskip for optional dependencies
 np = pytest.importorskip("numpy")
-pd = pytest.importorskip("pandas")
 
 
 class TestAlphaCore:
@@ -36,12 +35,12 @@ class TestAlphaCore:
         """Test alpha_core with different feature selections."""
         # Test with single feature
         result_f1 = alpha_core(self.G, features=["f1"])
-        assert isinstance(result_f1, pd.DataFrame)
+        assert isinstance(result_f1, dict)
         assert len(result_f1) == self.G.number_of_nodes()
 
         # Test with multiple features
         result_all = alpha_core(self.G, features=["f1", "f2"])
-        assert isinstance(result_all, pd.DataFrame)
+        assert isinstance(result_all, dict)
         assert len(result_all) == self.G.number_of_nodes()
 
     def test_alpha_core_parameters(self):
@@ -49,23 +48,23 @@ class TestAlphaCore:
         # Test step sizes
         result1 = alpha_core(self.G, step_size=0.1)
         result2 = alpha_core(self.G, step_size=0.2)
-        assert isinstance(result1, pd.DataFrame)
-        assert isinstance(result2, pd.DataFrame)
-        assert not result1.equals(result2)
+        assert isinstance(result1, dict)
+        assert isinstance(result2, dict)
+        assert result1 != result2
 
         # Test exponential decay
         result_normal = alpha_core(self.G, expo_decay=False)
         result_decay = alpha_core(self.G, expo_decay=True)
-        assert isinstance(result_normal, pd.DataFrame)
-        assert isinstance(result_decay, pd.DataFrame)
-        assert not result_normal.equals(result_decay)
+        assert isinstance(result_normal, dict)
+        assert isinstance(result_decay, dict)
+        assert result_normal != result_decay
 
         # Test start epsilon
         result_default = alpha_core(self.G, start_epsi=1.0)
         result_custom = alpha_core(self.G, start_epsi=0.5)
-        assert isinstance(result_default, pd.DataFrame)
-        assert isinstance(result_custom, pd.DataFrame)
-        assert not result_default.equals(result_custom)
+        assert isinstance(result_default, dict)
+        assert isinstance(result_custom, dict)
+        assert result_default != result_custom
 
     def test_feature_error_handling(self):
         """Test error handling for invalid features."""
@@ -83,7 +82,7 @@ class TestAlphaCore:
             )
 
         # Check the result is still valid
-        assert isinstance(result, pd.DataFrame)
+        assert isinstance(result, dict)
         assert len(result) == self.G.number_of_nodes()
 
     def test_graph_type_validation(self):
@@ -101,7 +100,7 @@ class TestAlphaCore:
         # Empty graph
         empty_G = nx.DiGraph()
         result = alpha_core(empty_G)
-        assert isinstance(result, pd.DataFrame)
+        assert isinstance(result, dict)
         assert len(result) == 0
 
         # No features
@@ -112,7 +111,7 @@ class TestAlphaCore:
             assert any(
                 "No node features found" in str(warning.message) for warning in w
             )
-        assert isinstance(result, pd.DataFrame)
+        assert isinstance(result, dict)
         assert len(result) == G_no_features.number_of_nodes()
 
     def test_multigraph_and_weighted(self):
@@ -126,9 +125,9 @@ class TestAlphaCore:
             weighted_multi_G.nodes[n]["f1"] = float(n) / 2
 
         result = alpha_core(weighted_multi_G)
-        assert isinstance(result, pd.DataFrame)
+        assert isinstance(result, dict)
         assert len(result) == weighted_multi_G.number_of_nodes()
-        assert set(result["nodeID"]) == set(weighted_multi_G.nodes())
+        assert set(result.keys()) == set(weighted_multi_G.nodes())
 
     def test_covariance_matrix_warnings(self):
         """Test warnings for non-invertible covariance matrix."""
@@ -142,7 +141,7 @@ class TestAlphaCore:
                 "Covariance matrix is not invertible" in str(warning.message)
                 for warning in w
             )
-        assert isinstance(result, pd.DataFrame)
+        assert isinstance(result, dict)
 
     def test_feature_validation(self):
         """Test feature validation and error handling."""
@@ -155,9 +154,9 @@ class TestAlphaCore:
 
         # Test with None and ["all"] features
         result = alpha_core(self.G, features=None)
-        assert isinstance(result, pd.DataFrame)
+        assert isinstance(result, dict)
         result = alpha_core(self.G, features=["all"])
-        assert isinstance(result, pd.DataFrame)
+        assert isinstance(result, dict)
 
     def test_performance_and_ci(self):
         """Test performance with larger graphs and CI-specific cases."""
@@ -169,7 +168,7 @@ class TestAlphaCore:
             G_large.add_edge(i, i + 1)
 
         result = alpha_core(G_large)
-        assert isinstance(result, pd.DataFrame)
+        assert isinstance(result, dict)
         assert len(result) == 100
 
         # CI-specific minimal graph
@@ -178,14 +177,44 @@ class TestAlphaCore:
         G_min.add_edge(0, 1)
 
         result = alpha_core(G_min)
-        assert isinstance(result, pd.DataFrame)
+        assert isinstance(result, dict)
         assert len(result) == 2
 
     def test_backend_compatibility(self):
         """Test compatibility with different backends."""
         result = alpha_core(self.G)
-        assert isinstance(result, pd.DataFrame)
+        assert isinstance(result, dict)
 
         multi_G = nx.MultiDiGraph(self.G)
         result = alpha_core(multi_G)
-        assert isinstance(result, pd.DataFrame)
+        assert isinstance(result, dict)
+
+    def test_result_structure(self):
+        """Test that the result has the expected structure."""
+        result = alpha_core(self.G)
+
+        # Check that result is a dictionary
+        assert isinstance(result, dict)
+
+        # Check that each node has the expected structure
+        for node_id, node_data in result.items():
+            assert isinstance(node_id, int)
+            assert isinstance(node_data, dict)
+            assert "alpha" in node_data
+            assert "batchID" in node_data
+            assert isinstance(node_data["alpha"], int | float)
+            assert isinstance(node_data["batchID"], int)
+
+    def test_alpha_values_range(self):
+        """Test that alpha values are in the expected range [0, 1]."""
+        result = alpha_core(self.G)
+
+        for node_data in result.values():
+            assert 0 <= node_data["alpha"] <= 1
+
+    def test_batch_id_ordering(self):
+        """Test that batch IDs are non-negative and properly ordered."""
+        result = alpha_core(self.G)
+
+        batch_ids = [node_data["batchID"] for node_data in result.values()]
+        assert all(batch_id >= 0 for batch_id in batch_ids)

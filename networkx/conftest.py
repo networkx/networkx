@@ -237,7 +237,6 @@ needs_scipy = [
 needs_matplotlib = ["drawing/nx_pylab.py", "generators/classic.py"]
 needs_pandas = [
     "convert_matrix.py",
-    "algorithms/alphacore.py",
 ]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
