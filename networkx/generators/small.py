@@ -27,6 +27,9 @@ __all__ = [
     "truncated_cube_graph",
     "truncated_tetrahedron_graph",
     "tutte_graph",
+    "claw_graph",
+    "paw_graph",
+    "bowtie_graph",
 ]
 
 from functools import wraps
@@ -994,3 +997,104 @@ def tutte_graph(create_using=None):
     )
     G.name = "Tutte's Graph"
     return G
+
+@_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
+def claw_graph(create_using=None):
+    """
+    Returns the Claw Graph (K_{1,3})
+
+    The Claw Graph is a tree with one internal node and three leaves. It is 
+    the complete bipartite graph K_{1,3}, and serves as a forbidden subgraph 
+    in claw-free graphs.
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        The claw graph with 4 nodes and 3 edges
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Claw_graph
+    """
+    G = nx.from_dict_of_lists(
+        {0: [1, 2, 3], 1: [0], 2: [0], 3: [0]},
+        create_using=create_using,
+    )
+    G.name = "Claw Graph"
+    return G
+
+@_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
+def paw_graph(create_using=None):
+    """
+    Returns the Paw Graph
+
+    The Paw Graph is a triangle with a single pendant vertex. It has 4 nodes 
+    and 4 edges. It is used in the study of threshold graphs and is a minimal 
+    non-threshold graph.
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        The paw graph with 4 nodes and 4 edges
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Paw_graph
+    """
+    G = nx.from_dict_of_lists(
+        {0: [1, 2, 3], 1: [0, 2], 2: [0, 1], 3: [0]},
+        create_using=create_using,
+    )
+    G.name = "Paw Graph"
+    return G
+
+@_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
+def bowtie_graph(create_using=None):
+    """
+    Returns the Bowtie Graph (a.k.a. Butterfly Graph)
+
+    The Bowtie Graph consists of two triangles sharing a common vertex.
+    It has 5 nodes and 6 edges. It is used in forbidden subgraph characterizations
+    of comparability graphs, chordal graphs, and others.
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        The bowtie graph with 5 nodes and 6 edges
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Butterfly_graph
+    .. [2] https://mathworld.wolfram.com/ButterflyGraph.html
+    """
+    G = nx.from_dict_of_lists(
+        {
+            0: [1, 2, 3, 4],
+            1: [0, 2],
+            2: [0, 1],
+            3: [0, 4],
+            4: [0, 3]
+        },
+        create_using=create_using,
+    )
+    G.name = "Bowtie Graph"
+    return G
+
