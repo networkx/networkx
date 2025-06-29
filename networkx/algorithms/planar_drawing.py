@@ -2,7 +2,23 @@ from collections import defaultdict
 
 import networkx as nx
 
-__all__ = ["combinatorial_embedding_to_pos"]
+__all__ = [
+    "combinatorial_embedding_to_pos",
+    "triangulate_embedding",
+    "triangulated_embedding_to_pos",
+]
+
+
+def too_small_combinatorial_embedding_to_pos(embedding):
+    """Assign every node a position when the number of nodes
+    is less than or equal to 3.
+    """
+    # Position the node in any triangle
+    default_positions = [(0, 0), (2, 0), (1, 1)]
+    pos = {}
+    for i, v in enumerate(embedding.nodes()):
+        pos[v] = default_positions[i]
+    return pos
 
 
 def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
@@ -36,14 +52,44 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
 
     """
     if len(embedding.nodes()) < 4:
-        # Position the node in any triangle
-        default_positions = [(0, 0), (2, 0), (1, 1)]
-        pos = {}
-        for i, v in enumerate(embedding.nodes()):
-            pos[v] = default_positions[i]
-        return pos
+        return too_small_combinatorial_embedding_to_pos(embedding)
 
     embedding, outer_face = triangulate_embedding(embedding, fully_triangulate)
+
+    return triangulated_embedding_to_pos(embedding, outer_face)
+
+
+def triangulated_embedding_to_pos(embedding, outer_face):
+    """Assigns every node a (x, y) position based on the given embedding
+
+    The algorithm iteratively inserts nodes of the input graph in a certain
+    order and rearranges previously inserted nodes so that the planar drawing
+    stays valid. This is done efficiently by only maintaining relative
+    positions during the node placements and calculating the absolute positions
+    at the end. For more information see [1]_.
+
+    Parameters
+    ----------
+    embedding : nx.PlanarEmbedding
+        This embedding is assumed to be already triangulated internally.
+
+    outer_face : list of int
+        The face to be represented as the outer face.
+
+    Returns
+    -------
+    pos : dict
+        Maps each node to a tuple that defines the (x, y) position
+
+    References
+    ----------
+    .. [1] M. Chrobak and T.H. Payne:
+        A Linear-time Algorithm for Drawing a Planar Graph on a Grid 1989
+        http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.51.6677
+
+    """
+    if len(embedding.nodes()) < 4:
+        return too_small_combinatorial_embedding_to_pos(embedding)
 
     # The following dicts map a node to another node
     # If a node is not in the key set it means that the node is not yet in G_k
