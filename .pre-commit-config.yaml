@@ -48,7 +48,7 @@ repos:
         name: generate_requirements.py
         language: system
         entry: python tools/generate_requirements.py
-        files: "pyproject.toml|requirements/.*\\.txt|tools/generate_requirements.py"
+        files: "pyproject.toml|environment.yml|tools/generate_requirements.py"
 
   - repo: local
     hooks:
