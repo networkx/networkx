@@ -1,4 +1,0 @@
-build>=0.10
-twine>=4.0
-wheel>=0.40
-changelist==0.5

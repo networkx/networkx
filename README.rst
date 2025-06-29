@@ -66,11 +66,11 @@ Install the latest released version of NetworkX:
 
     $ pip install networkx
 
-Install with all optional dependencies:
+Install without any optional dependencies:
 
 .. code:: shell
 
-    $ pip install networkx[default]
+    $ pip install --no-deps networkx
 
 For additional details,
 please see the `installation guide <https://networkx.org/documentation/stable/install.html>`_.

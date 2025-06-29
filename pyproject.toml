@@ -35,7 +35,12 @@ classifiers = [
     'Topic :: Scientific/Engineering :: Mathematics',
     'Topic :: Scientific/Engineering :: Physics',
 ]
-dependencies = []
+dependencies = [
+    'numpy>=1.25',
+    'scipy>=1.11.2',
+    'matplotlib>=3.8',
+    'pandas>=2.0',
+]
 
 [[project.authors]]
 name = 'Aric Hagberg'
@@ -55,13 +60,15 @@ Documentation = 'https://networkx.org/documentation/stable/'
 nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
-default = [
-    'numpy>=1.25',
-    'scipy>=1.11.2',
-    'matplotlib>=3.8',
-    'pandas>=2.0',
+extra = [
+    'lxml>=4.6',
+    'pygraphviz>=1.14',
+    'pydot>=3.0.1',
+    'sympy>=1.10',
 ]
-developer = [
+
+[dependency-groups]
+dev = [
     'pre-commit>=4.1',
     'mypy>=1.15',
 ]
@@ -83,12 +90,6 @@ example = [
     'cairocffi>=1.7',
     'igraph>=0.11',
     'scikit-learn>=1.5',
-]
-extra = [
-    'lxml>=4.6',
-    'pygraphviz>=1.14',
-    'pydot>=3.0.1',
-    'sympy>=1.10',
 ]
 test = [
     'pytest>=7.2',
