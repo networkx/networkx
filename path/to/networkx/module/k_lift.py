@@ -10,7 +10,7 @@ import networkx as nx
 
 
 def k_lift(G, k):
-    r"""Performs a k-lift of a d-regular graph using random permutations
+    r"""Perform a `k`-lift of a ``d``-regular graph using random permutations.
 
     The resulting graph H has k copies of each node from G.
     For each edge (u, v) in G, a random permutation is used to connect the i-th copy of u
