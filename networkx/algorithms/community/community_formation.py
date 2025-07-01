@@ -1,8 +1,11 @@
 """
-Implementation of the Social Aware Assignment of Passengers in Ridesharing, also known as coalition formation or graph partitioning in the literature
+Implementation of the Social Aware Assignment of Passengers in Ridesharing, also known as coalition
+formation or graph partitioning in the literature
 
-The social aware assignment problem belongs to the field of community formation, which is an important research branch
-within multiagent systems. It analyses the outcome that results when a set of agents is partitioned into communities.
+The social aware assignment problem belongs to the field of community formation, which is an important
+research branch within multiagent systems. It analyses the outcome that results
+when a set of agents is partitioned into communities.
+
 Actually, Match_And_Merge model is a special case of simple Additively Separable Hedonic Games (ASHGs).
 
 Which was described in the article:
@@ -21,13 +24,16 @@ __all__ = ["match_and_merge"]
 @not_implemented_for("directed")
 def match_and_merge(Graph: nx.Graph, k: int) -> list:
     """
-    An approximation algorithm for any k ≥ 3, provides a solution for the social aware assignment problem with a ratio of 1/(k-1).
+    An approximation algorithm for any k ≥ 3, provides a solution for the social aware
+    assignment problem with a ratio of 1/(k-1).
 
     Social aware assignment definition:
 
-    Given a number k and an undirected friendship graph G = (V, E) where (v_i , v_j) ∈ E if v_i and v_j are connected.
-    The goal is to find an assignment P, which is a partition of the set V , such that ∀S ∈ P, |S|≤ k, and the value of P,
-    V_P = |{(v_i , v_j) ∈ E: ∃S ∈ P where v_i ∈ S and v_j ∈ S}| is maximized.
+    Given a number k and an undirected friendship graph G = (V, E) where
+    (v_i , v_j) ∈ E if v_i and v_j are connected.
+    The goal is to find an assignment P, which is a partition of the set V , such that ∀S ∈ P,
+    |S|≤ k and the value of P, V_P = |{(v_i , v_j) ∈ E: ∃S ∈ P
+    where v_i ∈ S and v_j ∈ S}| is maximized.
 
     As described in the article under the section "Algorithm 1: Match and Merge".
 
@@ -35,18 +41,23 @@ def match_and_merge(Graph: nx.Graph, k: int) -> list:
 
     Levinger C., Hazon N., Azaria A. Social Aware Assignment of Passengers in Ridesharing. - 2022,
 
-    Function receives a graph G and a number k, and returns a partition P of G of all matched sets, so for ∀S ∈ P, |S|≤ k, and the value of P, V_P = |{(v_i , v_j) ∈ E: ∃S ∈ P where v_i ∈ S and v_j ∈ S}| is maximized.
+    Function receives a graph G and a number k, and returns a partition P of G of all matched sets, so for ∀S ∈ P,
+    |S|≤ k, and the value of P, V_P = |{(v_i , v_j) ∈ E: ∃S ∈ P where v_i ∈ S and v_j ∈ S}| is maximized.
 
-    The algorithm consists of k - 1 rounds. Each round is composed of a matching phase followed by a merging phase.
+    The algorithm consists of k - 1 rounds. Each round is composed of a matching phase
+    followed by a merging phase.
 
-    Specifically, in round l MnM computes a maximum matching, M_l ⊆ E_l , for G_l (where G_1 = G). In the merging phase, MnM creates a graph
-    G_(l+1) that includes a unified node for each pair of matched nodes. G_(l+1) also includes all unmatched nodes, along with their
-    edges to the unified nodes. Clearly, each node in V_l is composed of up-to l nodes
-    from V_1. Finally, MnM returns the partition, P, of all the matched sets in a way that ∀S ∈ P, |S|≤ k, and the value of P, V_P = |{(v_i , v_j) ∈ E: ∃S ∈ P where v_i ∈ S and v_j ∈ S}| is maximized.
+    Specifically, in round l MnM computes a maximum matching, M_l ⊆ E_l , for G_l (where G_1 = G).
+    In the merging phase, MnM creates a graph G_(l+1) that includes a unified node for each pair of matched nodes.
+    G_(l+1) also includes all unmatched nodes, along with their edges to the unified nodes.
+    Clearly, each node in V_l is composed of up-to l nodes from V_1.
+    Finally, MnM returns the partition, P, of all the matched sets in a way that ∀S ∈ P,
+    |S|≤ k, and the value of P, V_P = |{(v_i , v_j) ∈ E: ∃S ∈ P where v_i ∈ S and v_j ∈ S}| is maximized.
 
     :param G: Graph
     :param k: Number of passengers
-    :return: A partition P of G of all matched sets so ∀S ∈ P, |S|≤ k, and the value of P, V_P = |{(v_i , v_j) ∈ E: ∃S ∈ P where v_i ∈ S and v_j ∈ S}| is maximized.
+    :return: A partition P of G of all matched sets so ∀S ∈ P, |S|≤ k and the value of P,
+    V_P = |{(v_i , v_j) ∈ E: ∃S ∈ P where v_i ∈ S and v_j ∈ S}| is maximized.
 
     Examples:
 
