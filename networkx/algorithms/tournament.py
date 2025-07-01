@@ -318,7 +318,7 @@ def is_reachable(G, s, t):
     >>> nx.tournament.is_reachable(G, 3, 2)
     False
 
-    # Uses the numpy-based implementation (raises ImportError if numpy not installed)
+    # Uses the numpy-based implementation (raises ``ImportError`` if numpy is not installed)
     >>> nx.tournament._is_reachable_numpy(G, 1, 3)
     True
 
