@@ -41,14 +41,16 @@ def match_and_merge(Graph: nx.Graph, k: int) -> list:
 
     Levinger C., Hazon N., Azaria A. Social Aware Assignment of Passengers in Ridesharing. - 2022,
 
-    Function receives a graph G and a number k, and returns a partition P of G of all matched sets, so for ∀S ∈ P,
-    |S|≤ k, and the value of P, V_P = |{(v_i , v_j) ∈ E: ∃S ∈ P where v_i ∈ S and v_j ∈ S}| is maximized.
+    Function receives a graph G and a number k, and returns a partition P of G of all matched sets,
+    so for ∀S ∈ P,b|S|≤ k, and the value of P,
+    V_P = |{(v_i , v_j) ∈ E: ∃S ∈ P where v_i ∈ S and v_j ∈ S}| is maximized.
 
     The algorithm consists of k - 1 rounds. Each round is composed of a matching phase
     followed by a merging phase.
 
     Specifically, in round l MnM computes a maximum matching, M_l ⊆ E_l , for G_l (where G_1 = G).
-    In the merging phase, MnM creates a graph G_(l+1) that includes a unified node for each pair of matched nodes.
+    In the merging phase, MnM creates a graph G_(l+1) that includes a unified
+    node for each pair of matched nodes.
     G_(l+1) also includes all unmatched nodes, along with their edges to the unified nodes.
     Clearly, each node in V_l is composed of up-to l nodes from V_1.
     Finally, MnM returns the partition, P, of all the matched sets in a way that ∀S ∈ P,
@@ -106,7 +108,8 @@ def match_and_merge(Graph: nx.Graph, k: int) -> list:
     elif k == 1:
         return sorted([[node] for node in Graph.nodes()])
     else:
-        # The nodes and the edges of G_1 are sorted in descending order so the maximal matching will be as close to the matching in the article as possible
+        # The nodes and the edges of G_1 are sorted in descending order so the maximal
+        # matching will be as close to the matching in the article as possible
         G_1 = nx.Graph()
         G_1.add_nodes_from(sorted((Graph.nodes()), reverse=True))
         G_1.add_edges_from(sorted((Graph.edges()), reverse=True))
@@ -120,7 +123,8 @@ def match_and_merge(Graph: nx.Graph, k: int) -> list:
             unified_nodes: list = []
             # Find the maximum matching of G_l
             M[l] = list(nx.max_weight_matching(G[l], weight=1))
-            # Make sure that G_(l+1) is a empty graph (It was one of the steps of the algorithm in the article)
+            # Make sure that G_(l+1) is a empty graph
+            # (It was one of the steps of the algorithm in the article)
             if l + 1 not in G:
                 G[l + 1] = nx.Graph()
             # Put the nodes of G_l in G_(l+1)
@@ -133,7 +137,8 @@ def match_and_merge(Graph: nx.Graph, k: int) -> list:
                 G[l + 1].add_node(match)
                 # Remove the nodes in the match from G_(l+1)
                 G[l + 1].remove_nodes_from(list(match))
-            # For every unified node in G_(l+1), add every v_q in G_(l+1) that is connected to it in G_l, add an edge between them in G_(l+1)
+            # For every unified node in G_(l+1), add every v_q in G_(l+1) that is connected to it in G_l,
+            # add an edge between them in G_(l+1)
             for unified_node in unified_nodes:
                 for v_q in G[l + 1].nodes():
                     if (
@@ -142,7 +147,8 @@ def match_and_merge(Graph: nx.Graph, k: int) -> list:
                         or G[l].has_edge(unified_node[1], v_q)
                     ):
                         G[l + 1].add_edge(unified_node, v_q)
-        # Initialization of the partition P and for every unified node (which is a tuple of nodes) in G_k, add it to P
+        # Initialization of the partition P and for every unified
+        # node (which is a tuple of nodes) in G_k,add it to P
         P = [[unified_node] for unified_node in G[k].nodes()]
         P = tuplesflattener(P)
     # Return P
@@ -151,7 +157,8 @@ def match_and_merge(Graph: nx.Graph, k: int) -> list:
 
 def tuplesflattener(P: list) -> list:
     """
-    This function receives a list of partitions, which may contain nested tuples, and returns a list of lists which doesn't contain any tuples.
+    This function receives a list of partitions, which may contain nested tuples
+    and returns a list of listswhich doesn't contain any tuples.
 
     :param P: A list of partitions, which may contain nested tuples
     :return: A list of lists which doesn't contain any tuples
