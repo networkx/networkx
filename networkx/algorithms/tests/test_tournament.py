@@ -132,14 +132,12 @@ def test_tournament_matrix():
 
 def test_reachable_pair():
     """Tests for a reachable pair of nodes."""
-    pytest.importorskip("numpy")
     G = DiGraph([(0, 1), (1, 2), (2, 0)])
     assert is_reachable(G, 0, 2)
 
 
 def test_same_node_is_reachable():
     """Tests that a node is always reachable from it."""
-    pytest.importorskip("numpy")
     # G is an arbitrary tournament on ten nodes.
     G = DiGraph(sorted(p) for p in combinations(range(10), 2))
     assert all(is_reachable(G, v, v) for v in G)
@@ -147,20 +145,17 @@ def test_same_node_is_reachable():
 
 def test_unreachable_pair():
     """Tests for an unreachable pair of nodes."""
-    pytest.importorskip("numpy")
     G = DiGraph([(0, 1), (0, 2), (1, 2)])
     assert not is_reachable(G, 1, 0)
 
 
 def test_is_strongly_connected():
     """Tests for a strongly connected tournament."""
-    pytest.importorskip("numpy")
     G = DiGraph([(0, 1), (1, 2), (2, 0)])
     assert is_strongly_connected(G)
 
 
 def test_not_strongly_connected():
     """Tests for a tournament that is not strongly connected."""
-    pytest.importorskip("numpy")
     G = DiGraph([(0, 1), (0, 2), (1, 2)])
     assert not is_strongly_connected(G)
