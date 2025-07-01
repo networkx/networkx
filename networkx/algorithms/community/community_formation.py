@@ -109,7 +109,7 @@ def match_and_merge(Graph: nx.Graph, k: int) -> list:
         return sorted([[node] for node in Graph.nodes()])
     else:
         # The nodes and the edges of G_1 are sorted in descending order so the maximal
-        # matching will be as close to the matching in the article as possible
+        # Matching will be as close to the matching in the article as possible
         G_1 = nx.Graph()
         G_1.add_nodes_from(sorted((Graph.nodes()), reverse=True))
         G_1.add_edges_from(sorted((Graph.edges()), reverse=True))
@@ -123,22 +123,25 @@ def match_and_merge(Graph: nx.Graph, k: int) -> list:
             unified_nodes: list = []
             # Find the maximum matching of G_l
             M[l] = list(nx.max_weight_matching(G[l], weight=1))
-            # Make sure that G_(l+1) is a empty graph
+            # Make sure that G_(l+1) is an empty graph
             # (It was one of the steps of the algorithm in the article)
             if l + 1 not in G:
                 G[l + 1] = nx.Graph()
             # Put the nodes of G_l in G_(l+1)
             G[l + 1].add_nodes_from(tuple(G[l].nodes()))
-            # For every match in M_l, add a unified node to G_(l+1) so it will be used to find it when needed
+            # For every match in M_l, add a unified node to G_(l+1)
+            # So it will be used to find it when needed
             for match in M[l]:
-                # Add the match to the unified nodes dictionary, so it will be easier to find the unified nodes in each round
+                # Add the match to the unified nodes dictionary,
+                # So it should be easier to find the unified nodes in each round
                 unified_nodes.append(match)
                 # Add a unified node to G_(l+1), which is a tuple of the nodes in the match
                 G[l + 1].add_node(match)
                 # Remove the nodes in the match from G_(l+1)
                 G[l + 1].remove_nodes_from(list(match))
-            # For every unified node in G_(l+1), add every v_q in G_(l+1) that is connected to it in G_l,
-            # add an edge between them in G_(l+1)
+            # For every unified node in G_(l+1),
+            # Add every v_q in G_(l+1) that is connected to it in G_l,
+            # Add an edge between them in G_(l+1)
             for unified_node in unified_nodes:
                 for v_q in G[l + 1].nodes():
                     if (
@@ -148,7 +151,7 @@ def match_and_merge(Graph: nx.Graph, k: int) -> list:
                     ):
                         G[l + 1].add_edge(unified_node, v_q)
         # Initialization of the partition P and for every unified
-        # node (which is a tuple of nodes) in G_k,add it to P
+        # Node (which is a tuple of nodes) in G_k,add it to P
         P = [[unified_node] for unified_node in G[k].nodes()]
         P = tuplesflattener(P)
     # Return P
@@ -158,7 +161,7 @@ def match_and_merge(Graph: nx.Graph, k: int) -> list:
 def tuplesflattener(P: list) -> list:
     """
     This function receives a list of partitions, which may contain nested tuples
-    and returns a list of listswhich doesn't contain any tuples.
+    And returns a list of listswhich doesn't contain any tuples.
 
     :param P: A list of partitions, which may contain nested tuples
     :return: A list of lists which doesn't contain any tuples
@@ -171,10 +174,12 @@ def tuplesflattener(P: list) -> list:
     """
     # Loop through every partition in P
     for partition in P:
-        # While there are tuples in the partition, remove them and add their elements to the partition
+        # While there are tuples in the partition,
+        # Remove them and add their elements to the partition
         while any(isinstance(node, tuple) for node in partition):
             for node in partition:
-                # If the node is a tuple, remove it and add its elements to the partition
+                # If the node is a tuple,
+                # Remove it and add its elements to the partition
                 if isinstance(node, tuple):
                     partition.remove(node)
                     partition.extend(list(node))
