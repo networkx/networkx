@@ -66,7 +66,7 @@ def _normalize_projective(vector, q):
 
     Examples
     --------
-    >>> from er_polarity_prime import _normalize_projective
+    >>> from networkx.generators.er_polarity_prime import _normalize_projective
     >>> vector = (2, 1, 0)
     >>> _normalize_projective(vector, 3)
     (1, 2, 0)
@@ -100,7 +100,7 @@ def _projective_space(m, q):
 
     Examples
     --------
-    >>> from er_polarity_prime import _projective_space
+    >>> from networkx.generators.er_polarity_prime import _projective_space
     >>> PG = _projective_space(2, 3)
     >>> len(PG)
     13
