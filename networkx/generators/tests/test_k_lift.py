@@ -1,5 +1,5 @@
 import pytest
-from k_lift import k_lift
+from networkx.generators.k_lift import k_lift
 
 import networkx as nx
 
