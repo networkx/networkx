@@ -40,7 +40,7 @@ def _finite_field_vectors(m, q):
     tuple of ints
         All vectors in GF(q)^(m+1) using standard modular arithmetic.
     """
-    yield from iteratools.product(range(q), repeat=m + 1)
+    yield from itertools.product(range(q), repeat=m + 1)
 
 
 def _normalize_projective(vector, q):
