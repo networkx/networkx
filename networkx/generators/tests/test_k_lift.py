@@ -1,7 +1,7 @@
 import pytest
-from networkx.generators.k_lift import k_lift
 
 import networkx as nx
+from networkx.generators.k_lift import k_lift
 
 
 # Test structure and connectivity for multiple (d, n, k) combinations
@@ -16,7 +16,7 @@ import networkx as nx
     ],
 )
 def test_k_lift_size_and_structure(d, n, k):
-    G = nx.random_regular_graph(d, n, seed=42)
+    G = nx.random_regular_graph(d, n, seed=41)
     H = k_lift(G, k)
     assert H.number_of_nodes() == n * k
     assert nx.is_connected(H)
@@ -34,7 +34,7 @@ def test_k_lift_size_and_structure(d, n, k):
     ],
 )
 def test_degrees_near_regular(d, n, k):
-    G = nx.random_regular_graph(d, n, seed=7)
+    G = nx.random_regular_graph(d, n, seed=5)
     H = k_lift(G, k)
     degrees = [deg for _, deg in H.degree()]
     assert all(d - 1 <= deg <= d + 1 for deg in degrees)
