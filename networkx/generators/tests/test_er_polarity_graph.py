@@ -1,7 +1,7 @@
 import pytest
-from er_polarity_prime import er_polarity_graph
 
 import networkx as nx
+from networkx.generators.er_polarity_prime import er_polarity_graph
 
 numpy = pytest.importorskip("numpy")
 
