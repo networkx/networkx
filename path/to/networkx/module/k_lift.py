@@ -69,7 +69,7 @@ def k_lift(G, k, seed=None):
     if not nx.is_regular(G):
         raise ValueError("Input graph G must be d-regular.")
 
-    rng = random.Random(seed) # Create local RNG
+    rng = random.Random(seed)  # Create local RNG
 
     H = nx.Graph()
 
