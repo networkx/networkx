@@ -219,8 +219,8 @@ def slim_fly_graph(q):
         # Assuming the intention was to use the same `alpha**(2*l)` as the delta=1 case
         # for consistency in generating the squares/non-squares.
         # If not, the reference [2] or [3] should be consulted for the precise definition.
-        X = Yn + [(pow(alpha, 2 * l, q) * y) % q for y in Yn]
-        X_ = Yn_ + [(pow(alpha, 2 * l, q) * y) % q for y in Yn_]
+        X = Yn + [(pow(alpha, 2 * l - 1, q) * y) % q for y in Yn]
+        X_ = Yn_ + [(pow(alpha, 2 * l - 1, q) * y) % q for y in Yn_]
 
     zero_nodes = [(0, x, y) for x in range(q) for y in range(q)]
     one_nodes = [(1, m, c) for m in range(q) for c in range(q)]
