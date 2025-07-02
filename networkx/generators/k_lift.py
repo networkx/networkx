@@ -60,7 +60,7 @@ def k_lift(G, k, seed=None):
     Examples
     --------
     >>> import networkx as nx
-    >>> from k_lift import k_lift
+    >>> from networkx.generators.k_lift import k_lift
     >>> G = nx.complete_graph(4)  # 3-regular, connected graph
     >>> H = k_lift(G, 4, seed=42)  # 4-lift of G
     >>> H.number_of_nodes()
