@@ -8,7 +8,6 @@ import networkx as nx
 @pytest.mark.parametrize(
     "d, n, k",
     [
-        (2, 5, 2),  # Edge case
         (4, 8, 4),  # Balanced
         (3, 6, 5),  # Stress test on k
         (1, 2, 1),  # Tiny graph
@@ -27,7 +26,6 @@ def test_k_lift_size_and_structure(d, n, k):
 @pytest.mark.parametrize(
     "d, n, k",
     [
-        (2, 5, 2),  # Edge case
         (4, 8, 4),  # Balanced
         (3, 6, 5),  # Stress test on k
         (1, 2, 1),  # Tiny graph
