@@ -44,8 +44,8 @@ def test_degrees_near_regular(d, n, k):
 # Specific test for failure behavior
 def test_k_lift_non_regular_graph():
     """Create a non-regular graph: node 0 has degree 2,
-     node 1 has degree 1, node 2 has degree 1
-     """
+    node 1 has degree 1, node 2 has degree 1
+    """
     G = nx.Graph()
     G.add_edges_from([(0, 1), (0, 2)])  # degrees: 0→2, 1→1, 2→1
 
