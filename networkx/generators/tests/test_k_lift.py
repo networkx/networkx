@@ -41,6 +41,7 @@ def test_degrees_near_regular(d, n, k):
     degrees = [deg for _, deg in H.degree()]
     assert all(d - 1 <= deg <= d + 1 for deg in degrees)
 
+
 # Specific test for failure behavior
 def test_k_lift_non_regular_graph():
     """Create a non-regular graph: node 0 has degree 2,
@@ -51,6 +52,7 @@ def test_k_lift_non_regular_graph():
 
     with pytest.raises(ValueError, match="must be d-regular"):
         k_lift(G, k=2, seed=1)
+
 
 # Specific test for failure behavior
 def test_disconnected_lift_raises():
