@@ -9,19 +9,22 @@ import random
 import networkx as nx
 
 
-def k_lift(G, k):
-    r"""Perform a `k`-lift of a ``d``-regular graph using random permutations.
+def k_lift(G, k, seed=None):
+    r"""Performs a `k`-lift of a `d`-regular graph using random permutations.
 
-    The resulting graph H has k copies of each node from G.
-    For each edge (u, v) in G, a random permutation is used to connect the i-th copy of u
-    to the permuted i-th copy of v in H.
+    The resulting graph `H` has `k` copies of each node from `G`.
+    For each edge (u, v) in `G`, a random permutation is used to connect the i-th copy of u
+    to the permuted i-th copy of v in `H`.
 
     Parameters
     ----------
     G : networkx.Graph
-        An undirected, connected, d-regular graph.
+        An undirected, connected, d-regular graph
     k : int
         The lift parameter. Each node in G is expanded to k copies.
+    seed : int, RandomState, or None (default: None)
+        Seed for the random number generator (used for permutation generation).
+        This ensures reproducibility.
 
     Returns
     -------
@@ -35,11 +38,11 @@ def k_lift(G, k):
 
     Notes
     -----
-    Given a base graph G and a lift parameter k, this function performs a k-lift as follows:
-    - For each node v in G, it creates k copies: (v, 0), ..., (v, k-1)
-    - For each edge (u, v) in G, a random permutation σ is applied to determine new edges:
+    Given a base graph `G` and a lift parameter `k`, this function performs a `k`-lift as follows:
+    - For each node v in `G`, it creates k copies: (v, 0), ..., (v, `k`-1)
+    - For each edge (u, v) in `G`, a random permutation σ is applied to determine new edges:
       if σ(i) = j, then ((u, i), (v, j)) is added to H.
-      The permutation is simulated by creating a shuffled list `permutation` of values 0 to k-1.
+      The permutation is simulated by creating a shuffled list `permutation` of values 0 to `k`-1.
       Each i-th copy of u is then connected to the `permutation[i]`-th copy of v.
 
     References
@@ -58,25 +61,28 @@ def k_lift(G, k):
     --------
     >>> import networkx as nx
     >>> from k_lift import k_lift
-    >>> d, n, k = 3, 10, 4
-    >>> G = nx.random_regular_graph(d, n)
-    >>> H = k_lift(G, k)
+    >>> G = nx.complete_graph(4)  # 3-regular, connected graph
+    >>> H = k_lift(G, 4, seed=42)  # 4-lift of G
     >>> H.number_of_nodes()
-    40
+    16
     """
+    if not nx.is_regular(G):
+        raise ValueError("Input graph G must be d-regular.")
+
+    rng = random.Random(seed) # Create local RNG
+
     H = nx.Graph()
 
     # Create k copies of each node
-    for v in G.nodes:
-        for i in range(k):
-            H.add_node((v, i))
+    H.add_nodes_from((v, i) for v in G.nodes for i in range(k))
 
     # Apply random permutation to edges
+    edges = []
+    permutation = list(range(k))
     for u, v in G.edges():
-        permutation = list(range(k))
-        random.shuffle(permutation)
-        for i in range(k):
-            H.add_edge((u, i), (v, permutation[i]))
+        rng.shuffle(permutation)
+        edges.extend(((u, i), (v, permutation[i])) for i in range(k))
+    H.add_edges_from(edges)
 
     # Raise exception if disconnected
     if not nx.is_connected(H):
