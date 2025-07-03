@@ -85,7 +85,7 @@ def _calculate_phi(n):
     Examples
     --------
     >>> _calculate_phi(9)
-    6  # since {1, 2, 4, 5, 7, 8} are coprime to 9
+    6
     """
     if n == 1:
         return 1
