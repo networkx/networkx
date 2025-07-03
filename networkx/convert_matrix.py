@@ -810,7 +810,7 @@ def from_scipy_sparse_array(
     multigraph (constructed from `create_using`) with parallel edges.
     In this case, `edge_attribute` will be ignored.
 
-    If `create_using` indicates an undirected multigraph, then only the edges
+    If `create_using` indicates an undirected graph, then only the edges
     indicated by the upper triangle of the matrix `A` will be added to the
     graph.
 
@@ -872,7 +872,7 @@ def from_scipy_sparse_array(
     #
     # Without this check, we run into a problem where each edge is added twice
     # when `G.add_weighted_edges_from()` is invoked below.
-    if G.is_multigraph() and not G.is_directed():
+    if not G.is_directed():
         triples = ((u, v, d) for u, v, d in triples if u <= v)
     G.add_weighted_edges_from(triples, weight=edge_attribute)
     return G
@@ -1159,7 +1159,7 @@ def from_numpy_array(
     entries of `A` are of type :class:`int`, then this function returns a
     multigraph (of the same type as `create_using`) with parallel edges.
 
-    If `create_using` indicates an undirected multigraph, then only the edges
+    If `create_using` indicates an undirected graph, then only the edges
     indicated by the upper triangle of the array `A` will be added to the
     graph.
 
@@ -1187,7 +1187,7 @@ def from_numpy_array(
     >>> A = np.array([[1, 1], [2, 1]])
     >>> G = nx.from_numpy_array(A)
     >>> G.edges(data=True)
-    EdgeDataView([(0, 0, {'weight': 1}), (0, 1, {'weight': 2}), (1, 1, {'weight': 1})])
+    EdgeDataView([(0, 0, {'weight': 1}), (0, 1, {'weight': 1}), (1, 1, {'weight': 1})])
 
     If `create_using` indicates a multigraph and the array has only integer
     entries and `parallel_edges` is False, then the entries will be treated
@@ -1304,7 +1304,7 @@ def from_numpy_array(
     #
     # Without this check, we run into a problem where each edge is added twice
     # when `G.add_edges_from()` is invoked below.
-    if G.is_multigraph() and not G.is_directed():
+    if not G.is_directed():
         triples = ((u, v, d) for u, v, d in triples if u <= v)
     # Remap nodes if user provided custom `nodelist`
     if not _default_nodes:
