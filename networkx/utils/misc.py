@@ -533,17 +533,14 @@ def edges_equal(edges1, edges2):
     bool
         `True` if edges are equal, `False` otherwise.
     """
-    from collections import defaultdict
-
-    d1 = defaultdict(dict)
-    d2 = defaultdict(dict)
+    d1 = defaultdict(list)
+    d2 = defaultdict(list)
 
     def _update_dict(d, e):
         (u, v), data = e[:2], [e[2:]]
-        if v in d[u]:
-            data = d[u][v] + data
-        d[u][v] = data
-        d[v][u] = data
+        data = d[u, v] + data
+        d[u, v] = data
+        d[v, u] = data
 
     for e1, e2 in zip_longest(edges1, edges2, fillvalue=None):
         if e1 is None or e2 is None:
@@ -553,10 +550,7 @@ def edges_equal(edges1, edges2):
 
     # Can check one direction because lengths are the same.
     return all(
-        nbr in d2[n] and datalist.count(data) == d2[n][nbr].count(data)
-        for n, nbrdict in d1.items()
-        for nbr, datalist in nbrdict.items()
-        for data in datalist
+        d1[u, v].count(data) == d2[u, v].count(data) for u, v in d1 for data in d1[u, v]
     )
 
 
