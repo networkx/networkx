@@ -173,7 +173,7 @@ def er_polarity_graph(m, q):
         for j in range(i + 1, len(PG)):
             v = np.array(PG[j])
             if np.dot(u, v) % q == 0:
-                G.add_edge(tuple(u), tuple(v))
+                G.add_edge(tuple(int(x) for x in u), tuple(int(x) for x in v))
 
     if not nx.is_connected(G):
         raise ValueError("Generated ER polarity graph is not connected.")
