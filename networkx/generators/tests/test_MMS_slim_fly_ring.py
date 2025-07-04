@@ -32,6 +32,7 @@ import pytest
 
 import networkx as nx
 from networkx.generators.MMS_slim_fly_ring import slim_fly_graph
+from networkx.generators.MMS_slim_fly_ring import _prime_factors_for_test
 
 # Try importing numpy, skip tests if not available
 try:
@@ -72,7 +73,7 @@ def test_slim_fly_connectivity(q):
 
 
 @pytest.mark.parametrize("q", [3, 4, 5, 9, 27])
-def test_slim_fly_diameter_is_two(q):
+def test_slim_fly_diameter(q):
     if not _np_available:
         pytest.skip(
             "Numpy not available, skipping diameter test that relies on prime_factors."
@@ -82,21 +83,6 @@ def test_slim_fly_diameter_is_two(q):
         pytest.skip(f"q={q} is not a valid number or graph was not constructed")
     diameter = nx.diameter(G)
 
-    # Move prime_factors inside the test function or make it a helper function if needed.
-    # It's not general utility, so keeping it closer to where it's used.
-    def _prime_factors_for_test(n):
-        """Return the list of prime divisors of n."""
-        factors = []
-        while n % 2 == 0:
-            factors.append(2)
-            n //= 2
-        for i in range(3, int(np.sqrt(n)) + 1, 2):
-            while n % i == 0:
-                factors.append(i)
-                n //= i
-        if n > 1:
-            factors.append(n)
-        return factors
 
     expected_diameter = min(1 + len(_prime_factors_for_test(q)), 4)
     assert diameter == expected_diameter, (
