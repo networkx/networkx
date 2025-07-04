@@ -31,8 +31,10 @@ import math
 import pytest
 
 import networkx as nx
-from networkx.generators.MMS_slim_fly_ring import slim_fly_graph
-from networkx.generators.MMS_slim_fly_ring import _prime_factors_for_test
+from networkx.generators.MMS_slim_fly_ring import (
+    _get_prime_factors,
+    slim_fly_graph,
+)
 
 # Try importing numpy, skip tests if not available
 try:
@@ -84,7 +86,7 @@ def test_slim_fly_diameter(q):
     diameter = nx.diameter(G)
 
 
-    expected_diameter = min(1 + len(_prime_factors_for_test(q)), 4)
+    expected_diameter = min(1 + len(_get_prime_factors(q)), 4)
     assert diameter == expected_diameter, (
         f"Expected low diameter for q={q}",
         f" but got {diameter}",
