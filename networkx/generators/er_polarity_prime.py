@@ -74,7 +74,7 @@ def _normalize_projective(vector, q):
     for v in vector:
         if v != 0:
             inv = pow(v, -1, q)  # modular inverse
-            return tuple((x * inv) % q for x in vector)
+            return tuple(int((x * inv) % q) for x in vector)
     return None  # skip zero vector
 
 
