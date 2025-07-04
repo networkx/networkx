@@ -91,7 +91,9 @@ def test_slim_fly_diameter(q):
         return count
 
     unique_factors = _get_prime_factors(q)
-    full_factor_list = [p for p in sorted(unique_factors) for _ in range(multiplicity(q, p))]
+    full_factor_list = [
+        p for p in sorted(unique_factors) for _ in range(multiplicity(q, p))
+    ]
 
     expected_diameter = min(1 + len(full_factor_list), 4)
     diameter = nx.diameter(G)
