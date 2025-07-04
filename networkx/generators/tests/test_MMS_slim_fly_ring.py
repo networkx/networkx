@@ -77,20 +77,25 @@ def test_slim_fly_connectivity(q):
 @pytest.mark.parametrize("q", [3, 4, 5, 9, 27])
 def test_slim_fly_diameter(q):
     if not _np_available:
-        pytest.skip(
-            "Numpy not available, skipping diameter test that relies on prime_factors."
-        )
+        pytest.skip("Numpy not available")
+
     G = slim_fly_graph(q)
     if G.number_of_nodes() == 0:
-        pytest.skip(f"q={q} is not a valid number or graph was not constructed")
+        pytest.skip(f"q={q} did not produce a graph")
+
+    def multiplicity(n, p):
+        count = 0
+        while n % p == 0:
+            count += 1
+            n //= p
+        return count
+
+    unique_factors = _get_prime_factors(q)
+    full_factor_list = [p for p in sorted(unique_factors) for _ in range(multiplicity(q, p))]
+
+    expected_diameter = min(1 + len(full_factor_list), 4)
     diameter = nx.diameter(G)
-
-
-    expected_diameter = min(1 + len(_get_prime_factors(q)), 4)
-    assert diameter == expected_diameter, (
-        f"Expected low diameter for q={q}",
-        f" but got {diameter}",
-    )
+    assert diameter == expected_diameter
 
 
 def is_almost_k_regular(G, k, tolerance):
