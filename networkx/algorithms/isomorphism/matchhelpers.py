@@ -4,6 +4,7 @@ edge_match functions to use during isomorphism checks.
 
 import math
 import types
+from collections import Counter
 from itertools import permutations
 
 __all__ = [
@@ -93,23 +94,23 @@ def categorical_multiedge_match(attr, default):
     if isinstance(attr, str):
 
         def match(datasets1, datasets2):
-            values1 = {data.get(attr, default) for data in datasets1.values()}
-            values2 = {data.get(attr, default) for data in datasets2.values()}
-            return values1 == values2
+            values1 = Counter([data.get(attr, default) for data in datasets1.values()])
+            values2 = Counter([data.get(attr, default) for data in datasets2.values()])
+            return values1 >= values2
 
     else:
         attrs = list(zip(attr, default))  # Python 3
 
         def match(datasets1, datasets2):
-            values1 = set()
+            values1 = Counter()
             for data1 in datasets1.values():
                 x = tuple(data1.get(attr, d) for attr, d in attrs)
-                values1.add(x)
-            values2 = set()
+                values1[x] += 1
+            values2 = Counter()
             for data2 in datasets2.values():
                 x = tuple(data2.get(attr, d) for attr, d in attrs)
-                values2.add(x)
-            return values1 == values2
+                values2[x] += 1
+            return values1 >= values2
 
     return match
 
