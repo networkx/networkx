@@ -217,6 +217,73 @@ def test_multiedge():
             assert gm.subgraph_is_monomorphic()
 
 
+def test_multiedge_2():
+    graph = nx.MultiGraph([["a", "b", {"color": 0}], ["a", "b", {"color": 1}]])
+    subgraph = nx.MultiGraph([[0, 1, {"color": 0}]])
+
+    matcher = nx.isomorphism.GraphMatcher(
+        graph, subgraph, edge_match=iso.categorical_multiedge_match("color", -1)
+    )
+    assert matcher.subgraph_is_monomorphic()
+    assert not matcher.is_isomorphic()
+
+
+def test_multiedge_3():
+    graph = nx.MultiGraph([["a", "b", {"color": 0}], ["a", "b", {"color": 1}]])
+    subgraph = nx.MultiGraph([[0, 1, {"color": 0}], [0, 1, {"color": 0}]])
+
+    matcher = nx.isomorphism.GraphMatcher(
+        graph, subgraph, edge_match=iso.categorical_multiedge_match("color", -1)
+    )
+    assert not matcher.subgraph_is_monomorphic()
+    assert not matcher.is_isomorphic()
+
+
+def test_multiedge_4():
+    graph = nx.MultiGraph([["a", "b", {"color": 0}], ["a", "b", {"color": 1}]])
+    subgraph = nx.MultiGraph([[0, 1, {"color": 0}], [0, 1, {"color": 1}]])
+
+    matcher = nx.isomorphism.GraphMatcher(
+        graph, subgraph, edge_match=iso.categorical_multiedge_match("color", -1)
+    )
+    assert matcher.is_isomorphic()
+    assert matcher.subgraph_is_monomorphic()
+    assert matcher.subgraph_is_isomorphic()
+
+
+def test_multiedge_5():
+    graph = nx.MultiGraph(
+        [["a", "b", {"color": 0}], ["a", "b", {"color": 0}], ["a", "b", {"color": 1}]]
+    )
+    subgraph = nx.MultiGraph(
+        [[0, 1, {"color": 0}], [0, 1, {"color": 1}], [0, 1, {"color": 1}]]
+    )
+
+    matcher = nx.isomorphism.GraphMatcher(
+        graph, subgraph, edge_match=iso.categorical_multiedge_match("color", -1)
+    )
+    assert not matcher.is_isomorphic()
+    assert not matcher.subgraph_is_isomorphic()
+    assert not matcher.subgraph_is_monomorphic()
+
+
+def test_multiedge_6():
+    graph = nx.MultiGraph(
+        [["a", "b", {"color": 0}], ["a", "b", {"color": 0}], ["a", "b", {"color": 1}]]
+    )
+    subgraph = nx.MultiGraph([[0, 1, {"color": 0}], [0, 1, {"color": 1}]])
+
+    matcher = nx.isomorphism.GraphMatcher(
+        graph, subgraph, edge_match=iso.categorical_multiedge_match("color", -1)
+    )
+    assert not matcher.is_isomorphic()
+    assert not matcher.subgraph_is_isomorphic()
+    assert matcher.subgraph_is_monomorphic()
+
+
+# ---------------------------------------------- #
+
+
 @pytest.mark.parametrize("G1", [nx.Graph(), nx.MultiGraph()])
 @pytest.mark.parametrize("G2", [nx.Graph(), nx.MultiGraph()])
 def test_matcher_raises(G1, G2):
