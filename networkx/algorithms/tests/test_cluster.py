@@ -2,7 +2,7 @@ import pytest
 
 import networkx as nx
 
-from ..cluster import triangle_count
+from ..cluster import all_triangles
 
 
 def test_square_clustering_adjacent_squares():
@@ -78,66 +78,50 @@ class TestTriangles:
         assert list(nx.triangles(G).values()) == [5, 3, 3, 5, 5]
         assert nx.triangles(G, 3) == 5
 
-    # triangle_count function tests
-    def test_triangle_count_simple(self):
-        G = nx.Graph()
-        G.add_edges_from([(1, 2), (2, 3), (3, 1)])
-        assert triangle_count(G) == 1
 
-    def test_triangle_count_no_triangles(self):
-        G = nx.path_graph(4)
-        assert triangle_count(G) == 0
+def test_all_triangles():
+    G = nx.Graph()
+    G.add_edges_from([(0, 1), (1, 2), (2, 0), (0, 3)])  # one triangle: (0,1,2)
 
-    def test_triangle_count_empty_graph(self):
-        G = nx.Graph()
-        assert triangle_count(G) == 0
+    triangles = list(all_triangles(G))
+    triangles_sorted = [tuple(sorted(t)) for t in triangles]
 
-    def test_triangle_count_multiple(self):
-        G = nx.Graph()
-        G.add_edges_from(
-            [
-                (1, 2),
-                (2, 3),
-                (3, 1),  # triangle 1
-                (4, 5),
-                (5, 6),
-                (6, 4),  # triangle 2
-                (7, 8),  # no triangle here
-            ]
-        )
-        assert triangle_count(G) == 2
+    assert len(triangles_sorted) == 1
+    assert sorted(triangles_sorted[0]) == [0, 1, 2]
 
-    def test_triangle_count_nodes_subset(self):
-        G = nx.Graph()
-        G.add_edges_from(
-            [
-                (1, 2),
-                (2, 3),
-                (3, 1),  # triangle A: nodes 1,2,3
-                (4, 5),
-                (5, 6),
-                (6, 4),  # triangle B: nodes 4,5,6
-                (7, 8),
-            ]
-        )
-        # Triangles touching nodes [1,2,3,4] are A and B since node 4 is in B
-        assert triangle_count(G, nodes=[1, 2, 3, 4]) == 2
+    assert len(triangles_sorted) == len(set(triangles_sorted))
 
-    def test_triangle_count_single_node(self):
-        G = nx.Graph()
-        G.add_edges_from(
-            [
-                (1, 2),
-                (2, 3),
-                (3, 1),  # triangle A: 1,2,3
-                (1, 4),
-                (4, 5),
-                (5, 1),  # triangle B: 1,4,5
-                (6, 7),
-            ]
-        )
-        # Triangles touching node 1: both A and B
-        assert triangle_count(G, nodes=[1]) == 2
+
+def test_all_triangles_multiple():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            (0, 1),
+            (1, 2),
+            (2, 0),  # triangle 0-1-2
+            (2, 3),
+            (3, 4),
+            (4, 2),  # triangle 2-3-4
+            (0, 2),  # already part of both triangles
+        ]
+    )
+    triangles = list(all_triangles(G))
+    triangles_sorted = [tuple(sorted(t)) for t in triangles]
+
+    assert len(triangles_sorted) == 2
+    assert set(triangles_sorted) == {(0, 1, 2), (2, 3, 4)}
+
+
+def test_all_triangles_none():
+    G = nx.path_graph(4)  # No triangle in a path
+    triangles = list(all_triangles(G))
+    assert triangles == []
+
+
+def test_all_triangles_empty():
+    G = nx.Graph()
+    triangles = list(all_triangles(G))
+    assert triangles == []
 
 
 class TestDirectedClustering:
