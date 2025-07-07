@@ -2,6 +2,8 @@ import pytest
 
 import networkx as nx
 
+from ..cluster import triangle_count
+
 
 def test_square_clustering_adjacent_squares():
     G = nx.Graph([(1, 2), (1, 3), (2, 4), (3, 4), (3, 5), (4, 6), (5, 6)])
@@ -75,6 +77,67 @@ class TestTriangles:
         G.add_edge(3, 3)  # ignore self-edges
         assert list(nx.triangles(G).values()) == [5, 3, 3, 5, 5]
         assert nx.triangles(G, 3) == 5
+
+    # triangle_count function tests
+    def test_triangle_count_simple(self):
+        G = nx.Graph()
+        G.add_edges_from([(1, 2), (2, 3), (3, 1)])
+        assert triangle_count(G) == 1
+
+    def test_triangle_count_no_triangles(self):
+        G = nx.path_graph(4)
+        assert triangle_count(G) == 0
+
+    def test_triangle_count_empty_graph(self):
+        G = nx.Graph()
+        assert triangle_count(G) == 0
+
+    def test_triangle_count_multiple(self):
+        G = nx.Graph()
+        G.add_edges_from(
+            [
+                (1, 2),
+                (2, 3),
+                (3, 1),  # triangle 1
+                (4, 5),
+                (5, 6),
+                (6, 4),  # triangle 2
+                (7, 8),  # no triangle here
+            ]
+        )
+        assert triangle_count(G) == 2
+
+    def test_triangle_count_nodes_subset(self):
+        G = nx.Graph()
+        G.add_edges_from(
+            [
+                (1, 2),
+                (2, 3),
+                (3, 1),  # triangle A: nodes 1,2,3
+                (4, 5),
+                (5, 6),
+                (6, 4),  # triangle B: nodes 4,5,6
+                (7, 8),
+            ]
+        )
+        # Triangles touching nodes [1,2,3,4] are A and B since node 4 is in B
+        assert triangle_count(G, nodes=[1, 2, 3, 4]) == 2
+
+    def test_triangle_count_single_node(self):
+        G = nx.Graph()
+        G.add_edges_from(
+            [
+                (1, 2),
+                (2, 3),
+                (3, 1),  # triangle A: 1,2,3
+                (1, 4),
+                (4, 5),
+                (5, 1),  # triangle B: 1,4,5
+                (6, 7),
+            ]
+        )
+        # Triangles touching node 1: both A and B
+        assert triangle_count(G, nodes=[1]) == 2
 
 
 class TestDirectedClustering:
