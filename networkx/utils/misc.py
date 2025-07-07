@@ -549,9 +549,7 @@ def edges_equal(edges1, edges2):
         _update_dict(d2, e2)
 
     # Can check one direction because lengths are the same.
-    return all(
-        d1[u, v].count(data) == d2[u, v].count(data) for u, v in d1 for data in d1[u, v]
-    )
+    return all(d1[e].count(data) == d2[e].count(data) for e in d1 for data in d1[e])
 
 
 def graphs_equal(graph1, graph2):
