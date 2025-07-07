@@ -270,7 +270,7 @@ def all_triangles(G, nodes=None):
     Examples
     --------
     >>> G = nx.complete_graph(4)
-    >>> list(nx.all_triangles(G))
+    >>> list(all_triangles(G))
     [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)]
     """
     # If nodes is None, then yield all the triangles of the graph
