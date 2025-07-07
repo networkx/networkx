@@ -247,6 +247,73 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
         yield (i, dtotal, dbidirectional, float(directed_triangles))
 
 
+@not_implemented_for("directed")
+@nx._dispatchable
+def triangle_count(G, nodes = None):
+    """
+        Counts triangles in an undirected graph using fixed node ordering and set intersection.
+
+        Parameters
+        ----------
+        G : NetworkX graph
+            An undirected graph. Self-loops and multiple edges are ignored.
+
+        nodes : node, iterable of nodes, or None (default=None)
+            If a singleton node, return the number of triangles for that node.
+            If an iterable, compute the total distinct triangles for the nodes in the iterable.
+            If `None` (the default) compute the number of triangles for all nodes in `G`.
+
+        Returns
+        -------
+        out : int
+            If `nodes` is a container of nodes, returns number of distinct triangles in the iterable (int).
+            If `nodes` is a specific node, returns number of triangles for the node (int).
+
+        Examples
+        --------
+        >>> G = nx.complete_graph(4)
+        >>> triangle_count(G)
+        4
+
+        Notes
+        -----
+        Self loops are ignored.
+    """
+    # If nodes is None, then compute triangles for the whole graph
+    if nodes is None:
+        # Pre-computation based on fixed ID ordering
+        neighbor_sets = { node: {nbr for nbr in G.neighbors(node) if nbr > node}
+            for node in G }
+
+        triangle_count = sum(len(nbrs & neighbor_sets[v]) for nbrs in neighbor_sets.values() for v in nbrs)
+
+        return triangle_count
+
+    # If nodes is not None, then compute triangles for the specified nodes
+    if nodes in G:
+        nodes_set = {nodes}
+    else:
+        nodes_set = set(nodes)
+
+    # Keep only relevant nodes for counting triangles (nodes and their neighbors)
+    relevant_nodes = nodes_set | {nbr for node in nodes_set for nbr in G.neighbors(node)}
+
+    neighbor_sets = { node: {nbr for nbr in G.neighbors(node) if nbr > node and nbr in relevant_nodes}
+        for node in relevant_nodes }
+
+    # Count triangles for the specified nodes
+    # Add 1 to the count if at least one of the nodes is in the nodes_set
+    triangle_count = 0
+    for u in neighbor_sets:
+        for v in neighbor_sets[u]:
+            common = neighbor_sets[u] & neighbor_sets[v]
+            for w in common:
+                if u in nodes_set or v in nodes_set or w in nodes_set:
+                    triangle_count += 1
+
+    return triangle_count
+
+
 @nx._dispatchable(edge_attrs="weight")
 def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     r"""Compute the average clustering coefficient for the graph G.
