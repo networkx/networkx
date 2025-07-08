@@ -536,17 +536,12 @@ def edges_equal(edges1, edges2):
     d1 = defaultdict(list)
     d2 = defaultdict(list)
 
-    def _update_dict(d, e):
-        (u, v), data = e[:2], [e[2:]]
-        data = d[u, v] + data
-        d[u, v] = data
-        d[v, u] = data
-
     for e1, e2 in zip_longest(edges1, edges2, fillvalue=None):
         if e1 is None or e2 is None:
             return False  # One is longer.
-        _update_dict(d1, e1)
-        _update_dict(d2, e2)
+        for e, d in [(e1, d1), (e2, d2)]:
+            u, v, *data = e
+            d[u, v] = d[v, u] = d[u, v] + [data]
 
     # Can check one direction because lengths are the same.
     return all(d1[e].count(data) == d2[e].count(data) for e in d1 for data in d1[e])
