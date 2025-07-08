@@ -16,7 +16,7 @@ import networkx as nx
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def nonisomorphic_trees(order):
-    """Generate nonisomorphic trees of specified `order`
+    """Generate nonisomorphic trees of specified `order`.
 
     Parameters
     ----------
@@ -32,7 +32,7 @@ def nonisomorphic_trees(order):
     Raises
     ------
     ValueError
-        If `order` is negative.
+       If `order` is negative.
 
     Examples
     --------
@@ -48,7 +48,7 @@ def nonisomorphic_trees(order):
     >>> all(len(G) == n for G in nx.nonisomorphic_trees(n))
     True
 
-    Each tree is nonisomorphic to every other tree yielded by the generator
+    Each tree is nonisomorphic to every other tree yielded by the generator.
     >>> seen = []
     >>> for G in nx.nonisomorphic_trees(n):
     ...     assert not any(nx.is_isomorphic(G, H) for H in seen)
@@ -82,17 +82,17 @@ def number_of_nonisomorphic_trees(order):
     """Returns the number of nonisomorphic trees of the specified `order`.
 
     Based on an algorithm by Alois P. Heinz in
-    `OEIS entry A000055 <https://oeis.org/A000055>`_. Complexity is ``O(n ** 3)``
+    `OEIS entry A000055 <https://oeis.org/A000055>`_. Complexity is ``O(n ** 3)``.
 
     Parameters
     ----------
     order : int
-       order of the desired tree(s)
+       Order of the desired tree(s).
 
     Returns
     -------
     int
-       Number of nonisomorphic trees with `order` number of nodes
+       Number of nonisomorphic trees with `order` number of nodes.
 
     Raises
     ------
