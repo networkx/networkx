@@ -251,7 +251,7 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
 @nx._dispatchable
 def all_triangles(G, nodes=None):
     """
-    Yields all unique triangles in an undirected graph using fixed node ordering.
+    Yields all unique triangles in an undirected graph using node ordering.
 
     Parameters
     ----------
@@ -265,7 +265,8 @@ def all_triangles(G, nodes=None):
     Yields
     -------
     tuple
-        A tuple of three nodes forming a triangle (u, v, w) with u < v < w.
+        A tuple of three nodes forming a triangle (u, v, w), ordered using string-based node ordering
+        (i.e., str(u) < str(v) < str(w)).
 
     Examples
     --------
@@ -275,10 +276,16 @@ def all_triangles(G, nodes=None):
     """
     # If nodes is None, then yield all the triangles of the graph
     if nodes is None:
-        # Pre-computation based on fixed ID ordering
-        neighbor_sets = { node: {nbr for nbr in G.neighbors(node) if nbr > node}
-            for node in G }
-        
+        # Nodes may not be directly comparable, so we sort using their string representations for consistency
+        nodes = sorted(G.nodes(), key=lambda n: str(n))
+
+        node_ranks = {node: i for i, node in enumerate(nodes)}
+
+        neighbor_sets = {
+            u: {v for v in G.neighbors(u) if node_ranks[v] > node_ranks[u]}
+            for u in nodes
+        }
+
         for u in neighbor_sets:
             for v in neighbor_sets[u]:
                 common = neighbor_sets[u] & neighbor_sets[v]
@@ -296,12 +303,19 @@ def all_triangles(G, nodes=None):
             nbr for node in nodes_set for nbr in G.neighbors(node)
         }
 
+        sorted_relevant = sorted(relevant_nodes, key=lambda n: str(n))
+
+        node_ranks = {node: i for i, node in enumerate(sorted_relevant)}
+
         neighbor_sets = {
-            node: {
-                nbr for nbr in G.neighbors(node) if nbr > node and nbr in relevant_nodes
+            u: {
+                v
+                for v in G.neighbors(u)
+                if node_ranks[v] > node_ranks[u] and v in relevant_nodes
             }
-            for node in relevant_nodes
+            for u in relevant_nodes
         }
+
         # Yield a triangle if at least one of the nodes is in the nodes_set
         for u in neighbor_sets:
             for v in neighbor_sets[u]:
