@@ -8,7 +8,7 @@ __all__ = ["is_regular", "is_k_regular", "k_factor"]
 
 @nx._dispatchable
 def is_regular(G):
-    """Determines whether a graph is a regular graph.
+    """Determines whether a graph is regular.
 
     A regular graph is a graph where all nodes have the same degree. A regular
     digraph is a graph where all nodes have the same indegree and all nodes
@@ -41,7 +41,7 @@ def is_regular(G):
         ods = (od for _, od in G.out_degree)
         d_in = next(ids)
         d_out = next(ods)
-        return all(d_in == id and d_out == od for id, od in zip(ids, ods))
+        return all(id == d_in and od == d_out for id, od in zip(ids, ods))
 
 
 @not_implemented_for("directed")
