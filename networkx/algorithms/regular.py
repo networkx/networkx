@@ -97,7 +97,7 @@ def k_factor(G, k, matching_weight="weight"):
     Returns
     -------
     NetworkX graph
-        A `k`-factor of `G`
+        A `k`-factor of `G`.
 
     Examples
     --------
