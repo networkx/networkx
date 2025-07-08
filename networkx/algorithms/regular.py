@@ -74,33 +74,36 @@ def is_k_regular(G, k):
 @not_implemented_for("multigraph")
 @nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
 def k_factor(G, k, matching_weight="weight"):
-    """Compute a k-factor of G
+    """Compute a `k`-factor of a graph.
 
-    A k-factor of a graph is a spanning k-regular subgraph.
-    A spanning k-regular subgraph of G is a subgraph that contains
-    each vertex of G and a subset of the edges of G such that each
-    vertex has degree k.
+    A `k`-factor of a graph is a spanning `k`-regular subgraph.
+    A spanning `k`-regular subgraph of `G` is a subgraph that contains
+    each vertex of `G` and a subset of the edges of `G` such that each
+    vertex has degree `k`.
 
     Parameters
     ----------
     G : NetworkX graph
-      Undirected graph
+        An undirected graph.
 
-    matching_weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight.
-       Used for finding the max-weighted perfect matching.
-       If key not found, uses 1 as weight.
+    k : int
+        The degree of the `k`-factor.
+
+    matching_weight: string, optional (default="weight")
+        Edge data key corresponding to the edge weight.
+        Used for finding the max-weighted perfect matching.
+        If the key is not found, all edges are considered to have the same weight.
 
     Returns
     -------
-    G2 : NetworkX graph
-        A k-factor of G
+    NetworkX graph
+        A `k`-factor of `G`
 
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 1)])
-    >>> G2 = nx.k_factor(G, k=1)
-    >>> G2.edges()
+    >>> kf = nx.k_factor(G, k=1)
+    >>> kf.edges()
     EdgeView([(1, 2), (3, 4)])
 
     References
