@@ -335,7 +335,7 @@ def maybe_regular_expander_graph(n, d, *, create_using=None, max_tries=100, seed
 
 def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None):
     """
-    .. deprecated:: 3.5
+    .. deprecated:: 3.6
        `maybe_regular_expander` is a deprecated alias
        for `maybe_regular_expander_graph`.
        Use `maybe_regular_expander_graph` instead.
