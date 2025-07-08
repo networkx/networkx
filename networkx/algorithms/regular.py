@@ -32,16 +32,16 @@ def is_regular(G):
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("Graph has no nodes.")
-    n1 = nx.utils.arbitrary_element(G)
     if not G.is_directed():
-        d1 = G.degree(n1)
-        return all(d1 == d for _, d in G.degree)
+        ds = (d for _, d in G.degree)
+        d1 = next(ds)
+        return all(d == d1 for d in ds)
     else:
-        d_in = G.in_degree(n1)
-        in_regular = all(d_in == d for _, d in G.in_degree)
-        d_out = G.out_degree(n1)
-        out_regular = all(d_out == d for _, d in G.out_degree)
-        return in_regular and out_regular
+        ids = (id for _, id in G.in_degree)
+        ods = (od for _, od in G.out_degree)
+        d_in = next(ids)
+        d_out = next(ods)
+        return all(d_in == id and d_out == od for id, od in zip(ids, ods))
 
 
 @not_implemented_for("directed")
