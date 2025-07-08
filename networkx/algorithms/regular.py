@@ -8,11 +8,11 @@ __all__ = ["is_regular", "is_k_regular", "k_factor"]
 
 @nx._dispatchable
 def is_regular(G):
-    """Determines whether the graph ``G`` is a regular graph.
+    """Determines whether a graph is a regular graph.
 
-    A regular graph is a graph where each vertex has the same degree. A
-    regular digraph is a graph where the indegree and outdegree of each
-    vertex are equal.
+    A regular graph is a graph where all nodes have the same degree. A regular
+    digraph is a graph where all nodes have the same indegree and all nodes
+    have the same outdegree.
 
     Parameters
     ----------
