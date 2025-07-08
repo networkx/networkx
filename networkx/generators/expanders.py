@@ -343,7 +343,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
     import warnings
 
     warnings.warn(
-        "maybe_regular_expander is deprecated,"
+        "maybe_regular_expander is deprecated, "
         "use `maybe_regular_expander_graph` instead.",
         category=DeprecationWarning,
         stacklevel=2,
