@@ -1849,7 +1849,8 @@ def _random_paths_source_target(
         else:
             h[(node, k)] = sum(
                 [
-                    transition_probabilities[node][nbr] * h.get((nbr, k - 1), 0)
+                    transition_probabilities[node_map.index(node)][node_map.index(nbr)]
+                    * h.get((nbr, k - 1), 0)
                     for nbr in G.neighbors(node)
                 ]
             )
