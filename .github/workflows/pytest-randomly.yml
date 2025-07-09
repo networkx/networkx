@@ -18,9 +18,9 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip
-          pip install .[default,test]
+          pip install .[default,test,test-extras]
           pip install pytest-randomly
           pip list
 
       - name: Run tests
-        run: pytest --doctest-modules --durations=10 --pyargs networkx
+        run: pytest --doctest-modules --durations=10 --pyargs --mpl networkx
