@@ -141,8 +141,8 @@ def kosaraju_strongly_connected_components(G, source=None):
 
     Examples
     --------
-    Generate a list of strongly connected component lengths
-    in ascending order.
+    Generate a list of strongly connected components, in ascending order of
+    length.
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
     >>> nx.add_cycle(G, [10, 11, 12])
