@@ -22,6 +22,7 @@ __all__ = [
     "octahedral_graph",
     "pappus_graph",
     "petersen_graph",
+    "generalized_petersen_graph",
     "sedgewick_maze_graph",
     "tetrahedral_graph",
     "truncated_cube_graph",
@@ -643,7 +644,7 @@ def moebius_kantor_graph(create_using=None):
 
     The Möbius-Kantor graph is the cubic symmetric graph on 16 nodes.
     Its LCF notation is [5,-5]^8, and it is isomorphic to the generalized
-    Petersen graph [1]_.
+    Petersen graph GP(8,3) [1]_.
 
     Parameters
     ----------
@@ -724,6 +725,8 @@ def pappus_graph():
     return G
 
 
+
+
 @_raise_on_directed
 @nx._dispatchable(graphs=None, returns_graph=True)
 def petersen_graph(create_using=None):
@@ -768,7 +771,55 @@ def petersen_graph(create_using=None):
     G.name = "Petersen Graph"
     return G
 
+@nx._dispatchable(graphs=None, returns_graph=True)
+def generalized_petersen_graph(n, k, create_using=None):
+    """
+    Returns the generalized Petersen graph GP(n,k).
 
+    The Generalized Peterson graph consists of an outer cycle of n nodes
+    connected to an inner circulant graph of n nodes, where nodes in the
+    inner circulant are connected to their kth nearest neighbor [1]_. A
+    generalized Petersen graph is cubic with 2n nodes and 3n edges. 
+    
+    Some well known graphs are examples of generalized Petersen graphs such
+    as the Desargues graph GP(10,3) and dodecahedron graph GP(10,2).
+
+    Parameters
+    ----------
+    n : int
+       Number of nodes in the outer cycle and inner circulant. n must be greater or equal to 3.
+       
+    k : int
+       Neighbor to connect in the inner circulant. 1 <= k <= floor( (n-1)/2 )
+
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Generalized Petersen graph n k
+
+    References
+    ----------
+    .. [1] https://mathworld.wolfram.com/GeneralizedPetersenGraph.html
+    """
+    if n <= 2:
+        raise NetworkXError("n should be greater than or equal to 3")
+    if k <= 0 or k > int((n-1)/2):
+        raise NetworkXError("k should be greater than or equal to 1 and smaller than floor((n-1)/2)")
+
+
+    G = nx.Graph()
+    for i in range(n):
+        G.add_edge(i, (i+1)%n)
+        G.add_edge(n+i, n+(i+k)%n)	#inner circulant
+        G.add_edge(i, n+i)			#connect them
+
+    G.name = "Generalized Petersen Graph {} {}".format(n, k)
+
+    return G
+        
 @nx._dispatchable(graphs=None, returns_graph=True)
 def sedgewick_maze_graph(create_using=None):
     """
@@ -884,7 +935,6 @@ def truncated_cube_graph(create_using=None):
             21: [22],
             22: [23],
         },
-        create_using=create_using,
     )
     G.name = "Truncated Cube Graph"
     return G
