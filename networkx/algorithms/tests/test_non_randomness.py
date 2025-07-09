@@ -40,3 +40,21 @@ def test_empty_graph():
     G = nx.empty_graph(1)
     with pytest.raises(nx.NetworkXError, match=".*not applicable to empty graphs"):
         nx.non_randomness(G)
+
+
+@pytest.mark.parametrize("k", [-1, 0, 2, 5])
+def test_value_error(k):
+    """
+    Check that invalid values of k raise (must be between 1 and n - 1, inclusive,
+    and such that the probability is between 0 and 1, exclusive).
+    """
+    G = nx.path_graph(5)
+    with pytest.raises(ValueError, match=r"invalid number of communities"):
+        nx.non_randomness(G, k=k)
+
+
+@pytest.mark.parametrize("G", [nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()])
+def test_not_implemented(G):
+    """Check that non-randomness is not implemented for directed or multigraphs."""
+    with pytest.raises(nx.NetworkXNotImplemented, match=r"not implemented for"):
+        nx.non_randomness(G)
