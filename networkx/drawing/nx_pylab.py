@@ -893,7 +893,6 @@ def display(
         ]
 
     edge_subgraph = G.edge_subgraph(visible_edges)
-    print(nx.get_node_attributes(node_subgraph, pos))
     nx.set_node_attributes(
         edge_subgraph, nx.get_node_attributes(node_subgraph, pos), name=pos
     )
