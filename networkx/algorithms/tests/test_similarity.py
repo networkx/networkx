@@ -982,3 +982,120 @@ class TestSimilarity:
             nx.graph_edit_distance(G3, G2, node_match=user_match, edge_match=user_match)
             == 1
         )
+
+
+# -------------------- #
+# Tests for the enhancement random paths from source to target
+
+
+def test_random_paths_target_source():
+    G = nx.complete_graph(5)
+    source = 0
+    target = 4
+    path_len = 6
+    sample_size = 3
+    paths = list(
+        nx.generate_random_paths(
+            G,
+            sample_size=sample_size,
+            path_length=path_len,
+            source=source,
+            target=target,
+        )
+    )
+    assert len(paths) == 3
+    for path in paths:
+        assert path[0] == source
+        assert path[-1] == target
+        assert len(path) == (path_len + 1)
+
+
+def test_random_paths_no_path_target_source():
+    G = nx.lollipop_graph(4, 7)
+    source = 0
+    target = 8
+    path_len = 2
+    sample_size = 3
+    path_gen = nx.generate_random_paths(
+        G, sample_size=sample_size, path_length=path_len, source=source, target=target
+    )
+    with pytest.raises(Exception, match="There is not such path from source to target"):
+        next(path_gen)
+
+
+def test_random_paths_unique_path_target_source():
+    """
+    There is only one path of the specified length
+    """
+    G = nx.lollipop_graph(4, 7)
+    source = 10
+    target = 4
+    path_len = 6
+    sample_size = 3
+    paths = list(
+        nx.generate_random_paths(
+            G,
+            sample_size=sample_size,
+            path_length=path_len,
+            source=source,
+            target=target,
+        )
+    )
+    assert len(paths) == 3
+    for path in paths:
+        assert path[0] == source
+        assert path[-1] == target
+        assert len(path) == (path_len + 1)
+
+
+@pytest.mark.parametrize("source", (1, 2))
+@pytest.mark.parametrize("target", (10, "foo"))
+def test_random_paths_target_not_in_G_source_target(source, target):
+    pytest.importorskip("numpy")
+    G = nx.complete_graph(5)
+    # No exception at generator construction time
+    path_gen = nx.generate_random_paths(G, sample_size=3, source=source, target=target)
+    with pytest.raises(nx.NodeNotFound, match="Target node.*not in G"):
+        next(path_gen)
+
+
+@pytest.mark.parametrize("source", (10, "foo"))
+@pytest.mark.parametrize("target", (1, 2))
+def test_random_paths_source_not_in_G_source_target(source, target):
+    pytest.importorskip("numpy")
+    G = nx.complete_graph(5)
+    # No exception at generator construction time
+    path_gen = nx.generate_random_paths(G, sample_size=3, source=source, target=target)
+    with pytest.raises(nx.NodeNotFound, match="Initial node.*not in G"):
+        next(path_gen)
+
+
+@pytest.mark.parametrize("target", (10, "foo"))
+def test_random_paths_target_not_in_G(target):
+    pytest.importorskip("numpy")
+    G = nx.complete_graph(5)
+    # No exception at generator construction time
+    path_gen = nx.generate_random_paths(G, sample_size=3, target=target)
+    with pytest.raises(nx.NodeNotFound, match="Target node.*not in G"):
+        next(path_gen)
+
+
+def test_random_paths_target():
+    G = nx.complete_graph(5)
+    source = None
+    target = 4
+    path_len = 6
+    sample_size = 3
+    paths = list(
+        nx.generate_random_paths(
+            G,
+            sample_size=sample_size,
+            path_length=path_len,
+            source=source,
+            target=target,
+        )
+    )
+    assert len(paths) == 3
+    for path in paths:
+        assert path[-1] == target
+        assert len(path) == (path_len + 1)

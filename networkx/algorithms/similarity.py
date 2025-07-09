@@ -1653,6 +1653,7 @@ def generate_random_paths(
     seed=None,
     *,
     source=None,
+    target=None,
 ):
     """Randomly generate `sample_size` paths of length `path_length`.
 
@@ -1679,6 +1680,9 @@ def generate_random_paths(
     source : node, optional
         Node to use as the starting point for all generated paths.
         If None then starting nodes are selected at random with uniform probability.
+    target : node, optional
+        Node to use as the end point for all generated paths.
+        If None then end nodes are selected to be the end nodes of the randomly generated paths.
 
     Returns
     -------
@@ -1722,6 +1726,14 @@ def generate_random_paths(
     """
     import numpy as np
 
+    if source is not None and target is not None:
+        paths = _random_paths_source_target(
+            G, sample_size, path_length, index_map, weight, seed, source, target
+        )
+        for path in paths:
+            yield path
+        return
+
     randint_fn = (
         seed.integers if isinstance(seed, np.random.Generator) else seed.randint
     )
@@ -1736,15 +1748,19 @@ def generate_random_paths(
     num_nodes = G.number_of_nodes()
 
     for path_index in range(sample_size):
-        if source is None:
+        if source is None and target is None:
             # Sample current vertex v = v_i uniformly at random
             node_index = randint_fn(num_nodes)
             node = node_map[node_index]
-        else:
+        elif source is not None:
             if source not in node_map:
                 raise nx.NodeNotFound(f"Initial node {source} not in G")
-
             node = source
+            node_index = node_map.index(node)
+        elif target is not None:
+            if target not in node_map:
+                raise nx.NodeNotFound(f"Target node {target} not in G")
+            node = target
             node_index = node_map.index(node)
 
         # Add v into p_r and add p_r into the path set
@@ -1780,4 +1796,99 @@ def generate_random_paths(
                 else:
                     index_map[nbr_node] = {path_index}
 
+        if target is not None:
+            path.reverse()
+        yield path
+
+
+def _random_paths_source_target(
+    G,
+    sample_size,
+    path_length=5,
+    index_map=None,
+    weight="weight",
+    seed=None,
+    source=None,
+    target=None,
+):
+    import numpy as np
+
+    node_map = list(G)
+    num_nodes = G.number_of_nodes()
+
+    if source not in node_map:
+        raise nx.NodeNotFound(f"Initial node {source} not in G")
+    if target not in node_map:
+        raise nx.NodeNotFound(f"Target node {target} not in G")
+
+    randint_fn = (
+        seed.integers if isinstance(seed, np.random.Generator) else seed.randint
+    )
+
+    # Calculate transition probabilities between
+    # every pair of vertices according to Eq. (3)
+    adj_mat = nx.to_numpy_array(G, weight=weight)
+    inv_row_sums = np.reciprocal(adj_mat.sum(axis=1)).reshape(-1, 1)
+    transition_probabilities = adj_mat * inv_row_sums
+
+    # calculate the probabilities h[(node, k)] the probability of a random path of length k
+    # starting at "node" and ending at "target"
+    # worst case memory complexity is num_nodes*path_length
+    h = {}
+    queue = [(target, 0)]
+
+    while len(queue) != 0:
+        node, k = queue.pop(0)
+        is_visited = (node, k) in h
+        if is_visited or (k == path_length and node != source):
+            continue
+        if (k + 1) <= path_length:
+            queue.extend([(nbr, k + 1) for nbr in G.neighbors(node)])
+        if (node, k) == (target, 0):  # "base case"
+            h[(node, k)] = 1
+        else:
+            h[(node, k)] = sum(
+                [
+                    transition_probabilities[node][nbr] * h.get((nbr, k - 1), 0)
+                    for nbr in G.neighbors(node)
+                ]
+            )
+
+    if h.get((source, path_length), 0) == 0:
+        raise Exception("There is not such path from source to target")
+
+    for path_index in range(sample_size):
+        # sample a random path from source to target
+        cur_node = source
+        cur_node_index = node_map.index(cur_node)
+        path = [cur_node]
+
+        # Build the inverted index (P_v) of vertices to paths
+        if index_map is not None:
+            if node in index_map:
+                index_map[cur_node].add(path_index)
+            else:
+                index_map[cur_node] = {path_index}
+
+        for k in range(path_length, 0, -1):
+            nbrs = list(G.neighbors(cur_node))
+            p = [
+                transition_probabilities[cur_node_index][node_map.index(nbr)]
+                * h.get((nbr, k - 1), 0)
+                for nbr in nbrs
+            ]
+            p = p / sum(p)
+            # next_node = np.random.choice(list(G.neighbors(cur_node)), p=p)
+            next_node_index = seed.choice(len(nbrs), p=p)
+            next_node = nbrs[next_node_index]
+            path.append(next_node)
+            cur_node = next_node
+            cur_node_index = node_map.index(cur_node)
+
+            # Build the inverted index (P_v) of vertices to paths
+            if index_map is not None:
+                if node in index_map:
+                    index_map[cur_node].add(path_index)
+                else:
+                    index_map[cur_node] = {path_index}
         yield path
