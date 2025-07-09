@@ -363,8 +363,8 @@ def node_expansion(G, S):
 def boundary_expansion(G, S):
     """Returns the boundary expansion of the set `S`.
 
-    The *boundary expansion* of a set `S` is the ratio between the size
-    of its node boundary and the cardinality of the set itself. [1]
+    The *boundary expansion* of a set `S` is the ratio between the size of its
+    node boundary and the cardinality of the set itself [1]_ .
 
     Parameters
     ----------
@@ -381,36 +381,36 @@ def boundary_expansion(G, S):
 
     Examples
     --------
+    The node boundary is {2, 3} (size 2), divided by ``|S|=4``
+
     >>> G = nx.Graph([(0, 1), (1, 2), (2, 3), (3, 0)])
     >>> S = {0, 1}
     >>> nx.boundary_expansion(G, S)
-    0.5  # Node boundary is {2, 3} (size 2), divided by |S|=4
+    1.0
 
-    For disconnected sets:
+    For disconnected sets, e.g. here where the node boundary is ``{1, 3, 5}``:
+
     >>> G = nx.cycle_graph(6)
     >>> S = {0, 2, 4}
     >>> nx.boundary_expansion(G, S)
-    0.666...  # Boundary {1, 3, 5} (size 3) / |S|=3 = 1.0
+    1.0
 
     See also
     --------
+    :func:`~networkx.algorithms.boundary.node_boundary`
     edge_expansion
     mixing_expansion
     node_expansion
 
     Notes
     -----
-    - Currently defined for a single set S. The generalization to two sets S and T
-      would consider the boundary between S and T, with denominator min(|S|, |T|).
-      This remains an open TODO for future implementation.
-    - The node boundary is defined as all nodes not in S that are adjacent to nodes in S
+    The node boundary is defined as all nodes not in `S` that are adjacent to
+    nodes in `S`
 
     References
     ----------
     .. [1] Vadhan, Salil P.
-           "Pseudorandomness."
-           *Foundations and Trends in Theoretical Computer Science*
-           7.1–3 (2011): 1–336.
-           <https://doi.org/10.1561/0400000010>
+       "Pseudorandomness." *Foundations and Trends in Theoretical Computer Science*
+       7.1–3 (2011): 1–336. <https://doi.org/10.1561/0400000010>
     """
     return len(nx.node_boundary(G, S)) / len(S)
