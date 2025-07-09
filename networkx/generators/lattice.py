@@ -145,8 +145,7 @@ def grid_graph(dim, periodic=False):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def hypercube_graph(n):
-    """
-    Return the *n*-dimensional hypercube graph.
+    """Returns the *n*-dimensional hypercube graph.
 
     The *n*-dimensional hypercube graph [1]_ has ``2**n`` nodes, each represented as
     a binary integer in the form of a tuple of 0's and 1's. Edges exist between
