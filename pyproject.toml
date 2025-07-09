@@ -231,6 +231,7 @@ ignore = [
   "PYI",      # flake8-pyi
   "NPY002",   # Replace legacy `np.random.random` call with `np.random.Generator`
   "W291",     # Trailing white space
+  "C420",     # "Unnecessary" dict comprehensions (even though they're more readable)
 ]
 exclude=['doc/conf.py', '__init__.py']
 
