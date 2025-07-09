@@ -989,6 +989,7 @@ class TestSimilarity:
 
 
 def test_random_paths_target_source():
+    pytest.importorskip("numpy")
     G = nx.complete_graph(5)
     source = 0
     target = 4
@@ -1011,6 +1012,7 @@ def test_random_paths_target_source():
 
 
 def test_random_paths_no_path_target_source():
+    pytest.importorskip("numpy")
     G = nx.lollipop_graph(4, 7)
     source = 0
     target = 8
@@ -1027,6 +1029,7 @@ def test_random_paths_unique_path_target_source():
     """
     There is only one path of the specified length
     """
+    pytest.importorskip("numpy")
     G = nx.lollipop_graph(4, 7)
     source = 10
     target = 4
@@ -1081,6 +1084,7 @@ def test_random_paths_target_not_in_G(target):
 
 
 def test_random_paths_target():
+    pytest.importorskip("numpy")
     G = nx.complete_graph(5)
     source = None
     target = 4
