@@ -1515,7 +1515,10 @@ def test_hide_ticks(method, hide_ticks, subplots):
         assert bool(axis.get_ticklabels()) != hide_ticks
 
 
-def test_edge_label_all_connectionstyles(subplots):
+@pytest.mark.parametrize(
+    "style", ["angle", "angle3", "arc", "arc3,rad=0.0", "bar,fraction=0.1"]
+)
+def test_edge_label_all_connectionstyles(subplots, style):
     """
     Check that FancyArrowPatches with all `connectionstyle`s are supported
     in edge label rendering. See gh-7735 and gh-8106.
@@ -1523,22 +1526,19 @@ def test_edge_label_all_connectionstyles(subplots):
     fig, ax = subplots
     edge = (0, 1)
     G = nx.DiGraph([edge])
-    pos = nx.spring_layout(G, k=1, seed=42)
+    pos = {n: (n, n) for n in G}
 
-    styles = ["angle", "angle3", "arc", "arc3,rad=0.0", "bar,fraction=0.1"]
-    labels = {}
+    name = style.split(",")[0]
+    labels = nx.draw_networkx_edge_labels(
+        G, pos, edge_labels={edge: "edge"}, connectionstyle=style
+    )
 
-    for style in styles:
-        name = style.split(",")[0]
-        labels[name] = nx.draw_networkx_edge_labels(
-            G, pos, edge_labels={edge: "edge"}, connectionstyle=style
-        )
-
-    # For the "arc" and "arc3" styles, the label should be at roughly the midpoint
-    for name in ["arc", "arc3"]:
-        assert labels[name][edge].x, labels[name][edge].y == pytest.approx((0.5, 0))
-    # The label should be below the x-axis for the "bar" style
-    assert labels["bar"][edge].y < 0
+    hmid = (pos[0][0] + pos[1][0]) / 2
+    vmid = (pos[0][1] + pos[1][1]) / 2
+    if name in {"arc", "arc3"}:  # The label should be at roughly the midpoint.
+        assert labels[edge].x, labels[edge].y == pytest.approx((hmid, vmid))
+    elif name == "bar":  # The label should be below the vertical midpoint.
+        assert labels[edge].y < vmid
 
 
 @pytest.mark.parametrize("label_pos", [-0.1, 1.1])
