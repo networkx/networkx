@@ -147,23 +147,29 @@ def grid_graph(dim, periodic=False):
 def hypercube_graph(n):
     """Returns the *n*-dimensional hypercube graph.
 
-    The nodes are the integers between 0 and ``2 ** n - 1``, inclusive.
-
-    For more information on the hypercube graph, see the Wikipedia
-    article `Hypercube graph`_.
-
-    .. _Hypercube graph: https://en.wikipedia.org/wiki/Hypercube_graph
+    The *n*-dimensional hypercube graph [1]_ has ``2**n`` nodes, each represented as
+    a binary integer in the form of a tuple of 0's and 1's. Edges exist between
+    nodes that differ in exactly one bit.
 
     Parameters
     ----------
     n : int
-        The dimension of the hypercube.
-        The number of nodes in the graph will be ``2 ** n``.
+        Dimension of the hypercube, must be a positive integer.
 
     Returns
     -------
-    NetworkX graph
-        The hypercube graph of dimension *n*.
+    networkx.Graph
+        The n-dimensional hypercube graph as an undirected graph.
+
+    Examples
+    --------
+    >>> G = nx.hypercube_graph(3)
+    >>> list(G.neighbors((0, 0, 0)))
+    [(1, 0, 0), (0, 1, 0), (0, 0, 1)]
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Hypercube_graph
     """
     dim = n * [2]
     G = grid_graph(dim)
