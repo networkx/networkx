@@ -76,7 +76,7 @@ def strongly_connected_components(G):
     scc_found = set()
     scc_queue = []
     i = 0  # Preorder counter
-    neighbors = {v: iter(G[v]) for v in G}
+    neighbors = {v: iter(G._adj[v]) for v in G}
     for source in G:
         if source not in scc_found:
             queue = [source]
@@ -93,7 +93,7 @@ def strongly_connected_components(G):
                         break
                 if done:
                     lowlink[v] = preorder[v]
-                    for w in G[v]:
+                    for w in G._adj[v]:
                         if w not in scc_found:
                             if preorder[w] > preorder[v]:
                                 lowlink[v] = min([lowlink[v], lowlink[w]])

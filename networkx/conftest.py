@@ -122,6 +122,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=FutureWarning, message=r"\nThe default value will be"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="maybe_regular_expander"
+    )
 
 
 @pytest.fixture(autouse=True)
