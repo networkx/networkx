@@ -148,9 +148,9 @@ def hypercube_graph(n):
     """
     Return the *n*-dimensional hypercube graph.
 
-
-    The *n*-dimensional hypercube graph has 2^n nodes, each represented as an *n*-tuple
-    of binary values (0 or 1). Edges exist between nodes that differ in exactly one bit.
+    The *n*-dimensional hypercube graph [1]_ has ``2**n`` nodes, each represented as
+    a binary integer in the form of a tuple of 0's and 1's. Edges exist between
+    nodes that differ in exactly one bit.
 
     Parameters
     ----------
@@ -159,18 +159,18 @@ def hypercube_graph(n):
 
     Returns
     -------
-    Graph
+    networkx.Graph
         The n-dimensional hypercube graph as an undirected graph.
 
     Examples
     --------
     >>> G = nx.hypercube_graph(3)
-    >>> list(G.edges((0, 0, 0)))
-    [((0, 0, 0), (1, 0, 0)), ((0, 0, 0), (0, 1, 0)), ((0, 0, 0), (0, 0, 1))]
+    >>> list(G.neighbors((0, 0, 0)))
+    [(1, 0, 0), (0, 1, 0), (0, 0, 1)]
 
-    Notes
-    --------
-    For more information on the hypercube graph, see the Wikipedia article `Hypercube graph <https://en.wikipedia.org/wiki/Hypercube_graph>`.
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Hypercube_graph
     """
     dim = n * [2]
     G = grid_graph(dim)
