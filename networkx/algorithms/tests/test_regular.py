@@ -13,12 +13,12 @@ class TestKFactor:
         assert g.edges == kf.edges
         assert g.nodes == kf.nodes
 
-    @pytest.mark.parametrize("graph", [nx.complete_graph(4), nx.grid_2d_graph(4, 4)])
+    @pytest.mark.parametrize("g", [nx.complete_graph(4), nx.grid_2d_graph(4, 4)])
     @pytest.mark.parametrize("k", [1, 2])
-    def test_k_factor(self, graph, k):
-        kf = nx.k_factor(graph, k)
-        for u, v in kf.edges():
-            assert graph.has_edge(u, v)
+    def test_k_factor(self, g, k):
+        kf = nx.k_factor(g, k)
+        assert g.nodes == kf.nodes
+        assert set(kf.edges) <= set(g.edges)
         assert nx.is_k_regular(kf, k)
 
     def test_k_factor_degree(self):
