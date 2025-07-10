@@ -2,13 +2,6 @@
 # pre-commit install
 
 repos:
-  - repo: https://github.com/rbubley/mirrors-prettier
-    rev: 787fb9f542b140ba0b2aced38e6a3e68021647a3 # frozen: v3.5.3
-    hooks:
-      - id: prettier
-        files: \.(html|md|toml|yml|yaml)
-        args: [--prose-wrap=preserve]
-
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b # frozen: v5.0.0
     hooks:
@@ -35,6 +28,13 @@ repos:
         exclude_types: [svg, xml]
         exclude: test_p2g.py
 
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: 787fb9f542b140ba0b2aced38e6a3e68021647a3 # frozen: v3.5.3
+    hooks:
+      - id: prettier
+        files: \.(html|md|toml|yml|yaml)
+        args: [--prose-wrap=preserve]
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: f0fe93c067104b76ffb58852abe79673a8429bd1 # frozen: v0.11.8
     hooks:
@@ -56,3 +56,32 @@ repos:
         name: Check import conventions; see CONTRIBUTING.rst#guidelines
         language: pygrep
         entry: "^ *import (networkx(,|$| (?!as nx))|numpy(?! as np)|scipy(?! as sp)|pandas(?! as pd)|matplotlib(,|$)|matplotlib.pyplot(?! as plt)|matplotlib (?!as mpl))"
+
+  # The hooks below do not run automatically (may be too slow, bothersome, or low value).
+  # They can be run manually such as before releasing a new version or annually. To run:
+  #
+  #   $ pre-commit run --all-files --hook-stage manual
+  #
+  # Automatically remove unused imports (but not as aggressively as ruff rule F401)
+  - repo: https://github.com/PyCQA/autoflake
+    rev: 0544741e2b4a22b472d9d93e37d4ea9153820bb1 # frozen: v2.3.1
+    hooks:
+      - id: autoflake
+        stages: [manual]
+        args: [--in-place]
+
+  # Automatically upgrade syntax for newer versions of Python (may do more than ruff)
+  - repo: https://github.com/asottile/pyupgrade
+    rev: ce40a160603ab0e7d9c627ae33d7ef3906e2d2b2 # frozen: v3.19.1
+    hooks:
+      - id: pyupgrade
+        stages: [manual]
+        args: [--py311-plus]
+
+  # Additional ruff rules that may be nice to check occasionally, but not require
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 73413df07b4ab0bf103ca1ae73c7cec5c0ace593 # frozen: v0.9.2
+    hooks:
+      - id: ruff
+        stages: [manual]
+        args: [--select=PERF]
