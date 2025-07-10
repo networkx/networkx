@@ -18,7 +18,7 @@ class TestKFactor:
     def test_k_factor(self, g, k):
         kf = nx.k_factor(g, k)
         assert g.nodes == kf.nodes
-        assert set(kf.edges) <= set(g.edges)
+        assert all(g.has_edge(*e) for e in kf.edges)
         assert nx.is_k_regular(kf, k)
 
     def test_k_factor_degree(self):
