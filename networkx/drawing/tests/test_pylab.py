@@ -1526,7 +1526,7 @@ def test_edge_label_all_connectionstyles(subplots, style):
     fig, ax = subplots
     edge = (0, 1)
     G = nx.DiGraph([edge])
-    pos = {n: (n, n) for n in G}
+    pos = {n: (n, 0) for n in G}
 
     name = style.split(",")[0]
     labels = nx.draw_networkx_edge_labels(
