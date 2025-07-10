@@ -17,6 +17,14 @@ Recognition
    is_arborescence
    is_branching
 
+Distance Measures
+-----------------
+.. automodule:: networkx.algorithms.tree.distance_measures
+.. autosummary::
+   :toctree: generated/
+
+   tree_centroid
+
 Branchings and Spanning Arborescences
 -------------------------------------
 .. automodule:: networkx.algorithms.tree.branchings
