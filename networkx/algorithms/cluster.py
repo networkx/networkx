@@ -251,7 +251,7 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
 @nx._dispatchable
 def all_triangles(G, nodes=None):
     """
-    Yields all unique triangles in an undirected graph using node ordering.
+    Yields all unique triangles in an undirected graph using ID assignments and set intersections.
 
     Parameters
     ----------
@@ -265,8 +265,8 @@ def all_triangles(G, nodes=None):
     Yields
     -------
     tuple
-        A tuple of three nodes forming a triangle (u, v, w), ordered using string-based node ordering
-        (i.e., str(u) < str(v) < str(w)).
+        A tuple of three nodes forming a triangle (u, v, w), ordered based on assigned ID,
+        guaranteed to be unique.
 
     Examples
     --------
@@ -274,49 +274,45 @@ def all_triangles(G, nodes=None):
     >>> list(all_triangles(G))
     [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)]
     """
-    # If nodes is None, then yield all the triangles of the graph
     if nodes is None:
-        # Nodes may not be directly comparable, so we sort using their string representations for consistency
-        nodes = sorted(G.nodes(), key=lambda n: str(n))
-
-        node_ranks = {node: i for i, node in enumerate(nodes)}
+        node_to_id = {node: i for i, node in enumerate(G.nodes())}
 
         neighbor_sets = {
-            u: {v for v in G.neighbors(u) if node_ranks[v] > node_ranks[u]}
-            for u in nodes
+            node: {nbr for nbr in G[node] if node_to_id[nbr] > node_to_id[node]}
+            for node in G.nodes()
         }
-
-        for u in neighbor_sets:
+        for u in G.nodes():
             for v in neighbor_sets[u]:
                 common = neighbor_sets[u] & neighbor_sets[v]
                 for w in common:
                     yield u, v, w
     else:
-        # If nodes is not None, then compute triangles for the specified nodes
         if nodes in G:
             nodes_set = {nodes}
         else:
             nodes_set = set(nodes)
 
-        # Keep only relevant nodes for yielding triangles (nodes and their neighbors)
+        # Keep only relevant nodes for counting triangles (nodes and their neighbors)
         relevant_nodes = nodes_set | {
             nbr for node in nodes_set for nbr in G.neighbors(node)
         }
 
-        sorted_relevant = sorted(relevant_nodes, key=lambda n: str(n))
-
-        node_ranks = {node: i for i, node in enumerate(sorted_relevant)}
-
-        neighbor_sets = {
-            u: {
-                v
-                for v in G.neighbors(u)
-                if node_ranks[v] > node_ranks[u] and v in relevant_nodes
-            }
-            for u in relevant_nodes
+        # Need to assign IDs to all neighbors of relevant_nodes as well
+        all_needed = relevant_nodes | {
+            nbr for node in relevant_nodes for nbr in G.neighbors(node)
         }
 
-        # Yield a triangle if at least one of the nodes is in the nodes_set
+        node_to_id = {node: i for i, node in enumerate(all_needed)}
+
+        neighbor_sets = {
+            node: {
+                nbr
+                for nbr in G[node]
+                if node_to_id[nbr] > node_to_id[node] and nbr in relevant_nodes
+            }
+            for node in relevant_nodes
+        }
+
         for u in neighbor_sets:
             for v in neighbor_sets[u]:
                 common = neighbor_sets[u] & neighbor_sets[v]
