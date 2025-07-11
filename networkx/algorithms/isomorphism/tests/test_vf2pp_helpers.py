@@ -1127,8 +1127,8 @@ class TestGraphISOFeasibility:
             ]
         )
 
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
         l1.update({6: "green"})  # Change the label of one neighbor of u
 
         gparams = _GraphParameters(
@@ -1178,8 +1178,8 @@ class TestGraphISOFeasibility:
             ]
         )
 
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
 
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
@@ -1216,8 +1216,8 @@ class TestGraphISOFeasibility:
         )
         mapped = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g", 10: "k"}
         G2 = nx.relabel_nodes(G1, mapped)
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
 
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
@@ -1262,8 +1262,8 @@ class TestGraphISOFeasibility:
         sparams.T1_tilde.update({6, 7, 8})
         sparams.T2_tilde.update({"g", "y", "z"})
 
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
         )
@@ -1290,8 +1290,8 @@ class TestGraphISOFeasibility:
         # Add nodes from the new T1 and T2, as neighbors of u and v respectively
         G1.add_edges_from([(u, 20), (u, 21)])
         G2.add_edges_from([(v, "i"), (v, "j")])
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
         )
@@ -1358,7 +1358,7 @@ class TestGraphISOFeasibility:
         }
         G2 = nx.relabel_nodes(G1, mapped)
 
-        l1 = dict.fromkeys(G1.nodes(), "none")
+        l1 = {n: "none" for n in G1.nodes()}
         l2 = {}
 
         l1.update(
@@ -1488,7 +1488,7 @@ class TestGraphISOFeasibility:
         }
         G2 = nx.relabel_nodes(G1, mapped)
 
-        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
         l2 = {mapped[n]: "blue" for n in G1.nodes()}
 
         gparams = _GraphParameters(
@@ -1576,7 +1576,7 @@ class TestGraphISOFeasibility:
         }
         G2 = nx.relabel_nodes(G1, mapped)
 
-        l1 = dict.fromkeys(G1.nodes(), "none")
+        l1 = {n: "none" for n in G1.nodes()}
         l2 = {}
 
         l1.update(
@@ -1828,8 +1828,8 @@ class TestMultiGraphISOFeasibility:
         )
         mapped = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g", 10: "k"}
         G2 = nx.relabel_nodes(G1, mapped)
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
 
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
@@ -1885,8 +1885,8 @@ class TestMultiGraphISOFeasibility:
         sparams.T1_tilde.update({6, 7, 8})
         sparams.T2_tilde.update({"g", "y", "z"})
 
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
         )
@@ -1920,8 +1920,8 @@ class TestMultiGraphISOFeasibility:
         # Add nodes from the new T1 and T2, as neighbors of u and v respectively
         G1.add_edges_from([(u, 20), (u, 20), (u, 20), (u, 21)])
         G2.add_edges_from([(v, "i"), (v, "i"), (v, "i"), (v, "j")])
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
         )
@@ -1997,7 +1997,7 @@ class TestMultiGraphISOFeasibility:
         }
         G2 = nx.relabel_nodes(G1, mapped)
 
-        l1 = dict.fromkeys(G1.nodes(), "none")
+        l1 = {n: "none" for n in G1.nodes()}
         l2 = {}
 
         l1.update(
@@ -2143,7 +2143,7 @@ class TestMultiGraphISOFeasibility:
             20: "x",
         }
         G2 = nx.relabel_nodes(G1, mapped)
-        l1 = dict.fromkeys(G1.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
         l2 = {mapped[n]: "blue" for n in G1.nodes()}
 
         gparams = _GraphParameters(
@@ -2248,7 +2248,7 @@ class TestMultiGraphISOFeasibility:
             20: "x",
         }
         G2 = nx.relabel_nodes(G1, mapped)
-        l1 = dict.fromkeys(G1.nodes(), "none")
+        l1 = {n: "none" for n in G1.nodes()}
         l2 = {}
 
         l1.update(
@@ -2470,8 +2470,8 @@ class TestDiGraphISOFeasibility:
             ]
         )
 
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
         l1.update({5: "green"})  # Change the label of one neighbor of u
 
         gparams = _GraphParameters(
@@ -2521,8 +2521,8 @@ class TestDiGraphISOFeasibility:
             ]
         )
 
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
 
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
@@ -2559,8 +2559,8 @@ class TestDiGraphISOFeasibility:
         )
         mapped = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g", 10: "k"}
         G2 = nx.relabel_nodes(G1, mapped)
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
 
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
@@ -2614,8 +2614,8 @@ class TestDiGraphISOFeasibility:
         sparams.T1_tilde.update({6, 7, 8})
         sparams.T2_tilde.update({"g", "y", "z"})
 
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
         )
@@ -2669,7 +2669,7 @@ class TestDiGraphISOFeasibility:
         }
         G2 = nx.relabel_nodes(G1, mapped)
 
-        l1 = dict.fromkeys(G1.nodes(), "none")
+        l1 = {n: "none" for n in G1.nodes()}
         l2 = {}
 
         l1.update(
@@ -2766,8 +2766,8 @@ class TestDiGraphISOFeasibility:
         )
         mapped = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g"}
         G2 = nx.relabel_nodes(G1, mapped)
-        l1 = dict.fromkeys(G1.nodes(), "blue")
-        l2 = dict.fromkeys(G2.nodes(), "blue")
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
 
         gparams = _GraphParameters(
             G1, G2, l1, l2, nx.utils.groups(l1), nx.utils.groups(l2), None
