@@ -564,10 +564,11 @@ def spring_layout(
     >>> # suppress the returned dict and store on the graph directly
     >>> _ = nx.spring_layout(G, seed=123, store_pos_as="pos")
     >>> pprint(nx.get_node_attributes(G, "pos"))
-    {0: array([-0.61520994, -1.        ]),
-     1: array([-0.21840965, -0.35501755]),
-     2: array([0.21841264, 0.35502078]),
-     3: array([0.61520696, 0.99999677])}
+    {0: array([-0.61495802, -1.        ]),
+     1: array([-0.21789544, -0.35432583]),
+     2: array([0.21847843, 0.35527369]),
+     3: array([0.61437502, 0.99905215])}
+
 
     # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
