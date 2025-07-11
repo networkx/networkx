@@ -69,21 +69,21 @@ def generate_adjlist(G, delimiter=" "):
     NB: This option is not available for data that isn't user-generated.
 
     """
-    directed = G.is_directed()
     seen = set()
+    is_directed = G.is_directed()
+    is_multigraph = G.is_multigraph()
     for s, nbrs in G.adjacency():
-        line = str(s) + delimiter
+        nodes = [str(s)]
         for t, data in nbrs.items():
-            if not directed and t in seen:
+            if t in seen:
                 continue
-            if G.is_multigraph():
-                for d in data.values():
-                    line += str(t) + delimiter
+            if is_multigraph and len(data) > 1:
+                nodes.extend((str(t),) * len(data))
             else:
-                line += str(t) + delimiter
-        if not directed:
+                nodes.append(str(t))
+        if not is_directed:
             seen.add(s)
-        yield line[: -len(delimiter)]
+        yield delimiter.join(nodes)
 
 
 @open_file(1, mode="wb")
