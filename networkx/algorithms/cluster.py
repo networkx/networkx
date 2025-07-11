@@ -49,6 +49,12 @@ def triangles(G, nodes=None):
     >>> print(list(nx.triangles(G, [0, 1]).values()))
     [6, 6]
 
+    The total number of unique triangles in `G` can be determined by the total
+    triangles-per-node divided by 3, the number of nodes per triangle:
+
+    >>> sum(nx.triangles(G).values()) // 3
+    10
+
     Notes
     -----
     Self loops are ignored.
