@@ -737,12 +737,14 @@ def display(
                 x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
                 y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
             else:
-                assert isinstance(
+                if not isinstance(
                     conn,
                     mpl.patches.ConnectionStyle.Angle
                     | mpl.patches.ConnectionStyle.Arc
                     | mpl.patches.ConnectionStyle.Bar,
-                )
+                ):
+                    msg = f"invalid connection style: {type(conn)}"
+                    raise TypeError(msg)
                 # A. Collect lines
                 codes = path_disp.codes
                 lines = [
@@ -2452,12 +2454,14 @@ def draw_networkx_edge_labels(
                 x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
                 y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
             else:
-                assert isinstance(
+                if not isinstance(
                     conn,
                     mpl.patches.ConnectionStyle.Angle
                     | mpl.patches.ConnectionStyle.Arc
                     | mpl.patches.ConnectionStyle.Bar,
-                )
+                ):
+                    msg = f"invalid connection style: {type(conn)}"
+                    raise TypeError(msg)
                 # A. Collect lines
                 codes = path_disp.codes
                 lines = [
