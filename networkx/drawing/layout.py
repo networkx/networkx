@@ -704,7 +704,9 @@ def _fruchterman_reingold(
         )
         # update positions
         length = np.linalg.norm(displacement, axis=-1)
-        length = np.where(length < 0.01, 0.1, length)
+        # Threshold the minimum length prior to position scaling
+        # See gh-8113 for detailed discussion of the threshold
+        length = np.clip(length, a_min=0.01, a_max=None)
         delta_pos = np.einsum("ij,i->ij", displacement, t / length)
         if fixed is not None:
             # don't change positions of fixed nodes
@@ -796,7 +798,9 @@ def _sparse_fruchterman_reingold(
             ).sum(axis=1)
         # update positions
         length = np.sqrt((displacement**2).sum(axis=0))
-        length = np.where(length < 0.01, 0.1, length)
+        # Threshold the minimum length prior to position scaling
+        # See gh-8113 for detailed discussion of the threshold
+        length = np.clip(length, a_min=0.01, a_max=None)
         delta_pos = (displacement * t / length).T
         pos += delta_pos
         # cool temperature
