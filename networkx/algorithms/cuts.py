@@ -377,13 +377,13 @@ def boundary_expansion(G, S):
     Returns
     -------
     number
-        The boundary expansion ratio: size of node boundary / size of S
+        The boundary expansion ratio: size of node boundary / size of `S`.
 
     Examples
     --------
-    The node boundary is {2, 3} (size 2), divided by ``|S|=4``
+    The node boundary is {2, 3} (size 2), divided by ``|S|=2``:
 
-    >>> G = nx.Graph([(0, 1), (1, 2), (2, 3), (3, 0)])
+    >>> G = nx.cycle_graph(4)
     >>> S = {0, 1}
     >>> nx.boundary_expansion(G, S)
     1.0
@@ -405,7 +405,7 @@ def boundary_expansion(G, S):
     Notes
     -----
     The node boundary is defined as all nodes not in `S` that are adjacent to
-    nodes in `S`
+    nodes in `S`.
 
     References
     ----------
