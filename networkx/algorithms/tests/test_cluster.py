@@ -2,6 +2,8 @@ import pytest
 
 import networkx as nx
 
+from ..cluster import all_triangles
+
 
 def test_square_clustering_adjacent_squares():
     G = nx.Graph([(1, 2), (1, 3), (2, 4), (3, 4), (3, 5), (4, 6), (5, 6)])
@@ -75,6 +77,71 @@ class TestTriangles:
         G.add_edge(3, 3)  # ignore self-edges
         assert list(nx.triangles(G).values()) == [5, 3, 3, 5, 5]
         assert nx.triangles(G, 3) == 5
+
+
+def test_all_triangles_non_integer_nodes():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            ("a", "b"),
+            ("b", "c"),
+            ("c", "a"),  # triangle: a-b-c
+        ]
+    )
+    triangles = list(all_triangles(G))
+    sorted_triangles = [tuple(sorted(t)) for t in triangles]
+
+    assert len(triangles) == 1
+    assert set(sorted_triangles) == {("a", "b", "c")}
+
+
+def test_all_triangles_overlapping():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            (0, 1),
+            (1, 2),
+            (2, 0),  # triangle: 0-1-2
+            (0, 2),
+            (2, 3),
+            (3, 0),  # triangle: 0-2-3
+        ]
+    )
+    triangles = list(all_triangles(G))
+    sorted_triangles = {tuple(sorted(t)) for t in triangles}
+
+    assert sorted_triangles == {(0, 1, 2), (0, 2, 3)}
+
+
+def test_all_triangles_subset():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            (0, 1),
+            (1, 2),
+            (2, 0),  # triangle: 0-1-2
+            (2, 3),
+            (3, 4),
+            (4, 2),  # triangle: 2-3-4
+        ]
+    )
+
+    triangles = list(
+        all_triangles(G, nodes=[0, 1])
+    )  # Only include triangles involving 0 or 1
+    sorted_triangles = {tuple(sorted(t)) for t in triangles}
+
+    assert sorted_triangles == {(0, 1, 2)}
+
+
+def test_all_triangles_no_duplicates():
+    G = nx.complete_graph(4)  # 4 nodes, 4-choose-3 = 4 triangles
+    triangles = list(all_triangles(G))
+
+    # Sort and deduplicate
+    normalized = {frozenset(t) for t in triangles}
+    assert len(triangles) == len(normalized)  # No duplicates
+    assert len(triangles) == 4
 
 
 class TestDirectedClustering:

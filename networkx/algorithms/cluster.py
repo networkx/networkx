@@ -247,6 +247,57 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
         yield (i, dtotal, dbidirectional, float(directed_triangles))
 
 
+@not_implemented_for("directed")
+@nx._dispatchable
+def all_triangles(G, nodes=None):
+    """
+    Yields all unique triangles in an undirected graph using set intersections.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        An undirected graph. Self-loops and multiple edges are ignored.
+
+    nodes : node, iterable of nodes, or None (default=None)
+        If a node or iterable of nodes is given, only triangles involving those nodes are yielded.
+        If None, yields all unique triangles in the graph.
+
+    Yields
+    -------
+    tuple
+        A tuple of three nodes forming a triangle (u, v, w) in no particular order, guaranteed to be unique.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(4)
+    >>> list(all_triangles(G))
+    [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)]
+    """
+    seen = set()
+
+    if nodes is None:
+        relevant_nodes = G.nodes()
+    elif nodes in G:
+        relevant_nodes = [nodes]
+    else:
+        relevant_nodes = nodes
+
+    for u in relevant_nodes:
+        neighbors_u = set(G[u])
+        for v in neighbors_u:
+            neighbors_v = set(G[v])
+            if u == v:
+                continue
+            common = neighbors_u & neighbors_v
+            for w in common:
+                if w in (u, v):
+                    continue
+                triangle = frozenset((u, v, w))
+                if triangle not in seen:
+                    seen.add(triangle)
+                    yield tuple(triangle)
+
+
 @nx._dispatchable(edge_attrs="weight")
 def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     r"""Compute the average clustering coefficient for the graph G.
