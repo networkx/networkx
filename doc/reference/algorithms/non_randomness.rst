@@ -1,5 +1,5 @@
 **************
-non-randomness
+Non-randomness
 **************
 
 .. automodule:: networkx.algorithms.non_randomness
