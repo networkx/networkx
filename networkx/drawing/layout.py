@@ -790,7 +790,7 @@ def _sparse_fruchterman_reingold(
             # distance between points
             distance = np.sqrt((delta**2).sum(axis=0))
             # enforce minimum distance of 0.01
-            distance = np.where(distance < 0.01, 0.01, distance)
+            distance = np.clip(distance, a_min=0.01, a_max=None)
             # the adjacency matrix row
             Ai = A.getrowview(i).toarray()  # TODO: revisit w/ sparse 1D container
             # displacement "force"
