@@ -448,7 +448,7 @@ def bipartite_layout(
     return pos
 
 
-@np_random_state(10)
+@np_random_state("seed")
 def spring_layout(
     G,
     k=None,
@@ -1149,8 +1149,7 @@ def _sparse_spectral(A, dim=2):
         raise nx.NetworkXError(msg) from err
 
     # form Laplacian matrix
-    # TODO: Rm csr_array wrapper in favor of spdiags array constructor when available
-    D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, nnodes, nnodes))
+    D = sp.sparse.dia_array((A.sum(axis=1), 0), shape=(nnodes, nnodes)).tocsr()
     L = D - A
 
     k = dim + 1
@@ -1971,6 +1970,13 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None, store_pos_as
 
     start : node in `G`
         Starting node for bfs
+
+    align : string (default='vertical')
+        The alignment of nodes within a layer, either `"vertical"` or
+        `"horizontal"`.
+
+    scale : number (default: 1)
+        Scale factor for positions.
 
     center : array-like or None
         Coordinate pair around which to center the layout.

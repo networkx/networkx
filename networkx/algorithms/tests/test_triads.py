@@ -207,7 +207,7 @@ def test_triadic_census_nodelist():
         "120D": 0,
         "021C": 2,
     }
-    actual = dict.fromkeys(expected, 0)
+    actual = {k: 0 for k in expected}
     for node in G.nodes():
         node_triad_census = nx.triadic_census(G, nodelist=[node])
         for triad_key in expected:
