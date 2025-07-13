@@ -282,22 +282,18 @@ def all_triangles(G, nodes=None):
     [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)]
     """
     if nodes is None:
-        node_to_id = {node: i for i, node in enumerate(G.nodes())}
+        node_to_id = {node: i for i, node in enumerate(G)}
 
-        neighbor_sets = {
-            node: {nbr for nbr in G[node] if node_to_id[nbr] > node_to_id[node]}
-            for node in G.nodes()
-        }
-        for u in G.nodes():
-            for v in neighbor_sets[u]:
-                common = neighbor_sets[u] & neighbor_sets[v]
-                for w in common:
+        for u in G:
+            for v in G[u]:
+                if node_to_id[v] <= node_to_id[u]:
+                    continue
+                for w in set(G[u]) & set(G[v]):
+                    if node_to_id[w] <= node_to_id[v]:
+                        continue
                     yield u, v, w
     else:
-        if nodes in G:
-            nodes_set = {nodes}
-        else:
-            nodes_set = set(nodes)
+        nodes_set = {nodes} if nodes in G else set(nodes)
 
         # Keep only relevant nodes for counting triangles (nodes and their neighbors)
         relevant_nodes = nodes_set | {
@@ -311,19 +307,13 @@ def all_triangles(G, nodes=None):
 
         node_to_id = {node: i for i, node in enumerate(all_needed)}
 
-        neighbor_sets = {
-            node: {
-                nbr
-                for nbr in G[node]
-                if node_to_id[nbr] > node_to_id[node] and nbr in relevant_nodes
-            }
-            for node in relevant_nodes
-        }
-
-        for u in neighbor_sets:
-            for v in neighbor_sets[u]:
-                common = neighbor_sets[u] & neighbor_sets[v]
-                for w in common:
+        for u in relevant_nodes:
+            for v in G[u]:
+                if v not in relevant_nodes or node_to_id[v] <= node_to_id[u]:
+                    continue
+                for w in set(G[u]) & set(G[v]):
+                    if w not in relevant_nodes or node_to_id[w] <= node_to_id[v]:
+                        continue
                     if u in nodes_set or v in nodes_set or w in nodes_set:
                         yield u, v, w
 
