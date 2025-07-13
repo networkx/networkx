@@ -300,19 +300,14 @@ def all_triangles(G, nodes=None):
             nbr for node in nodes_set for nbr in G.neighbors(node)
         }
 
-        # Need to assign IDs to all neighbors of relevant_nodes as well
-        all_needed = relevant_nodes | {
-            nbr for node in relevant_nodes for nbr in G.neighbors(node)
-        }
-
-        node_to_id = {node: i for i, node in enumerate(all_needed)}
+        node_to_id = {node: i for i, node in enumerate(relevant_nodes)}
 
         for u in relevant_nodes:
             for v in G[u]:
-                if v not in relevant_nodes or node_to_id[v] <= node_to_id[u]:
+                if node_to_id.get(v, -1) <= node_to_id[u]:
                     continue
                 for w in set(G[u]) & set(G[v]):
-                    if w not in relevant_nodes or node_to_id[w] <= node_to_id[v]:
+                    if node_to_id.get(w, -1) <= node_to_id[v]:
                         continue
                     if u in nodes_set or v in nodes_set or w in nodes_set:
                         yield u, v, w
