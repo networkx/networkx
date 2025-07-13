@@ -35,6 +35,17 @@ class TestGenerateAdjlist:
         ]
         assert list(nx.generate_adjlist(G)) == lines
 
+        G = nx.path_graph(5, create_using=graph_type)
+        G.add_edge(1, 0)
+        lines = [
+            "0 1",
+            "1 2 0",
+            "2 3",
+            "3 4",
+            "4",
+        ]
+        assert list(nx.generate_adjlist(G)) == lines
+
     @pytest.mark.parametrize("delimiter", [" ", ",", "\t"])
     def test_delimiter(self, delimiter):
         G = nx.complete_graph(3)

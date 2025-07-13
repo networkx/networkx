@@ -58,7 +58,7 @@ def generate_adjlist(G, delimiter=" "):
     6
 
     When `G` is undirected, each edge is only listed once. For directed graphs,
-    edges appear twice.
+    edges appear once for each direction.
 
     >>> G = nx.complete_graph(3, create_using=nx.DiGraph)
     >>> for line in nx.generate_adjlist(G):
@@ -89,18 +89,18 @@ def generate_adjlist(G, delimiter=" "):
 
     """
     seen = set()
-    is_directed = G.is_directed()
-    is_multigraph = G.is_multigraph()
+    directed = G.is_directed()
+    multigraph = G.is_multigraph()
     for s, nbrs in G.adjacency():
         nodes = [str(s)]
         for t, data in nbrs.items():
             if t in seen:
                 continue
-            if is_multigraph and len(data) > 1:
+            if multigraph and len(data) > 1:
                 nodes.extend((str(t),) * len(data))
             else:
                 nodes.append(str(t))
-        if not is_directed:
+        if not directed:
             seen.add(s)
         yield delimiter.join(nodes)
 
