@@ -189,3 +189,13 @@ Laplacian
    :toctree: generated/
 
    laplacian_centrality
+
+
+.. _networkx.algorithms.centrality.domirank:
+
+DomiRank
+---------
+.. autosummary::
+   :toctree: generated/
+
+   domirank
