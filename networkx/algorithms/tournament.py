@@ -403,7 +403,9 @@ def _is_reachable_python(G, s, t):
 
         """
         return {
-            x for x in G if x == v or x in G[v] or any(is_path(G, [v, z, x]) for z in G)
+            x
+            for (x, xPred) in G.pred.items()
+            if x == v or x in G[v] or any(z in G[v] for z in xPred)
         }
 
     def is_closed(G, nodes):
