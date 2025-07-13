@@ -372,13 +372,12 @@ def _is_reachable_numpy(G, s, t):
         *u* to *v*.
 
         """
-        complement_nodes = set(node_indices) - nodes
-        return all(adj_matrix[u, v] for u in complement_nodes for v in nodes)
+        return all(u in nodes or adj_matrix[u, v] for u in node_indices for v in nodes)
 
     nodelist = list(G)
     adj_matrix = nx.to_numpy_array(G, dtype=bool, nodelist=nodelist)
     node_map = {node: i for i, node in enumerate(nodelist)}
-    node_indices = range(adj_matrix.shape[0])
+    node_indices = range(len(G))
     s = node_map[s]
     t = node_map[t]
 
@@ -404,8 +403,8 @@ def _is_reachable_python(G, s, t):
         """
         return {
             x
-            for (x, xPred) in G.pred.items()
-            if x == v or x in G[v] or any(z in G[v] for z in xPred)
+            for (x, x_pred) in G.pred.items()
+            if x == v or x in G[v] or any(z in G[v] for z in x_pred)
         }
 
     def is_closed(G, nodes):
@@ -416,8 +415,7 @@ def _is_reachable_python(G, s, t):
         *u* to *v*.
 
         """
-        complement_nodes = set(G) - nodes
-        return all(v in G[u] for u in complement_nodes for v in nodes)
+        return all(u in nodes or v in G[u] for u in G for v in nodes)
 
     neighborhoods = (two_neighborhood(G, v) for v in G)
     return not any(s in S and t not in S and is_closed(G, S) for S in neighborhoods)
