@@ -112,8 +112,6 @@ def k_factor(G, k, matching_weight="weight"):
        Meijer, Henk, Yurai Núñez-Rodríguez, and David Rappaport,
        Information processing letters, 2009.
     """
-    from itertools import product
-
     # Validate minimum degree requirement.
     if any(d < k for _, d in G.degree):
         raise nx.NetworkXUnfeasible("Graph contains a vertex with degree less than k")
@@ -141,7 +139,7 @@ def k_factor(G, k, matching_weight="weight"):
             g.add_edge(outer_n, neighbor, **attrs)
 
         # Add internal edges.
-        g.add_edges_from(product(core, outer if is_large else inner))
+        g.add_edges_from((u, v) for u in core for v in (outer if is_large else inner))
 
         g.remove_node(node)
         gadgets.append((node, outer, core, inner))
