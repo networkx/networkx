@@ -792,7 +792,7 @@ def path_graph(n, create_using=None):
 @nx._dispatchable(graphs=None, returns_graph=True)
 @nodes_or_number(0)
 def star_graph(n, create_using=None):
-    """Return the star graph.
+    """Return a star graph.
 
     The star graph consists of one center node connected to `n` outer nodes.
 
