@@ -260,6 +260,9 @@ def tournament_matrix(G):
     return A - A.T
 
 
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
+@nx._dispatchable
 def is_reachable(G, s, t):
     """Decides whether there is a path from `s` to `t` in the
     tournament.
