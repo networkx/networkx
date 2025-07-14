@@ -67,9 +67,10 @@ def generate_adjlist(G, delimiter=" "):
     1 0 2
     2 0 1
 
-    Node labels are shown multiple times for multiedges.
+    Node labels are shown multiple times for multiedges, but edge data (including keys)
+    are not included in the output.
 
-    >>> G = nx.MultiGraph([(0, 1), (0, 1)])
+    >>> G = nx.MultiGraph([(0, 1, {"weight": 1}), (0, 1, {"weight": 2})])
     >>> for line in nx.generate_adjlist(G):
     ...     print(line)
     0 1 1
