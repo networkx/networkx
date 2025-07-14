@@ -126,11 +126,11 @@ def k_factor(G, k, matching_weight="weight"):
         # Create gadget nodes.
         outer = [(node, i) for i in range(degree)]
         if is_large:
-            core = [(node, i + degree) for i in range(degree - k)]
+            core = [(node, i) for i in range(degree, 2 * degree - k)]
             inner = []
         else:
-            core = [(node, i + 2 * degree) for i in range(k)]
-            inner = [(node, i + degree) for i in range(degree)]
+            core = [(node, i) for i in range(2 * degree, 2 * degree + k)]
+            inner = [(node, i) for i in range(degree, 2 * degree)]
 
         # Connect gadget nodes to neighbors.
         if not is_large:
