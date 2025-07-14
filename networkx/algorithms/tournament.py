@@ -345,7 +345,7 @@ def is_reachable(G, s, t):
         """
         return all(u in S or v in G._adj[u] for u in G for v in S)
 
-    neighborhoods = [two_neighborhood(G, v) for v in G]
+    neighborhoods = (two_neighborhood(G, v) for v in G)
     return not any(s in S and t not in S and is_closed(G, S) for S in neighborhoods)
 
 
