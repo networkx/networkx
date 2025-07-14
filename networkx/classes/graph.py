@@ -1534,6 +1534,76 @@ class Graph:
         """
         return DegreeView(self)
 
+    def node_selectivity(self, nodes_list=None):
+        """Calculates the selectivity for one or more nodes in the graph.
+
+                Node selectivity is defined as the sum of the weights of the edges
+                incident to the node, divided by the degree of the node. The degree
+                is the number of edges connected to the node.
+
+                This function can be used to calculate the selectivity for a single node,
+                a list of nodes, or all nodes in the graph. If no nodes are specified,
+                the selectivity for all nodes will be calculated.
+
+                Parameters
+                ----------
+                nodes : single node, list of nodes, or None (default=None)
+                    The node(s) for which the selectivity will be calculated.
+                    - If a single node is provided, returns the selectivity of that node.
+                    - If a list of nodes is provided, returns a list of tuples, where each
+                      tuple consists of a node and its selectivity measure.
+                    - If None is provided (or no argument is passed), returns the selectivity
+                      for all nodes in the graph as a list of tuples.
+
+                Returns
+                -------
+                float or list of tuples
+                    - If a single node is provided, returns the selectivity as a float.
+                    - If a list of nodes or no nodes are provided, returns a list of tuples,
+                      where each tuple contains a node and its selectivity value.
+
+                Examples
+                --------
+                >>> G = nx.Graph()
+                >>> G.add_edge("a", "b", weight=0.6)
+                >>> G.add_edge("a", "c", weight=0.2)
+                >>> G.add_edge("c", "d", weight=0.1)
+                >>> G.node_selectivity("a")
+                0.4
+                >>> G.node_selectivity(["a", "b"])
+                [('a', 0.4), ('b', 0.6), ('c', 0.15000000000000002), ('d', 0.1)]
+
+                References
+                ----------
+                .. [1] Beliga, S., Meštrović, A. & Martinčić-Ipšić, S. Toward Selectivity-Based Keyword Extraction
+        for CROSBI, 2014. https://www.croris.hr/crosbi/publikacija/prilog-skup/617186?lang=en
+        """
+        try:
+            if nodes_list is None:
+                nodes_list = self.nodes()
+            if isinstance(nodes_list, (int, str)):
+                nodes_list = [nodes_list]
+
+            selectivity = []
+            for node in nodes_list:
+                neighbors = self.neighbors(node)
+                total_weight = sum(
+                    self[node][neighbor]["weight"] for neighbor in neighbors
+                )
+
+                degree = self.degree(node)
+                if degree == 0:
+                    node_selectivity = 0
+                else:
+                    node_selectivity = total_weight / degree
+
+                if len(nodes_list) == 1:
+                    return node_selectivity
+                selectivity.append((node, node_selectivity))
+            return selectivity
+        except:
+            raise NetworkXError("The given graph is not weighted.")
+
     def clear(self):
         """Remove all nodes and edges from the graph.
 
@@ -2001,43 +2071,44 @@ class Graph:
 
     def nbunch_iter(self, nbunch=None):
         """Returns an iterator over nodes contained in nbunch that are
-        also in the graph.
+                also in the graph.
 
-        The nodes in an iterable nbunch are checked for membership in the graph
-        and if not are silently ignored.
+                The nodes in an iterable nbunch are checked for membership in the graph
+                and if not are silently ignored.
 
-        Parameters
-        ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes.
+                Parameters
+                ----------
+                nbunch : single node, container, or all nodes (default= all nodes)
+                    The view will only report edges incident to these nodes.
 
-        Returns
-        -------
-        niter : iterator
-            An iterator over nodes in nbunch that are also in the graph.
-            If nbunch is None, iterate over all nodes in the graph.
+                Returns
+                -------
+                niter : iterator
+                    An iterator over nodes in nbunch that are also in the graph.
+                    If nbunch is None, iterate over all nodes in the grap
+        h.
 
-        Raises
-        ------
-        NetworkXError
-            If nbunch is not a node or sequence of nodes.
-            If a node in nbunch is not hashable.
+                Raises
+                ------
+                NetworkXError
+                    If nbunch is not a node or sequence of nodes.
+                    If a node in nbunch is not hashable.
 
-        See Also
-        --------
-        Graph.__iter__
+                See Also
+                --------
+                Graph.__iter__
 
-        Notes
-        -----
-        When nbunch is an iterator, the returned iterator yields values
-        directly from nbunch, becoming exhausted when nbunch is exhausted.
+                Notes
+                -----
+                When nbunch is an iterator, the returned iterator yields values
+                directly from nbunch, becoming exhausted when nbunch is exhausted.
 
-        To test whether nbunch is a single node, one can use
-        "if nbunch in self:", even after processing with this routine.
+                To test whether nbunch is a single node, one can use
+                "if nbunch in self:", even after processing with this routine.
 
-        If nbunch is not a node or a (possibly empty) sequence/iterator
-        or None, a :exc:`NetworkXError` is raised.  Also, if any object in
-        nbunch is not hashable, a :exc:`NetworkXError` is raised.
+                If nbunch is not a node or a (possibly empty) sequence/iterator
+                or None, a :exc:`NetworkXError` is raised.  Also, if any object in
+                nbunch is not hashable, a :exc:`NetworkXError` is raised.
         """
         if nbunch is None:  # include all nodes via iterator
             bunch = iter(self._adj)

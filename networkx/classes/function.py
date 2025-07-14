@@ -78,6 +78,15 @@ def degree(G, nbunch=None, weight=None):
     return G.degree(nbunch, weight)
 
 
+def node_selectivity(G, nbunch=None):
+    """Returns the selectivity of a single node, a list of nodes, or all nodes in the graph.
+    If nbunch is omitted, then return selectivity of *all* nodes.
+
+    This function wraps the :func:`G.node_selectivity <networkx.Graph.node_selectivity>` property.
+    """
+    return G.node_selectivity(nbunch)
+
+
 def neighbors(G, n):
     """Returns an iterator over all neighbors of node n.
 
