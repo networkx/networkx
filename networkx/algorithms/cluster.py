@@ -281,36 +281,24 @@ def all_triangles(G, nodes=None):
     >>> list(all_triangles(G))
     [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)]
     """
-    if nodes is None:
-        node_to_id = {node: i for i, node in enumerate(G)}
+    nodes_set = set(G.nbunch_iter(nodes))
+    relevant_nodes = nodes_set | {
+        nbr for node in nodes_set for nbr in G.neighbors(node)
+    }
+    node_to_id = {node: i for i, node in enumerate(relevant_nodes)}
 
-        for u in G:
-            for v in G[u]:
-                if node_to_id[v] <= node_to_id[u]:
+    for u in nodes_set:
+        u_id = node_to_id[u]
+        u_nbrs = set(G._adj[u])
+        for v in u_nbrs:
+            v_id = node_to_id.get(v, -1)
+            if v_id <= u_id:
+                continue
+            v_nbrs = set(G._adj[v])
+            for w in v_nbrs & u_nbrs:
+                if node_to_id.get(w, -1) <= v_id:
                     continue
-                for w in set(G[u]) & set(G[v]):
-                    if node_to_id[w] <= node_to_id[v]:
-                        continue
-                    yield u, v, w
-    else:
-        nodes_set = {nodes} if nodes in G else set(nodes)
-
-        # Keep only relevant nodes for counting triangles (nodes and their neighbors)
-        relevant_nodes = nodes_set | {
-            nbr for node in nodes_set for nbr in G.neighbors(node)
-        }
-
-        node_to_id = {node: i for i, node in enumerate(relevant_nodes)}
-
-        for u in relevant_nodes:
-            for v in G[u]:
-                if node_to_id.get(v, -1) <= node_to_id[u]:
-                    continue
-                for w in set(G[u]) & set(G[v]):
-                    if node_to_id.get(w, -1) <= node_to_id[v]:
-                        continue
-                    if u in nodes_set or v in nodes_set or w in nodes_set:
-                        yield u, v, w
+                yield u, v, w
 
 
 @nx._dispatchable(edge_attrs="weight")
