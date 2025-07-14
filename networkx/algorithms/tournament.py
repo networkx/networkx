@@ -260,9 +260,6 @@ def tournament_matrix(G):
     return A - A.T
 
 
-@not_implemented_for("undirected")
-@not_implemented_for("multigraph")
-@nx._dispatchable
 def is_reachable(G, s, t):
     """Decides whether there is a path from `s` to `t` in the
     tournament.
@@ -290,6 +287,16 @@ def is_reachable(G, s, t):
     bool
         Whether there is a path from `s` to `t` in `G`.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 0), (1, 3), (1, 2), (2, 3), (2, 0), (3, 0)])
+    >>> nx.is_tournament(G)
+    True
+    >>> nx.tournament.is_reachable(G, 1, 3)
+    True
+    >>> nx.tournament.is_reachable(G, 3, 2)
+    False
+
     Notes
     -----
     Although this function is more theoretically efficient than the
@@ -297,34 +304,7 @@ def is_reachable(G, s, t):
     parallelism. Though it may in the future, the current implementation
     does not use parallelism, thus you may not see much of a speedup.
 
-    `is_reachable` has two implementations: an array-based formulation that
-    uses `numpy` (``_is_reachable_numpy``), and a pure-Python
-    implementation (``_is_reachable_python``).
-    The NumPy implementation is more performant, and is therefore used by
-    default. If NumPy is not installed in the environment, then the pure
-    Python implementation is executed.
-    However, you can explicitly control which implementation is executed by
-    directly calling the corresponding function.
-
     This algorithm comes from [1].
-
-    Examples
-    --------
-    >>> G = nx.DiGraph([(1, 0), (1, 3), (1, 2), (2, 3), (2, 0), (3, 0)])
-
-    # Uses numpy if available, else Python
-    >>> nx.tournament.is_reachable(G, 1, 3)
-    True
-    >>> nx.tournament.is_reachable(G, 3, 2)
-    False
-
-    # Uses the numpy-based implementation (raises ``ImportError`` if numpy is not installed)
-    >>> nx.tournament._is_reachable_numpy(G, 1, 3)
-    True
-
-    # Uses the Python-based implementation
-    >>> nx.tournament._is_reachable_python(G, 1, 3)
-    True
 
     References
     ----------
@@ -335,62 +315,6 @@ def is_reachable(G, s, t):
            <http://eccc.hpi-web.de/report/2001/092/>
     """
 
-    try:  # Use numpy if available, otherwise fall back to pure Python implementation
-        return _is_reachable_numpy(G, s, t)
-    except ImportError:
-        return _is_reachable_python(G, s, t)
-
-
-def _is_reachable_numpy(G, s, t):
-    import numpy as np
-
-    def two_neighborhood(adj_matrix, v, node_indices):
-        """Returns the set of nodes at distance at most two from `v`.
-
-        `adj_matrix` must be a numpy 2D boolean array representing the
-        adjacency matrix of the graph, `v` is the index of a node in the graph,
-        and `node_indices` is an iterable of all node indices in the graph.
-
-        The returned set includes the nodes at distance zero (that is,
-        the node `v` itself), the nodes at distance one (that is, the
-        out-neighbors of `v`), and the nodes at distance two.
-
-        """
-        return {
-            x
-            for x in node_indices
-            if x == v
-            or adj_matrix[v, x]
-            or any(adj_matrix[v, z] and adj_matrix[z, x] for z in node_indices)
-        }
-
-    def is_closed(adj_matrix, nodes, node_indices):
-        """Decides whether the given set of nodes is closed.
-
-        A set *S* of nodes is *closed* if for each node *u* in the graph
-        not in *S* and for each node *v* in *S*, there is an edge from
-        *u* to *v*.
-
-        """
-        return all(u in nodes or adj_matrix[u, v] for u in node_indices for v in nodes)
-
-    nodelist = list(G)
-    adj_matrix = nx.to_numpy_array(G, dtype=bool, nodelist=nodelist)
-    node_map = {node: i for i, node in enumerate(nodelist)}
-    node_indices = range(len(G))
-    s = node_map[s]
-    t = node_map[t]
-
-    neighborhoods = (
-        two_neighborhood(adj_matrix, v, node_indices) for v in node_indices
-    )
-    return not any(
-        s in S and t not in S and is_closed(adj_matrix, S, node_indices)
-        for S in neighborhoods
-    )
-
-
-def _is_reachable_python(G, s, t):
     def two_neighborhood(G, v):
         """Returns the set of nodes at distance at most two from `v`.
 
@@ -401,13 +325,14 @@ def _is_reachable_python(G, s, t):
         out-neighbors of `v`), and the nodes at distance two.
 
         """
+        v_adj = G._adj[v]
         return {
             x
-            for (x, x_pred) in G.pred.items()
-            if x == v or x in G[v] or any(z in G[v] for z in x_pred)
+            for (x, x_pred) in G._pred.items()
+            if x == v or x in v_adj or any(z in v_adj for z in x_pred)
         }
 
-    def is_closed(G, nodes):
+    def is_closed(G, S):
         """Decides whether the given set of nodes is closed.
 
         A set *S* of nodes is *closed* if for each node *u* in the graph
@@ -415,9 +340,9 @@ def _is_reachable_python(G, s, t):
         *u* to *v*.
 
         """
-        return all(u in nodes or v in G[u] for u in G for v in nodes)
+        return all(u in S or v in G._adj[u] for u in G for v in S)
 
-    neighborhoods = (two_neighborhood(G, v) for v in G)
+    neighborhoods = [two_neighborhood(G, v) for v in G]
     return not any(s in S and t not in S and is_closed(G, S) for S in neighborhoods)
 
 
