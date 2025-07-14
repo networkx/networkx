@@ -133,8 +133,7 @@ def k_factor(G, k, matching_weight="weight"):
             inner = [(node, i) for i in range(degree, 2 * degree)]
 
         # Connect gadget nodes to neighbors.
-        if not is_large:
-            g.add_edges_from(zip(outer, inner))
+        g.add_edges_from(zip(outer, inner))
         for outer_n, (neighbor, attrs) in zip(outer, g[node].items()):
             g.add_edge(outer_n, neighbor, **attrs)
 
