@@ -7,13 +7,17 @@ class RegularBenchmarks:
     timeout = 120
     _graph_names = [
         "nx.complete_graph(6)",
+        "nx.complete_graph(20)",
         "nx.grid_graph([10, 10], periodic=True)",
         "nx.erdos_renyi_graph(100, 0.1)",
+        "nx.erdos_renyi_graph(10, 0.7)",
     ]
     _graphs = (
         nx.complete_graph(6),
+        nx.complete_graph(20),
         nx.grid_graph([10, 10], periodic=True),
         nx.erdos_renyi_graph(100, 0.1, seed=2),  # Minimum degree is 4.
+        nx.erdos_renyi_graph(10, 0.8, seed=2),  # Minimum degree is 6.
     )
     _ks = [1, 2, 3, 4]
 
