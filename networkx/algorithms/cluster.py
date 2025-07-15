@@ -258,7 +258,7 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
 @nx._dispatchable
 def all_triangles(G, nodes=None):
     """
-    Yields all unique triangles in an undirected graph.
+    Yields all unique triangles in an undirected graph using a node ordering strategy.
 
     A triangle is a set of three distinct nodes where each node is connected to the other two.
 
@@ -274,7 +274,7 @@ def all_triangles(G, nodes=None):
     Yields
     -------
     tuple
-        A tuple of three nodes forming a triangle (u, v, w), guaranteed to be unique.
+        A tuple of three nodes forming a triangle (u, v, w), with u < v < w based on internal ordering.
 
     Examples
     --------
