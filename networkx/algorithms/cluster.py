@@ -258,8 +258,9 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
 @nx._dispatchable
 def all_triangles(G, nodes=None):
     """
-    Yields all unique triangles in an undirected graph. A triangle is a set of three vertices in a graph
-    where each pair of vertices is connected by an edge.
+    Yields all unique triangles in an undirected graph.
+
+    A triangle is a set of three distinct nodes where each node is connected to the other two.
 
     Parameters
     ----------
@@ -282,16 +283,19 @@ def all_triangles(G, nodes=None):
     [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)]
     """
     nodes_set = dict.fromkeys(G.nbunch_iter(nodes))
-    relevant_nodes = chain(
-        nodes_set,
-        (
-            nbr
-            for node in nodes_set
-            for nbr in G.neighbors(node)
-            if nbr not in nodes_set
-        ),
-    )
-    node_to_id = {node: i for i, node in enumerate(relevant_nodes)}
+    if nodes is None:
+        node_to_id = {node: i for i, node in enumerate(G)}
+    else:
+        relevant_nodes = chain(
+            nodes_set,
+            (
+                nbr
+                for node in nodes_set
+                for nbr in G.neighbors(node)
+                if nbr not in nodes_set
+            ),
+        )
+        node_to_id = {node: i for i, node in enumerate(relevant_nodes)}
 
     for u in nodes_set:
         u_id = node_to_id[u]
