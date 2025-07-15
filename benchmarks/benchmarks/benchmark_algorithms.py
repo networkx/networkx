@@ -83,9 +83,9 @@ class AlgorithmBenchmarksConnectedGraphsOnly:
 def _make_tournament_benchmark_graphs(seed):
     number_of_nodes = [400, 800, 1600]
     graphs = {}
-    for n in number_of_nodes:
-        G = nx.tournament.random_tournament(n, seed=seed)
-        graphs[f"Tournament({n}, seed={seed})"] = (G, n)
+    for nodes in number_of_nodes:
+        G = nx.tournament.random_tournament(nodes, seed=seed)
+        graphs[f"Tournament ({nodes}, seed={seed})"] = G
     return graphs
 
 
@@ -98,9 +98,10 @@ class ReachabilityBenchmark:
     params = list(_graphs)
 
     def setup(self, graph):
-        self.G, self.n = self._graphs[graph]
+        self.G = self._graphs[graph]
+        self.nodes = sorted(self.G)
         rng = random.Random(self._seed)
-        self.source, self.target = rng.sample(range(self.n), 2)
+        self.source, self.target = rng.sample(self.nodes, 2)
 
     def time_is_reachable(self, graph):
-        _ = nx.is_reachable(self.G, self.source, self.target)
+        _ = nx.tournament.is_reachable(self.G, self.source, self.target)
