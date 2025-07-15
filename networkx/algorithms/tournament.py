@@ -24,7 +24,6 @@ To access the functions in this module, you must access them through the
 from itertools import combinations
 
 import networkx as nx
-from networkx.algorithms.simple_paths import is_simple_path as is_path
 from networkx.utils import arbitrary_element, not_implemented_for, py_random_state
 
 __all__ = [
@@ -331,7 +330,7 @@ def is_reachable(G, s, t):
         v_adj = G._adj[v]
         return {
             x
-            for (x, x_pred) in G._pred.items()
+            for x, x_pred in G._pred.items()
             if x == v or x in v_adj or any(z in v_adj for z in x_pred)
         }
 

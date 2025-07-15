@@ -10,8 +10,8 @@
     ],
     "install_command": ["in-dir={env_dir} python -mpip install {wheel_file}"],
     "conda_channels": ["conda-forge"],
-    "branches": ["main"],
-    "environment_type": "conda",
+    "branches": ["numpy_is_reachable"],
+    "environment_type": "virtualenv",
     "show_commit_url": "http://github.com/networkx/networkx/commit/",
     "pythons": ["3.11", "3.12", "3.13"],
     "matrix": {
