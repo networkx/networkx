@@ -78,8 +78,8 @@ def k_factor(G, k, matching_weight="weight"):
 
     A `k`-factor of a graph is a spanning `k`-regular subgraph.
     A spanning `k`-regular subgraph of `G` is a subgraph that contains
-    each vertex of `G` and a subset of the edges of `G` such that each
-    vertex has degree `k`.
+    each node of `G` and a subset of the edges of `G` such that each
+    node has degree `k`.
 
     Parameters
     ----------
@@ -90,9 +90,9 @@ def k_factor(G, k, matching_weight="weight"):
         The degree of the `k`-factor.
 
     matching_weight: string, optional (default="weight")
-        Edge data key corresponding to the edge weight.
+        Edge attribute name corresponding to the edge weight.
+        If not present, the edge is assumed to have weight 1.
         Used for finding the max-weighted perfect matching.
-        If the key is not found, all edges are considered to have the same weight.
 
     Returns
     -------
@@ -102,8 +102,8 @@ def k_factor(G, k, matching_weight="weight"):
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 1)])
-    >>> kf = nx.k_factor(G, k=1)
-    >>> kf.edges()
+    >>> KF = nx.k_factor(G, k=1)
+    >>> KF.edges()
     EdgeView([(1, 2), (3, 4)])
 
     References
@@ -120,7 +120,7 @@ def k_factor(G, k, matching_weight="weight"):
     gadgets = []
 
     # Replace each node with a gadget.
-    for node, degree in G.degree():
+    for node, degree in G.degree:
         is_large = k >= degree / 2.0
 
         # Create gadget nodes.
