@@ -81,7 +81,7 @@ class AlgorithmBenchmarksConnectedGraphsOnly:
 
 
 def _make_tournament_benchmark_graphs(seed):
-    number_of_nodes = [400, 800, 1600]
+    number_of_nodes = [10, 100, 1000]
     graphs = {}
     for nodes in number_of_nodes:
         G = nx.tournament.random_tournament(nodes, seed=seed)
