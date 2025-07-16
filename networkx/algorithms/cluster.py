@@ -258,29 +258,34 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
 @nx._dispatchable
 def all_triangles(G, nbunch=None):
     """
-    Yields all unique triangles in an undirected graph using a node ordering strategy.
+    Yields all unique triangles in an undirected graph.
 
     A triangle is a set of three distinct nodes where each node is connected to the other two.
 
     Parameters
     ----------
     G : NetworkX graph
-        An undirected graph. Self-loops and multiple edges are ignored.
+        An undirected graph.
 
     nbunch : node, iterable of nodes, or None (default=None)
-        If a node or iterable of nodes is given, only triangles involving those nodes are yielded.
-        If None, all unique triangles in the graph are yielded.
+        If a node or iterable of nodes, only triangles involving at least one node in nbunch are yielded.
+        If ``None``, yields all unique triangles in the graph.
 
     Yields
     -------
     tuple
-        A tuple of three nodes forming a triangle (u, v, w), with u < v < w based on internal ordering.
+         A tuple of three nodes forming a triangle ``(u, v, w)``.
 
     Examples
     --------
     >>> G = nx.complete_graph(4)
-    >>> list(all_triangles(G))
-    [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)]
+    >>> sorted([sorted(t) for t in all_triangles(G)])
+    [[0, 1, 2], [0, 1, 3], [0, 2, 3], [1, 2, 3]]
+
+    Notes
+    -----
+    This algorithm ensures each triangle is yielded once using an internal node ordering.
+    It runs in O(m * d) time in the worst case, where m is the number of edges and d is the maximum degree.
     """
     if nbunch is None:
         nbunch = relevant_nodes = G
@@ -302,9 +307,8 @@ def all_triangles(G, nbunch=None):
                 continue
             v_nbrs = G._adj[v].keys()
             for w in v_nbrs & u_nbrs:
-                if node_to_id.get(w, -1) <= v_id:
-                    continue
-                yield u, v, w
+                if node_to_id.get(w, -1) > v_id:
+                    yield u, v, w
 
 
 @nx._dispatchable(edge_attrs="weight")

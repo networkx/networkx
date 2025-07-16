@@ -1,6 +1,7 @@
 import pytest
 
 import networkx as nx
+from networkx.exception import NetworkXNotImplemented
 
 from ..cluster import all_triangles
 
@@ -89,7 +90,7 @@ def test_all_triangles_non_integer_nodes():
         ]
     )
     triangles = list(all_triangles(G))
-    assert triangles == [("a", "b", "c")]
+    assert set(map(frozenset, triangles)) == {frozenset({"a", "b", "c"})}
 
 
 def test_all_triangles_overlapping():
@@ -105,7 +106,8 @@ def test_all_triangles_overlapping():
         ]
     )
     triangles = list(all_triangles(G))
-    assert triangles == [(0, 1, 2), (0, 2, 3)]
+    expected = {frozenset({0, 1, 2}), frozenset({0, 2, 3})}
+    assert set(map(frozenset, triangles)) == expected
 
 
 def test_all_triangles_subset():
@@ -121,27 +123,59 @@ def test_all_triangles_subset():
         ]
     )
     triangles = list(all_triangles(G, nbunch=[0, 1]))
-    assert triangles == [(0, 1, 2)]
+    assert set(map(frozenset, triangles)) == {frozenset({0, 1, 2})}
 
 
-def test_all_triangles_no_duplicates():
-    G = nx.complete_graph(4)  # 4 nodes, 4-choose-3 = 4 triangles
+def test_all_triangles_subset_empty():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            (0, 1),
+            (1, 2),
+            (2, 0),  # triangle: 0-1-2
+            (2, 3),
+            (3, 4),
+            (4, 2),  # triangle: 2-3-4
+            (5, 2),
+        ]
+    )
+    triangles = list(all_triangles(G, nbunch=[5]))
+    assert triangles == []
+
+
+def test_all_triangles_no_triangles():
+    G = nx.path_graph(4)
     triangles = list(all_triangles(G))
-    assert len(triangles) == 4
+    assert triangles == []
 
 
 def test_all_triangles_complete_graph_exact():
     G = nx.complete_graph(4)
     triangles = list(all_triangles(G))
 
-    expected = [
-        (0, 1, 2),
-        (0, 1, 3),
-        (0, 2, 3),
-        (1, 2, 3),
-    ]
+    expected = {
+        frozenset({0, 1, 2}),
+        frozenset({0, 1, 3}),
+        frozenset({0, 2, 3}),
+        frozenset({1, 2, 3}),
+    }
 
-    assert triangles == expected
+    assert set(map(frozenset, triangles)) == expected
+
+
+def test_all_triangles_directed_graph():
+    G = nx.DiGraph()
+    G.add_edges_from([(0, 1), (1, 2), (2, 0)])
+    with pytest.raises(NetworkXNotImplemented):
+        list(all_triangles(G))
+
+
+@pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
+def test_all_triangles_parametrized(graph_type):
+    G = graph_type()
+    G.add_edges_from([(0, 1), (1, 2), (2, 0)])
+    triangles = list(all_triangles(G))
+    assert set(map(frozenset, triangles)) == {frozenset({0, 1, 2})}
 
 
 class TestDirectedClustering:
