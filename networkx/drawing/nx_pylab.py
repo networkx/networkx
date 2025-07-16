@@ -119,11 +119,11 @@ def display(
     """Draw the graph G.
 
     Draw the graph as a collection of nodes connected by edges.
-    The exact details of what the graph looks like are controled by the below
+    The exact details of what the graph looks like are controlled by the below
     attributes. All nodes and nodes at the end of visible edges must have a
     position set, but nearly all other node and edge attributes are options and
     nodes or edges missing the attribute will use the default listed below. A more
-    complete discription of each parameter is given below this summary.
+    complete description of each parameter is given below this summary.
 
     .. list-table:: Default Visualization Attributes
         :widths: 25 25 50
@@ -132,7 +132,7 @@ def display(
         * - Parameter
           - Default Attribute
           - Default Value
-        * - pos
+        * - node_pos
           - `"pos"`
           - If there is not position, a layout will be calculated with `nx.spring_layout`.
         * - node_visible
@@ -227,7 +227,7 @@ def display(
     canvas : Matplotlib Axes object, optional
         Draw the graph in specified Matplotlib axes
 
-    pos : string or function, default "pos"
+    node_pos : string or function, default "pos"
         A string naming the node attribute storing the position of nodes as a tuple.
         Or a function to be called with input `G` which returns the layout as a dict keyed
         by node to position tuple like the NetworkX layout functions.
@@ -435,7 +435,7 @@ def display(
     for kwarg in kwargs:
         if kwarg not in defaults:
             raise nx.NetworkXError(
-                f"Unrecongized visualization keyword argument: {kwarg}"
+                f"Unrecognized visualization keyword argument: {kwarg}"
             )
 
     if canvas is None:
