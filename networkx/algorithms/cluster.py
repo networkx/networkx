@@ -256,7 +256,7 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
 
 @not_implemented_for("directed")
 @nx._dispatchable
-def all_triangles(G, nodes=None):
+def all_triangles(G, nbunch=None):
     """
     Yields all unique triangles in an undirected graph using a node ordering strategy.
 
@@ -267,9 +267,9 @@ def all_triangles(G, nodes=None):
     G : NetworkX graph
         An undirected graph. Self-loops and multiple edges are ignored.
 
-    nodes : node, iterable of nodes, or None (default=None)
+    nbunch : node, iterable of nodes, or None (default=None)
         If a node or iterable of nodes is given, only triangles involving those nodes are yielded.
-        If None, yields all unique triangles in the graph.
+        If None, all unique triangles in the graph are yielded.
 
     Yields
     -------
@@ -282,22 +282,18 @@ def all_triangles(G, nodes=None):
     >>> list(all_triangles(G))
     [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)]
     """
-    nodes_set = dict.fromkeys(G.nbunch_iter(nodes))
-    if nodes is None:
-        node_to_id = {node: i for i, node in enumerate(G)}
+    if nbunch is None:
+        nbunch = relevant_nodes = G
     else:
+        nbunch = dict.fromkeys(G.nbunch_iter(nbunch))
         relevant_nodes = chain(
-            nodes_set,
-            (
-                nbr
-                for node in nodes_set
-                for nbr in G.neighbors(node)
-                if nbr not in nodes_set
-            ),
+            nbunch,
+            (nbr for node in nbunch for nbr in G.neighbors(node) if nbr not in nbunch),
         )
-        node_to_id = {node: i for i, node in enumerate(relevant_nodes)}
 
-    for u in nodes_set:
+    node_to_id = {node: i for i, node in enumerate(relevant_nodes)}
+
+    for u in nbunch:
         u_id = node_to_id[u]
         u_nbrs = G._adj[u].keys()
         for v in u_nbrs:

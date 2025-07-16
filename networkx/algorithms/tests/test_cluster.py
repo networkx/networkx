@@ -120,7 +120,7 @@ def test_all_triangles_subset():
             (4, 2),  # triangle: 2-3-4
         ]
     )
-    triangles = list(all_triangles(G, nodes=[0, 1]))
+    triangles = list(all_triangles(G, nbunch=[0, 1]))
     assert triangles == [(0, 1, 2)]
 
 
