@@ -32,4 +32,6 @@ jobs:
 
       - name: Test Dispatching
         run: |
-          NETWORKX_TEST_BACKEND=nx_loopback pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        env:
+          NETWORKX_TEST_BACKEND: nx_loopback
