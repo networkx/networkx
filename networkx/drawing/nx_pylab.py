@@ -203,10 +203,10 @@ def display(
         * - edge_alpha
           - `"alpha"`
           - 1.0
-        * - arrowstyle
+        * - edge_arrowstyle
           - `"arrowstyle"`
           - ``"-|>"`` if `G` is directed else ``"-"``
-        * - arrowsize
+        * - edge_arrowsize
           - `"arrowsize"`
           - 10 if `G` is directed else 0
         * - edge_curvature
@@ -333,14 +333,14 @@ def display(
         A string naming the edge attribute which stores the alpha value of each edge.
         Visible edges without this attribute will use an alpha value of 1.0.
 
-    arrowstyle : string, default "arrow"
+    edge_arrowstyle : string, default "arrowstyle"
         A string naming the edge attribute which stores the type of arrowhead to use for
         each edge. Visible edges without this attribute use ``"-"`` for undirected graphs
         and ``"-|>"`` for directed graphs.
 
         See `matplotlib.patches.ArrowStyle` for more options
 
-    arrowsize : string or int, default "arrow_size"
+    edge_arrowsize : string or int, default "arrowsize"
         A string naming the edge attribute which stores the size of the arrowhead for each
         edge. Visible edges without this attribute will use a default value of 10.
 
