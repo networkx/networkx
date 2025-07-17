@@ -49,28 +49,27 @@ class TestKFactor:
 
 
 class TestIsRegular:
-    def test_is_regular1(self):
-        g = gen.cycle_graph(4)
-        assert reg.is_regular(g)
+    @pytest.mark.parametrize(
+        "graph,expected",
+        [
+            (nx.cycle_graph(5), True),
+            (nx.complete_graph(5), True),
+            (nx.path_graph(5), False),
+            (nx.lollipop_graph(5, 5), False),
+            (nx.cycle_graph(5, create_using=nx.DiGraph), True),
+            (nx.Graph([(0, 1)]), True),
+            (nx.DiGraph([(0, 1)]), False),
+            (nx.MultiGraph([(0, 1), (0, 1)]), True),
+            (nx.MultiDiGraph([(0, 1), (0, 1)]), False),
+        ],
+    )
+    def test_is_regular(self, graph, expected):
+        assert reg.is_regular(graph) == expected
 
-    def test_is_regular2(self):
-        g = gen.complete_graph(5)
-        assert reg.is_regular(g)
-
-    def test_is_regular3(self):
-        g = gen.lollipop_graph(5, 5)
-        assert not reg.is_regular(g)
-
-    def test_is_regular4(self):
-        g = nx.DiGraph()
-        g.add_edges_from([(0, 1), (1, 2), (2, 0)])
-        assert reg.is_regular(g)
-
-
-def test_is_regular_empty_graph_raises():
-    G = nx.Graph()
-    with pytest.raises(nx.NetworkXPointlessConcept, match="Graph has no nodes"):
-        nx.is_regular(G)
+    def test_is_regular_empty_graph_raises(self):
+        graph = nx.Graph()
+        with pytest.raises(nx.NetworkXPointlessConcept, match="Graph has no nodes"):
+            nx.is_regular(graph)
 
 
 class TestIsKRegular:
