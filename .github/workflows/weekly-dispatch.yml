@@ -1,7 +1,6 @@
 name: Weekly Extensive Dispatch Run
 
 on:
-  pull_request:
   schedule:
     - cron: "0 0 * * 0" # Every Sunday at midnight UTC
   workflow_dispatch:
