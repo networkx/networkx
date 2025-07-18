@@ -8,6 +8,7 @@ from networkx.utils import not_implemented_for
 
 __all__ = [
     "triangles",
+    "all_triangles",
     "average_clustering",
     "clustering",
     "transitivity",
@@ -268,13 +269,13 @@ def all_triangles(G, nbunch=None):
         An undirected graph.
 
     nbunch : node, iterable of nodes, or None (default=None)
-        If a node or iterable of nodes, only triangles involving at least one node in nbunch are yielded.
+        If a node or iterable of nodes, only triangles involving at least one node in `nbunch` are yielded.
         If ``None``, yields all unique triangles in the graph.
 
     Yields
     -------
     tuple
-         A tuple of three nodes forming a triangle ``(u, v, w)``.
+        A tuple of three nodes forming a triangle ``(u, v, w)``.
 
     Examples
     --------
@@ -285,7 +286,7 @@ def all_triangles(G, nbunch=None):
     Notes
     -----
     This algorithm ensures each triangle is yielded once using an internal node ordering.
-    It runs in O(m * d) time in the worst case, where m is the number of edges and d is the maximum degree.
+    Runs in ``O(m * d)`` time in the worst case, where ``m`` the number of edges and ``d`` the maximum degree.
     """
     if nbunch is None:
         nbunch = relevant_nodes = G

@@ -3,8 +3,6 @@ import pytest
 import networkx as nx
 from networkx.exception import NetworkXNotImplemented
 
-from ..cluster import all_triangles
-
 
 def test_square_clustering_adjacent_squares():
     G = nx.Graph([(1, 2), (1, 3), (2, 4), (3, 4), (3, 5), (4, 6), (5, 6)])
@@ -89,7 +87,7 @@ def test_all_triangles_non_integer_nodes():
             ("c", "a"),  # triangle: a-b-c
         ]
     )
-    triangles = list(all_triangles(G))
+    triangles = list(nx.all_triangles(G))
     assert set(map(frozenset, triangles)) == {frozenset({"a", "b", "c"})}
 
 
@@ -105,7 +103,7 @@ def test_all_triangles_overlapping():
             (3, 0),  # triangle: 0-2-3
         ]
     )
-    triangles = list(all_triangles(G))
+    triangles = list(nx.all_triangles(G))
     expected = {frozenset({0, 1, 2}), frozenset({0, 2, 3})}
     assert set(map(frozenset, triangles)) == expected
 
@@ -122,7 +120,7 @@ def test_all_triangles_subset():
             (4, 2),  # triangle: 2-3-4
         ]
     )
-    triangles = list(all_triangles(G, nbunch=[0, 1]))
+    triangles = list(nx.all_triangles(G, nbunch=[0, 1]))
     assert set(map(frozenset, triangles)) == {frozenset({0, 1, 2})}
 
 
@@ -139,19 +137,19 @@ def test_all_triangles_subset_empty():
             (5, 2),
         ]
     )
-    triangles = list(all_triangles(G, nbunch=[5]))
+    triangles = list(nx.all_triangles(G, nbunch=[5]))
     assert triangles == []
 
 
 def test_all_triangles_no_triangles():
     G = nx.path_graph(4)
-    triangles = list(all_triangles(G))
+    triangles = list(nx.all_triangles(G))
     assert triangles == []
 
 
 def test_all_triangles_complete_graph_exact():
     G = nx.complete_graph(4)
-    triangles = list(all_triangles(G))
+    triangles = list(nx.all_triangles(G))
 
     expected = {
         frozenset({0, 1, 2}),
@@ -167,14 +165,14 @@ def test_all_triangles_directed_graph():
     G = nx.DiGraph()
     G.add_edges_from([(0, 1), (1, 2), (2, 0)])
     with pytest.raises(NetworkXNotImplemented):
-        list(all_triangles(G))
+        list(nx.all_triangles(G))
 
 
 @pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
 def test_all_triangles_parametrized(graph_type):
     G = graph_type()
     G.add_edges_from([(0, 1), (1, 2), (2, 0)])
-    triangles = list(all_triangles(G))
+    triangles = list(nx.all_triangles(G))
     assert set(map(frozenset, triangles)) == {frozenset({0, 1, 2})}
 
 
