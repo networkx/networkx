@@ -1,10 +1,7 @@
-"""AlphaCore algorithm for node ranking in a directed network.
-
-The algorithm iteratively computes a node ranking based on a feature set
-using the Mahalanobis data depth function at the origin.
-"""
+"""AlphaCore algorithm for node ranking in directed networks."""
 
 import math
+import numbers
 import warnings
 
 import networkx as nx
@@ -42,35 +39,51 @@ def alpha_core(G, features=None, step_size=0.1, start_epsi=1, expo_decay=False):
     Returns
     -------
     dict
-        A dictionary mapping node IDs to dictionaries containing 'alpha' and 'batchID' values.
+        A dictionary mapping node IDs to dictionaries containing ``alpha`` and
+        ``batch_id`` values.
 
     Notes
     -----
-    The function references numbered steps (#1, #2, etc.) to align with
-    the AlphaCore article's algorithmic outline.
+    AlphaCore ranks nodes when each node carries several numeric attributes
+    in addition to its position in the graph.  At every outer iteration the
+    algorithm removes all nodes whose Mahalanobis depth is at least the
+    current threshold *epsi*.  Every node removed together is assigned the
+    same alpha value, defined by
+
+        alpha = 1 − epsi
+
+    Larger alpha means membership in a denser, more central core.  The idea
+    is analogous to the core number returned by the core_number function,
+    but it is based on multivariate attributes rather than degree alone.
+
+    Typical applications include social networks with activity or influence
+    scores, financial or blockchain graphs with liquidity or risk measures,
+    and infrastructure networks where nodes have capacity or reliability
+    values.
+
+    The function returns alpha values in the interval 0 to 1 (higher means
+    more central) and a batch_id counter that starts at 0.
+
+    See Also
+    --------
+    core_number, k_core, degree_centrality
+
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.DiGraph()
+    >>> G.add_nodes_from([(0, {"f1": 0.2}), (1, {"f1": 0.7})])
+    >>> G.add_edge(0, 1, value=3)
+    >>> result = nx.alpha_core(G, features=["f1"])
+    >>> result  # doctest: +SKIP
+    {0: {'alpha': 0.2, 'batch_id': 3}, 1: {'alpha': 0.7, 'batch_id': 9}}
 
     References
     ----------
     .. [1] F. Victor, C.G. Akcora, Y.R. Gel, M. Kantarcioglu.
        "AlphaCore: Data Depth based Core Decomposition."
        In: Proceedings of the 27th ACM SIGKDD Conf. on Knowledge Discovery and Data Mining (KDD '21).
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> G = nx.DiGraph()
-    >>> G.add_nodes_from(
-    ...     [
-    ...         (0, {"f1": 0.2}),
-    ...         (1, {"f1": 0.7}),
-    ...     ]
-    ... )
-    >>> G.add_edge(0, 1, value=3)
-    >>> result = nx.alpha_core(
-    ...     G, features=["f1"], step_size=0.1, start_epsi=1.0, expo_decay=False
-    ... )
-    >>> result  # doctest: +SKIP
-    {0: {'alpha': 0.2, 'batchID': 3}, 1: {'alpha': 0.7, 'batchID': 9}}
     """
     import numpy as np
 
@@ -84,290 +97,242 @@ def alpha_core(G, features=None, step_size=0.1, start_epsi=1, expo_decay=False):
     if features is None:
         features = ["all"]
 
-    # 1. Extract numerical node features from the graph; if unavailable, use _compute_default_node_features
+    # Extract numerical node features
     data = _extract_features(graph, features)
 
-    # 2. Compute covariance matrix to be used for all remainder of depth calculations
-    matrix = _get_feature_matrix(data)  # Convert data to numeric matrix
+    # Compute covariance matrix for depth calculations
+    matrix = _get_feature_matrix(data)
     cov = np.cov(matrix.T)
 
-    # 3. Calculate the Mahalanobis depth and add it to the data
-    mahal_values = _calculate_mahal_from_center(data, 0, cov)
+    # Calculate initial Mahalanobis depth values
+    mahal_values = _calculate_mahal_from_center(data, 0, cov, matrix)
     for node_id, mahal_val in mahal_values.items():
         data[node_id]["mahal"] = mahal_val
 
-    # 4
     epsi = start_epsi
-    # 5
     node = []
-    alphaVals = []
-    # 6
+    alpha_vals = []
     batch = []
-    # 7
     alpha = 1 - epsi
-    # 8
-    alphaPrev = alpha
-    # 9
-    batchID = 0
+    alpha_prev = alpha
+    batch_id = 0
 
-    # 10
     while graph.number_of_nodes() > 0:
-        # 11
         while True:
-            depthFound = False  # To simulate do-while loop; used to check if there exists a node with depth >= epsi on current iteration
-            # 12
+            depth_found = False
             for node_id, node_data in data.items():
                 if node_data["mahal"] >= epsi:
-                    depthFound = True
-                    # 13
-                    node.append(node_id)  # Set node core
-                    alphaVals.append(alphaPrev)
-                    # 14
-                    batch.append(batchID)
-                    # 15
+                    depth_found = True
+                    node.append(node_id)
+                    alpha_vals.append(alpha_prev)
+                    batch.append(batch_id)
                     graph.remove_node(node_id)
-            # 16
-            batchID += 1
+            batch_id += 1
 
-            # 19 Exit condition of do-while loop of # 11
-            if graph.number_of_nodes() == 0 or not depthFound:
+            if graph.number_of_nodes() == 0 or not depth_found:
                 break
-            # 17
-            data = _extract_features(graph, features)  # Recompute node properties
-            # 18
-            mahal_values = _calculate_mahal_from_center(data, 0, cov)  # Recompute depth
+
+            # Recompute features and depth for remaining nodes
+            data = _extract_features(graph, features)
+            matrix = _get_feature_matrix(data)
+            mahal_values = _calculate_mahal_from_center(data, 0, cov, matrix)
             for node_id, mahal_val in mahal_values.items():
                 data[node_id]["mahal"] = mahal_val
 
-        # 20
-        alphaPrev = alpha
-        # 21
-        if expo_decay and graph.number_of_nodes() > 0:  # Exponential decay
-            localStepSize = math.ceil(graph.number_of_nodes() * step_size)
-            # Sort by mahal values in descending order
+        alpha_prev = alpha
+        if expo_decay and graph.number_of_nodes() > 0:
+            local_step_size = math.ceil(graph.number_of_nodes() * step_size)
             sorted_nodes = sorted(
                 data.items(), key=lambda x: x[1]["mahal"], reverse=True
             )
-            if localStepSize <= len(sorted_nodes):
-                epsi = sorted_nodes[localStepSize - 1][1]["mahal"]
-        else:  # step decay
+            if local_step_size <= len(sorted_nodes):
+                epsi = sorted_nodes[local_step_size - 1][1]["mahal"]
+        else:
             epsi -= step_size
-        # 22
         alpha = 1 - epsi
 
-    # Return results as dictionary
     return {
-        node_id: {"alpha": alpha_val, "batchID": batch_id}
-        for node_id, alpha_val, batch_id in zip(node, alphaVals, batch)
+        node_id: {"alpha": alpha_val, "batch_id": batch_id}
+        for node_id, alpha_val, batch_id in zip(node, alpha_vals, batch)
     }
 
 
 def _extract_features(graph, features=None):
-    """Extract numerical node features from the graph.
+    """Extract and normalize numeric node attributes for analysis.
+
+    This function processes node attributes to create a consistent feature
+    representation across all nodes. It filters for numeric attributes,
+    handles missing values, and ensures all nodes have the same feature set.
+
+    If *features* is None or equal to ["all"], every attribute that is
+    numeric on at least one node is kept. When a requested attribute is
+    missing or non-numeric for some nodes, its value is replaced with 0.0
+    and a single warning is issued.
 
     Parameters
     ----------
     graph : NetworkX graph
-        A directed graph.
-    features : list, optional (default=None)
-        A list of feature names to extract. If None or ["all"], uses all
-        numerical node attributes or computes default features.
+        The directed graph to analyse.
+    features : list of str or None
+        Names of the attributes to keep, or None to select all numeric
+        attributes.
 
     Returns
     -------
     dict
-        Dictionary mapping node IDs to feature dictionaries.
+        Mapping node → {attribute: value}.
     """
-    import numpy as np
-
-    if features is None:
-        features = ["all"]
-
-    # Add check for empty feature list
-    if not features:
-        warnings.warn("No node features found. Using default AlphaCore node features.")
-        return _compute_default_node_features(graph)
-
-    # Handle empty graph case
     if graph.number_of_nodes() == 0:
         return {}
 
-    # Get node attributes as dictionary
-    node_data = dict(graph.nodes(data=True))
+    if features is None:
+        features = ["all"]
+    features = list(features)
 
-    # Get all features from the first node (assuming all nodes have same attributes)
-    if not node_data:
-        warnings.warn("No node features found. Using default AlphaCore node features.")
+    all_numeric_keys = set()
+    node_numeric_attrs = {}
+    for node, attr_dict in graph.nodes(data=True):
+        numeric_attrs = {
+            key: value
+            for key, value in attr_dict.items()
+            if isinstance(value, numbers.Real) and not isinstance(value, bool)
+        }
+        all_numeric_keys.update(numeric_attrs.keys())
+        node_numeric_attrs[node] = numeric_attrs
+
+    selected = all_numeric_keys if features == ["all"] else set(features)
+    if not selected:
+        warnings.warn(
+            "No numeric node attributes detected – falling back to structural features."
+        )
         return _compute_default_node_features(graph)
 
-    # Get all available features
-    all_features = set()
-    for node_attrs in node_data.values():
-        all_features.update(node_attrs.keys())
+    if features != ["all"] and not selected.issubset(all_numeric_keys):
+        warnings.warn(
+            "Some requested features are missing or non-numeric; "
+            "missing values will be filled with 0.0."
+        )
 
-    # If no features found, use default features
-    if not all_features:
-        warnings.warn("No node features found. Using default AlphaCore node features.")
-        return _compute_default_node_features(graph)
-
-    # Check for numeric features
-    numeric_features = set()
-    for feature in all_features:
-        # Check if feature is numeric for all nodes
-        is_numeric = True
-        for node_attrs in node_data.values():
-            if feature in node_attrs:
-                try:
-                    float(node_attrs[feature])
-                except (ValueError, TypeError):
-                    is_numeric = False
-                    break
-            else:
-                is_numeric = False
-                break
-        if is_numeric:
-            numeric_features.add(feature)
-
-    # Handle feature selection
-    if features == ["all"]:
-        if not numeric_features:
-            warnings.warn(
-                "No numerical node features found. Using default AlphaCore node features."
-            )
-            return _compute_default_node_features(graph)
-        selected_features = numeric_features
-    else:
-        # Check for missing features
-        missing_features = set(features) - all_features
-        if missing_features:
-            warnings.warn(
-                "No node features found. Using default AlphaCore node features."
-            )
-            return _compute_default_node_features(graph)
-
-        # Check for non-numeric features
-        non_numeric_features = set(features) - numeric_features
-        if non_numeric_features:
-            warnings.warn(
-                f"Features {non_numeric_features} are not numeric. Using default AlphaCore node features."
-            )
-            return _compute_default_node_features(graph)
-
-        selected_features = set(features)
-
-    # Build result dictionary
-    result = {}
-    for node_id, node_attrs in node_data.items():
-        result[node_id] = {}
-        for feature in selected_features:
-            result[node_id][feature] = float(node_attrs.get(feature, 0.0))
-
-    return result
+    ordered = sorted(selected)
+    return {
+        node: {key: node_numeric_attrs[node].get(key, 0.0) for key in ordered}
+        for node in graph
+    }
 
 
-def _compute_default_node_features(graph, weight="value"):
-    """Compute default structural features for nodes in a directed graph.
+def _compute_default_node_features(graph, weight="weight"):
+    """Return structural fallback features.
 
-    Calculates the following features for each node:
-    - In-degree: Number of incoming edges.
-    - Out-degree: Number of outgoing edges.
-    - In-strength: Sum of weights of incoming edges (or in-degree if no weights).
-    - Out-strength: Sum of weights of outgoing edges (or out-degree if no weights).
+    For every node the function supplies in-degree and out-degree.
+    If at least one edge carries a non-unit *weight* attribute the
+    weighted strengths are added as separate columns.  When all edge
+    weights equal one the strength columns are omitted so that duplicate
+    information is not included.
 
     Parameters
     ----------
     graph : NetworkX graph
-        A directed graph for which node features are computed.
-    weight : string, optional (default='value')
-        The edge attribute to use as weight for strength calculations.
-        If the attribute doesn't exist, falls back to unweighted degree.
+        Directed graph whose nodes are to be characterised.
+    weight : str
+        Edge attribute used as weight when computing strengths.
 
     Returns
     -------
     dict
-        Dictionary mapping node IDs to feature dictionaries containing:
-        - 'inDegree': In-degree of the node.
-        - 'outDegree': Out-degree of the node.
-        - 'inStrength': Weighted in-degree.
-        - 'outStrength': Weighted out-degree.
+        Mapping node → {feature: value}.
     """
-    # Get degree information using NetworkX methods
     in_degree = dict(graph.in_degree())
     out_degree = dict(graph.out_degree())
-    in_strength = dict(graph.in_degree(weight=weight))
-    out_strength = dict(graph.out_degree(weight=weight))
 
-    # Build result dictionary
-    result = {}
-    for node in graph.nodes():
-        result[node] = {
-            "inDegree": float(in_degree[node]),
-            "outDegree": float(out_degree[node]),
-            "inStrength": float(in_strength[node]),
-            "outStrength": float(out_strength[node]),
+    # Detect whether any edge has a non-unit weight
+    has_var_weights = any(
+        data.get(weight, 1) != 1 for _, _, data in graph.edges(data=True)
+    )
+
+    if has_var_weights:
+        in_strength = dict(graph.in_degree(weight=weight))
+        out_strength = dict(graph.out_degree(weight=weight))
+
+    features = {}
+    for node in graph:
+        row = {
+            "inDegree": in_degree[node],
+            "outDegree": out_degree[node],
         }
+        if has_var_weights:
+            row["inStrength"] = in_strength[node]
+            row["outStrength"] = out_strength[node]
+        features[node] = row
 
-    return result
+    return features
 
 
 def _get_feature_matrix(data):
-    """Convert feature data to numpy matrix for covariance calculation.
+    """Convert a node-feature dictionary to a float64 NumPy matrix.
+
+    The columns appear in alphabetical order of the feature names.
+    An empty input returns an empty (0 × 0) array.
 
     Parameters
     ----------
     data : dict
-        Dictionary mapping node IDs to feature dictionaries.
+        Mapping of nodes to feature dictionaries.
 
     Returns
     -------
     numpy.ndarray
-        Matrix where each row is a node and each column is a feature.
+        Two-dimensional array with one row per node and one column per
+        feature, stored as float64.
     """
     import numpy as np
 
     if not data:
-        return np.array([])
+        return np.empty((0, 0), dtype=float)
 
-    # Get feature names from first node
     first_node_data = next(iter(data.values()))
-    feature_names = [name for name in first_node_data if name != "mahal"]
+    feature_names = sorted(name for name in first_node_data if name != "mahal")
 
     if not feature_names:
-        return np.array([])
+        return np.empty((0, 0), dtype=float)
 
-    # Build matrix
     matrix = []
     for node_data in data.values():
         row = [node_data[feature] for feature in feature_names]
         matrix.append(row)
 
-    return np.array(matrix)
+    return np.asarray(matrix, dtype=float)
 
 
-def _calculate_mahal_from_center(data, center, cov):
-    """Calculate Mahalanobis depth from a given center.
+def _calculate_mahal_from_center(data, center, cov, matrix=None):
+    """Return Mahalanobis depth for each node.
+
+    The depth of a point is one divided by one plus its squared
+    Mahalanobis distance from *center* when the covariance matrix is
+    *cov*.  A pre-computed feature matrix may be supplied via *matrix*;
+    if it is not given the function builds one from *data*.
 
     Parameters
     ----------
     data : dict
-        Dictionary mapping node IDs to feature dictionaries.
-    center : float or array
-        Center value for Mahalanobis depth calculation.
-    cov : array
-        Covariance matrix of the data.
+        Mapping node → feature dictionary.
+    center : float or array-like
+        Reference point for the distance calculation.
+    cov : array-like
+        Covariance matrix corresponding to the feature space.
+    matrix : numpy.ndarray or None
+        Optional feature matrix that matches *data*.
 
     Returns
     -------
     dict
-        Dictionary mapping node IDs to Mahalanobis depth values.
+        Mapping node → depth value in the range 0 to 1.
     """
     import numpy as np
 
-    matrix = _get_feature_matrix(data)
+    if matrix is None:
+        matrix = _get_feature_matrix(data)
 
-    # Handle empty or single-feature case
     if matrix.shape[0] == 0 or matrix.shape[1] == 0:
-        # No features, return zeros
         return dict.fromkeys(data.keys(), 0.0)
 
     x_minus_center = matrix - center
@@ -379,8 +344,6 @@ def _calculate_mahal_from_center(data, center, cov):
     elif cov.ndim == 1:
         cov = np.array([cov]).T @ np.array([cov])
 
-    # Try computing the inverse of the covariance matrix; if it fails,
-    # fall back to the pseudo-inverse for stability.
     try:
         inv_cov = np.linalg.inv(cov)
     except np.linalg.LinAlgError:
@@ -392,12 +355,9 @@ def _calculate_mahal_from_center(data, center, cov):
     left = np.dot(x_minus_center, inv_cov)
     mahal = np.dot(left, x_minus_center_transposed)
 
-    mahal_diag = np.diagonal(
-        mahal
-    )  # Diagonal contains the depth values corresponding to each row from matrix
-    mahal_values = np.reciprocal(1 + np.maximum(mahal_diag, 0))  # Ensure stability
+    mahal_diag = np.diagonal(mahal)
+    mahal_values = np.reciprocal(1 + np.maximum(mahal_diag, 0))
 
-    # Return as dictionary mapping node IDs to depth values
     node_ids = list(data.keys())
     return {
         node_id: float(depth_val) for node_id, depth_val in zip(node_ids, mahal_values)

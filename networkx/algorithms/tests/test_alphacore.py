@@ -5,13 +5,16 @@ import pytest
 import networkx as nx
 from networkx.algorithms.alphacore import alpha_core
 
-# Use importorskip for optional dependencies
-np = pytest.importorskip("numpy")
+# Skip this module entirely if NumPy isn’t available
+np = pytest.importorskip("numpy")  # noqa: F401  (imported only for skip logic)
 
 
 class TestAlphaCore:
+    # ------------------------------------------------------------------ #
+    # graph fixtures                                                     #
+    # ------------------------------------------------------------------ #
     def setup_method(self):
-        # Create a simple directed graph for testing
+        # Small directed graph with two numeric attributes
         self.G = nx.DiGraph()
         self.G.add_nodes_from(
             [
@@ -23,198 +26,113 @@ class TestAlphaCore:
         )
         self.G.add_edges_from([(0, 1), (1, 2), (2, 0), (2, 3)])
 
-        # Create a larger graph for testing
-        multi_graph = nx.scale_free_graph(20, seed=42)
+        # Larger random graph
+        scale_free = nx.scale_free_graph(20, seed=42)
         self.H = nx.DiGraph()
-        self.H.add_edges_from(multi_graph.edges())
-        for n in self.H.nodes():
+        self.H.add_edges_from(scale_free.edges())
+        for n in self.H:
             self.H.nodes[n]["f1"] = 0.1 * n
             self.H.nodes[n]["f2"] = 0.5 * n
 
-    def test_alpha_core_with_specific_features(self):
-        """Test alpha_core with different feature selections."""
-        # Test with single feature
-        result_f1 = alpha_core(self.G, features=["f1"])
-        assert isinstance(result_f1, dict)
-        assert len(result_f1) == self.G.number_of_nodes()
+    # ------------------------------------------------------------------ #
+    # functional behaviour                                               #
+    # ------------------------------------------------------------------ #
+    @pytest.mark.parametrize("feat", [["f1"], ["f1", "f2"], ["all"], None])
+    def test_feature_selection(self, feat):
+        res = alpha_core(self.G, features=feat)
+        assert isinstance(res, dict)
+        assert len(res) == self.G.number_of_nodes()
 
-        # Test with multiple features
-        result_all = alpha_core(self.G, features=["f1", "f2"])
-        assert isinstance(result_all, dict)
-        assert len(result_all) == self.G.number_of_nodes()
+    def test_parameter_variations(self):
+        assert alpha_core(self.G, step_size=0.05) != alpha_core(self.G, step_size=0.2)
+        assert alpha_core(self.G, expo_decay=False) != alpha_core(
+            self.G, expo_decay=True
+        )
+        assert alpha_core(self.G, start_epsi=1.0) != alpha_core(self.G, start_epsi=0.5)
 
-    def test_alpha_core_parameters(self):
-        """Test different parameter combinations."""
-        # Test step sizes
-        result1 = alpha_core(self.G, step_size=0.1)
-        result2 = alpha_core(self.G, step_size=0.2)
-        assert isinstance(result1, dict)
-        assert isinstance(result2, dict)
-        assert result1 != result2
-
-        # Test exponential decay
-        result_normal = alpha_core(self.G, expo_decay=False)
-        result_decay = alpha_core(self.G, expo_decay=True)
-        assert isinstance(result_normal, dict)
-        assert isinstance(result_decay, dict)
-        assert result_normal != result_decay
-
-        # Test start epsilon
-        result_default = alpha_core(self.G, start_epsi=1.0)
-        result_custom = alpha_core(self.G, start_epsi=0.5)
-        assert isinstance(result_default, dict)
-        assert isinstance(result_custom, dict)
-        assert result_default != result_custom
-
-    def test_feature_error_handling(self):
-        """Test error handling for invalid features."""
+    def test_missing_features_warning(self):
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
-            result = alpha_core(self.G, features=["non_existent_feature"])
-            # Check for the warning about using default features
-            assert any(
-                "No node features found" in str(warning.message) for warning in w
-            )
-            # Check for the covariance matrix warning
-            assert any(
-                "Covariance matrix is not invertible" in str(warning.message)
-                for warning in w
-            )
+            _ = alpha_core(self.G, features=["non_existent"])
+        assert len(_) == self.G.number_of_nodes()
+        assert any("missing values" in str(w_.message) for w_ in w)
 
-        # Check the result is still valid
-        assert isinstance(result, dict)
-        assert len(result) == self.G.number_of_nodes()
+    def test_covariance_warning(self):
+        G = nx.DiGraph([(0, 1)])
+        G.add_nodes_from([(0, {"f1": 1.0}), (1, {"f1": 1.0})])  # zero variance
+        with warnings.catch_warnings(record=True) as w:
+            alpha_core(G, features=["f1"])
+        assert any("Covariance matrix is not invertible" in str(w_.message) for w_ in w)
 
-    def test_graph_type_validation(self):
-        """Test that appropriate errors are raised for unsupported graph types."""
-        undirected_G = nx.Graph()
-        undirected_G.add_edges_from([(0, 1), (1, 2), (2, 0)])
-        for n in undirected_G.nodes():
-            undirected_G.nodes[n]["f1"] = float(n) / 3
-
+    def test_unsupported_graph_type(self):
         with pytest.raises(nx.NetworkXNotImplemented):
-            alpha_core(undirected_G)
+            alpha_core(nx.Graph([(0, 1)]))
 
-    def test_empty_and_no_features(self):
-        """Test empty graph and graph with no features."""
-        # Empty graph
-        empty_G = nx.DiGraph()
-        result = alpha_core(empty_G)
-        assert isinstance(result, dict)
-        assert len(result) == 0
+    def test_empty_graph(self):
+        assert alpha_core(nx.DiGraph()) == {}
 
-        # No features
-        G_no_features = nx.DiGraph()
-        G_no_features.add_edges_from([(0, 1), (1, 2), (2, 0)])
-        with warnings.catch_warnings(record=True) as w:
-            result = alpha_core(G_no_features)
-            assert any(
-                "No node features found" in str(warning.message) for warning in w
-            )
-        assert isinstance(result, dict)
-        assert len(result) == G_no_features.number_of_nodes()
+    def test_weighted_multigraph(self):
+        MG = nx.MultiDiGraph()
+        MG.add_weighted_edges_from([(0, 1, 1.5), (0, 1, 2.5), (1, 2, 3.0)])
+        for n in MG:
+            MG.nodes[n]["f1"] = float(n)
+        res = alpha_core(MG)
+        assert set(res) == set(MG)
 
-    def test_multigraph_and_weighted(self):
-        """Test multigraph and weighted graph support."""
-        # Weighted multigraph
-        weighted_multi_G = nx.MultiDiGraph()
-        weighted_multi_G.add_weighted_edges_from(
-            [(0, 1, 1.5), (0, 1, 2.5), (1, 2, 3.0), (2, 0, 1.0)]
-        )
-        for n in weighted_multi_G.nodes():
-            weighted_multi_G.nodes[n]["f1"] = float(n) / 2
+    # ------------------------------------------------------------------ #
+    # result schema / invariants                                         #
+    # ------------------------------------------------------------------ #
+    def test_result_schema(self):
+        res = alpha_core(self.G)
+        for nid, data in res.items():
+            assert {"alpha", "batch_id"} <= data.keys()
+            assert 0.0 <= data["alpha"] <= 1.0
+            assert isinstance(data["batch_id"], int) and data["batch_id"] >= 0
 
-        result = alpha_core(weighted_multi_G)
-        assert isinstance(result, dict)
-        assert len(result) == weighted_multi_G.number_of_nodes()
-        assert set(result.keys()) == set(weighted_multi_G.nodes())
+    def test_batch_ordering(self):
+        res = alpha_core(self.G)
+        batch_ids = [d["batch_id"] for d in res.values()]
+        assert sorted(batch_ids) == batch_ids  # non-decreasing
 
-    def test_covariance_matrix_warnings(self):
-        """Test warnings for non-invertible covariance matrix."""
+    # ------------------------------------------------------------------ #
+    # performance smoke                                                  #
+    # ------------------------------------------------------------------ #
+    def test_large_graph_smoke(self):
+        big = nx.gn_graph(1000, seed=1, create_using=nx.DiGraph)
+        for n in big:
+            big.nodes[n]["score"] = float(n)
+        res = alpha_core(big, features=["score"], step_size=0.2)
+        assert len(res) == big.number_of_nodes()
+
+    # ------------------------------------------------------------------ #
+    # internal feature-helper checks                                      #
+    # ------------------------------------------------------------------ #
+    def test_default_feature_consistency(self):
+        """Every node must expose exactly the same feature keys."""
+        import networkx.algorithms.alphacore as ac
+
         G = nx.DiGraph()
-        G.add_nodes_from([(0, {"f1": 1.0}), (1, {"f1": 1.0})])
-        G.add_edge(0, 1)
+        G.add_weighted_edges_from([(0, 1, 2.0), (1, 2, 3.0), (2, 0, 4.0)])
+        data = ac._compute_default_node_features(G)
 
-        with warnings.catch_warnings(record=True) as w:
-            result = alpha_core(G, features=["f1"])
-            assert any(
-                "Covariance matrix is not invertible" in str(warning.message)
-                for warning in w
-            )
-        assert isinstance(result, dict)
+        first_keys = set(next(iter(data.values())).keys())
+        assert all(set(d.keys()) == first_keys for d in data.values())
 
-    def test_feature_validation(self):
-        """Test feature validation and error handling."""
-        # Test with empty feature list
-        with warnings.catch_warnings(record=True) as w:
-            result = alpha_core(self.G, features=[])
-            assert any(
-                "No node features found" in str(warning.message) for warning in w
-            )
+    @pytest.mark.parametrize("with_weights", [False, True])
+    def test_strength_column_presence(self, with_weights):
+        """Strength columns appear iff at least one edge weight ≠ 1."""
+        import networkx.algorithms.alphacore as ac
 
-        # Test with None and ["all"] features
-        result = alpha_core(self.G, features=None)
-        assert isinstance(result, dict)
-        result = alpha_core(self.G, features=["all"])
-        assert isinstance(result, dict)
+        G = nx.DiGraph()
+        if with_weights:
+            G.add_weighted_edges_from([(0, 1, 2.0), (1, 2, 1.0)])
+        else:
+            G.add_edges_from([(0, 1), (1, 2)])
 
-    def test_performance_and_ci(self):
-        """Test performance with larger graphs and CI-specific cases."""
-        # Large graph
-        G_large = nx.DiGraph()
-        for i in range(100):
-            G_large.add_node(i, f1=float(i))
-        for i in range(99):
-            G_large.add_edge(i, i + 1)
+        feats = ac._compute_default_node_features(G)
+        cols = set(next(iter(feats.values())).keys())
 
-        result = alpha_core(G_large)
-        assert isinstance(result, dict)
-        assert len(result) == 100
-
-        # CI-specific minimal graph
-        G_min = nx.DiGraph()
-        G_min.add_nodes_from([(0, {"f1": 1.0}), (1, {"f1": 2.0})])
-        G_min.add_edge(0, 1)
-
-        result = alpha_core(G_min)
-        assert isinstance(result, dict)
-        assert len(result) == 2
-
-    def test_backend_compatibility(self):
-        """Test compatibility with different backends."""
-        result = alpha_core(self.G)
-        assert isinstance(result, dict)
-
-        multi_G = nx.MultiDiGraph(self.G)
-        result = alpha_core(multi_G)
-        assert isinstance(result, dict)
-
-    def test_result_structure(self):
-        """Test that the result has the expected structure."""
-        result = alpha_core(self.G)
-
-        # Check that result is a dictionary
-        assert isinstance(result, dict)
-
-        # Check that each node has the expected structure
-        for node_id, node_data in result.items():
-            assert isinstance(node_id, int)
-            assert isinstance(node_data, dict)
-            assert "alpha" in node_data
-            assert "batchID" in node_data
-            assert isinstance(node_data["alpha"], int | float)
-            assert isinstance(node_data["batchID"], int)
-
-    def test_alpha_values_range(self):
-        """Test that alpha values are in the expected range [0, 1]."""
-        result = alpha_core(self.G)
-
-        for node_data in result.values():
-            assert 0 <= node_data["alpha"] <= 1
-
-    def test_batch_id_ordering(self):
-        """Test that batch IDs are non-negative and properly ordered."""
-        result = alpha_core(self.G)
-
-        batch_ids = [node_data["batchID"] for node_data in result.values()]
-        assert all(batch_id >= 0 for batch_id in batch_ids)
+        if with_weights:
+            assert {"inStrength", "outStrength"} <= cols
+        else:
+            assert {"inStrength", "outStrength"}.isdisjoint(cols)
