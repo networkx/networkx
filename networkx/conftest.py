@@ -116,6 +116,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="Keyword argument 'link'"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="maybe_regular_expander"
+    )
 
 
 @pytest.fixture(autouse=True)
