@@ -451,7 +451,10 @@ class TestGeneratorClassic:
         s = nx.star_graph(10)
         assert sorted(d for n, d in s.degree()) == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10]
 
-        pytest.raises(nx.NetworkXError, nx.star_graph, 10, create_using=nx.DiGraph)
+        for cu in [nx.DiGraph, nx.MultiDiGraph]:
+            ds = nx.star_graph(3, create_using=cu)
+            ref = cu([(0, 1), (1, 0), (0, 2), (2, 0), (0, 3), (3, 0)])
+            assert ds.edges == ref.edges
 
         ms = nx.star_graph(10, create_using=nx.MultiGraph)
         assert edges_equal(ms.edges(), s.edges())
