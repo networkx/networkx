@@ -1,6 +1,7 @@
 name: Weekly Extensive Dispatch Run
 
 on:
+  pull_request:
   schedule:
     - cron: "0 0 * * 0" # Every Sunday at midnight UTC
   workflow_dispatch:
@@ -27,8 +28,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install .[default,test]
+          # Install trusted backends, but not their dependencies.
+          # We only need to use the "networkx.backend_info" entry-point.
+          # This is the nightly wheel for nx-cugraph.
+          pip install nx-cugraph-cu11 --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple --no-deps --pre
+          # Development version of GraphBLAS backend
+          pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
+          # Development version of nx-parallel backend
+          pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
           python -m pip list
 
+      - run: python -c 'import networkx'
       - name: Test Dispatching
         run: |
           pytest -n auto --doctest-modules --durations=10 --pyargs networkx
