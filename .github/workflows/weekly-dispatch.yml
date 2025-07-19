@@ -35,7 +35,8 @@ jobs:
           # Development version of GraphBLAS backend
           pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
           # Development version of nx-parallel backend
-          pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
+          # Comment this out for now, nx-parallel doesn't support 3.11
+          # pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
           python -m pip list
 
       - run: python -c 'import networkx'
