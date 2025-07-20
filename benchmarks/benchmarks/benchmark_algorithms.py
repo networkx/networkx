@@ -182,8 +182,8 @@ def _make_weighted_benchmark_graphs(seed):
         """Dijkstra's relaxation worst-case: `n` nodes, `n - 1` relaxations.
 
         Each node `i` has a direct edge to the target node `n - 1`, with decreasing weight
-        as i increases. As Dijkstra visits nodes in increasing order, it finds
-        shorter and shorter paths to n, triggering a new relaxation each time.
+        as `i` increases. As Dijkstra visits nodes in increasing order, it finds
+        shorter and shorter paths to `n - 1`, triggering a new relaxation each time.
         """
         G = nx.empty_graph(n)
         for pred in range(n - 1):
