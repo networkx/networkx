@@ -337,6 +337,7 @@ class NetworkXConfig(Config):
     backend_priority: BackendPriorities
     backends: Config
     cache_converted_graphs: bool
+    graph_type_backends_map: dict[type, list[str]]
     fallback_to_nx: bool
     warnings_to_ignore: set[str]
 
