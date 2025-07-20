@@ -174,14 +174,37 @@ def _make_weighted_benchmark_graphs(seed):
         for p in [0.1, 0.5, 0.9]
     ]
 
-    path_graphs = [(nx.path_graph, (nodes,), {}) for nodes in [1_000, 10_000, 20_000]]
+    path_graphs = [
+        (nx.path_graph, (nodes,), {}) for nodes in [100, 1_000, 10_000, 20_000]
+    ]
 
-    all_graphs = {}
+    def dijkstra_relaxation_worst_case(n):
+        """Dijkstra's relaxation worst-case: `n` nodes, `n - 1` relaxations.
+
+        Each node `i` has a direct edge to the target node `n - 1`, with decreasing weight
+        as i increases. As Dijkstra visits nodes in increasing order, it finds
+        shorter and shorter paths to n, triggering a new relaxation each time.
+        """
+        G = nx.empty_graph(n)
+        for pred in range(n - 1):
+            if pred > 0:
+                G.add_edge(pred - 1, pred, weight=1)
+            G.add_edge(pred, n, weight=2 * (n - pred))
+        return G
+
+    all_graphs = {
+        benchmark_name_from_func_call(dijkstra_relaxation_worst_case, n): (
+            dijkstra_relaxation_worst_case,
+            (n,),
+            {},
+        )
+        for n in [100, 1_000, 10_000, 20_000]
+    }
     for graph_func, args, kwargs in path_graphs + erdos_renyi_graphs:
         name = benchmark_name_from_func_call(
             weighted_graph, seed, graph_func, *args, **kwargs
         )
-        all_graphs[name] = lambda: weighted_graph(seed, graph_func, *args, **kwargs)
+        all_graphs[name] = (weighted_graph, (seed, graph_func, *args), dict(**kwargs))
     return all_graphs
 
 
@@ -196,7 +219,8 @@ class WeightedGraphBenchmark:
     params = list(_graphs)
 
     def setup(self, graph):
-        self.G = self._graphs[graph]()
+        f, args, kwargs = self._graphs[graph]
+        self.G = f(*args, **kwargs)
         self.nodes = sorted(self.G)
 
     def time_weighted_single_source_dijkstra(self, graph):
