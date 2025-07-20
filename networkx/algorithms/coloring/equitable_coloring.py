@@ -3,8 +3,10 @@ Equitable coloring of graphs with bounded degree.
 """
 
 from collections import defaultdict
+from queue import PriorityQueue
 
 import networkx as nx
+from networkx.utils import not_implemented_for
 
 __all__ = ["equitable_color"]
 
@@ -22,6 +24,12 @@ def is_equitable(G, coloring, num_colors=None):
 
     if not is_coloring(G, coloring):
         return False
+
+    # Get maximum degree of G. If num_colors is less or equal to this, no
+    # further checks are necessary
+    maxdeg = max(G.degree(node) for node in G.nodes) if len(G.nodes) > 0 else 0
+    if num_colors != None and num_colors <= maxdeg:
+        return True
 
     # Verify whether it is equitable.
     color_set_size = defaultdict(int)
@@ -387,14 +395,71 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
 
 
 @nx._dispatchable
-def equitable_color(G, num_colors):
-    """Provides an equitable coloring for nodes of `G`.
+def equitable_heuristic(G, num_colors):
+    # First initialise the data structures for this heuristic.
+    # These are a priority queue q; the colors of each vertex c[v];
+    # the set of colors adjacent to each uncolored vertex (initially empty
+    # sets); the degree d[v] of each uncolored vertex in the graph induced
+    # by uncolored nodes; and the size of each color class.
+    q = PriorityQueue()
+    c, adjcols, d = {}, {}, {}
+    colsize = [0 for i in range(num_colors)]
+    for u in G.nodes:
+        d[u] = G.degree(u)
+        adjcols[u] = set()
+        q.put((0, d[u] * (-1), u))
+    while len(c) < len(G):
+        # Get the uncolored vertex u with max saturation degree, breaking
+        # ties using the highest value for d. Remove u from q.
+        _, _, u = q.get()
+        if u not in c:
+            # vertex u has not yet been colored, so assign it to the feasible
+            # color class i that currently has the fewest vertices
+            i, mincolsize = None, float("inf")
+            for j in range(num_colors):
+                if j not in adjcols[u] and colsize[j] < mincolsize:
+                    i = j
+                    mincolsize = colsize[i]
+            if i == None:
+                raise nx.NetworkXAlgorithmError(
+                    f"Unable to determine a coloring for this graph using "
+                    f"{num_colors} colors. Try increasing the value for the "
+                    f"variable `num_colors`"
+                )
+            c[u] = i
+            colsize[i] += 1
+            # Update the saturation degrees and d-values of the uncolored
+            # neighbors v, and update the priority queue q
+            for v in G[u]:
+                if v not in c:
+                    adjcols[v].add(i)
+                    d[v] -= 1
+                    q.put((len(adjcols[v]) * (-1), d[v] * (-1), v))
+    return c
 
-    Attempts to color a graph using `num_colors` colors, where no neighbors of
+
+@not_implemented_for("directed")
+@nx._dispatchable
+def equitable_color(G, num_colors):
+    """Provides an equitable coloring for nodes of the graph ``G``.
+
+    Attempts to color a graph using ``num_colors`` colors, where no neighbors of
     a node can have same color as the node itself and the number of nodes with
-    each color differ by at most 1. `num_colors` must be greater than the
-    maximum degree of `G`. The algorithm is described in [1]_ and has
-    complexity O(num_colors * n**2).
+    each color is approximately equal.
+
+    If ``num_colors`` is greater than the maximum degree of ``G``, the
+    algorithm described in [1]_ is used. This has a complexity of
+    $O(kn^2)$ (where $k$ = ``num_colors``) and guarantees the production of a
+    solution in which the difference in size between the smallest and largest
+    color class is at most one.
+
+    If ``num_colors`` is  less than or equal to the maximum degree of
+    ``G``, then the problem of determining an equitable coloring is
+    NP-hard. In this case, the heuristic described in [2]_ is used. This
+    implementation has complexity $O((n lg n) + (nk) + (m lg m))$.
+    In solutions returned by this method, neighboring vertices always receive
+    different colors; however, the coloring is not guaranteed to be equitable,
+    even if an equitable coloring for ``G`` using this many colors exists.
 
     Parameters
     ----------
@@ -402,12 +467,14 @@ def equitable_color(G, num_colors):
        The nodes of this graph will be colored.
 
     num_colors : number of colors to use
-       This number must be at least one more than the maximum degree of nodes
-       in the graph.
+       The number of colors to use. If this value is less than or equal to the maximum
+       degree of nodes in the graph, the algorithm may not be able to color all nodes
+       such that neighbors always have different colors. In this case an exception
+       is raised.
 
     Returns
     -------
-    A dictionary with keys representing nodes and values representing
+    A dictionary with keys representing nodes and values representing the
     corresponding coloring.
 
     Examples
@@ -419,13 +486,18 @@ def equitable_color(G, num_colors):
     Raises
     ------
     NetworkXAlgorithmError
-        If `num_colors` is not at least the maximum degree of the graph `G`
+        If a value of ``num_colors`` is used that is too small (that is,
+        the algorithm is unable to color all nodes in ``G`` such
+        that all neighbors have different colors).
 
     References
     ----------
     .. [1] Kierstead, H. A., Kostochka, A. V., Mydlarz, M., & Szemerédi, E.
         (2010). A fast algorithm for equitable coloring. Combinatorica, 30(2),
         217-224.
+    .. [2] Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and
+        Applications, 2nd Ed. Springer, ISBN: 978-3-030-81053-5
+        <https://link.springer.com/book/10.1007/978-3-030-81054-2>
     """
 
     # Map nodes to integers for simplicity later.
@@ -444,6 +516,11 @@ def equitable_color(G, num_colors):
     else:
         r_ = 0
 
+    if num_colors <= r_:
+        # Employ the heuristic algorithm of [2]
+        return equitable_heuristic(G, num_colors)
+
+    # num_colors > max degree r_, so employ the exact algorithm of [1]
     if r_ >= num_colors:
         raise nx.NetworkXAlgorithmError(
             f"Graph has maximum degree {r_}, needs "
