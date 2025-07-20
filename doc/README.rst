@@ -9,17 +9,20 @@ for both the stable and the latest (i.e., development) releases.
 Instructions
 ~~~~~~~~~~~~
 
-After installing NetworkX and its dependencies, install the Python
-packages needed to build the documentation by entering the root
-directory and executing::
+Install NetworkX along with its extra dependencies. For example, from
+the root of the repository:
 
-    pip install -r requirements/doc.txt
+```
+pip install .[extra]
+```
 
-Building the example gallery additionally requires the dependencies
-listed in ``requirements/extra.txt`` and ``requirements/example.txt``::
+Then, install the Python packages needed to build the documentation with::
 
-    pip install -r requirements/extra.txt
-    pip install -r requirements/example.txt
+    pip install --group doc
+
+Building the example gallery additionally requires::
+
+    pip install --group example
 
 To build the HTML documentation, enter ``doc/`` and execute::
 
