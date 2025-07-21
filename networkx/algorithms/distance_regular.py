@@ -173,7 +173,7 @@ def intersection_array(G):
     # the diameter of a distance-regular graph is at most (8 log_2 n) / 3,
     # so let's compute it as we go in the hope that we can stop early
     diam = 0
-    max_diameter_for_dr_graphs = (8 * log(G.number_of_nodes(), 2)) / 3
+    max_diameter_for_dr_graphs = (8 * log(len(G), 2)) / 3
     for u, v in combinations_with_replacement(G, 2):
         # compute needed shortest path lengths
         if u not in path_length or v not in path_length[u]:
