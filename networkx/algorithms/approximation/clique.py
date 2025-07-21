@@ -223,8 +223,8 @@ class LinearTimeMaxmiumIndependentSet:
                     self.independent_set.add(v)
 
         # Extend independent set to be maximal
-        self.independent_set = nx.algorithms.maximal_independent_set(
-            self.G, self.independent_set
+        self.independent_set = set(
+            nx.algorithms.maximal_independent_set(self.G, self.independent_set)
         )
 
         # Restore graph
