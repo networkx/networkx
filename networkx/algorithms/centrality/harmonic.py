@@ -81,6 +81,7 @@ def harmonic_centrality(G, nbunch=None, distance=None, sources=None):
     for v in sources:
         dist = spl(v)
         for u, d_uv in dist.items():
+            # Ignore self-loops and edges with 0 weight
             if d_uv != 0 and u in nbunch:
                 centrality[v if transposed else u] += 1 / d_uv
 
