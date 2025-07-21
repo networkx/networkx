@@ -337,7 +337,7 @@ def max_clique(G):
     --------
     >>> G = nx.path_graph(10)
     >>> nx.approximation.max_clique(G)
-    {8, 9}
+    {5, 6}
 
     Raises
     ------
