@@ -39,7 +39,7 @@ class LinearTimeMaxmiumIndependentSet:
         The maximum degree of G
     degree : dict
         The degree of each node
-    nodes_by_degree : numpy array of sets
+    nodes_by_degree : dict of setd
         The set of nodes for each degree up to max_degree
     independent_set : set
         The set of independent nodes, equivalent to nodes_by_degree[0]
@@ -56,8 +56,6 @@ class LinearTimeMaxmiumIndependentSet:
 
     def __init__(self, G):
         """Initialize the class. Self-loop edges are temporarily removed."""
-        import numpy as np
-
         self.G = G
         if G.order() == 0:
             self.independent_set = []
@@ -76,7 +74,7 @@ class LinearTimeMaxmiumIndependentSet:
 
         # Construct degree data structures
         self.degree = dict(G.degree)
-        self.nodes_by_degree = np.array([set() for d in range(self.max_degree + 2)])
+        self.nodes_by_degree = {d: set() for d in range(self.max_degree + 2)}
         for v, d in G.degree:
             self.nodes_by_degree[d].add(v)
         self.independent_set = self.nodes_by_degree[0]
