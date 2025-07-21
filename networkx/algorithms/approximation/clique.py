@@ -1,7 +1,5 @@
 """Functions for computing large cliques and maximum independent sets."""
 
-import numpy as np
-
 import networkx as nx
 from networkx.algorithms.approximation import ramsey
 from networkx.utils import not_implemented_for
@@ -58,6 +56,8 @@ class LinearTimeMaxmiumIndependentSet:
 
     def __init__(self, G):
         """Initialize the class. Self-loop edges are temporarily removed."""
+        import numpy as np
+
         self.G = G
         if G.order() == 0:
             self.independent_set = []
