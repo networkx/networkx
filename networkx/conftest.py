@@ -116,6 +116,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="Keyword argument 'link'"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="maybe_regular_expander"
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -187,7 +190,6 @@ needs_numpy = [
     "algorithms/non_randomness.py",
     "algorithms/polynomials.py",
     "algorithms/shortest_paths/dense.py",
-    "algorithms/structuralholes.py",
     "algorithms/tree/mst.py",
     "drawing/nx_latex.py",
     "generators/expanders.py",
@@ -202,6 +204,7 @@ needs_scipy = [
     "algorithms/assortativity/pairs.py",
     "algorithms/bipartite/matrix.py",
     "algorithms/bipartite/spectral.py",
+    "algorithms/bipartite/link_analysis.py",
     "algorithms/centrality/current_flow_betweenness.py",
     "algorithms/centrality/current_flow_betweenness_subset.py",
     "algorithms/centrality/eigenvector.py",
@@ -216,7 +219,6 @@ needs_scipy = [
     "algorithms/link_analysis/pagerank_alg.py",
     "algorithms/node_classification.py",
     "algorithms/similarity.py",
-    "algorithms/structuralholes.py",
     "algorithms/tree/mst.py",
     "algorithms/walks.py",
     "convert_matrix.py",

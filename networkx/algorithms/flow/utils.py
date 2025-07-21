@@ -42,6 +42,11 @@ class CurrentEdge:
         self._it = iter(self._edges.items())
         self._curr = next(self._it)
 
+    def __eq__(self, other):
+        return (getattr(self, "_curr", None), self._edges) == (
+            (getattr(other, "_curr", None), other._edges)
+        )
+
 
 class Level:
     """Active and inactive nodes in a level."""
