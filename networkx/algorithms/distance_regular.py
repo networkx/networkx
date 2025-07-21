@@ -176,7 +176,7 @@ def intersection_array(G):
     max_diameter_for_dr_graphs = (8 * log(len(G), 2)) / 3
     for u, v in combinations_with_replacement(G, 2):
         # compute needed shortest path lengths
-        if u not in path_length or v not in path_length[u]:
+        if v not in path_length[u]:
             path_length[u].update(nx.single_source_shortest_path_length(G, u))
             for x, distance in path_length[u].items():
                 path_length[x][u] = distance
