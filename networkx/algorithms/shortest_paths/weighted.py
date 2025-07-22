@@ -2434,7 +2434,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def johnson(G, weight="weight"):
+def johnson(G, weight="weight", multi_source_dist=None, need_paths=True):
     r"""Uses Johnson's Algorithm to compute shortest paths.
 
     Johnson's Algorithm finds a shortest path between each pair of
@@ -2457,10 +2457,16 @@ def johnson(G, weight="weight"):
         dictionary of edge attributes for that edge. The function must
         return a number.
 
+    multi_source_dist: dictonary
+        Dictionary to store the shortest distance value, keyed by source and target
+
+    need_paths: bool
+        If False, we will not calculate the paths, and will return None
+
     Returns
     -------
     distance : dictionary
-        Dictionary, keyed by source and target, of shortest paths.
+        Dictionary, keyed by source and target, of shortest paths. If need_paths is False, returns None.
 
     Examples
     --------
@@ -2496,6 +2502,10 @@ def johnson(G, weight="weight"):
     all_pairs_bellman_ford_path_length
 
     """
+    if multi_source_dist is None and not need_paths:
+        # Nothing need to do in this case
+        return None
+
     dist = {v: 0 for v in G}
     pred = {v: [] for v in G}
     weight = _weight_function(G, weight)
@@ -2508,9 +2518,22 @@ def johnson(G, weight="weight"):
     def new_weight(u, v, d):
         return weight(u, v, d) + dist_bellman[u] - dist_bellman[v]
 
-    def dist_path(v):
-        paths = {v: [v]}
-        _dijkstra(G, v, new_weight, paths=paths)
-        return paths
+    def dist_path(v, multi_source_dist, multi_source_paths):
+        paths = None
+        if multi_source_paths is not None:
+            paths = multi_source_paths[v] = {v: [v]}
 
-    return {v: dist_path(v) for v in G}
+        if multi_source_dist is None:
+            _dijkstra(G, v, new_weight, paths=paths)
+        else:
+            multi_source_dist[v] = _dijkstra(G, v, new_weight, paths=paths)
+            multi_source_dist[v] = {
+                w: value - dist_bellman[v] + dist_bellman[w]
+                for w, value in multi_source_dist[v].items()
+            }
+
+    multi_source_paths = {} if need_paths else None
+    for v in G:
+        dist_path(v, multi_source_dist, multi_source_paths)
+
+    return multi_source_paths
