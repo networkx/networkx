@@ -61,8 +61,8 @@ def _get_backends(group, *, load_and_call=False):
     Notes
     ------
     If a backend is defined more than once, a warning is issued.
-    If a backend name is not a valid Python identifier, the backend will be
-    ignored and a warning will be issued.
+    If a backend name is not a valid Python identifier, the backend is
+    ignored and a warning is issued.
     The "nx_loopback" backend is removed if it exists, as it is only available during testing.
     A warning is displayed if an error occurs while loading a backend.
     """
