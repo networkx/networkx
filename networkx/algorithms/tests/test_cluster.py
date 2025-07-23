@@ -1,7 +1,6 @@
 import pytest
 
 import networkx as nx
-from networkx.exception import NetworkXNotImplemented
 
 
 def test_square_clustering_adjacent_squares():
@@ -87,8 +86,8 @@ def test_all_triangles_non_integer_nodes():
             ("c", "a"),  # triangle: a-b-c
         ]
     )
-    triangles = list(nx.all_triangles(G))
-    assert set(map(frozenset, triangles)) == {frozenset({"a", "b", "c"})}
+    expected = {frozenset({"a", "b", "c"})}
+    assert {frozenset(t) for t in nx.all_triangles(G)} == expected
 
 
 def test_all_triangles_overlapping():
@@ -103,9 +102,8 @@ def test_all_triangles_overlapping():
             (3, 0),  # triangle: 0-2-3
         ]
     )
-    triangles = list(nx.all_triangles(G))
     expected = {frozenset({0, 1, 2}), frozenset({0, 2, 3})}
-    assert set(map(frozenset, triangles)) == expected
+    assert {frozenset(t) for t in nx.all_triangles(G)} == expected
 
 
 def test_all_triangles_subset():
@@ -120,8 +118,9 @@ def test_all_triangles_subset():
             (4, 2),  # triangle: 2-3-4
         ]
     )
-    triangles = list(nx.all_triangles(G, nbunch=[0, 1]))
-    assert set(map(frozenset, triangles)) == {frozenset({0, 1, 2})}
+    assert {frozenset(t) for t in nx.all_triangles(G, nbunch=[0, 1])} == {
+        frozenset({0, 1, 2})
+    }
 
 
 def test_all_triangles_subset_empty():
@@ -158,22 +157,21 @@ def test_all_triangles_complete_graph_exact():
         frozenset({1, 2, 3}),
     }
 
-    assert set(map(frozenset, triangles)) == expected
+    assert {frozenset(t) for t in nx.all_triangles(G)} == expected
 
 
 def test_all_triangles_directed_graph():
     G = nx.DiGraph()
     G.add_edges_from([(0, 1), (1, 2), (2, 0)])
-    with pytest.raises(NetworkXNotImplemented):
+    with pytest.raises(nx.NetworkXNotImplemented):
         list(nx.all_triangles(G))
 
 
 @pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
 def test_all_triangles_parametrized(graph_type):
     G = graph_type()
-    G.add_edges_from([(0, 1), (1, 2), (2, 0)])
-    triangles = list(nx.all_triangles(G))
-    assert set(map(frozenset, triangles)) == {frozenset({0, 1, 2})}
+    G.add_edges_from([(0, 1), (0, 2), (1, 2), (1, 2)])
+    assert {frozenset(t) for t in nx.all_triangles(G)} == {frozenset({0, 1, 2})}
 
 
 class TestDirectedClustering:

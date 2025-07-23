@@ -286,6 +286,8 @@ def all_triangles(G, nbunch=None):
     Notes
     -----
     This algorithm ensures each triangle is yielded once using an internal node ordering.
+    In multigraphs, triangles are identified by their unique set of nodes,
+    ignoring multiple edges between the same nodes. Self-loops are ignored.
     Runs in ``O(m * d)`` time in the worst case, where ``m`` the number of edges and ``d`` the maximum degree.
     """
     if nbunch is None:
