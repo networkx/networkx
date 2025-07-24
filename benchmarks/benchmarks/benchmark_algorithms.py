@@ -186,7 +186,7 @@ def _make_weighted_benchmark_graphs(seed):
         shorter and shorter paths to `n - 1`, triggering a new relaxation each time.
         """
         G = nx.empty_graph(n)
-        for pred in range(n - 1):
+        for pred in range(n):
             if pred > 0:
                 G.add_edge(pred - 1, pred, weight=1)
             G.add_edge(pred, n, weight=2 * (n - pred))
