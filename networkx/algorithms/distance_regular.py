@@ -3,6 +3,7 @@
 Distance-regular graphs
 =======================
 """
+
 from collections import defaultdict
 from itertools import combinations_with_replacement
 from math import log
