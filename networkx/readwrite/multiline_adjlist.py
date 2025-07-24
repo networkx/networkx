@@ -157,17 +157,17 @@ def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_multiline_adjlist(G, "test.adjlist")
+    >>> nx.write_multiline_adjlist(G, "test.multi_adjlist")
 
     The path can be a file handle or a string with the name of the file. If a
     file handle is provided, it has to be opened in 'wb' mode.
 
-    >>> fh = open("test.adjlist", "wb")
+    >>> fh = open("test.multi_adjlist2", "wb")
     >>> nx.write_multiline_adjlist(G, fh)
 
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> nx.write_multiline_adjlist(G, "test.adjlist.gz")
+    >>> nx.write_multiline_adjlist(G, "test.multi_adjlist.gz")
 
     See Also
     --------
@@ -317,7 +317,7 @@ def read_multiline_adjlist(
     ----------
     path : string or file
        Filename or file handle to read.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filenames ending in .gz or .bz2 will be decompressed.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
@@ -341,38 +341,38 @@ def read_multiline_adjlist(
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_multiline_adjlist(G, "test.adjlist")
-    >>> G = nx.read_multiline_adjlist("test.adjlist")
+    >>> nx.write_multiline_adjlist(G, "test.multi_adjlistP4")
+    >>> G = nx.read_multiline_adjlist("test.multi_adjlistP4")
 
     The path can be a file or a string with the name of the file. If a
     file s provided, it has to be opened in 'rb' mode.
 
-    >>> fh = open("test.adjlist", "rb")
+    >>> fh = open("test.multi_adjlistP4", "rb")
     >>> G = nx.read_multiline_adjlist(fh)
 
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> nx.write_multiline_adjlist(G, "test.adjlist.gz")
-    >>> G = nx.read_multiline_adjlist("test.adjlist.gz")
+    >>> nx.write_multiline_adjlist(G, "test.multi_adjlistP4.gz")
+    >>> G = nx.read_multiline_adjlist("test.multi_adjlistP4.gz")
 
     The optional nodetype is a function to convert node strings to nodetype.
 
     For example
 
-    >>> G = nx.read_multiline_adjlist("test.adjlist", nodetype=int)
+    >>> G = nx.read_multiline_adjlist("test.multi_adjlistP4", nodetype=int)
 
     will attempt to convert all nodes to integer type.
 
     The optional edgetype is a function to convert edge data strings to
     edgetype.
 
-    >>> G = nx.read_multiline_adjlist("test.adjlist")
+    >>> G = nx.read_multiline_adjlist("test.multi_adjlistP4")
 
     The optional create_using parameter is a NetworkX graph container.
     The default is Graph(), an undirected graph.  To read the data as
     a directed graph use
 
-    >>> G = nx.read_multiline_adjlist("test.adjlist", create_using=nx.DiGraph)
+    >>> G = nx.read_multiline_adjlist("test.multi_adjlistP4", create_using=nx.DiGraph)
 
     Notes
     -----

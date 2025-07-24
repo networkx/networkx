@@ -154,6 +154,8 @@ to add your name to the bottom of the list.
 - Aaron Zolnai-Lucas, GitHub: `aaronzo <https://github.com/aaronzo>`_, LinkedIn: `aaronzolnailucas <https://www.linkedin.com/in/aaronzolnailucas/>`_
 - Erik Welch, GitHub: `eriknw <https://github.com/eriknw>`_, LinkedIn: `eriknwelch <https://www.linkedin.com/in/eriknwelch/>`_
 - Mohamed Rezk, Github: `mohamedrezk122 <https://github.com/mohamedrezk122>`_
+- Orion Sehn, GitHub: `OrionSehn <https://github.com/OrionSehn>`_
+- Berlin Cho, GitHub: `berlincho <https://github.com/berlincho>`_
 
 A supplementary (but still incomplete) list of contributors is given by the
 list of names that have commits in ``networkx``'s
@@ -169,7 +171,7 @@ of the earlier versions of NetworkX can be found
 Support
 -------
 
-NetworkX acknowledges support from the following research groups:
+NetworkX acknowledges support from the following organizations:
 
 - `Center for Nonlinear Studies <http://cnls.lanl.gov>`_, Los Alamos National
   Laboratory, PI: Aric Hagberg
@@ -184,9 +186,18 @@ NetworkX acknowledges support from the following research groups:
   Wisconsin Institute for Discovery, University of Wisconsin-Madison,
   PIs: Jessica C. Flack and David C. Krakauer
 
+- `Colgate University <https://www.colgate.edu/>`_
+
+- `California Institute of Technology <https://www.caltech.edu/>`_
+
+- `Berkeley Institute for Data Science <https://bids.berkeley.edu/>`_
+
+- `NVIDIA Corporation <https://www.nvidia.com/>`_
+
 NetworkX acknowledges the following financial support:
 
-- Google Summer of Code via Python Software Foundation
+- Google Summer of Code via Python Software Foundation (2013, 2015),
+  NumFOCUS (2021-2024)
 
 - U.S. Army Research Office grant W911NF-12-1-0288
 
@@ -199,3 +210,9 @@ NetworkX acknowledges the following financial support:
 
 - U.S. Army Research Laboratory and the U.S. Army Research Office under
   contract number W911NF-13-1-0340
+
+- Chan Zuckerberg Initiative Essential Open Source Software for Science
+  EOSS2-0000000066 and EOSS4-0000000138
+
+- Wellcome Trust via CZI, Wellcome and Kavli EOSS Cycle 6 (EOSS6-000000368)
+

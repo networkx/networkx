@@ -4,8 +4,6 @@ Generators for the small graph atlas.
 
 import gzip
 import importlib.resources
-import os
-import os.path
 from itertools import islice
 
 import networkx as nx
@@ -150,6 +148,55 @@ def graph_atlas_g():
     list
         A list of :class:`~networkx.Graph` objects, the one at index *i*
         corresponding to the graph *i* in the Graph Atlas.
+
+    Examples
+    --------
+    >>> from pprint import pprint
+    >>> atlas = nx.graph_atlas_g()
+
+    There are 1253 graphs in the atlas
+
+    >>> len(atlas)
+    1253
+
+    The number of graphs with *n* nodes, where *n* ranges from 0 to 7:
+
+    >>> from collections import Counter
+    >>> num_nodes_per_graph = [len(G) for G in atlas]
+    >>> Counter(num_nodes_per_graph)
+    Counter({7: 1044, 6: 156, 5: 34, 4: 11, 3: 4, 2: 2, 0: 1, 1: 1})
+
+    Since the atlas is ordered by the number of nodes in the graph, all graphs
+    with *n* nodes can be obtained by slicing the atlas. For example, all
+    graphs with 5 nodes:
+
+    >>> G5_list = atlas[19:53]
+    >>> all(len(G) == 5 for G in G5_list)
+    True
+
+    Or all graphs with at least 3 nodes but fewer than 7 nodes:
+
+    >>> G3_6_list = atlas[4:209]
+
+    More generally, the indices that partition the atlas by the number of nodes
+    per graph:
+
+    >>> import itertools
+    >>> partition_indices = [0] + list(
+    ...     itertools.accumulate(Counter(num_nodes_per_graph).values())  # cumsum
+    ... )
+    >>> partition_indices
+    [0, 1, 2, 4, 8, 19, 53, 209, 1253]
+    >>> partition_mapping = dict(enumerate(itertools.pairwise(partition_indices)))
+    >>> pprint(partition_mapping)
+    {0: (0, 1),
+     1: (1, 2),
+     2: (2, 4),
+     3: (4, 8),
+     4: (8, 19),
+     5: (19, 53),
+     6: (53, 209),
+     7: (209, 1253)}
 
     See also
     --------

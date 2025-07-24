@@ -61,18 +61,39 @@ class TestConnected:
         C = []
         cls.gc.append((G, C))
 
-    # This additionally tests the @nx._dispatchable mechanism, treating
-    # nx.connected_components as if it were a re-implementation from another package
-    @pytest.mark.parametrize("wrapper", [lambda x: x, dispatch_interface.convert])
-    def test_connected_components(self, wrapper):
+    def test_connected_components(self):
+        # Test duplicated below
         cc = nx.connected_components
-        G = wrapper(self.G)
+        G = self.G
         C = {
             frozenset([0, 1, 2, 3]),
             frozenset([4, 5, 6, 7, 8, 9]),
             frozenset([10, 11, 12, 13, 14]),
         }
         assert {frozenset(g) for g in cc(G)} == C
+
+    def test_connected_components_nx_loopback(self):
+        # This tests the @nx._dispatchable mechanism, treating nx.connected_components
+        # as if it were a re-implementation from another package.
+        # Test duplicated from above
+        cc = nx.connected_components
+        G = dispatch_interface.convert(self.G)
+        C = {
+            frozenset([0, 1, 2, 3]),
+            frozenset([4, 5, 6, 7, 8, 9]),
+            frozenset([10, 11, 12, 13, 14]),
+        }
+        if "nx_loopback" in nx.config.backends or not nx.config.backends:
+            # If `nx.config.backends` is empty, then `_dispatchable.__call__` takes a
+            # "fast path" and does not check graph inputs, so using an unknown backend
+            # here will still work.
+            assert {frozenset(g) for g in cc(G)} == C
+        else:
+            # This raises, because "nx_loopback" is not registered as a backend.
+            with pytest.raises(
+                ImportError, match="'nx_loopback' backend is not installed"
+            ):
+                cc(G)
 
     def test_number_connected_components(self):
         ncc = nx.number_connected_components

@@ -3,10 +3,10 @@ from operator import itemgetter
 
 import pytest
 
-np = pytest.importorskip("numpy")
-
 import networkx as nx
 from networkx.algorithms.tree import branchings, recognition
+
+np = pytest.importorskip("numpy")
 
 #
 # Explicitly discussed examples from Edmonds paper.
@@ -605,9 +605,9 @@ def test_branchings_with_default_weights():
     """
     graph = nx.erdos_renyi_graph(10, p=0.2, directed=True, seed=123)
 
-    assert all(
-        "weight" not in d for (u, v, d) in graph.edges(data=True)
-    ), "test is for graphs without a weight attribute"
+    assert all("weight" not in d for (u, v, d) in graph.edges(data=True)), (
+        "test is for graphs without a weight attribute"
+    )
 
     # Calling these functions will modify graph inplace to add weights
     # copy the graph to avoid this.
@@ -619,6 +619,6 @@ def test_branchings_with_default_weights():
     nx.algorithms.tree.branching_weight(graph.copy())
     nx.algorithms.tree.greedy_branching(graph.copy())
 
-    assert all(
-        "weight" not in d for (u, v, d) in graph.edges(data=True)
-    ), "The above calls should not modify the initial graph in-place"
+    assert all("weight" not in d for (u, v, d) in graph.edges(data=True)), (
+        "The above calls should not modify the initial graph in-place"
+    )

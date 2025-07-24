@@ -1,7 +1,5 @@
-networkx 3.3
+NetworkX 3.3
 ============
-
-We're happy to announce the release of networkx 3.3!
 
 Release date: 6 April 2024
 
@@ -85,7 +83,7 @@ Bug Fixes
 - add seed to tests of fast_label_propatation_communities (`#7242 <https://github.com/networkx/networkx/pull/7242>`_).
 - Fix rich_club_coefficient() for single node and empty graphs (`#7212 <https://github.com/networkx/networkx/pull/7212>`_).
 - Fix minimum_spanning_arborescence regression (`#7280 <https://github.com/networkx/networkx/pull/7280>`_).
-- Move arrowstyle input munging after intput validation (`#7293 <https://github.com/networkx/networkx/pull/7293>`_).
+- Move arrowstyle input munging after input validation (`#7293 <https://github.com/networkx/networkx/pull/7293>`_).
 - Fix empty GraphML attribute is not parsed (`#7319 <https://github.com/networkx/networkx/pull/7319>`_).
 - Add new test result to ``test_asadpour_tsp`` and change ``linprog`` method (`#7335 <https://github.com/networkx/networkx/pull/7335>`_).
 - Fix custom weight attribute for Mehlhorn (`#6681 <https://github.com/networkx/networkx/pull/6681>`_).

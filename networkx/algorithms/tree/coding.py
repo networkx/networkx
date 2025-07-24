@@ -397,7 +397,7 @@ def from_prufer_sequence(sequence):
         # check the validity of the prufer sequence
         if v < 0 or v > n - 1:
             raise nx.NetworkXError(
-                f"Invalid Prufer sequence: Values must be between 0 and {n-1}, got {v}"
+                f"Invalid Prufer sequence: Values must be between 0 and {n - 1}, got {v}"
             )
         T.add_edge(u, v)
         not_orphaned.add(u)

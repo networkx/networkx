@@ -1,12 +1,12 @@
 [build-system]
 build-backend = 'setuptools.build_meta'
-requires = ['setuptools>=61.2']
+requires = ['setuptools>=77.0.3']
 
 [project]
 name = 'networkx'
 description = 'Python package for creating and manipulating graphs and networks'
 readme = 'README.rst'
-requires-python = '>=3.10'
+requires-python = '>=3.11'
 dynamic = ['version']
 keywords = [
     'Networks',
@@ -17,16 +17,17 @@ keywords = [
     'discrete mathematics',
     'math',
 ]
+license = "BSD-3-Clause"
+license-files = ["LICENSE.txt"]
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
-    'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
     'Programming Language :: Python :: 3 :: Only',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Scientific/Engineering :: Bio-Informatics',
@@ -55,29 +56,27 @@ nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
 default = [
-    'numpy>=1.23',
-    'scipy>=1.9,!=1.11.0,!=1.11.1',
-    'matplotlib>=3.6',
-    'pandas>=1.4',
+    'numpy>=1.25',
+    'scipy>=1.11.2',
+    'matplotlib>=3.8',
+    'pandas>=2.0',
 ]
 developer = [
-    'changelist==0.5',
-    'pre-commit>=3.2',
-    'mypy>=1.1',
-    'rtoml',
+    'pre-commit>=4.1',
+    'mypy>=1.15',
 ]
 doc = [
-    'sphinx>=7.3',
-    'pydata-sphinx-theme>=0.15',
-    'sphinx-gallery>=0.16',
+    'sphinx>=8.0',
+    'pydata-sphinx-theme>=0.16',
+    'sphinx-gallery>=0.18',
     'numpydoc>=1.8.0',
-    'pillow>=9.4',
+    'pillow>=10',
     'texext>=0.6.7',
     'myst-nb>=1.1',
-    'intersphinx_registry',
+    'intersphinx-registry',
 ]
 example = [
-    'osmnx>=1.9',
+    'osmnx>=2.0.0',
     'momepy>=0.7.2',
     'contextily>=1.6',
     'seaborn>=0.13',
@@ -87,13 +86,18 @@ example = [
 ]
 extra = [
     'lxml>=4.6',
-    'pygraphviz>=1.13',
+    'pygraphviz>=1.14',
     'pydot>=3.0.1',
     'sympy>=1.10',
 ]
 test = [
     'pytest>=7.2',
     'pytest-cov>=4.0',
+    'pytest-xdist>=3.0',
+]
+test-extras = [
+    'pytest-mpl',
+    'pytest-randomly',
 ]
 
 [tool.setuptools]
@@ -211,24 +215,32 @@ extend-select = [
   "PD",       # pandas-vet
 #  "FURB",     # refurb
   "PYI",      # flake8-pyi
+  "W505",     # pycodestyle docstring/comment line length (see config below)
 ]
 ignore = [
   "PLR09",    # Too many <...>
   "PLR2004",  # Magic value used in comparison
   "ISC001",   # Conflicts with formatter
+  "E741",     # Ambiguous variable name
+  "E722",     # Do not use bare `except`
   "F",        # pyflakes
-  "E",        # pycodestyle
   "EM101",    # Exception must not use a string literal
   "EM102",    # Exception must not use an f-string literal
   "PD",       # pandas-vet
   "ICN",      # flake8-import-conventions
   "PYI",      # flake8-pyi
   "NPY002",   # Replace legacy `np.random.random` call with `np.random.Generator`
+  "W291",     # Trailing white space
+  "C420",     # "Unnecessary" dict comprehensions (even though they're more readable)
 ]
+exclude=['doc/conf.py', '__init__.py']
 
 # Need to select D above
 #[tool.ruff.lint.pydocstyle]
 #convention = "numpy"
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 110
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ['I']
@@ -236,6 +248,7 @@ ignore = [
 "doc/*.py" = ['I']
 "tools/*.py" = ['I']
 "networkx/classes/filters.py" = ['C416']
+"networkx/classes/reportviews.py" = ['W505']  # Ignore long docstring examples
 
 [tool.ruff.format]
 docstring-code-format = true

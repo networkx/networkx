@@ -45,8 +45,8 @@ def biadjacency_matrix(
        The edge data key used to provide each value in the matrix.
        If None, then each edge has weight 1.
 
-    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'}
-        The type of the matrix to be returned (default 'csr').  For
+    format : str in {'dense', 'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'}
+        The type of the matrix to be returned (default 'csr'). For
         some algorithms different implementations of sparse matrices
         can perform better.  See [2]_ for details.
 

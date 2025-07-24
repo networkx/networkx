@@ -18,7 +18,6 @@ See Also
  - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
 
-import os
 import tempfile
 
 import networkx as nx
@@ -105,9 +104,15 @@ def from_agraph(A, create_using=None):
 
     # add default attributes for graph, nodes, and edges
     # hang them on N.graph_attr
-    N.graph["graph"] = dict(A.graph_attr)
-    N.graph["node"] = dict(A.node_attr)
-    N.graph["edge"] = dict(A.edge_attr)
+    graph_default_dict = dict(A.graph_attr)
+    if graph_default_dict:
+        N.graph["graph"] = graph_default_dict
+    node_default_dict = dict(A.node_attr)
+    if node_default_dict and node_default_dict != {"label": "\\N"}:
+        N.graph["node"] = node_default_dict
+    edge_default_dict = dict(A.edge_attr)
+    if edge_default_dict:
+        N.graph["edge"] = edge_default_dict
     return N
 
 
@@ -291,7 +296,7 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
     for the layout computation using something similar to::
 
         >>> H = nx.convert_node_labels_to_integers(G, label_attribute="node_label")
-        >>> H_layout = nx.nx_agraph.pygraphviz_layout(G, prog="dot")
+        >>> H_layout = nx.nx_agraph.pygraphviz_layout(H, prog="dot")
         >>> G_layout = {H.nodes[n]["node_label"]: p for n, p in H_layout.items()}
 
     Note that some graphviz layouts are not guaranteed to be deterministic,
@@ -343,6 +348,7 @@ def view_pygraphviz(
     path : str, None
         The filename used to save the image.  If None, save to a temporary
         file.  File formats are the same as those from pygraphviz.agraph.draw.
+        Filenames ending in .gz or .bz2 will be compressed.
     show : bool, default = True
         Whether to display the graph with :mod:`PIL.Image.show`,
         default is `True`. If `False`, the rendered graph is still available

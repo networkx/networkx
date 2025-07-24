@@ -13,13 +13,12 @@ General guidelines for writing good tests:
 """
 
 import os
-import sys
 import warnings
 from importlib.metadata import entry_points
 
 import pytest
 
-import networkx
+import networkx as nx
 
 
 def pytest_addoption(parser):
@@ -57,29 +56,39 @@ def pytest_configure(config):
             "        Try `pip install -e .`, or change your PYTHONPATH\n"
             "        Make sure python finds the networkx repo you are testing\n\n"
         )
+    config.backend = backend
     if backend:
-        networkx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
-        networkx.config["backend_priority"] = [backend]
-        networkx.config.backends = networkx.utils.Config(
-            nx_loopback=networkx.utils.Config(),
-            **networkx.config.backends,
+        # We will update `networkx.config.backend_priority` below in `*_modify_items`
+        # to allow tests to get set up with normal networkx graphs.
+        nx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
+        nx.utils.backends.backend_info["nx_loopback"] = {}
+        nx.config.backends = nx.utils.Config(
+            nx_loopback=nx.utils.Config(),
+            **nx.config.backends,
         )
         fallback_to_nx = config.getoption("--fallback-to-nx")
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
-        networkx.utils.backends._dispatchable._fallback_to_nx = bool(fallback_to_nx)
+        nx.config.fallback_to_nx = bool(fallback_to_nx)
+        nx.utils.backends._dispatchable.__call__ = (
+            nx.utils.backends._dispatchable._call_if_any_backends_installed
+        )
 
 
 def pytest_collection_modifyitems(config, items):
     # Setting this to True here allows tests to be set up before dispatching
     # any function call to a backend.
-    networkx.utils.backends._dispatchable._is_testing = True
-    if backend_priority := networkx.config["backend_priority"]:
+    if config.backend:
         # Allow pluggable backends to add markers to tests (such as skip or xfail)
         # when running in auto-conversion test mode
-        backend = networkx.utils.backends.backends[backend_priority[0]].load()
-        if hasattr(backend, "on_start_tests"):
-            getattr(backend, "on_start_tests")(items)
+        backend_name = config.backend
+        if backend_name != "networkx":
+            nx.utils.backends._dispatchable._is_testing = True
+            nx.config.backend_priority.algos = [backend_name]
+            nx.config.backend_priority.generators = [backend_name]
+            backend = nx.utils.backends.backends[backend_name].load()
+            if hasattr(backend, "on_start_tests"):
+                getattr(backend, "on_start_tests")(items)
 
     if config.getoption("--runslow"):
         # --runslow given in cli: do not skip slow tests
@@ -95,80 +104,53 @@ def pytest_collection_modifyitems(config, items):
 def set_warnings():
     warnings.filterwarnings(
         "ignore",
-        category=FutureWarning,
-        message="\n\nsingle_target_shortest_path_length",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="\n\nshortest_path",
+        category=UserWarning,
+        message=r"Exited (at iteration \d+|postprocessing) with accuracies.*",
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nall_triplets"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="minimal_d_separator"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="d_separated"
-    )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="\n\nk_core")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nk_shell"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nk_crust"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nk_corona"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\n`compute_v_structures"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="Keyword argument 'link'"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="maybe_regular_expander"
     )
 
 
 @pytest.fixture(autouse=True)
 def add_nx(doctest_namespace):
-    doctest_namespace["nx"] = networkx
+    doctest_namespace["nx"] = nx
 
 
 # What dependencies are installed?
 
 try:
-    import numpy
+    import numpy as np
 
     has_numpy = True
 except ImportError:
     has_numpy = False
 
 try:
-    import scipy
+    import scipy as sp
 
     has_scipy = True
 except ImportError:
     has_scipy = False
 
 try:
-    import matplotlib
+    import matplotlib as mpl
 
     has_matplotlib = True
 except ImportError:
     has_matplotlib = False
 
 try:
-    import pandas
+    import pandas as pd
 
     has_pandas = True
 except ImportError:
@@ -222,6 +204,7 @@ needs_scipy = [
     "algorithms/assortativity/pairs.py",
     "algorithms/bipartite/matrix.py",
     "algorithms/bipartite/spectral.py",
+    "algorithms/bipartite/link_analysis.py",
     "algorithms/centrality/current_flow_betweenness.py",
     "algorithms/centrality/current_flow_betweenness_subset.py",
     "algorithms/centrality/eigenvector.py",
@@ -242,6 +225,7 @@ needs_scipy = [
     "drawing/layout.py",
     "drawing/nx_pylab.py",
     "generators/spectral_graph_forge.py",
+    "generators/geometric.py",
     "generators/expanders.py",
     "linalg/algebraicconnectivity.py",
     "linalg/attrmatrix.py",

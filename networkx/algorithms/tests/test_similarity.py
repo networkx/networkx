@@ -14,6 +14,16 @@ from networkx.generators.classic import (
 )
 
 
+@pytest.mark.parametrize("source", (10, "foo"))
+def test_generate_random_paths_source_not_in_G(source):
+    pytest.importorskip("numpy")
+    G = nx.complete_graph(5)
+    # No exception at generator construction time
+    path_gen = nx.generate_random_paths(G, sample_size=3, source=source)
+    with pytest.raises(nx.NodeNotFound, match="Initial node.*not in G"):
+        next(path_gen)
+
+
 def nmatch(n1, n2):
     return n1 == n2
 
@@ -844,6 +854,29 @@ class TestSimilarity:
         ):
             nx.panther_similarity(G, source=1)
 
+    @pytest.mark.parametrize("num_paths", (1, 3, 10))
+    @pytest.mark.parametrize("source", (0, 1))
+    def test_generate_random_paths_with_start(self, num_paths, source):
+        G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (2, 4)])
+        index_map = {}
+
+        path_gen = nx.generate_random_paths(
+            G,
+            num_paths,
+            path_length=2,
+            index_map=index_map,
+            source=source,
+        )
+        paths = list(path_gen)
+
+        # There should be num_paths paths
+        assert len(paths) == num_paths
+        # And they should all start with `source`
+        assert all(p[0] == source for p in paths)
+        # The index_map for the `source` node should contain the indices for
+        # all of the generated paths.
+        assert sorted(index_map[source]) == list(range(num_paths))
+
     def test_generate_random_paths_unweighted(self):
         index_map = {}
         num_paths = 10
@@ -922,8 +955,8 @@ class TestSimilarity:
         assert expected_map == index_map
 
     def test_symmetry_with_custom_matching(self):
-        print("G2 is edge (a,b) and G3 is edge (a,a)")
-        print("but node order for G2 is (a,b) while for G3 it is (b,a)")
+        """G2 has edge (a,b) and G3 has edge (a,a) but node order for G2 is (a,b)
+        while for G3 it is (b,a)"""
 
         a, b = "A", "B"
         G2 = nx.Graph()
@@ -937,10 +970,15 @@ class TestSimilarity:
                 G.nodes[n]["attr"] = n
             for e in G.edges:
                 G.edges[e]["attr"] = e
-        match = lambda x, y: x == y
 
-        print("Starting G2 to G3 GED calculation")
-        assert nx.graph_edit_distance(G2, G3, node_match=match, edge_match=match) == 1
+        def user_match(x, y):
+            return x == y
 
-        print("Starting G3 to G2 GED calculation")
-        assert nx.graph_edit_distance(G3, G2, node_match=match, edge_match=match) == 1
+        assert (
+            nx.graph_edit_distance(G2, G3, node_match=user_match, edge_match=user_match)
+            == 1
+        )
+        assert (
+            nx.graph_edit_distance(G3, G2, node_match=user_match, edge_match=user_match)
+            == 1
+        )

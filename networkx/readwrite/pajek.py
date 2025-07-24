@@ -111,7 +111,7 @@ def write_pajek(G, path, encoding="UTF-8"):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_pajek(G, "test.net")
+    >>> nx.write_pajek(G, "test.netP4")
 
     Warnings
     --------
@@ -137,8 +137,8 @@ def read_pajek(path, encoding="UTF-8"):
     Parameters
     ----------
     path : file or string
-       File or filename to write.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filename or file handle to read.
+       Filenames ending in .gz or .bz2 will be decompressed.
 
     Returns
     -------

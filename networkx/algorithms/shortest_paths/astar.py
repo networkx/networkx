@@ -102,8 +102,6 @@ def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=Non
         def heuristic(u, v):
             return 0
 
-    push = heappush
-    pop = heappop
     weight = _weight_function(G, weight)
 
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
@@ -125,7 +123,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=Non
 
     while queue:
         # Pop the smallest item from queue.
-        _, __, curnode, dist, parent = pop(queue)
+        _, __, curnode, dist, parent = heappop(queue)
 
         if curnode == target:
             path = [curnode]
@@ -168,7 +166,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=Non
                 continue
 
             enqueued[neighbor] = ncost, h
-            push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
+            heappush(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
     raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 

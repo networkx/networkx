@@ -31,7 +31,7 @@ def metric_closure(G, weight="weight"):
     # check for connected graph while processing first node
     all_paths_iter = nx.all_pairs_dijkstra(G, weight=weight)
     u, (distance, path) = next(all_paths_iter)
-    if Gnodes - set(distance):
+    if len(G) != len(distance):
         msg = "G is not a connected graph. metric_closure is not defined."
         raise nx.NetworkXError(msg)
     Gnodes.remove(u)
@@ -86,11 +86,28 @@ def _mehlhorn_steiner_tree(G, terminal_nodes, weight):
 
 
 def _kou_steiner_tree(G, terminal_nodes, weight):
-    # H is the subgraph induced by terminal_nodes in the metric closure M of G.
-    M = metric_closure(G, weight=weight)
-    H = M.subgraph(terminal_nodes)
+    # Compute the metric closure only for terminal nodes
+    # Create a complete graph H from the metric edges
+    H = nx.Graph()
+    unvisited_terminals = set(terminal_nodes)
 
-    # Use the 'distance' attribute of each edge provided by M.
+    # check for connected graph while processing first node
+    u = unvisited_terminals.pop()
+    distances, paths = nx.single_source_dijkstra(G, source=u, weight=weight)
+    if len(G) != len(distances):
+        msg = "G is not a connected graph."
+        raise nx.NetworkXError(msg)
+    for v in unvisited_terminals:
+        H.add_edge(u, v, distance=distances[v], path=paths[v])
+
+    # first node done -- now process the rest
+    for u in unvisited_terminals.copy():
+        distances, paths = nx.single_source_dijkstra(G, source=u, weight=weight)
+        unvisited_terminals.remove(u)
+        for v in unvisited_terminals:
+            H.add_edge(u, v, distance=distances[v], path=paths[v])
+
+    # Use the 'distance' attribute of each edge provided by H.
     mst_edges = nx.minimum_spanning_edges(H, weight="distance", data=True)
 
     # Create an iterator over each edge in each shortest path; repeats are okay
@@ -113,10 +130,21 @@ def _kou_steiner_tree(G, terminal_nodes, weight):
 
 
 def _remove_nonterminal_leaves(G, terminals):
-    terminals_set = set(terminals)
-    for n in list(G.nodes):
-        if n not in terminals_set and G.degree(n) == 1:
-            G.remove_node(n)
+    terminal_set = set(terminals)
+    leaves = {n for n in G if len(set(G[n]) - {n}) == 1}
+    nonterminal_leaves = leaves - terminal_set
+
+    while nonterminal_leaves:
+        # Removing a node may create new non-terminal leaves, so we limit
+        # search for candidate non-terminal nodes to neighbors of current
+        # non-terminal nodes
+        candidate_leaves = set.union(*(set(G[n]) for n in nonterminal_leaves))
+        candidate_leaves -= nonterminal_leaves | terminal_set
+        # Remove current set of non-terminal nodes
+        G.remove_nodes_from(nonterminal_leaves)
+        # Find any new non-terminal nodes from the set of candidates
+        leaves = {n for n in candidate_leaves if len(set(G[n]) - {n}) == 1}
+        nonterminal_leaves = leaves - terminal_set
 
 
 ALGORITHMS = {

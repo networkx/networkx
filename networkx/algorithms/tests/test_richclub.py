@@ -86,7 +86,7 @@ def test_rich_club_selfloop():
     G.add_edge(1, 2)
     with pytest.raises(
         Exception,
-        match="rich_club_coefficient is not implemented for " "graphs with self loops.",
+        match="rich_club_coefficient is not implemented for graphs with self loops.",
     ):
         nx.rich_club_coefficient(G)
 

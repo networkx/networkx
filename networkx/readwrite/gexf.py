@@ -144,8 +144,8 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     Parameters
     ----------
     path : file or string
-       File or file name to read.
-       File names ending in .gz or .bz2 will be decompressed.
+       Filename or file handle to read.
+       Filenames ending in .gz or .bz2 will be decompressed.
     node_type: Python type (default: None)
        Convert node ids to this type if not None.
     relabel : bool (default: False)
@@ -484,7 +484,7 @@ class GEXFWriter(GEXF):
                     e.attrib["for"] = attr_id
                     e.attrib["value"] = str(val)
                     # Handle nan, inf, -inf differently
-                    if val_type == float:
+                    if val_type is float:
                         if e.attrib["value"] == "inf":
                             e.attrib["value"] = "INF"
                         elif e.attrib["value"] == "nan":
@@ -509,7 +509,7 @@ class GEXFWriter(GEXF):
                 else:
                     e.attrib["value"] = str(v)
                     # Handle float nan, inf, -inf differently
-                    if val_type == float:
+                    if val_type is float:
                         if e.attrib["value"] == "inf":
                             e.attrib["value"] = "INF"
                         elif e.attrib["value"] == "nan":
@@ -643,21 +643,21 @@ class GEXFWriter(GEXF):
         return node_or_edge_data
 
     def alter_graph_mode_timeformat(self, start_or_end):
-        # If 'start' or 'end' appears, alter Graph mode to dynamic and
-        # set timeformat
-        if self.graph_element.get("mode") == "static":
-            if start_or_end is not None:
-                if isinstance(start_or_end, str):
-                    timeformat = "date"
-                elif isinstance(start_or_end, float):
-                    timeformat = "double"
-                elif isinstance(start_or_end, int):
-                    timeformat = "long"
-                else:
-                    raise nx.NetworkXError(
-                        "timeformat should be of the type int, float or str"
-                    )
-                self.graph_element.set("timeformat", timeformat)
+        # If 'start' or 'end' appears, set timeformat
+        if start_or_end is not None:
+            if isinstance(start_or_end, str):
+                timeformat = "date"
+            elif isinstance(start_or_end, float):
+                timeformat = "double"
+            elif isinstance(start_or_end, int):
+                timeformat = "long"
+            else:
+                raise nx.NetworkXError(
+                    "timeformat should be of the type int, float or str"
+                )
+            self.graph_element.set("timeformat", timeformat)
+            # If Graph mode is static, alter to dynamic
+            if self.graph_element.get("mode") == "static":
                 self.graph_element.set("mode", "dynamic")
 
     def write(self, fh):
@@ -1048,9 +1048,7 @@ def relabel_gexf_graph(G):
     x, y = zip(*mapping)
     if len(set(y)) != len(G):
         raise nx.NetworkXError(
-            "Failed to relabel nodes: "
-            "duplicate node labels found. "
-            "Use relabel=False."
+            "Failed to relabel nodes: duplicate node labels found. Use relabel=False."
         )
     mapping = dict(mapping)
     H = nx.relabel_nodes(G, mapping)
