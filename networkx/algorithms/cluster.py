@@ -261,7 +261,8 @@ def all_triangles(G, nbunch=None):
     """
     Yields all unique triangles in an undirected graph.
 
-    A triangle is a set of three distinct nodes where each node is connected to the other two.
+    A triangle is a set of three distinct nodes where each node is connected to
+    the other two.
 
     Parameters
     ----------
@@ -269,11 +270,12 @@ def all_triangles(G, nbunch=None):
         An undirected graph.
 
     nbunch : node, iterable of nodes, or None (default=None)
-        If a node or iterable of nodes, only triangles involving at least one node in `nbunch` are yielded.
+        If a node or iterable of nodes, only triangles involving at least one
+        node in `nbunch` are yielded.
         If ``None``, yields all unique triangles in the graph.
 
     Yields
-    -------
+    ------
     tuple
         A tuple of three nodes forming a triangle ``(u, v, w)``.
 
