@@ -136,19 +136,16 @@ def test_all_triangles_subset_empty():
             (5, 2),
         ]
     )
-    triangles = list(nx.all_triangles(G, nbunch=[5]))
-    assert triangles == []
+    assert list(nx.all_triangles(G, nbunch=[5])) == []
 
 
 def test_all_triangles_no_triangles():
     G = nx.path_graph(4)
-    triangles = list(nx.all_triangles(G))
-    assert triangles == []
+    assert list(nx.all_triangles(G)) == []
 
 
 def test_all_triangles_complete_graph_exact():
     G = nx.complete_graph(4)
-    triangles = list(nx.all_triangles(G))
 
     expected = {
         frozenset({0, 1, 2}),
@@ -168,7 +165,7 @@ def test_all_triangles_directed_graph():
 
 
 @pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
-def test_all_triangles_parametrized(graph_type):
+def test_all_triangles_multiedges(graph_type):
     G = graph_type()
     G.add_edges_from([(0, 1), (0, 2), (1, 2), (1, 2)])
     assert {frozenset(t) for t in nx.all_triangles(G)} == {frozenset({0, 1, 2})}
