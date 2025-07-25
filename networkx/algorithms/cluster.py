@@ -290,7 +290,12 @@ def all_triangles(G, nbunch=None):
     This algorithm ensures each triangle is yielded once using an internal node ordering.
     In multigraphs, triangles are identified by their unique set of nodes,
     ignoring multiple edges between the same nodes. Self-loops are ignored.
-    Runs in ``O(m * d)`` time in the worst case, where ``m`` the number of edges and ``d`` the maximum degree.
+    Runs in ``O(m * d)`` time in the worst case, where ``m`` the number of edges
+    and ``d`` the maximum degree.
+
+    See Also
+    --------
+    :func:`~networkx.algorithms.triads.all_triads` : related function for directed graphs
     """
     if nbunch is None:
         nbunch = relevant_nodes = G
