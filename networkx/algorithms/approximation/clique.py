@@ -12,11 +12,247 @@ __all__ = [
 ]
 
 
+class LinearTimeMaxmiumIndependentSet:
+    """A class for the approximate maximum independent set problem.
+
+    This class is a helper for the `maximum_independent_set` function.
+    The class should not normally be used directly.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+
+    Notes
+    -----
+    This implementation does not copy G but modifies it by temporarily
+    removing self-loops and inserting edges. These changes are reverted
+    after finding the approximate maximum independent set.
+    The algorithm only uses G to keep track of adjacency, e.g. no nodes
+    are actually removed from G.
+
+    Attributes
+    ----------
+    G : NetworkX graph
+        Undirected graph
+    max_degree : int
+        The maximum degree of G
+    degree : dict
+        The degree of each node
+    nodes_by_degree : dict of setd
+        The set of nodes for each degree up to max_degree
+    independent_set : set
+        The set of independent nodes, equivalent to nodes_by_degree[0]
+    twos: set
+        The set of nodes a degree-two reduction can be applied on
+        Note that this is *not* equivalent to nodes_by_degree[2]
+    removed_paths : list
+        The list of paths of temporarily removed nodes
+    inserted_edges : list
+        The list of edges temporarily added to G
+    removed: set
+        The set of nodes removed from the graph
+    """
+
+    def __init__(self, G):
+        """Initialize the class. Self-loop edges are temporarily removed."""
+        self.G = G
+        if G.order() == 0:
+            return
+
+        self.removed_paths = []
+        self.inserted_edges = []
+        self.removed = set()
+
+        # Temporarily remove self-loops
+        self.selfloop_edges = list(nx.selfloop_edges(G))
+        G.remove_edges_from(self.selfloop_edges)
+
+        self.twos = {v for v in G if G.degree(v) == 2}
+        self.max_degree = max((d for v, d in G.degree), default=0)
+
+        # Construct degree data structures
+        self.degree = dict(G.degree)
+        self.nodes_by_degree = {d: set() for d in range(self.max_degree + 2)}
+        for v, d in G.degree:
+            self.nodes_by_degree[d].add(v)
+        self.independent_set = self.nodes_by_degree[0]
+
+    def get_neighbors(self, v):
+        """Get neighbors of v that were not deleted."""
+        nbrs = [u for u in self.G[v] if u not in self.removed]
+        return nbrs
+
+    def reduce_degree(self, v):
+        """Reduce degree of v and update data structures accordingly."""
+        d = self.degree[v]
+        if d == 3:
+            self.twos.add(v)
+        elif d == 2:
+            self.twos.discard(v)
+
+        self.nodes_by_degree[d].remove(v)
+        self.nodes_by_degree[d - 1].add(v)
+        self.degree[v] -= 1
+
+    def remove_node(self, v):
+        """Remove v from data structures and update all neighbors of v."""
+        for u in self.get_neighbors(v):
+            self.reduce_degree(u)
+
+        d = self.degree[v]
+        self.nodes_by_degree[d].remove(v)
+        if d == 2:
+            self.twos.discard(v)
+
+        self.removed.add(v)
+
+    def degree_one_reduction(self):
+        """Apply the degree-one reduction by removing the neighbor of a degree-one node."""
+        u = nx.utils.arbitrary_element(self.nodes_by_degree[1])
+        v = self.get_neighbors(u)[0]  # Only take the single node that exists
+        self.remove_node(v)
+
+    def longest_degree_two_path(self, v):
+        """Find the longest path consisting of only degree-two nodes that includes v.
+        Using only degree-two nodes forces the path in both directions until it either
+        reaches its end or reconnects to v, finding a cycle. Returns whether a cycle
+        was found, the path and the first nodes found that are not in the path."""
+        u1, u2 = self.get_neighbors(v)
+
+        # Build forwards path
+        path1 = [v]
+        pred = v
+        while self.degree[u1] == 2:
+            if u1 == v:
+                # Cycle found
+                return True, path1, ()
+            path1.append(u1)
+            a, b = self.get_neighbors(u1)
+            u1, pred = a if a != pred else b, u1
+
+        # Build backwards path
+        path2 = []
+        pred = v
+        while self.degree[u2] == 2:
+            path2.append(u2)
+            a, b = self.get_neighbors(u2)
+            u2, pred = a if a != pred else b, u2
+
+        path2.reverse()
+        path = path2 + path1
+        return False, path, (u2, u1)
+
+    def degree_two_path_reduction(self):
+        """Apply the degree-two path reduction as described in [1]_."""
+        u = self.twos.pop()
+
+        is_cycle, P, ends = self.longest_degree_two_path(u)
+        if is_cycle:
+            self.remove_node(u)
+            return
+
+        # Get first nodes not in path
+        v, w = ends
+
+        if v == w:
+            # Fig. 4(a)
+            self.remove_node(v)
+            return
+
+        if len(P) % 2 == 1:
+            if self.G.has_edge(v, w):
+                # Fig. 4(b)
+                self.remove_node(v)
+                self.remove_node(w)
+            elif len(P) > 1:
+                # Fig. 4(c)
+                v1 = P[0]
+
+                # Also remove v1 as a further reduction on v1 is useless
+                self.twos -= set(P)
+                self.nodes_by_degree[2] -= set(P[1:])
+                self.removed |= set(P[1:])
+                self.removed_paths.append(P[1:])
+
+                self.G.add_edge(v1, w)
+                self.inserted_edges.append((v1, w))
+        else:
+            # Figs. 4(d) and 4(e)
+            p_set = set(P)
+            self.twos -= p_set
+            self.nodes_by_degree[2] -= p_set
+            self.removed |= p_set
+            self.removed_paths.append(P)
+
+            if self.G.has_edge(v, w):
+                # Fig. 4(d)
+                self.reduce_degree(v)
+                self.reduce_degree(w)
+            else:
+                # Fig. 4(e)
+                self.G.add_edge(v, w)
+                self.inserted_edges.append((v, w))
+
+    def max_degree_reduction(self):
+        """Apply the inexact reduction of removing a node with the highest degree."""
+        u = nx.utils.arbitrary_element(self.nodes_by_degree[self.max_degree])
+        self.remove_node(u)
+
+    def maximum_independent_set(self):
+        """Find an approximate maximum independent set in linear time with Reducing-Peeling."""
+        if self.G.order() == 0:
+            return set()
+
+        # Reducing-Peeling
+        while self.nodes_by_degree[1] or self.twos or self.max_degree >= 3:
+            if self.nodes_by_degree[1]:
+                self.degree_one_reduction()
+            elif self.twos:
+                self.degree_two_path_reduction()
+            else:
+                self.max_degree_reduction()
+            while not self.nodes_by_degree[self.max_degree]:
+                self.max_degree -= 1
+
+        # Add removed nodes to solution if possible
+        for P in reversed(self.removed_paths):
+            for v in P:
+                if all(nbr not in self.independent_set for nbr in self.G[v]):
+                    self.independent_set.add(v)
+
+        # Extend independent set to be maximal
+        self.independent_set = set(
+            nx.algorithms.maximal_independent_set(self.G, self.independent_set)
+        )
+
+        # Restore graph
+        self.G.remove_edges_from(self.inserted_edges)
+        self.G.add_edges_from(self.selfloop_edges)
+
+        return self.independent_set
+
+
+def _maximum_independent_set_clique_removal(G):
+    iset, _ = clique_removal(G)
+    return iset
+
+
+def _maximum_independent_set_lineartime(G):
+    return LinearTimeMaxmiumIndependentSet(G).maximum_independent_set()
+
+
+ALGORITHMS = {
+    "clique_removal": _maximum_independent_set_clique_removal,
+    "lineartime": _maximum_independent_set_lineartime,
+}
+
+
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatchable
-def maximum_independent_set(G):
-    """Returns an approximate maximum independent set.
+def maximum_independent_set(G, method=None):
+    r"""Find an approximate maximum independent set.
 
     Independent set or stable set is a set of vertices in a graph, no two of
     which are adjacent. That is, it is a set I of vertices such that for every
@@ -30,17 +266,35 @@ def maximum_independent_set(G):
     As such, it is unlikely that there exists an efficient algorithm for finding
     a maximum independent set of a graph.
 
-    The Independent Set algorithm is based on [2]_.
+    The approximation algorithm is specified with the `method` keyword argument.
+    Whereas the ``"clique_removal"`` method results in a $O(|V|/(\log |V|)^2)$
+    approximation of the maximum independent set in the worst case, there is no
+    such guarantee for the ``"lineartime"`` method.
+
+    * ``"clique_removal"`` [2]_ computes the approximate maximum independent set
+      by repeatedly removing cliques from a copy of *G*. The implementation may
+      suffer from recursion depth issues for large graphs. Use this if you desire
+      accurate results and only work with small graphs.
+
+    * ``"lineartime"`` [3]_ (runtime :math:`O(|V|+|E|)`) computes the approximate
+      maximum independent set by applying reduction rules to the graph, relying
+      on a heuristic if no exact reduction can be performed. Use this if you can
+      tolerate inaccurate results or work with large graphs.
 
     Parameters
     ----------
     G : NetworkX graph
         Undirected graph
 
+    method : string, optional (default = 'clique_removal')
+        The algorithm to use to approximate the maximum independent set.
+        Supported options: 'clique_removal', 'lineartime'.
+        Other inputs produce a ValueError.
+
     Returns
     -------
-    iset : Set
-        The apx-maximum independent set
+    iset : set
+        The approximate maximum independent set
 
     Examples
     --------
@@ -53,30 +307,74 @@ def maximum_independent_set(G):
     NetworkXNotImplemented
         If the graph is directed or is a multigraph.
 
+    ValueError
+        If the specified `method` is not supported.
+
     Notes
     -----
-    Finds the $O(|V|/(log|V|)^2)$ apx of independent set in the worst case.
+    ``"clique_removal"`` operates on a copy of *G*. ``"lineartime"`` instead
+    temporarily modifies the graph, avoiding the cost of a copy.
+
+    Both supported methods ignore self-loops, since independent sets are
+    not conventionally defined with such edges.
 
     References
     ----------
-    .. [1] `Wikipedia: Independent set
+    .. [1] `Wikipedia: Independent set (graph theory)
         <https://en.wikipedia.org/wiki/Independent_set_(graph_theory)>`_
     .. [2] Boppana, R., & Halldórsson, M. M. (1992).
        Approximating maximum independent sets by excluding subgraphs.
        BIT Numerical Mathematics, 32(2), 180–196. Springer.
+    .. [3] Chang, Lijun, Wei Li, and Wenjie Zhang.
+       "Computing a Near-Maximum Independent Set in Linear Time by Reducing-Peeling."
+       Proceedings of the 2017 ACM International Conference on Management of Data (2017): 1181–96.
+       https://www.researchgate.net/profile/Wei-Li-291/publication/316849563_Computing_A_Near-Maximum_Independent_Set_in_Linear_Time_by_Reducing-Peeling/.
     """
-    iset, _ = clique_removal(G)
-    return iset
+    if method is None:
+        method = "clique_removal"
+
+    try:
+        algo = ALGORITHMS[method]
+    except KeyError as e:
+        raise ValueError(f"{method} is not a valid choice for an algorithm.") from e
+
+    return algo(G)
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatchable
-def max_clique(G):
-    r"""Find the Maximum Clique
+def max_clique(G, method=None):
+    r"""Find an approximate maximum clique in G.
 
-    Finds the $O(|V|/(log|V|)^2)$ apx of maximum clique/independent set
-    in the worst case.
+    Returns an approximation of the maximum clique by finding the approximate
+    maximum independent set of the complement of G.
+
+    A clique in an undirected graph G = (V, E) is a subset of the vertex set
+    :math:`C \subseteq V` such that for every two vertices in C there exists an edge
+    connecting the two. This is equivalent to saying that the subgraph
+    induced by C is complete (in some cases, the term clique may also refer
+    to the subgraph) [1]_.
+
+    A maximum clique is a clique of the largest possible size in a given graph.
+    The clique number `\omega(G)` of a graph G is the number of
+    vertices in a maximum clique in G. The intersection number of
+    G is the smallest number of cliques that together cover all edges of G.
+
+    The approximation algorithm is specified with the `method` keyword argument.
+    Whereas the ``"clique_removal"`` method results in a $O(|V|/(\log |V|)^2)$
+    approximation of the maximum clique in the worst case, there is no such
+    guarantee for the ``"lineartime"`` method.
+
+    * ``"clique_removal"`` [2]_ computes the approximate maximum clique by
+      repeatedly removing cliques from the complement of *G*. The implementation
+      may suffer from recursion depth issues for large graphs. Use this if you
+      desire accurate results and only work with small graphs.
+
+    * ``"lineartime"`` [3]_ (runtime :math:`O(|V|+|E|)`) computes the approximate
+      maximum clique by applying reduction rules to the complement of *G*, relying
+      on a heuristic if no exact reduction can be performed. Use this if you can
+      tolerate inaccurate results or work with large graphs.
 
     Parameters
     ----------
@@ -86,7 +384,7 @@ def max_clique(G):
     Returns
     -------
     clique : set
-        The apx-maximum clique of the graph
+        The approximate maximum clique of the graph
 
     Examples
     --------
@@ -101,31 +399,26 @@ def max_clique(G):
 
     Notes
     -----
-    A clique in an undirected graph G = (V, E) is a subset of the vertex set
-    `C \subseteq V` such that for every two vertices in C there exists an edge
-    connecting the two. This is equivalent to saying that the subgraph
-    induced by C is complete (in some cases, the term clique may also refer
-    to the subgraph).
-
-    A maximum clique is a clique of the largest possible size in a given graph.
-    The clique number `\omega(G)` of a graph G is the number of
-    vertices in a maximum clique in G. The intersection number of
-    G is the smallest number of cliques that together cover all edges of G.
-
-    https://en.wikipedia.org/wiki/Maximum_clique
+    Both supported methods ignore self-loops, since cliques are not conventionally
+    defined with such edges.
 
     References
     ----------
-    .. [1] Boppana, R., & Halldórsson, M. M. (1992).
-        Approximating maximum independent sets by excluding subgraphs.
-        BIT Numerical Mathematics, 32(2), 180–196. Springer.
-        doi:10.1007/BF01994876
+    .. [1] `Wikipedia: Clique (graph theory)
+        <https://en.wikipedia.org/wiki/Clique_(graph_theory)>`_
+    .. [2] Boppana, R., & Halldórsson, M. M. (1992).
+       Approximating maximum independent sets by excluding subgraphs.
+       BIT Numerical Mathematics, 32(2), 180–196. Springer.
+    .. [3] Chang, Lijun, Wei Li, and Wenjie Zhang.
+       "Computing a Near-Maximum Independent Set in Linear Time by Reducing-Peeling."
+       Proceedings of the 2017 ACM International Conference on Management of Data (2017): 1181–96.
+       https://www.researchgate.net/profile/Wei-Li-291/publication/316849563_Computing_A_Near-Maximum_Independent_Set_in_Linear_Time_by_Reducing-Peeling/.
+
     """
     # finding the maximum clique in a graph is equivalent to finding
     # the independent set in the complementary graph
     cgraph = nx.complement(G)
-    iset, _ = clique_removal(cgraph)
-    return iset
+    return maximum_independent_set(cgraph, method)
 
 
 @not_implemented_for("directed")
