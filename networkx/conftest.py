@@ -117,6 +117,12 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="Keyword argument 'link'"
     )
     warnings.filterwarnings(
+        "ignore", category=UserWarning, message="The hashes produced for"
+    )
+    warnings.filterwarnings(
+        "ignore", category=FutureWarning, message=r"\nThe default value will be"
+    )
+    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="maybe_regular_expander"
     )
 
