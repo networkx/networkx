@@ -11,11 +11,13 @@ class TestTrustRank:
         """Set up a graph and pre-calculate expected values."""
         G = nx.DiGraph()
         edges = [
-            (1, 2), (1, 3),  # Seed 1 links to 2 and 3
-            (2, 4),          # 2 links to 4
-            (3, 4), (3, 5),  # 3 links to 4 and 5
-            (4, 1),          # 4 links back to a seed
-            (5, 6),          # 5 links to 6 (a sink)
+            (1, 2),
+            (1, 3),  # Seed 1 links to 2 and 3
+            (2, 4),  # 2 links to 4
+            (3, 4),
+            (3, 5),  # 3 links to 4 and 5
+            (4, 1),  # 4 links back to a seed
+            (5, 6),  # 5 links to 6 (a sink)
         ]
         G.add_edges_from(edges)
         cls.G = G
@@ -57,7 +59,7 @@ class TestTrustRank:
         bad_seeds = self.seed_nodes.union({99})  # Node 99 is not in G
         with pytest.raises(nx.NetworkXError):
             trustrank(self.G, seed_nodes=bad_seeds)
-            
+
     def test_logical_trust_distribution(self):
         """Tests that trust score decreases with distance from a seed."""
         # On a path graph, score should decrease with distance
