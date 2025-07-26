@@ -77,6 +77,100 @@ class TestTriangles:
         assert nx.triangles(G, 3) == 5
 
 
+def test_all_triangles_non_integer_nodes():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            ("a", "b"),
+            ("b", "c"),
+            ("c", "a"),  # triangle: a-b-c
+        ]
+    )
+    expected = {frozenset({"a", "b", "c"})}
+    assert {frozenset(t) for t in nx.all_triangles(G)} == expected
+
+
+def test_all_triangles_overlapping():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            (0, 1),
+            (1, 2),
+            (2, 0),  # triangle: 0-1-2
+            (0, 2),
+            (2, 3),
+            (3, 0),  # triangle: 0-2-3
+        ]
+    )
+    expected = {frozenset({0, 1, 2}), frozenset({0, 2, 3})}
+    assert {frozenset(t) for t in nx.all_triangles(G)} == expected
+
+
+def test_all_triangles_subset():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            (0, 1),
+            (1, 2),
+            (2, 0),  # triangle: 0-1-2
+            (2, 3),
+            (3, 4),
+            (4, 2),  # triangle: 2-3-4
+        ]
+    )
+    assert {frozenset(t) for t in nx.all_triangles(G, nbunch=[0, 1])} == {
+        frozenset({0, 1, 2})
+    }
+
+
+def test_all_triangles_subset_empty():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            (0, 1),
+            (1, 2),
+            (2, 0),  # triangle: 0-1-2
+            (2, 3),
+            (3, 4),
+            (4, 2),  # triangle: 2-3-4
+            (5, 2),
+        ]
+    )
+    assert list(nx.all_triangles(G, nbunch=[5])) == []
+
+
+def test_all_triangles_no_triangles():
+    G = nx.path_graph(4)
+    assert list(nx.all_triangles(G)) == []
+
+
+def test_all_triangles_complete_graph_exact():
+    G = nx.complete_graph(4)
+
+    expected = {
+        frozenset({0, 1, 2}),
+        frozenset({0, 1, 3}),
+        frozenset({0, 2, 3}),
+        frozenset({1, 2, 3}),
+    }
+
+    assert {frozenset(t) for t in nx.all_triangles(G)} == expected
+
+
+def test_all_triangles_directed_graph():
+    G = nx.DiGraph()
+    G.add_edges_from([(0, 1), (1, 2), (2, 0)])
+    with pytest.raises(nx.NetworkXNotImplemented):
+        list(nx.all_triangles(G))
+
+
+@pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
+def test_all_triangles_multiedges(graph_type):
+    G = graph_type()
+    G.add_edges_from([(0, 1), (0, 2), (1, 2), (1, 2)])
+    assert {frozenset(t) for t in nx.all_triangles(G)} == {frozenset({0, 1, 2})}
+
+
 class TestDirectedClustering:
     def test_clustering(self):
         G = nx.DiGraph()
