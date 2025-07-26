@@ -29,7 +29,7 @@ def single_source_shortest_path_length(G, source, cutoff=None):
 
     cutoff : integer, optional
         Depth to stop the search. Only target nodes where the shortest path to
-        this node from the source node contains <= `cutoff` edges will be
+        this node from the source node contains <= `cutoff + 1` nodes will be
         included in the returned results.
 
     Returns
@@ -126,8 +126,8 @@ def single_target_shortest_path_length(G, target, cutoff=None):
 
     cutoff : integer, optional
         Depth to stop the search. Only source nodes where the shortest path
-        from this node to the target node contains <= `cutoff` edges will be
-        included in the returned results.
+        from this node to the target node contains <= `cutoff + 1` nodes will
+        be included in the returned results.
 
     Returns
     -------
@@ -184,7 +184,7 @@ def all_pairs_shortest_path_length(G, cutoff=None):
 
     cutoff : integer, optional
         Depth at which to stop the search. Only paths of length at most
-        `cutoff` (i.e. paths containing <= `cutoff` edges) are returned.
+        `cutoff` (i.e. paths containing <= `cutoff + 1` nodes) are returned.
 
     Returns
     -------
@@ -365,7 +365,7 @@ def single_source_shortest_path(G, source, cutoff=None):
 
     cutoff : integer, optional
         Depth to stop the search. Only target nodes where the shortest path to
-        this node from the source node contains <= `cutoff` edges will be
+        this node from the source node contains <= `cutoff + 1` nodes will be
         included in the returned results.
 
     Returns
@@ -457,8 +457,8 @@ def single_target_shortest_path(G, target, cutoff=None):
 
     cutoff : integer, optional
         Depth to stop the search. Only source nodes where the shortest path
-        from this node to the target node contains <= `cutoff` edges will be
-        included in the returned results.
+        from this node to the target node contains <= `cutoff + 1` nodes will
+        be included in the returned results.
 
     Returns
     -------
@@ -515,7 +515,7 @@ def all_pairs_shortest_path(G, cutoff=None):
 
     cutoff : integer, optional
         Depth at which to stop the search. Only paths containing at most
-        `cutoff` edges are returned.
+        `cutoff + 1` nodes are returned.
 
     Returns
     -------
@@ -597,6 +597,8 @@ def predecessor(G, source, target=None, cutoff=None, return_seen=None):
     [0, 1, 2, 3]
     >>> nx.predecessor(G, 0)
     {0: [], 1: [0], 2: [1], 3: [2]}
+    >>> nx.predecessor(G, 0, cutoff=2)
+    {0: [], 1: [0], 2: [1]}
     >>> nx.predecessor(G, 0, return_seen=True)
     ({0: [], 1: [0], 2: [1], 3: [2]}, {0: 0, 1: 1, 2: 2, 3: 3})
 
