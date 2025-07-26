@@ -21,6 +21,15 @@ def trustrank(G, alpha=0.85, seed_nodes=None):
     -------
     nodes : dictionary
        Dictionary of nodes with TrustRank as value.
+
+    References
+    ----------
+    .. [1] Gyongyi, Zoltan; Garcia-Molina, Hector (2004).
+       "Combating Web Spam with TrustRank"
+       http://ilpubs.stanford.edu:8090/770/1/2004-52.pdf
+    .. [2] Krishnan, Vijay; Raj, Rashmi
+        "Web Spam Detection with Anti-Trust Rank"
+        http://i.stanford.edu/~kvijay/krishnan-raj-airweb06.pdf
     """
     if seed_nodes is None:
         # If no seeds, it's just a regular pagerank
