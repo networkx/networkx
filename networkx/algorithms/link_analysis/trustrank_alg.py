@@ -1,5 +1,6 @@
-from networkx.algorithms.link_analysis.pagerank_alg import pagerank
 import networkx as nx
+from networkx.algorithms.link_analysis.pagerank_alg import pagerank
+
 
 def trustrank(G, alpha=0.85, seed_nodes=None):
     """
