@@ -434,32 +434,41 @@ def power(G, k):
     return H
 
 
-@not_implemented_for("multigraph")
+@not_implemented_for("multigraph", which_args=("G", "H"))
 @nx._dispatchable(graphs=_G_H, returns_graph=True)
 def rooted_product(G, H, root):
-    """Return the rooted product of graphs G and H rooted at root in H.
+    r"""Return the rooted product of graphs `G` and `H` rooted at `root` in `H`.
 
     A new graph is constructed representing the rooted product of
-    the inputted graphs, G and H, with a root in H.
-    A rooted product duplicates H for each nodes in G with the root
-    of H corresponding to the node in G. Nodes are renamed as the direct
-    product of G and H. The result is a subgraph of the cartesian product.
+    the input graphs, `G` and `H`, with root `root` in `H`.
+    A rooted product duplicates `H` for each node in `G` with the root
+    of `H` corresponding to the node in `G`. Nodes are renamed as the direct
+    product of `G` and `H`. The result is a subgraph of the Cartesian product.
 
     Parameters
     ----------
-    G,H : graph
-       A NetworkX graph
+    G, H : graph
+        A NetworkX graph.
+
     root : node
-       A node in H
+        A node in `H`.
 
     Returns
     -------
-    R : The rooted product of G and H with a specified root in H
+    R : The rooted product of `G` and `H` with a specified `root` in `H`.
+
+    Raises
+    ------
+    NodeNotFound
+        If `root` is not a node in `H`.
+
+    NetworkXNotImplemented
+        If `G` or `H` are ``MultiGraph``\s.
 
     Notes
     -----
-    The nodes of R are the Cartesian Product of the nodes of G and H.
-    The nodes of G and H are not relabeled.
+    The nodes of `R` are the Cartesian product of the nodes of `G` and `H`.
+    The nodes of `G` and `H` are not relabeled.
     """
     if root not in H:
         raise nx.NodeNotFound("root must be a vertex in H")
@@ -473,11 +482,10 @@ def rooted_product(G, H, root):
     return R
 
 
-@not_implemented_for("directed")
-@not_implemented_for("multigraph")
+@not_implemented_for("multigraph", which_args=("G", "H"))
 @nx._dispatchable(graphs=_G_H, returns_graph=True)
 def corona_product(G, H):
-    r"""Returns the Corona product of G and H.
+    r"""Returns the corona product of $G$ and $H$.
 
     The corona product of $G$ and $H$ is the graph $C = G \circ H$ obtained by
     taking one copy of $G$, called the center graph, $|V(G)|$ copies of $H$,
@@ -487,18 +495,21 @@ def corona_product(G, H):
     Parameters
     ----------
     G, H: NetworkX graphs
-        The graphs to take the carona product of.
-        `G` is the center graph and `H` is the outer graph
+        The graphs to take the corona product of.
+        `G` is the center graph and `H` is the outer graph.
 
     Returns
     -------
     C: NetworkX graph
-        The Corona product of G and H.
+        The corona product of `G` and `H`.
 
     Raises
     ------
     NetworkXError
-        If G and H are not both directed or both undirected.
+        If `G` and `H` are not both directed or both undirected.
+
+    NetworkXNotImplemented
+        If `G` or `H` are ``MultiGraph``\s.
 
     Examples
     --------
@@ -514,7 +525,7 @@ def corona_product(G, H):
     ----------
     [1] M. Tavakoli, F. Rahbarnia, and A. R. Ashrafi,
         "Studying the corona product of graphs under some graph invariants,"
-        Transactions on Combinatorics, vol. 3, no. 3, pp. 43–49, Sep. 2014,
+        Transactions on Combinatorics, vol. 3, no. 3, pp. 43--49, Sep. 2014,
         doi: 10.22108/toc.2014.5542.
     [2] A. Faraji, "Corona Product in Graph Theory," Ali Faraji, May 11, 2021.
         https://blog.alifaraji.ir/math/graph-theory/corona-product.html (accessed Dec. 07, 2021).
@@ -538,18 +549,20 @@ def corona_product(G, H):
     return GH
 
 
+@not_implemented_for("directed", which_args=("G", "H"))
+@not_implemented_for("multigraph", which_args=("G", "H"))
 @nx._dispatchable(
     graphs=_G_H, preserve_edge_attrs=True, preserve_node_attrs=True, returns_graph=True
 )
 def modular_product(G, H):
-    r"""Returns the Modular product of G and H.
+    r"""Returns the modular product of `G` and `H`.
 
     The modular product of `G` and `H` is the graph $M = G \nabla H$,
     consisting of the node set $V(M) = V(G) \times V(H)$ that is the Cartesian
-    product of the node sets of `G` and `H`. Further, M contains an edge ((u, v), (x, y)):
+    product of the node sets of `G` and `H`. Further, `M` contains an edge ``((u, v), (x, y))``:
 
-    - if u is adjacent to x in `G` and v is adjacent to y in `H`, or
-    - if u is not adjacent to x in `G` and v is not adjacent to y in `H`.
+    - if `u` is adjacent to `x` in `G` and `v` is adjacent to `y` in `H`, or
+    - if `u` is not adjacent to `x` in `G` and `v` is not adjacent to `y` in `H`.
 
     More formally::
 
@@ -564,12 +577,12 @@ def modular_product(G, H):
     Returns
     -------
     M: NetworkX graph
-        The Modular product of `G` and `H`.
+        The modular product of `G` and `H`.
 
     Raises
     ------
     NetworkXNotImplemented
-        If `G` is not a simple graph.
+        If `G` and `H` are not both undirected simple graphs.
 
     Examples
     --------
@@ -587,33 +600,24 @@ def modular_product(G, H):
     introduced as the *weak modular product*.
 
     The modular product reduces the problem of counting isomorphic subgraphs
-    in `G` and `H` to the problem of counting cliques in M. The subgraphs of
-    `G` and `H` that are induced by the nodes of a clique in M are
+    in `G` and `H` to the problem of counting cliques in `M`. The subgraphs of
+    `G` and `H` that are induced by the nodes of a clique in `M` are
     isomorphic [2]_ [3]_.
 
     References
     ----------
     .. [1] R. Hammack, W. Imrich, and S. Klavžar,
-        "Handbook of Product Graphs", CRC Press, 2011.
+        "Handbook of Product Graphs," CRC Press, 2011.
 
     .. [2] H. G. Barrow and R. M. Burstall,
         "Subgraph isomorphism, matching relational structures and maximal
-        cliques", Information Processing Letters, vol. 4, issue 4, pp. 83-84,
+        cliques," Information Processing Letters, vol. 4, issue 4, pp. 83--84,
         1976, https://doi.org/10.1016/0020-0190(76)90049-1.
 
     .. [3] V. G. Vizing, "Reduction of the problem of isomorphism and isomorphic
         entrance to the task of finding the nondensity of a graph." Proc. Third
         All-Union Conference on Problems of Theoretical Cybernetics. 1974.
     """
-    if G.is_directed() or H.is_directed():
-        raise nx.NetworkXNotImplemented(
-            "Modular product not implemented for directed graphs"
-        )
-    if G.is_multigraph() or H.is_multigraph():
-        raise nx.NetworkXNotImplemented(
-            "Modular product not implemented for multigraphs"
-        )
-
     GH = _init_product_graph(G, H)
     GH.add_nodes_from(_node_product(G, H))
 
