@@ -4,7 +4,6 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms import modular_decomposition
-from networkx.algorithms.modular import Node, NodeType
 
 
 class TestModularDecomposition:
@@ -46,28 +45,30 @@ class TestModularDecomposition:
         #
         # Make sure the root node is PRIME.
         #
-        assert isinstance(root, Node) and root.node_type == NodeType.PRIME
+        assert tree.nodes[root]["type"] == "prime"
 
         expected = [
-            (NodeType.PRIME, NodeType.SERIES),
-            (NodeType.PRIME, NodeType.PARALLEL),
-            (NodeType.PRIME, 4),
-            (NodeType.PRIME, 8),
-            (NodeType.SERIES, 0),
-            (NodeType.SERIES, 1),
-            (NodeType.SERIES, 2),
-            (NodeType.SERIES, 3),
-            (NodeType.PARALLEL, 5),
-            (NodeType.PARALLEL, 6),
-            (NodeType.PARALLEL, 7),
+            ("prime", "series"),
+            ("prime", "parallel"),
+            ("prime", 4),
+            ("prime", 8),
+            ("series", 0),
+            ("series", 1),
+            ("series", 2),
+            ("series", 3),
+            ("parallel", 5),
+            ("parallel", 6),
+            ("parallel", 7),
         ]
 
         edges = []
         for tail, head in tree.edges():
-            if isinstance(tail, Node):
-                tail = tail.node_type
-            if isinstance(head, Node):
-                head = head.node_type
+            tail_type = tree.nodes[tail]["type"]
+            if tail_type != "leaf":
+                tail = tail_type
+            head_type = tree.nodes[head]["type"]
+            if head_type != "leaf":
+                head = head_type
             edges.append((tail, head))
 
         #
@@ -89,18 +90,22 @@ class TestModularDecomposition:
 
         edges1 = []
         for tail, head in tree1.edges():
-            if isinstance(tail, Node):
-                tail = tail.node_type
-            if isinstance(head, Node):
-                head = head.node_type
+            tail_type = tree1.nodes[tail]["type"]
+            if tail_type != "leaf":
+                tail = tail_type
+            head_type = tree1.nodes[head]["type"]
+            if head_type != "leaf":
+                head = head_type
             edges1.append((tail, head))
 
         edges2 = []
-        for tail, head in tree1.edges():
-            if isinstance(tail, Node):
-                tail = tail.node_type
-            if isinstance(head, Node):
-                head = head.node_type
+        for tail, head in tree2.edges():
+            tail_type = tree2.nodes[tail]["type"]
+            if tail_type != "leaf":
+                tail = tail_type
+            head_type = tree2.nodes[head]["type"]
+            if head_type != "leaf":
+                head = head_type
             edges2.append((tail, head))
 
         assert set(edges1) == set(edges2)
