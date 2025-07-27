@@ -4,12 +4,9 @@ import collections
 import dataclasses
 import itertools
 import uuid
-from collections.abc import Callable, Iterator
-from typing import Any
 
 import networkx as nx
 from networkx import DiGraph, Graph
-
 
 __all__ = ["modular_decomposition"]
 
