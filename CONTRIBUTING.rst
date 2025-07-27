@@ -44,18 +44,23 @@ Development Workflow
          # Create a virtualenv named ``networkx-dev`` that lives in the directory of
          # the same name
          python -m venv networkx-dev
+
          # Activate it
          source networkx-dev/bin/activate
+
          # Install main development and runtime dependencies of networkx
-         pip install -r requirements/default.txt -r requirements/test.txt -r requirements/developer.txt
-         #
+         pip install --group dev --group test
+
          # (Optional) Install pygraphviz and pydot packages
          # These packages require that you have your system properly configured
          # and what that involves differs on various systems.
-         # pip install -r requirements/extra.txt
-         #
-         # Build and install networkx from source
+         # pip install --group extra
+
+         # Build and install networkx from source as an
+         # "editable-install" (i.e., one for which code changes is
+         # picked up automatically).
          pip install -e .
+
          # Test your installation
          pytest --pyargs networkx
 
@@ -374,7 +379,7 @@ detailing the test coverage::
 
 There are additional pytest plugins that provide enhanced features for running
 the test suite. These can be installed with
-``pip install -r requirements/test-extras.txt``.
+``pip install --group test-extras``.
 For example, with these plugins installed it is possible to run the tests
 (including doctests) with multiple cores in randomized order with::
 
