@@ -13,9 +13,17 @@ class TestKFactor:
         assert g.edges == kf.edges
         assert g.nodes == kf.nodes
 
-    @pytest.mark.parametrize("g", [nx.complete_graph(4), nx.grid_2d_graph(4, 4)])
-    @pytest.mark.parametrize("k", [1, 2])
-    def test_k_factor(self, g, k):
+    @pytest.mark.parametrize("k", range(3))
+    def test_k_factor_grid(self, k):
+        g = nx.grid_2d_graph(4, 4)
+        kf = nx.k_factor(g, k)
+        assert g.nodes == kf.nodes
+        assert all(g.has_edge(*e) for e in kf.edges)
+        assert nx.is_k_regular(kf, k)
+
+    @pytest.mark.parametrize("k", range(6))
+    def test_k_factor_complete(self, k):
+        g = nx.complete_graph(6)
         kf = nx.k_factor(g, k)
         assert g.nodes == kf.nodes
         assert all(g.has_edge(*e) for e in kf.edges)
