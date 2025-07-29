@@ -466,7 +466,7 @@ class _dispatchable:
         if name in _registered_algorithms:
             raise KeyError(
                 f"Algorithm already exists in dispatch namespace: {name}. "
-                 "Fix by assigning a unique `name=` in the `@_dispatchable` decorator."
+                "Fix by assigning a unique `name=` in the `@_dispatchable` decorator."
             ) from None
         # Use the `argmap` decorator to turn `self` into a function. This does result
         # in small additional overhead compared to calling `_dispatchable` directly,
