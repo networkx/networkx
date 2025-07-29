@@ -927,8 +927,7 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         G.add_weighted_edges_from(
             [("0", "3", 3), ("0", "1", -5), ("0", "2", 2), ("1", "2", 4), ("2", "3", 1)]
         )
-        dist = {}
-        paths = nx.johnson(G, multi_source_dist=dist)
+        paths, dist = nx.johnson(G, ret="all")
         assert paths == {
             "1": {"1": ["1"], "3": ["1", "2", "3"], "2": ["1", "2"]},
             "0": {
@@ -951,6 +950,9 @@ class TestJohnsonAlgorithm(WeightedTestBase):
             "3": {"3": 0},
             "2": {"3": 1, "2": 0},
         }
+        # test only calculating paths/dist
+        assert paths == nx.johnson(G)
+        assert dist == nx.johnson(G, ret="dist")
 
     def test_unweighted_graph(self):
         G = nx.Graph()

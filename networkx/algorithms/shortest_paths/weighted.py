@@ -2434,7 +2434,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def johnson(G, weight="weight", multi_source_dist=None, need_paths=True):
+def johnson(G, weight="weight", ret="path"):
     r"""Uses Johnson's Algorithm to compute shortest paths.
 
     Johnson's Algorithm finds a shortest path between each pair of
@@ -2457,16 +2457,20 @@ def johnson(G, weight="weight", multi_source_dist=None, need_paths=True):
         dictionary of edge attributes for that edge. The function must
         return a number.
 
-    multi_source_dist: dictonary
-        Dictionary to store the shortest distance value, keyed by source and target
-
-    need_paths: bool
-        If False, we will not calculate the paths, and will return None
+    ret : string
+        Controls what to return. View Returns for detail.
 
     Returns
     -------
-    distance : dictionary
-        Dictionary, keyed by source and target, of shortest paths. If need_paths is False, returns None.
+    paths : dictionary
+        Dictionary, keyed by source and target, of shortest paths.
+
+    dist: dictionary
+        Dictionary, keyed by source and target, of shortest paths distance.
+
+    When ret is set to "path", only paths is returned.
+    When ret is set to "dist", only dist is returned.
+    When ret is set to "all", both paths and dist are returned.
 
     Examples
     --------
@@ -2502,9 +2506,8 @@ def johnson(G, weight="weight", multi_source_dist=None, need_paths=True):
     all_pairs_bellman_ford_path_length
 
     """
-    if multi_source_dist is None and not need_paths:
-        # Nothing need to do in this case
-        return None
+    if ret != "path" and ret != "dist" and ret != "all":
+        raise ValueError("Wrong return type")
 
     dist = {v: 0 for v in G}
     pred = {v: [] for v in G}
@@ -2518,22 +2521,32 @@ def johnson(G, weight="weight", multi_source_dist=None, need_paths=True):
     def new_weight(u, v, d):
         return weight(u, v, d) + dist_bellman[u] - dist_bellman[v]
 
-    def dist_path(v, multi_source_dist, multi_source_paths):
-        paths = None
-        if multi_source_paths is not None:
-            paths = multi_source_paths[v] = {v: [v]}
+    paths = None
+    if ret == "path" or ret == "all":
+        paths = {}
 
-        if multi_source_dist is None:
-            _dijkstra(G, v, new_weight, paths=paths)
-        else:
-            multi_source_dist[v] = _dijkstra(G, v, new_weight, paths=paths)
-            multi_source_dist[v] = {
-                w: value - dist_bellman[v] + dist_bellman[w]
-                for w, value in multi_source_dist[v].items()
+    dist = None
+    if ret == "dist" or ret == "all":
+        dist = {}
+
+    def dist_path(v):
+        path_from_v = None
+        if paths is not None:
+            paths[v] = {v: [v]}
+            path_from_v = paths[v]
+        dist_from_v = _dijkstra(G, v, new_weight, paths=path_from_v)
+        if dist is not None:
+            dist[v] = {
+                target: value - dist_bellman[v] + dist_bellman[target]
+                for target, value in dist_from_v.items()
             }
 
-    multi_source_paths = {} if need_paths else None
     for v in G:
-        dist_path(v, multi_source_dist, multi_source_paths)
+        dist_path(v)
 
-    return multi_source_paths
+    if ret == "path":
+        return paths
+    elif ret == "dist":
+        return dist
+    else:
+        return paths, dist
