@@ -326,7 +326,7 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         >>> len(paths)
         1
 
-    You can use the ``cutoff`` parameter to only generate paths that are
+    You can use the `cutoff` parameter to only generate paths that are
     shorter than a certain length:
 
         >>> g = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 5), (1, 4), (1, 5)])
