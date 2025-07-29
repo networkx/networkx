@@ -993,20 +993,23 @@ def all_neighbors(graph, node):
 
     Notes
     -----
-    For undirected graphs, this function is equivalent to `G.neighbors(node)`.
+    For undirected graphs, this function is equivalent to ``G.neighbors(node)``.
     For directed graphs, this function returns both predecessors and successors,
     which may include duplicates if a node is both a predecessor and successor
     (e.g., in bidirectional edges or self-loops).
 
     This function provides a consistent interface for accessing neighbors
     regardless of graph type, unlike the class methods which vary between
-    `G.neighbors(n)` for undirected graphs and `G.predecessors(n)`/`G.successors(n)`
+    ``G.neighbors(n)`` for undirected graphs and ``G.predecessors(n)``/``G.successors(n)``
     for directed graphs.
 
-    **Related methods:**
-    - `G.neighbors(n)`: Works for both Graph and DiGraph (returns successors for directed)
-    - `G[n]`: Shorthand equivalent to `G.neighbors(n)` for both graph types
-    - `G.pred[u]`: Returns predecessors for directed graphs only
+    See Also
+    --------
+    neighbors : Returns successors for both Graph and DiGraph
+    predecessors : Returns predecessors for directed graphs only
+    successors : Returns successors for directed graphs only
+    G[n] : Shorthand equivalent to ``G.neighbors(n)`` for both graph types
+    G.pred[u] : Returns predecessors for directed graphs only
     """
     if graph.is_directed():
         values = chain(graph.predecessors(node), graph.successors(node))
