@@ -1003,13 +1003,15 @@ def all_neighbors(graph, node):
     ``G.neighbors(n)`` for undirected graphs and ``G.predecessors(n)``/``G.successors(n)``
     for directed graphs.
 
+    Alternative access methods:
+    - ``G[n]`` : Shorthand equivalent to ``G.neighbors(n)`` for both graph types
+    - ``G.pred[u]`` : Returns predecessors for directed graphs only
+
     See Also
     --------
     neighbors : Returns successors for both Graph and DiGraph
     predecessors : Returns predecessors for directed graphs only
     successors : Returns successors for directed graphs only
-    G[n] : Shorthand equivalent to ``G.neighbors(n)`` for both graph types
-    G.pred[u] : Returns predecessors for directed graphs only
     """
     if graph.is_directed():
         values = chain(graph.predecessors(node), graph.successors(node))
