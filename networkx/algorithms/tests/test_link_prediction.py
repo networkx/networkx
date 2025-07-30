@@ -191,7 +191,7 @@ class TestCommonNeighborCentrality:
     def test_equal_nodes(self):
         G = nx.complete_graph(4)
         with pytest.raises(nx.NetworkXAlgorithmError):
-            self.func(G, [(0, 0)], [])
+            self.test(G, [(0, 0)], [])
 
     def test_equal_nodes_with_alpha_one_raises_error(self):
         G = nx.complete_graph(4)
