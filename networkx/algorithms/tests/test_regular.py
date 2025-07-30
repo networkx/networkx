@@ -52,11 +52,11 @@ class TestIsRegular:
     @pytest.mark.parametrize(
         "graph,expected",
         [
-            (nx.cycle_graph(5), True),
+            (nx.cycle_graph(4), True),
             (nx.complete_graph(5), True),
             (nx.path_graph(5), False),
             (nx.lollipop_graph(5, 5), False),
-            (nx.cycle_graph(5, create_using=nx.DiGraph), True),
+            (nx.cycle_graph(3, create_using=nx.DiGraph), True),
             (nx.Graph([(0, 1)]), True),
             (nx.DiGraph([(0, 1)]), False),
             (nx.MultiGraph([(0, 1), (0, 1)]), True),
@@ -67,9 +67,9 @@ class TestIsRegular:
         assert reg.is_regular(graph) == expected
 
     def test_is_regular_empty_graph_raises(self):
-        graph = nx.Graph()
+        G = nx.Graph()
         with pytest.raises(nx.NetworkXPointlessConcept, match="Graph has no nodes"):
-            nx.is_regular(graph)
+            nx.is_regular(G)
 
 
 class TestIsKRegular:
