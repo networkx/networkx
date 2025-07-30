@@ -810,6 +810,33 @@ def star_graph(n, create_using=None):
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
+    Examples
+    --------
+    A star graph with 3 spokes can be generated with
+
+    >>> G = nx.star_graph(3)
+    >>> sorted(G.edges)
+    [(0, 1), (0, 2), (0, 3)]
+
+    For directed graphs, the convention is to have edges pointing from the hub
+    to the spokes:
+
+    >>> DG1 = nx.star_graph(3, create_using=nx.DiGraph)
+    >>> sorted(DG1.edges)
+    [(0, 1), (0, 2), (0, 3)]
+
+    Other possible definitions have edges pointing from the spokes to the hub:
+
+    >>> DG2 = nx.star_graph(3, create_using=nx.DiGraph).reverse()
+    >>> sorted(DG2.edges)
+    [(1, 0), (2, 0), (3, 0)]
+
+    or have bidirectional edges:
+
+    >>> DG3 = nx.star_graph(3).to_directed()
+    >>> sorted(DG3.edges)
+    [(0, 1), (0, 2), (0, 3), (1, 0), (2, 0), (3, 0)]
+
     Notes
     -----
     The graph has ``n + 1`` nodes for integer `n`.
@@ -823,8 +850,6 @@ def star_graph(n, create_using=None):
     if len(nodes) > 1:
         hub, *spokes = nodes
         G.add_edges_from((hub, node) for node in spokes)
-        if G.is_directed():
-            G.add_edges_from((node, hub) for node in spokes)
     return G
 
 
