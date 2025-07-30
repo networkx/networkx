@@ -88,30 +88,49 @@ A* Algorithm
 Notes on Multi-Target Shortest Path Queries
 -------------------------------------------
 
-NetworkX does not currently provide a built-in function to compute the shortest path from a single source to the *nearest* node in a set of multiple targets:
+NetworkX does not currently provide a built-in function to compute the shortest
+path from a single source to the *nearest* node in a set of multiple targets:
 
 .. math::
 
    \min_{t \in \text{targets}} \mathrm{distance}(s, t)
 
 
-This type of query is useful in applications like navigation, facility location, or emergency response planning. You can implement it efficiently using a **sentinel node trick**, which transforms the problem into a standard single-target query.
+This type of query is useful in applications like navigation, facility location,
+or emergency response planning. You can implement it efficiently using a
+**sentinel node trick**, which transforms the problem into a standard
+single-target query.
 
-**Note:** If modifying the original graph is not desirable, use :meth:`Graph.copy <networkx.Graph.copy>` to operate on a duplicate.
+**Note:** If modifying the original graph is not desirable, use
+:meth:`Graph.copy <networkx.Graph.copy>` to operate on a duplicate.
 
 Sentinel Node trick for Multi-Target Queries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To find the shortest path from a source node `s` to the nearest of several target nodes `{t₁, t₂, ..., tₖ}`, you can:
+To find the shortest path from a source node :math:`s` to the nearest of several
+target nodes :math:`\{t_1, t_2, \ldots, t_k\}`, you can:
 
-1. Add a **sentinel node** `T` to your graph.
-2. Connect each target node `tᵢ` to `T` with an edge of **zero cost**.
-3. Run a shortest path algorithm from the source node `s` to the sentinel node `T`.
-4. Recover the actual target by inspecting the path just before `T`.
+#. Add a **sentinel node** :math:`T` to your graph.
+#. Connect each target node :math:`t_i` to :math:`T` with an edge of **zero cost** (for weighted graphs).
+#. Run a shortest path algorithm from the source node :math:`s` to the sentinel node :math:`T`.
+#. Recover the actual target by inspecting the path just before :math:`T`.
 
-This approach works with all shortest path algorithms supported in NetworkX, including Dijkstra's algorithm and BFS (for unweighted graphs).
+This approach works with all shortest path algorithms supported in NetworkX,
+including Dijkstra's algorithm and Breadth-First Search (for unweighted graphs).
 
-It also works for multi-source queries, where you want to find the shortest path from any node in a set of sources to the nearest target. In that case, you run a multi-source shortest path algorithm (such as :meth:`multi_source_dijkstra <networkx.algorithms.shortest_paths.weighted.multi_source_dijkstra>`) from the set of sources to the sentinel node, and then recover the closest source and target by inspecting the resulting path as before.
+It also works for multi-source queries, where you want to find the shortest path
+from any node in a set of sources to the nearest target. In that case, you run a
+multi-source shortest path algorithm (such as :meth:`multi_source_dijkstra
+<networkx.algorithms.shortest_paths.weighted.multi_source_dijkstra>`) from the
+set of sources to the sentinel node, and then recover the closest source and
+target by inspecting the resulting path as before.
+
+To obtain the true distance to the closest target, you may need to adjust the
+result returned by the shortest path algorithm. In **weighted graphs**, **no
+adjustment is needed** because the added edges have zero weight. In **unweighted
+graphs**, however, the extra edge to the sentinel contributes a **distance of
+one**, so you should **subtract one** from the total to get the correct distance
+to the closest target.
 
 Example
 ^^^^^^^
@@ -127,8 +146,9 @@ Adding sentinel node in-place and calling shortest path functions::
     >>> G.add_edge('C', 'D', weight=1)
     >>> G.add_edge('D', 'E', weight=1)
 
-    >>> # Suppose we're at node 'A' and want the closest of targets 'C', 'D', or 'E'
+    >>> # Suppose we're at source node 'A'
     >>> source = 'A'
+    >>> # And we want the closest of targets 'C', 'D', or 'E'
     >>> targets = {'C', 'D', 'E'}
 
     >>> # Add a sentinel node connected to each target with weight 0
@@ -138,8 +158,20 @@ Adding sentinel node in-place and calling shortest path functions::
     >>>     G.add_edge(target, sentinel, weight=0)
 
     >>> # Compute shortest path from source to sentinel
-    >>> path = nx.shortest_path(G, source=source, target=sentinel, weight='weight')
-    >>> distance = nx.shortest_path_length(G, source=source, target=sentinel, weight='weight')
+    >>> path = nx.shortest_path(
+            G,
+            source=source,
+            target=sentinel,
+            weight='weight'
+         )
+    >>> # Compute the true distance
+    >>> # No adjustment needed because added edges have zero weight
+    >>> distance = nx.shortest_path_length(
+            G,
+            source=source,
+            target=sentinel,
+            weight='weight'
+         )
 
     >>> # The real closest target is the node before the sentinel
     >>> closest_target = path[-2]
