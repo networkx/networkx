@@ -36,8 +36,9 @@ class TestResourceAllocationIndex:
 
     @pytest.mark.parametrize("graph_type", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
     def test_notimplemented(self, graph_type):
+        G = graph_type([(0, 1), (1, 2)])
         with pytest.raises(nx.NetworkXNotImplemented):
-            self.func(graph_type([(0, 1), (1, 2)]), [(0, 2)])
+            self.func(G, [(0, 2)])
 
     def test_node_not_found(self):
         G = nx.Graph()
@@ -76,8 +77,9 @@ class TestJaccardCoefficient:
 
     @pytest.mark.parametrize("graph_type", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
     def test_notimplemented(self, graph_type):
+        G = graph_type([(0, 1), (1, 2)])
         with pytest.raises(nx.NetworkXNotImplemented):
-            self.func(graph_type([(0, 1), (1, 2)]), [(0, 2)])
+            self.func(G, [(0, 2)])
 
     def test_node_not_found(self):
         G = nx.Graph()
@@ -122,7 +124,8 @@ class TestAdamicAdarIndex:
     @pytest.mark.parametrize("graph_type", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
     def test_notimplemented(self, graph_type):
         with pytest.raises(nx.NetworkXNotImplemented):
-            self.func(graph_type([(0, 1), (1, 2)]), [(0, 2)])
+            G = graph_type([(0, 1), (1, 2)])
+            self.func(G, [(0, 2)])
 
     def test_node_not_found(self):
         G = nx.Graph()
@@ -168,8 +171,9 @@ class TestCommonNeighborCentrality:
 
     @pytest.mark.parametrize("graph_type", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
     def test_notimplemented(self, graph_type):
+        G = graph_type([(0, 1), (1, 2)])
         with pytest.raises(nx.NetworkXNotImplemented):
-            self.func(graph_type([(0, 1), (1, 2)]), [(0, 2)])
+            self.func(G, [(0, 2)])
 
     def test_node_u_not_found(self):
         G = nx.Graph()
@@ -224,8 +228,9 @@ class TestPreferentialAttachment:
 
     @pytest.mark.parametrize("graph_type", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
     def test_notimplemented(self, graph_type):
+        G = graph_type([(0, 1), (1, 2)])
         with pytest.raises(nx.NetworkXNotImplemented):
-            self.func(graph_type([(0, 1), (1, 2)]), [(0, 2)])
+            self.func(G, [(0, 2)])
 
     def test_node_not_found(self):
         G = nx.Graph()
