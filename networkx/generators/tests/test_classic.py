@@ -474,7 +474,6 @@ class TestGeneratorClassic:
         dg = nx.star_graph(3, create_using=graph_type)
         assert sorted([(u, v) for u, v, *d in dg.edges]) == [(0, 1), (0, 2), (0, 3)]
 
-
     def test_non_int_integers_for_star_graph(self):
         np = pytest.importorskip("numpy")
         G = nx.star_graph(np.int32(3))
