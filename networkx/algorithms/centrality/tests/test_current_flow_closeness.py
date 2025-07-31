@@ -21,7 +21,7 @@ class TestFlowClosenessCentrality:
                 {"a": 1.0 / 3, "b": 1.0 / 5, "c": 1.0 / 5, "d": 1.0 / 5},
             ),
             (nx.Graph(), {}),
-            (nx.path_graph(1), {0: 1.0}),
+            (nx.empty_graph(1), {0: 1.0}),
             (nx.Graph([(0, 0)]), {0: 1.0}),
             (nx.path_graph(2), {0: 1.0, 1: 1.0}),
         ],

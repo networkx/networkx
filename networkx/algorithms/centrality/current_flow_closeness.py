@@ -87,7 +87,7 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
         return {nx.utils.arbitrary_element(G): 1.0}
 
     if not nx.is_connected(G):
-        raise nx.NetworkXError("Graph is not connected.")
+        raise nx.NetworkXError("Graph not connected.")
 
     solvername = {
         "full": FullInverseLaplacian,
