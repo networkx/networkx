@@ -618,8 +618,9 @@ def test_is_aperiodic_selfloop():
     assert nx.is_aperiodic(G)
 
 
-def test_is_aperiodic_undirected_raises():
-    G = nx.Graph([(1, 2), (2, 3), (3, 1)])
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
+def test_is_aperiodic_undirected_raises(graph_type):
+    G = graph_type([(1, 2), (2, 3), (3, 1)])
     with pytest.raises(
         nx.NetworkXNotImplemented, match="not implemented for undirected"
     ):
@@ -633,6 +634,7 @@ def test_is_aperiodic_undirected_raises():
         nx.DiGraph([(0, 1), (1, 0), (2, 2)]),
         nx.DiGraph([(0, 1), (1, 2), (0, 3), (3, 4), (4, 0)]),
         nx.DiGraph([(0, 1), (1, 2), (2, 1)]),
+        nx.empty_graph(3, create_using=nx.DiGraph),
     ],
 )
 def test_is_aperiodic_not_sc_raises(G):
@@ -640,8 +642,8 @@ def test_is_aperiodic_not_sc_raises(G):
         nx.is_aperiodic(G)
 
 
-def test_is_aperiodic_empty_graph():
-    G = nx.empty_graph(create_using=nx.DiGraph)
+def test_is_aperiodic_null_graph():
+    G = nx.DiGraph()
     with pytest.raises(nx.NetworkXPointlessConcept, match="Graph has no nodes."):
         nx.is_aperiodic(G)
 
