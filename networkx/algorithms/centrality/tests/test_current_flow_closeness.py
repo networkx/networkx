@@ -32,8 +32,8 @@ class TestFlowClosenessCentrality:
         assert all(b[n] == pytest.approx(answer[n], abs=1e-7) for n in G)
 
     @pytest.mark.parametrize("G", [nx.empty_graph(3), nx.Graph([(0, 1), (2, 3)])])
-    def test_cfcc_connectivity_exceptions(self, G):
-        """Current-flow closeness centrality: connectivity exceptions."""
+    def test_cfcc_not_connected(self, G):
+        """Current-flow closeness centrality: not connected exceptions."""
         with pytest.raises(nx.NetworkXError, match=r"not connected"):
             nx.current_flow_closeness_centrality(G)
 
