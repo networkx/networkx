@@ -60,8 +60,4 @@ def is_complete_split_graph(G: nx.Graph) -> bool:
     if any(G.has_edge(u, v) for u in rest for v in rest if u != v):
         return False
 
-    for u in rest:
-        if any(not G.has_edge(u, v) for v in clique_set):
-            return False
-
-    return True
+    return all(not any(not G.has_edge(u, v) for v in clique_set) for u in rest)
