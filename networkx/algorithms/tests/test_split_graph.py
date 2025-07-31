@@ -13,7 +13,7 @@ def test_is_split_graph():
     assert is_split_graph(G3)
 
     G4 = nx.path_graph(4)
-    assert not is_split_graph(G4)
+    assert is_split_graph(G4)
 
     G5 = nx.cycle_graph(4)
     assert not is_split_graph(G5)
@@ -33,4 +33,4 @@ def test_is_complete_split_graph():
     assert not is_complete_split_graph(G4)
 
     G5 = nx.complete_graph(4)
-    assert not is_complete_split_graph(G5)
+    assert is_complete_split_graph(G5)
