@@ -81,10 +81,8 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
        Social Networks 11(1):1--37, 1989.
        https://doi.org/10.1016/0378-8733(89)90016-6
     """
-    if (N := len(G)) == 0:
-        return {}
-    elif N == 1:
-        return {nx.utils.arbitrary_element(G): 1.0}
+    if (N := len(G)) <= 1:
+        return {n: 1.0 for n in G}
 
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
