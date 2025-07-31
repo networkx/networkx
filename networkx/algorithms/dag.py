@@ -697,12 +697,12 @@ def is_aperiodic(G):
         raise nx.NetworkXError("Graph is not strongly connected.")
 
     s = nx.utils.arbitrary_element(G)
-    levels = {s: 0}
+    lvls = {s: 0}
     g = 0
     for u, v, d in nx.bfs_labeled_edges(G, s):
         if d == "tree":
-            levels[v] = levels[u] + 1
-        elif (g := gcd(g, levels[u] - levels[v] + 1)) == 1:
+            lvls[v] = lvls[u] + 1
+        elif d in {"level", "reverse"} and (g := gcd(g, lvls[u] - lvls[v] + 1)) == 1:
             return True
     return False
 

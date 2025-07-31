@@ -618,6 +618,11 @@ def test_is_aperiodic_selfloop():
     assert nx.is_aperiodic(G)
 
 
+def test_is_aperiodic_forward_edge():
+    G = nx.DiGraph([(0, 1), (0, 2), (1, 3), (2, 3), (3, 0)])
+    assert not nx.is_aperiodic(G)
+
+
 @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
 def test_is_aperiodic_undirected_raises(graph_type):
     G = graph_type([(1, 2), (2, 3), (3, 1)])
