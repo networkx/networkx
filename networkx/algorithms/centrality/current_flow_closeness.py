@@ -26,19 +26,18 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
         A NetworkX graph.
 
     weight : None or string, optional (default=None)
-        If `None`, all edge weights are considered equal.
+        If ``None``, all edge weights are considered equal.
         Otherwise holds the name of the edge attribute used as weight.
-        The weight reflects the capacity or the strength of the
-        edge.
+        The weight reflects the capacity or the strength of the edge.
 
     dtype : data type (default=float)
         Default data type for internal matrices.
-        Set to `np.float32` for lower memory consumption.
+        Set to ``np.float32`` for lower memory consumption.
 
     solver : string (default="lu")
         Type of linear solver to use for computing the flow matrix.
-        Options are `"full"` (uses most memory), `"lu"` (recommended), and
-        `"cg"` (uses least memory).
+        Options are ``"full"`` (uses most memory), ``"lu"`` (recommended), and
+        ``"cg"`` (uses least memory).
 
     Returns
     -------
@@ -82,14 +81,13 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
        Social Networks 11(1):1--37, 1989.
        https://doi.org/10.1016/0378-8733(89)90016-6
     """
-    N = G.number_of_nodes()
-    if N == 0:
+    if (N := len(G)) == 0:
         return {}
     elif N == 1:
         return {nx.utils.arbitrary_element(G): 1.0}
 
     if not nx.is_connected(G):
-        raise nx.NetworkXError("graph is not connected")
+        raise nx.NetworkXError("Graph is not connected.")
 
     solvername = {
         "full": FullInverseLaplacian,
