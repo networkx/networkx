@@ -125,11 +125,10 @@ def kosaraju_strongly_connected_components(G, source=None):
         Specify a node from which to start the depth-first search.
         If not provided, the algorithm will start from an arbitrary node.
 
-    Returns
-    -------
-    comp : generator of sets
-        A generator of sets of nodes, one for each strongly connected
-        component of `G`.
+    Yields
+    ------
+    set
+        A set of all nodes in a strongly connected component of `G`.
 
     Raises
     ------
@@ -141,13 +140,12 @@ def kosaraju_strongly_connected_components(G, source=None):
 
     Examples
     --------
-    Generate a list of strongly connected components, in ascending order of
-    length.
+    Generate a list of strongly connected components of a graph:
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
     >>> nx.add_cycle(G, [10, 11, 12])
-    >>> sorted(nx.kosaraju_strongly_connected_components(G), key=len)
-    [{10, 11, 12}, {0, 1, 2, 3}]
+    >>> sorted(nx.kosaraju_strongly_connected_components(G), key=len, reverse=True)
+    [{0, 1, 2, 3}, {10, 11, 12}]
 
     If you only want the largest component, it's more efficient to
     use `max()` instead of `sorted()`.
