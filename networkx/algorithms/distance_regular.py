@@ -190,17 +190,19 @@ def intersection_array(G):
         if diam > max_diameter_for_dr_graphs:
             raise nx.NetworkXError("Graph is not distance regular.")
 
+        vnbrs = G[v]
         # compute needed path lengths
-        for n in G[v]:
-            if n not in path_length or u not in path_length[n]:
-                path_length[n].update(nx.single_source_shortest_path_length(G, n))
-                for x, distance in path_length[n].items():
+        for n in vnbrs:
+            pl_n = path_length[n]
+            if u not in pl_n:
+                pl_n.update(nx.single_source_shortest_path_length(G, n))
+                for x, distance in pl_n.items():
                     path_length[x][n] = distance
 
         # number of neighbors of v at a distance of i-1 from u
-        c = sum(1 for n in G[v] if path_length[n][u] == i - 1)
+        c = sum(1 for n in vnbrs if pl_u[n] == i - 1)
         # number of neighbors of v at a distance of i+1 from u
-        b = sum(1 for n in G[v] if path_length[n][u] == i + 1)
+        b = sum(1 for n in vnbrs if pl_u[n] == i + 1)
         # b, c are independent of u and v
         if cint.get(i, c) != c or bint.get(i, b) != b:
             raise nx.NetworkXError("Graph is not distance regular")
