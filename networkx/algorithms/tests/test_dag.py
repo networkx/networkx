@@ -632,6 +632,20 @@ def test_is_aperiodic_multiedge():
     assert nx.is_aperiodic(G)
 
 
+def test_is_aperiodic_two_cycles1():
+    G = nx.DiGraph()
+    nx.add_cycle(G, [0, 1, 2, 3])
+    nx.add_cycle(G, [0, 4, 2])
+    assert nx.is_aperiodic(G)
+
+
+def test_is_aperiodic_two_cycles2():
+    G = nx.DiGraph()
+    nx.add_cycle(G, [0, 1, 2])
+    nx.add_cycle(G, [0, 4, 2])
+    assert not nx.is_aperiodic(G)
+
+
 @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
 def test_is_aperiodic_undirected_raises(graph_type):
     G = graph_type([(1, 2), (2, 3), (3, 1)])

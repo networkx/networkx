@@ -697,13 +697,19 @@ def is_aperiodic(G):
         raise nx.NetworkXError("Graph is not strongly connected.")
 
     s = nx.utils.arbitrary_element(G)
-    lvls = {s: 0}
+    levels = {s: 0}
     g = 0
-    for u, v, d in nx.bfs_labeled_edges(G, s):
-        if d == "tree":
-            lvls[v] = lvls[u] + 1
-        elif d in {"level", "reverse"} and (g := gcd(g, lvls[u] - lvls[v] + 1)) == 1:
+    # There are 3 relevant possible edge types in `dfs_labeled_edges`:
+    # "forward", "reverse", and "nontree".
+    for u, v, d in nx.dfs_labeled_edges(G, s):
+        if d == "forward":
+            # "forward" edges indicate a new node.
+            levels[v] = levels[u] + 1
+        elif d == "nontree" and (g := gcd(g, levels[u] - levels[v] + 1)) == 1:
+            # "nontree" edges indicate a previously explored node.
+            # Check whether this affects the common factor of cycle lengths.
             return True
+        # "reverse" edges indicate backtracking in DFS and can be ignored.
     return False
 
 
