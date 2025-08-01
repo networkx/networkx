@@ -34,11 +34,11 @@ import matplotlib.pyplot as plt
 G = nx.DiGraph()
 edges = [
     (1, 2),
-    (1, 3),  
-    (2, 4),  
+    (1, 3),
+    (2, 4),
     (3, 4),
-    (3, 5),  
-    (4, 1),  
+    (3, 5),
+    (4, 1),
     (5, 6),
 ]
 G.add_edges_from(edges)
@@ -57,8 +57,8 @@ personalization.update({n: 0 for n in G.nodes if n not in seed_nodes})
 # Compute TrustRank using PageRank with personalization
 trust_rank = nx.pagerank(G, alpha=0.85, personalization=personalization)
 
-pos = nx.spring_layout(G)  
-node_sizes = [trust_rank[n] * 5000 for n in G.nodes]  
+pos = nx.spring_layout(G)
+node_sizes = [trust_rank[n] * 5000 for n in G.nodes]
 
 plt.figure(figsize=(8, 6))
 nx.draw(
