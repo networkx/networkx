@@ -59,7 +59,7 @@ def center(G):
     center_candidates_degree = dict(G.degree)
     leaves = {node for node, degree in center_candidates_degree.items() if degree == 1}
 
-    # It's better to fail than an infinite loop, so check leaves to ensure progress
+    # It's better to fail than an infinite loop, so check leaves to ensure progress.
     while len(center_candidates_degree) > 2 and leaves:
         new_leaves = set()
         for leaf in leaves:
