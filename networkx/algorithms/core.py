@@ -475,12 +475,12 @@ def k_truss(G, k):
         to_drop = []
         seen = set()
         for u in H:
-            nbrs_u = set(H[u])
             seen.add(u)
-            new_nbrs = [v for v in nbrs_u if v not in seen]
-            for v in new_nbrs:
-                if len(nbrs_u & set(H[v])) < (k - 2):
-                    to_drop.append((u, v))
+            to_drop.extend(
+                (u, v)
+                for v in H._adj[u]
+                if v not in seen and len(H._adj[u].keys() & H._adj[v].keys()) < k - 2
+            )
         H.remove_edges_from(to_drop)
         n_dropped = len(to_drop)
         H.remove_nodes_from(list(nx.isolates(H)))
