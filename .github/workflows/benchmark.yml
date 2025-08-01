@@ -83,7 +83,7 @@ jobs:
           ASV_SKIP_SLOW: 1
         run: |
           set -x
-          python -m pip install -r requirements/benchmarking.txt
+          python -m pip install .[benchmarking]
           cd benchmarks/
 
           # ID this runner
