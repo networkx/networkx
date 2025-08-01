@@ -1,13 +1,11 @@
 import pytest
 
-np = pytest.importorskip("numpy")
-sp = pytest.importorskip("scipy")
-sparse = pytest.importorskip("scipy.sparse")
-
-
 import networkx as nx
 from networkx.algorithms import bipartite
 from networkx.utils import edges_equal
+
+np = pytest.importorskip("numpy")
+sp = pytest.importorskip("scipy")
 
 
 class TestBiadjacencyMatrix:
@@ -71,7 +69,7 @@ class TestBiadjacencyMatrix:
         assert nx.is_isomorphic(B1, B2)
 
     def test_from_biadjacency_weight(self):
-        M = sparse.csc_matrix([[1, 2], [0, 3]])
+        M = sp.sparse.csc_array([[1, 2], [0, 3]])
         B = bipartite.from_biadjacency_matrix(M)
         assert edges_equal(B.edges(), [(0, 2), (0, 3), (1, 3)])
         B = bipartite.from_biadjacency_matrix(M, edge_attribute="weight")
@@ -79,6 +77,6 @@ class TestBiadjacencyMatrix:
         assert edges_equal(B.edges(data=True), e)
 
     def test_from_biadjacency_multigraph(self):
-        M = sparse.csc_matrix([[1, 2], [0, 3]])
+        M = sp.sparse.csc_array([[1, 2], [0, 3]])
         B = bipartite.from_biadjacency_matrix(M, create_using=nx.MultiGraph())
         assert edges_equal(B.edges(), [(0, 2), (0, 3), (0, 3), (1, 3), (1, 3), (1, 3)])

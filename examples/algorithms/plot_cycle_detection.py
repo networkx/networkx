@@ -9,6 +9,7 @@ arbitrary cycle in a graph.
 Other functions like ``nx.simple_cycles`` and ``nx.cycle_basis`` can be used to
 find all cycles or a cycle basis.
 """
+
 import networkx as nx
 import matplotlib.pyplot as plt
 

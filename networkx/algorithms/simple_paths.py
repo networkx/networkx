@@ -429,7 +429,10 @@ def shortest_simple_paths(G, source, target, weight=None):
         If it is a function, the weight of an edge is the value returned
         by the function. The function must accept exactly three positional
         arguments: the two endpoints of an edge and the dictionary of edge
-        attributes for that edge. The function must return a number.
+        attributes for that edge. The function must return a number or None.
+        The weight function can be used to hide edges by returning None.
+        So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+        will find the shortest red path.
 
         If None all edges are considered to have unit weight. Default
         value None.
@@ -756,19 +759,24 @@ def _bidirectional_dijkstra(
     G : NetworkX graph
 
     source : node
-       Starting node.
+        Starting node.
 
     target : node
-       Ending node.
+        Ending node.
 
     weight: string, function, optional (default='weight')
-       Edge data key or weight function corresponding to the edge weight
+        Edge data key or weight function corresponding to the edge weight
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     ignore_nodes : container of nodes
-       nodes to ignore, optional
+        nodes to ignore, optional
 
     ignore_edges : container of edges
-       edges to ignore, optional
+        edges to ignore, optional
 
     Returns
     -------
@@ -788,6 +796,10 @@ def _bidirectional_dijkstra(
     -----
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
+
+    The weight function can be used to hide edges by returning None.
+    So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+    will find the shortest red path.
 
     In practice  bidirectional Dijkstra is much more than twice as fast as
     ordinary Dijkstra.
@@ -873,8 +885,7 @@ def _bidirectional_dijkstra(
             Gpred = filter_iter(Gpred)
             Gsucc = filter_iter(Gsucc)
 
-    push = heappush
-    pop = heappop
+    wt = _weight_function(G, weight)
     # Init:   Forward             Backward
     dists = [{}, {}]  # dictionary of final distances
     paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
@@ -884,8 +895,8 @@ def _bidirectional_dijkstra(
     # nodes seen
     c = count()
     # initialize fringe heap
-    push(fringe[0], (0, next(c), source))
-    push(fringe[1], (0, next(c), target))
+    heappush(fringe[0], (0, next(c), source))
+    heappush(fringe[1], (0, next(c), target))
     # neighs for extracting correct neighbor information
     neighs = [Gsucc, Gpred]
     # variables to hold shortest discovered path
@@ -897,7 +908,7 @@ def _bidirectional_dijkstra(
         # dir == 0 is forward direction and dir == 1 is back
         dir = 1 - dir
         # extract closest to expand
-        (dist, _, v) = pop(fringe[dir])
+        (dist, _, v) = heappop(fringe[dir])
         if v in dists[dir]:
             # Shortest path to v has already been found
             continue
@@ -908,14 +919,14 @@ def _bidirectional_dijkstra(
             # we have now discovered the shortest path
             return (finaldist, finalpath)
 
-        wt = _weight_function(G, weight)
         for w in neighs[dir](v):
             if dir == 0:  # forward
                 minweight = wt(v, w, G.get_edge_data(v, w))
-                vwLength = dists[dir][v] + minweight
             else:  # back, must remember to change v,w->w,v
                 minweight = wt(w, v, G.get_edge_data(w, v))
-                vwLength = dists[dir][v] + minweight
+            if minweight is None:
+                continue
+            vwLength = dists[dir][v] + minweight
 
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
@@ -923,7 +934,7 @@ def _bidirectional_dijkstra(
             elif w not in seen[dir] or vwLength < seen[dir][w]:
                 # relaxing
                 seen[dir][w] = vwLength
-                push(fringe[dir], (vwLength, next(c), w))
+                heappush(fringe[dir], (vwLength, next(c), w))
                 paths[dir][w] = paths[dir][v] + [w]
                 if w in seen[0] and w in seen[1]:
                     # see if this path is better than the already

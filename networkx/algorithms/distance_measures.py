@@ -1,11 +1,14 @@
 """Graph diameter, radius, eccentricity and other properties."""
 
+import math
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = [
     "eccentricity",
     "diameter",
+    "harmonic_diameter",
     "radius",
     "periphery",
     "center",
@@ -14,6 +17,77 @@ __all__ = [
     "kemeny_constant",
     "effective_graph_resistance",
 ]
+
+
+@not_implemented_for("directed")
+def _tree_center(G):
+    """Returns the center of an undirected tree graph.
+
+    The center of a tree consists of nodes that minimize the maximum eccentricity.
+    That is, these nodes minimize the maximum distance to all other nodes.
+    This implementation currently only works for unweighted edges.
+
+    If the input graph is not a tree, results are not guaranteed to be correct and while
+    some non-trees will raise a ``NetworkXError`` not all non-trees will be discovered.
+    Thus, this function should not be used if caller is unsure whether the input graph
+    is a tree. Use ``networkx.is_tree(G)`` to check.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A tree graph (undirected, acyclic graph).
+
+    Returns
+    -------
+    center : list
+        A list of nodes in the center of the tree. This could be one or two nodes.
+
+    Raises
+    ------
+    NetworkXError
+        If algorithm detects input graph is not a tree. There is no guarantee
+        this error will always raise if a non-tree is passed.
+
+    Notes
+    -----
+    This algorithm iteratively removes leaves (nodes with degree 1) from the tree until
+    there are only 1 or 2 nodes left. The remaining nodes form the center of the tree.
+
+    This algorithm's time complexity is O(N) where N is the number of nodes in the tree.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 4), (2, 5)])
+    >>> _tree_center(G)
+    [1, 2]
+
+    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 5)])
+    >>> _tree_center(G)
+    [3]
+    """
+    center_candidates_degree = dict(G.degree)
+    leaves = {node for node, degree in center_candidates_degree.items() if degree == 1}
+
+    # It's better to fail than an infinite loop, so check leaves to ensure progress
+    while len(center_candidates_degree) > 2 and leaves:
+        new_leaves = set()
+        for leaf in leaves:
+            del center_candidates_degree[leaf]
+            for neighbor in G.neighbors(leaf):
+                if neighbor not in center_candidates_degree:
+                    continue
+                center_candidates_degree[neighbor] -= 1
+                if center_candidates_degree[neighbor] == 1:
+                    new_leaves.add(neighbor)
+        leaves = new_leaves
+
+    if not leaves and len(center_candidates_degree) >= 2:
+        # We detected graph is not a tree. This check does not cover all cases.
+        # For example, it does not cover the case where we have two islands (A-B) and (B-C)
+        # where we might eliminate (B-C) leaves and return [A, B] as centers.
+        raise nx.NetworkXError("Input graph is not a tree")
+
+    return list(center_candidates_degree)
 
 
 def _extrema_bounding(G, compute="diameter", weight=None):
@@ -77,14 +151,17 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     ----------
     .. [1] F. W. Takes, W. A. Kosters,
        "Determining the diameter of small world networks."
-       Proceedings of the 20th ACM international conference on Information and knowledge management, 2011
+       Proceedings of the 20th ACM international conference on Information and
+       knowledge management, 2011
        https://dl.acm.org/doi/abs/10.1145/2063576.2063748
     .. [2] F. W. Takes, W. A. Kosters,
        "Computing the Eccentricity Distribution of Large Graphs."
        Algorithms, 2013
        https://www.mdpi.com/1999-4893/6/1/100
     .. [3] M. Borassi, P. Crescenzi, M. Habib, W. A. Kosters, A. Marino, F. W. Takes,
-       "Fast diameter and radius BFS-based computation in (weakly connected) real-world graphs: With an application to the six degrees of separation games. "
+       "Fast diameter and radius BFS-based computation in (weakly connected)
+       real-world graphs: With an application to the six degrees of separation
+       games."
        Theoretical Computer Science, 2015
        https://www.sciencedirect.com/science/article/pii/S0304397515001644
     """
@@ -96,13 +173,13 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     high = False
     # status variables
     ecc_lower = dict.fromkeys(G, 0)
-    ecc_upper = dict.fromkeys(G, N)
+    ecc_upper = dict.fromkeys(G, math.inf)
     candidates = set(G)
 
     # (re)set bound extremes
-    minlower = N
+    minlower = math.inf
     maxlower = 0
-    minupper = N
+    minupper = math.inf
     maxupper = 0
 
     # repeat the following until there are no more candidates
@@ -286,7 +363,9 @@ def eccentricity(G, v=None, sp=None, weight=None):
     >>> dict(nx.eccentricity(G))
     {1: 2, 2: 3, 3: 2, 4: 2, 5: 3}
 
-    >>> dict(nx.eccentricity(G, v=[1, 5]))  # This returns the eccentricity of node 1 & 5
+    >>> dict(
+    ...     nx.eccentricity(G, v=[1, 5])
+    ... )  # This returns the eccentricity of node 1 & 5
     {1: 2, 5: 3}
 
     """
@@ -316,7 +395,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
                     " strongly connected"
                 )
             else:
-                msg = "Found infinite path length because the graph is not" " connected"
+                msg = "Found infinite path length because the graph is not connected"
             raise nx.NetworkXError(msg)
 
         e[n] = max(length.values())
@@ -339,6 +418,12 @@ def diameter(G, e=None, usebounds=False, weight=None):
 
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
+
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the diameter
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
 
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
@@ -365,6 +450,13 @@ def diameter(G, e=None, usebounds=False, weight=None):
     d : integer
        Diameter of graph
 
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
+
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
@@ -383,6 +475,81 @@ def diameter(G, e=None, usebounds=False, weight=None):
 
 
 @nx._dispatchable(edge_attrs="weight")
+def harmonic_diameter(G, sp=None, *, weight=None):
+    """Returns the harmonic diameter of the graph G.
+
+    The harmonic diameter of a graph is the harmonic mean of the distances
+    between all pairs of distinct vertices. Graphs that are not strongly
+    connected have infinite diameter and mean distance, making such
+    measures not useful. Restricting the diameter or mean distance to
+    finite distances yields paradoxical values (e.g., a perfect match
+    would have diameter one). The harmonic mean handles gracefully
+    infinite distances (e.g., a perfect match has harmonic diameter equal
+    to the number of vertices minus one), making it possible to assign a
+    meaningful value to all graphs.
+
+    Note that in [1] the harmonic diameter is called "connectivity length":
+    however, "harmonic diameter" is a more standard name from the
+    theory of metric spaces. The name "harmonic mean distance" is perhaps
+    a more descriptive name, but is not used in the literature, so we use the
+    name "harmonic diameter" here.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph
+
+    sp : dict of dicts, optional
+       All-pairs shortest path lengths as a dictionary of dictionaries
+
+    weight : string, function, or None (default=None)
+        If None, every edge has weight/distance 1.
+        If a string, use this edge attribute as the edge weight.
+        Any edge attribute not present defaults to 1.
+        If a function, the weight of an edge is the value returned by the function.
+        The function must accept exactly three positional arguments:
+        the two endpoints of an edge and the dictionary of edge attributes for
+        that edge. The function must return a number.
+
+    Returns
+    -------
+    hd : float
+       Harmonic diameter of graph
+
+    References
+    ----------
+    .. [1] Massimo Marchiori and Vito Latora, "Harmony in the small-world".
+           *Physica A: Statistical Mechanics and Its Applications*
+           285(3-4), pages 539-546, 2000.
+           <https://doi.org/10.1016/S0378-4371(00)00311-3>
+    """
+    order = G.order()
+
+    sum_invd = 0
+    for n in G:
+        if sp is None:
+            length = nx.single_source_dijkstra_path_length(G, n, weight=weight)
+        else:
+            try:
+                length = sp[n]
+                L = len(length)
+            except TypeError as err:
+                raise nx.NetworkXError('Format of "sp" is invalid.') from err
+
+        for d in length.values():
+            # Note that this will skip the zero distance from n to itself,
+            # as it should be, but also zero-weight paths in weighted graphs.
+            if d != 0:
+                sum_invd += 1 / d
+
+    if sum_invd != 0:
+        return order * (order - 1) / sum_invd
+    if order > 1:
+        return math.inf
+    return math.nan
+
+
+@nx._dispatchable(edge_attrs="weight")
 def periphery(G, e=None, usebounds=False, weight=None):
     """Returns the periphery of the graph G.
 
@@ -395,6 +562,12 @@ def periphery(G, e=None, usebounds=False, weight=None):
 
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
+
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the periphery
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
 
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
@@ -420,6 +593,13 @@ def periphery(G, e=None, usebounds=False, weight=None):
     -------
     p : list
        List of nodes in periphery
+
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
 
     Examples
     --------
@@ -455,6 +635,12 @@ def radius(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the radius
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -479,6 +665,13 @@ def radius(G, e=None, usebounds=False, weight=None):
     -------
     r : integer
        Radius of graph
+
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
 
     Examples
     --------
@@ -508,6 +701,12 @@ def center(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the center
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -533,6 +732,13 @@ def center(G, e=None, usebounds=False, weight=None):
     c : list
        List of nodes in center
 
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
+
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
@@ -546,6 +752,8 @@ def center(G, e=None, usebounds=False, weight=None):
     """
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="center", weight=weight)
+    if e is None and weight is None and not G.is_directed() and nx.is_tree(G):
+        return _tree_center(G)
     if e is None:
         e = eccentricity(G, weight=weight)
     radius = min(e.values())
@@ -941,7 +1149,7 @@ def kemeny_constant(G, *, weight=None):
     with np.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
-    DH = sp.sparse.csr_array(sp.sparse.spdiags(diags_sqrt, 0, m, n, format="csr"))
+    DH = sp.sparse.dia_array((diags_sqrt, 0), shape=(m, n)).tocsr()
     H = DH @ (A @ DH)
 
     # Compute eigenvalues of H

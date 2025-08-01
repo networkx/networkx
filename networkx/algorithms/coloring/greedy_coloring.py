@@ -1,6 +1,7 @@
 """
 Greedy graph coloring using various strategies.
 """
+
 import itertools
 from collections import defaultdict, deque
 
@@ -356,7 +357,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
             msg = "interchange cannot be used with independent_set"
             raise nx.NetworkXPointlessConcept(msg)
         if strategy is strategy_saturation_largest_first:
-            msg = "interchange cannot be used with" " saturation_largest_first"
+            msg = "interchange cannot be used with saturation_largest_first"
             raise nx.NetworkXPointlessConcept(msg)
     colors = {}
     nodes = strategy(G, colors)

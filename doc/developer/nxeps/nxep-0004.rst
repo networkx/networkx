@@ -279,7 +279,7 @@ users could use to switch the behavior the ``seed`` kwarg for all functions
 decorated by ``np_random_state`` or ``py_random_state``.
 To illustrate (ignoring implementation details)::
 
-    
+
     >>> import networkx as nx
     >>> from networkx.utils.misc import create_random_state
 

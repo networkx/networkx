@@ -7,6 +7,7 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 
 For directed graphs see DiGraph and MultiDiGraph.
 """
+
 from copy import deepcopy
 from functools import cached_property
 
@@ -306,6 +307,8 @@ class Graph:
     >>> G[2][1] is G[2][2]
     True
     """
+
+    __networkx_backend__ = "networkx"
 
     _adj = _CachedPropertyResetterAdj()
     _node = _CachedPropertyResetterNode()
@@ -1226,12 +1229,20 @@ class Graph:
         >>> DG = nx.DiGraph()
         >>> # dict-of-dict-of-attribute
         >>> adj = {1: {2: 1.3, 3: 0.7}, 2: {1: 1.4}, 3: {1: 0.7}}
-        >>> e = [(u, v, {"weight": d}) for u, nbrs in adj.items() for v, d in nbrs.items()]
+        >>> e = [
+        ...     (u, v, {"weight": d})
+        ...     for u, nbrs in adj.items()
+        ...     for v, d in nbrs.items()
+        ... ]
         >>> DG.update(edges=e, nodes=adj)
 
         >>> # dict-of-dict-of-dict
         >>> adj = {1: {2: {"weight": 1.3}, 3: {"color": 0.7, "weight": 1.2}}}
-        >>> e = [(u, v, {"weight": d}) for u, nbrs in adj.items() for v, d in nbrs.items()]
+        >>> e = [
+        ...     (u, v, {"weight": d})
+        ...     for u, nbrs in adj.items()
+        ...     for v, d in nbrs.items()
+        ... ]
         >>> DG.update(edges=e, nodes=adj)
 
         >>> # predecessor adjacency (dict-of-set)
@@ -1827,6 +1838,16 @@ class Graph:
                 )
             SG.graph.update(G.graph)
 
+        Subgraphs are not guaranteed to preserve the order of nodes or edges
+        as they appear in the original graph. For example:
+
+        >>> G = nx.Graph()
+        >>> G.add_nodes_from(reversed(range(10)))
+        >>> list(G)
+        [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+        >>> list(G.subgraph([1, 3, 2]))
+        [1, 2, 3]
+
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -1982,7 +2003,7 @@ class Graph:
         """Returns an iterator over nodes contained in nbunch that are
         also in the graph.
 
-        The nodes in nbunch are checked for membership in the graph
+        The nodes in an iterable nbunch are checked for membership in the graph
         and if not are silently ignored.
 
         Parameters
@@ -2036,6 +2057,9 @@ class Graph:
                         exc = NetworkXError(
                             "nbunch is not a node or a sequence of nodes."
                         )
+                    # capture single nodes that are not in the graph.
+                    if "object is not iterable" in message:
+                        exc = NetworkXError(f"Node {nbunch} is not in the graph.")
                     # capture error for unhashable node.
                     if "hashable" in message:
                         exc = NetworkXError(

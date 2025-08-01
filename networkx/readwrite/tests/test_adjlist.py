@@ -1,12 +1,105 @@
 """
-    Unit tests for adjlist.
+Unit tests for adjlist.
 """
+
 import io
 
 import pytest
 
 import networkx as nx
 from networkx.utils import edges_equal, graphs_equal, nodes_equal
+
+
+class TestGenerateAdjlist:
+    @pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
+    def test_undirected(self, graph_type):
+        G = nx.complete_graph(5, create_using=graph_type)
+        lines = [
+            "0 1 2 3 4",
+            "1 2 3 4",
+            "2 3 4",
+            "3 4",
+            "4",
+        ]
+        assert list(nx.generate_adjlist(G)) == lines
+
+    @pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
+    def test_directed(self, graph_type):
+        G = nx.complete_graph(5, create_using=graph_type)
+        lines = [
+            "0 1 2 3 4",
+            "1 0 2 3 4",
+            "2 0 1 3 4",
+            "3 0 1 2 4",
+            "4 0 1 2 3",
+        ]
+        assert list(nx.generate_adjlist(G)) == lines
+
+        G = nx.path_graph(5, create_using=graph_type)
+        G.add_edge(1, 0)
+        lines = [
+            "0 1",
+            "1 2 0",
+            "2 3",
+            "3 4",
+            "4",
+        ]
+        assert list(nx.generate_adjlist(G)) == lines
+
+    @pytest.mark.parametrize("delimiter", [" ", ",", "\t"])
+    def test_delimiter(self, delimiter):
+        G = nx.complete_graph(3)
+        lines = [
+            f"0{delimiter}1{delimiter}2",
+            f"1{delimiter}2",
+            f"2",
+        ]
+        assert list(nx.generate_adjlist(G, delimiter=delimiter)) == lines
+
+    def test_multiple_edges_undirected(self):
+        G = nx.complete_graph(3, create_using=nx.MultiGraph)
+        G.add_edge(0, 1)
+        lines = [
+            "0 1 1 2",
+            "1 2",
+            "2",
+        ]
+        assert list(nx.generate_adjlist(G)) == lines
+
+    def test_multiple_edges_directed(self):
+        G = nx.complete_graph(3, create_using=nx.MultiDiGraph)
+        G.add_edge(0, 1)
+        lines = [
+            "0 1 1 2",
+            "1 0 2",
+            "2 0 1",
+        ]
+        assert list(nx.generate_adjlist(G)) == lines
+
+        G.add_edge(1, 0)
+        lines[1] = "1 0 0 2"
+        assert list(nx.generate_adjlist(G)) == lines
+
+    def test_multiple_edges_with_data(self):
+        G = nx.complete_graph(3, create_using=nx.MultiGraph)
+        G.add_edge(0, 1, weight=1)
+        G.add_edge(0, 1, weight=2)
+        lines = [
+            "0 1 1 1 2",
+            "1 2",
+            "2",
+        ]
+        assert list(nx.generate_adjlist(G)) == lines
+
+    def test_with_self_loop(self):
+        G = nx.complete_graph(3)
+        G.add_edge(0, 0)
+        lines = [
+            "0 1 2 0",
+            "1 2",
+            "2",
+        ]
+        assert list(nx.generate_adjlist(G)) == lines
 
 
 class TestAdjlist:
@@ -238,3 +331,24 @@ class TestMultilineAdjlist:
         H = nx.read_multiline_adjlist(fh, nodetype=int, delimiter=":")
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
+
+
+@pytest.mark.parametrize(
+    ("lines", "delim"),
+    (
+        (["1 2 5", "2 3 4", "3 5", "4", "5"], None),  # No extra whitespace
+        (["1\t2\t5", "2\t3\t4", "3\t5", "4", "5"], "\t"),  # tab-delimited
+        (
+            ["1\t2\t5", "2\t3\t4", "3\t5\t", "4\t", "5"],
+            "\t",
+        ),  # tab-delimited, extra delims
+        (
+            ["1\t2\t5", "2\t3\t4", "3\t5\t\t\n", "4\t", "5"],
+            "\t",
+        ),  # extra delim+newlines
+    ),
+)
+def test_adjlist_rstrip_parsing(lines, delim):
+    """Regression test related to gh-7465"""
+    expected = nx.Graph([(1, 2), (1, 5), (2, 3), (2, 4), (3, 5)])
+    nx.utils.graphs_equal(nx.parse_adjlist(lines, delimiter=delim), expected)

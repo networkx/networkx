@@ -2,6 +2,7 @@
 Algorithms for calculating min/max spanning trees/forests.
 
 """
+
 from dataclasses import dataclass, field
 from enum import Enum
 from heapq import heappop, heappush
@@ -192,7 +193,7 @@ def kruskal_mst_edges(
         edges = G.edges(data=True)
 
     """
-    Sort the edges of the graph with respect to the partition data. 
+    Sort the edges of the graph with respect to the partition data.
     Edges are returned in the following order:
 
     * Included edges
@@ -282,8 +283,6 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
 
     """
     is_multigraph = G.is_multigraph()
-    push = heappush
-    pop = heappop
 
     nodes = set(G)
     c = count()
@@ -303,7 +302,7 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                             continue
                         msg = f"NaN found as an edge weight. Edge {(u, v, k, d)}"
                         raise ValueError(msg)
-                    push(frontier, (wt, next(c), u, v, k, d))
+                    heappush(frontier, (wt, next(c), u, v, k, d))
         else:
             for v, d in G.adj[u].items():
                 wt = d.get(weight, 1) * sign
@@ -312,12 +311,12 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                         continue
                     msg = f"NaN found as an edge weight. Edge {(u, v, d)}"
                     raise ValueError(msg)
-                push(frontier, (wt, next(c), u, v, d))
+                heappush(frontier, (wt, next(c), u, v, d))
         while nodes and frontier:
             if is_multigraph:
-                W, _, u, v, k, d = pop(frontier)
+                W, _, u, v, k, d = heappop(frontier)
             else:
-                W, _, u, v, d = pop(frontier)
+                W, _, u, v, d = heappop(frontier)
             if v in visited or v not in nodes:
                 continue
             # Multigraphs need to handle edge keys in addition to edge data.
@@ -345,7 +344,7 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                                 continue
                             msg = f"NaN found as an edge weight. Edge {(v, w, k2, d2)}"
                             raise ValueError(msg)
-                        push(frontier, (new_weight, next(c), v, w, k2, d2))
+                        heappush(frontier, (new_weight, next(c), v, w, k2, d2))
             else:
                 for w, d2 in G.adj[v].items():
                     if w in visited:
@@ -356,7 +355,7 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                             continue
                         msg = f"NaN found as an edge weight. Edge {(v, w, d2)}"
                         raise ValueError(msg)
-                    push(frontier, (new_weight, next(c), v, w, d2))
+                    heappush(frontier, (new_weight, next(c), v, w, d2))
 
 
 ALGORITHMS = {
@@ -890,7 +889,7 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             spanning trees in the graph.
         """
         if multiplicative:
-            return nx.total_spanning_tree_weight(G, weight)
+            return number_of_spanning_trees(G, weight=weight)
         else:
             # There are two cases for the total spanning tree additive weight.
             # 1. There is one edge in the graph. Then the only spanning tree is
@@ -905,13 +904,14 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             #    can be accomplished by contracting the edge and finding the
             #    multiplicative total spanning tree weight if the weight of each edge
             #    is assumed to be 1, which is conveniently built into networkx already,
-            #    by calling total_spanning_tree_weight with weight=None.
+            #    by calling number_of_spanning_trees with weight=None.
             #    Note that with no edges the returned value is just zero.
             else:
                 total = 0
                 for u, v, w in G.edges(data=weight):
-                    total += w * nx.total_spanning_tree_weight(
-                        nx.contracted_edge(G, edge=(u, v), self_loops=False), None
+                    total += w * nx.number_of_spanning_trees(
+                        nx.contracted_edge(G, edge=(u, v), self_loops=False),
+                        weight=None,
                     )
                 return total
 
@@ -945,11 +945,11 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             if multiplicative:
                 threshold = e_weight * G_e_total_tree_weight / G_total_tree_weight
             else:
-                numerator = (
-                    st_cached_value + e_weight
-                ) * nx.total_spanning_tree_weight(prepared_G_e) + G_e_total_tree_weight
+                numerator = (st_cached_value + e_weight) * nx.number_of_spanning_trees(
+                    prepared_G_e
+                ) + G_e_total_tree_weight
                 denominator = (
-                    st_cached_value * nx.total_spanning_tree_weight(prepared_G)
+                    st_cached_value * nx.number_of_spanning_trees(prepared_G)
                     + G_total_tree_weight
                 )
                 threshold = numerator / denominator
@@ -1125,19 +1125,28 @@ class SpanningTreeIterator:
             A Partition dataclass describing a partition on the edges of the
             graph.
         """
-        for u, v, d in self.G.edges(data=True):
-            if (u, v) in partition.partition_dict:
-                d[self.partition_key] = partition.partition_dict[(u, v)]
-            else:
-                d[self.partition_key] = EdgePartition.OPEN
+
+        partition_dict = partition.partition_dict
+        partition_key = self.partition_key
+        G = self.G
+
+        edges = (
+            G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
+        )
+        for *e, d in edges:
+            d[partition_key] = partition_dict.get(tuple(e), EdgePartition.OPEN)
 
     def _clear_partition(self, G):
         """
         Removes partition data from the graph
         """
-        for u, v, d in G.edges(data=True):
-            if self.partition_key in d:
-                del d[self.partition_key]
+        partition_key = self.partition_key
+        edges = (
+            G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
+        )
+        for *e, d in edges:
+            if partition_key in d:
+                del d[partition_key]
 
 
 @nx._dispatchable(edge_attrs="weight")

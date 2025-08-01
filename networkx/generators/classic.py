@@ -489,12 +489,15 @@ def cycle_graph(n, create_using=None):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
-    """Returns the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.
+    """Returns the hierarchically constructed Dorogovtsev--Goltsev--Mendes graph.
 
-    The Dorogovtsev-Goltsev-Mendes [1]_ procedure produces a scale-free graph
-    deterministically with the following properties for a given `n`:
-    - Total number of nodes = ``3 * (3**n + 1) / 2``
-    - Total number of edges = ``3 ** (n + 1)``
+    The Dorogovtsev--Goltsev--Mendes [1]_ procedure deterministically produces a
+    scale-free graph with ``3/2 * (3**(n-1) + 1)`` nodes
+    and ``3**n`` edges for a given `n`.
+
+    Note that `n` denotes the number of times the state transition is applied,
+    starting from the base graph with ``n = 0`` (no transitions), as in [2]_.
+    This is different from the parameter ``t = n - 1`` in [1]_.
 
     .. plot::
 
@@ -503,15 +506,21 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     Parameters
     ----------
     n : integer
-       The generation number.
+        The generation number.
 
-    create_using : NetworkX Graph, optional
-       Graph type to be returned. Directed graphs and multi graphs are not
-       supported.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. Directed graphs and multigraphs are not supported.
 
     Returns
     -------
-    G : NetworkX Graph
+    G : NetworkX `Graph`
+
+    Raises
+    ------
+    NetworkXError
+        If `n` is less than zero.
+
+        If `create_using` is a directed graph or multigraph.
 
     Examples
     --------
@@ -528,24 +537,29 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     .. [1] S. N. Dorogovtsev, A. V. Goltsev and J. F. F. Mendes,
         "Pseudofractal scale-free web", Physical Review E 65, 066122, 2002.
         https://arxiv.org/pdf/cond-mat/0112143.pdf
+    .. [2] Weisstein, Eric W. "Dorogovtsev--Goltsev--Mendes Graph".
+        From MathWorld--A Wolfram Web Resource.
+        https://mathworld.wolfram.com/Dorogovtsev-Goltsev-MendesGraph.html
     """
+    if n < 0:
+        raise NetworkXError("n must be greater than or equal to 0")
+
     G = empty_graph(0, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise NetworkXError("directed graph not supported")
     if G.is_multigraph():
-        raise NetworkXError("Multigraph not supported")
+        raise NetworkXError("multigraph not supported")
 
     G.add_edge(0, 1)
-    if n == 0:
-        return G
     new_node = 2  # next node to be added
-    for i in range(1, n + 1):  # iterate over number of generations.
-        last_generation_edges = list(G.edges())
-        number_of_edges_in_last_generation = len(last_generation_edges)
-        for j in range(number_of_edges_in_last_generation):
-            G.add_edge(new_node, last_generation_edges[j][0])
-            G.add_edge(new_node, last_generation_edges[j][1])
+    for _ in range(n):  # iterate over number of generations.
+        new_edges = []
+        for u, v in G.edges():
+            new_edges.append((u, new_node))
+            new_edges.append((v, new_node))
             new_node += 1
+
+        G.add_edges_from(new_edges)
     return G
 
 
@@ -778,9 +792,9 @@ def path_graph(n, create_using=None):
 @nx._dispatchable(graphs=None, returns_graph=True)
 @nodes_or_number(0)
 def star_graph(n, create_using=None):
-    """Return the star graph
+    """Return a star graph.
 
-    The star graph consists of one center node connected to n outer nodes.
+    The star graph consists of one center node connected to `n` outer nodes.
 
     .. plot::
 
@@ -789,24 +803,49 @@ def star_graph(n, create_using=None):
     Parameters
     ----------
     n : int or iterable
-        If an integer, node labels are 0 to n with center 0.
+        If an integer, node labels are ``0`` to `n`, with center ``0``.
         If an iterable of nodes, the center is the first.
-        Warning: n is not checked for duplicates and if present the
+        Warning: `n` is not checked for duplicates and if present, the
         resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
+    Examples
+    --------
+    A star graph with 3 spokes can be generated with
+
+    >>> G = nx.star_graph(3)
+    >>> sorted(G.edges)
+    [(0, 1), (0, 2), (0, 3)]
+
+    For directed graphs, the convention is to have edges pointing from the hub
+    to the spokes:
+
+    >>> DG1 = nx.star_graph(3, create_using=nx.DiGraph)
+    >>> sorted(DG1.edges)
+    [(0, 1), (0, 2), (0, 3)]
+
+    Other possible definitions have edges pointing from the spokes to the hub:
+
+    >>> DG2 = nx.star_graph(3, create_using=nx.DiGraph).reverse()
+    >>> sorted(DG2.edges)
+    [(1, 0), (2, 0), (3, 0)]
+
+    or have bidirectional edges:
+
+    >>> DG3 = nx.star_graph(3).to_directed()
+    >>> sorted(DG3.edges)
+    [(0, 1), (0, 2), (0, 3), (1, 0), (2, 0), (3, 0)]
+
     Notes
     -----
-    The graph has n+1 nodes for integer n.
-    So star_graph(3) is the same as star_graph(range(4)).
+    The graph has ``n + 1`` nodes for integer `n`.
+    So ``star_graph(3)`` is the same as ``star_graph(range(4))``.
     """
     n, nodes = n
     if isinstance(n, numbers.Integral):
-        nodes.append(int(n))  # there should be n+1 nodes
+        nodes.append(int(n))  # There should be n + 1 nodes.
     G = empty_graph(nodes, create_using)
-    if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
 
     if len(nodes) > 1:
         hub, *spokes = nodes

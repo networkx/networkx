@@ -4,20 +4,18 @@ Miscellaneous Helpers for NetworkX.
 These are not imported into the base networkx namespace but
 can be accessed, for example, as
 
->>> import networkx
->>> networkx.utils.make_list_of_ints({1, 2, 3})
+>>> import networkx as nx
+>>> nx.utils.make_list_of_ints({1, 2, 3})
 [1, 2, 3]
->>> networkx.utils.arbitrary_element({5, 1, 7})  # doctest: +SKIP
+>>> nx.utils.arbitrary_element({5, 1, 7})  # doctest: +SKIP
 1
 """
 
 import random
-import sys
-import uuid
 import warnings
-from collections import defaultdict, deque
+from collections import defaultdict
 from collections.abc import Iterable, Iterator, Sized
-from itertools import chain, tee
+from itertools import chain, tee, zip_longest
 
 import networkx as nx
 
@@ -282,7 +280,7 @@ class PythonRandomViaNumpyBits(random.Random):
     bit-stream for all work with NetworkX. This implementation is based on helpful
     comments and code from Robert Kern on NumPy's GitHub Issue #24458.
 
-    This implementation supercedes that of `PythonRandomInterface` which rewrote
+    This implementation supersedes that of `PythonRandomInterface` which rewrote
     methods to account for subtle differences in API between `random` and
     `numpy.random`. Instead this subclasses `random.Random` and overwrites
     the methods `random`, `getrandbits`, `getstate`, `setstate` and `seed`.
@@ -524,50 +522,29 @@ def edges_equal(edges1, edges2):
 
     Parameters
     ----------
-    edges1, edges2 : iterables of with u, v nodes as
-        edge tuples (u, v), or
-        edge tuples with data dicts (u, v, d), or
-        edge tuples with keys and data dicts (u, v, k, d)
+    edges1, edges2 : iterables of tuples
+        Each tuple can be
+        an edge tuple ``(u, v)``, or
+        an edge tuple with data `dict`s ``(u, v, d)``, or
+        an edge tuple with keys and data `dict`s ``(u, v, k, d)``.
 
     Returns
     -------
     bool
-        True if edges are equal, False otherwise.
+        `True` if edges are equal, `False` otherwise.
     """
-    from collections import defaultdict
+    d1 = defaultdict(list)
+    d2 = defaultdict(list)
 
-    d1 = defaultdict(dict)
-    d2 = defaultdict(dict)
-    c1 = 0
-    for c1, e in enumerate(edges1):
-        u, v = e[0], e[1]
-        data = [e[2:]]
-        if v in d1[u]:
-            data = d1[u][v] + data
-        d1[u][v] = data
-        d1[v][u] = data
-    c2 = 0
-    for c2, e in enumerate(edges2):
-        u, v = e[0], e[1]
-        data = [e[2:]]
-        if v in d2[u]:
-            data = d2[u][v] + data
-        d2[u][v] = data
-        d2[v][u] = data
-    if c1 != c2:
-        return False
-    # can check one direction because lengths are the same.
-    for n, nbrdict in d1.items():
-        for nbr, datalist in nbrdict.items():
-            if n not in d2:
-                return False
-            if nbr not in d2[n]:
-                return False
-            d2datalist = d2[n][nbr]
-            for data in datalist:
-                if datalist.count(data) != d2datalist.count(data):
-                    return False
-    return True
+    for e1, e2 in zip_longest(edges1, edges2, fillvalue=None):
+        if e1 is None or e2 is None:
+            return False  # One is longer.
+        for e, d in [(e1, d1), (e2, d2)]:
+            u, v, *data = e
+            d[u, v] = d[v, u] = d[u, v] + [data]
+
+    # Can check one direction because lengths are the same.
+    return all(d1[e].count(data) == d2[e].count(data) for e in d1 for data in d1[e])
 
 
 def graphs_equal(graph1, graph2):
@@ -599,3 +576,55 @@ def _clear_cache(G):
     """
     if cache := getattr(G, "__networkx_cache__", None):
         cache.clear()
+
+
+def check_create_using(create_using, *, directed=None, multigraph=None, default=None):
+    """Assert that create_using has good properties
+
+    This checks for desired directedness and multi-edge properties.
+    It returns `create_using` unless that is `None` when it returns
+    the optionally specified default value.
+
+    Parameters
+    ----------
+    create_using : None, graph class or instance
+        The input value of create_using for a function.
+    directed : None or bool
+        Whether to check `create_using.is_directed() == directed`.
+        If None, do not assert directedness.
+    multigraph : None or bool
+        Whether to check `create_using.is_multigraph() == multigraph`.
+        If None, do not assert multi-edge property.
+    default : None or graph class
+        The graph class to return if create_using is None.
+
+    Returns
+    -------
+    create_using : graph class or instance
+        The provided graph class or instance, or if None, the `default` value.
+
+    Raises
+    ------
+    NetworkXError
+        When `create_using` doesn't match the properties specified by `directed`
+        or `multigraph` parameters.
+    """
+    if default is None:
+        default = nx.Graph
+    G = create_using if create_using is not None else default
+
+    G_directed = G.is_directed(None) if isinstance(G, type) else G.is_directed()
+    G_multigraph = G.is_multigraph(None) if isinstance(G, type) else G.is_multigraph()
+
+    if directed is not None:
+        if directed and not G_directed:
+            raise nx.NetworkXError("create_using must be directed")
+        if not directed and G_directed:
+            raise nx.NetworkXError("create_using must not be directed")
+
+    if multigraph is not None:
+        if multigraph and not G_multigraph:
+            raise nx.NetworkXError("create_using must be a multi-graph")
+        if not multigraph and G_multigraph:
+            raise nx.NetworkXError("create_using must not be a multi-graph")
+    return G

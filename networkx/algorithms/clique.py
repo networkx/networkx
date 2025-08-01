@@ -7,7 +7,8 @@ see the Wikipedia article on the clique problem [1]_.
 .. [1] clique problem:: https://en.wikipedia.org/wiki/Clique_problem
 
 """
-from collections import defaultdict, deque
+
+from collections import Counter, defaultdict, deque
 from itertools import chain, combinations, islice
 
 import networkx as nx
@@ -155,7 +156,10 @@ def find_cliques(G, nodes=None):
     node. The following produces a dictionary keyed by node whose
     values are the number of maximal cliques in `G` that contain the node:
 
-    >>> pprint({n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G})
+    >>> from collections import Counter
+    >>> from itertools import chain
+    >>> counts = Counter(chain.from_iterable(nx.find_cliques(G)))
+    >>> pprint(dict(counts))
     {0: 13,
      1: 6,
      2: 7,
@@ -580,7 +584,7 @@ def number_of_cliques(G, nodes=None, cliques=None):
     Optional list of cliques can be input if already computed.
     """
     if cliques is None:
-        cliques = list(find_cliques(G))
+        cliques = find_cliques(G)
 
     if nodes is None:
         nodes = list(G.nodes())  # none, get entire graph
@@ -588,11 +592,10 @@ def number_of_cliques(G, nodes=None, cliques=None):
     if not isinstance(nodes, list):  # check for a list
         v = nodes
         # assume it is a single value
-        numcliq = len([1 for c in cliques if v in c])
+        numcliq = sum(1 for c in cliques if v in c)
     else:
-        numcliq = {}
-        for v in nodes:
-            numcliq[v] = len([1 for c in cliques if v in c])
+        numcliq = Counter(chain.from_iterable(cliques))
+        numcliq = {v: numcliq[v] for v in nodes}  # return a dict
     return numcliq
 
 

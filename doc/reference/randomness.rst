@@ -31,8 +31,8 @@ seed of each RNG to an arbitrary integer:
 
    >>> import random
    >>> random.seed(246)        # or any integer
-   >>> import numpy
-   >>> numpy.random.seed(4812)
+   >>> import numpy as np
+   >>> np.random.seed(4812)
 
 Many users will be satisfied with this level of control.
 

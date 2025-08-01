@@ -4,7 +4,7 @@ import pickle
 import pytest
 
 import networkx as nx
-from networkx.utils.configs import Config
+from networkx.utils.configs import BackendPriorities, Config
 
 
 # Define this at module level so we can test pickling
@@ -14,11 +14,12 @@ class ExampleConfig(Config):
     x: int
     y: str
 
-    def _check_config(self, key, value):
+    def _on_setattr(self, key, value):
         if key == "x" and value <= 0:
             raise ValueError("x must be positive")
         if key == "y" and not isinstance(value, str):
             raise TypeError("y must be a str")
+        return value
 
 
 class EmptyConfig(Config):
@@ -116,12 +117,13 @@ def test_config_defaults():
 
 
 def test_nxconfig():
-    assert isinstance(nx.config.backend_priority, list)
+    assert isinstance(nx.config.backend_priority, BackendPriorities)
+    assert isinstance(nx.config.backend_priority.algos, list)
     assert isinstance(nx.config.backends, Config)
     with pytest.raises(TypeError, match="must be a list of backend names"):
-        nx.config.backend_priority = "nx_loopback"
+        nx.config.backend_priority.algos = "nx_loopback"
     with pytest.raises(ValueError, match="Unknown backend when setting"):
-        nx.config.backend_priority = ["this_almost_certainly_is_not_a_backend"]
+        nx.config.backend_priority.algos = ["this_almost_certainly_is_not_a_backend"]
     with pytest.raises(TypeError, match="must be a Config of backend configs"):
         nx.config.backends = {}
     with pytest.raises(TypeError, match="must be a Config of backend configs"):
@@ -130,6 +132,42 @@ def test_nxconfig():
         nx.config.backends = Config(this_almost_certainly_is_not_a_backend=Config())
     with pytest.raises(TypeError, match="must be True or False"):
         nx.config.cache_converted_graphs = "bad value"
+    with pytest.raises(TypeError, match="must be a set of "):
+        nx.config.warnings_to_ignore = 7
+    with pytest.raises(ValueError, match="Unknown warning "):
+        nx.config.warnings_to_ignore = {"bad value"}
+
+    prev = nx.config.backend_priority
+    try:
+        nx.config.backend_priority = ["networkx"]
+        assert isinstance(nx.config.backend_priority, BackendPriorities)
+        assert nx.config.backend_priority.algos == ["networkx"]
+    finally:
+        nx.config.backend_priority = prev
+
+
+def test_nxconfig_context():
+    # We do some special handling so that `nx.config.backend_priority = val`
+    # actually does `nx.config.backend_priority.algos = val`.
+    orig = nx.config.backend_priority.algos
+    val = [] if orig else ["networkx"]
+    assert orig != val
+    assert nx.config.backend_priority.algos != val
+    with nx.config(backend_priority=val):
+        assert nx.config.backend_priority.algos == val
+    assert nx.config.backend_priority.algos == orig
+    with nx.config.backend_priority(algos=val):
+        assert nx.config.backend_priority.algos == val
+    assert nx.config.backend_priority.algos == orig
+    bad = ["bad-backend"]
+    with pytest.raises(ValueError, match="Unknown backend"):
+        nx.config.backend_priority = bad
+    with pytest.raises(ValueError, match="Unknown backend"):
+        with nx.config(backend_priority=bad):
+            pass
+    with pytest.raises(ValueError, match="Unknown backend"):
+        with nx.config.backend_priority(algos=bad):
+            pass
 
 
 def test_not_strict():
@@ -184,3 +222,42 @@ def test_not_strict():
 
     assert FlexibleConfigWithDefault().x == 0
     assert FlexibleConfigWithDefault(x=1)["x"] == 1
+
+
+def test_context():
+    cfg = Config(x=1)
+    with cfg(x=2) as c:
+        assert c.x == 2
+        c.x = 3
+        assert cfg.x == 3
+    assert cfg.x == 1
+
+    with cfg(x=2) as c:
+        assert c == cfg
+        assert cfg.x == 2
+        with cfg(x=3) as c2:
+            assert c2 == cfg
+            assert cfg.x == 3
+            with pytest.raises(RuntimeError, match="context manager without"):
+                with cfg as c3:  # Forgot to call `cfg(...)`
+                    pass
+            assert cfg.x == 3
+        assert cfg.x == 2
+    assert cfg.x == 1
+
+    c = cfg(x=4)  # Not yet as context (not recommended, but possible)
+    assert c == cfg
+    assert cfg.x == 4
+    # Cheat by looking at internal data; context stack should only grow with __enter__
+    assert cfg._prev is not None
+    assert cfg._context_stack == []
+    with c:
+        assert c == cfg
+        assert cfg.x == 4
+    assert cfg.x == 1
+    # Cheat again; there was no preceding `cfg(...)` call this time
+    assert cfg._prev is None
+    with pytest.raises(RuntimeError, match="context manager without"):
+        with cfg:
+            pass
+    assert cfg.x == 1

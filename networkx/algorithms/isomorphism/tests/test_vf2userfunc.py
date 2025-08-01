@@ -1,5 +1,5 @@
 """
-    Tests for VF2 isomorphism algorithm for weighted graphs.
+Tests for VF2 isomorphism algorithm for weighted graphs.
 """
 
 import math

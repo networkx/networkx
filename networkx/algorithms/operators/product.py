@@ -1,6 +1,7 @@
 """
 Graph products.
 """
+
 from itertools import product
 
 import networkx as nx
@@ -291,10 +292,12 @@ def strong_product(G, H):
 
     The strong product $P$ of the graphs $G$ and $H$ has a node set that
     is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
-    $P$ has an edge $((u,v), (x,y))$ if and only if
-    $u==v$ and $(x,y)$ is an edge in $H$, or
-    $x==y$ and $(u,v)$ is an edge in $G$, or
-    $(u,v)$ is an edge in $G$ and $(x,y)$ is an edge in $H$.
+    $P$ has an edge $((u,x), (v,y))$ if any of the following conditions
+    are met:
+
+    - $u=v$ and $(x,y)$ is an edge in $H$
+    - $x=y$ and $(u,v)$ is an edge in $G$
+    - $(u,v)$ is an edge in $G$ and $(x,y)$ is an edge in $H$
 
     Parameters
     ----------
@@ -459,7 +462,7 @@ def rooted_product(G, H, root):
     The nodes of G and H are not relabeled.
     """
     if root not in H:
-        raise nx.NetworkXError("root must be a vertex in H")
+        raise nx.NodeNotFound("root must be a vertex in H")
 
     R = nx.Graph()
     R.add_nodes_from(product(G, H))

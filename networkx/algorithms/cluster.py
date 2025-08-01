@@ -8,6 +8,7 @@ from networkx.utils import not_implemented_for
 
 __all__ = [
     "triangles",
+    "all_triangles",
     "average_clustering",
     "clustering",
     "transitivity",
@@ -48,6 +49,13 @@ def triangles(G, nodes=None):
     {0: 6, 1: 6, 2: 6, 3: 6, 4: 6}
     >>> print(list(nx.triangles(G, [0, 1]).values()))
     [6, 6]
+
+    The total number of unique triangles in `G` can be determined by summing
+    the number of triangles for each node and dividing by 3 (because a given
+    triangle gets counted three times, once for each of its nodes).
+
+    >>> sum(nx.triangles(G).values()) // 3
+    10
 
     Notes
     -----
@@ -245,6 +253,72 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
         dtotal = len(ipreds) + len(isuccs)
         dbidirectional = len(ipreds & isuccs)
         yield (i, dtotal, dbidirectional, float(directed_triangles))
+
+
+@not_implemented_for("directed")
+@nx._dispatchable
+def all_triangles(G, nbunch=None):
+    """
+    Yields all unique triangles in an undirected graph.
+
+    A triangle is a set of three distinct nodes where each node is connected to
+    the other two.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        An undirected graph.
+
+    nbunch : node, iterable of nodes, or None (default=None)
+        If a node or iterable of nodes, only triangles involving at least one
+        node in `nbunch` are yielded.
+        If ``None``, yields all unique triangles in the graph.
+
+    Yields
+    ------
+    tuple
+        A tuple of three nodes forming a triangle ``(u, v, w)``.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(4)
+    >>> sorted([sorted(t) for t in all_triangles(G)])
+    [[0, 1, 2], [0, 1, 3], [0, 2, 3], [1, 2, 3]]
+
+    Notes
+    -----
+    This algorithm ensures each triangle is yielded once using an internal node ordering.
+    In multigraphs, triangles are identified by their unique set of nodes,
+    ignoring multiple edges between the same nodes. Self-loops are ignored.
+    Runs in ``O(m * d)`` time in the worst case, where ``m`` the number of edges
+    and ``d`` the maximum degree.
+
+    See Also
+    --------
+    :func:`~networkx.algorithms.triads.all_triads` : related function for directed graphs
+    """
+    if nbunch is None:
+        nbunch = relevant_nodes = G
+    else:
+        nbunch = dict.fromkeys(G.nbunch_iter(nbunch))
+        relevant_nodes = chain(
+            nbunch,
+            (nbr for node in nbunch for nbr in G.neighbors(node) if nbr not in nbunch),
+        )
+
+    node_to_id = {node: i for i, node in enumerate(relevant_nodes)}
+
+    for u in nbunch:
+        u_id = node_to_id[u]
+        u_nbrs = G._adj[u].keys()
+        for v in u_nbrs:
+            v_id = node_to_id.get(v, -1)
+            if v_id <= u_id:
+                continue
+            v_nbrs = G._adj[v].keys()
+            for w in v_nbrs & u_nbrs:
+                if node_to_id.get(w, -1) > v_id:
+                    yield u, v, w
 
 
 @nx._dispatchable(edge_attrs="weight")
@@ -505,6 +579,8 @@ def square_clustering(G, nodes=None):
 
     Notes
     -----
+    Self loops are ignored.
+
     While :math:`C_3(v)` (triangle clustering) gives the probability that
     two neighbors of node v are connected with each other, :math:`C_4(v)` is
     the probability that two neighbors of node v share a common
@@ -525,18 +601,65 @@ def square_clustering(G, nodes=None):
     else:
         node_iter = G.nbunch_iter(nodes)
     clustering = {}
+    _G_adj = G._adj
+
+    class GAdj(dict):
+        """Calculate (and cache) node neighbor sets excluding self-loops."""
+
+        def __missing__(self, v):
+            v_neighbors = self[v] = set(_G_adj[v])
+            v_neighbors.discard(v)  # Ignore self-loops
+            return v_neighbors
+
+    G_adj = GAdj()  # Values are sets of neighbors (no self-loops)
+
     for v in node_iter:
-        clustering[v] = 0
-        potential = 0
-        for u, w in combinations(G[v], 2):
-            squares = len((set(G[u]) & set(G[w])) - {v})
-            clustering[v] += squares
-            degm = squares + 1
-            if w in G[u]:
-                degm += 1
-            potential += (len(G[u]) - degm) + (len(G[w]) - degm) + squares
+        v_neighbors = G_adj[v]
+        v_degrees_m1 = len(v_neighbors) - 1  # degrees[v] - 1 (used below)
+        if v_degrees_m1 <= 0:
+            # Can't form a square without at least two neighbors
+            clustering[v] = 0
+            continue
+
+        # Count squares with nodes u-v-w-x from the current node v.
+        # Terms of the denominator: potential = uw_degrees - uw_count - triangles - squares
+        # uw_degrees: degrees[u] + degrees[w] for each u-w combo
+        uw_degrees = 0
+        # uw_count: 1 for each u and 1 for each w for all combos (degrees * (degrees - 1))
+        uw_count = len(v_neighbors) * v_degrees_m1
+        # triangles: 1 for each edge where u-w or w-u are connected (i.e. triangles)
+        triangles = 0
+        # squares: the number of squares (also the numerator)
+        squares = 0
+
+        # Iterate over all neighbors
+        for u in v_neighbors:
+            u_neighbors = G_adj[u]
+            uw_degrees += len(u_neighbors) * v_degrees_m1
+            # P2 from https://arxiv.org/abs/2007.11111
+            p2 = len(u_neighbors & v_neighbors)
+            # triangles is C_3, sigma_4 from https://arxiv.org/abs/2007.11111
+            # This double-counts triangles compared to `triangles` function
+            triangles += p2
+            # squares is C_4, sigma_12 from https://arxiv.org/abs/2007.11111
+            # Include this term, b/c a neighbor u can also be a neighbor of neighbor x
+            squares += p2 * (p2 - 1)  # Will divide by 2 later
+
+        # And iterate over all neighbors of neighbors.
+        # These nodes x may be the corners opposite v in squares u-v-w-x.
+        two_hop_neighbors = set.union(*(G_adj[u] for u in v_neighbors))
+        two_hop_neighbors -= v_neighbors  # Neighbors already counted above
+        two_hop_neighbors.discard(v)
+        for x in two_hop_neighbors:
+            p2 = len(v_neighbors & G_adj[x])
+            squares += p2 * (p2 - 1)  # Will divide by 2 later
+
+        squares //= 2
+        potential = uw_degrees - uw_count - triangles - squares
         if potential > 0:
-            clustering[v] /= potential
+            clustering[v] = squares / potential
+        else:
+            clustering[v] = 0
     if nodes in G:
         # Return the value of the sole entry in the dictionary.
         return clustering[nodes]

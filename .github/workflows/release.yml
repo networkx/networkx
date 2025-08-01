@@ -14,6 +14,8 @@ jobs:
     permissions:
       # IMPORTANT: this permission is mandatory for trusted publishing
       id-token: write
+      attestations: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,6 +31,14 @@ jobs:
           git clean -fxd
           pip install -U build twine wheel
           python -m build --sdist --wheel
+
+      - name: Verify the distribution
+        run: twine check --strict dist/*
+
+      - name: Generate artifact attestation for sdist and wheel
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
+        with:
+          subject-path: "dist/networkx-*"
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

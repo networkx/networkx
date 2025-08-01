@@ -12,6 +12,7 @@ from networkx.utils import (
     create_random_state,
     dict_to_numpy_array,
     discrete_sequence,
+    edges_equal,
     flatten,
     groups,
     make_list_of_ints,
@@ -63,7 +64,7 @@ def test_make_list_of_ints():
     mylist = [1, 2, 3.0, 42, -2]
     assert make_list_of_ints(mylist) is mylist
     assert make_list_of_ints(mylist) == mylist
-    assert type(make_list_of_ints(mylist)[2]) is int
+    assert isinstance(make_list_of_ints(mylist)[2], int)
     pytest.raises(nx.NetworkXError, make_list_of_ints, [1, 2, 3, "kermit"])
     pytest.raises(nx.NetworkXError, make_list_of_ints, [1, 2, 3.1])
 
@@ -84,10 +85,10 @@ class TestNumpyArray:
         a = np.array([1, 2, 3], dtype=np.int64)
         b = np.array([1.0, 2, 3])
         c = np.array([1.1, 2, 3])
-        assert type(make_list_of_ints(a)) == list
+        assert isinstance(make_list_of_ints(a), list)
         assert make_list_of_ints(b) == list(b)
         B = make_list_of_ints(b)
-        assert type(B[0]) == int
+        assert isinstance(B[0], int)
         pytest.raises(nx.NetworkXError, make_list_of_ints, c)
 
     def test__dict_to_numpy_array1(self):
@@ -266,3 +267,90 @@ def test_arbitrary_element_raises(iterator):
     """Value error is raised when input is an iterator."""
     with pytest.raises(ValueError, match="from an iterator"):
         arbitrary_element(iterator)
+
+
+@pytest.mark.parametrize("n", [5, 10, 20])
+@pytest.mark.parametrize("gen", [nx.complete_graph, nx.path_graph, nx.cycle_graph])
+@pytest.mark.parametrize("create_using", [nx.Graph, nx.DiGraph])
+def test_edges_equal(n, gen, create_using):
+    """Test whether edges_equal properly compares edges without attribute data."""
+    G = gen(n, create_using=create_using)
+    H = gen(n, create_using=create_using)
+    assert edges_equal(G.edges(), H.edges())
+    assert edges_equal(H.edges(), G.edges())
+
+    H.remove_edge(0, 1)
+    assert edges_equal(H.edges(), H.edges())
+    assert not edges_equal(G.edges(), H.edges())
+    assert not edges_equal(H.edges(), G.edges())
+
+
+@pytest.mark.parametrize("n", [5, 10, 20])
+@pytest.mark.parametrize("gen", [nx.complete_graph, nx.path_graph, nx.cycle_graph])
+@pytest.mark.parametrize("create_using", [nx.MultiGraph, nx.MultiDiGraph])
+def test_edges_equal_multiedge(n, gen, create_using):
+    """Test whether ``edges_equal`` properly compares edges in multigraphs."""
+    G = gen(n, create_using=create_using)
+    H = gen(n, create_using=create_using)
+
+    G_edges = list(G.edges())
+    G.add_edges_from(G_edges)
+    H.add_edges_from(G_edges)
+    assert edges_equal(G.edges(), H.edges())
+
+    H.remove_edge(0, 1)
+    assert edges_equal(H.edges(), H.edges())
+    assert not edges_equal(G.edges(), H.edges())
+
+
+@pytest.mark.parametrize("n", [5, 10, 20])
+@pytest.mark.parametrize("gen", [nx.complete_graph, nx.path_graph, nx.cycle_graph])
+@pytest.mark.parametrize("weight", [1, 2, 3])
+def test_edges_equal_weighted(n, gen, weight):
+    """Test whether ``edges_equal`` properly compares edges with weight data."""
+    G = gen(n)
+    H = gen(n)
+
+    G_edges = list(G.edges())
+    G.add_weighted_edges_from((*e, weight) for e in G_edges)
+    assert edges_equal(G.edges(), G.edges())
+
+    H.add_weighted_edges_from((*e, weight + 1) for e in G_edges)
+    assert edges_equal(H.edges(), H.edges())
+    assert not edges_equal(G.edges(data=True), H.edges(data=True))
+
+
+def test_edges_equal_data():
+    """Test whether ``edges_equal`` properly compares edges with attribute dictionaries."""
+    G = nx.path_graph(3)
+    H = nx.path_graph(3)
+    I = nx.path_graph(3, create_using=nx.MultiGraph)
+
+    attrs = {(0, 1): {"attr1": 20, "attr2": "nothing"}, (1, 2): {"attr2": 3}}
+    nx.set_edge_attributes(G, attrs)
+    assert edges_equal(G.edges(data=True), G.edges(data=True))
+    assert not edges_equal(G.edges(data=True), G.edges())
+
+    nx.set_edge_attributes(H, attrs)
+    assert edges_equal(G.edges(), H.edges())
+    assert edges_equal(G.edges(data=True), H.edges(data=True))
+
+    H[0][1]["attr2"] = "something"
+    assert edges_equal(G.edges(), H.edges())
+    assert not edges_equal(G.edges(data=True), H.edges(data=True))
+
+
+def test_edges_equal_multigraph_data():
+    """Test whether ``edges_equal`` properly compares edges with attribute dictionaries in ``MultiGraphs``."""
+    G = nx.path_graph(3, create_using=nx.MultiGraph)
+    I = nx.path_graph(3, create_using=nx.MultiGraph)
+
+    G.add_edge(0, 1, 0, attr1="blue")
+    G.add_edge(1, 2, 1, attr2="green")
+    I.add_edge(0, 1, 0, attr1="blue")
+    I.add_edge(0, 1, 1, attr2="green")
+    assert edges_equal(G.edges(data=True), G.edges(data=True))
+    assert not edges_equal(G.edges(), I.edges())
+    assert not edges_equal(G.edges(data=True), I.edges(data=True))
+    assert not edges_equal(G.edges(keys=True), I.edges(keys=True))
+    assert not edges_equal(G.edges(keys=True, data=True), I.edges(keys=True, data=True))
