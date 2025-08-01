@@ -15,7 +15,8 @@ vector. The algorithm then propagates trust through the graph using the same ite
 
 Key Steps:
 1. Define a set of seed nodes that are considered trustworthy.
-2. Create a personalization vector where seed nodes are assigned equal trust, and non-seed nodes are assigned zero.
+2. Create a personalization vector where seed nodes are assigned equal trust,
+   and non-seed nodes are assigned zero.
 3. Run the PageRank algorithm with the personalization vector to compute trust scores for all nodes.
 
 References
@@ -46,13 +47,10 @@ G.add_edges_from(edges)
 # Define seed nodes (trusted nodes)
 seed_nodes = {1, 3}
 
-# use personalization vector to assign equal trust to seed nodes
+# Use a personalization vector to assign trust values to seed nodes.
+# Seed nodes can have equal trust or custom values, while non-seed nodes are
+# assigned zero trust.
 personalization = {n: 1.0 / len(seed_nodes) if n in seed_nodes else 0 for n in G.nodes}
-"""
-alternatively, you can use a dictionary with custom trust values:
-personalization = {1: 0.7, 3: 0.3}
-personalization.update({n: 0 for n in G.nodes if n not in seed_nodes})
-"""
 
 # Compute TrustRank using PageRank with personalization
 trust_rank = nx.pagerank(G, alpha=0.85, personalization=personalization)
@@ -70,5 +68,4 @@ nx.draw(
     edge_color="gray",
     font_size=10,
 )
-plt.title("TrustRank Visualization")
 plt.show()
