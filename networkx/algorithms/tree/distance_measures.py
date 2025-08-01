@@ -44,7 +44,7 @@ def center(G):
     This algorithm iteratively removes leaves (nodes with degree 1) from the tree until
     there are only 1 or 2 nodes left. The remaining nodes form the center of the tree.
 
-    This algorithm's time complexity is O(N) where N is the number of nodes in the tree.
+    This algorithm's time complexity is ``O(N)`` where ``N`` is the number of nodes in the tree.
 
     Examples
     --------
@@ -52,9 +52,9 @@ def center(G):
     >>> nx.tree.center(G)
     [1, 2]
 
-    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 5)])
+    >>> G = nx.path_graph(5)
     >>> nx.tree.center(G)
-    [3]
+    [2]
     """
     center_candidates_degree = dict(G.degree)
     leaves = {node for node, degree in center_candidates_degree.items() if degree == 1}
