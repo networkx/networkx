@@ -9,7 +9,6 @@ import networkx as nx
 
 class CoreBenchmarks:
     seed = 42
-    random.seed(seed)
     param_names = ["nk", "precomputed"]
     nks = (
         [100, None],
@@ -26,6 +25,7 @@ class CoreBenchmarks:
 
     def setup(self, nk, precomputed):
         n, k = nk
+        random.seed(self.seed)
         degree_sequence = [
             random.randint(0, n) for _ in range(n)
         ]  # TODO: Use a more realistic degree sequence.
