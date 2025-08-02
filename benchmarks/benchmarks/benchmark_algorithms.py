@@ -134,5 +134,60 @@ class ReachabilityBenchmark:
         rng = random.Random(self._seed)
         self.source, self.target = rng.sample(self.nodes, 2)
 
+        # Pre-compute SCCs for the new benchmarks
+        self.sccs = list(nx.strongly_connected_components(self.G))
+        self.scc_graph = nx.condensation(self.G, self.sccs)
+
+        # Find pairs for same SCC (guaranteed reachable)
+        self.same_scc_pairs = []
+        for scc in self.sccs:
+            if len(scc) >= 2:
+                scc_nodes = list(scc)
+                # Pick two different nodes from the same SCC
+                for i in range(min(3, len(scc_nodes))):  # Limit to 3 pairs per SCC
+                    for j in range(i + 1, min(i + 4, len(scc_nodes))):
+                        self.same_scc_pairs.append((scc_nodes[i], scc_nodes[j]))
+                        if len(self.same_scc_pairs) >= 5:  # Limit total pairs
+                            break
+                    if len(self.same_scc_pairs) >= 5:
+                        break
+                if len(self.same_scc_pairs) >= 5:
+                    break
+
+        # Find pairs for different SCCs (guaranteed unreachable)
+        self.different_scc_pairs = []
+        if len(self.sccs) >= 2:
+            # Find SCCs that are not reachable from each other
+            for i, scc1 in enumerate(self.sccs):
+                for j, scc2 in enumerate(self.sccs):
+                    if i != j:
+                        # Check if there's no path between these SCCs
+                        if not nx.has_path(self.scc_graph, i, j):
+                            node1 = list(scc1)[0]
+                            node2 = list(scc2)[0]
+                            self.different_scc_pairs.append((node1, node2))
+                            if len(self.different_scc_pairs) >= 5:  # Limit total pairs
+                                break
+                if len(self.different_scc_pairs) >= 5:
+                    break
+
     def time_is_reachable(self, graph):
         _ = nx.tournament.is_reachable(self.G, self.source, self.target)
+
+    def time_is_reachable_same_scc(self, graph):
+        """Benchmark is_reachable for nodes guaranteed to be reachable (same SCC)."""
+        if not self.same_scc_pairs:
+            # Fallback: use any two nodes if no same-SCC pairs found
+            source, target = self.source, self.target
+        else:
+            source, target = self.same_scc_pairs[0]
+        _ = nx.tournament.is_reachable(self.G, source, target)
+
+    def time_is_reachable_different_sccs(self, graph):
+        """Benchmark is_reachable for nodes guaranteed to be unreachable (different SCCs)."""
+        if not self.different_scc_pairs:
+            # Fallback: use any two nodes if no different-SCC pairs found
+            source, target = self.source, self.target
+        else:
+            source, target = self.different_scc_pairs[0]
+        _ = nx.tournament.is_reachable(self.G, source, target)
