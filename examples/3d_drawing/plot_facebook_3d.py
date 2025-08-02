@@ -65,7 +65,7 @@ anim = animation.FuncAnimation(
     init_func=init,
     interval=50,
     cache_frame_data=False,
-    frames=100,
+    frames=40,
 )
 
 plt.show()
