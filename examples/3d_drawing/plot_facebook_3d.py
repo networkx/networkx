@@ -46,18 +46,17 @@ def init():
     ax.scatter(*nodes.T, alpha=0.2, s=point_size, ec="w")
     for vizedge in edges:
         ax.plot(*vizedge.T, color="tab:gray")
+    ax.grid(False)
+    ax.set_axis_off()
 
 
 def _frame_update(idx):
-    ax.view_init(idx * 0.2, idx * 0.5)
+    ax.view_init(idx * 0.9, idx * 1.8)
 
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
-ax.view_init(20, 11)
 ax.clear()
-ax.grid(False)
-ax.set_axis_off()
 fig.tight_layout()
 
 anim = animation.FuncAnimation(
