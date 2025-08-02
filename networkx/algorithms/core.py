@@ -102,16 +102,17 @@ def core_number(G):
     curr_degree = 0
     for i, v in enumerate(nodes):
         if degrees[v] > curr_degree:
-            bin_boundaries.extend([i] * (degrees[v] - curr_degree))
+            bin_boundaries.extend((i,) * (degrees[v] - curr_degree))
             curr_degree = degrees[v]
     node_pos = {v: pos for pos, v in enumerate(nodes)}
     # The initial guess for the core number of a node is its degree.
     core = degrees
-    nbrs = {v: list(nx.all_neighbors(G, v)) for v in G}
+    nbrs = {v: set(nx.all_neighbors(G, v)) for v in G}
     for v in nodes:
+        cv = core[v]
         for u in nbrs[v]:
-            if core[u] > core[v]:
-                nbrs[u].remove(v)
+            if core[u] > cv:
+                nbrs[u].discard(v)
                 pos = node_pos[u]
                 bin_start = bin_boundaries[core[u]]
                 node_pos[u] = bin_start
