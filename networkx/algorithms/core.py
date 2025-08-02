@@ -468,18 +468,24 @@ def k_truss(G, k):
         raise nx.NetworkXNotImplemented(msg)
 
     H = G.copy()
+    threshold = k - 2
 
     n_dropped = 1
     while n_dropped > 0:
-        n_dropped = 0
         to_drop = []
         seen = set()
-        for u in H:
+        for u, u_nbrs in H.adjacency():
+            u_keys = u_nbrs.keys()
             seen.add(u)
             to_drop.extend(
                 (u, v)
-                for v in H._adj[u]
-                if v not in seen and len(H._adj[u].keys() & H._adj[v].keys()) < k - 2
+                for v in u_nbrs
+                if v not in seen
+                and (
+                    len(u_keys) < threshold
+                    or len(H._adj[v].keys()) < threshold
+                    or len(u_keys & H._adj[v].keys()) < threshold
+                )
             )
         H.remove_edges_from(to_drop)
         n_dropped = len(to_drop)
