@@ -17,7 +17,8 @@ import random
 
 # The graph to plot
 facebook = pd.read_csv(
-    "./facebook_combined_shortened.txt.gz",
+    # Dataset from the SNAP database
+    "https://snap.stanford.edu/data/facebook_combined.txt.gz",
     compression="gzip",
     sep=" ",
     names=["start_node", "end_node"],
