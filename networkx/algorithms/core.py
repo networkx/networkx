@@ -29,6 +29,8 @@ http://doi.org/10.1038/srep31708
 
 """
 
+from collections import defaultdict
+
 import networkx as nx
 
 __all__ = [
@@ -107,19 +109,28 @@ def core_number(G):
     node_pos = {v: pos for pos, v in enumerate(nodes)}
     # The initial guess for the core number of a node is its degree.
     core = degrees
-    nbrs = {v: set(nx.all_neighbors(G, v)) for v in G}
+    out_nbrs = {v: set(nx.neighbors(G, v)) for v in G}
+    in_nbrs = (
+        {v: set(G.predecessors(v)) for v in G} if G.is_directed() else defaultdict(set)
+    )
+
+    def update_core(v, nbrs):
+        nbrs.discard(v)
+        pos = node_pos[u]
+        bin_start = bin_boundaries[core[u]]
+        node_pos[u] = bin_start
+        node_pos[nodes[bin_start]] = pos
+        nodes[bin_start], nodes[pos] = nodes[pos], nodes[bin_start]
+        bin_boundaries[core[u]] += 1
+        core[u] -= 1
+
     for v in nodes:
         cv = core[v]
-        for u in nbrs[v]:
-            if core[u] > cv:
-                nbrs[u].discard(v)
-                pos = node_pos[u]
-                bin_start = bin_boundaries[core[u]]
-                node_pos[u] = bin_start
-                node_pos[nodes[bin_start]] = pos
-                nodes[bin_start], nodes[pos] = nodes[pos], nodes[bin_start]
-                bin_boundaries[core[u]] += 1
-                core[u] -= 1
+        for nbrs in (out_nbrs, in_nbrs):
+            for u in nbrs[v]:
+                if core[u] > cv:
+                    update_core(v, nbrs[u])
+
     return core
 
 
