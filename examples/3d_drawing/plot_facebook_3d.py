@@ -16,30 +16,29 @@ import pandas as pd
 import random
 
 # The graph to plot
-facebook = pd.read_csv(
+df = pd.read_csv(
     # Dataset from the SNAP database
     "https://snap.stanford.edu/data/facebook_combined.txt.gz",
     compression="gzip",
     sep=" ",
-    names=["start_node", "end_node"],
+    names=["source", "target"],
 )
 
-# Randomly select 50% of the edges
-rng = np.random.default_rng()
-G = nx.from_edgelist(rng.choice(facebook, size=2500, replace=False))
+G = nx.from_pandas_edgelist(df)
+
+# Extract the ego_graph for node `n`, i.e. the induced subgraph of neighbors of
+# `n` within a given radius
+node = 3981
+radius = 2
+ego = nx.ego_graph(G, node, radius)
 
 # Generate layout of the graph using spring_layout in 3D
-pos = nx.spring_layout(
-    G,
-    iterations=30,  # Convergence expected
-    dim=3,
-    seed=1721,
-)
+pos = nx.spring_layout(ego, dim=3, seed=25519, method="energy")
 
 # Getting nodes and edges into the right format for matplotlib
-nodes = np.array([pos[v] for v in G])
-edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
-point_size = 1000 // np.sqrt(len(G))
+nodes = np.array([pos[v] for v in ego])
+edges = np.array([(pos[u], pos[v]) for u, v in ego.edges()])
+point_size = 1000 // np.sqrt(len(ego))
 
 
 def init():
