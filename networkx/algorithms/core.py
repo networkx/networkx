@@ -29,6 +29,8 @@ http://doi.org/10.1038/srep31708
 
 """
 
+from collections import defaultdict
+
 import networkx as nx
 
 __all__ = [
@@ -102,23 +104,33 @@ def core_number(G):
     curr_degree = 0
     for i, v in enumerate(nodes):
         if degrees[v] > curr_degree:
-            bin_boundaries.extend([i] * (degrees[v] - curr_degree))
+            bin_boundaries.extend((i,) * (degrees[v] - curr_degree))
             curr_degree = degrees[v]
     node_pos = {v: pos for pos, v in enumerate(nodes)}
     # The initial guess for the core number of a node is its degree.
     core = degrees
-    nbrs = {v: list(nx.all_neighbors(G, v)) for v in G}
+    out_nbrs = {v: set(nx.neighbors(G, v)) for v in G}
+    in_nbrs = (
+        {v: set(G.predecessors(v)) for v in G} if G.is_directed() else defaultdict(set)
+    )
+
+    def update_core(v, nbrs):
+        nbrs.discard(v)
+        pos = node_pos[u]
+        bin_start = bin_boundaries[core[u]]
+        node_pos[u] = bin_start
+        node_pos[nodes[bin_start]] = pos
+        nodes[bin_start], nodes[pos] = nodes[pos], nodes[bin_start]
+        bin_boundaries[core[u]] += 1
+        core[u] -= 1
+
     for v in nodes:
-        for u in nbrs[v]:
-            if core[u] > core[v]:
-                nbrs[u].remove(v)
-                pos = node_pos[u]
-                bin_start = bin_boundaries[core[u]]
-                node_pos[u] = bin_start
-                node_pos[nodes[bin_start]] = pos
-                nodes[bin_start], nodes[pos] = nodes[pos], nodes[bin_start]
-                bin_boundaries[core[u]] += 1
-                core[u] -= 1
+        cv = core[v]
+        for nbrs in (out_nbrs, in_nbrs):
+            for u in nbrs[v]:
+                if core[u] > cv:
+                    update_core(v, nbrs[u])
+
     return core
 
 
@@ -468,19 +480,25 @@ def k_truss(G, k):
         raise nx.NetworkXNotImplemented(msg)
 
     H = G.copy()
+    threshold = k - 2
 
     n_dropped = 1
     while n_dropped > 0:
-        n_dropped = 0
         to_drop = []
         seen = set()
-        for u in H:
-            nbrs_u = set(H[u])
+        for u, u_nbrs in H.adjacency():
+            u_keys = u_nbrs.keys()
             seen.add(u)
-            new_nbrs = [v for v in nbrs_u if v not in seen]
-            for v in new_nbrs:
-                if len(nbrs_u & set(H[v])) < (k - 2):
-                    to_drop.append((u, v))
+            to_drop.extend(
+                (u, v)
+                for v in u_nbrs
+                if v not in seen
+                and (
+                    len(u_keys) < threshold
+                    or len(H._adj[v].keys()) < threshold
+                    or len(u_keys & H._adj[v].keys()) < threshold
+                )
+            )
         H.remove_edges_from(to_drop)
         n_dropped = len(to_drop)
         H.remove_nodes_from(list(nx.isolates(H)))
