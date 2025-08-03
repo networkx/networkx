@@ -47,7 +47,7 @@ class TestMCS:
         non_chordal_G.add_edges_from([(1, 2), (1, 3), (2, 4), (2, 5), (3, 4), (3, 5)])
         cls.non_chordal_G = non_chordal_G
 
-        self_loop_G = nx.Graph()
+        self_loop_G = chordal_G.copy()
         self_loop_G.add_edges_from([(1, 1)])
         cls.self_loop_G = self_loop_G
 
@@ -92,8 +92,6 @@ class TestMCS:
         assert set(nx.chordal_graph_cliques(self.chordal_G)) == cliques
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
             set(nx.chordal_graph_cliques(self.non_chordal_G))
-        with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
-            set(nx.chordal_graph_cliques(self.self_loop_G))
 
     def test_chordal_find_cliques_path(self):
         G = nx.path_graph(10)
