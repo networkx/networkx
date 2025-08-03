@@ -109,27 +109,24 @@ def core_number(G):
     node_pos = {v: pos for pos, v in enumerate(nodes)}
     # The initial guess for the core number of a node is its degree.
     core = degrees
-    out_nbrs = {v: set(nx.neighbors(G, v)) for v in G}
-    in_nbrs = (
-        {v: set(G.predecessors(v)) for v in G} if G.is_directed() else defaultdict(set)
-    )
-
-    def update_core(v, nbrs):
-        nbrs.discard(v)
-        pos = node_pos[u]
-        bin_start = bin_boundaries[core[u]]
-        node_pos[u] = bin_start
-        node_pos[nodes[bin_start]] = pos
-        nodes[bin_start], nodes[pos] = nodes[pos], nodes[bin_start]
-        bin_boundaries[core[u]] += 1
-        core[u] -= 1
+    all_nbrs = [{v: set(nx.neighbors(G, v)) for v in G}]
+    if G.is_directed():
+        all_nbrs.append({v: set(G.predecessors(v)) for v in G})
 
     for v in nodes:
         cv = core[v]
-        for nbrs in (out_nbrs, in_nbrs):
-            for u in nbrs[v]:
-                if core[u] > cv:
-                    update_core(v, nbrs[u])
+        for nbrs_set in all_nbrs:
+            for u in nbrs_set[v]:
+                if core[u] <= cv:
+                    continue
+                nbrs_set[u].discard(v)
+                pos = node_pos[u]
+                bin_start = bin_boundaries[core[u]]
+                node_pos[u] = bin_start
+                node_pos[nodes[bin_start]] = pos
+                nodes[bin_start], nodes[pos] = nodes[pos], nodes[bin_start]
+                bin_boundaries[core[u]] += 1
+                core[u] -= 1
 
     return core
 
