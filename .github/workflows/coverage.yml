@@ -37,7 +37,10 @@ jobs:
 
       - name: Test NetworkX
         run: |
-          pytest --cov=networkx --runslow -n auto --doctest-modules --durations=20 --pyargs networkx
+          pytest --cov=networkx --cov-report=html --runslow -n auto --doctest-modules --durations=20 --pyargs networkx
 
-      - name: Upload to codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-${{ matrix.python-version }}
+          path: htmlcov
