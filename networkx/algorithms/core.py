@@ -492,7 +492,7 @@ def k_truss(G, k):
                 if v not in seen
                 and (
                     len(u_keys) < threshold
-                    or len(H._adj[v].keys()) < threshold
+                    or len(H[v]) < threshold
                     or len(u_keys & H._adj[v].keys()) < threshold
                 )
             )
