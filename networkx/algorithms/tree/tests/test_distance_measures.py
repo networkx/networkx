@@ -37,6 +37,8 @@ class TestCenter:
             nx.empty_graph(2),
             nx.Graph(),
             nx.MultiGraph([(0, 1), (0, 1)]),
+            nx.Graph([(0, 1), (1, 2), (3, 4)]),
+            nx.Graph([(0, 1), (1, 2), (3, 4), (4, 5)]),
         ),
     )
     def test_center_non_tree(self, G):

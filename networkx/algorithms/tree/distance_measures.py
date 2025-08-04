@@ -68,11 +68,13 @@ def center(G):
                 if neighbor not in center_candidates_degree:
                     continue
                 center_candidates_degree[neighbor] -= 1
-                if center_candidates_degree[neighbor] == 1:
+                if (cddn := center_candidates_degree[neighbor]) == 1:
                     new_leaves.add(neighbor)
+                elif cddn == 0 and len(center_candidates_degree) != 1:
+                    raise nx.NotATree("input graph is not a tree")
         leaves = new_leaves
 
-    if (n := len(center_candidates_degree)) == 0 or not leaves and n >= 2:
+    if (n := len(center_candidates_degree)) not in {1, 2} or n == 2 and not leaves:
         # We detected graph is not a tree. This check does not necessarily cover all cases?
         raise nx.NotATree("input graph is not a tree")
 
