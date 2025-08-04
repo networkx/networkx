@@ -19,7 +19,7 @@ def center(G):
     This implementation currently only works for unweighted edges.
 
     If the input graph is not a tree, results are not guaranteed to be correct and while
-    some non-trees will raise a `nx.NotATree` exception; not all non-trees will be discovered.
+    some non-trees will raise an ``nx.NotATree`` exception, not all non-trees will be discovered.
     Thus, this function should not be used if caller is unsure whether the input graph
     is a tree. Use ``nx.is_tree(G)`` to check.
 
@@ -31,12 +31,15 @@ def center(G):
     Returns
     -------
     center : list
-        A list of nodes in the center of the tree. This could be one or two nodes.
+        A list of nodes forming the center of the tree. This can be one or two nodes.
 
     Raises
     ------
+    NetworkXNotImplemented
+        If the input graph is directed.
+
     NotATree
-        If the algorithm detects input graph is not a tree. There is no guarantee
+        If the algorithm detects the input graph is not a tree. There is no guarantee
         this error will always raise if a non-tree is passed.
 
     Notes
@@ -75,7 +78,8 @@ def center(G):
         leaves = new_leaves
 
     if (n := len(center_candidates_degree)) not in {1, 2} or n == 2 and not leaves:
-        # We detected graph is not a tree. This check does not necessarily cover all cases?
+        # We have detected graph is not a tree. This check does not cover all cases.
+        # For example, `nx.Graph([(0, 0)])` will not raise an error.
         raise nx.NotATree("input graph is not a tree")
 
     return list(center_candidates_degree)
