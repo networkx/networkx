@@ -497,9 +497,7 @@ def k_truss(G, k):
         n_dropped = len(to_drop)
     H.remove_nodes_from(list(nx.isolates(H)))
 
-    H = nx.relabel_nodes(H, inverse_mapping, copy=True)
-
-    return H
+    return nx.relabel_nodes(H, inverse_mapping, copy=True)
 
 
 @nx.utils.not_implemented_for("multigraph")
