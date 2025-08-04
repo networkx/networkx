@@ -1,9 +1,0 @@
-# Allow coverage to decrease by 0.05%.
-coverage:
-  status:
-    project:
-      default:
-        threshold: 0.05%
-
-# Don't post a comment on pull requests.
-comment: off
