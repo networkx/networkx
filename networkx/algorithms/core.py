@@ -29,8 +29,6 @@ http://doi.org/10.1038/srep31708
 
 """
 
-from collections import defaultdict
-
 import networkx as nx
 
 __all__ = [
