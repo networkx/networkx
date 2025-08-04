@@ -139,6 +139,7 @@ jobs:
             mkdir -p coverage_data
             TEST_FILES=$(circleci tests glob "networkx/**/*.py" | circleci tests split --split-by=timings)
             pytest \
+              --junitxml=test_results/junit.xml \
               --cov=networkx \
               --cov-append \
               --cov-report= \
