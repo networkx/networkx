@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-class LinearTimeMaxmiumIndependentSet:
+class LinearTimeMaximiumIndependentSet:
     """A class for the approximate maximum independent set problem.
 
     This class is a helper for the `maximum_independent_set` function.
@@ -25,21 +25,19 @@ class LinearTimeMaxmiumIndependentSet:
 
     Notes
     -----
-    This implementation does not copy G but modifies it by temporarily
-    removing self-loops and inserting edges. These changes are reverted
-    after finding the approximate maximum independent set.
-    The algorithm only uses G to keep track of adjacency, e.g. no nodes
-    are actually removed from G.
+    This implementation temporarily modifies G by removing self-loops.
+    These changes are reverted after finding the approximate maximum
+    independent set.
 
     Attributes
     ----------
     G : NetworkX graph
-        Undirected graph
+        The undirected graph received as input
+    H : NetworkX graph
+        The undirected graph being operated on
     max_degree : int
-        The maximum degree of G
-    degree : dict
-        The degree of each node
-    nodes_by_degree : dict of setd
+        The maximum degree of H
+    nodes_by_degree : dict of sets
         The set of nodes for each degree up to max_degree
     independent_set : set
         The set of independent nodes, equivalent to nodes_by_degree[0]
@@ -48,44 +46,35 @@ class LinearTimeMaxmiumIndependentSet:
         Note that this is *not* equivalent to nodes_by_degree[2]
     removed_paths : list
         The list of paths of temporarily removed nodes
-    inserted_edges : list
-        The list of edges temporarily added to G
-    removed: set
-        The set of nodes removed from the graph
     """
 
     def __init__(self, G):
         """Initialize the class. Self-loop edges are temporarily removed."""
         self.G = G
-        if G.order() == 0:
+
+        # note: no edge or node data is copied
+        self.H = nx.Graph(G.edges)
+        self.H.add_nodes_from(G)
+        if self.H.order() == 0:
             return
 
         self.removed_paths = []
         self.inserted_edges = []
-        self.removed = set()
 
-        # Temporarily remove self-loops
-        self.selfloop_edges = list(nx.selfloop_edges(G))
-        G.remove_edges_from(self.selfloop_edges)
+        # Remove self-loops
+        self.H.remove_edges_from(nx.selfloop_edges(self.H))
 
-        self.twos = {v for v in G if G.degree(v) == 2}
-        self.max_degree = max((d for v, d in G.degree), default=0)
-
-        # Construct degree data structures
-        self.degree = dict(G.degree)
-        self.nodes_by_degree = {d: set() for d in range(self.max_degree + 2)}
-        for v, d in G.degree:
+        # Construct degree data structure
+        self.max_degree = max((d for v, d in self.H.degree), default=0)
+        self.nodes_by_degree = {d: set() for d in range(max(self.max_degree, 2) + 1)}
+        for v, d in self.H.degree:
             self.nodes_by_degree[d].add(v)
         self.independent_set = self.nodes_by_degree[0]
-
-    def get_neighbors(self, v):
-        """Get neighbors of v that were not deleted."""
-        nbrs = [u for u in self.G[v] if u not in self.removed]
-        return nbrs
+        self.twos = self.nodes_by_degree[2].copy()
 
     def reduce_degree(self, v):
         """Reduce degree of v and update data structures accordingly."""
-        d = self.degree[v]
+        d = self.H.degree[v]
         if d == 3:
             self.twos.add(v)
         elif d == 2:
@@ -93,24 +82,24 @@ class LinearTimeMaxmiumIndependentSet:
 
         self.nodes_by_degree[d].remove(v)
         self.nodes_by_degree[d - 1].add(v)
-        self.degree[v] -= 1
 
     def remove_node(self, v):
         """Remove v from data structures and update all neighbors of v."""
-        for u in self.get_neighbors(v):
+        for u in self.H[v]:
             self.reduce_degree(u)
 
-        d = self.degree[v]
+        d = self.H.degree[v]
         self.nodes_by_degree[d].remove(v)
         if d == 2:
             self.twos.discard(v)
 
-        self.removed.add(v)
+        self.H.remove_node(v)
 
     def degree_one_reduction(self):
         """Apply the degree-one reduction by removing the neighbor of a degree-one node."""
         u = nx.utils.arbitrary_element(self.nodes_by_degree[1])
-        v = self.get_neighbors(u)[0]  # Only take the single node that exists
+        # note: only take the single node that exists
+        v = nx.utils.arbitrary_element(self.H[u])
         self.remove_node(v)
 
     def longest_degree_two_path(self, v):
@@ -118,25 +107,25 @@ class LinearTimeMaxmiumIndependentSet:
         Using only degree-two nodes forces the path in both directions until it either
         reaches its end or reconnects to v, finding a cycle. Returns whether a cycle
         was found, the path and the first nodes found that are not in the path."""
-        u1, u2 = self.get_neighbors(v)
+        u1, u2 = self.H[v]
 
         # Build forwards path
         path1 = [v]
         pred = v
-        while self.degree[u1] == 2:
+        while self.H.degree[u1] == 2:
             if u1 == v:
                 # Cycle found
                 return True, path1, ()
             path1.append(u1)
-            a, b = self.get_neighbors(u1)
+            a, b = self.H[u1]
             u1, pred = a if a != pred else b, u1
 
         # Build backwards path
         path2 = []
         pred = v
-        while self.degree[u2] == 2:
+        while self.H.degree[u2] == 2:
             path2.append(u2)
-            a, b = self.get_neighbors(u2)
+            a, b = self.H[u2]
             u2, pred = a if a != pred else b, u2
 
         path2.reverse()
@@ -161,7 +150,7 @@ class LinearTimeMaxmiumIndependentSet:
             return
 
         if len(P) % 2 == 1:
-            if self.G.has_edge(v, w):
+            if self.H.has_edge(v, w):
                 # Fig. 4(b)
                 self.remove_node(v)
                 self.remove_node(w)
@@ -172,27 +161,25 @@ class LinearTimeMaxmiumIndependentSet:
                 # Also remove v1 as a further reduction on v1 is useless
                 self.twos -= set(P)
                 self.nodes_by_degree[2] -= set(P[1:])
-                self.removed |= set(P[1:])
+                self.H.remove_nodes_from(P[1:])
                 self.removed_paths.append(P[1:])
 
-                self.G.add_edge(v1, w)
-                self.inserted_edges.append((v1, w))
+                self.H.add_edge(v1, w)
         else:
             # Figs. 4(d) and 4(e)
-            p_set = set(P)
-            self.twos -= p_set
-            self.nodes_by_degree[2] -= p_set
-            self.removed |= p_set
-            self.removed_paths.append(P)
-
-            if self.G.has_edge(v, w):
+            if self.H.has_edge(v, w):
                 # Fig. 4(d)
                 self.reduce_degree(v)
                 self.reduce_degree(w)
             else:
                 # Fig. 4(e)
-                self.G.add_edge(v, w)
-                self.inserted_edges.append((v, w))
+                self.H.add_edge(v, w)
+
+            p_set = set(P)
+            self.twos -= p_set
+            self.nodes_by_degree[2] -= p_set
+            self.H.remove_nodes_from(P)
+            self.removed_paths.append(P)
 
     def max_degree_reduction(self):
         """Apply the inexact reduction of removing a node with the highest degree."""
@@ -201,7 +188,7 @@ class LinearTimeMaxmiumIndependentSet:
 
     def maximum_independent_set(self):
         """Find an approximate maximum independent set in linear time with Reducing-Peeling."""
-        if self.G.order() == 0:
+        if self.H.order() == 0:
             return set()
 
         # Reducing-Peeling
@@ -222,13 +209,12 @@ class LinearTimeMaxmiumIndependentSet:
                     self.independent_set.add(v)
 
         # Extend independent set to be maximal
+        selfloops = nx.selfloop_edges(self.G)
+        self.G.remove_edges_from(selfloops)
         self.independent_set = set(
             nx.algorithms.maximal_independent_set(self.G, self.independent_set)
         )
-
-        # Restore graph
-        self.G.remove_edges_from(self.inserted_edges)
-        self.G.add_edges_from(self.selfloop_edges)
+        self.G.add_edges_from(selfloops)
 
         return self.independent_set
 
@@ -239,7 +225,7 @@ def _maximum_independent_set_clique_removal(G):
 
 
 def _maximum_independent_set_lineartime(G):
-    return LinearTimeMaxmiumIndependentSet(G).maximum_independent_set()
+    return LinearTimeMaximiumIndependentSet(G).maximum_independent_set()
 
 
 ALGORITHMS = {
@@ -312,9 +298,6 @@ def maximum_independent_set(G, method=None):
 
     Notes
     -----
-    ``"clique_removal"`` operates on a copy of *G*. ``"lineartime"`` instead
-    temporarily modifies the graph, avoiding the cost of a copy.
-
     Both supported methods ignore self-loops, since independent sets are
     not conventionally defined with such edges.
 
