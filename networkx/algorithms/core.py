@@ -29,6 +29,8 @@ http://doi.org/10.1038/srep31708
 
 """
 
+from collections import defaultdict
+
 import networkx as nx
 
 __all__ = [
@@ -474,29 +476,28 @@ def k_truss(G, k):
         )
         raise nx.NetworkXNotImplemented(msg)
 
-    H = G.copy()
-    threshold = k - 2
+    mapping = {node: i for i, node in enumerate(G)}
+    inverse_mapping = dict(enumerate(G))
+    H = nx.relabel_nodes(G, mapping=mapping, copy=True)
+    t = k - 2
 
     n_dropped = 1
     while n_dropped > 0:
         to_drop = []
-        seen = set()
         for u, u_nbrs in H.adjacency():
+            u_cond = len(u_nbrs) < t
             u_keys = u_nbrs.keys()
-            seen.add(u)
             to_drop.extend(
                 (u, v)
                 for v in u_nbrs
-                if v not in seen
-                and (
-                    len(u_keys) < threshold
-                    or len(H[v]) < threshold
-                    or len(u_keys & H._adj[v].keys()) < threshold
-                )
+                if v > u
+                and (u_cond or len(hv := H._adj[v]) < t or len(u_keys & hv.keys()) < t)
             )
         H.remove_edges_from(to_drop)
         n_dropped = len(to_drop)
         H.remove_nodes_from(list(nx.isolates(H)))
+
+    H = nx.relabel_nodes(H, inverse_mapping, copy=True)
 
     return H
 
