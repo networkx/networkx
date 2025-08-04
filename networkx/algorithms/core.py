@@ -495,7 +495,7 @@ def k_truss(G, k):
             )
         H.remove_edges_from(to_drop)
         n_dropped = len(to_drop)
-        H.remove_nodes_from(list(nx.isolates(H)))
+    H.remove_nodes_from(list(nx.isolates(H)))
 
     H = nx.relabel_nodes(H, inverse_mapping, copy=True)
 
