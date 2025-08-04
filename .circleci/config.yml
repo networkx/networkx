@@ -150,6 +150,8 @@ jobs:
           root: coverage_data
           paths:
             - .coverage.*
+      - store_test_results:
+          path: test_results
 
   coverage:
     executor: python-executor
@@ -167,8 +169,6 @@ jobs:
       - store_artifacts:
           path: htmlcov
           destination: coverage
-      - store_test_results:
-          path: htmlcov # Optional, for CircleCI insights
 
 workflows:
   documentation_and_image_comparison:
