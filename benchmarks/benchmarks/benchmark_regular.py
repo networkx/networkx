@@ -3,7 +3,7 @@
 import networkx as nx
 
 
-class RegularBenchmarks:
+class KFactorBenchmarks:
     timeout = 120
     _graph_names = [
         "nx.complete_graph(6)",
@@ -29,3 +29,19 @@ class RegularBenchmarks:
 
     time_k_factor.params = (_graph_names, _ks)
     time_k_factor.param_names = ("graph", "k")
+
+
+class IsRegularCompleteGraph:
+    param_names = ["n", "directed", "is_regular"]
+    params = ([10, 20, 100], [True, False], [True, False])
+
+    def setup(self, n, directed, is_regular):
+        G = nx.complete_graph(n)
+        if directed:
+            G = G.to_directed()
+        if not is_regular:
+            G.remove_edge(n - 2, n - 1)
+        self.G = G
+
+    def time_is_regular(self, n, directed, is_regular):
+        _ = nx.is_regular(self.G)
