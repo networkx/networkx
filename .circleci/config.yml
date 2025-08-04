@@ -1,6 +1,37 @@
 # See: https://circleci.com/docs/2.0/language-python/
 
 version: 2.1
+
+executors:
+  python-executor:
+    docker:
+      - image: cimg/python:3.12
+    environment:
+      PIP_NO_CACHE_DIR: "off"
+
+commands:
+  install-deps:
+    steps:
+      - checkout
+      - run:
+          name: Install system packages
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y graphviz graphviz-dev
+      - restore_cache:
+          keys:
+            - v1-pip-cache-{{ checksum "pyproject.toml" }}
+            - v1-pip-cache-
+      - run:
+          name: Install Python packages
+          command: |
+            pip install --upgrade pip
+            pip install .[default,extra,test]
+      - save_cache:
+          key: v1-pip-cache-{{ checksum "pyproject.toml" }}
+          paths:
+            - ~/.cache/pip
+
 jobs:
   documentation:
     docker:
@@ -97,8 +128,56 @@ jobs:
       - store_artifacts:
           path: results
 
+  test:
+    executor: python-executor
+    parallelism: 4
+    steps:
+      - install-deps
+      - run:
+          name: Run pytest with partial coverage
+          command: |
+            mkdir -p coverage_data
+            TEST_FILES=$(circleci tests glob "networkx/**/*.py" | circleci tests split --split-by=timings)
+            pytest \
+              --cov=networkx \
+              --cov-append \
+              --cov-report= \
+              --runslow --durations=20 \
+              --doctest-modules \
+              --pyargs $TEST_FILES
+            cp .coverage coverage_data/.coverage.$CIRCLE_NODE_INDEX || true
+      - persist_to_workspace:
+          root: coverage_data
+          paths:
+            - .coverage.*
+
+  coverage:
+    executor: python-executor
+    steps:
+      - install-deps
+      - attach_workspace:
+          at: coverage_data
+      - run:
+          name: Combine coverage and generate HTML report
+          command: |
+            pip install coverage
+            cp coverage_data/.coverage.* .
+            coverage combine
+            coverage html
+      - store_artifacts:
+          path: htmlcov
+          destination: coverage
+      - store_test_results:
+          path: htmlcov # Optional, for CircleCI insights
+
 workflows:
   documentation_and_image_comparison:
     jobs:
       - documentation
       - image
+  test-and-report:
+    jobs:
+      - test
+      - coverage:
+          requires:
+            - test
