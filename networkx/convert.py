@@ -230,6 +230,7 @@ def from_dict_of_lists(d, create_using=None):
 
     """
     G = nx.empty_graph(0, create_using)
+    G.add_nodes_from(d)
     if G.is_multigraph() and not G.is_directed():
         # a dict_of_lists can't show multiedges.  BUT for undirected graphs,
         # each edge shows up twice in the dict_of_lists.
@@ -346,22 +347,17 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     dod = {}
     if nodelist is None:
         if edge_data is None:
-            for u, nbrdict in G.adjacency():
-                dod[u] = nbrdict.copy()
+            dod = {u: nbrdict.copy() for u, nbrdict in G.adjacency()}
         else:  # edge_data is not None
-            for u, nbrdict in G.adjacency():
-                dod[u] = dod.fromkeys(nbrdict, edge_data)
+            dod = {u: dod.fromkeys(nbrdict, edge_data) for u, nbrdict in G.adjacency()}
     else:  # nodelist is not None
+        ns = set(nodelist)
         if edge_data is None:
             for u in nodelist:
-                dod[u] = {}
-                for v, data in ((v, data) for v, data in G[u].items() if v in nodelist):
-                    dod[u][v] = data
+                unbrs = G._adj[u].items()
+                dod[u] = {v: data for v, data in unbrs if v in ns}
         else:  # nodelist and edge_data are not None
-            for u in nodelist:
-                dod[u] = {}
-                for v in (v for v in G[u] if v in nodelist):
-                    dod[u][v] = edge_data
+            dod = {u: {v: edge_data for v in G._adj[u].keys() & ns} for u in nodelist}
     return dod
 
 
