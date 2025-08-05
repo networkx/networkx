@@ -235,10 +235,12 @@ def from_dict_of_lists(d, create_using=None):
         # a dict_of_lists can't show multiedges.  BUT for undirected graphs,
         # each edge shows up twice in the dict_of_lists.
         # So we need to treat this case separately.
-        seen = {}
-        for node, nbrlist in d.items():
-            G.add_edges_from((node, nbr) for nbr in nbrlist if nbr not in seen)
-            seen[node] = 1  # don't allow reverse edge to show up
+        G.add_edges_from(
+            (node, nbr)
+            for node, nbrlist in d.items()
+            for nbr in nbrlist
+            if hash(node) <= hash(nbr)
+        )
     else:
         G.add_edges_from(
             ((node, nbr) for node, nbrlist in d.items() for nbr in nbrlist)
