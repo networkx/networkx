@@ -203,10 +203,8 @@ def to_dict_of_lists(G, nodelist=None):
     if nodelist is None:
         nodelist = G
 
-    d = {}
-    for n in nodelist:
-        d[n] = [nbr for nbr in G.neighbors(n) if nbr in nodelist]
-    return d
+    nodeset = set(nodelist)
+    return {n: list(G._adj[n].keys() & nodeset) for n in nodelist}
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
