@@ -410,8 +410,8 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
                     for key, data in datadict.items()
                 )
         else:  # Undirected
+            seen = set()  # don't add both directions of undirected graph
             if G.is_multigraph():
-                seen = set()  # don't add both directions of undirected graph
                 for u, nbrs in d.items():
                     for v, datadict in nbrs.items():
                         if (u, v) not in seen:
@@ -420,7 +420,6 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
                             )
                             seen.add((v, u))
             else:
-                seen = set()  # don't add both directions of undirected graph
                 for u, nbrs in d.items():
                     for v, datadict in nbrs.items():
                         if (u, v) not in seen:
