@@ -437,10 +437,11 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
             # or for Graph() since it is done implicitly (parallel edges not allowed)
             seen = set()
             for u, nbrs in d.items():
-                for v, data in nbrs.items():
-                    if (u, v) not in seen:
-                        G.add_edge(u, v, key=0, data=data)
-                    seen.add((v, u))
+                edges_to_add = [
+                    (u, v, 0, data) for v, data in nbrs.items() if (u, v) not in seen
+                ]
+                G.add_edges_from(edges_to_add)
+                seen.update((v, u) for u, v, _, _ in edges_to_add)
         else:
             G.add_edges_from(
                 ((u, v, data) for u, nbrs in d.items() for v, data in nbrs.items())
