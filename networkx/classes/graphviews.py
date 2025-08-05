@@ -205,6 +205,7 @@ def subgraph_view(G, *, filter_node=no_filter, filter_edge=no_filter):
     EdgeView([(0, 1), (1, 2), (2, 3)])
     """
     newG = nx.freeze(G.__class__())
+    newG._number_of_edges = None
     newG._NODE_OK = filter_node
     newG._EDGE_OK = filter_edge
 
