@@ -230,16 +230,13 @@ def from_dict_of_lists(d, create_using=None):
 
     """
     G = nx.empty_graph(0, create_using)
-    G.add_nodes_from(d)
     if G.is_multigraph() and not G.is_directed():
         # a dict_of_lists can't show multiedges.  BUT for undirected graphs,
         # each edge shows up twice in the dict_of_lists.
         # So we need to treat this case separately.
         seen = {}
         for node, nbrlist in d.items():
-            for nbr in nbrlist:
-                if nbr not in seen:
-                    G.add_edge(node, nbr)
+            G.add_edges_from((node, nbr) for nbr in nbrlist if nbr not in seen)
             seen[node] = 1  # don't allow reverse edge to show up
     else:
         G.add_edges_from(
