@@ -16,6 +16,7 @@ See Also
 nx_agraph, nx_pydot
 """
 
+from collections import defaultdict
 from collections.abc import Collection, Generator, Iterator
 
 import networkx as nx
@@ -412,36 +413,38 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
                     for key, data in datadict.items()
                 )
         else:  # Undirected
-            seen = set()  # don't add both directions of undirected graph
+            seen = defaultdict(set)  # don't add both directions of undirected graph
             if G.is_multigraph():
                 for u, nbrs in d.items():
+                    su = seen[u]
                     for v, datadict in nbrs.items():
-                        if (u, v) not in seen:
+                        if v not in su:
                             G.add_edges_from(
                                 (u, v, key, data) for key, data in datadict.items()
                             )
-                            seen.add((v, u))
+                            seen[v].add(u)
             else:
                 for u, nbrs in d.items():
+                    su = seen[u]
                     for v, datadict in nbrs.items():
-                        if (u, v) not in seen:
+                        if v not in su:
                             G.add_edges_from(
                                 (u, v, data) for key, data in datadict.items()
                             )
-                            seen.add((v, u))
+                            seen[v].add(u)
 
     else:  # not a multigraph to multigraph transfer
         if G.is_multigraph() and not G.is_directed():
             # d can have both representations u-v, v-u in dict.  Only add one.
             # We don't need this check for digraphs since we add both directions,
             # or for Graph() since it is done implicitly (parallel edges not allowed)
-            seen = set()
+            seen = defaultdict(set)
             for u, nbrs in d.items():
-                edges_to_add = [
-                    (u, v, 0, data) for v, data in nbrs.items() if (u, v) not in seen
-                ]
-                G.add_edges_from(edges_to_add)
-                seen.update((v, u) for u, v, _, _ in edges_to_add)
+                su = seen[u]
+                for v, data in nbrs.items():
+                    if v not in su:
+                        G.add_edge(u, v, key=0, data=data)
+                    seen[v].add(u)
         else:
             G.add_edges_from(
                 ((u, v, data) for u, nbrs in d.items() for v, data in nbrs.items())
