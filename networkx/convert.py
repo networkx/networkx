@@ -445,8 +445,9 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
                 su = seen[u]
                 for v, data in nbrs.items():
                     if v not in su:
-                        G.add_edge(u, v, key=0, data=data)
-                    seen[v].add(u)
+                        G.add_edge(u, v, key=0)
+                        G[u][v][0].update(data)
+                        seen[v].add(u)
         else:
             G.add_edges_from(
                 ((u, v, data) for u, nbrs in d.items() for v, data in nbrs.items())
