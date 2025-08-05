@@ -360,7 +360,9 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
                 unbrs = G._adj[u].items()
                 dod[u] = {v: data for v, data in unbrs if v in ns}
         else:  # nodelist and edge_data are not None
-            dod = {u: {v: edge_data for v in G._adj[u].keys() & ns} for u in nodelist}
+            for u in nodelist:
+                intersection = G._adj[u].keys() & ns
+                dod[u] = dod.fromkeys(intersection, edge_data)
     return dod
 
 
