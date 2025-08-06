@@ -35,5 +35,5 @@ class EdgelistCompleteGraph:
                 self.G[u][v].update({"weight": 1})
 
     def time_write_edgelist(self, graph_type, n, data):
-        # data = ("weight",) corresponds to `read_weighted_edgelist`.
+        # data = ("weight",) corresponds to `write_weighted_edgelist`.
         _ = nx.write_edgelist(self.G, path="benchmark_edgelist.txt", data=data)
