@@ -184,11 +184,9 @@ def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-
         + comments
         + f" {G.name}\n"
     )
-    path.write(header.encode(encoding))
 
-    for multiline in generate_multiline_adjlist(G, delimiter):
-        multiline += "\n"
-        path.write(multiline.encode(encoding))
+    to_write = tuple(generate_multiline_adjlist(G, delimiter)) + ("",)
+    path.write(header.encode(encoding) + "\n".join(to_write).encode(encoding))
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
