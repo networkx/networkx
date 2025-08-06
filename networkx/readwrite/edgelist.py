@@ -167,10 +167,8 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
     read_edgelist
     write_weighted_edgelist
     """
-
-    for line in generate_edgelist(G, delimiter, data):
-        line += "\n"
-        path.write(line.encode(encoding))
+    to_write = list(generate_edgelist(G, delimiter, data)) + [""]
+    path.write("\n".join(to_write).encode(encoding))
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
