@@ -74,9 +74,8 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
     write_edgelist
     generate_edgelist
     """
-    for line in generate_edgelist(G, delimiter, data):
-        line += "\n"
-        path.write(line.encode(encoding))
+    to_write = tuple(generate_edgelist(G, delimiter, data)) + ("",)
+    path.write("\n".join(to_write).encode(encoding))
 
 
 @not_implemented_for("directed")
