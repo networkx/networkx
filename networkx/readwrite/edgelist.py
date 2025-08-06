@@ -123,7 +123,7 @@ def generate_edgelist(G, delimiter=" ", data=True):
             yield delimiter.join(map(str, e))
 
 
-@open_file(1, mode="wb")
+@open_file("path", mode="wb")
 def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="utf-8"):
     """Write graph as a list of edges.
 
@@ -167,7 +167,7 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
     read_edgelist
     write_weighted_edgelist
     """
-    to_write = list(generate_edgelist(G, delimiter, data)) + [""]
+    to_write = tuple(generate_edgelist(G, delimiter, data)) + ("",)
     path.write("\n".join(to_write).encode(encoding))
 
 
