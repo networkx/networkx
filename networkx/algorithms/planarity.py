@@ -766,6 +766,17 @@ class LRPlanarity:
         return self.side[e]
 
 
+def _PlanarEmbedding__forbidden(self, *args, **kwargs):
+    """Forbidden operation
+
+    Any edge additions to a PlanarEmbedding should be done using
+    method `add_half_edge`.
+    """
+    raise NotImplementedError(
+        "Use `add_half_edge` method to add edges to a PlanarEmbedding."
+    )
+
+
 class PlanarEmbedding(nx.DiGraph):
     """Represents a planar graph with its planar embedding.
 
@@ -858,19 +869,9 @@ class PlanarEmbedding(nx.DiGraph):
 
     def __init__(self, incoming_graph_data=None, **attr):
         super().__init__(incoming_graph_data=incoming_graph_data, **attr)
-        self.add_edge = self.__forbidden
-        self.add_edges_from = self.__forbidden
-        self.add_weighted_edges_from = self.__forbidden
-
-    def __forbidden(self, *args, **kwargs):
-        """Forbidden operation
-
-        Any edge additions to a PlanarEmbedding should be done using
-        method `add_half_edge`.
-        """
-        raise NotImplementedError(
-            "Use `add_half_edge` method to add edges to a PlanarEmbedding."
-        )
+        self.add_edge = __forbidden
+        self.add_edges_from = __forbidden
+        self.add_weighted_edges_from = __forbidden
 
     def get_data(self):
         """Converts the adjacency structure into a better readable structure.
