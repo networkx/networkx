@@ -16,6 +16,9 @@ class AdjlistCompleteGraph:
     def time_generate_adjlist(self, graph_type, n):
         _ = list(nx.generate_adjlist(self.G))
 
+    def time_write_adjlist(self, graph_type, n):
+        _ = nx.write_adjlist(self.G, path="benchmark_write_adjlist.txt")
+
     def time_write_multiline_adjlist(self, graph_type, n):
         _ = nx.write_multiline_adjlist(
             self.G, path="benchmark_write_multiline_adjlist.txt"

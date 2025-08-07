@@ -163,11 +163,9 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
         + comments
         + f" {G.name}\n"
     )
-    path.write(header.encode(encoding))
 
-    for line in generate_adjlist(G, delimiter):
-        line += "\n"
-        path.write(line.encode(encoding))
+    to_write = tuple(generate_adjlist(G, delimiter)) + ("",)
+    path.write(header.encode(encoding) + "\n".join(to_write).encode(encoding))
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
