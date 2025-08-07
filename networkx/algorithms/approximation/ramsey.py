@@ -39,26 +39,32 @@ def ramsey_R2(G):
     stack = [(G, set(), set())]
     best_clique = set()
     best_indep = set()
+    lbi = lbc = 0
 
     while stack:
         graph, clique, indep = stack.pop()
 
         if not graph:
             # Graph is empty, no more nodes to distribute.
-            best_clique = max(best_clique, clique, key=len)
-            best_indep = max(best_indep, indep, key=len)
+            if lbc < len(clique):
+                best_clique = clique
+                lbc = len(best_clique)
+            if lbi < len(indep):
+                best_indep = indep
+                lbi = len(best_indep)
         else:
             # Pick arbitrary node and create subproblems.
             node = nx.utils.arbitrary_element(graph)
+            li, lc = len(indep), len(clique)
 
             # Push subproblems: node to indep set in first, to clique in second.
             non_nbrs = nx.non_neighbors(graph, node)
-            if len(best_indep) <= len(non_nbrs) + len(indep):
+            if lbi < (lnn := len(non_nbrs)) + li + 1 or lbc < lnn + lc:
                 non_nbr_graph = graph.subgraph(non_nbrs).copy()
                 stack.append((non_nbr_graph, clique, indep | {node}))
 
             nbrs = set(nx.neighbors(graph, node)) - {node}
-            if len(best_clique) <= len(nbrs) + len(clique):
+            if lbi < (ln := len(nbrs)) + li or lbc < ln + lc + 1:
                 nbr_graph = graph.subgraph(nbrs).copy()
                 stack.append((nbr_graph, clique | {node}, indep))
 
