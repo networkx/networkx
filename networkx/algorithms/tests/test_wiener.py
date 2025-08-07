@@ -124,7 +124,7 @@ def test_schultz_and_gutman_index_of_odd_cycle_graph():
 
 
 def test_hyper_wiener_of_complete_graph():
-    # In a complete graph K_n, the distance is always 1. 
+    # In a complete graph K_n, the distance is always 1.
     # For K_n, this term is always (1 + 1^2) = 2.
     #
     # The number of ordered pairs is n * (n - 1).
@@ -155,6 +155,7 @@ def test_hyper_wiener_of_weighted_graph():
     G = nx.path_graph(3)
     G.edges[0, 1]["weight"] = 2
     assert nx.hyper_wiener_index(G, weight="weight") == 20.0
+
 
 def test_hyper_wiener_of_trivial_graphs():
     G1 = nx.Graph()

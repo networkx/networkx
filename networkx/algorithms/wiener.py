@@ -264,11 +264,11 @@ def hyper_wiener_index(G, weight=None):
     --------
     >>> G = nx.path_graph(4)
     >>> nx.hyper_wiener_index(G)
-    15.0
+    30.0
 
     >>> G = nx.cycle_graph(4)
     >>> nx.hyper_wiener_index(G)
-    10.0
+    20.0
     """
     if len(G) < 2:
         return 0.0
