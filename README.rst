@@ -7,8 +7,10 @@ NetworkX
     :target: https://github.com/networkx/networkx/actions?query=workflow%3Atest
 
 .. image::
-    https://codecov.io/gh/networkx/networkx/branch/main/graph/badge.svg?
-    :target: https://app.codecov.io/gh/networkx/networkx/branch/main
+    https://img.shields.io/github/actions/workflow/status/networkx/networkx/coverage.yml?branch=main&label=coverage
+    :target: https://github.com/networkx/networkx/actions/workflows/coverage.yml
+
+
 
 .. image::
     https://img.shields.io/pypi/v/networkx.svg?
