@@ -1,7 +1,7 @@
 """
-==========
+===================
 TrustRank Algorithm
-==========
+===================
 
 TrustRank is an algorithm designed to compute trust scores for nodes in a graph.
 It is particularly useful in applications like web spam detection, where certain nodes (web pages) are
@@ -14,6 +14,7 @@ These seed nodes are considered trustworthy and are assigned higher initial scor
 vector. The algorithm then propagates trust through the graph using the same iterative process as PageRank.
 
 Key Steps:
+
 1. Define a set of seed nodes that are considered trustworthy.
 2. Create a personalization vector where seed nodes are assigned equal trust,
    and non-seed nodes are assigned zero.
@@ -32,17 +33,7 @@ References
 import networkx as nx
 import matplotlib.pyplot as plt
 
-G = nx.DiGraph()
-edges = [
-    (1, 2),
-    (1, 3),
-    (2, 4),
-    (3, 4),
-    (3, 5),
-    (4, 1),
-    (5, 6),
-]
-G.add_edges_from(edges)
+G = nx.DiGraph([(1, 2), (1, 3), (2, 4), (3, 4), (3, 5), (4, 1), (5, 6)])
 
 # Define seed nodes (trusted nodes)
 seed_nodes = {1, 3}
@@ -50,13 +41,13 @@ seed_nodes = {1, 3}
 # Use a personalization vector to assign trust values to seed nodes.
 # Seed nodes can have equal trust or custom values, while non-seed nodes are
 # assigned zero trust.
-personalization = {n: 1.0 / len(seed_nodes) if n in seed_nodes else 0 for n in G.nodes}
+trust = {n: 1.0 / len(seed_nodes) if n in seed_nodes else 0 for n in G.nodes}
 
 # Compute TrustRank using PageRank with personalization
-trust_rank = nx.pagerank(G, alpha=0.85, personalization=personalization)
+trust_rank = nx.pagerank(G, alpha=0.85, personalization=trust)
 
-pos = nx.spring_layout(G)
-node_sizes = [trust_rank[n] * 5000 for n in G.nodes]
+pos = nx.spring_layout(G, seed=2771)
+node_sizes = [trust_rank[n] * 5000 for n in G]
 
 plt.figure(figsize=(8, 6))
 nx.draw(
