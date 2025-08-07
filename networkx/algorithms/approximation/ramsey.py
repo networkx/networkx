@@ -35,7 +35,7 @@ def ramsey_R2(G):
         If the graph is directed or is a multigraph.
     """
     # Stack entries: (subgraph, clique, independent set).
-    stack = [(G.copy(), set(), set())]
+    stack = [(G, set(), set())]
     best_clique = set()
     best_indep = set()
 
@@ -50,14 +50,14 @@ def ramsey_R2(G):
             # Pick arbitrary node and create subproblems.
             node = nx.utils.arbitrary_element(graph)
 
-            nbrs = set(nx.all_neighbors(graph, node)) - {node}
+            nbrs = set(nx.neighbors(graph, node)) - {node}
             nbr_graph = graph.subgraph(nbrs).copy()
 
-            nnbrs = nx.non_neighbors(graph, node)
-            nnbr_graph = graph.subgraph(nnbrs).copy()
+            non_nbrs = nx.non_neighbors(graph, node)
+            non_nbr_graph = graph.subgraph(non_nbrs).copy()
 
             # Push subproblems: node to clique in first, independent set in second.
-            stack.append((nnbr_graph, clique, indep | {node}))
+            stack.append((non_nbr_graph, clique, indep | {node}))
             stack.append((nbr_graph, clique | {node}, indep))
 
     return best_clique, best_indep
