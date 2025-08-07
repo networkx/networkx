@@ -58,6 +58,7 @@ class UndirectedAlgorithmBenchmarks:
             raise SkipNotImplemented(f"recursion limit exceeded for {graph}")
         _ = nx.algorithms.approximation.ramsey_R2(self.graphs_dict[graph])
 
+
 class DirectedAlgorithmBenchmarks:
     timeout = 120
     _graphs = [
