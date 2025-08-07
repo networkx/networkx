@@ -2,6 +2,8 @@
 
 import random
 
+from asv_runner.benchmarks.mark import SkipNotImplemented
+
 import networkx as nx
 from benchmarks.utils import fetch_drug_interaction_network
 from networkx.algorithms import community
@@ -51,6 +53,10 @@ class UndirectedAlgorithmBenchmarks:
     def time_average_clustering(self, graph):
         _ = nx.average_clustering(self.graphs_dict[graph])
 
+    def time_ramsey(self, graph):
+        if graph == "Drug Interaction network":
+            raise SkipNotImplemented(f"recursion limit exceeded for {graph}")
+        _ = nx.algorithms.approximation.ramsey_R2(self.graphs_dict[graph])
 
 class DirectedAlgorithmBenchmarks:
     timeout = 120
