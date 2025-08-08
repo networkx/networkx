@@ -1,5 +1,78 @@
 Shortest Paths
 ==============
+
+The shortest path problem involves finding a path between two nodes in a graph
+such that the total distance is minimized. In unweighted graphs this means
+finding the path with the fewest number of edges. In weighted graphs it is the
+path with minimum sum of weights associated to the path edges.
+
+This problem definition applies for both undirected and directed graphs. In
+undirected graphs, edges can be traversed in any direction. In directed graphs
+edges can only be followed in their defined direction, and the path must respect
+those constraints. For more details on graph types and their properties, see
+:ref:`graph types <classes>`.
+
+NetworkX provides a unified interface for shortest paths weighted and unweighed,
+directed and undirected. Other variants of the shortest path problem such as all
+pairs of shortest paths are also supported.
+
+To specify graph is weighted, user must provide a weight attribute name by using
+the ``weight`` parameter. This can be a string that corresponds to an edge
+attribute or a function that returns the weight of an edge. If no weight is
+specified, the graph is treated as unweighted. In the case ``weight`` is
+specified, but the edge does not have the specified attribute, the edge is
+treated as having a weight of :math:`1`.
+
+ >>> import networkx as nx
+ >>>
+ >>> # Create an undirected weighted graph
+ >>> G = nx.Graph()
+ >>> G.add_edge("A", "B", weight=4)
+ >>> G.add_edge("A", "C", weight=2)
+ >>> G.add_edge("B", "C", weight=5)
+ >>> G.add_edge("B", "D", weight=10)
+ >>> G.add_edge("C", "E", weight=3)
+ >>> G.add_edge("E", "D", weight=4)
+ >>> G.add_edge("D", "F", weight=11)
+ >>>
+ >>> # Compute shortest path from A to F
+ >>> path = nx.shortest_path(G, source="A", target="F", weight="weight")
+ >>> print(path)
+ ['A', 'C', 'E', 'D', 'F']
+
+Algorithm Selection
+-------------------
+
+Depending on the type of graph and problem, different algorithms can perform
+better than others. When using the simplified interface, NerworkX picks the
+algorithm that suits the use case best. Selection is based on the type of graph
+and weight attribute. When multiple algorithms are available, the user can
+control which one to use by specifying the ``method`` parameter.
+
+The table below summarizes the algorithms NetworkX may select internally and
+their typical time complexities. Here, :math:`V` is the number of nodes and
+:math:`E` is the number of edges in the graph.
+
++----------------------+-------------+---------------------------+------------------------------------+
+| Algorithm            | Graph Type  | Time Complexity           | Recommended for                    |
++======================+=============+===========================+====================================+
+| Breadth–First Search | Unweighted  | :math:`O(V + E)`          | Fastest choice for unweighted      |
+|                      |             |                           | graphs; shortest path in hops      |
++----------------------+-------------+---------------------------+------------------------------------+
+| Dijkstra             | Weighted    | :math:`O((V + E) \log V)` | General-purpose choice for         |
+|                      |             |                           | non-negative weights               |
++----------------------+-------------+---------------------------+------------------------------------+
+| Bellman–Ford         | Weighted    | :math:`O(VE)`             | Graphs with negative edge weights  |
+|                      |             |                           | but no negative cycles             |
++----------------------+-------------+---------------------------+------------------------------------+
+| Floyd–Warshall       | Weighted    | :math:`O(V^3)`            | Dense graphs or when all-pairs     |
+|                      |             |                           | shortest paths are needed          |
++----------------------+-------------+---------------------------+------------------------------------+
+
+
+Simplified Interface
+--------------------
+
 .. automodule:: networkx.algorithms.shortest_paths.generic
 .. autosummary::
    :toctree: generated/
