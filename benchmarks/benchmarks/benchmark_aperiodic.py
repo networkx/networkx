@@ -1,9 +1,9 @@
-"""Benchmarks for DAG algorithms."""
+"""Benchmarks for `is_aperiodic`."""
 
 import networkx as nx
 
 
-class DAGBenchmarks:
+class AperiodicBenchmarks:
     timeout = 120
     seed = 42
     _graphs = [
