@@ -29,7 +29,7 @@ import networkx as nx
 from networkx.utils import not_implemented_for, open_file
 
 
-@open_file(1, mode="wb")
+@open_file("path", mode="wb")
 def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="utf-8"):
     """Write a bipartite graph as a list of edges.
 
