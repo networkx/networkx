@@ -90,7 +90,7 @@ def hnm_harary_graph(n, m, create_using=None):
         )
 
         if d % 2 == 1:
-            # If d is odd, n must be even.
+            # If d is odd; n must be even.
             half = n // 2
             # Add edges diagonally.
             H.add_edges_from((i, i + half) for i in range(half))
@@ -165,38 +165,39 @@ def hkn_harary_graph(k, n, create_using=None):
     if n < k + 1:
         raise NetworkXError("The number of nodes must be >= k+1 !")
 
-    # in case of connectivity 1, simply return the path graph
+    # In case of connectivity 1, simply return the path graph.
     if k == 1:
         H = nx.path_graph(n, create_using)
         return H
 
-    # Construct an empty graph with n nodes first
+    # Construct an empty graph with n nodes first.
     H = nx.empty_graph(n, create_using)
 
-    # Test the parity of k and n
+    # Test the parity of k and n.
     if (k % 2 == 0) or (n % 2 == 0):
-        # Construct a regular graph with k degrees
+        # Construct a regular graph with k degrees.
         offset = k // 2
-        for i in range(n):
-            for j in range(1, offset + 1):
-                H.add_edge(i, (i - j) % n)
-                H.add_edge(i, (i + j) % n)
-        if k & 1:
-            # odd degree; n must be even in this case
+        H.add_edges_from(
+            (i, (i - j) % n) for i in range(n) for j in range(1, offset + 1)
+        )
+        H.add_edges_from(
+            (i, (i + j) % n) for i in range(n) for j in range(1, offset + 1)
+        )
+        if k % 2 == 1:
+            # If k is odd; n must be even.
             half = n // 2
-            for i in range(half):
-                # add edges diagonally
-                H.add_edge(i, i + half)
+            # Add edges diagonally.
+            H.add_edges_from((i, i + half) for i in range(half))
     else:
-        # Construct a regular graph with (k - 1) degrees
-        offset = (k - 1) // 2
-        for i in range(n):
-            for j in range(1, offset + 1):
-                H.add_edge(i, (i - j) % n)
-                H.add_edge(i, (i + j) % n)
+        # Construct a regular graph with (k - 1) degrees.
+        H.add_edges_from(
+            (i, (i - j) % n) for i in range(n) for j in range(1, offset + 1)
+        )
+        H.add_edges_from(
+            (i, (i + j) % n) for i in range(n) for j in range(1, offset + 1)
+        )
         half = n // 2
-        for i in range(half + 1):
-            # add half+1 edges between i and i+half
-            H.add_edge(i, (i + half) % n)
+        # Add half + 1 edges between i and i + half.
+        H.add_edges_from((i, (i + half) % n) for i in range(half + 1))
 
     return H
