@@ -75,13 +75,11 @@ def hnm_harary_graph(n, m, create_using=None):
     # Get the floor of average node degree.
     d = 2 * m // n
 
-    n_or_d_even = (n % 2 == 0) or (d % 2 == 0)
-
-    offset = (d if n_or_d_even else d - 1) // 2
+    offset = d // 2
     H = nx.circulant_graph(n, range(1, offset + 1), create_using=create_using)
 
     half = n // 2
-    if n_or_d_even:
+    if (n % 2 == 0) or (d % 2 == 0):
         if d % 2 == 1:
             # If d is odd; n must be even.
             # Add edges diagonally.
@@ -150,13 +148,11 @@ def hkn_harary_graph(k, n, create_using=None):
     if k == 1:
         return nx.path_graph(n, create_using)
 
-    k_or_n_even = (k % 2 == 0) or (n % 2 == 0)
-
-    offset = (k if k_or_n_even else k - 1) // 2
+    offset = k // 2
     H = nx.circulant_graph(n, range(1, offset + 1), create_using=create_using)
 
     half = n // 2
-    if k_or_n_even:
+    if (k % 2 == 0) or (n % 2 == 0):
         if k % 2 == 1:
             # If k is odd; n must be even.
             # Add edges diagonally.
