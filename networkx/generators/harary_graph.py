@@ -15,8 +15,6 @@ References
 
 """
 
-import itertools
-
 import networkx as nx
 from networkx.exception import NetworkXError
 
@@ -118,29 +116,28 @@ def hnm_harary_graph(n, m, create_using=None):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def hkn_harary_graph(k, n, create_using=None):
-    """Returns the Harary graph with given node connectivity and node number.
+    r"""Return the Harary graph with given node connectivity and node number.
 
-    The Harary graph $H_{k,n}$ is the graph that minimizes the number of
+    The Harary graph $H_{k, n}$ is the graph that minimizes the number of
     edges needed with given node connectivity $k$ and node number $n$.
 
-    This smallest number of edges is known to be ceil($kn/2$) [1]_.
+    This smallest number of edges is known to be $\lceil kn/2 \rceil$ [1]_.
 
     Parameters
     ----------
     k: integer
-       The node connectivity of the generated graph
+        The node connectivity of the generated graph.
 
     n: integer
-       The number of nodes the generated graph is to contain
+        The number of nodes the generated graph is to contain.
 
-    create_using : NetworkX graph constructor, optional Graph type
-     to create (default=nx.Graph). If graph instance, then cleared
-     before populated.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
     NetworkX graph
-        The Harary graph $H_{k,n}$.
+        The Harary graph $H_{k, n}$.
 
     See Also
     --------
