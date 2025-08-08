@@ -184,7 +184,7 @@ def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-
         + comments
         + f" {G.name}"
     )
-
+    # Add empty string to ensure file ends with newline.
     to_write = (header,) + tuple(generate_multiline_adjlist(G, delimiter)) + ("",)
     path.write("\n".join(to_write).encode(encoding))
 

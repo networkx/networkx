@@ -167,6 +167,7 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
     read_edgelist
     write_weighted_edgelist
     """
+    # Add empty string to ensure file ends with newline.
     to_write = tuple(generate_edgelist(G, delimiter, data)) + ("",)
     path.write("\n".join(to_write).encode(encoding))
 
