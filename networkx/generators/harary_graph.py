@@ -15,6 +15,8 @@ References
 
 """
 
+import itertools
+
 import networkx as nx
 from networkx.exception import NetworkXError
 
@@ -73,42 +75,43 @@ def hnm_harary_graph(n, m, create_using=None):
     if m > n * (n - 1) // 2:
         raise NetworkXError("The number of edges must be <= n(n-1)/2")
 
-    # Construct an empty graph with n nodes first
+    # Construct an empty graph with n nodes first.
     H = nx.empty_graph(n, create_using)
-    # Get the floor of average node degree
+    # Get the floor of average node degree.
     d = 2 * m // n
 
-    # Test the parity of n and d
     if (n % 2 == 0) or (d % 2 == 0):
-        # Start with a regular graph of d degrees
+        # Start with a regular graph of d degrees.
         offset = d // 2
-        for i in range(n):
-            for j in range(1, offset + 1):
-                H.add_edge(i, (i - j) % n)
-                H.add_edge(i, (i + j) % n)
-        if d & 1:
-            # in case d is odd; n must be even in this case
+        H.add_edges_from(
+            (i, (i - j) % n) for i in range(n) for j in range(1, offset + 1)
+        )
+        H.add_edges_from(
+            (i, (i + j) % n) for i in range(n) for j in range(1, offset + 1)
+        )
+
+        if d % 2 == 1:
             half = n // 2
-            for i in range(half):
-                # add edges diagonally
-                H.add_edge(i, i + half)
-        # Get the remainder of 2*m modulo n
+            # Add edges diagonally.
+            H.add_edges_from((i, i + half) for i in range(half))
+
         r = 2 * m % n
         if r > 0:
-            # add remaining edges at offset+1
-            for i in range(r // 2):
-                H.add_edge(i, i + offset + 1)
+            # Add remaining edges at offset+1.
+            H.add_edges_from((i, i + offset + 1) for i in range(r // 2))
     else:
-        # Start with a regular graph of (d - 1) degrees
+        # Start with a regular graph of (d - 1) degrees.
         offset = (d - 1) // 2
-        for i in range(n):
-            for j in range(1, offset + 1):
-                H.add_edge(i, (i - j) % n)
-                H.add_edge(i, (i + j) % n)
+        H.add_edges_from(
+            (i, (i - j) % n) for i in range(n) for j in range(1, offset + 1)
+        )
+        H.add_edges_from(
+            (i, (i + j) % n) for i in range(n) for j in range(1, offset + 1)
+        )
+
         half = n // 2
-        for i in range(m - n * offset):
-            # add the remaining m - n*offset edges between i and i+half
-            H.add_edge(i, (i + half) % n)
+        # Add the remaining m - n * offset edges between i and i + half.
+        H.add_edges_from((i, (i + half) % n) for i in range(m - n * offset))
 
     return H
 
