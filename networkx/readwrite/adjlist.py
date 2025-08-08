@@ -106,7 +106,7 @@ def generate_adjlist(G, delimiter=" "):
         yield delimiter.join(nodes)
 
 
-@open_file(1, mode="wb")
+@open_file("path", mode="wb")
 def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
     """Write graph G in single-line adjacency-list format to path.
 
@@ -161,13 +161,11 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
         + comments
         + f" GMT {time.asctime(time.gmtime())}\n"
         + comments
-        + f" {G.name}\n"
+        + f" {G.name}"
     )
-    path.write(header.encode(encoding))
-
-    for line in generate_adjlist(G, delimiter):
-        line += "\n"
-        path.write(line.encode(encoding))
+    # Add empty string to ensure file ends with newline.
+    to_write = (header,) + tuple(generate_adjlist(G, delimiter)) + ("",)
+    path.write("\n".join(to_write).encode(encoding))
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
