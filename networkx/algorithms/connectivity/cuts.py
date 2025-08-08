@@ -413,9 +413,12 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
 
     # Global minimum node cut.
     # Analog to the algorithm 11 for global node connectivity in [1].
+    n = len(G)
     if G.is_directed():
         if not nx.is_weakly_connected(G):
             raise nx.NetworkXError("Input graph is not connected")
+        if G.number_of_edges() == n * (n - 1):
+            raise nx.NetworkXError("Input graph is complete, it has no node cuts.")
         iter_func = itertools.permutations
 
         def neighbors(v):
@@ -424,6 +427,8 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     else:
         if not nx.is_connected(G):
             raise nx.NetworkXError("Input graph is not connected")
+        if G.number_of_edges() == n * (n - 1) / 2:
+            raise nx.NetworkXError("Input graph is complete, it has no node cuts.")
         iter_func = itertools.combinations
         neighbors = G.neighbors
 
@@ -448,7 +453,6 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
         this_cut = minimum_st_node_cut(G, x, y, **kwargs)
         if len(min_cut) >= len(this_cut):
             min_cut = this_cut
-
     return min_cut
 
 
