@@ -63,7 +63,7 @@ their typical time complexities. Here, :math:`V` is the number of nodes and
 |                      |             |                           | non-negative weights               |
 +----------------------+-------------+---------------------------+------------------------------------+
 | Bellman–Ford         | Weighted    | :math:`O(VE)`             | Graphs with negative edge weights  |
-|                      |             |                           | but no negative cycles             |
+|                      |             |                           |                                    |
 +----------------------+-------------+---------------------------+------------------------------------+
 | Floyd–Warshall       | Weighted    | :math:`O(V^3)`            | Dense graphs or when all-pairs     |
 |                      |             |                           | shortest paths are needed          |
