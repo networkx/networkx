@@ -53,7 +53,7 @@ def hnm_harary_graph(n, m, create_using=None):
     Notes
     -----
     This algorithm runs in $O(m)$ time.
-    It is implemented by following the Reference [2]_.
+    The implementation follows [2]_.
 
     References
     ----------
@@ -130,7 +130,7 @@ def hkn_harary_graph(k, n, create_using=None):
     Notes
     -----
     This algorithm runs in $O(kn)$ time.
-    It is implemented by following the Reference [2]_.
+    The implementation follows [2]_.
 
     References
     ----------
