@@ -72,42 +72,26 @@ def hnm_harary_graph(n, m, create_using=None):
     if m > n * (n - 1) // 2:
         raise NetworkXError("The number of edges must be <= n(n-1)/2")
 
-    # Construct an empty graph with n nodes first.
-    H = nx.empty_graph(n, create_using)
     # Get the floor of average node degree.
     d = 2 * m // n
 
-    if (n % 2 == 0) or (d % 2 == 0):
-        # Start with a regular graph of d degrees.
-        offset = d // 2
-        H.add_edges_from(
-            (i, (i - j) % n) for i in range(n) for j in range(1, offset + 1)
-        )
-        H.add_edges_from(
-            (i, (i + j) % n) for i in range(n) for j in range(1, offset + 1)
-        )
+    n_or_d_even = (n % 2 == 0) or (d % 2 == 0)
 
+    offset = (d if n_or_d_even else d - 1) // 2
+    H = nx.circulant_graph(n, range(1, offset + 1), create_using=create_using)
+
+    half = n // 2
+    if n_or_d_even:
         if d % 2 == 1:
             # If d is odd; n must be even.
-            half = n // 2
             # Add edges diagonally.
             H.add_edges_from((i, i + half) for i in range(half))
 
         r = 2 * m % n
         if r > 0:
-            # Add remaining edges at offset+1.
+            # Add remaining edges at offset + 1.
             H.add_edges_from((i, i + offset + 1) for i in range(r // 2))
     else:
-        # Start with a regular graph of (d - 1) degrees.
-        offset = (d - 1) // 2
-        H.add_edges_from(
-            (i, (i - j) % n) for i in range(n) for j in range(1, offset + 1)
-        )
-        H.add_edges_from(
-            (i, (i + j) % n) for i in range(n) for j in range(1, offset + 1)
-        )
-
-        half = n // 2
         # Add the remaining m - n * offset edges between i and i + half.
         H.add_edges_from((i, (i + half) % n) for i in range(m - n * offset))
 
@@ -164,36 +148,20 @@ def hkn_harary_graph(k, n, create_using=None):
 
     # In case of connectivity 1, simply return the path graph.
     if k == 1:
-        H = nx.path_graph(n, create_using)
-        return H
+        return nx.path_graph(n, create_using)
 
-    # Construct an empty graph with n nodes first.
-    H = nx.empty_graph(n, create_using)
+    k_or_n_even = (k % 2 == 0) or (n % 2 == 0)
 
-    # Test the parity of k and n.
-    if (k % 2 == 0) or (n % 2 == 0):
-        # Construct a regular graph with k degrees.
-        offset = k // 2
-        H.add_edges_from(
-            (i, (i - j) % n) for i in range(n) for j in range(1, offset + 1)
-        )
-        H.add_edges_from(
-            (i, (i + j) % n) for i in range(n) for j in range(1, offset + 1)
-        )
+    offset = (k if k_or_n_even else k - 1) // 2
+    H = nx.circulant_graph(n, range(1, offset + 1), create_using=create_using)
+
+    half = n // 2
+    if k_or_n_even:
         if k % 2 == 1:
             # If k is odd; n must be even.
-            half = n // 2
             # Add edges diagonally.
             H.add_edges_from((i, i + half) for i in range(half))
     else:
-        # Construct a regular graph with (k - 1) degrees.
-        H.add_edges_from(
-            (i, (i - j) % n) for i in range(n) for j in range(1, offset + 1)
-        )
-        H.add_edges_from(
-            (i, (i + j) % n) for i in range(n) for j in range(1, offset + 1)
-        )
-        half = n // 2
         # Add half + 1 edges between i and i + half.
         H.add_edges_from((i, (i + half) % n) for i in range(half + 1))
 
