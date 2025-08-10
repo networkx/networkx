@@ -7,6 +7,7 @@ Clustering
    :toctree: generated/
 
    triangles
+   all_triangles
    transitivity
    clustering
    average_clustering

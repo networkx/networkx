@@ -32,6 +32,67 @@ class TestGenericPath:
         cls.neg_weights.add_edge(1, 3, weight=1)
         cls.neg_weights.add_edge(2, 3, weight=-2)
 
+    def test_sentinel_trick_all_algorithms(self):
+        def reconstruct_path(pred, source, target):
+            path = [target]
+            while path[-1] != source:
+                path.append(pred[path[-1]])
+            return list(reversed(path))
+
+        # Build the test graph inline
+        G = nx.Graph()
+        G.add_edge("A", "B", weight=1)
+        G.add_edge("B", "C", weight=1)
+        G.add_edge("C", "D", weight=1)
+        G.add_edge("D", "E", weight=1)
+
+        source = "A"
+        targets = {"C", "D", "E"}
+        expected_target = "C"  # A-B-C is closest
+
+        sentinel = "_sentinel_"
+        G.add_node(sentinel)
+        for t in targets:
+            G.add_edge(t, sentinel, weight=0)
+
+        # shortest_path: Dijkstra (default)
+        path = nx.shortest_path(G, source=source, target=sentinel, weight="weight")
+        assert path[-2] == expected_target
+
+        # shortest_path: Bellman-Ford
+        path = nx.shortest_path(
+            G, source=source, target=sentinel, weight="weight", method="bellman-ford"
+        )
+        assert path[-2] == expected_target
+
+        # shortest_path: Unweighted (BFS)
+        path = nx.shortest_path(G, source=source, target=sentinel, weight=None)
+        assert path[-2] == expected_target
+
+        # bidirectional_dijkstra
+        _, path = nx.bidirectional_dijkstra(G, source, sentinel, weight="weight")
+        assert path[-2] == expected_target
+
+        # goldberg_radzik
+        pred, _ = nx.goldberg_radzik(G, source, weight="weight")
+        path = reconstruct_path(pred, source, sentinel)
+        assert path[-2] == expected_target
+
+        # astar_path with zero heuristic
+        path = nx.astar_path(
+            G, source, sentinel, heuristic=lambda u, v: 0, weight="weight"
+        )
+        assert path[-2] == expected_target
+
+        # johnson (all-pairs shortest paths)
+        paths = nx.johnson(G, weight="weight")
+        assert paths[source][sentinel][-2] == expected_target
+
+        # floyd_warshall_predecessor_and_distance
+        pred, _ = nx.floyd_warshall_predecessor_and_distance(G, weight="weight")
+        path = reconstruct_path(pred[source], source, sentinel)
+        assert path[-2] == expected_target
+
     def test_shortest_path(self):
         assert nx.shortest_path(self.cycle, 0, 3) == [0, 1, 2, 3]
         assert nx.shortest_path(self.cycle, 0, 4) == [0, 6, 5, 4]

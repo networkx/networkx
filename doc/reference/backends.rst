@@ -374,7 +374,7 @@ Creating a custom backend
 
     The ``get_info`` should return a dictionary with following key-value pairs:
         - ``backend_name`` : str or None
-            It is the name passed in the ``backend`` kwarg.
+            It is the name passed in the ``backend`` kwarg and must be a valid Python identifier.
         - ``project`` : str or None
             The name of your backend project.
         - ``package`` : str or None
@@ -423,7 +423,7 @@ Creating a custom backend
 3.  Defining a Backend Graph class
 
     The backend must create an object with an attribute ``__networkx_backend__`` that holds
-    a string with the entry point name::
+    a string with the entry point name, which must be a valid Python identifier::
 
         class BackendGraph:
             __networkx_backend__ = "backend_name"
