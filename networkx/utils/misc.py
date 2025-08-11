@@ -555,17 +555,17 @@ def edges_equal(edges1, edges2, *, directed=False):
 
     >>> DG1 = nx.DiGraph([(0, 1)])
     >>> DG2 = nx.DiGraph([(1, 0)])
-    >>> edges_equal(DG1.edges, DG2.edges, directed=False)  # Bad.
+    >>> edges_equal(DG1.edges, DG2.edges, directed=False)  # Not recommended.
     True
     >>> edges_equal(DG1.edges, DG2.edges, directed=True)
     False
 
-    This function is meant to be used on edgelists, not on lists of
-    edges:
+    This function is meant to be used on edgelists, and can give
+    unexpected results on lists of edges:
 
     >>> l1 = [(0, 1)]
     >>> l2 = [(0, 1), (1, 0)]
-    >>> edges_equal(l1, l2)  # Bad.
+    >>> edges_equal(l1, l2)  # Not recommended.
     False
     >>> G1 = nx.Graph(l1)
     >>> G2 = nx.Graph(l2)
