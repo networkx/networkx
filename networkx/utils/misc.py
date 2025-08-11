@@ -513,7 +513,7 @@ def nodes_equal(nodes1, nodes2):
     return d1 == d2
 
 
-def edges_equal(edges1, edges2, directed=False):
+def edges_equal(edges1, edges2, *, directed=False):
     """Return whether iterables of edges are equal.
 
     Equality here means equal as Python objects.
@@ -535,6 +535,29 @@ def edges_equal(edges1, edges2, directed=False):
     -------
     bool
         `True` if edges are equal, `False` otherwise.
+
+    Examples
+    --------
+    >>> G1 = nx.complete_graph(3)
+    >>> G2 = nx.circulant_graph(3, [1])
+    >>> nx.utils.edges_equal(G1.edges(), G2.edges())
+    True
+
+    Edge order is not taken into account:
+
+    >>> G1 = nx.Graph([(0, 1), (1, 2)])
+    >>> G2 = nx.Graph([(1, 2), (0, 1)])
+    >>> nx.utils.edges_equal(G1.edges(), G2.edges())
+    True
+
+    The `directed` parameter controls whether edge direction matters.
+
+    >>> G1 = nx.DiGraph([(0, 1)])
+    >>> G2 = nx.DiGraph([(1, 0)])
+    >>> nx.utils.edges_equal(G1.edges(), G2.edges(), directed=False)
+    True
+    >>> nx.utils.edges_equal(G1.edges(), G2.edges(), directed=True)
+    False
     """
     d1 = defaultdict(list)
     d2 = defaultdict(list)
