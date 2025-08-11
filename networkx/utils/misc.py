@@ -513,12 +513,11 @@ def nodes_equal(nodes1, nodes2):
     return d1 == d2
 
 
-def edges_equal(edges1, edges2, *, directed=False):
-    """Return whether iterables of edges are equal.
+def edges_equal(edges1, edges2, *, directed_graph=False):
+    """Return whether edgelists are equal.
 
-    Equality here means equal as Python objects.
-    Edge data must match if included.
-    The order of the edges is not relevant.
+    Equality here means equal as Python objects. Edge data must match
+    if included. The order of the edges is not relevant.
 
     Parameters
     ----------
@@ -528,49 +527,67 @@ def edges_equal(edges1, edges2, *, directed=False):
         an edge tuple with data `dict` s ``(u, v, d)``, or
         an edge tuple with keys and data `dict` s ``(u, v, k, d)``.
 
-    directed : bool, optional (default=False)
-        If `True`, edges are treated as directed.
+    directed_graph : bool, optional (default=False)
+        If `True`, edgelists are treated as coming from directed
+        graphs.
 
     Returns
     -------
     bool
-        `True` if edges are equal, `False` otherwise.
+        `True` if edgelists are equal, `False` otherwise.
 
     Examples
     --------
     >>> G1 = nx.complete_graph(3)
     >>> G2 = nx.circulant_graph(3, [1])
-    >>> nx.utils.edges_equal(G1.edges(), G2.edges())
+    >>> edges_equal(G1.edges, G2.edges)
     True
 
     Edge order is not taken into account:
 
     >>> G1 = nx.Graph([(0, 1), (1, 2)])
     >>> G2 = nx.Graph([(1, 2), (0, 1)])
-    >>> nx.utils.edges_equal(G1.edges(), G2.edges())
+    >>> edges_equal(G1.edges, G2.edges)
     True
 
-    The `directed` parameter controls whether edge direction matters.
+    The `directed` parameter controls whether edges are treated as
+    coming from directed graphs.
 
-    >>> G1 = nx.DiGraph([(0, 1)])
-    >>> G2 = nx.DiGraph([(1, 0)])
-    >>> nx.utils.edges_equal(G1.edges(), G2.edges(), directed=False)
+    >>> DG1 = nx.DiGraph([(0, 1)])
+    >>> DG2 = nx.DiGraph([(1, 0)])
+    >>> edges_equal(DG1.edges, DG2.edges, directed_graph=False)  # Bad.
     True
-    >>> nx.utils.edges_equal(G1.edges(), G2.edges(), directed=True)
+    >>> edges_equal(DG1.edges, DG2.edges, directed_graph=True)
+    False
+
+    This function is meant to be used on edgelists, not on lists of
+    edges:
+
+    >>> l1 = [(0, 1)]
+    >>> l2 = [(0, 1), (1, 0)]
+    >>> edges_equal(l1, l2)  # Bad.
+    False
+    >>> G1 = nx.Graph(l1)
+    >>> G2 = nx.Graph(l2)
+    >>> edges_equal(G1.edges, G2.edges)
+    True
+    >>> DG1 = nx.DiGraph(l1)
+    >>> DG2 = nx.DiGraph(l2)
+    >>> edges_equal(DG1.edges, DG2.edges, directed_graph=True)
     False
     """
     d1 = defaultdict(list)
     d2 = defaultdict(list)
 
     for e1, e2 in zip_longest(edges1, edges2, fillvalue=None):
-        if (e1 is None or e2 is None) and directed:
+        if (e1 is None or e2 is None) and directed_graph:
             return False
         for e, d in [(e1, d1), (e2, d2)]:
             if e is None:
                 continue
             u, v, *data = e
             d[u, v].append(data)
-            if not directed:
+            if not directed_graph:
                 d[v, u].append(data)
 
     # Can check one direction when lengths are the same.

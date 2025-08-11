@@ -361,8 +361,8 @@ def test_edges_equal_directed():
     G = nx.DiGraph([(0, 1)])
     I = nx.DiGraph([(1, 0)])
 
-    assert edges_equal(G.edges(), I.edges(), directed=False)
-    assert not edges_equal(G.edges(), I.edges(), directed=True)
+    assert edges_equal(G.edges(), I.edges(), directed_graph=False)
+    assert not edges_equal(G.edges(), I.edges(), directed_graph=True)
 
 def test_edges_equal_directed_data():
     """Test whether ``edges_equal`` properly compares directed edges with attribute dictionaries."""
@@ -371,12 +371,12 @@ def test_edges_equal_directed_data():
 
     G.add_edge(0, 1, attr1="blue")
     I.add_edge(0, 1, attr1="blue")
-    assert edges_equal(G.edges(data=True), G.edges(data=True), directed=True)
+    assert edges_equal(G.edges(data=True), G.edges(data=True), directed_graph=True)
     I.add_edge(1, 2, attr2="green")
-    assert not edges_equal(G.edges(data=True), I.edges(data=True), directed=True)
+    assert not edges_equal(G.edges(data=True), I.edges(data=True), directed_graph=True)
     G.add_edge(1, 2, attr2="green")
-    assert edges_equal(G.edges(data=True), I.edges(data=True), directed=True)
+    assert edges_equal(G.edges(data=True), I.edges(data=True), directed_graph=True)
     G.remove_edge(1, 2)
     G.add_edge(2, 1, attr2="green")
-    assert edges_equal(G.edges(data=True), I.edges(data=True), directed=False)
-    assert not edges_equal(G.edges(data=True), I.edges(data=True), directed=True)
+    assert edges_equal(G.edges(data=True), I.edges(data=True), directed_graph=False)
+    assert not edges_equal(G.edges(data=True), I.edges(data=True), directed_graph=True)
