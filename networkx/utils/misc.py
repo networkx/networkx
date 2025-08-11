@@ -513,8 +513,8 @@ def nodes_equal(nodes1, nodes2):
     return d1 == d2
 
 
-def edges_equal(edges1, edges2):
-    """Check if edges are equal.
+def edges_equal(edges1, edges2, directed=False):
+    """Return whether iterables of edges are equal.
 
     Equality here means equal as Python objects.
     Edge data must match if included.
@@ -525,8 +525,11 @@ def edges_equal(edges1, edges2):
     edges1, edges2 : iterables of tuples
         Each tuple can be
         an edge tuple ``(u, v)``, or
-        an edge tuple with data `dict`s ``(u, v, d)``, or
-        an edge tuple with keys and data `dict`s ``(u, v, k, d)``.
+        an edge tuple with data `dict` s ``(u, v, d)``, or
+        an edge tuple with keys and data `dict` s ``(u, v, k, d)``.
+
+    directed : bool, optional (default=False)
+        If `True`, edges are treated as directed.
 
     Returns
     -------
@@ -537,14 +540,18 @@ def edges_equal(edges1, edges2):
     d2 = defaultdict(list)
 
     for e1, e2 in zip_longest(edges1, edges2, fillvalue=None):
-        if e1 is None or e2 is None:
-            return False  # One is longer.
+        if (e1 is None or e2 is None) and directed:
+            return False
         for e, d in [(e1, d1), (e2, d2)]:
+            if e is None:
+                continue
             u, v, *data = e
-            d[u, v] = d[v, u] = d[u, v] + [data]
+            d[u, v].append(data)
+            if not directed:
+                d[v, u].append(data)
 
-    # Can check one direction because lengths are the same.
-    return all(d1[e].count(data) == d2[e].count(data) for e in d1 for data in d1[e])
+    # Can check one direction when lengths are the same.
+    return len(d1) == len(d2) and all(d1[e].count(data) == d2[e].count(data) for e in d1 for data in d1[e])
 
 
 def graphs_equal(graph1, graph2):
