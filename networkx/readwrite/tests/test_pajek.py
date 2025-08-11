@@ -50,14 +50,14 @@ class TestPajek:
             directed=True,
         )
 
-    def test_parse_pajet_mat(self):
+    def test_parse_pajek_mat(self):
         data = """*Vertices 3\n1 "one"\n2 "two"\n3 "three"\n*Matrix\n1 1 0\n0 1 0\n0 1 0\n"""
         G = nx.parse_pajek(data)
         assert set(G.nodes()) == {"one", "two", "three"}
         assert G.nodes["two"] == {"id": "2"}
         assert edges_equal(
             G.edges(),
-            [("one", "one"), ("two", "one"), ("two", "two"), ("two", "three")],
+            [("one", "one"), ("one", "two"), ("two", "two"), ("three", "two")],
             directed=True,
         )
 

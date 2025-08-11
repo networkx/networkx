@@ -453,7 +453,8 @@ def test_held_karp_ascent():
     # Check that the z_stars are the same
     solution = nx.DiGraph()
     solution.add_edges_from(solution_edges)
-    assert nx.utils.edges_equal(z_star.edges, solution.edges, directed=True)
+    # Use undirected edges for `edges_equal` because the graph is symmetric.
+    assert nx.utils.edges_equal(z_star.edges, solution.edges)
 
 
 def test_ascent_fractional_solution():
