@@ -80,15 +80,14 @@ def hnm_harary_graph(n, m, create_using=None):
 
     half = n // 2
     if (n % 2 == 0) or (d % 2 == 0):
+        # If d is odd; n must be even.
         if d % 2 == 1:
-            # If d is odd; n must be even.
             # Add edges diagonally.
             H.add_edges_from((i, i + half) for i in range(half))
 
         r = 2 * m % n
-        if r > 0:
-            # Add remaining edges at offset + 1.
-            H.add_edges_from((i, i + offset + 1) for i in range(r // 2))
+        # Add remaining edges at offset + 1.
+        H.add_edges_from((i, i + offset + 1) for i in range(r // 2))
     else:
         # Add the remaining m - n * offset edges between i and i + half.
         H.add_edges_from((i, (i + half) % n) for i in range(m - n * offset))
@@ -153,8 +152,8 @@ def hkn_harary_graph(k, n, create_using=None):
 
     half = n // 2
     if (k % 2 == 0) or (n % 2 == 0):
+        # If k is odd; n must be even.
         if k % 2 == 1:
-            # If k is odd; n must be even.
             # Add edges diagonally.
             H.add_edges_from((i, i + half) for i in range(half))
     else:
