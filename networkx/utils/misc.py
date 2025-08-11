@@ -513,7 +513,7 @@ def nodes_equal(nodes1, nodes2):
     return d1 == d2
 
 
-def edges_equal(edges1, edges2, *, directed_graph=False):
+def edges_equal(edges1, edges2, *, directed=False):
     """Return whether edgelists are equal.
 
     Equality here means equal as Python objects. Edge data must match
@@ -527,7 +527,7 @@ def edges_equal(edges1, edges2, *, directed_graph=False):
         an edge tuple with data `dict` s ``(u, v, d)``, or
         an edge tuple with keys and data `dict` s ``(u, v, k, d)``.
 
-    directed_graph : bool, optional (default=False)
+    directed : bool, optional (default=False)
         If `True`, edgelists are treated as coming from directed
         graphs.
 
@@ -555,9 +555,9 @@ def edges_equal(edges1, edges2, *, directed_graph=False):
 
     >>> DG1 = nx.DiGraph([(0, 1)])
     >>> DG2 = nx.DiGraph([(1, 0)])
-    >>> edges_equal(DG1.edges, DG2.edges, directed_graph=False)  # Bad.
+    >>> edges_equal(DG1.edges, DG2.edges, directed=False)  # Bad.
     True
-    >>> edges_equal(DG1.edges, DG2.edges, directed_graph=True)
+    >>> edges_equal(DG1.edges, DG2.edges, directed=True)
     False
 
     This function is meant to be used on edgelists, not on lists of
@@ -573,25 +573,27 @@ def edges_equal(edges1, edges2, *, directed_graph=False):
     True
     >>> DG1 = nx.DiGraph(l1)
     >>> DG2 = nx.DiGraph(l2)
-    >>> edges_equal(DG1.edges, DG2.edges, directed_graph=True)
+    >>> edges_equal(DG1.edges, DG2.edges, directed=True)
     False
     """
     d1 = defaultdict(list)
     d2 = defaultdict(list)
 
     for e1, e2 in zip_longest(edges1, edges2, fillvalue=None):
-        if (e1 is None or e2 is None) and directed_graph:
+        if (e1 is None or e2 is None) and directed:
             return False
         for e, d in [(e1, d1), (e2, d2)]:
             if e is None:
                 continue
             u, v, *data = e
             d[u, v].append(data)
-            if not directed_graph:
+            if not directed:
                 d[v, u].append(data)
 
     # Can check one direction when lengths are the same.
-    return len(d1) == len(d2) and all(d1[e].count(data) == d2[e].count(data) for e in d1 for data in d1[e])
+    return len(d1) == len(d2) and all(
+        d1[e].count(data) == d2[e].count(data) for e in d1 for data in d1[e]
+    )
 
 
 def graphs_equal(graph1, graph2):
