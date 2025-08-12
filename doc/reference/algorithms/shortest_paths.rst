@@ -12,11 +12,11 @@ edges can only be followed in their defined direction, and the path must respect
 those constraints. For more details on graph types and their properties, see
 :ref:`graph types <classes>`.
 
-NetworkX provides a unified interface for shortest paths weighted and unweighed,
+NetworkX provides a unified interface for shortest paths weighted and unweighted,
 directed and undirected. Other variants of the shortest path problem such as all
 pairs of shortest paths are also supported.
 
-To specify graph is weighted, user must provide a weight attribute name by using
+To specify that graph is weighted, user must provide a weight attribute name by using
 the ``weight`` parameter. This can be a string that corresponds to an edge
 attribute or a function that returns the weight of an edge. If no weight is
 specified, the graph is treated as unweighted. In the case ``weight`` is
@@ -35,17 +35,21 @@ treated as having a weight of :math:`1`.
  >>> G.add_edge("E", "D", weight=4)
  >>> G.add_edge("D", "F", weight=11)
  >>>
- >>> # Compute shortest path from A to F
- >>> path = nx.shortest_path(G, source="A", target="F", weight="weight")
- >>> print(path)
+ >>> # Compute shortest path from A to F considering weights
+ >>> weighted_path = nx.shortest_path(G, source="A", target="F", weight="weight")
+ >>> print(weighted_path)
  ['A', 'C', 'E', 'D', 'F']
+ >>> # Compute shortest path length from A to F ignoring weights
+ >>> unweighted_path = nx.shortest_path(G, source="A", target="F")
+ >>> print(unweighted_path)
+ ['A', 'B', 'D', 'F']
 
 Algorithm Selection
 -------------------
 
 Depending on the type of graph and problem, different algorithms can perform
-better than others. When using the simplified interface, NerworkX picks the
-algorithm that suits the use case best. Selection is based on the type of graph
+better than others. When using the simplified interface, NetworkX picks the
+algorithm that best suits the use-case. The selection is based on the type of graph
 and weight attribute. When multiple algorithms are available, the user can
 control which one to use by specifying the ``method`` parameter.
 
