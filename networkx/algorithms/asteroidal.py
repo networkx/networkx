@@ -58,28 +58,28 @@ def find_asteroidal_triple(G):
        Journal of Discrete Algorithms 2, pages 439-452, 2004.
        https://www.sciencedirect.com/science/article/pii/S157086670400019X
     """
-    V = set(G.nodes)
+    V = set(G)
 
     if len(V) < 6:
-        # An asteroidal triple cannot exist in a graph with 5 or less vertices.
+        # An asteroidal triple cannot exist in a graph with 5 or fewer vertices.
         return None
 
-    component_structure = create_component_structure(G)
+    component_structure = _create_component_structure(G)
 
-    for u, v in nx.non_edges(G):
-        u_neighborhood = set(G[u]).union([u])
-        v_neighborhood = set(G[v]).union([v])
-        union_of_neighborhoods = u_neighborhood.union(v_neighborhood)
-        for w in V - union_of_neighborhoods:
-            # Check for each pair of vertices whether they belong to the
-            # same connected component when the closed neighborhood of the
-            # third is removed.
-            if (
-                component_structure[u][v] == component_structure[u][w]
-                and component_structure[v][u] == component_structure[v][w]
-                and component_structure[w][u] == component_structure[w][v]
-            ):
-                return [u, v, w]
+    seen_u = set()
+    for u, csu in component_structure.items():
+        seen_u.add(u)
+        seen_v = set()
+        for v in (Vu := V - (G._adj[u].keys() | seen_u)):
+            seen_v.add(v)
+            csv = component_structure[v]
+            for w in Vu - (G._adj[v].keys() | seen_v):
+                csw = component_structure[w]
+                # Check for each pair of vertices whether they belong to the
+                # same connected component when the closed neighborhood of the
+                # third is removed.
+                if csu[v] == csu[w] and csv[u] == csv[w] and csw[u] == csw[v]:
+                    return [u, v, w]
     return None
 
 
@@ -120,7 +120,7 @@ def is_at_free(G):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatchable
-def create_component_structure(G):
+def _create_component_structure(G):
     r"""Create component structure for G.
 
     A *component structure* is an `nxn` array, denoted `c`, where `n` is
@@ -144,21 +144,13 @@ def create_component_structure(G):
         A dictionary of dictionaries, keyed by pairs of vertices.
 
     """
-    V = set(G.nodes)
-    component_structure = {}
-    for v in V:
-        label = 0
-        closed_neighborhood = set(G[v]).union({v})
-        row_dict = {}
-        for u in closed_neighborhood:
-            row_dict[u] = 0
-
-        G_reduced = G.subgraph(set(G.nodes) - closed_neighborhood)
-        for cc in nx.connected_components(G_reduced):
-            label += 1
-            for u in cc:
-                row_dict[u] = label
-
-        component_structure[v] = row_dict
-
-    return component_structure
+    V = set(G)
+    ccfn = nx.connected_components  # To make the generator expression more readable.
+    return {
+        v: {
+            u: i
+            for i, cc in enumerate(ccfn(G.subgraph(V - (v_nbrs.keys() | {v}))))
+            for u in cc
+        }
+        for v, v_nbrs in G.adjacency()
+    }
