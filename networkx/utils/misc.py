@@ -517,7 +517,8 @@ def edges_equal(edges1, edges2, *, directed=False):
     """Return whether edgelists are equal.
 
     Equality here means equal as Python objects. Edge data must match
-    if included. The order of the edges is not relevant.
+    if included. Ordering of edges in an edgelist is not relevant;
+    ordering of nodes in an edge is only relevant if ``directed == True``.
 
     Parameters
     ----------
@@ -539,7 +540,7 @@ def edges_equal(edges1, edges2, *, directed=False):
     Examples
     --------
     >>> G1 = nx.complete_graph(3)
-    >>> G2 = nx.circulant_graph(3, [1])
+    >>> G2 = nx.cycle_graph(3)
     >>> edges_equal(G1.edges, G2.edges)
     True
 

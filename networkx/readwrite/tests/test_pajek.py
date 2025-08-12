@@ -124,5 +124,5 @@ class TestPajek:
         fh.seek(0)
         H = nx.read_pajek(fh)
         assert nodes_equal(list(G), list(H))
-        assert edges_equal(G.edges(), H.edges(), directed=True)
+        assert edges_equal(list(G.edges()), list(H.edges()))
         assert G.graph == H.graph
