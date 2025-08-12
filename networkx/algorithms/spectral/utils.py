@@ -45,8 +45,8 @@ def build_flow_network(G, _s, _t, S, T=None, c=1, d=1):
     """Builds a flow network on `G` where each edge has capacity `c`, and each node of `S`, `T`
     have a supply / demand of d respectively.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     G : networkx.Graph
 
     _s : object
@@ -69,16 +69,28 @@ def build_flow_network(G, _s, _t, S, T=None, c=1, d=1):
     d : int
         The supply of nodes in `S` and demand of nodes in `T`.
 
-    Returns:
-    --------
+    Returns
+    -------
     networkx.Graph
         A graph such that each node `v in S` has supply `d`, and each node `u in T` has
         demand `d`, and each edge of `G` has capacity `c`.
+
+    Raises
+    ------
+    NetworkXError
+        if `_s` or `_t` is already in `G`, if edge capacities are negative,
+        or if nodes have negative demand.
     """
-    if not _s:
-        _s = "_source_"
-    if not _t:
-        t = "_target_"
+    if _s in G or _t in G:
+        raise nx.NetworkXError(
+            "The keys _s and _t for the super-source and"
+            "super-sink must satisfy `_s not in G` and `_t not in G`."
+        )
+    if c < 0:
+        raise nx.NetworkXError("Edges must have non-negative capacity.")
+    if d < 0:
+        raise nx.NetworkXError("Nodes must have non-negative demand.")
+
     H = nx.Graph()
     H.add_nodes_from(G.nodes)
     H.add_edges_from(G.edges, capacity=c)
@@ -130,7 +142,7 @@ def dfs(R, s, t):
     return []
 
 
-@nx.dispatchable(edge_attrs={"flow": 0})
+@nx._dispatchable(edge_attrs={"flow": 0})
 def flow_matching(R, _s, _t):
     """Given a residual network `R` on which a flow problem has been solved, a super-source `_s`,
     and a super-sink `_t`, decompose the flow into `_s` - `_t` and find a matching between
@@ -168,7 +180,7 @@ def flow_matching(R, _s, _t):
     return matching
 
 
-@nx.dispatchable(edge_attrs={"flow": 0, "capacity": float("inf")})
+@nx._dispatchable(edge_attrs={"flow": 0, "capacity": float("inf")})
 def compute_mincut(R, _t):
     """Computes the min-cut in R. Always returns the smaller side of the cut first."""
     cutset = [(u, v, d) for u, v, d in R.edges(data=True) if d["flow"] == d["capacity"]]
@@ -182,7 +194,7 @@ def compute_mincut(R, _t):
     return partition
 
 
-@nx.dispatchable(returns_graph=True)
+@nx._dispatchable(returns_graph=True)
 def build_subdivision_graph(G, subdiv_node_format=None):
     """Builds the subdivision graph of `G`, where the subdivision node of an edge
     (u, v) is given the key subdiv_node_format(u, v).

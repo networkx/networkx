@@ -21,7 +21,7 @@ __all__ = ["sparse_cut", "sparsest_cut", "balanced_sparse_cut"]
 
 
 @not_implemented_for("directed")
-@nx.dispatchable
+@nx._dispatchable()
 def sparse_cut(
     G,
     alpha,
@@ -212,7 +212,7 @@ def sparse_cut(
 
 
 @not_implemented_for("directed")
-@nx.dispatchable
+@nx._dispatchable
 def sparsest_cut(G, _s, _t, **kwargs):
     alpha = max(d for v, d in G.degree())
     found_sparse = True
@@ -227,7 +227,7 @@ def sparsest_cut(G, _s, _t, **kwargs):
 
 
 @not_implemented_for("directed")
-@nx.dispatchable
+@nx._dispatchable
 def balanced_sparse_cut(G, _s, _t, alpha, balance, **kwargs):
     S = set()
     H = G

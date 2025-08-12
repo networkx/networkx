@@ -49,28 +49,42 @@ def lowest_conductance_cut_impl(
     T = math.ceil(t_const + t_slope * math.log(m) ** 2)
     c = math.ceil(1 / alpha / math.log(m) ** 2)
 
+    # map of nodes to indices. Note that the first n indices will be
+    # nodes of G, then the remainder will be subdivision nodes.
     vertex_to_index = {v: i for i, v in enumerate(subdivision_graph)}
 
     proj_flow_vectors = generate_random_orthogonal_gaussian(m, num_candidates)
 
     def compute_potential(S, vecs, proj_avg_flow, exp=2):
-        bit_mask = np.array([v in S for v in H]).reshape(vecs.shape[0], 1)
+        bit_mask = [False] * m
+        for v in S:
+            bit_mask[vertex_to_index[v] - n] = True
+        compatible_shape = (m, 1)
+        if len(vecs.shape) == 1:
+            compatible_shape = (m,)
+        bit_mask = np.array(bit_mask).reshape(compatible_shape)
         return np.sum(np.abs(vecs - proj_avg_flow) ** exp, axis=0, where=bit_mask)
 
     def average_flow(vecs):
-        bit_mask = np.array([v in active_subdiv_nodes for v in H]).reshape(
-            vecs.shape[0], 1
-        )
+        bit_mask = [False] * m
+        for v in active_subdiv_nodes:
+            bit_mask[vertex_to_index[v] - n] = True
+        # Need to do this check, otherwise the method will not work for both
+        # 1d vectors and arrays.
+        compatible_shape = (m, 1)
+        if len(vecs.shape) == 1:
+            compatible_shape = (m,)
+        bit_mask = np.array(bit_mask).reshape(compatible_shape)
         return np.mean(vecs, axis=0, where=bit_mask)
 
     def initial_partition(proj_flow_vector, proj_avg_flow):
-        L = set()
-        R = set()
+        L = []
+        R = []
         for v in active_subdiv_nodes:
-            if proj_flow_vector[vertex_to_index[v]] < proj_avg_flow:
-                L.add(v)
+            if proj_flow_vector[vertex_to_index[v] - n] < proj_avg_flow:
+                L.append(v)
             else:
-                R.add(v)
+                R.append(v)
             if len(L) > len(R):
                 temp = L
                 L = R
@@ -91,7 +105,7 @@ def lowest_conductance_cut_impl(
 
         if left_potential >= total_potential / 20:
             # sort L by flow
-            L = L.sort(key=lambda v: proj_flow_vector[vertex_to_index[v]])
+            L.sort(key=lambda v: proj_flow_vector[vertex_to_index[v] - n])
             if strategy == "unbalanced":
                 while len(L) > num_active // 8:
                     L.pop()
@@ -100,7 +114,7 @@ def lowest_conductance_cut_impl(
                 # TODO: might by better if you sort and remove largest
                 while len(R) > len(L):
                     R.pop()
-            return (L, R)
+            return (set(L), set(R))
 
         left_l1_potential = compute_potential(L, proj_flow_vector, proj_avg_flow, exp=1)
         # repartition with new cutoff
@@ -108,26 +122,26 @@ def lowest_conductance_cut_impl(
         R.clear()
         for v in active_subdiv_nodes:
             if (
-                proj_flow_vector[vertex_to_index[v]]
+                proj_flow_vector[vertex_to_index[v] - n]
                 <= proj_avg_flow + 4 / num_active * left_l1_potential
             ):
-                R.add(v)
+                R.append(v)
             elif (
-                proj_flow_vector[vertex_to_index[v]]
+                proj_flow_vector[vertex_to_index[v] - n]
                 >= proj_avg_flow + 6 / num_active * left_l1_potential
             ):
-                L.add(v)
+                L.append(v)
             # sort R by flow and prune
             if strategy == "unbalanced":
-                L = L.sort(
-                    key=lambda v: proj_flow_vector[vertex_to_index[v]], reverse=True
+                L.sort(
+                    key=lambda v: proj_flow_vector[vertex_to_index[v] - n], reverse=True
                 )
                 while len(L) > num_active // 8:
                     L.pop()
             elif strategy == "balanced":
                 while len(R) > len(L):
                     R.pop()
-        return (L, R)
+        return (set(L), set(R))
 
     for i in range(max(T, min_iterations)):
         # get best candidate among random gaussians
@@ -164,13 +178,13 @@ def lowest_conductance_cut_impl(
                 return C.intersection(set(G)), set(G).difference(C)
 
         # get matching from flow
-        matching, _ = flow_matching(R, _s, _t)
-        matching_rows = [vertex_to_index[i] for i in matching]
-        matching_cols = [vertex_to_index[i] for i in matching.values()]
+        matching = flow_matching(R, _s, _t)
+        matching_rows = [vertex_to_index[i] - n for i in matching]
+        matching_cols = [vertex_to_index[i] - n for i in matching.values()]
 
         # Average across matching edges
         W = (
-            sp.sparse.identity(n)
+            sp.sparse.identity(m)
             + sp.sparse.coo_array(
                 ([0.5] * len(matching_rows), (matching_rows, matching_cols)), (m, m)
             ).tocsr()
@@ -184,7 +198,7 @@ def lowest_conductance_cut_impl(
 
 
 @not_implemented_for("directed")
-@nx.dispatchable
+@nx._dispatchable
 def lowest_conductance_cut(
     G,
     alpha,
@@ -192,7 +206,7 @@ def lowest_conductance_cut(
     _t,
     min_iterations=0,
     num_candidates=20,
-    b=0,
+    b=0.0,
     t_const=20,
     t_slope=5,
     subdiv_node_format=None,
@@ -200,6 +214,9 @@ def lowest_conductance_cut(
     flow_func=None,
     **kwargs,
 ):
+    if len(G.edges()) < 2:
+        raise nx.NetworkXError("G must have at least 2 edges.")
+
     if flow_func is None:
         if kwargs:
             raise nx.NetworkXError(
@@ -222,6 +239,11 @@ def lowest_conductance_cut(
     if t_slope <= 0:
         raise nx.NetworkXError(
             "The algorithm runs for t_const + t_slope * log(m)^2 iterations. t_slope must be positive."
+        )
+    if t_const + t_slope * math.log(len(G.edges())) ** 2 < 0:
+        raise nx.NetworkXError(
+            "The algorithm runs for t_const + t_slope * log(m)^2 < 0 iterations. "
+            "Tune your values of t_const and t_slope so that this is positive."
         )
 
     if b < 0 or b > 1:
