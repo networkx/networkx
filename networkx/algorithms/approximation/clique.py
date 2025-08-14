@@ -37,12 +37,12 @@ class LinearTimeMaximiumIndependentSet:
         The undirected graph being operated on
     max_degree : int
         The maximum degree of H
-    nodes_by_degree : dict of sets
-        The set of nodes for each degree up to max_degree
-    independent_set : set
-        The set of independent nodes, equivalent to nodes_by_degree[0]
-    twos: set
-        The set of nodes a degree-two reduction can be applied on
+    nodes_by_degree : dict of dicts
+        The ordered set of nodes for each degree up to max_degree
+    independent_set : dict
+        The ordered set of independent nodes, equivalent to nodes_by_degree[0]
+    twos: dict
+        The ordered set of nodes a degree-two reduction can be applied on
         Note that this is *not* equivalent to nodes_by_degree[2]
     removed_paths : list
         The list of paths of temporarily removed nodes
@@ -66,9 +66,10 @@ class LinearTimeMaximiumIndependentSet:
 
         # Construct degree data structure
         self.max_degree = max((d for v, d in self.H.degree), default=0)
-        self.nodes_by_degree = {d: set() for d in range(max(self.max_degree, 2) + 1)}
+        # note: use dict as an ordered set
+        self.nodes_by_degree = {d: {} for d in range(max(self.max_degree, 2) + 1)}
         for v, d in self.H.degree:
-            self.nodes_by_degree[d].add(v)
+            self.nodes_by_degree[d][v] = True
         self.independent_set = self.nodes_by_degree[0]
         self.twos = self.nodes_by_degree[2].copy()
 
@@ -76,12 +77,12 @@ class LinearTimeMaximiumIndependentSet:
         """Reduce degree of v and update data structures accordingly."""
         d = self.H.degree[v]
         if d == 3:
-            self.twos.add(v)
+            self.twos[v] = True
         elif d == 2:
-            self.twos.discard(v)
+            self.twos.pop(v, None)
 
-        self.nodes_by_degree[d].remove(v)
-        self.nodes_by_degree[d - 1].add(v)
+        self.nodes_by_degree[d].pop(v)
+        self.nodes_by_degree[d - 1][v] = True
 
     def remove_node(self, v):
         """Remove v from data structures and update all neighbors of v."""
@@ -89,9 +90,9 @@ class LinearTimeMaximiumIndependentSet:
             self.reduce_degree(u)
 
         d = self.H.degree[v]
-        self.nodes_by_degree[d].remove(v)
+        self.nodes_by_degree[d].pop(v)
         if d == 2:
-            self.twos.discard(v)
+            self.twos.pop(v, None)
 
         self.H.remove_node(v)
 
@@ -134,7 +135,7 @@ class LinearTimeMaximiumIndependentSet:
 
     def degree_two_path_reduction(self):
         """Apply the degree-two path reduction as described in [1]_."""
-        u = self.twos.pop()
+        u, _ = self.twos.popitem()
 
         is_cycle, P, ends = self.longest_degree_two_path(u)
         if is_cycle:
@@ -159,8 +160,10 @@ class LinearTimeMaximiumIndependentSet:
                 v1 = P[0]
 
                 # Also remove v1 as a further reduction on v1 is useless
-                self.twos -= set(P)
-                self.nodes_by_degree[2] -= set(P[1:])
+                self.twos.pop(v1, None)
+                for vi in P[1:]:
+                    self.twos.pop(vi, None)
+                    self.nodes_by_degree[2].pop(vi)
                 self.H.remove_nodes_from(P[1:])
                 self.removed_paths.append(P[1:])
 
@@ -175,9 +178,9 @@ class LinearTimeMaximiumIndependentSet:
                 # Fig. 4(e)
                 self.H.add_edge(v, w)
 
-            p_set = set(P)
-            self.twos -= p_set
-            self.nodes_by_degree[2] -= p_set
+            for vi in P:
+                self.twos.pop(vi, None)
+                self.nodes_by_degree[2].pop(vi)
             self.H.remove_nodes_from(P)
             self.removed_paths.append(P)
 
@@ -206,17 +209,17 @@ class LinearTimeMaximiumIndependentSet:
         for P in reversed(self.removed_paths):
             for v in P:
                 if all(nbr not in self.independent_set for nbr in self.G[v]):
-                    self.independent_set.add(v)
+                    self.independent_set[v] = True
 
         # Extend independent set to be maximal
         selfloops = nx.selfloop_edges(self.G)
         self.G.remove_edges_from(selfloops)
-        self.independent_set = set(
+        max_independent_set = set(
             nx.algorithms.maximal_independent_set(self.G, self.independent_set)
         )
         self.G.add_edges_from(selfloops)
 
-        return self.independent_set
+        return max_independent_set
 
 
 def _maximum_independent_set_clique_removal(G):
