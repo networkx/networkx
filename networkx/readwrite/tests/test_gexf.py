@@ -24,12 +24,18 @@ def test_gexf_v1_3(tmp_path):
 """
     with open(fname := (tmp_path / "basic.gexf"), "w") as fh:
         fh.write(data)
-    # Load example with version explicitly set
-    G = nx.read_gexf(fname, version="1.3")
 
+    # Expected output based on xml input
     expected = nx.DiGraph([("0", "1")])
     nx.set_node_attributes(expected, {"0": "Hello", "1": "Word"}, name="label")
     expected.graph = {"mode": "static", "edge_default": {}}
+
+    # Load example with version explicitly set
+    G = nx.read_gexf(fname, version="1.3")
+    assert nx.utils.graphs_equal(G, expected)
+
+    # And with the "default" version
+    G = nx.read_gexf(fname)
     assert nx.utils.graphs_equal(G, expected)
 
 
