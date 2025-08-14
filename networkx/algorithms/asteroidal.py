@@ -2,23 +2,21 @@
 Algorithms for asteroidal triples and asteroidal numbers in graphs.
 
 An asteroidal triple in a graph ``G`` is a set of three non-adjacent nodes
-``u``, ``v``, and ``w`` such that there exists a path between any two of them that avoids
-the closed neighborhood of the third. More formally, ``v_j``, ``v_k`` belong to the same
+``{u, v, w}`` such that there exists a path between any two of them that avoids
+the closed neighborhood of the third. More formally, ``v_j`` and ``v_k`` belong to the same
 connected component of ``G - N[v_i]``, where ``N[v_i]`` denotes the closed neighborhood
-of ``v_i``. A graph which does not contain any asteroidal triples is called
-an AT-free graph. The class of AT-free graphs is a graph class for which
+of ``v_i``. A graph that does not contain any asteroidal triples is called
+an "AT-free" graph. The class of AT-free graphs is a graph class for which
 many NP-complete problems such as independent set and coloring are solvable in polynomial time.
-.
 """
 
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ["is_at_free", "find_asteroidal_triple"]
+__all__ = ["is_at_free", "find_asteroidal_triple", "_create_component_structure"]
 
 
 @not_implemented_for("directed")
-@not_implemented_for("multigraph")
 @nx._dispatchable
 def find_asteroidal_triple(G):
     r"""Find an asteroidal triple in a graph.
@@ -29,7 +27,7 @@ def find_asteroidal_triple(G):
 
     Parameters
     ----------
-    G : NetworkX Graph
+    G : NetworkX graph
         The graph to find an asteroidal triple in.
 
     Returns
@@ -41,11 +39,11 @@ def find_asteroidal_triple(G):
     Raises
     ------
     NetworkXNotImplemented
-        If the graph is directed or a multigraph.
+        If the graph is directed.
 
     Notes
     -----
-    This implements the trivial algorithm for simple graphs in [1]_.
+    This implements the trivial algorithm in [1]_.
     It checks all independent triples of nodes and whether they are an
     asteroidal triple or not. This is done with the help of a data structure
     called a component structure. The component structure encodes information
@@ -65,7 +63,7 @@ def find_asteroidal_triple(G):
     V = set(G)
 
     if len(V) < 6:
-        # An asteroidal triple cannot exist in a graph with 5 or fewer vertices.
+        # An asteroidal triple cannot exist in a graph with 5 or fewer nodes.
         return None
 
     component_structure = _create_component_structure(G)
@@ -79,7 +77,7 @@ def find_asteroidal_triple(G):
             csv = component_structure[v]
             for w in Vu - (G._adj[v].keys() | seen_v):
                 csw = component_structure[w]
-                # Check for each pair of vertices whether they belong to the
+                # Check for each pair of nodes whether they belong to the
                 # same connected component when the closed neighborhood of the
                 # third is removed.
                 if csu[v] == csu[w] and csv[u] == csv[w] and csw[u] == csw[v]:
@@ -88,7 +86,6 @@ def find_asteroidal_triple(G):
 
 
 @not_implemented_for("directed")
-@not_implemented_for("multigraph")
 @nx._dispatchable
 def is_at_free(G):
     """Check if a graph is AT-free.
@@ -100,7 +97,7 @@ def is_at_free(G):
 
     Parameters
     ----------
-    G : NetworkX Graph
+    G : NetworkX graph
         The graph to check whether is AT-free or not.
 
     Returns
@@ -122,27 +119,27 @@ def is_at_free(G):
 
 
 @not_implemented_for("directed")
-@not_implemented_for("multigraph")
 @nx._dispatchable
 def _create_component_structure(G):
     r"""Create a modified component structure for a graph.
 
-    A *component structure* is an ``n x n`` array, denoted ``c``, where ``n`` is
-    the number of vertices, where each row and column corresponds to a node.
+    A *component structure* is an $n \times n$ array, denoted $c$, where $n$ is
+    the number of vertices and each row and column corresponds to a node.
 
     .. math::
-        c_{uv} = \begin{cases} 0, \text{if} v \in N[u] \\
-            k, \text{if} v \in \text{component} k \text{of} G \setminus N[u] \end{cases}
+        c_{uv} = \begin{cases} 0, \text{ if } v \in N[u] \\
+            k, \text{ if } v \in \text{component } k \text{ of } G \setminus N[u] \end{cases}
 
-    where ``k` is an arbitrary label for each component. The structure is used
-    to simplify the detection of asteroidal triples. Our implementation uses a
-    modified version of the component structure that excludes ``v`` from ``c_u``
-    if ``v \in N[u]``.
+    where $k$ is an arbitrary label for each component. The structure is used
+    to simplify the detection of asteroidal triples.
+
+    Our implementation uses a modified version of the component structure using dictionaries
+    that excludes $v$ from $c_u$ if $v \in N[u]$.
 
     Parameters
     ----------
-    G : NetworkX Graph
-        Undirected, simple graph.
+    G : NetworkX graph
+        Undirected graph.
 
     Returns
     -------
