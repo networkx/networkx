@@ -1,11 +1,13 @@
 """
-===================
-TrustRank Algorithm
-===================
+=========
+TrustRank
+=========
 
-TrustRank is an algorithm designed to compute trust scores for nodes in a graph.
+`TrustRank`_ is an algorithm designed to compute trust scores for nodes in a graph.
 It is particularly useful in applications like web spam detection, where certain nodes (web pages) are
 known to be trustworthy, and the goal is to propagate trust to other nodes based on the graph structure.
+
+.. _TrustRank: https://en.wikipedia.org/wiki/TrustRank
 
 How TrustRank Relies on PageRank:
 ---------------------------------
