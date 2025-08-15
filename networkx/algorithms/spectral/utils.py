@@ -91,13 +91,13 @@ def build_flow_network(G, _s, _t, S, T=None, c=1, d=1):
     if d < 0:
         raise nx.NetworkXError("Nodes must have non-negative demand.")
 
-    H = nx.Graph()
+    H = G.__class__()
     H.add_nodes_from(G.nodes)
     H.add_edges_from(G.edges, capacity=c)
     for v in G:
         if v in S:
             H.add_edge(_s, v, capacity=d)
-        if T and v in T:
+        elif T and v in T:
             H.add_edge(_t, v, capacity=d)
         elif not T:
             H.add_edge(_t, v, capacity=d)
