@@ -133,7 +133,7 @@ def generate_multiline_adjlist(G, delimiter=" "):
                 seen.add(s)
 
 
-@open_file(1, mode="wb")
+@open_file("path", mode="wb")
 def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-8"):
     """Write the graph G in multiline adjacency list format to path
 
@@ -182,13 +182,11 @@ def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-
         + comments
         + f" GMT {time.asctime(time.gmtime())}\n"
         + comments
-        + f" {G.name}\n"
+        + f" {G.name}"
     )
-    path.write(header.encode(encoding))
-
-    for multiline in generate_multiline_adjlist(G, delimiter):
-        multiline += "\n"
-        path.write(multiline.encode(encoding))
+    # Add empty string to ensure file ends with newline.
+    to_write = (header,) + tuple(generate_multiline_adjlist(G, delimiter)) + ("",)
+    path.write("\n".join(to_write).encode(encoding))
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
