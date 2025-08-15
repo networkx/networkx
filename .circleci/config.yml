@@ -2,36 +2,6 @@
 
 version: 2.1
 
-executors:
-  python-executor:
-    docker:
-      - image: cimg/python:3.12
-    environment:
-      PIP_NO_CACHE_DIR: "off"
-
-commands:
-  install-deps:
-    steps:
-      - checkout
-      - run:
-          name: Install system packages
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y graphviz graphviz-dev
-      - restore_cache:
-          keys:
-            - v1-pip-cache-{{ checksum "pyproject.toml" }}
-            - v1-pip-cache-
-      - run:
-          name: Install Python packages
-          command: |
-            pip install --upgrade pip
-            pip install .[default,extra,test]
-      - save_cache:
-          key: v1-pip-cache-{{ checksum "pyproject.toml" }}
-          paths:
-            - ~/.cache/pip
-
 jobs:
   documentation:
     docker:
@@ -128,44 +98,34 @@ jobs:
       - store_artifacts:
           path: results
 
-  test:
-    executor: python-executor
-    parallelism: 4
-    steps:
-      - install-deps
-      - run:
-          name: Run pytest with partial coverage
-          command: |
-            mkdir -p coverage_data
-            TEST_FILES=$(circleci tests glob "networkx/**/*.py" | circleci tests split --split-by=timings)
-            pytest \
-              --junitxml=test_results/junit.xml \
-              --cov=networkx \
-              --cov-append \
-              --cov-report= \
-              --runslow --durations=20 \
-              --doctest-modules \
-              --pyargs $TEST_FILES
-            cp .coverage coverage_data/.coverage.$CIRCLE_NODE_INDEX || true
-      - persist_to_workspace:
-          root: coverage_data
-          paths:
-            - .coverage.*
-      - store_test_results:
-          path: test_results
-
   coverage:
-    executor: python-executor
+    docker:
+      - image: cimg/python:3.12
     steps:
-      - install-deps
-      - attach_workspace:
-          at: coverage_data
+      - checkout
       - run:
-          name: Combine coverage and generate HTML report
+          name: Before install
           command: |
+            sudo apt-get update
+            sudo apt-get install graphviz graphviz-dev
+      - run:
+          name: Install dependencies
+          command: |
+            python -m venv venv
+            source venv/bin/activate
+            pip install --upgrade pip
+            pip install .[default,extra,test]
             pip install coverage
-            cp coverage_data/.coverage.* .
-            coverage combine
+            pip list
+      - run:
+          name: Run tests
+          command: |
+            source venv/bin/activate
+            pytest --cov=networkx --cov-report=html --runslow --doctest-modules --durations=20 --pyargs networkx
+      - run:
+          name: Generate coverage report
+          command: |
+            source venv/bin/activate
             coverage html
       - store_artifacts:
           path: htmlcov
@@ -176,9 +136,6 @@ workflows:
     jobs:
       - documentation
       - image
-  test-and-report:
+  test-and-report-coverage:
     jobs:
-      - test
-      - coverage:
-          requires:
-            - test
+      - coverage
