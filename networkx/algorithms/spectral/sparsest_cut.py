@@ -33,8 +33,8 @@ def sparse_cut(
     flow_func=None,
     **kwargs,
 ):
-    """Find a $(1 - b / 4log^2(n))$ balanced `alpha` sparse cut in `G` or certify with high
-    probability that every `b` balanced cut has expansion $O(alpha / log^2(n))$.
+    r"""Find a $b / 4\log^2(n)$ balanced `alpha` sparse cut in `G` or certify with high
+    probability that every `b` balanced cut has expansion $O(alpha / \log^2(n))$.
 
     This algorithm has a running time of $O(log^2(m) * T_f)$ for a graph `G` with $m$ nodes and
     a flow function which runs in time $T_f$.
@@ -53,13 +53,17 @@ def sparse_cut(
         Key for a super-sink used in flow computations. Must satisfy `_t not in G`.
 
     min_iterations : int
-        Minimum number of iterations to run the cut-matching procedure
+        Minimum number of iterations to run the cut-matching procedure.
 
     num_candidates : int
-        Number of random unit vectors orthogonal on each run of the cut-matching procedure
+        Number of random unit vectors to consider during the algorithm. A higher
+        value increases the quality of the cut or the confidence in the expansion
+        guarantee, but decreases the running time.
 
     b : float
-        Balance parameters
+        Balance parameter for the expansion guarantee. If the first set returned
+        is empty, then all b-balanced cuts in `G` have expansion at least `alpha`.
+        Must be less than 1/2.
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes
@@ -149,16 +153,24 @@ def sparse_cut(
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func must be callable")
 
+    if _s in G or _t in G:
+        raise nx.NetworkXError(
+            "super-source node _s or super-sink node _t are already in G."
+        )
+
+    if b < 0 or b > 1 / 2:
+        raise nx.NetworkXError("b must be between 0 and 0.5.")
+
     n = len(G)
     m = len(G.edges())
-    T = math.ceil(20 + 4 * 1 / b * math.log(m) ** 2)
+    T = math.ceil(20 + 10 * math.log(m) ** 2)
 
     index_to_vertex = dict(enumerate(G))
     vertex_to_index = {v: i for i, v in enumerate(G)}
 
     proj_flow_vecs = generate_random_orthogonal_gaussian(n, num_candidates)
 
-    for i in range(max(T, min_iterations)):
+    for _ in range(max(T, min_iterations)):
         norms = np.linalg.norm(proj_flow_vecs, axis=0)
         u = proj_flow_vecs[:, np.argmax(norms)]
 
@@ -179,8 +191,9 @@ def sparse_cut(
 
         # solve flow
         R = flow_func(H, _s, _t, **kwargs)
-        if R.graph["flow_value"] < (1 / 2 - b / 4 * math.log(n) ** 2) * n:
-            return compute_mincut(R, _t)
+        if R.graph["flow_value"] < math.floor((1 / 2 - b / 4 / math.log(n) ** 2) * n):
+            Q, S = compute_mincut(R, _t)
+            return Q.intersection(set(G)), S.intersection(set(G))
 
         # get matching from flow
         matching = flow_matching(R, _s, _t)
@@ -196,7 +209,7 @@ def sparse_cut(
         if len(unmatched_A) == 1:
             matching[unmatched_A[0]] = unmatched_A[0]
         if len(unmatched_B) == 1:
-            matching[unmatched_B[0]] == unmatched_B[0]
+            matching[unmatched_B[0]] = unmatched_B[0]
 
         rows = [vertex_to_index[m] for m in matching]
         cols = [vertex_to_index[m] for m in matching.values()]
@@ -214,16 +227,16 @@ def sparse_cut(
 @not_implemented_for("directed")
 @nx._dispatchable
 def sparsest_cut(G, _s, _t, **kwargs):
-    alpha = max(d for v, d in G.degree())
+    alpha = max(d for _, d in G.degree()) * math.log(len(G)) ** 2
     found_sparse = True
     best_cut_so_far = (set(), set(G.nodes()))
     while found_sparse:
-        S, T = sparse_cut(alpha, _s, _t, **kwargs)
-        if not S or not T:
+        S, T = sparse_cut(G, alpha, _s, _t, b=0, **kwargs)
+        if len(S) == 0 or len(T) == 0:
             found_sparse = False
+            return best_cut_so_far
         best_cut_so_far = (S, T)
         alpha /= 2
-    return best_cut_so_far
 
 
 @not_implemented_for("directed")
@@ -240,8 +253,8 @@ def balanced_sparse_cut(G, _s, _t, alpha, balance, **kwargs):
             B = temp
         # if no cut could be found, then return early
         if not A:
-            return set()
+            return set(), set(G.nodes())
 
         S = S.union(A)
         H = G.subgraph(B)
-    return S
+    return S, set(G).difference(S)
