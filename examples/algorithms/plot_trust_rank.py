@@ -21,15 +21,6 @@ Key Steps:
 2. Create a personalization vector where seed nodes are assigned equal trust,
    and non-seed nodes are assigned zero.
 3. Run the PageRank algorithm with the personalization vector to compute trust scores for all nodes.
-
-References
-----------
-.. [1] Gyongyi, Zoltan; Garcia-Molina, Hector (2004).
-    "Combating Web Spam with TrustRank"
-    http://ilpubs.stanford.edu:8090/770/1/2004-52.pdf
-.. [2] Krishnan, Vijay; Raj, Rashmi
-    "Web Spam Detection with Anti-Trust Rank"
-    http://i.stanford.edu/~kvijay/krishnan-raj-airweb06.pdf
 """
 
 import networkx as nx
