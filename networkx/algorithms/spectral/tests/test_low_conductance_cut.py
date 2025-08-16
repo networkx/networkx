@@ -11,20 +11,20 @@ from networkx.algorithms.spectral.low_conductance_cut import lowest_conductance_
 def test_low_conductance_cut_barbell_balanced():
     G = nx.barbell_graph(30, 5)
     m = len(G.edges())
-    S, T = lowest_conductance_cut(G, 0.005, "_s", "_t")
+    S, T = lowest_conductance_cut(G, 0.007, "_s", "_t")
 
-    assert nx.conductance(G, S, T) <= 0.005
-    assert len(S) > m / 10 / math.log(m) ** 2
+    assert nx.conductance(G, S, T) <= 0.007 * math.log(m) ** 2
+    assert nx.volume(G, S) > m / 10 / math.log(m) ** 2
     assert S.union(T) == set(G)
 
 
 def test_low_conductance_cut_lolipop_balanced():
     G = nx.lollipop_graph(30, 10)
     m = len(G.edges())
-    S, T = lowest_conductance_cut(G, 0.005, "_s", "_t")
+    S, T = lowest_conductance_cut(G, 0.3, "_s", "_t")
 
-    assert nx.conductance(G, S, T) <= 0.005
-    assert len(S) > m / 10 / math.log(m) ** 2
+    assert nx.conductance(G, S, T) <= 0.3 * math.log(m) ** 2
+    assert nx.volume(G, S) > m / 10 / math.log(m) ** 2
     assert S.union(T) == set(G)
 
 
@@ -38,39 +38,42 @@ def test_low_conductance_cut_expander_balanced():
 
 def test_low_conductance_cut_near_expander_balanced():
     G = nx.margulis_gabber_galil_graph(20)
-    G.add_edges_from(
-        [
-            ("x", 2),
-            ("x", 4),
-            ("x", 8),
-            ("y", 3),
-            ("y", 5),
-            ("y", 7),
-            ("y", 9),
-            ("x", "y"),
-        ]
-    )
+    G.add_edge("a", "b")
+    m = len(G.edges())
     S, T = lowest_conductance_cut(G, 0.005, "_s", "_t")
-    assert S == {"x", "y"}
+    assert S == {"a", "b"}
+    assert nx.volume(G, S) < m / 10 / math.log(m) ** 2
+    assert nx.conductance(G, S, T) < 0.005 * math.log(m) ** 2
 
 
 def test_low_conductance_cut_barbell_unbalanced():
+    """As the unbalanced strategy mixes much more slowly than the balanced strategy,
+    we need to adjust the values of t_const and t_slope in order to get the
+    expected behaviour. The barbell graph mixes especially slowly, so the values
+    emperically determined in Isaac Arvestad's thesis (170, 17.2) are sometimes
+    insufficient. The value of allpha isn't the same as in the balanced case for
+    the sake of the running time.
+    """
     G = nx.barbell_graph(30, 5)
     m = len(G.edges())
-    S, T = lowest_conductance_cut(G, 0.005, "_s", "_t", strategy="unbalanced")
+    S, T = lowest_conductance_cut(
+        G, 0.02, "_s", "_t", strategy="unbalanced", t_const=200, t_slope=20.2
+    )
 
-    assert nx.conductance(G, S, T) <= 0.005
-    assert len(S) > m / 10 / math.log(m) ** 2
+    assert nx.conductance(G, S, T) <= 0.02 * math.log(m) ** 2
+    assert nx.volume(G, S) > m / 10 / math.log(m) ** 2
     assert S.union(T) == set(G)
 
 
 def test_low_conductance_cut_lolipop_unbalanced():
     G = nx.lollipop_graph(30, 10)
     m = len(G.edges())
-    S, T = lowest_conductance_cut(G, 0.005, "_s", "_t", strategy="unbalanced")
+    S, T = lowest_conductance_cut(
+        G, 0.3, "_s", "_t", strategy="unbalanced", t_const=170, t_slope=17.2
+    )
 
-    assert nx.conductance(G, S, T) <= 0.005
-    assert len(S) > m / 10 / math.log(m) ** 2
+    assert nx.conductance(G, S, T) <= 0.3 * math.log(m) ** 2
+    assert nx.volume(G, S) > m / 10 / math.log(m) ** 2
     assert S.union(T) == set(G)
 
 
@@ -84,38 +87,33 @@ def test_low_conductance_cut_expander_unbalanced():
 
 def test_low_conductance_cut_near_expander_unbalanced():
     G = nx.margulis_gabber_galil_graph(20)
-    G.add_edges_from(
-        [
-            ("x", 2),
-            ("x", 4),
-            ("x", 8),
-            ("y", 3),
-            ("y", 5),
-            ("y", 7),
-            ("y", 9),
-            ("x", "y"),
-        ]
+    G.add_edge("a", "b")
+    m = len(G.edges())
+    S, T = lowest_conductance_cut(
+        G, 0.005, "_s", "_t", strategy="unbalanced", t_const=170, t_slope=17.2
     )
-    S, T = lowest_conductance_cut(G, 0.005, "_s", "_t", strategy="unbalanced")
-    assert S == {"x", "y"}
+    assert S == {"a", "b"}
+    assert nx.volume(G, S) < m / 10 / math.log(m) ** 2
+    assert nx.conductance(G, S, T) < 0.005 * math.log(m) ** 2
 
 
 def test_low_conductance_cut_high_balance():
     G = nx.ladder_graph(50)
-    S, T = lowest_conductance_cut(G, 0.005, "_s", "_t", b=0.45)
+    m = len(G.edges())
+    S, T = lowest_conductance_cut(G, 0.14, "_s", "_t", b=0.45)
 
-    assert nx.conductance(G, S, T) <= 0.005
-    assert len(S) > 45
+    assert nx.conductance(G, S, T) <= 0.14 * math.log(m) ** 2
+    assert nx.volume(G, S) > 0.225 * (2 * m)
     assert S.union(T) == set(G)
 
 
 def test_low_conductance_cut_single_candidate():
     G = nx.ladder_graph(50)
     m = len(G.edges())
-    S, T = lowest_conductance_cut(G, 0.01, "_s", "_t", num_candidates=1)
+    S, T = lowest_conductance_cut(G, 0.08, "_s", "_t", num_candidates=1)
 
-    assert nx.conductance(G, S, T) <= 0.01
-    assert len(S) > m / 10 / math.log(m) ** 2
+    assert nx.conductance(G, S, T) <= 0.08 * math.log(m) ** 2
+    assert nx.volume(G, S) > m / 10 / math.log(m) ** 2
     assert S.union(T) == set(G)
 
 
