@@ -307,8 +307,8 @@ def balanced_sparse_cut(G, alpha, _s, _t, balance, **kwargs):
         `_t not in G`.
 
     balance : float
-        A number between 0 and 1/6 such that the returned cut (if any) will have
-        size at least `balance * n`.
+        A number between between 0 and 1/3, not inclusive, such that the
+        returned cut (if any) will have size at least `balance * n`.
 
     kwargs : Any other keyword argument to be passed to the sparse_cut
         function.

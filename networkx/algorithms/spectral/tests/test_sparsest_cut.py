@@ -63,7 +63,7 @@ def test_sparsest_cut_barbell_graph():
     G = nx.barbell_graph(40, 1)
     S, T = sparsest_cut(G, "_s", "_t")
 
-    assert nx.cut_size(G, S, T) / len(S) < 2 * 0.965
+    assert nx.cut_size(G, S, T) / len(S) < 0.965
     assert S.union(T) == set(G)
 
 
@@ -71,5 +71,28 @@ def test_sparsest_cut_ladder_graph():
     G = nx.ladder_graph(50)
     S, T = sparsest_cut(G, "_s", "_t")
 
-    assert nx.cut_size(G, S, T) / len(S) < 2 * 0.848
+    assert nx.cut_size(G, S, T) / len(S) < 0.848
     assert S.union(T) == set(G)
+
+
+def test_balanced_sparse_cut_barbell_graph():
+    G = nx.barbell_graph(40, 1)
+    S, T = balanced_sparse_cut(G, 1 / 5, "_s", "_t", 1 / 6)
+
+    assert nx.edge_expansion(G, S, T) < 1 / 5
+    assert len(S) > len(G) // 6
+
+
+def test_balanced_sparse_cut_ternary_tree():
+    G = nx.balanced_tree(3, 6)
+    S, T = balanced_sparse_cut(G, 0.18, "_s", "_t", 1 / 4)
+
+    assert nx.edge_expansion(G, S, T) < 0.18
+    assert len(S) > len(G) // 4
+
+
+def test_balanced_sparse_cut_random_graph():
+    G = nx.gnp_random_graph(400, 0.1)
+    S, T = balanced_sparse_cut(G, 0.6, "_s", "_t", 1 / 4)
+
+    assert len(S) == 0
