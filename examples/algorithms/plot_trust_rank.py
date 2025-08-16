@@ -4,23 +4,26 @@ TrustRank
 =========
 
 `TrustRank`_ is an algorithm designed to compute trust scores for nodes in a graph.
-It is particularly useful in applications like web spam detection, where certain nodes (web pages) are
-known to be trustworthy, and the goal is to propagate trust to other nodes based on the graph structure.
+It is particularly useful in applications like web spam detection, where certain
+nodes (web pages) are known to be trustworthy, and the goal is to propagate trust
+to other nodes based on the graph structure.
 
 .. _TrustRank: https://en.wikipedia.org/wiki/TrustRank
 
 How TrustRank Relies on PageRank:
 ---------------------------------
-TrustRank uses the personalization feature of PageRank to bias the ranking towards a set of "seed nodes."
-These seed nodes are considered trustworthy and are assigned higher initial scores in the personalization
-vector. The algorithm then propagates trust through the graph using the same iterative process as PageRank.
+TrustRank uses the personalization feature of PageRank to bias the ranking towards
+a set of "seed nodes." These seed nodes are considered trustworthy and are assigned
+higher initial scores in the personalization vector. The algorithm then propagates
+trust through the graph using the same iterative process as PageRank.
 
 Key Steps:
 
 1. Define a set of seed nodes that are considered trustworthy.
 2. Create a personalization vector where seed nodes are assigned equal trust,
    and non-seed nodes are assigned zero.
-3. Run the PageRank algorithm with the personalization vector to compute trust scores for all nodes.
+3. Run the PageRank algorithm with the personalization vector to compute trust
+   scores for all nodes.
 """
 
 import networkx as nx
