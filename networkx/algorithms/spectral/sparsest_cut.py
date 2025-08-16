@@ -33,11 +33,13 @@ def sparse_cut(
     flow_func=None,
     **kwargs,
 ):
-    r"""Find a $b / 4\log^2(n)$ balanced `alpha` sparse cut in `G` or certify with high
-    probability that every `b` balanced cut has expansion $O(alpha / \log^2(n))$.
+    r"""Given a graph `G` with n nodes, find a $b / 4\log^2(n)$ balanced `alpha`
+    sparse cut in `G` or certify with high probability that every `b` balanced
+    cut has expansion $O(alpha / \log^2(n))$.
 
-    This algorithm has a running time of $O(log^2(m) * T_f)$ for a graph `G` with $m$ nodes and
-    a flow function which runs in time $T_f$.
+    This algorithm has a running time of $O(log^2(n) (T_f + m / \alpha))$ for
+    a graph `G` with $n$ nodes and `m` edges, and a flow function which runs
+    in time $T_f$.
 
     Parameters
     ----------
@@ -80,7 +82,7 @@ def sparse_cut(
 
     Returns
     -------
-    tuple(Set, Set)
+    tuple[set, set]
         A cut in `G` which has expansion at most `alpha`. If every `b` balanced cut in `G` has
         expansion $O(alpha / log^2(n))$, then the first set in the tuple will be empty.
 
@@ -227,6 +229,44 @@ def sparse_cut(
 @not_implemented_for("directed")
 @nx._dispatchable
 def sparsest_cut(G, _s, _t, **kwargs):
+    r"""Given a graph `G` with n nodes, find an $\alpha$ sparse cut in `G`
+    such that `G` is an $\alpha / 4 \log(n)^2$ edge expander.
+
+    This algorithm runs in time $O(\log(d) \log^2(n)(T_f + m / \alpha))$
+    for a graph `G` with `n` nodes, `m` edges, and maximum degree `d`,
+    and a flow function which runs in time $T_f$.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    _s : object
+        Key for super-source node added during flow computations. Must
+        satisfy `_s not in G`.
+
+    _t : object
+        Key for super-sink node added during flow computations. Must
+        satisfy `_t not in G`.
+
+    kwargs : Any other keyword argument to be passed to the sparse_cut
+        function.
+
+    Returns
+    -------
+    tuple[set, set]
+        An $\alpha$ sparse cut in `G` such that `G` is an $\alpha / 4 \log(n)^2$
+        edge expander.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the input graph is not undirected
+
+    See also
+    --------
+    :meth: `sparse_cut`
+    :meth: `balanced_sparse_cut`
+    """
     alpha = max(d for _, d in G.degree()) * math.log(len(G)) ** 2
     found_sparse = True
     best_cut_so_far = (set(), set(G.nodes()))
@@ -241,7 +281,55 @@ def sparsest_cut(G, _s, _t, **kwargs):
 
 @not_implemented_for("directed")
 @nx._dispatchable
-def balanced_sparse_cut(G, _s, _t, alpha, balance, **kwargs):
+def balanced_sparse_cut(G, alpha, _s, _t, balance, **kwargs):
+    r"""Given a graph `G` with n nodes, a sparsity parameter `alpha`, and a balance
+    parameter `balance`, find an `alpha` sparse cut `balance` balanced cut, or
+    certify that every `1/3` balanced cut in `G` has expansion at least
+    $\alpha / 4 \log(n)^2$.
+
+    This algorithm runs in time $O(log(n)^4 (T_f + m / \alpha))$, where m
+    is the number of edges in `G` and $T_f$ is the time it takes to compute
+    a single commodity max flow.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    alpha : float
+        Upper bound for the expansion of the returned cut, if any is returned.
+
+    _s : object
+        Key for super-source node added during flow computations. Must satisfy
+        `_s not in G`.
+
+    _t : object
+        Key for super-sink node added during flow computations. Must satisfy
+        `_t not in G`.
+
+    balance : float
+        A number between 0 and 1/6 such that the returned cut (if any) will have
+        size at least `balance * n`.
+
+    kwargs : Any other keyword argument to be passed to the sparse_cut
+        function.
+
+    Returns
+    -------
+    tuple[set, set]
+        A cut (S, T) such that either S is an `alpha` sparse cut of size at least
+        `balance * n`, or `S` is empty and all sets of size `n / 3` in `G` have
+        expansion at least `alpha / 4 / log(n) ** 2`.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the input graph is not undirected
+
+    See Also
+    --------
+    :meth: `sparse_cut`
+    :meth: `sparsest_cut`
+    """
     S = set()
     H = G
     while len(S) < balance * len(G):
