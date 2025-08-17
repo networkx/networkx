@@ -115,18 +115,12 @@ jobs:
             source venv/bin/activate
             pip install --upgrade pip
             pip install .[default,extra,test]
-            pip install coverage
             pip list
       - run:
           name: Run tests
           command: |
             source venv/bin/activate
-            pytest --cov=networkx --cov-report=html --runslow --doctest-modules --durations=20 --pyargs networkx
-      - run:
-          name: Generate coverage report
-          command: |
-            source venv/bin/activate
-            coverage html
+            pytest --cov=networkx --cov-report=html -n 16 --runslow --doctest-modules --durations=20 --pyargs networkx
       - store_artifacts:
           path: htmlcov
           destination: coverage
