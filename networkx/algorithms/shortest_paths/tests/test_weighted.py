@@ -1,7 +1,8 @@
+from itertools import pairwise
+
 import pytest
 
 import networkx as nx
-from networkx.utils import pairwise
 
 
 def validate_path(G, s, t, soln_len, path, weight="weight"):

@@ -3,10 +3,10 @@ Dinitz' algorithm for maximum flow problems.
 """
 
 from collections import deque
+from itertools import pairwise
 
 import networkx as nx
 from networkx.algorithms.flow.utils import build_residual_network
-from networkx.utils import pairwise
 
 __all__ = ["dinitz"]
 

@@ -12,7 +12,6 @@ from networkx.algorithms.connectivity.edge_augmentation import (
     is_k_edge_connected,
     is_locally_k_edge_connected,
 )
-from networkx.utils import pairwise
 
 # This should be set to the largest k for which an efficient algorithm is
 # explicitly defined.
@@ -33,7 +32,7 @@ def tarjan_bridge_graph():
         (11, 12, 14, 13, 11, 14),
     ]
     bridges = [(4, 8), (3, 5), (3, 17)]
-    G = nx.Graph(it.chain(*(pairwise(path) for path in ccs + bridges)))
+    G = nx.Graph(it.chain(*(it.pairwise(path) for path in ccs + bridges)))
     return G
 
 

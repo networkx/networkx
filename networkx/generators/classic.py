@@ -16,7 +16,7 @@ import numbers
 import networkx as nx
 from networkx.classes import Graph
 from networkx.exception import NetworkXError
-from networkx.utils import nodes_or_number, pairwise
+from networkx.utils import nodes_or_number
 
 __all__ = [
     "balanced_tree",
@@ -259,7 +259,7 @@ def barbell_graph(m1, m2, create_using=None):
     # connecting path
     G.add_nodes_from(range(m1, m1 + m2 - 1))
     if m2 > 1:
-        G.add_edges_from(pairwise(range(m1, m1 + m2)))
+        G.add_edges_from(itertools.pairwise(range(m1, m1 + m2)))
 
     # right barbell
     G.add_edges_from(
@@ -483,7 +483,7 @@ def cycle_graph(n, create_using=None):
     """
     _, nodes = n
     G = empty_graph(nodes, create_using)
-    G.add_edges_from(pairwise(nodes, cyclic=True))
+    G.add_edges_from(nx.utils.pairwise(nodes, cyclic=True))
     return G
 
 
@@ -679,8 +679,8 @@ def ladder_graph(n, create_using=None):
     G = empty_graph(2 * n, create_using)
     if G.is_directed():
         raise NetworkXError("Directed Graph not supported")
-    G.add_edges_from(pairwise(range(n)))
-    G.add_edges_from(pairwise(range(n, 2 * n)))
+    G.add_edges_from(itertools.pairwise(range(n)))
+    G.add_edges_from(itertools.pairwise(range(n, 2 * n)))
     G.add_edges_from((v, v + n) for v in range(n))
     return G
 
@@ -741,7 +741,7 @@ def lollipop_graph(m, n, create_using=None):
     # the stick
     G.add_nodes_from(n_nodes)
     if N > 1:
-        G.add_edges_from(pairwise(n_nodes))
+        G.add_edges_from(itertools.pairwise(n_nodes))
 
     if len(G) != M + N:
         raise NetworkXError("Nodes must be distinct in containers m and n")
@@ -785,7 +785,7 @@ def path_graph(n, create_using=None):
     """
     _, nodes = n
     G = empty_graph(nodes, create_using)
-    G.add_edges_from(pairwise(nodes))
+    G.add_edges_from(itertools.pairwise(nodes))
     return G
 
 
@@ -998,7 +998,7 @@ def wheel_graph(n, create_using=None):
         hub, *rim = nodes
         G.add_edges_from((hub, node) for node in rim)
         if len(rim) > 1:
-            G.add_edges_from(pairwise(rim, cyclic=True))
+            G.add_edges_from(nx.utils.pairwise(rim, cyclic=True))
     return G
 
 
@@ -1070,7 +1070,7 @@ def complete_multipartite_graph(*subset_sizes):
 
     # set up subsets of nodes
     try:
-        extents = pairwise(itertools.accumulate((0,) + subset_sizes))
+        extents = itertools.pairwise(itertools.accumulate((0,) + subset_sizes))
         subsets = [range(start, end) for start, end in extents]
     except TypeError:
         subsets = subset_sizes

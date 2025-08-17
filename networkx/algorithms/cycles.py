@@ -5,11 +5,11 @@ Cycle finding algorithms
 """
 
 from collections import defaultdict
-from itertools import combinations, product
+from itertools import combinations, pairwise, product
 from math import inf
 
 import networkx as nx
-from networkx.utils import not_implemented_for, pairwise
+from networkx.utils import not_implemented_for
 
 __all__ = [
     "cycle_basis",

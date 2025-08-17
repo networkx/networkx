@@ -1,11 +1,11 @@
-from itertools import groupby
+from itertools import groupby, pairwise
 
 import pytest
 
 import networkx as nx
 from networkx import graph_atlas, graph_atlas_g
 from networkx.generators.atlas import NUM_GRAPHS
-from networkx.utils import edges_equal, nodes_equal, pairwise
+from networkx.utils import edges_equal, nodes_equal
 
 
 class TestAtlasGraph:

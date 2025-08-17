@@ -1,9 +1,9 @@
 from heapq import heappop, heappush
-from itertools import count
+from itertools import count, pairwise
 
 import networkx as nx
 from networkx.algorithms.shortest_paths.weighted import _weight_function
-from networkx.utils import not_implemented_for, pairwise
+from networkx.utils import not_implemented_for
 
 __all__ = [
     "all_simple_paths",
@@ -50,7 +50,7 @@ def is_simple_path(G, nodes):
     To convert between a node path and an edge path, you can use code
     like the following::
 
-        >>> from networkx.utils import pairwise
+        >>> from itertools import pairwise
         >>> nodes = [0, 1, 2, 3]
         >>> edges = list(pairwise(nodes))
         >>> edges
@@ -141,10 +141,11 @@ def all_simple_paths(G, source, target, cutoff=None):
         [[0, 1, 3], [0, 2, 3], [0, 3]]
 
     To get each path as the corresponding list of edges, you can use the
-    :func:`networkx.utils.pairwise` helper function::
+    :func:`itertools.pairwise` helper function::
 
+        >>> from itertools import pairwise
         >>> paths = nx.all_simple_paths(G, source=0, target=3)
-        >>> for path in map(nx.utils.pairwise, paths):
+        >>> for path in map(pairwise, paths):
         ...     print(list(path))
         [(0, 1), (1, 2), (2, 3)]
         [(0, 1), (1, 3)]

@@ -1,8 +1,9 @@
+from itertools import pairwise
+
 import pytest
 
 import networkx as nx
 from networkx.algorithms import flow
-from networkx.utils import pairwise
 
 flow_funcs = [
     flow.boykov_kolmogorov,

@@ -1,10 +1,10 @@
 from collections import deque
-from itertools import combinations, permutations
+from itertools import combinations, pairwise, permutations
 
 import pytest
 
 import networkx as nx
-from networkx.utils import edges_equal, pairwise
+from networkx.utils import edges_equal
 
 
 # Recipe from the itertools documentation.
@@ -737,7 +737,7 @@ class TestDagToBranching:
     def test_not_acyclic(self):
         """Tests that a non-acyclic graph causes an exception."""
         with pytest.raises(nx.HasACycle):
-            G = nx.DiGraph(pairwise("abc", cyclic=True))
+            G = nx.DiGraph(pairwise("abca"))
             nx.dag_to_branching(G)
 
     def test_undirected(self):
