@@ -192,18 +192,18 @@ def johnson_graph(n, k, *, create_using=None):
     if k > len(nodes) or k < 0:
         raise ValueError("`k` must be between 0 and `n`")
 
-    nodes = list(itertools.combinations(nodes, k))
-    G = nx.empty_graph(nodes, create_using=create_using)
+    combs = list(itertools.combinations(nodes, k))
+    G = nx.empty_graph(combs, create_using=create_using)
     if G.is_directed():
         raise nx.NetworkXNotImplemented("not implemented for directed type")
 
-    precomputed_sets = [set(node) for node in nodes]
+    comb_sets = list(map(set, combs))
 
     # Two k-subsets are adjacent if they intersect in (k - 1) elements.
     G.add_edges_from(
         (ni, nj)
-        for i, (ni, sni) in enumerate(zip(nodes, precomputed_sets))
-        for nj, snj in zip(nodes[i + 1 :], precomputed_sets[i + 1 :])
+        for i, (ni, sni) in enumerate(zip(combs, comb_sets))
+        for nj, snj in zip(combs[i + 1 :], comb_sets[i + 1 :])
         if len(sni & snj) == k - 1
     )
 
