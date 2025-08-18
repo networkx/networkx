@@ -5,9 +5,9 @@ This module constructs a graph based on the projective polarity model,
 where nodes are derived from a finite projective space PG(m, q) over GF(q),
 and edges are added based on modular dot-product orthogonality.
 
-The special case of m=2 produces the well-known "Erdos-Renyi (ER) polarity graph",
-which is a diameter-2 graph that serves as the basis for the PolarFly
-network topology.
+The special case of m=2 produces the well-known
+"Erdos-Renyi (ER) polarity graph", which is a diameter-2 graph
+that serves as the basis for the PolarFly network topology.
 
 Limitations
 -----------
@@ -172,11 +172,11 @@ def projective_polarity_graph(m, q):
     for u in PG:
         G.add_node(u)
 
-   pg_array = np.array(PG, dtype=int)
+    pg_array = np.array(PG, dtype=int)
 
     for i in range(len(PG)):
         for j in range(i + 1, len(PG)):
-            if np.dot(pg_array[i], pg_array[j]) % q == 0:
+            if int(np.dot(pg_array[i], pg_array[j])) % q == 0:
                 G.add_edge(PG[i], PG[j])
 
     if not nx.is_connected(G):
