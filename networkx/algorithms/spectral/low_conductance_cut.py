@@ -57,8 +57,8 @@ def lowest_conductance_cut_impl(
 
     if fast_randomization:
         matching_graphs = [sp.sparse.identity(m)]
-    else:
-        proj_flow_vectors = generate_random_orthogonal_gaussian(m, num_candidates)
+
+    proj_flow_vectors = generate_random_orthogonal_gaussian(m, num_candidates)
 
     def compute_potential(S, vecs, proj_avg_flow, exp=2):
         bit_mask = [False] * m
