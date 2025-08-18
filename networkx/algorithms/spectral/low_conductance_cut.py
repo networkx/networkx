@@ -33,6 +33,7 @@ def lowest_conductance_cut_impl(
     t_slope,
     subdiv_node_format,
     strategy,
+    fast_randomization,
     flow_func,
     **kwargs,
 ):
@@ -54,7 +55,10 @@ def lowest_conductance_cut_impl(
     # nodes of G, then the remainder will be subdivision nodes.
     vertex_to_index = {v: i for i, v in enumerate(subdivision_graph)}
 
-    proj_flow_vectors = generate_random_orthogonal_gaussian(m, num_candidates)
+    if fast_randomization:
+        matching_graphs = [sp.sparse.identity(m)]
+    else:
+        proj_flow_vectors = generate_random_orthogonal_gaussian(m, num_candidates)
 
     def compute_potential(S, vecs, proj_avg_flow, exp=2):
         bit_mask = [False] * m
@@ -197,7 +201,19 @@ def lowest_conductance_cut_impl(
                 ([0.5] * len(matching_rows), (matching_rows, matching_rows)), (m, m)
             ).tocsr()
         )
-        proj_flow_vectors = W @ proj_flow_vectors
+        if fast_randomization:
+            # This is quite a significant divergence from Arvestad's implementation.
+            # I found that resampling the flow vectors every time improved the running
+            # time quite drastically, especially for the unbalanced strategy. This makes
+            # the theoretical complexity O(log(m)^3 ...), and increases slightly the
+            # space requirements to O(n * log(m)^2)
+            matching_graphs.append(W)
+            proj_flow_vectors = generate_random_orthogonal_gaussian(m, num_candidates)
+            for M in matching_graphs:
+                proj_flow_vectors = M @ proj_flow_vectors
+        else:
+            proj_flow_vectors = W @ proj_flow_vectors
+
     return C.intersection(set(G)), set(G).difference(C)
 
 
@@ -210,11 +226,12 @@ def lowest_conductance_cut(
     _t,
     min_iterations=0,
     num_candidates=20,
-    b=0.0,
+    b=0.45,
     t_const=22.0,
     t_slope=5.0,
     subdiv_node_format=None,
     strategy="balanced",
+    fast_randomization=True,
     flow_func=None,
     **kwargs,
 ):
@@ -279,6 +296,11 @@ def lowest_conductance_cut(
     strategy : str
         The strategy to be used in the cut finding step. Supported values
         are "balanced" or "unbalanced".
+
+    fast_randomization : bool
+        Whether or not to resample the projected flow vectors on each iteration.
+        This adds O(n * log(m) ** 3) to the theoretical running time but usually
+        decreses actual running time, especially for the unbalanced strategy.
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes
@@ -410,6 +432,7 @@ def lowest_conductance_cut(
         t_slope,
         subdiv_node_format,
         strategy,
+        fast_randomization,
         flow_func,
         **kwargs,
     )
