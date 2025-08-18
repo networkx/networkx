@@ -1,9 +1,13 @@
 """
-ER Polarity Graph Generator.
+Projective Polarity Graph Generator.
 
-This module constructs a graph based on the ER polarity model,
+This module constructs a graph based on the projective polarity model,
 where nodes are derived from a finite projective space PG(m, q) over GF(q),
 and edges are added based on modular dot-product orthogonality.
+
+The special case of m=2 produces the well-known "Erdos-Renyi (ER) polarity graph",
+which is a diameter-2 graph that serves as the basis for the PolarFly
+network topology.
 
 Limitations
 -----------
@@ -22,7 +26,7 @@ import itertools
 
 import networkx as nx
 
-__all__ = ["er_polarity_graph"]
+__all__ = ["projective_polarity_graph"]
 
 
 def _finite_field_vectors(m, q):
@@ -66,7 +70,7 @@ def _normalize_projective(vector, q):
 
     Examples
     --------
-    >>> from networkx.generators.er_polarity_prime import _normalize_projective
+    >>> from networkx.generators.projective_polarity_prime import _normalize_projective
     >>> vector = (2, 1, 0)
     >>> _normalize_projective(vector, 3)
     (1, 2, 0)
@@ -100,7 +104,7 @@ def _projective_space(m, q):
 
     Examples
     --------
-    >>> from networkx.generators.er_polarity_prime import _projective_space
+    >>> from networkx.generators.projective_polarity_prime import _projective_space
     >>> PG = _projective_space(2, 3)
     >>> len(PG)
     13
@@ -119,8 +123,8 @@ def _projective_space(m, q):
     return PG
 
 
-def er_polarity_graph(m, q):
-    r"""Generate an ER polarity graph from the projective space PG(m, q).
+def projective_polarity_graph(m, q):
+    r"""Generate an projective polarity graph from the projective space PG(m, q).
 
     Constructs an undirected graph where each node is a point in PG(m, q),
     and edges connect orthogonal pairs (under modular dot product mod q).
@@ -135,7 +139,7 @@ def er_polarity_graph(m, q):
     Returns
     -------
     G : networkx.Graph
-        An undirected graph representing the ER polarity structure.
+        An undirected graph representing the projective polarity structure.
 
     Raises
     ------
@@ -148,7 +152,7 @@ def er_polarity_graph(m, q):
 
     Examples
     --------
-    >>> G = er_polarity_graph(2, 3)
+    >>> G = projective_polarity_graph(2, 3)
     >>> nx.diameter(G)
     2
     >>> nx.is_connected(G)
@@ -168,14 +172,14 @@ def er_polarity_graph(m, q):
     for u in PG:
         G.add_node(u)
 
+   pg_array = np.array(PG, dtype=int)
+
     for i in range(len(PG)):
-        u = np.array(PG[i])
         for j in range(i + 1, len(PG)):
-            v = np.array(PG[j])
-            if np.dot(u, v) % q == 0:
-                G.add_edge(tuple(int(x) for x in u), tuple(int(x) for x in v))
+            if np.dot(pg_array[i], pg_array[j]) % q == 0:
+                G.add_edge(PG[i], PG[j])
 
     if not nx.is_connected(G):
-        raise ValueError("Generated ER polarity graph is not connected.")
+        raise ValueError("Generated projective polarity graph is not connected.")
 
     return G
