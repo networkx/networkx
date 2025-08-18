@@ -184,7 +184,7 @@ class TestAdjlist:
         H2 = nx.read_adjlist(fname, create_using=nx.DiGraph())
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
-        assert edges_equal(list(H.edges()), list(G.edges()))
+        assert edges_equal(list(H.edges()), list(G.edges()), directed=True)
 
     def test_adjlist_integers(self, tmp_path):
         fname = tmp_path / "adjlist.txt"
@@ -214,7 +214,7 @@ class TestAdjlist:
         H2 = nx.read_adjlist(fname, nodetype=int, create_using=nx.MultiDiGraph())
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
-        assert edges_equal(list(H.edges()), list(G.edges()))
+        assert edges_equal(list(H.edges()), list(G.edges()), directed=True)
 
     def test_adjlist_delimiter(self):
         fh = io.BytesIO()
@@ -285,7 +285,7 @@ class TestMultilineAdjlist:
         H2 = nx.read_multiline_adjlist(fname, create_using=nx.DiGraph())
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
-        assert edges_equal(list(H.edges()), list(G.edges()))
+        assert edges_equal(list(H.edges()), list(G.edges()), directed=True)
 
     def test_multiline_adjlist_integers(self, tmp_path):
         fname = tmp_path / "adjlist.txt"
@@ -321,7 +321,7 @@ class TestMultilineAdjlist:
         )
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
-        assert edges_equal(list(H.edges()), list(G.edges()))
+        assert edges_equal(list(H.edges()), list(G.edges()), directed=True)
 
     def test_multiline_adjlist_delimiter(self):
         fh = io.BytesIO()
