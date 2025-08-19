@@ -40,7 +40,6 @@ def generate_random_orthogonal_gaussian(dim, quantity):
     return vecs / col_norms
 
 
-@nx._dispatchable(returns_graph=True, name="spectral_utils_build_flow_network")
 def build_flow_network(G, _s, _t, S, T=None, c=1, d=1):
     """Builds a flow network on `G` where each edge has capacity `c`, and each node of `S`, `T`
     have a supply / demand of d respectively.
@@ -142,7 +141,7 @@ def dfs(R, s, t):
     return []
 
 
-@nx._dispatchable(edge_attrs={"flow": 0})
+@nx._dispatchable(edge_attrs="flow")
 def flow_matching(R, _s, _t):
     """Given a residual network `R` on which a flow problem has been solved, a super-source `_s`,
     and a super-sink `_t`, decompose the flow into `_s` - `_t` and find a matching between
