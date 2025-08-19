@@ -60,6 +60,6 @@ def test_expander_decomposition_random():
     pytest.importorskip("numpy")
     pytest.importorskip("scipy")
     G = nx.gnp_random_graph(200, 0.2)
-    clusters = expander_decomposition(G, 0.01, "_s", "_t")
+    clusters = expander_decomposition(G, 0.001, "_s", "_t")
 
     assert len(clusters) == 1

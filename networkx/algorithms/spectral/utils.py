@@ -40,7 +40,7 @@ def generate_random_orthogonal_gaussian(dim, quantity):
     return vecs / col_norms
 
 
-@nx._dispatchable(returns_graph=True, name="spectra_utils_build_flow_network")
+@nx._dispatchable(returns_graph=True, name="spectral_utils_build_flow_network")
 def build_flow_network(G, _s, _t, S, T=None, c=1, d=1):
     """Builds a flow network on `G` where each edge has capacity `c`, and each node of `S`, `T`
     have a supply / demand of d respectively.
