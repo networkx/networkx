@@ -4,9 +4,6 @@ Implementation of the KRV cut matching algorithm for finding sparsest cut.
 
 import math
 
-import numpy as np
-import scipy as sp
-
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -145,6 +142,9 @@ def sparse_cut(
     .. [2] L. Gottesburn, N. Parotsidis, and M. P. Gutenburg. Practical
             Expander Decomposition. J. ESA, 32(61):1-17, 2024.
     """
+    import numpy as np
+    import scipy as sp
+
     if flow_func is None:
         if kwargs:
             raise nx.NetworkXError(

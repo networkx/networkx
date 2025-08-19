@@ -2,8 +2,6 @@
 Utility classes and functions for cut finding algorithms.
 """
 
-import numpy as np
-
 import networkx as nx
 
 __all__ = [
@@ -33,6 +31,8 @@ def generate_random_orthogonal_gaussian(dim, quantity):
         A numpy array of shape (dim, quantity) such that each column is a random
         gaussian vector orthogonal to the all ones vector.
     """
+    import numpy as np
+
     vecs = np.random.normal(size=(quantity, dim))
     vecs = vecs - (vecs @ np.full((dim, 1), 1 / dim))
     vecs = vecs.T

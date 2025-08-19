@@ -4,9 +4,6 @@ Implementation of the RST cut matching algorithm for finding a cut of low conduc
 
 import math
 
-import numpy as np
-import scipy as sp
-
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -37,6 +34,9 @@ def lowest_conductance_cut_impl(
     flow_func,
     **kwargs,
 ):
+    import numpy as np
+    import scipy as sp
+
     n = len(G)
     m = len(G.edges())
     subdivision_graph, active_subdiv_nodes = build_subdivision_graph(

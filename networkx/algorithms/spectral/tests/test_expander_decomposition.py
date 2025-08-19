@@ -35,6 +35,8 @@ def intercluster_edges(G, clusters):
 
 
 def test_expander_decomposition_cliques_1():
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     G = connected_cliques(10, 10, 20)
     m = len(G.edges())
     clusters = expander_decomposition(G, 0.1, "_s", "_t")
@@ -44,6 +46,8 @@ def test_expander_decomposition_cliques_1():
 
 
 def test_expander_decomposition_cliques_2():
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     G = connected_cliques(15, 20, 40)
     m = len(G.edges())
     clusters = expander_decomposition(G, 0.1, "_s", "_t", fast_randomization=True)
@@ -53,7 +57,9 @@ def test_expander_decomposition_cliques_2():
 
 
 def test_expander_decomposition_random():
-    G = nx.gnp_random_graph(400, 0.1)
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+    G = nx.gnp_random_graph(200, 0.2)
     clusters = expander_decomposition(G, 0.01, "_s", "_t")
 
     assert len(clusters) == 1
