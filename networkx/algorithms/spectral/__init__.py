@@ -1,3 +1,3 @@
-from .expander_decomposition import *
-from .low_conductance_cut import *
-from .sparsest_cut import *
+from networkx.algorithms.spectral.expander_decomposition import *
+from networkx.algorithms.spectral.low_conductance_cut import *
+from networkx.algorithms.spectral.sparsest_cut import *
