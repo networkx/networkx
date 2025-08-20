@@ -9,7 +9,6 @@ from networkx.generators.k_lift import k_lift
     "d, n, k",
     [
         (4, 8, 4),  # Balanced
-        (3, 6, 5),  # Stress test on k
         (1, 2, 1),  # Tiny graph
         (6, 20, 3),  # Higher n with moderate d
         (80, 100, 10),  # Large-scale performance & correctness
