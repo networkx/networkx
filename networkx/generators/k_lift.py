@@ -9,6 +9,7 @@ import networkx as nx
 from networkx.utils import py_random_state
 
 
+@py_random_state(2)
 def k_lift(G, k, seed=None):
     r"""Perform a `k`-lift of a ``d``-regular graph using random permutations.
 
