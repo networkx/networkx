@@ -4,7 +4,6 @@ This module implements k-lift graph with random permutations,
 based on a given d-regular graph.
 """
 
-
 import networkx as nx
 from networkx.utils import py_random_state
 
