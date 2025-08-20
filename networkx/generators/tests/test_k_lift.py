@@ -1,7 +1,7 @@
 import pytest
-from networkx.generators.k_lift import k_lift
 
 import networkx as nx
+from networkx.generators.k_lift import k_lift
 
 
 # Test structure and connectivity for multiple (d, n, k) combinations
