@@ -53,22 +53,22 @@ class LinearTimeMaximiumIndependentSet:
         self.G = G
 
         # note: no edge or node data is copied
-        self.H = nx.Graph(G.edges)
-        self.H.add_nodes_from(G)
-        if self.H.order() == 0:
+        self.H = H = nx.Graph(G.edges)
+        H.add_nodes_from(G)
+        if H.order() == 0:
             return
 
         self.removed_paths = []
         self.inserted_edges = []
 
         # Remove self-loops
-        self.H.remove_edges_from(nx.selfloop_edges(self.H))
+        H.remove_edges_from(nx.selfloop_edges(H))
 
         # Construct degree data structure
-        self.max_degree = max((d for v, d in self.H.degree), default=0)
+        self.max_degree = max((d for v, d in H.degree), default=0)
         # note: use dict as an ordered set
         self.nodes_by_degree = {d: {} for d in range(max(self.max_degree, 2) + 1)}
-        for v, d in self.H.degree:
+        for v, d in H.degree:
             self.nodes_by_degree[d][v] = True
         self.independent_set = self.nodes_by_degree[0]
         self.twos = self.nodes_by_degree[2].copy()
