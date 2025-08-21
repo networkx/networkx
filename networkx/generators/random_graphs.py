@@ -1428,7 +1428,7 @@ def random_k_lift(G, k, seed=None):
 
     The resulting graph ``H`` has `k` copies of each node from `G`.
     For each edge (``u``, ``v``) in `G`, a random permutation is used to connect the ``i``-th copy of ``u``
-    to the permuted ``i``-th copy of ``v`` in ``H``. 
+    to the permuted ``i``-th copy of ``v`` in ``H``.
 
     Parameters
     ----------
