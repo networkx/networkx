@@ -35,7 +35,7 @@ __all__ = [
     "random_powerlaw_tree",
     "random_powerlaw_tree_sequence",
     "random_kernel_graph",
-    "k_lift",
+    "random_k_lift",
 ]
 
 
@@ -1423,12 +1423,12 @@ def random_kernel_graph(
 
 @py_random_state(2)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def k_lift(G, k, seed=None):
+def random_k_lift(G, k, seed=None):
     r"""Perform a `k`-lift of a ``d``-regular graph using random permutations.
 
     The resulting graph ``H`` has `k` copies of each node from `G`.
     For each edge (``u``, ``v``) in `G`, a random permutation is used to connect the ``i``-th copy of ``u``
-    to the permuted ``i``-th copy of ``v`` in ``H``.
+    to the permuted ``i``-th copy of ``v`` in ``H``. 
 
     Parameters
     ----------
@@ -1459,6 +1459,8 @@ def k_lift(G, k, seed=None):
       if σ(``i``) = ``j``, then ((``u``, ``i``), (``v``, ``j``)) is added to ``H``.
       The permutation is simulated by creating a shuffled list ``permutation`` of values 0 to `k`-1.
       Each ``i``-th copy of ``u`` is then connected to the ``permutation[``i``]``-th copy of ``v``.
+    This randomized construction preserves expansion properties (such as spectral
+    gap) with high probability.
 
     References
     ----------
@@ -1475,7 +1477,7 @@ def k_lift(G, k, seed=None):
     Examples
     --------
     >>> G = nx.complete_graph(4)  # 3-regular, connected graph
-    >>> H = nx.k_lift(G, 4, seed=42)  # 4-lift of G
+    >>> H = nx.random_k_lift(G, 4, seed=42)  # 4-lift of G
     >>> H.number_of_nodes()
     16
     """
