@@ -29,14 +29,14 @@ jobs:
       - name: Build wheels
         run: |
           git clean -fxd
-          pip install -U build twine wheel
+          pip install -U .[release]
           python -m build --sdist --wheel
 
       - name: Verify the distribution
         run: twine check --strict dist/*
 
       - name: Generate artifact attestation for sdist and wheel
-        uses: actions/attest-build-provenance@173725a1209d09b31f9d30a3890cf2757ebbff0d # v1.1.2
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
         with:
           subject-path: "dist/networkx-*"
 

@@ -92,9 +92,9 @@ class TestMaxWeightMatching:
         G.add_edge(2, 3, weight=11)
         G.add_edge(3, 4, weight=5)
         assert edges_equal(nx.max_weight_matching(G), {(2, 3)})
-        assert edges_equal(nx.max_weight_matching(G, 1), {(1, 2), (3, 4)})
+        assert edges_equal(nx.max_weight_matching(G, weight=None), {(1, 2), (3, 4)})
         assert edges_equal(nx.min_weight_matching(G), {(1, 2), (3, 4)})
-        assert edges_equal(nx.min_weight_matching(G, 1), {(1, 2), (3, 4)})
+        assert edges_equal(nx.min_weight_matching(G, weight=None), {(1, 2), (3, 4)})
 
     def test_square(self):
         G = nx.Graph()
@@ -383,6 +383,14 @@ class TestMaxWeightMatching:
         )
         answer = {(1, 2), (3, 5), (4, 9), (6, 7), (8, 10)}
         assert edges_equal(nx.max_weight_matching(G), answer)
+        assert edges_equal(nx.min_weight_matching(G), answer)
+
+    def test_min_weight_matching_max_cardinality(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from([(1, 2, 1000), (2, 3, 2), (3, 4, 3000)])
+        # The minimum-weight maximal matching is {(2, 3)}; the minimum-weight
+        # maximum-cardinality matching is {(1, 2), (3, 4)}. See gh-8062.
+        answer = {(1, 2), (3, 4)}
         assert edges_equal(nx.min_weight_matching(G), answer)
 
 
