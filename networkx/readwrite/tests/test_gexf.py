@@ -6,6 +6,39 @@ import pytest
 import networkx as nx
 
 
+def test_gexf_v1_3(tmp_path):
+    """'Basic graph' example from https://gexf.net/schema.html"""
+    # GEXF file from published example
+    data = """<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://gexf.net/1.3" version="1.3">
+    <graph mode="static" defaultedgetype="directed">
+        <nodes>
+            <node id="0" label="Hello" />
+            <node id="1" label="Word" />
+        </nodes>
+        <edges>
+            <edge source="0" target="1" />
+        </edges>
+    </graph>
+</gexf>
+"""
+    with open(fname := (tmp_path / "basic.gexf"), "w") as fh:
+        fh.write(data)
+
+    # Expected output based on xml input
+    expected = nx.DiGraph([("0", "1")])
+    nx.set_node_attributes(expected, {"0": "Hello", "1": "Word"}, name="label")
+    expected.graph = {"mode": "static", "edge_default": {}}
+
+    # Load example with version explicitly set
+    G = nx.read_gexf(fname, version="1.3")
+    assert nx.utils.graphs_equal(G, expected)
+
+    # And with the "default" version
+    G = nx.read_gexf(fname)
+    assert nx.utils.graphs_equal(G, expected)
+
+
 @pytest.mark.parametrize("time_attr", ("start", "end"))
 @pytest.mark.parametrize("dyn_attr", ("static", "dynamic"))
 def test_dynamic_graph_has_timeformat(time_attr, dyn_attr, tmp_path):
