@@ -79,11 +79,16 @@ A* Algorithm
 ------------
 
 .. automodule:: networkx.algorithms.shortest_paths.astar
+   :members:
+   :undoc-members:
+   :show-inheritance:
 .. autosummary::
    :toctree: generated/
 
    astar_path
    astar_path_length
+   sma_star_path
+   sma_star_path_length
 
 Notes on Multi-Target Shortest Path Queries
 -------------------------------------------
