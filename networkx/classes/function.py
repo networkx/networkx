@@ -969,7 +969,6 @@ def all_neighbors(graph, node):
     ----------
     graph : NetworkX graph
         Graph to find neighbors.
-
     node : node
         The node whose neighbors will be returned.
 
@@ -977,6 +976,42 @@ def all_neighbors(graph, node):
     -------
     neighbors : iterator
         Iterator of neighbors
+
+    Raises
+    ------
+    NetworkXError
+        If the node is not in the graph.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+    >>> list(nx.all_neighbors(G, 1))
+    [0, 2]
+    >>> DG = nx.DiGraph([(0, 1), (1, 2), (2, 1)])
+    >>> list(nx.all_neighbors(DG, 1))
+    [0, 2, 2]
+
+    Notes
+    -----
+    For undirected graphs, this function is equivalent to ``G.neighbors(node)``.
+    For directed graphs, this function returns both predecessors and successors,
+    which may include duplicates if a node is both a predecessor and successor
+    (e.g., in bidirectional edges or self-loops).
+
+    This function provides a consistent interface for accessing neighbors
+    regardless of graph type, unlike the class methods which vary between
+    ``G.neighbors(n)`` for undirected graphs and ``G.predecessors(n)``/``G.successors(n)``
+    for directed graphs.
+
+    Alternative access methods:
+    - ``G[n]`` : Shorthand equivalent to ``G.neighbors(n)`` for both graph types
+    - ``G.pred[u]`` : Returns predecessors for directed graphs only
+
+    See Also
+    --------
+    neighbors : Returns successors for both Graph and DiGraph
+    predecessors : Returns predecessors for directed graphs only
+    successors : Returns successors for directed graphs only
     """
     if graph.is_directed():
         values = chain(graph.predecessors(node), graph.successors(node))
