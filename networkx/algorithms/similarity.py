@@ -13,10 +13,8 @@ At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
 
-import heapq
 import math
 import time
-from collections import namedtuple
 from dataclasses import dataclass
 from itertools import product
 
@@ -1606,7 +1604,6 @@ def _prepare_panther_paths(
         # NOTE: index_map is modified in-place by `generate_random_paths`
         pass
 
-    # Return a named tuple with all the required data
     return (
         G,  # The graph with isolated nodes removed
         inv_node_map,
