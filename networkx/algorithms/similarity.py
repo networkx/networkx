@@ -1850,7 +1850,7 @@ def panther_vector_similarity(
            Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
     import numpy as np
-    from scipy.spatial import cKDTree as KDTree
+    import scipy as sp
 
     # Use helper method to prepare common data structures but keep isolates in the graph
     G, inv_node_map, index_map, inv_sample_size, eps = _prepare_panther_paths(
