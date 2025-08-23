@@ -107,7 +107,6 @@ test = [
 ]
 test-extras = [
     'pytest-mpl',
-    'pytest-randomly',
 ]
 
 [tool.setuptools]
