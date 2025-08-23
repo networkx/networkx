@@ -1781,6 +1781,7 @@ def panther_vector_similarity(
     the original Panther algorithm.
 
     This approach is preferred when:
+    
     1. You need better structural similarity than basic path co-occurrence
     2. You want to overcome the close-neighbor bias of standard Panther
     3. You're working with large graphs where k-d tree indexing would be beneficial
