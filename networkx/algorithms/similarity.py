@@ -1733,10 +1733,11 @@ def panther_similarity(
         common_paths = source_paths.intersection(paths)
         S[inv_node_map[node]] = len(common_paths) * inv_sample_size
 
-    # Retrieve top ``k`` similar
+    # Retrieve top ``k+1`` similar to account for removing self-similarity
     # Note: the below performed anywhere from 4-10x faster
     # (depending on input sizes) vs the equivalent ``np.argsort(S)[::-1]``
-    top_k_unsorted = np.argpartition(S, -k)[-k:]
+    partition_k = min(k + 1, num_nodes)
+    top_k_unsorted = np.argpartition(S, -partition_k)[-partition_k:]
     top_k_sorted = top_k_unsorted[np.argsort(S[top_k_unsorted])][::-1]
 
     # Add back the similarity scores
@@ -1893,10 +1894,12 @@ def panther_vector_similarity(
     # for fast retrieval
     kdtree = sp.spatial.KDTree(theta)
 
-    # Retrieve top ``k`` similar vertices (i.e., vectors)
+    # Retrieve top ``k+1`` similar vertices (i.e., vectors)
     # (based on their Euclidean distance)
+    # Note that it's k+1 because the source node will be included and later removed
+    query_k = min(k + 1, num_nodes)
     neighbor_distances, nearest_neighbors = kdtree.query(
-        theta[inv_node_map[source]], k=k
+        theta[inv_node_map[source]], k=query_k
     )
 
     # Ensure results are always arrays (KDTree returns scalars when k=1)

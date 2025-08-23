@@ -1004,9 +1004,9 @@ class TestSimilarity:
 
         sim = nx.panther_vector_similarity(G, 0, D=3, k=4, path_length=2, seed=42)
 
-        assert len(sim) == 3
+        assert len(sim) == 4
         assert 0 not in sim
-        assert all(node in sim for node in [1, 2, 3])
+        assert all(node in sim for node in [1, 2, 3, 4])
         assert all(0 <= score <= 1 for score in sim.values())
 
     def test_panther_vector_similarity_weighted(self):
@@ -1022,7 +1022,7 @@ class TestSimilarity:
             G, "v1", D=3, k=4, path_length=2, weight="weight", seed=42
         )
 
-        assert len(sim) == 3
+        assert len(sim) == 4
         assert "v1" not in sim
         assert all(0 <= score <= 1 for score in sim.values())
         assert all(node in sim for node in ["v2", "v3", "v4"])
@@ -1101,3 +1101,20 @@ class TestSimilarity:
 
         assert "A" not in sim  # Source node should not be included
         assert all(isinstance(node, str) for node in sim)  # Nodes should remain strings
+
+    def test_panther_similarity_k_parameter_returns_k_results(self):
+        pytest.importorskip("numpy")
+        G = nx.star_graph(100)
+
+        for k_val in [1, 2, 3, 4, 5, 10]:
+            result_panther = nx.panther_similarity(G, source=1, k=k_val, seed=42)
+            assert len(result_panther) == k_val, (
+                f"panther_similarity k={k_val} returned {len(result_panther)} results"
+            )
+            assert 1 not in result_panther, "Source node should not be in results"
+
+            result_vector = nx.panther_vector_similarity(G, source=1, k=k_val, seed=42)
+            assert len(result_vector) == k_val, (
+                f"panther_vector_similarity k={k_val} returned {len(result_vector)} results"
+            )
+            assert 1 not in result_vector, "Source node should not be in results"
