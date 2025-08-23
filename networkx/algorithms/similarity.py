@@ -1894,7 +1894,7 @@ def panther_vector_similarity(
 
     # Insert the feature vectors into a k-d tree
     # for fast retrieval
-    kdtree = KDTree(theta)
+    kdtree = sp.spatial.KDTree(theta)
 
     # Retrieve top ``k`` similar vertices (i.e., vectors)
     # (based on their Euclidean distance)
