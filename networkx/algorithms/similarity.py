@@ -1905,7 +1905,7 @@ def panther_vector_similarity(
     # Handle the case where distances are very small or zero (common in small graphs)
     # Use the passed in eps parameter instead of defining a new epsilon
     neighbor_distances = np.maximum(neighbor_distances, eps)
-    similarities = np.reciprocal(neighbor_distances)
+    similarities = 1 / neighbor_distances
 
     # Always normalize to ensure values are between 0 and 1
     if similarities.size > 0:
