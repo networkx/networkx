@@ -195,32 +195,8 @@ def partition_to_color(partitions):
     -------
     dict
     """
-    colors = {}
-    for color, keys in enumerate(partitions):
-        for key in keys:
-            colors[key] = color
+    colors = {key: color for color, keys in enumerate(partitions) for key in keys}
     return colors
-
-
-def intersect(collection_of_sets):
-    """
-    Given an collection of sets, returns the intersection of those sets.
-
-    Parameters
-    ----------
-    collection_of_sets: collections.abc.Collection[set]
-        A collection of sets.
-
-    Returns
-    -------
-    set
-        An intersection of all sets in `collection_of_sets`. Will have the same
-        type as the item initially taken from `collection_of_sets`.
-    """
-    collection_of_sets = list(collection_of_sets)
-    first = collection_of_sets.pop()
-    out = reduce(set.intersection, collection_of_sets, set(first))
-    return type(first)(out)
 
 
 class ISMAGS:
@@ -482,7 +458,7 @@ class ISMAGS:
 
         if any(candidates.values()):
             start_sgn = min(candidates, key=lambda n: min(candidates[n], key=len))
-            candidates[start_sgn] = (intersect(candidates[start_sgn]),)
+            candidates[start_sgn] = (frozenset.intersection(*candidates[start_sgn]),)
             yield from self._map_nodes(start_sgn, candidates, constraints)
         else:
             return
@@ -494,10 +470,12 @@ class ISMAGS:
         it has to nodes of a specific color.
         """
         counts = Counter()
+        # FIXME directed graphs
         neighbors = graph[node]
         for neighbor in neighbors:
             n_color = node_color[neighbor]
             if (node, neighbor) in edge_color:
+                # FIXME directed graphs
                 e_color = edge_color[node, neighbor]
             else:
                 e_color = edge_color[neighbor, node]
@@ -831,7 +809,7 @@ class ISMAGS:
         # Note, we modify candidates here. Doesn't seem to affect results, but
         # remember this.
         # candidates = candidates.copy()
-        sgn_candidates = intersect(candidates[sgn])
+        sgn_candidates = frozenset.intersection(*candidates[sgn])
         candidates[sgn] = frozenset([sgn_candidates])
         for gn in sgn_candidates:
             # We're going to try to map sgn to gn.
@@ -848,7 +826,9 @@ class ISMAGS:
             left_to_map = to_be_mapped - set(mapping.keys())
 
             new_candidates = candidates.copy()
+            # FIXME directed graphs
             sgn_nbrs = set(self.subgraph[sgn])
+            # FIXME directed graphs
             not_gn_nbrs = set(self.graph.nodes) - set(self.graph[gn])
             for sgn2 in left_to_map:
                 if sgn2 not in sgn_nbrs:
@@ -871,6 +851,7 @@ class ISMAGS:
                 )
 
                 if (sgn, sgn2) in constraints:
+                    # FIXME directed graphs
                     gn2_options = {gn2 for gn2 in self.graph if gn2 > gn}
                 elif (sgn2, sgn) in constraints:
                     gn2_options = {gn2 for gn2 in self.graph if gn2 < gn}
