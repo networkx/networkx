@@ -1715,6 +1715,7 @@ def panther_similarity(
     )
 
     num_nodes = G.number_of_nodes()
+    node_list = list(G.nodes)
 
     # Check number of nodes after any modifications by _prepare_panther_paths
     if num_nodes < k:
@@ -1744,7 +1745,7 @@ def panther_similarity(
     # Add back the similarity scores
     # Convert numpy scalars to native Python types for dispatch compatibility
     top_k_with_val = dict(
-        zip((G.nodes[i] for i in top_k_sorted), S[top_k_sorted].tolist())
+        zip((node_list[i] for i in top_k_sorted), S[top_k_sorted].tolist())
     )
 
     # Remove the self-similarity
@@ -1865,6 +1866,7 @@ def panther_vector_similarity(
         seed=seed,
     )
     num_nodes = G.number_of_nodes()
+    node_list = list(G.nodes)
 
     # Ensure D doesn't exceed the number of nodes
     if num_nodes < D:
@@ -1920,7 +1922,7 @@ def panther_vector_similarity(
     # Add back the similarity scores (i.e., distances)
     # Convert numpy scalars to native Python types for dispatch compatibility
     top_k_with_val = dict(
-        zip((G.nodes[n] for n in nearest_neighbors), similarities.tolist())
+        zip((node_list[n] for n in nearest_neighbors), similarities.tolist())
     )
 
     # Remove the self-similarity
