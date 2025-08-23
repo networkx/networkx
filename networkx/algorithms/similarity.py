@@ -1716,7 +1716,7 @@ def panther_similarity(
     node_map = np.array(G.nodes)
     num_nodes = G.number_of_nodes()
 
-    # If there aren't enough nodes for the requested k, adjust k with a warning
+    # Check number of nodes after any modifications by _prepare_panther_paths
     if num_nodes < k:
         raise nx.NetworkXUnfeasible(
             f"The number of requested nodes {k} is greater than the number of nodes {num_nodes}."
