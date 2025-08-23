@@ -79,7 +79,7 @@ Simplified Interface
 
 When using the simplified interface, NetworkX picks the algorithm that best suits
 the use-case. The selection is based on the ``weight`` parameter and type of
-query. 
+query.
 
 The type of shortest path query depends on whether ``source`` and ``target`` are
 specified. When those parameters are ``None``, the type of query corresponds to
