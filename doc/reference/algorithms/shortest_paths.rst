@@ -16,8 +16,8 @@ NetworkX provides a unified interface for shortest paths weighted and unweighted
 directed and undirected. Other variants of the shortest path problem such as all
 pairs of shortest paths are also supported.
 
-To specify that graph is weighted, user must provide a weight attribute name by using
-the ``weight`` parameter. This can be a string that corresponds to an edge
+To specify that a graph is weighted, the user must provide a weight for the edges by
+using the ``weight`` parameter. This can be either a string holding the name of an edge
 attribute or a function that returns the weight of an edge. If no weight is
 specified, the graph is treated as unweighted. In the case ``weight`` is
 specified, but the edge does not have the specified attribute, the edge is
