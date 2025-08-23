@@ -1603,6 +1603,7 @@ def _prepare_panther_paths(
         weight=weight,
         seed=seed,
     ):
+        # NOTE: index_map is modified in-place by `generate_random_paths`
         pass
 
     # Return a named tuple with all the required data
