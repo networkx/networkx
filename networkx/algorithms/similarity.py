@@ -1714,7 +1714,6 @@ def panther_similarity(
         seed=seed,
     )
 
-    node_map = np.array(G.nodes)
     num_nodes = G.number_of_nodes()
 
     # Check number of nodes after any modifications by _prepare_panther_paths
@@ -1745,7 +1744,7 @@ def panther_similarity(
     # Add back the similarity scores
     # Convert numpy scalars to native Python types for dispatch compatibility
     top_k_with_val = dict(
-        zip((node_map[i].item() for i in top_k_sorted), S[top_k_sorted].tolist())
+        zip((G.nodes[i] for i in top_k_sorted), S[top_k_sorted].tolist())
     )
 
     # Remove the self-similarity
@@ -1782,7 +1781,7 @@ def panther_vector_similarity(
     the original Panther algorithm.
 
     This approach is preferred when:
-    
+
     1. You need better structural similarity than basic path co-occurrence
     2. You want to overcome the close-neighbor bias of standard Panther
     3. You're working with large graphs where k-d tree indexing would be beneficial
@@ -1830,14 +1829,14 @@ def panther_vector_similarity(
     Examples
     --------
     >>> G = nx.star_graph(100)
-    
+
     The "hub" node is distinct from the "spoke" nodes
-    
+
     >>> nx.panther_vector_similarity(G, source=0, seed=42)
     {85: 0.10254413039936112, 61: 0.10187943587925867, 35: 0.10156480636337968, 65: 0.10155189938081624}
-    
+
     But "spoke" nodes are similar to one another
-    
+
     >>> nx.panther_vector_similarity(G, source=1, seed=42)
     {26: 1.0, 52: 1.0, 98: 1.0, 29: 1.0}
 
@@ -1865,7 +1864,6 @@ def panther_vector_similarity(
         k=k,
         seed=seed,
     )
-    node_map = np.array(G.nodes)
     num_nodes = G.number_of_nodes()
 
     # Ensure D doesn't exceed the number of nodes
@@ -1922,7 +1920,7 @@ def panther_vector_similarity(
     # Add back the similarity scores (i.e., distances)
     # Convert numpy scalars to native Python types for dispatch compatibility
     top_k_with_val = dict(
-        zip((node_map[n].item() for n in nearest_neighbors), similarities.tolist())
+        zip((G.nodes[n] for n in nearest_neighbors), similarities.tolist())
     )
 
     # Remove the self-similarity
