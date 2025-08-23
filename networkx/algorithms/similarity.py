@@ -1829,10 +1829,17 @@ def panther_vector_similarity(
 
     Examples
     --------
-
-        >>> import networkx as nx
-        >>> G = nx.star_graph(100)
-        >>> sim = nx.panther_vector_similarity(G, 0)
+    >>> G = nx.star_graph(100)
+    
+    The "hub" node is distinct from the "spoke" nodes
+    
+    >>> nx.panther_vector_similarity(G, source=0, seed=42)
+    {85: 0.10254413039936112, 61: 0.10187943587925867, 35: 0.10156480636337968, 65: 0.10155189938081624}
+    
+    But "spoke" nodes are similar to one another
+    
+    >>> nx.panther_vector_similarity(G, source=1, seed=42)
+    {26: 1.0, 52: 1.0, 98: 1.0, 29: 1.0}
 
     References
     ----------
