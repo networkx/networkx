@@ -1916,10 +1916,8 @@ def panther_vector_similarity(
     similarities = 1 / neighbor_distances
 
     # Always normalize to ensure values are between 0 and 1
-    if similarities.size > 0:
-        max_sim = np.max(similarities)
-        if max_sim > 0:  # Avoid division by zero
-            similarities = similarities / max_sim  # Normalize to [0, 1]
+    if len(similarities) > 0 and (max_sim := np.max(similarities)) > 0:
+        similarities /= max_sim
 
     # Add back the similarity scores (i.e., distances)
     # Convert numpy scalars to native Python types for dispatch compatibility
