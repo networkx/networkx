@@ -108,6 +108,11 @@ def set_warnings():
         message=r"Exited (at iteration \d+|postprocessing) with accuracies.*",
     )
     warnings.filterwarnings(
+        "ignore",
+        category=UserWarning,
+        message=r"The hashes produced for ",
+    )
+    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
