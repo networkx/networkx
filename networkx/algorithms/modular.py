@@ -2,6 +2,7 @@
 
 import collections
 import dataclasses
+import functools
 import itertools
 import uuid
 
@@ -48,59 +49,62 @@ def _maybe_merge(md_tree, root, node_type, node):
 
 
 def _check_for_parallel(md_tree, forest, pointers, left, right):
+    #
+    # No more trees to the "right", so, we can't create a parallel node.
+    #
     if right >= len(forest):
         return False
+
+    #
+    # Keep going "right" until we either hit a tree whose adjacencies overlap
+    # with the current tree's (in which case we create a prime node), or until
+    # we can't go more to the "right" (in which case we create a parallel node).
+    #
     i = right
-    right += 1
-    while i < right:
-        root = forest[i]
-        node_left, node_right = pointers[root]
+    while i <= min(len(forest) - 1, right):
+        node_left, node_right = pointers[forest[i]]
         if node_left < left:
             return False
-        if node_right > right:
-            right = node_right
+        right = max(right, node_right)
         i += 1
+
     return True
 
 
-def _dfs_preorder_leaves(md_tree, root):
-    yield from (
-        node
-        for node in nx.dfs_preorder_nodes(md_tree, source=root)
-        if md_tree.nodes[node]["type"] == "leaf"
-    )
-
-
 def _set_left_right_pointers(graph, md_tree, forest):
-    indices = dict.fromkeys(graph, -1)
-    for i, node in enumerate(forest):
-        if md_tree.nodes[node]["type"] != "leaf":
-            for node in _dfs_preorder_leaves(md_tree, node):
-                indices[node] = i
-        else:
+    def _dfs_preorder_leaves(root):
+        yield from (
+            node
+            for node in nx.dfs_preorder_nodes(md_tree, source=root)
+            if md_tree.nodes[node]["type"] == "leaf"
+        )
+
+    #
+    # For each root in the forest build and save the list of leaves reachable
+    # from that root. Then, store the index of the tree each leaf belongs to.
+    #
+    leaves = {}
+    indices = {}
+    for i, root in enumerate(forest):
+        leaves[root] = list(_dfs_preorder_leaves(root))
+        for node in leaves[root]:
             indices[node] = i
 
+    #
+    # Compute left and right pointers for each tree in the forest (Algorithm 4.6
+    # in [2]). Right is set to one past the maximum adjacent tree index, while
+    # left is set to the first non-adjacent tree index before the current tree.
+    #
     pointers = {}
-    for i, node in enumerate(forest):
-        root = _get_root(md_tree, node)
-        nodes = list(_dfs_preorder_leaves(md_tree, root))
-
-        adjacencies = []
-        for n in nodes:
-            adjacencies += list(graph.neighbors(n))
-
-        connections = [0] * len(forest)
-        max_module = -1
-        for v in adjacencies:
-            j = indices[v]
-            if j > max_module:
-                max_module = j
-            connections[j] = 1
-
-        min_module = 0
-        while min_module < i and connections[min_module]:
-            min_module += 1
-        max_module += 1
+    for i, root in enumerate(forest):
+        adjacencies = functools.reduce(
+            set.union,
+            [graph.neighbors(n) for n in leaves[root]],
+            set(),
+        )
+        adjacencies = {indices[n] for n in adjacencies}
+        max_module = max(adjacencies) + 1
+        min_module = next((j for j in range(i) if j not in adjacencies), i)
         pointers[root] = (min_module, max_module)
 
     return pointers
