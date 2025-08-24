@@ -52,41 +52,64 @@ better than others. The table below summarizes the algorithms NetworkX supports
 and their typical time complexities. Here, :math:`V` is the number of nodes and
 :math:`E` is the number of edges in the graph.
 
-+----------------------+-------------+---------------------------+------------------------------------+
-| Algorithm            | Graph Type  | Time Complexity           | Recommended for                    |
-+======================+=============+===========================+====================================+
-| Breadth–First Search | Unweighted  | :math:`O(V + E)`          | Fastest choice for unweighted      |
-|                      |             |                           | graphs; shortest path in hops      |
-+----------------------+-------------+---------------------------+------------------------------------+
-| Dijkstra             | Weighted    | :math:`O((V + E) \log V)` | General-purpose choice for         |
-|                      |             |                           | non-negative weights               |
-+----------------------+-------------+---------------------------+------------------------------------+
-| Bidirectional        | Weighted    | :math:`O((V + E) \log V)` | Single source to single target for |
-| Dijkstra             |             |                           | non-negative weights               |
-+----------------------+-------------+---------------------------+------------------------------------+
-| Bellman–Ford         | Weighted    | :math:`O(VE)`             | Graphs with negative edge weights  |
-|                      |             |                           |                                    |
-+----------------------+-------------+---------------------------+------------------------------------+
-| Floyd–Warshall       | Weighted    | :math:`O(V^3)`            | Dense graphs or when all-pairs     |
-|                      |             |                           | shortest paths are needed          |
-+----------------------+-------------+---------------------------+------------------------------------+
-| Johnson              | Weighted    | :math:`O(V(V + E) \log V)`| All-pairs shortest paths with      |
-|                      |             |                           | negative weights                   |
-+----------------------+-------------+---------------------------+------------------------------------+
++----------------------+-------------+--------------------+---------------------------+------------------------------------+
+| Algorithm            | Weighted    | Query Type         | Time Complexity           | Recommended for                    |
+|                      | Supported?  |                    |                           |                                    |
++======================+=============+====================+===========================+====================================+
+| Breadth–First Search | Unweighted  | Single-source,     | :math:`O(V + E)`          | Fastest choice for unweighted      |
+|                      | Only        | Single-pair        |                           | graphs; shortest path in hops      |
++----------------------+-------------+--------------------+---------------------------+------------------------------------+
+| Dijkstra             | Yes, both   | Single-source,     | :math:`O((V + E) \log V)` | General-purpose choice for         |
+|                      |             | Single-pair        |                           | non-negative weights               |
++----------------------+-------------+--------------------+---------------------------+------------------------------------+
+| Bellman–Ford         | Yes, both   | Single-source,     | :math:`O(VE)`             | Graphs with negative edge weights  |
+|                      |             | Single-pair        |                           |                                    |
++----------------------+-------------+--------------------+---------------------------+------------------------------------+
+| Floyd–Warshall       | Yes, both   | All-pairs          | :math:`O(V^3)`            | Dense graphs or when all-pairs     |
+|                      |             |                    |                           | shortest paths are needed          |
++----------------------+-------------+--------------------+---------------------------+------------------------------------+
+| Johnson              | Yes, both   | All-pairs          | :math:`O(V(V + E) \log V)`| All-pairs shortest paths with      |
+|                      |             |                    |                           | negative weights                   |
++----------------------+-------------+--------------------+---------------------------+------------------------------------+
+
+The **query type** determines whether the algorithm computes shortest paths
+from one node to all others (single-source), between two specified nodes
+(single-pair), or between all pairs of nodes (all-pairs). For example, BFS,
+Dijkstra, and Bellman–Ford are commonly used for single-source or single-pair
+queries, while Floyd–Warshall and Johnson are designed for all-pairs shortest
+paths.
+
+Single-source algorithms can be adapted to single-pair queries by stopping
+once the target node is reached (same time complexity). They can also be
+extended to multi-source queries by running the algorithm from all starting
+nodes. In which case, the time complexity increases by a factor equal to the
+number of sources (:math:`V`).
+
+When the query is restricted to a single pair of nodes, bidirectional variants
+of some algorithms can be applied to improve efficiency. In NetworkX, both
+bidirectional breadth–first search and bidirectional Dijkstra are available.
+
+A less common query type is the single-target shortest path, where the goal is
+to find paths from all nodes to a given target. This can be computed by
+reversing the graph and running a single-source shortest path algorithm from
+the target node.
+
+To make these choices easier, NetworkX provides a **simplified interface** that
+automatically selects the most suitable algorithm based on the query type.
 
 Simplified Interface
 --------------------
 
-When using the simplified interface, NetworkX picks the algorithm that best suits
-the use-case. The selection is based on the ``weight`` parameter and type of
-query.
+When using the simplified interface, NetworkX picks the algorithm that best
+suits the use-case. The selection is primarly based on the type of query and
+the specified method ("unweighted", "dijkstra", or "bellman-ford").
 
-The type of shortest path query depends on whether ``source`` and ``target`` are
-specified. When those parameters are ``None``, the type of query corresponds to
-all sources or all targets respectively. For example, specifying ``source``
-alone means that the query is from the specified source to all possible vertex
-targets in the graph. Not passing both ``source`` and ``target`` represents the
-all pairs shortest path query.
+The type of shortest path query depends on whether ``source`` and ``target``
+are specified. When those parameters are ``None``, the type of query
+corresponds to all sources or all targets respectively. For example, specifying
+``source`` alone means that the query is from the specified source to all
+possible vertex targets in the graph. Not passing both ``source`` and ``target``
+represents the all pairs shortest path query.
 
 +------------------+------------------+---------------------------------------------+
 | ``source``       | ``target``       | Query Type                                  |
@@ -100,9 +123,17 @@ all pairs shortest path query.
 | specified        | specified        | Single source–target shortest path          |
 +------------------+------------------+---------------------------------------------+
 
-The user can control which specific algorithm to use by specifying the ``method`` parameter.
-Algorithms Dijkstra, Bellman-Ford and Breadth–First Search (BFS) are supported on the
-simplified interface. If an unsupported method is provided, NetworkX will raise an error.
+By default, the simplified interface uses Breadth–First Search for unweighted
+graphs and Dijkstra's algorithm for weighted graphs (``weight`` parameter is
+not ``None``). In the special case of single-pair queries (both ``source`` and
+``target`` specified), bidirectional variants of these algorithms are used.
+
+This default behavior can be overridden by specifying the ``method`` parameter.
+Algorithms Dijkstra, Bellman-Ford and Breadth–First Search (BFS) are supported.
+If an unsupported method is provided, NetworkX will raise an error.
+
+For the case of single-pair queries, bidirectional variants of Dijkstra and BFS
+are used when those methods are specified.
 
 Simplified Interface Methods
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
