@@ -22,7 +22,12 @@ import itertools
 import math
 from numbers import Number
 
+from numpy.ma import isin
+from traitlets import default
+
 import networkx as nx
+from networkx.algorithms.cycles import cycle_basis
+from networkx.exception import NetworkXError
 
 __all__ = [
     "display",
@@ -62,8 +67,9 @@ def apply_matplotlib_colors(
     src_attr : str or other attribute name
         The name of the attribute to read from the graph.
 
-    dest_attr : str or other attribute name
+    dest_attr : str or other attribute name or None
         The name of the attribute to write to on the graph.
+        If None, return color map as a dict from node name to color.
 
     map : matplotlib.colormap
         The matplotlib colormap to use.
@@ -103,13 +109,17 @@ def apply_matplotlib_colors(
         return tuple(float(x) for x in mapper.to_rgba(x))
 
     if nodes:
-        nx.set_node_attributes(
-            G, {n: do_map(G.nodes[n][src_attr]) for n in G.nodes()}, dest_attr
-        )
+        c_map = {n: do_map(G.nodes[n][src_attr]) for n in G.nodes()}
+        if dest_attr is not None:
+            nx.set_node_attributes(G, c_map, dest_attr)
+        else:
+            return c_map
     else:
-        nx.set_edge_attributes(
-            G, {e: do_map(G.edges[e][src_attr]) for e in type_iter}, dest_attr
-        )
+        c_map = {e: do_map(G.edges[e][src_attr]) for e in type_iter}
+        if dest_attr is not None:
+            nx.set_edge_attributes(G, c_map, dest_attr)
+        else:
+            return c_map
 
 
 class CurvedArrowTextBase:
@@ -596,31 +606,46 @@ def display(
 
     ### Helper methods and classes
 
-    def node_property_sequence(seq, attr):
+    def node_property_sequence(seq, attr_name):
         """Return a list of attribute values for `seq`, using a default if needed"""
 
         # All node attribute parameters start with "node_"
-        param_name = f"node_{attr}"
+        param_name = f"node_{attr_name}"
         default = defaults[param_name]
-        attr = kwargs.get(param_name, attr)
+        attr = kwargs.get(param_name, attr_name)
+
+        def get_attr(n):
+            if isinstance(attr, dict):
+                return attr.get(n, default)
+            else:
+                return node_subgraph.nodes[n].get(attr, default)
+
+        def check_attr(n):
+            if isinstance(attr, dict):
+                return n in attr
+            else:
+                return attr in node_subgraph.nodes[n]
 
         if default is None:
             # raise instead of using non-existant default value
             for n in seq:
-                if attr not in node_subgraph.nodes[n]:
-                    raise nx.NetworkXError(f"Attribute '{attr}' missing for node {n}")
+                if not check_attr(n):
+                    raise nx.NetworkXError(
+                        f"Attribute '{attr_name}' missing for node {n}"
+                    )
 
         # If `attr` is not a graph attr and was explicitly passed as an argument
         # it must be a user-default value. Allow attr=None to tell draw to skip
         # attributes which are on the graph
         if (
             attr is not None
+            and not isinstance(attr, dict)
             and nx.get_node_attributes(node_subgraph, attr) == {}
             and any(attr == v for k, v in kwargs.items() if "node" in k)
         ):
             return [attr for _ in seq]
 
-        return [node_subgraph.nodes[n].get(attr, default) for n in seq]
+        return [get_attr(n) for n in seq]
 
     def compute_colors(color, alpha):
         if isinstance(color, str):
@@ -657,66 +682,107 @@ def display(
             and e[0] != e[1]
         )
 
-    def edge_property_sequence(seq, attr):
+    def edge_property_sequence(seq, attr_name):
         """Return a list of attribute values for `seq`, using a default if needed"""
 
-        param_name = f"edge_{attr}"
+        param_name = f"edge_{attr_name}"
         default = defaults[param_name]
-        attr = kwargs.get(param_name, attr)
+        attr = kwargs.get(param_name, attr_name)
+
+        def get_attr(e):
+            if isinstance(attr, dict):
+                return attr.get(e, default)
+            else:
+                return edge_subgraph.edges[e].get(attr, default)
+
+        def check_attr(e):
+            if isinstance(attr, dict):
+                return e in attr
+            else:
+                return attr in edge_subgraph.edges[n]
 
         if default is None:
             # raise instead of using non-existant default value
             for e in seq:
-                if attr not in edge_subgraph.edges[e]:
-                    raise nx.NetworkXError(f"Attribute '{attr}' missing for edge {e}")
+                if not check_attr(e):
+                    raise nx.NetworkXError(
+                        f"Attribute '{attr_name}' missing for edge {e}"
+                    )
 
         if (
             attr is not None
+            and not isinstance(attr, dict)
             and nx.get_edge_attributes(edge_subgraph, attr) == {}
             and any(attr == v for k, v in kwargs.items() if "edge" in k)
         ):
             return [attr for _ in seq]
 
-        return [edge_subgraph.edges[e].get(attr, default) for e in seq]
+        return [get_attr(e) for e in seq]
 
-    def get_edge_attr(e, attr):
+    def get_edge_attr(e, attr_name):
         """Return the final edge attribute value, using default if not None"""
 
-        param_name = f"edge_{attr}"
+        param_name = f"edge_{attr_name}"
         default = defaults[param_name]
-        attr = kwargs.get(param_name, attr)
+        attr = kwargs.get(param_name, attr_name)
 
-        if default is None and attr not in edge_subgraph.edges[e]:
-            raise nx.NetworkXError(f"Attribute '{attr}' missing from edge {e}")
+        def get_attr(e):
+            if isinstance(attr, dict):
+                return attr.get(e, default)
+            else:
+                return edge_subgraph.edges[e].get(attr, default)
+
+        def check_attr(e):
+            if isinstance(attr, dict):
+                return e in attr
+            else:
+                return attr in edge_subgraph.edges[e]
+
+        if default is None and not check_attr(e):
+            raise nx.NetworkXError(f"Attribute '{attr_name}' missing from edge {e}")
 
         if (
             attr is not None
+            and not isinstance(attr, dict)
             and nx.get_edge_attributes(edge_subgraph, attr) == {}
             and attr in kwargs.values()
         ):
             return attr
 
-        return edge_subgraph.edges[e].get(attr, default)
+        return get_attr(e)
 
-    def get_node_attr(n, attr, use_edge_subgraph=True):
+    def get_node_attr(n, attr_name, use_edge_subgraph=True):
         """Return the final node attribute value, using default if not None"""
         subgraph = edge_subgraph if use_edge_subgraph else node_subgraph
 
-        param_name = f"node_{attr}"
+        param_name = f"node_{attr_name}"
         default = defaults[param_name]
-        attr = kwargs.get(param_name, attr)
+        attr = kwargs.get(param_name, attr_name)
 
-        if default is None and attr not in subgraph.nodes[n]:
-            raise nx.NetworkXError(f"Attribute '{attr}' missing from node {n}")
+        def get_attr(n):
+            if isinstance(attr, dict):
+                return attr.get(n, default)
+            else:
+                return subgraph.nodes[n].get(attr, default)
+
+        def check_attr(n):
+            if isinstance(attr, dict):
+                return n in attr
+            else:
+                return attr in subgraph.nodes[n]
+
+        if default is None and not check_attr(n):
+            raise nx.NetworkXError(f"Attribute '{attr_name}' missing from node {n}")
 
         if (
             attr is not None
+            and not isinstance(attr, dict)
             and nx.get_node_attributes(subgraph, attr) == {}
             and attr in kwargs.values()
         ):
             return attr
 
-        return subgraph.nodes[n].get(attr, default)
+        return get_attr(n)
 
     # Taken from ConnectionStyleFactory
     def self_loop(edge_index, node_size):
@@ -786,8 +852,8 @@ def display(
             get_edge_attr(e, "target_margin"),
         )
         return mpl.patches.FancyArrowPatch(
-            edge_subgraph.nodes[e[0]][pos],
-            edge_subgraph.nodes[e[1]][pos],
+            pos[e[0]],
+            pos[e[1]],
             arrowstyle=get_edge_attr(e, "arrowstyle"),
             connectionstyle=(
                 get_edge_attr(e, "curvature")
@@ -816,6 +882,8 @@ def display(
             visible_nodes = G.nodes()
         else:
             visible_nodes = []
+    elif isinstance(node_visible, dict):
+        visible_nodes = [n for n, v in node_visible.items() if v]
     else:
         visible_nodes = [
             n for n, v in nx.get_node_attributes(G, node_visible, True).items() if v
@@ -827,33 +895,31 @@ def display(
     # default attribute name
     pos = kwargs.get("node_pos", "pos")
 
-    default_display_pos_attr = "display's position attribute name"
     if callable(pos):
-        nx.set_node_attributes(
-            node_subgraph, pos(node_subgraph), default_display_pos_attr
-        )
-        pos = default_display_pos_attr
-        kwargs["node_pos"] = default_display_pos_attr
-    elif nx.get_node_attributes(G, pos) == {}:
-        nx.set_node_attributes(
-            node_subgraph, nx.spring_layout(node_subgraph), default_display_pos_attr
-        )
-        pos = default_display_pos_attr
-        kwargs["node_pos"] = default_display_pos_attr
+        pos_map = pos(node_subgraph)
+        pos = pos_map
+        kwargs["node_pos"] = pos_map
+    elif not isinstance(pos, dict) and nx.get_node_attributes(G, pos) == {}:
+        pos_map = nx.spring_layout(node_subgraph)
+        pos = pos_map
+        kwargs["node_pos"] = pos_map
+    elif not isinstance(pos, dict):
+        pos = nx.get_node_attributes(G, pos)
 
     # Each shape requires a new scatter object since they can't have different
     # shapes.
     if len(visible_nodes) > 0:
         node_shape = kwargs.get("node_shape", "shape")
-        for shape in Counter(
-            nx.get_node_attributes(
-                node_subgraph, node_shape, defaults["node_shape"]
-            ).values()
-        ):
+        node_shape_dict = (
+            nx.get_node_attributes(node_subgraph, node_shape, defaults["node_shape"])
+            if not isinstance(node_shape, dict)
+            else node_shape
+        )
+        for shape in Counter(node_shape_dict.values()):
             # Filter position just on this shape.
             nodes_with_shape = [
                 n
-                for n, s in node_subgraph.nodes(data=node_shape)
+                for n, s in node_shape_dict.items()
                 if s == shape or (s is None and shape == defaults["node_shape"])
             ]
             # There are two property sequences to create before hand.
@@ -920,7 +986,7 @@ def display(
                 lbl_text = str(lbl_text)
 
             lbl.update(default_dict)
-            x, y = node_subgraph.nodes[n][pos]
+            x, y = pos[n]
             canvas.text(
                 x,
                 y,
@@ -951,9 +1017,6 @@ def display(
         ]
 
     edge_subgraph = G.edge_subgraph(visible_edges)
-    nx.set_node_attributes(
-        edge_subgraph, nx.get_node_attributes(node_subgraph, pos), name=pos
-    )
 
     collection_edges = (
         [e for e in edge_subgraph.edges(keys=True) if collection_compatible(e)]
@@ -1080,10 +1143,6 @@ def display(
                 zorder=1,
                 ax=canvas,
             )
-
-    # If we had to add an attribute, remove it here
-    if pos == default_display_pos_attr:
-        nx.remove_node_attributes(G, default_display_pos_attr)
 
     return G
 
@@ -1463,10 +1522,11 @@ def draw_networkx_nodes(
     draw_networkx_labels
     draw_networkx_edge_labels
     """
+
     from collections.abc import Iterable
+    from itertools import cycle
 
     import matplotlib as mpl
-    import matplotlib.collections  # call as mpl.collections
     import matplotlib.pyplot as plt
     import numpy as np
 
@@ -1479,42 +1539,71 @@ def draw_networkx_nodes(
     if len(nodelist) == 0:  # empty nodelist, no drawing
         return mpl.collections.PathCollection(None)
 
-    try:
-        xy = np.asarray([pos[v] for v in nodelist])
-    except KeyError as err:
-        raise nx.NetworkXError(f"Node {err} has no position.") from err
+    disp_node_visible = {n: n in nodelist for n in G.nodes}
+    disp_node_size = (
+        node_size
+        if not isinstance(node_size, Iterable)
+        else dict(zip(nodelist, node_size))
+    )
+    mapper = None
+    if cmap is not None:
+        mapper = mpl.cm.ScalarMappable(cmap=cmap)
+        if vmin is None:
+            vmin = 0.0
+        if vmax is None:
+            vmax = 1.0
+        mapper.set_clim(vmin, vmax)
 
-    if isinstance(alpha, Iterable):
-        node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
-        alpha = None
+    def map_color(c):
+        if mapper is None:
+            raise nx.NetworkXError("Supplied scalar color without color map.")
 
-    if not isinstance(node_shape, np.ndarray) and not isinstance(node_shape, list):
-        node_shape = np.array([node_shape for _ in range(len(nodelist))])
+        return tuple(float(x) for x in mapper.to_rgba(c))
 
-    for shape in np.unique(node_shape):
-        node_collection = ax.scatter(
-            xy[node_shape == shape, 0],
-            xy[node_shape == shape, 1],
-            s=node_size,
-            c=node_color,
-            marker=shape,
-            cmap=cmap,
-            vmin=vmin,
-            vmax=vmax,
-            alpha=alpha,
-            linewidths=linewidths,
-            edgecolors=edgecolors,
-            label=label,
-        )
-    if hide_ticks:
-        ax.tick_params(
-            axis="both",
-            which="both",
-            bottom=False,
-            left=False,
-            labelbottom=False,
-            labelleft=False,
-        )
+    disp_node_color = None
+    if isinstance(node_color, Number):
+        disp_node_color = map_color(node_color)
+    elif isinstance(node_color, (np.ndarray | list)):
+        disp_node_color = {
+            n: map_color(node_color) if isinstance(node_color, float) else ns
+            for n, ns in zip(nodelist, node_color)
+        }
+
+    disp_node_shape = (
+        node_shape if isinstance(node_shape, str) else dict(zip(nodelist, node_shape))
+    )
+
+    disp_node_alpha = (
+        alpha if not isinstance(alpha, Iterable) else dict(zip(nodelist, cycle(alpha)))
+    )
+
+    disp_node_border_width = (
+        linewidths
+        if not isinstance(linewidths, Iterable)
+        else dict(zip(nodelist, linewidths))
+    )
+
+    disp_node_border_color = (
+        edgecolors
+        if not isinstance(edgecolors, Iterable)
+        else {n: map_color(c) for n, c in zip(nodelist, cycle(edgecolors))}
+    )
+
+    display(
+        G,
+        ax,
+        node_pos=pos,
+        node_visible=disp_node_visible,
+        node_size=disp_node_size,
+        node_color=disp_node_color,
+        node_shape=disp_node_shape,
+        node_alpha=disp_node_alpha,
+        node_border_width=disp_node_border_width,
+        node_border_color=disp_node_border_color,
+        node_label=False,
+        edge_visible=False,
+        hide_ticks=hide_ticks,
+    )
 
     if margins is not None:
         if isinstance(margins, Iterable):
@@ -1522,8 +1611,7 @@ def draw_networkx_nodes(
         else:
             ax.margins(margins)
 
-    node_collection.set_zorder(2)
-    return node_collection
+    return ax.collections[0]
 
 
 class FancyArrowFactory:
