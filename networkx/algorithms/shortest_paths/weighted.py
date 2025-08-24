@@ -857,8 +857,9 @@ def _dijkstra_multisource(
         heappush(fringe, (0, next(c), source))
     while fringe:
         (v_dist, _, v) = heappop(fringe)
-        if dist.setdefault(v, v_dist) < v_dist:
+        if v in dist:
             continue  # already searched this node.
+        dist[v] = v_dist
         if v == target:
             break
         for u, e in G_succ[v].items():
