@@ -1,4 +1,5 @@
 import random
+from itertools import pairwise
 
 import pytest
 
@@ -8,7 +9,7 @@ from networkx.algorithms.simple_paths import (
     _bidirectional_dijkstra,
     _bidirectional_shortest_path,
 )
-from networkx.utils import arbitrary_element, pairwise
+from networkx.utils import arbitrary_element
 
 
 class TestIsSimplePath:

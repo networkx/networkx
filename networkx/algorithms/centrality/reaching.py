@@ -1,7 +1,8 @@
 """Functions for computing reaching centrality of a node or a graph."""
 
+from itertools import pairwise
+
 import networkx as nx
-from networkx.utils import pairwise
 
 __all__ = ["global_reaching_centrality", "local_reaching_centrality"]
 

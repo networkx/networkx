@@ -1,6 +1,6 @@
 """Unit tests for the :mod:`~networkx.algorithms.tree.coding` module."""
 
-from itertools import product
+from itertools import pairwise, product
 
 import pytest
 
@@ -29,7 +29,7 @@ class TestPruferSequence:
 
     def test_bad_integer_labels(self):
         with pytest.raises(KeyError):
-            T = nx.Graph(nx.utils.pairwise("abc"))
+            T = nx.Graph(pairwise("abc"))
             nx.to_prufer_sequence(T)
 
     def test_encoding(self):

@@ -35,10 +35,11 @@ http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
 
 import math
+from itertools import pairwise
 
 import networkx as nx
 from networkx.algorithms.tree.mst import random_spanning_tree
-from networkx.utils import not_implemented_for, pairwise, py_random_state
+from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = [
     "traveling_salesman_problem",
@@ -979,6 +980,7 @@ def greedy_tsp(G, weight="weight", source=None):
 
     Examples
     --------
+    >>> from itertools import pairwise
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.DiGraph()
     >>> G.add_weighted_edges_from(
@@ -998,7 +1000,7 @@ def greedy_tsp(G, weight="weight", source=None):
     ...     }
     ... )
     >>> cycle = approx.greedy_tsp(G, source="D")
-    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
+    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
     >>> cost
@@ -1153,6 +1155,7 @@ def simulated_annealing_tsp(
 
     Examples
     --------
+    >>> from itertools import pairwise
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.DiGraph()
     >>> G.add_weighted_edges_from(
@@ -1172,14 +1175,14 @@ def simulated_annealing_tsp(
     ...     }
     ... )
     >>> cycle = approx.simulated_annealing_tsp(G, "greedy", source="D")
-    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
+    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
     >>> cost
     31
     >>> incycle = ["D", "B", "A", "C", "D"]
     >>> cycle = approx.simulated_annealing_tsp(G, incycle, source="D")
-    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
+    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
     >>> cost
@@ -1381,6 +1384,7 @@ def threshold_accepting_tsp(
 
     Examples
     --------
+    >>> from itertools import pairwise
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.DiGraph()
     >>> G.add_weighted_edges_from(
@@ -1400,14 +1404,14 @@ def threshold_accepting_tsp(
     ...     }
     ... )
     >>> cycle = approx.threshold_accepting_tsp(G, "greedy", source="D")
-    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
+    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
     >>> cost
     31
     >>> incycle = ["D", "B", "A", "C", "D"]
     >>> cycle = approx.threshold_accepting_tsp(G, incycle, source="D")
-    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
+    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
     >>> cost

@@ -5,7 +5,6 @@ import pytest
 import networkx as nx
 from networkx.algorithms.connectivity import EdgeComponentAuxGraph, bridge_components
 from networkx.algorithms.connectivity.edge_kcomponents import general_k_edge_subgraphs
-from networkx.utils import pairwise
 
 # ----------------
 # Helper functions
@@ -237,7 +236,7 @@ def test_tarjan_bridge():
         (11, 12, 14, 13, 11, 14),
     ]
     bridges = [(4, 8), (3, 5), (3, 17)]
-    G = nx.Graph(it.chain(*(pairwise(path) for path in ccs + bridges)))
+    G = nx.Graph(it.chain(*(it.pairwise(path) for path in ccs + bridges)))
     _check_edge_connectivity(G)
 
 
@@ -245,7 +244,7 @@ def test_bridge_cc():
     # define 2-connected components and bridges
     cc2 = [(1, 2, 4, 3, 1, 4), (8, 9, 10, 8), (11, 12, 13, 11)]
     bridges = [(4, 8), (3, 5), (20, 21), (22, 23, 24)]
-    G = nx.Graph(it.chain(*(pairwise(path) for path in cc2 + bridges)))
+    G = nx.Graph(it.chain(*(it.pairwise(path) for path in cc2 + bridges)))
     bridge_ccs = fset(bridge_components(G))
     target_ccs = fset(
         [{1, 2, 3, 4}, {5}, {8, 9, 10}, {11, 12, 13}, {20}, {21}, {22}, {23}, {24}]
@@ -266,7 +265,7 @@ def test_undirected_aux_graph():
         (f, g, f),
         (h, i),
     ]
-    G = nx.Graph(it.chain(*[pairwise(path) for path in paths]))
+    G = nx.Graph(it.chain(*[it.pairwise(path) for path in paths]))
     aux_graph = EdgeComponentAuxGraph.construct(G)
 
     components_1 = fset(aux_graph.k_edge_subgraphs(k=1))
@@ -306,7 +305,7 @@ def test_local_subgraph_difference():
         (13, 103, 23),
         (14, 104, 24),
     ]
-    G = nx.Graph(it.chain(*[pairwise(path) for path in paths]))
+    G = nx.Graph(it.chain(*[it.pairwise(path) for path in paths]))
     aux_graph = EdgeComponentAuxGraph.construct(G)
 
     # Each clique is returned separately in k-edge-subgraphs
@@ -325,7 +324,7 @@ def test_local_subgraph_difference():
 
 def test_local_subgraph_difference_directed():
     dipaths = [(1, 2, 3, 4, 1), (1, 3, 1)]
-    G = nx.DiGraph(it.chain(*[pairwise(path) for path in dipaths]))
+    G = nx.DiGraph(it.chain(*[it.pairwise(path) for path in dipaths]))
 
     assert fset(nx.k_edge_components(G, k=1)) == fset(nx.k_edge_subgraphs(G, k=1))
 
@@ -345,7 +344,7 @@ def test_triangles():
         (21, 22, 23, 21),  # second 3-clique
         (11, 21),  # connected by an edge
     ]
-    G = nx.Graph(it.chain(*[pairwise(path) for path in paths]))
+    G = nx.Graph(it.chain(*[it.pairwise(path) for path in paths]))
 
     # subgraph and ccs are the same in all cases here
     assert fset(nx.k_edge_components(G, k=1)) == fset(nx.k_edge_subgraphs(G, k=1))
@@ -369,7 +368,7 @@ def test_four_clique():
         (13, 200, 23),
         (14, 300, 24),
     ]
-    G = nx.Graph(it.chain(*[pairwise(path) for path in paths]))
+    G = nx.Graph(it.chain(*[it.pairwise(path) for path in paths]))
 
     # The subgraphs and ccs are different for k=3
     local_ccs = fset(nx.k_edge_components(G, k=3))
@@ -401,7 +400,7 @@ def test_five_clique():
         (3, 200, 8),
         (4, 200, 100),
     ]
-    G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))
+    G.add_edges_from(it.chain(*[it.pairwise(path) for path in paths]))
     assert min(dict(nx.degree(G)).values()) == 4
 
     # For k=3 they are the same
@@ -436,7 +435,7 @@ def test_directed_aux_graph():
         (f, g, f),
         (h, i),
     ]
-    G = nx.DiGraph(it.chain(*[pairwise(path) for path in dipaths]))
+    G = nx.DiGraph(it.chain(*[it.pairwise(path) for path in dipaths]))
     aux_graph = EdgeComponentAuxGraph.construct(G)
 
     components_1 = fset(aux_graph.k_edge_subgraphs(k=1))

@@ -1,10 +1,10 @@
 """Functional interface to graph methods and assorted utilities."""
 
 from collections import Counter
-from itertools import chain
+from itertools import chain, pairwise
 
 import networkx as nx
-from networkx.utils import not_implemented_for, pairwise
+from networkx.utils import not_implemented_for
 
 __all__ = [
     "nodes",
@@ -335,7 +335,7 @@ def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
         return
     G_to_add_to.add_node(first_node)
     G_to_add_to.add_edges_from(
-        pairwise(chain((first_node,), nlist), cyclic=True), **attr
+        nx.utils.pairwise(chain((first_node,), nlist), cyclic=True), **attr
     )
 
 
@@ -1373,7 +1373,7 @@ def is_path(G, path):
 
     """
     try:
-        return all(nbr in G._adj[node] for node, nbr in nx.utils.pairwise(path))
+        return all(nbr in G._adj[node] for node, nbr in pairwise(path))
     except (KeyError, TypeError):
         return False
 
@@ -1408,7 +1408,7 @@ def path_weight(G, path, weight):
 
     if not nx.is_path(G, path):
         raise nx.NetworkXNoPath("path does not exist")
-    for node, nbr in nx.utils.pairwise(path):
+    for node, nbr in pairwise(path):
         if multigraph:
             cost += min(v[weight] for v in G._adj[node][nbr].values())
         else:
