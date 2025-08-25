@@ -2397,7 +2397,15 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     weight = _weight_function(G, weight)
     # Init:  [Forward, Backward]
     dists = [{}, {}]  # dictionary of final distances
-    paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
+    preds = [{source: None}, {target: None}]  # dictionary of preds
+
+    def _walk(curr, dir):
+        ret = []
+        while curr is not None:
+            ret.append(curr)
+            curr = preds[dir][curr]
+        return list(reversed(ret)) if dir == 0 else ret
+
     fringe = [[], []]  # heap of (distance, node) for choosing node to expand
     seen = [{source: 0}, {target: 0}]  # dict of distances to seen nodes
     c = count()
@@ -2410,8 +2418,8 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     else:
         neighs = [G._adj, G._adj]
     # variables to hold shortest discovered path
-    # finaldist = 1e30000
-    finalpath = []
+    finaldist = None
+    meetnode = None
     dir = 1
     while fringe[0] and fringe[1]:
         # choose direction
@@ -2427,31 +2435,29 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
         if v in dists[1 - dir]:
             # if we have scanned v in both directions we are done
             # we have now discovered the shortest path
-            return (finaldist, finalpath)
+            return (finaldist, _walk(meetnode, 0) + _walk(preds[1][meetnode], 1))
 
         for w, d in neighs[dir][v].items():
             # weight(v, w, d) for forward and weight(w, v, d) for back direction
             cost = weight(v, w, d) if dir == 0 else weight(w, v, d)
             if cost is None:
                 continue
-            vwLength = dists[dir][v] + cost
+            vwLength = dist + cost
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
                     raise ValueError("Contradictory paths found: negative weights?")
-            elif w not in seen[dir] or vwLength < seen[dir][w]:
+            elif (seen_dist := seen[dir].get(w)) is None or vwLength < seen_dist:
                 # relaxing
                 seen[dir][w] = vwLength
                 heappush(fringe[dir], (vwLength, next(c), w))
-                paths[dir][w] = paths[dir][v] + [w]
+                preds[dir][w] = v
                 if w in seen[0] and w in seen[1]:
                     # see if this path is better than the already
                     # discovered shortest path
-                    totaldist = seen[0][w] + seen[1][w]
-                    if finalpath == [] or finaldist > totaldist:
-                        finaldist = totaldist
-                        revpath = paths[1][w][:]
-                        revpath.reverse()
-                        finalpath = paths[0][w] + revpath[1:]
+                    finaldist_w = seen[0][w] + seen[1][w]
+                    if finaldist is None or finaldist > finaldist_w:
+                        finaldist, meetnode = finaldist_w, w
+
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
