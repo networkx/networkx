@@ -2424,13 +2424,10 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
             continue
         # update distance
         dists[dir][v] = dist  # equal to seen[dir][v]
-        if (rev_dist := dists[1 - dir].get(v)) is not None:
-            # v has been settled in both directions
-            # update candidate shortest path if this gives a smaller total distance
-            finaldist_v = dist + rev_dist
-            if finaldist is None or finaldist_v < finaldist:
-                finaldist, meetnode = finaldist_v, v
-            continue
+        if v in dists[1 - dir]:
+            # if we have scanned v in both directions we are done
+            # we have now discovered the shortest path
+            break
 
         for w, d in neighs[dir][v].items():
             # weight(v, w, d) for forward and weight(w, v, d) for back direction
@@ -2446,6 +2443,12 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
                 seen[dir][w] = vwLength
                 preds[dir][w] = v
                 heappush(fringe[dir], (vwLength, next(c), w))
+                if w in seen[0] and w in seen[1]:
+                    # see if this path is better than the already
+                    # discovered shortest path
+                    finaldist_w = seen[0][w] + seen[1][w]
+                    if finaldist is None or finaldist > finaldist_w:
+                        finaldist, meetnode = finaldist_w, w
 
     if meetnode is None:
         raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
