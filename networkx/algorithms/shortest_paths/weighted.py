@@ -2398,6 +2398,14 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     # Init:  [Forward, Backward]
     dists = [{}, {}]  # dictionary of final distances
     preds = [{source: None}, {target: None}]  # dictionary of preds
+
+    def _walk(curr, dir):
+        ret = []
+        while curr is not None:
+            ret.append(curr)
+            curr = preds[dir][curr]
+        return list(reversed(ret)) if dir == 0 else ret
+
     fringe = [[], []]  # heap of (distance, node) for choosing node to expand
     seen = [{source: 0}, {target: 0}]  # dict of distances to seen nodes
     c = count()
@@ -2427,7 +2435,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
         if v in dists[1 - dir]:
             # if we have scanned v in both directions we are done
             # we have now discovered the shortest path
-            break
+            return (finaldist, _walk(meetnode, 0) + _walk(preds[1][meetnode], 1))
 
         for w, d in neighs[dir][v].items():
             # weight(v, w, d) for forward and weight(w, v, d) for back direction
@@ -2441,8 +2449,8 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
             elif (seen_dist := seen[dir].get(w)) is None or vwLength < seen_dist:
                 # relaxing
                 seen[dir][w] = vwLength
-                preds[dir][w] = v
                 heappush(fringe[dir], (vwLength, next(c), w))
+                preds[dir][w] = v
                 if w in seen[0] and w in seen[1]:
                     # see if this path is better than the already
                     # discovered shortest path
@@ -2450,17 +2458,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
                     if finaldist is None or finaldist > finaldist_w:
                         finaldist, meetnode = finaldist_w, w
 
-    if meetnode is None:
-        raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
-
-    def _walk(curr, dir):
-        ret = []
-        while curr is not None:
-            ret.append(curr)
-            curr = preds[dir][curr]
-        return list(reversed(ret)) if dir == 0 else ret
-
-    return finaldist, _walk(meetnode, 0) + _walk(preds[1][meetnode], 1)
+    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
 @nx._dispatchable(edge_attrs="weight")
