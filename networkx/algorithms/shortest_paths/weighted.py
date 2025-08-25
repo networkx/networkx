@@ -2443,21 +2443,20 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
             if cost is None:
                 continue
             vwLength = dist + cost
-            if w in dists[dir]:
-                if vwLength < dists[dir][w]:
+            if (w_dist := dists[dir].get(w)) is not None:
+                if vwLength < w_dist:
                     raise ValueError("Contradictory paths found: negative weights?")
             elif (seen_dist := seen[dir].get(w)) is None or vwLength < seen_dist:
                 # relaxing
-                seen[dir][w] = vwLength
+                seen_dist = seen[dir][w] = vwLength
                 heappush(fringe[dir], (vwLength, next(c), w))
                 preds[dir][w] = v
-                if w in seen[0] and w in seen[1]:
+                if (seen_dist_rev := seen[1 - dir].get(w)) is not None:
                     # see if this path is better than the already
                     # discovered shortest path
-                    finaldist_w = seen[0][w] + seen[1][w]
+                    finaldist_w = seen_dist + seen_dist_rev
                     if finaldist is None or finaldist > finaldist_w:
                         finaldist, meetnode = finaldist_w, w
-
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
