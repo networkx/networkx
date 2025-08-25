@@ -1024,6 +1024,8 @@ def display(
             visible_edges = G.edges()
         else:
             visible_edges = []
+    elif isinstance(edge_visible, dict):
+        visible_edges = [n for n, v in edge_visible.items() if v]
     else:
         visible_edges = [
             e for e, v in nx.get_edge_attributes(G, edge_visible, True).items() if v
@@ -1615,6 +1617,7 @@ def draw_networkx_nodes(
         node_border_color=disp_node_border_color,
         node_label=False,
         edge_visible=False,
+        edge_label=False,
         hide_ticks=hide_ticks,
     )
 
@@ -1624,7 +1627,11 @@ def draw_networkx_nodes(
         else:
             ax.margins(margins)
 
-    return ax.collections[0]
+    for col in ax.collections:
+        if isinstance(col, mpl.collections.PathCollection):
+            return col
+
+    return None
 
 
 class FancyArrowFactory:
@@ -2032,10 +2039,10 @@ def draw_networkx_edges(
 
     """
     import warnings
+    from collections.abc import Iterable
+    from itertools import cycle
 
     import matplotlib as mpl
-    import matplotlib.collections  # call as mpl.collections
-    import matplotlib.colors  # call as mpl.colors
     import matplotlib.pyplot as plt
     import numpy as np
 
@@ -2096,13 +2103,7 @@ def draw_networkx_edges(
     if edgelist is None:
         edgelist = list(G.edges)  # (u, v, k) for multigraph (u, v) otherwise
 
-    if len(edgelist):
-        if G.is_multigraph():
-            key_count = collections.defaultdict(lambda: itertools.count(0))
-            edge_indices = [next(key_count[tuple(e[:2])]) for e in edgelist]
-        else:
-            edge_indices = [0] * len(edgelist)
-    else:  # no edges!
+    if len(edgelist) == 0:
         return []
 
     if nodelist is None:
@@ -2112,111 +2113,95 @@ def draw_networkx_edges(
     if edge_color is None:
         edge_color = "k"
 
-    # set edge positions
-    edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
-
-    # Check if edge_color is an array of floats and map to edge_cmap.
-    # This is the only case handled differently from matplotlib
-    if (
-        np.iterable(edge_color)
-        and (len(edge_color) == len(edge_pos))
-        and np.all([isinstance(c, Number) for c in edge_color])
-    ):
-        if edge_cmap is not None:
-            assert isinstance(edge_cmap, mpl.colors.Colormap)
-        else:
-            edge_cmap = plt.get_cmap()
+    disp_edge_visible = {e: e in edgelist for e in G.edges}
+    disp_edge_width = (
+        width if not isinstance(width, Iterable) else dict(zip(edgelist, cycle(width)))
+    )
+    disp_edge_style = (
+        style if isinstance(style, (str | tuple)) else dict(zip(edgelist, cycle(style)))
+    )
+    disp_edge_alpha = (
+        alpha if not isinstance(alpha, Iterable) else dict(zip(edgelist, cycle(alpha)))
+    )
+    disp_edge_arrowstyle = (
+        arrowstyle
+        if isinstance(arrowstyle, str)
+        else dict(zip(edgelist, cycle(arrowstyle)))
+    )
+    disp_edge_arrowsize = (
+        arrowsize
+        if not isinstance(arrowsize, Iterable)
+        else dict(zip(edgelist, cycle(arrowsize)))
+    )
+    disp_node_size = (
+        node_size
+        if not isinstance(node_size, Iterable)
+        else dict(zip(nodelist, node_size))
+    )
+    mapper = None
+    if edge_cmap is not None:
+        mapper = mpl.cm.ScalarMappable(cmap=edge_cmap)
         if edge_vmin is None:
-            edge_vmin = min(edge_color)
+            edge_vmin = 0.0
         if edge_vmax is None:
-            edge_vmax = max(edge_color)
-        color_normal = mpl.colors.Normalize(vmin=edge_vmin, vmax=edge_vmax)
-        edge_color = [edge_cmap(color_normal(e)) for e in edge_color]
+            edge_vmax = 1.0
+        mapper.set_clim(edge_vmin, edge_vmax)
 
-    # compute initial view
-    minx = np.amin(np.ravel(edge_pos[:, :, 0]))
-    maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
-    miny = np.amin(np.ravel(edge_pos[:, :, 1]))
-    maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
-    w = maxx - minx
-    h = maxy - miny
+    def map_color(c):
+        if mapper is None:
+            raise nx.NetworkXError("Supplied scalar color without color map.")
 
-    # Self-loops are scaled by view extent, except in cases the extent
-    # is 0, e.g. for a single node. In this case, fall back to scaling
-    # by the maximum node size
-    selfloop_height = h if h != 0 else 0.005 * np.array(node_size).max()
-    fancy_arrow_factory = FancyArrowFactory(
-        edge_pos,
-        edgelist,
-        nodelist,
-        edge_indices,
-        node_size,
-        selfloop_height,
-        connectionstyle,
-        node_shape,
-        arrowstyle,
-        arrowsize,
-        edge_color,
-        alpha,
-        width,
-        style,
-        min_source_margin,
-        min_target_margin,
-        ax=ax,
+        return tuple(float(x) for x in mapper.to_rgba(c))
+
+    disp_edge_color = None
+    if isinstance(edge_color, float):
+        disp_edge_color = map_color(node_color)
+    elif isinstance(edge_color, str):
+        disp_edge_color = edge_color
+    elif isinstance(edge_color, (np.ndarray | list)):
+        disp_edge_color = {
+            n: map_color(edge_color) if isinstance(edge_color, float) else ns
+            for n, ns in zip(nodelist, edge_color)
+        }
+
+    disp_node_shape = (
+        node_shape if isinstance(node_shape, str) else dict(zip(nodelist, node_shape))
     )
 
-    # Draw the edges
-    if use_linecollection:
-        edge_collection = mpl.collections.LineCollection(
-            edge_pos,
-            colors=edge_color,
-            linewidths=width,
-            antialiaseds=(1,),
-            linestyle=style,
-            alpha=alpha,
-        )
-        edge_collection.set_cmap(edge_cmap)
-        edge_collection.set_clim(edge_vmin, edge_vmax)
-        edge_collection.set_zorder(1)  # edges go behind nodes
-        edge_collection.set_label(label)
-        ax.add_collection(edge_collection)
-        edge_viz_obj = edge_collection
+    disp_edge_curvature = (
+        connectionstyle
+        if not isinstance(connectionstyle, np.ndarray | list)
+        else dict(zip(edgelist, cycle(connectionstyle)))
+    )
 
-        # Make sure selfloop edges are also drawn
-        # ---------------------------------------
-        selfloops_to_draw = [loop for loop in nx.selfloop_edges(G) if loop in edgelist]
-        if selfloops_to_draw:
-            edgelist_tuple = list(map(tuple, edgelist))
-            arrow_collection = []
-            for loop in selfloops_to_draw:
-                i = edgelist_tuple.index(loop)
-                arrow = fancy_arrow_factory(i)
-                arrow_collection.append(arrow)
-                ax.add_patch(arrow)
-    else:
-        edge_viz_obj = []
-        for i in range(len(edgelist)):
-            arrow = fancy_arrow_factory(i)
-            ax.add_patch(arrow)
-            edge_viz_obj.append(arrow)
+    display(
+        G,
+        ax,
+        node_pos=pos,
+        node_visible=False,
+        node_label=False,
+        edge_label=False,
+        edge_visible=disp_edge_visible,
+        edge_width=disp_edge_width,
+        edge_color=disp_edge_color,
+        edge_style=disp_edge_style,
+        edge_alpha=disp_edge_alpha,
+        edge_arrowstyle=disp_edge_arrowstyle,
+        edge_arrowsize=disp_edge_arrowsize,
+        edge_curvature=disp_edge_curvature,
+        node_shape=disp_node_shape,
+        node_size=disp_node_size,
+        hide_ticks=hide_ticks,
+    )
 
-    # update view after drawing
-    padx, pady = 0.05 * w, 0.05 * h
-    corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
-    ax.update_datalim(corners)
-    ax.autoscale_view()
-
-    if hide_ticks:
-        ax.tick_params(
-            axis="both",
-            which="both",
-            bottom=False,
-            left=False,
-            labelbottom=False,
-            labelleft=False,
-        )
-
-    return edge_viz_obj
+    patches = []
+    lines = None
+    for col in ax.collections:
+        if isinstance(col, mpl.collections.LineCollection):
+            lines = col
+        elif isinstance(col, mpl.patches.FancyArrowPatch):
+            patches.append(col)
+    return patches if len(patches) > 0 else lines
 
 
 def draw_networkx_labels(
