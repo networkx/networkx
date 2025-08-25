@@ -1831,13 +1831,18 @@ def panther_vector_similarity(
 
     The "hub" node is distinct from the "spoke" nodes
 
-    >>> nx.panther_vector_similarity(G, source=0, seed=42)
-    {85: 0.10254413039936112, 61: 0.10187943587925867, 35: 0.10156480636337968, 65: 0.10155189938081624}
+    >>> from pprint import pprint
+    >>> pprint(nx.panther_vector_similarity(G, source=0, seed=42))
+    {35: 0.10156480636337968,
+     61: 0.10187943587925867,
+     65: 0.10155189938081624,
+     85: 0.10254413039936112,
+     88: 0.10154281963854213}
 
     But "spoke" nodes are similar to one another
 
     >>> sorted(nx.panther_vector_similarity(G, source=1, seed=42).items())
-    [(26, 1.0), (29, 1.0), (52, 1.0), (98, 1.0)]
+    [(10, 1.0), (26, 1.0), (52, 1.0), (64, 1.0), (98, 1.0)]
 
     References
     ----------
