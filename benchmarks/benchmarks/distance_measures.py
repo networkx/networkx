@@ -1,9 +1,5 @@
 """Benchmarks for distance measure functions."""
 
-import random
-
-from asv_runner.benchmarks.mark import SkipNotImplemented
-
 import networkx as nx
 
 
