@@ -2399,7 +2399,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     dists = [{}, {}]  # dictionary of final distances
     preds = [{source: None}, {target: None}]  # dictionary of preds
 
-    def _walk(curr, dir):
+    def path(curr, dir):
         ret = []
         while curr is not None:
             ret.append(curr)
@@ -2435,7 +2435,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
         if v in dists[1 - dir]:
             # if we have scanned v in both directions we are done
             # we have now discovered the shortest path
-            return (finaldist, _walk(meetnode, 0) + _walk(preds[1][meetnode], 1))
+            return (finaldist, path(meetnode, 0) + path(preds[1][meetnode], 1))
 
         for w, d in neighs[dir][v].items():
             # weight(v, w, d) for forward and weight(w, v, d) for back direction
@@ -2443,18 +2443,18 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
             if cost is None:
                 continue
             vwLength = dist + cost
-            if (w_dist := dists[dir].get(w)) is not None:
-                if vwLength < w_dist:
+            if w in dists[dir]:
+                if vwLength < dists[dir][w]:
                     raise ValueError("Contradictory paths found: negative weights?")
-            elif (seen_dist := seen[dir].get(w)) is None or vwLength < seen_dist:
+            elif w not in seen[dir] or vwLength < seen[dir][w]:
                 # relaxing
-                seen_dist = seen[dir][w] = vwLength
+                seen[dir][w] = vwLength
                 heappush(fringe[dir], (vwLength, next(c), w))
                 preds[dir][w] = v
-                if (seen_dist_rev := seen[1 - dir].get(w)) is not None:
+                if w in seen[1 - dir]:
                     # see if this path is better than the already
                     # discovered shortest path
-                    finaldist_w = seen_dist + seen_dist_rev
+                    finaldist_w = vwLength + seen[1 - dir][w]
                     if finaldist is None or finaldist > finaldist_w:
                         finaldist, meetnode = finaldist_w, w
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
