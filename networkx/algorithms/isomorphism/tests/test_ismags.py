@@ -118,7 +118,7 @@ class TestSelfIsomorphism:
         found.
         """
         for node_data, edge_data in self.data:
-            graph = nx.Graph()
+            graph = nx.DiGraph()
             graph.add_nodes_from(node_data)
             graph.add_edges_from(edge_data)
 
@@ -244,12 +244,14 @@ class TestWikipediaExample:
     ]
 
     def test_graph(self):
-        g1 = nx.Graph()
-        g2 = nx.Graph()
-        g1.add_edges_from(self.g1edges)
-        g2.add_edges_from(self.g2edges)
-        gm = iso.ISMAGS(g1, g2)
-        assert gm.is_isomorphic()
+        g1 = nx.Graph(self.g1edges)
+        g2 = nx.Graph(self.g2edges)
+        assert iso.ISMAGS(g1, g2).is_isomorphic()
+
+    def test_digraph(self):
+        g1 = nx.DiGraph(self.g1edges)
+        g2 = nx.DiGraph(self.g2edges)
+        assert iso.ISMAGS(g1, g2).is_isomorphic()
 
 
 class TestLargestCommonSubgraph:
