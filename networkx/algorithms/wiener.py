@@ -230,14 +230,14 @@ def gutman_index(G, weight=None):
 @nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 def hyper_wiener_index(G, weight=None):
-    r"""Returns the Hyper-Wiener index of the graph G.
+    r"""Returns the Hyper-Wiener index of the graph `G`.
 
-    The Hyper-Wiener index of a connected graph G is defined as
+    The Hyper-Wiener index of a connected graph `G` is defined as
 
     .. math::
         WW(G) = \frac{1}{2} \sum_{u,v \in V(G)} (d(u,v) + d(u,v)^2)
 
-    where `d(u,v)` is the shortest-path distance between nodes `u` and `v`.
+    where ``d(u, v)`` is the shortest-path distance between nodes ``u`` and ``v``.
 
     Parameters
     ----------
