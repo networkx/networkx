@@ -121,3 +121,37 @@ def test_schultz_and_gutman_index_of_odd_cycle_graph():
 
     assert expected_1 == actual_1
     assert expected_2 == actual_2
+
+
+def test_hyper_wiener_of_complete_graph():
+    # In a complete graph K_n, the distance is always 1.
+    # For K_n, this term is always (1 + 1^2) = 2.
+    #
+    # The number of ordered pairs is n * (n - 1).
+    # The total sum before division is (n * (n - 1)) * 2.
+    # The final result is therefore ((n * (n - 1)) * 2) / 2, which
+    # simplifies to n * (n - 1).
+    n = 5
+    G = nx.complete_graph(n)
+    assert nx.hyper_wiener_index(G) == n * (n - 1)
+
+
+def test_hyper_wiener_of_path_graph():
+    G = nx.path_graph(4)
+    assert nx.hyper_wiener_index(G) == 30.0
+
+
+def test_hyper_wiener_of_cycle_graph():
+    G = nx.cycle_graph(4)
+    assert nx.hyper_wiener_index(G) == 20.0
+
+
+def test_hyper_wiener_of_disconnected_graph():
+    G = nx.Graph([(0, 1), (2, 3)])
+    assert nx.hyper_wiener_index(G) == float("inf")
+
+
+def test_hyper_wiener_of_weighted_graph():
+    G = nx.path_graph(3)
+    G.edges[0, 1]["weight"] = 2
+    assert nx.hyper_wiener_index(G, weight="weight") == 20.0
