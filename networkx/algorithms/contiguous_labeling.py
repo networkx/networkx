@@ -24,16 +24,17 @@ This corresponds to the contiguous oriented labeling definition from the paper:
        f"Edge {label}: {i_minus}⁻ → {i_plus}⁺"
 """
 
-import networkx as nx
-from typing import List, Tuple, Dict, Set, Optional, Any
 import logging
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+import networkx as nx
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
-def find_uv_to_make_bridgeless(G: nx.Graph) -> Optional[Tuple]:
+def find_uv_to_make_bridgeless(G: nx.Graph) -> tuple | None:
     """
     Find vertices u and v such that adding edge (u,v) makes the graph G bridgeless.
 
@@ -83,7 +84,7 @@ def find_uv_to_make_bridgeless(G: nx.Graph) -> Optional[Tuple]:
     return None
 
 
-def contiguous_oriented_labeling(G: nx.Graph) -> Optional[List[Tuple[int, Any, Any]]]:
+def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | None:
     """
     Create a contiguous oriented labeling for an almost bridgeless graph.
 
@@ -288,7 +289,7 @@ def contiguous_oriented_labeling(G: nx.Graph) -> Optional[List[Tuple[int, Any, A
     return labeling
 
 
-def dfs_labeling(G: nx.Graph) -> List[Tuple[int, Any, Any]]:
+def dfs_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]]:
     """
     Create a simple DFS-based labeling as a fallback when the main algorithm fails.
 
@@ -337,7 +338,7 @@ def dfs_labeling(G: nx.Graph) -> List[Tuple[int, Any, Any]]:
     return labeling
 
 
-def verify_contiguous_labeling(G: nx.Graph, labeling: Optional[List[Tuple[int, Any, Any]]]) -> bool:
+def verify_contiguous_labeling(G: nx.Graph, labeling: list[tuple[int, Any, Any]] | None) -> bool:
     """
     Verify if the given labeling satisfies the contiguous property according to Definition 4.2.
 
@@ -414,7 +415,7 @@ def verify_contiguous_labeling(G: nx.Graph, labeling: Optional[List[Tuple[int, A
     return True
 
 
-def show_labeling(labeling: Optional[List[Tuple[int, Any, Any]]]) -> None:
+def show_labeling(labeling: list[tuple[int, Any, Any]] | None) -> None:
     """
     Print a human-readable representation of the edge labeling.
 
@@ -475,7 +476,6 @@ if __name__ == "__main__":
     print("Labeling:")
     show_labeling(labeling4)
     print(f"Is contiguous: {verify_contiguous_labeling(G4, labeling4)}")
-
 
 
 
