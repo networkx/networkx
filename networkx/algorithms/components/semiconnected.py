@@ -1,9 +1,7 @@
 """Semiconnectedness."""
 
-from itertools import pairwise
-
 import networkx as nx
-from networkx.utils import not_implemented_for
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = ["is_semiconnected"]
 

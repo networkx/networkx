@@ -1,7 +1,7 @@
-from itertools import chain, pairwise
+from itertools import chain
 
 import networkx as nx
-from networkx.utils import not_implemented_for
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = ["metric_closure", "steiner_tree"]
 

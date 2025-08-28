@@ -8,11 +8,11 @@ to the user to check for that.
 import heapq
 from collections import deque
 from functools import partial
-from itertools import chain, combinations, pairwise, product, starmap
+from itertools import chain, combinations, product, starmap
 from math import gcd
 
 import networkx as nx
-from networkx.utils import arbitrary_element, not_implemented_for
+from networkx.utils import arbitrary_element, not_implemented_for, pairwise
 
 __all__ = [
     "descendants",
@@ -1229,11 +1229,10 @@ def dag_to_branching(G):
     example, consider the directed diamond graph::
 
         >>> from collections import defaultdict
-        >>> from itertools import pairwise
         >>> from operator import itemgetter
         >>>
-        >>> G = nx.DiGraph(pairwise("abd"))
-        >>> G.add_edges_from(pairwise("acd"))
+        >>> G = nx.DiGraph(nx.utils.pairwise("abd"))
+        >>> G.add_edges_from(nx.utils.pairwise("acd"))
         >>> B = nx.dag_to_branching(G)
         >>>
         >>> sources = defaultdict(set)

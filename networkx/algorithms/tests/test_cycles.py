@@ -1,5 +1,5 @@
 import random
-from itertools import chain, islice, pairwise, tee
+from itertools import chain, islice, tee
 from math import inf
 
 import pytest
@@ -189,6 +189,12 @@ class TestCycles:
             assert any(self.is_cyclic_permutation(c, rc) for rc in rcc)
         for rc in rcc:
             assert any(self.is_cyclic_permutation(rc, c) for c in cc)
+
+
+def pairwise(iterable):
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
 
 
 def cycle_edges(c):

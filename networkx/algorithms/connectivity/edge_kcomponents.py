@@ -68,13 +68,14 @@ def k_edge_components(G, k):
     Examples
     --------
     >>> import itertools as it
+    >>> from networkx.utils import pairwise
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
     ...     (5, 6, 7, 8, 5, 7, 8, 6),
     ... ]
     >>> G = nx.Graph()
     >>> G.add_nodes_from(it.chain(*paths))
-    >>> G.add_edges_from(it.chain(*[it.pairwise(path) for path in paths]))
+    >>> G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))
     >>> # note this returns {1, 4} unlike k_edge_subgraphs
     >>> sorted(map(sorted, nx.k_edge_components(G, k=3)))
     [[1, 4], [2], [3], [5, 6, 7, 8]]
@@ -148,13 +149,14 @@ def k_edge_subgraphs(G, k):
     Examples
     --------
     >>> import itertools as it
+    >>> from networkx.utils import pairwise
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
     ...     (5, 6, 7, 8, 5, 7, 8, 6),
     ... ]
     >>> G = nx.Graph()
     >>> G.add_nodes_from(it.chain(*paths))
-    >>> G.add_edges_from(it.chain(*[it.pairwise(path) for path in paths]))
+    >>> G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))
     >>> # note this does not return {1, 4} unlike k_edge_components
     >>> sorted(map(sorted, nx.k_edge_subgraphs(G, k=3)))
     [[1], [2], [3], [4], [5, 6, 7, 8]]
@@ -265,6 +267,7 @@ class EdgeComponentAuxGraph:
     Examples
     --------
     >>> import itertools as it
+    >>> from networkx.utils import pairwise
     >>> from networkx.algorithms.connectivity import EdgeComponentAuxGraph
     >>> # Build an interesting graph with multiple levels of k-edge-ccs
     >>> paths = [
@@ -275,7 +278,7 @@ class EdgeComponentAuxGraph:
     ... ]
     >>> G = nx.Graph()
     >>> G.add_nodes_from(it.chain(*paths))
-    >>> G.add_edges_from(it.chain(*[it.pairwise(path) for path in paths]))
+    >>> G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))
     >>> # Constructing the AuxGraph takes about O(n ** 4)
     >>> aux_graph = EdgeComponentAuxGraph.construct(G)
     >>> # Once constructed, querying takes O(n)
@@ -293,13 +296,14 @@ class EdgeComponentAuxGraph:
     search space.
 
     >>> import itertools as it
+    >>> from networkx.utils import pairwise
     >>> from networkx.algorithms.connectivity import EdgeComponentAuxGraph
     >>> paths = [
     ...     (1, 2, 4, 3, 1, 4),
     ... ]
     >>> G = nx.Graph()
     >>> G.add_nodes_from(it.chain(*paths))
-    >>> G.add_edges_from(it.chain(*[it.pairwise(path) for path in paths]))
+    >>> G.add_edges_from(it.chain(*[pairwise(path) for path in paths]))
     >>> aux_graph = EdgeComponentAuxGraph.construct(G)
     >>> sorted(map(sorted, aux_graph.k_edge_subgraphs(k=3)))
     [[1], [2], [3], [4]]
@@ -540,6 +544,7 @@ def general_k_edge_subgraphs(G, k):
 
     Examples
     --------
+    >>> from networkx.utils import pairwise
     >>> paths = [
     ...     (11, 12, 13, 14, 11, 13, 14, 12),  # a 4-clique
     ...     (21, 22, 23, 24, 21, 23, 24, 22),  # another 4-clique
@@ -549,7 +554,7 @@ def general_k_edge_subgraphs(G, k):
     ...     (13, 102, 23),
     ...     (14, 101, 24),
     ... ]
-    >>> G = nx.Graph(it.chain(*[it.pairwise(path) for path in paths]))
+    >>> G = nx.Graph(it.chain(*[pairwise(path) for path in paths]))
     >>> sorted(len(k_sg) for k_sg in k_edge_subgraphs(G, k=3))
     [1, 1, 1, 4, 4]
     """

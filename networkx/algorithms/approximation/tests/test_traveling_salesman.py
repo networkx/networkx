@@ -1,12 +1,13 @@
 """Unit tests for the traveling_salesman module."""
 
 import random
-from itertools import pairwise
 
 import pytest
 
 import networkx as nx
 import networkx.algorithms.approximation as nx_app
+
+pairwise = nx.utils.pairwise
 
 
 def test_christofides_hamiltonian():

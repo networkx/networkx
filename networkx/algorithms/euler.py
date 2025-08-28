@@ -2,7 +2,7 @@
 Eulerian circuits and graphs.
 """
 
-from itertools import combinations, pairwise
+from itertools import combinations
 
 import networkx as nx
 
@@ -466,5 +466,5 @@ def eulerize(G):
     # duplicate each edge along each path in the set of paths in Gp
     for m, n in best_matching.edges():
         path = Gp[m][n]["path"]
-        G.add_edges_from(pairwise(path))
+        G.add_edges_from(nx.utils.pairwise(path))
     return G

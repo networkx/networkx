@@ -129,11 +129,10 @@ def dijkstra_path(G, source, target, weight="weight"):
 
     Find edges of shortest path in Multigraph
 
-    >>> from itertools import pairwise
     >>> G = nx.MultiDiGraph()
     >>> G.add_weighted_edges_from([(1, 2, 0.75), (1, 2, 0.5), (2, 3, 0.5), (1, 3, 1.5)])
     >>> nodes = nx.dijkstra_path(G, 1, 3)
-    >>> edges = pairwise(nodes)
+    >>> edges = nx.utils.pairwise(nodes)
     >>> list(
     ...     (u, v, min(G[u][v], key=lambda k: G[u][v][k].get("weight", 1)))
     ...     for u, v in edges
