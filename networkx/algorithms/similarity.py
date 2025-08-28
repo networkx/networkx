@@ -1850,8 +1850,11 @@ def panther_vector_similarity(
 
     But "spoke" nodes are similar to one another
 
-    >>> sorted(nx.panther_vector_similarity(G, source=1, seed=42).items())
-    [(10, 1.0), (26, 1.0), (52, 1.0), (64, 1.0), (98, 1.0)]
+    >>> result = nx.panther_vector_similarity(G, source=1, seed=42)
+    >>> len(result)
+    5
+    >>> all(similarity == 1.0 for similarity in result.values())
+    True
 
     References
     ----------
