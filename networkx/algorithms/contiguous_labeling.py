@@ -337,7 +337,7 @@ def dfs_labeling(G: nx.Graph) -> List[Tuple[int, Any, Any]]:
     return labeling
 
 
-def verify_contiguous_labeling(G: nx.Graph, labeling: List[Tuple[int, Any, Any]]) -> bool:
+def verify_contiguous_labeling(G: nx.Graph, labeling: Optional[List[Tuple[int, Any, Any]]]) -> bool:
     """
     Verify if the given labeling satisfies the contiguous property according to Definition 4.2.
 
@@ -412,7 +412,7 @@ def verify_contiguous_labeling(G: nx.Graph, labeling: List[Tuple[int, Any, Any]]
     return True
 
 
-def show_labeling(labeling: List[Tuple[int, Any, Any]]) -> None:
+def show_labeling(labeling: Optional[List[Tuple[int, Any, Any]]]) -> None:
     """
     Print a human-readable representation of the edge labeling.
 
@@ -470,4 +470,5 @@ if __name__ == "__main__":
     print("Labeling:")
     show_labeling(labeling4)
     print(f"Is contiguous: {verify_contiguous_labeling(G4, labeling4)}")
+
 
