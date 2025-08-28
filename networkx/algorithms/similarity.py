@@ -1941,6 +1941,12 @@ def panther_vector_similarity(
 
     # Remove the self-similarity
     top_k_with_val.pop(source, None)
+
+    # Ensure we return exactly k results (sorted by similarity)
+    if len(top_k_with_val) > k:
+        sorted_items = sorted(top_k_with_val.items(), key=lambda x: x[1], reverse=True)
+        top_k_with_val = dict(sorted_items[:k])
+
     return top_k_with_val
 
 
