@@ -329,7 +329,7 @@ def threshold_graph(creation_sequence, create_using=None):
         cs = uncompact(creation_sequence)
         ci = list(enumerate(cs))
     else:
-        print("not a valid creation sequence type")
+        raise ValueError("not a valid creation sequence")
         return None
 
     G = nx.empty_graph(0, create_using)
