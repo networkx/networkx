@@ -473,8 +473,7 @@ class ISMAGS:
             # heuristic is length of smallest set in candidates list of sets.
             # Using smallest len avoids computing the intersection of the sets
             # for all nodes.
-            #start_sgn = min(candidates, key=lambda n: min(len(x) for x in candidates[n]))
-            start_sgn = min(candidates, key=lambda n: min(candidates[n], key=len))
+            start_sgn = min(candidates, key=lambda n: min(len(x) for x in candidates[n]))
             candidates[start_sgn] = (frozenset.intersection(*candidates[start_sgn]),)
             yield from self._map_nodes(start_sgn, candidates, constraints)
         else:
@@ -831,7 +830,7 @@ class ISMAGS:
 
                 # Add gn2_options to the right collection. Since cc
                 # is a dict of frozensets of frozensets of node indices it's
-                # a bit clunky. 
+                # a bit clunky.
                 cc[sgn2] = cc[sgn2].union({frozenset(gn2_options)})
 
             for sgn2 in left_to_map:
@@ -845,7 +844,7 @@ class ISMAGS:
                 cc[sgn2].add(frozenset(gn2_options))
 
             # The next node is the one that is unmapped and has fewest candidates
-            next_sgn = min(left_to_map, key=lambda n: min(cc[n], key=len))
+            next_sgn = min(left_to_map, key=lambda n: min(len(x) for x in cc[n]))
             yield from self._map_nodes(next_sgn, cc, constraints, mapping, to_be_mapped)
             # Unmap sgn-gn. Strictly not necessary since it'd get overwritten
             # when making a new mapping for sgn.
@@ -876,7 +875,7 @@ class ISMAGS:
             # theory.
             for nodes in sorted(to_be_mapped, key=sorted):
                 # Find the isomorphism between subgraph[to_be_mapped] <= graph
-                next_sgn = min(nodes, key=lambda n: min(candidates[n], key=len))
+                next_sgn = min(nodes, key=lambda n: min(len(x) for x in candidates[n]))
                 isomorphs = self._map_nodes(
                     next_sgn, candidates, constraints, to_be_mapped=nodes
                 )
