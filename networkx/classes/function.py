@@ -998,14 +998,7 @@ def all_neighbors(graph, node):
     which may include duplicates if a node is both a predecessor and successor
     (e.g., in bidirectional edges or self-loops).
 
-    This function provides a consistent interface for accessing neighbors
-    regardless of graph type, unlike the class methods which vary between
-    ``G.neighbors(n)`` for undirected graphs and ``G.predecessors(n)``/``G.successors(n)``
-    for directed graphs.
-
-    Alternative access methods:
-    - ``G[n]`` : Shorthand equivalent to ``G.neighbors(n)`` for both graph types
-    - ``G.pred[u]`` : Returns predecessors for directed graphs only
+    This function iterates over all neighbors (both predecessors and successors).
 
     See Also
     --------
