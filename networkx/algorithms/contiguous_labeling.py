@@ -358,7 +358,7 @@ def verify_contiguous_labeling(G: nx.Graph, labeling: Optional[List[Tuple[int, A
     logger.info("Verifying contiguous labeling property")
     if labeling is None:
         print("No labeling provided.")
-        return
+        return False
     # If the graph or labeling is empty, it's trivially contiguous
     if len(labeling) == 0:
         logger.debug("Empty labeling is trivially contiguous")
@@ -475,6 +475,7 @@ if __name__ == "__main__":
     print("Labeling:")
     show_labeling(labeling4)
     print(f"Is contiguous: {verify_contiguous_labeling(G4, labeling4)}")
+
 
 
 
