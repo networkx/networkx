@@ -1,7 +1,7 @@
-networkx 3.5rc0
-===============
+networkx 3.5
+============
 
-We're happy to announce the release of networkx 3.5rc0!
+We're happy to announce the release of networkx 3.5!
 
 API Changes
 -----------
@@ -53,6 +53,8 @@ Enhancements
 - Added "initial_node" param to generate_random_paths() to allow a starting node to be specified for generated walks (`#8002 <https://github.com/networkx/networkx/pull/8002>`_).
 - Fix behavior for iterable ``sources`` argument in ``bfs_layers`` (`#8013 <https://github.com/networkx/networkx/pull/8013>`_).
 - Speed up ``connected_components`` and ``weakly_connected_components`` (`#7971 <https://github.com/networkx/networkx/pull/7971>`_).
+- BiRank Algorithm Implementation (`#7978 <https://github.com/networkx/networkx/pull/7978>`_).
+- Enforce correct graph types for graph matchers (`#8043 <https://github.com/networkx/networkx/pull/8043>`_).
 
 Bug Fixes
 ---------
@@ -77,6 +79,10 @@ Bug Fixes
 - BUG: graph6 format invariant to trailing newline (`#7941 <https://github.com/networkx/networkx/pull/7941>`_).
 - Fix ``random_degree_sequence_graph`` when input is an iterator (`#7979 <https://github.com/networkx/networkx/pull/7979>`_).
 - Improve special cases in dispatch testing (paying off tech debt) (`#7982 <https://github.com/networkx/networkx/pull/7982>`_).
+- Fix bug when assigning list to ``nx.config.backend_priority`` (`#8034 <https://github.com/networkx/networkx/pull/8034>`_).
+- A minimal fix for ``is_aperiodic`` (`#8029 <https://github.com/networkx/networkx/pull/8029>`_).
+- fix bug of _sparse_fruchterman_reingold and remove try/except idiom (`#8041 <https://github.com/networkx/networkx/pull/8041>`_).
+- Fix edge case in ISMAGS symmetry detection (`#8055 <https://github.com/networkx/networkx/pull/8055>`_).
 
 Documentation
 -------------
@@ -116,6 +122,11 @@ Documentation
 - More ``random_paths`` docstring improvements (`#7841 <https://github.com/networkx/networkx/pull/7841>`_).
 - Add nx-guides link to navbar without dropdown (`#8015 <https://github.com/networkx/networkx/pull/8015>`_).
 - Clarifying backend graph class interface is_directed+is_multigraph (`#8032 <https://github.com/networkx/networkx/pull/8032>`_).
+- Fix all sphinx build warnings (`#8047 <https://github.com/networkx/networkx/pull/8047>`_).
+- Add a new gallery spring layout (`#8042 <https://github.com/networkx/networkx/pull/8042>`_).
+- Add note about cycles in ``maximum_flow()`` (`#8058 <https://github.com/networkx/networkx/pull/8058>`_).
+- Clarify subgraph node/edge order is not preserved (`#8069 <https://github.com/networkx/networkx/pull/8069>`_).
+- Fix typo in ``min_edge_cover`` docstring (`#8075 <https://github.com/networkx/networkx/pull/8075>`_).
 
 Maintenance
 -----------
@@ -184,11 +195,18 @@ Maintenance
 - Add linting for line length in docstrings and comments (`#7938 <https://github.com/networkx/networkx/pull/7938>`_).
 - Add sg_execution_times.rst to gitignore (`#8025 <https://github.com/networkx/networkx/pull/8025>`_).
 - Support both pydot v3 and pydot v4 (`#8027 <https://github.com/networkx/networkx/pull/8027>`_).
+- Update copyright license years (`#8038 <https://github.com/networkx/networkx/pull/8038>`_).
+- Fix all sphinx build warnings (`#8047 <https://github.com/networkx/networkx/pull/8047>`_).
+- Fix intermittent test failures in expander graph generator tests (`#8048 <https://github.com/networkx/networkx/pull/8048>`_).
+- Refactor tree_isomorphism to improve code reuse and readability (`#7929 <https://github.com/networkx/networkx/pull/7929>`_).
+- STY: Rm local variable remapping of heappush and heappop (`#8051 <https://github.com/networkx/networkx/pull/8051>`_).
+- TST: Minor improvements to layout test suite (`#8049 <https://github.com/networkx/networkx/pull/8049>`_).
+- Minor refactor to cleanup/improve matching test suite (`#8068 <https://github.com/networkx/networkx/pull/8068>`_).
 
 Contributors
 ------------
 
-54 authors added to this release (alphabetically):
+56 authors added to this release (alphabetically):
 
 - `@Bigstool <https://github.com/Bigstool>`_
 - `@Celelibi <https://github.com/Celelibi>`_
@@ -211,6 +229,7 @@ Contributors
 - dgpb (`@dg-pb <https://github.com/dg-pb>`_)
 - Elfarouk Harb (`@FaroukY <https://github.com/FaroukY>`_)
 - Erik Welch (`@eriknw <https://github.com/eriknw>`_)
+- Fei Pan (`@fei0319 <https://github.com/fei0319>`_)
 - Fernando Pérez (`@fperez <https://github.com/fperez>`_)
 - Gilles Peiffer (`@Peiffap <https://github.com/Peiffap>`_)
 - gmichaeli (`@GalMichaeli <https://github.com/GalMichaeli>`_)
@@ -227,6 +246,7 @@ Contributors
 - Morteza24 (`@Morteza-24 <https://github.com/Morteza-24>`_)
 - Mridul Seth (`@MridulS <https://github.com/MridulS>`_)
 - Nikolaos Chatzikonstantinou (`@createyourpersonalaccount <https://github.com/createyourpersonalaccount>`_)
+- Peter C Kroon (`@pckroon <https://github.com/pckroon>`_)
 - Po-Lin Cho (`@berlincho <https://github.com/berlincho>`_)
 - Qian Zhang (`@QianZhang19 <https://github.com/QianZhang19>`_)
 - Raj Pawar (`@Raj3110 <https://github.com/Raj3110>`_)
@@ -245,7 +265,7 @@ Contributors
 - Zhige Xin (`@xinzhige <https://github.com/xinzhige>`_)
 - 大王白小甫 (`@dawangbaixiaofu <https://github.com/dawangbaixiaofu>`_)
 
-29 reviewers added to this release (alphabetically):
+32 reviewers added to this release (alphabetically):
 
 - `@Celelibi <https://github.com/Celelibi>`_
 - `@Schwarf <https://github.com/Schwarf>`_
@@ -254,11 +274,14 @@ Contributors
 - Alejandro Candioti (`@amcandio <https://github.com/amcandio>`_)
 - Anthony Mahanna (`@aMahanna <https://github.com/aMahanna>`_)
 - Chuck Hastings (`@ChuckHastings <https://github.com/ChuckHastings>`_)
+- Colman Bouton (`@LorentzFactor <https://github.com/LorentzFactor>`_)
 - Dan Schult (`@dschult <https://github.com/dschult>`_)
 - Elfarouk Harb (`@FaroukY <https://github.com/FaroukY>`_)
 - Erik Welch (`@eriknw <https://github.com/eriknw>`_)
+- Fei Pan (`@fei0319 <https://github.com/fei0319>`_)
 - Gilles Peiffer (`@Peiffap <https://github.com/Peiffap>`_)
 - gmichaeli (`@GalMichaeli <https://github.com/GalMichaeli>`_)
+- Hiroki Hamaguchi (`@HirokiHamaguchi <https://github.com/HirokiHamaguchi>`_)
 - Jarrod Millman (`@jarrodmillman <https://github.com/jarrodmillman>`_)
 - Keith Hughitt (`@khughitt <https://github.com/khughitt>`_)
 - Matt Schwennesen (`@mjschwenne <https://github.com/mjschwenne>`_)

@@ -374,7 +374,7 @@ Creating a custom backend
 
     The ``get_info`` should return a dictionary with following key-value pairs:
         - ``backend_name`` : str or None
-            It is the name passed in the ``backend`` kwarg.
+            It is the name passed in the ``backend`` kwarg and must be a valid Python identifier.
         - ``project`` : str or None
             The name of your backend project.
         - ``package`` : str or None
@@ -423,7 +423,7 @@ Creating a custom backend
 3.  Defining a Backend Graph class
 
     The backend must create an object with an attribute ``__networkx_backend__`` that holds
-    a string with the entry point name::
+    a string with the entry point name, which must be a valid Python identifier::
 
         class BackendGraph:
             __networkx_backend__ = "backend_name"
@@ -431,9 +431,10 @@ Creating a custom backend
 
     Backend graph objects are also required to implement the methods ``is_directed()`` and
     ``is_multigraph()``. These methods return boolean values indicating the type of the graph:
-        - ``is_directed()`` should return True if the graph is directed, and False otherwise.
-        - ``is_multigraph()`` should return True if the graph allows multiple (parallel) edges
-          between node pairs, and False otherwise.
+
+    - ``is_directed()`` should return True if the graph is directed, and False otherwise.
+    - ``is_multigraph()`` should return True if the graph allows multiple (parallel) edges
+      between node pairs, and False otherwise.
 
     These methods are used by NetworkX utilities such as the ``@not_implemented_for`` decorator
     to determine whether a graph meets certain type constraints and to raise an error if the

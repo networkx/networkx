@@ -76,7 +76,7 @@ def strongly_connected_components(G):
     scc_found = set()
     scc_queue = []
     i = 0  # Preorder counter
-    neighbors = {v: iter(G[v]) for v in G}
+    neighbors = {v: iter(G._adj[v]) for v in G}
     for source in G:
         if source not in scc_found:
             queue = [source]
@@ -93,7 +93,7 @@ def strongly_connected_components(G):
                         break
                 if done:
                     lowlink[v] = preorder[v]
-                    for w in G[v]:
+                    for w in G._adj[v]:
                         if w not in scc_found:
                             if preorder[w] > preorder[v]:
                                 lowlink[v] = min([lowlink[v], lowlink[w]])
@@ -121,35 +121,37 @@ def kosaraju_strongly_connected_components(G, source=None):
     G : NetworkX Graph
         A directed graph.
 
-    Returns
-    -------
-    comp : generator of sets
-        A generator of sets of nodes, one for each strongly connected
-        component of G.
+    source : node, optional (default=None)
+        Specify a node from which to start the depth-first search.
+        If not provided, the algorithm will start from an arbitrary node.
+
+    Yields
+    ------
+    set
+        A set of all nodes in a strongly connected component of `G`.
 
     Raises
     ------
     NetworkXNotImplemented
-        If G is undirected.
+        If `G` is undirected.
+
+    NetworkXError
+        If `source` is not a node in `G`.
 
     Examples
     --------
-    Generate a sorted list of strongly connected components, largest first.
+    Generate a list of strongly connected components of a graph:
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
     >>> nx.add_cycle(G, [10, 11, 12])
-    >>> [
-    ...     len(c)
-    ...     for c in sorted(
-    ...         nx.kosaraju_strongly_connected_components(G), key=len, reverse=True
-    ...     )
-    ... ]
-    [4, 3]
+    >>> sorted(nx.kosaraju_strongly_connected_components(G), key=len, reverse=True)
+    [{0, 1, 2, 3}, {10, 11, 12}]
 
     If you only want the largest component, it's more efficient to
-    use max instead of sort.
+    use `max()` instead of `sorted()`.
 
-    >>> largest = max(nx.kosaraju_strongly_connected_components(G), key=len)
+    >>> max(nx.kosaraju_strongly_connected_components(G), key=len)
+    {0, 1, 2, 3}
 
     See Also
     --------
@@ -158,18 +160,24 @@ def kosaraju_strongly_connected_components(G, source=None):
     Notes
     -----
     Uses Kosaraju's algorithm.
-
     """
     post = list(nx.dfs_postorder_nodes(G.reverse(copy=False), source=source))
-
+    n = len(post)
     seen = set()
-    while post:
+    while post and len(seen) < n:
         r = post.pop()
         if r in seen:
             continue
-        c = nx.dfs_preorder_nodes(G, r)
-        new = {v for v in c if v not in seen}
-        seen.update(new)
+        new = {r}
+        seen.add(r)
+        stack = [r]
+        while stack and len(seen) < n:
+            v = stack.pop()
+            for w in G._adj[v]:
+                if w not in seen:
+                    new.add(w)
+                    seen.add(w)
+                    stack.append(w)
         yield new
 
 
