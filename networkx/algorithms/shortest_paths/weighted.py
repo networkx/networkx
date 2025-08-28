@@ -2412,11 +2412,11 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     # initialize fringe heap
     heappush(fringe[0], (0, next(c), source))
     heappush(fringe[1], (0, next(c), target))
-    # neighs for extracting correct neighbor information
+    # neighbors for extracting correct neighbor information
     if G.is_directed():
-        neighs = [G._succ, G._pred]
+        neighbors = [G._succ, G._pred]
     else:
-        neighs = [G._adj, G._adj]
+        neighbors = [G._adj, G._adj]
     # variables to hold shortest discovered path
     finaldist = None
     meetnode = None
@@ -2437,7 +2437,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
             # we have now discovered the shortest path
             return (finaldist, path(meetnode, 0) + path(preds[1][meetnode], 1))
 
-        for w, d in neighs[direction][v].items():
+        for w, d in neighbors[direction][v].items():
             # weight(v, w, d) for forward and weight(w, v, d) for back direction
             cost = weight(v, w, d) if direction == 0 else weight(w, v, d)
             if cost is None:
