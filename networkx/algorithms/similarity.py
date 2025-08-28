@@ -1894,8 +1894,7 @@ def panther_vector_similarity(
     for vi_idx, vi in enumerate(G.nodes):
         vi_paths = index_map_sets[vi]
 
-        for node in sorted(index_map_sets.keys()):
-            node_paths = index_map_sets[node]
+        for node, node_paths in index_map_sets.items():
             # Calculate similarity score
             common_path_count = len(vi_paths.intersection(node_paths))
             similarities[vi_idx, inv_node_map[node]] = (
