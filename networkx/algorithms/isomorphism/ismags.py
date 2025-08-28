@@ -284,134 +284,68 @@ class ISMAGS:
         self.graph = graph
         self.subgraph = subgraph
         self._symmetry_cache = cache
-        # Naming conventions are taken from the original paper. For your
-        # sanity:
+        # Naming conventions are taken from the original paper.
+        # For your sanity:
         #   sg: subgraph
         #   g: graph
         #   e: edge(s)
         #   n: node(s)
         # So: sgn means "subgraph nodes".
-        self._sgn_partition_ = None
-        self._sge_partition_ = None
-
-        self._sgn_colors_ = None
-        self._sge_colors_ = None
-
-        self._gn_partition_ = None
-        self._ge_partition_ = None
-
-        self._gn_colors_ = None
-        self._ge_colors_ = None
-
-        self._node_compat_ = None
-        self._edge_compat_ = None
 
         if node_match is None:
             self.node_equality = self._node_match_maker(lambda n1, n2: True)
-            self._sgn_partition_ = [set(self.subgraph.nodes)]
-            self._gn_partition_ = [set(self.graph.nodes)]
-            self._node_compat_ = {0: 0}
+            self._sgn_partition = [set(self.subgraph.nodes)]
+            self._gn_partition = [set(self.graph.nodes)]
+            self._sgn_color_to_gn_color = {0: 0}
         else:
             self.node_equality = self._node_match_maker(node_match)
-        if edge_match is None:
-            self.edge_equality = self._edge_match_maker(lambda e1, e2: True)
-            self._sge_partition_ = [set(self.subgraph.edges)]
-            self._ge_partition_ = [set(self.graph.edges)]
-            self._edge_compat_ = {0: 0}
-        else:
-            self.edge_equality = self._edge_match_maker(edge_match)
-
-    @property
-    def _sgn_partition(self):
-        if self._sgn_partition_ is None:
-
             def nodematch(node1, node2):
                 return self.node_equality(self.subgraph, node1, self.subgraph, node2)
 
-            self._sgn_partition_ = make_partition(self.subgraph.nodes, nodematch)
-        return self._sgn_partition_
-
-    @property
-    def _sge_partition(self):
-        if self._sge_partition_ is None:
-
-            def edgematch(edge1, edge2):
-                return self.edge_equality(self.subgraph, edge1, self.subgraph, edge2)
-
-            self._sge_partition_ = make_partition(self.subgraph.edges, edgematch)
-        return self._sge_partition_
-
-    @property
-    def _gn_partition(self):
-        if self._gn_partition_ is None:
-
+            self._sgn_partition = make_partition(self.subgraph.nodes, nodematch)
             def nodematch(node1, node2):
                 return self.node_equality(self.graph, node1, self.graph, node2)
 
-            self._gn_partition_ = make_partition(self.graph.nodes, nodematch)
-        return self._gn_partition_
+            self._gn_partition = make_partition(self.graph.nodes, nodematch)
 
-    @property
-    def _ge_partition(self):
-        if self._ge_partition_ is None:
+            self._sgn_color_to_gn_color = {}
+            for sgn_part_color, gn_part_color in itertools.product(
+                range(len(self._sgn_partition)), range(len(self._gn_partition))
+            ):
+                sgn = next(iter(self._sgn_partition[sgn_part_color]))
+                gn = next(iter(self._gn_partition[gn_part_color]))
+                if self.node_equality(self.subgraph, sgn, self.graph, gn):
+                    self._sgn_color_to_gn_color[sgn_part_color] = gn_part_color
 
+        if edge_match is None:
+            self.edge_equality = self._edge_match_maker(lambda e1, e2: True)
+            self._sge_partition = [set(self.subgraph.edges)]
+            self._ge_partition = [set(self.graph.edges)]
+            self._sge_color_to_ge_color = {0: 0}
+        else:
+            self.edge_equality = self._edge_match_maker(edge_match)
+            def edgematch(edge1, edge2):
+                return self.edge_equality(self.subgraph, edge1, self.subgraph, edge2)
+
+            self._sge_partition = make_partition(self.subgraph.edges, edgematch)
             def edgematch(edge1, edge2):
                 return self.edge_equality(self.graph, edge1, self.graph, edge2)
 
-            self._ge_partition_ = make_partition(self.graph.edges, edgematch)
-        return self._ge_partition_
+            self._ge_partition = make_partition(self.graph.edges, edgematch)
 
-    @property
-    def _sgn_colors(self):
-        if self._sgn_colors_ is None:
-            self._sgn_colors_ = partition_to_color(self._sgn_partition)
-        return self._sgn_colors_
+            self._sge_color_to_ge_color = {}
+            for sge_part_color, ge_part_color in itertools.product(
+                range(len(self._sge_partition)), range(len(self._ge_partition))
+            ):
+                sge = next(iter(self._sge_partition[sge_part_color]))
+                ge = next(iter(self._ge_partition[ge_part_color]))
+                if self.edge_equality(self.subgraph, sge, self.graph, ge):
+                    self._sge_color_to_ge_color[sge_part_color] = ge_part_color
 
-    @property
-    def _sge_colors(self):
-        if self._sge_colors_ is None:
-            self._sge_colors_ = EdgeLookup(partition_to_color(self._sge_partition))
-        return self._sge_colors_
-
-    @property
-    def _gn_colors(self):
-        if self._gn_colors_ is None:
-            self._gn_colors_ = partition_to_color(self._gn_partition)
-        return self._gn_colors_
-
-    @property
-    def _ge_colors(self):
-        if self._ge_colors_ is None:
-            self._ge_colors_ = EdgeLookup(partition_to_color(self._ge_partition))
-        return self._ge_colors_
-
-    @property
-    def _node_compatibility(self):
-        if self._node_compat_ is not None:
-            return self._node_compat_
-        self._node_compat_ = {}
-        for sgn_part_color, gn_part_color in itertools.product(
-            range(len(self._sgn_partition)), range(len(self._gn_partition))
-        ):
-            sgn = next(iter(self._sgn_partition[sgn_part_color]))
-            gn = next(iter(self._gn_partition[gn_part_color]))
-            if self.node_equality(self.subgraph, sgn, self.graph, gn):
-                self._node_compat_[sgn_part_color] = gn_part_color
-        return self._node_compat_
-
-    @property
-    def _edge_compatibility(self):
-        if self._edge_compat_ is not None:
-            return self._edge_compat_
-        self._edge_compat_ = {}
-        for sge_part_color, ge_part_color in itertools.product(
-            range(len(self._sge_partition)), range(len(self._ge_partition))
-        ):
-            sge = next(iter(self._sge_partition[sge_part_color]))
-            ge = next(iter(self._ge_partition[ge_part_color]))
-            if self.edge_equality(self.subgraph, sge, self.graph, ge):
-                self._edge_compat_[sge_part_color] = ge_part_color
-        return self._edge_compat_
+        self._sgn_colors = partition_to_color(self._sgn_partition)
+        self._sge_colors = EdgeLookup(partition_to_color(self._sge_partition))
+        self._gn_colors = partition_to_color(self._gn_partition)
+        self._ge_colors = EdgeLookup(partition_to_color(self._ge_partition))
 
     @staticmethod
     def _node_match_maker(cmp):
@@ -506,8 +440,8 @@ class ISMAGS:
             new_sg_count = []
             for (sge_color, sgn_color), count in sg_count.items():
                 try:
-                    ge_color = self._edge_compatibility[sge_color]
-                    gn_color = self._node_compatibility[sgn_color]
+                    ge_color = self._sge_color_to_ge_color[sge_color]
+                    gn_color = self._sgn_color_to_gn_color[sgn_color]
                 except KeyError:
                     pass
                 else:
@@ -660,8 +594,8 @@ class ISMAGS:
         candidates = defaultdict(set)
         for sgn in self.subgraph.nodes:
             sgn_color = self._sgn_colors[sgn]
-            if sgn_color in self._node_compatibility:
-                gn_color = self._node_compatibility[sgn_color]
+            if sgn_color in self._sgn_color_to_gn_color:
+                gn_color = self._sgn_color_to_gn_color[sgn_color]
                 candidates[sgn].add(frozenset(self._gn_partition[gn_color]))
             else:
                 candidates[sgn].add(frozenset())
@@ -772,8 +706,8 @@ class ISMAGS:
         Returns all edges in :attr:`graph` that have the same colour as the
         edge between sgn1 and sgn2 in :attr:`subgraph`.
         """
-        if sge_color in self._edge_compatibility:
-            ge_color = self._edge_compatibility[sge_color]
+        if sge_color in self._sge_color_to_ge_color:
+            ge_color = self._sge_color_to_ge_color[sge_color]
             g_edges = self._ge_partition[ge_color]
         else:
             g_edges = []
@@ -816,9 +750,9 @@ class ISMAGS:
                 # edge color must match when sgn2 connected to sgn
                 if sgn2 in sgn_nbrs:
                     sge_color = self._sge_colors[sgn, sgn2]
-                    if sge_color in self._edge_compatibility:
+                    if sge_color in self._sge_color_to_ge_color:
                         # Get all edges from gn of the correct color:
-                        ge_color = self._edge_compatibility[sge_color]
+                        ge_color = self._sge_color_to_ge_color[sge_color]
                         g_edges = self._ge_partition[ge_color]
                         gn2_options = {n for e in g_edges if gn in e for n in e}
                     else:
