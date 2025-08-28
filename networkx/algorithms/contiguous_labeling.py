@@ -356,7 +356,9 @@ def verify_contiguous_labeling(G: nx.Graph, labeling: Optional[List[Tuple[int, A
         bool: True if the labeling is contiguous, False otherwise
     """
     logger.info("Verifying contiguous labeling property")
-
+    if labeling is None:
+        print("No labeling provided.")
+        return
     # If the graph or labeling is empty, it's trivially contiguous
     if len(labeling) == 0:
         logger.debug("Empty labeling is trivially contiguous")
@@ -423,6 +425,9 @@ def show_labeling(labeling: Optional[List[Tuple[int, Any, Any]]]) -> None:
         labeling (List[Tuple[int, Any, Any]]): The labeling to display, where each tuple
                                               is (label, from_node, to_node)
     """
+    if labeling is None:
+        print("No labeling provided.")
+        return
     for label, i_minus, i_plus in labeling:
         print(f"Edge {label}: {i_minus}⁻ → {i_plus}⁺")
 
@@ -470,5 +475,6 @@ if __name__ == "__main__":
     print("Labeling:")
     show_labeling(labeling4)
     print(f"Is contiguous: {verify_contiguous_labeling(G4, labeling4)}")
+
 
 
