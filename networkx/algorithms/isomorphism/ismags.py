@@ -421,7 +421,12 @@ class ISMAGS:
         it has to nodes of a specific color.
         """
         cnt = Counter((edge_color[(node, nbr)], node_color[nbr]) for nbr in graph[node])
-        return cnt
+        if not graph.is_directed():
+            return (cnt,)
+        cnt_pred = Counter(
+            (edge_color[(nbr, node)], node_color[nbr]) for nbr in graph._pred[node]
+        )
+        return (cnt, cnt_pred)
 
     def _get_lookahead_candidates(self):
         """
@@ -433,22 +438,28 @@ class ISMAGS:
         g_counts = {}
         for gn in self.graph:
             g_counts[gn] = nbr_cnts(self.graph, gn, self._gn_colors, self._ge_colors)
+
         candidates = defaultdict(set)
         for sgn in self.subgraph:
             sg_count = nbr_cnts(self.subgraph, sgn, self._sgn_colors, self._sge_colors)
 
-            new_sg_count = []
-            for (sge_color, sgn_color), count in sg_count.items():
-                try:
-                    ge_color = self._sge_color_to_ge_color[sge_color]
-                    gn_color = self._sgn_color_to_gn_color[sgn_color]
-                except KeyError:
-                    pass
-                else:
-                    new_sg_count.append(((ge_color, gn_color), count))
+            new_sg_count = ([],) * len(sg_count)  # handle succ and pred or just adj
+            for sg_cnt, new_cnt in zip(sg_count, new_sg_count):
+                for (sge_color, sgn_color), count in sg_cnt.items():
+                    try:
+                        ge_color = self._sge_color_to_ge_color[sge_color]
+                        gn_color = self._sgn_color_to_gn_color[sgn_color]
+                    except KeyError:
+                        pass
+                    else:
+                        new_cnt.append(((ge_color, gn_color), count))
 
             for gn, g_count in g_counts.items():
-                if all(sg_count <= g_count[x] for x, sg_count in new_sg_count):
+                if all(
+                    sg_cnts <= g_cnts[x]
+                    for g_cnts, new_cnt in zip(g_count, new_sg_count)
+                    for x, sg_cnts in new_cnt
+                ):
                     # Valid candidate
                     candidates[sgn].add(gn)
         return candidates
