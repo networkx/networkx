@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>תיוג רציף מכוון לגרף</title>
+  <script src="https://unpkg.com/vis-network@9.1.2/standalone/umd/vis-network.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f4f4f4; padding:20px; }
+    .container { background:#fff; padding:30px; border-radius:10px; max-width:900px; margin:auto; box-shadow:0 0 10px rgba(0,0,0,0.2); }
+    textarea { width:100%; height:120px; direction:ltr; font-family:monospace; }
+    input[type="submit"], button, .btn-link {
+      padding:10px 20px; background:#007bff; color:#fff;
+      border:none; border-radius:6px; cursor:pointer; margin-top:10px; margin-left:10px;
+      text-decoration:none; display:inline-block;
+    }
+    input[type="number"] {
+      padding:6px; width:90px; margin-inline-start:8px; margin-inline-end:16px;
+    }
+    label.inline { display:inline-block; margin-top:10px; }
+    .graph-container { height:420px; border:1px solid #ccc; border-radius:6px; margin-top:20px; }
+    .error { color:red; font-weight:bold; }
+    pre { background:#eee; padding:10px; border-radius:6px; direction:ltr; white-space:pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>תיוג רציף מכוון לגרף</h1>
+
+    <!-- כפתור אודות -->
+    <a href="{{ url_for('about') }}" class="btn-link">אודות</a>
+
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+      <label>קשתות הגרף (a b):</label><br />
+      <textarea name="edges" id="edges-input" placeholder="1 2
+2 3
+3 1
+3 4">{{ edges_text|default('') }}</textarea><br />
+
+      <!-- Client-side random graph controls -->
+      <label class="inline">מס’ קודקודים:</label>
+      <input type="number" id="rand-nodes" value="6" min="2" max="50" />
+
+      <label class="inline">הסתברות קשת (p):</label>
+      <input type="number" id="rand-prob" value="0.35" min="0.05" max="0.95" step="0.05" />
+
+      <button type="button" id="btn-generate">צור גרף אקראי (לקוח)</button>
+
+      <br />
+      <input type="submit" value="חשב תיוג">
+    </form>
+
+    <div class="graph-container" id="network"></div>
+
+    {% if status_text %}
+      <hr />
+      <h3>סטטוס הגרף</h3>
+      <pre>{{ status_text }}</pre>
+    {% endif %}
+
+    {% if labeling_text %}
+      <h3>תיוג רציף</h3>
+      <pre>{{ labeling_text }}</pre>
+    {% endif %}
+  </div>
+
+  <script>
+    const edgesInput = document.getElementById("edges-input");
+    const container  = document.getElementById("network");
+
+    // From server after POST: [[u,v], ...] oriented order
+    const orderedEdges = {{ ordered_edges|tojson | safe }};
+
+    function drawGraph(edgeText, orientedOrder) {
+      const lines    = (edgeText || "").trim().split("\n").filter(Boolean);
+      const nodes    = new Set();
+      const edgesRaw = [];
+
+      for (const line of lines) {
+        const [a0, b0] = line.trim().split(/\s+/);
+        if (!a0 || !b0) continue;
+        const a = String(a0), b = String(b0);
+        nodes.add(a); nodes.add(b);
+        edgesRaw.push([a, b]);
+      }
+
+      const edges = edgesRaw.map(([a, b]) => {
+        let orderIdx = -1, oriented = null;
+        for (let i = 0; i < orientedOrder.length; i++) {
+          const [u, v] = orientedOrder[i].map(String);
+          if ((u === a && v === b) || (u === b && v === a)) { orderIdx = i; oriented = [u, v]; break; }
+        }
+
+        const labelText = (orderIdx >= 0) ? String(orderIdx + 1) : "";
+
+        return {
+          from: oriented ? oriented[0] : a,
+          to:   oriented ? oriented[1] : b,
+          label: labelText,
+          labelHighlightBold: false,
+          font: { size: 14, color: "black", align: "top" },
+          arrows: { },
+          smooth: { enabled: true, type: "curvedCW", roundness: 0.2 },
+          width: 2,
+          color: { color: orderIdx >= 0 ? "#ff0000" : "#aaaaaa" }
+        };
+      });
+
+      const data = {
+        nodes: Array.from(nodes).map(id => ({ id, label: id })),
+        edges
+      };
+
+      const options = {
+        nodes: {
+          shape: "dot", size: 16,
+          color: { background: "#007bff", border: "#0047ab" },
+          borderWidth: 2,
+          font: { size: 12, color: "#ffffff", vadjust: -30 }
+        },
+        edges: {},
+        physics: { stabilization: true }
+      };
+
+      new vis.Network(container, data, options);
+    }
+
+    drawGraph(edgesInput.value, orderedEdges);
+    edgesInput.addEventListener("input", () => drawGraph(edgesInput.value, []));
+
+    function generateRandomConnectedER(n = 6, p = 0.35, retries = 40) {
+      n = Math.max(2, Math.min(50, Math.floor(n)));
+      p = Math.max(0.01, Math.min(0.99, Number(p)));
+
+      function attempt() {
+        const nodes = Array.from({ length: n }, (_, i) => String(i + 1));
+        const edges = [];
+        for (let i = 0; i < n; i++) {
+          for (let j = i + 1; j < n; j++) {
+            if (Math.random() < p) edges.push([nodes[i], nodes[j]]);
+          }
+        }
+        const adj = Object.fromEntries(nodes.map(v => [v, []]));
+        edges.forEach(([u, v]) => { adj[u].push(v); adj[v].push(u); });
+        const seen = new Set();
+        const stack = [nodes[0]];
+        while (stack.length) {
+          const u = stack.pop();
+          if (seen.has(u)) continue;
+          seen.add(u);
+          for (const w of adj[u]) if (!seen.has(w)) stack.push(w);
+        }
+        return (seen.size === n) ? edges : null;
+      }
+
+      for (let k = 0; k < retries; k++) {
+        const edges = attempt();
+        if (edges) return edges;
+      }
+
+      const nodes = Array.from({ length: n }, (_, i) => String(i + 1));
+      const edges = [];
+      for (let i = 0; i < n; i++) {
+        edges.push([nodes[i], nodes[(i + 1) % n]]);
+      }
+      return edges;
+    }
+
+    const btnGen = document.getElementById("btn-generate");
+    const inpN   = document.getElementById("rand-nodes");
+    const inpP   = document.getElementById("rand-prob");
+
+    if (btnGen) {
+      btnGen.addEventListener("click", () => {
+        const n = parseInt(inpN.value, 10) || 6;
+        const p = parseFloat(inpP.value) || 0.35;
+        const edges = generateRandomConnectedER(n, p);
+        edgesInput.value = edges.map(([u, v]) => `${u} ${v}`).join("\n");
+        drawGraph(edgesInput.value, []);
+      });
+    }
+  </script>
+</body>
+</html>
