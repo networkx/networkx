@@ -980,7 +980,7 @@ def all_neighbors(graph, node):
     Raises
     ------
     NetworkXError
-        If the node is not in the graph.
+        If `node` is not in the graph.
 
     Examples
     --------
