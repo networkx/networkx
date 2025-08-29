@@ -955,20 +955,14 @@ class TestSimilarity:
         assert expected_map == index_map
 
     def test_one_node_one_loop_and_empty_graph(self):
-        g1 = nx.DiGraph()
-        g1.add_nodes_from([0])
-        g1.add_edges_from([(0, 0)])
-        g2 = nx.DiGraph()
-        ged = nx.graph_edit_distance(g1, g2)
-        assert ged == 2
+        G1 = nx.DiGraph([(0, 0)])
+        G2 = nx.DiGraph()
+        assert nx.graph_edit_distance(G1, G2) == 2
 
     def test_one_node_two_loops_and_empty_graph(self):
-        g1 = nx.MultiDiGraph()
-        g1.add_nodes_from([0])
-        g1.add_edges_from([(0, 0), (0, 0)])
-        g2 = nx.DiGraph()
-        ged = nx.graph_edit_distance(g1, g2)
-        assert ged == 3
+        G1 = nx.MultiDiGraph([(0, 0), (0, 0)])
+        assert nx.graph_edit_distance(G1, nx.DiGraph()) == 3
+        assert nx.graph_edit_distance(G1, nx.MultiDiGraph()) == 3
 
     def test_symmetry_with_custom_matching(self):
         """G2 has edge (a,b) and G3 has edge (a,a) but node order for G2 is (a,b)
