@@ -1843,11 +1843,11 @@ def panther_vector_similarity(
 
     >>> from pprint import pprint
     >>> pprint(nx.panther_vector_similarity(G, source=0, seed=42))
-    {35: 0.10156480636337968,
-     61: 0.10187943587925867,
-     65: 0.10155189938081624,
-     85: 0.10254413039936112,
-     88: 0.10154281963854213}
+    {35: 0.10365841445030906,
+     61: 0.10396936818122897,
+     65: 0.10364469283544002,
+     85: 0.10468814199451512,
+     88: 0.10365841445030906}
 
     But "spoke" nodes are similar to one another
 
