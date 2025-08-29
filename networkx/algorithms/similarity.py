@@ -1766,7 +1766,7 @@ def panther_vector_similarity(
     G,
     source,
     *,
-    D=50,
+    D=15,
     k=5,
     path_length=5,
     c=0.5,
@@ -1803,7 +1803,8 @@ def panther_vector_similarity(
         Source node for which to find the top ``k`` similar other nodes
     D : int
         The number of similarity scores to use (in descending order)
-        for each feature vector. Defaults to 50 per [1]_
+        for each feature vector. Defaults to 15. Note that the original paper
+        used D=50 [1]_, but KDTree is optimized for lower dimensions.
     k : int
         The number of most similar nodes to return
     path_length : int
@@ -1855,6 +1856,12 @@ def panther_vector_similarity(
     5
     >>> all(similarity == 1.0 for similarity in result.values())
     True
+
+    Notes
+    -----
+    Results may be nondeterministic when feature vectors have the same distances,
+    as the KDTree's internal tie-breaking behavior can vary between runs.
+    Using the same ``seed`` parameter ensures reproducible results.
 
     References
     ----------
