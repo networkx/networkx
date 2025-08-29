@@ -279,6 +279,9 @@ class ISMAGS:
         cache: collections.abc.Mapping
             A cache used for caching graph symmetries.
         """
+        if graph.is_directed() != subgraph.is_directed():
+            raise ValueError("Directed and undirected graphs cannot be isomorphic.")
+
         # TODO: graph and subgraph setter methods that invalidate the caches.
         # TODO: allow for precomputed partitions and colors
         self.graph = graph
@@ -291,6 +294,8 @@ class ISMAGS:
         #   e: edge(s)
         #   n: node(s)
         # So: sgn means "subgraph nodes".
+        self.gn_ID_to_node = list(graph)
+        self.gn_node_to_ID = {n: id for id, n in enumerate(graph)}
 
         if node_match is None:
             self.node_equality = self._node_match_maker(lambda n1, n2: True)
@@ -403,10 +408,10 @@ class ISMAGS:
             candidates[sgn].add(frozenset(la_cands))
 
         if any(candidates.values()):
-            # Choose start node based on heuristic of min # of candidates
-            # heuristic is length of smallest set in candidates list of sets.
-            # Using smallest len avoids computing the intersection of the sets
-            # for all nodes.
+            # Choose start node based on a heuristic for the min # of candidates
+            # Heuristic here is length of smallest frozenset in candidates' set
+            # of frozensets for that node. Using the smallest length avoids
+            # avoids computing the intersection of the frosensets for each node.
             start_sgn = min(candidates, key=lambda n: min(len(x) for x in candidates[n]))
             candidates[start_sgn] = (frozenset.intersection(*candidates[start_sgn]),)
             yield from self._map_nodes(start_sgn, candidates, constraints)
@@ -430,16 +435,16 @@ class ISMAGS:
 
     def _get_lookahead_candidates(self):
         """
-        Returns a mapping of {subgraph node: collection of graph nodes} for
-        which the graph nodes are feasible candidates for the subgraph node, as
-        determined by looking ahead one edge.
+        Returns a mapping of {subgraph node: set of graph nodes} for
+        which the graph nodes are feasible mapping candidates for the
+        subgraph node, as determined by looking ahead one edge.
         """
         nbr_cnts = self._find_neighbor_color_count
         g_counts = {}
         for gn in self.graph:
             g_counts[gn] = nbr_cnts(self.graph, gn, self._gn_colors, self._ge_colors)
 
-        candidates = defaultdict(set)
+        lookahead_candidates = defaultdict(set)
         for sgn in self.subgraph:
             sg_count = nbr_cnts(self.subgraph, sgn, self._sgn_colors, self._sge_colors)
 
@@ -461,8 +466,8 @@ class ISMAGS:
                     for x, sg_cnts in new_cnt
                 ):
                     # Valid candidate
-                    candidates[sgn].add(gn)
-        return candidates
+                    lookahead_candidates[sgn].add(gn)
+        return lookahead_candidates
 
     def largest_common_subgraph(self, symmetry=True):
         """
@@ -601,6 +606,19 @@ class ISMAGS:
     def _find_nodecolor_candidates(self):
         """
         Per node in subgraph find all nodes in graph that have the same color.
+        Stored as a dict-of-set-of-frozenset. The dict is keyed by node to a
+        collection of frozensets of graph nodes. Each of these frozensets are
+        a restriction. The node can be mapped only to nodes in the frosenset.
+        Thus it must be mapped to nodes in the intersection of all these sets.
+        We store the sets to delay taking the intersection of them. This helps
+        for two reasons: Firstly any duplicate restriction sets can be ignored;
+        Secondly, some nodes will not need the intersection to be constructed.
+        Note: a dict-of-list-of-set would store duplicate sets in the list and
+        we want to avoid that. But I wonder if checking hash/equality when `add`ing
+        removes the benefit of avoiding computing intersections.
+
+        TODO: track down how best to store mapping candidates by node to a bunch
+        of sets that each image node must belong to.
         """
         candidates = defaultdict(set)
         for sgn in self.subgraph.nodes:
@@ -635,7 +653,7 @@ class ISMAGS:
         node_edge_count = {}
         for u, nbrs in graph.adjacency():
             # Count per node the edges by edge-color and neighbor-node-color
-            counts = Counter((edge_colors[(u, v)], node_colors[v]) for v in nbrs)
+            counts = Counter((edge_colors[u, v], node_colors[v]) for v in nbrs)
             node_edge_count[u] = node_colors[u], set(counts.items())
         return node_edge_count
 
@@ -727,44 +745,76 @@ class ISMAGS:
     def _map_nodes(self, sgn, candidates, constraints, mapping=None, to_be_mapped=None):
         """
         Find all subgraph isomorphisms honoring constraints.
+        The collection `candidates` is stored as a dict-of-set-of-frozenset. The dict is keyed by node to a
         """
-        if mapping is None:
-            mapping = {}
-        else:
-            mapping = mapping.copy()
         if to_be_mapped is None:
             to_be_mapped = set(self.subgraph.nodes)
+        if sgn not in to_be_mapped:
+            return
 
-        # Note, we modify candidates here. Doesn't seem to affect results, but
-        # remember this.
-        # candidates = candidates.copy()
+        if mapping is None:
+            mapping = {}
+        elif sgn in mapping:
+            print("sgn in mapping", mapping, sgn)
+            assert False
+            return
+#        else:
+#            mapping = mapping.copy()
+        existing_map_images = set(mapping.values())
+        existing_map_keys = mapping.keys() | {sgn}
+
+        # shortcuts for speed
+        G, SG = self.graph._adj, self.subgraph._adj
+        gn_node_to_ID = self.gn_node_to_ID
+        gn_ID_to_node = self.gn_ID_to_node
+        self_ge_partition = self._ge_partition
+        self_sge_colors = self._sge_colors
+        self_sge_color_to_ge_color = self._sge_color_to_ge_color
+
+        # Note that we don't copy candidates here. This means we leak
+        # information between the recursive branches. This is intentional!
+        # Specifically, we modify candidates here. That's OK because we substitute
+        # the set of frozensets with a set containing the frozenset intersection.
+        # So, it doesn't change the membership rule or the length rule for sorting.
+        # Membership: any candidate must be an element of each of the frozensets.
+        # Length: length of the intersection set. Use heuristic min(len of frozensets).
+        # This intersection improves future length heuristics which can only occur
+        # after this recursive call finishes. But it means future additional
+        # restriction frozensets that duplicate previous ones are not ignored.
         sgn_candidates = frozenset.intersection(*candidates[sgn])
-        candidates[sgn] = frozenset([sgn_candidates])
+        candidates[sgn] = set([sgn_candidates])
         for gn in sgn_candidates:
             # We're going to try to map sgn to gn.
-            if gn in mapping.values() or sgn not in to_be_mapped:
+            if gn in existing_map_images:
                 # gn is already mapped to something
                 continue  # pragma: no cover
 
             # REDUCTION and COMBINATION
+            if sgn in mapping:
+                print("sgn in mapping", mapping, sgn)
+                assert False
             mapping[sgn] = gn
             # BASECASE
-            if to_be_mapped == set(mapping.keys()):
+            if to_be_mapped == existing_map_keys:
                 yield {v: k for k, v in mapping.items()}
+                del mapping[sgn]  # allows us to not copy mapping each recursion
                 continue
-            left_to_map = to_be_mapped - set(mapping.keys())
+            left_to_map = to_be_mapped - existing_map_keys
 
+            # Now we copy the candidates dict. But it is not a deepcopy.
+            # The dict-of-sets-of-frozensets point to the same sets of frozensets.
+            # The sets of frozensets are changed below when assigning to cc[sgn2].
             cc = candidates.copy()
-            sgn_nbrs = self.subgraph[sgn]
-            not_gn_nbrs = set(self.graph) - self.graph._adj[gn].keys()
+            sgn_nbrs = SG[sgn]
+            not_gn_nbrs = G.keys() - G[gn].keys()
             for sgn2 in left_to_map:
                 # edge color must match when sgn2 connected to sgn
                 if sgn2 in sgn_nbrs:
-                    sge_color = self._sge_colors[sgn, sgn2]
-                    if sge_color in self._sge_color_to_ge_color:
+                    sge_color = self_sge_colors[sgn, sgn2]
+                    if sge_color in self_sge_color_to_ge_color:
                         # Get all edges from gn of the correct color:
-                        ge_color = self._sge_color_to_ge_color[sge_color]
-                        g_edges = self._ge_partition[ge_color]
+                        ge_color = self_sge_color_to_ge_color[sge_color]
+                        g_edges = self_ge_partition[ge_color]
                         gn2_options = {n for e in g_edges if gn in e for n in e}
                     else:
                         gn2_options = set()
@@ -774,31 +824,36 @@ class ISMAGS:
                 # initial candidate lists made by find_subgraphs
 
                 # Add gn2_options to the right collection. Since cc
-                # is a dict of frozensets of frozensets of node indices it's
-                # a bit clunky.
+                # is a dict-of-sets-of-frozensets of node indices it's
+                # a bit clunky. We can't do .add without changing the original,
+                # and + also doesn't work. We could do |, but union to be clearer.
                 cc[sgn2] = cc[sgn2].union({frozenset(gn2_options)})
 
             for sgn2 in left_to_map:
                 # symmetry must match
                 if (sgn, sgn2) in constraints:
-                    gn2_options = {gn2 for gn2 in self.graph if gn2 > gn}
+                    gn2_options = set(self.gn_ID_to_node[self.gn_node_to_ID[gn] + 1:])
+                    # gn2_options = {gn2 for gn2 in self.graph if gn2 > gn}
                 elif (sgn2, sgn) in constraints:
-                    gn2_options = {gn2 for gn2 in self.graph if gn2 < gn}
+                    gn2_options = set(self.gn_ID_to_node[:self.gn_node_to_ID[gn]])
+                    # gn2_options = {gn2 for gn2 in self.graph if gn2 < gn}
                 else:
                     continue  # pragma: no cover
-                cc[sgn2].add(frozenset(gn2_options))
+                # same gn2_options comment here. Use union.
+                cc[sgn2] = cc[sgn2].union({frozenset(gn2_options)})
 
             # The next node is the one that is unmapped and has fewest candidates
+            # Use the heuristic of the min size of the frosensets rather than
+            # intersection of all frozensets to delay computing intersections.
             next_sgn = min(left_to_map, key=lambda n: min(len(x) for x in cc[n]))
             yield from self._map_nodes(next_sgn, cc, constraints, mapping, to_be_mapped)
-            # Unmap sgn-gn. Strictly not necessary since it'd get overwritten
-            # when making a new mapping for sgn.
-            # del mapping[sgn]
+            del mapping[sgn]  # allows us to not copy mapping each recursion
 
     def _largest_common_subgraph(self, candidates, constraints, to_be_mapped=None):
         """
         Find all largest common subgraphs honoring constraints.
         """
+        # to_be_mapped is a set of frozensets of subgraph nodes
         if to_be_mapped is None:
             to_be_mapped = {frozenset(self.subgraph.nodes)}
 
@@ -1061,13 +1116,12 @@ class ISMAGS:
         mapped = {
             k
             for top, bottom in zip(top_partition, bottom_partition)
-            for k in top
             if len(top) == 1 and top == bottom
+            for k in top
         }
         ks = {k for k in graph.nodes if k < node}
         # Have all nodes with ID < node been mapped?
-        find_coset = ks <= mapped and node not in cosets
-        if find_coset:
+        if ks <= mapped and node not in cosets:
             # Find the orbit that contains node
             for orbit in orbits:
                 if node in orbit:
