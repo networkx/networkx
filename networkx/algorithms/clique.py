@@ -297,7 +297,7 @@ def find_cliques(G, nodes=None):
         pass
 
 
-# TODO Should this also be not implemented for directed graphs?
+@not_implemented_for("directed")
 @nx._dispatchable
 def find_cliques_recursive(G, nodes=None):
     """Returns all maximal cliques in a graph.
@@ -318,6 +318,7 @@ def find_cliques_recursive(G, nodes=None):
     Parameters
     ----------
     G : NetworkX graph
+        An undirected graph.
 
     nodes : list, optional (default=None)
         If provided, only yield *maximal cliques* containing all nodes in `nodes`.
@@ -333,6 +334,9 @@ def find_cliques_recursive(G, nodes=None):
 
     Raises
     ------
+    NetworkXNotImplemented
+        If `G` is directed.
+
     ValueError
         If `nodes` is not a clique.
 
