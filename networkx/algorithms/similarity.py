@@ -758,7 +758,7 @@ def optimize_edit_paths(
         # this will stop self-edges on the first node being automatically deleted
         # even when a substitution is the better option
 
-        substitution_possible = len(pending_g) != 0 and len(pending_h) != 0
+        substitution_possible = M and N
         at_least_one_node_match = matched_uv is None or len(matched_uv) == 0
         if at_least_one_node_match and substitution_possible:
             g_ind = []
