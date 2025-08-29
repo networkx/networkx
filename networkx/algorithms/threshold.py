@@ -329,7 +329,7 @@ def threshold_graph(creation_sequence, create_using=None):
         cs = uncompact(creation_sequence)
         ci = list(enumerate(cs))
     else:
-        print("not a valid creation sequence type")
+        raise ValueError("not a valid creation sequence")
         return None
 
     G = nx.empty_graph(0, create_using)
@@ -546,9 +546,6 @@ def degree_correlation(creation_sequence):
     ds = degree_sequence(cs)
     for i, sym in enumerate(cs):
         if sym == "d":
-            if i != rdi[0]:
-                print("Logic error in degree_correlation", i, rdi)
-                raise ValueError
             rdi.pop(0)
         degi = ds[i]
         for dj in rdi:
