@@ -107,8 +107,6 @@ def run_all_random_functions(seed):
     )
     t(nx.algorithms.coloring.strategy_random_sequential, G, colors, seed=seed)
 
-    cs = ["d", "i", "i", "d", "d", "i"]
-    t(threshold.swap_d, cs, seed=seed)
     t(nx.configuration_model, deg_sequence, seed=seed)
     t(
         nx.directed_configuration_model,
