@@ -330,7 +330,6 @@ def threshold_graph(creation_sequence, create_using=None):
         ci = list(enumerate(cs))
     else:
         raise ValueError("not a valid creation sequence")
-        return None
 
     G = nx.empty_graph(0, create_using)
     if G.is_directed():
