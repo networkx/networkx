@@ -44,9 +44,8 @@ def test_find_cliques2(find_clique_fn):
     assert sorted(map(sorted, hcl)) == expected
 
 
-def test_find_cliques_trivial(find_clique_fn):
-    TG = nx.Graph()
-    assert list(find_clique_fn(TG)) == []
+def test_find_cliques_null(find_clique_fn):
+    assert list(find_clique_fn(nx.null_graph())) == []
 
 
 def test_find_cliques_not_clique(G, find_clique_fn):
@@ -54,8 +53,9 @@ def test_find_cliques_not_clique(G, find_clique_fn):
         list(find_clique_fn(G, [2, 6, 4, 1]))
 
 
-def test_find_cliques_directed(find_clique_fn):
-    DG = nx.path_graph(4, create_using=nx.DiGraph)
+@pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
+def test_find_cliques_directed(find_clique_fn, graph_type):
+    DG = nx.path_graph(4, create_using=graph_type)
     msg = "not implemented for directed"
     with pytest.raises(nx.NetworkXNotImplemented, match=msg):
         list(find_clique_fn(DG))
