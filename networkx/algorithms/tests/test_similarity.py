@@ -964,6 +964,10 @@ class TestSimilarity:
         assert nx.graph_edit_distance(G1, nx.DiGraph()) == 3
         assert nx.graph_edit_distance(G1, nx.MultiDiGraph()) == 3
 
+    def test_two_directed_loops(self):
+        G = nx.DiGraph([(0, 0), (1, 1)])
+        assert nx.graph_edit_distance(G, nx.DiGraph()) == 4
+
     def test_symmetry_with_custom_matching(self):
         """G2 has edge (a,b) and G3 has edge (a,a) but node order for G2 is (a,b)
         while for G3 it is (b,a)"""
