@@ -2461,7 +2461,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def johnson(G, weight="weight"):
+def johnson(G, weight="weight", ret="path"):
     r"""Uses Johnson's Algorithm to compute shortest paths.
 
     Johnson's Algorithm finds a shortest path between each pair of
@@ -2484,10 +2484,20 @@ def johnson(G, weight="weight"):
         dictionary of edge attributes for that edge. The function must
         return a number.
 
+    ret : string
+        Controls what to return. View Returns for detail.
+
     Returns
     -------
-    distance : dictionary
+    paths : dictionary
         Dictionary, keyed by source and target, of shortest paths.
+
+    dist: dictionary
+        Dictionary, keyed by source and target, of shortest paths distance.
+
+    When ret is set to "path", only paths is returned.
+    When ret is set to "dist", only dist is returned.
+    When ret is set to "all", both paths and dist are returned.
 
     Examples
     --------
@@ -2523,6 +2533,9 @@ def johnson(G, weight="weight"):
     all_pairs_bellman_ford_path_length
 
     """
+    if ret != "path" and ret != "dist" and ret != "all":
+        raise ValueError("Wrong return type")
+
     dist = {v: 0 for v in G}
     pred = {v: [] for v in G}
     weight = _weight_function(G, weight)
@@ -2535,9 +2548,32 @@ def johnson(G, weight="weight"):
     def new_weight(u, v, d):
         return weight(u, v, d) + dist_bellman[u] - dist_bellman[v]
 
-    def dist_path(v):
-        paths = {v: [v]}
-        _dijkstra(G, v, new_weight, paths=paths)
-        return paths
+    paths = None
+    if ret == "path" or ret == "all":
+        paths = {}
 
-    return {v: dist_path(v) for v in G}
+    dist = None
+    if ret == "dist" or ret == "all":
+        dist = {}
+
+    def dist_path(v):
+        path_from_v = None
+        if paths is not None:
+            paths[v] = {v: [v]}
+            path_from_v = paths[v]
+        dist_from_v = _dijkstra(G, v, new_weight, paths=path_from_v)
+        if dist is not None:
+            dist[v] = {
+                target: value - dist_bellman[v] + dist_bellman[target]
+                for target, value in dist_from_v.items()
+            }
+
+    for v in G:
+        dist_path(v)
+
+    if ret == "path":
+        return paths
+    elif ret == "dist":
+        return dist
+    else:
+        return paths, dist
