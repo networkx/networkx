@@ -4,77 +4,68 @@ import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 
 
+@pytest.fixture(params=[nx.find_cliques, nx.find_cliques_recursive])
+def find_clique_fn(request):
+    return request.param
+
+
+@pytest.fixture
+def G():
+    z = [3, 4, 3, 4, 2, 4, 2, 1, 1, 1, 1]
+    return cnlti(nx.generators.havel_hakimi_graph(z), first_label=1)
+
+
+@pytest.mark.parametrize(
+    ("nodes", "expected"),
+    [
+        (None, [[2, 6, 1, 3], [2, 6, 4], [5, 4, 7], [8, 9], [10, 11]]),
+        ([2], [[2, 6, 1, 3], [2, 6, 4]]),
+        ([2, 3], [[2, 6, 1, 3]]),
+        ([2, 6, 4], [[2, 6, 4]]),
+    ],
+)
+def test_find_cliques(G, find_clique_fn, nodes, expected):
+    cl = list(find_clique_fn(G, nodes))
+    assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
+
+
+def test_selfloops(G, find_clique_fn):
+    G.add_edge(1, 1)
+    cl = list(find_clique_fn(G))
+    expected = [[2, 6, 1, 3], [2, 6, 4], [5, 4, 7], [8, 9], [10, 11]]
+    assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
+
+
+def test_find_cliques2(find_clique_fn):
+    H = nx.relabel_nodes(nx.complete_graph(6), {i: i + 1 for i in range(6)})
+    H.remove_edges_from([(2, 6), (2, 5), (2, 4), (1, 3), (5, 3)])
+    hcl = list(find_clique_fn(H))
+    expected = [[1, 2], [1, 4, 5, 6], [2, 3], [3, 4, 6]]
+    assert sorted(map(sorted, hcl)) == expected
+
+
+def test_find_cliques_trivial(find_clique_fn):
+    TG = nx.Graph()
+    assert list(find_clique_fn(TG)) == []
+
+
+def test_find_cliques_not_clique(G, find_clique_fn):
+    with pytest.raises(ValueError, match="do not form a clique"):
+        list(find_clique_fn(G, [2, 6, 4, 1]))
+
+
+def test_find_cliques_directed(find_clique_fn):
+    DG = nx.path_graph(4, create_using=nx.DiGraph)
+    msg = "not implemented for directed"
+    with pytest.raises(nx.NetworkXNotImplemented, match=msg):
+        list(find_clique_fn(DG))
+
+
 class TestCliques:
     def setup_method(self):
         z = [3, 4, 3, 4, 2, 4, 2, 1, 1, 1, 1]
         self.G = cnlti(nx.generators.havel_hakimi_graph(z), first_label=1)
         self.cl = list(nx.find_cliques(self.G))
-        H = nx.complete_graph(6)
-        H = nx.relabel_nodes(H, {i: i + 1 for i in range(6)})
-        H.remove_edges_from([(2, 6), (2, 5), (2, 4), (1, 3), (5, 3)])
-        self.H = H
-
-    def test_find_cliques1(self):
-        cl = list(nx.find_cliques(self.G))
-        rcl = nx.find_cliques_recursive(self.G)
-        expected = [[2, 6, 1, 3], [2, 6, 4], [5, 4, 7], [8, 9], [10, 11]]
-        assert sorted(map(sorted, cl)) == sorted(map(sorted, rcl))
-        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
-
-    def test_selfloops(self):
-        self.G.add_edge(1, 1)
-        cl = list(nx.find_cliques(self.G))
-        rcl = list(nx.find_cliques_recursive(self.G))
-        assert set(map(frozenset, cl)) == set(map(frozenset, rcl))
-        answer = [{2, 6, 1, 3}, {2, 6, 4}, {5, 4, 7}, {8, 9}, {10, 11}]
-        assert len(answer) == len(cl)
-        assert all(set(c) in answer for c in cl)
-
-    def test_find_cliques2(self):
-        hcl = list(nx.find_cliques(self.H))
-        assert sorted(map(sorted, hcl)) == [[1, 2], [1, 4, 5, 6], [2, 3], [3, 4, 6]]
-
-    def test_find_cliques3(self):
-        # all cliques are [[2, 6, 1, 3], [2, 6, 4], [5, 4, 7], [8, 9], [10, 11]]
-
-        cl = list(nx.find_cliques(self.G, [2]))
-        rcl = nx.find_cliques_recursive(self.G, [2])
-        expected = [[2, 6, 1, 3], [2, 6, 4]]
-        assert sorted(map(sorted, rcl)) == sorted(map(sorted, expected))
-        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
-
-        cl = list(nx.find_cliques(self.G, [2, 3]))
-        rcl = nx.find_cliques_recursive(self.G, [2, 3])
-        expected = [[2, 6, 1, 3]]
-        assert sorted(map(sorted, rcl)) == sorted(map(sorted, expected))
-        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
-
-        cl = list(nx.find_cliques(self.G, [2, 6, 4]))
-        rcl = nx.find_cliques_recursive(self.G, [2, 6, 4])
-        expected = [[2, 6, 4]]
-        assert sorted(map(sorted, rcl)) == sorted(map(sorted, expected))
-        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
-
-        cl = list(nx.find_cliques(self.G, [2, 6, 4]))
-        rcl = nx.find_cliques_recursive(self.G, [2, 6, 4])
-        expected = [[2, 6, 4]]
-        assert sorted(map(sorted, rcl)) == sorted(map(sorted, expected))
-        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
-
-        with pytest.raises(ValueError):
-            list(nx.find_cliques(self.G, [2, 6, 4, 1]))
-
-        with pytest.raises(ValueError):
-            list(nx.find_cliques_recursive(self.G, [2, 6, 4, 1]))
-
-    def test_find_cliques_directed(self):
-        G = nx.path_graph(4, create_using=nx.DiGraph)
-        msg = "not implemented for directed"
-        with pytest.raises(nx.NetworkXNotImplemented, match=msg):
-            list(nx.find_cliques(G))
-
-        with pytest.raises(nx.NetworkXNotImplemented, match=msg):
-            list(nx.find_cliques_recursive(G))
 
     def test_number_of_cliques(self):
         G = self.G
@@ -201,15 +192,6 @@ class TestCliques:
         H1 = nx.relabel_nodes(H1, {-v: v - 1 for v in range(1, 6)})
         H2 = nx.make_max_clique_graph(G)
         assert H1.adj == H2.adj
-
-    def test_directed(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
-            next(nx.find_cliques(nx.DiGraph()))
-
-    def test_find_cliques_trivial(self):
-        G = nx.Graph()
-        assert sorted(nx.find_cliques(G)) == []
-        assert sorted(nx.find_cliques_recursive(G)) == []
 
     def test_make_max_clique_graph_create_using(self):
         G = nx.Graph([(1, 2), (3, 1), (4, 1), (5, 6)])
