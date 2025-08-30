@@ -61,16 +61,13 @@ def test_find_cliques_directed(find_clique_fn):
         list(find_clique_fn(DG))
 
 
-def test_number_of_cliques(G):
-    cl = list(nx.find_cliques(G))
-    assert nx.number_of_cliques(G, 1) == 1
-    assert list(nx.number_of_cliques(G, [1]).values()) == [1]
-    assert list(nx.number_of_cliques(G, [1, 2]).values()) == [1, 2]
-    assert nx.number_of_cliques(G, [1, 2]) == {1: 1, 2: 2}
-    assert nx.number_of_cliques(G, 2) == 2
+@pytest.fixture
+def cl(G):
+    return list(nx.find_cliques(G))
 
-    noc = nx.number_of_cliques(G)
-    assert noc == {
+
+def test_number_of_cliques_default_args(G, cl):
+    expected = {
         1: 1,
         2: 2,
         3: 1,
@@ -83,58 +80,32 @@ def test_number_of_cliques(G):
         10: 1,
         11: 1,
     }
-
-    noc = nx.number_of_cliques(G, nodes=list(G))
-    assert noc == {
-        1: 1,
-        2: 2,
-        3: 1,
-        4: 2,
-        5: 1,
-        6: 2,
-        7: 1,
-        8: 1,
-        9: 1,
-        10: 1,
-        11: 1,
-    }
-    assert nx.number_of_cliques(G, nodes=[2, 3, 4]) == {2: 2, 3: 1, 4: 2}
-    assert nx.number_of_cliques(G, cliques=cl) == {
-        1: 1,
-        2: 2,
-        3: 1,
-        4: 2,
-        5: 1,
-        6: 2,
-        7: 1,
-        8: 1,
-        9: 1,
-        10: 1,
-        11: 1,
-    }
-    assert nx.number_of_cliques(G, list(G), cliques=cl) == {
-        1: 1,
-        2: 2,
-        3: 1,
-        4: 2,
-        5: 1,
-        6: 2,
-        7: 1,
-        8: 1,
-        9: 1,
-        10: 1,
-        11: 1,
-    }
+    assert nx.number_of_cliques(G) == expected
+    assert nx.number_of_cliques(G, nodes=list(G)) == expected
+    assert nx.number_of_cliques(G, cliques=cl) == expected
+    assert nx.number_of_cliques(G, nodes=list(G), cliques=cl) == expected
 
 
-def test_node_clique_number(G):
-    cl = list(nx.find_cliques(G))
-    assert nx.node_clique_number(G, 1) == 4
-    assert list(nx.node_clique_number(G, [1]).values()) == [4]
-    assert list(nx.node_clique_number(G, [1, 2]).values()) == [4, 4]
-    assert nx.node_clique_number(G, [1, 2]) == {1: 4, 2: 4}
-    assert nx.node_clique_number(G, 1) == 4
-    assert nx.node_clique_number(G) == {
+@pytest.mark.parametrize(
+    ("nodes", "expected"),
+    [
+        (1, 1),
+        ([1], {1: 1}),
+        ([1, 2], {1: 1, 2: 2}),
+        (2, 2),
+        (
+            [2, 3, 4],
+            {2: 2, 3: 1, 4: 2},
+        ),
+    ],
+)
+def test_number_of_cliques_nodes(G, cl, nodes, expected):
+    assert nx.number_of_cliques(G, nodes=nodes) == expected
+    assert nx.number_of_cliques(G, nodes=nodes, cliques=cl) == expected
+
+
+def test_node_clique_number_default_args(G, cl):
+    expected = {
         1: 4,
         2: 4,
         3: 4,
@@ -147,21 +118,18 @@ def test_node_clique_number(G):
         10: 2,
         11: 2,
     }
-    assert nx.node_clique_number(G, cliques=cl) == {
-        1: 4,
-        2: 4,
-        3: 4,
-        4: 3,
-        5: 3,
-        6: 4,
-        7: 3,
-        8: 2,
-        9: 2,
-        10: 2,
-        11: 2,
-    }
-    assert nx.node_clique_number(G, [1, 2], cliques=cl) == {1: 4, 2: 4}
-    assert nx.node_clique_number(G, 1, cliques=cl) == 4
+    assert nx.node_clique_number(G) == expected
+    assert nx.node_clique_number(G, nodes=list(G)) == expected
+    assert nx.node_clique_number(G, cliques=cl) == expected
+    assert nx.node_clique_number(G, nodes=list(G), cliques=cl) == expected
+
+
+@pytest.mark.parametrize(
+    ("nodes", "expected"), [(1, 4), ([1], {1: 4}), ([1, 2], {1: 4, 2: 4}), (2, 4)]
+)
+def test_node_clique_number_nodes(G, cl, nodes, expected):
+    assert nx.node_clique_number(G, nodes=nodes) == expected
+    assert nx.node_clique_number(G, nodes=nodes, cliques=cl) == expected
 
 
 def test_make_clique_bipartite(G):
