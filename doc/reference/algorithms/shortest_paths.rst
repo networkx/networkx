@@ -128,9 +128,9 @@ graphs and Dijkstra's algorithm for weighted graphs (``weight`` parameter is
 not ``None``). In the special case of single-pair queries (both ``source`` and
 ``target`` specified), bidirectional variants of these algorithms are used.
 
-This default behavior can be overridden by specifying the ``method`` parameter.
-Algorithms Dijkstra, Bellman-Ford and Breadth–First Search (BFS) are supported.
-If an unsupported method is provided, NetworkX will raise an error.
+The default algorithm can be overridden to select Bellman-Ford by specifying
+the ``method`` parameter to be "bellman-ford". Algorithms other than Dijkstra,
+Bellman-Ford and Breadth–First Search are not supported in the simplified interface.
 
 For the case of single-pair queries, bidirectional variants of Dijkstra and BFS
 are used when those methods are specified.
