@@ -1,5 +1,3 @@
-import pytest
-
 import networkx as nx
 from networkx.algorithms.contiguous_labeling import (
     contiguous_oriented_labeling,
@@ -186,3 +184,4 @@ if __name__ == "__main__":
     test_big_path_graph()
     test_big_star_graph()
     print("✅ All tests including failures and edge cases ran.")
+
