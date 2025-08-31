@@ -22,8 +22,6 @@ import itertools
 import math
 from numbers import Number
 
-from matplotlib._api import kwarg_error
-
 import networkx as nx
 from networkx.exception import NetworkXException
 
@@ -2201,7 +2199,7 @@ def draw_networkx_edges(
     ):
         disp_edge_color = edge_color
     elif np.iterable(edge_color):
-        disp_edge_color = zip(edgelist, cycle(edge_color))
+        disp_edge_color = dict(zip(edgelist, cycle(edge_color)))
     else:
         disp_edge_color = edge_color
 
