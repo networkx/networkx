@@ -204,7 +204,7 @@ def _make_weighted_benchmark_graphs(seed):
             (n,),
             {},
         )
-        for n in [10, 50, 100]
+        for n in [10, 100, 1_000]
     }
     for graph_func, args, kwargs in path_graphs + erdos_renyi_graphs:
         name = benchmark_name_from_func_call(
@@ -236,3 +236,8 @@ class WeightedGraphBenchmark:
             _ = nx.single_source_dijkstra(self.G, source, target)
         except nx.NetworkXNoPath:
             pass
+
+    def time_shortest_path(self, graph):
+        source = self.nodes[0]
+        target = self.nodes[-1]
+        nx.shortest_path(self.G, source, target, weight="weight")
