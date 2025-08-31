@@ -67,7 +67,3 @@ python app.py
 │   └── about.html          # דף מידע נוסף 
 ├── requirements.txt
 └── README.md
-
-
-    
-
