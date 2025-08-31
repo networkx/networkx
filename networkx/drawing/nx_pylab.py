@@ -22,7 +22,10 @@ import itertools
 import math
 from numbers import Number
 
+from matplotlib._api import kwarg_error
+
 import networkx as nx
+from networkx.exception import NetworkXException
 
 __all__ = [
     "display",
@@ -597,9 +600,12 @@ def display(
         "hide_ticks": True,
     }
 
+    # Allow some undocumented kwargs to allow the old draw API to wrap display
+    compat_kwargs = ["compat_force_fancy_arrows", "compat_return_edge_viz_obj"]
+
     # Check arguments
     for kwarg in kwargs:
-        if kwarg not in defaults:
+        if kwarg not in defaults and kwarg not in compat_kwargs:
             raise nx.NetworkXError(
                 f"Unrecognized visualization keyword argument: {kwarg}"
             )
@@ -686,14 +692,19 @@ def display(
     # - min_target_margin
 
     def collection_compatible(e):
-        return (
-            get_edge_attr(e, "arrowstyle") == "-"
-            and get_edge_attr(e, "curvature") == "arc3"
-            and get_edge_attr(e, "source_margin") == 0
-            and get_edge_attr(e, "target_margin") == 0
-            # Self-loops will use fancy arrow patches
-            and e[0] != e[1]
-        )
+        compat_collection = kwargs.get("compat_force_fancy_arrows", None)
+        if isinstance(compat_collection, bool):
+            return not compat_collection
+        else:
+            return (
+                # Edge can be plotted with LineCollection since it has compatible characteristics
+                get_edge_attr(e, "arrowstyle") == "-"
+                and get_edge_attr(e, "curvature") == "arc3"
+                and get_edge_attr(e, "source_margin") == 0
+                and get_edge_attr(e, "target_margin") == 0
+                # self-loops ALWAYS get a fancy arrow
+                and e[0] != e[1]
+            )
 
     def edge_property_sequence(seq, attr_name):
         """Return a list of attribute values for `seq`, using a default if needed"""
@@ -877,6 +888,7 @@ def display(
                 )
             ),
             color=get_edge_attr(e, "color"),
+            alpha=get_edge_attr(e, "alpha"),
             linestyle=get_edge_attr(e, "style"),
             linewidth=get_edge_attr(e, "width"),
             mutation_scale=get_edge_attr(e, "arrowsize"),
@@ -1054,6 +1066,7 @@ def display(
     )
 
     # Only plot a line collection if needed
+    edge_collection = None
     if len(collection_edges) > 0:
         edge_collection = mpl.collections.LineCollection(
             edge_position,
@@ -1113,7 +1126,7 @@ def display(
             if e[0] == e[1]:
                 # Taken directly from draw_networkx_edge_labels
                 connectionstyle_obj = arrow.get_connectionstyle()
-                posA = canvas.transData.transform(edge_subgraph.nodes[e[0]][pos])
+                posA = canvas.transData.transform(pos[e[0]])
                 path_disp = connectionstyle_obj(posA, posA)
                 path_data = canvas.transData.inverted().transform_path(path_disp)
                 x, y = path_data.vertices[0]
@@ -1159,6 +1172,12 @@ def display(
                 ax=canvas,
             )
 
+    if kwargs.get("compat_return_edge_viz_obj", False):
+        return (
+            edge_collection
+            if edge_collection is not None
+            else list(fancy_arrows.values())
+        )
     return G
 
 
@@ -2065,6 +2084,9 @@ def draw_networkx_edges(
         msg = "draw_networkx_edges arg `connectionstyle` must be str or iterable"
         raise nx.NetworkXError(msg)
 
+    if isinstance(edgelist, np.ndarray):
+        edgelist = list(map(tuple, edgelist))
+
     # Some kwargs only apply to FancyArrowPatches. Warn users when they use
     # non-default values for these kwargs when LineCollection is being used
     # instead of silently ignoring the specified option
@@ -2123,29 +2145,36 @@ def draw_networkx_edges(
     disp_edge_alpha = (
         alpha if not isinstance(alpha, Iterable) else dict(zip(edgelist, cycle(alpha)))
     )
+
     disp_edge_arrowstyle = (
         arrowstyle
         if isinstance(arrowstyle, str)
         else dict(zip(edgelist, cycle(arrowstyle)))
     )
-    disp_edge_arrowsize = (
-        arrowsize
-        if not isinstance(arrowsize, Iterable)
-        else dict(zip(edgelist, cycle(arrowsize)))
-    )
+
+    if isinstance(arrowsize, Iterable):
+        if len(arrowsize) != len(edgelist):
+            raise ValueError("arrowsize should have the same length as edgelist")
+        disp_edge_arrowsize = dict(zip(edgelist, arrowsize))
+    else:
+        disp_edge_arrowsize = arrowsize
+
     disp_node_size = (
         node_size
         if not isinstance(node_size, Iterable)
         else dict(zip(nodelist, node_size))
     )
-    mapper = None
+
     if edge_cmap is not None:
         mapper = mpl.cm.ScalarMappable(cmap=edge_cmap)
-        if edge_vmin is None:
-            edge_vmin = 0.0
-        if edge_vmax is None:
-            edge_vmax = 1.0
-        mapper.set_clim(edge_vmin, edge_vmax)
+    else:
+        mapper = mpl.cm.ScalarMappable(cmap=plt.get_cmap())
+
+    if edge_vmin is None:
+        edge_vmin = 0.0
+    if edge_vmax is None:
+        edge_vmax = 1.0
+    mapper.set_clim(edge_vmin, edge_vmax)
 
     def map_color(c):
         if mapper is None:
@@ -2154,15 +2183,27 @@ def draw_networkx_edges(
         return tuple(float(x) for x in mapper.to_rgba(c))
 
     disp_edge_color = None
-    if isinstance(edge_color, float):
-        disp_edge_color = map_color(node_color)
-    elif isinstance(edge_color, str):
+    if isinstance(edge_color, str):
         disp_edge_color = edge_color
-    elif isinstance(edge_color, (np.ndarray | list)):
+    elif (
+        np.iterable(edge_color)
+        and len(edge_color) == len(edgelist)
+        and np.all([isinstance(c, Number) for c in edge_color])
+    ):
         disp_edge_color = {
-            n: map_color(edge_color) if isinstance(edge_color, float) else ns
-            for n, ns in zip(nodelist, edge_color)
+            n: map_color(ns) for n, ns in zip(edgelist, cycle(edge_color))
         }
+    elif (
+        # Tuple color... most likely
+        isinstance(edge_color, tuple)
+        and np.all([isinstance(c, Number) for c in edge_color])
+        and (len(edge_color) == 3 or len(edge_color) == 4)
+    ):
+        disp_edge_color = edge_color
+    elif np.iterable(edge_color):
+        disp_edge_color = zip(edgelist, cycle(edge_color))
+    else:
+        disp_edge_color = edge_color
 
     disp_node_shape = (
         node_shape if isinstance(node_shape, str) else dict(zip(nodelist, node_shape))
@@ -2174,7 +2215,19 @@ def draw_networkx_edges(
         else dict(zip(edgelist, cycle(connectionstyle)))
     )
 
-    display(
+    disp_edge_source_margin = (
+        min_source_margin
+        if not isinstance(min_source_margin, np.ndarray | list)
+        else dict(zip(edgelist, cycle(min_source_margin)))
+    )
+
+    disp_edge_target_margin = (
+        min_target_margin
+        if not isinstance(min_target_margin, np.ndarray | list)
+        else dict(zip(edgelist, cycle(min_target_margin)))
+    )
+
+    return display(
         G,
         ax,
         node_pos=pos,
@@ -2189,19 +2242,14 @@ def draw_networkx_edges(
         edge_arrowstyle=disp_edge_arrowstyle,
         edge_arrowsize=disp_edge_arrowsize,
         edge_curvature=disp_edge_curvature,
+        edge_source_margin=disp_edge_source_margin,
+        edge_target_margin=disp_edge_target_margin,
         node_shape=disp_node_shape,
         node_size=disp_node_size,
         hide_ticks=hide_ticks,
+        compat_force_fancy_arrows=arrows,
+        compat_return_edge_viz_obj=True,
     )
-
-    patches = []
-    lines = None
-    for col in ax.collections:
-        if isinstance(col, mpl.collections.LineCollection):
-            lines = col
-        elif isinstance(col, mpl.patches.FancyArrowPatch):
-            patches.append(col)
-    return patches if len(patches) > 0 else lines
 
 
 def draw_networkx_labels(

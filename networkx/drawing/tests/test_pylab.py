@@ -625,7 +625,7 @@ def test_single_edge_color_undirected(edge_color, expected, edgelist):
     drawn_edges = nx.draw_networkx_edges(
         G, pos=nx.random_layout(G), edgelist=edgelist, edge_color=edge_color
     )
-    assert mpl.colors.same_color(drawn_edges.get_color(), expected)
+    assert mpl.colors.same_color(drawn_edges.get_color()[0], expected)
 
 
 @pytest.mark.parametrize(
@@ -742,7 +742,7 @@ def test_edge_color_string_with_global_alpha_undirected():
         edge_color="purple",
         alpha=0.2,
     )
-    ec = edge_collection.get_color().squeeze()  # as rgba tuple
+    ec = edge_collection.get_color()[0]  # as rgba tuple
     assert len(edge_collection.get_paths()) == 2
     assert mpl.colors.same_color(ec[:-1], "purple")
     assert ec[-1] == 0.2
@@ -778,8 +778,8 @@ def test_edge_width_default_value(graph_type):
 @pytest.mark.parametrize(
     ("edgewidth", "expected"),
     (
-        (3, 3),  # single-value, non-default
-        ([3], 3),  # Single value as a list
+        (3, [3, 3, 3]),  # single-value, non-default
+        ([3], [3, 3, 3]),  # Single value as a list
     ),
 )
 def test_edge_width_single_value_undirected(edgewidth, expected):
@@ -787,7 +787,7 @@ def test_edge_width_single_value_undirected(edgewidth, expected):
     pos = {n: (n, n) for n in range(len(G))}
     drawn_edges = nx.draw_networkx_edges(G, pos, width=edgewidth)
     assert len(drawn_edges.get_paths()) == 3
-    assert drawn_edges.get_linewidth() == expected
+    assert all(drawn_edges.get_linewidth() == expected)
 
 
 @pytest.mark.parametrize(
@@ -1240,6 +1240,7 @@ def test_draw_edges_min_source_target_margins_individual(node_shape, subplots):
         min_target_margin=[98, 102],
     )
     padded_extent = [p.get_extents().corners()[::2, 0] for p in padded_patch]
+    print(f"{default_extent=}, {padded_extent=}")
     for d, p in zip(default_extent, padded_extent):
         # With padding, the left-most extent of the edge should be further to the
         # right
