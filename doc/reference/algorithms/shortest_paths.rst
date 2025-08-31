@@ -57,7 +57,7 @@ and their typical time complexities. Here, :math:`V` is the number of nodes and
 |                      | Supported?  |                    |                           |                                    |
 +======================+=============+====================+===========================+====================================+
 | Breadth–First Search | Unweighted  | Single-source,     | :math:`O(V + E)`          | Fastest choice for unweighted      |
-|                      | Only        | Single-pair        |                           | graphs; shortest path in hops      |
+| (BFS)                | Only        | Single-pair        |                           | graphs; shortest path in hops      |
 +----------------------+-------------+--------------------+---------------------------+------------------------------------+
 | Dijkstra             | Yes, both   | Single-source,     | :math:`O((V + E) \log V)` | General-purpose choice for         |
 |                      |             | Single-pair        |                           | non-negative weights               |
