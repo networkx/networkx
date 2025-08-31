@@ -125,15 +125,17 @@ represents the all pairs shortest path query.
 
 By default, the simplified interface uses Breadth–First Search for unweighted
 graphs and Dijkstra's algorithm for weighted graphs (``weight`` parameter is
-not ``None``). In the special case of single-pair queries (both ``source`` and
-``target`` specified), bidirectional variants of these algorithms are used.
+not ``None``).
 
 The default algorithm can be overridden to select Bellman-Ford by specifying
 the ``method`` parameter to be "bellman-ford". Algorithms other than Dijkstra,
-Bellman-Ford and Breadth–First Search are not supported in the simplified interface.
+Bellman-Ford and Breadth–First Search are not supported in the simplified
+interface.
 
-For the case of single-pair queries, bidirectional variants of Dijkstra and BFS
-are used when those methods are specified.
+For the case of single-pair queries (both ``source`` and ``target`` specified),
+bidirectional variants of Dijkstra and BFS are used when those methods are
+selected.
+
 
 Simplified Interface Methods
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
