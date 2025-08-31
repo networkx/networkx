@@ -889,7 +889,6 @@ def _dijkstra_multisource(
                 # Found another shortest path to u with equal distance (including zero-weight edges).
                 # We must store *all* predecessors because `pred` was provided by the caller.
                 pred[u].append(v)
-                
 
     if target is not None and paths is not None:
         # Caller requested the path to a specific target node.
