@@ -857,36 +857,36 @@ def _dijkstra_multisource(
         heappush(fringe, (0, next(c), source))
     while fringe:
         (d, _, v) = heappop(fringe)
-        v_dist = dist.setdefault(v, d)
-        if v_dist < d:
+        if v in dist:
             continue  # already searched this node.
+        dist[v] = d
         if v == target:
             break
         for u, e in G_succ[v].items():
             cost = weight(v, u, e)
             if cost is None:
                 continue
-            vu_dist = v_dist + cost
-            if cutoff is not None and vu_dist > cutoff:
-                continue
-            u_dist = dist.get(u)
-            if u_dist is None:
-                u_seen = seen.get(u)
-                if u_seen is None or vu_dist < u_seen:
-                    seen[u] = vu_dist
-                    heappush(fringe, (vu_dist, next(c), u))
-                    if paths_dict is not None:
-                        paths_dict[u] = paths_dict[v] + [u]
-                    if pred_dict is not None:
-                        pred_dict[u] = [v]
-                elif pred is not None and vu_dist == u_seen:
-                    # Found another shortest path to u
+            vu_dist = dist[v] + cost
+            if cutoff is not None:
+                if vu_dist > cutoff:
+                    continue
+            if u in dist:
+                u_dist = dist[u]
+                if vu_dist < u_dist:
+                    raise ValueError("Contradictory paths found:", "negative weights?")
+                elif pred is not None and vu_dist == u_dist:
+                    # Found another shortest path to u with equal distance (including zero-weight edges).
                     # We must store *all* predecessors because `pred` was provided by the caller.
                     pred[u].append(v)
-            elif vu_dist < u_dist:
-                raise ValueError("Contradictory paths found: negative weights?")
-            elif pred is not None and vu_dist == u_dist:
-                # Found another shortest path to u with equal distance (including zero-weight edges).
+            elif u not in seen or vu_dist < seen[u]:
+                seen[u] = vu_dist
+                heappush(fringe, (vu_dist, next(c), u))
+                if paths_dict is not None:
+                    paths_dict[u] = paths_dict[v] + [u]
+                if pred_dict is not None:
+                    pred_dict[u] = [v]
+            elif pred is not None and vu_dist == seen[u]:
+                # Found another shortest path to u
                 # We must store *all* predecessors because `pred` was provided by the caller.
                 pred[u].append(v)
 
