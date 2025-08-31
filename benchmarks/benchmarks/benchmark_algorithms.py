@@ -179,17 +179,23 @@ def _make_weighted_benchmark_graphs(seed):
     ]
 
     def dijkstra_relaxation_worst_case(n):
-        """Dijkstra's relaxation worst-case: `n` nodes, `n - 1` relaxations.
+        """
+        Build a graph on n nodes that makes Dijkstra relax every edge.
 
-        Each node `i` has a direct edge to the target node `n - 1`, with decreasing weight
-        as `i` increases. As Dijkstra visits nodes in increasing order, it finds
-        shorter and shorter paths to `n - 1`, triggering a new relaxation each time.
+        Idea:
+        - Nodes are 0..n-1.
+        - For each i < j, add edge (i, j) with weight = 2*(j-1-i)+1.
+        - Shortest paths are the chain 0->1->...->k (distance = k).
+        - Each predecessor i < j gives a strictly better tentative distance to j,
+            so every edge (i, j) is relaxed.
+
+        The graph has Θ(n^2) edges and forces Θ(n^2) relaxations,
+        which is the worst case for Dijkstra.
         """
         G = nx.empty_graph(n)
-        for pred in range(n):
-            if pred > 0:
-                G.add_edge(pred - 1, pred, weight=1)
-            G.add_edge(pred, n, weight=2 * (n - pred))
+        for i in range(n):
+            for j in range(i + 1, n):
+                G.add_edge(i, j, weight=2 * (j - 1 - i) + 1)
         return G
 
     all_graphs = {
@@ -198,7 +204,7 @@ def _make_weighted_benchmark_graphs(seed):
             (n,),
             {},
         )
-        for n in [100, 1_000, 10_000, 20_000]
+        for n in [10, 50, 100]
     }
     for graph_func, args, kwargs in path_graphs + erdos_renyi_graphs:
         name = benchmark_name_from_func_call(
