@@ -884,6 +884,7 @@ def _dijkstra_multisource(
                 pred[u].append(v)
 
     if paths is not None:
+        # Reconstruct the path from source to target using the predecessor dictionary.
         if target is None:
             for v in dist:
                 pred_v = pred_dict.get(v)
@@ -891,7 +892,6 @@ def _dijkstra_multisource(
                     paths[v] = paths[pred_v[0]] + [v]
         else:
             # Caller requested the path to a specific target node.
-            # Reconstruct the path from source to target using the predecessor dictionary.
             path = paths[target] = [target]
             while (current_preds := pred_dict.get(path[-1])) is not None:
                 path.append(current_preds[0])
