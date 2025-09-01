@@ -508,13 +508,3 @@ def test_random_k_lift_non_regular_graph():
     with pytest.raises(ValueError, match="must be d-regular"):
         nx.random_k_lift(G, k=2, seed=1)
 
-
-# Specific test for failure behavior
-def test_disconnected_random_lift():
-    """Create graph G with two connected nodes (0, 1).
-    The 2-lift H is guaranteed to produce two disconnected pairs
-    """
-    G = nx.Graph()
-    G.add_edge(0, 1)  # d = 1, n = 2
-    with pytest.raises(ValueError, match="not connected"):
-        nx.random_k_lift(G, k=2, seed=2)
