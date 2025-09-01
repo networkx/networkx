@@ -834,15 +834,11 @@ def _dijkstra_multisource(
     as arguments. No need to explicitly return pred or paths.
 
     """
-    # If a target is specified, we only need the path to that target,
-    # so we skip building the full paths dictionary.
-    paths_dict = paths if target is None else None
-
-    # If a target is specified, we only need the predecessors for the path to that target,
-    # so we use a temporary internal dictionary (`pred_dict`). However, if the caller
-    # passed in a `pred` dictionary, we must compute *all* predecessors, even if a
-    # target is given, since the caller expects the full predecessor structure.
-    pred_dict = pred if target is None else (pred or {})
+    # If `paths`` is specified, we use a temporary internal dictionary (`pred_dict`) to
+    # store predecesors use to reconstruct paths. However, if the caller
+    # passed in a `pred` dictionary, we must compute *all* predecessors, since the caller
+    # expects the full predecessor structure.
+    pred_dict = pred if paths is None else (pred or {})
 
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
@@ -856,20 +852,19 @@ def _dijkstra_multisource(
         seen[source] = 0
         heappush(fringe, (0, next(c), source))
     while fringe:
-        (d, _, v) = heappop(fringe)
+        (dist_v, _, v) = heappop(fringe)
         if v in dist:
             continue  # already searched this node.
-        dist[v] = d
+        dist[v] = dist_v
         if v == target:
             break
         for u, e in G_succ[v].items():
             cost = weight(v, u, e)
             if cost is None:
                 continue
-            vu_dist = dist[v] + cost
-            if cutoff is not None:
-                if vu_dist > cutoff:
-                    continue
+            vu_dist = dist_v + cost
+            if cutoff is not None and vu_dist > cutoff:
+                continue
             if u in dist:
                 u_dist = dist[u]
                 if vu_dist < u_dist:
@@ -881,8 +876,6 @@ def _dijkstra_multisource(
             elif u not in seen or vu_dist < seen[u]:
                 seen[u] = vu_dist
                 heappush(fringe, (vu_dist, next(c), u))
-                if paths_dict is not None:
-                    paths_dict[u] = paths_dict[v] + [u]
                 if pred_dict is not None:
                     pred_dict[u] = [v]
             elif pred is not None and vu_dist == seen[u]:
@@ -890,14 +883,20 @@ def _dijkstra_multisource(
                 # We must store *all* predecessors because `pred` was provided by the caller.
                 pred[u].append(v)
 
-    if target is not None and paths is not None:
-        # Caller requested the path to a specific target node.
-        # Reconstruct the path from source to target using the predecessor dictionary.
-        path = paths[target] = [target]
-        while (current_preds := pred_dict.get(path[-1])) is not None:
-            path.append(current_preds[0])
-        # The path was built in reverse order, so reverse it at the end.
-        path.reverse()
+    if paths is not None:
+        if target is None:
+            for v in dist:
+                pred_v = pred_dict.get(v)
+                if pred_v is not None:
+                    paths[v] = paths[pred_v[0]] + [v]
+        else:
+            # Caller requested the path to a specific target node.
+            # Reconstruct the path from source to target using the predecessor dictionary.
+            path = paths[target] = [target]
+            while (current_preds := pred_dict.get(path[-1])) is not None:
+                path.append(current_preds[0])
+            # The path was built in reverse order, so reverse it at the end.
+            path.reverse()
 
     # The optional predecessor and path dictionaries can be accessed
     # by the caller via the pred and paths objects passed as arguments.
