@@ -1449,7 +1449,7 @@ def random_k_lift(G, k, seed=None):
     Raises
     ------
     ValueError
-        If `G` is not ``d``-regular or if the generated lifted graph is not connected.
+        If `G` is not ``d``-regular.
 
     Notes
     -----
@@ -1459,8 +1459,19 @@ def random_k_lift(G, k, seed=None):
       if σ(``i``) = ``j``, then ((``u``, ``i``), (``v``, ``j``)) is added to ``H``.
       The permutation is simulated by creating a shuffled list ``permutation`` of values 0 to `k`-1.
       Each ``i``-th copy of ``u`` is then connected to the ``permutation[``i``]``-th copy of ``v``.
-    This randomized construction preserves expansion properties (such as spectral
-    gap) with high probability.
+      
+    This operation is often used in the construction of expander graphs.
+    If the base graph is a decent expander (i.e., has a good spectral gap),
+    then its `k`-lifts are also expanders, with the spectral gap preserved
+    (or slightly reduced) with high probability, while producing a larger
+    graph of the same degree.
+    
+    For arbitrary input graphs, the lifted graph may be disconnected.
+    Disconnected lifts occur more often when the base graph has poor
+    expansion. Since enforcing connectivity in such cases is unlikely to
+    produce a good expander, this implementation returns the lift directly,
+    even if it is disconnected. Users who require connected results may wrap
+    this function with retries until a connected lift is found.
 
     References
     ----------
@@ -1497,7 +1508,4 @@ def random_k_lift(G, k, seed=None):
         edges.extend(((u, i), (v, permutation[i])) for i in range(k))
     H.add_edges_from(edges)
 
-    # Raise exception if disconnected
-    if not nx.is_connected(H):
-        raise ValueError("The lifted graph is not connected")
     return H
