@@ -507,4 +507,3 @@ def test_random_k_lift_non_regular_graph():
 
     with pytest.raises(ValueError, match="must be d-regular"):
         nx.random_k_lift(G, k=2, seed=1)
-
