@@ -1,6 +1,7 @@
 """
 Algorithms for computing distance measures on trees.
 """
+
 import networkx as nx
 
 __all__ = [
@@ -195,7 +196,7 @@ def centroid(G):
     --------
     :func:`~networkx.algorithms.distance_measures.barycenter`
     :func:`~networkx.algorithms.distance_measures.center`
-
+    center : tree center
     """
     if not nx.is_tree(G):
         raise nx.NotATree("provided graph is not a tree")

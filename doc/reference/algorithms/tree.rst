@@ -40,7 +40,6 @@ Distance Measures
    center
    centroid
 
-
 Encoding and decoding
 ---------------------
 .. automodule:: networkx.algorithms.tree.coding
