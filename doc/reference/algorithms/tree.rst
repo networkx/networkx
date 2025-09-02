@@ -38,6 +38,7 @@ Distance Measures
    :toctree: generated/
 
    center
+   centroid
 
 Encoding and decoding
 ---------------------
