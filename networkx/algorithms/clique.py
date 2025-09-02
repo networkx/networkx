@@ -585,7 +585,7 @@ def node_clique_number(G, nodes=None, cliques=None, separate_nodes=False):
 def number_of_cliques(G, nodes=None, cliques=None):
     """Return the number of maximal cliques each node is part of.
 
-    Output is a single node or list depending on input nodes.
+    Output is a single value or list depending on `nodes`.
     Optional list of cliques can be input if already computed.
 
     Parameters
@@ -610,7 +610,7 @@ def number_of_cliques(G, nodes=None, cliques=None):
     Raises
     ------
     NetworkXNotImplemented
-        If `G` is not undirected.
+        If `G` is directed.
 
     See Also
     --------
@@ -640,7 +640,7 @@ def number_of_cliques(G, nodes=None, cliques=None):
 
     The list of maximal cliques can also be precomputed:
 
-    >>> cl = nx.find_cliques(G)
+    >>> cl = list(nx.find_cliques(G))
     >>> nx.number_of_cliques(G, cliques=cl)
     {0: 2, 1: 1, 2: 1, 3: 1, 4: 1}
     """
