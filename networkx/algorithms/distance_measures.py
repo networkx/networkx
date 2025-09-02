@@ -676,8 +676,10 @@ def center(G, e=None, usebounds=False, weight=None):
 
     See Also
     --------
+    :func:`~networkx.algorithms.tree.distance_measures.center` : tree center
     barycenter
     periphery
+    :func:`~networkx.algorithms.tree.distance_measures.centroid` : tree centroid
     """
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="center", weight=weight)
@@ -744,7 +746,12 @@ def barycenter(G, weight=None, attr=None, sp=None):
     --------
     center
     periphery
+    :func:`~networkx.algorithms.tree.distance_measures.centroid` : tree centroid
     """
+    if weight is None and attr is None and sp is None:
+        if not G.is_directed() and nx.is_tree(G):
+            return nx.tree.centroid(G)
+
     if sp is None:
         sp = nx.shortest_path_length(G, weight=weight)
     else:
