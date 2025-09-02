@@ -18,7 +18,7 @@ jobs:
       matrix:
         python-version: ["3.12"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -40,4 +40,4 @@ jobs:
           pytest --cov=networkx --runslow -n auto --doctest-modules --durations=20 --pyargs networkx
 
       - name: Upload to codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
