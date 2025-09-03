@@ -834,8 +834,8 @@ def _dijkstra_multisource(
     as arguments. No need to explicitly return pred or paths.
 
     """
-    # If `paths`` is specified, we use a temporary internal dictionary (`pred_dict`) to
-    # store predecesors use to reconstruct paths. However, if the caller
+    # If `paths` is specified, we use a temporary internal dictionary (`pred_dict`) to
+    # store predecessors, used to reconstruct paths. However, if the caller
     # passed in a `pred` dictionary, we must compute *all* predecessors, since the caller
     # expects the full predecessor structure.
     pred_dict = pred if paths is None else (pred or {})
