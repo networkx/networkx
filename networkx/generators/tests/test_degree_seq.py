@@ -141,6 +141,12 @@ def test_expected_degree_graph_skew():
     assert len(G1) == 5
 
 
+def test_expected_degree_graph_small():
+    deg_seq = [2, 0]
+    G = nx.expected_degree_graph(deg_seq, seed=42)
+    assert dict(G.degree) == dict(enumerate(deg_seq))
+
+
 def test_havel_hakimi_construction():
     G = nx.havel_hakimi_graph([])
     assert len(G) == 0
