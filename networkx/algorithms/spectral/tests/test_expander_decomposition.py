@@ -1,15 +1,16 @@
 """Unit tests for low conductance cut"""
 
 import math
-import random
 
 import pytest
 
 import networkx as nx
 from networkx.algorithms.spectral.expander_decomposition import expander_decomposition
+from networkx.utils import py_random_state
 
 
-def connected_cliques(n, k, r):
+@py_random_state(3)
+def connected_cliques(n, k, r, _seed=1234):
     """Returns k cliques of size n, with r edges placed at random between the
     different cliques.
     """
@@ -18,9 +19,9 @@ def connected_cliques(n, k, r):
         G.add_edges_from(nx.complete_graph(range(i * n, (i + 1) * n)).edges)
 
     for _ in range(r):
-        clique_1, clique_2 = random.sample(range(k), 2)
-        u = random.choice(range(clique_1 * n, (clique_1 + 1) * n))
-        v = random.choice(range(clique_2 * n, (clique_2 + 1) * n))
+        clique_1, clique_2 = _seed.sample(range(k), 2)
+        u = _seed.choice(range(clique_1 * n, (clique_1 + 1) * n))
+        v = _seed.choice(range(clique_2 * n, (clique_2 + 1) * n))
         G.add_edge(u, v)
 
     return G
@@ -56,10 +57,11 @@ def test_expander_decomposition_cliques_2():
     assert intercluster_edges(G, clusters) < 0.1 * m * math.log(m) ** 3
 
 
-def test_expander_decomposition_random():
+@py_random_state(0)
+def test_expander_decomposition_random(_seed=1234):
     pytest.importorskip("numpy")
     pytest.importorskip("scipy")
-    G = nx.gnp_random_graph(200, 0.2)
+    G = nx.gnp_random_graph(200, 0.2, _seed)
     clusters = expander_decomposition(G, 0.001, "_s", "_t")
 
     assert len(clusters) == 1
