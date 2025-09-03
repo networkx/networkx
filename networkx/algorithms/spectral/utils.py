@@ -141,7 +141,6 @@ def dfs(R, s, t):
     return []
 
 
-@nx._dispatchable(edge_attrs="flow")
 def flow_matching(R, _s, _t):
     """Given a residual network `R` on which a flow problem has been solved, a super-source `_s`,
     and a super-sink `_t`, decompose the flow into `_s` - `_t` and find a matching between
@@ -179,7 +178,6 @@ def flow_matching(R, _s, _t):
     return matching
 
 
-@nx._dispatchable(edge_attrs={"flow": 0, "capacity": float("inf")})
 def compute_mincut(R, _t):
     """Computes the min-cut in R. Always returns the smaller side of the cut first."""
     cutset = [(u, v, d) for u, v, d in R.edges(data=True) if d["flow"] == d["capacity"]]
@@ -193,7 +191,6 @@ def compute_mincut(R, _t):
     return partition
 
 
-@nx._dispatchable(returns_graph=True)
 def build_subdivision_graph(G, subdiv_node_format=None):
     """Builds the subdivision graph of `G`, where the subdivision node of an edge
     (u, v) is given the key subdiv_node_format(u, v).
