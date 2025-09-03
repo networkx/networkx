@@ -1515,26 +1515,43 @@ def test_hide_ticks(method, hide_ticks, subplots):
         assert bool(axis.get_ticklabels()) != hide_ticks
 
 
-def test_edge_label_bar_connectionstyle(subplots):
-    """Check that FancyArrowPatches with `bar` connectionstyle are also supported
-    in edge label rendering. See gh-7735."""
+@pytest.mark.parametrize(
+    "style", ["angle", "angle3", "arc", "arc3,rad=0.0", "bar,fraction=0.1"]
+)
+def test_edge_label_all_connectionstyles(subplots, style):
+    """
+    Check that FancyArrowPatches with all `connectionstyle`s are supported
+    in edge label rendering. See gh-7735 and gh-8106.
+    """
     fig, ax = subplots
     edge = (0, 1)
     G = nx.DiGraph([edge])
-    pos = {n: (n, 0) for n in G}  # Edge is horizontal line between (0, 0) and (1, 0)
+    pos = {n: (n, 0) for n in G}
 
-    style_arc = "arc3,rad=0.0"
-    style_bar = "bar,fraction=0.1"
-
-    arc_lbl = nx.draw_networkx_edge_labels(
-        G, pos, edge_labels={edge: "edge"}, connectionstyle=style_arc
-    )
-    # This would fail prior to gh-7739
-    bar_lbl = nx.draw_networkx_edge_labels(
-        G, pos, edge_labels={edge: "edge"}, connectionstyle=style_bar
+    name = style.split(",")[0]
+    labels = nx.draw_networkx_edge_labels(
+        G, pos, edge_labels={edge: "edge"}, connectionstyle=style
     )
 
-    # For the "arc" style, the label should be at roughly the midpoint
-    assert arc_lbl[edge].x, arc_lbl[edge].y == pytest.approx((0.5, 0))
-    # The label should be below the x-axis for the "bar" style
-    assert bar_lbl[edge].y < arc_lbl[edge].y
+    hmid = (pos[0][0] + pos[1][0]) / 2
+    vmid = (pos[0][1] + pos[1][1]) / 2
+    if name in {"arc", "arc3"}:  # The label should be at roughly the midpoint.
+        assert labels[edge].x, labels[edge].y == pytest.approx((hmid, vmid))
+    elif name == "bar":  # The label should be below the vertical midpoint.
+        assert labels[edge].y < vmid
+
+
+@pytest.mark.parametrize("label_pos", [-0.1, 1.1])
+def test_edge_label_label_pos(subplots, label_pos):
+    """
+    Check that label positions can be extrapolated outside [0, 1].
+    """
+    fig, ax = subplots
+    edge = (0, 1)
+    G = nx.DiGraph([edge])
+    pos = {n: (n, n) for n in G}
+    lbl = nx.draw_networkx_edge_labels(
+        G, pos, edge_labels={edge: "edge"}, label_pos=label_pos, connectionstyle="angle"
+    )
+
+    assert lbl[edge].x, lbl[edge].y == pytest.approx((label_pos, label_pos))

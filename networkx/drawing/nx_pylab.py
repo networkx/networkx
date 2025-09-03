@@ -19,6 +19,7 @@ See Also
 
 import collections
 import itertools
+import math
 from numbers import Number
 
 import networkx as nx
@@ -111,6 +112,148 @@ def apply_matplotlib_colors(
         )
 
 
+class CurvedArrowTextBase:
+    def __init__(
+        self,
+        arrow,
+        *args,
+        label_pos=0.5,
+        labels_horizontal=False,
+        ax=None,
+        **kwargs,
+    ):
+        # Bind to FancyArrowPatch
+        self.arrow = arrow
+        # how far along the text should be on the curve,
+        # 0 is at start, 1 is at end etc.
+        self.label_pos = label_pos
+        self.labels_horizontal = labels_horizontal
+        if ax is None:
+            ax = plt.gca()
+        self.ax = ax
+        self.x, self.y, self.angle = self._update_text_pos_angle(arrow)
+
+        # Create text object
+        super().__init__(self.x, self.y, *args, rotation=self.angle, **kwargs)
+        # Bind to axis
+        self.ax.add_artist(self)
+
+    def _get_arrow_path_disp(self, arrow):
+        """
+        This is part of FancyArrowPatch._get_path_in_displaycoord
+        It omits the second part of the method where path is converted
+            to polygon based on width
+        The transform is taken from ax, not the object, as the object
+            has not been added yet, and doesn't have transform
+        """
+        dpi_cor = arrow._dpi_cor
+        trans_data = self.ax.transData
+        if arrow._posA_posB is None:
+            raise ValueError(
+                "Can only draw labels for fancy arrows with "
+                "posA and posB inputs, not custom path"
+            )
+        posA = arrow._convert_xy_units(arrow._posA_posB[0])
+        posB = arrow._convert_xy_units(arrow._posA_posB[1])
+        (posA, posB) = trans_data.transform((posA, posB))
+        _path = arrow.get_connectionstyle()(
+            posA,
+            posB,
+            patchA=arrow.patchA,
+            patchB=arrow.patchB,
+            shrinkA=arrow.shrinkA * dpi_cor,
+            shrinkB=arrow.shrinkB * dpi_cor,
+        )
+        # Return is in display coordinates
+        return _path
+
+    def _update_text_pos_angle(self, arrow):
+        # Fractional label position
+        # Text position at a proportion t along the line in display coords
+        # default is 0.5 so text appears at the halfway point
+        import matplotlib as mpl
+        import numpy as np
+
+        t = self.label_pos
+        tt = 1 - t
+        path_disp = self._get_arrow_path_disp(arrow)
+        conn = arrow.get_connectionstyle()
+        # 1. Calculate x and y
+        points = path_disp.vertices
+        if is_curve := isinstance(
+            conn,
+            mpl.patches.ConnectionStyle.Angle3 | mpl.patches.ConnectionStyle.Arc3,
+        ):
+            # Arc3 or Angle3 type Connection Styles - Bezier curve
+            (x1, y1), (cx, cy), (x2, y2) = points
+            x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
+            y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
+        else:
+            if not isinstance(
+                conn,
+                mpl.patches.ConnectionStyle.Angle
+                | mpl.patches.ConnectionStyle.Arc
+                | mpl.patches.ConnectionStyle.Bar,
+            ):
+                msg = f"invalid connection style: {type(conn)}"
+                raise TypeError(msg)
+            # A. Collect lines
+            codes = path_disp.codes
+            lines = [
+                points[i - 1 : i + 1]
+                for i in range(1, len(points))
+                if codes[i] == mpl.path.Path.LINETO
+            ]
+            # B. If more than one line, find the right one and position in it
+            if (nlines := len(lines)) != 1:
+                dists = [math.dist(*line) for line in lines]
+                dist_tot = sum(dists)
+                cdist = 0
+                last_cut = 0
+                i_last = nlines - 1
+                for i, dist in enumerate(dists):
+                    cdist += dist
+                    cut = cdist / dist_tot
+                    if i == i_last or t < cut:
+                        t = (t - last_cut) / (dist / dist_tot)
+                        tt = 1 - t
+                        lines = [lines[i]]
+                        break
+                    last_cut = cut
+            [[(cx1, cy1), (cx2, cy2)]] = lines
+            x = cx1 * tt + cx2 * t
+            y = cy1 * tt + cy2 * t
+
+        # 2. Calculate Angle
+        if self.labels_horizontal:
+            # Horizontal text labels
+            angle = 0
+        else:
+            # Labels parallel to curve
+            if is_curve:
+                change_x = 2 * tt * (cx - x1) + 2 * t * (x2 - cx)
+                change_y = 2 * tt * (cy - y1) + 2 * t * (y2 - cy)
+            else:
+                change_x = (cx2 - cx1) / 2
+                change_y = (cy2 - cy1) / 2
+            angle = np.arctan2(change_y, change_x) / (2 * np.pi) * 360
+            # Text is "right way up"
+            if angle > 90:
+                angle -= 180
+            elif angle < -90:
+                angle += 180
+        (x, y) = self.ax.transData.inverted().transform((x, y))
+        return x, y, angle
+
+    def draw(self, renderer):
+        # recalculate the text position and angle
+        self.x, self.y, self.angle = self._update_text_pos_angle(self.arrow)
+        self.set_position((self.x, self.y))
+        self.set_rotation(self.angle)
+        # redraw text
+        super().draw(renderer)
+
+
 def display(
     G,
     canvas=None,
@@ -119,11 +262,11 @@ def display(
     """Draw the graph G.
 
     Draw the graph as a collection of nodes connected by edges.
-    The exact details of what the graph looks like are controled by the below
+    The exact details of what the graph looks like are controlled by the below
     attributes. All nodes and nodes at the end of visible edges must have a
     position set, but nearly all other node and edge attributes are options and
     nodes or edges missing the attribute will use the default listed below. A more
-    complete discription of each parameter is given below this summary.
+    complete description of each parameter is given below this summary.
 
     .. list-table:: Default Visualization Attributes
         :widths: 25 25 50
@@ -132,7 +275,7 @@ def display(
         * - Parameter
           - Default Attribute
           - Default Value
-        * - pos
+        * - node_pos
           - `"pos"`
           - If there is not position, a layout will be calculated with `nx.spring_layout`.
         * - node_visible
@@ -203,10 +346,10 @@ def display(
         * - edge_alpha
           - `"alpha"`
           - 1.0
-        * - arrowstyle
+        * - edge_arrowstyle
           - `"arrowstyle"`
           - ``"-|>"`` if `G` is directed else ``"-"``
-        * - arrowsize
+        * - edge_arrowsize
           - `"arrowsize"`
           - 10 if `G` is directed else 0
         * - edge_curvature
@@ -227,7 +370,7 @@ def display(
     canvas : Matplotlib Axes object, optional
         Draw the graph in specified Matplotlib axes
 
-    pos : string or function, default "pos"
+    node_pos : string or function, default "pos"
         A string naming the node attribute storing the position of nodes as a tuple.
         Or a function to be called with input `G` which returns the layout as a dict keyed
         by node to position tuple like the NetworkX layout functions.
@@ -333,14 +476,14 @@ def display(
         A string naming the edge attribute which stores the alpha value of each edge.
         Visible edges without this attribute will use an alpha value of 1.0.
 
-    arrowstyle : string, default "arrow"
+    edge_arrowstyle : string, default "arrowstyle"
         A string naming the edge attribute which stores the type of arrowhead to use for
         each edge. Visible edges without this attribute use ``"-"`` for undirected graphs
         and ``"-|>"`` for directed graphs.
 
         See `matplotlib.patches.ArrowStyle` for more options
 
-    arrowsize : string or int, default "arrow_size"
+    edge_arrowsize : string or int, default "arrowsize"
         A string naming the edge attribute which stores the size of the arrowhead for each
         edge. Visible edges without this attribute will use a default value of 10.
 
@@ -435,7 +578,7 @@ def display(
     for kwarg in kwargs:
         if kwarg not in defaults:
             raise nx.NetworkXError(
-                f"Unrecongized visualization keyword argument: {kwarg}"
+                f"Unrecognized visualization keyword argument: {kwarg}"
             )
 
     if canvas is None:
@@ -663,93 +806,8 @@ def display(
             zorder=1,
         )
 
-    class CurvedArrowText(mpl.text.Text):
-        def __init__(
-            self,
-            arrow,
-            *args,
-            label_pos=0.5,
-            labels_horizontal=False,
-            ax=None,
-            **kwargs,
-        ):
-            # Bind to FancyArrowPatch
-            self.arrow = arrow
-            # how far along the text should be on the curve,
-            # 0 is at start, 1 is at end etc.
-            self.label_pos = label_pos
-            self.labels_horizontal = labels_horizontal
-            if ax is None:
-                ax = plt.gca()
-            self.ax = ax
-            self.x, self.y, self.angle = self._update_text_pos_angle(arrow)
-
-            # Create text object
-            super().__init__(self.x, self.y, *args, rotation=self.angle, **kwargs)
-            # Bind to axis
-            self.ax.add_artist(self)
-
-        def _get_arrow_path_disp(self, arrow):
-            """
-            This is part of FancyArrowPatch._get_path_in_displaycoord
-            It omits the second part of the method where path is converted
-                to polygon based on width
-            The transform is taken from ax, not the object, as the object
-                has not been added yet, and doesn't have transform
-            """
-            dpi_cor = arrow._dpi_cor
-            # trans_data = arrow.get_transform()
-            trans_data = self.ax.transData
-            if arrow._posA_posB is not None:
-                posA = arrow._convert_xy_units(arrow._posA_posB[0])
-                posB = arrow._convert_xy_units(arrow._posA_posB[1])
-                (posA, posB) = trans_data.transform((posA, posB))
-                _path = arrow.get_connectionstyle()(
-                    posA,
-                    posB,
-                    patchA=arrow.patchA,
-                    patchB=arrow.patchB,
-                    shrinkA=arrow.shrinkA * dpi_cor,
-                    shrinkB=arrow.shrinkB * dpi_cor,
-                )
-            else:
-                _path = trans_data.transform_path(arrow._path_original)
-            # Return is in display coordinates
-            return _path
-
-        def _update_text_pos_angle(self, arrow):
-            # Fractional label position
-            path_disp = self._get_arrow_path_disp(arrow)
-            (x1, y1), (cx, cy), (x2, y2) = path_disp.vertices
-            # Text position at a proportion t along the line in display coords
-            # default is 0.5 so text appears at the halfway point
-            t = self.label_pos
-            tt = 1 - t
-            x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
-            y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
-            if self.labels_horizontal:
-                # Horizontal text labels
-                angle = 0
-            else:
-                # Labels parallel to curve
-                change_x = 2 * tt * (cx - x1) + 2 * t * (x2 - cx)
-                change_y = 2 * tt * (cy - y1) + 2 * t * (y2 - cy)
-                angle = (np.arctan2(change_y, change_x) / (2 * np.pi)) * 360
-                # Text is "right way up"
-                if angle > 90:
-                    angle -= 180
-                if angle < -90:
-                    angle += 180
-            (x, y) = self.ax.transData.inverted().transform((x, y))
-            return x, y, angle
-
-        def draw(self, renderer):
-            # recalculate the text position and angle
-            self.x, self.y, self.angle = self._update_text_pos_angle(self.arrow)
-            self.set_position((self.x, self.y))
-            self.set_rotation(self.angle)
-            # redraw text
-            super().draw(renderer)
+    class CurvedArrowText(CurvedArrowTextBase, mpl.text.Text):
+        pass
 
     ### Draw the nodes first
     node_visible = kwargs.get("node_visible", "visible")
@@ -2330,110 +2388,8 @@ def draw_networkx_edge_labels(
     import matplotlib.pyplot as plt
     import numpy as np
 
-    class CurvedArrowText(mpl.text.Text):
-        def __init__(
-            self,
-            arrow,
-            *args,
-            label_pos=0.5,
-            labels_horizontal=False,
-            ax=None,
-            **kwargs,
-        ):
-            # Bind to FancyArrowPatch
-            self.arrow = arrow
-            # how far along the text should be on the curve,
-            # 0 is at start, 1 is at end etc.
-            self.label_pos = label_pos
-            self.labels_horizontal = labels_horizontal
-            if ax is None:
-                ax = plt.gca()
-            self.ax = ax
-            self.x, self.y, self.angle = self._update_text_pos_angle(arrow)
-
-            # Create text object
-            super().__init__(self.x, self.y, *args, rotation=self.angle, **kwargs)
-            # Bind to axis
-            self.ax.add_artist(self)
-
-        def _get_arrow_path_disp(self, arrow):
-            """
-            This is part of FancyArrowPatch._get_path_in_displaycoord
-            It omits the second part of the method where path is converted
-                to polygon based on width
-            The transform is taken from ax, not the object, as the object
-                has not been added yet, and doesn't have transform
-            """
-            dpi_cor = arrow._dpi_cor
-            trans_data = self.ax.transData
-            if arrow._posA_posB is None:
-                raise ValueError(
-                    "Can only draw labels for fancy arrows with "
-                    "posA and posB inputs, not custom path"
-                )
-            posA = arrow._convert_xy_units(arrow._posA_posB[0])
-            posB = arrow._convert_xy_units(arrow._posA_posB[1])
-            (posA, posB) = trans_data.transform((posA, posB))
-            _path = arrow.get_connectionstyle()(
-                posA,
-                posB,
-                patchA=arrow.patchA,
-                patchB=arrow.patchB,
-                shrinkA=arrow.shrinkA * dpi_cor,
-                shrinkB=arrow.shrinkB * dpi_cor,
-            )
-            # Return is in display coordinates
-            return _path
-
-        def _update_text_pos_angle(self, arrow):
-            # Fractional label position
-            # Text position at a proportion t along the line in display coords
-            # default is 0.5 so text appears at the halfway point
-            t = self.label_pos
-            tt = 1 - t
-            path_disp = self._get_arrow_path_disp(arrow)
-            is_bar_style = isinstance(
-                arrow.get_connectionstyle(), mpl.patches.ConnectionStyle.Bar
-            )
-            # 1. Calculate x and y
-            if is_bar_style:
-                # Bar Connection Style - straight line
-                _, (cx1, cy1), (cx2, cy2), _ = path_disp.vertices
-                x = cx1 * tt + cx2 * t
-                y = cy1 * tt + cy2 * t
-            else:
-                # Arc or Angle type Connection Styles - Bezier curve
-                (x1, y1), (cx, cy), (x2, y2) = path_disp.vertices
-                x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
-                y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
-            # 2. Calculate Angle
-            if self.labels_horizontal:
-                # Horizontal text labels
-                angle = 0
-            else:
-                # Labels parallel to curve
-                if is_bar_style:
-                    change_x = (cx2 - cx1) / 2
-                    change_y = (cy2 - cy1) / 2
-                else:
-                    change_x = 2 * tt * (cx - x1) + 2 * t * (x2 - cx)
-                    change_y = 2 * tt * (cy - y1) + 2 * t * (y2 - cy)
-                angle = np.arctan2(change_y, change_x) / (2 * np.pi) * 360
-                # Text is "right way up"
-                if angle > 90:
-                    angle -= 180
-                elif angle < -90:
-                    angle += 180
-            (x, y) = self.ax.transData.inverted().transform((x, y))
-            return x, y, angle
-
-        def draw(self, renderer):
-            # recalculate the text position and angle
-            self.x, self.y, self.angle = self._update_text_pos_angle(self.arrow)
-            self.set_position((self.x, self.y))
-            self.set_rotation(self.angle)
-            # redraw text
-            super().draw(renderer)
+    class CurvedArrowText(CurvedArrowTextBase, mpl.text.Text):
+        pass
 
     # use default box of white with white border
     if bbox is None:
