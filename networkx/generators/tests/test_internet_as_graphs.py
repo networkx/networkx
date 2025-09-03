@@ -1,7 +1,12 @@
 from pytest import approx
 
+import networkx as nx
 from networkx import is_connected, neighbors
-from networkx.generators.internet_as_graphs import random_internet_as_graph
+from networkx.generators.internet_as_graphs import (
+    AS_graph_generator,
+    choose_pref_attach,
+    random_internet_as_graph,
+)
 
 
 class TestInternetASTopology:
@@ -174,3 +179,25 @@ class TestInternetASTopology:
         assert t_m / d_m == approx(0.375, abs=1e-1)
         assert t_cp / d_cp == approx(0.375, abs=1e-1)
         assert t_c / d_c == approx(0.125, abs=1e-1)
+
+
+def test_AS_graph_coverage():
+    """Add test coverage for some hard-to-hit branches."""
+    GG = AS_graph_generator(20, seed=42)
+    GG.generate()
+    node = GG.nodes["M"].pop()
+
+    # Add coverage for the unsuccessful branches when adding peering links.
+    GG.add_m_peering_link(node, "M")
+    GG.add_cp_peering_link(node, "M")
+
+    # Add coverage for trying to link to a node we are already connected to.
+    GG.add_cp_peering_link(node, "C")
+
+    # Add coverage for adding an already existing node.
+    GG.add_node(0, "M", 1, 2, 0.5)
+
+
+def test_choose_pref_attach():
+    """Add test coverage for the empty `degs` branch in `choose_pref_attach`."""
+    choose_pref_attach([], seed=42)
