@@ -71,7 +71,6 @@ def max_flow_trimming(G, A, alpha, _s, _t, flow_func=None, **kwargs):
     return set(), set(G)
 
 
-@nx._dispatchable()
 @not_implemented_for("directed")
 def expander_decomposition(
     G, alpha, _s, _t, max_flow_trimming=True, trimming_kwargs=None, **kwargs

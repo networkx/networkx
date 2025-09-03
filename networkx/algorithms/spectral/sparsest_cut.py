@@ -18,7 +18,6 @@ __all__ = ["sparse_cut", "sparsest_cut", "balanced_sparse_cut"]
 
 
 @not_implemented_for("directed")
-@nx._dispatchable()
 def sparse_cut(
     G,
     alpha,
@@ -227,7 +226,6 @@ def sparse_cut(
 
 
 @not_implemented_for("directed")
-@nx._dispatchable
 def sparsest_cut(G, _s, _t, **kwargs):
     r"""Given a graph `G` with n nodes, find an $\alpha$ sparse cut in `G`
     such that `G` is an $\alpha / 4 \log(n)^2$ edge expander.
@@ -280,7 +278,6 @@ def sparsest_cut(G, _s, _t, **kwargs):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable
 def balanced_sparse_cut(G, alpha, _s, _t, balance, **kwargs):
     r"""Given a graph `G` with n nodes, a sparsity parameter `alpha`, and a balance
     parameter `balance`, find an `alpha` sparse cut `balance` balanced cut, or

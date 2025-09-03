@@ -218,7 +218,6 @@ def lowest_conductance_cut_impl(
 
 
 @not_implemented_for("directed")
-@nx._dispatchable
 def lowest_conductance_cut(
     G,
     alpha,
