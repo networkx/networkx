@@ -18,6 +18,8 @@ def test_exceptions():
     pytest.raises(NetworkXError, asyn_fluidc, test, "hi")
     pytest.raises(NetworkXError, asyn_fluidc, test, -1)
     pytest.raises(NetworkXError, asyn_fluidc, test, 3)
+    with pytest.raises(ValueError, match="must be greater than 0"):
+        asyn_fluidc(test, 1, max_iter=0)
     test.add_node("b")
     pytest.raises(NetworkXError, asyn_fluidc, test, 1)
 

@@ -1,0 +1,82 @@
+diff --git a/../no_runslow.txt b/../runslow.txt
+index 28d0413b2..abacaa52b 100644
+--- a/../no_runslow.txt
++++ b/../runslow.txt
+@@ -72,7 +72,7 @@ networkx/algorithms/coloring/equitable_coloring.py                    214      5
+ networkx/algorithms/coloring/greedy_coloring.py                       223      6     98      4    97%   191, 225, 370->374, 389, 433-435, 549->548
+ networkx/algorithms/communicability_alg.py                             41      0     10      0   100%
+ networkx/algorithms/community/__init__.py                              13      0      0      0   100%
+-networkx/algorithms/community/asyn_fluid.py                            69      1     24      1    98%   149
++networkx/algorithms/community/asyn_fluid.py                            69      0     24      0   100%
+ networkx/algorithms/community/centrality.py                            24      0      8      0   100%
+ networkx/algorithms/community/community_utils.py                        8      0      2      0   100%
+ networkx/algorithms/community/divisive.py                              62      0     34      1    99%   191->189
+@@ -98,8 +98,8 @@ networkx/algorithms/connectivity/cuts.py                              115      0
+ networkx/algorithms/connectivity/disjoint_paths.py                     83      0     44      0   100%
+ networkx/algorithms/connectivity/edge_augmentation.py                 317      6    142      6    97%   489, 689->688, 809, 842->840, 930-931, 962-963, 1146->1143
+ networkx/algorithms/connectivity/edge_kcomponents.py                  143      0     72      0   100%
+-networkx/algorithms/connectivity/kcomponents.py                        88      2     48      6    94%   112->115, 118->115, 144->135, 194->188, 206, 211
+-networkx/algorithms/connectivity/kcutsets.py                           88      2     44      2    97%   119, 203
++networkx/algorithms/connectivity/kcomponents.py                        88      1     48      3    97%   112->115, 194->188, 206
++networkx/algorithms/connectivity/kcutsets.py                           88      1     44      1    98%   203
+ networkx/algorithms/connectivity/stoerwagner.py                        51      0     26      0   100%
+ networkx/algorithms/connectivity/utils.py                              32      0     10      0   100%
+ networkx/algorithms/core.py                                           125      0     48      2    99%   339->341, 559->565
+@@ -134,7 +134,7 @@ networkx/algorithms/isolate.py                                         11      0
+ networkx/algorithms/isomorphism/__init__.py                             7      0      0      0   100%
+ networkx/algorithms/isomorphism/ismags.py                             455     19    204     13    95%   137-139, 461-462, 464, 488, 558-559, 561, 576, 611-620, 630, 666->exit, 716, 817, 993, 1128
+ networkx/algorithms/isomorphism/isomorph.py                            76      0     26      0   100%
+-networkx/algorithms/isomorphism/isomorphvf2.py                        405     18    306     18    95%   204, 226, 385, 568, 573, 786, 796, 801, 816, 826, 831, 852, 866, 869, 885, 888, 902, 905, 1123->1129, 1253->1259
++networkx/algorithms/isomorphism/isomorphvf2.py                        405     19    306     19    95%   204, 226, 385, 568, 573, 786, 796, 801, 812, 816, 826, 831, 852, 866, 869, 885, 888, 902, 905, 1123->1129, 1253->1259
+ networkx/algorithms/isomorphism/matchhelpers.py                       118      9     38      1    91%   174-176, 208, 263, 269-273
+ networkx/algorithms/isomorphism/temporalisomorphvf2.py                 93     14     44     10    75%   110-113, 115, 137, 178-182, 194-198, 244, 249->251, 263, 302, 306
+ networkx/algorithms/isomorphism/tree_isomorphism.py                    79      0     40      0   100%
+@@ -216,21 +216,21 @@ networkx/drawing/layout.py                                            633     58
+ networkx/drawing/nx_agraph.py                                         160     13     70      4    93%   112, 115, 141-142, 221-222, 307-308, 319-321, 412->exit, 466-468
+ networkx/drawing/nx_latex.py                                           93      1     44      4    96%   235->237, 239->241, 241->245, 251
+ networkx/drawing/nx_pydot.py                                          134     15     50      7    86%   119-120, 157-158, 163-164, 173, 325, 335-341, 355->357, 358->351
+-networkx/drawing/nx_pylab.py                                          701     44    306     34    91%   91->98, 93->95, 95->98, 132, 152, 198-199, 214->223, 634, 639, 669-671, 690, 710, 725, 816, 912, 944-947, 1012->1085, 1024->1030, 1520-1523, 1553, 1580-1583, 1616, 1620-1621, 1949, 1957-1958, 2007->2011, 2225, 2395->2398, 2403, 2419->2423, 2435->2439, 2456-2458, 2463, 2483-2488, 2899
++networkx/drawing/nx_pylab.py                                          701     48    306     34    91%   91->98, 93->95, 95->98, 132, 152, 198-199, 214->223, 250-254, 634, 639, 669-671, 690, 710, 725, 816, 912, 944-947, 1012->1085, 1024->1030, 1520-1523, 1553, 1580-1583, 1616, 1620-1621, 1949, 1957-1958, 2007->2011, 2225, 2395->2398, 2403, 2419->2423, 2435->2439, 2456-2458, 2463, 2483-2488, 2899
+ networkx/exception.py                                                  20      0      0      0   100%
+ networkx/generators/__init__.py                                        29      0      0      0   100%
+ networkx/generators/atlas.py                                           32      0      6      0   100%
+ networkx/generators/classic.py                                        250      6     90      4    97%   137, 139, 747, 962, 1086-1087
+-networkx/generators/cographs.py                                        13      1      4      1    88%   64
++networkx/generators/cographs.py                                        13      0      4      0   100%
+ networkx/generators/community.py                                      269      3    148      0    99%   731-734
+-networkx/generators/degree_seq.py                                     292     10    140     11    95%   316->319, 434->436, 508, 583, 599->586, 626, 660-664, 688, 753, 768-769, 780, 781->786
+-networkx/generators/directed.py                                       175      4     76      1    98%   512-515
++networkx/generators/degree_seq.py                                     292      9    140      9    96%   316->319, 508, 583, 599->586, 626, 660-664, 753, 768-769, 780, 781->786
++networkx/generators/directed.py                                       175      2     76      0    99%   514-515
+ networkx/generators/duplication.py                                     49      0     24      0   100%
+ networkx/generators/ego.py                                             15      0      8      0   100%
+ networkx/generators/expanders.py                                      102      7     44      4    91%   290, 300, 412, 489-495
+ networkx/generators/geometric.py                                      174      4     60      1    98%   97-105, 472->475
+ networkx/generators/harary_graph.py                                    65      0     48      0   100%
+-networkx/generators/internet_as_graphs.py                             181      5     70      6    96%   56, 215, 255->259, 270, 308, 317
++networkx/generators/internet_as_graphs.py                             181      4     70      5    96%   56, 215, 255->259, 308, 317
+ networkx/generators/intersection.py                                    30      0     10      0   100%
+ networkx/generators/interval_graph.py                                  21      0     12      0   100%
+ networkx/generators/joint_degree_seq.py                               233     14    126     12    92%   57->56, 66, 69, 72, 121-125, 129->136, 204-205, 271, 346->341, 351, 538-539, 597->594
+@@ -239,7 +239,7 @@ networkx/generators/line.py                                           160      0
+ networkx/generators/mycielski.py                                       24      0      6      0   100%
+ networkx/generators/nonisomorphic_trees.py                            119     14     64      1    89%   75->73, 227-240
+ networkx/generators/random_clustered.py                                31      0     14      0   100%
+-networkx/generators/random_graphs.py                                  449     18    200     12    95%   233, 237, 461, 519->516, 578, 702, 711, 1059, 1062, 1163-1170, 1229, 1329, 1402-1408
++networkx/generators/random_graphs.py                                  449     13    200     10    96%   233, 237, 461, 578, 702, 711, 1059, 1062, 1163-1170, 1229, 1329
+ networkx/generators/small.py                                          172      0     18      0   100%
+ networkx/generators/social.py                                         311      0      8      0   100%
+ networkx/generators/spectral_graph_forge.py                            34      0      8      0   100%
+@@ -282,9 +282,9 @@ networkx/utils/configs.py                                             152     11
+ networkx/utils/decorators.py                                          208      3     58      3    98%   991, 1014, 1186
+ networkx/utils/heaps.py                                               167     11     42      2    94%   31, 50, 65, 84, 107, 111, 119, 129, 271, 276-277
+ networkx/utils/mapped_queue.py                                        146      8     34      1    95%   62-63, 84-85, 88, 169, 225-227
+-networkx/utils/misc.py                                                239     22    102      9    91%   74-75, 296-298, 316, 322, 325, 329, 341-343, 354, 360, 409, 469-470, 473, 481, 578, 619->625, 621, 625->630, 627
++networkx/utils/misc.py                                                239     18    102      7    93%   74-75, 296-298, 316, 322, 325, 329, 341-343, 469-470, 481, 578, 619->625, 621, 625->630, 627
+ networkx/utils/random_sequence.py                                      54      1     20      2    96%   127, 161->exit
+ networkx/utils/rcm.py                                                  36      0      8      0   100%
+ networkx/utils/union_find.py                                           39      1     14      0    98%   70
+ ---------------------------------------------------------------------------------------------------------------
+-TOTAL                                                               31867   1408  13758    592    95%
++TOTAL                                                               31867   1396  13758    579    95%
+\ No newline at end of file
