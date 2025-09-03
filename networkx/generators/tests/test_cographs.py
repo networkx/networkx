@@ -5,7 +5,7 @@ import networkx as nx
 
 def test_random_cograph():
     n = 3
-    G = nx.random_cograph(n)
+    G = nx.random_cograph(n, seed=42)
 
     assert len(G) == 2**n
 
