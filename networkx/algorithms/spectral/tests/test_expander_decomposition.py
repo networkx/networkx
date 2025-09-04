@@ -51,7 +51,7 @@ def test_expander_decomposition_cliques_2():
     pytest.importorskip("scipy")
     G = connected_cliques(15, 20, 40)
     m = len(G.edges())
-    clusters = expander_decomposition(G, 0.1, "_s", "_t", fast_randomization=True)
+    clusters = expander_decomposition(G, 0.05, "_s", "_t", fast_randomization=True)
 
     assert len(clusters) == 20
     assert intercluster_edges(G, clusters) < 0.1 * m * math.log(m) ** 3
