@@ -91,7 +91,9 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
         density[communities[vertex]] = max_density
     # Set up control variables and start iterating
     iter_count = 0
-    while iter_count < max_iter:
+    cont = True
+    while cont and iter_count < max_iter:
+        cont = False
         iter_count += 1
         # Loop over all vertices in graph in a random order
         vertices = list(G)
@@ -126,26 +128,26 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
                 except KeyError:
                     pass
 
-                # If vertex community didn't change, stop looping.
-                if new_com != -1:
-                    continue
-
-                # Randomly chose a new community from candidates
-                new_com = seed.choice(best_communities)
-                # Update previous community status
-                try:
-                    com_to_numvertices[communities[vertex]] -= 1
+                # If vertex community changes...
+                if new_com == -1:
+                    # Set flag of non-convergence
+                    cont = True
+                    # Randomly chose a new community from candidates
+                    new_com = seed.choice(best_communities)
+                    # Update previous community status
+                    try:
+                        com_to_numvertices[communities[vertex]] -= 1
+                        density[communities[vertex]] = (
+                            max_density / com_to_numvertices[communities[vertex]]
+                        )
+                    except KeyError:
+                        pass
+                    # Update new community status
+                    communities[vertex] = new_com
+                    com_to_numvertices[communities[vertex]] += 1
                     density[communities[vertex]] = (
                         max_density / com_to_numvertices[communities[vertex]]
                     )
-                except KeyError:
-                    pass
-                # Update new community status
-                communities[vertex] = new_com
-                com_to_numvertices[communities[vertex]] += 1
-                density[communities[vertex]] = (
-                    max_density / com_to_numvertices[communities[vertex]]
-                )
     # If maximum iterations reached --> output actual results
     # Return results by grouping communities as list of vertices
     return iter(groups(communities).values())
