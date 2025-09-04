@@ -505,5 +505,5 @@ def test_random_k_lift_non_regular_graph():
     G = nx.Graph()
     G.add_edges_from([(0, 1), (0, 2)])  # degrees: 0→2, 1→1, 2→1
 
-    with pytest.raises(ValueError, match="must be d-regular"):
+    with pytest.raises(ValueError, match="must be degree-regular"):
         nx.random_k_lift(G, k=2, seed=1)
