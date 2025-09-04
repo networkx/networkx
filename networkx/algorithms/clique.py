@@ -585,7 +585,7 @@ def node_clique_number(G, nodes=None, cliques=None, separate_nodes=False):
 def number_of_cliques(G, nodes=None, cliques=None):
     """Return the number of maximal cliques each node is part of.
 
-    Output is a single value or list depending on `nodes`.
+    Output is a single value or dict depending on `nodes`.
     Optional list of cliques can be input if already computed.
 
     Parameters
