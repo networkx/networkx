@@ -551,6 +551,7 @@ def subplots():
         nx.draw_spectral,
         nx.draw_spring,
         nx.draw_shell,
+        nx.draw_forceatlas2,
     ],
 )
 def test_draw(function):
