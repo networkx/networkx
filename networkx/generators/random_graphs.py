@@ -1421,7 +1421,7 @@ def random_kernel_graph(
     return graph
 
 
-@py_random_state(2)
+@py_random_state("seed")
 @nx._dispatchable(graphs=None, returns_graph=True)
 def random_k_lift(G, k, seed=None):
     r"""Return a `k`-lift of a degree-regular graph using random permutations.
