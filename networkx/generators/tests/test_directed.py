@@ -105,9 +105,16 @@ class TestRandomKOutGraph:
 
     """
 
-    @pytest.mark.parametrize(
-        "f", (_random_k_out_graph_numpy, _random_k_out_graph_python)
+    @pytest.fixture(
+        params=[
+            _random_k_out_graph_numpy,
+            _random_k_out_graph_python,
+            random_k_out_graph,
+        ]
     )
+    def f(self, request):
+        return request.param
+
     def test_regularity(self, f):
         """Tests that the generated graph is `k`-out-regular."""
         if (f == _random_k_out_graph_numpy) and not has_numpy:
@@ -120,9 +127,6 @@ class TestRandomKOutGraph:
         G = f(n, k, alpha, seed=42)
         assert all(d == k for v, d in G.out_degree())
 
-    @pytest.mark.parametrize(
-        "f", (_random_k_out_graph_numpy, _random_k_out_graph_python)
-    )
     def test_no_self_loops(self, f):
         """Tests for forbidding self-loops."""
         if (f == _random_k_out_graph_numpy) and not has_numpy:
