@@ -125,26 +125,27 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
                         new_com = communities[vertex]
                 except KeyError:
                     pass
-                # If vertex community changes...
-                if new_com == -1:
-                    # Set flag of non-convergence
-                    cont = True
-                    # Randomly chose a new community from candidates
-                    new_com = seed.choice(best_communities)
-                    # Update previous community status
-                    try:
-                        com_to_numvertices[communities[vertex]] -= 1
-                        density[communities[vertex]] = (
-                            max_density / com_to_numvertices[communities[vertex]]
-                        )
-                    except KeyError:
-                        pass
-                    # Update new community status
-                    communities[vertex] = new_com
-                    com_to_numvertices[communities[vertex]] += 1
+
+                # If vertex community didn't change, stop looping.
+                if new_com != -1:
+                    continue
+
+                # Randomly chose a new community from candidates
+                new_com = seed.choice(best_communities)
+                # Update previous community status
+                try:
+                    com_to_numvertices[communities[vertex]] -= 1
                     density[communities[vertex]] = (
                         max_density / com_to_numvertices[communities[vertex]]
                     )
+                except KeyError:
+                    pass
+                # Update new community status
+                communities[vertex] = new_com
+                com_to_numvertices[communities[vertex]] += 1
+                density[communities[vertex]] = (
+                    max_density / com_to_numvertices[communities[vertex]]
+                )
     # If maximum iterations reached --> output actual results
     # Return results by grouping communities as list of vertices
     return iter(groups(communities).values())
