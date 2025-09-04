@@ -193,8 +193,12 @@ def test_create_py_random_state():
     assert isinstance(create_py_random_state(rng), nprs)
     assert isinstance(create_py_random_state(rng_explicit), nprs)
     # test default rng input
-    assert isinstance(PythonRandomInterface(), old_nprs)
-    assert isinstance(PythonRandomViaNumpyBits(), nprs)
+    old_nprs_instance = old_nprs()
+    nprs_instance = nprs()
+    assert isinstance(old_nprs_instance, old_nprs)
+    assert isinstance(nprs_instance, nprs)
+    assert create_py_random_state(old_nprs_instance) == old_nprs_instance
+    assert create_py_random_state(nprs_instance) == nprs_instance
 
     # VeryLargeIntegers Smoke test (they raise error for np.random)
     int64max = 9223372036854775807  # from np.iinfo(np.int64).max
@@ -214,9 +218,12 @@ def test_PythonRandomInterface_RandomState():
 
     # make sure these functions are same as expected outcome
     assert rng.randrange(3, 5) == rs42.randint(3, 5)
+    assert rng.randrange(2) == rs42.randint(0, 2)
+    assert rng.uniform(1, 10) == rs42.uniform(1, 10)
     assert rng.choice([1, 2, 3]) == rs42.choice([1, 2, 3])
     assert rng.gauss(0, 1) == rs42.normal(0, 1)
     assert rng.expovariate(1.5) == rs42.exponential(1 / 1.5)
+    assert rng.paretovariate(2) == rs42.pareto(2)
     assert np.all(rng.shuffle([1, 2, 3]) == rs42.shuffle([1, 2, 3]))
     assert np.all(
         rng.sample([1, 2, 3], 2) == rs42.choice([1, 2, 3], (2,), replace=False)
@@ -237,9 +244,12 @@ def test_PythonRandomInterface_Generator():
 
     # make sure these functions are same as expected outcome
     assert pri.randrange(3, 5) == rng.integers(3, 5)
+    assert pri.randrange(2) == rng.integers(0, 2)
+    assert pri.uniform(1, 10) == rng.uniform(1, 10)
     assert pri.choice([1, 2, 3]) == rng.choice([1, 2, 3])
     assert pri.gauss(0, 1) == rng.normal(0, 1)
     assert pri.expovariate(1.5) == rng.exponential(1 / 1.5)
+    assert pri.paretovariate(2) == rng.pareto(2)
     assert np.all(pri.shuffle([1, 2, 3]) == rng.shuffle([1, 2, 3]))
     assert np.all(
         pri.sample([1, 2, 3], 2) == rng.choice([1, 2, 3], (2,), replace=False)
