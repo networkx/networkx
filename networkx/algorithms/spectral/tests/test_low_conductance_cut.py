@@ -151,7 +151,9 @@ def test_low_conductance_cut_no_edges():
     pytest.importorskip("numpy")
     pytest.importorskip("scipy")
     G = nx.trivial_graph()
-    pytest.raises(nx.NetworkXError, lowest_conductance_cut, G, 0.005, "_s", "_t")
+    S, T = lowest_conductance_cut(G, 0.01, "_s", "_t")
+    assert len(S) == 0
+    assert T == set(G)
 
 
 def test_low_conductance_cut_negative_t_factor():
