@@ -33,6 +33,9 @@ def generate_random_orthogonal_gaussian(dim, quantity):
     """
     import numpy as np
 
+    if dim == 1:
+        return np.full((1, quantity), 0)
+
     vecs = np.random.normal(size=(quantity, dim))
     vecs = vecs - (vecs @ np.full((dim, 1), 1 / dim))
     vecs = vecs.T

@@ -49,7 +49,7 @@ def lowest_conductance_cut_impl(
     C = set()
     cut_volume = 0
     T = math.ceil(t_const + t_slope * math.log(m) ** 2)
-    c = math.ceil(1 / alpha / math.log(m) ** 2)
+    c = math.ceil(1 / alpha / (math.log(m) ** 2 + 0.01))
 
     # map of nodes to indices. Note that the first n indices will be
     # nodes of G, then the remainder will be subdivision nodes.
@@ -384,8 +384,8 @@ def lowest_conductance_cut(
     .. [3] Isaac Arvestad. Near-linear Time Expander Decomposition in Practice.
             Master's thesis, KTH Royal Institute of Technology, 2022.
     """
-    if len(G.edges()) < 2:
-        raise nx.NetworkXError("G must have at least 2 edges.")
+    if len(G.edges()) == 0:
+        return set(), set(G)
 
     if flow_func is None:
         if kwargs:

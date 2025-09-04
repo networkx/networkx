@@ -65,3 +65,31 @@ def test_expander_decomposition_random(_seed=1234):
     clusters = expander_decomposition(G, 0.001, "_s", "_t")
 
     assert len(clusters) == 1
+
+
+def test_expander_decomposition_one_edge():
+    """Should always certify that a graph with one edge is an expander."""
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+    G = nx.complete_graph(2)
+    clusters = expander_decomposition(G, 0.01, "_s", "_t")
+
+    assert len(clusters) == 1
+
+
+def test_expander_decomposition_no_edges():
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+    G = nx.trivial_graph()
+    clusters = expander_decomposition(G, 0.1, "_s", "_t")
+
+    assert len(clusters) == 1
+
+
+def test_expander_decomposition_bad_args():
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+    G = nx.complete_graph(10)
+    pytest.raises(
+        nx.NetworkXNotImplemented, expander_decomposition, G, 0.1, "_s", "_t", False
+    )

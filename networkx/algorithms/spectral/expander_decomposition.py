@@ -77,7 +77,7 @@ def expander_decomposition(
 ):
     r"""Given a graph `G` with `n` nodes and `m` edges, and a conductance parameter
     `alpha`, finds with high probability a partition such that each cluster is
-    an `alpha` expander and the total number of intercluster edges is
+    a `6 * alpha` expander and the total number of intercluster edges is
     $O(\alpha m \log(m)^3)$
 
     This algorithm runs in time $O(\log(m)^4(m / \alpha + T_f))$ where $T_f$ is the
