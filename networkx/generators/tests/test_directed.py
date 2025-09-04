@@ -134,7 +134,7 @@ class TestRandomKOutGraph:
         n = 10
         k = 3
         alpha = 1
-        G = f(n, k, alpha, self_loops=False)
+        G = f(n, k, alpha, self_loops=False, seed=42)
         assert nx.number_of_selfloops(G) == 0
 
     def test_negative_alpha(self):
