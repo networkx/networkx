@@ -1424,7 +1424,7 @@ def random_kernel_graph(
 @py_random_state(2)
 @nx._dispatchable(graphs=None, returns_graph=True)
 def random_k_lift(G, k, seed=None):
-    r"""Perform a `k`-lift of a ``d``-regular graph using random permutations.
+    r"""Return a `k`-lift of a degree-regular graph using random permutations.
 
     The resulting graph ``H`` has `k` copies of each node from `G`.
     For each edge (``u``, ``v``) in `G`, a random permutation is used to connect the ``i``-th copy of ``u``
