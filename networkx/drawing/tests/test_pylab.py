@@ -541,21 +541,23 @@ def subplots():
     plt.close()
 
 
-def test_draw():
+@pytest.mark.parametrize(
+    "function",
+    [
+        nx.draw_circular,
+        nx.draw_kamada_kawai,
+        nx.draw_planar,
+        nx.draw_random,
+        nx.draw_spectral,
+        nx.draw_spring,
+        nx.draw_shell,
+    ],
+)
+def test_draw(function):
+    options = {"node_color": "black", "node_size": 100, "width": 3}
     try:
-        functions = [
-            nx.draw_circular,
-            nx.draw_kamada_kawai,
-            nx.draw_planar,
-            nx.draw_random,
-            nx.draw_spectral,
-            nx.draw_spring,
-            nx.draw_shell,
-        ]
-        options = [{"node_color": "black", "node_size": 100, "width": 3}]
-        for function, option in itertools.product(functions, options):
-            function(barbell, **option)
-            plt.savefig("test.ps")
+        function(barbell, **options)
+        plt.savefig("test.ps")
     except ModuleNotFoundError:  # draw_kamada_kawai requires scipy
         pass
     finally:
