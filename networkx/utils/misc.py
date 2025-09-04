@@ -404,7 +404,7 @@ class PythonRandomInterface:
     def expovariate(self, scale):
         return self._rng.exponential(1 / scale)
 
-    #    pareto as paretovariate with 1/argument,
+    #    pareto as paretovariate with argument,
     def paretovariate(self, shape):
         return self._rng.pareto(shape)
 
