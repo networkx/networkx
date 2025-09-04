@@ -903,8 +903,8 @@ def test_return_types():
 
     G = nx.frucht_graph(create_using=nx.Graph)
     dG = nx.frucht_graph(create_using=nx.DiGraph)
-    pos = nx.spring_layout(G)
-    dpos = nx.spring_layout(dG)
+    pos = nx.spring_layout(G, seed=42)
+    dpos = nx.spring_layout(dG, seed=42)
     # nodes
     nodes = nx.draw_networkx_nodes(G, pos)
     assert isinstance(nodes, PathCollection)
@@ -925,7 +925,7 @@ def test_return_types():
 
 def test_labels_and_colors():
     G = nx.cubical_graph()
-    pos = nx.spring_layout(G)  # positions for all nodes
+    pos = nx.spring_layout(G, seed=42)  # positions for all nodes
     # nodes
     nx.draw_networkx_nodes(
         G, pos, nodelist=[0, 1, 2, 3], node_color="r", node_size=500, alpha=0.75
