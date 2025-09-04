@@ -1491,7 +1491,7 @@ def random_k_lift(G, k, seed=None):
     16
     """
     if not nx.is_regular(G):
-        raise ValueError("Input graph G must be d-regular.")
+        raise ValueError("input graph must be degree-regular")
 
     H = nx.Graph()
 
