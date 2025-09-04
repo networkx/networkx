@@ -1449,7 +1449,7 @@ def random_k_lift(G, k, seed=None):
     Raises
     ------
     ValueError
-        If `G` is not ``d``-regular.
+        If `G` is not degree-regular.
 
     Notes
     -----
