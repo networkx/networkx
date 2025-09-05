@@ -586,6 +586,16 @@ def test_edge_colormap():
     # plt.show()
 
 
+def test_draw_networkx_edge_labels(subplots, tmpdir):
+    fig, _ = subplots
+    edge = (0, 1)
+    G = nx.DiGraph([edge])
+    pos = {n: (n, n) for n in G}
+    nx.draw(G, pos=pos)
+    nx.draw_networkx_edge_labels(G, pos, edge_labels={edge: "edge"})
+    fig.savefig(tmpdir.join("test.ps"))
+
+
 def test_arrows():
     nx.draw_spring(barbell.to_directed())
     # plt.show()
