@@ -79,6 +79,11 @@ def test_directed():
         nx.k_components(G)
 
 
+def test_empty_k_components():
+    G = nx.empty_graph(5)
+    assert nx.k_components(G) == {}
+
+
 # Helper function
 def _check_connectivity(G, k_components):
     for k, components in k_components.items():
