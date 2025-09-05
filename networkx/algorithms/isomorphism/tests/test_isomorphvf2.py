@@ -148,6 +148,7 @@ class TestAtlas:
         from networkx.generators import atlas
 
         cls.GAG = atlas.graph_atlas_g()
+        cls.rng = random.Random(42)
 
     def test_graph_atlas(self):
         # Atlas = nx.graph_atlas_g()[0:208] # 208, 6 nodes or less
@@ -157,7 +158,7 @@ class TestAtlas:
             nlist = list(graph)
             labels = alphabet[: len(nlist)]
             for s in range(10):
-                random.shuffle(labels)
+                self.rng.shuffle(labels)
                 d = dict(zip(nlist, labels))
                 relabel = nx.relabel_nodes(graph, d)
                 gm = iso.GraphMatcher(graph, relabel)
@@ -201,11 +202,13 @@ def test_multiedge():
     ]
     nodes = list(range(20))
 
+    rng = random.Random(42)
+
     for g1 in [nx.MultiGraph(), nx.MultiDiGraph()]:
         g1.add_edges_from(edges)
-        for _ in range(10):
+        for _ in range(100):
             new_nodes = list(nodes)
-            random.shuffle(new_nodes)
+            rng.shuffle(new_nodes)
             d = dict(zip(nodes, new_nodes))
             g2 = nx.relabel_nodes(g1, d)
             if not g1.is_directed():
@@ -262,11 +265,13 @@ def test_selfloop():
     ]
     nodes = list(range(6))
 
+    rng = random.Random(42)
+
     for g1 in [nx.Graph(), nx.DiGraph()]:
         g1.add_edges_from(edges)
         for _ in range(100):
             new_nodes = list(nodes)
-            random.shuffle(new_nodes)
+            rng.shuffle(new_nodes)
             d = dict(zip(nodes, new_nodes))
             g2 = nx.relabel_nodes(g1, d)
             if not g1.is_directed():
@@ -293,11 +298,13 @@ def test_selfloop_mono():
     edges = edges0 + [(2, 2)]
     nodes = list(range(6))
 
+    rng = random.Random(42)
+
     for g1 in [nx.Graph(), nx.DiGraph()]:
         g1.add_edges_from(edges)
         for _ in range(100):
             new_nodes = list(nodes)
-            random.shuffle(new_nodes)
+            rng.shuffle(new_nodes)
             d = dict(zip(nodes, new_nodes))
             g2 = nx.relabel_nodes(g1, d)
             g2.remove_edges_from(nx.selfloop_edges(g2))
