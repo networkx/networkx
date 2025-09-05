@@ -651,18 +651,10 @@ def degree_sequence_tree(deg_sequence, create_using=None):
     the degree sequence must have
     len(deg_sequence)-sum(deg_sequence)/2=1
     """
-    # The sum of the degree sequence must be even (for any undirected graph).
-    if (degree_sum := sum(deg_sequence)) % 2 != 0:
-        msg = "Invalid degree sequence: sum of degrees must be even, not odd"
-        raise nx.NetworkXError(msg)
-    if (degree_len := len(deg_sequence)) - degree_sum // 2 != 1:
-        msg = (
-            "Invalid degree sequence: tree must have number of nodes equal"
-            " to one less than the number of edges"
-        )
-        raise nx.NetworkXError(msg)
-    if deg_sequence != [0] and any(d <= 0 for d in deg_sequence):
-        raise ValueError("nontrivial tree cannot have isolated nodes")
+    deg_sequence = list(deg_sequence)
+    valid, reason = nx.utils.is_valid_tree_degree_sequence(deg_sequence)
+    if not valid:
+        raise nx.NetworkXError(reason)
 
     G = nx.empty_graph(0, create_using)
     if G.is_directed():
@@ -686,7 +678,7 @@ def degree_sequence_tree(deg_sequence, create_using=None):
         last += nedges
 
     # in case we added one too many
-    if len(G) > degree_len:
+    if len(G) > len(deg_sequence):
         G.remove_node(0)
     return G
 
