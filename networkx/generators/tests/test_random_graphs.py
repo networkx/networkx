@@ -490,7 +490,7 @@ def test_random_kernel_disallow_directed_and_multigraph(graphtype):
 )
 def test_random_k_lift_size_and_structure(d, n, k):
     G = nx.random_regular_graph(d, n, seed=42)
-    H = nx.random_k_lift(G, k)
+    H = nx.random_k_lift(G, k, seed=42)
     degrees = [deg for _, deg in H.degree()]
     assert all(deg == d for deg in degrees)
     assert H.number_of_nodes() == n * k
