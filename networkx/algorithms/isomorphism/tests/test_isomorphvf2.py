@@ -444,3 +444,41 @@ def test_isomorphvf2pp_multidigraphs():
     g = nx.MultiDiGraph({0: [1, 1, 2, 2, 3], 1: [2, 3, 3], 2: [3]})
     h = nx.MultiDiGraph({0: [1, 1, 2, 2, 3], 1: [2, 3, 3], 3: [2]})
     assert not (nx.vf2pp_is_isomorphic(g, h))
+
+
+@pytest.mark.parametrize(
+    ("e1", "e2", "isomorphic", "subgraph_is_isomorphic"),
+    [
+        ([(0, 1), (0, 2)], [(0, 1), (0, 2), (1, 2)], False, False),
+        ([(0, 1), (0, 2)], [(0, 1), (0, 2), (2, 1)], False, False),
+        ([(0, 1), (1, 2)], [(0, 1), (1, 2), (2, 0)], False, False),
+        ([(0, 1), (1, 2)], [(0, 1), (2, 0), (2, 1)], False, False),
+        ([(0, 1), (0, 2), (1, 2)], [(0, 1), (0, 2), (2, 1)], True, True),
+        (
+            [(0, 0), (0, 1), (1, 2), (2, 1)],
+            [(0, 1), (1, 0), (1, 2), (2, 0)],
+            False,
+            False,
+        ),
+        (
+            [(0, 0), (1, 0), (1, 2), (2, 1)],
+            [(0, 1), (0, 2), (1, 0), (1, 2)],
+            False,
+            False,
+        ),
+        ([(0, 1), (0, 2), (1, 2)], [(0, 1), (1, 2), (2, 0)], False, False),
+        (
+            [(0, 0), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1), (2, 2)],
+            [(0, 0), (0, 1), (0, 2), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2)],
+            False,
+            False,
+        ),
+    ],
+)
+def test_three_node(e1, e2, isomorphic, subgraph_is_isomorphic):
+    """Test some edge cases distilled from random search of the input space."""
+    G1 = nx.DiGraph(e1)
+    G2 = nx.DiGraph(e2)
+    gm = iso.DiGraphMatcher(G1, G2)
+    assert gm.is_isomorphic() == isomorphic
+    assert gm.subgraph_is_isomorphic() == subgraph_is_isomorphic
