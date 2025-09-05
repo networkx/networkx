@@ -554,42 +554,28 @@ def subplots():
         nx.draw_forceatlas2,
     ],
 )
-def test_draw(function):
+def test_draw(function, subplots, tmpdir):
+    fig, _ = subplots
     options = {"node_color": "black", "node_size": 100, "width": 3}
     try:
         function(barbell, **options)
-        plt.savefig("test.ps")
     except ModuleNotFoundError:  # draw_kamada_kawai requires scipy
         pass
-    finally:
-        try:
-            os.unlink("test.ps")
-        except OSError:
-            pass
+    fig.savefig(tmpdir.join("test.ps"))
 
 
-def test_draw_shell_nlist():
-    try:
-        nlist = [list(range(4)), list(range(4, 10)), list(range(10, 14))]
-        nx.draw_shell(barbell, nlist=nlist)
-        plt.savefig("test.ps")
-    finally:
-        try:
-            os.unlink("test.ps")
-        except OSError:
-            pass
+def test_draw_shell_nlist(subplots, tmpdir):
+    fig, _ = subplots
+    nlist = [list(range(4)), list(range(4, 10)), list(range(10, 14))]
+    nx.draw_shell(barbell, nlist=nlist)
+    fig.savefig(tmpdir.join("test.ps"))
 
 
-def test_draw_bipartite():
-    try:
-        G = nx.complete_bipartite_graph(2, 5)
-        nx.draw_bipartite(G)
-        plt.savefig("test.ps")
-    finally:
-        try:
-            os.unlink("test.ps")
-        except OSError:
-            pass
+def test_draw_bipartite(subplots, tmpdir):
+    fig, _ = subplots
+    G = nx.complete_bipartite_graph(2, 5)
+    nx.draw_bipartite(G)
+    fig.savefig(tmpdir.join("test.ps"))
 
 
 def test_edge_colormap():
