@@ -1456,7 +1456,7 @@ def random_k_lift(G, k, seed=None):
     Given a base graph `G` and a lift parameter `k`, this function performs a `k`-lift as follows:
     - For each node ``v`` in `G`, it creates `k` copies: ``(v, 0), ..., (v, k - 1)``
     - For each edge ``(u, v)`` in `G`, a random permutation ``σ`` is applied to determine new edges:
-      if ``σ(i)`` = ``j``, then ``((u, i), (v, j))`` is added to ``H``.
+      if ``σ(i) = j``, then ``((u, i), (v, j))`` is added to ``H``.
       The permutation is simulated by creating a shuffled list ``permutation`` of values 0 to ``k - 1``.
       Each ``i``-th copy of ``u`` is then connected to the ``permutation[i]``-th copy of ``v``.
     This operation is often used in the construction of expander graphs.
