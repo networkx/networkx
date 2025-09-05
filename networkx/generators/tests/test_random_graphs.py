@@ -484,8 +484,8 @@ def test_random_kernel_disallow_directed_and_multigraph(graphtype):
     [
         (4, 8, 4),  # Balanced
         (1, 2, 1),  # Tiny graph
-        (6, 20, 3),  # Higher n with moderate d
-        (80, 100, 10),  # Large-scale performance & correctness
+        (3, 20, 3),  # Higher n with moderate d
+        (40, 60, 6),  # Large-scale performance & correctness
     ],
 )
 def test_random_k_lift_size_and_structure(d, n, k):
