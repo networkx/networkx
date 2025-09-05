@@ -308,8 +308,16 @@ class TestGeneratorsRandom:
             return r / c + w
 
         c = 1
-        graph = nx.random_kernel_graph(1000, integral, root)
         graph = nx.random_kernel_graph(1000, integral, root, seed=42)
+        assert len(graph) == 1000
+
+    def test_random_kernel_graph_default_root(self):
+        def integral(u, w, z):
+            return c * (z - w)
+
+        c = 1
+        pytest.importorskip("scipy")
+        graph = nx.random_kernel_graph(1000, integral, seed=42)
         assert len(graph) == 1000
 
 
@@ -347,6 +355,12 @@ def test_connected_watts_strogatz():
 def test_connected_watts_strogatz_zero_tries():
     with pytest.raises(nx.NetworkXError, match="Maximum number of tries exceeded"):
         nx.connected_watts_strogatz_graph(10, 2, 0.1, tries=0)
+
+
+def test_connected_watts_strogatz_graph_disconnected():
+    """Test that `connected_watts_strogatz_graph` properly loops when disconnected."""
+    with pytest.raises(nx.NetworkXError, match="Maximum number of tries exceeded"):
+        nx.connected_watts_strogatz_graph(10, 0, 0.0)
 
 
 @pytest.mark.parametrize(
