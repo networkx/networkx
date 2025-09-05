@@ -24,19 +24,16 @@ This corresponds to the contiguous oriented labeling definition from the paper:
        f"Edge {label}: {i_minus}⁻ → {i_plus}⁺"
 """
 
-import logging
-from typing import Any, Optional
-
 import networkx as nx
+from typing import List, Tuple, Dict, Set, Optional
+import logging
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
-def find_uv_to_make_bridgeless(G: nx.Graph) -> tuple | None:
+def find_uv_to_make_bridgeless(G: nx.Graph) -> Optional[Tuple]:
     """
     Find vertices u and v such that adding edge (u,v) makes the graph G bridgeless.
 
@@ -52,9 +49,7 @@ def find_uv_to_make_bridgeless(G: nx.Graph) -> tuple | None:
                         G bridgeless, or None if G is already bridgeless or cannot
                         be made bridgeless by adding a single edge
     """
-    logger.info(
-        f"Checking if graph with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges can be made bridgeless"
-    )
+    logger.info(f"Checking if graph with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges can be made bridgeless")
 
     # If the graph is already bridgeless, return None
     if not nx.has_bridges(G):
@@ -64,7 +59,7 @@ def find_uv_to_make_bridgeless(G: nx.Graph) -> tuple | None:
     bridges = list(nx.bridges(G))
     logger.info(f"Found {len(bridges)} bridges in the graph")
 
-    # Try adding an edge between Any pair of vertices
+    # Try adding an edge between any pair of vertices
     nodes = list(G.nodes())
     for i in range(len(nodes)):
         for j in range(i + 1, len(nodes)):
@@ -88,13 +83,13 @@ def find_uv_to_make_bridgeless(G: nx.Graph) -> tuple | None:
     return None
 
 
-def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | None:
+def contiguous_oriented_labeling(G: nx.Graph) -> Optional[List[Tuple[int, any, any]]]:
     """
     Create a contiguous oriented labeling for an almost bridgeless graph.
 
     This function implements the constructive algorithm from Lemma 4.3 of the paper.
     A contiguous oriented labeling is an ordering of edges with orientation such that
-    for Any prefix of edges, they form a connected subgraph, and for Any suffix of
+    for any prefix of edges, they form a connected subgraph, and for any suffix of
     edges, they also form a connected subgraph with specific connectivity conditions.
 
     The algorithm works by:
@@ -107,16 +102,14 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | No
                      can be made bridgeless by adding one edge)
 
     Returns:
-        Optional[List[Tuple[int, Any, Any]]]: A list of tuples (label, from_node, to_node)
+        Optional[List[Tuple[int, any, any]]]: A list of tuples (label, from_node, to_node)
                                             where label is an integer starting from 1,
                                             from_node is i⁻, and to_node is i⁺.
                                             Returns None if the graph is not almost bridgeless
                                             or not connected.
     """
     logger.info("Starting contiguous oriented labeling algorithm")
-    logger.info(
-        f"Input graph: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges"
-    )
+    logger.info(f"Input graph: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
 
     # Check if the graph is almost bridgeless
     if find_uv_to_make_bridgeless(G) is None and nx.has_bridges(G):
@@ -133,9 +126,9 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | No
     # Make a copy of the graph to work with
     H = G.copy()
 
-    # If G is already bridgeless, choose Any edge as the first ear
+    # If G is already bridgeless, choose any edge as the first ear
     if not nx.has_bridges(G):
-        # Choose Any edge for the first ear
+        # Choose any edge for the first ear
         first_edge = list(H.edges())[0]
         u, v = first_edge
         logger.info(f"Graph is bridgeless, choosing edge {first_edge} for first ear")
@@ -157,7 +150,7 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | No
         return None
 
     # Convert path to list of edges
-    first_ear = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
+    first_ear = [(path[i], path[i+1]) for i in range(len(path)-1)]
     logger.info(f"First ear: {first_ear}")
 
     # Initialize the list of ears and the edge ordering
@@ -174,9 +167,7 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | No
     # Continue building ears until all edges are used
     ear_count = 1
     while H.number_of_edges() > 0:
-        logger.debug(
-            f"Building ear #{ear_count + 1}, remaining edges: {H.number_of_edges()}"
-        )
+        logger.debug(f"Building ear #{ear_count + 1}, remaining edges: {H.number_of_edges()}")
 
         # First, try to find edges between vertices already in an ear
         found_ear = False
@@ -197,9 +188,7 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | No
                         # Insert after the first edge directed into node1
                         for i, (src, dst) in enumerate(all_edges):
                             if dst == node1:  # Found incoming edge to node1
-                                all_edges = (
-                                    all_edges[: i + 1] + new_ear + all_edges[i + 1 :]
-                                )
+                                all_edges = all_edges[:i+1] + new_ear + all_edges[i+1:]
                                 logger.debug(f"Inserting after position {i}")
                                 break
                         else:
@@ -232,16 +221,10 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | No
 
                 # Continue the path until we reach another used vertex
                 while True:
-                    next_neighbors = [
-                        n for n in H.neighbors(current) if n not in used_vertices
-                    ]
+                    next_neighbors = [n for n in H.neighbors(current) if n not in used_vertices]
                     if not next_neighbors:
                         # Check if current is connected to a used vertex
-                        used_neighbors = [
-                            n
-                            for n in H.neighbors(current)
-                            if n in used_vertices and n != node1
-                        ]
+                        used_neighbors = [n for n in H.neighbors(current) if n in used_vertices and n != node1]
                         if used_neighbors:
                             # End the ear at this used vertex
                             node3 = used_neighbors[0]
@@ -269,9 +252,7 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | No
                     # Insert after the first edge directed into node1
                     for i, (src, dst) in enumerate(all_edges):
                         if dst == node1:  # Found incoming edge to node1
-                            all_edges = (
-                                all_edges[: i + 1] + current_ear + all_edges[i + 1 :]
-                            )
+                            all_edges = all_edges[:i+1] + current_ear + all_edges[i+1:]
                             logger.debug(f"Inserting after position {i}")
                             break
                     else:
@@ -284,7 +265,7 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | No
 
         if not found_ear:
             # Should not happen in a connected graph, but just in case
-            # Take Any remaining edge
+            # Take any remaining edge
             edge = list(H.edges())[0]
             H.remove_edge(*edge)
             ears.append([edge])
@@ -293,7 +274,7 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | No
             logger.warning(f"Fallback: adding remaining edge {edge}")
 
     # Create the labeling based on the final edge order
-    labeling = [(i + 1, src, dst) for i, (src, dst) in enumerate(all_edges)]
+    labeling = [(i+1, src, dst) for i, (src, dst) in enumerate(all_edges)]
     logger.info(f"Created labeling with {len(labeling)} edges")
 
     # Verify the contiguous property
@@ -307,7 +288,7 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | No
     return labeling
 
 
-def dfs_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]]:
+def dfs_labeling(G: nx.Graph) -> List[Tuple[int, any, any]]:
     """
     Create a simple DFS-based labeling as a fallback when the main algorithm fails.
 
@@ -320,7 +301,7 @@ def dfs_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]]:
         G (nx.Graph): The input graph
 
     Returns:
-        List[Tuple[int, Any, Any]]: A list of tuples (label, from_node, to_node)
+        List[Tuple[int, any, any]]: A list of tuples (label, from_node, to_node)
                                    representing the DFS-based edge labeling
     """
     logger.info("Creating DFS-based labeling as fallback")
@@ -347,7 +328,7 @@ def dfs_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]]:
             label += 1
             dfs(v)  # Recursively visit the neighbor
 
-    # Start DFS from Any node
+    # Start DFS from any node
     start_node = list(G.nodes())[0]
     logger.debug(f"Starting DFS from node {start_node}")
     dfs(start_node)
@@ -356,9 +337,7 @@ def dfs_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]]:
     return labeling
 
 
-def verify_contiguous_labeling(
-    G: nx.Graph, labeling: list[tuple[int, Any, Any]] | None
-) -> bool:
+def verify_contiguous_labeling(G: nx.Graph, labeling: List[Tuple[int, any, any]]) -> bool:
     """
     Verify if the given labeling satisfies the contiguous property according to Definition 4.2.
 
@@ -370,16 +349,14 @@ def verify_contiguous_labeling(
 
     Args:
         G (nx.Graph): The original graph
-        labeling (List[Tuple[int, Any, Any]]): The labeling to verify, where each tuple
+        labeling (List[Tuple[int, any, any]]): The labeling to verify, where each tuple
                                               is (label, from_node, to_node)
 
     Returns:
         bool: True if the labeling is contiguous, False otherwise
     """
     logger.info("Verifying contiguous labeling property")
-    if labeling is None:
-        print("No labeling provided.")
-        return False
+
     # If the graph or labeling is empty, it's trivially contiguous
     if len(labeling) == 0:
         logger.debug("Empty labeling is trivially contiguous")
@@ -397,7 +374,7 @@ def verify_contiguous_labeling(
 
     # Check first condition: For each 2 ≤ i ≤ m, the edges 1,...,i-1 form a connected subgraph,
     # and vertex i- belongs to one of these edges
-    for i in range(2, m + 1):
+    for i in range(2, m+1):
         # Create subgraph of edges with labels 1 to i-1
         subgraph = nx.Graph()
         for j in range(1, i):
@@ -410,9 +387,7 @@ def verify_contiguous_labeling(
 
         # Check if vertex i- belongs to the subgraph
         if i_minus[i] not in subgraph:
-            logger.error(
-                f"First condition failed at i={i}: vertex {i_minus[i]}⁻ not in subgraph"
-            )
+            logger.error(f"First condition failed at i={i}: vertex {i_minus[i]}⁻ not in subgraph")
             return False
 
     # Check second condition: For each 1 ≤ i ≤ m-1, the edges i+1,...,m form a connected subgraph,
@@ -420,7 +395,7 @@ def verify_contiguous_labeling(
     for i in range(1, m):
         # Create subgraph of edges with labels i+1 to m
         subgraph = nx.Graph()
-        for j in range(i + 1, m + 1):
+        for j in range(i+1, m+1):
             subgraph.add_edge(i_minus[j], i_plus[j])
 
         # Check if the subgraph is connected (if it has edges)
@@ -430,16 +405,14 @@ def verify_contiguous_labeling(
 
         # Check if vertex i+ belongs to the subgraph
         if i_plus[i] not in subgraph:
-            logger.error(
-                f"Second condition failed at i={i}: vertex {i_plus[i]}⁺ not in subgraph"
-            )
+            logger.error(f"Second condition failed at i={i}: vertex {i_plus[i]}⁺ not in subgraph")
             return False
 
     logger.info("Contiguous labeling verification passed")
     return True
 
 
-def show_labeling(labeling: list[tuple[int, Any, Any]] | None) -> None:
+def show_labeling(labeling: List[Tuple[int, any, any]]) -> None:
     """
     Print a human-readable representation of the edge labeling.
 
@@ -447,14 +420,12 @@ def show_labeling(labeling: list[tuple[int, Any, Any]] | None) -> None:
     to show the oriented labeling clearly.
 
     Args:
-        labeling (List[Tuple[int, Any, Any]]): The labeling to display, where each tuple
+        labeling (List[Tuple[int, any, any]]): The labeling to display, where each tuple
                                               is (label, from_node, to_node)
     """
-    if labeling is None:
-        print("No labeling provided.")
-        return
     for label, i_minus, i_plus in labeling:
         print(f"Edge {label}: {i_minus}⁻ → {i_plus}⁺")
+
 
 
 if __name__ == "__main__":
@@ -472,9 +443,7 @@ if __name__ == "__main__":
     print("===== Test 2: Path Graph =====")
     G2 = nx.path_graph(4)
     print(f"Is bridgeless: {not nx.has_bridges(G2)}")
-    print(
-        f"Is almost bridgeless: {find_uv_to_make_bridgeless(G2) is not None or not nx.has_bridges(G2)}"
-    )
+    print(f"Is almost bridgeless: {find_uv_to_make_bridgeless(G2) is not None or not nx.has_bridges(G2)}")
     labeling2 = contiguous_oriented_labeling(G2)
     print("Labeling:")
     show_labeling(labeling2)
