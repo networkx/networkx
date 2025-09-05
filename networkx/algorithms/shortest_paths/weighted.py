@@ -2434,7 +2434,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def johnson(G, weight="weight", ret="path"):
+def johnson(G, weight="weight", dist=None, pred=None, paths=None):
     r"""Uses Johnson's Algorithm to compute shortest paths.
 
     Johnson's Algorithm finds a shortest path between each pair of
@@ -2457,20 +2457,20 @@ def johnson(G, weight="weight", ret="path"):
         dictionary of edge attributes for that edge. The function must
         return a number.
 
-    ret : string
-        Controls what to return. View Returns for detail.
+    paths : dict or None (default=None)
+        If a dict is provided, it will be filled with shortest paths, keyed by source and target.
+    pred : dict or None (default=None)
+        If a dict is provided, it will be filled with predecessors, keyed by source and target.
+    dist : dict or None (default=None)
+        If a dict is provided, it will be filled with distances, keyed by source and target.
+        If None, a new dict will be created and returned.
 
     Returns
     -------
-    paths : dictionary
-        Dictionary, keyed by source and target, of shortest paths.
-
-    dist: dictionary
-        Dictionary, keyed by source and target, of shortest paths distance.
-
-    When ret is set to "path", only paths is returned.
-    When ret is set to "dist", only dist is returned.
-    When ret is set to "all", both paths and dist are returned.
+    If all of (paths, pred, dist) are None:
+        Returns dict of paths (backward compatibility).
+    Else:
+        Returns dict of distances.
 
     Examples
     --------
@@ -2506,35 +2506,33 @@ def johnson(G, weight="weight", ret="path"):
     all_pairs_bellman_ford_path_length
 
     """
-    if ret != "path" and ret != "dist" and ret != "all":
-        raise ValueError("Wrong return type")
+    if dist is None and pred is None and paths is None:
+        paths = {}
+    elif dist is None:
+        dist = {}
 
-    dist = {v: 0 for v in G}
-    pred = {v: [] for v in G}
     weight = _weight_function(G, weight)
 
     # Calculate distance of shortest paths
-    dist_bellman = _bellman_ford(G, list(G), weight, pred=pred, dist=dist)
+    dist_bellman = _bellman_ford(
+        G, list(G), weight, pred={v: [] for v in G}, dist={v: 0 for v in G}
+    )
 
     # Update the weight function to take into account the Bellman--Ford
     # relaxation distances.
     def new_weight(u, v, d):
         return weight(u, v, d) + dist_bellman[u] - dist_bellman[v]
 
-    paths = None
-    if ret == "path" or ret == "all":
-        paths = {}
-
-    dist = None
-    if ret == "dist" or ret == "all":
-        dist = {}
-
     def dist_path(v):
         path_from_v = None
         if paths is not None:
             paths[v] = {v: [v]}
             path_from_v = paths[v]
-        dist_from_v = _dijkstra(G, v, new_weight, paths=path_from_v)
+        pred_from_v = None
+        if pred is not None:
+            pred[v] = {v: []}
+            pred_from_v = pred[v]
+        dist_from_v = _dijkstra(G, v, new_weight, paths=path_from_v, pred=pred_from_v)
         if dist is not None:
             dist[v] = {
                 target: value - dist_bellman[v] + dist_bellman[target]
@@ -2544,9 +2542,7 @@ def johnson(G, weight="weight", ret="path"):
     for v in G:
         dist_path(v)
 
-    if ret == "path":
+    if dist is None:
         return paths
-    elif ret == "dist":
-        return dist
     else:
-        return paths, dist
+        return dist
