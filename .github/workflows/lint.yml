@@ -29,3 +29,15 @@ jobs:
 
       - name: Lint
         run: pre-commit run --all-files --show-diff-on-failure --color always
+
+      - name: Check PR type label
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const labels = context.payload.pull_request.labels.map(l => l.name);
+            const hasTypeLabel = labels.some(label => label.startsWith("type:"));
+            if (!hasTypeLabel) {
+              core.warning(" This PR needs a reviewer to label the PR with a 'type:' label.");
+            }
