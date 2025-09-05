@@ -555,12 +555,11 @@ def subplots():
     ],
 )
 def test_draw(function, subplots, tmpdir):
+    if function == nx.draw_kamada_kawai:
+        pytest.importorskip("scipy", reason="draw_kamada_kawai requires scipy")
     fig, _ = subplots
     options = {"node_color": "black", "node_size": 100, "width": 3}
-    try:
-        function(barbell, **options)
-    except ModuleNotFoundError:  # draw_kamada_kawai requires scipy
-        pass
+    function(barbell, **options)
     fig.savefig(tmpdir.join("test.ps"))
 
 
