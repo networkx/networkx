@@ -105,7 +105,7 @@ def test_long_path_graph_conditions_only():
    G = nx.path_graph(100)
    result = contiguous_oriented_labeling(G)
    assert result is not None
-   labels = ((i_minus, i_plus) for _, i_minus, i_plus in result)
+   labels = {(i_minus, i_plus) for _, i_minus, i_plus in result}
    for u, v in G.edges:
        assert (u, v) in labels or (v, u) in labels
    assert verify_contiguous_labeling(G, result)
@@ -161,4 +161,5 @@ if __name__ == "__main__":
    test_big_path_graph()
    test_big_star_graph()
    print("✅ All tests including failures and edge cases ran.")
+
 
