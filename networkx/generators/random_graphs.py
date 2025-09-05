@@ -1433,7 +1433,7 @@ def random_k_lift(G, k, seed=None):
     Parameters
     ----------
     G : networkx.Graph
-        An undirected, connected, degree-regular graph.
+        An undirected, degree-regular graph.
     k : int
         The lift parameter. Each node in `G` is expanded to `k` copies.
     seed : int, RandomState, or None (default: None)
