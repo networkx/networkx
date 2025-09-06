@@ -52,10 +52,10 @@ def is_valid_tree_degree_sequence(degree_sequence):
         Reason for invalidity, or dummy string if valid.
     """
     seq = list(degree_sequence)
-    l = len(seq)
-    s = sum(seq)
+    number_of_nodes = len(seq)
+    twice_number_of_edges = sum(seq)
 
-    if 2 * l - s != 2:
+    if 2 * number_of_nodes - twice_number_of_edges != 2:
         return False, "tree must have one more node than number of edges"
     elif seq != [0] and any(d <= 0 for d in seq):
         return False, "nontrivial tree must have strictly positive node degrees"
