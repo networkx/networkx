@@ -128,10 +128,9 @@ def test_torrents_and_ferraro_graph():
 
 
 @pytest.mark.parametrize(
-    "np", [(10, 0.6), pytest.param((50, 0.2), marks=pytest.mark.slow)]
+    ("n", "p"), [(10, 0.6), pytest.param((50, 0.2), marks=pytest.mark.slow)]
 )
-def test_random_gnp(np):
-    n, p = np
+def test_random_gnp(n, p):
     G = nx.gnp_random_graph(n, p, seed=42)
     result = nx.k_components(G)
     _check_connectivity(G, result)
