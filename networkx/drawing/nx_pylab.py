@@ -1652,6 +1652,8 @@ def draw_networkx_nodes(
     disp_node_color = None
     if isinstance(node_color, Number):
         disp_node_color = map_color(node_color)
+    elif isinstance(node_color, str):
+        disp_node_color = node_color
     elif isinstance(node_color, (np.ndarray | list)):
         disp_node_color = {
             n: map_color(node_color) if isinstance(node_color, float) else ns
@@ -1674,13 +1676,13 @@ def draw_networkx_nodes(
 
     disp_node_border_color = (
         edgecolors
-        if not isinstance(edgecolors, Iterable)
+        if not isinstance(edgecolors, (np.ndarray | list))
         else {n: map_color(c) for n, c in zip(nodelist, cycle(edgecolors))}
     )
 
     display(
         G,
-        ax,
+        canvas=ax,
         node_pos=pos,
         node_visible=disp_node_visible,
         node_size=disp_node_size,
