@@ -362,7 +362,7 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
 
 
 def _rescale(
-    betweenness, n, *, normalized, directed, endpoints=True, sampled_nodes=None
+    betweenness, n, *, normalized, directed, endpoints=None, sampled_nodes=None
 ):
     k = None if sampled_nodes is None else len(sampled_nodes)
     # N is used to count the number of valid (s, t) pairs where s != t that
