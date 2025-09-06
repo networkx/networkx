@@ -677,17 +677,11 @@ def degree_sequence_tree(deg_sequence, create_using=None):
     --------
     random_degree_sequence_graph
     """
-    # The sum of the degree sequence must be even (for any undirected graph).
-    degree_sum = sum(deg_sequence)
-    if degree_sum % 2 != 0:
-        msg = "Invalid degree sequence: sum of degrees must be even, not odd"
-        raise nx.NetworkXError(msg)
-    if len(deg_sequence) - degree_sum // 2 != 1:
-        msg = (
-            "Invalid degree sequence: tree must have number of nodes equal"
-            " to one less than the number of edges"
-        )
-        raise nx.NetworkXError(msg)
+    deg_sequence = list(deg_sequence)
+    valid, reason = nx.utils.is_valid_tree_degree_sequence(deg_sequence)
+    if not valid:
+        raise nx.NetworkXError(reason)
+
     G = nx.empty_graph(0, create_using)
     if G.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
