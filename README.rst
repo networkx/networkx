@@ -3,8 +3,8 @@ NetworkX
 
 
 .. image::
-    https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
-    :target: https://github.com/networkx/networkx/actions?query=workflow%3Atest
+    https://github.com/networkx/networkx/actions/workflows/test.yml/badge.svg?branch=main
+    :target: https://github.com/networkx/networkx/actions/workflows/test.yml
 
 .. image::
     https://codecov.io/gh/networkx/networkx/branch/main/graph/badge.svg?
