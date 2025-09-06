@@ -4,7 +4,7 @@ Shortest path algorithms for weighted graphs.
 
 from collections import deque
 from heapq import heappop, heappush
-from itertools import count
+from itertools import count, islice
 
 import networkx as nx
 from networkx.algorithms.shortest_paths.generic import _build_paths_from_predecessors
@@ -851,6 +851,7 @@ def _dijkstra_multisource(
     for source in sources:
         seen[source] = 0
         heappush(fringe, (0, next(c), source))
+    number_of_sources = len(seen)
     while fringe:
         (dist_v, _, v) = heappop(fringe)
         if v in dist:
@@ -872,7 +873,7 @@ def _dijkstra_multisource(
                 elif pred is not None and vu_dist == u_dist:
                     # Found another shortest path to u with equal distance (including zero-weight edges).
                     # We must store *all* predecessors because `pred` was provided by the caller.
-                    pred[u].append(v)
+                    pred_dict[u].append(v)
             elif u not in seen or vu_dist < seen[u]:
                 seen[u] = vu_dist
                 heappush(fringe, (vu_dist, next(c), u))
@@ -881,15 +882,18 @@ def _dijkstra_multisource(
             elif pred is not None and vu_dist == seen[u]:
                 # Found another shortest path to u
                 # We must store *all* predecessors because `pred` was provided by the caller.
-                pred[u].append(v)
+                pred_dict[u].append(v)
 
     if paths is not None:
         # Reconstruct the path from source to target using the predecessor dictionary.
         if target is None:
-            for v in dist:
-                pred_v = pred_dict.get(v)
-                if pred_v is not None:
-                    paths[v] = paths[pred_v[0]] + [v]
+            # Since `dist` is in increasing distance order, each predecessor's path is
+            # already computed by the time we process `v`. We skip the first
+            # `number_of_sources` entries because sources already have their paths defined.
+            for v in islice(dist, number_of_sources, None):
+                # `v` must be in `pred_dict`: any node with a distance (and not a source)
+                # has a predecessor.
+                paths[v] = paths[pred_dict[v][0]] + [v]
         else:
             # Caller requested the path to a specific target node.
             path = paths[target] = [target]
