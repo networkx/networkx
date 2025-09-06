@@ -3,6 +3,7 @@
 import networkx as nx
 from networkx.algorithms.centrality.betweenness import (
     _add_edge_keys,
+    _rescale,
 )
 from networkx.algorithms.centrality.betweenness import (
     _single_source_dijkstra_path_basic as dijkstra,
@@ -111,7 +112,12 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
         else:  # use Dijkstra's algorithm
             S, P, sigma, _ = dijkstra(G, s, weight)
         b = _accumulate_subset(b, S, P, sigma, s, targets)
-    b = _rescale(b, len(G), normalized=normalized, directed=G.is_directed())
+    b = _rescale(
+        b,
+        len(G),
+        normalized=normalized,
+        directed=G.is_directed(),
+    )
     return b
 
 
@@ -196,7 +202,12 @@ def edge_betweenness_centrality_subset(
         b = _accumulate_edges_subset(b, S, P, sigma, s, targets)
     for n in G:  # remove nodes to only return edges
         del b[n]
-    b = _rescale_e(b, len(G), normalized=normalized, directed=G.is_directed())
+    b = _rescale(
+        b,
+        len(G) + 1,
+        normalized=normalized,
+        directed=G.is_directed(),
+    )
     if G.is_multigraph():
         b = _add_edge_keys(G, b, weight=weight)
     return b
@@ -236,40 +247,4 @@ def _accumulate_edges_subset(betweenness, S, P, sigma, s, targets):
             delta[v] += c
         if w != s:
             betweenness[w] += delta[w]
-    return betweenness
-
-
-def _rescale(betweenness, n, normalized, directed=False):
-    """betweenness_centrality_subset helper."""
-    if normalized:
-        if n <= 2:
-            scale = None  # no normalization b=0 for all nodes
-        else:
-            scale = 1.0 / ((n - 1) * (n - 2))
-    else:  # rescale by 2 for undirected graphs
-        if not directed:
-            scale = 0.5
-        else:
-            scale = None
-    if scale is not None:
-        for v in betweenness:
-            betweenness[v] *= scale
-    return betweenness
-
-
-def _rescale_e(betweenness, n, normalized, directed=False):
-    """edge_betweenness_centrality_subset helper."""
-    if normalized:
-        if n <= 1:
-            scale = None  # no normalization b=0 for all nodes
-        else:
-            scale = 1.0 / (n * (n - 1))
-    else:  # rescale by 2 for undirected graphs
-        if not directed:
-            scale = 0.5
-        else:
-            scale = None
-    if scale is not None:
-        for v in betweenness:
-            betweenness[v] *= scale
     return betweenness

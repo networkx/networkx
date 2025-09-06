@@ -152,7 +152,6 @@ def betweenness_centrality(
         len(G),
         normalized=normalized,
         directed=G.is_directed(),
-        k=k,
         endpoints=endpoints,
         sampled_nodes=nodes,
     )
@@ -247,8 +246,11 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     # rescaling
     for n in G:  # remove nodes to only return edges
         del betweenness[n]
-    betweenness = _rescale_e(
-        betweenness, len(G), normalized=normalized, directed=G.is_directed()
+    betweenness = _rescale(
+        betweenness,
+        len(G) + 1,
+        normalized=normalized,
+        directed=G.is_directed(),
     )
     if G.is_multigraph():
         betweenness = _add_edge_keys(G, betweenness, weight=weight)
@@ -359,7 +361,10 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
     return betweenness
 
 
-def _rescale(betweenness, n, *, normalized, directed, k, endpoints, sampled_nodes):
+def _rescale(
+    betweenness, n, *, normalized, directed, endpoints=True, sampled_nodes=None
+):
+    k = None if sampled_nodes is None else len(sampled_nodes)
     # N is used to count the number of valid (s, t) pairs where s != t that
     # could have a path pass through v. If endpoints is False, then v must
     # not be the target t, hence why we subtract by 1.
@@ -411,25 +416,6 @@ def _rescale(betweenness, n, *, normalized, directed, k, endpoints, sampled_node
     sampled_nodes = set(sampled_nodes)
     for v in betweenness:
         betweenness[v] *= scale_source if v in sampled_nodes else scale_nonsource
-    return betweenness
-
-
-def _rescale_e(betweenness, n, normalized, directed=False, k=None):
-    if normalized:
-        if n <= 1:
-            scale = None  # no normalization b=0 for all nodes
-        else:
-            scale = 1 / (n * (n - 1))
-    else:  # rescale by 2 for undirected graphs
-        if not directed:
-            scale = 0.5
-        else:
-            scale = None
-    if scale is not None:
-        if k is not None:
-            scale = scale * n / k
-        for v in betweenness:
-            betweenness[v] *= scale
     return betweenness
 
 
