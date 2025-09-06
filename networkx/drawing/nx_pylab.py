@@ -17,16 +17,10 @@ See Also
  - :obj:`matplotlib.patches.FancyArrowPatch`
 """
 
-import collections
-import itertools
 import math
 from numbers import Number
 
-from traitlets import default
-
 import networkx as nx
-from networkx.exception import NetworkXException
-from networkx.readwrite import edgelist
 
 __all__ = [
     "display",
@@ -1241,6 +1235,8 @@ def draw(G, pos=None, ax=None, **kwds):
     and no axis labels by default.  See draw_networkx() for more
     full-featured drawing that allows title, axis labels etc.
 
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
+
     Parameters
     ----------
     G : graph
@@ -1266,6 +1262,7 @@ def draw(G, pos=None, ax=None, **kwds):
 
     See Also
     --------
+    display
     draw_networkx
     draw_networkx_nodes
     draw_networkx_edges
@@ -1318,6 +1315,8 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
     Draw the graph with Matplotlib with options for node positions,
     labeling, titles, and many other drawing features.
     See draw() for simple drawing without labels or axes.
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -1457,6 +1456,7 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
 
     See Also
     --------
+    display
     draw
     draw_networkx_nodes
     draw_networkx_edges
@@ -1522,6 +1522,8 @@ def draw_networkx_nodes(
     """Draw the nodes of the graph G.
 
     This draws only the nodes of the graph G.
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -1602,6 +1604,7 @@ def draw_networkx_nodes(
 
     See Also
     --------
+    display
     draw
     draw_networkx
     draw_networkx_edges
@@ -1705,225 +1708,6 @@ def draw_networkx_nodes(
     return None
 
 
-class FancyArrowFactory:
-    """Draw arrows with `matplotlib.patches.FancyarrowPatch`"""
-
-    class ConnectionStyleFactory:
-        def __init__(self, connectionstyles, selfloop_height, ax=None):
-            import matplotlib as mpl
-            import matplotlib.path  # call as mpl.path
-            import numpy as np
-
-            self.ax = ax
-            self.mpl = mpl
-            self.np = np
-            self.base_connection_styles = [
-                mpl.patches.ConnectionStyle(cs) for cs in connectionstyles
-            ]
-            self.n = len(self.base_connection_styles)
-            self.selfloop_height = selfloop_height
-
-        def curved(self, edge_index):
-            return self.base_connection_styles[edge_index % self.n]
-
-        def self_loop(self, edge_index):
-            def self_loop_connection(posA, posB, *args, **kwargs):
-                if not self.np.all(posA == posB):
-                    raise nx.NetworkXError(
-                        "`self_loop` connection style method"
-                        "is only to be used for self-loops"
-                    )
-                # this is called with _screen space_ values
-                # so convert back to data space
-                data_loc = self.ax.transData.inverted().transform(posA)
-                v_shift = 0.1 * self.selfloop_height
-                h_shift = v_shift * 0.5
-                # put the top of the loop first so arrow is not hidden by node
-                path = self.np.asarray(
-                    [
-                        # 1
-                        [0, v_shift],
-                        # 4 4 4
-                        [h_shift, v_shift],
-                        [h_shift, 0],
-                        [0, 0],
-                        # 4 4 4
-                        [-h_shift, 0],
-                        [-h_shift, v_shift],
-                        [0, v_shift],
-                    ]
-                )
-                # Rotate self loop 90 deg. if more than 1
-                # This will allow for maximum of 4 visible self loops
-                if edge_index % 4:
-                    x, y = path.T
-                    for _ in range(edge_index % 4):
-                        x, y = y, -x
-                    path = self.np.array([x, y]).T
-                return self.mpl.path.Path(
-                    self.ax.transData.transform(data_loc + path), [1, 4, 4, 4, 4, 4, 4]
-                )
-
-            return self_loop_connection
-
-    def __init__(
-        self,
-        edge_pos,
-        edgelist,
-        nodelist,
-        edge_indices,
-        node_size,
-        selfloop_height,
-        connectionstyle="arc3",
-        node_shape="o",
-        arrowstyle="-",
-        arrowsize=10,
-        edge_color="k",
-        alpha=None,
-        linewidth=1.0,
-        style="solid",
-        min_source_margin=0,
-        min_target_margin=0,
-        ax=None,
-    ):
-        import matplotlib as mpl
-        import matplotlib.patches  # call as mpl.patches
-        import matplotlib.pyplot as plt
-        import numpy as np
-
-        if isinstance(connectionstyle, str):
-            connectionstyle = [connectionstyle]
-        elif np.iterable(connectionstyle):
-            connectionstyle = list(connectionstyle)
-        else:
-            msg = "ConnectionStyleFactory arg `connectionstyle` must be str or iterable"
-            raise nx.NetworkXError(msg)
-        self.ax = ax
-        self.mpl = mpl
-        self.np = np
-        self.edge_pos = edge_pos
-        self.edgelist = edgelist
-        self.nodelist = nodelist
-        self.node_shape = node_shape
-        self.min_source_margin = min_source_margin
-        self.min_target_margin = min_target_margin
-        self.edge_indices = edge_indices
-        self.node_size = node_size
-        self.connectionstyle_factory = self.ConnectionStyleFactory(
-            connectionstyle, selfloop_height, ax
-        )
-        self.arrowstyle = arrowstyle
-        self.arrowsize = arrowsize
-        self.arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
-        self.linewidth = linewidth
-        self.style = style
-        if isinstance(arrowsize, list) and len(arrowsize) != len(edge_pos):
-            raise ValueError("arrowsize should have the same length as edgelist")
-
-    def __call__(self, i):
-        (x1, y1), (x2, y2) = self.edge_pos[i]
-        shrink_source = 0  # space from source to tail
-        shrink_target = 0  # space from  head to target
-        if (
-            self.np.iterable(self.min_source_margin)
-            and not isinstance(self.min_source_margin, str)
-            and not isinstance(self.min_source_margin, tuple)
-        ):
-            min_source_margin = self.min_source_margin[i]
-        else:
-            min_source_margin = self.min_source_margin
-
-        if (
-            self.np.iterable(self.min_target_margin)
-            and not isinstance(self.min_target_margin, str)
-            and not isinstance(self.min_target_margin, tuple)
-        ):
-            min_target_margin = self.min_target_margin[i]
-        else:
-            min_target_margin = self.min_target_margin
-
-        if self.np.iterable(self.node_size):  # many node sizes
-            source, target = self.edgelist[i][:2]
-            source_node_size = self.node_size[self.nodelist.index(source)]
-            target_node_size = self.node_size[self.nodelist.index(target)]
-            shrink_source = self.to_marker_edge(source_node_size, self.node_shape)
-            shrink_target = self.to_marker_edge(target_node_size, self.node_shape)
-        else:
-            shrink_source = self.to_marker_edge(self.node_size, self.node_shape)
-            shrink_target = shrink_source
-        shrink_source = max(shrink_source, min_source_margin)
-        shrink_target = max(shrink_target, min_target_margin)
-
-        # scale factor of arrow head
-        if isinstance(self.arrowsize, list):
-            mutation_scale = self.arrowsize[i]
-        else:
-            mutation_scale = self.arrowsize
-
-        if len(self.arrow_colors) > i:
-            arrow_color = self.arrow_colors[i]
-        elif len(self.arrow_colors) == 1:
-            arrow_color = self.arrow_colors[0]
-        else:  # Cycle through colors
-            arrow_color = self.arrow_colors[i % len(self.arrow_colors)]
-
-        if self.np.iterable(self.linewidth):
-            if len(self.linewidth) > i:
-                linewidth = self.linewidth[i]
-            else:
-                linewidth = self.linewidth[i % len(self.linewidth)]
-        else:
-            linewidth = self.linewidth
-
-        if (
-            self.np.iterable(self.style)
-            and not isinstance(self.style, str)
-            and not isinstance(self.style, tuple)
-        ):
-            if len(self.style) > i:
-                linestyle = self.style[i]
-            else:  # Cycle through styles
-                linestyle = self.style[i % len(self.style)]
-        else:
-            linestyle = self.style
-
-        if x1 == x2 and y1 == y2:
-            connectionstyle = self.connectionstyle_factory.self_loop(
-                self.edge_indices[i]
-            )
-        else:
-            connectionstyle = self.connectionstyle_factory.curved(self.edge_indices[i])
-
-        if (
-            self.np.iterable(self.arrowstyle)
-            and not isinstance(self.arrowstyle, str)
-            and not isinstance(self.arrowstyle, tuple)
-        ):
-            arrowstyle = self.arrowstyle[i]
-        else:
-            arrowstyle = self.arrowstyle
-
-        return self.mpl.patches.FancyArrowPatch(
-            (x1, y1),
-            (x2, y2),
-            arrowstyle=arrowstyle,
-            shrinkA=shrink_source,
-            shrinkB=shrink_target,
-            mutation_scale=mutation_scale,
-            color=arrow_color,
-            linewidth=linewidth,
-            connectionstyle=connectionstyle,
-            linestyle=linestyle,
-            zorder=1,  # arrows go behind nodes
-        )
-
-    def to_marker_edge(self, marker_size, marker):
-        if marker in "s^>v<d":  # `large` markers need extra space
-            return self.np.sqrt(2 * marker_size) / 2
-        else:
-            return self.np.sqrt(marker_size) / 2
-
-
 def draw_networkx_edges(
     G,
     pos,
@@ -1951,6 +1735,8 @@ def draw_networkx_edges(
     r"""Draw the edges of the graph G.
 
     This draws only the edges of the graph G.
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2102,6 +1888,7 @@ def draw_networkx_edges(
 
     See Also
     --------
+    display
     draw
     draw_networkx
     draw_networkx_nodes
@@ -2322,6 +2109,8 @@ def draw_networkx_labels(
 ):
     """Draw node labels on the graph G.
 
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
+
     Parameters
     ----------
     G : graph
@@ -2389,6 +2178,7 @@ def draw_networkx_labels(
 
     See Also
     --------
+    display
     draw
     draw_networkx
     draw_networkx_nodes
@@ -2495,6 +2285,8 @@ def draw_networkx_edge_labels(
 ):
     """Draw edge labels.
 
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
+
     Parameters
     ----------
     G : graph
@@ -2579,6 +2371,7 @@ def draw_networkx_edge_labels(
 
     See Also
     --------
+    display
     draw
     draw_networkx
     draw_networkx_nodes
@@ -2689,6 +2482,8 @@ def draw_bipartite(G, **kwargs):
 
         nx.draw(G, pos=nx.bipartite_layout(G), **kwargs)
 
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
+
     Parameters
     ----------
     G : graph
@@ -2721,6 +2516,7 @@ def draw_bipartite(G, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.bipartite_layout`
     """
     draw(G, pos=nx.bipartite_layout(G), **kwargs)
@@ -2732,6 +2528,8 @@ def draw_circular(G, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.circular_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2760,6 +2558,7 @@ def draw_circular(G, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.circular_layout`
     """
     draw(G, pos=nx.circular_layout(G), **kwargs)
@@ -2771,6 +2570,8 @@ def draw_kamada_kawai(G, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.kamada_kawai_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2800,6 +2601,7 @@ def draw_kamada_kawai(G, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.kamada_kawai_layout`
     """
     draw(G, pos=nx.kamada_kawai_layout(G), **kwargs)
@@ -2811,6 +2613,8 @@ def draw_random(G, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.random_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2839,6 +2643,7 @@ def draw_random(G, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.random_layout`
     """
     draw(G, pos=nx.random_layout(G), **kwargs)
@@ -2853,6 +2658,8 @@ def draw_spectral(G, **kwargs):
 
     For more information about how node positions are determined, see
     `~networkx.drawing.layout.spectral_layout`.
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2881,6 +2688,7 @@ def draw_spectral(G, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.spectral_layout`
     """
     draw(G, pos=nx.spectral_layout(G), **kwargs)
@@ -2892,6 +2700,8 @@ def draw_spring(G, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.spring_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2923,6 +2733,7 @@ def draw_spring(G, **kwargs):
 
     See Also
     --------
+    display
     draw
     :func:`~networkx.drawing.layout.spring_layout`
     """
@@ -2935,6 +2746,8 @@ def draw_shell(G, nlist=None, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.shell_layout(G, nlist=nlist), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2969,6 +2782,7 @@ def draw_shell(G, nlist=None, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.shell_layout`
     """
     draw(G, pos=nx.shell_layout(G, nlist=nlist), **kwargs)
@@ -2980,6 +2794,8 @@ def draw_planar(G, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.planar_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -3013,6 +2829,7 @@ def draw_planar(G, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.planar_layout`
     """
     draw(G, pos=nx.planar_layout(G), **kwargs)
@@ -3024,6 +2841,8 @@ def draw_forceatlas2(G, **kwargs):
     This is a convenience function equivalent to::
 
        nx.draw(G, pos=nx.forceatlas2_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
