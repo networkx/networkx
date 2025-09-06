@@ -212,7 +212,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
 
     Notes
     -----
-    The algorithm is from Ulrik Brandes [1]_.
+    The algorithm is from Ulrik Brandes [2]_.
 
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length

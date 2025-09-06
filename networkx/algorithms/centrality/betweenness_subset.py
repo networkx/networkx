@@ -170,7 +170,7 @@ def edge_betweenness_centrality_subset(
 
     Notes
     -----
-    The basic algorithm is from [1]_.
+    The basic algorithm is from [2]_.
 
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length
