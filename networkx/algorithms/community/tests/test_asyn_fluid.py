@@ -18,6 +18,8 @@ def test_exceptions():
     pytest.raises(NetworkXError, asyn_fluidc, test, "hi")
     pytest.raises(NetworkXError, asyn_fluidc, test, -1)
     pytest.raises(NetworkXError, asyn_fluidc, test, 3)
+    with pytest.raises(ValueError, match="must be greater than 0"):
+        asyn_fluidc(test, 1, max_iter=0)
     test.add_node("b")
     pytest.raises(NetworkXError, asyn_fluidc, test, 1)
 
@@ -134,3 +136,12 @@ def test_five_clique_ring():
     communities = asyn_fluidc(test, 5, seed=9)
     result = {frozenset(c) for c in communities}
     assert result == ground_truth
+
+
+def test_asyn_fluidc_max_iter():
+    """Check that setting `max_iter` stops the algorithm early."""
+    test = nx.barbell_graph(3, 2)
+
+    c1 = asyn_fluidc(test, 2, max_iter=1, seed=42)
+    c2 = asyn_fluidc(test, 2, max_iter=100, seed=42)
+    assert {map(frozenset, c1)} != {map(frozenset, c2)}

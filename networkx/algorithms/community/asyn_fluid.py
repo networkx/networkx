@@ -76,6 +76,9 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
         raise NetworkXError("Fluid Communities require connected Graphs.")
     if len(G) < k:
         raise NetworkXError("k cannot be bigger than the number of nodes.")
+    if max_iter <= 0:
+        msg = f"{max_iter=} must be greater than 0"
+        raise ValueError(msg)
     # Initialization
     max_density = 1.0
     vertices = list(G)
@@ -89,7 +92,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
     # Set up control variables and start iterating
     iter_count = 0
     cont = True
-    while cont:
+    while cont and iter_count < max_iter:
         cont = False
         iter_count += 1
         # Loop over all vertices in graph in a random order
@@ -124,6 +127,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
                         new_com = communities[vertex]
                 except KeyError:
                     pass
+
                 # If vertex community changes...
                 if new_com == -1:
                     # Set flag of non-convergence
@@ -144,8 +148,6 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
                     density[communities[vertex]] = (
                         max_density / com_to_numvertices[communities[vertex]]
                     )
-        # If maximum iterations reached --> output actual results
-        if iter_count > max_iter:
-            break
+    # If maximum iterations reached --> output actual results
     # Return results by grouping communities as list of vertices
     return iter(groups(communities).values())
