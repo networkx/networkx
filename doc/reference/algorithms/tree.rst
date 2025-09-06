@@ -31,6 +31,15 @@ Branchings and Spanning Arborescences
    minimum_spanning_arborescence
    ArborescenceIterator
 
+Distance Measures
+-----------------
+.. automodule:: networkx.algorithms.tree.distance_measures
+.. autosummary::
+   :toctree: generated/
+
+   center
+   centroid
+
 Encoding and decoding
 ---------------------
 .. automodule:: networkx.algorithms.tree.coding

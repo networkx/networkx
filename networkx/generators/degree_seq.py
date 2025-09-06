@@ -645,11 +645,37 @@ def directed_havel_hakimi_graph(in_deg_sequence, out_deg_sequence, create_using=
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def degree_sequence_tree(deg_sequence, create_using=None):
-    """Make a tree for the given degree sequence.
+    """Return a tree with the given degree sequence.
 
-    A tree has #nodes-#edges=1 so
-    the degree sequence must have
-    len(deg_sequence)-sum(deg_sequence)/2=1
+    Two conditions must be met for a degree sequence to be valid for a tree:
+
+    1. The number of nodes must be one more than the number of edges.
+    2. The degree sequence must be trivial or have only strictly positive
+       node degrees.
+
+    Parameters
+    ----------
+    degree_sequence : iterable
+        Iterable of node degrees.
+
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    networkx.Graph
+        A tree with the given degree sequence.
+
+    Raises
+    ------
+    NetworkXError
+        If the degree sequence is not valid for a tree.
+
+        If `create_using` is directed.
+
+    See Also
+    --------
+    random_degree_sequence_graph
     """
     # The sum of the degree sequence must be even (for any undirected graph).
     degree_sum = sum(deg_sequence)
