@@ -476,3 +476,33 @@ def test_random_kernel_disallow_directed_and_multigraph(graphtype):
         nx.random_kernel_graph(
             10, lambda y, a, b: a + b, lambda u, w, r: r + w, create_using=graphtype
         )
+
+
+# Test structure and connectivity for multiple (d, n, k) combinations
+@pytest.mark.parametrize(
+    "d, n, k",
+    [
+        (4, 8, 4),  # Balanced
+        (1, 2, 1),  # Tiny graph
+        (6, 20, 3),  # Higher n with moderate d
+        (40, 60, 6),  # Large-scale performance & correctness
+    ],
+)
+def test_random_k_lift_size_and_structure(d, n, k):
+    G = nx.random_regular_graph(d, n, seed=42)
+    H = nx.random_k_lift(G, k, seed=42)
+    assert nx.is_k_regular(H, d)
+    assert H.number_of_nodes() == n * k
+    assert nx.is_connected(H)
+
+
+# Specific test for failure behavior
+def test_random_k_lift_non_regular_graph():
+    """Create a non-regular graph: node 0 has degree 2,
+    node 1 has degree 1, node 2 has degree 1
+    """
+    G = nx.Graph()
+    G.add_edges_from([(0, 1), (0, 2)])  # degrees: 0→2, 1→1, 2→1
+
+    with pytest.raises(ValueError, match="must be degree-regular"):
+        nx.random_k_lift(G, k=2, seed=1)
