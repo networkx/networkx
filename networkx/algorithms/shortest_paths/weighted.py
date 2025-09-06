@@ -838,7 +838,7 @@ def _dijkstra_multisource(
     # store predecessors, used to reconstruct paths. However, if the caller
     # passed in a `pred` dictionary, we must compute *all* predecessors, since the caller
     # expects the full predecessor structure.
-    pred_dict = pred if paths is None else (pred or {})
+    pred_dict = pred if paths is None or pred is not None else {}
 
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
