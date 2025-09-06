@@ -22,8 +22,11 @@ import itertools
 import math
 from numbers import Number
 
+from traitlets import default
+
 import networkx as nx
 from networkx.exception import NetworkXException
+from networkx.readwrite import edgelist
 
 __all__ = [
     "display",
@@ -599,7 +602,13 @@ def display(
     }
 
     # Allow some undocumented kwargs to allow the old draw API to wrap display
-    compat_kwargs = ["compat_force_fancy_arrows", "compat_return_edge_viz_obj"]
+    compat_kwargs = [
+        "compat_force_fancy_arrows",
+        "compat_return_edge_viz_obj",
+        "compat_return_node_label_obj",
+        "compat_return_edge_label_obj",
+        "compat_edge_label_anyways",
+    ]
 
     # Check arguments
     for kwarg in kwargs:
@@ -891,7 +900,31 @@ def display(
             linewidth=get_edge_attr(e, "width"),
             mutation_scale=get_edge_attr(e, "arrowsize"),
             shrinkA=source_margin,
-            shrinkB=source_margin,
+            shrinkB=target_margin,
+            zorder=1,
+        )
+
+    def build_ghost_fancy_arrow(e):
+        node_size = kwargs.get("node_size", defaults["node_size"])
+        src_size = node_size[e[0]] if isinstance(node_size, dict) else node_size
+        tar_size = node_size[e[1]] if isinstance(node_size, dict) else node_size
+        source_margin = to_marker_edge(src_size, "o")
+        target_margin = to_marker_edge(tar_size, "o")
+        curvature = kwargs.get("edge_curvature", defaults["edge_curvature"])
+        curvature = curvature[e] if isinstance(curvature, dict) else curvature
+        return mpl.patches.FancyArrowPatch(
+            pos[e[0]],
+            pos[e[1]],
+            connectionstyle=(
+                curvature
+                if e[0] != e[1]
+                else self_loop(
+                    0 if len(e) == 2 else e[2] % 4,
+                    src_size,
+                )
+            ),
+            shrinkA=source_margin,
+            shrinkB=target_margin,
             zorder=1,
         )
 
@@ -990,6 +1023,7 @@ def display(
     ### Draw node labels
     node_label = kwargs.get("node_label", "label")
     # Plot labels if node_label is not None and not False
+    node_label_objs = {}
     if node_label is not None and node_label is not False:
         default_dict = {}
         if isinstance(node_label, dict):
@@ -1010,7 +1044,7 @@ def display(
 
             lbl.update(default_dict)
             x, y = pos[n]
-            canvas.text(
+            t = canvas.text(
                 x,
                 y,
                 lbl_text,
@@ -1025,6 +1059,8 @@ def display(
                 transform=canvas.transData,
                 bbox=lbl.get("bbox", defaults["node_label"]["bbox"]),
             )
+            if kwargs.get("compat_return_node_label_obj", False):
+                node_label_objs[n] = t
 
     ### Draw edges
 
@@ -1087,20 +1123,26 @@ def display(
     ### Draw edge labels
     edge_label = kwargs.get("edge_label", "label")
     default_dict = {}
-    if isinstance(edge_label, dict):
+    if isinstance(edge_label, dict) and not all(e in G.edges for e in edge_label):
         default_dict = edge_label
         # Restore the default label attribute key of 'label'
         edge_label = "label"
 
-    # Handle multigraphs
-    edge_label_data = (
-        edge_subgraph.edges(data=edge_label, keys=True)
-        if edge_subgraph.is_multigraph()
-        else edge_subgraph.edges(data=edge_label)
-    )
+    if kwargs.get("compat_edge_label_anyways", False):
+        edge_label_data = [(e, lbl["label"]) for e, lbl in edge_label.items()]
+    else:
+        edge_label_data = (
+            edge_subgraph.edges(data=edge_label, keys=True)
+            if edge_subgraph.is_multigraph()
+            else edge_subgraph.edges(data=edge_label)
+        )
+    edge_label_objs = {}
     if edge_label is not None and edge_label is not False:
         for *e, lbl in edge_label_data:
-            e = tuple(e)
+            if kwargs.get("compat_edge_label_anyways", False):
+                e = e[0]
+            else:
+                e = tuple(e)
             # I'm not sure how I want to handle None here... For now it means no label
             if lbl is False or lbl is None:
                 continue
@@ -1119,7 +1161,11 @@ def display(
             try:
                 arrow = fancy_arrows[e]
             except KeyError:
-                arrow = build_fancy_arrow(e)
+                if kwargs.get("compat_edge_label_anyways", False):
+                    # We likely have an empty node / edge subgraph
+                    arrow = build_ghost_fancy_arrow(e)
+                else:
+                    arrow = build_fancy_arrow(e)
 
             if e[0] == e[1]:
                 # Taken directly from draw_networkx_edge_labels
@@ -1128,7 +1174,7 @@ def display(
                 path_disp = connectionstyle_obj(posA, posA)
                 path_data = canvas.transData.inverted().transform_path(path_disp)
                 x, y = path_data.vertices[0]
-                canvas.text(
+                t = canvas.text(
                     x,
                     y,
                     lbl_text,
@@ -1148,9 +1194,11 @@ def display(
                     bbox=lbl.get("bbox", defaults["edge_label"]["bbox"]),
                     zorder=1,
                 )
+                if kwargs.get("compat_return_edge_label_obj", False):
+                    edge_label_objs[e] = t
                 continue
 
-            CurvedArrowText(
+            t = CurvedArrowText(
                 arrow,
                 lbl_text,
                 size=lbl.get("size", defaults["edge_label"]["size"]),
@@ -1169,6 +1217,8 @@ def display(
                 zorder=1,
                 ax=canvas,
             )
+            if kwargs.get("compat_return_edge_label_obj", False):
+                edge_label_objs[e] = t
 
     if kwargs.get("compat_return_edge_viz_obj", False):
         return (
@@ -1176,6 +1226,10 @@ def display(
             if edge_collection is not None
             else list(fancy_arrows.values())
         )
+    if kwargs.get("compat_return_node_label_obj", False):
+        return node_label_objs
+    if kwargs.get("compat_return_edge_label_obj", False):
+        return edge_label_objs
     return G
 
 
@@ -2390,17 +2444,32 @@ def draw_networkx_labels(
         )
         text_items[n] = t
 
-    if hide_ticks:
-        ax.tick_params(
-            axis="both",
-            which="both",
-            bottom=False,
-            left=False,
-            labelbottom=False,
-            labelleft=False,
-        )
+    disp_node_labels = {
+        n: {
+            "label": lab,
+            "size": get_param_value(n, font_size, "font_size"),
+            "color": get_param_value(n, font_color, "font_color"),
+            "family": get_param_value(n, font_family, "font_family"),
+            "weight": get_param_value(n, font_weight, "font_weight"),
+            "alpha": get_param_value(n, alpha, "alpha"),
+            "h_align": horizontalalignment,
+            "v_align": verticalalignment,
+        }
+        for n, lab in labels.items()
+        if n in pos
+    }
 
-    return text_items
+    return display(
+        G,
+        canvas=ax,
+        node_pos=pos,
+        node_visible=False,
+        edge_visible=False,
+        edge_label=False,
+        node_label=disp_node_labels,
+        hide_ticks=hide_ticks,
+        compat_return_node_label_obj=True,
+    )
 
 
 def draw_networkx_edge_labels(
@@ -2516,16 +2585,11 @@ def draw_networkx_edge_labels(
     draw_networkx_edges
     draw_networkx_labels
     """
-    import matplotlib as mpl
+    from collections.abc import Iterable
+    from itertools import cycle
+
     import matplotlib.pyplot as plt
     import numpy as np
-
-    class CurvedArrowText(CurvedArrowTextBase, mpl.text.Text):
-        pass
-
-    # use default box of white with white border
-    if bbox is None:
-        bbox = {"boxstyle": "round", "ec": (1.0, 1.0, 1.0), "fc": (1.0, 1.0, 1.0)}
 
     if isinstance(connectionstyle, str):
         connectionstyle = [connectionstyle]
@@ -2551,35 +2615,6 @@ def draw_networkx_edge_labels(
     if nodelist is None:
         nodelist = list(G.nodes())
 
-    # set edge positions
-    edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
-
-    if G.is_multigraph():
-        key_count = collections.defaultdict(lambda: itertools.count(0))
-        edge_indices = [next(key_count[tuple(e[:2])]) for e in edgelist]
-    else:
-        edge_indices = [0] * len(edgelist)
-
-    # Used to determine self loop mid-point
-    # Note, that this will not be accurate,
-    #   if not drawing edge_labels for all edges drawn
-    h = 0
-    if edge_labels:
-        miny = np.amin(np.ravel(edge_pos[:, :, 1]))
-        maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
-        h = maxy - miny
-    selfloop_height = h if h != 0 else 0.005 * np.array(node_size).max()
-    fancy_arrow_factory = FancyArrowFactory(
-        edge_pos,
-        edgelist,
-        nodelist,
-        edge_indices,
-        node_size,
-        selfloop_height,
-        connectionstyle,
-        ax=ax,
-    )
-
     individual_params = {}
 
     def check_individual_params(p_value, p_name):
@@ -2604,75 +2639,47 @@ def draw_networkx_edge_labels(
     check_individual_params(rotate, "rotate")
     check_individual_params(label_pos, "label_pos")
 
-    text_items = {}
-    for i, (edge, label) in enumerate(zip(edgelist, labels)):
-        if not isinstance(label, str):
-            label = str(label)  # this makes "1" and 1 labeled the same
+    # use default box of white with white border
+    if bbox is None:
+        bbox = {"boxstyle": "round", "ec": (1.0, 1.0, 1.0), "fc": (1.0, 1.0, 1.0)}
 
-        n1, n2 = edge[:2]
-        arrow = fancy_arrow_factory(i)
-        if n1 == n2:
-            connectionstyle_obj = arrow.get_connectionstyle()
-            posA = ax.transData.transform(pos[n1])
-            path_disp = connectionstyle_obj(posA, posA)
-            path_data = ax.transData.inverted().transform_path(path_disp)
-            x, y = path_data.vertices[0]
-            text_items[edge] = ax.text(
-                x,
-                y,
-                label,
-                size=get_param_value(font_size, "font_size"),
-                color=get_param_value(font_color, "font_color"),
-                family=get_param_value(font_family, "font_family"),
-                weight=get_param_value(font_weight, "font_weight"),
-                alpha=get_param_value(alpha, "alpha"),
-                horizontalalignment=get_param_value(
-                    horizontalalignment, "horizontalalignment"
-                ),
-                verticalalignment=get_param_value(
-                    verticalalignment, "verticalalignment"
-                ),
-                rotation=0,
-                transform=ax.transData,
-                bbox=bbox,
-                zorder=1,
-                clip_on=clip_on,
-            )
-        else:
-            text_items[edge] = CurvedArrowText(
-                arrow,
-                label,
-                size=get_param_value(font_size, "font_size"),
-                color=get_param_value(font_color, "font_color"),
-                family=get_param_value(font_family, "font_family"),
-                weight=get_param_value(font_weight, "font_weight"),
-                alpha=get_param_value(alpha, "alpha"),
-                horizontalalignment=get_param_value(
-                    horizontalalignment, "horizontalalignment"
-                ),
-                verticalalignment=get_param_value(
-                    verticalalignment, "verticalalignment"
-                ),
-                transform=ax.transData,
-                bbox=bbox,
-                zorder=1,
-                clip_on=clip_on,
-                label_pos=get_param_value(label_pos, "label_pos"),
-                labels_horizontal=not get_param_value(rotate, "rotate"),
-                ax=ax,
-            )
+    disp_edge_curvature = (
+        connectionstyle
+        if not isinstance(connectionstyle, Iterable)
+        else dict(zip(edgelist, cycle(connectionstyle)))
+    )
 
-    if hide_ticks:
-        ax.tick_params(
-            axis="both",
-            which="both",
-            bottom=False,
-            left=False,
-            labelbottom=False,
-            labelleft=False,
-        )
+    disp_edge_lables = {
+        e: {
+            "label": lbl,
+            "size": get_param_value(font_size, "font_size"),
+            "color": get_param_value(font_color, "font_color"),
+            "family": get_param_value(font_family, "font_family"),
+            "weight": get_param_value(font_weight, "font_weight"),
+            "alpha": get_param_value(alpha, "alpha"),
+            "h_align": get_param_value(horizontalalignment, "horizontalalignment"),
+            "v_align": get_param_value(verticalalignment, "verticalalignment"),
+            "label_pos": get_param_value(label_pos, "label_pos"),
+            "rotate": get_param_value(rotate, "rotate"),
+            "bbox": bbox,
+        }
+        for e, lbl in edge_labels.items()
+    }
 
-    return text_items
+    return display(
+        G,
+        canvas=ax,
+        node_pos=pos,
+        node_visible=False,
+        node_label=False,
+        edge_visible=False,
+        edge_label=disp_edge_lables,
+        edge_curvature=disp_edge_curvature,
+        hide_ticks=hide_ticks,
+        node_size=node_size,
+        compat_return_edge_label_obj=True,
+        compat_edge_label_anyways=True,
+    )
 
 
 def draw_bipartite(G, **kwargs):
