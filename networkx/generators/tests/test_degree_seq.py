@@ -213,17 +213,20 @@ def test_degree_sequence_tree():
         nx.NetworkXError, nx.degree_sequence_tree, z, create_using=nx.DiGraph()
     )
 
-    z = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-    pytest.raises(nx.NetworkXError, nx.degree_sequence_tree, z)
 
-
-def test_degree_sequence_tree_too_many():
-    """Test to synchronize coverage between `runslow` and regular tests."""
-    # Degree sequence obtained from inspecting `nx.random_powerlaw_tree` test in
-    # `test_all_random_functions.py`.
-    # This degree sequence is not a valid tree degree sequence.
-    deg_seq = [1, 16, 1, 4, 0, 0, 1, 1, 0, 1, 2, 0, 1, 0, 1, 5, 1, 2, 1, 0]
-    nx.degree_sequence_tree(deg_seq)
+@pytest.mark.parametrize(
+    "deg_seq",
+    [
+        [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4],
+        [],
+        [2, 0],
+        [1, 16, 1, 4, 0, 0, 1, 1, 0, 1, 2, 0, 1, 0, 1, 5, 1, 2, 1, 0],
+    ],
+)
+def test_degree_sequence_tree_invalid_degree_sequence(deg_seq):
+    """Test invalid degree sequences raise an error."""
+    with pytest.raises(nx.NetworkXError, match="tree must have"):
+        nx.degree_sequence_tree(deg_seq)
 
 
 def test_random_degree_sequence_graph():
