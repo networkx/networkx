@@ -132,7 +132,7 @@ Maintenance
 -----------
 
 - MAINT: wrapping ``partial`` with ``staticmethod()`` in ``test_link_prediction.py`` (`#7673 <https://github.com/networkx/networkx/pull/7673>`_).
-- Updating ``pip install``s in benchmarking workflow (`#7647 <https://github.com/networkx/networkx/pull/7647>`_).
+- Updating ``pip install`` in benchmarking workflow (`#7647 <https://github.com/networkx/networkx/pull/7647>`_).
 - Mv changelist to release deps (`#7708 <https://github.com/networkx/networkx/pull/7708>`_).
 - Drop support for Python 3.10 (`#7668 <https://github.com/networkx/networkx/pull/7668>`_).
 - Update minimum dependencies (SPEC 0) (`#7711 <https://github.com/networkx/networkx/pull/7711>`_).
