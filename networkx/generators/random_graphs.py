@@ -1315,13 +1315,9 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
     # round to integer values in the range [0,n]
     swap = [min(n, max(round(s), 0)) for s in z]
 
-    for deg in swap:
-        # If this degree sequence can be the degree sequence of a tree, return
-        # it. It can be a tree if the number of edges is one fewer than the
-        # number of nodes, or in other words, `n - sum(zseq) / 2 == 1`. We
-        # use an equivalent condition below that avoids floating point
-        # operations.
-        if 2 * n - sum(zseq) == 2:
+    for _ in swap:
+        valid, _ = nx.utils.is_valid_tree_degree_sequence(zseq)
+        if valid:
             return zseq
         index = seed.randint(0, n - 1)
         zseq[index] = swap.pop()
