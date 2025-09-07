@@ -212,7 +212,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
 
     Notes
     -----
-    The algorithm is from Ulrik Brandes [2]_.
+    The algorithm is from Ulrik Brandes [1]_.
 
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length
@@ -220,10 +220,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
 
     References
     ----------
-    .. [1]  A Faster Algorithm for Betweenness Centrality. Ulrik Brandes,
-       Journal of Mathematical Sociology 25(2):163-177, 2001.
-       https://doi.org/10.1080/0022250X.2001.9990249
-    .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
+    .. [1] Ulrik Brandes: On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
        https://doi.org/10.1016/j.socnet.2007.11.001
