@@ -1769,7 +1769,7 @@ def panther_vector_similarity(
     G,
     source,
     *,
-    D=15,
+    D=10,
     k=5,
     path_length=5,
     c=0.5,
@@ -1806,7 +1806,7 @@ def panther_vector_similarity(
         Source node for which to find the top ``k`` similar other nodes
     D : int
         The number of similarity scores to use (in descending order)
-        for each feature vector. Defaults to 15. Note that the original paper
+        for each feature vector. Defaults to 10. Note that the original paper
         used D=50 [1]_, but KDTree is optimized for lower dimensions.
     k : int
         The number of most similar nodes to return
@@ -1846,11 +1846,11 @@ def panther_vector_similarity(
 
     >>> from pprint import pprint
     >>> pprint(nx.panther_vector_similarity(G, source=0, seed=42))
-    {35: 0.10365841445030906,
-     61: 0.10396936818122897,
-     65: 0.10364469283544002,
-     85: 0.10468814199451512,
-     88: 0.10365841445030906}
+    {35: 0.10402634656233918,
+     61: 0.10434063328712018,
+     65: 0.10401247833456054,
+     85: 0.10506718868571752,
+     88: 0.10402634656233918}
 
     But "spoke" nodes are similar to one another
 
