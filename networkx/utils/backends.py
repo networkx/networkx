@@ -258,15 +258,17 @@ class _dispatchable:
             function based on input graph types.
 
         name : str, optional (default: name of `func`)
-            The dispatch name for the function. It defaults to the name of `func`, but can
-            be set manually to avoid conflicts in the global dispatch namespace. A common
-            pattern is to prefix the function name with its module or submodule to make it
-            unique. For example:
+            The dispatch name for the function. It defaults to the name of `func`,
+            but can be set manually to avoid conflicts in the global dispatch
+            namespace. A common pattern is to prefix the function name with its
+            module or submodule to make it unique. For example:
 
-                - ``@_dispatchable(name="tournament_is_strongly_connected")`` resolves conflict
-                  between ``nx.tournament.is_strongly_connected`` and ``nx.is_strongly_connected``.
-                - ``@_dispatchable(name="approximate_node_connectivity")`` resolves conflict
-                  between ``nx.approximation.node_connectivity`` and ``nx.connectivity.node_connectivity``.
+                - ``@_dispatchable(name="tournament_is_strongly_connected")``
+                  resolves conflict between ``nx.tournament.is_strongly_connected``
+                  and ``nx.is_strongly_connected``.
+                - ``@_dispatchable(name="approximate_node_connectivity")``
+                  resolves conflict between ``nx.approximation.node_connectivity``
+                  and ``nx.connectivity.node_connectivity``.
 
         graphs : str or dict or None, optional (default: "G")
             If a string, the parameter name of the graph, which must be the first
