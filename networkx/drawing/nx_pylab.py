@@ -693,9 +693,8 @@ def display(
     # - min_target_margin
 
     def collection_compatible(e):
-        compat_collection = kwargs.get("compat_force_fancy_arrows", None)
-        if isinstance(compat_collection, bool):
-            return not compat_collection
+        if "compat_force_fancy_arrows" in kwargs:
+            return not kwargs["compat_force_fancy_arrows"]
         else:
             return (
                 # Edge can be plotted with LineCollection since it has compatible characteristics
@@ -2104,7 +2103,7 @@ def draw_networkx_edges(
         node_shape=disp_node_shape,
         node_size=disp_node_size,
         hide_ticks=hide_ticks,
-        compat_force_fancy_arrows=arrows,
+        compat_force_fancy_arrows=not use_linecollection,
         compat_return_edge_viz_obj=True,
     )
 
