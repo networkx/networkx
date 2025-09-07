@@ -694,7 +694,7 @@ def display(
 
     def collection_compatible(e):
         if "compat_force_fancy_arrows" in kwargs:
-            return not kwargs["compat_force_fancy_arrows"]
+            return e[0] != e[1] and not kwargs["compat_force_fancy_arrows"]
         else:
             return (
                 # Edge can be plotted with LineCollection since it has compatible characteristics
