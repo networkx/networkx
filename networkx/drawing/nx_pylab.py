@@ -675,10 +675,10 @@ def display(
                 return (rgba[0], rgba[1], rgba[2], alpha)
             return rgba
 
-        if isinstance(color, tuple) and len(color) == 3:
+        if isinstance(color, tuple | np.ndarray) and len(color) == 3:
             return (color[0], color[1], color[2], alpha)
 
-        if isinstance(color, tuple) and len(color) == 4:
+        if isinstance(color, tuple | np.ndarry) and len(color) == 4:
             return color
 
         raise ValueError(f"Invalid format for color: {color}")
@@ -1637,16 +1637,30 @@ def draw_networkx_nodes(
     mapper = None
     if cmap is not None:
         mapper = mpl.cm.ScalarMappable(cmap=cmap)
-        if vmin is None:
+    else:
+        mapper = mpl.cm.ScalarMappable(cmap=plt.get_cmap())
+
+    if vmin is None:
+        if isinstance(node_color, list | np.ndarray) and all(
+            isinstance(c, Number) for c in node_color
+        ):
+            vmin = min(node_color)
+        else:
             vmin = 0.0
-        if vmax is None:
+    if vmax is None:
+        if isinstance(node_color, list | np.ndarray) and all(
+            isinstance(c, Number) for c in node_color
+        ):
+            vmax = max(node_color)
+        else:
             vmax = 1.0
-        mapper.set_clim(vmin, vmax)
+    mapper.set_clim(vmin, vmax)
 
     def map_color(c):
         if mapper is None:
             raise nx.NetworkXError("Supplied scalar color without color map.")
 
+        print(f"{c=}")
         return tuple(float(x) for x in mapper.to_rgba(c))
 
     disp_node_color = None
@@ -1656,7 +1670,7 @@ def draw_networkx_nodes(
         disp_node_color = node_color
     elif isinstance(node_color, (np.ndarray | list)):
         disp_node_color = {
-            n: map_color(node_color) if isinstance(node_color, float) else ns
+            n: map_color(ns) if isinstance(ns, Number) else ns
             for n, ns in zip(nodelist, node_color)
         }
 
@@ -1677,7 +1691,10 @@ def draw_networkx_nodes(
     disp_node_border_color = (
         edgecolors
         if not isinstance(edgecolors, (np.ndarray | list))
-        else {n: map_color(c) for n, c in zip(nodelist, cycle(edgecolors))}
+        else {
+            n: map_color(c) if isinstance(c, Number) else c
+            for n, c in zip(nodelist, cycle(edgecolors))
+        }
     )
 
     display(
