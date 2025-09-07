@@ -203,15 +203,28 @@ def test_directed_havel_hakimi():
     pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
 
 
-def test_degree_sequence_tree():
-    z = [1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-    G = nx.degree_sequence_tree(z)
-    assert len(G) == len(z)
-    assert len(list(G.edges())) == sum(z) / 2
+@pytest.mark.parametrize(
+    "deg_seq",
+    [
+        [0],
+        [1, 1],
+        [2, 2, 2, 1, 1],
+        [3, 1, 1, 1],
+        [4, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 2, 2, 2, 3, 4],
+    ],
+)
+def test_degree_sequence_tree(deg_seq):
+    G = nx.degree_sequence_tree(deg_seq)
+    assert len(G) == len(deg_seq)
+    assert G.number_of_edges() == sum(deg_seq) // 2
+    assert nx.is_tree(G)
 
-    pytest.raises(
-        nx.NetworkXError, nx.degree_sequence_tree, z, create_using=nx.DiGraph()
-    )
+
+@pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
+def test_degree_sequence_tree_directed(graph_type):
+    with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
+        nx.degree_sequence_tree([1, 1], create_using=graph_type())
 
 
 @pytest.mark.parametrize(
@@ -220,6 +233,7 @@ def test_degree_sequence_tree():
         [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4],
         [],
         [2, 0],
+        [-1, 3],
         [1, 16, 1, 4, 0, 0, 1, 1, 0, 1, 2, 0, 1, 0, 1, 5, 1, 2, 1, 0],
     ],
 )
