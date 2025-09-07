@@ -678,7 +678,7 @@ def display(
         if isinstance(color, tuple | np.ndarray) and len(color) == 3:
             return (color[0], color[1], color[2], alpha)
 
-        if isinstance(color, tuple | np.ndarry) and len(color) == 4:
+        if isinstance(color, tuple | np.ndarray) and len(color) == 4:
             return color
 
         raise ValueError(f"Invalid format for color: {color}")
