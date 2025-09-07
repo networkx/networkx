@@ -1660,7 +1660,6 @@ def draw_networkx_nodes(
         if mapper is None:
             raise nx.NetworkXError("Supplied scalar color without color map.")
 
-        print(f"{c=}")
         return tuple(float(x) for x in mapper.to_rgba(c))
 
     disp_node_color = None
