@@ -216,8 +216,7 @@ def test_directed_havel_hakimi():
 )
 def test_degree_sequence_tree(deg_seq):
     G = nx.degree_sequence_tree(deg_seq)
-    assert len(G) == len(deg_seq)
-    assert G.number_of_edges() == sum(deg_seq) // 2
+    assert sorted(dict(G.degree).values()) == sorted(deg_seq)
     assert nx.is_tree(G)
 
 
