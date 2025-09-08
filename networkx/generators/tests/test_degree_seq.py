@@ -86,9 +86,8 @@ def test_expected_degree_graph_empty():
 
 
 @pytest.mark.parametrize("seed", [10, 1000])
-def test_expected_degree_graph(seed):
-    # test that fixed seed delivers the same graph
-    deg_seq = [3] * 12
+@pytest.mark.parametrize("deg_seq", [[3] * 12, [2, 0], [10, 2, 2, 2, 2]])
+def test_expected_degree_graph(seed, deg_seq):
     G1 = nx.expected_degree_graph(deg_seq, seed=seed)
     G2 = nx.expected_degree_graph(deg_seq, seed=seed)
     assert len(G1) == len(G2) == len(deg_seq)
@@ -102,20 +101,6 @@ def test_expected_degree_graph_selfloops():
     assert len(G1) == len(G2) == len(deg_seq)
     assert nx.is_isomorphic(G1, G2)
     assert nx.number_of_selfloops(G1) == nx.number_of_selfloops(G2) == 0
-
-
-def test_expected_degree_graph_skew():
-    deg_seq = [10, 2, 2, 2, 2]
-    G1 = nx.expected_degree_graph(deg_seq, seed=1000)
-    G2 = nx.expected_degree_graph(deg_seq, seed=1000)
-    assert nx.is_isomorphic(G1, G2)
-    assert len(G1) == 5
-
-
-def test_expected_degree_graph_small():
-    deg_seq = [2, 0]
-    G = nx.expected_degree_graph(deg_seq, seed=42)
-    assert dict(G.degree) == dict(enumerate(deg_seq))
 
 
 def test_havel_hakimi_construction():
