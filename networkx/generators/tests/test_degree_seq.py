@@ -85,7 +85,7 @@ def test_expected_degree_graph_empty():
     assert dict(G.degree()) == {}
 
 
-@pytest.mark.parametrize("seed", [10, 1000])
+@pytest.mark.parametrize("seed", [10, 42, 1000])
 @pytest.mark.parametrize("deg_seq", [[3] * 12, [2, 0], [10, 2, 2, 2, 2]])
 def test_expected_degree_graph(seed, deg_seq):
     G1 = nx.expected_degree_graph(deg_seq, seed=seed)
