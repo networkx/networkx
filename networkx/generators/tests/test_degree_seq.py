@@ -96,11 +96,12 @@ def test_expected_degree_graph(seed):
 
 
 def test_expected_degree_graph_selfloops():
-    deg_seq = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+    deg_seq = [3] * 12
     G1 = nx.expected_degree_graph(deg_seq, seed=1000, selfloops=False)
     G2 = nx.expected_degree_graph(deg_seq, seed=1000, selfloops=False)
+    assert len(G1) == len(G2) == len(deg_seq)
     assert nx.is_isomorphic(G1, G2)
-    assert len(G1) == 12
+    assert nx.number_of_selfloops(G1) == nx.number_of_selfloops(G2) == 0
 
 
 def test_expected_degree_graph_skew():
