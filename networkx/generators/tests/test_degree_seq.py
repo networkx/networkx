@@ -141,6 +141,12 @@ def test_expected_degree_graph_skew():
     assert len(G1) == 5
 
 
+def test_expected_degree_graph_small():
+    deg_seq = [2, 0]
+    G = nx.expected_degree_graph(deg_seq, seed=42)
+    assert dict(G.degree) == dict(enumerate(deg_seq))
+
+
 def test_havel_hakimi_construction():
     G = nx.havel_hakimi_graph([])
     assert len(G) == 0
@@ -197,18 +203,44 @@ def test_directed_havel_hakimi():
     pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
 
 
-def test_degree_sequence_tree():
-    z = [1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-    G = nx.degree_sequence_tree(z)
-    assert len(G) == len(z)
-    assert len(list(G.edges())) == sum(z) / 2
+@pytest.mark.parametrize(
+    "deg_seq",
+    [
+        [0],
+        [1, 1],
+        [2, 2, 2, 1, 1],
+        [3, 1, 1, 1],
+        [4, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 2, 2, 2, 3, 4],
+    ],
+)
+def test_degree_sequence_tree(deg_seq):
+    G = nx.degree_sequence_tree(deg_seq)
+    assert len(G) == len(deg_seq)
+    assert G.number_of_edges() == sum(deg_seq) // 2
+    assert nx.is_tree(G)
 
-    pytest.raises(
-        nx.NetworkXError, nx.degree_sequence_tree, z, create_using=nx.DiGraph()
-    )
 
-    z = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-    pytest.raises(nx.NetworkXError, nx.degree_sequence_tree, z)
+@pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
+def test_degree_sequence_tree_directed(graph_type):
+    with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
+        nx.degree_sequence_tree([1, 1], create_using=graph_type())
+
+
+@pytest.mark.parametrize(
+    "deg_seq",
+    [
+        [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4],
+        [],
+        [2, 0],
+        [-1, 3],
+        [1, 16, 1, 4, 0, 0, 1, 1, 0, 1, 2, 0, 1, 0, 1, 5, 1, 2, 1, 0],
+    ],
+)
+def test_degree_sequence_tree_invalid_degree_sequence(deg_seq):
+    """Test invalid degree sequences raise an error."""
+    with pytest.raises(nx.NetworkXError, match="tree must have"):
+        nx.degree_sequence_tree(deg_seq)
 
 
 def test_random_degree_sequence_graph():

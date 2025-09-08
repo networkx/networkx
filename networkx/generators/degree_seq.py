@@ -686,6 +686,10 @@ def degree_sequence_tree(deg_sequence, create_using=None):
     if G.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
 
+    if deg_sequence == [0]:
+        G.add_node(0)
+        return G
+
     # Sort all degrees greater than 1 in decreasing order.
     #
     # TODO Does this need to be sorted in reverse order?
@@ -699,13 +703,8 @@ def degree_sequence_tree(deg_sequence, create_using=None):
     # add the leaves
     for source in range(1, n - 1):
         nedges = deg.pop() - 2
-        for target in range(last, last + nedges):
-            G.add_edge(source, target)
+        G.add_edges_from((source, target) for target in range(last, last + nedges))
         last += nedges
-
-    # in case we added one too many
-    if len(G) > len(deg_sequence):
-        G.remove_node(0)
     return G
 
 
