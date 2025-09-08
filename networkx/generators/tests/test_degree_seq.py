@@ -33,17 +33,15 @@ class TestConfigurationModel:
         assert sorted(dict(G.degree).values()) == sorted(deg_seq)
         assert sorted(dict(G.degree(range(len(deg_seq)))).values()) == sorted(deg_seq)
 
-    def test_random_seed(self):
+    @pytest.mark.parametrize("seed", [10, 1000])
+    def test_random_seed(self, seed):
         """Tests that each call with the same random seed generates the
         same graph.
 
         """
         deg_seq = [3] * 12
-        G1 = nx.configuration_model(deg_seq, seed=1000)
-        G2 = nx.configuration_model(deg_seq, seed=1000)
-        assert nx.is_isomorphic(G1, G2)
-        G1 = nx.configuration_model(deg_seq, seed=10)
-        G2 = nx.configuration_model(deg_seq, seed=10)
+        G1 = nx.configuration_model(deg_seq, seed=seed)
+        G2 = nx.configuration_model(deg_seq, seed=seed)
         assert nx.is_isomorphic(G1, G2)
 
     def test_directed_disallowed(self):
@@ -87,17 +85,13 @@ def test_expected_degree_graph_empty():
     assert dict(G.degree()) == {}
 
 
-def test_expected_degree_graph():
+@pytest.mark.parametrize("seed", [10, 1000])
+def test_expected_degree_graph(seed):
     # test that fixed seed delivers the same graph
-    deg_seq = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
-    G1 = nx.expected_degree_graph(deg_seq, seed=1000)
-    assert len(G1) == 12
-
-    G2 = nx.expected_degree_graph(deg_seq, seed=1000)
-    assert nx.is_isomorphic(G1, G2)
-
-    G1 = nx.expected_degree_graph(deg_seq, seed=10)
-    G2 = nx.expected_degree_graph(deg_seq, seed=10)
+    deg_seq = [3] * 12
+    G1 = nx.expected_degree_graph(deg_seq, seed=seed)
+    G2 = nx.expected_degree_graph(deg_seq, seed=seed)
+    assert len(G1) == len(G2) == len(deg_seq)
     assert nx.is_isomorphic(G1, G2)
 
 
