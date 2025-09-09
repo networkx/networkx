@@ -211,32 +211,34 @@ class TestSteinerTree:
 
         assert list(G) == [4, 5, 6]  # only the terminal nodes are left
 
-    def test_weighted(self, method):
+    @pytest.mark.parametrize(
+        ("weight", "expected_edges"),
+        [
+            (
+                None,
+                [
+                    (0, 2, {"my_weight": 2}),
+                    (2, 3, {"my_weight": 1}),
+                    (2, 4, {}),
+                ],
+            ),
+            (
+                "my_weight",
+                [
+                    (0, 1, {"my_weight": 0.1}),
+                    (1, 2, {"my_weight": 0.1}),
+                    (2, 3, {"my_weight": 1}),
+                    (2, 4, {}),
+                ],
+            ),
+        ],
+    )
+    def test_weighted(self, method, weight, expected_edges):
         G = self.G4
         terminal_nodes = self.G4_term_nodes
 
-        no_weights_expected_edges = [
-            (0, 2, {"my_weight": 2}),
-            (2, 3, {"my_weight": 1}),
-            (2, 4, {}),
-        ]
-        S_no_weights = steiner_tree(G, terminal_nodes, method=method, weight=None)
-        assert edges_equal(
-            list(S_no_weights.edges(data=True)), no_weights_expected_edges
-        )
-
-        with_weights_expected_edges = [
-            (0, 1, {"my_weight": 0.1}),
-            (1, 2, {"my_weight": 0.1}),
-            (2, 3, {"my_weight": 1}),
-            (2, 4, {}),
-        ]
-        S_with_weights = steiner_tree(
-            G, terminal_nodes, method=method, weight="my_weight"
-        )
-        assert edges_equal(
-            list(S_with_weights.edges(data=True)), with_weights_expected_edges
-        )
+        S = steiner_tree(G, terminal_nodes, method=method, weight=weight)
+        assert edges_equal(list(S.edges(data=True)), expected_edges)
 
 
 def test_steiner_tree_weight_attribute(method):
