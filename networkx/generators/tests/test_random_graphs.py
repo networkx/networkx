@@ -312,12 +312,14 @@ class TestGeneratorsRandom:
         assert len(graph) == 1000
 
     def test_random_kernel_graph_default_root(self):
+        """When `kernel_root` is not provided, `sp.optimize.brentq` is used to
+        construct the default kernel.
+        """
         pytest.importorskip("scipy")
 
         def integral(u, w, z):
-            return c * (z - w)
+            return z - w
 
-        c = 1
         graph = nx.random_kernel_graph(1000, integral, seed=42)
         assert len(graph) == 1000
 
