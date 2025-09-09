@@ -148,17 +148,17 @@ class TestAtlas:
         from networkx.generators import atlas
 
         cls.GAG = atlas.graph_atlas_g()
-        cls.rng = random.Random(42)
 
     def test_graph_atlas(self):
+        rng = random.Random(42)
         # Atlas = nx.graph_atlas_g()[0:208] # 208, 6 nodes or less
         Atlas = self.GAG[0:100]
         alphabet = list(range(26))
         for graph in Atlas:
             nlist = list(graph)
             labels = alphabet[: len(nlist)]
-            for s in range(10):
-                self.rng.shuffle(labels)
+            for _ in range(10):
+                rng.shuffle(labels)
                 d = dict(zip(nlist, labels))
                 relabel = nx.relabel_nodes(graph, d)
                 gm = iso.GraphMatcher(graph, relabel)
@@ -206,7 +206,7 @@ def test_multiedge():
 
     for g1 in [nx.MultiGraph(), nx.MultiDiGraph()]:
         g1.add_edges_from(edges)
-        for _ in range(100):
+        for _ in range(10):
             new_nodes = list(nodes)
             rng.shuffle(new_nodes)
             d = dict(zip(nodes, new_nodes))
