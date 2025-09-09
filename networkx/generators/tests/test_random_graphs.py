@@ -312,11 +312,11 @@ class TestGeneratorsRandom:
         assert len(graph) == 1000
 
     def test_random_kernel_graph_default_root(self):
+        pytest.importorskip("scipy")
         def integral(u, w, z):
             return c * (z - w)
 
         c = 1
-        pytest.importorskip("scipy")
         graph = nx.random_kernel_graph(1000, integral, seed=42)
         assert len(graph) == 1000
 
