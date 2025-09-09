@@ -313,6 +313,7 @@ class TestGeneratorsRandom:
 
     def test_random_kernel_graph_default_root(self):
         pytest.importorskip("scipy")
+
         def integral(u, w, z):
             return c * (z - w)
 
