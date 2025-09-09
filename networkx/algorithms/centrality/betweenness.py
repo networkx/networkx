@@ -153,7 +153,7 @@ def betweenness_centrality(
         normalized=normalized,
         directed=G.is_directed(),
         endpoints=endpoints,
-        sampled_nodes=nodes,
+        sampled_nodes=None if k is None else nodes,
     )
     return betweenness
 
@@ -244,7 +244,11 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     for n in G:  # remove nodes to only return edges
         del betweenness[n]
     betweenness = _rescale(
-        betweenness, len(G) + 1, normalized=normalized, directed=G.is_directed()
+        betweenness,
+        len(G),
+        normalized=normalized,
+        directed=G.is_directed(),
+        sampled_nodes=None if k is None else nodes,
     )
     if G.is_multigraph():
         betweenness = _add_edge_keys(G, betweenness, weight=weight)
@@ -356,8 +360,10 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
 
 
 def _rescale(
-    betweenness, n, *, normalized, directed, endpoints=None, sampled_nodes=None
+    betweenness, n, *, normalized, directed, endpoints=True, sampled_nodes=None
 ):
+    # For edge betweenness, `endpoints` is always `True`.
+
     k = None if sampled_nodes is None else len(sampled_nodes)
     # N is used to count the number of valid (s, t) pairs where s != t that
     # could have a path pass through v. If endpoints is False, then v must

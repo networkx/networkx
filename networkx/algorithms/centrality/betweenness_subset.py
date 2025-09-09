@@ -114,7 +114,7 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
         else:  # use Dijkstra's algorithm
             S, P, sigma, _ = dijkstra(G, s, weight)
         b = _accumulate_subset(b, S, P, sigma, s, targets)
-    b = _rescale(b, len(G), normalized=normalized, directed=G.is_directed())
+    b = _rescale(b, len(G) - 1, normalized=normalized, directed=G.is_directed())
     return b
 
 
@@ -198,7 +198,7 @@ def edge_betweenness_centrality_subset(
         b = _accumulate_edges_subset(b, S, P, sigma, s, targets)
     for n in G:  # remove nodes to only return edges
         del b[n]
-    b = _rescale(b, len(G) + 1, normalized=normalized, directed=G.is_directed())
+    b = _rescale(b, len(G), normalized=normalized, directed=G.is_directed())
     if G.is_multigraph():
         b = _add_edge_keys(G, b, weight=weight)
     return b
