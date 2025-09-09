@@ -1051,113 +1051,86 @@ def optimize_edit_paths(
                 for _ in xy:
                     matched_gh.pop()
 
-    # Initialization
+    cost_fns = {
+        "node": (node_match, node_subst_cost, node_del_cost, node_ins_cost),
+        "edge": (edge_match, edge_subst_cost, edge_del_cost, edge_ins_cost),
+    }
 
-    pending_u = list(G1.nodes)
-    pending_v = list(G2.nodes)
+    def _initialize_cost_matrix(_type):
+        if _type == "node":
+            G1elements = G1.nodes
+            G2elements = G2.nodes
+        elif _type == "edge":
+            G1elements = G1.edges
+            G2elements = G2.edges
+        else:
+            msg = f"invalid type {_type=}"
+            raise ValueError(msg)
 
-    initial_cost = 0
-    if roots:
-        root_u, root_v = roots
-        if root_u not in pending_u or root_v not in pending_v:
-            raise nx.NodeNotFound("Root node not in graph.")
+        pending1 = list(G1elements)
+        pending2 = list(G2elements)
+        match, subst_cost, del_cost, ins_cost = cost_fns[_type]
 
-        # remove roots from pending
-        pending_u.remove(root_u)
-        pending_v.remove(root_v)
+        initial_cost = 0
+        if _type == "node" and roots:
+            root_u, root_v = roots
+            if root_u not in pending1 or root_v not in pending2:
+                raise nx.NodeNotFound("Root node not in graph.")
 
-    # cost matrix of vertex mappings
-    m = len(pending_u)
-    n = len(pending_v)
-    C = np.zeros((m + n, m + n))
-    if node_subst_cost:
-        C[0:m, 0:n] = np.array(
-            [
-                node_subst_cost(G1.nodes[u], G2.nodes[v])
-                for u in pending_u
-                for v in pending_v
-            ]
-        ).reshape(m, n)
-        if roots:
-            initial_cost = node_subst_cost(G1.nodes[root_u], G2.nodes[root_v])
-    elif node_match:
-        C[0:m, 0:n] = np.array(
-            [
-                1 - int(node_match(G1.nodes[u], G2.nodes[v]))
-                for u in pending_u
-                for v in pending_v
-            ]
-        ).reshape(m, n)
-        if roots:
-            initial_cost = 1 - node_match(G1.nodes[root_u], G2.nodes[root_v])
-    else:
-        # all zeroes
-        pass
-    # assert not min(m, n) or C[0:m, 0:n].min() >= 0
-    if node_del_cost:
-        del_costs = [node_del_cost(G1.nodes[u]) for u in pending_u]
-    else:
-        del_costs = [1] * len(pending_u)
-    # assert not m or min(del_costs) >= 0
-    if node_ins_cost:
-        ins_costs = [node_ins_cost(G2.nodes[v]) for v in pending_v]
-    else:
-        ins_costs = [1] * len(pending_v)
-    # assert not n or min(ins_costs) >= 0
-    inf = C[0:m, 0:n].sum() + sum(del_costs) + sum(ins_costs) + 1
-    C[0:m, n : n + m] = np.array(
-        [del_costs[i] if i == j else inf for i in range(m) for j in range(m)]
-    ).reshape(m, m)
-    C[m : m + n, 0:n] = np.array(
-        [ins_costs[i] if i == j else inf for i in range(n) for j in range(n)]
-    ).reshape(n, n)
-    Cv = make_CostMatrix(C, m, n)
+            pending1.remove(root_u)
+            pending2.remove(root_v)
 
-    pending_g = list(G1.edges)
-    pending_h = list(G2.edges)
+        m = len(pending1)
+        n = len(pending2)
+        C = np.zeros((m + n, m + n))
+        if subst_cost:
+            C[:m, :n] = np.array(
+                [
+                    subst_cost(G1elements[a], G2elements[b])
+                    for a in pending1
+                    for b in pending2
+                ]
+            ).reshape(m, n)
+            if _type == "node" and roots:
+                initial_cost = subst_cost(G1elements[root_u], G2elements[root_v])
+        elif match:
+            C[:m, :n] = np.array(
+                [
+                    1 - int(match(G1elements[a], G2elements[b]))
+                    for a in pending1
+                    for b in pending2
+                ]
+            ).reshape(m, n)
+            if _type == "node" and roots:
+                initial_cost = 1 - match(G1elements[root_u], G2elements[root_v])
+        else:
+            # all zeroes
+            pass
 
-    # cost matrix of edge mappings
-    m = len(pending_g)
-    n = len(pending_h)
-    C = np.zeros((m + n, m + n))
-    if edge_subst_cost:
-        C[0:m, 0:n] = np.array(
-            [
-                edge_subst_cost(G1.edges[g], G2.edges[h])
-                for g in pending_g
-                for h in pending_h
-            ]
-        ).reshape(m, n)
-    elif edge_match:
-        C[0:m, 0:n] = np.array(
-            [
-                1 - int(edge_match(G1.edges[g], G2.edges[h]))
-                for g in pending_g
-                for h in pending_h
-            ]
-        ).reshape(m, n)
-    else:
-        # all zeroes
-        pass
-    # assert not min(m, n) or C[0:m, 0:n].min() >= 0
-    if edge_del_cost:
-        del_costs = [edge_del_cost(G1.edges[g]) for g in pending_g]
-    else:
-        del_costs = [1] * len(pending_g)
-    # assert not m or min(del_costs) >= 0
-    if edge_ins_cost:
-        ins_costs = [edge_ins_cost(G2.edges[h]) for h in pending_h]
-    else:
-        ins_costs = [1] * len(pending_h)
-    # assert not n or min(ins_costs) >= 0
-    inf = C[0:m, 0:n].sum() + sum(del_costs) + sum(ins_costs) + 1
-    C[0:m, n : n + m] = np.array(
-        [del_costs[i] if i == j else inf for i in range(m) for j in range(m)]
-    ).reshape(m, m)
-    C[m : m + n, 0:n] = np.array(
-        [ins_costs[i] if i == j else inf for i in range(n) for j in range(n)]
-    ).reshape(n, n)
-    Ce = make_CostMatrix(C, m, n)
+        # assert not min(m, n) or C[0:m, 0:n].min() >= 0
+        if del_cost:
+            del_costs = [del_cost(G1elements[a]) for a in pending1]
+        else:
+            del_costs = [1] * len(pending1)
+        # assert not m or min(del_costs) >= 0
+        if ins_cost:
+            ins_costs = [ins_cost(G2elements[b]) for b in pending2]
+        else:
+            ins_costs = [1] * len(pending2)
+        # assert not n or min(ins_costs) >= 0
+        global inf
+        inf = C[:m, :n].sum() + sum(del_costs) + sum(ins_costs) + 1
+        C[:m, n : n + m] = np.array(
+            [del_costs[i] if i == j else inf for i in range(m) for j in range(m)]
+        ).reshape(m, m)
+        C[m : m + n, :n] = np.array(
+            [ins_costs[i] if i == j else inf for i in range(n) for j in range(n)]
+        ).reshape(n, n)
+
+        return make_CostMatrix(C, m, n), pending1, pending2, initial_cost
+
+    Cv, pending_u, pending_v, initial_cost = _initialize_cost_matrix("node")
+    Ce, pending_g, pending_h, _ = _initialize_cost_matrix("edge")
 
     maxcost_value = Cv.C.sum() + Ce.C.sum() + 1
 
