@@ -114,7 +114,9 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
         else:  # use Dijkstra's algorithm
             S, P, sigma, _ = dijkstra(G, s, weight)
         b = _accumulate_subset(b, S, P, sigma, s, targets)
-    b = _rescale(b, len(G) - 1, normalized=normalized, directed=G.is_directed())
+    b = _rescale(
+        b, len(G), normalized=normalized, directed=G.is_directed(), endpoints=False
+    )
     return b
 
 
