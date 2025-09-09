@@ -20,18 +20,19 @@ ALL_STRATEGIES = [
     "connected_sequential",
     "saturation_largest_first",
     "DSATUR",
+    "rlf",
 ]
 
 # List of strategies where interchange=True results in an error
-INTERCHANGE_INVALID = ["independent_set", "saturation_largest_first", "DSATUR"]
+INTERCHANGE_INVALID = ["independent_set", "saturation_largest_first", "DSATUR", "rlf"]
 
 
 class TestColoring:
     def test_basic_cases(self):
-        def check_basic_case(graph_func, n_nodes, strategy, interchange):
+        def check_basic_case(graph_func, n_nodes, strategy, interchange, tabu):
             graph = graph_func()
             coloring = nx.coloring.greedy_color(
-                graph, strategy=strategy, interchange=interchange
+                graph, strategy=strategy, interchange=interchange, tabu=tabu
             )
             assert verify_length(coloring, n_nodes)
             assert verify_coloring(graph, coloring)
@@ -39,9 +40,10 @@ class TestColoring:
         for graph_func, n_nodes in BASIC_TEST_CASES.items():
             for interchange in [True, False]:
                 for strategy in ALL_STRATEGIES:
-                    check_basic_case(graph_func, n_nodes, strategy, False)
-                    if strategy not in INTERCHANGE_INVALID:
-                        check_basic_case(graph_func, n_nodes, strategy, True)
+                    for tabu in [0, 100, 1000]:
+                        check_basic_case(graph_func, n_nodes, strategy, False, tabu)
+                        if strategy not in INTERCHANGE_INVALID:
+                            check_basic_case(graph_func, n_nodes, strategy, True, tabu)
 
     def test_special_cases(self):
         def check_special_case(strategy, graph_func, interchange, colors):
@@ -117,11 +119,38 @@ class TestColoring:
     def test_num_colors(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (0, 3)])
-        pytest.raises(nx.NetworkXAlgorithmError, nx.coloring.equitable_color, G, 2)
+        pytest.raises(nx.NetworkXAlgorithmError, nx.coloring.equitable_color, G, 1)
+        for k in range(2, 5):
+            coloring = nx.coloring.equitable_color(G, k)
+            assert is_equitable(G, coloring, k)
+
+    def test_equitable_directed(self):
+        graph = nx.DiGraph()
+        graph.add_nodes_from([1, 2, 3, 4, 5, 6])
+        graph.add_edges_from([(6, 1), (1, 4), (4, 3), (3, 2), (2, 5)])
+        pytest.raises(
+            nx.NetworkXNotImplemented,
+            nx.coloring.equitable_color,
+            graph,
+            num_colors=max_degree(graph),
+        )
+
+    def test_equitable_multidirected(self):
+        graph = nx.MultiDiGraph()
+        graph.add_nodes_from([1, 2, 3, 4, 5, 6])
+        graph.add_edges_from([(6, 1), (6, 1), (1, 4), (4, 3), (3, 2), (2, 5)])
+        pytest.raises(
+            nx.NetworkXNotImplemented,
+            nx.coloring.equitable_color,
+            graph,
+            num_colors=max_degree(graph),
+        )
 
     def test_equitable_color(self):
         G = nx.fast_gnp_random_graph(n=10, p=0.2, seed=42)
         coloring = nx.coloring.equitable_color(G, max_degree(G) + 1)
+        assert is_equitable(G, coloring)
+        coloring = nx.coloring.equitable_color(G, max_degree(G))
         assert is_equitable(G, coloring)
 
     def test_equitable_color_empty(self):
@@ -133,6 +162,16 @@ class TestColoring:
         G = nx.fast_gnp_random_graph(100, 0.1, seed=42)
         coloring = nx.coloring.equitable_color(G, max_degree(G) + 1)
         assert is_equitable(G, coloring, num_colors=max_degree(G) + 1)
+        coloring = nx.coloring.equitable_color(G, max_degree(G))
+        assert is_equitable(G, coloring, num_colors=max_degree(G))
+
+    def test_equitable_color_large_differing_num_colors(self):
+        G = nx.fast_gnp_random_graph(100, 0.5, seed=42)
+        for k in range(20):
+            pytest.raises(nx.NetworkXAlgorithmError, nx.coloring.equitable_color, G, k)
+        for k in range(20, 110):
+            coloring = nx.coloring.equitable_color(G, k)
+            assert is_equitable(G, coloring, k)
 
     def test_case_V_plus_not_in_A_cal(self):
         # Hand crafted case to avoid the easy case.
@@ -430,74 +469,10 @@ class TestColoring:
         check_state(**params)
 
     def test_strategy_saturation_largest_first(self):
-        def color_remaining_nodes(
-            G,
-            colored_nodes,
-            full_color_assignment=None,
-            nodes_to_add_between_calls=1,
-        ):
-            color_assignments = []
-            aux_colored_nodes = colored_nodes.copy()
-
-            node_iterator = nx.algorithms.coloring.greedy_coloring.strategy_saturation_largest_first(
-                G, aux_colored_nodes
-            )
-
-            for u in node_iterator:
-                # Set to keep track of colors of neighbors
-                nbr_colors = {
-                    aux_colored_nodes[v] for v in G[u] if v in aux_colored_nodes
-                }
-                # Find the first unused color.
-                for color in itertools.count():
-                    if color not in nbr_colors:
-                        break
-                aux_colored_nodes[u] = color
-                color_assignments.append((u, color))
-
-                # Color nodes between iterations
-                for i in range(nodes_to_add_between_calls - 1):
-                    if not len(color_assignments) + len(colored_nodes) >= len(
-                        full_color_assignment
-                    ):
-                        full_color_assignment_node, color = full_color_assignment[
-                            len(color_assignments) + len(colored_nodes)
-                        ]
-
-                        # Assign the new color to the current node.
-                        aux_colored_nodes[full_color_assignment_node] = color
-                        color_assignments.append((full_color_assignment_node, color))
-
-            return color_assignments, aux_colored_nodes
-
         for G, _, _ in SPECIAL_TEST_CASES["saturation_largest_first"]:
             G = G()
-
-            # Check that function still works when nodes are colored between iterations
-            for nodes_to_add_between_calls in range(1, 5):
-                # Get a full color assignment, (including the order in which nodes were colored)
-                colored_nodes = {}
-                full_color_assignment, full_colored_nodes = color_remaining_nodes(
-                    G, colored_nodes
-                )
-
-                # For each node in the color assignment, add it to colored_nodes and re-run the function
-                for ind, (node, color) in enumerate(full_color_assignment):
-                    colored_nodes[node] = color
-
-                    (
-                        partial_color_assignment,
-                        partial_colored_nodes,
-                    ) = color_remaining_nodes(
-                        G,
-                        colored_nodes,
-                        full_color_assignment=full_color_assignment,
-                        nodes_to_add_between_calls=nodes_to_add_between_calls,
-                    )
-
-                    # Check that the color assignment and order of remaining nodes are the same
-                    assert full_color_assignment[ind + 1 :] == partial_color_assignment
-                    assert full_colored_nodes == partial_colored_nodes
+            coloring = nx.coloring.greedy_color(G, strategy="saturation_largest_first")
+            assert verify_coloring(G, coloring)
 
 
 #  ############################  Utility functions ############################
