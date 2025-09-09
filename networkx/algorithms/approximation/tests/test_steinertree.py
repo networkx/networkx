@@ -223,8 +223,6 @@ class TestSteinerTree:
             S_no_weights = steiner_tree(G, terminal_nodes, method=method, weight=None)
             assert edges_equal(
                 list(S_no_weights.edges(data=True)), no_weights_expected_edges
-            ), (
-                f"S edges, {S_no_weights.edges(data=True)}  G edges, {G.edges(data=True)}"
             )
 
         with_weights_expected_edges = [
@@ -239,8 +237,6 @@ class TestSteinerTree:
             )
             assert edges_equal(
                 list(S_with_weights.edges(data=True)), with_weights_expected_edges
-            ), (
-                f"S edges, {S_with_weights.edges(data=True)}  G edges, {G.edges(data=True)}"
             )
 
 
