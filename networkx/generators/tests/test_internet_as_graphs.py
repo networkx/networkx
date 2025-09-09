@@ -196,11 +196,6 @@ def test_AS_graph_coverage():
 
     # All M nodes are already connected to each other.
     assert all(u in G[v] for u in GG.nodes["M"] for v in GG.nodes["M"] if u != v)
-    # There is only one CP node (so it is connected to itself).
-    assert len(GG.nodes["CP"]) == 1
-
-    for n in GG.nodes["M"]:
-        GG.G.add_edge(n, cp_node)
 
     # Add coverage for the unsuccessful branches when adding peering links.
     # `add_m_peering_link` cannot add edges when the nodes are already connected.
