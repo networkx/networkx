@@ -9,6 +9,11 @@ from networkx.algorithms.approximation.steinertree import (
 from networkx.utils import edges_equal
 
 
+@pytest.fixture(params=["kou", "mehlhorn"])
+def method(request):
+    return request.param
+
+
 class TestSteinerTree:
     @classmethod
     def setup_class(cls):
@@ -65,14 +70,22 @@ class TestSteinerTree:
         G3.add_edge(13, 15, weight=1)
         G3.add_edge(14, 15, weight=2)
 
+        G4 = nx.Graph()
+        G4.add_edge(0, 2, my_weight=2)
+        G4.add_edge(0, 1, my_weight=0.1)
+        G4.add_edge(1, 2, my_weight=0.1)
+        G4.add_edge(2, 3, my_weight=1)
+        G4.add_edge(2, 4)
+
         cls.G1 = G1
         cls.G2 = G2
         cls.G3 = G3
+        cls.G4 = G4
+
         cls.G1_term_nodes = [1, 2, 3, 4, 5]
         cls.G2_term_nodes = [0, 2, 3]
         cls.G3_term_nodes = [1, 3, 5, 6, 8, 10, 11, 12, 13]
-
-        cls.methods = ["kou", "mehlhorn"]
+        cls.G4_term_nodes = [0, 3, 4]
 
     def test_connected_metric_closure(self):
         G = self.G1.copy()
@@ -106,7 +119,7 @@ class TestSteinerTree:
         ]
         assert edges_equal(list(M.edges(data=True)), mc)
 
-    def test_steiner_tree(self):
+    def test_steiner_tree(self, method):
         valid_steiner_trees = [
             [
                 [
@@ -161,19 +174,18 @@ class TestSteinerTree:
                 ]
             ],
         ]
-        for method in self.methods:
-            for G, term_nodes, valid_trees in zip(
-                [self.G1, self.G2, self.G3],
-                [self.G1_term_nodes, self.G2_term_nodes, self.G3_term_nodes],
-                valid_steiner_trees,
-            ):
-                S = steiner_tree(G, term_nodes, method=method)
-                assert any(
-                    edges_equal(list(S.edges(data=True)), valid_tree)
-                    for valid_tree in valid_trees
-                )
+        for G, term_nodes, valid_trees in zip(
+            [self.G1, self.G2, self.G3],
+            [self.G1_term_nodes, self.G2_term_nodes, self.G3_term_nodes],
+            valid_steiner_trees,
+        ):
+            S = steiner_tree(G, term_nodes, method=method)
+            assert any(
+                edges_equal(list(S.edges(data=True)), valid_tree)
+                for valid_tree in valid_trees
+            )
 
-    def test_multigraph_steiner_tree(self):
+    def test_multigraph_steiner_tree(self, method):
         G = nx.MultiGraph()
         G.add_edges_from(
             [
@@ -190,9 +202,8 @@ class TestSteinerTree:
             (3, 4, 0, {"weight": 1}),
             (3, 5, 0, {"weight": 1}),
         ]
-        for method in self.methods:
-            S = steiner_tree(G, terminal_nodes, method=method)
-            assert edges_equal(S.edges(data=True, keys=True), expected_edges)
+        S = steiner_tree(G, terminal_nodes, method=method)
+        assert edges_equal(S.edges(data=True, keys=True), expected_edges)
 
     def test_remove_nonterminal_leaves(self):
         G = nx.path_graph(10)
@@ -200,8 +211,36 @@ class TestSteinerTree:
 
         assert list(G) == [4, 5, 6]  # only the terminal nodes are left
 
+    @pytest.mark.parametrize(
+        ("weight", "expected_edges"),
+        [
+            (
+                None,
+                [
+                    (0, 2, {"my_weight": 2}),
+                    (2, 3, {"my_weight": 1}),
+                    (2, 4, {}),
+                ],
+            ),
+            (
+                "my_weight",
+                [
+                    (0, 1, {"my_weight": 0.1}),
+                    (1, 2, {"my_weight": 0.1}),
+                    (2, 3, {"my_weight": 1}),
+                    (2, 4, {}),
+                ],
+            ),
+        ],
+    )
+    def test_weighted(self, method, weight, expected_edges):
+        G = self.G4
+        terminal_nodes = self.G4_term_nodes
 
-@pytest.mark.parametrize("method", ("kou", "mehlhorn"))
+        S = steiner_tree(G, terminal_nodes, method=method, weight=weight)
+        assert edges_equal(list(S.edges(data=True)), expected_edges)
+
+
 def test_steiner_tree_weight_attribute(method):
     G = nx.star_graph(4)
     # Add an edge attribute that is named something other than "weight"
@@ -210,7 +249,6 @@ def test_steiner_tree_weight_attribute(method):
     assert nx.utils.edges_equal(H.edges, [(0, 1), (0, 3)])
 
 
-@pytest.mark.parametrize("method", ("kou", "mehlhorn"))
 def test_steiner_tree_multigraph_weight_attribute(method):
     G = nx.cycle_graph(3, create_using=nx.MultiGraph)
     nx.set_edge_attributes(G, {e: 10 for e in G.edges}, name="distance")

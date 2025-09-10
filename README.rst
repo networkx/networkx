@@ -3,8 +3,8 @@ NetworkX
 
 
 .. image::
-    https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
-    :target: https://github.com/networkx/networkx/actions?query=workflow%3Atest
+    https://github.com/networkx/networkx/actions/workflows/test.yml/badge.svg?branch=main
+    :target: https://github.com/networkx/networkx/actions/workflows/test.yml
 
 .. image::
     https://codecov.io/gh/networkx/networkx/branch/main/graph/badge.svg?
@@ -25,6 +25,10 @@ NetworkX
 .. image::
     https://img.shields.io/github/labels/networkx/networkx/good%20first%20issue?color=green&label=contribute
     :target: https://github.com/networkx/networkx/contribute
+
+.. image::
+    https://insights.linuxfoundation.org/api/badge/health-score?project=networkx
+    :target: https://insights.linuxfoundation.org/project/networkx
 
 
 NetworkX is a Python package for the creation, manipulation,
@@ -87,9 +91,9 @@ see the `contributor guide <https://networkx.org/documentation/latest/developer/
 License
 -------
 
-Released under the `3-Clause BSD license <https://github.com/networkx/networkx/blob/main/LICENSE.txt>`_::
+Released under the `3-clause BSD license <https://github.com/networkx/networkx/blob/main/LICENSE.txt>`_::
 
-    Copyright (C) 2004-2024 NetworkX Developers
+    Copyright (c) 2004-2025, NetworkX Developers
     Aric Hagberg <hagberg@lanl.gov>
     Dan Schult <dschult@colgate.edu>
     Pieter Swart <swart@lanl.gov>

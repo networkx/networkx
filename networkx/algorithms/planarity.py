@@ -858,11 +858,11 @@ class PlanarEmbedding(nx.DiGraph):
 
     def __init__(self, incoming_graph_data=None, **attr):
         super().__init__(incoming_graph_data=incoming_graph_data, **attr)
-        self.add_edge = self.__forbidden
-        self.add_edges_from = self.__forbidden
-        self.add_weighted_edges_from = self.__forbidden
+        self.add_edge = self._forbidden
+        self.add_edges_from = self._forbidden
+        self.add_weighted_edges_from = self._forbidden
 
-    def __forbidden(self, *args, **kwargs):
+    def _forbidden(self, *args, **kwargs):
         """Forbidden operation
 
         Any edge additions to a PlanarEmbedding should be done using

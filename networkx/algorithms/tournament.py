@@ -24,7 +24,6 @@ To access the functions in this module, you must access them through the
 from itertools import combinations
 
 import networkx as nx
-from networkx.algorithms.simple_paths import is_simple_path as is_path
 from networkx.utils import arbitrary_element, not_implemented_for, py_random_state
 
 __all__ = [
@@ -328,11 +327,14 @@ def is_reachable(G, s, t):
         out-neighbors of `v`), and the nodes at distance two.
 
         """
+        v_adj = G._adj[v]
         return {
-            x for x in G if x == v or x in G[v] or any(is_path(G, [v, z, x]) for z in G)
+            x
+            for x, x_pred in G._pred.items()
+            if x == v or x in v_adj or any(z in v_adj for z in x_pred)
         }
 
-    def is_closed(G, nodes):
+    def is_closed(G, S):
         """Decides whether the given set of nodes is closed.
 
         A set *S* of nodes is *closed* if for each node *u* in the graph
@@ -340,10 +342,10 @@ def is_reachable(G, s, t):
         *u* to *v*.
 
         """
-        return all(v in G[u] for u in set(G) - nodes for v in nodes)
+        return all(u in S or all(v in unbrs for v in S) for u, unbrs in G._adj.items())
 
-    neighborhoods = [two_neighborhood(G, v) for v in G]
-    return all(not (is_closed(G, S) and s in S and t not in S) for S in neighborhoods)
+    neighborhoods = (two_neighborhood(G, v) for v in G)
+    return not any(s in S and t not in S and is_closed(G, S) for S in neighborhoods)
 
 
 @not_implemented_for("undirected")

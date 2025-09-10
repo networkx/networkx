@@ -1,6 +1,6 @@
 [build-system]
 build-backend = 'setuptools.build_meta'
-requires = ['setuptools>=61.2']
+requires = ['setuptools>=77.0.3']
 
 [project]
 name = 'networkx'
@@ -17,11 +17,12 @@ keywords = [
     'discrete mathematics',
     'math',
 ]
+license = "BSD-3-Clause"
+license-files = ["LICENSE.txt"]
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
-    'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.11',
@@ -54,6 +55,10 @@ Documentation = 'https://networkx.org/documentation/stable/'
 nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
+benchmarking = [
+    'asv',
+    'virtualenv',
+]
 default = [
     'numpy>=1.25',
     'scipy>=1.11.2',
@@ -88,6 +93,12 @@ extra = [
     'pygraphviz>=1.14',
     'pydot>=3.0.1',
     'sympy>=1.10',
+]
+release = [
+    'build>=0.10',
+    'twine>=4.0',
+    'wheel>=0.40',
+    'changelist==0.5',
 ]
 test = [
     'pytest>=7.2',
@@ -214,6 +225,7 @@ extend-select = [
   "PD",       # pandas-vet
 #  "FURB",     # refurb
   "PYI",      # flake8-pyi
+  "W505",     # pycodestyle docstring/comment line length (see config below)
 ]
 ignore = [
   "PLR09",    # Too many <...>
@@ -228,6 +240,8 @@ ignore = [
   "ICN",      # flake8-import-conventions
   "PYI",      # flake8-pyi
   "NPY002",   # Replace legacy `np.random.random` call with `np.random.Generator`
+  "W291",     # Trailing white space
+  "C420",     # "Unnecessary" dict comprehensions (even though they're more readable)
 ]
 exclude=['doc/conf.py', '__init__.py']
 
@@ -235,12 +249,16 @@ exclude=['doc/conf.py', '__init__.py']
 #[tool.ruff.lint.pydocstyle]
 #convention = "numpy"
 
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 110
+
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ['I']
 "examples/*.py" = ['I']
 "doc/*.py" = ['I']
 "tools/*.py" = ['I']
 "networkx/classes/filters.py" = ['C416']
+"networkx/classes/reportviews.py" = ['W505']  # Ignore long docstring examples
 
 [tool.ruff.format]
 docstring-code-format = true

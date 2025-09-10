@@ -2,16 +2,24 @@
 import pytest
 
 import networkx as nx
+from networkx.algorithms import flow
 from networkx.algorithms.connectivity.kcomponents import (
     _consolidate,
     build_k_number_dict,
 )
 
+FLOW_FUNCS = (
+    flow.boykov_kolmogorov,
+    flow.dinitz,
+    flow.edmonds_karp,
+    flow.preflow_push,
+    flow.shortest_augmenting_path,
+)
+
+
 ##
 # A nice synthetic graph
 ##
-
-
 def torrents_and_ferraro_graph():
     # Graph from https://arxiv.org/pdf/1503.04476v1 p.26
     G = nx.convert_node_labels_to_integers(
@@ -79,6 +87,18 @@ def test_directed():
         nx.k_components(G)
 
 
+def test_empty_k_components():
+    G = nx.empty_graph(5)
+    assert nx.k_components(G) == {}
+
+
+@pytest.mark.parametrize("flow_func", FLOW_FUNCS)
+def test_k_components_alternative_flow_func(flow_func):
+    G = nx.lollipop_graph(5, 5)
+    result = nx.k_components(G, flow_func=flow_func)
+    _check_connectivity(G, result)
+
+
 # Helper function
 def _check_connectivity(G, k_components):
     for k, components in k_components.items():
@@ -107,16 +127,23 @@ def test_torrents_and_ferraro_graph():
     assert all(len(c) == 5 for c in result[4])
 
 
-@pytest.mark.slow
-def test_random_gnp():
-    G = nx.gnp_random_graph(50, 0.2, seed=42)
+@pytest.mark.parametrize(
+    ("n", "p"), [(10, 0.6), pytest.param(50, 0.2, marks=pytest.mark.slow)]
+)
+def test_random_gnp(n, p):
+    G = nx.gnp_random_graph(n, p, seed=42)
     result = nx.k_components(G)
     _check_connectivity(G, result)
 
 
-@pytest.mark.slow
-def test_shell():
-    constructor = [(20, 80, 0.8), (80, 180, 0.6)]
+@pytest.mark.parametrize(
+    "constructor",
+    [
+        [(5, 8, 0.8), (8, 15, 0.6), (5, 24, 0.2)],
+        pytest.param([(20, 80, 0.8), (80, 180, 0.6)], marks=pytest.mark.slow),
+    ],
+)
+def test_shell(constructor):
     G = nx.random_shell_graph(constructor, seed=42)
     result = nx.k_components(G)
     _check_connectivity(G, result)
