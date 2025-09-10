@@ -554,27 +554,27 @@ def subplots():
         nx.draw_forceatlas2,
     ],
 )
-def test_draw(function, subplots, tmpdir):
+def test_draw(function, subplots, tmp_path):
     if function == nx.draw_kamada_kawai:
         pytest.importorskip("scipy", reason="draw_kamada_kawai requires scipy")
     fig, _ = subplots
     options = {"node_color": "black", "node_size": 100, "width": 3}
     function(barbell, **options)
-    fig.savefig(tmpdir.join("test.ps"))
+    fig.savefig(tmp_path / "test.ps")
 
 
-def test_draw_shell_nlist(subplots, tmpdir):
+def test_draw_shell_nlist(subplots, tmp_path):
     fig, _ = subplots
     nlist = [list(range(4)), list(range(4, 10)), list(range(10, 14))]
     nx.draw_shell(barbell, nlist=nlist)
-    fig.savefig(tmpdir.join("test.ps"))
+    fig.savefig(tmp_path / "test.ps")
 
 
-def test_draw_bipartite(subplots, tmpdir):
+def test_draw_bipartite(subplots, tmp_path):
     fig, _ = subplots
     G = nx.complete_bipartite_graph(2, 5)
     nx.draw_bipartite(G)
-    fig.savefig(tmpdir.join("test.ps"))
+    fig.savefig(tmp_path / "test.ps")
 
 
 def test_edge_colormap():
@@ -585,14 +585,14 @@ def test_edge_colormap():
     # plt.show()
 
 
-def test_draw_networkx_edge_labels(subplots, tmpdir):
+def test_draw_networkx_edge_labels(subplots, tmp_path):
     fig, _ = subplots
     edge = (0, 1)
     G = nx.DiGraph([edge])
     pos = {n: (n, n) for n in G}
     nx.draw(G, pos=pos)
     nx.draw_networkx_edge_labels(G, pos, edge_labels={edge: "edge"})
-    fig.savefig(tmpdir.join("test.ps"))
+    fig.savefig(tmp_path / "test.ps")
 
 
 def test_arrows():
