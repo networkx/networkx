@@ -23,6 +23,7 @@ def sparse_cut(
     alpha,
     _s,
     _t,
+    _seed=None,
     min_iterations=0,
     num_candidates=20,
     b=1 / 3,
@@ -49,6 +50,10 @@ def sparse_cut(
 
     _t : object
         Key for a super-sink used in flow computations. Must satisfy `_t not in G`.
+
+    _seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     min_iterations : int
         Minimum number of iterations to run the cut-matching procedure.
@@ -144,6 +149,11 @@ def sparse_cut(
     import numpy as np
     import scipy as sp
 
+    if _seed is None:
+        _seed = np.random.RandomState()
+    if isinstance(_seed, int):
+        _seed = np.random.RandomState(_seed)
+
     if flow_func is None:
         if kwargs:
             raise nx.NetworkXError(
@@ -169,7 +179,7 @@ def sparse_cut(
     index_to_vertex = dict(enumerate(G))
     vertex_to_index = {v: i for i, v in enumerate(G)}
 
-    proj_flow_vecs = generate_random_orthogonal_gaussian(n, num_candidates)
+    proj_flow_vecs = generate_random_orthogonal_gaussian(n, num_candidates, _seed=_seed)
 
     for _ in range(max(T, min_iterations)):
         norms = np.linalg.norm(proj_flow_vecs, axis=0)

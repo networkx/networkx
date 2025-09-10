@@ -8,6 +8,11 @@ import networkx as nx
 from networkx.algorithms.spectral.expander_decomposition import expander_decomposition
 from networkx.utils import py_random_state
 
+np = pytest.importorskip("numpy")
+sp = pytest.importorskip("scipy")
+
+_seed = np.random.RandomState(42)
+
 
 @py_random_state(3)
 def connected_cliques(n, k, r, _seed=1234):
@@ -36,60 +41,57 @@ def intercluster_edges(G, clusters):
 
 
 def test_expander_decomposition_cliques_1():
-    pytest.importorskip("numpy")
-    pytest.importorskip("scipy")
-    G = connected_cliques(10, 10, 20)
+    G = connected_cliques(10, 10, 20, _seed)
     m = len(G.edges())
-    clusters = expander_decomposition(G, 0.1, "_s", "_t")
+    clusters = expander_decomposition(G, 0.1, "_s", "_t", _seed=_seed)
 
     assert len(clusters) == 10
     assert intercluster_edges(G, clusters) < 0.1 * m * math.log(m) ** 3
 
 
 def test_expander_decomposition_cliques_2():
-    pytest.importorskip("numpy")
-    pytest.importorskip("scipy")
-    G = connected_cliques(15, 20, 40)
+    G = connected_cliques(15, 20, 40, _seed)
     m = len(G.edges())
-    clusters = expander_decomposition(G, 0.05, "_s", "_t", fast_randomization=True)
+    clusters = expander_decomposition(
+        G, 0.05, "_s", "_t", fast_randomization=True, _seed=_seed
+    )
 
     assert len(clusters) == 20
     assert intercluster_edges(G, clusters) < 0.1 * m * math.log(m) ** 3
 
 
-@py_random_state(0)
-def test_expander_decomposition_random(_seed=1234):
-    pytest.importorskip("numpy")
-    pytest.importorskip("scipy")
+def test_expander_decomposition_random():
     G = nx.gnp_random_graph(200, 0.2, _seed)
-    clusters = expander_decomposition(G, 0.001, "_s", "_t")
+    clusters = expander_decomposition(G, 0.001, "_s", "_t", _seed=_seed)
 
     assert len(clusters) == 1
 
 
 def test_expander_decomposition_one_edge():
     """Should always certify that a graph with one edge is an expander."""
-    pytest.importorskip("numpy")
-    pytest.importorskip("scipy")
+
     G = nx.complete_graph(2)
-    clusters = expander_decomposition(G, 0.01, "_s", "_t")
+    clusters = expander_decomposition(G, 0.01, "_s", "_t", _seed=_seed)
 
     assert len(clusters) == 1
 
 
 def test_expander_decomposition_no_edges():
-    pytest.importorskip("numpy")
-    pytest.importorskip("scipy")
     G = nx.trivial_graph()
-    clusters = expander_decomposition(G, 0.1, "_s", "_t")
+    clusters = expander_decomposition(G, 0.1, "_s", "_t", _seed=_seed)
 
     assert len(clusters) == 1
 
 
 def test_expander_decomposition_bad_args():
-    pytest.importorskip("numpy")
-    pytest.importorskip("scipy")
     G = nx.complete_graph(10)
     pytest.raises(
-        nx.NetworkXNotImplemented, expander_decomposition, G, 0.1, "_s", "_t", False
+        nx.NetworkXNotImplemented,
+        expander_decomposition,
+        G,
+        0.1,
+        "_s",
+        "_t",
+        False,
+        _seed=_seed,
     )

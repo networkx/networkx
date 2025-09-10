@@ -107,6 +107,7 @@ def expander_decomposition(
         A dictionary of keyword arguments to be passed to the trimming function
 
     kwargs : Any keyword argument to be passed to the lowest_conductance_cut function.
+            This includes a _seed argument to control the RNG.
 
     Returns
     -------

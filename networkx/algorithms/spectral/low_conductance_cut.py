@@ -32,6 +32,7 @@ def lowest_conductance_cut_impl(
     strategy,
     fast_randomization,
     flow_func,
+    _seed,
     **kwargs,
 ):
     import numpy as np
@@ -58,7 +59,9 @@ def lowest_conductance_cut_impl(
     if fast_randomization:
         matching_graphs = [sp.sparse.identity(m)]
 
-    proj_flow_vectors = generate_random_orthogonal_gaussian(m, num_candidates)
+    proj_flow_vectors = generate_random_orthogonal_gaussian(
+        m, num_candidates, _seed=_seed
+    )
 
     def compute_potential(S, vecs, proj_avg_flow, exp=2):
         bit_mask = [False] * m
@@ -208,7 +211,9 @@ def lowest_conductance_cut_impl(
             # the theoretical complexity O(log(m)^3 ...), and increases slightly the
             # space requirements to O(n * log(m)^2)
             matching_graphs.append(W)
-            proj_flow_vectors = generate_random_orthogonal_gaussian(m, num_candidates)
+            proj_flow_vectors = generate_random_orthogonal_gaussian(
+                m, num_candidates, _seed=_seed
+            )
             for M in matching_graphs:
                 proj_flow_vectors = M @ proj_flow_vectors
         else:
@@ -232,6 +237,7 @@ def lowest_conductance_cut(
     strategy="balanced",
     fast_randomization=True,
     flow_func=None,
+    _seed=None,
     **kwargs,
 ):
     r"""With high probability, given a graph `G` with m edges and a parameter `alpha`
@@ -309,6 +315,10 @@ def lowest_conductance_cut(
         (see Notes). If flow_func is None, the default maximum
         flow function (:meth:`preflow_push`) is used. The choice of the default
         function may change from version to version and should not be relied on.
+
+    _seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     kwargs : Any other keyword parameter is passed to the function that
         computes the maximum flow.
@@ -433,5 +443,6 @@ def lowest_conductance_cut(
         strategy,
         fast_randomization,
         flow_func,
+        _seed,
         **kwargs,
     )

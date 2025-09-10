@@ -3,6 +3,7 @@ Utility classes and functions for cut finding algorithms.
 """
 
 import networkx as nx
+from networkx.utils import py_random_state
 
 __all__ = [
     "generate_random_orthogonal_gaussian",
@@ -12,8 +13,10 @@ __all__ = [
     "build_subdivision_graph",
 ]
 
+py_random_state("_seed")
 
-def generate_random_orthogonal_gaussian(dim, quantity):
+
+def generate_random_orthogonal_gaussian(dim, quantity, _seed=None):
     """Generate `quantity` many random Gaussian unit vectors of dimension `dim` which
     are all orthogonal to the all ones vector.
 
@@ -24,6 +27,10 @@ def generate_random_orthogonal_gaussian(dim, quantity):
 
     quantity : int
         The number of vectors to generate.
+
+    _seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -36,7 +43,7 @@ def generate_random_orthogonal_gaussian(dim, quantity):
     if dim == 1:
         return np.full((1, quantity), 0)
 
-    vecs = np.random.normal(size=(quantity, dim))
+    vecs = _seed.normal(size=(quantity, dim))
     vecs = vecs - (vecs @ np.full((dim, 1), 1 / dim))
     vecs = vecs.T
     col_norms = np.linalg.norm(vecs, axis=0)
