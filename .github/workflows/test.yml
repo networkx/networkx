@@ -46,7 +46,7 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[default,test]
+          python -m pip install .[default,test,test-extras]
           python -m pip list
 
       - name: Test for warnings at import time
@@ -54,7 +54,7 @@ jobs:
 
       - name: Test NetworkX
         run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --doctest-modules --durations=10 --pyargs --mpl networkx
 
   default-without-scipy:
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[default,test]
+          python -m pip install .[default,test,test-extras]
           python -m pip uninstall -y scipy  # All default dependencies except scipy
           python -m pip list
 
@@ -77,7 +77,7 @@ jobs:
 
       - name: Test NetworkX
         run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --doctest-modules --durations=10 --pyargs --mpl networkx
 
   dispatch:
     runs-on: ubuntu-latest
@@ -94,12 +94,12 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[default,test]
+          python -m pip install .[default,test,test-extras]
           python -m pip list
 
       - name: Test Dispatching
         run: |
-          NETWORKX_TEST_BACKEND=nx_loopback pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+          NETWORKX_TEST_BACKEND=nx_loopback pytest -n auto --doctest-modules --durations=10 --pyargs --mpl networkx
 
   extra:
     runs-on: ${{ matrix.os }}
@@ -130,7 +130,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           pip install --upgrade pip
-          pip install .[default,test,extra]
+          pip install .[default,test,extra,test-extras]
           pip list
       - name: Install packages (macOS)
         if: runner.os == 'macOS'
@@ -141,7 +141,7 @@ jobs:
                       --config-settings="--global-option=-I$(brew --prefix graphviz)/include/" \
                       --config-settings="--global-option=-L$(brew --prefix graphviz)/lib/" \
                       pygraphviz
-          pip install .[default,test,extra]
+          pip install .[default,test,extra,test-extras]
           pip list
       - name: Install Pygraphviz packages  (windows)
         if: runner.os == 'Windows'
@@ -156,12 +156,12 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          python -m pip install .[default,test,extra]
+          python -m pip install .[default,test,extra,test-extras]
           python -m pip list
 
       - name: Test NetworkX
         run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --doctest-modules --durations=10 --pyargs --mpl networkx
 
   prerelease:
     runs-on: ${{ matrix.os }}-latest
@@ -179,9 +179,9 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip
-          pip install --pre .[default,test]
+          pip install --pre .[default,test,test-extras]
           pip list
 
       - name: Test NetworkX
         run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --doctest-modules --durations=10 --pyargs --mpl networkx
