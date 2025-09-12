@@ -135,11 +135,10 @@ def _assembly(graph, md_tree, pivot, forest):
     #
     pivot_neighbors = list(graph.neighbors(pivot))
     i = 1
-    for i in range(1, len(forest)):
-        node = forest[i]
-        root = _get_root(md_tree, node)
-        if not _is_connected_to_pivot(graph, md_tree, root, pivot_neighbors):
-            break
+    while i < len(forest) and _is_connected_to_pivot(
+        graph, md_tree, forest[i], pivot_neighbors
+    ):
+        i += 1
     forest.insert(i, pivot)
 
     pointers = _set_left_right_pointers(graph, md_tree, forest)
@@ -149,7 +148,7 @@ def _assembly(graph, md_tree, pivot, forest):
     included_left = i
     included_right = i + 1
 
-    while True:
+    while current_left > 0 or current_right < len(forest):
         indices = []
         added_left = False
         added_right = False
@@ -189,21 +188,14 @@ def _assembly(graph, md_tree, pivot, forest):
         md_tree.add_edge(node, parent)
 
         for i in range(current_left, included_left):
-            n = forest[i]
-            rn = _get_root(md_tree, n)
-            _maybe_merge(md_tree, rn, node_type, parent)
+            _maybe_merge(md_tree, forest[i], node_type, parent)
 
         for i in range(included_right, current_right):
-            n = forest[i]
-            rn = _get_root(md_tree, n)
-            _maybe_merge(md_tree, rn, node_type, parent)
+            _maybe_merge(md_tree, forest[i], node_type, parent)
 
         parent = node
         included_left = current_left
         included_right = current_right
-
-        if current_left <= 0 and current_right >= len(forest):
-            break
 
     return parent
 
