@@ -29,14 +29,6 @@ def _get_parent(graph, node):
     return next(iter(parents), None)
 
 
-def _get_root(graph, node):
-    parent = _get_parent(graph, node)
-    while parent is not None:
-        node = parent
-        parent = _get_parent(graph, node)
-    return node
-
-
 def _maybe_merge(md_tree, root, node_type, node):
     parent = _get_parent(md_tree, node)
     children = list(md_tree.successors(root))
@@ -228,27 +220,15 @@ def _get_promoted_tree(md_tree, node):
 
 
 def _promotion(md_tree, forest):
-    roots = []
-    for node in forest:
-        root = _get_root(md_tree, node)
-        if root is not None and root not in roots:
-            roots.append(root)
-
     promoted_forest = []
-    for root in roots:
+    for root in forest:
         promoted_forest += _get_promoted_tree(md_tree, root)
 
     #
     # Clean-up step.
     #
-    roots = []
-    for node in promoted_forest:
-        root = _get_root(md_tree, node)
-        if root is not None and root not in roots:
-            roots.append(root)
-
     new_promoted_forest = []
-    for root in roots:
+    for root in promoted_forest:
         if md_tree.nodes[root]["left"] or md_tree.nodes[root]["right"]:
             children = list(md_tree.successors(root))
             if children:
@@ -265,8 +245,7 @@ def _promotion(md_tree, forest):
         else:
             new_promoted_forest.append(root)
 
-    for node in new_promoted_forest:
-        root = _get_root(md_tree, node)
+    for root in new_promoted_forest:
         _clear_left_right(md_tree, root)
 
     return new_promoted_forest
@@ -329,11 +308,10 @@ def _refinement_non_prime(forest, md_tree, node, marked, left_split):
             _set_parent(md_tree, a_root, node)
             _set_parent(md_tree, b_root, node)
         else:
-            root = _get_root(md_tree, node)
-            root_left = md_tree.nodes[root]["left"]
-            root_right = md_tree.nodes[root]["right"]
-            root_left_of_pivot = md_tree.nodes[root]["left_of_pivot"]
-            i = forest.index(root)
+            root_left = md_tree.nodes[node]["left"]
+            root_right = md_tree.nodes[node]["right"]
+            root_left_of_pivot = md_tree.nodes[node]["left_of_pivot"]
+            i = forest.index(node)
 
             md_tree.nodes[a_root]["left"] = root_left
             md_tree.nodes[a_root]["right"] = root_right
@@ -350,7 +328,7 @@ def _refinement_non_prime(forest, md_tree, node, marked, left_split):
                 forest[i] = b_root
                 forest.insert(i + 1, a_root)
 
-            md_tree.remove_node(root)
+            md_tree.remove_node(node)
 
         _mark_lr(md_tree, a_root, left_split)
         _mark_lr_ancestors(md_tree, a_root, left_split)
@@ -395,6 +373,13 @@ def _mark(md_tree, nodes):
 
 
 def _refinement(graph, md_tree, pivot, active_edges, left_nodes, forest):
+    def _get_root(node):
+        parent = _get_parent(md_tree, node)
+        while parent is not None:
+            node = parent
+            parent = _get_parent(md_tree, node)
+        return node
+
     for u in (u for u in graph if u != pivot):
         marked = _mark(md_tree, [v for v in active_edges[u] if v in md_tree])
 
@@ -405,7 +390,7 @@ def _refinement(graph, md_tree, pivot, active_edges, left_nodes, forest):
                 marked_parents.append(parent)
 
         for v in marked_parents:
-            root = _get_root(md_tree, v)
+            root = _get_root(v)
             left_split = left_nodes[u] or md_tree.nodes[root]["left_of_pivot"]
             if md_tree.nodes[v]["type"] == "prime":
                 _refinement_prime(md_tree, v, left_split)
