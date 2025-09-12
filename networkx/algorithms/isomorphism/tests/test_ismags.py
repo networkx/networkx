@@ -231,49 +231,97 @@ class TestSubgraphIsomorphism:
 
 
 class TestWikipediaExample:
+    # example in wikipedia is g1a and g2b
+    # 1 have letter nodes, 2 have number nodes
+    # b have some edges reversed vs a (undirected still isomorphic)
+    # reversed edges marked with blank comment `#`
+    # isomorphism = {'a': 1, 'g': 2, 'b': 3, 'c': 6, 'h': 4, 'i': 5, 'j': 7, 'd': 8}
+
     # Nodes 'a', 'b', 'c' and 'd' form a column.
     # Nodes 'g', 'h', 'i' and 'j' form a column.
-    g1edges = [
+    g1a_edges = [
         ["a", "g"],
-        ["a", "h"],
+        ["a", "h"], #
         ["a", "i"],
-        ["b", "g"],
+        ["b", "g"], #
         ["b", "h"],
         ["b", "j"],
-        ["c", "g"],
-        ["c", "i"],
+        ["c", "g"], #
+        ["c", "i"], #
         ["c", "j"],
-        ["d", "h"],
+        ["d", "h"], #
         ["d", "i"],
-        ["d", "j"],
+        ["d", "j"], #
+    ]
+    g1b_edges = [
+        ["a", "g"],
+        ["h", "a"], #
+        ["a", "i"],
+        ["g", "b"], #
+        ["b", "h"],
+        ["b", "j"],
+        ["g", "c"], #
+        ["i", "c"], #
+        ["c", "j"],
+        ["h", "d"], #
+        ["d", "i"],
+        ["j", "d"], #
+    ]
+    g2b_edges = [
+        [1, 2],
+        [1, 4], #
+        [1, 5],
+        [3, 2], #
+        [3, 4],
+        [3, 7],
+        [6, 2], #
+        [6, 5], #
+        [6, 7],
+        [8, 4], #
+        [8, 5],
+        [8, 7], #
     ]
 
     # Nodes 1,2,3,4 form the clockwise corners of a large square.
     # Nodes 5,6,7,8 form the clockwise corners of a small square
-    g2edges = [
+    g2a_edges = [
         [1, 2],
-        [2, 3],
-        [3, 4],
-        [4, 1],
-        [5, 6],
-        [6, 7],
-        [7, 8],
-        [8, 5],
+        [4, 1], #
         [1, 5],
-        [2, 6],
+        [2, 3], #
+        [3, 4],
         [3, 7],
-        [4, 8],
+        [2, 6], #
+        [5, 6], #
+        [6, 7],
+        [4, 8], #
+        [8, 5],
+        [7, 8], #
     ]
 
     def test_graph(self):
-        g1 = nx.Graph(self.g1edges)
-        g2 = nx.Graph(self.g2edges)
-        assert iso.ISMAGS(g1, g2).is_isomorphic()
+        g1a = nx.Graph(self.g1a_edges)
+        g1b = nx.Graph(self.g1b_edges)
+        g2a = nx.Graph(self.g2a_edges)
+        g2b = nx.Graph(self.g2b_edges)
+        assert iso.ISMAGS(g1a, g1b).is_isomorphic()
+        assert iso.ISMAGS(g1a, g2a).is_isomorphic()
+        assert iso.ISMAGS(g1a, g2b).is_isomorphic()
 
-#    def test_digraph(self):
-#        g1 = nx.DiGraph(self.g1edges)
-#        g2 = nx.DiGraph(self.g2edges)
-#        assert iso.ISMAGS(g1, g2).is_isomorphic()
+    def test_digraph(self):
+        # 1 have letter nodes, 2 have number nodes
+        # b have some edges reversed vs a
+        # example in wikipedia is g1a and g2b
+        g1a = nx.DiGraph(self.g1a_edges)
+        g1b = nx.DiGraph(self.g1b_edges)
+        g2a = nx.DiGraph(self.g2a_edges)
+        g2b = nx.DiGraph(self.g2b_edges)
+        assert iso.ISMAGS(g1a, g2b).is_isomorphic()
+        assert iso.ISMAGS(g1b, g2a).is_isomorphic()
+        assert not iso.ISMAGS(g1a, g1b).is_isomorphic()
+        assert not iso.ISMAGS(g2a, g2b).is_isomorphic()
+        assert not iso.ISMAGS(g1a, g2a).is_isomorphic()
+        assert not iso.ISMAGS(g1b, g2b).is_isomorphic()
 
 
 class TestLargestCommonSubgraph:

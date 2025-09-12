@@ -317,7 +317,7 @@ class ISMAGS:
             A cache used for caching graph symmetries.
         """
         if graph.is_directed() != subgraph.is_directed():
-            raise ValueError("Directed and undirected graphs cannot be isomorphic.")
+            raise ValueError("Directed and undirected graphs cannot be compared.")
 
         # TODO: graph and subgraph setter methods that invalidate the caches.
         # TODO: allow for precomputed partitions and colors
@@ -331,22 +331,23 @@ class ISMAGS:
         #   e: edge(s)
         #   n: node(s)
         # So: sgn means "subgraph nodes".
-        self.gn_ID_to_node = list(graph)
-        self.gn_node_to_ID = {n: id for id, n in enumerate(graph)}
-
-        self._sgn_partition, self._gn_partition, N = self.create_aligned_partition(
+        node_parts = self.create_aligned_partition(
             node_match, self.subgraph.nodes, self.graph.nodes
         )
-        self.N_node_colors = N
-        self._sgn_colors = sgnc = group_to_group_ID_dict(self._sgn_partition)
-        self._gn_colors = gnc = group_to_group_ID_dict(self._gn_partition)
+        self._sgn_partition, self._gn_partition, self.N_node_colors = node_parts
+        self._sgn_colors = group_to_group_ID_dict(self._sgn_partition)
+        self._gn_colors = group_to_group_ID_dict(self._gn_partition)
 
-        self._sge_partition, self._ge_partition, Ne = self.create_aligned_partition(
+        edge_partitions = self.create_aligned_partition(
             edge_match, self.subgraph.edges, self.graph.edges
         )
-        self.N_edge_colors = Ne
-        self._sge_colors = sgec = EdgeLookup(group_to_group_ID_dict(self._sge_partition))
-        self._ge_colors = gec = EdgeLookup(group_to_group_ID_dict(self._ge_partition))
+        self._sge_partition, self._ge_partition, self.N_edge_colors = edge_partitions
+        if self.graph.is_directed():
+            self._sge_colors = group_to_group_ID_dict(self._sge_partition)
+            self._ge_colors = group_to_group_ID_dict(self._ge_partition)
+        else:  # allow lookups (u, v) or (v, u)
+            self._sge_colors = EdgeLookup(group_to_group_ID_dict(self._sge_partition))
+            self._ge_colors = EdgeLookup(group_to_group_ID_dict(self._ge_partition))
 
     def create_aligned_partition(self, match, sg_things, g_things):
         """Partitions of `things` based on function `match`
@@ -384,7 +385,7 @@ class ISMAGS:
                 assert gc not in gc_to_sgc  # 2 g parts match same sg part
                 sgc_to_gc[sgc] = gc
                 gc_to_sgc[gc] = sgc
-        ## Maybe return two lists and a number of partitions that match.
+        ## return two lists and a number of partitions that match.
         new_order = [
             (sg_partition[sgc], g_partition[gc]) for sgc, gc in sgc_to_gc.items()
         ]
@@ -462,11 +463,14 @@ class ISMAGS:
         sg_deg = color_degree_by_node(self.subgraph, self._sgn_colors, self._sge_colors)
 
         color_degree_candidates = defaultdict(set)
-        for sgn, (_, needed_counts) in sg_deg.items():
-            for gn, (_, g_counts) in g_deg.items():
+        for sgn, (_, *needed_counts) in sg_deg.items():
+            for gn, (_, *g_counts) in g_deg.items():
                 if all(
-                    sg_cnt <= g_counts[color]
-                    for color, sg_cnt in needed_counts.items()
+                    all(
+                        sg_cnt <= g_counts[idx][color]
+                        for color, sg_cnt in counts.items()
+                    )
+                    for idx, counts in enumerate(needed_counts)
                 ):
                     color_degree_candidates[sgn].add(gn)
         return color_degree_candidates
@@ -538,6 +542,7 @@ class ISMAGS:
                     tuple(self.subgraph.edges),
                     tuple(map(tuple, node_partition)),
                     tuple(edge_colors.items()),
+                    self.subgraph.is_directed(),
                 )
             )
             if key in self._symmetry_cache:
