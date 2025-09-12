@@ -22,16 +22,23 @@ class Testfind_start_node:
         H = nx.path_graph(range(20, 25))
         assert iso.ISMAGS(G, H).is_isomorphic()
 
-        candidates = {
-            10: frozenset([frozenset([21, 22]), frozenset([20, 23, 22])]),
-            11: frozenset([frozenset([20]), frozenset([20, 23, 22, 21])]),
-            12: frozenset([frozenset([21, 22]), frozenset([20, 23, 22])]),
-            13: frozenset([frozenset([21, 22]), frozenset([20, 23, 22])]),
+        cand_sets = {
+            10: set([frozenset([21, 22]), frozenset([20, 23, 22])]),
+            11: set([frozenset([20]), frozenset([20, 23, 22, 21])]),
+            12: set([frozenset([21, 22]), frozenset([20, 23, 22])]),
+            13: set([frozenset([21, 22]), frozenset([20, 23, 22])]),
         }
-        start_sgn = min(candidates, key=lambda n: min(len(x) for x in candidates[n]))
+        start_sgn = min(cand_sets, key=lambda n: min(len(x) for x in cand_sets[n]))
         assert start_sgn == 11
+#        old_start_sgn = min(cand_sets, key=lambda n: min(cand_sets[n], key=len))
+#        print(f"{start_sgn=} {old_start_sgn=}")
+#        print(f"{min(len(x) for x in cand_sets[start_sgn])=}")
+#        print(f"{min(cand_sets[start_sgn], key=len)=}")
+#        assert start_sgn == old_start_sgn  # fails. min numb vs min size of frozensets
 
 data = [
+    # node_data, edge_data
+    (range(1, 5), [(1, 2), (2, 4), (4, 3), (3, 1)]),
     (
         [
             (0, {"name": "a"}),
@@ -43,10 +50,9 @@ data = [
         ],
         [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5)],
     ),
-    (range(1, 5), [(1, 2), (2, 4), (4, 3), (3, 1)]),
     (
         [],
-        [
+        [  # 5-cycle with 2-paths stuck onto nodes 0, 2, 4
             (0, 1),
             (1, 2),
             (2, 3),
@@ -104,6 +110,7 @@ class TestSelfIsomorphism:
             graph, graph, node_match=iso.categorical_node_match("name", None)
         )
         assert ismags.is_isomorphic()
+        assert ismags.is_isomorphic(True)
         assert ismags.subgraph_is_isomorphic()
         assert list(ismags.subgraph_isomorphisms_iter(symmetry=True)) == [
             {n: n for n in graph.nodes}
