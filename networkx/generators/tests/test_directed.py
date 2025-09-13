@@ -125,7 +125,7 @@ class TestRandomKOutGraph:
         """Test that the generated graph is `k`-out-regular."""
         n, k, alpha = nkalpha
         G = f(n, k, alpha, seed=42)
-        assert all(d == k for _, d in G.out_degree())
+        assert all(d == k for _, d in G.out_degree)
 
     def test_no_self_loops(self, f, nkalpha):
         """Test for forbidding self-loops."""
@@ -137,7 +137,7 @@ class TestRandomKOutGraph:
         """Test that the interface function `random_k_out_graph` works correctly."""
         n, k, alpha = nkalpha
         G = random_k_out_graph(n, k, alpha, seed=42)
-        assert all(d == k for _, d in G.out_degree())
+        assert all(d == k for _, d in G.out_degree)
 
     def test_negative_alpha(self):
         with pytest.raises(ValueError, match="alpha must be positive"):
