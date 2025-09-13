@@ -367,7 +367,6 @@ def test_display_edge_labels():
     nx.set_edge_attributes(G, {(u, v): {"label": u + v} for u, v in G.edges()})
     nx.display(G, canvas=canvas, edge_label={"color": "r"}, node_label=None)
     labels = [t for t in canvas.get_children() if isinstance(t, mpl.text.Text)]
-    print(labels)
     for e, l in zip(G.edges(), labels):
         assert l.get_text() == str(e[0] + e[1])
         assert l.get_color() == "r"
@@ -514,8 +513,6 @@ def test_display_self_loop():
         f for f in ax.get_children() if isinstance(f, mpl.patches.FancyArrowPatch)
     ][0]
     bbox = arrow.get_extents()
-    print(bbox.width)
-    print(bbox.height)
     assert bbox.width > 0 and bbox.height > 0
 
     plt.delaxes(ax)
@@ -1240,7 +1237,6 @@ def test_draw_edges_min_source_target_margins_individual(node_shape, subplots):
         min_target_margin=[98, 102],
     )
     padded_extent = [p.get_extents().corners()[::2, 0] for p in padded_patch]
-    print(f"{default_extent=}, {padded_extent=}")
     for d, p in zip(default_extent, padded_extent):
         # With padding, the left-most extent of the edge should be further to the
         # right
