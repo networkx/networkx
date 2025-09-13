@@ -46,7 +46,7 @@ def betweenness_centrality(
 
     normalized : bool, optional (default=True)
         If `True`, the betweenness values are rescaled according to the number of
-        possible $s, t$ pairs in the graph.
+        possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
         If `None`, all edge weights are considered equal.
@@ -67,6 +67,52 @@ def betweenness_centrality(
     -------
     nodes : dict
         Dictionary of nodes with betweenness centrality as the value.
+
+    Examples
+    --------
+    Consider an undirected 3-path. Each pair of nodes has exactly one shortest
+    path between them. Of these, none of the shortest paths pass through 0 and 2;
+    only the shortest paths between 0 and 2 and between 2 and 0 (counting
+    undirected edges once in each direction) pass through 1.
+    As such, the raw counts before rescaling should be ``{0: 0, 1: 2, 2: 0}``.
+    Without normalization, these values are simply divided by two to account
+    for double-counting.
+
+    >>> G = nx.path_graph(3)
+    >>> nx.betweenness_centrality(G, normalized=False)
+    {0: 0.0, 1: 1.0, 2: 0.0}
+
+    With normalization, the values are instead divided by the number of $(s, t)$-pairs.
+    If we are not counting end points, there are $n - 1$ possible choices for $s$
+    (all except the node we are computing betweenness centrality for), which in turn
+    leaves $n - 2$ possible choices for $t$ as $s \ne t$.
+    The number of total pairs is thus $(n - 1)(n - 2) = 2$ if `endpoints` is `False`.
+
+    >>> nx.betweenness_centrality(G, normalized=True, endpoints=False)
+    {0: 0.0, 1: 1.0, 2: 0.0}
+
+    However, when `endpoints` is `True` we also need to now count
+    $\sigma(s, t \mid s) = \sigma(s, t \mid t) = \sigma(s, t)$.
+    As such, 0 is part of four shortest paths (0 to 1 and 0 to 2, in both directions);
+    similarly, 2 is part of two shortest paths (2 to 0 and 2 to 1, in both directions).
+    1 is now part of all six shortest paths.
+    This makes the new raw counts ``{0: 4, 1: 6, 2: 4}``.
+    If we want to normalize, there are $n(n - 1) = 6$ $(s, t)$-pairs to divide by.
+
+    >>> nx.betweenness_centrality(G, normalized=False, endpoints=True)
+    {0: 2.0, 1: 3.0, 2: 2.0}
+    >>> nx.betweenness_centrality(G, normalized=True, endpoints=True)
+    {0: 0.6666666666666666, 1: 1.0, 2: 0.6666666666666666}
+
+    If the graph is directed instead, only the unnormalized betweenness changes.
+    Going back to that unnormalized, `endpoints == False` situation, we have
+    no shortest paths passing through 0 and 2, and only the shortest path between
+    0 and 2 passing through 1.
+    This means the raw counts are ``{0: 0, 1: 1, 2: 0}``.
+
+    >>> G = nx.path_graph(3, create_using=nx.DiGraph)
+    >>> nx.betweenness_centrality(G, normalized=False, endpoints=False)
+    {0: 0.0, 1: 1.0, 2: 0.0}
 
     See Also
     --------
@@ -93,9 +139,7 @@ def betweenness_centrality(
     differently for directed and undirected graphs. Directed paths
     are easy to count. Undirected paths are tricky: should a path
     from ``u`` to ``v`` count as 1 undirected path or as 2 directed paths?
-
-    For `betweenness_centrality`, we report the number of undirected
-    paths when `G` is undirected.
+    For this implementation of `betweenness_centrality`, we do the latter.
 
     This algorithm is not guaranteed to be correct if edge weights
     are floating point numbers. As a workaround you can use integer
@@ -182,7 +226,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
 
     normalized : bool, optional (default=True)
         If `True`, the betweenness values are rescaled according to the number of
-        possible $s, t$ pairs in the graph.
+        possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
         If `None`, all edge weights are considered equal.

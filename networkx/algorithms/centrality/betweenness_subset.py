@@ -46,7 +46,7 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
 
     normalized : bool, optional (default=False)
         If `True`, the betweenness values are rescaled according to the number of
-        possible $s, t$ pairs in the graph.
+        possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
         If `None`, all edge weights are considered equal.
@@ -82,11 +82,7 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     differently for directed and undirected graphs. Directed paths
     are easy to count. Undirected paths are tricky: should a path
     from ``u`` to ``v`` count as 1 undirected path or as 2 directed paths?
-
-    If the source and target subsets are the same, then we want
-    to count undirected paths. But if the source and target subsets
-    differ -- for example, if `sources` is ``{0}`` and `targets` is
-    ``{1}`` -- then we are only counting the paths in one direction. They are
+    We are only counting the paths in one direction. They are
     undirected paths but we are counting them in a directed way.
     To count them as undirected paths, each should count as half a path.
 
@@ -142,7 +138,7 @@ def edge_betweenness_centrality_subset(
 
     normalized : bool, optional (default=False)
         If `True`, the betweenness values are rescaled according to the number of
-        possible $s, t$ pairs in the graph.
+        possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
         If `None`, all edge weights are considered equal.
