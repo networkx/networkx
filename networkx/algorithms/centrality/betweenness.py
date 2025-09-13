@@ -68,6 +68,61 @@ def betweenness_centrality(
     nodes : dict
         Dictionary of nodes with betweenness centrality as the value.
 
+    See Also
+    --------
+    betweenness_centrality_subset
+    edge_betweenness_centrality
+    load_centrality
+
+    Notes
+    -----
+    The algorithm is from Ulrik Brandes [1]_.
+    See [4]_ for the original first published version and [2]_ for details on
+    algorithms for variations and related metrics.
+
+    For approximate betweenness calculations, set `k` to the number of nodes
+    ("pivots") used to estimate the betweenness values.
+    This corresponds to the number of $s$ nodes in the formula.
+    For an estimate of the number of pivots needed see [3]_.
+
+    For weighted graphs the edge weights must be greater than zero.
+    Zero edge weights can produce an infinite number of equal length
+    paths between pairs of nodes.
+
+    Directed graphs and undirected graphs count paths differently.
+    In directed graphs, each pair of source-target nodes is considered separately
+    in each direction, as the shortest paths can change.
+    However, in undirected graphs, each pair of nodes is considered only once,
+    as the shortest paths are symmetric.
+    This means the normalization factor to divide by is $N(N-1)$ for directed graphs
+    and $N(N-1)/2$ for undirected graphs, where $N = n$ (the number of nodes)
+    if endpoints are included and $N = n-1$ otherwise.
+
+    This algorithm is not guaranteed to be correct if edge weights
+    are floating point numbers. As a workaround you can use integer
+    numbers by multiplying the relevant edge attributes by a convenient
+    constant factor (e.g. 100) and converting to integers.
+
+    References
+    ----------
+    .. [1] Ulrik Brandes:
+       A Faster Algorithm for Betweenness Centrality.
+       Journal of Mathematical Sociology 25(2):163--177, 2001.
+       https://doi.org/10.1080/0022250X.2001.9990249
+    .. [2] Ulrik Brandes:
+       On Variants of Shortest-Path Betweenness
+       Centrality and their Generic Computation.
+       Social Networks 30(2):136--145, 2008.
+       https://doi.org/10.1016/j.socnet.2007.11.001
+    .. [3] Ulrik Brandes and Christian Pich:
+       Centrality Estimation in Large Networks.
+       International Journal of Bifurcation and Chaos 17(7):2303--2318, 2007.
+       https://dx.doi.org/10.1142/S0218127407018403
+    .. [4] Linton C. Freeman:
+       A set of measures of centrality based on betweenness.
+       Sociometry 40: 35--41, 1977
+       https://doi.org/10.2307/3033543
+
     Examples
     --------
     Consider an undirected 3-path. Each pair of nodes has exactly one shortest
@@ -123,61 +178,6 @@ def betweenness_centrality(
     {0: 0.3333333333333333, 1: 0.5, 2: 0.3333333333333333}
     >>> nx.betweenness_centrality(DG, normalized=True, endpoints=False)
     {0: 0.0, 1: 0.5, 2: 0.0}
-
-    See Also
-    --------
-    betweenness_centrality_subset
-    edge_betweenness_centrality
-    load_centrality
-
-    Notes
-    -----
-    The algorithm is from Ulrik Brandes [1]_.
-    See [4]_ for the original first published version and [2]_ for details on
-    algorithms for variations and related metrics.
-
-    For approximate betweenness calculations, set `k` to the number of nodes
-    ("pivots") used to estimate the betweenness values.
-    This corresponds to the number of $s$ nodes in the formula.
-    For an estimate of the number of pivots needed see [3]_.
-
-    For weighted graphs the edge weights must be greater than zero.
-    Zero edge weights can produce an infinite number of equal length
-    paths between pairs of nodes.
-
-    Directed graphs and undirected graphs count paths differently.
-    In directed graphs, each pair of source-target nodes is considered separately
-    in each direction, as the shortest paths can change.
-    However, in undirected graphs, each pair of nodes is considered only once,
-    as the shortest paths are symmetric.
-    This means the normalization factor to divide by is $N(N-1)$ for directed graphs
-    and $N(N-1)/2$ for undirected graphs, where $N = n$ (the number of nodes)
-    if endpoints are included and $N = n-1$ otherwise.
-
-    This algorithm is not guaranteed to be correct if edge weights
-    are floating point numbers. As a workaround you can use integer
-    numbers by multiplying the relevant edge attributes by a convenient
-    constant factor (e.g. 100) and converting to integers.
-
-    References
-    ----------
-    .. [1] Ulrik Brandes:
-       A Faster Algorithm for Betweenness Centrality.
-       Journal of Mathematical Sociology 25(2):163--177, 2001.
-       https://doi.org/10.1080/0022250X.2001.9990249
-    .. [2] Ulrik Brandes:
-       On Variants of Shortest-Path Betweenness
-       Centrality and their Generic Computation.
-       Social Networks 30(2):136--145, 2008.
-       https://doi.org/10.1016/j.socnet.2007.11.001
-    .. [3] Ulrik Brandes and Christian Pich:
-       Centrality Estimation in Large Networks.
-       International Journal of Bifurcation and Chaos 17(7):2303--2318, 2007.
-       https://dx.doi.org/10.1142/S0218127407018403
-    .. [4] Linton C. Freeman:
-       A set of measures of centrality based on betweenness.
-       Sociometry 40: 35--41, 1977
-       https://doi.org/10.2307/3033543
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     if k == len(G):
