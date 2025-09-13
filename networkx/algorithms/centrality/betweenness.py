@@ -72,54 +72,56 @@ def betweenness_centrality(
     --------
     Consider an undirected 3-path. Each pair of nodes has exactly one shortest
     path between them. Since the graph is undirected, only ordered pairs are counted.
-    Of these, none of the shortest paths pass through 0 and 2;
-    only the shortest path between 0 and 2 passes through 1.
+    Of these, none of the shortest paths pass through 0 and 2, and only the
+    shortest path between 0 and 2 passes through 1 (when `endpoints` is `False`).
     As such, the counts should be ``{0: 0, 1: 1, 2: 0}``.
 
-    >>> G = nx.path_graph(3)
-    >>> nx.betweenness_centrality(G, normalized=False)
-    {0: 0.0, 1: 1.0, 2: 0.0}
-
-    With normalization, the values are instead divided by the number of $(s, t)$-pairs.
-    If we are not counting endpoints, there are $n - 1$ possible choices for $s$
-    (all except the node we are computing betweenness centrality for), which in turn
-    leaves $n - 2$ possible choices for $t$ as $s \ne t$.
-    The total number of ordered pairs is thus $(n - 1)(n - 2)/2 = 1$ if `endpoints` is `False`.
-
-    >>> nx.betweenness_centrality(G, normalized=True, endpoints=False)
-    {0: 0.0, 1: 1.0, 2: 0.0}
-
-    However, when `endpoints` is `True` we also need to now count
+    If `endpoints` is `True`, we also need to count endpoints as being on the path:
     $\sigma(s, t | s) = \sigma(s, t | t) = \sigma(s, t)$.
-    As such, 0 is part of two shortest paths (0 to 1 and 0 to 2);
+    In our example, 0 is then part of two shortest paths (0 to 1 and 0 to 2);
     similarly, 2 is part of two shortest paths (0 to 2 and 1 to 2).
     1 is part of all three shortest paths. This makes the new raw
-    counts ``{0: 2, 1: 3, 2: 2}``. If we want to normalize,
-    there are $n(n - 1)/2 = 3$ ordered $(s, t)$-pairs to divide by.
+    counts ``{0: 2, 1: 3, 2: 2}``.
 
-    >>> nx.betweenness_centrality(G, normalized=False, endpoints=True)
-    {0: 2.0, 1: 3.0, 2: 2.0}
-    >>> nx.betweenness_centrality(G, normalized=True, endpoints=True)
-    {0: 0.6666666666666666, 1: 1.0, 2: 0.6666666666666666}
-
-    If the graph is directed instead, we now need to consider $(s, t)$-pairs
-    in both directions. We still only have one path through 1 (0 to 2).
-    This means the raw counts are ``{0: 0, 1: 1, 2: 0}``.
-    Similarly, when counting endpoints, the raw counts are ``{0: 2, 1: 3, 2: 2}``.
-
-    >>> G = nx.path_graph(3, create_using=nx.DiGraph)
+    >>> G = nx.path_graph(3)
     >>> nx.betweenness_centrality(G, normalized=False, endpoints=False)
     {0: 0.0, 1: 1.0, 2: 0.0}
     >>> nx.betweenness_centrality(G, normalized=False, endpoints=True)
     {0: 2.0, 1: 3.0, 2: 2.0}
 
-    When considering normalized betweenness centrality, the raw counts
-    are normalized by the number of $(s, t)$-pairs, which is $n(n - 1) = 6$
-    for a directed graph with endpoints and $(n-1)(n-2) = 2$ without endpoints.
+    With normalization, the values are divided by the number of ordered $(s, t)$-pairs.
+    If we are not counting endpoints, there are $n - 1$ possible choices for $s$
+    (all except the node we are computing betweenness centrality for), which in turn
+    leaves $n - 2$ possible choices for $t$ as $s \ne t$.
+    The total number of ordered pairs when `endpoints` is `False` is $(n - 1)(n - 2)/2 = 1$.
+    If `endpoints` is `True`, there are $n(n - 1)/2 = 3$ ordered $(s, t)$-pairs to divide by.
 
-    >>> nx.betweenness_centrality(G, normalized=True, endpoints=True)
-    {0: 0.3333333333333333, 1: 0.5, 2: 0.3333333333333333}
     >>> nx.betweenness_centrality(G, normalized=True, endpoints=False)
+    {0: 0.0, 1: 1.0, 2: 0.0}
+    >>> nx.betweenness_centrality(G, normalized=True, endpoints=True)
+    {0: 0.6666666666666666, 1: 1.0, 2: 0.6666666666666666}
+
+    If the graph is directed instead, we now need to consider $(s, t)$-pairs
+    in both directions. This means there are $n(n - 1)$ possible paths with endpoints
+    and $(n - 1)(n - 2)$ without endpoints.
+
+    In our example, without counting endpoints, we only have one path through 1 (0 to 2).
+    This means the raw counts are ``{0: 0, 1: 1, 2: 0}``.
+    If we do include endpoints, the raw counts are ``{0: 2, 1: 3, 2: 2}``.
+
+    >>> DG = nx.path_graph(3, create_using=nx.DiGraph)
+    >>> nx.betweenness_centrality(DG, normalized=False, endpoints=False)
+    {0: 0.0, 1: 1.0, 2: 0.0}
+    >>> nx.betweenness_centrality(DG, normalized=False, endpoints=True)
+    {0: 2.0, 1: 3.0, 2: 2.0}
+
+    If we want to normalize directed betweenness centrality, the raw counts
+    are normalized by the number of $(s, t)$-pairs, which is 6 with endpoints and
+    2 without endpoints.
+
+    >>> nx.betweenness_centrality(DG, normalized=True, endpoints=True)
+    {0: 0.3333333333333333, 1: 0.5, 2: 0.3333333333333333}
+    >>> nx.betweenness_centrality(DG, normalized=True, endpoints=False)
     {0: 0.0, 1: 0.5, 2: 0.0}
 
     See Also
@@ -143,9 +145,9 @@ def betweenness_centrality(
     Zero edge weights can produce an infinite number of equal length
     paths between pairs of nodes.
 
-    Directed graphs and undirected graphs are handled differently.
-    In directed graphs, each pair of nodes is considered once in each direction,
-    as the shortest paths can change.
+    Directed graphs and undirected graphs count paths differently.
+    In directed graphs, each pair of source-target nodes is considered separately
+    in each direction, as the shortest paths can change.
     However, in undirected graphs, each pair of nodes is considered only once,
     as the shortest paths are symmetric.
     This means the normalization factor to divide by is $N(N-1)$ for directed graphs
