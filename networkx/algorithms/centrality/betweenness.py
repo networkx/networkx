@@ -25,13 +25,13 @@ def betweenness_centrality(
 
     .. math::
 
-       c_\text{B}(v) = \sum_{s, t \in V} \frac{\sigma(s, t \mid v)}{\sigma(s, t)}
+       c_B(v) = \sum_{s, t \in V} \frac{\sigma(s, t | v)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
-    shortest $(s, t)$-paths, and $\sigma(s, t \mid v)$ is the number of
+    shortest $(s, t)$-paths, and $\sigma(s, t | v)$ is the number of
     those paths passing through some node $v$ other than $s$ and $t$.
     If $s = t$, $\sigma(s, t) = 1$, and if $v \in \{s, t\}$,
-    $\sigma(s, t \mid v) = 0$ [2]_.
+    $\sigma(s, t | v) = 0$ [2]_.
 
     Parameters
     ----------
@@ -92,9 +92,9 @@ def betweenness_centrality(
     {0: 0.0, 1: 1.0, 2: 0.0}
 
     However, when `endpoints` is `True` we also need to now count
-    $\sigma(s, t \mid s) = \sigma(s, t \mid t) = \sigma(s, t)$.
+    $\sigma(s, t | s) = \sigma(s, t | t) = \sigma(s, t)$.
     As such, 0 is part of four shortest paths (0 to 1 and 0 to 2, in both directions);
-    similarly, 2 is part of two shortest paths (2 to 0 and 2 to 1, in both directions).
+    similarly, 2 is part of four shortest paths (2 to 0 and 2 to 1, in both directions).
     1 is now part of all six shortest paths.
     This makes the new raw counts ``{0: 4, 1: 6, 2: 4}``.
     If we want to normalize, there are $n(n - 1) = 6$ $(s, t)$-pairs to divide by.
@@ -207,10 +207,10 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
 
     .. math::
 
-       c_\text{B}(e) = \sum_{s, t \in V} \frac{\sigma(s, t \mid e)}{\sigma(s, t)}
+       c_B(e) = \sum_{s, t \in V} \frac{\sigma(s, t | e)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
-    shortest $(s, t)$-paths, and $\sigma(s, t \mid e)$ is the number of
+    shortest $(s, t)$-paths, and $\sigma(s, t | e)$ is the number of
     those paths passing through edge $e$ [2]_.
 
     Parameters

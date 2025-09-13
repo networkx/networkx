@@ -24,14 +24,14 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
 
     .. math::
 
-       c_\text{B}(v) = \sum_{s \in S, t \in T} \frac{\sigma(s, t \mid v)}{\sigma(s, t)}
+       c_B(v) = \sum_{s \in S, t \in T} \frac{\sigma(s, t | v)}{\sigma(s, t)}
 
     where $S$ is the set of sources, $T$ is the set of targets,
     $\sigma(s, t)$ is the number of shortest $(s, t)$-paths,
-    and $\sigma(s, t \mid v)$ is the number of those paths
+    and $\sigma(s, t | v)$ is the number of those paths
     passing through some node $v$ other than $s$ and $t$.
     If $s = t$, $\sigma(s, t) = 1$,
-    and if $v \in \{s, t\}$, $\sigma(s, t \mid v) = 0$ [2]_.
+    and if $v \in \{s, t\}$, $\sigma(s, t | v) = 0$ [2]_.
 
     Parameters
     ----------
@@ -118,11 +118,11 @@ def edge_betweenness_centrality_subset(
 
     .. math::
 
-       c_\text{B}(e) = \sum_{s \in S, t \in T} \frac{\sigma(s, t \mid e)}{\sigma(s, t)}
+       c_B(e) = \sum_{s \in S, t \in T} \frac{\sigma(s, t | e)}{\sigma(s, t)}
 
     where $S$ is the set of sources, $T$ is the set of targets,
     $\sigma(s, t)$ is the number of shortest $(s, t)$-paths,
-    and $\sigma(s, t \mid e)$ is the number of those paths
+    and $\sigma(s, t | e)$ is the number of those paths
     passing through edge $e$ [2]_.
 
     Parameters
