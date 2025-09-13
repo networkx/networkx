@@ -112,6 +112,7 @@ import itertools
 from collections import Counter, defaultdict
 from functools import reduce, wraps
 
+import networkx as nx
 
 def are_all_equal(iterable):
     """
@@ -215,10 +216,10 @@ def color_degree_by_node(G, n_colors, e_colors):
     """
     if not G.is_directed():
         if len(n_colors) < len(G):
-            for n in G:
+            for n, nbrs in G.adjacency():
                 if n not in n_colors:
                     n_colors[n] = None
-                    for v in G[n]:
+                    for v in nbrs:
                         e_colors[n, v] = None
         # undirected colored degree
         return {
@@ -319,7 +320,6 @@ class ISMAGS:
         if graph.is_directed() != subgraph.is_directed():
             raise ValueError("Directed and undirected graphs cannot be compared.")
 
-        # TODO: graph and subgraph setter methods that invalidate the caches.
         # TODO: allow for precomputed partitions and colors
         self.graph = graph
         self.subgraph = subgraph
@@ -339,7 +339,7 @@ class ISMAGS:
         self._gn_colors = group_to_group_ID_dict(self._gn_partition)
 
         edge_partitions = self.create_aligned_partition(
-            edge_match, self.subgraph.edges, self.graph.edges
+            edge_match, self.subgraph.edges(), self.graph.edges()
         )
         self._sge_partition, self._ge_partition, self.N_edge_colors = edge_partitions
         if self.graph.is_directed():
@@ -364,11 +364,25 @@ class ISMAGS:
             return sg_partition, g_partition, 1
 
         # Use match to create a partition
-        def sg_match(thing1, thing2):
-            return match(sg_things[thing1], sg_things[thing2])
+        sg_multiedge = isinstance(sg_things, nx.classes.reportviews.OutEdgeDataView)
+        g_multiedge = isinstance(g_things, nx.classes.reportviews.OutEdgeDataView)
+        if not sg_multiedge:
+            def sg_match(thing1, thing2):
+                return match(sg_things[thing1], sg_things[thing2])
 
-        def g_match(thing1, thing2):
-            return match(g_things[thing1], g_things[thing2])
+        else:  # multiedges (note nodes of multigraphs use simple case above)
+            def sg_match(thing1, thing2):
+                (u1, v1), (u2, v2) = thing1, thing2
+                return match(self.subgraph[u1][v1], self.subgraph[u2][v2])
+
+        if not g_multiedge:
+            def g_match(thing1, thing2):
+                return match(g_things[thing1], g_things[thing2])
+
+        else:  # multiedges (note nodes of multigraphs use simple case above)
+            def g_match(thing1, thing2):
+                (u1, v1), (u2, v2) = thing1, thing2
+                return match(self.graph[u1][v1], self.graph[u2][v2])
 
         sg_partition = make_partition(sg_things, sg_match)
         g_partition = make_partition(g_things, g_match)
@@ -378,19 +392,24 @@ class ISMAGS:
         gc_to_sgc = {}
         sN, N = len(sg_partition), len(g_partition)
         for sgc, gc in itertools.product(range(sN), range(N)):
-            sgn = next(iter(sg_partition[sgc]))
-            gn = next(iter(g_partition[gc]))
-            if match(sg_things[sgn], g_things[gn]):
+            sgt = next(iter(sg_partition[sgc]))
+            gt = next(iter(g_partition[gc]))
+            sgt_ = sg_things[sgt] if not sg_multiedge else self.subgraph[sgt[0]][sgt[1]]
+            gt_ = g_things[gt] if not g_multiedge else self.graph[gt[0]][gt[1]]
+            if match(sgt_, gt_):
                 assert sgc not in sgc_to_gc  # 2 sg parts match same g part
                 assert gc not in gc_to_sgc  # 2 g parts match same sg part
                 sgc_to_gc[sgc] = gc
                 gc_to_sgc[gc] = sgc
-        ## return two lists and a number of partitions that match.
+        ## return two lists and the number of partitions that match.
         new_order = [
             (sg_partition[sgc], g_partition[gc]) for sgc, gc in sgc_to_gc.items()
         ]
-        new_sg_p, new_g_p = [list(x) for x in zip(*new_order)]
         Ncolors = len(new_order)
+        if Ncolors:
+            new_sg_p, new_g_p = [list(x) for x in zip(*new_order)]
+        else:
+            new_sg_p, new_g_p = [], []
         if Ncolors < sN:
             extra = [sg_partition[c] for c in range(sN) if c not in sgc_to_gc]
             new_sg_p = list(new_sg_p) + extra
@@ -428,6 +447,8 @@ class ISMAGS:
         elif len(self.graph) < len(self.subgraph):
             return
         elif len(self._sgn_partition) > self.N_node_colors:
+            return
+        elif len(self._sge_partition) > self.N_edge_colors:
             return
 
         if symmetry:
@@ -682,7 +703,7 @@ class ISMAGS:
                 else:
                     refined = make_partition(part, equal_color)
                     R = len(refined)
-                    if not branch or R == 1 or R == len(set(len(r) for r in refined)):
+                    if not branch or R == 1 or R == len({len(r) for r in refined}):
                         for n_p in more_partitions:
                             n_p.extend(sorted(refined, key=len))
                     else:
@@ -713,8 +734,9 @@ class ISMAGS:
         duplicate restrictions on candidates are ignored, avoided another intersection.
         """
         # shortcuts for speed
-        subgraph = self.subgraph._adj
-        graph = self.graph._adj
+        subgraph = self.subgraph
+        graph = self.graph
+        is_directed = subgraph.is_directed()
         self_ge_partition = self._ge_partition
         self_sge_colors = self._sge_colors
         gn_ID_to_node = list(graph)
@@ -768,26 +790,51 @@ class ISMAGS:
                 new_candidates = candidate_sets.copy()
 
                 # update the candidate_sets for unmapped sgn based on sgn mapped
-                sgn_nbrs = subgraph[sgn]
-                not_gn_nbrs = graph.keys() - graph[gn].keys()
-                for sgn2 in left_to_map:
-                    # edge color must match when sgn2 connected to sgn
-                    if sgn2 not in sgn_nbrs:
-                        gn2_options = not_gn_nbrs
-                    else:
-                        g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
-                        gn2_options = {n for e in g_edges if gn in e for n in e}
-                    # Node color compatibility should be taken care of by the
-                    # initial candidate lists made by find_subgraphs
+                if not is_directed:
+                    sgn_nbrs = subgraph._adj[sgn]
+                    not_gn_nbrs = graph._adj.keys() - graph._adj[gn].keys()
+                    for sgn2 in left_to_map:
+                        # edge color must match when sgn2 connected to sgn
+                        if sgn2 not in sgn_nbrs:
+                            gn2_options = not_gn_nbrs
+                        else:
+                            g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
+                            gn2_options = {n for e in g_edges if gn in e for n in e}
+                        # Node color compatibility should be taken care of by the
+                        # initial candidate lists made by find_subgraphs
 
-                    # Add gn2_options to the right collection. Since new_candidates
-                    # is a dict-of-sets-of-frozensets of node indices it's
-                    # a bit clunky. We can't do .add without changing the original,
-                    # and + also doesn't work. We could do |, but union to be clearer.
-                    # Note this doesn't change candidate_sets[sgn2] b/c new_candidates is a copy
-                    new_candidates[sgn2] = new_candidates[sgn2].union(
-                        [frozenset(gn2_options)]
-                    )
+                        # Add gn2_options to the right collection. Since new_candidates
+                        # is a dict-of-sets-of-frozensets of node indices it's
+                        # a bit clunky. We can't do .add without changing the original,
+                        # and + also doesn't work. Could do |, but union is clearer?
+                        new_candidates[sgn2] = new_candidates[sgn2].union(
+                            [frozenset(gn2_options)]
+                        )
+                else:  # directed
+                    sgn_nbrs = subgraph._adj[sgn].keys()
+                    sgn_preds = subgraph._pred[sgn].keys()
+                    not_gn_nbrs = graph._adj.keys() - graph._adj[gn].keys() - graph._pred[gn].keys()
+                    for sgn2 in left_to_map:
+                        # edge color must match when sgn2 connected to sgn
+                        if sgn2 not in sgn_nbrs:
+                            if sgn2 not in sgn_preds:
+                                gn2_options = not_gn_nbrs
+                            else:  # sgn2 in sgn_preds
+                                g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
+                                gn2_options = {e[0] for e in g_edges if gn == e[1]}
+                        else:
+                            if sgn2 not in sgn_preds:
+                                g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
+                                gn2_options = {e[1] for e in g_edges if gn == e[0]}
+                            else:
+                                # gn2 must be on correct color of both directions
+                                g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
+                                gn2_options = {e[1] for e in g_edges if gn == e[0]}
+                                g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
+                                gn2_options &= {e[0] for e in g_edges if gn == e[1]}
+                        new_candidates[sgn2] = new_candidates[sgn2].union(
+                            [frozenset(gn2_options)]
+                        )
 
                 for sgn2 in left_to_map:
                     # symmetry must match
@@ -1046,9 +1093,9 @@ class ISMAGS:
                             for k in top
                             if len(top) == 1 and top == bottom
                         }
-                        less = {n for n in graph if node_to_ID[n] < node_to_ID[node]}
+                        IDless = {n for n in graph if node_to_ID[n] < node_to_ID[node]}
                         # Have all nodes with ID < node been mapped?
-                        if less <= mapped:
+                        if IDless <= mapped:
                             orb = orbit_id[node]
                             cosets[node] = orbits[orb].copy()
         return cosets

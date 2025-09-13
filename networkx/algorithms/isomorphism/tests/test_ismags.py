@@ -3,9 +3,13 @@ Tests for ISMAGS isomorphism algorithm.
 """
 
 import pytest
+import random
 
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
+
+
+graph_classes = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 
 
 def _matches_to_sets(matches):
@@ -95,14 +99,15 @@ data = [
 ]
 
 
+@pytest.mark.parametrize("graph_constructor", graph_classes)
 @pytest.mark.parametrize(["node_data", "edge_data"], data)
 class TestSelfIsomorphism:
-    def test_self_isomorphism(self, node_data, edge_data):
+    def test_self_isomorphism(self, graph_constructor, node_data, edge_data):
         """
         For some small, symmetric graphs, make sure that 1) they are isomorphic
         to themselves, and 2) that only the identity mapping is found.
         """
-        graph = nx.Graph()
+        graph = graph_constructor()
         graph.add_nodes_from(node_data)
         graph.add_edges_from(edge_data)
 
@@ -116,12 +121,12 @@ class TestSelfIsomorphism:
             {n: n for n in graph.nodes}
         ]
 
-    def test_edgecase_self_isomorphism(self, node_data, edge_data):
+    def test_edgecase_self_isomorphism(self, graph_constructor, node_data, edge_data):
         """
         This edgecase is one of the cases in which it is hard to find all
         symmetry elements.
         """
-        graph = nx.Graph()
+        graph = graph_constructor()
         nx.add_path(graph, range(5))
         graph.add_edges_from([(2, 5), (5, 6)])
 
@@ -134,13 +139,13 @@ class TestSelfIsomorphism:
         ismags_answer = list(ismags.find_isomorphisms(True))
         assert ismags_answer == [{n: n for n in graph.nodes}]
 
-    def test_directed_self_isomorphism(self, node_data, edge_data):
+    def test_directed_self_isomorphism(self, graph_constructor, node_data, edge_data):
         """
         For some small, directed, symmetric graphs, make sure that 1) they are
         isomorphic to themselves, and 2) that only the identity mapping is
         found.
         """
-        graph = nx.Graph()
+        graph = graph_constructor()
         graph.add_nodes_from(node_data)
         graph.add_edges_from(edge_data)
 
@@ -230,6 +235,43 @@ class TestSubgraphIsomorphism:
         )
 
 
+def test_noncomparable_nodes():
+    node1 = object()
+    node2 = object()
+    node3 = object()
+
+    # Graph
+    G = nx.path_graph([node1, node2, node3])
+    gm = iso.ISMAGS(G, G)
+    assert gm.is_isomorphic()
+    # Just testing some cases
+    assert gm.subgraph_is_isomorphic()
+
+    # DiGraph
+    G = nx.path_graph([node1, node2, node3], create_using=nx.DiGraph)
+    H = nx.path_graph([node3, node2, node1], create_using=nx.DiGraph)
+    dgm = iso.ISMAGS(G, H)
+    assert dgm.is_isomorphic()
+    assert dgm.is_isomorphic(symmetry=True)
+    # Just testing some cases
+    assert dgm.subgraph_is_isomorphic()
+
+
+@pytest.mark.parametrize("graph_constructor", graph_classes)
+def test_selfloop(graph_constructor):
+    # Simple test for graphs with selfloops
+    g1 = graph_constructor([(0, 1), (0, 2), (1, 2), (1, 3), (2, 2), (2, 4)])
+    nodes = range(5)
+    rng = random.Random(42)
+
+    for _ in range(3):
+        new_nodes = list(nodes)
+        rng.shuffle(new_nodes)
+        d = dict(zip(nodes, new_nodes))
+        g2 = nx.relabel_nodes(g1, d)
+        assert iso.ISMAGS(g1, g2).is_isomorphic()
+
+
 class TestWikipediaExample:
     # example in wikipedia is g1a and g2b
     # 1 have letter nodes, 2 have number nodes
@@ -299,23 +341,22 @@ class TestWikipediaExample:
         [7, 8], #
     ]
 
-    def test_graph(self):
-        g1a = nx.Graph(self.g1a_edges)
-        g1b = nx.Graph(self.g1b_edges)
-        g2a = nx.Graph(self.g2a_edges)
-        g2b = nx.Graph(self.g2b_edges)
+    @pytest.mark.parametrize("graph_constructor", [nx.Graph, nx.MultiGraph])
+    def test_graph(self, graph_constructor):
+        g1a = graph_constructor(self.g1a_edges)
+        g1b = graph_constructor(self.g1b_edges)
+        g2a = graph_constructor(self.g2a_edges)
+        g2b = graph_constructor(self.g2b_edges)
         assert iso.ISMAGS(g1a, g1b).is_isomorphic()
         assert iso.ISMAGS(g1a, g2a).is_isomorphic()
         assert iso.ISMAGS(g1a, g2b).is_isomorphic()
 
-    def test_digraph(self):
-        # 1 have letter nodes, 2 have number nodes
-        # b have some edges reversed vs a
-        # example in wikipedia is g1a and g2b
-        g1a = nx.DiGraph(self.g1a_edges)
-        g1b = nx.DiGraph(self.g1b_edges)
-        g2a = nx.DiGraph(self.g2a_edges)
-        g2b = nx.DiGraph(self.g2b_edges)
+    @pytest.mark.parametrize("graph_constructor", [nx.DiGraph, nx.MultiDiGraph])
+    def test_digraph(self, graph_constructor):
+        g1a = graph_constructor(self.g1a_edges)
+        g1b = graph_constructor(self.g1b_edges)
+        g2a = graph_constructor(self.g2a_edges)
+        g2b = graph_constructor(self.g2b_edges)
         assert iso.ISMAGS(g1a, g2b).is_isomorphic()
         assert iso.ISMAGS(g1b, g2a).is_isomorphic()
         assert not iso.ISMAGS(g1a, g1b).is_isomorphic()
@@ -421,3 +462,198 @@ class TestLargestCommonSubgraph:
         )
         assert expected == found_mcis1
         assert expected == found_mcis2
+
+
+def is_isomorphic(G, SG, edge_match=None, node_match=None):
+    return iso.ISMAGS(G, SG, node_match, edge_match).is_isomorphic()
+
+
+class TestDiGraphISO:
+    def test_wikipedia_graph(self):
+        edges1 = [
+            (1, 5),
+            (1, 2),
+            (1, 4),
+            (3, 2),
+            (6, 2),
+            (3, 4),
+            (7, 3),
+            (4, 8),
+            (5, 8),
+            (6, 5),
+            (6, 7),
+            (7, 8),
+        ]
+        mapped = {1: "a", 2: "h", 3: "d", 4: "i", 5: "g", 6: "b", 7: "j", 8: "c"}
+
+        G1 = nx.DiGraph(edges1)
+        G2 = nx.relabel_nodes(G1, mapped)
+
+        result = next(nx.isomorphism.ISMAGS(G1, G2).find_isomorphisms())
+        assert result == mapped
+
+        # Change the direction of an edge
+        G1.remove_edge(1, 5)
+        G1.add_edge(5, 1)
+        result = list(nx.isomorphism.ISMAGS(G1, G2).find_isomorphisms())
+        assert result == []
+
+    def test_non_isomorphic_same_degree_sequence(self):
+        r"""
+                G1                           G2
+        x--------------x              x--------------x
+        | \            |              | \            |
+        |  x-------x   |              |  x-------x   |
+        |  |       |   |              |  |       |   |
+        |  x-------x   |              |  x-------x   |
+        | /            |              |            \ |
+        x--------------x              x--------------x
+        """
+        edges1 = [
+            (1, 5),
+            (1, 2),
+            (4, 1),
+            (3, 2),
+            (3, 4),
+            (4, 8),
+            (5, 8),
+            (6, 5),
+            (6, 7),
+            (7, 8),
+        ]
+        edges2 = [
+            (1, 5),
+            (1, 2),
+            (4, 1),
+            (3, 2),
+            (4, 3),
+            (5, 8),
+            (6, 5),
+            (6, 7),
+            (3, 7),
+            (8, 7),
+        ]
+
+        G1 = nx.DiGraph(edges1)
+        G2 = nx.DiGraph(edges2)
+        assert not is_isomorphic(G1, G2)
+
+
+    def test_is_isomorphic(self):
+        G1 = nx.Graph([[1, 2], [1, 3], [1, 5], [2, 3]])
+        G2 = nx.Graph([[10, 20], [20, 30], [10, 30], [10, 50]])
+        G4 = nx.Graph([[1, 2], [1, 3], [1, 5], [2, 4]])
+        assert is_isomorphic(G1, G2)
+        assert not is_isomorphic(G1, G4)
+        assert is_isomorphic(G1.to_directed(), G2.to_directed())
+        assert not is_isomorphic(G1.to_directed(), G4.to_directed())
+        with pytest.raises(
+            ValueError, match="Directed and undirected graphs cannot be compared."
+        ):
+            is_isomorphic(G1.to_directed(), G1)
+
+
+@pytest.mark.parametrize("graph_class", graph_classes)
+def test_simple_node_match(graph_class):
+    g1 = graph_class([(0, 0), (0, 1), (1, 0)])
+    g2 = g1.copy()
+    nm = iso.numerical_node_match("size", 1)
+    assert is_isomorphic(g1, g2, node_match=nm)
+
+    g2.nodes[0]["size"] = 3
+    assert not is_isomorphic(g1, g2, node_match=nm)
+
+
+@pytest.mark.parametrize("graph_class", graph_classes)
+def test_simple_node_and_edge_match(graph_class):
+    g1 = graph_class()
+    g1.add_weighted_edges_from([(0, 0, 1.2), (0, 1, 1.4), (1, 0, 1.6)])
+    g2 = g1.copy()
+    nm = iso.numerical_node_match("size", 1)
+    if g1.is_multigraph():
+        em = iso.numerical_multiedge_match("weight", 1)
+    else:
+        em = iso.numerical_edge_match("weight", 1)
+    assert is_isomorphic(g1, g2, node_match=nm, edge_match=em)
+
+    g2.nodes[0]["size"] = 3
+    assert not is_isomorphic(g1, g2, node_match=nm, edge_match=em)
+
+    g2 = g1.copy()
+    if g1.is_multigraph():
+        g2.edges[0, 1, 0]["weight"] = 2.1
+    else:
+        g2.edges[0, 1]["weight"] = 2.1
+    assert not is_isomorphic(g1, g2, node_match=nm, edge_match=em)
+
+    g2 = g1.copy()
+    g2.nodes[0]["size"] = 3
+    if g1.is_multigraph():
+        g2.edges[0, 1, 0]["weight"] = 2.1
+    else:
+        g2.edges[0, 1]["weight"] = 2.1
+    assert not is_isomorphic(g1, g2, node_match=nm, edge_match=em)
+
+
+@pytest.mark.parametrize("graph_class", graph_classes)
+def test_simple_edge_match(graph_class):
+    # 16 simple tests
+    w = "weight"
+    edges = [(0, 0, 1), (0, 0, 1.5), (0, 1, 2), (1, 0, 3)]
+    g1 = graph_class()
+    g1.add_weighted_edges_from(edges)
+    g2 = g1.copy()
+    if g1.is_multigraph():
+        em = iso.numerical_multiedge_match("weight", 1)
+    else:
+        em = iso.numerical_edge_match("weight", 1)
+    assert is_isomorphic(g1, g2, edge_match=em)
+
+    for mod1, mod2 in [(False, True), (True, False), (True, True)]:
+        # mod1 tests a regular edge weight difference
+        # mod2 tests a selfloop weight difference
+        if g1.is_multigraph():
+            if mod1:
+                data1 = {0: {"weight": 10}}
+            if mod2:
+                data2 = {0: {"weight": 1}, 1: {"weight": 2.5}}
+        else:
+            if mod1:
+                data1 = {"weight": 10}
+            if mod2:
+                data2 = {"weight": 2.5}
+
+        g2 = g1.copy()
+        if mod1:
+            if not g1.is_directed():
+                g2._adj[1][0] = data1
+                g2._adj[0][1] = data1
+            else:
+                g2._succ[1][0] = data1
+                g2._pred[0][1] = data1
+        if mod2:
+            if not g1.is_directed():
+                g2._adj[0][0] = data2
+            else:
+                g2._succ[0][0] = data2
+                g2._pred[0][0] = data2
+
+        assert not is_isomorphic(g1, g2, edge_match=em)
+
+
+def test_weightkey():
+    g1 = nx.DiGraph()
+    g2 = nx.DiGraph()
+
+    g1.add_edge("A", "B", weight=1)
+    g2.add_edge("C", "D", weight=0)
+
+    assert nx.is_isomorphic(g1, g2)
+    em = iso.numerical_edge_match("nonexistent attribute", 1)
+    assert nx.is_isomorphic(g1, g2, edge_match=em)
+    em = iso.numerical_edge_match("weight", 1)
+    assert not nx.is_isomorphic(g1, g2, edge_match=em)
+
+    g2 = nx.DiGraph()
+    g2.add_edge("C", "D")
+    assert nx.is_isomorphic(g1, g2, edge_match=em)
