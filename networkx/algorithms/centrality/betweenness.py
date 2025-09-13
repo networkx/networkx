@@ -13,7 +13,7 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = ["betweenness_centrality", "edge_betweenness_centrality"]
 
 
-@py_random_state(5)
+@py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
 def betweenness_centrality(
     G, k=None, normalized=True, weight=None, endpoints=False, seed=None
@@ -21,54 +21,110 @@ def betweenness_centrality(
     r"""Compute the shortest-path betweenness centrality for nodes.
 
     Betweenness centrality of a node $v$ is the sum of the
-    fraction of all-pairs shortest paths that pass through $v$
+    fraction of all-pairs shortest paths that pass through $v$.
 
     .. math::
 
-       c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|v)}{\sigma(s, t)}
+       c_B(v) = \sum_{s, t \in V} \frac{\sigma(s, t | v)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
-    shortest $(s, t)$-paths,  and $\sigma(s, t|v)$ is the number of
-    those paths  passing through some  node $v$ other than $s, t$.
-    If $s = t$, $\sigma(s, t) = 1$, and if $v \in {s, t}$,
-    $\sigma(s, t|v) = 0$ [2]_.
+    shortest $(s, t)$-paths, and $\sigma(s, t | v)$ is the number of
+    those paths passing through some node $v$ other than $s$ and $t$.
+    If $s = t$, $\sigma(s, t) = 1$, and if $v \in \{s, t\}$,
+    $\sigma(s, t | v) = 0$ [2]_.
 
     Parameters
     ----------
     G : graph
-      A NetworkX graph.
+        A NetworkX graph.
 
     k : int, optional (default=None)
-      If k is not None use k node samples to estimate betweenness.
-      The value of k <= n where n is the number of nodes in the graph.
-      Higher values give better approximation.
+        If `k` is not `None`, use `k` node samples as sources to estimate betweenness.
+        This is taken into account when rescaling the values.
+        Must have ``k <= n``, where ``n`` is the number of nodes in the graph.
+        Higher values give better approximation.
 
-    normalized : bool, optional
-      If True the betweenness values are normalized by `2/((n-1)(n-2))`
-      for graphs, and `1/((n-1)(n-2))` for directed graphs where `n`
-      is the number of nodes in G.
+    normalized : bool, optional (default=True)
+        If `True`, the betweenness values are rescaled according to the number of
+        possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
-      If None, all edge weights are considered equal.
-      Otherwise holds the name of the edge attribute used as weight.
-      Weights are used to calculate weighted shortest paths, so they are
-      interpreted as distances.
+        If `None`, all edge weights are considered equal.
+        Otherwise holds the name of the edge attribute used as weight.
+        Weights are used to calculate weighted shortest paths, so they are
+        interpreted as distances.
 
-    endpoints : bool, optional
-      If True include the endpoints in the shortest path counts.
+    endpoints : bool, optional (default=False)
+        If `True`, include the endpoints $s$ and $t$ in the shortest path counts.
+        This is taken into account when rescaling the values.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-        Note that this is only used if k is not None.
+        Note that this is only used if ``k is not None``.
 
     Returns
     -------
-    nodes : dictionary
-       Dictionary of nodes with betweenness centrality as the value.
+    nodes : dict
+        Dictionary of nodes with betweenness centrality as the value.
+
+    Examples
+    --------
+    Consider an undirected 3-path. Each pair of nodes has exactly one shortest
+    path between them. Since the graph is undirected, only ordered pairs are counted.
+    Of these, none of the shortest paths pass through 0 and 2;
+    only the shortest path between 0 and 2 passes through 1.
+    As such, the counts should be ``{0: 0, 1: 1, 2: 0}``.
+
+    >>> G = nx.path_graph(3)
+    >>> nx.betweenness_centrality(G, normalized=False)
+    {0: 0.0, 1: 1.0, 2: 0.0}
+
+    With normalization, the values are instead divided by the number of $(s, t)$-pairs.
+    If we are not counting endpoints, there are $n - 1$ possible choices for $s$
+    (all except the node we are computing betweenness centrality for), which in turn
+    leaves $n - 2$ possible choices for $t$ as $s \ne t$.
+    The total number of ordered pairs is thus $(n - 1)(n - 2)/2 = 1$ if `endpoints` is `False`.
+
+    >>> nx.betweenness_centrality(G, normalized=True, endpoints=False)
+    {0: 0.0, 1: 1.0, 2: 0.0}
+
+    However, when `endpoints` is `True` we also need to now count
+    $\sigma(s, t | s) = \sigma(s, t | t) = \sigma(s, t)$.
+    As such, 0 is part of two shortest paths (0 to 1 and 0 to 2);
+    similarly, 2 is part of two shortest paths (0 to 2 and 1 to 2).
+    1 is part of all three shortest paths. This makes the new raw
+    counts ``{0: 2, 1: 3, 2: 2}``. If we want to normalize,
+    there are $n(n - 1)/2 = 3$ ordered $(s, t)$-pairs to divide by.
+
+    >>> nx.betweenness_centrality(G, normalized=False, endpoints=True)
+    {0: 2.0, 1: 3.0, 2: 2.0}
+    >>> nx.betweenness_centrality(G, normalized=True, endpoints=True)
+    {0: 0.6666666666666666, 1: 1.0, 2: 0.6666666666666666}
+
+    If the graph is directed instead, we now need to consider $(s, t)$-pairs
+    in both directions. We still only have one path through 1 (0 to 2).
+    This means the raw counts are ``{0: 0, 1: 1, 2: 0}``.
+    Similarly, when counting endpoints, the raw counts are ``{0: 2, 1: 3, 2: 2}``.
+
+    >>> G = nx.path_graph(3, create_using=nx.DiGraph)
+    >>> nx.betweenness_centrality(G, normalized=False, endpoints=False)
+    {0: 0.0, 1: 1.0, 2: 0.0}
+    >>> nx.betweenness_centrality(G, normalized=False, endpoints=True)
+    {0: 2.0, 1: 3.0, 2: 2.0}
+
+    When considering normalized betweenness centrality, the raw counts
+    are normalized by the number of $(s, t)$-pairs, which is $n(n - 1) = 6$
+    for a directed graph with endpoints and $(n-1)(n-2) = 2$ without endpoints.
+
+    >>> nx.betweenness_centrality(G, normalized=True, endpoints=True)
+    {0: 0.3333333333333333, 1: 0.5, 2: 0.3333333333333333}
+    >>> nx.betweenness_centrality(G, normalized=True, endpoints=False)
+    {0: 0.0, 1: 0.5, 2: 0.0}
 
     See Also
     --------
+    betweenness_centrality_subset
     edge_betweenness_centrality
     load_centrality
 
@@ -78,53 +134,47 @@ def betweenness_centrality(
     See [4]_ for the original first published version and [2]_ for details on
     algorithms for variations and related metrics.
 
-    For approximate betweenness calculations set k=#samples to use
-    k nodes ("pivots") to estimate the betweenness values. For an estimate
-    of the number of pivots needed see [3]_.
+    For approximate betweenness calculations, set `k` to the number of nodes
+    ("pivots") used to estimate the betweenness values.
+    This corresponds to the number of $s$ nodes in the formula.
+    For an estimate of the number of pivots needed see [3]_.
 
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length
     paths between pairs of nodes.
 
-    The total number of paths between source and target is counted
-    differently for directed and undirected graphs. Directed paths
-    are easy to count. Undirected paths are tricky: should a path
-    from "u" to "v" count as 1 undirected path or as 2 directed paths?
-
-    For betweenness_centrality we report the number of undirected
-    paths when G is undirected.
-
-    For betweenness_centrality_subset the reporting is different.
-    If the source and target subsets are the same, then we want
-    to count undirected paths. But if the source and target subsets
-    differ -- for example, if sources is {0} and targets is {1},
-    then we are only counting the paths in one direction. They are
-    undirected paths but we are counting them in a directed way.
-    To count them as undirected paths, each should count as half a path.
+    Directed graphs and undirected graphs are handled differently.
+    In directed graphs, each pair of nodes is considered once in each direction,
+    as the shortest paths can change.
+    However, in undirected graphs, each pair of nodes is considered only once,
+    as the shortest paths are symmetric.
+    This means the normalization factor to divide by is $N(N-1)$ for directed graphs
+    and $N(N-1)/2$ for undirected graphs, where $N = n$ (the number of nodes)
+    if endpoints are included and $N = n-1$ otherwise.
 
     This algorithm is not guaranteed to be correct if edge weights
     are floating point numbers. As a workaround you can use integer
     numbers by multiplying the relevant edge attributes by a convenient
-    constant factor (eg 100) and converting to integers.
+    constant factor (e.g. 100) and converting to integers.
 
     References
     ----------
     .. [1] Ulrik Brandes:
        A Faster Algorithm for Betweenness Centrality.
-       Journal of Mathematical Sociology 25(2):163-177, 2001.
+       Journal of Mathematical Sociology 25(2):163--177, 2001.
        https://doi.org/10.1080/0022250X.2001.9990249
     .. [2] Ulrik Brandes:
        On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
-       Social Networks 30(2):136-145, 2008.
+       Social Networks 30(2):136--145, 2008.
        https://doi.org/10.1016/j.socnet.2007.11.001
     .. [3] Ulrik Brandes and Christian Pich:
        Centrality Estimation in Large Networks.
-       International Journal of Bifurcation and Chaos 17(7):2303-2318, 2007.
+       International Journal of Bifurcation and Chaos 17(7):2303--2318, 2007.
        https://dx.doi.org/10.1142/S0218127407018403
     .. [4] Linton C. Freeman:
        A set of measures of centrality based on betweenness.
-       Sociometry 40: 35–41, 1977
+       Sociometry 40: 35--41, 1977
        https://doi.org/10.2307/3033543
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
@@ -158,56 +208,57 @@ def betweenness_centrality(
     return betweenness
 
 
-@py_random_state(4)
+@py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
 def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=None):
     r"""Compute betweenness centrality for edges.
 
     Betweenness centrality of an edge $e$ is the sum of the
-    fraction of all-pairs shortest paths that pass through $e$
+    fraction of all-pairs shortest paths that pass through $e$.
 
     .. math::
 
-       c_B(e) =\sum_{s,t \in V} \frac{\sigma(s, t|e)}{\sigma(s, t)}
+       c_B(e) = \sum_{s, t \in V} \frac{\sigma(s, t | e)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
-    shortest $(s, t)$-paths, and $\sigma(s, t|e)$ is the number of
+    shortest $(s, t)$-paths, and $\sigma(s, t | e)$ is the number of
     those paths passing through edge $e$ [2]_.
 
     Parameters
     ----------
     G : graph
-      A NetworkX graph.
+        A NetworkX graph.
 
     k : int, optional (default=None)
-      If k is not None use k node samples to estimate betweenness.
-      The value of k <= n where n is the number of nodes in the graph.
-      Higher values give better approximation.
+        If `k` is not `None`, use `k` node samples as sources to estimate betweenness.
+        This is taken into account when rescaling the values.
+        Must have ``k <= n``, where ``n`` is the number of nodes in the graph.
+        Higher values give better approximation.
 
-    normalized : bool, optional
-      If True the betweenness values are normalized by $2/(n(n-1))$
-      for graphs, and $1/(n(n-1))$ for directed graphs where $n$
-      is the number of nodes in G.
+    normalized : bool, optional (default=True)
+        If `True`, the betweenness values are rescaled according to the number of
+        possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
-      If None, all edge weights are considered equal.
-      Otherwise holds the name of the edge attribute used as weight.
-      Weights are used to calculate weighted shortest paths, so they are
-      interpreted as distances.
+        If `None`, all edge weights are considered equal.
+        Otherwise holds the name of the edge attribute used as weight.
+        Weights are used to calculate weighted shortest paths, so they are
+        interpreted as distances.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-        Note that this is only used if k is not None.
+        Note that this is only used if ``k is not None``.
 
     Returns
     -------
-    edges : dictionary
-       Dictionary of edges with betweenness centrality as the value.
+    edges : dict
+        Dictionary of edges with betweenness centrality as the value.
 
     See Also
     --------
     betweenness_centrality
+    edge_betweenness_centrality_subset
     edge_load
 
     Notes
