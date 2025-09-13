@@ -115,11 +115,11 @@ class TestRandomKOutGraph:
         ]
     )
     def f(self, request):
-        return request.param
+        yield request.param
 
     @pytest.fixture(params=[(10, 3, 1), (20, 2, 4), (5, 1, 10)])
     def nkalpha(self, request):
-        return request.param
+        yield request.param
 
     def test_regularity(self, f, nkalpha):
         """Test that the generated graph is `k`-out-regular."""
@@ -137,6 +137,7 @@ class TestRandomKOutGraph:
         """Test that the interface function `random_k_out_graph` works correctly."""
         n, k, alpha = nkalpha
         G = random_k_out_graph(n, k, alpha, seed=42)
+        assert len(G) == n
         assert all(d == k for _, d in G.out_degree)
 
     def test_negative_alpha(self):
