@@ -71,48 +71,56 @@ def betweenness_centrality(
     Examples
     --------
     Consider an undirected 3-path. Each pair of nodes has exactly one shortest
-    path between them. Of these, none of the shortest paths pass through 0 and 2;
-    only the shortest paths between 0 and 2 and between 2 and 0 (counting
-    undirected edges once in each direction) pass through 1.
-    As such, the raw counts before rescaling should be ``{0: 0, 1: 2, 2: 0}``.
-    Without normalization, these values are simply divided by two to account
-    for double-counting.
+    path between them. Since the graph is undirected, only ordered pairs are counted.
+    Of these, none of the shortest paths pass through 0 and 2;
+    only the shortest path between 0 and 2 passes through 1.
+    As such, the counts should be ``{0: 0, 1: 1, 2: 0}``.
 
     >>> G = nx.path_graph(3)
     >>> nx.betweenness_centrality(G, normalized=False)
     {0: 0.0, 1: 1.0, 2: 0.0}
 
     With normalization, the values are instead divided by the number of $(s, t)$-pairs.
-    If we are not counting end points, there are $n - 1$ possible choices for $s$
+    If we are not counting endpoints, there are $n - 1$ possible choices for $s$
     (all except the node we are computing betweenness centrality for), which in turn
     leaves $n - 2$ possible choices for $t$ as $s \ne t$.
-    The number of total pairs is thus $(n - 1)(n - 2) = 2$ if `endpoints` is `False`.
+    The total number of ordered pairs is thus $(n - 1)(n - 2)/2 = 1$ if `endpoints` is `False`.
 
     >>> nx.betweenness_centrality(G, normalized=True, endpoints=False)
     {0: 0.0, 1: 1.0, 2: 0.0}
 
     However, when `endpoints` is `True` we also need to now count
     $\sigma(s, t | s) = \sigma(s, t | t) = \sigma(s, t)$.
-    As such, 0 is part of four shortest paths (0 to 1 and 0 to 2, in both directions);
-    similarly, 2 is part of four shortest paths (2 to 0 and 2 to 1, in both directions).
-    1 is now part of all six shortest paths.
-    This makes the new raw counts ``{0: 4, 1: 6, 2: 4}``.
-    If we want to normalize, there are $n(n - 1) = 6$ $(s, t)$-pairs to divide by.
+    As such, 0 is part of two shortest paths (0 to 1 and 0 to 2);
+    similarly, 2 is part of two shortest paths (0 to 2 and 1 to 2).
+    1 is part of all three shortest paths. This makes the new raw
+    counts ``{0: 2, 1: 3, 2: 2}``. If we want to normalize,
+    there are $n(n - 1)/2 = 3$ ordered $(s, t)$-pairs to divide by.
 
     >>> nx.betweenness_centrality(G, normalized=False, endpoints=True)
     {0: 2.0, 1: 3.0, 2: 2.0}
     >>> nx.betweenness_centrality(G, normalized=True, endpoints=True)
     {0: 0.6666666666666666, 1: 1.0, 2: 0.6666666666666666}
 
-    If the graph is directed instead, only the unnormalized betweenness changes.
-    Going back to that unnormalized, `endpoints == False` situation, we have
-    no shortest paths passing through 0 and 2, and only the shortest path between
-    0 and 2 passing through 1.
+    If the graph is directed instead, we now need to consider $(s, t)$-pairs
+    in both directions. We still only have one path through 1 (0 to 2).
     This means the raw counts are ``{0: 0, 1: 1, 2: 0}``.
+    Similarly, when counting endpoints, the raw counts are ``{0: 2, 1: 3, 2: 2}``.
 
     >>> G = nx.path_graph(3, create_using=nx.DiGraph)
     >>> nx.betweenness_centrality(G, normalized=False, endpoints=False)
     {0: 0.0, 1: 1.0, 2: 0.0}
+    >>> nx.betweenness_centrality(G, normalized=False, endpoints=True)
+    {0: 2.0, 1: 3.0, 2: 2.0}
+
+    When considering normalized betweenness centrality, the raw counts
+    are normalized by the number of $(s, t)$-pairs, which is $n(n - 1) = 6$
+    for a directed graph with endpoints and $(n-1)(n-2) = 2$ without endpoints.
+
+    >>> nx.betweenness_centrality(G, normalized=True, endpoints=True)
+    {0: 0.3333333333333333, 1: 0.5, 2: 0.3333333333333333}
+    >>> nx.betweenness_centrality(G, normalized=True, endpoints=False)
+    {0: 0.0, 1: 0.5, 2: 0.0}
 
     See Also
     --------
@@ -135,11 +143,14 @@ def betweenness_centrality(
     Zero edge weights can produce an infinite number of equal length
     paths between pairs of nodes.
 
-    The total number of paths between source and target is counted
-    differently for directed and undirected graphs. Directed paths
-    are easy to count. Undirected paths are tricky: should a path
-    from ``u`` to ``v`` count as 1 undirected path or as 2 directed paths?
-    For this implementation of `betweenness_centrality`, we do the latter.
+    Directed graphs and undirected graphs are handled differently.
+    In directed graphs, each pair of nodes is considered once in each direction,
+    as the shortest paths can change.
+    However, in undirected graphs, each pair of nodes is considered only once,
+    as the shortest paths are symmetric.
+    This means the normalization factor to divide by is $N(N-1)$ for directed graphs
+    and $N(N-1)/2$ for undirected graphs, where $N = n$ (the number of nodes)
+    if endpoints are included and $N = n-1$ otherwise.
 
     This algorithm is not guaranteed to be correct if edge weights
     are floating point numbers. As a workaround you can use integer
@@ -150,20 +161,20 @@ def betweenness_centrality(
     ----------
     .. [1] Ulrik Brandes:
        A Faster Algorithm for Betweenness Centrality.
-       Journal of Mathematical Sociology 25(2):163-177, 2001.
+       Journal of Mathematical Sociology 25(2):163--177, 2001.
        https://doi.org/10.1080/0022250X.2001.9990249
     .. [2] Ulrik Brandes:
        On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
-       Social Networks 30(2):136-145, 2008.
+       Social Networks 30(2):136--145, 2008.
        https://doi.org/10.1016/j.socnet.2007.11.001
     .. [3] Ulrik Brandes and Christian Pich:
        Centrality Estimation in Large Networks.
-       International Journal of Bifurcation and Chaos 17(7):2303-2318, 2007.
+       International Journal of Bifurcation and Chaos 17(7):2303--2318, 2007.
        https://dx.doi.org/10.1142/S0218127407018403
     .. [4] Linton C. Freeman:
        A set of measures of centrality based on betweenness.
-       Sociometry 40: 35–41, 1977
+       Sociometry 40: 35--41, 1977
        https://doi.org/10.2307/3033543
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
