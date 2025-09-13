@@ -150,14 +150,15 @@ class TestAtlas:
         cls.GAG = atlas.graph_atlas_g()
 
     def test_graph_atlas(self):
+        rng = random.Random(42)
         # Atlas = nx.graph_atlas_g()[0:208] # 208, 6 nodes or less
         Atlas = self.GAG[0:100]
         alphabet = list(range(26))
         for graph in Atlas:
             nlist = list(graph)
             labels = alphabet[: len(nlist)]
-            for s in range(10):
-                random.shuffle(labels)
+            for _ in range(10):
+                rng.shuffle(labels)
                 d = dict(zip(nlist, labels))
                 relabel = nx.relabel_nodes(graph, d)
                 gm = iso.GraphMatcher(graph, relabel)
@@ -201,11 +202,13 @@ def test_multiedge():
     ]
     nodes = list(range(20))
 
+    rng = random.Random(42)
+
     for g1 in [nx.MultiGraph(), nx.MultiDiGraph()]:
         g1.add_edges_from(edges)
         for _ in range(10):
             new_nodes = list(nodes)
-            random.shuffle(new_nodes)
+            rng.shuffle(new_nodes)
             d = dict(zip(nodes, new_nodes))
             g2 = nx.relabel_nodes(g1, d)
             if not g1.is_directed():
@@ -262,11 +265,13 @@ def test_selfloop():
     ]
     nodes = list(range(6))
 
+    rng = random.Random(42)
+
     for g1 in [nx.Graph(), nx.DiGraph()]:
         g1.add_edges_from(edges)
         for _ in range(100):
             new_nodes = list(nodes)
-            random.shuffle(new_nodes)
+            rng.shuffle(new_nodes)
             d = dict(zip(nodes, new_nodes))
             g2 = nx.relabel_nodes(g1, d)
             if not g1.is_directed():
@@ -293,11 +298,13 @@ def test_selfloop_mono():
     edges = edges0 + [(2, 2)]
     nodes = list(range(6))
 
+    rng = random.Random(42)
+
     for g1 in [nx.Graph(), nx.DiGraph()]:
         g1.add_edges_from(edges)
         for _ in range(100):
             new_nodes = list(nodes)
-            random.shuffle(new_nodes)
+            rng.shuffle(new_nodes)
             d = dict(zip(nodes, new_nodes))
             g2 = nx.relabel_nodes(g1, d)
             g2.remove_edges_from(nx.selfloop_edges(g2))
@@ -437,3 +444,43 @@ def test_isomorphvf2pp_multidigraphs():
     g = nx.MultiDiGraph({0: [1, 1, 2, 2, 3], 1: [2, 3, 3], 2: [3]})
     h = nx.MultiDiGraph({0: [1, 1, 2, 2, 3], 1: [2, 3, 3], 3: [2]})
     assert not (nx.vf2pp_is_isomorphic(g, h))
+
+
+@pytest.mark.parametrize(
+    ("e1", "e2", "isomorphic", "subgraph_is_isomorphic"),
+    [
+        ([(0, 1), (0, 2)], [(0, 1), (0, 2), (1, 2)], False, False),
+        ([(0, 1), (0, 2)], [(0, 1), (0, 2), (2, 1)], False, False),
+        ([(0, 1), (1, 2)], [(0, 1), (1, 2), (2, 0)], False, False),
+        ([(0, 1)], [(0, 1), (1, 2), (2, 0)], False, False),
+        ([(0, 1), (1, 2), (2, 0)], [(0, 1)], False, True),
+        ([(0, 1), (1, 2)], [(0, 1), (2, 0), (2, 1)], False, False),
+        ([(0, 1), (0, 2), (1, 2)], [(0, 1), (0, 2), (2, 1)], True, True),
+        ([(0, 1), (0, 2), (1, 2)], [(0, 1), (1, 2), (2, 0)], False, False),
+        (
+            [(0, 0), (0, 1), (1, 2), (2, 1)],
+            [(0, 1), (1, 0), (1, 2), (2, 0)],
+            False,
+            False,
+        ),
+        (
+            [(0, 0), (1, 0), (1, 2), (2, 1)],
+            [(0, 1), (0, 2), (1, 0), (1, 2)],
+            False,
+            False,
+        ),
+        (
+            [(0, 0), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1), (2, 2)],
+            [(0, 0), (0, 1), (0, 2), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2)],
+            False,
+            False,
+        ),
+    ],
+)
+def test_three_node(e1, e2, isomorphic, subgraph_is_isomorphic):
+    """Test some edge cases distilled from random search of the input space."""
+    G1 = nx.DiGraph(e1)
+    G2 = nx.DiGraph(e2)
+    gm = iso.DiGraphMatcher(G1, G2)
+    assert gm.is_isomorphic() == isomorphic
+    assert gm.subgraph_is_isomorphic() == subgraph_is_isomorphic
