@@ -26,7 +26,7 @@ jobs:
         run: python -m tarfile --list dist/networkx-*.tar.gz
       - name: List contents of wheel
         run: python -m zipfile --list dist/networkx-*.whl
-      - name: Upload nighlty wheel
+      - name: Upload nightly wheel
         uses: scientific-python/upload-nightly-action@b36e8c0c10dbcfd2e05bf95f17ef8c14fd708dbf # 0.6.2
         with:
           anaconda_nightly_upload_token: ${{ secrets.ANACONDA_NIGHTLY }}
