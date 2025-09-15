@@ -39,8 +39,8 @@ def betweenness_centrality(
         A NetworkX graph.
 
     k : int, optional (default=None)
-        If `k` is not `None`, use `k` node samples as sources to estimate betweenness.
-        This is taken into account when rescaling the values.
+        If `k` is not `None`, use `k` sampled nodes as sources for the considered paths.
+        The resulting sampled counts are then inflated to approximate betweenness.
         Must have ``k <= n``, where ``n`` is the number of nodes in the graph.
         Higher values give better approximation.
 
@@ -82,8 +82,9 @@ def betweenness_centrality(
 
     For approximate betweenness calculations, set `k` to the number of nodes
     ("pivots") used to estimate the betweenness values.
-    This corresponds to the number of $s$ nodes in the formula.
-    For an estimate of the number of pivots needed see [3]_.
+    The sum in the formula then only includes terms where $s$ is in these pivots.
+    The resulting sum is then inflated to approximate the full sum.
+    For a discussion of how to choose `k` for efficiency, see [3]_.
 
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length
@@ -91,7 +92,7 @@ def betweenness_centrality(
 
     Directed graphs and undirected graphs count paths differently.
     In directed graphs, each pair of source-target nodes is considered separately
-    in each direction, as the shortest paths can change.
+    in each direction, as the shortest paths can differ by direction.
     However, in undirected graphs, each pair of nodes is considered only once,
     as the shortest paths are symmetric.
     This means the normalization factor to divide by is $N(N-1)$ for directed graphs
@@ -127,8 +128,8 @@ def betweenness_centrality(
     --------
     Consider an undirected 3-path. Each pair of nodes has exactly one shortest
     path between them. Since the graph is undirected, only ordered pairs are counted.
-    Of these, none of the shortest paths pass through 0 and 2, and only the
-    shortest path between 0 and 2 passes through 1 (when `endpoints` is `False`).
+    Of these (and when `endpoints` is `False`), none of the shortest paths pass
+    through 0 and 2, and only the shortest path between 0 and 2 passes through 1.
     As such, the counts should be ``{0: 0, 1: 1, 2: 0}``.
 
     If `endpoints` is `True`, we also need to count endpoints as being on the path:
