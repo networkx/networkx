@@ -179,6 +179,33 @@ def betweenness_centrality(
     {0: 0.3333333333333333, 1: 0.5, 2: 0.3333333333333333}
     >>> nx.betweenness_centrality(DG, normalized=True, endpoints=False)
     {0: 0.0, 1: 0.5, 2: 0.0}
+
+    Computing the full betweenness centrality can be costly.
+    This function can also be used to compute approximate betweenness centrality
+    by setting `k`. This determines the number of source nodes to sample.
+
+    For simplicity, we only consider the case where endpoints are included in the counts.
+    Since the partial sums only include `k` terms, instead of ``n``,
+    we multiply them by ``n / k``, to approximate the full sum.
+    As the sets of sources and targets are not the same anymore,
+    edges have to be counted in a directed way. To ensure that the results agree
+    for undirected graphs when ``k == n``, we additionally divide the resulting counts by 2.
+
+    For instance, in the undirected 3-path graph case, setting ``k = 2`` (with ``seed=42``)
+    selects nodes 0 and 2 as sources.
+    This means only shortest paths starting at these nodes are considered.
+    The raw counts with endpoints are ``{0: 3, 1: 4, 2: 3}``. Accounting for the partial sum
+    and applying the undirectedness correction, we get
+
+    >>> nx.betweenness_centrality(G, k=2, normalized=False, endpoints=True, seed=42)
+    {0: 2.25, 1: 3.0, 2: 2.25}
+
+    When normalizing, we instead want to divide by the total number of $(s, t)$-pairs.
+    This is $k(n - 1)$ with endpoints.
+
+    >>> nx.betweenness_centrality(G, k=2, normalized=True, endpoints=True, seed=42)
+    {0: 0.75, 1: 1.0, 2: 0.75}
+
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     if k == len(G):
