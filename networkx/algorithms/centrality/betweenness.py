@@ -41,8 +41,7 @@ def betweenness_centrality(
     k : int, optional (default=None)
         If `k` is not `None`, use `k` sampled nodes as sources for the considered paths.
         The resulting sampled counts are then inflated to approximate betweenness.
-        Must have ``k <= n``, where ``n`` is the number of nodes in the graph.
-        Higher values give better approximation.
+        Must have ``k <= len(G)``. Higher values give better approximation.
 
     normalized : bool, optional (default=True)
         If `True`, the betweenness values are rescaled according to the number of
@@ -132,6 +131,10 @@ def betweenness_centrality(
     through 0 and 2, and only the shortest path between 0 and 2 passes through 1.
     As such, the counts should be ``{0: 0, 1: 1, 2: 0}``.
 
+    >>> G = nx.path_graph(3)
+    >>> nx.betweenness_centrality(G, normalized=False, endpoints=False)
+    {0: 0.0, 1: 1.0, 2: 0.0}
+
     If `endpoints` is `True`, we also need to count endpoints as being on the path:
     $\sigma(s, t | s) = \sigma(s, t | t) = \sigma(s, t)$.
     In our example, 0 is then part of two shortest paths (0 to 1 and 0 to 2);
@@ -139,9 +142,6 @@ def betweenness_centrality(
     1 is part of all three shortest paths. This makes the new raw
     counts ``{0: 2, 1: 3, 2: 2}``.
 
-    >>> G = nx.path_graph(3)
-    >>> nx.betweenness_centrality(G, normalized=False, endpoints=False)
-    {0: 0.0, 1: 1.0, 2: 0.0}
     >>> nx.betweenness_centrality(G, normalized=False, endpoints=True)
     {0: 2.0, 1: 3.0, 2: 2.0}
 
@@ -158,22 +158,22 @@ def betweenness_centrality(
     {0: 0.6666666666666666, 1: 1.0, 2: 0.6666666666666666}
 
     If the graph is directed instead, we now need to consider $(s, t)$-pairs
-    in both directions. This means there are $n(n - 1)$ possible paths with endpoints
-    and $(n - 1)(n - 2)$ without endpoints.
-
-    In our example, without counting endpoints, we only have one path through 1 (0 to 2).
+    in both directions. Without counting endpoints, we only have one path through 1 (0 to 2).
     This means the raw counts are ``{0: 0, 1: 1, 2: 0}``.
-    If we do include endpoints, the raw counts are ``{0: 2, 1: 3, 2: 2}``.
 
     >>> DG = nx.path_graph(3, create_using=nx.DiGraph)
     >>> nx.betweenness_centrality(DG, normalized=False, endpoints=False)
     {0: 0.0, 1: 1.0, 2: 0.0}
+
+    If we do include endpoints, the raw counts are ``{0: 2, 1: 3, 2: 2}``.
+
     >>> nx.betweenness_centrality(DG, normalized=False, endpoints=True)
     {0: 2.0, 1: 3.0, 2: 2.0}
 
     If we want to normalize directed betweenness centrality, the raw counts
-    are normalized by the number of $(s, t)$-pairs, which is 6 with endpoints and
-    2 without endpoints.
+    are normalized by the number of $(s, t)$-pairs. There are $n(n - 1)$
+    possible paths with endpoints and $(n - 1)(n - 2)$ without endpoints.
+    In our example, that's 6 with endpoints and 2 without endpoints.
 
     >>> nx.betweenness_centrality(DG, normalized=True, endpoints=True)
     {0: 0.3333333333333333, 1: 0.5, 2: 0.3333333333333333}
@@ -261,8 +261,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     k : int, optional (default=None)
         If `k` is not `None`, use `k` sampled nodes as sources for the considered paths.
         The resulting sampled counts are then inflated to approximate betweenness.
-        Must have ``k <= n``, where ``n`` is the number of nodes in the graph.
-        Higher values give better approximation.
+        Must have ``k <= len(G)``. Higher values give better approximation.
 
     normalized : bool, optional (default=True)
         If `True`, the betweenness values are rescaled according to the number of
