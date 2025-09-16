@@ -173,21 +173,23 @@ def _havel_hakimi_graph_helper(aseq, bseq, *, method="highest", create_using=Non
         if degree == 0:
             break  # Done, all degrees are zero.
         # Connect the source in A to targets in B depending on the method.
-        match method:
-            case "highest":  # Connect to highest degree nodes.
-                bstubs.sort()
-                targets = bstubs[-degree:]
-            case "lowest" | "reverse":  # Connect to lowest degree nodes.
-                # No need to sort, decreasing lowest degrees does not change order.
-                targets = bstubs[:degree]
-            case "alternating":  # Connect to alternating high and low degree nodes.
-                bstubs.sort()
-                hi = bstubs[-degree // 2 :]  # High degree targets.
-                lo = bstubs[: degree // 2]  # Low degree targets.
-                # If lengths differ, add last high degree target.
-                targets = list(chain(chain(*zip(hi, lo)), hi[len(lo) :]))
-            case _:
-                raise ValueError(f"invalid method: {method}")
+        if method == "highest":
+            # Connect to highest degree nodes.
+            bstubs.sort()
+            targets = bstubs[-degree:]
+        elif method in {"lowest", "reverse"}:
+            # Connect to lowest degree nodes.
+            # No need to sort, decreasing lowest degrees does not change order.
+            targets = bstubs[:degree]
+        elif method == "alternating":
+            # Connect to alternating high and low degree nodes.
+            bstubs.sort()
+            hi = bstubs[-degree // 2 :]  # High degree targets.
+            lo = bstubs[: degree // 2]  # Low degree targets.
+            # If lengths differ, add last high degree target.
+            targets = list(chain(chain(*zip(hi, lo)), hi[len(lo) :]))
+        else:
+            raise ValueError(f"invalid method: {method}")
 
         for target in targets:
             target[0] -= 1  # This updates bstubs too.
