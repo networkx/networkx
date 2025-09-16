@@ -260,16 +260,16 @@ class HistoricalTests:
         else:
             elist = [("A", "B"), ("A", "C"), ("B", "C"), ("B", "D")]
         # nbunch can be a list
-        assert edges_equal(list(G.edges(["A", "B"])), elist)
+        assert edges_equal(list(G.edges(["A", "B"])), elist, directed=G.is_directed())
         # nbunch can be a set
-        assert edges_equal(G.edges({"A", "B"}), elist)
+        assert edges_equal(G.edges({"A", "B"}), elist, directed=G.is_directed())
         # nbunch can be a graph
         G1 = self.G()
         G1.add_nodes_from("AB")
-        assert edges_equal(G.edges(G1), elist)
+        assert edges_equal(G.edges(G1), elist, directed=G.is_directed())
         # nbunch can be a dict with nodes as keys
         ndict = {"A": "thing1", "B": "thing2"}
-        assert edges_equal(G.edges(ndict), elist)
+        assert edges_equal(G.edges(ndict), elist, directed=G.is_directed())
         # nbunch can be a single node
         assert edges_equal(list(G.edges("A")), [("A", "B"), ("A", "C")])
         assert nodes_equal(sorted(G), ["A", "B", "C", "D"])
@@ -403,7 +403,8 @@ class HistoricalTests:
         G.add_nodes_from("GJK")
         assert sorted(G.nodes()) == ["A", "B", "C", "D", "G", "J", "K"]
         assert edges_equal(
-            G.edges(), [("A", "B"), ("A", "C"), ("B", "D"), ("C", "B"), ("C", "D")]
+            G.edges(),
+            [("A", "B"), ("A", "C"), ("B", "D"), ("C", "B"), ("C", "D")],
         )
 
         assert sorted(v for k, v in G.degree()) == [0, 0, 0, 2, 2, 3, 3]

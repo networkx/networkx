@@ -7,7 +7,7 @@ jobs:
     name: Run CircleCI image artifact redirector
     steps:
       - name: GitHub Action step
-        uses: scientific-python/circleci-artifacts-redirector-action@7eafdb60666f57706a5525a2f5eb76224dc8779b # v1.1.0
+        uses: scientific-python/circleci-artifacts-redirector-action@839631420e45a08af893032e5a5e8843bf47e8ff # v1.2.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           api-token: ${{ secrets.CIRCLECI_ARTIFACT_REDIRECTOR_TOKEN }}
@@ -19,9 +19,21 @@ jobs:
     name: Run CircleCI documentation artifact redirector
     steps:
       - name: GitHub Action step
-        uses: scientific-python/circleci-artifacts-redirector-action@7eafdb60666f57706a5525a2f5eb76224dc8779b # v1.1.0
+        uses: scientific-python/circleci-artifacts-redirector-action@839631420e45a08af893032e5a5e8843bf47e8ff # v1.2.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           api-token: ${{ secrets.CIRCLECI_ARTIFACT_REDIRECTOR_TOKEN }}
           artifact-path: 0/doc/build/html/index.html
           circleci-jobs: documentation
+
+  coverage:
+    runs-on: ubuntu-latest
+    name: Run CircleCI documentation artifact redirector
+    steps:
+      - name: GitHub Action step
+        uses: scientific-python/circleci-artifacts-redirector-action@839631420e45a08af893032e5a5e8843bf47e8ff # v1.2.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          api-token: ${{ secrets.CIRCLECI_ARTIFACT_REDIRECTOR_TOKEN }}
+          artifact-path: 0/coverage/index.html
+          circleci-jobs: coverage

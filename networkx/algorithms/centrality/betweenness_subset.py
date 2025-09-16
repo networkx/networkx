@@ -3,6 +3,7 @@
 import networkx as nx
 from networkx.algorithms.centrality.betweenness import (
     _add_edge_keys,
+    _rescale,
 )
 from networkx.algorithms.centrality.betweenness import (
     _single_source_dijkstra_path_basic as dijkstra,
@@ -62,7 +63,9 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
 
     See Also
     --------
+    betweenness_centrality
     edge_betweenness_centrality
+    edge_betweenness_centrality_subset
     load_centrality
 
     Notes
@@ -111,7 +114,9 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
         else:  # use Dijkstra's algorithm
             S, P, sigma, _ = dijkstra(G, s, weight)
         b = _accumulate_subset(b, S, P, sigma, s, targets)
-    b = _rescale(b, len(G), normalized=normalized, directed=G.is_directed())
+    b = _rescale(
+        b, len(G), normalized=normalized, directed=G.is_directed(), endpoints=False
+    )
     return b
 
 
@@ -160,6 +165,8 @@ def edge_betweenness_centrality_subset(
     See Also
     --------
     betweenness_centrality
+    betweenness_centrality_subset
+    edge_betweenness_centrality
     edge_load
 
     Notes
@@ -177,10 +184,7 @@ def edge_betweenness_centrality_subset(
 
     References
     ----------
-    .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
-       Journal of Mathematical Sociology 25(2):163-177, 2001.
-       https://doi.org/10.1080/0022250X.2001.9990249
-    .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
+    .. [1] Ulrik Brandes: On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
        https://doi.org/10.1016/j.socnet.2007.11.001
@@ -196,7 +200,7 @@ def edge_betweenness_centrality_subset(
         b = _accumulate_edges_subset(b, S, P, sigma, s, targets)
     for n in G:  # remove nodes to only return edges
         del b[n]
-    b = _rescale_e(b, len(G), normalized=normalized, directed=G.is_directed())
+    b = _rescale(b, len(G), normalized=normalized, directed=G.is_directed())
     if G.is_multigraph():
         b = _add_edge_keys(G, b, weight=weight)
     return b
@@ -236,40 +240,4 @@ def _accumulate_edges_subset(betweenness, S, P, sigma, s, targets):
             delta[v] += c
         if w != s:
             betweenness[w] += delta[w]
-    return betweenness
-
-
-def _rescale(betweenness, n, normalized, directed=False):
-    """betweenness_centrality_subset helper."""
-    if normalized:
-        if n <= 2:
-            scale = None  # no normalization b=0 for all nodes
-        else:
-            scale = 1.0 / ((n - 1) * (n - 2))
-    else:  # rescale by 2 for undirected graphs
-        if not directed:
-            scale = 0.5
-        else:
-            scale = None
-    if scale is not None:
-        for v in betweenness:
-            betweenness[v] *= scale
-    return betweenness
-
-
-def _rescale_e(betweenness, n, normalized, directed=False):
-    """edge_betweenness_centrality_subset helper."""
-    if normalized:
-        if n <= 1:
-            scale = None  # no normalization b=0 for all nodes
-        else:
-            scale = 1.0 / (n * (n - 1))
-    else:  # rescale by 2 for undirected graphs
-        if not directed:
-            scale = 0.5
-        else:
-            scale = None
-    if scale is not None:
-        for v in betweenness:
-            betweenness[v] *= scale
     return betweenness
