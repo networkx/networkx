@@ -7,10 +7,6 @@ NetworkX
     :target: https://github.com/networkx/networkx/actions/workflows/test.yml
 
 .. image::
-    https://codecov.io/gh/networkx/networkx/branch/main/graph/badge.svg?
-    :target: https://app.codecov.io/gh/networkx/networkx/branch/main
-
-.. image::
     https://img.shields.io/pypi/v/networkx.svg?
     :target: https://pypi.python.org/pypi/networkx
 
