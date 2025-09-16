@@ -198,7 +198,7 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[test]
+          python -m pip install .[default,test]
           python -m pip list
 
       - name: Run slow tests
