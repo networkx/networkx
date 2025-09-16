@@ -214,9 +214,9 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
     Parameters
     ----------
     aseq : list
-       Degree sequence for node set ``A``.
+        Degree sequence for node set ``A``.
     bseq : list
-       Degree sequence for node set ``B``.
+        Degree sequence for node set ``B``.
     create_using : NetworkX graph constructor, optional (default=nx.MultiGraph)
         Graph type to create. If graph instance, then cleared before populated.
 
@@ -254,9 +254,9 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     Parameters
     ----------
     aseq : list
-       Degree sequence for node set ``A``.
+        Degree sequence for node set ``A``.
     bseq : list
-       Degree sequence for node set ``B``.
+        Degree sequence for node set ``B``.
     create_using : NetworkX graph constructor, optional (default=nx.MultiGraph)
         Graph type to create. If graph instance, then cleared before populated.
 
@@ -294,9 +294,9 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     Parameters
     ----------
     aseq : list
-       Degree sequence for node set ``A``.
+        Degree sequence for node set ``A``.
     bseq : list
-       Degree sequence for node set ``B``.
+        Degree sequence for node set ``B``.
     create_using : NetworkX graph constructor, optional (default=nx.MultiGraph)
         Graph type to create. If graph instance, then cleared before populated.
 
