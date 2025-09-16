@@ -3,7 +3,12 @@ import pytest
 import networkx as nx
 import networkx.algorithms.approximation as approx
 
-HAS_NUMPY = pytest.importorskip("numpy")
+try:
+    import numpy as np
+
+    HAS_NUMPY = True
+except ImportError:
+    HAS_NUMPY = False
 
 
 def close_cliques_example(d=12, D=300, h=24, k=2):
@@ -37,12 +42,14 @@ def _compute_density(family, n):
         # The densest subgraph of a star network is the entire graph.
         # The peeling algorithm would peel all the vertices with degree 1,
         # and so should discover the densest subgraph in one iteration!
-        return n / (n + 1)
+        return n / (n + 1), set(range(n + 1))
     elif family == nx.complete_graph:
         # The density of a complete graph network is the entire graph: C(n, 2)/n
         # where C(n, 2) is n*(n-1)//2. The peeling algorithm would find
         # the densest subgraph in one iteration!
-        return (n - 1) / 2
+        return (n - 1) / 2, set(range(n))
+    elif family == nx.empty_graph:
+        return 0, set()
     else:
         msg = f"unknown {family=} family"
         raise ValueError(msg)
@@ -50,13 +57,13 @@ def _compute_density(family, n):
 
 @pytest.mark.parametrize("n", range(4, 7))
 @pytest.mark.parametrize("iterations", (1, 3))
-@pytest.mark.parametrize("family", (nx.star_graph, nx.complete_graph))
+@pytest.mark.parametrize("family", (nx.star_graph, nx.complete_graph, nx.empty_graph))
 def test_densest_subgraph(n, iterations, family, method):
     G = family(n)
     d, S = approx.densest_subgraph(G, iterations=iterations, method=method)
-
-    assert d == pytest.approx(_compute_density(family, n))
-    assert S == set(G)  # The entire graph!
+    correct_density, correct_subgraph_set = _compute_density(family, n)
+    assert d == pytest.approx(correct_density)
+    assert S == correct_subgraph_set
 
 
 def test_greedy_plus_plus_close_cliques():
@@ -124,8 +131,25 @@ def test_fista_big_dataset():
     assert dense_set == best_subgraph
 
 
-@pytest.mark.parametrize("n", (0, 4))
-@pytest.mark.parametrize("it", (1, 3))
-def test_greedy_plus_plus_edgeless_cornercase(n, it):
-    G = nx.empty_graph(n)
-    assert approx.densest_subgraph(G, iterations=it, method="greedy++") == (0, set())
+def test_densest_subgraph_self_loop(method):
+    """Test that self-loops don't repeat calculations."""
+    G = nx.complete_graph(7)
+    G.add_edges_from([(0, 7), (7, 7)])
+    # 7 is the lowest degree node, so it will be removed first.
+    # However, it will be re-added as neighbor (due to the self-loop) and be skipped.
+
+    density, dense_set = approx.densest_subgraph(G, method=method)
+    assert density == pytest.approx(density)
+    assert dense_set == dense_set
+
+
+def test_densest_subgraph_invalid_iterations(method):
+    """Test that `iterations < 1` raises."""
+    with pytest.raises(ValueError, match="iterations must be"):
+        approx.densest_subgraph(nx.complete_graph(3), iterations=0, method=method)
+
+
+def test_densest_subgraph_invalid_method():
+    """Test that `method` is validated."""
+    with pytest.raises(ValueError, match="not a valid choice"):
+        approx.densest_subgraph(nx.complete_graph(3), method="dummy")
