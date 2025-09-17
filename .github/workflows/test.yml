@@ -202,8 +202,8 @@ jobs:
           python -m pip list
 
       - name: Run slow tests
-        # NOTE: --runslow adds slow tests to the collection while -k slow
+        # NOTE: --runslow adds slow tests to the collection while -m slow
         # filters out tests that are *not* marked slow, leaving only the
         # slow tests
         run: |
-          pytest -n auto --durations=20 --runslow -k slow --pyargs networkx
+          pytest -n auto --durations=20 --runslow -m slow --pyargs networkx
