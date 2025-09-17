@@ -114,6 +114,7 @@ from functools import reduce, wraps
 
 import networkx as nx
 
+
 def are_all_equal(iterable):
     """
     Returns ``True`` if and only if all elements in `iterable` are equal; and
@@ -239,6 +240,7 @@ def color_degree_by_node(G, n_colors, e_colors):
 
 class EdgeLookup:
     """Class to handle getitem for undirected edges"""
+
     def __init__(self, edge_dict):
         self.edge_dict = edge_dict
 
@@ -367,19 +369,23 @@ class ISMAGS:
         sg_multiedge = isinstance(sg_things, nx.classes.reportviews.OutEdgeDataView)
         g_multiedge = isinstance(g_things, nx.classes.reportviews.OutEdgeDataView)
         if not sg_multiedge:
+
             def sg_match(thing1, thing2):
                 return match(sg_things[thing1], sg_things[thing2])
 
         else:  # multiedges (note nodes of multigraphs use simple case above)
+
             def sg_match(thing1, thing2):
                 (u1, v1), (u2, v2) = thing1, thing2
                 return match(self.subgraph[u1][v1], self.subgraph[u2][v2])
 
         if not g_multiedge:
+
             def g_match(thing1, thing2):
                 return match(g_things[thing1], g_things[thing2])
 
         else:  # multiedges (note nodes of multigraphs use simple case above)
+
             def g_match(thing1, thing2):
                 (u1, v1), (u2, v2) = thing1, thing2
                 return match(self.graph[u1][v1], self.graph[u2][v2])
@@ -529,7 +535,7 @@ class ISMAGS:
         candidate_sets = self._get_node_color_candidate_sets()
 
         if any(candidate_sets.values()):
-            relevant_parts = self._sgn_partition[:self.N_node_colors]
+            relevant_parts = self._sgn_partition[: self.N_node_colors]
             to_be_mapped = {frozenset(n for p in relevant_parts for n in p)}
             yield from self._largest_common_subgraph(
                 candidate_sets, constraints, to_be_mapped
@@ -716,8 +722,7 @@ class ISMAGS:
                         more_partitions = new_partitions
             possible_partitions.extend(more_partitions[::-1])
 
-
-    def _map_nodes(self, sgn, candidate_sets, constraints, mapping=None, to_be_mapped=None):
+    def _map_nodes(self, sgn, candidate_sets, constraints, to_be_mapped=None):
         """
         Find all subgraph isomorphisms honoring constraints.
         The collection `candidate_sets` is stored as a dict-of-set-of-frozenset.
@@ -732,17 +737,20 @@ class ISMAGS:
         """
         # shortcuts for speed
         subgraph = self.subgraph
+        subgraph_adj = subgraph._adj
         graph = self.graph
+        graph_adj = graph._adj
         self_ge_partition = self._ge_partition
         self_sge_colors = self._sge_colors
         is_directed = subgraph.is_directed()
+
         gn_ID_to_node = list(graph)
         gn_node_to_ID = {n: id for id, n in enumerate(graph)}
 
         mapping = {}
         rev_mapping = {}
         if to_be_mapped is None:
-            to_be_mapped = self.subgraph._adj.keys()
+            to_be_mapped = subgraph_adj.keys()
 
         # Note that we don't copy candidates here. This means we leak
         # information between the recursive branches. This is intentional!
@@ -788,8 +796,8 @@ class ISMAGS:
 
                 # update the candidate_sets for unmapped sgn based on sgn mapped
                 if not is_directed:
-                    sgn_nbrs = subgraph._adj[sgn]
-                    not_gn_nbrs = graph._adj.keys() - graph._adj[gn].keys()
+                    sgn_nbrs = subgraph_adj[sgn]
+                    not_gn_nbrs = graph_adj.keys() - graph_adj[gn].keys()
                     for sgn2 in left_to_map:
                         # edge color must match when sgn2 connected to sgn
                         if sgn2 not in sgn_nbrs:
@@ -808,9 +816,11 @@ class ISMAGS:
                             [frozenset(gn2_options)]
                         )
                 else:  # directed
-                    sgn_nbrs = subgraph._adj[sgn].keys()
+                    sgn_nbrs = subgraph_adj[sgn].keys()
                     sgn_preds = subgraph._pred[sgn].keys()
-                    not_gn_nbrs = graph._adj.keys() - graph._adj[gn].keys() - graph._pred[gn].keys()
+                    not_gn_nbrs = (
+                        graph_adj.keys() - graph_adj[gn].keys() - graph._pred[gn].keys()
+                    )
                     for sgn2 in left_to_map:
                         # edge color must match when sgn2 connected to sgn
                         if sgn2 not in sgn_nbrs:
@@ -836,10 +846,10 @@ class ISMAGS:
                 for sgn2 in left_to_map:
                     # symmetry must match. constraints mean gn2>gn iff sgn2>sgn
                     if (sgn, sgn2) in constraints:
-                        gn2_options = set(gn_ID_to_node[gn_node_to_ID[gn] + 1:])
+                        gn2_options = set(gn_ID_to_node[gn_node_to_ID[gn] + 1 :])
                         # gn2_options = {gn2 for gn2 in self.graph if gn2 > gn}
                     elif (sgn2, sgn) in constraints:
-                        gn2_options = set(gn_ID_to_node[:gn_node_to_ID[gn]])
+                        gn2_options = set(gn_ID_to_node[: gn_node_to_ID[gn]])
                         # gn2_options = {gn2 for gn2 in self.graph if gn2 < gn}
                     else:
                         continue  # pragma: no cover
@@ -1051,7 +1061,6 @@ class ISMAGS:
                         graph,
                         edge_colors,
                     )
-                    partitions=list(partitions)
                     new_q = []
                     for opp in partitions:
                         if all(len(top) <= 1 for top in opp[0]):

@@ -2,12 +2,12 @@
 Tests for ISMAGS isomorphism algorithm.
 """
 
-import pytest
 import random
+
+import pytest
 
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
-
 
 graph_classes = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 
@@ -263,62 +263,62 @@ class TestWikipediaExample:
     # Nodes 'g', 'h', 'i' and 'j' form a column.
     g1a_edges = [
         ["a", "g"],
-        ["a", "h"], #
+        ["a", "h"],  #
         ["a", "i"],
-        ["b", "g"], #
+        ["b", "g"],  #
         ["b", "h"],
         ["b", "j"],
-        ["c", "g"], #
-        ["c", "i"], #
+        ["c", "g"],  #
+        ["c", "i"],  #
         ["c", "j"],
-        ["d", "h"], #
+        ["d", "h"],  #
         ["d", "i"],
-        ["d", "j"], #
+        ["d", "j"],  #
     ]
     g1b_edges = [
         ["a", "g"],
-        ["h", "a"], #
+        ["h", "a"],  #
         ["a", "i"],
-        ["g", "b"], #
+        ["g", "b"],  #
         ["b", "h"],
         ["b", "j"],
-        ["g", "c"], #
-        ["i", "c"], #
+        ["g", "c"],  #
+        ["i", "c"],  #
         ["c", "j"],
-        ["h", "d"], #
+        ["h", "d"],  #
         ["d", "i"],
-        ["j", "d"], #
+        ["j", "d"],  #
     ]
     g2b_edges = [
         [1, 2],
-        [1, 4], #
+        [1, 4],  #
         [1, 5],
-        [3, 2], #
+        [3, 2],  #
         [3, 4],
         [3, 7],
-        [6, 2], #
-        [6, 5], #
+        [6, 2],  #
+        [6, 5],  #
         [6, 7],
-        [8, 4], #
+        [8, 4],  #
         [8, 5],
-        [8, 7], #
+        [8, 7],  #
     ]
 
     # Nodes 1,2,3,4 form the clockwise corners of a large square.
     # Nodes 5,6,7,8 form the clockwise corners of a small square
     g2a_edges = [
         [1, 2],
-        [4, 1], #
+        [4, 1],  #
         [1, 5],
-        [2, 3], #
+        [2, 3],  #
         [3, 4],
         [3, 7],
-        [2, 6], #
-        [5, 6], #
+        [2, 6],  #
+        [5, 6],  #
         [6, 7],
-        [4, 8], #
+        [4, 8],  #
         [8, 5],
-        [7, 8], #
+        [7, 8],  #
     ]
 
     @pytest.mark.parametrize("graph_constructor", [nx.Graph, nx.MultiGraph])
@@ -517,7 +517,6 @@ class TestDiGraphISO:
         G1 = nx.DiGraph(edges1)
         G2 = nx.DiGraph(edges2)
         assert not is_isomorphic(G1, G2)
-
 
     def test_is_isomorphic(self):
         G1 = nx.Graph([[1, 2], [1, 3], [1, 5], [2, 3]])
