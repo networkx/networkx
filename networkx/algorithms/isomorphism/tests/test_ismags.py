@@ -96,7 +96,7 @@ class TestSelfIsomorphism:
             graph, graph, node_match=iso.categorical_node_match("name", None)
         )
         assert ismags.is_isomorphic()
-        assert ismags.is_isomorphic(True)
+        assert ismags.is_isomorphic(symmetry=True)
         assert ismags.subgraph_is_isomorphic()
         assert list(ismags.subgraph_isomorphisms_iter(symmetry=True)) == [
             {n: n for n in graph.nodes}

@@ -727,13 +727,13 @@ class ISMAGS:
         Find all subgraph isomorphisms honoring constraints.
         The collection `candidate_sets` is stored as a dict-of-set-of-frozenset.
         The dict is keyed by node to a collection of candidate frozensets. Any
-        viable candidate must nelong to all the frozensets in the collection.
+        viable candidate must belong to all the frozensets in the collection.
         So each frozenset added to the collection is a restriction on the candidates.
 
         According to the paper, we store the collection of sets rather than their
         intersection to delay computing many intersections with the hope of avoiding
-        them completely. having the middle collection be a set also means that
-        duplicate restrictions on candidates are ignored, avoided another intersection.
+        them completely. Having the middle collection be a set also means that
+        duplicate restrictions on candidates are ignored, avoiding another intersection.
         """
         # shortcuts for speed
         subgraph = self.subgraph
