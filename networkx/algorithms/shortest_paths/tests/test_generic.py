@@ -501,11 +501,11 @@ class TestAverageShortestPathLengthNumpy:
         ans = nx.average_shortest_path_length(
             G, weight="weight", method="floyd-warshall-numpy"
         )
-        np.testing.assert_almost_equal(ans, 4)
+        np.testing.assert_allclose(ans, 4, atol=1.5e-7, rtol=0)
 
         G = nx.Graph()
         nx.add_path(G, range(5), weight=2)
         ans = nx.average_shortest_path_length(
             G, weight="weight", method="floyd-warshall-numpy"
         )
-        np.testing.assert_almost_equal(ans, 4)
+        np.testing.assert_allclose(ans, 4, atol=1.5e-7, rtol=0)
