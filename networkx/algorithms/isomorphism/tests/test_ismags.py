@@ -20,26 +20,6 @@ def _matches_to_sets(matches):
     return {frozenset(m.items()) for m in matches}
 
 
-class Testfind_start_node:
-    def test_candidates_min_of_len(self):
-        G = nx.path_graph(range(10, 15))
-        H = nx.path_graph(range(20, 25))
-        assert iso.ISMAGS(G, H).is_isomorphic()
-
-        cand_sets = {
-            10: set([frozenset([21, 22]), frozenset([20, 23, 22])]),
-            11: set([frozenset([20]), frozenset([20, 23, 22, 21])]),
-            12: set([frozenset([21, 22]), frozenset([20, 23, 22])]),
-            13: set([frozenset([21, 22]), frozenset([20, 23, 22])]),
-        }
-        start_sgn = min(cand_sets, key=lambda n: min(len(x) for x in cand_sets[n]))
-        assert start_sgn == 11
-#        old_start_sgn = min(cand_sets, key=lambda n: min(cand_sets[n], key=len))
-#        print(f"{start_sgn=} {old_start_sgn=}")
-#        print(f"{min(len(x) for x in cand_sets[start_sgn])=}")
-#        print(f"{min(cand_sets[start_sgn], key=len)=}")
-#        assert start_sgn == old_start_sgn  # fails. min numb vs min size of frozensets
-
 data = [
     # node_data, edge_data
     (range(1, 5), [(1, 2), (2, 4), (4, 3), (3, 1)]),
@@ -86,6 +66,7 @@ data = [
         [],
         [
             (0, 3),
+            (3, 0),  # added to allow symmetry for DiGraphs
             (0, 4),
             (4, 5),
             (0, 8),
@@ -100,8 +81,8 @@ data = [
 
 
 @pytest.mark.parametrize("graph_constructor", graph_classes)
-@pytest.mark.parametrize(["node_data", "edge_data"], data)
 class TestSelfIsomorphism:
+    @pytest.mark.parametrize(["node_data", "edge_data"], data)
     def test_self_isomorphism(self, graph_constructor, node_data, edge_data):
         """
         For some small, symmetric graphs, make sure that 1) they are isomorphic
@@ -121,7 +102,7 @@ class TestSelfIsomorphism:
             {n: n for n in graph.nodes}
         ]
 
-    def test_edgecase_self_isomorphism(self, graph_constructor, node_data, edge_data):
+    def test_edgecase_self_isomorphism(self, graph_constructor):
         """
         This edgecase is one of the cases in which it is hard to find all
         symmetry elements.
@@ -139,24 +120,23 @@ class TestSelfIsomorphism:
         ismags_answer = list(ismags.find_isomorphisms(True))
         assert ismags_answer == [{n: n for n in graph.nodes}]
 
-    def test_directed_self_isomorphism(self, graph_constructor, node_data, edge_data):
+    def test_double_star_self_isomorphism(self, graph_constructor):
         """
-        For some small, directed, symmetric graphs, make sure that 1) they are
-        isomorphic to themselves, and 2) that only the identity mapping is
-        found.
+        Another edgecase in which is hard to find all symmetry elements.
         """
         graph = graph_constructor()
-        graph.add_nodes_from(node_data)
-        graph.add_edges_from(edge_data)
+        nx.add_path(graph, range(3))
+        nx.add_path(graph, [4, 3, 2])
+        nx.add_path(graph, [6, 5, 2])
 
-        ismags = iso.ISMAGS(
-            graph, graph, node_match=iso.categorical_node_match("name", None)
-        )
-        assert ismags.is_isomorphic()
-        assert ismags.subgraph_is_isomorphic()
-        assert list(ismags.subgraph_isomorphisms_iter(symmetry=True)) == [
-            {n: n for n in graph.nodes}
-        ]
+        ismags = iso.ISMAGS(graph, graph)
+        ismags_answer = list(ismags.find_isomorphisms(True))
+        assert ismags_answer == [{n: n for n in graph.nodes}]
+
+        graph = nx.relabel_nodes(graph, {0: 0, 1: 1, 2: 2, 3: 3, 4: 6, 5: 4, 6: 5})
+        ismags = iso.ISMAGS(graph, graph)
+        ismags_answer = list(ismags.find_isomorphisms(True))
+        assert ismags_answer == [{n: n for n in graph.nodes}]
 
 
 class TestSubgraphIsomorphism:
@@ -641,19 +621,24 @@ def test_simple_edge_match(graph_class):
         assert not is_isomorphic(g1, g2, edge_match=em)
 
 
-def test_weightkey():
-    g1 = nx.DiGraph()
-    g2 = nx.DiGraph()
+@pytest.mark.parametrize("graph_class", graph_classes)
+def test_weightkey(graph_class):
+    g1 = graph_class()
+    g2 = graph_class()
+    if g1.is_multigraph():
+        edge_match = iso.numerical_multiedge_match
+    else:
+        edge_match = iso.numerical_edge_match
 
     g1.add_edge("A", "B", weight=1)
     g2.add_edge("C", "D", weight=0)
 
     assert nx.is_isomorphic(g1, g2)
-    em = iso.numerical_edge_match("nonexistent attribute", 1)
+    em = edge_match("nonexistent attribute", 1)
     assert nx.is_isomorphic(g1, g2, edge_match=em)
-    em = iso.numerical_edge_match("weight", 1)
+    em = edge_match("weight", 1)
     assert not nx.is_isomorphic(g1, g2, edge_match=em)
 
-    g2 = nx.DiGraph()
+    g2 = graph_class()
     g2.add_edge("C", "D")
     assert nx.is_isomorphic(g1, g2, edge_match=em)

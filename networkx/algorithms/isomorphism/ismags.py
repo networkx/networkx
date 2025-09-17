@@ -182,7 +182,7 @@ def make_partition(items, test):
     return partition
 
 
-def group_to_group_ID_dict(partition):
+def node_to_part_ID_dict(partition):
     """
     Creates a dictionary that maps each item in each part to the index of
     the part to which it belongs.
@@ -335,19 +335,19 @@ class ISMAGS:
             node_match, self.subgraph.nodes, self.graph.nodes
         )
         self._sgn_partition, self._gn_partition, self.N_node_colors = node_parts
-        self._sgn_colors = group_to_group_ID_dict(self._sgn_partition)
-        self._gn_colors = group_to_group_ID_dict(self._gn_partition)
+        self._sgn_colors = node_to_part_ID_dict(self._sgn_partition)
+        self._gn_colors = node_to_part_ID_dict(self._gn_partition)
 
         edge_partitions = self.create_aligned_partition(
             edge_match, self.subgraph.edges(), self.graph.edges()
         )
         self._sge_partition, self._ge_partition, self.N_edge_colors = edge_partitions
         if self.graph.is_directed():
-            self._sge_colors = group_to_group_ID_dict(self._sge_partition)
-            self._ge_colors = group_to_group_ID_dict(self._ge_partition)
+            self._sge_colors = node_to_part_ID_dict(self._sge_partition)
+            self._ge_colors = node_to_part_ID_dict(self._ge_partition)
         else:  # allow lookups (u, v) or (v, u)
-            self._sge_colors = EdgeLookup(group_to_group_ID_dict(self._sge_partition))
-            self._ge_colors = EdgeLookup(group_to_group_ID_dict(self._ge_partition))
+            self._sge_colors = EdgeLookup(node_to_part_ID_dict(self._sge_partition))
+            self._ge_colors = EdgeLookup(node_to_part_ID_dict(self._ge_partition))
 
     def create_aligned_partition(self, match, sg_things, g_things):
         """Partitions of `things` based on function `match`
@@ -545,9 +545,6 @@ class ISMAGS:
 
         Returns
         -------
-        set[frozenset]
-            The found permutations. This is a set of frozensets of pairs of node
-            keys which can be exchanged without changing the graph structure.
         dict[collections.abc.Hashable, set[collections.abc.Hashable]]
             The found co-sets. The co-sets is a dictionary of
             ``{node key: set of node keys}``.
@@ -687,7 +684,7 @@ class ISMAGS:
         possible_partitions = [partition]
         while possible_partitions:
             partition = possible_partitions.pop()
-            node_colors = group_to_group_ID_dict(partition)
+            node_colors = node_to_part_ID_dict(partition)
             color_degree = color_degree_by_node(graph, node_colors, edge_colors)
             if all(are_all_equal(color_degree[n] for n in p) for p in partition):
                 yield partition
@@ -736,9 +733,9 @@ class ISMAGS:
         # shortcuts for speed
         subgraph = self.subgraph
         graph = self.graph
-        is_directed = subgraph.is_directed()
         self_ge_partition = self._ge_partition
         self_sge_colors = self._sge_colors
+        is_directed = subgraph.is_directed()
         gn_ID_to_node = list(graph)
         gn_node_to_ID = {n: id for id, n in enumerate(graph)}
 
@@ -827,7 +824,7 @@ class ISMAGS:
                                 g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
                                 gn2_options = {e[1] for e in g_edges if gn == e[0]}
                             else:
-                                # gn2 must be on correct color of both directions
+                                # gn2 must have correct color in both directions
                                 g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
                                 gn2_options = {e[1] for e in g_edges if gn == e[0]}
                                 g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
@@ -837,7 +834,7 @@ class ISMAGS:
                         )
 
                 for sgn2 in left_to_map:
-                    # symmetry must match
+                    # symmetry must match. constraints mean gn2>gn iff sgn2>sgn
                     if (sgn, sgn2) in constraints:
                         gn2_options = set(gn_ID_to_node[gn_node_to_ID[gn] + 1:])
                         # gn2_options = {gn2 for gn2 in self.graph if gn2 > gn}
@@ -891,9 +888,8 @@ class ISMAGS:
             # graph >= subgraph if subgraph has more nodes than graph.
 
             # Try the isomorphism first with the nodes with lowest ID. So sort
-            # them. Those are more likely to be part of the final
-            # correspondence. This makes finding the first answer(s) faster. In
-            # theory.
+            # them. Those are more likely to be part of the final correspondence.
+            # In theory, this makes finding the first answer(s) faster.
             for nodes in sorted(to_be_mapped, key=sorted):
                 # Find the isomorphism between subgraph[to_be_mapped] <= graph
                 next_sgn = min(nodes, key=lambda n: min(len(x) for x in candidates[n]))
