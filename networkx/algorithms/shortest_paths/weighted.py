@@ -2101,14 +2101,13 @@ def goldberg_radzik(G, source, weight="weight"):
                 t = d[u] + weight(u, v, e)
                 d_v = d[v]
                 if t < d_v:
-                    is_neg = t < d_v
                     d[v] = t
                     pred[v] = u
                     if v not in neg_count:
-                        neg_count[v] = neg_count[u] + int(is_neg)
+                        neg_count[v] = neg_count[u] + 1
                         stack.append((v, iter(G_succ[v].items())))
                         in_stack.add(v)
-                    elif v in in_stack and neg_count[u] + int(is_neg) > neg_count[v]:
+                    elif v in in_stack and neg_count[u] + 1 > neg_count[v]:
                         # (u, v) is a back edge, and the cycle formed by the
                         # path v to u and (u, v) contains at least one edge of
                         # negative reduced cost. The cycle must be of negative
