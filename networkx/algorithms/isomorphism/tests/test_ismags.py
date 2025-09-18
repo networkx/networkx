@@ -60,9 +60,9 @@ data = [
         # Coupling node 4 to 8 means that 5 and 9
         # are no longer equivalent, pushing them in their own partitions.
         # However, {5, 9} was considered equivalent to {13, 17}, which is *not*
-        # taken into account in the second refinement, tripping a (former)
-        # assertion failure. Note that this is actually the minimal failing
-        # example.
+        # taken into account in the second refinement. The resulting failure
+        # has been fixed with the switch away from recursive functions.
+        # But lets keep testing it here. This was the minimal failing example.
         [],
         [
             (0, 3),
@@ -263,62 +263,62 @@ class TestWikipediaExample:
     # Nodes 'g', 'h', 'i' and 'j' form a column.
     g1a_edges = [
         ["a", "g"],
-        ["a", "h"],  #
+        ["a", "h"],  # edge direction swapped from g1b
         ["a", "i"],
-        ["b", "g"],  #
+        ["b", "g"],  # edge direction swapped from g1b
         ["b", "h"],
         ["b", "j"],
-        ["c", "g"],  #
-        ["c", "i"],  #
+        ["c", "g"],  # edge direction swapped from g1b
+        ["c", "i"],  # edge direction swapped from g1b
         ["c", "j"],
-        ["d", "h"],  #
+        ["d", "h"],  # edge direction swapped from g1b
         ["d", "i"],
-        ["d", "j"],  #
+        ["d", "j"],  # edge direction swapped from g1b
     ]
     g1b_edges = [
         ["a", "g"],
-        ["h", "a"],  #
+        ["h", "a"],  # edge direction swapped from g1a
         ["a", "i"],
-        ["g", "b"],  #
+        ["g", "b"],  # edge direction swapped from g1a
         ["b", "h"],
         ["b", "j"],
-        ["g", "c"],  #
-        ["i", "c"],  #
+        ["g", "c"],  # edge direction swapped from g1a
+        ["i", "c"],  # edge direction swapped from g1a
         ["c", "j"],
-        ["h", "d"],  #
+        ["h", "d"],  # edge direction swapped from g1a
         ["d", "i"],
-        ["j", "d"],  #
+        ["j", "d"],  # edge direction swapped from g1a
     ]
     g2b_edges = [
         [1, 2],
-        [1, 4],  #
+        [1, 4],  # edge direction swapped from g2a
         [1, 5],
-        [3, 2],  #
+        [3, 2],  # edge direction swapped from g2a
         [3, 4],
         [3, 7],
-        [6, 2],  #
-        [6, 5],  #
+        [6, 2],  # edge direction swapped from g2a
+        [6, 5],  # edge direction swapped from g2a
         [6, 7],
-        [8, 4],  #
+        [8, 4],  # edge direction swapped from g2a
         [8, 5],
-        [8, 7],  #
+        [8, 7],  # edge direction swapped from g2a
     ]
 
     # Nodes 1,2,3,4 form the clockwise corners of a large square.
     # Nodes 5,6,7,8 form the clockwise corners of a small square
     g2a_edges = [
         [1, 2],
-        [4, 1],  #
+        [4, 1],  # edge direction swapped from g2b
         [1, 5],
-        [2, 3],  #
+        [2, 3],  # edge direction swapped from g2b
         [3, 4],
         [3, 7],
-        [2, 6],  #
-        [5, 6],  #
+        [2, 6],  # edge direction swapped from g2b
+        [5, 6],  # edge direction swapped from g2b
         [6, 7],
-        [4, 8],  #
+        [4, 8],  # edge direction swapped from g2b
         [8, 5],
-        [7, 8],  #
+        [7, 8],  # edge direction swapped from g2b
     ]
 
     @pytest.mark.parametrize("graph_constructor", [nx.Graph, nx.MultiGraph])

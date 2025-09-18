@@ -215,14 +215,14 @@ def color_degree_by_node(G, n_colors, e_colors):
     color on the other end of the edge. Similarly if node_match is None then only
     edge color is tracked. And if both are None, we simply count the number of edges.
     """
-    if not G.is_directed():
-        if len(n_colors) < len(G):
-            for n, nbrs in G.adjacency():
-                if n not in n_colors:
-                    n_colors[n] = None
-                    for v in nbrs:
-                        e_colors[n, v] = None
+    if len(n_colors) < len(G):
+        for n, nbrs in G.adjacency():
+            if n not in n_colors:
+                n_colors[n] = None
+                for v in nbrs:
+                    e_colors[n, v] = None
         # undirected colored degree
+    if not G.is_directed():
         return {
             u: (n_colors[u], Counter((e_colors[u, v], n_colors[v]) for v in nbrs))
             for u, nbrs in G.adjacency()
@@ -351,7 +351,7 @@ class ISMAGS:
             self._sge_colors = EdgeLookup(node_to_part_ID_dict(self._sge_partition))
             self._ge_colors = EdgeLookup(node_to_part_ID_dict(self._ge_partition))
 
-    def create_aligned_partition(self, match, sg_things, g_things):
+    def create_aligned_partition(self, thing_matcher, sg_things, g_things):
         """Partitions of `things` based on function `match`
         Returns: sg_partition, g_partition, number_of_matched_parts
 
@@ -360,40 +360,40 @@ class ISMAGS:
         Warning: nodes in parts after that have no matching nodes in the other graph.
         For morphisms those nodes can't appear in the mapping.
         """
-        if match is None:
+        if thing_matcher is None:
             sg_partition = [set(sg_things)]
             g_partition = [set(g_things)]
             return sg_partition, g_partition, 1
 
-        # Use match to create a partition
+        # Use thing_matcher to create a partition
         sg_multiedge = isinstance(sg_things, nx.classes.reportviews.OutEdgeDataView)
         g_multiedge = isinstance(g_things, nx.classes.reportviews.OutEdgeDataView)
         if not sg_multiedge:
 
             def sg_match(thing1, thing2):
-                return match(sg_things[thing1], sg_things[thing2])
+                return thing_matcher(sg_things[thing1], sg_things[thing2])
 
         else:  # multiedges (note nodes of multigraphs use simple case above)
 
             def sg_match(thing1, thing2):
                 (u1, v1), (u2, v2) = thing1, thing2
-                return match(self.subgraph[u1][v1], self.subgraph[u2][v2])
+                return thing_matcher(self.subgraph[u1][v1], self.subgraph[u2][v2])
 
         if not g_multiedge:
 
             def g_match(thing1, thing2):
-                return match(g_things[thing1], g_things[thing2])
+                return thing_matcher(g_things[thing1], g_things[thing2])
 
         else:  # multiedges (note nodes of multigraphs use simple case above)
 
             def g_match(thing1, thing2):
                 (u1, v1), (u2, v2) = thing1, thing2
-                return match(self.graph[u1][v1], self.graph[u2][v2])
+                return thing_matcher(self.graph[u1][v1], self.graph[u2][v2])
 
         sg_partition = make_partition(sg_things, sg_match)
         g_partition = make_partition(g_things, g_match)
 
-        # Align order of g_partition to match that of sg_partition
+        # Align order of g_partition to that of sg_partition
         sgc_to_gc = {}
         gc_to_sgc = {}
         sN, N = len(sg_partition), len(g_partition)
@@ -402,7 +402,7 @@ class ISMAGS:
             gt = next(iter(g_partition[gc]))
             sgt_ = sg_things[sgt] if not sg_multiedge else self.subgraph[sgt[0]][sgt[1]]
             gt_ = g_things[gt] if not g_multiedge else self.graph[gt[0]][gt[1]]
-            if match(sgt_, gt_):
+            if thing_matcher(sgt_, gt_):
                 assert sgc not in sgc_to_gc  # 2 sg parts match same g part
                 assert gc not in gc_to_sgc  # 2 g parts match same sg part
                 sgc_to_gc[sgc] = gc
@@ -453,28 +453,30 @@ class ISMAGS:
         elif len(self.graph) < len(self.subgraph):
             return
         elif len(self._sgn_partition) > self.N_node_colors:
+            # some subgraph nodes have a color that doesn't occur in graph
             return
         elif len(self._sge_partition) > self.N_edge_colors:
+            # some subgraph edges have a color that doesn't occur in graph
             return
 
         if symmetry:
-            # only find node symmetry for subgraph colors that match to graph colors
             cosets = self.analyze_subgraph_symmetry()
-            constraints = self._make_constraints(cosets)
+            # Turn cosets into constraints.
+            constraints = [(n, co) for n, cs in cosets.items() for co in cs if n != co]
         else:
             constraints = []
 
         cand_sets = self._get_node_color_candidate_sets()
-        cand_sets = {node: cands for node, cands in cand_sets.items() if cands}
-        la_candidates = self._get_color_degree_candidates()
-        for sgn, la_cands in la_candidates.items():
-            cand_sets[sgn].add(frozenset(la_cands))
+
+        lookahead_candidates = self._get_color_degree_candidates()
+        for sgn, lookahead_cands in lookahead_candidates.items():
+            cand_sets[sgn].add(frozenset(lookahead_cands))
 
         if any(cand_sets.values()):
             # Choose start node based on a heuristic for the min # of candidates
             # Heuristic here is length of smallest frozenset in candidates' set
             # of frozensets for that node. Using the smallest length avoids
-            # avoids computing the intersection of the frosensets for each node.
+            # computing the intersection of the frosensets for each node.
             start_sgn = min(cand_sets, key=lambda n: min(len(x) for x in cand_sets[n]))
             cand_sets[start_sgn] = (frozenset.intersection(*cand_sets[start_sgn]),)
             yield from self._map_nodes(start_sgn, cand_sets, constraints)
@@ -528,7 +530,8 @@ class ISMAGS:
 
         if symmetry:
             cosets = self.analyze_subgraph_symmetry()
-            constraints = self._make_constraints(cosets)
+            # Turn cosets into constraints.
+            constraints = [(n, cn) for n, cs in cosets.items() for cn in cs if n != cn]
         else:
             constraints = []
 
@@ -645,19 +648,6 @@ class ISMAGS:
         return dict(candidate_sets)
 
     @staticmethod
-    def _make_constraints(cosets):
-        """
-        Turn cosets into constraints.
-        """
-        constraints = []
-        for node_i, node_ts in cosets.items():
-            for node_t in node_ts:
-                if node_i != node_t:
-                    # node_i <= node_t in ordering of nodes
-                    constraints.append((node_i, node_t))
-        return constraints
-
-    @staticmethod
     def _get_permutations_by_length(items):
         """
         Get all permutations of items, but only permute items with the same
@@ -686,7 +676,6 @@ class ISMAGS:
         def equal_color(node1, node2):
             return color_degree[node1] == color_degree[node2]
 
-        yields = 0
         possible_partitions = [partition]
         while possible_partitions:
             partition = possible_partitions.pop()
@@ -714,6 +703,7 @@ class ISMAGS:
                         # There are multiple new cells in refined with the
                         # same length, and their order matters. So we hit
                         # it with a big hammer and simply add all orderings.
+                        # TODO can we track partitions by more than len?
                         new_partitions = []
                         perms = cls._get_permutations_by_length(refined)
                         for n_p in more_partitions:
@@ -753,19 +743,18 @@ class ISMAGS:
             to_be_mapped = subgraph_adj.keys()
 
         # Note that we don't copy candidates here. This means we leak
-        # information between the recursive branches. This is intentional!
+        # information between the branches of the search. This is intentional!
         # Specifically, we modify candidates here. That's OK because we substitute
         # the set of frozensets with a set containing the frozenset intersection.
         # So, it doesn't change the membership rule or the length rule for sorting.
         # Membership: any candidate must be an element of each of the frozensets.
         # Length: length of the intersection set. Use heuristic min(len of frozensets).
         # This intersection improves future length heuristics which can only occur
-        # after this recursive call finishes. But it means future additional
+        # after this element of the queu is popped. But it means future additional
         # restriction frozensets that duplicate previous ones are not ignored.
         sgn_candidates = frozenset.intersection(*candidate_sets[sgn])
         candidate_sets[sgn] = {sgn_candidates}
         queue = [(sgn, candidate_sets, iter(sgn_candidates))]
-        its = jts = kts = 0
         while queue:  # DFS over all possible mappings
             sgn, candidate_sets, sgn_cand_iter = queue[-1]
 
@@ -792,7 +781,7 @@ class ISMAGS:
                 # The dict-of-sets-of-frozensets point to the same sets of frozensets.
                 # Be careful to not change the sets of frozensets below.
                 # Shallow copy. allows chg for new sgns
-                new_candidates = candidate_sets.copy()
+                new_cand_sets = candidate_sets.copy()
 
                 # update the candidate_sets for unmapped sgn based on sgn mapped
                 if not is_directed:
@@ -808,11 +797,11 @@ class ISMAGS:
                         # Node color compatibility should be taken care of by the
                         # initial candidate lists made by find_subgraphs
 
-                        # Add gn2_options to the right collection. Since new_candidates
+                        # Add gn2_options to the right collection. Since new_cand_sets
                         # is a dict-of-sets-of-frozensets of node indices it's
                         # a bit clunky. We can't do .add without changing the original,
                         # and + also doesn't work. Could do |, but union is clearer?
-                        new_candidates[sgn2] = new_candidates[sgn2].union(
+                        new_cand_sets[sgn2] = new_cand_sets[sgn2].union(
                             [frozenset(gn2_options)]
                         )
                 else:  # directed
@@ -839,7 +828,7 @@ class ISMAGS:
                                 gn2_options = {e[1] for e in g_edges if gn == e[0]}
                                 g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
                                 gn2_options &= {e[0] for e in g_edges if gn == e[1]}
-                        new_candidates[sgn2] = new_candidates[sgn2].union(
+                        new_cand_sets[sgn2] = new_cand_sets[sgn2].union(
                             [frozenset(gn2_options)]
                         )
 
@@ -854,7 +843,7 @@ class ISMAGS:
                     else:
                         continue  # pragma: no cover
                     # same gn2_options comment here. Use union.
-                    new_candidates[sgn2] = new_candidates[sgn2].union(
+                    new_cand_sets[sgn2] = new_cand_sets[sgn2].union(
                         [frozenset(gn2_options)]
                     )
 
@@ -862,13 +851,13 @@ class ISMAGS:
                 # Use the heuristic of the min size of the frosensets rather than
                 # intersection of all frozensets to delay computing intersections.
                 new_sgn = min(
-                    left_to_map, key=lambda n: min(len(x) for x in new_candidates[n])
+                    left_to_map, key=lambda n: min(len(x) for x in new_cand_sets[n])
                 )
-                new_sgn_candidates = frozenset.intersection(*new_candidates[new_sgn])
+                new_sgn_candidates = frozenset.intersection(*new_cand_sets[new_sgn])
                 if not new_sgn_candidates:
                     continue
-                new_candidates[new_sgn] = {new_sgn_candidates}
-                queue.append((new_sgn, new_candidates, iter(new_sgn_candidates)))
+                new_cand_sets[new_sgn] = {new_sgn_candidates}
+                queue.append((new_sgn, new_cand_sets, iter(new_sgn_candidates)))
                 break
             else:  # all gn candidates tried for sgn.
                 queue.pop()
@@ -1006,14 +995,16 @@ class ISMAGS:
         # Replace the old partitions with the coupled ones
         del new_top[part_idx]
         del new_bot[part_idx]
+        # assignment to slice with start == end inserts a whole list at that position
         new_top[part_idx:part_idx] = new_t_groups
         new_bot[part_idx:part_idx] = new_b_groups
 
         new_top = next(self._refine_node_partition(graph, new_top, edge_colors))
         # refine in all branches of possible refinements (to find symmetries)
         bots = self._refine_node_partition(graph, new_bot, edge_colors, branch=True)
+        list_new_top = list(new_top)
         for bot in bots:
-            yield list(new_top), bot
+            yield list_new_top, bot
 
     def _process_ordered_pair_partitions(
         self,
