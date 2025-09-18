@@ -2120,7 +2120,7 @@ def goldberg_radzik(G, source, weight="weight"):
         """Relax out-edges of relabeled nodes."""
         relabeled = set()
         # Scan nodes in to_scan in topological order and relax incident
-        # out-edges. Add the relabled nodes to labeled.
+        # out-edges. Add the relabeled nodes to labeled.
         for u in to_scan:
             d_u = d[u]
             for v, e in G_succ[u].items():
@@ -2131,7 +2131,7 @@ def goldberg_radzik(G, source, weight="weight"):
                     relabeled.add(v)
         return relabeled
 
-    # Set of nodes relabled in the last round of scan operations. Denoted by B
+    # Set of nodes relabeled in the last round of scan operations. Denoted by B
     # in Goldberg and Radzik's paper.
     relabeled = {source}
 
