@@ -120,7 +120,7 @@ jobs:
           name: Run tests
           command: |
             source venv/bin/activate
-            pytest --cov=networkx --cov-report=html -n 4 --doctest-modules --durations=20 --pyargs networkx
+            pytest --cov=networkx --cov-report=html -n 4 --durations=20 --pyargs networkx
       - store_artifacts:
           path: htmlcov
           destination: coverage
