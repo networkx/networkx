@@ -784,32 +784,6 @@ def test_ancestors_descendants_undirected():
     nx.ancestors(G, 2) == nx.descendants(G, 2) == {0, 1, 3, 4}
 
 
-def test_compute_v_structures_raise():
-    G = nx.Graph()
-    with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
-        nx.compute_v_structures(G)
-
-
-def test_compute_v_structures():
-    edges = [(0, 1), (0, 2), (3, 2)]
-    G = nx.DiGraph(edges)
-
-    v_structs = set(nx.compute_v_structures(G))
-    assert len(v_structs) == 1
-    assert (0, 2, 3) in v_structs
-
-    edges = [("A", "B"), ("C", "B"), ("B", "D"), ("D", "E"), ("G", "E")]
-    G = nx.DiGraph(edges)
-    v_structs = set(nx.compute_v_structures(G))
-    assert len(v_structs) == 2
-
-
-def test_compute_v_structures_deprecated():
-    G = nx.DiGraph()
-    with pytest.deprecated_call():
-        nx.compute_v_structures(G)
-
-
 def test_v_structures_raise():
     G = nx.Graph()
     with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
