@@ -1,10 +1,8 @@
 """Functions for computing and verifying matchings in a graph."""
 
 from itertools import combinations, repeat
-
 import networkx as nx
-from networkx.utils import not_implemented_for
-
+from networkx.utils import not_implemented_for 
 __all__ = [
     "is_matching",
     "is_maximal_matching",
@@ -12,6 +10,7 @@ __all__ = [
     "max_weight_matching",
     "min_weight_matching",
     "maximal_matching",
+    "minimal_fraction_max_matching"
 ]
 
 
@@ -1146,3 +1145,242 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
         verifyOptimum()
 
     return matching_dict_to_set(mate)
+
+
+@not_implemented_for("multigraph")
+@not_implemented_for("directed")
+@nx._dispatchable
+def minimal_fraction_max_matching(G):
+    """Find a maximum fractional matching in the graph with the minimum 0.5 edges.
+
+    A fractional matching is a generalization of a matching where each edge
+    can have a value of 0, 1/2, or 1. The sum of edge values incident to any
+    vertex cannot exceed 1.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+
+    Returns
+    -------
+    matching : dict
+        A dictionary mapping edge tuples (u,v) to values (0, 0.5, or 1)
+        representing the maximum fractional matching.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1,3),(2,3)])
+    >>> minimal_fraction_max_matching(G)
+    {(1, 2): 0.5, (1, 3): 0.5, (2, 3): 0.5}
+    >>> G =  nx.Graph([(1, 2), (1,3),(2,3),(3,4)])
+    >>> minimal_fraction_max_matching(G)
+    {(1, 2): 1, (3, 4): 1}
+    >>> G = nx.Graph([(1, 2), (1,3),(2,4),(3,5),(4,5),(5,6),(6,7)])
+    >>> minimal_fraction_max_matching(G)
+    {(1, 2): 0.5, (1, 3): 0.5, (2, 4): 0.5, (3, 5): 0.5, (4, 5): 0.5, (6, 7): 1}
+
+    Notes
+    -----
+    Based on the algorithm described in:
+    "Konig-Egervary graphs, 2-bicritical graphs and fractional matchings"
+    by Jean-Marie Bourjolly and William R. Pulleyblank
+    Programmer: Roi Sibony
+    Date: 20.05.2024
+    """
+    # Initialize matching using edge attributes to store values
+    matching_attr = "_fractional_matching_value"
+    
+    # Clear any existing matching values
+    for u, v in G.edges():
+        G.edges[u, v][matching_attr] = 0
+    
+    # Main algorithm loop
+    while True:
+        # Step 1: Initialize labels and predecessors
+        labels = {}
+        preds = {v: None for v in G.nodes()}
+        
+        # Calculate saturation for each node
+        node_values = {}
+        for u, v in G.edges():
+            val = G.edges[u, v].get(matching_attr, 0)
+            node_values[u] = node_values.get(u, 0) + val
+            node_values[v] = node_values.get(v, 0) + val
+        
+        # Label unsaturated nodes with "+"
+        for node in G:
+            saturation = node_values.get(node, 0)
+            labels[node] = "+" if saturation < 1 else None
+        
+        # Continue until we can't augment anymore
+        augmented = False
+        
+        while not augmented:
+            # Step 2: Edge scan - look for augmenting structures
+            result = None
+            for u in G:
+                if labels.get(u) == "+":
+                    for v in G.neighbors(u):
+                        # Case 1: v is labeled "-" - skip
+                        if labels.get(v) == "-":
+                            continue
+                        # Case 2: v is labeled "+" - type 1/3 augmentation possible  
+                        if labels.get(v) == "+":
+                            result = (u, v)
+                            break
+                        # Case 3: v is unlabeled - potential type 2 augmentation
+                        if labels.get(v) is None:
+                            edge_val = G.edges[u, v].get(matching_attr, 0)
+                            if edge_val < 1:
+                                result = (u, v)
+                                break
+                    if result:
+                        break
+            
+            # If no augmenting structure found, we're done with this phase
+            if result is None:
+                break
+                
+            u, v = result
+            
+            # Handle based on the type of augmenting structure found
+            if labels.get(v) == "+":
+                # Found an augmenting path/cycle of type 1 or 3
+                _augment_fractional_matching(G, u, v, labels, preds, matching_attr)
+                augmented = True
+            else:
+                # Found a potential type 2 augmentation or need to label more nodes
+                if _label_or_augment_fractional(G, u, v, labels, preds, matching_attr):
+                    _augment_fractional_matching(G, u, v, labels, preds, matching_attr)
+                    augmented = True
+        
+        # If we couldn't augment in this phase, we're done
+        if not augmented:
+            break
+    
+    # Return only one direction of edges to match NetworkX convention
+    result = {}
+    for u, v in G.edges():
+        val = G.edges[u, v].get(matching_attr, 0)
+        if val > 0 and u < v:  # Only keep one direction and non-zero edges
+            result[(u, v)] = val
+    
+    # Clean up edge attributes
+    for u, v in G.edges():
+        if matching_attr in G.edges[u, v]:
+            del G.edges[u, v][matching_attr]
+    
+    return result
+
+
+def _build_cycle_fractional(path_u, path_v):
+    """Build the cycle from two paths that meet at a common root."""
+    set_u = set(path_u)
+    # First common vertex when climbing from v towards the root
+    lca = next(node for node in path_v if node in set_u)
+    
+    idx_u = path_u.index(lca)   # Where LCA sits inside path_u
+    idx_v = path_v.index(lca)   # Where LCA sits inside path_v
+    
+    # u ... lca + lca-1 ... v (second part reversed)
+    cycle = path_u[:idx_u + 1] + list(reversed(path_v[:idx_v]))
+    return cycle
+
+
+def _augment_fractional_matching(G, u, v, labels, preds, matching_attr):
+    """Augment the fractional matching by tracing paths and flipping values."""
+    # Construct paths from u and v back to their roots
+    path_u = [u]
+    path_v = [v]
+    
+    # Trace path from u to its root
+    current = u
+    while preds[current] is not None:
+        current = preds[current]
+        path_u.append(current)
+    
+    # Trace path from v to its root
+    current = v
+    while preds[current] is not None:
+        current = preds[current]
+        path_v.append(current)
+    
+    # Check if this is type 1 (different roots) or type 3 (same root)
+    if path_u[-1] != path_v[-1]:
+        # Type 1: augmenting path between two different roots
+        # Flip values along the path
+        path_u.reverse()
+        for i in range(len(path_u) - 1):
+            a, b = path_u[i], path_u[i+1]
+            G.edges[a, b][matching_attr] = 1 - G.edges[a, b].get(matching_attr, 0)
+        
+        # Edge connecting u and v
+        G.edges[u, v][matching_attr] = 1 - G.edges[u, v].get(matching_attr, 0)
+        
+        # Path from v to v's root
+        for i in range(len(path_v) - 1):
+            a, b = path_v[i], path_v[i+1]
+            G.edges[a, b][matching_attr] = 1 - G.edges[a, b].get(matching_attr, 0)
+    else:
+        # Type 3: augmenting cycle with a common root
+        cycle = _build_cycle_fractional(path_u, path_v)
+        
+        # Flip values around the cycle
+        for i in range(len(cycle)):
+            a = cycle[i]
+            b = cycle[(i + 1) % len(cycle)]
+            current_val = G.edges[a, b].get(matching_attr, 0)
+            G.edges[a, b][matching_attr] = 0.5 if current_val != 0.5 else 0
+        
+        # Handle the path from v to root
+        path_v.reverse()
+        for i in range(len(path_v) - 1):
+            a, b = path_v[i], path_v[i+1]
+            G.edges[a, b][matching_attr] = 1 - G.edges[a, b].get(matching_attr, 0)
+
+
+def _label_or_augment_fractional(G, u, v, labels, preds, matching_attr):
+    """Label nodes or perform type 2 augmentation on 1/2-cycles."""
+    # Check if v has a neighbor w with edge value 1
+    for w in G.neighbors(v):
+        if G.edges[v, w].get(matching_attr, 0) == 1:
+            # Set labels and predecessors for further search
+            labels[v] = "-"
+            labels[w] = "+"
+            preds[v] = u
+            preds[w] = v
+            return False  # Return to edge scan
+    
+    # If we get here, v must be on a 1/2-cycle (type 2 augmentation)
+    cycle = [v]
+    visited = {v}
+    
+    while True:
+        # Find the next node in the cycle (connected by a 1/2 edge)
+        current = cycle[-1]
+        next_node_found = False
+        
+        for next_node in G.neighbors(current):
+            if (G.edges[current, next_node].get(matching_attr, 0) == 0.5 
+                and next_node not in visited):
+                cycle.append(next_node)
+                visited.add(next_node)
+                next_node_found = True
+                break
+        
+        if not next_node_found:
+            # Check if we've found a cycle back to the start
+            for next_node in G.neighbors(current):
+                if (next_node == cycle[0] 
+                    and G.edges[current, next_node].get(matching_attr, 0) == 0.5):
+                    # Found the cycle, perform type 2 augmentation
+                    for i in range(len(cycle)):
+                        a = cycle[i]
+                        b = cycle[(i + 1) % len(cycle)]
+                        # Change 0.5 edges to 0 or 1 alternately
+                        new_val = 0 if i % 2 == 0 else 1
+                        G.edges[a, b][matching_attr] = new_val
+                    return True
+            # If no cycle found, this shouldn't happen in theory
+            return False
