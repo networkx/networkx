@@ -2075,10 +2075,7 @@ def goldberg_radzik(G, source, weight="weight"):
         #
         # neg_count also doubles as the DFS visit marker array.
         neg_count = {}
-        for u in relabeled:
-            # Skip visited nodes.
-            if u in neg_count:
-                continue
+        for u in relabeled - neg_count.keys():
             d_u = d[u]
             # Skip nodes without out-edges of negative reduced costs.
             if all(d_u + weight(u, v, e) >= d[v] for v, e in G_succ[u].items()):
@@ -2101,14 +2098,13 @@ def goldberg_radzik(G, source, weight="weight"):
                 t = d[u] + weight(u, v, e)
                 d_v = d[v]
                 if t < d_v:
-                    is_neg = t < d_v
                     d[v] = t
                     pred[v] = u
                     if v not in neg_count:
-                        neg_count[v] = neg_count[u] + int(is_neg)
+                        neg_count[v] = neg_count[u] + 1
                         stack.append((v, iter(G_succ[v].items())))
                         in_stack.add(v)
-                    elif v in in_stack and neg_count[u] + int(is_neg) > neg_count[v]:
+                    elif v in in_stack and neg_count[u] + 1 > neg_count[v]:
                         # (u, v) is a back edge, and the cycle formed by the
                         # path v to u and (u, v) contains at least one edge of
                         # negative reduced cost. The cycle must be of negative
@@ -2121,7 +2117,7 @@ def goldberg_radzik(G, source, weight="weight"):
         """Relax out-edges of relabeled nodes."""
         relabeled = set()
         # Scan nodes in to_scan in topological order and relax incident
-        # out-edges. Add the relabled nodes to labeled.
+        # out-edges. Add the relabeled nodes to labeled.
         for u in to_scan:
             d_u = d[u]
             for v, e in G_succ[u].items():
@@ -2132,7 +2128,7 @@ def goldberg_radzik(G, source, weight="weight"):
                     relabeled.add(v)
         return relabeled
 
-    # Set of nodes relabled in the last round of scan operations. Denoted by B
+    # Set of nodes relabeled in the last round of scan operations. Denoted by B
     # in Goldberg and Radzik's paper.
     relabeled = {source}
 
