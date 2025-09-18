@@ -2075,10 +2075,7 @@ def goldberg_radzik(G, source, weight="weight"):
         #
         # neg_count also doubles as the DFS visit marker array.
         neg_count = {}
-        for u in relabeled:
-            # Skip visited nodes.
-            if u in neg_count:
-                continue
+        for u in relabeled - neg_count.keys():
             d_u = d[u]
             # Skip nodes without out-edges of negative reduced costs.
             if all(d_u + weight(u, v, e) >= d[v] for v, e in G_succ[u].items()):
