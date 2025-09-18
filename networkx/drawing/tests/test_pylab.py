@@ -367,7 +367,6 @@ def test_display_edge_labels():
     nx.set_edge_attributes(G, {(u, v): {"label": u + v} for u, v in G.edges()})
     nx.display(G, canvas=canvas, edge_label={"color": "r"}, node_label=None)
     labels = [t for t in canvas.get_children() if isinstance(t, mpl.text.Text)]
-    print(labels)
     for e, l in zip(G.edges(), labels):
         assert l.get_text() == str(e[0] + e[1])
         assert l.get_color() == "r"
@@ -514,8 +513,6 @@ def test_display_self_loop():
         f for f in ax.get_children() if isinstance(f, mpl.patches.FancyArrowPatch)
     ][0]
     bbox = arrow.get_extents()
-    print(bbox.width)
-    print(bbox.height)
     assert bbox.width > 0 and bbox.height > 0
 
     plt.delaxes(ax)
@@ -623,7 +620,7 @@ def test_single_edge_color_undirected(edge_color, expected, edgelist):
     drawn_edges = nx.draw_networkx_edges(
         G, pos=nx.random_layout(G), edgelist=edgelist, edge_color=edge_color
     )
-    assert mpl.colors.same_color(drawn_edges.get_color(), expected)
+    assert mpl.colors.same_color(drawn_edges.get_color()[0], expected)
 
 
 @pytest.mark.parametrize(
@@ -740,7 +737,7 @@ def test_edge_color_string_with_global_alpha_undirected():
         edge_color="purple",
         alpha=0.2,
     )
-    ec = edge_collection.get_color().squeeze()  # as rgba tuple
+    ec = edge_collection.get_color()[0]  # as rgba tuple
     assert len(edge_collection.get_paths()) == 2
     assert mpl.colors.same_color(ec[:-1], "purple")
     assert ec[-1] == 0.2
@@ -776,8 +773,8 @@ def test_edge_width_default_value(graph_type):
 @pytest.mark.parametrize(
     ("edgewidth", "expected"),
     (
-        (3, 3),  # single-value, non-default
-        ([3], 3),  # Single value as a list
+        (3, [3, 3, 3]),  # single-value, non-default
+        ([3], [3, 3, 3]),  # Single value as a list
     ),
 )
 def test_edge_width_single_value_undirected(edgewidth, expected):
@@ -785,7 +782,7 @@ def test_edge_width_single_value_undirected(edgewidth, expected):
     pos = {n: (n, n) for n in range(len(G))}
     drawn_edges = nx.draw_networkx_edges(G, pos, width=edgewidth)
     assert len(drawn_edges.get_paths()) == 3
-    assert drawn_edges.get_linewidth() == expected
+    assert all(drawn_edges.get_linewidth() == expected)
 
 
 @pytest.mark.parametrize(
@@ -1148,7 +1145,7 @@ def test_np_edgelist():
 def test_draw_nodes_missing_node_from_position():
     G = nx.path_graph(3)
     pos = {0: (0, 0), 1: (1, 1)}  # No position for node 2
-    with pytest.raises(nx.NetworkXError, match="has no position"):
+    with pytest.raises(nx.NetworkXError, match="'pos' missing"):
         nx.draw_networkx_nodes(G, pos)
 
 
