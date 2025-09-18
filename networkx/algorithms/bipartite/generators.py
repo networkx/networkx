@@ -5,6 +5,7 @@ Generators and functions for bipartite graphs.
 import math
 import numbers
 from functools import reduce
+from itertools import chain
 
 import networkx as nx
 from networkx.utils import nodes_or_number, py_random_state
@@ -139,229 +140,182 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     return G
 
 
-@nx._dispatchable(name="bipartite_havel_hakimi_graph", graphs=None, returns_graph=True)
-def havel_hakimi_graph(aseq, bseq, create_using=None):
-    """Returns a bipartite graph from two given degree sequences using a
-    Havel-Hakimi style construction.
+def _havel_hakimi_graph_helper(aseq, bseq, *, method="highest", create_using=None):
+    """Return a bipartite graph from two given degree sequences using a
+    Havel--Hakimi-style construction.
 
-    The graph is composed of two partitions. Set A has nodes 0 to
-    (len(aseq) - 1) and set B has nodes len(aseq) to (len(bseq) - 1).
-    Nodes from the set A are connected to nodes in the set B by
-    connecting the highest degree nodes in set A to the highest degree
-    nodes in set B until all stubs are connected.
-
-    Parameters
-    ----------
-    aseq : list
-       Degree sequence for node set A.
-    bseq : list
-       Degree sequence for node set B.
-    create_using : NetworkX graph instance, optional
-       Return graph of this type.
-
-    Notes
-    -----
-    The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
-    If no graph type is specified use MultiGraph with parallel edges.
-    If you want a graph with no parallel edges use create_using=Graph()
-    but then the resulting degree sequences might not be exact.
-
-    The nodes are assigned the attribute 'bipartite' with the value 0 or 1
-    to indicate which bipartite set the node belongs to.
-
-    This function is not imported in the main namespace.
-    To use it use nx.bipartite.havel_hakimi_graph
+    The `method` parameter specifies how target nodes are selected.
     """
     G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
     if G.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
 
-    # length of the each sequence
-    naseq = len(aseq)
-    nbseq = len(bseq)
+    if (suma := sum(aseq)) != (sumb := sum(bseq)):
+        msg = f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}"
+        raise nx.NetworkXError(msg)
 
-    suma = sum(aseq)
-    sumb = sum(bseq)
+    if any(d < 0 for d in chain(aseq, bseq)):
+        msg = "invalid degree sequences, all degrees must be nonnegative"
+        raise ValueError(msg)
 
-    if not suma == sumb:
-        raise nx.NetworkXError(
-            f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}"
-        )
+    G = _add_nodes_with_bipartite_label(G, naseq := len(aseq), nbseq := len(bseq))
 
-    G = _add_nodes_with_bipartite_label(G, naseq, nbseq)
+    if suma == 0:
+        return G  # Done if no edges.
 
-    if len(aseq) == 0 or max(aseq) == 0:
-        return G  # done if no edges
+    # Build lists of degree-repeated node numbers.
+    astubs = sorted([a, i] for i, a in enumerate(aseq))
+    bstubs = sorted([b, i] for i, b in enumerate(bseq, naseq))
 
-    # build list of degree-repeated vertex numbers
-    astubs = [[aseq[v], v] for v in range(naseq)]
-    bstubs = [[bseq[v - naseq], v] for v in range(naseq, naseq + nbseq)]
-    astubs.sort()
+    edges_to_add = []
     while astubs:
-        (degree, u) = astubs.pop()  # take of largest degree node in the a set
+        (degree, u) = astubs.pop()  # Take highest degree node in A.
         if degree == 0:
-            break  # done, all are zero
-        # connect the source to largest degree nodes in the b set
-        bstubs.sort()
-        for target in bstubs[-degree:]:
-            v = target[1]
-            G.add_edge(u, v)
-            target[0] -= 1  # note this updates bstubs too.
-            if target[0] == 0:
-                bstubs.remove(target)
+            break  # Done, all degrees are zero.
+        # Connect the source in A to targets in B depending on the method.
+        if method == "highest":
+            # Connect to highest degree nodes.
+            bstubs.sort()
+            targets = bstubs[-degree:]
+        elif method in {"lowest", "reverse"}:
+            # Connect to lowest degree nodes.
+            # No need to sort, decreasing lowest degrees does not change order.
+            targets = bstubs[:degree]
+        elif method == "alternating":
+            # Connect to alternating high and low degree nodes.
+            bstubs.sort()
+            hi = bstubs[-degree // 2 :]  # High degree targets.
+            lo = bstubs[: degree // 2]  # Low degree targets.
+            # If lengths differ, add last high degree target.
+            targets = list(chain(chain(*zip(hi, lo)), hi[len(lo) :]))
+        else:
+            raise ValueError(f"invalid method: {method}")
 
+        for target in targets:
+            target[0] -= 1  # This updates bstubs too.
+        edges_to_add.extend((u, v) for _, v in targets)
+        bstubs = [[d, n] for d, n in bstubs if d != 0]
+
+    G.add_edges_from(edges_to_add)
+    return G
+
+
+@nx._dispatchable(name="bipartite_havel_hakimi_graph", graphs=None, returns_graph=True)
+def havel_hakimi_graph(aseq, bseq, create_using=None):
+    """Return a bipartite graph from two given degree sequences using a
+    Havel--Hakimi-style construction.
+
+    The graph is composed of two partitions. Set ``A`` has nodes ``0`` to
+    ``len(aseq) - 1`` and set ``B`` has nodes ``len(aseq)`` to ``len(bseq) - 1``.
+    Nodes from set ``A`` are connected to nodes in set ``B`` by
+    connecting the highest degree nodes in set ``A`` to the highest degree
+    nodes in set ``B`` until all stubs are connected.
+
+    Parameters
+    ----------
+    aseq : list
+        Degree sequence for node set ``A``.
+    bseq : list
+        Degree sequence for node set ``B``.
+    create_using : NetworkX graph constructor, optional (default=nx.MultiGraph)
+        Graph type to create. If graph instance, then cleared before populated.
+
+    Notes
+    -----
+    The sum of the two sequences must be equal: ``sum(aseq) = sum(bseq)``.
+    If no graph type is specified, ``nx.MultiGraph`` (with parallel edges) is used.
+    If you want a graph with no parallel edges use ``create_using=nx.Graph``,
+    but then the resulting degree sequences might not be exact.
+
+    The nodes are assigned the attribute ``"bipartite"`` with the value ``0`` or ``1``
+    to indicate which bipartite set the node belongs to.
+
+    This function is not imported in the main namespace.
+    To use it, use ``nx.bipartite.havel_hakimi_graph``.
+    """
+    G = _havel_hakimi_graph_helper(
+        aseq, bseq, method="highest", create_using=create_using
+    )
     G.name = "bipartite_havel_hakimi_graph"
     return G
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
-    """Returns a bipartite graph from two given degree sequences using a
-    Havel-Hakimi style construction.
+    """Return a bipartite graph from two given degree sequences using a
+    Havel--Hakimi-style construction.
 
-    The graph is composed of two partitions. Set A has nodes 0 to
-    (len(aseq) - 1) and set B has nodes len(aseq) to (len(bseq) - 1).
-    Nodes from set A are connected to nodes in the set B by connecting
-    the highest degree nodes in set A to the lowest degree nodes in
-    set B until all stubs are connected.
+    The graph is composed of two partitions. Set ``A`` has nodes ``0`` to
+    ``len(aseq) - 1`` and set ``B`` has nodes ``len(aseq)`` to ``len(bseq) - 1``.
+    Nodes from set ``A`` are connected to nodes in set ``B`` by
+    connecting the highest degree nodes in set ``A`` to the lowest degree
+    nodes in set ``B`` until all stubs are connected.
 
     Parameters
     ----------
     aseq : list
-       Degree sequence for node set A.
+        Degree sequence for node set ``A``.
     bseq : list
-       Degree sequence for node set B.
-    create_using : NetworkX graph instance, optional
-       Return graph of this type.
+        Degree sequence for node set ``B``.
+    create_using : NetworkX graph constructor, optional (default=nx.MultiGraph)
+        Graph type to create. If graph instance, then cleared before populated.
 
     Notes
     -----
-    The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
-    If no graph type is specified use MultiGraph with parallel edges.
-    If you want a graph with no parallel edges use create_using=Graph()
+    The sum of the two sequences must be equal: ``sum(aseq) = sum(bseq)``.
+    If no graph type is specified, ``nx.MultiGraph`` (with parallel edges) is used.
+    If you want a graph with no parallel edges use ``create_using=nx.Graph``,
     but then the resulting degree sequences might not be exact.
 
-    The nodes are assigned the attribute 'bipartite' with the value 0 or 1
+    The nodes are assigned the attribute ``"bipartite"`` with the value ``0`` or ``1``
     to indicate which bipartite set the node belongs to.
 
     This function is not imported in the main namespace.
-    To use it use nx.bipartite.reverse_havel_hakimi_graph
+    To use it, use ``nx.bipartite.reverse_havel_hakimi_graph``.
     """
-    G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
-    if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
-
-    # length of the each sequence
-    lena = len(aseq)
-    lenb = len(bseq)
-    suma = sum(aseq)
-    sumb = sum(bseq)
-
-    if not suma == sumb:
-        raise nx.NetworkXError(
-            f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}"
-        )
-
-    G = _add_nodes_with_bipartite_label(G, lena, lenb)
-
-    if len(aseq) == 0 or max(aseq) == 0:
-        return G  # done if no edges
-
-    # build list of degree-repeated vertex numbers
-    astubs = [[aseq[v], v] for v in range(lena)]
-    bstubs = [[bseq[v - lena], v] for v in range(lena, lena + lenb)]
-    astubs.sort()
-    bstubs.sort()
-    while astubs:
-        (degree, u) = astubs.pop()  # take of largest degree node in the a set
-        if degree == 0:
-            break  # done, all are zero
-        # connect the source to the smallest degree nodes in the b set
-        for target in bstubs[0:degree]:
-            v = target[1]
-            G.add_edge(u, v)
-            target[0] -= 1  # note this updates bstubs too.
-            if target[0] == 0:
-                bstubs.remove(target)
-
+    G = _havel_hakimi_graph_helper(
+        aseq, bseq, method="lowest", create_using=create_using
+    )
     G.name = "bipartite_reverse_havel_hakimi_graph"
     return G
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
-    """Returns a bipartite graph from two given degree sequences using
-    an alternating Havel-Hakimi style construction.
+    """Return a bipartite graph from two given degree sequences using a
+    Havel--Hakimi-style construction.
 
-    The graph is composed of two partitions. Set A has nodes 0 to
-    (len(aseq) - 1) and set B has nodes len(aseq) to (len(bseq) - 1).
-    Nodes from the set A are connected to nodes in the set B by
-    connecting the highest degree nodes in set A to alternatively the
-    highest and the lowest degree nodes in set B until all stubs are
-    connected.
+    The graph is composed of two partitions. Set ``A`` has nodes ``0`` to
+    ``len(aseq) - 1`` and set ``B`` has nodes ``len(aseq)`` to ``len(bseq) - 1``.
+    Nodes from set ``A`` are connected to nodes in set ``B`` by
+    connecting the highest degree nodes in set ``A`` to alternatively the highest
+    and the lowest degree nodes in set ``B`` until all stubs are connected.
 
     Parameters
     ----------
     aseq : list
-       Degree sequence for node set A.
+        Degree sequence for node set ``A``.
     bseq : list
-       Degree sequence for node set B.
-    create_using : NetworkX graph instance, optional
-       Return graph of this type.
+        Degree sequence for node set ``B``.
+    create_using : NetworkX graph constructor, optional (default=nx.MultiGraph)
+        Graph type to create. If graph instance, then cleared before populated.
 
     Notes
     -----
-    The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
-    If no graph type is specified use MultiGraph with parallel edges.
-    If you want a graph with no parallel edges use create_using=Graph()
+    The sum of the two sequences must be equal: ``sum(aseq) = sum(bseq)``.
+    If no graph type is specified, ``nx.MultiGraph`` (with parallel edges) is used.
+    If you want a graph with no parallel edges use ``create_using=nx.Graph``,
     but then the resulting degree sequences might not be exact.
 
-    The nodes are assigned the attribute 'bipartite' with the value 0 or 1
+    The nodes are assigned the attribute ``"bipartite"`` with the value ``0`` or ``1``
     to indicate which bipartite set the node belongs to.
 
     This function is not imported in the main namespace.
-    To use it use nx.bipartite.alternating_havel_hakimi_graph
+    To use it, use ``nx.bipartite.alternating_havel_hakimi_graph``.
     """
-    G = nx.empty_graph(0, create_using, default=nx.MultiGraph)
-    if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
-
-    # length of the each sequence
-    naseq = len(aseq)
-    nbseq = len(bseq)
-    suma = sum(aseq)
-    sumb = sum(bseq)
-
-    if not suma == sumb:
-        raise nx.NetworkXError(
-            f"invalid degree sequences, sum(aseq)!=sum(bseq),{suma},{sumb}"
-        )
-
-    G = _add_nodes_with_bipartite_label(G, naseq, nbseq)
-
-    if len(aseq) == 0 or max(aseq) == 0:
-        return G  # done if no edges
-    # build list of degree-repeated vertex numbers
-    astubs = [[aseq[v], v] for v in range(naseq)]
-    bstubs = [[bseq[v - naseq], v] for v in range(naseq, naseq + nbseq)]
-    while astubs:
-        astubs.sort()
-        (degree, u) = astubs.pop()  # take of largest degree node in the a set
-        if degree == 0:
-            break  # done, all are zero
-        bstubs.sort()
-        small = bstubs[0 : degree // 2]  # add these low degree targets
-        large = bstubs[(-degree + degree // 2) :]  # now high degree targets
-        stubs = [x for z in zip(large, small) for x in z]  # combine, sorry
-        if len(stubs) < len(small) + len(large):  # check for zip truncation
-            stubs.append(large.pop())
-        for target in stubs:
-            v = target[1]
-            G.add_edge(u, v)
-            target[0] -= 1  # note this updates bstubs too.
-            if target[0] == 0:
-                bstubs.remove(target)
-
+    G = _havel_hakimi_graph_helper(
+        aseq, bseq, method="alternating", create_using=create_using
+    )
     G.name = "bipartite_alternating_havel_hakimi_graph"
     return G
 
