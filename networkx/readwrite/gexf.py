@@ -204,6 +204,18 @@ class GEXF:
             ),
             "VERSION": "1.2",
         },
+        "1.3": {
+            "NS_GEXF": "http://gexf.net/1.3",
+            "NS_VIZ": "http://gexf.net/1.3/viz",
+            "NS_XSI": "http://w3.org/2001/XMLSchema-instance",
+            "SCHEMALOCATION": " ".join(
+                [
+                    "http://gexf.net/1.3",
+                    "http://gexf.net/1.3/gexf.xsd",
+                ]
+            ),
+            "VERSION": "1.3",
+        },
     }
 
     def construct_types(self):

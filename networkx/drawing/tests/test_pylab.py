@@ -111,43 +111,6 @@ def test_display_node_position():
     plt.close()
 
 
-@pytest.mark.mpl_image_compare
-def test_display_house_with_colors():
-    """
-    Originally, I wanted to use the exact samge image as test_house_with_colors.
-    But I can't seem to find the correct value for the margins to get the figures
-    to line up perfectly. To the human eye, these visualizations are basically the
-    same.
-    """
-    G = nx.house_graph()
-    fig, ax = plt.subplots()
-    nx.set_node_attributes(
-        G, {0: (0, 0), 1: (1, 0), 2: (0, 1), 3: (1, 1), 4: (0.5, 2.0)}, "pos"
-    )
-    nx.set_node_attributes(
-        G,
-        {
-            n: {
-                "size": 3000 if n != 4 else 2000,
-                "color": "tab:blue" if n != 4 else "tab:orange",
-            }
-            for n in G.nodes()
-        },
-    )
-    nx.display(
-        G,
-        node_pos="pos",
-        edge_alpha=0.5,
-        edge_width=6,
-        node_label=None,
-        node_border_color="k",
-    )
-    ax.margins(0.17)
-    plt.tight_layout()
-    plt.axis("off")
-    return fig
-
-
 def test_display_line_collection():
     G = nx.karate_club_graph()
     nx.set_edge_attributes(
@@ -163,149 +126,6 @@ def test_display_line_collection():
     ][0]
     assert len(lc.get_paths()) == sum([1 for u, v in G.edges() if (u + v) % 2])
     plt.close()
-
-
-@pytest.mark.mpl_image_compare
-def test_display_labels_and_colors():
-    """See 'Labels and Colors' gallery example"""
-    fig, ax = plt.subplots()
-    G = nx.cubical_graph()
-    pos = nx.spring_layout(G, seed=3113794652)  # positions for all nodes
-    nx.set_node_attributes(G, pos, "pos")  # Will not be needed after PR 7571
-    labels = iter(
-        [
-            r"$a$",
-            r"$b$",
-            r"$c$",
-            r"$d$",
-            r"$\alpha$",
-            r"$\beta$",
-            r"$\gamma$",
-            r"$\delta$",
-        ]
-    )
-    nx.set_node_attributes(
-        G,
-        {
-            n: {
-                "size": 800,
-                "alpha": 0.9,
-                "color": "tab:red" if n < 4 else "tab:blue",
-                "label": {"label": next(labels), "size": 22, "color": "whitesmoke"},
-            }
-            for n in G.nodes()
-        },
-    )
-
-    nx.display(G, node_pos="pos", edge_color="tab:grey")
-
-    # The tricky bit is the highlighted colors for the edges
-    edgelist = [(0, 1), (1, 2), (2, 3), (0, 3)]
-    nx.set_edge_attributes(
-        G,
-        {
-            (u, v): {
-                "width": 8,
-                "alpha": 0.5,
-                "color": "tab:red",
-                "visible": (u, v) in edgelist,
-            }
-            for u, v in G.edges()
-        },
-    )
-    nx.display(G, node_pos="pos", node_visible=False)
-    edgelist = [(4, 5), (5, 6), (6, 7), (4, 7)]
-    nx.set_edge_attributes(
-        G,
-        {
-            (u, v): {
-                "color": "tab:blue",
-                "visible": (u, v) in edgelist,
-            }
-            for u, v in G.edges()
-        },
-    )
-    nx.display(G, node_pos="pos", node_visible=False)
-
-    plt.tight_layout()
-    plt.axis("off")
-    return fig
-
-
-@pytest.mark.mpl_image_compare
-def test_display_complex():
-    import itertools as it
-
-    fig, ax = plt.subplots()
-    G = nx.MultiDiGraph()
-    nodes = "ABC"
-    prod = list(it.product(nodes, repeat=2)) * 4
-    G = nx.MultiDiGraph()
-    for i, (u, v) in enumerate(prod):
-        G.add_edge(u, v, w=round(i / 3, 2))
-    nx.set_node_attributes(G, nx.spring_layout(G, seed=3113794652), "pos")
-    csi = it.cycle([f"arc3,rad={r}" for r in it.accumulate([0.15] * 4)])
-    nx.set_edge_attributes(G, {e: next(csi) for e in G.edges(keys=True)}, "curvature")
-    nx.set_edge_attributes(
-        G,
-        {
-            tuple(e): {"label": w, "bbox": {"alpha": 0}}
-            for *e, w in G.edges(keys=True, data="w")
-        },
-        "label",
-    )
-    nx.apply_matplotlib_colors(G, "w", "color", mpl.colormaps["inferno"], nodes=False)
-    nx.display(G, canvas=ax, node_pos="pos")
-
-    plt.tight_layout()
-    plt.axis("off")
-    return fig
-
-
-@pytest.mark.mpl_image_compare
-def test_display_shortest_path():
-    fig, ax = plt.subplots()
-    G = nx.Graph()
-    G.add_nodes_from(["A", "B", "C", "D", "E", "F", "G", "H"])
-    G.add_edge("A", "B", weight=4)
-    G.add_edge("A", "H", weight=8)
-    G.add_edge("B", "C", weight=8)
-    G.add_edge("B", "H", weight=11)
-    G.add_edge("C", "D", weight=7)
-    G.add_edge("C", "F", weight=4)
-    G.add_edge("C", "I", weight=2)
-    G.add_edge("D", "E", weight=9)
-    G.add_edge("D", "F", weight=14)
-    G.add_edge("E", "F", weight=10)
-    G.add_edge("F", "G", weight=2)
-    G.add_edge("G", "H", weight=1)
-    G.add_edge("G", "I", weight=6)
-    G.add_edge("H", "I", weight=7)
-
-    # Find the shortest path from node A to node E
-    path = nx.shortest_path(G, "A", "E", weight="weight")
-
-    # Create a list of edges in the shortest path
-    path_edges = list(zip(path, path[1:]))
-    nx.set_node_attributes(G, nx.spring_layout(G, seed=37), "pos")
-    nx.set_edge_attributes(
-        G,
-        {
-            (u, v): {
-                "color": (
-                    "red"
-                    if (u, v) in path_edges or tuple(reversed((u, v))) in path_edges
-                    else "black"
-                ),
-                "label": {"label": d["weight"], "rotate": False},
-            }
-            for u, v, d in G.edges(data=True)
-        },
-    )
-    nx.display(G, canvas=ax)
-    plt.tight_layout()
-    plt.axis("off")
-    return fig
 
 
 @pytest.mark.parametrize(
@@ -554,16 +374,6 @@ def test_display_edge_labels():
     plt.close()
 
 
-@pytest.mark.mpl_image_compare
-def test_display_empty_graph():
-    G = nx.empty_graph()
-    fig, ax = plt.subplots()
-    nx.display(G, canvas=ax)
-    plt.tight_layout()
-    plt.axis("off")
-    return fig
-
-
 def test_display_multigraph_non_integer_keys():
     G = nx.MultiGraph()
     G.add_nodes_from(["A", "B", "C", "D"])
@@ -731,52 +541,40 @@ def subplots():
     plt.close()
 
 
-def test_draw():
-    try:
-        functions = [
-            nx.draw_circular,
-            nx.draw_kamada_kawai,
-            nx.draw_planar,
-            nx.draw_random,
-            nx.draw_spectral,
-            nx.draw_spring,
-            nx.draw_shell,
-        ]
-        options = [{"node_color": "black", "node_size": 100, "width": 3}]
-        for function, option in itertools.product(functions, options):
-            function(barbell, **option)
-            plt.savefig("test.ps")
-    except ModuleNotFoundError:  # draw_kamada_kawai requires scipy
-        pass
-    finally:
-        try:
-            os.unlink("test.ps")
-        except OSError:
-            pass
+@pytest.mark.parametrize(
+    "function",
+    [
+        nx.draw_circular,
+        nx.draw_kamada_kawai,
+        nx.draw_planar,
+        nx.draw_random,
+        nx.draw_spectral,
+        nx.draw_spring,
+        nx.draw_shell,
+        nx.draw_forceatlas2,
+    ],
+)
+def test_draw(function, subplots, tmp_path):
+    if function == nx.draw_kamada_kawai:
+        pytest.importorskip("scipy", reason="draw_kamada_kawai requires scipy")
+    fig, _ = subplots
+    options = {"node_color": "black", "node_size": 100, "width": 3}
+    function(barbell, **options)
+    fig.savefig(tmp_path / "test.ps")
 
 
-def test_draw_shell_nlist():
-    try:
-        nlist = [list(range(4)), list(range(4, 10)), list(range(10, 14))]
-        nx.draw_shell(barbell, nlist=nlist)
-        plt.savefig("test.ps")
-    finally:
-        try:
-            os.unlink("test.ps")
-        except OSError:
-            pass
+def test_draw_shell_nlist(subplots, tmp_path):
+    fig, _ = subplots
+    nlist = [list(range(4)), list(range(4, 10)), list(range(10, 14))]
+    nx.draw_shell(barbell, nlist=nlist)
+    fig.savefig(tmp_path / "test.ps")
 
 
-def test_draw_bipartite():
-    try:
-        G = nx.complete_bipartite_graph(2, 5)
-        nx.draw_bipartite(G)
-        plt.savefig("test.ps")
-    finally:
-        try:
-            os.unlink("test.ps")
-        except OSError:
-            pass
+def test_draw_bipartite(subplots, tmp_path):
+    fig, _ = subplots
+    G = nx.complete_bipartite_graph(2, 5)
+    nx.draw_bipartite(G)
+    fig.savefig(tmp_path / "test.ps")
 
 
 def test_edge_colormap():
@@ -785,6 +583,16 @@ def test_edge_colormap():
         barbell, edge_color=colors, width=4, edge_cmap=plt.cm.Blues, with_labels=True
     )
     # plt.show()
+
+
+def test_draw_networkx_edge_labels(subplots, tmp_path):
+    fig, _ = subplots
+    edge = (0, 1)
+    G = nx.DiGraph([edge])
+    pos = {n: (n, n) for n in G}
+    nx.draw(G, pos=pos)
+    nx.draw_networkx_edge_labels(G, pos, edge_labels={edge: "edge"})
+    fig.savefig(tmp_path / "test.ps")
 
 
 def test_arrows():
@@ -1093,8 +901,8 @@ def test_return_types():
 
     G = nx.frucht_graph(create_using=nx.Graph)
     dG = nx.frucht_graph(create_using=nx.DiGraph)
-    pos = nx.spring_layout(G)
-    dpos = nx.spring_layout(dG)
+    pos = nx.spring_layout(G, seed=42)
+    dpos = nx.spring_layout(dG, seed=42)
     # nodes
     nodes = nx.draw_networkx_nodes(G, pos)
     assert isinstance(nodes, PathCollection)
@@ -1115,7 +923,7 @@ def test_return_types():
 
 def test_labels_and_colors():
     G = nx.cubical_graph()
-    pos = nx.spring_layout(G)  # positions for all nodes
+    pos = nx.spring_layout(G, seed=42)  # positions for all nodes
     # nodes
     nx.draw_networkx_nodes(
         G, pos, nodelist=[0, 1, 2, 3], node_color="r", node_size=500, alpha=0.75
@@ -1172,32 +980,6 @@ def test_labels_and_colors():
     nx.draw_networkx_edge_labels(G, pos, edge_labels=None, rotate=False)
     nx.draw_networkx_edge_labels(G, pos, edge_labels={(4, 5): "4-5"})
     # plt.show()
-
-
-@pytest.mark.mpl_image_compare
-def test_house_with_colors():
-    G = nx.house_graph()
-    # explicitly set positions
-    fig, ax = plt.subplots()
-    pos = {0: (0, 0), 1: (1, 0), 2: (0, 1), 3: (1, 1), 4: (0.5, 2.0)}
-
-    # Plot nodes with different properties for the "wall" and "roof" nodes
-    nx.draw_networkx_nodes(
-        G,
-        pos,
-        node_size=3000,
-        nodelist=[0, 1, 2, 3],
-        node_color="tab:blue",
-    )
-    nx.draw_networkx_nodes(
-        G, pos, node_size=2000, nodelist=[4], node_color="tab:orange"
-    )
-    nx.draw_networkx_edges(G, pos, alpha=0.5, width=6)
-    # Customize axes
-    ax.margins(0.11)
-    plt.tight_layout()
-    plt.axis("off")
-    return fig
 
 
 def test_axes(subplots):
@@ -1731,26 +1513,43 @@ def test_hide_ticks(method, hide_ticks, subplots):
         assert bool(axis.get_ticklabels()) != hide_ticks
 
 
-def test_edge_label_bar_connectionstyle(subplots):
-    """Check that FancyArrowPatches with `bar` connectionstyle are also supported
-    in edge label rendering. See gh-7735."""
+@pytest.mark.parametrize(
+    "style", ["angle", "angle3", "arc", "arc3,rad=0.0", "bar,fraction=0.1"]
+)
+def test_edge_label_all_connectionstyles(subplots, style):
+    """
+    Check that FancyArrowPatches with all `connectionstyle`s are supported
+    in edge label rendering. See gh-7735 and gh-8106.
+    """
     fig, ax = subplots
     edge = (0, 1)
     G = nx.DiGraph([edge])
-    pos = {n: (n, 0) for n in G}  # Edge is horizontal line between (0, 0) and (1, 0)
+    pos = {n: (n, 0) for n in G}
 
-    style_arc = "arc3,rad=0.0"
-    style_bar = "bar,fraction=0.1"
-
-    arc_lbl = nx.draw_networkx_edge_labels(
-        G, pos, edge_labels={edge: "edge"}, connectionstyle=style_arc
-    )
-    # This would fail prior to gh-7739
-    bar_lbl = nx.draw_networkx_edge_labels(
-        G, pos, edge_labels={edge: "edge"}, connectionstyle=style_bar
+    name = style.split(",")[0]
+    labels = nx.draw_networkx_edge_labels(
+        G, pos, edge_labels={edge: "edge"}, connectionstyle=style
     )
 
-    # For the "arc" style, the label should be at roughly the midpoint
-    assert arc_lbl[edge].x, arc_lbl[edge].y == pytest.approx((0.5, 0))
-    # The label should be below the x-axis for the "bar" style
-    assert bar_lbl[edge].y < arc_lbl[edge].y
+    hmid = (pos[0][0] + pos[1][0]) / 2
+    vmid = (pos[0][1] + pos[1][1]) / 2
+    if name in {"arc", "arc3"}:  # The label should be at roughly the midpoint.
+        assert labels[edge].x, labels[edge].y == pytest.approx((hmid, vmid))
+    elif name == "bar":  # The label should be below the vertical midpoint.
+        assert labels[edge].y < vmid
+
+
+@pytest.mark.parametrize("label_pos", [-0.1, 1.1])
+def test_edge_label_label_pos(subplots, label_pos):
+    """
+    Check that label positions can be extrapolated outside [0, 1].
+    """
+    fig, ax = subplots
+    edge = (0, 1)
+    G = nx.DiGraph([edge])
+    pos = {n: (n, n) for n in G}
+    lbl = nx.draw_networkx_edge_labels(
+        G, pos, edge_labels={edge: "edge"}, label_pos=label_pos, connectionstyle="angle"
+    )
+
+    assert lbl[edge].x, lbl[edge].y == pytest.approx((label_pos, label_pos))

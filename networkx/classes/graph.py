@@ -1849,6 +1849,16 @@ class Graph:
                 )
             SG.graph.update(G.graph)
 
+        Subgraphs are not guaranteed to preserve the order of nodes or edges
+        as they appear in the original graph. For example:
+
+        >>> G = nx.Graph()
+        >>> G.add_nodes_from(reversed(range(10)))
+        >>> list(G)
+        [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+        >>> list(G.subgraph([1, 3, 2]))
+        [1, 2, 3]
+
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc

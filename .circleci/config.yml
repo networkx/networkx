@@ -1,6 +1,7 @@
 # See: https://circleci.com/docs/2.0/language-python/
 
 version: 2.1
+
 jobs:
   documentation:
     docker:
@@ -97,8 +98,38 @@ jobs:
       - store_artifacts:
           path: results
 
+  coverage:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - run:
+          name: Before install
+          command: |
+            sudo apt-get update
+            sudo apt-get install graphviz graphviz-dev
+      - run:
+          name: Install dependencies
+          command: |
+            python -m venv venv
+            source venv/bin/activate
+            pip install --upgrade pip
+            pip install .[default,extra,test]
+            pip list
+      - run:
+          name: Run tests
+          command: |
+            source venv/bin/activate
+            pytest --cov=networkx --cov-report=html -n 4 --doctest-modules --durations=20 --pyargs networkx
+      - store_artifacts:
+          path: htmlcov
+          destination: coverage
+
 workflows:
   documentation_and_image_comparison:
     jobs:
       - documentation
       - image
+  test-and-report-coverage:
+    jobs:
+      - coverage

@@ -107,7 +107,7 @@ def number_connected_components(G):
     For undirected graphs only.
 
     """
-    return sum(1 for cc in connected_components(G))
+    return sum(1 for _ in connected_components(G))
 
 
 @not_implemented_for("directed")
@@ -154,7 +154,7 @@ def is_connected(G):
         raise nx.NetworkXPointlessConcept(
             "Connectivity is undefined for the null graph."
         )
-    return sum(1 for node in _plain_bfs(G, n, arbitrary_element(G))) == len(G)
+    return len(_plain_bfs(G, n, arbitrary_element(G))) == n
 
 
 @not_implemented_for("directed")

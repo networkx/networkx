@@ -30,6 +30,7 @@ __all__ = [
     "extended_barabasi_albert_graph",
     "powerlaw_cluster_graph",
     "random_lobster",
+    "random_lobster_graph",
     "random_shell_graph",
     "random_powerlaw_tree",
     "random_powerlaw_tree_sequence",
@@ -1097,7 +1098,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None, *, create_using=None):
 
 @py_random_state(3)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def random_lobster(n, p1, p2, seed=None, *, create_using=None):
+def random_lobster_graph(n, p1, p2, seed=None, *, create_using=None):
     """Returns a random lobster graph.
 
     A lobster is a tree that reduces to a caterpillar when pruning all
@@ -1120,7 +1121,7 @@ def random_lobster(n, p1, p2, seed=None, *, create_using=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-    create_using : Graph constructor, optional (default=nx.Grap)
+    create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
         Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
@@ -1148,6 +1149,25 @@ def random_lobster(n, p1, p2, seed=None, *, create_using=None):
                 current_node += 1
                 L.add_edge(cat_node, current_node)
     return L  # voila, un lobster!
+
+
+@py_random_state(3)
+@nx._dispatchable(graphs=None, returns_graph=True)
+def random_lobster(n, p1, p2, seed=None, *, create_using=None):
+    """
+    .. deprecated:: 3.5
+       `random_lobster` is a deprecated alias
+       for `random_lobster_graph`.
+       Use `random_lobster_graph` instead.
+    """
+    import warnings
+
+    warnings.warn(
+        "`random_lobster` is deprecated, use `random_lobster_graph` instead.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+    return random_lobster_graph(n, p1, p2, seed=seed, create_using=create_using)
 
 
 @py_random_state(1)
@@ -1295,13 +1315,9 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
     # round to integer values in the range [0,n]
     swap = [min(n, max(round(s), 0)) for s in z]
 
-    for deg in swap:
-        # If this degree sequence can be the degree sequence of a tree, return
-        # it. It can be a tree if the number of edges is one fewer than the
-        # number of nodes, or in other words, `n - sum(zseq) / 2 == 1`. We
-        # use an equivalent condition below that avoids floating point
-        # operations.
-        if 2 * n - sum(zseq) == 2:
+    for _ in swap:
+        valid, _ = nx.utils.is_valid_tree_degree_sequence(zseq)
+        if valid:
             return zseq
         index = seed.randint(0, n - 1)
         zseq[index] = swap.pop()

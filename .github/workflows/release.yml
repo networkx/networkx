@@ -17,11 +17,11 @@ jobs:
       attestations: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         name: Install Python
         with:
           python-version: "3.11"
@@ -29,14 +29,14 @@ jobs:
       - name: Build wheels
         run: |
           git clean -fxd
-          pip install -U build twine wheel
+          pip install -U .[release]
           python -m build --sdist --wheel
 
       - name: Verify the distribution
         run: twine check --strict dist/*
 
       - name: Generate artifact attestation for sdist and wheel
-        uses: actions/attest-build-provenance@173725a1209d09b31f9d30a3890cf2757ebbff0d # v1.1.2
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
         with:
           subject-path: "dist/networkx-*"
 

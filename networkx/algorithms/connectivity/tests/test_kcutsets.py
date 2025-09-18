@@ -208,16 +208,15 @@ def test_disconnected_graph():
 
 
 @pytest.mark.slow
-def test_alternative_flow_functions():
-    graphs = [nx.grid_2d_graph(4, 4), nx.cycle_graph(5)]
-    for G in graphs:
-        node_conn = nx.node_connectivity(G)
-        for flow_func in flow_funcs:
-            all_cuts = nx.all_node_cuts(G, flow_func=flow_func)
-            # Only test a limited number of cut sets to reduce test time.
-            for cut in itertools.islice(all_cuts, MAX_CUTSETS_TO_TEST):
-                assert node_conn == len(cut)
-                assert not nx.is_connected(nx.restricted_view(G, cut, []))
+@pytest.mark.parametrize("G", [nx.grid_2d_graph(4, 4), nx.cycle_graph(5)])
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_alternative_flow_functions(G, flow_func):
+    node_conn = nx.node_connectivity(G)
+    all_cuts = nx.all_node_cuts(G, flow_func=flow_func)
+    # Only test a limited number of cut sets to reduce test time.
+    for cut in itertools.islice(all_cuts, MAX_CUTSETS_TO_TEST):
+        assert node_conn == len(cut)
+        assert not nx.is_connected(nx.restricted_view(G, cut, []))
 
 
 def test_is_separating_set_complete_graph():
@@ -268,3 +267,14 @@ def test_all_node_cuts_simple_case():
     assert len(actual) == len(expected)
     for cut in actual:
         assert cut in expected
+
+
+def test_all_node_cuts_sap():
+    """Non-slow test for `all_node_cuts` using the shortest augmenting path flow."""
+    G = nx.cycle_graph(5)
+    node_conn = nx.node_connectivity(G)
+    all_cuts = nx.all_node_cuts(G, flow_func=flow.shortest_augmenting_path)
+    # Only test a limited number of cut sets to reduce test time.
+    for cut in itertools.islice(all_cuts, MAX_CUTSETS_TO_TEST):
+        assert node_conn == len(cut)
+        assert not nx.is_connected(nx.restricted_view(G, cut, []))

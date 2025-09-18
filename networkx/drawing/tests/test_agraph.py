@@ -20,7 +20,7 @@ class TestAGraph:
 
     def assert_equal(self, G1, G2):
         assert nodes_equal(G1.nodes(), G2.nodes())
-        assert edges_equal(G1.edges(), G2.edges())
+        assert edges_equal(G1.edges(), G2.edges(), directed=G1.is_directed())
         assert G1.graph["metal"] == G2.graph["metal"]
 
     @pytest.mark.parametrize(
@@ -174,13 +174,10 @@ class TestAGraph:
         G = nx.Graph()
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
-        # assert graphs_equal(G, H)
+        assert graphs_equal(G, H)
         AA = nx.nx_agraph.to_agraph(H)
         HH = nx.nx_agraph.from_agraph(AA)
         assert graphs_equal(H, HH)
-        G.graph["graph"] = {}
-        G.graph["node"] = {}
-        G.graph["edge"] = {}
         assert graphs_equal(G, HH)
 
     @pytest.mark.xfail(reason="integer->string node conversion in round trip")
