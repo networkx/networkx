@@ -251,6 +251,17 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     return T
 
 
+def _collapse_multigraph_to_digraph(G, weight="weight"):
+    """Return a DiGraph with parallel edges collapsed to minimum weight edges."""
+    H = nx.DiGraph()
+    for u, v, data in G.edges(keys=True, data=True):
+        w = data.get(weight, 1)
+        if not H.has_edge(u, v) or w < H[u][v][weight]:
+            attrs = dict(data)
+            H.add_edge(u, v, **attrs)
+    return H
+
+
 def _reachable_within(G, source, cutoff):
     """Return the set of nodes reachable from source within cutoff depth."""
     seen = {source}
@@ -271,7 +282,7 @@ def _directed_steiner_tree_density(G, terminals, weight):
     if G.number_of_edges() == 0:
         return float("inf")
 
-    terminals = set(terminals)
+    terminals = terminals.copy()
     num_terminals = 0
     total = 0
     for u, v, d in G.edges(data=True):
@@ -289,10 +300,10 @@ def _directed_steiner_tree_density(G, terminals, weight):
 def _directed_steiner_tree(G, root, terminals, min_terminals, cutoff, weight):
     """Recursive helper for directed_steiner_tree."""
     H = nx.DiGraph()
-    if min_terminals <= 0 or not terminals or cutoff == 0:
+    if cutoff == 0:
         return H
 
-    terminals = set(terminals)
+    terminals = terminals.copy()
     if cutoff == 1:
         H.add_node(root, **G.nodes[root])
         edges_filtered = [
@@ -337,10 +348,19 @@ def _directed_steiner_tree(G, root, terminals, min_terminals, cutoff, weight):
     return H
 
 
+@nx.utils.not_implemented_for("undirected")
 def directed_steiner_tree(
-    G, root, terminals, min_terminals=None, cutoff=None, weight="weight"
+    G, root, terminals, *, min_terminals=None, cutoff=None, weight="weight"
 ):
-    """Approximation algorithm for the Directed Steiner Tree problem.
+    """
+    Approximate solution to the Directed Steiner Tree problem.
+
+    This implementation follows the greedy density-based approach of
+    Charikar et al. (1999). The algorithm repeatedly grows partial trees
+    rooted at the given source until all required terminals are spanned.
+    While the result is not guaranteed to be optimal, it provides a
+    polylogarithmic approximation in polynomial time and is effective
+    on medium-sized directed graphs.
 
     Parameters
     ----------
@@ -348,12 +368,14 @@ def directed_steiner_tree(
         A directed graph.
     root : node
         The root node.
-    terminals : set
-        Set of terminal nodes to be connected.
-    min_terminals : int
+    terminals : iterable of nodes
+        An iterable of terminal nodes. This will be converted to a set.
+    min_terminals : int, optional (default: None)
         Minimum number of terminals to connect.
-    cutoff : int, optional
+        If None, this is set to the total number of terminals.
+    cutoff : int, optional (default: None)
         Maximum search depth from the root.
+        If None, treated as infinity.
     weight : string, optional (default="weight")
         Edge attribute to use as weight.
 
@@ -375,6 +397,11 @@ def directed_steiner_tree(
         the root within the cutoff, or if the resulting tree fails
         to cover at least ``min_terminals`` terminals.
 
+    Notes
+    -----
+    MultiDiGraph inputs are reduced to DiGraph by keeping the minimum-weight
+    edge between each node pair. The returned Steiner tree is a DiGraph.
+
     References
     ----------
     .. [1] Charikar, M., Chekuri, C., Cheung, T-Y., Dai, Z., Goel, A.,
@@ -382,6 +409,9 @@ def directed_steiner_tree(
            directed Steiner problems. *Journal of Algorithms*, 33(1), 73–91.
            https://doi.org/10.1006/jagm.1999.1042
     """
+    if G.is_multigraph():
+        G = _collapse_multigraph_to_digraph(G, weight)
+
     if not G.is_directed():
         raise nx.NetworkXError("directed_steiner_tree only works for directed graphs")
 
@@ -422,6 +452,7 @@ def directed_steiner_tree(
     covered = set(H.nodes) & set(reachable_terminals)
     if len(covered) < min_terminals:
         raise nx.NetworkXUnfeasible(
-            f"Directed Steiner tree could not cover at least {min_terminals} terminals {list(reachable_terminals)}"
+            "Directed Steiner tree could not cover at least "
+            f"{min_terminals}.\nReachable terminals: {list(reachable_terminals)}"
         )
     return H
