@@ -323,7 +323,7 @@ class TestDirectedSteinerTree:
     def test_undirected_graph_raises(self):
         G = nx.Graph()
         G.add_edge(0, 1, weight=1)
-        with pytest.raises(nx.NetworkXError, match="only works for directed graphs"):
+        with pytest.raises(nx.NetworkXNotImplemented):
             directed_steiner_tree(G, 0, {1})
 
     def test_invaild_root(self):

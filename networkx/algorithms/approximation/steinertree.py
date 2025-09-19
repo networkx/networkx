@@ -387,9 +387,8 @@ def directed_steiner_tree(
     Raises
     ------
     NetworkXError
-        If ``G`` is not directed, if root is not in ``G``, if cutoff
-        is not a positive integer or None, if ``min_terminals`` is
-        not a positive integer, if ``min_terminals`` exceeds the
+        If cutoff is not a positive integer or None, if ``min_terminals``
+        is not a positive integer, if ``min_terminals`` exceeds the
         number of given terminals, if ``min_terminals`` is not
         a positive integer or if any terminals are not in ``G``.
     NetworkXUnfeasible
@@ -411,9 +410,6 @@ def directed_steiner_tree(
     """
     if G.is_multigraph():
         G = _collapse_multigraph_to_digraph(G, weight)
-
-    if not G.is_directed():
-        raise nx.NetworkXError("directed_steiner_tree only works for directed graphs")
 
     if root not in G:
         raise nx.NetworkXError(f"Root {root} not in G")
