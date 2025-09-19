@@ -30,7 +30,6 @@ __all__ = [
     "dag_longest_path",
     "dag_longest_path_length",
     "dag_to_branching",
-    "compute_v_structures",
 ]
 
 chaini = chain.from_iterable
@@ -1273,81 +1272,6 @@ def dag_to_branching(G):
     B.remove_node(0)
     B.remove_node(-1)
     return B
-
-
-@not_implemented_for("undirected")
-@nx._dispatchable
-def compute_v_structures(G):
-    """Yields 3-node tuples that represent the v-structures in `G`.
-
-    .. deprecated:: 3.4
-
-       `compute_v_structures` actually yields colliders. It will be removed in
-       version 3.6. Use `nx.dag.v_structures` or `nx.dag.colliders` instead.
-
-    Colliders are triples in the directed acyclic graph (DAG) where two parent nodes
-    point to the same child node. V-structures are colliders where the two parent
-    nodes are not adjacent. In a causal graph setting, the parents do not directly
-    depend on each other, but conditioning on the child node provides an association.
-
-    Parameters
-    ----------
-    G : graph
-        A networkx `~networkx.DiGraph`.
-
-    Yields
-    ------
-    A 3-tuple representation of a v-structure
-        Each v-structure is a 3-tuple with the parent, collider, and other parent.
-
-    Raises
-    ------
-    NetworkXNotImplemented
-        If `G` is an undirected graph.
-
-    Examples
-    --------
-    >>> G = nx.DiGraph([(1, 2), (0, 4), (3, 1), (2, 4), (0, 5), (4, 5), (1, 5)])
-    >>> nx.is_directed_acyclic_graph(G)
-    True
-    >>> list(nx.compute_v_structures(G))
-    [(0, 4, 2), (0, 5, 4), (0, 5, 1), (4, 5, 1)]
-
-    See Also
-    --------
-    v_structures
-    colliders
-
-    Notes
-    -----
-    This function was written to be used on DAGs, however it works on cyclic graphs
-    too. Since colliders are referred to in the cyclic causal graph literature
-    [2]_ we allow cyclic graphs in this function. It is suggested that you test if
-    your input graph is acyclic as in the example if you want that property.
-
-    References
-    ----------
-    .. [1]  `Pearl's PRIMER <https://bayes.cs.ucla.edu/PRIMER/primer-ch2.pdf>`_
-            Ch-2 page 50: v-structures def.
-    .. [2] A Hyttinen, P.O. Hoyer, F. Eberhardt, M J ̈arvisalo, (2013)
-           "Discovering cyclic causal models with latent variables:
-           a general SAT-based procedure", UAI'13: Proceedings of the Twenty-Ninth
-           Conference on Uncertainty in Artificial Intelligence, pg 301–310,
-           `doi:10.5555/3023638.3023669 <https://dl.acm.org/doi/10.5555/3023638.3023669>`_
-    """
-    import warnings
-
-    warnings.warn(
-        (
-            "\n\n`compute_v_structures` actually yields colliders. It will be\n"
-            "removed in version 3.6. Use `nx.dag.v_structures` or `nx.dag.colliders`\n"
-            "instead.\n"
-        ),
-        category=DeprecationWarning,
-        stacklevel=5,
-    )
-
-    return colliders(G)
 
 
 @not_implemented_for("undirected")
