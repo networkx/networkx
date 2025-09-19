@@ -420,7 +420,7 @@ def test_noncomparable_nodes():
     dgm = iso.DiGraphMatcher(G, H)
     assert dgm.is_isomorphic()
     # Just testing some cases
-    assert gm.subgraph_is_monomorphic()
+    assert dgm.subgraph_is_monomorphic()
 
 
 def test_monomorphism_edge_match():
