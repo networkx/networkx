@@ -30,13 +30,16 @@ variables). The best way to use a backend depends on the backend, your use
 case, and whether you want to automatically convert to or from backend
 graphs. Automatic conversions of graphs is always opt-in.
 
-To explicitly dispatch to a backend, use the `backend=` keyword argument in a
+To explicitly dispatch to a backend, use the ``backend=`` keyword argument in a
 dispatchable function. This will convert (and cache by default) input NetworkX
-graphs to backend graphs and call the backend implementation. Another explicit
-way to use a backend is to create a backend graph directly--for example,
-perhaps the backend has its own functions for loading data and creating
-graphs--and pass that graph to a dispatchable function, which will then call
-the backend implementation without converting.
+graphs to backend graphs and call the backend implementation.
+
+Another explicit way to use a backend is to create a backend graph directly.
+Graph classes support the ``backend=`` keyword argument to create a backend
+graph such as ``nx.Graph(backend=...)``, and backends may have their own
+functions for loading data and creating graphs that you can use. Passing a
+backend graph to a dispatchable function will call the backend implementation
+without converting.
 
 Using automatic dispatch requires setting configuration options. Every NetworkX
 configuration may also be set from an environment variable and are processed at
@@ -74,6 +77,12 @@ supported:
   nx.config.backend_priority.algos, but possible downsides are that the backend
   graph may not behave the same as a NetworkX graph and the backend may not
   implement all algorithms that you use, which may break your workflow.
+
+* ``nx.config.backend_priority.classes``
+  (``NETWORKX_BACKEND_PRIORITY_CLASSES`` env var), a list of backends,
+  controls graph classes. For example, this allows ``nx.Graph(data)`` to
+  create a backend graph. Advantages and disadvantages of this are similar
+  to ``nx.config.backend_priority.generators`` (see above).
 
 * ``nx.config.fallback_to_nx`` (``NETWORKX_FALLBACK_TO_NX`` env var), a boolean
   (default False), controls what happens when a backend graph is passed to a
