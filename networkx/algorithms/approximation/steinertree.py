@@ -251,6 +251,116 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     return T
 
 
+@nx.utils.not_implemented_for("undirected")
+def directed_steiner_tree(
+    G, root, terminals, *, min_terminals=None, cutoff=None, weight="weight"
+):
+    """
+    Approximate solution to the Directed Steiner Tree problem.
+
+    This implementation follows the greedy density-based approach of
+    Charikar et al. (1999). The algorithm repeatedly grows partial trees
+    rooted at the given source until all required terminals are spanned.
+    While the result is not guaranteed to be optimal, it provides a
+    polylogarithmic approximation in polynomial time and is effective
+    on medium-sized directed graphs.
+
+    Parameters
+    ----------
+    G : DiGraph
+        A directed graph.
+    root : node
+        The root node.
+    terminals : iterable of nodes
+        An iterable of terminal nodes. This will be converted to a set.
+    min_terminals : int, optional (default: None)
+        Minimum number of terminals to connect.
+        If None, this is set to the total number of terminals.
+    cutoff : int, optional (default: None)
+        Maximum search depth from the root.
+        If None, treated as infinity.
+    weight : string, optional (default="weight")
+        Edge attribute to use as weight.
+
+    Returns
+    -------
+    H : DiGraph
+        A directed Steiner tree subgraph.
+
+    Raises
+    ------
+    NetworkXError
+        If cutoff is not a positive integer or None, if ``min_terminals``
+        is not a positive integer, if ``min_terminals`` exceeds the
+        number of given terminals, if ``min_terminals`` is not
+        a positive integer or if any terminals are not in ``G``.
+    NetworkXUnfeasible
+        If no terminals are given, if no terminals are reachable from
+        the root within the cutoff, or if the resulting tree fails
+        to cover at least ``min_terminals`` terminals.
+
+    Notes
+    -----
+    MultiDiGraph inputs are reduced to DiGraph by keeping the minimum-weight
+    edge between each node pair. The returned Steiner tree is a DiGraph.
+    This implementation is recursive. If `cutoff` is larger than ~1000,
+    Python's default recursion limit may be exceeded, leading to RecursionError.
+    Consider increasing the recursion limit with `sys.setrecursionlimit`.
+
+    References
+    ----------
+    .. [1] Charikar, M., Chekuri, C., Cheung, T-Y., Dai, Z., Goel, A.,
+           Guha, S., & Li, M. (1999). Approximation algorithms for
+           directed Steiner problems. *Journal of Algorithms*, 33(1), 73–91.
+           https://doi.org/10.1006/jagm.1999.1042
+    """
+    if G.is_multigraph():
+        G = _collapse_multigraph_to_digraph(G, weight)
+
+    if root not in G:
+        raise nx.NetworkXError(f"Root {root} not in G")
+
+    terminals = set(terminals)
+    if not terminals:
+        raise nx.NetworkXUnfeasible("No terminals given")
+
+    if cutoff is None:
+        cutoff = float("inf")
+    elif cutoff <= 0:
+        raise nx.NetworkXError("cutoff must be a positive integer or None")
+
+    if min_terminals is None:
+        min_terminals = len(terminals)
+    elif min_terminals <= 0:
+        raise nx.NetworkXError("min_terminals must be a positive integer or None")
+    elif min_terminals > len(terminals):
+        raise nx.NetworkXError(
+            "min_terminals must be less than or equal to the number of terminals"
+        )
+
+    missing = terminals - set(G.nodes)
+    if missing:
+        raise nx.NetworkXError(f"Terminals {missing} not in G")
+
+    reachable_nodes = nx.single_source_shortest_path_length(G, root, cutoff).keys()
+    reachable_terminals = terminals & reachable_nodes
+    if not reachable_terminals:
+        raise nx.NetworkXUnfeasible(
+            f"No terminals are reachable from root {root} within cutoff={cutoff}"
+        )
+
+    H = _directed_steiner_tree(
+        G, root, reachable_terminals, min_terminals, cutoff, weight
+    )
+    covered = set(H.nodes) & set(reachable_terminals)
+    if len(covered) < min_terminals:
+        raise nx.NetworkXUnfeasible(
+            "Directed Steiner tree could not cover at least "
+            f"{min_terminals}.\nReachable terminals: {list(reachable_terminals)}"
+        )
+    return H
+
+
 def _collapse_multigraph_to_digraph(G, weight="weight"):
     """Return a DiGraph with parallel edges collapsed to minimum weight edges."""
     H = nx.DiGraph()
@@ -260,21 +370,6 @@ def _collapse_multigraph_to_digraph(G, weight="weight"):
             attrs = dict(data)
             H.add_edge(u, v, **attrs)
     return H
-
-
-def _reachable_within(G, source, cutoff):
-    """Return the set of nodes reachable from source within cutoff depth."""
-    seen = {source}
-    q = deque([(source, 0)])
-    while q:
-        node, depth = q.popleft()
-        if depth == cutoff:
-            continue
-        for nbr in G[node]:
-            if nbr not in seen:
-                seen.add(nbr)
-                q.append((nbr, depth + 1))
-    return seen
 
 
 def _directed_steiner_tree_density(G, terminals, weight):
@@ -345,110 +440,4 @@ def _directed_steiner_tree(G, root, terminals, min_terminals, cutoff, weight):
         H.add_nodes_from(min_sub_tree.nodes(data=True))
         H.add_edges_from(min_sub_tree.edges(data=True))
 
-    return H
-
-
-@nx.utils.not_implemented_for("undirected")
-def directed_steiner_tree(
-    G, root, terminals, *, min_terminals=None, cutoff=None, weight="weight"
-):
-    """
-    Approximate solution to the Directed Steiner Tree problem.
-
-    This implementation follows the greedy density-based approach of
-    Charikar et al. (1999). The algorithm repeatedly grows partial trees
-    rooted at the given source until all required terminals are spanned.
-    While the result is not guaranteed to be optimal, it provides a
-    polylogarithmic approximation in polynomial time and is effective
-    on medium-sized directed graphs.
-
-    Parameters
-    ----------
-    G : DiGraph
-        A directed graph.
-    root : node
-        The root node.
-    terminals : iterable of nodes
-        An iterable of terminal nodes. This will be converted to a set.
-    min_terminals : int, optional (default: None)
-        Minimum number of terminals to connect.
-        If None, this is set to the total number of terminals.
-    cutoff : int, optional (default: None)
-        Maximum search depth from the root.
-        If None, treated as infinity.
-    weight : string, optional (default="weight")
-        Edge attribute to use as weight.
-
-    Returns
-    -------
-    H : DiGraph
-        A directed Steiner tree subgraph.
-
-    Raises
-    ------
-    NetworkXError
-        If cutoff is not a positive integer or None, if ``min_terminals``
-        is not a positive integer, if ``min_terminals`` exceeds the
-        number of given terminals, if ``min_terminals`` is not
-        a positive integer or if any terminals are not in ``G``.
-    NetworkXUnfeasible
-        If no terminals are given, if no terminals are reachable from
-        the root within the cutoff, or if the resulting tree fails
-        to cover at least ``min_terminals`` terminals.
-
-    Notes
-    -----
-    MultiDiGraph inputs are reduced to DiGraph by keeping the minimum-weight
-    edge between each node pair. The returned Steiner tree is a DiGraph.
-
-    References
-    ----------
-    .. [1] Charikar, M., Chekuri, C., Cheung, T-Y., Dai, Z., Goel, A.,
-           Guha, S., & Li, M. (1999). Approximation algorithms for
-           directed Steiner problems. *Journal of Algorithms*, 33(1), 73–91.
-           https://doi.org/10.1006/jagm.1999.1042
-    """
-    if G.is_multigraph():
-        G = _collapse_multigraph_to_digraph(G, weight)
-
-    if root not in G:
-        raise nx.NetworkXError(f"Root {root} not in G")
-
-    terminals = set(terminals)
-    if not terminals:
-        raise nx.NetworkXUnfeasible("No terminals given")
-
-    if cutoff is None:
-        cutoff = float("inf")
-    elif cutoff <= 0:
-        raise nx.NetworkXError("cutoff must be a positive integer or None")
-
-    if min_terminals is None:
-        min_terminals = len(terminals)
-    elif min_terminals <= 0:
-        raise nx.NetworkXError("min_terminals must be a positive integer or None")
-    elif min_terminals > len(terminals):
-        raise nx.NetworkXError(
-            "min_terminals must be less than or equal to the number of terminals"
-        )
-
-    missing = terminals - set(G.nodes)
-    if missing:
-        raise nx.NetworkXError(f"Terminals {missing} not in G")
-
-    reachable_terminals = terminals & _reachable_within(G, root, cutoff)
-    if not reachable_terminals:
-        raise nx.NetworkXUnfeasible(
-            f"No terminals are reachable from root {root} within cutoff={cutoff}"
-        )
-
-    H = _directed_steiner_tree(
-        G, root, reachable_terminals, min_terminals, cutoff, weight
-    )
-    covered = set(H.nodes) & set(reachable_terminals)
-    if len(covered) < min_terminals:
-        raise nx.NetworkXUnfeasible(
-            "Directed Steiner tree could not cover at least "
-            f"{min_terminals}.\nReachable terminals: {list(reachable_terminals)}"
-        )
     return H
