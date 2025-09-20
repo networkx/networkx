@@ -153,7 +153,7 @@ def assert_equal_branchings(G1, G2, attr="weight", default=1):
 
     for a, b in zip(e1, e2):
         assert a[:2] == b[:2]
-        np.testing.assert_almost_equal(a[2], b[2])
+        np.testing.assert_allclose(a[2], b[2], atol=1.5e-7, rtol=0)
 
 
 ################

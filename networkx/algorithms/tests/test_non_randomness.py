@@ -16,8 +16,8 @@ np = pytest.importorskip("numpy")
 )
 def test_non_randomness(k, weight, expected):
     G = nx.karate_club_graph()
-    np.testing.assert_almost_equal(
-        nx.non_randomness(G, k, weight)[0], expected, decimal=2
+    np.testing.assert_allclose(
+        nx.non_randomness(G, k, weight)[0], expected, atol=1.5e-2, rtol=0
     )
 
 
