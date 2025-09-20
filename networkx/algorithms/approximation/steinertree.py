@@ -281,6 +281,7 @@ def directed_steiner_tree(
         If None, treated as infinity.
     weight : string, optional (default="weight")
         Edge attribute to use as weight.
+        If the edge does not have this attribute, the edge weight is assumed to be 1.
 
     Returns
     -------
@@ -364,9 +365,9 @@ def directed_steiner_tree(
 def _collapse_multigraph_to_digraph(G, weight="weight"):
     """Return a DiGraph with parallel edges collapsed to minimum weight edges."""
     H = nx.DiGraph()
-    for u, v, data in G.edges(keys=True, data=True):
+    for u, v, data in G.edges(data=True):
         w = data.get(weight, 1)
-        if not H.has_edge(u, v) or w < H[u][v][weight]:
+        if not H.has_edge(u, v) or w < H[u][v].get(weight, float("inf")):
             attrs = dict(data)
             H.add_edge(u, v, **attrs)
     return H
@@ -377,19 +378,16 @@ def _directed_steiner_tree_density(G, terminals, weight):
     if G.number_of_edges() == 0:
         return float("inf")
 
-    terminals = terminals.copy()
-    num_terminals = 0
+    sub_terminals = set()
     total = 0
     for u, v, d in G.edges(data=True):
         if u in terminals:
-            terminals.remove(u)
-            num_terminals += 1
+            sub_terminals.add(u)
         if v in terminals:
-            terminals.remove(v)
-            num_terminals += 1
+            sub_terminals.add(v)
         total += d.get(weight, 1)
 
-    return float("inf") if num_terminals == 0 else total / num_terminals
+    return total / len(sub_terminals) if sub_terminals else float("inf")
 
 
 def _directed_steiner_tree(G, root, terminals, min_terminals, cutoff, weight):
