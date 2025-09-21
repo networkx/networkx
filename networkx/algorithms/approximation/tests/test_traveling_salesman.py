@@ -172,6 +172,135 @@ class TestGreedyTSP(TestBase):
         assert len(cycle) - 1 == len(G) == len(set(cycle))
 
 
+class TestGreedyTSPMinimumInsertions(TestBase):
+    def test_greedy_tsp_minimum_insertions(self):
+        cycle = nx_app.greedy_tsp_minimum_insertions(self.DG, source="D")
+        cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 31.0)
+
+        cycle = nx_app.greedy_tsp_minimum_insertions(self.DG2, source="D")
+        cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "A", "B", "C", "D"], 53.0)
+
+        cycle = nx_app.greedy_tsp_minimum_insertions(self.UG, source="D")
+        cost = sum(self.UG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "A", "B", "C", "D"], 33.0)
+
+        cycle = nx_app.greedy_tsp_minimum_insertions(self.UG2, source="D")
+        cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "A", "B", "C", "D"], 25.0)
+
+    def test_not_complete_graph(self):
+        with pytest.raises(nx.NetworkXError):
+            nx_app.greedy_tsp_minimum_insertions(self.incompleteUG)
+        with pytest.raises(nx.NetworkXError):
+            nx_app.greedy_tsp_minimum_insertions(self.incompleteDG)
+
+    def test_not_weighted_graph(self):
+        nx_app.greedy_tsp_minimum_insertions(self.unweightedUG)
+        nx_app.greedy_tsp_minimum_insertions(self.unweightedDG)
+
+    def test_two_nodes(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from({(1, 2, 1)})
+        cycle = nx_app.greedy_tsp_minimum_insertions(G)
+        cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, [1, 2, 1], 2)
+
+    def test_ignore_selfloops(self):
+        G = nx.complete_graph(5)
+        G.add_edge(3, 3)
+        cycle = nx_app.greedy_tsp_minimum_insertions(G)
+        assert len(cycle) - 1 == len(G) == len(set(cycle))
+
+
+class TestNearestInsertion(TestBase):
+    def test_nearest_insertion(self):
+        cycle = nx_app.greedy_tsp_nearest_insertion(self.DG, source="D")
+        cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 31.0)
+
+        cycle = nx_app.greedy_tsp_nearest_insertion(self.DG2, source="D")
+        cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 78.0)
+
+        cycle = nx_app.greedy_tsp_nearest_insertion(self.UG, source="D")
+        cost = sum(self.UG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "A", "B", "C", "D"], 33.0)
+
+        # cycle = nx_app.greedy_tsp_minimum_insertions(self.UG2, source="D")
+        cycle = nx_app.greedy_tsp_nearest_insertion(self.UG2, source="D")
+        cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "A", "B", "C", "D"], 25.0)
+
+    def test_not_complete_graph(self):
+        with pytest.raises(nx.NetworkXError):
+            nx_app.greedy_tsp_nearest_insertion(self.incompleteUG)
+        with pytest.raises(nx.NetworkXError):
+            nx_app.greedy_tsp_nearest_insertion(self.incompleteDG)
+
+    def test_not_weighted_graph(self):
+        nx_app.greedy_tsp_nearest_insertion(self.unweightedUG)
+        nx_app.greedy_tsp_nearest_insertion(self.unweightedDG)
+
+    def test_two_nodes(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from({(1, 2, 1)})
+        cycle = nx_app.greedy_tsp_nearest_insertion(G)
+        cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+
+        validate_solution(cycle, cost, [1, 2, 1], 2)
+
+    def test_ignore_selfloops(self):
+        G = nx.complete_graph(5)
+        G.add_edge(3, 3)
+        cycle = nx_app.greedy_tsp_nearest_insertion(G)
+        assert len(cycle) - 1 == len(G) == len(set(cycle))
+
+
+class TestFarthestInsertion(TestBase):
+    def test_greedy_tsp_farthest_insertion(self):
+        cycle = nx_app.greedy_tsp_farthest_insertion(self.DG, source="D")
+        cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 31.0)
+
+        cycle = nx_app.greedy_tsp_farthest_insertion(self.DG2, source="D")
+        cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 78.0)
+
+        cycle = nx_app.greedy_tsp_farthest_insertion(self.UG, source="D")
+        cost = sum(self.UG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "A", "B", "C", "D"], 33.0)
+
+        # cycle = nx_app.greedy_tsp_minimum_insertions(self.UG2, source="D")
+        cycle = nx_app.greedy_tsp_farthest_insertion(self.UG2, source="D")
+        cost = sum(self.UG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, ["D", "C", "B", "A", "D"], 25.0)
+
+    def test_not_complete_graph(self):
+        with pytest.raises(nx.NetworkXError):
+            nx_app.greedy_tsp_farthest_insertion(self.incompleteUG)
+        with pytest.raises(nx.NetworkXError):
+            nx_app.greedy_tsp_farthest_insertion(self.incompleteDG)
+
+    def test_not_weighted_graph(self):
+        nx_app.greedy_tsp_farthest_insertion(self.unweightedUG)
+        nx_app.greedy_tsp_farthest_insertion(self.unweightedDG)
+
+    def test_two_nodes(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from({(1, 2, 1)})
+        cycle = nx_app.greedy_tsp_farthest_insertion(G)
+        cost = sum(G[n][nbr]["weight"] for n, nbr in pairwise(cycle))
+        validate_solution(cycle, cost, [1, 2, 1], 2)
+
+    def test_ignore_selfloops(self):
+        G = nx.complete_graph(5)
+        G.add_edge(3, 3)
+        cycle = nx_app.greedy_tsp_farthest_insertion(G)
+        assert len(cycle) - 1 == len(G) == len(set(cycle))
+
+
 class TestSimulatedAnnealingTSP(TestBase):
     tsp = staticmethod(nx_app.simulated_annealing_tsp)
 
