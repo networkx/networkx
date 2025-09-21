@@ -20,24 +20,25 @@ def connected_components(G):
 
     The connected components of an undirected graph partition the graph into
     disjoint sets of nodes. Each of these sets induces a subgraph of graph
-    ``G`` that is connected and not part of any larger connected subgraph.
+    `G` that is connected and not part of any larger connected subgraph.
 
-    This function returns a generator of sets of nodes, one for each connected
-    component.
+    A graph is connected (:func:`is_connected`) if, for every pair of distinct
+    vertices, there is a path between them. If there is a pair of vertices for
+    which such path does not exist, the graph is not connected (also referred
+    to as "disconnected").
 
-    The algorithm is based on a Breadth-First Search (BFS) traversal and its
-    time complexity is $O(n + m)$, where $n$ is the number of nodes and $m$ the
-    number of edges in the graph.
+    A graph consisting of a single vertex and no edges is connected.
+    Connectivity is undefined for the null graph (graph with no vertices).
 
     Parameters
     ----------
     G : NetworkX graph
        An undirected graph
 
-    Returns
+    Yields
     -------
-    comp : generator of sets
-       A generator of sets of nodes, one for each component of G.
+    comp : set
+       A set of nodes in one connected component of the graph.
 
     Raises
     ------
@@ -72,7 +73,12 @@ def connected_components(G):
     Notes
     -----
     This function is for undirected graphs only. For directed graphs, use
-    :func:`strongly_connected_components` or :func:`weakly_connected_components`.
+    :func:`strongly_connected_components` or
+    :func:`weakly_connected_components`.
+
+    The algorithm is based on a Breadth-First Search (BFS) traversal and its
+    time complexity is $O(n + m)$, where $n$ is the number of nodes and $m$ the
+    number of edges in the graph.
 
     """
     seen = set()
@@ -91,11 +97,15 @@ def number_connected_components(G):
 
     The connected components of an undirected graph partition the graph into
     disjoint sets of nodes. Each of these sets induces a subgraph of graph
-    ``G`` that is connected and not part of any larger connected subgraph.
+    `G` that is connected and not part of any larger connected subgraph.
 
-    The algorithm is based on a Breadth-First Search (BFS) traversal and its
-    time complexity is $O(n + m)$, where $n$ is the number of nodes and $m$ the
-    number of edges in the graph.
+    A graph is connected (:func:`is_connected`) if, for every pair of distinct
+    vertices, there is a path between them. If there is a pair of vertices for
+    which such path does not exist, the graph is not connected (also referred
+    to as "disconnected").
+
+    A graph consisting of a single vertex and no edges is connected.
+    Connectivity is undefined for the null graph (graph with no vertices).
 
     Parameters
     ----------
@@ -131,6 +141,10 @@ def number_connected_components(G):
     :func:`number_strongly_connected_components` or
     :func:`number_weakly_connected_components`.
 
+    The algorithm is based on a Breadth-First Search (BFS) traversal and its
+    time complexity is $O(n + m)$, where $n$ is the number of nodes and $m$ the
+    number of edges in the graph.
+
     """
     return sum(1 for _ in connected_components(G))
 
@@ -140,16 +154,12 @@ def number_connected_components(G):
 def is_connected(G):
     """Returns True if the graph is connected, False otherwise.
 
-    A graph is connected if, for every pair of distinct vertices, there is a path
-    between them. If there is a pair of vertices for which such path does not exist,
-    the graph is not connected (also referred to as "disconnected").
+    A graph is connected if, for every pair of distinct vertices, there is a
+    path between them. If there is a pair of vertices for which such path does
+    not exist, the graph is not connected (also referred to as "disconnected").
 
-    A graph consisting of a single vertex and no edges is connected. Connectivity
-    is undefined for the null graph (graph with no vertices).
-
-    The algorithm is based on a Breadth-First Search (BFS) traversal and its
-    time complexity is $O(n + m)$, where $n$ is the number of nodes and $m$ the
-    number of edges in the graph.
+    A graph consisting of a single vertex and no edges is connected.
+    Connectivity is undefined for the null graph (graph with no vertices).
 
     Parameters
     ----------
@@ -185,6 +195,10 @@ def is_connected(G):
     This function is for undirected graphs only. For directed graphs, use
     :func:`is_strongly_connected` or :func:`is_weakly_connected`.
 
+    The algorithm is based on a Breadth-First Search (BFS) traversal and its
+    time complexity is $O(n + m)$, where $n$ is the number of nodes and $m$ the
+    number of edges in the graph.
+
     """
     n = len(G)
     if n == 0:
@@ -200,11 +214,15 @@ def node_connected_component(G, n):
     """Returns the set of nodes in the component of graph containing node n.
 
     A connected component is a set of nodes that induces a subgraph of graph
-    ``G`` that is connected and not part of any larger connected subgraph.
+    `G` that is connected and not part of any larger connected subgraph.
 
-    The algorithm is based on a Breadth-First Search (BFS) traversal and its
-    time complexity is $O(n + m)$, where $n$ is the number of nodes and $m$ the
-    number of edges in the graph.
+    A graph is connected (:func:`is_connected`) if, for every pair of distinct
+    vertices, there is a path between them. If there is a pair of vertices for
+    which such path does not exist, the graph is not connected (also referred
+    to as "disconnected").
+
+    A graph consisting of a single vertex and no edges is connected.
+    Connectivity is undefined for the null graph (graph with no vertices).
 
     Parameters
     ----------
@@ -237,6 +255,10 @@ def node_connected_component(G, n):
     Notes
     -----
     This function is for undirected graphs only.
+
+    The algorithm is based on a Breadth-First Search (BFS) traversal and its
+    time complexity is $O(n + m)$, where $n$ is the number of nodes and $m$ the
+    number of edges in the graph.
 
     """
     return _plain_bfs(G, len(G), n)
