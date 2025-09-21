@@ -1459,6 +1459,7 @@ def random_k_lift(G, k, seed=None):
       if ``σ(i) = j``, then ``((u, i), (v, j))`` is added to ``H``.
       The permutation is simulated by creating a shuffled list ``permutation`` of values 0 to ``k - 1``.
       Each ``i``-th copy of ``u`` is then connected to the ``permutation[i]``-th copy of ``v``.
+
     This operation is often used in the construction of expander graphs.
     If the base graph is a decent expander (i.e., has a good spectral gap),
     then its `k`-lifts are also expanders, with the spectral gap preserved
@@ -1470,6 +1471,10 @@ def random_k_lift(G, k, seed=None):
     produce a good expander, this implementation returns the lift directly,
     even if it is disconnected. Users who require connected results may wrap
     this function with retries until a connected lift is found.
+
+    This implementation supports all standard NetworkX graph types.
+    While expander graphs are most commonly studied as undirected multigraphs,
+    the `k`-lift operation itself is well-defined for directed and simple graphs as well.
 
     References
     ----------
@@ -1493,7 +1498,7 @@ def random_k_lift(G, k, seed=None):
     if not nx.is_regular(G):
         raise ValueError("input graph must be degree-regular")
 
-    H = nx.Graph()
+    H = G.__class__()
 
     # Create k copies of each node
     H.add_nodes_from((v, i) for v in G.nodes for i in range(k))
