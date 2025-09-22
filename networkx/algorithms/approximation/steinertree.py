@@ -260,7 +260,7 @@ def directed_steiner_tree(
 
     This implementation follows the greedy density-based approach of
     Charikar et al. (1999). The algorithm repeatedly grows partial trees
-    rooted at the given source until all required terminals are spanned.
+    starting at `root` until all required terminals are spanned.
     While the result is not guaranteed to be optimal, it provides a
     polylogarithmic approximation in polynomial time and is effective
     on medium-sized directed graphs.
@@ -268,9 +268,9 @@ def directed_steiner_tree(
     Parameters
     ----------
     G : DiGraph
-        A directed graph.
+        The directed graph on which the algorithm operates.
     root : node
-        The root node.
+        The root node where the algorithm starts growing partial trees.
     terminals : iterable of nodes
         An iterable of terminal nodes. This will be converted to a set.
     min_terminals : int, optional (default: None)
@@ -286,7 +286,8 @@ def directed_steiner_tree(
     Returns
     -------
     H : DiGraph
-        A directed Steiner tree subgraph.
+        The directed Steiner tree subgraph of `G` spanning all required terminals,
+        rooted at `root`.
 
     Raises
     ------
@@ -315,9 +316,6 @@ def directed_steiner_tree(
            directed Steiner problems. *Journal of Algorithms*, 33(1), 73–91.
            https://doi.org/10.1006/jagm.1999.1042
     """
-    if G.is_multigraph():
-        G = _collapse_multigraph_to_digraph(G, weight)
-
     if root not in G:
         raise nx.NetworkXError(f"Root {root} not in G")
 
@@ -342,6 +340,9 @@ def directed_steiner_tree(
     missing = terminals - set(G.nodes)
     if missing:
         raise nx.NetworkXError(f"Terminals {missing} not in G")
+
+    if G.is_multigraph():
+        G = _collapse_multigraph_to_digraph(G, weight)
 
     reachable_nodes = nx.single_source_shortest_path_length(G, root, cutoff).keys()
     reachable_terminals = terminals & reachable_nodes
@@ -375,9 +376,6 @@ def _collapse_multigraph_to_digraph(G, weight="weight"):
 
 def _directed_steiner_tree_density(G, terminals, weight):
     """Compute density = total cost / #covered terminals."""
-    if G.number_of_edges() == 0:
-        return float("inf")
-
     sub_terminals = set()
     total = 0
     for u, v, d in G.edges(data=True):
@@ -429,7 +427,7 @@ def _directed_steiner_tree(G, root, terminals, min_terminals, cutoff, weight):
                 if sub_density < min_density:
                     min_sub_tree = sub_tree
                     min_density = sub_density
-        covered_terminals = {n for n in min_sub_tree.nodes if n in terminals}
+        covered_terminals = {node for node in min_sub_tree if node in terminals}
         if not covered_terminals:
             return H
         reached_terminals |= covered_terminals
