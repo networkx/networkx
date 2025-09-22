@@ -1,4 +1,0 @@
-[run]
-branch = True
-source = networkx
-omit = */tests/*, conftest.py, *testing/test.py
