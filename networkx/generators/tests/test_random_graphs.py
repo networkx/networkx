@@ -480,6 +480,8 @@ def test_random_kernel_disallow_directed_and_multigraph(graphtype):
 
 """Test structure and connectivity for multiple (d, n, k) combinations
 for simple undirected graphs"""
+
+
 @pytest.mark.parametrize(
     "d, n, k",
     [
@@ -498,7 +500,7 @@ def test_random_k_lift_size_and_structure(d, n, k):
     assert nx.is_connected(H)
 
 
-#Test structure and connectivity for simple DiGraph case
+# Test structure and connectivity for simple DiGraph case
 def test_random_k_lift__digraph():
     G = nx.DiGraph()
     G.add_edges_from([(0, 1), (1, 2), (2, 0)])  # directed 3-cycle, strongly connected
@@ -509,14 +511,19 @@ def test_random_k_lift__digraph():
     assert all(H.out_degree(n) == 1 for n in H)
 
 
-#Test structure and connectivity for simple MultiGraph case
+# Test structure and connectivity for simple MultiGraph case
 def test_random_k_lift_multigraph():
     G = nx.MultiGraph()
-    G.add_edges_from([
-        (0, 1), (0, 1),  # Two parallel edges
-        (1, 2), (1, 2),  # Two parallel edges
-        (2, 0), (2, 0)  # Two parallel edges
-    ])  # small multigraph with parallel edges
+    G.add_edges_from(
+        [
+            (0, 1),
+            (0, 1),  # Two parallel edges
+            (1, 2),
+            (1, 2),  # Two parallel edges
+            (2, 0),
+            (2, 0),  # Two parallel edges
+        ]
+    )  # small multigraph with parallel edges
     H = random_k_lift(G, 2, seed=41)
     assert isinstance(H, nx.MultiGraph)
     assert H.number_of_nodes() == 3 * 2
