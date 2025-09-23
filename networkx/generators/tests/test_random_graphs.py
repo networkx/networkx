@@ -524,7 +524,7 @@ def test_random_k_lift_multigraph():
             (2, 0),  # Two parallel edges
         ]
     )  # small multigraph with parallel edges
-    H = random_k_lift(G, 2, seed=41)
+    H = nx.random_k_lift(G, 2, seed=41)
     assert isinstance(H, nx.MultiGraph)
     assert H.number_of_nodes() == 3 * 2
     degrees = [deg for _, deg in H.degree()]
