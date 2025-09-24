@@ -1454,7 +1454,7 @@ def random_k_lift(G, k, seed=None):
       if ``σ(i) = j``, then ``((u, i), (v, j))`` is added to ``H``.
       The permutation is simulated by creating a shuffled list ``permutation`` of values 0 to ``k - 1``.
       Each ``i``-th copy of ``u`` is then connected to the ``permutation[i]``-th copy of ``v``.
-    
+
     This operation is often used in the construction of expander graphs [1].
     If the base graph is a decent expander (i.e., has a good spectral gap-the
     difference between the two largest eigenvalues (in absolute value) of its adjacency matrix),
@@ -1476,24 +1476,24 @@ def random_k_lift(G, k, seed=None):
 
     References
     ----------
-    [1] Y. Bilu and N. Linial. "Lifts, Discrepancy and Nearly Optimal Spectral Gap."
-        *Combinatorica*, 26(5), pp. 495–519, 2006.
-        https://www.cs.huji.ac.il/~nati/PAPERS/raman_lift.pdf  
-    [2] A. Valadarsky, G. Shahaf, M. Dinitz, and M. Schapira.
-        "Xpander: Towards Optimal-Performance Datacenters."
+    [1] Y. Bilu and N. Linial, "Lifts, Discrepancy and Nearly Optimal Spectral Gap."
+        *Combinatorica*, 26(5), pp. 495–519, 2006, 
+        https://www.cs.huji.ac.il/~nati/PAPERS/raman_lift.pdf
+    [2] A. Valadarsky, G. Shahaf, M. Dinitz and M. Schapira, 
+        "Xpander: Towards Optimal-Performance Datacenters.", 
         In *Proceedings of the 12th International Conference on
-        Emerging Networking Experiments and Technologies (CoNEXT)*, 2016.
-        https://dl.acm.org/doi/pdf/10.1145/2999572.2999580  
-    [3] N. Agarwal, K. Chandrasekaran, A. Kolla, V. Madan.
-        "On the Expansion of Group-Based Lifts." arXiv preprint arXiv:1311.3268v2, 2016.  
-        http://arxiv.org/abs/1311.3268v2  
-    [4] P. Chebolu and A. Frieze.
-        "Hamilton Cycles in Random Lifts of Directed Graphs."  
-        Department of Mathematics, Carnegie Mellon University, 2007.  
-        https://www.math.cmu.edu/~af1p/Texfiles/LiftHamDir.pdf  
-    [5] S. Hoory.
-        "On the Girth of Graph Lifts." arXiv:2401.01238v1, 2024.  
-        https://arxiv.org/pdf/2401.01238  
+        Emerging Networking Experiments and Technologies (CoNEXT)*, 2016, 
+        https://dl.acm.org/doi/pdf/10.1145/2999572.2999580
+    [3] N. Agarwal, K. Chandrasekaran, A. Kolla and V. Madan,
+        "On the Expansion of Group-Based Lifts.", arXiv preprint arXiv:1311.3268v2, 2016, 
+        http://arxiv.org/abs/1311.3268v2
+    [4] P. Chebolu and A. Frieze, 
+        "Hamilton Cycles in Random Lifts of Directed Graphs.", 
+        Department of Mathematics, Carnegie Mellon University, 2007, 
+        https://www.math.cmu.edu/~af1p/Texfiles/LiftHamDir.pdf
+    [5] S. Hoory, 
+        "On the Girth of Graph Lifts." arXiv:2401.01238v1, 2024, 
+        https://arxiv.org/pdf/2401.01238
 
     Examples
     --------
