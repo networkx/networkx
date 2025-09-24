@@ -255,7 +255,7 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
 def directed_steiner_tree(
     G, root, terminals, *, min_terminals=None, levels=None, weight="weight"
 ):
-    """
+    r"""
     Approximate solution to the Directed Steiner Tree problem.
 
     This implementation follows the greedy density-based approach of
