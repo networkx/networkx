@@ -112,6 +112,8 @@ import itertools
 from collections import Counter, defaultdict
 from functools import reduce, wraps
 
+import networkx as nx
+
 
 def are_all_equal(iterable):
     """
@@ -143,9 +145,9 @@ def are_all_equal(iterable):
     return all(item == first for item in iterator)
 
 
-def make_partitions(items, test):
+def make_partition(items, test):
     """
-    Partitions items into sets based on the outcome of ``test(item1, item2)``.
+    Partition items into sets based on the outcome of ``test(item1, item2)``.
     Pairs of items for which `test` returns `True` end up in the same set.
 
     Parameters
@@ -155,7 +157,7 @@ def make_partitions(items, test):
     test : collections.abc.Callable[collections.abc.Hashable, collections.abc.Hashable]
         A function that will be called with 2 arguments, taken from items.
         Should return `True` if those 2 items need to end up in the same
-        partition, and `False` otherwise.
+        part, and `False` otherwise.
 
     Returns
     -------
@@ -169,58 +171,86 @@ def make_partitions(items, test):
     The function `test` is assumed to be transitive: if ``test(a, b)`` and
     ``test(b, c)`` return ``True``, then ``test(a, c)`` must also be ``True``.
     """
-    partitions = []
+    partition = []
     for item in items:
-        for partition in partitions:
-            p_item = next(iter(partition))
+        for part in partition:
+            p_item = next(iter(part))
             if test(item, p_item):
-                partition.add(item)
+                part.add(item)
                 break
         else:  # No break
-            partitions.append({item})
-    return partitions
+            partition.append({item})
+    return partition
 
 
-def partition_to_color(partitions):
+def node_to_part_ID_dict(partition):
     """
-    Creates a dictionary that maps each item in each partition to the index of
-    the partition to which it belongs.
+    Creates a dictionary that maps each item in each part to the index of
+    the part to which it belongs.
 
     Parameters
     ----------
-    partitions: collections.abc.Sequence[collections.abc.Iterable]
-        As returned by :func:`make_partitions`.
+    partition: collections.abc.Sequence[collections.abc.Iterable]
+        As returned by :func:`make_partition`.
 
     Returns
     -------
     dict
     """
-    colors = {}
-    for color, keys in enumerate(partitions):
-        for key in keys:
-            colors[key] = color
-    return colors
+    return {node: ID for ID, part in enumerate(partition) for node in part}
 
 
-def intersect(collection_of_sets):
+def color_degree_by_node(G, n_colors, e_colors):
+    """Returns a dict by node to counts of edge and node color for that node.
+
+    This returns a dict by node to a 2-tuple of node color and degree by
+    (edge color and nbr color). E.g. ``{0: (1, {(0, 2): 5})}`` means that
+    node ``0`` has node type 1 and has 5 edges of type 0 that go to nodes of type 2.
+    Thus, this is a measure of degree (edge count) by color of edge and color
+    of the node on the other side of that edge.
+
+    For directed graphs the degree counts is a 2-tuple of (in, out) degree counts.
+
+    Ideally, if edge_match is None, this could get simplified to just the node
+    color on the other end of the edge. Similarly if node_match is None then only
+    edge color is tracked. And if both are None, we simply count the number of edges.
     """
-    Given an collection of sets, returns the intersection of those sets.
+    if len(n_colors) < len(G):
+        for n, nbrs in G.adjacency():
+            if n not in n_colors:
+                n_colors[n] = None
+                for v in nbrs:
+                    e_colors[n, v] = None
+        # undirected colored degree
+    if not G.is_directed():
+        return {
+            u: (n_colors[u], Counter((e_colors[u, v], n_colors[v]) for v in nbrs))
+            for u, nbrs in G.adjacency()
+        }
+    # directed colored out and in degree
+    return {
+        u: (
+            n_colors[u],
+            Counter((e_colors[u, v], n_colors[v]) for v in nbrs),
+            Counter((e_colors[v, u], n_colors[v]) for v in G._pred[u]),
+        )
+        for u, nbrs in G.adjacency()
+    }
 
-    Parameters
-    ----------
-    collection_of_sets: collections.abc.Collection[set]
-        A collection of sets.
 
-    Returns
-    -------
-    set
-        An intersection of all sets in `collection_of_sets`. Will have the same
-        type as the item initially taken from `collection_of_sets`.
-    """
-    collection_of_sets = list(collection_of_sets)
-    first = collection_of_sets.pop()
-    out = reduce(set.intersection, collection_of_sets, set(first))
-    return type(first)(out)
+class EdgeLookup:
+    """Class to handle getitem for undirected edges"""
+
+    def __init__(self, edge_dict):
+        self.edge_dict = edge_dict
+
+    def __getitem__(self, edge):
+        if edge in self.edge_dict:
+            return self.edge_dict[edge]
+        return self.edge_dict[edge[::-1]]
+
+    def items(self):
+        return self.edge_dict.items()
 
 
 class ISMAGS:
@@ -289,155 +319,113 @@ class ISMAGS:
         cache: collections.abc.Mapping
             A cache used for caching graph symmetries.
         """
-        # TODO: graph and subgraph setter methods that invalidate the caches.
+        if graph.is_directed() != subgraph.is_directed():
+            raise ValueError("Directed and undirected graphs cannot be compared.")
+
         # TODO: allow for precomputed partitions and colors
         self.graph = graph
         self.subgraph = subgraph
         self._symmetry_cache = cache
-        # Naming conventions are taken from the original paper. For your
-        # sanity:
+        # Naming conventions are taken from the original paper.
+        # For your sanity:
         #   sg: subgraph
         #   g: graph
         #   e: edge(s)
         #   n: node(s)
         # So: sgn means "subgraph nodes".
-        self._sgn_partitions_ = None
-        self._sge_partitions_ = None
+        node_parts = self.create_aligned_partition(
+            node_match, self.subgraph.nodes, self.graph.nodes
+        )
+        self._sgn_partition, self._gn_partition, self.N_node_colors = node_parts
+        self._sgn_colors = node_to_part_ID_dict(self._sgn_partition)
+        self._gn_colors = node_to_part_ID_dict(self._gn_partition)
 
-        self._sgn_colors_ = None
-        self._sge_colors_ = None
+        edge_partitions = self.create_aligned_partition(
+            edge_match, self.subgraph.edges(), self.graph.edges()
+        )
+        self._sge_partition, self._ge_partition, self.N_edge_colors = edge_partitions
+        if self.graph.is_directed():
+            self._sge_colors = node_to_part_ID_dict(self._sge_partition)
+            self._ge_colors = node_to_part_ID_dict(self._ge_partition)
+        else:  # allow lookups (u, v) or (v, u)
+            self._sge_colors = EdgeLookup(node_to_part_ID_dict(self._sge_partition))
+            self._ge_colors = EdgeLookup(node_to_part_ID_dict(self._ge_partition))
 
-        self._gn_partitions_ = None
-        self._ge_partitions_ = None
+    def create_aligned_partition(self, thing_matcher, sg_things, g_things):
+        """Partitions of `things` based on function `match`
+        Returns: sg_partition, g_partition, number_of_matched_parts
 
-        self._gn_colors_ = None
-        self._ge_colors_ = None
+        The first `number_of_matched_parts` parts in each partition
+        match in order, e.g. 2nd part matches other's 2nd part.
+        Warning: nodes in parts after that have no matching nodes in the other graph.
+        For morphisms those nodes can't appear in the mapping.
+        """
+        if thing_matcher is None:
+            sg_partition = [set(sg_things)]
+            g_partition = [set(g_things)]
+            return sg_partition, g_partition, 1
 
-        self._node_compat_ = None
-        self._edge_compat_ = None
+        # Use thing_matcher to create a partition
+        sg_multiedge = isinstance(sg_things, nx.classes.reportviews.OutEdgeDataView)
+        g_multiedge = isinstance(g_things, nx.classes.reportviews.OutEdgeDataView)
+        if not sg_multiedge:
 
-        if node_match is None:
-            self.node_equality = self._node_match_maker(lambda n1, n2: True)
-            self._sgn_partitions_ = [set(self.subgraph.nodes)]
-            self._gn_partitions_ = [set(self.graph.nodes)]
-            self._node_compat_ = {0: 0}
+            def sg_match(thing1, thing2):
+                return thing_matcher(sg_things[thing1], sg_things[thing2])
+
+        else:  # multiedges (note nodes of multigraphs use simple case above)
+
+            def sg_match(thing1, thing2):
+                (u1, v1), (u2, v2) = thing1, thing2
+                return thing_matcher(self.subgraph[u1][v1], self.subgraph[u2][v2])
+
+        if not g_multiedge:
+
+            def g_match(thing1, thing2):
+                return thing_matcher(g_things[thing1], g_things[thing2])
+
+        else:  # multiedges (note nodes of multigraphs use simple case above)
+
+            def g_match(thing1, thing2):
+                (u1, v1), (u2, v2) = thing1, thing2
+                return thing_matcher(self.graph[u1][v1], self.graph[u2][v2])
+
+        sg_partition = make_partition(sg_things, sg_match)
+        g_partition = make_partition(g_things, g_match)
+
+        # Align order of g_partition to that of sg_partition
+        sgc_to_gc = {}
+        gc_to_sgc = {}
+        sN, N = len(sg_partition), len(g_partition)
+        for sgc, gc in itertools.product(range(sN), range(N)):
+            sgt = next(iter(sg_partition[sgc]))
+            gt = next(iter(g_partition[gc]))
+            sgt_ = sg_things[sgt] if not sg_multiedge else self.subgraph[sgt[0]][sgt[1]]
+            gt_ = g_things[gt] if not g_multiedge else self.graph[gt[0]][gt[1]]
+            if thing_matcher(sgt_, gt_):
+                assert sgc not in sgc_to_gc  # 2 sg parts match same g part
+                assert gc not in gc_to_sgc  # 2 g parts match same sg part
+                sgc_to_gc[sgc] = gc
+                gc_to_sgc[gc] = sgc
+        ## return two lists and the number of partitions that match.
+        new_order = [
+            (sg_partition[sgc], g_partition[gc]) for sgc, gc in sgc_to_gc.items()
+        ]
+        Ncolors = len(new_order)
+        if Ncolors:
+            new_sg_p, new_g_p = [list(x) for x in zip(*new_order)]
         else:
-            self.node_equality = self._node_match_maker(node_match)
-        if edge_match is None:
-            self.edge_equality = self._edge_match_maker(lambda e1, e2: True)
-            self._sge_partitions_ = [set(self.subgraph.edges)]
-            self._ge_partitions_ = [set(self.graph.edges)]
-            self._edge_compat_ = {0: 0}
-        else:
-            self.edge_equality = self._edge_match_maker(edge_match)
+            new_sg_p, new_g_p = [], []
+        if Ncolors < sN:
+            extra = [sg_partition[c] for c in range(sN) if c not in sgc_to_gc]
+            new_sg_p = list(new_sg_p) + extra
+            new_g_p = list(new_g_p) + [set()] * len(extra)
+        if Ncolors < N:
+            extra = [g_partition[c] for c in range(N) if c not in gc_to_sgc]
+            new_g_p = list(new_g_p) + extra
+            new_sg_p = list(new_sg_p) + [set()] * len(extra)
 
-    @property
-    def _sgn_partitions(self):
-        if self._sgn_partitions_ is None:
-
-            def nodematch(node1, node2):
-                return self.node_equality(self.subgraph, node1, self.subgraph, node2)
-
-            self._sgn_partitions_ = make_partitions(self.subgraph.nodes, nodematch)
-        return self._sgn_partitions_
-
-    @property
-    def _sge_partitions(self):
-        if self._sge_partitions_ is None:
-
-            def edgematch(edge1, edge2):
-                return self.edge_equality(self.subgraph, edge1, self.subgraph, edge2)
-
-            self._sge_partitions_ = make_partitions(self.subgraph.edges, edgematch)
-        return self._sge_partitions_
-
-    @property
-    def _gn_partitions(self):
-        if self._gn_partitions_ is None:
-
-            def nodematch(node1, node2):
-                return self.node_equality(self.graph, node1, self.graph, node2)
-
-            self._gn_partitions_ = make_partitions(self.graph.nodes, nodematch)
-        return self._gn_partitions_
-
-    @property
-    def _ge_partitions(self):
-        if self._ge_partitions_ is None:
-
-            def edgematch(edge1, edge2):
-                return self.edge_equality(self.graph, edge1, self.graph, edge2)
-
-            self._ge_partitions_ = make_partitions(self.graph.edges, edgematch)
-        return self._ge_partitions_
-
-    @property
-    def _sgn_colors(self):
-        if self._sgn_colors_ is None:
-            self._sgn_colors_ = partition_to_color(self._sgn_partitions)
-        return self._sgn_colors_
-
-    @property
-    def _sge_colors(self):
-        if self._sge_colors_ is None:
-            self._sge_colors_ = partition_to_color(self._sge_partitions)
-        return self._sge_colors_
-
-    @property
-    def _gn_colors(self):
-        if self._gn_colors_ is None:
-            self._gn_colors_ = partition_to_color(self._gn_partitions)
-        return self._gn_colors_
-
-    @property
-    def _ge_colors(self):
-        if self._ge_colors_ is None:
-            self._ge_colors_ = partition_to_color(self._ge_partitions)
-        return self._ge_colors_
-
-    @property
-    def _node_compatibility(self):
-        if self._node_compat_ is not None:
-            return self._node_compat_
-        self._node_compat_ = {}
-        for sgn_part_color, gn_part_color in itertools.product(
-            range(len(self._sgn_partitions)), range(len(self._gn_partitions))
-        ):
-            sgn = next(iter(self._sgn_partitions[sgn_part_color]))
-            gn = next(iter(self._gn_partitions[gn_part_color]))
-            if self.node_equality(self.subgraph, sgn, self.graph, gn):
-                self._node_compat_[sgn_part_color] = gn_part_color
-        return self._node_compat_
-
-    @property
-    def _edge_compatibility(self):
-        if self._edge_compat_ is not None:
-            return self._edge_compat_
-        self._edge_compat_ = {}
-        for sge_part_color, ge_part_color in itertools.product(
-            range(len(self._sge_partitions)), range(len(self._ge_partitions))
-        ):
-            sge = next(iter(self._sge_partitions[sge_part_color]))
-            ge = next(iter(self._ge_partitions[ge_part_color]))
-            if self.edge_equality(self.subgraph, sge, self.graph, ge):
-                self._edge_compat_[sge_part_color] = ge_part_color
-        return self._edge_compat_
-
-    @staticmethod
-    def _node_match_maker(cmp):
-        @wraps(cmp)
-        def comparer(graph1, node1, graph2, node2):
-            return cmp(graph1.nodes[node1], graph2.nodes[node2])
-
-        return comparer
-
-    @staticmethod
-    def _edge_match_maker(cmp):
-        @wraps(cmp)
-        def comparer(graph1, edge1, graph2, edge2):
-            return cmp(graph1.edges[edge1], graph2.edges[edge2])
-
-        return comparer
+        return new_sg_p, new_g_p, Ncolors
 
     def find_isomorphisms(self, symmetry=True):
         """Find all subgraph isomorphisms between subgraph and graph
@@ -464,77 +452,57 @@ class ISMAGS:
             return
         elif len(self.graph) < len(self.subgraph):
             return
+        elif len(self._sgn_partition) > self.N_node_colors:
+            # some subgraph nodes have a color that doesn't occur in graph
+            return
+        elif len(self._sge_partition) > self.N_edge_colors:
+            # some subgraph edges have a color that doesn't occur in graph
+            return
 
         if symmetry:
-            _, cosets = self.analyze_symmetry(
-                self.subgraph, self._sgn_partitions, self._sge_colors
-            )
-            constraints = self._make_constraints(cosets)
+            cosets = self.analyze_subgraph_symmetry()
+            # Turn cosets into constraints.
+            constraints = [(n, co) for n, cs in cosets.items() for co in cs if n != co]
         else:
             constraints = []
 
-        candidates = self._find_nodecolor_candidates()
-        la_candidates = self._get_lookahead_candidates()
-        for sgn in self.subgraph:
-            extra_candidates = la_candidates[sgn]
-            if extra_candidates:
-                candidates[sgn] = candidates[sgn] | {frozenset(extra_candidates)}
+        cand_sets = self._get_node_color_candidate_sets()
 
-        if any(candidates.values()):
-            start_sgn = min(candidates, key=lambda n: min(candidates[n], key=len))
-            candidates[start_sgn] = (intersect(candidates[start_sgn]),)
-            yield from self._map_nodes(start_sgn, candidates, constraints)
-        else:
-            return
+        lookahead_candidates = self._get_color_degree_candidates()
+        for sgn, lookahead_cands in lookahead_candidates.items():
+            cand_sets[sgn].add(frozenset(lookahead_cands))
 
-    @staticmethod
-    def _find_neighbor_color_count(graph, node, node_color, edge_color):
-        """
-        For `node` in `graph`, count the number of edges of a specific color
-        it has to nodes of a specific color.
-        """
-        counts = Counter()
-        neighbors = graph[node]
-        for neighbor in neighbors:
-            n_color = node_color[neighbor]
-            if (node, neighbor) in edge_color:
-                e_color = edge_color[node, neighbor]
-            else:
-                e_color = edge_color[neighbor, node]
-            counts[e_color, n_color] += 1
-        return counts
+        if any(cand_sets.values()):
+            # Choose start node based on a heuristic for the min # of candidates
+            # Heuristic here is length of smallest frozenset in candidates' set
+            # of frozensets for that node. Using the smallest length avoids
+            # computing the intersection of the frosensets for each node.
+            start_sgn = min(cand_sets, key=lambda n: min(len(x) for x in cand_sets[n]))
+            cand_sets[start_sgn] = (frozenset.intersection(*cand_sets[start_sgn]),)
+            yield from self._map_nodes(start_sgn, cand_sets, constraints)
+        return
 
-    def _get_lookahead_candidates(self):
+    def _get_color_degree_candidates(self):
         """
-        Returns a mapping of {subgraph node: collection of graph nodes} for
-        which the graph nodes are feasible candidates for the subgraph node, as
-        determined by looking ahead one edge.
+        Returns a mapping of {subgraph node: set of graph nodes} for
+        which the graph nodes are feasible mapping candidate_sets for the
+        subgraph node, as determined by looking ahead one edge.
         """
-        g_counts = {}
-        for gn in self.graph:
-            g_counts[gn] = self._find_neighbor_color_count(
-                self.graph, gn, self._gn_colors, self._ge_colors
-            )
-        candidates = defaultdict(set)
-        for sgn in self.subgraph:
-            sg_count = self._find_neighbor_color_count(
-                self.subgraph, sgn, self._sgn_colors, self._sge_colors
-            )
-            new_sg_count = Counter()
-            for (sge_color, sgn_color), count in sg_count.items():
-                try:
-                    ge_color = self._edge_compatibility[sge_color]
-                    gn_color = self._node_compatibility[sgn_color]
-                except KeyError:
-                    pass
-                else:
-                    new_sg_count[ge_color, gn_color] = count
+        g_deg = color_degree_by_node(self.graph, self._gn_colors, self._ge_colors)
+        sg_deg = color_degree_by_node(self.subgraph, self._sgn_colors, self._sge_colors)
 
-            for gn, g_count in g_counts.items():
-                if all(new_sg_count[x] <= g_count[x] for x in new_sg_count):
-                    # Valid candidate
-                    candidates[sgn].add(gn)
-        return candidates
+        color_degree_candidates = defaultdict(set)
+        for sgn, (_, *needed_counts) in sg_deg.items():
+            for gn, (_, *g_counts) in g_deg.items():
+                if all(
+                    all(
+                        sg_cnt <= g_counts[idx][color]
+                        for color, sg_cnt in counts.items()
+                    )
+                    for idx, counts in enumerate(needed_counts)
+                ):
+                    color_degree_candidates[sgn].add(gn)
+        return color_degree_candidates
 
     def largest_common_subgraph(self, symmetry=True):
         """
@@ -561,74 +529,60 @@ class ISMAGS:
             return
 
         if symmetry:
-            _, cosets = self.analyze_symmetry(
-                self.subgraph, self._sgn_partitions, self._sge_colors
-            )
-            constraints = self._make_constraints(cosets)
+            cosets = self.analyze_subgraph_symmetry()
+            # Turn cosets into constraints.
+            constraints = [(n, cn) for n, cs in cosets.items() for cn in cs if n != cn]
         else:
             constraints = []
 
-        candidates = self._find_nodecolor_candidates()
+        candidate_sets = self._get_node_color_candidate_sets()
 
-        if any(candidates.values()):
-            yield from self._largest_common_subgraph(candidates, constraints)
+        if any(candidate_sets.values()):
+            relevant_parts = self._sgn_partition[: self.N_node_colors]
+            to_be_mapped = {frozenset(n for p in relevant_parts for n in p)}
+            yield from self._largest_common_subgraph(
+                candidate_sets, constraints, to_be_mapped
+            )
         else:
             return
 
-    def analyze_symmetry(self, graph, node_partitions, edge_colors):
+    def analyze_subgraph_symmetry(self):
         """
         Find a minimal set of permutations and corresponding co-sets that
-        describe the symmetry of `graph`, given the node and edge equalities
-        given by `node_partitions` and `edge_colors`, respectively.
-
-        Parameters
-        ----------
-        graph : networkx.Graph
-            The graph whose symmetry should be analyzed.
-        node_partitions : list of sets
-            A list of sets containing node keys. Node keys in the same set
-            are considered equivalent. Every node key in `graph` should be in
-            exactly one of the sets. If all nodes are equivalent, this should
-            be ``[set(graph.nodes)]``.
-        edge_colors : dict mapping edges to their colors
-            A dict mapping every edge in `graph` to its corresponding color.
-            Edges with the same color are considered equivalent. If all edges
-            are equivalent, this should be ``{e: 0 for e in graph.edges}``.
-
+        describe the symmetry of ``self.subgraph``, given the node and edge
+        equalities given by `node_partition` and `edge_colors`, respectively.
 
         Returns
         -------
-        set[frozenset]
-            The found permutations. This is a set of frozensets of pairs of node
-            keys which can be exchanged without changing :attr:`subgraph`.
         dict[collections.abc.Hashable, set[collections.abc.Hashable]]
             The found co-sets. The co-sets is a dictionary of
             ``{node key: set of node keys}``.
             Every key-value pair describes which ``values`` can be interchanged
             without changing nodes less than ``key``.
         """
+        node_partition, edge_colors = self._sgn_partition, self._sge_colors
+
         if self._symmetry_cache is not None:
             key = hash(
                 (
-                    tuple(graph.nodes),
-                    tuple(graph.edges),
-                    tuple(map(tuple, node_partitions)),
+                    tuple(self.subgraph.nodes),
+                    tuple(self.subgraph.edges),
+                    tuple(map(tuple, node_partition)),
                     tuple(edge_colors.items()),
+                    self.subgraph.is_directed(),
                 )
             )
             if key in self._symmetry_cache:
                 return self._symmetry_cache[key]
-        node_partitions = list(
-            self._refine_node_partitions(graph, node_partitions, edge_colors)
+        node_partition = next(
+            self._refine_node_partition(self.subgraph, node_partition, edge_colors)
         )
-        assert len(node_partitions) == 1
-        node_partitions = node_partitions[0]
-        permutations, cosets = self._process_ordered_pair_partitions(
-            graph, node_partitions, node_partitions, edge_colors
+        cosets = self._process_ordered_pair_partitions(
+            self.subgraph, node_partition, node_partition, edge_colors
         )
         if self._symmetry_cache is not None:
-            self._symmetry_cache[key] = permutations, cosets
-        return permutations, cosets
+            self._symmetry_cache[key] = cosets
+        return cosets
 
     def is_isomorphic(self, symmetry=False):
         """
@@ -670,60 +624,28 @@ class ISMAGS:
         """Alternative name for :meth:`find_isomorphisms`."""
         return self.find_isomorphisms(symmetry)
 
-    def _find_nodecolor_candidates(self):
+    def _get_node_color_candidate_sets(self):
         """
         Per node in subgraph find all nodes in graph that have the same color.
+        Stored as a dict-of-set-of-frozenset. The dict is keyed by node to a
+        collection of frozensets of graph nodes. Each of these frozensets are
+        a restriction. The node can be mapped only to nodes in the frosenset.
+        Thus it must be mapped to nodes in the intersection of all these sets.
+        We store the sets to delay taking the intersection of them. This helps
+        for two reasons: Firstly any duplicate restriction sets can be ignored;
+        Secondly, some nodes will not need the intersection to be constructed.
+        Note: a dict-of-list-of-set would store duplicate sets in the list and
+        we want to avoid that. But I wonder if checking hash/equality when `add`ing
+        removes the benefit of avoiding computing intersections.
         """
-        candidates = defaultdict(set)
+        candidate_sets = defaultdict(set)
         for sgn in self.subgraph.nodes:
             sgn_color = self._sgn_colors[sgn]
-            if sgn_color in self._node_compatibility:
-                gn_color = self._node_compatibility[sgn_color]
-                candidates[sgn].add(frozenset(self._gn_partitions[gn_color]))
+            if sgn_color >= self.N_node_colors:  # color has no candidates
+                candidate_sets[sgn]  # creates empty set entry in defaultdict
             else:
-                candidates[sgn].add(frozenset())
-        candidates = dict(candidates)
-        for sgn, options in candidates.items():
-            candidates[sgn] = frozenset(options)
-        return candidates
-
-    @staticmethod
-    def _make_constraints(cosets):
-        """
-        Turn cosets into constraints.
-        """
-        constraints = []
-        for node_i, node_ts in cosets.items():
-            for node_t in node_ts:
-                if node_i != node_t:
-                    # Node i must be smaller than node t.
-                    constraints.append((node_i, node_t))
-        return constraints
-
-    @staticmethod
-    def _find_node_edge_color(graph, node_colors, edge_colors):
-        """
-        For every node in graph, come up with a color that combines 1) the
-        color of the node, and 2) the number of edges of a color to each type
-        of node.
-        """
-        counts = defaultdict(lambda: defaultdict(int))
-        for node1, node2 in graph.edges:
-            if (node1, node2) in edge_colors:
-                # FIXME directed graphs
-                ecolor = edge_colors[node1, node2]
-            else:
-                ecolor = edge_colors[node2, node1]
-            # Count per node how many edges it has of what color to nodes of
-            # what color
-            counts[node1][ecolor, node_colors[node2]] += 1
-            counts[node2][ecolor, node_colors[node1]] += 1
-
-        node_edge_colors = {}
-        for node in graph.nodes:
-            node_edge_colors[node] = node_colors[node], set(counts[node].items())
-
-        return node_edge_colors
+                candidate_sets[sgn].add(frozenset(self._gn_partition[sgn_color]))
+        return dict(candidate_sets)
 
     @staticmethod
     def _get_permutations_by_length(items):
@@ -750,154 +672,205 @@ class ISMAGS:
         )
 
     @classmethod
-    def _refine_node_partitions(cls, graph, node_partitions, edge_colors, branch=False):
-        """
-        Given a partition of nodes in graph, make the partitions smaller such
-        that all nodes in a partition have 1) the same color, and 2) the same
-        number of edges to specific other partitions.
-        """
-
+    def _refine_node_partition(cls, graph, partition, edge_colors, branch=False):
         def equal_color(node1, node2):
-            return node_edge_colors[node1] == node_edge_colors[node2]
+            return color_degree[node1] == color_degree[node2]
 
-        node_partitions = list(node_partitions)
-        node_colors = partition_to_color(node_partitions)
-        node_edge_colors = cls._find_node_edge_color(graph, node_colors, edge_colors)
-        if all(
-            are_all_equal(node_edge_colors[node] for node in partition)
-            for partition in node_partitions
-        ):
-            yield node_partitions
-            return
+        possible_partitions = [partition]
+        while possible_partitions:
+            partition = possible_partitions.pop()
+            node_colors = node_to_part_ID_dict(partition)
+            color_degree = color_degree_by_node(graph, node_colors, edge_colors)
+            if all(are_all_equal(color_degree[n] for n in p) for p in partition):
+                yield partition
+                if branch:
+                    continue
+                return
 
-        new_partitions = []
-        output = [new_partitions]
-        for partition in node_partitions:
-            if not are_all_equal(node_edge_colors[node] for node in partition):
-                refined = make_partitions(partition, equal_color)
-                if (
-                    branch
-                    and len(refined) != 1
-                    and len({len(r) for r in refined}) != len([len(r) for r in refined])
-                ):
-                    # This is where it breaks. There are multiple new cells
-                    # in refined with the same length, and their order
-                    # matters.
-                    # So option 1) Hit it with a big hammer and simply make all
-                    # orderings.
-                    permutations = cls._get_permutations_by_length(refined)
-                    new_output = []
-                    for n_p in output:
-                        for permutation in permutations:
-                            new_output.append(n_p + list(permutation[0]))
-                    output = new_output
+            more_partitions = [[]]
+            for part in partition:
+                if are_all_equal(color_degree[node] for node in part):
+                    for n_p in more_partitions:
+                        n_p.append(part)
                 else:
-                    for n_p in output:
-                        n_p.extend(sorted(refined, key=len))
-            else:
-                for n_p in output:
-                    n_p.append(partition)
-        for n_p in output:
-            yield from cls._refine_node_partitions(graph, n_p, edge_colors, branch)
+                    refined = make_partition(part, equal_color)
+                    R = len(refined)
+                    if not branch or R == 1 or R == len({len(r) for r in refined}):
+                        for n_p in more_partitions:
+                            n_p.extend(sorted(refined, key=len))
+                    else:
+                        # This is where tracking partitions by len breaks.
+                        # There are multiple new cells in refined with the
+                        # same length, and their order matters. So we hit
+                        # it with a big hammer and simply add all orderings.
+                        # TODO can we track partitions by more than len?
+                        new_partitions = []
+                        perms = cls._get_permutations_by_length(refined)
+                        for n_p in more_partitions:
+                            for permutation in perms:
+                                new_partitions.append(n_p + list(permutation[0]))
+                        more_partitions = new_partitions
+            possible_partitions.extend(more_partitions[::-1])
 
-    def _edges_of_same_color(self, sgn1, sgn2):
-        """
-        Returns all edges in :attr:`graph` that have the same colour as the
-        edge between sgn1 and sgn2 in :attr:`subgraph`.
-        """
-        if (sgn1, sgn2) in self._sge_colors:
-            # FIXME directed graphs
-            sge_color = self._sge_colors[sgn1, sgn2]
-        else:
-            sge_color = self._sge_colors[sgn2, sgn1]
-        if sge_color in self._edge_compatibility:
-            ge_color = self._edge_compatibility[sge_color]
-            g_edges = self._ge_partitions[ge_color]
-        else:
-            g_edges = []
-        return g_edges
-
-    def _map_nodes(self, sgn, candidates, constraints, mapping=None, to_be_mapped=None):
+    def _map_nodes(self, sgn, candidate_sets, constraints, to_be_mapped=None):
         """
         Find all subgraph isomorphisms honoring constraints.
+        The collection `candidate_sets` is stored as a dict-of-set-of-frozenset.
+        The dict is keyed by node to a collection of candidate frozensets. Any
+        viable candidate must belong to all the frozensets in the collection.
+        So each frozenset added to the collection is a restriction on the candidates.
+
+        According to the paper, we store the collection of sets rather than their
+        intersection to delay computing many intersections with the hope of avoiding
+        them completely. Having the middle collection be a set also means that
+        duplicate restrictions on candidates are ignored, avoiding another intersection.
         """
-        if mapping is None:
-            mapping = {}
-        else:
-            mapping = mapping.copy()
+        # shortcuts for speed
+        subgraph = self.subgraph
+        subgraph_adj = subgraph._adj
+        graph = self.graph
+        graph_adj = graph._adj
+        self_ge_partition = self._ge_partition
+        self_sge_colors = self._sge_colors
+        is_directed = subgraph.is_directed()
+
+        gn_ID_to_node = list(graph)
+        gn_node_to_ID = {n: id for id, n in enumerate(graph)}
+
+        mapping = {}
+        rev_mapping = {}
         if to_be_mapped is None:
-            to_be_mapped = set(self.subgraph.nodes)
+            to_be_mapped = subgraph_adj.keys()
 
-        # Note, we modify candidates here. Doesn't seem to affect results, but
-        # remember this.
-        # candidates = candidates.copy()
-        sgn_candidates = intersect(candidates[sgn])
-        candidates[sgn] = frozenset([sgn_candidates])
-        for gn in sgn_candidates:
-            # We're going to try to map sgn to gn.
-            if gn in mapping.values() or sgn not in to_be_mapped:
-                # gn is already mapped to something
-                continue  # pragma: no cover
+        # Note that we don't copy candidates here. This means we leak
+        # information between the branches of the search. This is intentional!
+        # Specifically, we modify candidates here. That's OK because we substitute
+        # the set of frozensets with a set containing the frozenset intersection.
+        # So, it doesn't change the membership rule or the length rule for sorting.
+        # Membership: any candidate must be an element of each of the frozensets.
+        # Length: length of the intersection set. Use heuristic min(len of frozensets).
+        # This intersection improves future length heuristics which can only occur
+        # after this element of the queu is popped. But it means future additional
+        # restriction frozensets that duplicate previous ones are not ignored.
+        sgn_candidates = frozenset.intersection(*candidate_sets[sgn])
+        candidate_sets[sgn] = {sgn_candidates}
+        queue = [(sgn, candidate_sets, iter(sgn_candidates))]
+        while queue:  # DFS over all possible mappings
+            sgn, candidate_sets, sgn_cand_iter = queue[-1]
 
-            # REDUCTION and COMBINATION
-            mapping[sgn] = gn
-            # BASECASE
-            if to_be_mapped == set(mapping.keys()):
-                yield {v: k for k, v in mapping.items()}
-                continue
-            left_to_map = to_be_mapped - set(mapping.keys())
-
-            new_candidates = candidates.copy()
-            sgn_nbrs = set(self.subgraph[sgn])
-            not_gn_nbrs = set(self.graph.nodes) - set(self.graph[gn])
-            for sgn2 in left_to_map:
-                if sgn2 not in sgn_nbrs:
-                    gn2_options = not_gn_nbrs
-                else:
-                    # Get all edges to gn of the right color:
-                    g_edges = self._edges_of_same_color(sgn, sgn2)
-                    # FIXME directed graphs
-                    # And all nodes involved in those which are connected to gn
-                    gn2_options = {n for e in g_edges for n in e if gn in e}
-                # Node color compatibility should be taken care of by the
-                # initial candidate lists made by find_subgraphs
-
-                # Add gn2_options to the right collection. Since new_candidates
-                # is a dict of frozensets of frozensets of node indices it's
-                # a bit clunky. We can't do .add, and + also doesn't work. We
-                # could do |, but I deem union to be clearer.
-                new_candidates[sgn2] = new_candidates[sgn2].union(
-                    [frozenset(gn2_options)]
-                )
-
-                if (sgn, sgn2) in constraints:
-                    gn2_options = {gn2 for gn2 in self.graph if gn2 > gn}
-                elif (sgn2, sgn) in constraints:
-                    gn2_options = {gn2 for gn2 in self.graph if gn2 < gn}
-                else:
+            for gn in sgn_cand_iter:
+                # We're going to try to map sgn to gn.
+                if gn in rev_mapping:
                     continue  # pragma: no cover
-                new_candidates[sgn2] = new_candidates[sgn2].union(
-                    [frozenset(gn2_options)]
-                )
 
-            # The next node is the one that is unmapped and has fewest
-            # candidates
-            next_sgn = min(left_to_map, key=lambda n: min(new_candidates[n], key=len))
-            yield from self._map_nodes(
-                next_sgn,
-                new_candidates,
-                constraints,
-                mapping=mapping,
-                to_be_mapped=to_be_mapped,
-            )
-            # Unmap sgn-gn. Strictly not necessary since it'd get overwritten
-            # when making a new mapping for sgn.
-            # del mapping[sgn]
+                # REDUCTION and COMBINATION
+                if sgn in mapping:
+                    old_gn = mapping[sgn]
+                    del rev_mapping[old_gn]
+                mapping[sgn] = gn
+                rev_mapping[gn] = sgn
+                # BASECASE
+                if len(mapping) == len(to_be_mapped):
+                    yield rev_mapping.copy()
+                    del mapping[sgn]
+                    del rev_mapping[gn]
+                    continue
+                left_to_map = to_be_mapped - mapping.keys()
+
+                # Now we copy the candidates dict. But it is not a deepcopy.
+                # The dict-of-sets-of-frozensets point to the same sets of frozensets.
+                # Be careful to not change the sets of frozensets below.
+                # Shallow copy. allows chg for new sgns
+                new_cand_sets = candidate_sets.copy()
+
+                # update the candidate_sets for unmapped sgn based on sgn mapped
+                if not is_directed:
+                    sgn_nbrs = subgraph_adj[sgn]
+                    not_gn_nbrs = graph_adj.keys() - graph_adj[gn].keys()
+                    for sgn2 in left_to_map:
+                        # edge color must match when sgn2 connected to sgn
+                        if sgn2 not in sgn_nbrs:
+                            gn2_options = not_gn_nbrs
+                        else:
+                            g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
+                            gn2_options = {n for e in g_edges if gn in e for n in e}
+                        # Node color compatibility should be taken care of by the
+                        # initial candidate lists made by find_subgraphs
+
+                        # Add gn2_options to the right collection. Since new_cand_sets
+                        # is a dict-of-sets-of-frozensets of node indices it's
+                        # a bit clunky. We can't do .add without changing the original,
+                        # and + also doesn't work. Could do |, but union is clearer?
+                        new_cand_sets[sgn2] = new_cand_sets[sgn2].union(
+                            [frozenset(gn2_options)]
+                        )
+                else:  # directed
+                    sgn_nbrs = subgraph_adj[sgn].keys()
+                    sgn_preds = subgraph._pred[sgn].keys()
+                    not_gn_nbrs = (
+                        graph_adj.keys() - graph_adj[gn].keys() - graph._pred[gn].keys()
+                    )
+                    for sgn2 in left_to_map:
+                        # edge color must match when sgn2 connected to sgn
+                        if sgn2 not in sgn_nbrs:
+                            if sgn2 not in sgn_preds:
+                                gn2_options = not_gn_nbrs
+                            else:  # sgn2 in sgn_preds
+                                g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
+                                gn2_options = {e[0] for e in g_edges if gn == e[1]}
+                        else:
+                            if sgn2 not in sgn_preds:
+                                g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
+                                gn2_options = {e[1] for e in g_edges if gn == e[0]}
+                            else:
+                                # gn2 must have correct color in both directions
+                                g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
+                                gn2_options = {e[1] for e in g_edges if gn == e[0]}
+                                g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
+                                gn2_options &= {e[0] for e in g_edges if gn == e[1]}
+                        new_cand_sets[sgn2] = new_cand_sets[sgn2].union(
+                            [frozenset(gn2_options)]
+                        )
+
+                for sgn2 in left_to_map:
+                    # symmetry must match. constraints mean gn2>gn iff sgn2>sgn
+                    if (sgn, sgn2) in constraints:
+                        gn2_options = set(gn_ID_to_node[gn_node_to_ID[gn] + 1 :])
+                        # gn2_options = {gn2 for gn2 in self.graph if gn2 > gn}
+                    elif (sgn2, sgn) in constraints:
+                        gn2_options = set(gn_ID_to_node[: gn_node_to_ID[gn]])
+                        # gn2_options = {gn2 for gn2 in self.graph if gn2 < gn}
+                    else:
+                        continue  # pragma: no cover
+                    # same gn2_options comment here. Use union.
+                    new_cand_sets[sgn2] = new_cand_sets[sgn2].union(
+                        [frozenset(gn2_options)]
+                    )
+
+                # The next node is the one that is unmapped and has fewest candidates
+                # Use the heuristic of the min size of the frosensets rather than
+                # intersection of all frozensets to delay computing intersections.
+                new_sgn = min(
+                    left_to_map, key=lambda n: min(len(x) for x in new_cand_sets[n])
+                )
+                new_sgn_candidates = frozenset.intersection(*new_cand_sets[new_sgn])
+                if not new_sgn_candidates:
+                    continue
+                new_cand_sets[new_sgn] = {new_sgn_candidates}
+                queue.append((new_sgn, new_cand_sets, iter(new_sgn_candidates)))
+                break
+            else:  # all gn candidates tried for sgn.
+                queue.pop()
+                if sgn in mapping:
+                    assert rev_mapping[mapping[sgn]] == sgn
+                    del rev_mapping[mapping[sgn]]
+                    del mapping[sgn]
 
     def _largest_common_subgraph(self, candidates, constraints, to_be_mapped=None):
         """
         Find all largest common subgraphs honoring constraints.
         """
+        # to_be_mapped is a set of frozensets of subgraph nodes
         if to_be_mapped is None:
             to_be_mapped = {frozenset(self.subgraph.nodes)}
 
@@ -914,12 +887,11 @@ class ISMAGS:
             # graph >= subgraph if subgraph has more nodes than graph.
 
             # Try the isomorphism first with the nodes with lowest ID. So sort
-            # them. Those are more likely to be part of the final
-            # correspondence. This makes finding the first answer(s) faster. In
-            # theory.
+            # them. Those are more likely to be part of the final correspondence.
+            # In theory, this makes finding the first answer(s) faster.
             for nodes in sorted(to_be_mapped, key=sorted):
                 # Find the isomorphism between subgraph[to_be_mapped] <= graph
-                next_sgn = min(nodes, key=lambda n: min(candidates[n], key=len))
+                next_sgn = min(nodes, key=lambda n: min(len(x) for x in candidates[n]))
                 isomorphs = self._map_nodes(
                     next_sgn, candidates, constraints, to_be_mapped=nodes
                 )
@@ -975,57 +947,33 @@ class ISMAGS:
                     node = high
                     break
             else:  # no break, couldn't find node in constraints
-                break
-        return frozenset(nodes - {node})
+                return frozenset(nodes - {node})
 
     @staticmethod
-    def _find_permutations(top_partitions, bottom_partitions):
+    def _find_permutations(top_partition, bottom_partition):
         """
-        Return the pairs of top/bottom partitions where the partitions are
-        different. Ensures that all partitions in both top and bottom
+        Return the pairs of top/bottom parts where the parts are
+        different. Ensures that all parts in both top and bottom
         partitions have size 1.
         """
         # Find permutations
         permutations = set()
-        for top, bot in zip(top_partitions, bottom_partitions):
+        for top, bot in zip(top_partition, bottom_partition):
             # top and bot have only one element
-            if len(top) != 1 or len(bot) != 1:
+            if len(top) > 1 or len(bot) > 1:
                 raise IndexError(
                     "Not all nodes are coupled. This is"
-                    f" impossible: {top_partitions}, {bottom_partitions}"
+                    f" impossible: {top_partition}, {bottom_partition}"
                 )
             if top != bot:
                 permutations.add(frozenset((next(iter(top)), next(iter(bot)))))
         return permutations
 
-    @staticmethod
-    def _update_orbits(orbits, permutations):
-        """
-        Update orbits based on permutations. Orbits is modified in place.
-        For every pair of items in permutations their respective orbits are
-        merged.
-        """
-        for permutation in permutations:
-            node, node2 = permutation
-            # Find the orbits that contain node and node2, and replace the
-            # orbit containing node with the union
-            first = second = None
-            for idx, orbit in enumerate(orbits):
-                if first is not None and second is not None:
-                    break
-                if node in orbit:
-                    first = idx
-                if node2 in orbit:
-                    second = idx
-            if first != second:
-                orbits[first].update(orbits[second])
-                del orbits[second]
-
     def _couple_nodes(
         self,
-        top_partitions,
-        bottom_partitions,
-        pair_idx,
+        top_partition,
+        bottom_partition,
+        part_idx,
         t_node,
         b_node,
         graph,
@@ -1033,142 +981,117 @@ class ISMAGS:
     ):
         """
         Generate new partitions from top and bottom_partitions where t_node is
-        coupled to b_node. pair_idx is the index of the partitions where t_ and
+        coupled to b_node. part_idx is the index of the parts where t_ and
         b_node can be found.
         """
-        t_partition = top_partitions[pair_idx]
-        b_partition = bottom_partitions[pair_idx]
-        assert t_node in t_partition and b_node in b_partition
-        # Couple node to node2. This means they get their own partition
-        new_top_partitions = [top.copy() for top in top_partitions]
-        new_bottom_partitions = [bot.copy() for bot in bottom_partitions]
-        new_t_groups = {t_node}, t_partition - {t_node}
-        new_b_groups = {b_node}, b_partition - {b_node}
+        t_part = top_partition[part_idx]
+        b_part = bottom_partition[part_idx]
+        assert t_node in t_part and b_node in b_part
+        # Couple node to node2. This means they get their own part
+        new_top = [top.copy() for top in top_partition]
+        new_bot = [bot.copy() for bot in bottom_partition]
+        new_t_groups = {t_node}, t_part - {t_node}
+        new_b_groups = {b_node}, b_part - {b_node}
         # Replace the old partitions with the coupled ones
-        del new_top_partitions[pair_idx]
-        del new_bottom_partitions[pair_idx]
-        new_top_partitions[pair_idx:pair_idx] = new_t_groups
-        new_bottom_partitions[pair_idx:pair_idx] = new_b_groups
+        del new_top[part_idx]
+        del new_bot[part_idx]
+        # assignment to slice with start == end inserts a whole list at that position
+        new_top[part_idx:part_idx] = new_t_groups
+        new_bot[part_idx:part_idx] = new_b_groups
 
-        new_top_partitions = self._refine_node_partitions(
-            graph, new_top_partitions, edge_colors
-        )
-        new_bottom_partitions = self._refine_node_partitions(
-            graph, new_bottom_partitions, edge_colors, branch=True
-        )
-        new_top_partitions = list(new_top_partitions)
-        assert len(new_top_partitions) == 1
-        new_top_partitions = new_top_partitions[0]
-        for bot in new_bottom_partitions:
-            yield list(new_top_partitions), bot
+        new_top = next(self._refine_node_partition(graph, new_top, edge_colors))
+        # refine in all branches of possible refinements (to find symmetries)
+        bots = self._refine_node_partition(graph, new_bot, edge_colors, branch=True)
+        list_new_top = list(new_top)
+        for bot in bots:
+            yield list_new_top, bot
 
     def _process_ordered_pair_partitions(
         self,
         graph,
-        top_partitions,
-        bottom_partitions,
+        top_partition,
+        bottom_partition,
         edge_colors,
-        orbits=None,
-        cosets=None,
     ):
-        """
-        Processes ordered pair partitions as per the reference paper. Finds and
-        returns all permutations and cosets that leave the graph unchanged.
-        """
-        if orbits is None:
-            orbits = [{node} for node in graph.nodes]
-        else:
-            # Note that we don't copy orbits when we are given one. This means
-            # we leak information between the recursive branches. This is
-            # intentional!
-            orbits = orbits
-        if cosets is None:
-            cosets = {}
-        else:
-            cosets = cosets.copy()
+        if all(len(top) <= 1 for top in top_partition):
+            return {}
 
-        if not all(
-            len(t_p) == len(b_p) for t_p, b_p in zip(top_partitions, bottom_partitions)
-        ):
-            # This used to be an assertion, but it gets tripped in rare cases:
-            # 5 - 4 \     / 12 - 13
-            #        0 - 3
-            # 9 - 8 /     \ 16 - 17
-            # Assume 0 and 3 are coupled and no longer equivalent. At that point
-            # {4, 8} and {12, 16} are no longer equivalent, and neither are
-            # {5, 9} and {13, 17}. Coupling 4 and refinement results in 5 and 9
-            # getting their own partitions, *but not 13 and 17*. Further
-            # iterations will attempt to couple 5 to {13, 17}, which cannot
-            # result in more symmetries?
-            return [], cosets
+        node_to_ID = {n: i for i, n in enumerate(graph)}
+        orbit_id = {node: orbit_i for orbit_i, node in enumerate(graph.nodes)}
+        orbits = [{node} for node in graph.nodes]
+        cosets = {}
 
-        # BASECASE
-        if all(len(top) == 1 for top in top_partitions):
-            # All nodes are mapped
-            permutations = self._find_permutations(top_partitions, bottom_partitions)
-            self._update_orbits(orbits, permutations)
-            if permutations:
-                return [permutations], cosets
-            else:
-                return [], cosets
+        # find smallest node and its partition index
+        unmapped_nodes = (
+            (node_to_ID[node], node, idx)
+            for idx, t_part in enumerate(top_partition)
+            for node in t_part
+            if len(t_part) > 1
+        )
+        _, node, part_i = min(unmapped_nodes)  # needs sortable nodes
+        b_part = bottom_partition[part_i]
+        node2_iter = iter(sorted(b_part))
 
-        permutations = []
-        unmapped_nodes = {
-            (node, idx)
-            for idx, t_partition in enumerate(top_partitions)
-            for node in t_partition
-            if len(t_partition) > 1
-        }
-        node, pair_idx = min(unmapped_nodes)
-        b_partition = bottom_partitions[pair_idx]
+        queue = [(top_partition, bottom_partition, node, part_i, node2_iter)]
 
-        for node2 in sorted(b_partition):
-            if len(b_partition) == 1:
-                # Can never result in symmetry
-                continue
-            if node != node2 and any(
-                node in orbit and node2 in orbit for orbit in orbits
-            ):
-                # Orbit prune branch
-                continue
-            # REDUCTION
-            # Couple node to node2
-            partitions = self._couple_nodes(
-                top_partitions,
-                bottom_partitions,
-                pair_idx,
-                node,
-                node2,
-                graph,
-                edge_colors,
-            )
-            for opp in partitions:
-                new_top_partitions, new_bottom_partitions = opp
+        while queue:
+            tops, bottoms, node, part_i, node2_iter = queue[-1]
 
-                new_perms, new_cosets = self._process_ordered_pair_partitions(
-                    graph,
-                    new_top_partitions,
-                    new_bottom_partitions,
-                    edge_colors,
-                    orbits,
-                    cosets,
-                )
-                # COMBINATION
-                permutations += new_perms
-                cosets.update(new_cosets)
+            if len(bottoms[part_i]) > 1:
+                for node2 in node2_iter:
+                    if node != node2 and orbit_id[node] == orbit_id[node2]:
+                        # Orbit prune branch
+                        continue
+                    # REDUCTION   Couple node to node2
+                    partitions = self._couple_nodes(
+                        tops,
+                        bottoms,
+                        part_i,
+                        node,
+                        node2,
+                        graph,
+                        edge_colors,
+                    )
+                    new_q = []
+                    for opp in partitions:
+                        if all(len(top) <= 1 for top in opp[0]):
+                            # all nodes are mapped
+                            permutations = self._find_permutations(*opp)
+                            for permutation in permutations:
+                                orb1, orb2 = (orbit_id[n] for n in permutation)
+                                if orb1 != orb2:
+                                    orbit_set2 = orbits[orb2]
+                                    orbits[orb1].update(orbit_set2)
+                                    orbits[orb2] = set()
+                                    orbit_id.update((n, orb1) for n in orbit_set2)
+                            continue
 
-        mapped = {
-            k
-            for top, bottom in zip(top_partitions, bottom_partitions)
-            for k in top
-            if len(top) == 1 and top == bottom
-        }
-        ks = {k for k in graph.nodes if k < node}
-        # Have all nodes with ID < node been mapped?
-        find_coset = ks <= mapped and node not in cosets
-        if find_coset:
-            # Find the orbit that contains node
-            for orbit in orbits:
-                if node in orbit:
-                    cosets[node] = orbit.copy()
-        return permutations, cosets
+                        ## Prep to load into queue
+                        unmapped_nodes = {
+                            (node_to_ID[node], node, i)
+                            for i, top in enumerate(opp[0])
+                            for node in top
+                            if len(top) > 1
+                        }
+                        if unmapped_nodes:
+                            _, n, part_i = min(unmapped_nodes)
+                            b_part = opp[1][part_i]
+                            node2_iter = iter(sorted(b_part))
+                            new_q.append((*opp, n, part_i, node2_iter))
+                    queue.extend(new_q[::-1])
+                    break
+                else:  # no more node2 options
+                    queue.pop()
+                    if node not in cosets:
+                        mapped = {
+                            k
+                            for top, bottom in zip(tops, bottoms)
+                            for k in top
+                            if len(top) == 1 and top == bottom
+                        }
+                        IDless = {n for n in graph if node_to_ID[n] < node_to_ID[node]}
+                        # Have all nodes with ID < node been mapped?
+                        if IDless <= mapped:
+                            orb = orbit_id[node]
+                            cosets[node] = orbits[orb].copy()
+        return cosets
