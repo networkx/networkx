@@ -815,7 +815,7 @@ class TestSimilarity:
             ]
         )
         actual = nx.similarity._simrank_similarity_numpy(G)
-        np.testing.assert_allclose(expected, actual, atol=1e-7)
+        assert np.allclose(expected, actual, rtol=1e-7, atol=1e-7)
 
     def test_simrank_numpy_source_no_target(self):
         G = nx.cycle_graph(5)
@@ -829,13 +829,13 @@ class TestSimilarity:
             ]
         )
         actual = nx.similarity._simrank_similarity_numpy(G, source=0)
-        np.testing.assert_allclose(expected, actual, atol=1e-7)
+        assert np.allclose(expected, actual, rtol=1e-7, atol=1e-7)
 
     def test_simrank_numpy_source_and_target(self):
         G = nx.cycle_graph(5)
         expected = 1.0
         actual = nx.similarity._simrank_similarity_numpy(G, source=0, target=0)
-        np.testing.assert_allclose(expected, actual, atol=1e-7)
+        assert np.allclose(expected, actual, rtol=1e-7, atol=1e-7)
 
     def test_panther_similarity_unweighted(self):
         G = nx.Graph()

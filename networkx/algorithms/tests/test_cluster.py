@@ -304,8 +304,12 @@ class TestDirectedWeightedClustering:
         G.add_edge(0, 4, weight=2)
         assert nx.clustering(G)[0] == 1 / 6
         # Relaxed comparisons to allow graphblas-algorithms to pass tests
-        np.testing.assert_allclose(nx.clustering(G, weight="weight")[0], 1 / 12)
-        np.testing.assert_allclose(nx.clustering(G, 0, weight="weight"), 1 / 12)
+        assert np.allclose(
+            nx.clustering(G, weight="weight")[0], 1 / 12, rtol=1e-07, atol=0
+        )
+        assert np.allclose(
+            nx.clustering(G, 0, weight="weight"), 1 / 12, rtol=1e-07, atol=0
+        )
 
 
 class TestWeightedClustering:
@@ -384,8 +388,12 @@ class TestWeightedClustering:
         G = nx.cycle_graph(3)
         G.add_edge(0, 4, weight=2)
         assert nx.clustering(G)[0] == 1 / 3
-        np.testing.assert_allclose(nx.clustering(G, weight="weight")[0], 1 / 6)
-        np.testing.assert_allclose(nx.clustering(G, 0, weight="weight"), 1 / 6)
+        assert np.allclose(
+            nx.clustering(G, weight="weight")[0], 1 / 6, rtol=1e-07, atol=0
+        )
+        assert np.allclose(
+            nx.clustering(G, 0, weight="weight"), 1 / 6, rtol=1e-07, atol=0
+        )
 
     def test_triangle_and_signed_edge(self):
         G = nx.cycle_graph(3)
