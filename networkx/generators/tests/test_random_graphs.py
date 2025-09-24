@@ -523,7 +523,7 @@ def test_random_k_lift_multigraph():
             (2, 0),
             (2, 0),  # Two parallel edges
         ]
-    )  # small multigraph with parallel edges
+    )  # small 3 node multigraph with parallel edges
     H = nx.random_k_lift(G, 2, seed=41)
     assert isinstance(H, nx.MultiGraph)
     assert H.number_of_nodes() == 3 * 2
@@ -532,13 +532,17 @@ def test_random_k_lift_multigraph():
     assert nx.is_connected(H)
 
 
-# Specific test for failure behavior
-def test_random_k_lift_non_regular_graph():
-    """Create a non-regular graph: node 0 has degree 2,
-    node 1 has degree 1, node 2 has degree 1
-    """
+# Test structure and connectivity for simple non regular case
+def test_random_k_lift_non_regular():
+    # G is a non degree regular graph with 4 nodes
     G = nx.Graph()
-    G.add_edges_from([(0, 1), (0, 2)])  # degrees: 0→2, 1→1, 2→1
-
-    with pytest.raises(ValueError, match="must be degree-regular"):
-        nx.random_k_lift(G, k=2, seed=1)
+    G.add_edges_from([(0, 1), (1, 2), (1, 3), (2, 3), (0, 3)])
+    H = random_k_lift(G, 3, seed=43)
+    assert H.number_of_nodes() == 4 * 3
+    assert nx.is_connected(H)
+    #degree distribution check
+    for v in G.nodes:
+        original_degree = G.degree[v]
+        for i in range(3):
+            lifted_node = (v, i)
+            assert H.degree[lifted_node] == original_degree
