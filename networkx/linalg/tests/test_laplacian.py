@@ -133,32 +133,32 @@ class TestLaplacian:
                           [ 0.    ,  0.    ,  0.    ,  0.    , -0.4082,  0.5   ]])
         # fmt: on
 
-        np.testing.assert_allclose(
+        assert np.allclose(
             nx.normalized_laplacian_matrix(self.G, nodelist=range(5)).todense(),
             G,
             atol=1.5e-3,
             rtol=0,
         )
-        np.testing.assert_allclose(
+        assert np.allclose(
             nx.normalized_laplacian_matrix(self.G).todense(), GL, atol=1.5e-3, rtol=0
         )
-        np.testing.assert_allclose(
+        assert np.allclose(
             nx.normalized_laplacian_matrix(self.MG).todense(), GL, atol=1.5e-3, rtol=0
         )
-        np.testing.assert_allclose(
+        assert np.allclose(
             nx.normalized_laplacian_matrix(self.WG).todense(), GL, atol=1.5e-3, rtol=0
         )
-        np.testing.assert_allclose(
+        assert np.allclose(
             nx.normalized_laplacian_matrix(self.WG, weight="other").todense(),
             GL,
             atol=1.5e-3,
             rtol=0,
         )
-        np.testing.assert_allclose(
+        assert np.allclose(
             nx.normalized_laplacian_matrix(self.Gsl).todense(), Lsl, atol=1.5e-3, rtol=0
         )
 
-        np.testing.assert_allclose(
+        assert np.allclose(
             nx.normalized_laplacian_matrix(
                 self.DiG,
                 nodelist=range(1, 1 + 6),
@@ -167,31 +167,31 @@ class TestLaplacian:
             atol=1.5e-3,
             rtol=0,
         )
-        np.testing.assert_allclose(
+        assert np.allclose(
             nx.normalized_laplacian_matrix(self.DiG).todense(),
             DiGL,
             atol=1.5e-3,
             rtol=0,
         )
-        np.testing.assert_allclose(
+        assert np.allclose(
             nx.normalized_laplacian_matrix(self.DiMG).todense(),
             DiGL,
             atol=1.5e-3,
             rtol=0,
         )
-        np.testing.assert_allclose(
+        assert np.allclose(
             nx.normalized_laplacian_matrix(self.DiWG).todense(),
             DiGL,
             atol=1.5e-3,
             rtol=0,
         )
-        np.testing.assert_allclose(
+        assert np.allclose(
             nx.normalized_laplacian_matrix(self.DiWG, weight="other").todense(),
             DiGL,
             atol=1.5e-3,
             rtol=0,
         )
-        np.testing.assert_allclose(
+        assert np.allclose(
             nx.normalized_laplacian_matrix(self.DiGsl).todense(),
             DiLsl,
             atol=1.5e-3,
@@ -228,7 +228,7 @@ def test_directed_laplacian():
                    [-0.0261, -0.0554, -0.0251, -0.6675, -0.2078,  0.9833]])
     # fmt: on
     L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G))
-    np.testing.assert_allclose(L, GL, atol=1.5e-3, rtol=0)
+    assert np.allclose(L, GL, atol=1.5e-3, rtol=0)
 
     # Make the graph strongly connected, so we can use a random and lazy walk
     G.add_edges_from(((2, 5), (6, 1)))
@@ -243,7 +243,7 @@ def test_directed_laplacian():
     L = nx.directed_laplacian_matrix(
         G, alpha=0.9, nodelist=sorted(G), walk_type="random"
     )
-    np.testing.assert_allclose(L, GL, atol=1.5e-3, rtol=0)
+    assert np.allclose(L, GL, atol=1.5e-3, rtol=0)
 
     # fmt: off
     GL = np.array([[ 0.5   , -0.1531, -0.2357,  0.    ,  0.    , -0.1614],
@@ -254,7 +254,7 @@ def test_directed_laplacian():
                    [-0.1614,  0.    ,  0.    , -0.25  , -0.125 ,  0.5   ]])
     # fmt: on
     L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G), walk_type="lazy")
-    np.testing.assert_allclose(L, GL, atol=1.5e-3, rtol=0)
+    assert np.allclose(L, GL, atol=1.5e-3, rtol=0)
 
     # Make a strongly connected periodic graph
     G = nx.DiGraph()
@@ -266,7 +266,7 @@ def test_directed_laplacian():
                    [-0.25 , -0.176, -0.176,  0.5  ]])
     # fmt: on
     L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G))
-    np.testing.assert_allclose(L, GL, atol=1.5e-3, rtol=0)
+    assert np.allclose(L, GL, atol=1.5e-3, rtol=0)
 
 
 def test_directed_combinatorial_laplacian():
@@ -299,7 +299,7 @@ def test_directed_combinatorial_laplacian():
     # fmt: on
 
     L = nx.directed_combinatorial_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G))
-    np.testing.assert_allclose(L, GL, atol=1.5e-3, rtol=0)
+    assert np.allclose(L, GL, atol=1.5e-3, rtol=0)
 
     # Make the graph strongly connected, so we can use a random and lazy walk
     G.add_edges_from(((2, 5), (6, 1)))
@@ -316,7 +316,7 @@ def test_directed_combinatorial_laplacian():
     L = nx.directed_combinatorial_laplacian_matrix(
         G, alpha=0.9, nodelist=sorted(G), walk_type="random"
     )
-    np.testing.assert_allclose(L, GL, atol=1.5e-3, rtol=0)
+    assert np.allclose(L, GL, atol=1.5e-3, rtol=0)
 
     # fmt: off
     GL = np.array([[ 0.0698, -0.0174, -0.0233,  0.    ,  0.    , -0.0291],
@@ -330,7 +330,7 @@ def test_directed_combinatorial_laplacian():
     L = nx.directed_combinatorial_laplacian_matrix(
         G, alpha=0.9, nodelist=sorted(G), walk_type="lazy"
     )
-    np.testing.assert_allclose(L, GL, atol=1.5e-3, rtol=0)
+    assert np.allclose(L, GL, atol=1.5e-3, rtol=0)
 
     E = nx.DiGraph(nx.margulis_gabber_galil_graph(2))
     L = nx.directed_combinatorial_laplacian_matrix(E)
@@ -342,7 +342,7 @@ def test_directed_combinatorial_laplacian():
          [ 0.        , -0.08333333, -0.08333333,  0.16666667]]
     )
     # fmt: on
-    np.testing.assert_allclose(L, expected, atol=1.5e-6, rtol=0)
+    assert np.allclose(L, expected, atol=1.5e-6, rtol=0)
 
     with pytest.raises(nx.NetworkXError):
         nx.directed_combinatorial_laplacian_matrix(G, walk_type="pagerank", alpha=100)
