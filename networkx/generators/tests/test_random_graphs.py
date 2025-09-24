@@ -540,7 +540,7 @@ def test_random_k_lift_non_regular():
     H = random_k_lift(G, 3, seed=43)
     assert H.number_of_nodes() == 4 * 3
     assert nx.is_connected(H)
-    #degree distribution check
+    # degree distribution check
     for v in G.nodes:
         original_degree = G.degree[v]
         for i in range(3):
