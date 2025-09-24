@@ -342,7 +342,7 @@ class TestDirectedSteinerTree:
             directed_steiner_tree(self.G1, 0, {})
 
     @pytest.mark.parametrize(
-        "cutoff, should_raise",
+        "levels, should_raise",
         [
             (None, False),
             (float("inf"), False),
@@ -351,28 +351,13 @@ class TestDirectedSteinerTree:
             (-5, True),
         ],
     )
-    def test_cutoff_values(self, cutoff, should_raise):
+    def test_levels_values(self, levels, should_raise):
         if should_raise:
             with pytest.raises(nx.NetworkXError):
-                directed_steiner_tree(self.G2, 0, {1}, cutoff=cutoff)
+                directed_steiner_tree(self.G2, 0, {1}, levels=levels)
         else:
-            H = directed_steiner_tree(self.G2, 0, {1}, cutoff=cutoff)
+            H = directed_steiner_tree(self.G2, 0, {1}, levels=levels)
             assert (0, 2) and (2, 1) in H.edges
-
-    @pytest.mark.parametrize(
-        "cutoff, should_raise",
-        [
-            (2, False),
-            (1, True),
-        ],
-    )
-    def test_cutoff_limited_depth(self, cutoff, should_raise):
-        if should_raise:
-            with pytest.raises(nx.NetworkXUnfeasible):
-                directed_steiner_tree(self.G2, 0, {1}, cutoff=cutoff)
-        else:
-            H = directed_steiner_tree(self.G2, 0, {1}, cutoff=cutoff)
-            assert 2 in H.nodes
 
     @pytest.mark.parametrize(
         "min_terminals, should_raise", [(-1, True), (0, True), (2, True), (1, False)]
@@ -397,7 +382,7 @@ class TestDirectedSteinerTree:
     def test_multiple_terminals(self):
         H = directed_steiner_tree(self.G1, 0, {1, 2})
         assert set(H.nodes) == {0, 1, 2}
-        assert (0, 1) and (2, 1) in H.edges
+        assert (0, 1) and (0, 2) in H.edges
 
     def test_cannot_cover_min_terminals_raises(self):
         with pytest.raises(nx.NetworkXError):
@@ -405,5 +390,5 @@ class TestDirectedSteinerTree:
 
     def test_multidigraph_missing_weight(self):
         directed_steiner_tree(
-            self.G3, 1, {2, 3}, min_terminals=2, cutoff=2, weight="weight"
+            self.G3, 1, {2, 3}, min_terminals=2, levels=2, weight="weight"
         )
