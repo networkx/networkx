@@ -537,7 +537,7 @@ def test_random_k_lift_non_regular():
     # G is a non degree regular graph with 4 nodes
     G = nx.Graph()
     G.add_edges_from([(0, 1), (1, 2), (1, 3), (2, 3), (0, 3)])
-    H = random_k_lift(G, 3, seed=43)
+    H = nx.random_k_lift(G, 3, seed=43)
     assert H.number_of_nodes() == 4 * 3
     assert nx.is_connected(H)
     # degree distribution check
