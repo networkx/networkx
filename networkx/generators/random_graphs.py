@@ -1477,22 +1477,22 @@ def random_k_lift(G, k, seed=None):
     References
     ----------
     [1] Y. Bilu and N. Linial, "Lifts, Discrepancy and Nearly Optimal Spectral Gap."
-        *Combinatorica*, 26(5), pp. 495–519, 2006, 
+        *Combinatorica*, 26(5), pp. 495–519, 2006,
         https://www.cs.huji.ac.il/~nati/PAPERS/raman_lift.pdf
-    [2] A. Valadarsky, G. Shahaf, M. Dinitz and M. Schapira, 
-        "Xpander: Towards Optimal-Performance Datacenters.", 
+    [2] A. Valadarsky, G. Shahaf, M. Dinitz and M. Schapira,
+        "Xpander: Towards Optimal-Performance Datacenters.",
         In *Proceedings of the 12th International Conference on
-        Emerging Networking Experiments and Technologies (CoNEXT)*, 2016, 
+        Emerging Networking Experiments and Technologies (CoNEXT)*, 2016,
         https://dl.acm.org/doi/pdf/10.1145/2999572.2999580
     [3] N. Agarwal, K. Chandrasekaran, A. Kolla and V. Madan,
-        "On the Expansion of Group-Based Lifts.", arXiv preprint arXiv:1311.3268v2, 2016, 
+        "On the Expansion of Group-Based Lifts.", arXiv preprint arXiv:1311.3268v2, 2016,
         http://arxiv.org/abs/1311.3268v2
-    [4] P. Chebolu and A. Frieze, 
-        "Hamilton Cycles in Random Lifts of Directed Graphs.", 
-        Department of Mathematics, Carnegie Mellon University, 2007, 
+    [4] P. Chebolu and A. Frieze,
+        "Hamilton Cycles in Random Lifts of Directed Graphs.",
+        Department of Mathematics, Carnegie Mellon University, 2007,
         https://www.math.cmu.edu/~af1p/Texfiles/LiftHamDir.pdf
-    [5] S. Hoory, 
-        "On the Girth of Graph Lifts." arXiv:2401.01238v1, 2024, 
+    [5] S. Hoory,
+        "On the Girth of Graph Lifts." arXiv:2401.01238v1, 2024,
         https://arxiv.org/pdf/2401.01238
 
     Examples
