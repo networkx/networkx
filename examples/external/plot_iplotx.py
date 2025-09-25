@@ -41,7 +41,7 @@ ipx.network(
     node_labels=True,
     # Edge styling
     edge_alpha=0.7,
-    edge_padding=3,
+    edge_shrink=3,
     # Custom drawing order (nodes on top)
     edge_zorder=2,
     node_zorder=3,
