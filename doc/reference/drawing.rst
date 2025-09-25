@@ -24,8 +24,9 @@ GraphML format, and so, ``networkx.write_graphml(G, path)`` might be an appropri
 choice.
 
 .. tip::
+
    ``iplotx`` accepts NetworkX native data structures without exporting to a file.
-   An example is provided below. 
+   An example is provided below.
 
 More information on the features provided here are available at
  - matplotlib:  http://matplotlib.org/
