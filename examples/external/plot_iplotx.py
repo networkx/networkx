@@ -29,22 +29,22 @@ ipx.network(
     H,
     layout,
     # Constant styling
-    vertex_marker="s",
-    vertex_edgecolor="black",
-    vertex_linewidth=1.5,
+    node_marker="s",
+    node_edgecolor="black",
+    node_linewidth=1.5,
     # Per-element styling, with fallback
-    vertex_size=defaultdict(lambda: 17, {0: 50, 1: 30, 2: 40}),
+    node_size=defaultdict(lambda: 17, {0: 50, 1: 30, 2: 40}),
     # Cycling styling
-    vertex_facecolor=["lightblue", "steelblue", "dodgerblue"],
-    vertex_label_color=["black", "white", "white"],
-    # Add vertex labels
-    vertex_labels=True,
+    node_facecolor=["lightblue", "steelblue", "dodgerblue"],
+    node_label_color=["black", "white", "white"],
+    # Add node labels
+    node_labels=True,
     # Edge styling
     edge_alpha=0.7,
     edge_padding=3,
-    # Custom drawing order (vertices on top)
+    # Custom drawing order (nodes on top)
     edge_zorder=2,
-    vertex_zorder=3,
+    node_zorder=3,
     # Custom axes-level options
     margins=0.1,
     figsize=(8, 8),
