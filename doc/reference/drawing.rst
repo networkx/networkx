@@ -64,8 +64,8 @@ Examples
 .. code-block:: python
 
   >>> import iplotx as ipx
-  >>> G = nx.cycle_graph(n=5, create_using=nx.DiGraph)
-  >>> layout = nx.layout.circular_layout(G)
+  >>> G = nx.cycle_graph(5, create_using=nx.DiGraph)
+  >>> layout = nx.circular_layout(G)
   >>> ipx.network(G, layout=layout, vertex_facecolor=["tomato", "gold"])
 
 See Also
