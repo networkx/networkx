@@ -14,7 +14,8 @@ visualize their graphs with tools dedicated to that task. Notable examples of
 dedicated and fully-featured graph visualization tools are
 `Cytoscape <http://www.cytoscape.org/>`_,
 `Gephi <https://gephi.org/>`_,
-`Graphviz <http://www.graphviz.org/>`_ and, for
+`Graphviz <http://www.graphviz.org/>`_,
+`iplotx <https://iplotx.readthedocs.io/>`_ and, for
 `LaTeX <http://www.latex-project.org/>`_ typesetting,
 `PGF/TikZ <https://sourceforge.net/projects/pgf/>`_.
 To use these and other such tools, you should export your NetworkX graph into
@@ -22,10 +23,15 @@ a format that can be read by those tools. For example, Cytoscape can read the
 GraphML format, and so, ``networkx.write_graphml(G, path)`` might be an appropriate
 choice.
 
+.. tip::
+
+   ``iplotx`` accepts NetworkX native data structures without exporting to a file.
+   An example is provided below.
+
 More information on the features provided here are available at
  - matplotlib:  http://matplotlib.org/
  - pygraphviz:  http://pygraphviz.github.io/
-
+ - iplotx: https://iplotx.readthedocs.io/
 
 Matplotlib
 ==========
@@ -50,6 +56,23 @@ Matplotlib
    draw_spring
    draw_shell
 
+Matplotlib with iplotx
+======================
+Draw networks with matplotlib, using ``iplotx`` for extended styling options.
+
+Examples
+--------
+.. code-block:: python
+
+  >>> import iplotx as ipx
+  >>> G = nx.cycle_graph(5, create_using=nx.DiGraph)
+  >>> layout = nx.circular_layout(G)
+  >>> ipx.network(G, layout=layout, vertex_facecolor=["tomato", "gold"])
+
+See Also
+--------
+- `iplotx <https://iplotx.readthedocs.io/>`_
+- `iplotx.network <https://iplotx.readthedocs.io/en/latest/api/plotting.html#plotting-api>`_
 
 
 Graphviz AGraph (dot)
