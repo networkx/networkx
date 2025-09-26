@@ -290,9 +290,11 @@ def directed_steiner_tree(
 
     Returns
     -------
-    H : DiGraph
-        The directed Steiner tree subgraph of `G` spanning all required terminals,
-        rooted at `root`.
+    DST : DiGraph
+        A directed Steiner tree (arborescence) subgraph of `G` spanning all
+        required terminals, rooted at `root`. The returned graph is a new
+        DiGraph containing the relevant nodes and edges (with attributes)
+        from `G`.
 
     Raises
     ------
@@ -382,42 +384,88 @@ def directed_steiner_tree(
             f"which is fewer than required min_terminals={min_terminals}."
         )
 
-    H = _directed_metric_closure(G, weight=weight)
-    H = _directed_steiner_tree(
-        H, root, reachable_terminals, min_terminals, levels, weight
+    G_closure = _directed_metric_closure(G, weight=weight)
+    G_closure_tree = _directed_steiner_tree(
+        G_closure, root, reachable_terminals, min_terminals, levels, weight
     )
-    covered = set(H.nodes) & set(reachable_terminals)
+    covered = set(G_closure_tree.nodes) & set(reachable_terminals)
     if len(covered) < min_terminals:
         raise nx.NetworkXUnfeasible(
             "Directed Steiner tree could not cover at least "
             f"{min_terminals}.\nReachable terminals: {list(reachable_terminals)}"
         )
-    H = _expand_full_closure(G, H)
-    return H
+    G_expanded = _expand_full_closure(G, G_closure_tree)
+    pred, dist = nx.dijkstra_predecessor_and_distance(G_expanded, root, weight=weight)
+
+    DST = _build_strict_steiner_tree(
+        G_expanded=G_expanded,
+        root=root,
+        covered=covered,
+        pred=pred,
+        terminals=terminals,
+    )
+    return DST
 
 
 def _directed_metric_closure(G, weight="weight"):
     """Return the directed metric closure of a DiGraph."""
-    M = nx.DiGraph()
+    G_closure = nx.DiGraph()
     for u in G:
         costs, paths = nx.single_source_dijkstra(G, u, weight=weight)
         for v, d in costs.items():
             if u == v:
                 continue
-            M.add_edge(u, v, **{weight: d}, path=paths[v])
-    return M
+            G_closure.add_edge(u, v, **{weight: d}, path=paths[v])
+    return G_closure
 
 
-def _expand_full_closure(G, H):
-    R = nx.DiGraph()
-    for u, v, data in H.edges(data=True):
+def _expand_full_closure(G, G_closure):
+    G_expanded = nx.DiGraph()
+    for u, v, data in G_closure.edges(data=True):
         path_nodes = data["path"]
         for a, b in zip(path_nodes[:-1], path_nodes[1:]):
             if G.has_edge(a, b):
-                R.add_edge(a, b, **G[a][b])
+                G_expanded.add_edge(a, b, **G[a][b])
             else:
-                R.add_edge(a, b)
-    return R
+                G_expanded.add_edge(a, b)
+    return G_expanded
+
+
+def _build_strict_steiner_tree(G_expanded, root, covered, pred, terminals):
+    DST = nx.DiGraph()
+    DST.add_node(root, **G_expanded.nodes[root])
+    for t in covered:
+        if t == root:
+            continue
+        if t not in pred:
+            continue
+
+        v = t
+        while v != root:
+            # pred[v] may contain multiple predecessors (ties in shortest paths).
+            # Use min() to ensure deterministic output instead of relying on list order.
+            u = min(pred[v])
+
+            if u not in DST:
+                DST.add_node(u, **G_expanded.nodes[u])
+            if v not in DST:
+                DST.add_node(v, **G_expanded.nodes[v])
+
+            DST.add_edge(u, v, **G_expanded[u][v])
+            v = u
+
+    # remove non-terminal leaves
+    leaves = {node for node in DST if DST.out_degree(node) == 0 and node not in covered}
+
+    while leaves:
+        parents = set()
+        for u in leaves:
+            parents.update(DST.predecessors(u))
+        DST.remove_nodes_from(leaves)
+
+        leaves = {p for p in parents if DST.out_degree(p) == 0 and p not in terminals}
+
+    return DST
 
 
 def _collapse_multigraph_to_digraph(G, weight="weight"):
