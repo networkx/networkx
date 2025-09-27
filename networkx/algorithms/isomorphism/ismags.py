@@ -89,12 +89,158 @@ True
 
 Notes
 -----
-- The current implementation works for undirected graphs only. The algorithm
-  in general should work for directed graphs as well though.
-- Node keys for both provided graphs need to be fully orderable as well as
-  hashable.
 - Node and edge equality is assumed to be transitive: if A is equal to B, and
   B is equal to C, then A is equal to C.
+- ISMAGS does a symmetry analysis to find the constraints on isomorphisms if
+  we preclude yielding isomorphisms that differ by a symmetry of the subgraph.
+  For example, is the subgraph is a 4-cycle, every isomorphism would have a
+  symmetric version with the nodes rotated relative to the original isomorphism.
+  By encoding these symmetries as constraints we reduce the search space for
+  isomorphisms and we also simplify processing the resulting isomorphisms.
+
+  **Symmetry Analysis**
+
+  The constraints in ISMAGS are based off the handling in `nauty` and it's many
+  variants, in particular `saucy`, as discussed in the ISMAGS paper [1]_.
+  That paper cites [3]_ for details on symmetry handling. Figure 2 of that paper
+  describes the DFS approach to symmetries used here and relying on a data structure
+  called an Ordered Pair Partitions(OPP). This consists of a pair of partitions
+  where each part represents nodes with the same degree-by-color over all colors.
+  We refine these partitions simultaneously in a way to result in permutations
+  of the nodes that preserve the graph structure. We thus find automorphisms
+  for the subgraph of interest. From those we identify pairs of nodes which
+  are structurally equivalent. We then constrain our problem by requiring the
+  first of the pair to always be assigned first in the isomorphism -- thus
+  constraining the isomorphisms reported to only one example from the set of all
+  symmetrically equivalent isomorphisms. These constraints are computed once
+  based on the subgraph symmetries and then used throughout the DFS search for
+  isomorphisms.
+
+  Finding the symmetries involves a DFS of the OPP wherein we "couple" a node
+  to a node in its degree-by-color part of the partition. This "coupling" is done
+  via assigning a new color in the top partition to the node being coupled,
+  and the same new color in the bottom partition to the node being coupled to.
+  This new color has only one node in each partition. The new color also requires
+  that we "refine" both top and bottom partitions by splitting parts until each
+  part represents a common degree-by-color value. Those refinements introduce
+  new colors as the parts are split during refinement. Parts do not get combined
+  during refinement. So the coupling/refining process always results in at least
+  one new part with only one node in both the top and bottom partition. In practice
+  we usually refine into many new one-node parts in both partitions.
+  We continue in this way until each node has its own part/color in the top partition
+  -- and the node in the bottom partition with that color is the symmetric node.
+  That is, an OPP represents an automorphism, and thus a symmetry
+  of the subgraph when each color has a single node in the top partition and a single
+  node in the bottom partition. From those automorphisms we build up a set of nodes
+  that can be obtained from each other by symmetry (they are mutually symmetric).
+  That set of nodes is called an "orbit" of subgraph under symmetry.
+
+  After finding the orbits for one symmetry, we backtrack in the DFS by removing the
+  latest coupling and replacing it with a coupling from the same top node to a new
+  botom node in its degree-by-color grouping. When all possible couplings for that
+  node are considered we backtrack to the previously coupled node and recouple in
+  a DFS manner.
+
+  We can prune the DFS search tree in helpful ways. The paper [2]_ demonstrates 6
+  situations of interest in the DFS where pruning is possible:
+
+    - An **Automorphism OPP** is an OPP where every part in both partitions
+      contains a single node. The mapping/automorphism is found by mapping
+      each top node to the bottom node in the same color part. For example,
+      ``[({1}, {2}, {3}); ({2}, {3}, {1})]`` represents the mapping of each
+      not to the next in a triangle. It rotates the nodes around the triangle.
+    - The **Identity OPP** is the first automorphism found during the DFS. It
+      appears on the left side of the DFS tree and is first due to our ordering of
+      coupling nodes to be in an arbitrary but fixed ordering of the nodes. This
+      automorphism does not show any symmetries, but it ensures the orbit for each
+      node includes itself and it sets us up for handling the symmetries. Note that
+      a subgraph with no symmetries will only have the identity automorphism.
+    - A **Non-isomorphic OPP** occurs when refinement creates a different number of
+      parts in the top partition than in the bottom partition. This means no symmetries
+      will be found during further processing of that subtree of the DFS. We prune
+      the subtree and continue.
+    - A **Matching OPP** is such that each top part that has more than one node is
+      in fact equal to the bottom part with the same color. The many-node-parts match
+      exactly. The single-node parts then represent symmetries that do not permute
+      any matching nodes. Matching OPPs arise while finding the Identity Mapping. But
+      the single-node parts are identical in the two partitions, so no useful symmetries
+      are found. But after the Identity Mapping is found, every Matching OPP encountered
+      will have different nodes in at least two single-node parts of the same color.
+      So these positions in the DFS provide us with symmetries without any
+      need to find the whole automorphism. We can prune the subtree, update the orbits
+      and backtrack. Any larger symmetries that combine these symmetries with symmetries
+      of the many-node-parts do not need to be explored because the symmetry "generators"
+      found in this way provide a basis for all symmetries. We will find the symmetry
+      generators of the many-node-parts at another subtree of the DFS.
+    - An **Orbit Pruning OPP** is an OPP where the node coupling to be considered next
+      has both nodes already known to be in the same orbit. We have already identified
+      those permutations when we discovered the orbit. So we can prune the resulting
+      subtree. This is the primary pruning discussed in [1]_.
+    - A **Coset Point** in the DFS is a point of the tree when a node is first
+      back-tracked. That is, it's couplings have all been analyzed once and we backtrack
+      to its parent. So, said another way, when a node is backtracked to and is about to
+      be mapped to a different node for the first time, its child in the DFS has been
+      completely analysed. Thus the orbit for that child at this point in the DFS is
+      the full orbit for symmetries involving only that child or larger nodes in the
+      node order. All smaller nodes are mapped to themselves.
+      This orbit is due to symmetries not involving smaller nodes. Such an orbit is
+      called the "coset" of that node. The Coset Point does not lead pruning or to
+      more symmetries. It is the point in the process where we store the **coset** of
+      the node being backtracked. We use the cosets to construct the symmetry
+      constraints.
+
+  Once the pruned DFS tree has been traversed, we have collected the cosets of some
+  special nodes. Often most nodes are not coupled during the progression down the left
+  side of the DFS. They are separated from other nodes during the partition refinement
+  process after coupling. So they never get coupled directly. Thus the number of cosets
+  we find if typically many fewer than the number of nodes.
+
+  We turn those cosets into constraints on the nodes when building non-symmetric
+  isomorphisms. The node who's coset is used is paired with each other node in the
+  coset. These node-pairs form the constraints. During isomorphism construction we
+  always select the first of the constraint before the other. This removes subtrees
+  from the DFS traversal space used to build isomorphisms.
+
+  The constraints we obtain via symmetry analysis of the subgraph are used for
+  finding non-symmetric isomorphisms. We prune the isomorphism tree based on
+  the constraints we obtain from the symmetry analysis.
+
+  **Isomorphism Construction**
+
+  Once we have symmetry constraints on the isomorphisms, ISMAGS constructs the allowed
+  isomorphisms by mapping each node of the subgraph to all possible nodes (with the
+  same degree-by-color) from the graph. We partition all nodes into degree-by-color
+  parts and order the subgraph nodes we consider using smallest part size first.
+  The idea is to try to map the most difficult subgraph nodes first (most difficult
+  here means least number of graph candidates).
+
+  By considering each potential subgraph node to graph candidate mapping image in turn,
+  we perform a DFS traversal of partial mappings. If the mapping is rejected due to
+  the graph neighbors not matching the degree-by-color of the subgraph neighbors, or
+  rejected due to the constraints imposed from symmetry, we prune that subtree and
+  consider a new graph candidate node for that subgraph node. When no more graph
+  candidates remain we backtrack to the previous node in the mapping and consider a
+  new graph candidate for that node. Is we ever to a depth where all subgraph nodes
+  are mapped and no structural requirements or symmetry constraints are violated,
+  we have found an isomorphism. We yield that mapping and backtrack to find other
+  isomorphisms.
+
+  As we visit more neighbors, the graph candidate nodes have to satisfy more structural
+  restrictions. As described in the ISMAGS paper, [1]_, we store each set of structural
+  restrictions separately as a set of possible candidate nodes rather than computing
+  the intersection of that set with the known graph candidates for the subgraph node.
+  We delay taking the intersection until that node is selected to be in the mapping.
+  While choosing the node with fewest candidates, we avoid computing the intersection
+  by using the size of the minimal set to be intersected rather than the size of the
+  intersection. This may make the node ordering slightly worse via a savings of
+  many intersections most of which are not ever needed.
+
+- With a method that yields subgraph_isomorphisms, we can construct functions like
+  `is_subgraph_isomorphic` by checking for any yielded mapping. And functions like
+  `is_isomorphic` by checking whether the subgraph has the same number of nodes as
+  the graph and is also subgraph isomorphic. This subpackage also allows a `symmetry`
+  bool keyword argument so you can find isomorphisms with or without the symmetry
+  constraints.
 
 References
 ----------
@@ -104,6 +250,10 @@ References
    Enumeration", PLoS One 9(5): e97896, 2014.
    https://doi.org/10.1371/journal.pone.0097896
 .. [2] https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph
+.. [3] Hadi Katebi, Karem A. Sakallah and Igor L. Markov
+   "Graph Symmetry Detection and Canonical Labeling: Diﬀerences and Synergies"
+   in "Turing-100. The Alan Turing Centenary" Ed: A. Voronkov p. 181 -- 195, (2012).
+   https://doi.org/10.29007/gzc1 https://arxiv.org/abs/1208.6271
 """
 
 __all__ = ["ISMAGS"]
@@ -333,14 +483,14 @@ class ISMAGS:
         #   e: edge(s)
         #   n: node(s)
         # So: sgn means "subgraph nodes".
-        node_parts = self.create_aligned_partition(
+        node_parts = self.create_aligned_partitions(
             node_match, self.subgraph.nodes, self.graph.nodes
         )
         self._sgn_partition, self._gn_partition, self.N_node_colors = node_parts
         self._sgn_colors = node_to_part_ID_dict(self._sgn_partition)
         self._gn_colors = node_to_part_ID_dict(self._gn_partition)
 
-        edge_partitions = self.create_aligned_partition(
+        edge_partitions = self.create_aligned_partitions(
             edge_match, self.subgraph.edges(), self.graph.edges()
         )
         self._sge_partition, self._ge_partition, self.N_edge_colors = edge_partitions
@@ -351,8 +501,10 @@ class ISMAGS:
             self._sge_colors = EdgeLookup(node_to_part_ID_dict(self._sge_partition))
             self._ge_colors = EdgeLookup(node_to_part_ID_dict(self._ge_partition))
 
-    def create_aligned_partition(self, thing_matcher, sg_things, g_things):
-        """Partitions of `things` based on function `match`
+    def create_aligned_partitions(self, thing_matcher, sg_things, g_things):
+        """Partitions of `things` (nodes or edges) from subgraph and graph
+        based on function `match`.
+
         Returns: sg_partition, g_partition, number_of_matched_parts
 
         The first `number_of_matched_parts` parts in each partition
@@ -560,7 +712,7 @@ class ISMAGS:
             Every key-value pair describes which ``values`` can be interchanged
             without changing nodes less than ``key``.
         """
-        node_partition, edge_colors = self._sgn_partition, self._sge_colors
+        partition, edge_colors = self._sgn_partition, self._sge_colors
 
         if self._symmetry_cache is not None:
             key = hash(
@@ -574,11 +726,9 @@ class ISMAGS:
             )
             if key in self._symmetry_cache:
                 return self._symmetry_cache[key]
-        node_partition = next(
-            self._refine_node_partition(self.subgraph, node_partition, edge_colors)
-        )
+        partition = self._refine_node_partition(self.subgraph, partition, edge_colors)
         cosets = self._process_ordered_pair_partitions(
-            self.subgraph, node_partition, node_partition, edge_colors
+            self.subgraph, partition, partition, edge_colors
         )
         if self._symmetry_cache is not None:
             self._symmetry_cache[key] = cosets
@@ -647,70 +797,24 @@ class ISMAGS:
                 candidate_sets[sgn].add(frozenset(self._gn_partition[sgn_color]))
         return dict(candidate_sets)
 
-    @staticmethod
-    def _get_permutations_by_length(items):
-        """
-        Get all permutations of items, but only permute items with the same
-        length.
-
-        >>> found = list(ISMAGS._get_permutations_by_length([[1], [2], [3, 4], [4, 5]]))
-        >>> answer = [
-        ...     (([1], [2]), ([3, 4], [4, 5])),
-        ...     (([1], [2]), ([4, 5], [3, 4])),
-        ...     (([2], [1]), ([3, 4], [4, 5])),
-        ...     (([2], [1]), ([4, 5], [3, 4])),
-        ... ]
-        >>> found == answer
-        True
-        """
-        by_len = defaultdict(list)
-        for item in items:
-            by_len[len(item)].append(item)
-
-        yield from itertools.product(
-            *(itertools.permutations(by_len[l]) for l in sorted(by_len))
-        )
-
     @classmethod
-    def _refine_node_partition(cls, graph, partition, edge_colors, branch=False):
+    def _refine_node_partition(cls, graph, partition, edge_colors):
         def equal_color(node1, node2):
             return color_degree[node1] == color_degree[node2]
 
-        possible_partitions = [partition]
-        while possible_partitions:
-            partition = possible_partitions.pop()
+        node_colors = node_to_part_ID_dict(partition)
+        color_degree = color_degree_by_node(graph, node_colors, edge_colors)
+        while not all(are_all_equal(color_degree[n] for n in p) for p in partition):
+            partition = [
+                p for part in partition
+                for p in (
+                    [part] if are_all_equal(color_degree[n] for n in part)
+                    else sorted(make_partition(part, equal_color), key=len)
+                )
+            ]
             node_colors = node_to_part_ID_dict(partition)
             color_degree = color_degree_by_node(graph, node_colors, edge_colors)
-            if all(are_all_equal(color_degree[n] for n in p) for p in partition):
-                yield partition
-                if branch:
-                    continue
-                return
-
-            more_partitions = [[]]
-            for part in partition:
-                if are_all_equal(color_degree[node] for node in part):
-                    for n_p in more_partitions:
-                        n_p.append(part)
-                else:
-                    refined = make_partition(part, equal_color)
-                    R = len(refined)
-                    if not branch or R == 1 or R == len({len(r) for r in refined}):
-                        for n_p in more_partitions:
-                            n_p.extend(sorted(refined, key=len))
-                    else:
-                        # This is where tracking partitions by len breaks.
-                        # There are multiple new cells in refined with the
-                        # same length, and their order matters. So we hit
-                        # it with a big hammer and simply add all orderings.
-                        # TODO can we track partitions by more than len?
-                        new_partitions = []
-                        perms = cls._get_permutations_by_length(refined)
-                        for n_p in more_partitions:
-                            for permutation in perms:
-                                new_partitions.append(n_p + list(permutation[0]))
-                        more_partitions = new_partitions
-            possible_partitions.extend(more_partitions[::-1])
+        return partition
 
     def _map_nodes(self, sgn, candidate_sets, constraints, to_be_mapped=None):
         """
@@ -950,6 +1054,81 @@ class ISMAGS:
                 return frozenset(nodes - {node})
 
     @staticmethod
+    def _get_permutations_by_length(items):
+        """
+        Get all permutations of items, but only permute items with the same
+        length.
+
+        Note that for ISMAGS, all permutations are returned in length 1 tuples.
+        So ``assert all(len(p) == 1 for p in permutations), f'{permutations=}'``
+
+        >>> found = list(ISMAGS._get_permutations_by_length([{1}, {2}, {3, 4}, {4, 5}]))
+        >>> answer = [
+        ...     (({1}, {2}), ({3, 4}, {4, 5})),
+        ...     (({1}, {2}), ({4, 5}, {3, 4})),
+        ...     (({2}, {1}), ({3, 4}, {4, 5})),
+        ...     (({2}, {1}), ({4, 5}, {3, 4})),
+        ... ]
+        >>> found == answer
+        True
+        """
+        by_len = defaultdict(list)
+        for item in items:
+            by_len[len(item)].append(item)
+
+        return list(
+            itertools.product(
+                *(itertools.permutations(by_len[l]) for l in sorted(by_len))
+            )
+        )
+
+    def _refine_opp(cls, graph, top, bottom, edge_colors):
+        def equal_color(node1, node2):
+            return color_degree[node1] == color_degree[node2]
+
+        top = cls._refine_node_partition(graph, top, edge_colors)
+
+        possible_bottoms = [bottom]
+        while possible_bottoms:
+            bottom = possible_bottoms.pop()
+            node_colors = node_to_part_ID_dict(bottom)
+            color_degree = color_degree_by_node(graph, node_colors, edge_colors)
+            if all(are_all_equal(color_degree[n] for n in p) for p in bottom):
+                if len(top) == len(bottom):
+                    yield top, bottom
+                #else Non-isomorphic OPP (pruned here)
+                # either way continue to next possible bottom
+                continue
+            # refine bottom partition
+            more_bottoms = [[]]
+            for part in bottom:
+                if len(part) == 1 or are_all_equal(color_degree[node] for node in part):
+                    for new_partition in more_bottoms:
+                        new_partition.append(part)
+                else:
+                    # This specific part needs to be refined
+                    refined_part = make_partition(part, equal_color)
+                    R = len(refined_part)
+                    if R == 1 or R == len({len(p) for p in refined_part}):
+                        for n_p in more_bottoms:
+                            n_p.extend(sorted(refined_part, key=len))
+                    else:
+                        # Any part might match any other part with the same size.
+                        # Before refinement they were the same color. So we need to
+                        # include all possible orderings/colors within each size.
+                        permutations = cls._get_permutations_by_length(refined_part)
+                        # Add all permutations of the refined parts to each possible
+                        # bottom. So the number of new possible bottoms increases
+                        # by the number of permutations of the refined parts.
+                        new_partitions = []
+                        for new_partition in more_bottoms:
+                            for p in permutations:
+                                new_partitions.append(new_partition + list(p[0]))
+                        more_bottoms = new_partitions
+            # reverse more_partitions to keep identity finding first
+            possible_bottoms.extend(more_bottoms[::-1])
+
+    @staticmethod
     def _find_permutations(top_partition, bottom_partition):
         """
         Return the pairs of top/bottom parts where the parts are
@@ -959,52 +1138,21 @@ class ISMAGS:
         # Find permutations
         permutations = set()
         for top, bot in zip(top_partition, bottom_partition):
-            # top and bot have only one element
             if len(top) > 1 or len(bot) > 1:
+                # ignore parts with > 1 element when they are equal
+                # These are called matching partitions in Katebi 2012.
+                # Symmetries in matching partitions are built by looking only
+                # parts that have 1 element.
+                if top == bot:
+                    continue
                 raise IndexError(
                     "Not all nodes are coupled. This is"
                     f" impossible: {top_partition}, {bottom_partition}"
                 )
-            if top != bot:
+            # top and bot have only one element
+            elif top != bot:
                 permutations.add(frozenset((next(iter(top)), next(iter(bot)))))
         return permutations
-
-    def _couple_nodes(
-        self,
-        top_partition,
-        bottom_partition,
-        part_idx,
-        t_node,
-        b_node,
-        graph,
-        edge_colors,
-    ):
-        """
-        Generate new partitions from top and bottom_partitions where t_node is
-        coupled to b_node. part_idx is the index of the parts where t_ and
-        b_node can be found.
-        """
-        t_part = top_partition[part_idx]
-        b_part = bottom_partition[part_idx]
-        assert t_node in t_part and b_node in b_part
-        # Couple node to node2. This means they get their own part
-        new_top = [top.copy() for top in top_partition]
-        new_bot = [bot.copy() for bot in bottom_partition]
-        new_t_groups = {t_node}, t_part - {t_node}
-        new_b_groups = {b_node}, b_part - {b_node}
-        # Replace the old partitions with the coupled ones
-        del new_top[part_idx]
-        del new_bot[part_idx]
-        # assignment to slice with start == end inserts a whole list at that position
-        new_top[part_idx:part_idx] = new_t_groups
-        new_bot[part_idx:part_idx] = new_b_groups
-
-        new_top = next(self._refine_node_partition(graph, new_top, edge_colors))
-        # refine in all branches of possible refinements (to find symmetries)
-        bots = self._refine_node_partition(graph, new_bot, edge_colors, branch=True)
-        list_new_top = list(new_top)
-        for bot in bots:
-            yield list_new_top, bot
 
     def _process_ordered_pair_partitions(
         self,
@@ -1014,84 +1162,94 @@ class ISMAGS:
         edge_colors,
     ):
         if all(len(top) <= 1 for top in top_partition):
+            # no symmetries. Each node unique.
             return {}
 
-        node_to_ID = {n: i for i, n in enumerate(graph)}
-        orbit_id = {node: orbit_i for orbit_i, node in enumerate(graph.nodes)}
-        orbits = [{node} for node in graph.nodes]
+        # first mapping found is the identity mapping
+        finding_identity = True
+
+        orbit_id = {node: orbit_i for orbit_i, node in enumerate(graph)}
+        orbits = [{node} for node in graph]
         cosets = {}
 
-        # find smallest node and its partition index
-        unmapped_nodes = (
-            (node_to_ID[node], node, idx)
-            for idx, t_part in enumerate(top_partition)
-            for node in t_part
-            if len(t_part) > 1
-        )
-        _, node, part_i = min(unmapped_nodes)  # needs sortable nodes
-        b_part = bottom_partition[part_i]
-        node2_iter = iter(sorted(b_part))
+        node_to_ID = {n: i for i, n in enumerate(graph)}
+        sort_by_ID = node_to_ID.__getitem__
 
-        queue = [(top_partition, bottom_partition, node, part_i, node2_iter)]
+        def _load_next_queue_entry(queue, top_partition, bottom_partition):
+            # find smallest node (by ID) in a |part|>1 and its partition index
+            unmapped_nodes = (
+                (node_to_ID[node], node, idx)
+                for idx, t_part in enumerate(top_partition)
+                for node in t_part
+                if len(t_part) > 1
+            )
+            _, node, part_i = min(unmapped_nodes)
+            b_part = bottom_partition[part_i]
+            node2_iter = iter(sorted(b_part, key=sort_by_ID))
+
+            queue.append([top_partition, bottom_partition, node, part_i, node2_iter])
+
+        queue = []
+        _load_next_queue_entry(queue, top_partition, bottom_partition)
 
         while queue:
             tops, bottoms, node, part_i, node2_iter = queue[-1]
 
-            if len(bottoms[part_i]) > 1:
-                for node2 in node2_iter:
-                    if node != node2 and orbit_id[node] == orbit_id[node2]:
-                        # Orbit prune branch
-                        continue
-                    # REDUCTION   Couple node to node2
-                    partitions = self._couple_nodes(
-                        tops,
-                        bottoms,
-                        part_i,
-                        node,
-                        node2,
-                        graph,
-                        edge_colors,
-                    )
-                    new_q = []
-                    for opp in partitions:
-                        if all(len(top) <= 1 for top in opp[0]):
-                            # all nodes are mapped
-                            permutations = self._find_permutations(*opp)
-                            for permutation in permutations:
-                                orb1, orb2 = (orbit_id[n] for n in permutation)
-                                if orb1 != orb2:
-                                    orbit_set2 = orbits[orb2]
-                                    orbits[orb1].update(orbit_set2)
-                                    orbits[orb2] = set()
-                                    orbit_id.update((n, orb1) for n in orbit_set2)
-                            continue
+            for node2 in node2_iter:
+                if node != node2 and orbit_id[node] == orbit_id[node2]:
+                    # Orbit prune
+                    continue
 
-                        ## Prep to load into queue
-                        unmapped_nodes = {
-                            (node_to_ID[node], node, i)
-                            for i, top in enumerate(opp[0])
-                            for node in top
-                            if len(top) > 1
-                        }
-                        if unmapped_nodes:
-                            _, n, part_i = min(unmapped_nodes)
-                            b_part = opp[1][part_i]
-                            node2_iter = iter(sorted(b_part))
-                            new_q.append((*opp, n, part_i, node2_iter))
-                    queue.extend(new_q[::-1])
-                    break
-                else:  # no more node2 options
-                    queue.pop()
-                    if node not in cosets:
-                        mapped = {
-                            k
-                            for top, bottom in zip(tops, bottoms)
-                            for k in top
-                            if len(top) == 1 and top == bottom
-                        }
-                        IDless = {n for n in graph if node_to_ID[n] < node_to_ID[node]}
-                        # Have all nodes with ID < node been mapped?
-                        if IDless <= mapped:
-                            orb = orbit_id[node]
-                            cosets[node] = orbits[orb].copy()
+                # couple node to node2
+                new_top_part, new_bot_part = {node}, {node2}
+
+                new_top = [top.copy() for top in tops]
+                new_top[part_i] -= new_top_part
+                new_top.insert(part_i, new_top_part)
+
+                new_bot = [bot.copy() for bot in bottoms]
+                new_bot[part_i] -= new_bot_part
+                new_bot.insert(part_i, new_bot_part)
+
+                # collect OPPs
+                opps = self._refine_opp(graph, new_top, new_bot, edge_colors)
+                new_q = []
+                for opp in opps:
+                    # Use OPP to find any of: Identity, Automorphism or Matching OPPs
+                    # else load the OPP onto queue for further exploration
+                    # Note that we check for Orbit pruning later because orbits may
+                    # be updated while OPP is sitting on the queue.
+                    # Note: that we check for non-isomorphic OPPs in `_refine_opp`.
+                    if finding_identity:
+                        # Note: allow zero size parts in identity check
+                        #       b/c largest_common_subgraph allows empty parts
+                        if all(len(top) <= 1 for top in opp[0]):
+                            # Identity found. Set flag. Can now prune Matching OPPs
+                            finding_identity = False
+                            continue
+                    elif all(len(t) <= 1 or t == b for t, b in zip(*opp)):
+                        # Found a symmetry! (Full mapping or Matching OPP)
+                        # update orbits using the permutations from the OPP.
+                        permutations = self._find_permutations(*opp)
+                        for permutation in permutations:
+                            orb1, orb2 = (orbit_id[n] for n in permutation)
+                            if orb1 != orb2:
+                                orbit_set2 = orbits[orb2]
+                                orbits[orb1].update(orbit_set2)
+                                orbits[orb2] = set()
+                                orbit_id.update((n, orb1) for n in orbit_set2)
+                        continue
+
+                    _load_next_queue_entry(new_q, *opp)
+                # reverse order to maintain node order DFS (Identity comes first)
+                queue.extend(new_q[::-1])
+                break
+            else:  # no more node2 options
+                queue.pop()
+                if node not in cosets:
+                    # coset of `node` is its orbit at the time `node` has completed
+                    # its first DFS traversal. DFS is about to go to previous node.
+                    # Make copy so future orbit changes do not change the coset.
+                    cosets[node] = orbits[orbit_id[node]].copy()
+                    assert len(cosets[node]) > 1, f'cosets[{node}]= {cosets[node]}'
         return cosets

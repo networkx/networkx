@@ -22,6 +22,8 @@ def _matches_to_sets(matches):
 
 data = [
     # node_data, edge_data
+    ([0, 1, 2, 3], [(0, 0)]),
+    ([], nx.star_graph(3).edges),
     (range(1, 5), [(1, 2), (2, 4), (4, 3), (3, 1)]),
     (
         [
@@ -77,6 +79,33 @@ data = [
             (16, 17),
         ],
     ),
+    ( # check for unsortable nodes
+        [],
+        [
+            (17, 16),
+            (16, 17),
+            (17, 13),
+            (13, 12),
+            (17, "a"),
+            ("a", "b"),
+            (16, "c"),
+            ("c", "d"),
+            (16, "e"),
+            ("e", "f"),
+        ],
+    ),
+    # Example from Katebi, 2012, Fig 1-3.
+    # Node order specified to almost match their DFS order
+    (
+        [3, 5, 6, 4, 2, 1, 0],
+        set(nx.cycle_graph(4).edges) | set(nx.cycle_graph(range(4, 7)).edges)
+    ),
+    # Example from Houbraken (ISMAGS paper)
+    ([], nx.cycle_graph([1, 2, 4, 3]).edges),
+    # isolated node
+    ([0, 1, 2], [(1, 2)]),
+    # famously lots of symmetries
+    ([], nx.petersen_graph().edges),
 ]
 
 
