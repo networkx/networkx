@@ -251,14 +251,6 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
         out_degrees = dict(G.out_degree(weight="weight"))
         Stot_in = list(in_degrees.values())
         Stot_out = list(out_degrees.values())
-
-        def _inc_or_dec(com, sign, u):
-            Stot_in[com] += sign * in_degrees[u]
-            Stot_out[com] += sign * out_degrees[u]
-
-        def _get_prod(com, u):
-            return out_degrees[u] * Stot_in[com] + in_degrees[u] * Stot_out[com]
-
         # Calculate weights for both in and out neighbors without considering self-loops
         nbrs = {}
         for u in G:
@@ -272,13 +264,6 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
     else:
         degrees = dict(G.degree(weight="weight"))
         Stot = list(degrees.values())
-
-        def _inc_or_dec(com, sign, u):
-            Stot[com] += sign * degrees[u]
-
-        def _get_prod(com, u):
-            return degrees[u] * Stot[com] / 2
-
         nbrs = {u: {v: data["weight"] for v, data in G[u].items() if v != u} for u in G}
     rand_nodes = list(G.nodes)
     seed.shuffle(rand_nodes)
@@ -287,25 +272,45 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
     while nb_moves > 0:
         nb_moves = 0
         for u in rand_nodes:
+            if is_directed:
+                idu = in_degrees[u]
+                odu = out_degrees[u]
+
+                def _inc_or_dec(com, sign):
+                    Stot_in[com] += sign * idu
+                    Stot_out[com] += sign * odu
+
+                def _get_prod(com):
+                    return odu * Stot_in[com] + idu * Stot_out[com]
+            else:
+                du = degrees[u]
+
+                def _inc_or_dec(com, sign):
+                    Stot[com] += sign * du
+
+                def _get_prod(com):
+                    return du * Stot[com] / 2
+
             # Get current community and neighbor weights.
             best_mod = 0
             best_com = node2com[u]
             weights2com = _neighbor_weights(nbrs[u], node2com)
 
             # Calculate modularity for current community.
-            _inc_or_dec(best_com, -1, u)
-            bc_prod = _get_prod(best_com, u)
-            remove_cost = -weights2com[best_com] / m + resolution * bc_prod / m**2
+            _inc_or_dec(best_com, -1)
+            bc_prod = _get_prod(best_com)
+            # Multiply everything by `m` compared to formula because we only care about argmax.
+            remove_cost = -weights2com[best_com] + resolution * bc_prod / m
 
             # Find best community among neighbors.
             for nbr_com, wt in weights2com.items():
-                nc_prod = _get_prod(nbr_com, u)
-                gain = remove_cost + wt / m - resolution * nc_prod / m**2
+                nc_prod = _get_prod(nbr_com)
+                gain = remove_cost + wt - resolution * nc_prod / m
                 if gain > best_mod:
                     best_mod = gain
                     best_com = nbr_com
 
-            _inc_or_dec(best_com, 1, u)
+            _inc_or_dec(best_com, 1)
 
             if best_com != node2com[u]:
                 com = G.nodes[u].get("nodes", {u})
