@@ -1,9 +1,9 @@
 Dijkstra's Algorithm
 ===================
 
-Dijkstra's algorithm is a classical algorithm for finding the shortest paths 
-from a single source node to all other nodes in a weighted graph with 
-non-negative edge weights. It was conceived by Edsger W. Dijkstra in 1956 
+Dijkstra's algorithm is a classical algorithm for finding the shortest paths
+from a single source node to all other nodes in a weighted graph with
+non-negative edge weights. It was conceived by Edsger W. Dijkstra in 1956
 and is widely used in routing, network optimization, and pathfinding problems.
 
 For a general overview in the shortest path problem see
@@ -11,15 +11,15 @@ For a general overview in the shortest path problem see
 
 Problem Definition
 ------------------
-Given a weighted graph G = (V, E) and a source vertex s ∈ V, compute the 
-shortest-path distances d(s, v) from s to every vertex v ∈ V, where each 
-edge (u, v) ∈ E has a non-negative weight w(u, v). Optionally, the algorithm 
+Given a weighted graph G = (V, E) and a source vertex s ∈ V, compute the
+shortest-path distances d(s, v) from s to every vertex v ∈ V, where each
+edge (u, v) ∈ E has a non-negative weight w(u, v). Optionally, the algorithm
 can also produce the actual shortest paths.
 
 Algorithm
 ---------
-Dijkstra's algorithm is a greedy, iterative algorithm. The main idea is to 
-incrementally build a set of nodes with known shortest distances, 
+Dijkstra's algorithm is a greedy, iterative algorithm. The main idea is to
+incrementally build a set of nodes with known shortest distances,
 selecting at each step the node with the smallest tentative distance.
 
 **Initialization**
@@ -42,41 +42,42 @@ While there are unvisited nodes:
 
 **Termination**
 
-The algorithm terminates when all nodes have been visited, or when the smallest tentative distance among unvisited nodes is infinity.
+The algorithm terminates when all nodes have been visited, or when the smallest
+tentative distance among unvisited nodes is infinity.
 
-Pseudocode
-----------
+Example
+-------
+Consider the weighted graph:
+
 .. code-block:: text
 
-    function Dijkstra(Graph, source):
-        for each vertex v in Graph:
-            dist[v] ← ∞
-            prev[v] ← UNDEFINED
-        dist[source] ← 0
+        (2)
+    A ------- B
+    |         |
+   (1)       (3)
+    |         |
+    C ------- D
+        (1)
 
-        Q ← priority queue of all vertices, keyed by dist
+We can compute the shortest path from ``A`` to all vertices by doing:
 
-        while Q is not empty:
-            u ← vertex in Q with smallest dist[u]
-            remove u from Q
-
-            for each neighbor v of u:
-                alt ← dist[u] + weight(u, v)
-                if alt < dist[v]:
-                    dist[v] ← alt
-                    prev[v] ← u
-                    decrease-key(Q, v, alt)
-
-        return dist, prev
+    >>> import networkx as nx
+    >>> # Create a weighted graph
+    >>> G = nx.Graph()
+    >>> edges = [('A', 'B', 2), ('A', 'C', 1), ('B', 'D', 3), ('C', 'D', 1)]
+    >>> G.add_weighted_edges_from(edges)
+    >>> distances = nx.single_source_dijkstra_path_length(G, source='A')
+    >>> print("Shortest distances from A:", distances)
+    Shortest distances from A: {'A': 0, 'C': 1, 'B': 2, 'D': 2}
 
 Complexity
 ----------
 
 The time complexity of Dijkstra's algorithm depends on the data structure used
 to select the node with the smallest tentative distance. Using a simple array
-results in a time complexity of :math:`O(|V|^2)`, while a binary heap reduces it
-to :math:`O((|V| + |E|) \log |V|)`. Using a Fibonacci heap further improves the
-complexity to :math:`O(|V| \log |V| + |E|)`. The space complexity of the
+results in a time complexity of :math:`O(|V|^2)`, while a binary heap reduces
+it to :math:`O((|V| + |E|) \log |V|)`. Using a Fibonacci heap further improves
+the complexity to :math:`O(|V| \log |V| + |E|)`. The space complexity of the
 algorithm is :math:`O(|V| + |E|)`, which accounts for storing the graph
 representation as well as the distance and predecessor information.
 
@@ -91,32 +92,6 @@ Dijkstra's algorithm works only with non-negative edge weights and finds the
 shortest-path tree from the source to all reachable nodes. For graphs that
 contain negative edge weights, alternative algorithms such as Bellman-Ford or
 Johnson’s algorithm are required.
-
-
-Example
--------
-Consider the weighted graph:
-
-.. code-block:: text
-
-       (2)
-    A ------ B
-    |        |
-   (1)      (3)
-    |        |
-    C ------ D
-       (1)
-
-We can compute the shortest path from ``A`` to all vertices by doing:
-
-    >>> import networkx as nx
-    >>> # Create a weighted graph
-    >>> G = nx.Graph()
-    >>> edges = [('A', 'B', 2), ('A', 'C', 1), ('B', 'D', 3), ('C', 'D', 1)]
-    >>> G.add_weighted_edges_from(edges)
-    >>> distances = nx.single_source_dijkstra_path_length(G, source='A')
-    >>> print("Shortest distances from A:", distances)
-    Shortest distances from A: {'A': 0, 'C': 1, 'B': 2, 'D': 2}
 
 Available Functions
 -------------------
