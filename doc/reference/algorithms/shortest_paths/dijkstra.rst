@@ -7,7 +7,7 @@ non-negative edge weights. It was conceived by Edsger W. Dijkstra in 1956
 and is widely used in routing, network optimization, and pathfinding problems.
 
 For a general overview in the shortest path problem see
-`Shortest Paths <shortest_paths.html>`_.
+`Shortest Paths <index.html>`_.
 
 Problem Definition
 ------------------

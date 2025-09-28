@@ -62,7 +62,7 @@ Algorithms
    reciprocity
    regular
    rich_club
-   shortest_paths
+   shortest_paths/index
    similarity
    simple_paths
    smallworld
