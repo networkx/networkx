@@ -253,6 +253,151 @@ def kruskal_mst_edges(
                 subtrees.union(u, v)
 
 
+def kruskal_mst_edges_opt(
+    G,
+    minimum=True,
+    weight="weight",
+    keys=True,
+    data=True,
+    ignore_nan=False,
+    partition=None,
+):
+    """
+    Iterate over edge of a Kruskal's algorithm min/max spanning tree.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        The graph holding the tree of interest.
+
+    minimum : bool (default: True)
+        Find the minimum (True) or maximum (False) spanning tree.
+
+    weight : string (default: 'weight')
+        The name of the edge attribute holding the edge weights.
+
+    keys : bool (default: True)
+        If `G` is a multigraph, `keys` controls whether edge keys ar yielded.
+        Otherwise `keys` is ignored.
+
+    data : bool (default: True)
+        Flag for whether to yield edge attribute dicts.
+        If True, yield edges `(u, v, d)`, where `d` is the attribute dict.
+        If False, yield edges `(u, v)`.
+
+    ignore_nan : bool (default: False)
+        If a NaN is found as an edge weight normally an exception is raised.
+        If `ignore_nan is True` then that edge is ignored instead.
+
+    partition : string (default: None)
+        The name of the edge attribute holding the partition data, if it exists.
+        Partition data is written to the edges using the `EdgePartition` enum.
+        If a partition exists, all included edges and none of the excluded edges
+        will appear in the final tree. Open edges may or may not be used.
+
+    Yields
+    ------
+    edge tuple
+        The edges as discovered by Kruskal's method. Each edge can
+        take the following forms: `(u, v)`, `(u, v, d)` or `(u, v, k, d)`
+        depending on the `key` and `data` parameters
+    """
+    num_nodes = G.number_of_nodes()
+    edges_needed = num_nodes - 1
+    sign = 1 if minimum else -1
+
+    def _ok_weight(w):
+        if isnan(w):
+            if ignore_nan:
+                return False
+            raise ValueError("NaN found as an edge weight.")
+        return True
+
+    # Collect candidate edges
+    included, open_ = [], []
+    if G.is_multigraph():
+        for u, v, k, d in G.edges(keys=True, data=True):
+            w = d.get(weight, 1)
+            if not _ok_weight(w):
+                continue
+            tup = (w * sign, u, v, k, d)
+            part = d.get(partition)
+            if part == EdgePartition.INCLUDED:
+                included.append(tup)
+            elif part == EdgePartition.EXCLUDED:
+                continue
+            else:
+                open_.append(tup)
+        open_.sort(key=itemgetter(0))
+        sorted_edges = included + open_
+    else:
+        for u, v, d in G.edges(data=True):
+            w = d.get(weight, 1)
+            if not _ok_weight(w):
+                continue
+            tup = (w * sign, u, v, d)
+            part = d.get(partition)
+            if part == EdgePartition.INCLUDED:
+                included.append(tup)
+            elif part == EdgePartition.EXCLUDED:
+                continue
+            else:
+                open_.append(tup)
+        open_.sort(key=itemgetter(0))
+        sorted_edges = included + open_
+
+    # DSU with path-halving
+    parent, rank = {}, {}
+
+    def find(x):
+        if x not in parent:
+            parent[x] = x
+            rank[x] = 0
+            return x
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(a, b):
+        ra, rb = find(a), find(b)
+        if ra == rb:
+            return False
+        if rank[ra] < rank[rb]:
+            parent[ra] = rb
+        elif rank[ra] > rank[rb]:
+            parent[rb] = ra
+        else:
+            parent[rb] = ra
+            rank[ra] += 1
+        return True
+
+    mst_edges = []
+
+    # Iterate through sorted edges
+    if G.is_multigraph():
+        for _, u, v, k, d in sorted_edges:
+            if union(u, v):
+                if keys:
+                    edge = (u, v, k, d) if data else (u, v, k)
+                else:
+                    edge = (u, v, d) if data else (u, v)
+                mst_edges.append(edge)
+                if len(mst_edges) == edges_needed:
+                    break
+    else:
+        for _, u, v, d in sorted_edges:
+            if union(u, v):
+                edge = (u, v, d) if data else (u, v)
+                mst_edges.append(edge)
+                if len(mst_edges) == edges_needed:
+                    break
+
+    # Final deterministic sort by (u,v)
+    mst_edges.sort(key=itemgetter(0, 1))
+    yield from mst_edges
+
+
 @nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
 def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan=False):
     """Iterate over edges of Prim's algorithm min/max spanning tree.
@@ -363,6 +508,7 @@ ALGORITHMS = {
     "borůvka": boruvka_mst_edges,
     "kruskal": kruskal_mst_edges,
     "prim": prim_mst_edges,
+    "kruskal_opt": kruskal_mst_edges_opt,
 }
 
 
@@ -386,7 +532,7 @@ def minimum_spanning_edges(
 
     algorithm : string
        The algorithm to use when finding a minimum spanning tree. Valid
-       choices are 'kruskal', 'prim', or 'boruvka'. The default is 'kruskal'.
+       choices are 'kruskal', 'kruskal_opt', 'prim', or 'boruvka'. The default is 'kruskal'.
 
     weight : string
        Edge data key to use for weight (default 'weight').
