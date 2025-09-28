@@ -140,6 +140,9 @@ def boruvka_mst_edges(
                 forest.union(u, v)
 
 
+@nx._dispatchable(
+    edge_attrs={"weight": None, "partition": None}, preserve_edge_attrs="data"
+)
 def kruskal_mst_edges(
     G,
     minimum=True,
