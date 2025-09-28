@@ -330,3 +330,10 @@ Adding sentinel node in-place and calling shortest path functions::
     ['A', 'B', 'C', 'D', 'E']
 
 
+See Also
+--------
+
+.. toctree::
+   :maxdepth: 1
+
+   dijkstra
