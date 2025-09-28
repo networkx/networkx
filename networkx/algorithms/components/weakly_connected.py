@@ -2,7 +2,6 @@
 
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
-from networkx.utils.misc import arbitrary_element
 
 __all__ = [
     "number_weakly_connected_components",
