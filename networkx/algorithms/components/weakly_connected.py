@@ -164,7 +164,7 @@ def is_weakly_connected(G):
             """Connectivity is undefined for the null graph."""
         )
 
-    return len(next(weakly_connected_components(G))) == len(G)
+    return len(next(weakly_connected_components(G))) == n
 
 
 def _plain_bfs(G, n, source):
