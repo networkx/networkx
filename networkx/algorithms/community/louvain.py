@@ -269,6 +269,7 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
     seed.shuffle(rand_nodes)
     nb_moves = 1
     improvement = False
+    factor = resolution / m
     while nb_moves > 0:
         nb_moves = 0
         for u in rand_nodes:
@@ -292,22 +293,22 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
                     return du * Stot[com] / 2
 
             # Get current community and neighbor weights.
-            best_mod = 0
             best_com = node2com[u]
             weights2com = _neighbor_weights(nbrs[u], node2com)
 
             # Calculate modularity for current community.
             _inc_or_dec(best_com, -1)
             bc_prod = _get_prod(best_com)
+
             # Multiply everything by `m` compared to formula because we only care about argmax.
-            remove_cost = -weights2com[best_com] + resolution * bc_prod / m
+            best_mod = weights2com[best_com] - factor * bc_prod
 
             # Find best community among neighbors.
             for nbr_com, wt in weights2com.items():
                 nc_prod = _get_prod(nbr_com)
-                gain = remove_cost + wt - resolution * nc_prod / m
-                if gain > best_mod:
-                    best_mod = gain
+                new_mod = wt - factor * nc_prod
+                if new_mod > best_mod:
+                    best_mod = new_mod
                     best_com = nbr_com
 
             _inc_or_dec(best_com, 1)
