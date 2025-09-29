@@ -130,6 +130,19 @@ class Graph:
 
     >>> G.add_node(H)
 
+    Note
+    ----
+    ``G.nodes`` is a :class:`NodeView`, which behaves like a set of the
+    graph’s nodes.
+
+    ``G.nodes()`` returns a :class:`NodeDataView`, which allows optional
+    arguments such as ``data`` and ``default`` to access node attributes.
+
+    >>> list(G.nodes)
+    [0, 1, 2]
+    >>> list(G.nodes(data=True))
+    [(0, {'color': 'red'}), (1, {}), (2, {})]
+
     **Edges:**
 
     G can also be grown by adding edges.
@@ -149,6 +162,19 @@ class Graph:
     If some edges connect nodes not yet in the graph, the nodes
     are added automatically.  There are no errors when adding
     nodes or edges that already exist.
+
+    Note
+    ----
+    ``G.edges`` is a :class:`EdgeView`, which behaves like a set of the
+    graph’s edges.
+
+    ``G.edges()`` returns a :class:`EdgeDataView`, which allows optional
+    arguments such as ``nbunch``, ``data`` and ``default`` to access edge attributes.
+
+    >>> list(G.edges)
+    [(0, 1), (1, 2)]
+    >>> list(G.edges(data=True))
+    [(0, 1, {'weight': 3}), (1, 2, {})]
 
     **Attributes:**
 
@@ -1392,7 +1418,7 @@ class Graph:
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges from these nodes.
+            Tnhe view will only report edges from these odes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
