@@ -147,9 +147,9 @@ class Graph:
         >>> G = nx.path_graph(3)
         >>> G.nodes[0]["color"] = "red"
         >>> G.nodes(data=True)
-        NodeDataView({0: {"color": "red"}, 1: {}, 2: {}})
+        NodeDataView({0: {'color': 'red'}, 1: {}, 2: {}})
         >>> list(G.nodes(data=True))
-        [(0, {"color": "red"}), (1, {}), (2, {})]
+        [(0, {'color': 'red'}), (1, {}), (2, {})]
 
     **Edges:**
 
@@ -187,9 +187,9 @@ class Graph:
         [(0, 1), (1, 2)]
 
         >>> G.edges(data=True)
-        EdgeDataView([(0, 1, {"weight": 3}), (1, 2, {})])
+        EdgeDataView([(0, 1, {'weight': 3}), (1, 2, {})])
         >>> list(G.edges(data=True))
-        [(0, 1, {"weight": 3}), (1, 2, {})]
+        [(0, 1, {'weight': 3}), (1, 2, {})]
 
     **Attributes:**
 
