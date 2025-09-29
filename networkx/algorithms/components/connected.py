@@ -62,7 +62,7 @@ def connected_components(G):
 
     """
     seen = set()
-    n = len(G)
+    n = len(G)  # must be outside the loop to avoid performance hit with graph views
     for v in G:
         if v not in seen:
             c = _plain_bfs(G, n - len(seen), v)
@@ -154,7 +154,7 @@ def is_connected(G):
         raise nx.NetworkXPointlessConcept(
             "Connectivity is undefined for the null graph."
         )
-    return len(_plain_bfs(G, n, arbitrary_element(G))) == n
+    return len(next(connected_components(G))) == n
 
 
 @not_implemented_for("directed")

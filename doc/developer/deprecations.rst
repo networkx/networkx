@@ -41,13 +41,6 @@ Todo
 
 Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 
-Version 3.6
-~~~~~~~~~~~
-* Remove ``compute_v_structures`` from ``algorithms/dag.py``.
-* Remove ``link`` kwarg from ``readwrite/json_graph/node_link.py``;
-  Remove the ``FutureWarning`` re: the default value of ``edges`` and change the
-  default value to ``"edges"``.
-
 Version 3.7
 ~~~~~~~~~~~
 * Remove ``graph_could_be_isomorphic``, ``fast_graph_could_be_isomorphic``, and
