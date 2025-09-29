@@ -130,18 +130,18 @@ class Graph:
 
     >>> G.add_node(H)
 
-    Note
-    ----
-    ``G.nodes`` is a :class:`NodeView`, which behaves like a set of the
-    graph’s nodes.
+    .. note::
 
-    ``G.nodes()`` returns a :class:`NodeDataView`, which allows optional
-    arguments such as ``data`` and ``default`` to access node attributes.
+        ``G.nodes`` is a :class:`NodeView`, which behaves like a set of the
+        graph’s nodes.
 
-    >>> list(G.nodes)
-    [0, 1, 2]
-    >>> list(G.nodes(data=True))
-    [(0, {'color': 'red'}), (1, {}), (2, {})]
+        ``G.nodes()`` returns a :class:`NodeDataView`, which allows optional
+        arguments such as ``data`` and ``default`` to access node attributes.
+
+        >>> list(G.nodes)
+        [0, 1, 2]
+        >>> list(G.nodes(data=True))
+        [(0, {'color': 'red'}), (1, {}), (2, {})]
 
     **Edges:**
 
@@ -163,18 +163,18 @@ class Graph:
     are added automatically.  There are no errors when adding
     nodes or edges that already exist.
 
-    Note
-    ----
-    ``G.edges`` is a :class:`EdgeView`, which behaves like a set of the
-    graph’s edges.
+    .. note::
 
-    ``G.edges()`` returns a :class:`EdgeDataView`, which allows optional
-    arguments such as ``nbunch``, ``data`` and ``default`` to access edge attributes.
+        ``G.edges`` is a :class:`EdgeView`, which behaves like a set of the
+        graph’s edges.
 
-    >>> list(G.edges)
-    [(0, 1), (1, 2)]
-    >>> list(G.edges(data=True))
-    [(0, 1, {'weight': 3}), (1, 2, {})]
+        ``G.edges()`` returns a :class:`EdgeDataView`, which allows optional
+        arguments such as ``nbunch``, ``data`` and ``default`` to access edge attributes.
+
+        >>> list(G.edges)
+        [(0, 1), (1, 2)]
+        >>> list(G.edges(data=True))
+        [(0, 1, {'weight': 3}), (1, 2, {})]
 
     **Attributes:**
 
