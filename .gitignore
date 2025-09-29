@@ -61,13 +61,3 @@ networkx-dev/
 # Benchmark products
 benchmarks/env
 benchmarks/results
-
-
-# Local benchmark script
-bench_mst.py
-
-# Virtual environments
-.venv/
-venv/
-ENV/
-env/
