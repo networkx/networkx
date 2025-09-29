@@ -138,10 +138,18 @@ class Graph:
         ``G.nodes()`` returns a :class:`NodeDataView`, which allows optional
         arguments such as ``data`` and ``default`` to access node attributes.
 
+        >>> G = nx.path_graph(3)
+        >>> G.nodes
+        NodeView((0, 1, 2))
         >>> list(G.nodes)
         [0, 1, 2]
+
+        >>> G = nx.path_graph(3)
+        >>> G.nodes[0]["color"] = "red"
+        >>> G.nodes(data=True)
+        NodeDataView({0: {"color": "red"}, 1: {}, 2: {}})
         >>> list(G.nodes(data=True))
-        [(0, {'color': 'red'}), (1, {}), (2, {})]
+        [(0, {"color": "red"}), (1, {}), (2, {})]
 
     **Edges:**
 
@@ -171,10 +179,17 @@ class Graph:
         ``G.edges()`` returns a :class:`EdgeDataView`, which allows optional
         arguments such as ``nbunch``, ``data`` and ``default`` to access edge attributes.
 
+        >>> G = nx.path_graph(3)
+        >>> G[0][1]["weight"] = 3
+        >>> G.edges
+        EdgeView([(0, 1), (1, 2)])
         >>> list(G.edges)
         [(0, 1), (1, 2)]
+
+        >>> G.edges(data=True)
+        EdgeDataView([(0, 1, {"weight": 3}), (1, 2, {})])
         >>> list(G.edges(data=True))
-        [(0, 1, {'weight': 3}), (1, 2, {})]
+        [(0, 1, {"weight": 3}), (1, 2, {})]
 
     **Attributes:**
 
