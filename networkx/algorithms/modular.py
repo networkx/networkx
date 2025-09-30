@@ -1,15 +1,21 @@
 """Modular decomposition."""
 
 import collections
-import dataclasses
 import functools
 import itertools
-import uuid
 
 import networkx as nx
 from networkx import DiGraph, Graph
 
 __all__ = ["modular_decomposition"]
+
+
+def _gen_node(graph):
+    if not hasattr(_gen_node, "node"):
+        _gen_node.node = -1
+    while _gen_node.node in graph:
+        _gen_node.node -= 1
+    return _gen_node.node
 
 
 def _set_parent(graph, node, parent):
@@ -173,7 +179,7 @@ def _assembly(graph, md_tree, pivot, forest):
             node_type = "prime"
         elif added_left:
             node_type = "series"
-        node = uuid.uuid1()
+        node = _gen_node(md_tree)
         md_tree.add_node(
             node, type=node_type, left=False, right=False, left_of_pivot=False
         )
@@ -272,7 +278,7 @@ def _mark_lr(md_tree, node, left):
 
 def _construct_tree(md_tree, node, children):
     if len(children) > 1:
-        root = uuid.uuid1()
+        root = _gen_node(md_tree)
         md_tree.add_node(
             root,
             type=md_tree.nodes[node]["type"],
@@ -455,7 +461,7 @@ def _modular_decomposition_component(graph, md_tree, pivot_picker):
 
 
 def _modular_decomposition_components(graph, md_tree, pivot_picker):
-    root = uuid.uuid1()
+    root = _gen_node(md_tree)
     md_tree.add_node(
         root, type="parallel", left=False, right=False, left_of_pivot=False
     )
