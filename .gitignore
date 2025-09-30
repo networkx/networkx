@@ -20,6 +20,7 @@ doc/auto_examples
 doc/modules
 doc/reference/generated
 doc/reference/algorithms/generated
+doc/reference/algorithms/shortest_paths/generated
 doc/reference/classes/generated
 doc/reference/readwrite/generated
 doc/path.to.file
