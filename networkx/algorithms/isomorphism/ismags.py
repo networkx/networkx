@@ -806,9 +806,11 @@ class ISMAGS:
         color_degree = color_degree_by_node(graph, node_colors, edge_colors)
         while not all(are_all_equal(color_degree[n] for n in p) for p in partition):
             partition = [
-                p for part in partition
+                p
+                for part in partition
                 for p in (
-                    [part] if are_all_equal(color_degree[n] for n in part)
+                    [part]
+                    if are_all_equal(color_degree[n] for n in part)
                     else sorted(make_partition(part, equal_color), key=len)
                 )
             ]
@@ -1096,7 +1098,7 @@ class ISMAGS:
             if all(are_all_equal(color_degree[n] for n in p) for p in bottom):
                 if len(top) == len(bottom):
                     yield top, bottom
-                #else Non-isomorphic OPP (pruned here)
+                # else Non-isomorphic OPP (pruned here)
                 # either way continue to next possible bottom
                 continue
             # refine bottom partition
@@ -1251,5 +1253,5 @@ class ISMAGS:
                     # its first DFS traversal. DFS is about to go to previous node.
                     # Make copy so future orbit changes do not change the coset.
                     cosets[node] = orbits[orbit_id[node]].copy()
-                    assert len(cosets[node]) > 1, f'cosets[{node}]= {cosets[node]}'
+                    assert len(cosets[node]) > 1, f"cosets[{node}]= {cosets[node]}"
         return cosets

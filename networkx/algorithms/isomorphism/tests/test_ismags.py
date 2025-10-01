@@ -79,7 +79,7 @@ data = [
             (16, 17),
         ],
     ),
-    ( # check for unsortable nodes
+    (  # check for unsortable nodes
         [],
         [
             (17, 16),
@@ -98,7 +98,7 @@ data = [
     # Node order specified to almost match their DFS order
     (
         [3, 5, 6, 4, 2, 1, 0],
-        set(nx.cycle_graph(4).edges) | set(nx.cycle_graph(range(4, 7)).edges)
+        set(nx.cycle_graph(4).edges) | set(nx.cycle_graph(range(4, 7)).edges),
     ),
     # Example from Houbraken (ISMAGS paper)
     ([], nx.cycle_graph([1, 2, 4, 3]).edges),
