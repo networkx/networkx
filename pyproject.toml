@@ -87,6 +87,7 @@ example = [
     'cairocffi>=1.7',
     'igraph>=0.11',
     'scikit-learn>=1.5',
+    'iplotx>=0.9.0',
 ]
 extra = [
     'lxml>=4.6',
@@ -192,6 +193,11 @@ networkx = ['tests/*.py']
 
 [tool.changelist]
 ignored_user_logins = ["dependabot[bot]", "pre-commit-ci[bot]", "web-flow"]
+
+[tool.coverage.run]
+branch = true
+source = ["networkx"]
+omit = ["*/tests/*", "conftest.py", "*testing/test.py"]
 
 [tool.ruff.lint]
 extend-select = [

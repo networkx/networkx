@@ -4,7 +4,7 @@ Shortest path algorithms for weighted graphs.
 
 from collections import deque
 from heapq import heappop, heappush
-from itertools import count
+from itertools import count, islice
 
 import networkx as nx
 from networkx.algorithms.shortest_paths.generic import _build_paths_from_predecessors
@@ -834,15 +834,11 @@ def _dijkstra_multisource(
     as arguments. No need to explicitly return pred or paths.
 
     """
-    # If a target is specified, we only need the path to that target,
-    # so we skip building the full paths dictionary.
-    paths_dict = paths if target is None else None
-
-    # If a target is specified, we only need the predecessors for the path to that target,
-    # so we use a temporary internal dictionary (`pred_dict`). However, if the caller
-    # passed in a `pred` dictionary, we must compute *all* predecessors, even if a
-    # target is given, since the caller expects the full predecessor structure.
-    pred_dict = pred if target is None else (pred or {})
+    # If `paths` is specified, we use a temporary internal dictionary (`pred_dict`) to
+    # store predecessors, used to reconstruct paths. However, if the caller
+    # passed in a `pred` dictionary, we must compute *all* predecessors, since the caller
+    # expects the full predecessor structure.
+    pred_dict = pred if paths is None or pred is not None else {}
 
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
@@ -855,21 +851,21 @@ def _dijkstra_multisource(
     for source in sources:
         seen[source] = 0
         heappush(fringe, (0, next(c), source))
+    number_of_sources = len(seen)
     while fringe:
-        (d, _, v) = heappop(fringe)
+        (dist_v, _, v) = heappop(fringe)
         if v in dist:
             continue  # already searched this node.
-        dist[v] = d
+        dist[v] = dist_v
         if v == target:
             break
         for u, e in G_succ[v].items():
             cost = weight(v, u, e)
             if cost is None:
                 continue
-            vu_dist = dist[v] + cost
-            if cutoff is not None:
-                if vu_dist > cutoff:
-                    continue
+            vu_dist = dist_v + cost
+            if cutoff is not None and vu_dist > cutoff:
+                continue
             if u in dist:
                 u_dist = dist[u]
                 if vu_dist < u_dist:
@@ -877,27 +873,34 @@ def _dijkstra_multisource(
                 elif pred is not None and vu_dist == u_dist:
                     # Found another shortest path to u with equal distance (including zero-weight edges).
                     # We must store *all* predecessors because `pred` was provided by the caller.
-                    pred[u].append(v)
+                    pred_dict[u].append(v)
             elif u not in seen or vu_dist < seen[u]:
                 seen[u] = vu_dist
                 heappush(fringe, (vu_dist, next(c), u))
-                if paths_dict is not None:
-                    paths_dict[u] = paths_dict[v] + [u]
                 if pred_dict is not None:
                     pred_dict[u] = [v]
             elif pred is not None and vu_dist == seen[u]:
                 # Found another shortest path to u
                 # We must store *all* predecessors because `pred` was provided by the caller.
-                pred[u].append(v)
+                pred_dict[u].append(v)
 
-    if target is not None and paths is not None:
-        # Caller requested the path to a specific target node.
+    if paths is not None:
         # Reconstruct the path from source to target using the predecessor dictionary.
-        path = paths[target] = [target]
-        while (current_preds := pred_dict.get(path[-1])) is not None:
-            path.append(current_preds[0])
-        # The path was built in reverse order, so reverse it at the end.
-        path.reverse()
+        if target is None:
+            # Since `dist` is in increasing distance order, each predecessor's path is
+            # already computed by the time we process `v`. We skip the first
+            # `number_of_sources` entries because sources already have their paths defined.
+            for v in islice(dist, number_of_sources, None):
+                # `v` must be in `pred_dict`: any node with a distance (and not a source)
+                # has a predecessor.
+                paths[v] = paths[pred_dict[v][0]] + [v]
+        else:
+            # Caller requested the path to a specific target node.
+            path = paths[target] = [target]
+            while (current_preds := pred_dict.get(path[-1])) is not None:
+                path.append(current_preds[0])
+            # The path was built in reverse order, so reverse it at the end.
+            path.reverse()
 
     # The optional predecessor and path dictionaries can be accessed
     # by the caller via the pred and paths objects passed as arguments.
@@ -2072,10 +2075,7 @@ def goldberg_radzik(G, source, weight="weight"):
         #
         # neg_count also doubles as the DFS visit marker array.
         neg_count = {}
-        for u in relabeled:
-            # Skip visited nodes.
-            if u in neg_count:
-                continue
+        for u in relabeled - neg_count.keys():
             d_u = d[u]
             # Skip nodes without out-edges of negative reduced costs.
             if all(d_u + weight(u, v, e) >= d[v] for v, e in G_succ[u].items()):
@@ -2098,14 +2098,13 @@ def goldberg_radzik(G, source, weight="weight"):
                 t = d[u] + weight(u, v, e)
                 d_v = d[v]
                 if t < d_v:
-                    is_neg = t < d_v
                     d[v] = t
                     pred[v] = u
                     if v not in neg_count:
-                        neg_count[v] = neg_count[u] + int(is_neg)
+                        neg_count[v] = neg_count[u] + 1
                         stack.append((v, iter(G_succ[v].items())))
                         in_stack.add(v)
-                    elif v in in_stack and neg_count[u] + int(is_neg) > neg_count[v]:
+                    elif v in in_stack and neg_count[u] + 1 > neg_count[v]:
                         # (u, v) is a back edge, and the cycle formed by the
                         # path v to u and (u, v) contains at least one edge of
                         # negative reduced cost. The cycle must be of negative
@@ -2118,7 +2117,7 @@ def goldberg_radzik(G, source, weight="weight"):
         """Relax out-edges of relabeled nodes."""
         relabeled = set()
         # Scan nodes in to_scan in topological order and relax incident
-        # out-edges. Add the relabled nodes to labeled.
+        # out-edges. Add the relabeled nodes to labeled.
         for u in to_scan:
             d_u = d[u]
             for v, e in G_succ[u].items():
@@ -2129,7 +2128,7 @@ def goldberg_radzik(G, source, weight="weight"):
                     relabeled.add(v)
         return relabeled
 
-    # Set of nodes relabled in the last round of scan operations. Denoted by B
+    # Set of nodes relabeled in the last round of scan operations. Denoted by B
     # in Goldberg and Radzik's paper.
     relabeled = {source}
 
