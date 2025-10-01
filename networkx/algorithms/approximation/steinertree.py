@@ -33,7 +33,7 @@ def metric_closure(G, weight="weight"):
     import warnings
 
     warnings.warn(
-        "metric_closure is deprecated and will be removed in NetworkX 3.8. "
+        "metric_closure is deprecated and will be removed in NetworkX 3.8.\n"
         "Use nx.all_pairs_shortest_path_length instead.",
         category=DeprecationWarning,
         stacklevel=5,
