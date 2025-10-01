@@ -36,7 +36,7 @@ def metric_closure(G, weight="weight"):
         "metric_closure is deprecated and will be removed in NetworkX 3.8. "
         "Use nx.all_pairs_shortest_path_length instead.",
         category=DeprecationWarning,
-        stacklevel=2,
+        stacklevel=5,
     )
 
     M = nx.Graph()
