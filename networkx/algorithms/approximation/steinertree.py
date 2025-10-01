@@ -25,15 +25,15 @@ def metric_closure(G, weight="weight"):
 
     Notes
     -----
-    .. deprecated:: 3.5
-       `metric_closure` is deprecated and will be removed in NetworkX 3.7.
+    .. deprecated:: 3.6
+       `metric_closure` is deprecated and will be removed in NetworkX 3.8.
        Use :func:`networkx.all_pairs_shortest_path_length` instead.
 
     """
     import warnings
 
     warnings.warn(
-        "metric_closure is deprecated and will be removed in NetworkX 3.7. "
+        "metric_closure is deprecated and will be removed in NetworkX 3.8. "
         "Use nx.all_pairs_shortest_path_length instead.",
         category=DeprecationWarning,
         stacklevel=2,

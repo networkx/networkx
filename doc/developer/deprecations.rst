@@ -47,8 +47,8 @@ Version 3.7
   ``faster_graph_could_be_isomorphic``, from
   ``networkx.algorithms.isomorphism.isomorph``.
 * Remove ``random_lobster`` from ``networkx.generators.random_graphs``.
-* In ``algorithms/approximation/steinertree.py`` remove ``metric_closure`` and related tests.
 
 Version 3.8
 ~~~~~~~~~~~
 * Remove ``maybe_regular_expander`` from ``networkx.generators.expanders``.
+* In ``algorithms/approximation/steinertree.py`` remove ``metric_closure`` and related tests.
