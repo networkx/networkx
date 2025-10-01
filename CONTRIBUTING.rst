@@ -173,7 +173,7 @@ Development Workflow
    please make sure the PR has the ``type: API`` label.
 
    See the
-   `deprecation policy <https://networkx.org/documentation/latest/developer/deprecations>`__
+   `deprecation policy <https://networkx.org/documentation/latest/developer/deprecations#procedure>`__
    for a step-by-step guide to the deprecation procedure.
 
 
