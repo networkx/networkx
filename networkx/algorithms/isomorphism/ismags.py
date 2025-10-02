@@ -298,26 +298,26 @@ def are_all_equal(iterable):
     return all(item == first for item in iterator)
 
 
-def make_partition(things, thing_matcher):
+def make_partition(items, test):
     """
-    Partition things into sets based on the outcome of ``thing_matcher(item1, item2)``.
-    Pairs of things for which `thing_matcher` returns `True` end up in the same set.
+    Partitions items into sets based on the outcome of ``test(item1, item2)``.
+    Pairs of items for which `test` returns `True` end up in the same set.
 
     Parameters
     ----------
-    things : collections.abc.Iterable[collections.abc.Hashable]
-        Things to partition
+    items : collections.abc.Iterable[collections.abc.Hashable]
+        Items to partition
     test : collections.abc.Callable[collections.abc.Hashable, collections.abc.Hashable]
-        A function that will be called with 2 things taken from `things`.
-        Should return `True` if those 2 things match so need to end up in the same
+        A function that will be called with 2 arguments, taken from items.
+        Should return `True` if those 2 items match/tests so need to end up in the same
         part of the partition, and `False` otherwise.
 
     Returns
     -------
     list[set]
         A partition as a list of sets (the parts). Each set contains some of
-        the things in `things`, such that all things are in one part and every
-        pair of things in each part matches. The following will be true:
+        the items in `items`, such that all items are in exactly one part and every
+        pair of items in each part matches. The following will be true:
         ``all(thing_matcher(*pair) for pair in itertools.combinations(set, 2))``
 
     Notes
@@ -325,16 +325,16 @@ def make_partition(things, thing_matcher):
     The function `test` is assumed to be transitive: if ``test(a, b)`` and
     ``test(b, c)`` return ``True``, then ``test(a, c)`` must also be ``True``.
     """
-    part_by_1st_thing = {}
-    for thing1 in things:
-        for thing2, part in part_by_1st_thing.items():
-            if thing_matcher(thing1, thing2):
-                part.add(thing1)
+    partitions = []
+    for item in items:
+        for partition in partitions:
+            p_item = next(iter(partition))
+            if test(item, p_item):
+                partition.add(item)
                 break
         else:  # No break
-            part_by_1st_thing[thing1] = {thing1}
-    return list(part_by_1st_thing.values())
-    partition = []
+            partitions.append({item})
+    return partitions
 
 
 def node_to_part_ID_dict(partition):
@@ -1125,7 +1125,6 @@ class ISMAGS:
                             for p in permutations:
                                 new_partitions.append(new_partition + list(p[0]))
                         more_bottoms = new_partitions
-
 
             # reverse more_bottoms to keep the "finding identity" bottom first
             possible_bottoms.extend(more_bottoms[::-1])
