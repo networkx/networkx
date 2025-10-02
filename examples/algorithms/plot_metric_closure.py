@@ -63,7 +63,7 @@ nx.draw_networkx_edge_labels(
 )
 axes[0].set_title("Original Graph")
 
-pos_mc = nx.spring_layout(M, seed=2210)
+pos_mc = nx.circular_layout(M)
 nx.draw(M, pos_mc, with_labels=True, ax=axes[1])
 nx.draw_networkx_edge_labels(
     M,
