@@ -68,7 +68,7 @@ nx.draw(M, pos_mc, with_labels=True, ax=axes[1])
 nx.draw_networkx_edge_labels(
     M,
     pos,
-    edge_labels={(u, v): d["distance"] for u, v, d in M.edges(data=True)},
+    edge_labels={(u, v): d for u, v, d in M.edges(data="distance")},
     ax=axes[1],
 )
 axes[1].set_title("Metric Closure of Origin Graph")
