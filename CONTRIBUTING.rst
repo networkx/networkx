@@ -172,31 +172,9 @@ Development Workflow
    If your change introduces any API modifications including deprecations,
    please make sure the PR has the ``type: API`` label.
 
-   To set up a function for deprecation:
-
-   - Use a deprecation warning to warn users. For example::
-
-         msg = "curly_hair is deprecated and will be removed in v3.0. Use sum() instead."
-         warnings.warn(msg, DeprecationWarning)
-
-   - Add a warnings filter to ``networkx/conftest.py``::
-
-         warnings.filterwarnings(
-             "ignore", category=DeprecationWarning, message=<start of message>
-         )
-
-   - Add a reminder to ``doc/developer/deprecations.rst`` for the team
-     to remove the deprecated functionality in the future. For example:
-
-     .. code-block:: rst
-
-        * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
-
-   .. note::
-
-      To reviewers: make sure the merge message has a brief description of the
-      change(s) and if the PR closes an issue add, for example, "Closes #123"
-      where 123 is the issue number.
+   See the
+   `deprecation policy <https://networkx.org/documentation/latest/developer/deprecations#procedure>`__
+   for a step-by-step guide to the deprecation procedure.
 
 
 Divergence from ``upstream main``
