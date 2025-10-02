@@ -19,30 +19,19 @@ using the minimum total edge weights along paths.
 
 import networkx as nx
 import matplotlib.pyplot as plt
+from pprint import pprint
 
 # Creating five nodes from index 0 to 4
-G = nx.Graph()
-G.add_nodes_from(range(5))
-G.add_edge(0, 1)
-G.add_edge(0, 4)
-G.add_edge(1, 3)
-G.add_edge(1, 5)
-G.add_edge(2, 3)
-G.add_edge(2, 4)
-G.add_edge(2, 5)
-G.add_edge(3, 4)
-G.add_edge(3, 5)
-G.add_edge(4, 5)
+G = nx.house_graph()
 
 # Find the all-pairs shortest distance
 # all_pairs_shortest_path_length returns a one-time generator,
 # so wrap with dict() to materialize results for reuse.
 paths = dict(nx.all_pairs_shortest_path_length(G))
-for u, dist_dict in paths.items():
-    print(
-        f"From node {u}, distances to all other nodes: {dist_dict} "
-        "(keys = target nodes, values = shortest-path distances)"
-    )
+
+
+# Dictionary format: u: {v: d}, meaning "distance d from node u to node v"
+pprint(paths)
 
 # Metric closure of G
 M = nx.Graph()
@@ -53,7 +42,7 @@ for u, dist_dict in paths.items():
 # Visualize the G and metric closure of G
 fig, axes = plt.subplots(1, 2, figsize=(10, 4))
 
-pos = nx.spring_layout(G, seed=2210)
+pos = nx.circular_layout(G)
 nx.draw(G, pos, with_labels=True, ax=axes[0])
 nx.draw_networkx_edge_labels(
     G,
