@@ -41,7 +41,7 @@ for u, dist_dict in paths.items():
 # Visualize the G and metric closure of G
 fig, axes = plt.subplots(1, 2, figsize=(10, 4))
 
-pos = nx.circular_layout(G)
+pos = {0: (0, 0), 1: (1, 0), 2: (0, 1), 3: (1, 1), 4: (0.5, 2.0)}
 nx.draw(G, pos, with_labels=True, ax=axes[0])
 nx.draw_networkx_edge_labels(
     G,
