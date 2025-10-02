@@ -280,18 +280,6 @@ class ISMAGS:
     ----------
     graph: networkx.Graph
     subgraph: networkx.Graph
-    node_equality: collections.abc.Callable
-        The function called to see if two nodes should be considered equal.
-        It's signature looks like this:
-        ``f(graph1: networkx.Graph, node1, graph2: networkx.Graph, node2) -> bool``.
-        `node1` is a node in `graph1`, and `node2` a node in `graph2`.
-        Constructed from the argument `node_match`.
-    edge_equality: collections.abc.Callable
-        The function called to see if two edges should be considered equal.
-        It's signature looks like this:
-        ``f(graph1: networkx.Graph, edge1, graph2: networkx.Graph, edge2) -> bool``.
-        `edge1` is an edge in `graph1`, and `edge2` an edge in `graph2`.
-        Constructed from the argument `edge_match`.
 
     Notes
     -----
