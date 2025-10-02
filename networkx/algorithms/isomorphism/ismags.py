@@ -298,42 +298,43 @@ def are_all_equal(iterable):
     return all(item == first for item in iterator)
 
 
-def make_partition(items, test):
+def make_partition(things, thing_matcher):
     """
-    Partition items into sets based on the outcome of ``test(item1, item2)``.
-    Pairs of items for which `test` returns `True` end up in the same set.
+    Partition things into sets based on the outcome of ``thing_matcher(item1, item2)``.
+    Pairs of things for which `thing_matcher` returns `True` end up in the same set.
 
     Parameters
     ----------
-    items : collections.abc.Iterable[collections.abc.Hashable]
-        Items to partition
+    things : collections.abc.Iterable[collections.abc.Hashable]
+        Things to partition
     test : collections.abc.Callable[collections.abc.Hashable, collections.abc.Hashable]
-        A function that will be called with 2 arguments, taken from items.
-        Should return `True` if those 2 items need to end up in the same
-        part, and `False` otherwise.
+        A function that will be called with 2 things taken from `things`.
+        Should return `True` if those 2 things match so need to end up in the same
+        part of the partition, and `False` otherwise.
 
     Returns
     -------
     list[set]
-        A list of sets, with each set containing part of the items in `items`,
-        such that ``all(test(*pair) for pair in  itertools.combinations(set, 2))
-        == True``
+        A partition as a list of sets (the parts). Each set contains some of
+        the things in `things`, such that all things are in one part and every
+        pair of things in each part matches. The following will be true:
+        ``all(thing_matcher(*pair) for pair in itertools.combinations(set, 2))``
 
     Notes
     -----
     The function `test` is assumed to be transitive: if ``test(a, b)`` and
     ``test(b, c)`` return ``True``, then ``test(a, c)`` must also be ``True``.
     """
-    partition = []
-    for item in items:
-        for part in partition:
-            p_item = next(iter(part))
-            if test(item, p_item):
-                part.add(item)
+    part_by_1st_thing = {}
+    for thing1 in things:
+        for thing2, part in part_by_1st_thing.items():
+            if thing_matcher(thing1, thing2):
+                part.add(thing1)
                 break
         else:  # No break
-            partition.append({item})
-    return partition
+            part_by_1st_thing[thing1] = {thing1}
+    return list(part_by_1st_thing.values())
+    partition = []
 
 
 def node_to_part_ID_dict(partition):
@@ -368,13 +369,14 @@ def color_degree_by_node(G, n_colors, e_colors):
     color on the other end of the edge. Similarly if node_match is None then only
     edge color is tracked. And if both are None, we simply count the number of edges.
     """
+    # n_colors might be incomplete when using `largest_common_subgraph()`
     if len(n_colors) < len(G):
         for n, nbrs in G.adjacency():
             if n not in n_colors:
                 n_colors[n] = None
                 for v in nbrs:
                     e_colors[n, v] = None
-        # undirected colored degree
+    # undirected colored degree
     if not G.is_directed():
         return {
             u: (n_colors[u], Counter((e_colors[u, v], n_colors[v]) for v in nbrs))
@@ -886,11 +888,11 @@ class ISMAGS:
                     continue
                 left_to_map = to_be_mapped - mapping.keys()
 
-                # Now we copy the candidates dict. But it is not a deepcopy.
-                # The dict-of-sets-of-frozensets point to the same sets of frozensets.
-                # Be careful to not change the sets of frozensets below.
-                # Shallow copy. allows chg for new sgns
-                new_cand_sets = candidate_sets.copy()
+                # We copy the candidates dict. But it is not a deepcopy.
+                # This avoids inner set copies, yet still allows updates b/c setitem
+                # changes sgn in new dict without changing original set.
+                # Below be careful to not change the sets of frozensets.
+                cand_sets = candidate_sets.copy()
 
                 # update the candidate_sets for unmapped sgn based on sgn mapped
                 if not is_directed:
@@ -899,20 +901,16 @@ class ISMAGS:
                     for sgn2 in left_to_map:
                         # edge color must match when sgn2 connected to sgn
                         if sgn2 not in sgn_nbrs:
-                            gn2_options = not_gn_nbrs
+                            gn2_cands = not_gn_nbrs
                         else:
                             g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
-                            gn2_options = {n for e in g_edges if gn in e for n in e}
+                            gn2_cands = {n for e in g_edges if gn in e for n in e}
                         # Node color compatibility should be taken care of by the
                         # initial candidate lists made by find_subgraphs
 
-                        # Add gn2_options to the right collection. Since new_cand_sets
-                        # is a dict-of-sets-of-frozensets of node indices it's
-                        # a bit clunky. We can't do .add without changing the original,
-                        # and + also doesn't work. Could do |, but union is clearer?
-                        new_cand_sets[sgn2] = new_cand_sets[sgn2].union(
-                            [frozenset(gn2_options)]
-                        )
+                        # Add gn2_cands to the right collection.
+                        # Do not change the original set. So do not use |= operator
+                        cand_sets[sgn2] = cand_sets[sgn2] | {frozenset(gn2_cands)}
                 else:  # directed
                     sgn_nbrs = subgraph_adj[sgn].keys()
                     sgn_preds = subgraph._pred[sgn].keys()
@@ -923,50 +921,45 @@ class ISMAGS:
                         # edge color must match when sgn2 connected to sgn
                         if sgn2 not in sgn_nbrs:
                             if sgn2 not in sgn_preds:
-                                gn2_options = not_gn_nbrs
+                                gn2_cands = not_gn_nbrs
                             else:  # sgn2 in sgn_preds
                                 g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
-                                gn2_options = {e[0] for e in g_edges if gn == e[1]}
+                                gn2_cands = {e[0] for e in g_edges if gn == e[1]}
                         else:
                             if sgn2 not in sgn_preds:
                                 g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
-                                gn2_options = {e[1] for e in g_edges if gn == e[0]}
+                                gn2_cands = {e[1] for e in g_edges if gn == e[0]}
                             else:
                                 # gn2 must have correct color in both directions
                                 g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
-                                gn2_options = {e[1] for e in g_edges if gn == e[0]}
+                                gn2_cands = {e[1] for e in g_edges if gn == e[0]}
                                 g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
-                                gn2_options &= {e[0] for e in g_edges if gn == e[1]}
-                        new_cand_sets[sgn2] = new_cand_sets[sgn2].union(
-                            [frozenset(gn2_options)]
-                        )
+                                gn2_cands &= {e[0] for e in g_edges if gn == e[1]}
+                        # Do not change the original set. So do not use |= operator
+                        cand_sets[sgn2] = cand_sets[sgn2] | {frozenset(gn2_cands)}
 
                 for sgn2 in left_to_map:
                     # symmetry must match. constraints mean gn2>gn iff sgn2>sgn
                     if (sgn, sgn2) in constraints:
-                        gn2_options = set(gn_ID_to_node[gn_node_to_ID[gn] + 1 :])
-                        # gn2_options = {gn2 for gn2 in self.graph if gn2 > gn}
+                        gn2_cands = set(gn_ID_to_node[gn_node_to_ID[gn] + 1 :])
                     elif (sgn2, sgn) in constraints:
-                        gn2_options = set(gn_ID_to_node[: gn_node_to_ID[gn]])
-                        # gn2_options = {gn2 for gn2 in self.graph if gn2 < gn}
+                        gn2_cands = set(gn_ID_to_node[: gn_node_to_ID[gn]])
                     else:
                         continue  # pragma: no cover
-                    # same gn2_options comment here. Use union.
-                    new_cand_sets[sgn2] = new_cand_sets[sgn2].union(
-                        [frozenset(gn2_options)]
-                    )
+                    # Do not change the original set. So do not use |= operator
+                    cand_sets[sgn2] = cand_sets[sgn2] | {frozenset(gn2_cands)}
 
                 # The next node is the one that is unmapped and has fewest candidates
                 # Use the heuristic of the min size of the frosensets rather than
                 # intersection of all frozensets to delay computing intersections.
                 new_sgn = min(
-                    left_to_map, key=lambda n: min(len(x) for x in new_cand_sets[n])
+                    left_to_map, key=lambda n: min(len(x) for x in cand_sets[n])
                 )
-                new_sgn_candidates = frozenset.intersection(*new_cand_sets[new_sgn])
+                new_sgn_candidates = frozenset.intersection(*cand_sets[new_sgn])
                 if not new_sgn_candidates:
                     continue
-                new_cand_sets[new_sgn] = {new_sgn_candidates}
-                queue.append((new_sgn, new_cand_sets, iter(new_sgn_candidates)))
+                cand_sets[new_sgn] = {new_sgn_candidates}
+                queue.append((new_sgn, cand_sets, iter(new_sgn_candidates)))
                 break
             else:  # all gn candidates tried for sgn.
                 queue.pop()
@@ -1064,9 +1057,6 @@ class ISMAGS:
         Get all permutations of items, but only permute items with the same
         length.
 
-        Note that for ISMAGS, all permutations are returned in length 1 tuples.
-        So ``assert all(len(p) == 1 for p in permutations), f'{permutations=}'``
-
         >>> found = list(ISMAGS._get_permutations_by_length([{1}, {2}, {3, 4}, {4, 5}]))
         >>> answer = [
         ...     (({1}, {2}), ({3, 4}, {4, 5})),
@@ -1077,6 +1067,9 @@ class ISMAGS:
         >>> found == answer
         True
         """
+        # TODO: Note that for ISMAGS, all permutations are returned in length 1 tuples.
+        # So ``assert all(len(p) == 1 for p in permutations), f'{permutations=}'``
+        # Why is this true? If we can count on it we should be able to simplify this.
         by_len = defaultdict(list)
         for item in items:
             by_len[len(item)].append(item)
@@ -1108,13 +1101,14 @@ class ISMAGS:
             more_bottoms = [[]]
             for part in bottom:
                 if len(part) == 1 or are_all_equal(color_degree[node] for node in part):
-                    for new_partition in more_bottoms:
-                        new_partition.append(part)
+                    for new_bottom in more_bottoms:
+                        new_bottom.append(part)
                 else:
-                    # This specific part needs to be refined
+                    # This part needs to be refined
                     refined_part = make_partition(part, equal_color)
                     R = len(refined_part)
                     if R == 1 or R == len({len(p) for p in refined_part}):
+                        # no two parts have same length -- simple case
                         for n_p in more_bottoms:
                             n_p.extend(sorted(refined_part, key=len))
                     else:
@@ -1122,6 +1116,7 @@ class ISMAGS:
                         # Before refinement they were the same color. So we need to
                         # include all possible orderings/colors within each size.
                         permutations = cls._get_permutations_by_length(refined_part)
+                        assert all(len(p) == 1 for p in permutations)
                         # Add all permutations of the refined parts to each possible
                         # bottom. So the number of new possible bottoms increases
                         # by the number of permutations of the refined parts.
@@ -1130,28 +1125,31 @@ class ISMAGS:
                             for p in permutations:
                                 new_partitions.append(new_partition + list(p[0]))
                         more_bottoms = new_partitions
-            # reverse more_partitions to keep identity finding first
+
+
+            # reverse more_bottoms to keep the "finding identity" bottom first
             possible_bottoms.extend(more_bottoms[::-1])
 
     @staticmethod
     def _find_permutations(top_partition, bottom_partition):
         """
-        Return the pairs of top/bottom parts where the parts are
-        different. Ensures that all parts in both top and bottom
-        partitions have size 1.
+        Return a set of 2-tuples of nodes. These nodes are not equal
+        but are mapped to each other in the symmetry represented by this OPP.
+        Swapping all the 2-tuples of nodes in this set permutes the nodes
+        but retains the graph structure. Thus it is a symmetry of the subgraph.
         """
         # Find permutations
         permutations = set()
         for top, bot in zip(top_partition, bottom_partition):
             if len(top) > 1 or len(bot) > 1:
                 # ignore parts with > 1 element when they are equal
-                # These are called matching partitions in Katebi 2012.
+                # These are called Matching OPPs in Katebi 2012.
                 # Symmetries in matching partitions are built by considering
                 # only parts that have 1 element.
                 if top == bot:
                     continue
                 raise IndexError(
-                    "Not all nodes are coupled. This is"
+                    "Not all nodes are matched. This is"
                     f" impossible: {top_partition}, {bottom_partition}"
                 )
             # top and bot have only one element
@@ -1206,7 +1204,8 @@ class ISMAGS:
                     continue
 
                 # couple node to node2
-                new_top_part, new_bot_part = {node}, {node2}
+                new_top_part = {node}
+                new_bot_part = {node2}
 
                 new_top = [top.copy() for top in tops]
                 new_top[part_i] -= new_top_part
@@ -1224,7 +1223,7 @@ class ISMAGS:
                     # else load the OPP onto queue for further exploration
                     # Note that we check for Orbit pruning later because orbits may
                     # be updated while OPP is sitting on the queue.
-                    # Note that we check for non-isomorphic OPPs in `_refine_opp`.
+                    # Note that we check for Non-isomorphic OPPs in `_refine_opp`.
                     if finding_identity:
                         # Note: allow zero size parts in identity check
                         #       b/c largest_common_subgraph allows empty parts
@@ -1236,8 +1235,9 @@ class ISMAGS:
                         # Found a symmetry! (Full mapping or Matching OPP)
                         # update orbits using the permutations from the OPP.
                         permutations = self._find_permutations(*opp)
-                        for permutation in permutations:
-                            orb1, orb2 = (orbit_id[n] for n in permutation)
+                        for n1, n2 in permutations:
+                            orb1 = orbit_id[n1]
+                            orb2 = orbit_id[n2]
                             if orb1 != orb2:
                                 orbit_set2 = orbits[orb2]
                                 orbits[orb1].update(orbit_set2)
