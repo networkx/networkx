@@ -29,7 +29,6 @@ G = nx.house_graph()
 # so wrap with dict() to materialize results for reuse.
 paths = dict(nx.all_pairs_shortest_path_length(G))
 
-
 # Dictionary format: u: {v: d}, meaning "distance d from node u to node v"
 pprint(paths)
 
