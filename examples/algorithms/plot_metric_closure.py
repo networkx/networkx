@@ -38,7 +38,7 @@ for u, dist_dict in paths.items():
     for v, d in dist_dict.items():
         if u != v:  # avoid self-loops
             M.add_edge(u, v, distance=d)
-# Visualize the G and metric closure of G
+# Visualize G and its metric closure
 fig, axes = plt.subplots(1, 2, figsize=(10, 4))
 
 pos = {0: (0, 0), 1: (1, 0), 2: (0, 1), 3: (1, 1), 4: (0.5, 2.0)}
