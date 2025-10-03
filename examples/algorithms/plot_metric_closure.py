@@ -55,7 +55,7 @@ pos_mc = nx.circular_layout(M)
 nx.draw(M, pos_mc, with_labels=True, ax=axes[1])
 nx.draw_networkx_edge_labels(
     M,
-    pos,
+    pos_mc,
     edge_labels={(u, v): d for u, v, d in M.edges(data="distance")},
     ax=axes[1],
 )
