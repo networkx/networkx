@@ -8,13 +8,14 @@ each edge weight corresponds to the shortest-path distance
 between two nodes in the original graph.
 
 This example demonstrates the *unweighted* version of the metric closure,
-constructed using :func:`networkx.all_pairs_shortest_path_length`.
+constructed using
+:func:`~networkx.algorithms.shortest_paths.unweighted.all_pairs_shortest_path_length`.
 Here, each edge is assumed to have weight 1, so distances correspond to
 the minimum number of hops between nodes.
 
 For weighted graphs, the metric closure can be obtained instead with
-:func:`networkx.all_pairs_dijkstra_path_length`, which computes distances
-using the minimum total edge weights along paths.
+:func:`~networkx.algorithms.shortest_paths.weighted.all_pairs_dijkstra_path_length`,
+which computes distances using the minimum total edge weights along paths.
 """
 
 import networkx as nx
