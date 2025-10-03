@@ -55,6 +55,7 @@ jobs:
           command: |
             source venv/bin/activate
             pip install -e '.[default,test,extra,example,doc]'
+            pip list
 
       - run:
           name: Build docs
@@ -88,6 +89,7 @@ jobs:
           command: |
             source venv/bin/activate
             pip install -e .[default,test]
+            pip list
 
       - run:
           name: Test NetworkX drawing
