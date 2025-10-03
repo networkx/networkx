@@ -36,6 +36,8 @@ jobs:
           # Development version of nx-parallel backend
           # Comment this out for now, nx-parallel doesn't support 3.11
           # pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
+          # Development version of Neptune Analytics backend
+          pip install git+https://github.com/awslabs/nx-neptune.git@main --no-deps
           python -m pip list
 
       - run: python -c 'import networkx'

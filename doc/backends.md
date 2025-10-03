@@ -41,4 +41,6 @@ backend-specific configurations it supports.
    - GPU acceleration using RAPIDS cuGraph and NVIDIA GPUs
 *  - [nx-arangodb](https://github.com/arangodb/nx-arangodb)
    - Seamlessly adds ArangoDB as a persistence layer to NetworkX graphs
+*  - [nx-neptune](https://github.com/awslabs/nx-neptune)
+   - Seamlessly offload computation workloads to AWS Neptune Analytics service
 ```
