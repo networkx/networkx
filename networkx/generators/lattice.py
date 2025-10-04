@@ -347,15 +347,13 @@ def hexagonal_lattice_graph(
     G.remove_node((n, (M + 1) * (n % 2)))
 
     # identify boundary nodes if periodic
-    from networkx.algorithms.minors import contracted_nodes
-
     if periodic:
         for i in cols[:n]:
-            G = contracted_nodes(G, (i, 0), (i, M))
+            G = nx.contracted_nodes(G, (i, 0), (i, M))
         for i in cols[1:]:
-            G = contracted_nodes(G, (i, 1), (i, M + 1))
+            G = nx.contracted_nodes(G, (i, 1), (i, M + 1))
         for j in rows[1:M]:
-            G = contracted_nodes(G, (0, j), (n, j))
+            G = nx.contracted_nodes(G, (0, j), (n, j))
         G.remove_node((n, M))
 
     # calc position in embedded space
