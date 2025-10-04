@@ -250,14 +250,13 @@ def triangular_lattice_graph(
     # add diagonals
     H.add_edges_from(((i, j), (i + 1, j + 1)) for j in rows[1:m:2] for i in cols[:N])
     H.add_edges_from(((i + 1, j), (i, j + 1)) for j in rows[:m:2] for i in cols[:N])
-    # identify boundary nodes if periodic
-    from networkx.algorithms.minors import contracted_nodes
 
+    # identify boundary nodes if periodic
     if periodic is True:
         for i in cols:
-            H = contracted_nodes(H, (i, 0), (i, m))
+            H = nx.contracted_nodes(H, (i, 0), (i, m), store_contraction_as=None)
         for j in rows[:m]:
-            H = contracted_nodes(H, (0, j), (N, j))
+            H = nx.contracted_nodes(H, (0, j), (N, j), store_contraction_as=None)
     elif n % 2:
         # remove extra nodes
         H.remove_nodes_from((N, j) for j in rows[1::2])
