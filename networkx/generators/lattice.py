@@ -359,15 +359,16 @@ def hexagonal_lattice_graph(
         G.remove_node((n, M))
 
     # calc position in embedded space
-    ii = (i for i in cols for j in rows)
-    jj = (j for i in cols for j in rows)
-    xx = (0.5 + i + i // 2 + (j % 2) * ((i % 2) - 0.5) for i in cols for j in rows)
-    h = sqrt(3) / 2
-    if periodic:
-        yy = (h * j + 0.01 * i * i for i in cols for j in rows)
-    else:
-        yy = (h * j for i in cols for j in rows)
-    # exclude nodes not in G
-    pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy) if (i, j) in G}
-    set_node_attributes(G, pos, "pos")
+    if with_positions:
+        ii = (i for i in cols for j in rows)
+        jj = (j for i in cols for j in rows)
+        xx = (0.5 + i + i // 2 + (j % 2) * ((i % 2) - 0.5) for i in cols for j in rows)
+        h = sqrt(3) / 2
+        if periodic:
+            yy = (h * j + 0.01 * i * i for i in cols for j in rows)
+        else:
+            yy = (h * j for i in cols for j in rows)
+        # exclude nodes not in G
+        pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy) if (i, j) in G}
+        set_node_attributes(G, pos, "pos")
     return G
