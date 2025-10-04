@@ -59,6 +59,12 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
     NetworkX graph
         The (possibly periodic) grid graph of the specified dimensions.
 
+    See Also
+    --------
+    triangular_lattice_graph, hexagonal_lattice_graph :
+        Other 2D lattice graphs
+    grid_graph, hypercube_graph :
+        N-dimensional lattice graphs
     """
     G = empty_graph(0, create_using)
     row_name, rows = m
@@ -112,6 +118,13 @@ def grid_graph(dim, periodic=False):
     NetworkX graph
         The (possibly periodic) grid graph of the specified dimensions.
 
+    See Also
+    --------
+    grid_2d_graph, triangular_lattice_graph, hexagonal_lattice_graph :
+        2D lattice graphs
+    hypercube_graph :
+        A special case of `grid_graph` where all elements of `dim` are identical
+
     Examples
     --------
     To produce a 2 by 3 by 4 grid graph, a graph on 24 nodes:
@@ -160,6 +173,13 @@ def hypercube_graph(n):
     -------
     networkx.Graph
         The n-dimensional hypercube graph as an undirected graph.
+
+    See Also
+    --------
+    grid_2d_graph, triangular_lattice_graph, hexagonal_lattice_graph :
+        2D lattice graphs
+    grid_graph :
+        A more general N-dimensional grid
 
     Examples
     --------
@@ -232,6 +252,13 @@ def triangular_lattice_graph(
     -------
     NetworkX graph
         The *m* by *n* triangular lattice graph.
+
+    See Also
+    --------
+    grid_2d_graph, hexagonal_lattice_graph :
+        Other 2D lattice graphs
+    grid_graph, hypercube_graph :
+        N-dimensional lattice graphs
     """
     H = empty_graph(0, create_using)
     if n == 0 or m == 0:
@@ -326,6 +353,13 @@ def hexagonal_lattice_graph(
     -------
     NetworkX graph
         The *m* by *n* hexagonal lattice graph.
+
+    See Also
+    --------
+    grid_2d_graph, triangular_lattice_graph :
+        Other 2D lattice graphs
+    grid_graph, hypercube_graph :
+        N-dimensional lattice graphs
     """
     G = empty_graph(0, create_using)
     if m == 0 or n == 0:
