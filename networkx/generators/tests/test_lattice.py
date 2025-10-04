@@ -14,6 +14,14 @@ def test_hexagonal_lattice_no_pos():
     assert all(pos is None for _, pos in G.nodes(data="pos"))
 
 
+def test_hexagonal_lattice_no_contraction_leftovers():
+    """hexagonal_lattice_graph uses nx.contracted_nodes under-the-hood when
+    periodic=True. Check that there are no leftover "contraction" node
+    attributes on the returned graph."""
+    G = nx.hexagonal_lattice_graph(6, 6, with_positions=False, periodic=True)
+    assert all(data == {} for _, data in G.nodes(data=True))
+
+
 class TestGrid2DGraph:
     """Unit tests for :func:`networkx.generators.lattice.grid_2d_graph`"""
 

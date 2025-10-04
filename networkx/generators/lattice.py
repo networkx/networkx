@@ -349,11 +349,11 @@ def hexagonal_lattice_graph(
     # identify boundary nodes if periodic
     if periodic:
         for i in cols[:n]:
-            G = nx.contracted_nodes(G, (i, 0), (i, M))
+            G = nx.contracted_nodes(G, (i, 0), (i, M), store_contraction_as=None)
         for i in cols[1:]:
-            G = nx.contracted_nodes(G, (i, 1), (i, M + 1))
+            G = nx.contracted_nodes(G, (i, 1), (i, M + 1), store_contraction_as=None)
         for j in rows[1:M]:
-            G = nx.contracted_nodes(G, (0, j), (n, j))
+            G = nx.contracted_nodes(G, (0, j), (n, j), store_contraction_as=None)
         G.remove_node((n, M))
 
     # calc position in embedded space
