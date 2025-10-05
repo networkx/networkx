@@ -134,6 +134,12 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     r : float
        Assortativity of graph by degree.
 
+    Raises
+    ------
+    NetworkXError
+        If the graph 'G' is empty.
+        If the graph 'G' has nodes with degrees less than two.
+
     Examples
     --------
     >>> G = nx.path_graph(4)
@@ -154,8 +160,16 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     """
     import scipy as sp
 
+    if nx.is_empty(G):
+        raise nx.NetworkXError(
+            "Cannot compute correlation coefficient on an empty graph."
+        )
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
+    if len(x) < 2 or len(y) < 2:
+        raise nx.NetworkXError(
+            "Not enough node degrees to compute correlation coefficient."
+        )
     return float(sp.stats.pearsonr(x, y)[0])
 
 
