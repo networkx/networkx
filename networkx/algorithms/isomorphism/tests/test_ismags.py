@@ -21,24 +21,13 @@ def _matches_to_sets(matches):
 
 
 data = [
-    # node_data, edge_data
-    ([0, 1, 2, 3], [(0, 0)]),
-    ([], nx.star_graph(3).edges),
-    (range(1, 5), [(1, 2), (2, 4), (4, 3), (3, 1)]),
-    (
-        [
-            (0, {"name": "a"}),
-            (1, {"name": "a"}),
-            (2, {"name": "b"}),
-            (3, {"name": "b"}),
-            (4, {"name": "a"}),
-            (5, {"name": "a"}),
-        ],
-        [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5)],
-    ),
-    (
+    # node_data, edge_data, [id used in name for the test]
+    pytest.param([0, 1, 2, 3], [(0, 0)], id="isolated-nodes-and-selfloops"),
+    pytest.param([], nx.star_graph(3).edges, id="3-star"),
+    pytest.param(
+        # 6-cycle with 2-paths stuck onto nodes 0, 2, 4 (stretched symmetry)
         [],
-        [  # 5-cycle with 2-paths stuck onto nodes 0, 2, 4
+        [
             (0, 1),
             (1, 2),
             (2, 3),
@@ -52,23 +41,44 @@ data = [
             (4, 10),
             (10, 11),
         ],
+        id="sun:6-cycle-with-2-path-rays"
     ),
-    ([], [(0, 1), (1, 2), (1, 4), (2, 3), (3, 5), (3, 6)]),
-    (
+    # 0-1-2-3-5
+    #  /     \
+    # 4       6
+    pytest.param([], [(0, 1), (1, 2), (1, 4), (2, 3), (3, 5), (3, 6)], id="tree"),
+    pytest.param([], nx.petersen_graph().edges, id="petersen_graph"),
+    # Example Fig 3 from Houbraken, et al (ISMAGS paper)
+    pytest.param(
+        [], nx.cycle_graph([1, 2, 4, 3]).edges, id="houbraken-ismags-paper-fig3"
+    ),
+    pytest.param(
+        # path with node labels
+        [
+            (0, {"name": "a"}),
+            (1, {"name": "a"}),
+            (2, {"name": "b"}),
+            (3, {"name": "b"}),
+            (4, {"name": "a"}),
+            (5, {"name": "a"}),
+        ],
+        [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5)],
+        id="path-with-node-labels",
+    ),
+    pytest.param(
         # 5 - 4 \     / 12 - 13
         #        0 - 3
         # 9 - 8 /     \ 16 - 17
         # Assume 0 and 3 are coupled and no longer equivalent.
         # Coupling node 4 to 8 means that 5 and 9
         # are no longer equivalent, pushing them in their own partitions.
-        # However, {5, 9} was considered equivalent to {13, 17}, which is *not*
-        # taken into account in the second refinement. The resulting failure
-        # has been fixed with the switch away from recursive functions.
-        # But lets keep testing it here. This was the minimal failing example.
+        # So, [{5}, {9}] is no longer considered equivalent to {13, 17}.
+        # Minimal example with this trait. Adding all permutations of
+        # same-size parts at each step finds the symmetry.
         [],
         [
             (0, 3),
-            (3, 0),  # added to allow symmetry for DiGraphs
+            (3, 0),  # added to provide symmetry for DiGraphs
             (0, 4),
             (4, 5),
             (0, 8),
@@ -78,34 +88,67 @@ data = [
             (3, 16),
             (16, 17),
         ],
+        id="gh8055-tricky-case",
     ),
-    (  # check for unsortable nodes
-        [],
-        [
-            (17, 16),
-            (16, 17),
-            (17, 13),
-            (13, 12),
-            (17, "a"),
-            ("a", "b"),
-            (16, "c"),
-            ("c", "d"),
-            (16, "e"),
-            ("e", "f"),
-        ],
+    pytest.param(
+        [], nx.path_graph([1, 2, 3, "a", "b", "c"]).edges, id="unsortable-nodes"
     ),
     # Example from Katebi, 2012, Fig 1-3.
-    # Node order specified to almost match their DFS order
-    (
+    # Node order specified to (almost) match their DFS order
+    pytest.param(
         [3, 5, 6, 4, 2, 1, 0],
         set(nx.cycle_graph(4).edges) | set(nx.cycle_graph(range(4, 7)).edges),
+        id="katebi-paper-fig2",
     ),
-    # Example from Houbraken (ISMAGS paper)
-    ([], nx.cycle_graph([1, 2, 4, 3]).edges),
-    # isolated node
-    ([0, 1, 2], [(1, 2)]),
-    # famously lots of symmetries
-    ([], nx.petersen_graph().edges),
+    # Example of refining permutations with two different length parts at the same time.
+    # Underlying shape is a 4-cycle and 2-path. Multiedges make all nodes degree-3
+    # Full simple graph is then obtained by extending each edge as a path thru 1 node.
+    #                   0
+    # Underlying      // \     4       When 0->0 coupling occurs,
+    # MultiGraph     1    3    \\\     refining {1, 2, 3, 4, 5}
+    #                 \  //      5     refined parts [{1}, {3}, {2, 4, 5}]
+    #                   2              with different parts having different lengths.
+    #               0
+    #              /|\         4
+    #             6 7 8       /|\
+    # Full:       |/  |      / | \
+    #             1   3     12 13 14
+    #             |  / \     \ | /
+    #             9 10 11     \|/
+    #              \ | /       5
+    #                2
+    # Nodes 0-5 are the degree-3 nodes.
+    # Nodes 6-14 are degree 2 nodes on paths between the degree-3 nodes.
+    pytest.param(
+        [],
+        [
+            (0, 6),
+            (0, 7),
+            (0, 8),
+            (1, 6),
+            (1, 7),
+            (1, 9),
+            (2, 9),
+            (2, 10),
+            (2, 11),
+            (3, 8),
+            (3, 10),
+            (3, 11),
+            (4, 12),
+            (4, 13),
+            (4, 14),
+            (5, 12),
+            (5, 13),
+            (5, 14),
+        ],
+        id="refining-parts-finds-different-lengths",
+    ),
+    # Underlying structure from previous example
+    pytest.param(
+        [],
+        [(0, 1), (0, 1), (1, 2), (2, 3), (2, 3), (3, 0), (4, 5), (4, 5), (4, 5)],
+        id="basic-structure-for-refining-parts-test",
+    ),
 ]
 
 
