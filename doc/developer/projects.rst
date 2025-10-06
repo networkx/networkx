@@ -29,7 +29,7 @@ Feel free to reach out to use as you plan these activities.
 Creating a cookie-cutter backend repository in NetworkX
 -------------------------------------------------------
 
-- Abstract: NetworkX has recently incorporated a backend `plugin <https://en.wikipedia.org/wiki/Plug-in_(computing)>`__
+- Abstract: NetworkX has recently incorporated a backend :wiki:`plugin <Plug-in_(computing)>`
   system based on `Python entry-points <https://packaging.python.org/en/latest/specifications/entry-points/>`__.
   This project aims to develop a template backend repository to help developers
   create their own NetworkX backends with ease. The template will clearly distinguish
