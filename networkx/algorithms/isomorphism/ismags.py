@@ -1106,14 +1106,15 @@ class ISMAGS:
                         # Before refinement they were the same color. So we need to
                         # include all possible orderings/colors within each size.
                         permutations = cls._get_permutations_by_length(refined_part)
-                        assert all(len(p) == 1 for p in permutations)
                         # Add all permutations of the refined parts to each possible
-                        # bottom. So the number of new possible bottoms increases
+                        # bottom. So the number of new possible bottoms is multiplied
                         # by the number of permutations of the refined parts.
                         new_partitions = []
                         for new_partition in more_bottoms:
                             for p in permutations:
-                                new_partitions.append(new_partition + list(p[0]))
+                                # p is tuple-of-tuples-of-sets. Flatten to list-of-sets
+                                flat_p = [s for tup in p for s in tup]
+                                new_partitions.append(new_partition + flat_p)
                         more_bottoms = new_partitions
 
             # reverse more_bottoms to keep the "finding identity" bottom first
