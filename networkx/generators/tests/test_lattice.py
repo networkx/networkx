@@ -23,6 +23,7 @@ def test_2D_lattice_no_contraction_leftovers(lattice_graph):
     "contraction" node attributes on the returned graph."""
     G = lattice_graph(6, 6, with_positions=False, periodic=True)
     assert all(data == {} for _, data in G.nodes(data=True))
+    assert all(data == {} for _, _, data in G.edges(data=True))
 
 
 class TestGrid2DGraph:
