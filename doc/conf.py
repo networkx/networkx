@@ -18,6 +18,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
     "sphinx.ext.doctest",
+    "sphinx.ext.extlinks",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
     "sphinx.ext.todo",
@@ -28,6 +29,8 @@ extensions = [
     "matplotlib.sphinxext.plot_directive",
     "myst_nb",
 ]
+
+extlinks = {"wiki": ("https://en.wikipedia.org/wiki/%s", "%s (wiki)")}
 
 # https://github.com/sphinx-gallery/sphinx-gallery
 sphinx_gallery_conf = {
