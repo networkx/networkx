@@ -41,7 +41,7 @@ data = [
             (4, 10),
             (10, 11),
         ],
-        id="sun:6-cycle-with-2-path-rays"
+        id="sun:6-cycle-with-2-path-rays",
     ),
     # 0-1-2-3-5
     #  /     \
