@@ -70,7 +70,7 @@ Adding embarrassingly parallel graph algorithms in nx-parallel
   backend that uses `joblib <https://joblib.readthedocs.io/en/latest/index.html>`__ for
   implementing parallel graph algorithms. Currently, only some of the NetworkX
   `algorithms are implemented in nx-parallel <https://github.com/networkx/nx-parallel?tab=readme-ov-file#algorithms-in-nx-parallel>`__.
-  We expect the contributor to find `embarrassingly parallel <https://en.wikipedia.org/wiki/Embarrassingly_parallel>`__
+  We expect the contributor to find :wiki:`Embarrassingly_parallel`
   graph algorithms from the :ref:`wide variety of graph algorithms <Algorithms>`
   implemented in NetworkX and then write their parallel implementations in nx-parallel.
   You can start by looking at:
