@@ -277,14 +277,13 @@ def triangular_lattice_graph(
     # add diagonals
     H.add_edges_from(((i, j), (i + 1, j + 1)) for j in rows[1:m:2] for i in cols[:N])
     H.add_edges_from(((i + 1, j), (i, j + 1)) for j in rows[:m:2] for i in cols[:N])
-    # identify boundary nodes if periodic
-    from networkx.algorithms.minors import contracted_nodes
 
+    # identify boundary nodes if periodic
     if periodic is True:
         for i in cols:
-            H = contracted_nodes(H, (i, 0), (i, m))
+            H = nx.contracted_nodes(H, (i, 0), (i, m), store_contraction_as=None)
         for j in rows[:m]:
-            H = contracted_nodes(H, (0, j), (N, j))
+            H = nx.contracted_nodes(H, (0, j), (N, j), store_contraction_as=None)
     elif n % 2:
         # remove extra nodes
         H.remove_nodes_from((N, j) for j in rows[1::2])
@@ -381,27 +380,26 @@ def hexagonal_lattice_graph(
     G.remove_node((n, (M + 1) * (n % 2)))
 
     # identify boundary nodes if periodic
-    from networkx.algorithms.minors import contracted_nodes
-
     if periodic:
         for i in cols[:n]:
-            G = contracted_nodes(G, (i, 0), (i, M))
+            G = nx.contracted_nodes(G, (i, 0), (i, M), store_contraction_as=None)
         for i in cols[1:]:
-            G = contracted_nodes(G, (i, 1), (i, M + 1))
+            G = nx.contracted_nodes(G, (i, 1), (i, M + 1), store_contraction_as=None)
         for j in rows[1:M]:
-            G = contracted_nodes(G, (0, j), (n, j))
+            G = nx.contracted_nodes(G, (0, j), (n, j), store_contraction_as=None)
         G.remove_node((n, M))
 
     # calc position in embedded space
-    ii = (i for i in cols for j in rows)
-    jj = (j for i in cols for j in rows)
-    xx = (0.5 + i + i // 2 + (j % 2) * ((i % 2) - 0.5) for i in cols for j in rows)
-    h = sqrt(3) / 2
-    if periodic:
-        yy = (h * j + 0.01 * i * i for i in cols for j in rows)
-    else:
-        yy = (h * j for i in cols for j in rows)
-    # exclude nodes not in G
-    pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy) if (i, j) in G}
-    set_node_attributes(G, pos, "pos")
+    if with_positions:
+        ii = (i for i in cols for j in rows)
+        jj = (j for i in cols for j in rows)
+        xx = (0.5 + i + i // 2 + (j % 2) * ((i % 2) - 0.5) for i in cols for j in rows)
+        h = sqrt(3) / 2
+        if periodic:
+            yy = (h * j + 0.01 * i * i for i in cols for j in rows)
+        else:
+            yy = (h * j for i in cols for j in rows)
+        # exclude nodes not in G
+        pos = {(i, j): (x, y) for i, j, x, y in zip(ii, jj, xx, yy) if (i, j) in G}
+        set_node_attributes(G, pos, "pos")
     return G
