@@ -68,6 +68,8 @@ autosummary_generate = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
+# Ignore spurious warnings related to bad interactions between the texmath
+# and myst extensions
 suppress_warnings = ["ref.citation", "ref.footnote"]
 
 # The suffix of source filenames.
