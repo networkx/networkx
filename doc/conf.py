@@ -16,7 +16,6 @@ filterwarnings(
 extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.autodoc",
-    "sphinx.ext.coverage",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
     "sphinx.ext.todo",
