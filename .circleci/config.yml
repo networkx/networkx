@@ -46,6 +46,8 @@ jobs:
             pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
             # Development version of nx-parallel backend
             pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
+            # Development version of nx-neptune backend0
+            pip install git+https://github.com/awslabs/nx-neptune.git@main --no-deps
             pip list
 
       - save_cache:
