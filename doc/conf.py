@@ -17,7 +17,6 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
-    "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
     "sphinx.ext.todo",
@@ -124,8 +123,6 @@ pygments_style = "sphinx"
 
 # A list of prefixes that are ignored when creating the module index. (new in Sphinx 0.6)
 modindex_common_prefix = ["networkx."]
-
-doctest_global_setup = "import networkx as nx"
 
 # Options for HTML output
 # -----------------------
