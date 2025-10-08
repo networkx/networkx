@@ -32,6 +32,8 @@ def betweenness_centrality(
     those paths passing through some node $v$ other than $s$ and $t$.
     If $s = t$, $\sigma(s, t) = 1$, and if $v \in \{s, t\}$,
     $\sigma(s, t | v) = 0$ [2]_.
+    The denominator $\sigma(s, t)$ is a normalization factor that can be
+    turned off to get the raw path counts.
 
     Parameters
     ----------
@@ -41,10 +43,10 @@ def betweenness_centrality(
     k : int, optional (default=None)
         If `k` is not `None`, use `k` sampled nodes as sources for the considered paths.
         The resulting sampled counts are then inflated to approximate betweenness.
-        Must have ``k <= len(G)``. Higher values give better approximation.
+        Higher values of `k` give better approximation. Must have ``k <= len(G)``.
 
     normalized : bool, optional (default=True)
-        If `True`, the betweenness values are rescaled according to the number of
+        If `True`, the betweenness values are rescaled by dividing by the number of
         possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
@@ -79,9 +81,9 @@ def betweenness_centrality(
     See [4]_ for the original first published version and [2]_ for details on
     algorithms for variations and related metrics.
 
-    For approximate betweenness calculations, set `k` to the number of nodes
-    ("pivots") used to estimate the betweenness values.
-    The sum in the formula then only includes terms where $s$ is in these pivots.
+    For approximate betweenness calculations, set `k` to the number of sampled
+    nodes ("pivots") used as sources to estimate the betweenness values.
+    The formula then sums over $s$ is in these pivots, instead of over all nodes.
     The resulting sum is then inflated to approximate the full sum.
     For a discussion of how to choose `k` for efficiency, see [3]_.
 
@@ -158,7 +160,8 @@ def betweenness_centrality(
     {0: 0.6666666666666666, 1: 1.0, 2: 0.6666666666666666}
 
     If the graph is directed instead, we now need to consider $(s, t)$-pairs
-    in both directions. Without counting endpoints, we only have one path through 1 (0 to 2).
+    in both directions. Our example becomes a directed 3-path.
+    Without counting endpoints, we only have one path through 1 (0 to 2).
     This means the raw counts are ``{0: 0, 1: 1, 2: 0}``.
 
     >>> DG = nx.path_graph(3, create_using=nx.DiGraph)
@@ -182,20 +185,21 @@ def betweenness_centrality(
 
     Computing the full betweenness centrality can be costly.
     This function can also be used to compute approximate betweenness centrality
-    by setting `k`. This determines the number of source nodes to sample.
+    by setting `k`. This only determines the number of source nodes to sample;
+    all nodes are targets.
 
     For simplicity, we only consider the case where endpoints are included in the counts.
     Since the partial sums only include `k` terms, instead of ``n``,
     we multiply them by ``n / k``, to approximate the full sum.
     As the sets of sources and targets are not the same anymore,
-    edges have to be counted in a directed way. To ensure that the results agree
-    for undirected graphs when ``k == n``, we additionally divide the resulting counts by 2.
+    paths have to be counted in a directed way. We thus count each as half a path.
+    This ensures that the results approximate the standard betweenness for ``k == n``.
 
     For instance, in the undirected 3-path graph case, setting ``k = 2`` (with ``seed=42``)
     selects nodes 0 and 2 as sources.
     This means only shortest paths starting at these nodes are considered.
     The raw counts with endpoints are ``{0: 3, 1: 4, 2: 3}``. Accounting for the partial sum
-    and applying the undirectedness correction, we get
+    and applying the undirectedness half-path correction, we get
 
     >>> nx.betweenness_centrality(G, k=2, normalized=False, endpoints=True, seed=42)
     {0: 2.25, 1: 3.0, 2: 2.25}
@@ -252,6 +256,8 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
     shortest $(s, t)$-paths, and $\sigma(s, t | e)$ is the number of
     those paths passing through edge $e$ [1]_.
+    The denominator $\sigma(s, t)$ is a normalization factor that can be
+    turned off to get the raw path counts.
 
     Parameters
     ----------
@@ -261,10 +267,10 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     k : int, optional (default=None)
         If `k` is not `None`, use `k` sampled nodes as sources for the considered paths.
         The resulting sampled counts are then inflated to approximate betweenness.
-        Must have ``k <= len(G)``. Higher values give better approximation.
+        Higher values of `k` give better approximation. Must have ``k <= len(G)``.
 
     normalized : bool, optional (default=True)
-        If `True`, the betweenness values are rescaled according to the number of
+        If `True`, the betweenness values are rescaled by dividing by the number of
         possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
@@ -337,14 +343,14 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     Since the partial sums only include `k` terms, instead of ``n``,
     we multiply them by ``n / k``, to approximate the full sum.
     As the sets of sources and targets are not the same anymore,
-    edges have to be counted in a directed way. To ensure that the results agree
-    for undirected graphs when ``k == n``, we additionally divide the resulting counts by 2.
+    paths have to be counted in a directed way. We thus count each as half a path.
+    This ensures that the results approximate the standard betweenness for ``k == n``.
 
     For instance, in the undirected 3-path graph case, setting ``k = 2`` (with ``seed=42``)
     selects nodes 0 and 2 as sources.
     This means only shortest paths starting at these nodes are considered.
     The raw counts are ``{(0, 1): 3, (1, 2): 3}``. Accounting for the partial sum
-    and applying the undirectedness correction, we get
+    and applying the undirectedness half-path correction, we get
 
     >>> nx.edge_betweenness_centrality(G, k=2, normalized=False, seed=42)
     {(0, 1): 2.25, (1, 2): 2.25}

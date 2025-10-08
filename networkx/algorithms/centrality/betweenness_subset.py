@@ -32,6 +32,8 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     passing through some node $v$ other than $s$ and $t$.
     If $s = t$, $\sigma(s, t) = 1$,
     and if $v \in \{s, t\}$, $\sigma(s, t | v) = 0$ [2]_.
+    The denominator $\sigma(s, t)$ is a normalization factor that can be
+    turned off to get the raw path counts.
 
     Parameters
     ----------
@@ -45,7 +47,7 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
         Nodes to use as targets for shortest paths in betweenness.
 
     normalized : bool, optional (default=False)
-        If `True`, the betweenness values are rescaled according to the number of
+        If `True`, the betweenness values are rescaled by dividing by the number of
         possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
@@ -124,6 +126,8 @@ def edge_betweenness_centrality_subset(
     $\sigma(s, t)$ is the number of shortest $(s, t)$-paths,
     and $\sigma(s, t | e)$ is the number of those paths
     passing through edge $e$ [1]_.
+    The denominator $\sigma(s, t)$ is a normalization factor that can be
+    turned off to get the raw path counts.
 
     Parameters
     ----------
@@ -137,7 +141,7 @@ def edge_betweenness_centrality_subset(
         Nodes to use as targets for shortest paths in betweenness.
 
     normalized : bool, optional (default=False)
-        If `True`, the betweenness values are rescaled according to the number of
+        If `True`, the betweenness values are rescaled by dividing by the number of
         possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
