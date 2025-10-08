@@ -90,10 +90,13 @@ class TestSteinerTree:
     def test_connected_metric_closure(self):
         G = self.G1.copy()
         G.add_node(100)
-        pytest.raises(nx.NetworkXError, metric_closure, G)
+        with pytest.raises(nx.NetworkXError):
+            with pytest.deprecated_call():
+                metric_closure(G)
 
     def test_metric_closure(self):
-        M = metric_closure(self.G1)
+        with pytest.deprecated_call():
+            M = metric_closure(self.G1)
         mc = [
             (1, 2, {"distance": 10, "path": [1, 2]}),
             (1, 3, {"distance": 20, "path": [1, 2, 3]}),

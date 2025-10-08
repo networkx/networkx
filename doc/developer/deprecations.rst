@@ -36,6 +36,34 @@ releases is not a strict rule and in some cases, the developers can agree on a
 different procedure upon justification (like when we can't detect the change,
 or it involves moving or deleting an entire function for example).
 
+Procedure
+---------
+To set up a function for deprecation:
+
+- Use a deprecation warning to warn users. For example::
+
+      msg = "curly_hair is deprecated and will be removed in v3.0. Use sum() instead."
+      warnings.warn(msg, DeprecationWarning)
+
+- Add a warnings filter to ``networkx/conftest.py``::
+
+      warnings.filterwarnings(
+          "ignore", category=DeprecationWarning, message=<start of message>
+      )
+
+- Add a reminder to ``doc/developer/deprecations.rst`` for the team
+  to remove the deprecated functionality in the future. For example:
+
+  .. code-block:: rst
+
+     * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
+
+.. note::
+
+   To reviewers: make sure the merge message has a brief description of the
+   change(s) and if the PR closes an issue add, for example, "Closes #123"
+   where 123 is the issue number.
+
 Todo
 ----
 
@@ -51,3 +79,4 @@ Version 3.7
 Version 3.8
 ~~~~~~~~~~~
 * Remove ``maybe_regular_expander`` from ``networkx.generators.expanders``.
+* In ``algorithms/approximation/steinertree.py`` remove ``metric_closure`` and related tests.

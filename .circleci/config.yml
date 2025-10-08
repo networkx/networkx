@@ -16,14 +16,17 @@ jobs:
             sudo apt update
 
       - run:
+          # Optional dependency for more efficient matplotlib animation
+          name: Install ffmpeg
+          command: sudo apt install -y ffmpeg
+
+      - run:
           name: Install Graphviz
-          command: |
-            sudo apt install graphviz libgraphviz-dev
+          command: sudo apt install -y graphviz libgraphviz-dev
 
       - run:
           name: Install pysal dependencies
-          command: |
-            sudo apt install libspatialindex-dev
+          command: sudo apt install -y libspatialindex-dev
 
       - restore_cache:
           keys:
@@ -55,6 +58,7 @@ jobs:
           command: |
             source venv/bin/activate
             pip install -e '.[default,test,extra,example,doc]'
+            pip list
 
       - run:
           name: Build docs
@@ -88,6 +92,7 @@ jobs:
           command: |
             source venv/bin/activate
             pip install -e .[default,test]
+            pip list
 
       - run:
           name: Test NetworkX drawing

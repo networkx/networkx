@@ -133,7 +133,7 @@ def edge_betweenness_centrality_subset(
     where $S$ is the set of sources, $T$ is the set of targets,
     $\sigma(s, t)$ is the number of shortest $(s, t)$-paths,
     and $\sigma(s, t|e)$ is the number of those paths
-    passing through edge $e$ [2]_.
+    passing through edge $e$ [1]_.
 
     Parameters
     ----------
