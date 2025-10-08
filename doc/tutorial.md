@@ -231,10 +231,14 @@ G.edges[1, 2]["weight"] = 5
 Meanwhile, the method-like form is commonly used for querying or iterating:
 
 ```{code-cell}
-list(G.nodes(data="color")), list(G.edges(data="weight"))
+print(list(G.nodes(data="color")), list(G.edges(data="weight")))
+print()
 
 for node, data in G.nodes(data=True):
     print(node, data)
+
+print()
+
 for u, v, data in G.edges(data=True):
     print((u, v), data)
 ```
