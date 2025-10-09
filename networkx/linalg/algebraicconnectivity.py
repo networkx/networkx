@@ -189,8 +189,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # Form the normalized Laplacian matrix and determine the eigenvector of
         # its nullspace.
         e = np.sqrt(L.diagonal())
-        # TODO: rm csr_array wrapper when spdiags array creation becomes available
-        D = sp.sparse.csr_array(sp.sparse.spdiags(1 / e, 0, n, n, format="csr"))
+        D = sp.sparse.dia_array((1 / e, 0), shape=(n, n)).tocsr()
         L = D @ L @ D
         e *= 1.0 / np.linalg.norm(e, 2)
 
@@ -276,12 +275,9 @@ def _get_fiedler_func(method):
             L = sp.sparse.csc_array(L, dtype=float)
             n = L.shape[0]
             if normalized:
-                # TODO: rm csc_array wrapping when spdiags array becomes available
-                D = sp.sparse.csc_array(
-                    sp.sparse.spdiags(
-                        1.0 / np.sqrt(L.diagonal()), [0], n, n, format="csc"
-                    )
-                )
+                D = sp.sparse.dia_array(
+                    (1.0 / np.sqrt(L.diagonal()), 0), shape=(n, n)
+                ).tocsc()
                 L = D @ L @ D
             if method == "lanczos" or n < 10:
                 # Avoid LOBPCG when n < 10 due to
@@ -293,8 +289,7 @@ def _get_fiedler_func(method):
                 return sigma[1], X[:, 1]
             else:
                 X = np.asarray(np.atleast_2d(x).T)
-                # TODO: rm csr_array wrapping when spdiags array becomes available
-                M = sp.sparse.csr_array(sp.sparse.spdiags(1.0 / L.diagonal(), 0, n, n))
+                M = sp.sparse.dia_array((1.0 / L.diagonal(), 0), shape=(n, n)).tocsr()
                 Y = np.ones(n)
                 if normalized:
                     Y /= D.diagonal()

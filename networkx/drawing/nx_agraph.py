@@ -104,9 +104,15 @@ def from_agraph(A, create_using=None):
 
     # add default attributes for graph, nodes, and edges
     # hang them on N.graph_attr
-    N.graph["graph"] = dict(A.graph_attr)
-    N.graph["node"] = dict(A.node_attr)
-    N.graph["edge"] = dict(A.edge_attr)
+    graph_default_dict = dict(A.graph_attr)
+    if graph_default_dict:
+        N.graph["graph"] = graph_default_dict
+    node_default_dict = dict(A.node_attr)
+    if node_default_dict and node_default_dict != {"label": "\\N"}:
+        N.graph["node"] = node_default_dict
+    edge_default_dict = dict(A.edge_attr)
+    if edge_default_dict:
+        N.graph["edge"] = edge_default_dict
     return N
 
 

@@ -244,6 +244,10 @@ def cubical_graph(create_using=None):
     G : networkx Graph
         A cubical graph with 8 nodes and 12 edges
 
+    See Also
+    --------
+    tetrahedral_graph, octahedral_graph, dodecahedral_graph, icosahedral_graph
+
     References
     ----------
     .. [1] https://en.wikipedia.org/wiki/Cube#Cubical_graph
@@ -345,6 +349,10 @@ def dodecahedral_graph(create_using=None):
     -------
     G : networkx Graph
         Dodecahedral Graph with 20 nodes and 30 edges
+
+    See Also
+    --------
+    tetrahedral_graph, cubical_graph, octahedral_graph, icosahedral_graph
 
     References
     ----------
@@ -562,6 +570,10 @@ def icosahedral_graph(create_using=None):
     G : networkx Graph
         Icosahedral graph with 12 nodes and 30 edges.
 
+    See Also
+    --------
+    tetrahedral_graph, cubical_graph, octahedral_graph, dodecahedral_graph
+
     References
     ----------
     .. [1] https://mathworld.wolfram.com/IcosahedralGraph.html
@@ -686,6 +698,10 @@ def octahedral_graph(create_using=None):
     -------
     G : networkx Graph
         Octahedral graph
+
+    See Also
+    --------
+    tetrahedral_graph, cubical_graph, dodecahedral_graph, icosahedral_graph
 
     References
     ----------
@@ -820,6 +836,10 @@ def tetrahedral_graph(create_using=None):
     -------
     G : networkx Graph
         Tetrahedral Graph
+
+    See Also
+    --------
+    cubical_graph, octahedral_graph, dodecahedral_graph, icosahedral_graph
 
     References
     ----------

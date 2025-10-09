@@ -453,6 +453,7 @@ def test_held_karp_ascent():
     # Check that the z_stars are the same
     solution = nx.DiGraph()
     solution.add_edges_from(solution_edges)
+    # Use undirected edges for `edges_equal` because the graph is symmetric.
     assert nx.utils.edges_equal(z_star.edges, solution.edges)
 
 
@@ -545,7 +546,7 @@ def test_ascent_method_asymmetric():
     # Check that the z_stars match.
     solution = nx.DiGraph()
     solution.add_edges_from(solution_edges)
-    assert nx.utils.edges_equal(z_star.edges, solution.edges)
+    assert nx.utils.edges_equal(z_star.edges, solution.edges, directed=True)
 
 
 def test_ascent_method_asymmetric_2():
@@ -579,7 +580,7 @@ def test_ascent_method_asymmetric_2():
     # Check that the z_stars match.
     solution = nx.DiGraph()
     solution.add_edges_from(solution_edges)
-    assert nx.utils.edges_equal(z_star.edges, solution.edges)
+    assert nx.utils.edges_equal(z_star.edges, solution.edges, directed=True)
 
 
 def test_held_karp_ascent_asymmetric_3():
@@ -622,9 +623,9 @@ def test_held_karp_ascent_asymmetric_3():
     solution1.add_edges_from(solution1_edges)
     solution2 = nx.DiGraph()
     solution2.add_edges_from(solution2_edges)
-    assert nx.utils.edges_equal(z_star.edges, solution1.edges) or nx.utils.edges_equal(
-        z_star.edges, solution2.edges
-    )
+    assert nx.utils.edges_equal(
+        z_star.edges, solution1.edges, directed=True
+    ) or nx.utils.edges_equal(z_star.edges, solution2.edges, directed=True)
 
 
 def test_held_karp_ascent_fractional_asymmetric():

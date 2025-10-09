@@ -9,6 +9,7 @@ __all__ = [
     "chordal_cycle_graph",
     "paley_graph",
     "maybe_regular_expander",
+    "maybe_regular_expander_graph",
     "is_regular_expander",
     "random_regular_expander_graph",
 ]
@@ -216,7 +217,7 @@ def paley_graph(p, create_using=None):
 
 @nx.utils.decorators.np_random_state("seed")
 @nx._dispatchable(graphs=None, returns_graph=True)
-def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None):
+def maybe_regular_expander_graph(n, d, *, create_using=None, max_tries=100, seed=None):
     r"""Utility for creating a random regular expander.
 
     Returns a random $d$-regular graph on $n$ nodes which is an expander
@@ -250,7 +251,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
 
     Examples
     --------
-    >>> G = nx.maybe_regular_expander(n=200, d=6, seed=8020)
+    >>> G = nx.maybe_regular_expander_graph(n=200, d=6, seed=8020)
 
     Returns
     -------
@@ -324,11 +325,32 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
                 edges.update(new_edges)
 
             if iterations == 0:
-                raise nx.NetworkXError("Too many iterations in maybe_regular_expander")
+                msg = "Too many iterations in maybe_regular_expander_graph"
+                raise nx.NetworkXError(msg)
 
     G.add_edges_from(edges)
 
     return G
+
+
+def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None):
+    """
+    .. deprecated:: 3.6
+       `maybe_regular_expander` is a deprecated alias
+       for `maybe_regular_expander_graph`.
+       Use `maybe_regular_expander_graph` instead.
+    """
+    import warnings
+
+    warnings.warn(
+        "maybe_regular_expander is deprecated, "
+        "use `maybe_regular_expander_graph` instead.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+    return maybe_regular_expander_graph(
+        n, d, create_using=create_using, max_tries=max_tries, seed=seed
+    )
 
 
 @nx.utils.not_implemented_for("directed")
@@ -369,7 +391,7 @@ def is_regular_expander(G, *, epsilon=0):
 
     See Also
     --------
-    maybe_regular_expander
+    maybe_regular_expander_graph
     random_regular_expander_graph
 
     References
@@ -425,7 +447,8 @@ def random_regular_expander_graph(
       The degree of each node.
     epsilon : int, float, default=0
     max_tries : int, (default: 100)
-      The number of allowed loops, also used in the maybe_regular_expander utility
+      The number of allowed loops,
+      also used in the `maybe_regular_expander_graph` utility
     seed : (default: None)
       Seed used to set random number generation state. See :ref`Randomness<randomness>`.
 
@@ -442,12 +465,12 @@ def random_regular_expander_graph(
 
     Notes
     -----
-    This loops over `maybe_regular_expander` and can be slow when
+    This loops over `maybe_regular_expander_graph` and can be slow when
     $n$ is too big or $\epsilon$ too small.
 
     See Also
     --------
-    maybe_regular_expander
+    maybe_regular_expander_graph
     is_regular_expander
 
     References
@@ -457,14 +480,14 @@ def random_regular_expander_graph(
     .. [3] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
 
     """
-    G = maybe_regular_expander(
+    G = maybe_regular_expander_graph(
         n, d, create_using=create_using, max_tries=max_tries, seed=seed
     )
     iterations = max_tries
 
     while not is_regular_expander(G, epsilon=epsilon):
         iterations -= 1
-        G = maybe_regular_expander(
+        G = maybe_regular_expander_graph(
             n=n, d=d, create_using=create_using, max_tries=max_tries, seed=seed
         )
 

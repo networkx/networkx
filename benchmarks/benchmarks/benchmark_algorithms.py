@@ -1,11 +1,13 @@
 """Benchmarks for a certain set of algorithms"""
 
+import random
+
 import networkx as nx
 from benchmarks.utils import fetch_drug_interaction_network
 from networkx.algorithms import community
 
 
-class AlgorithmBenchmarks:
+class UndirectedAlgorithmBenchmarks:
     timeout = 120
     nodes = 100
     _graphs = [
@@ -50,6 +52,62 @@ class AlgorithmBenchmarks:
         _ = nx.average_clustering(self.graphs_dict[graph])
 
 
+class DirectedAlgorithmBenchmarks:
+    timeout = 120
+    seed = 42
+    _graphs = [
+        nx.erdos_renyi_graph(100, 0.005, seed=seed, directed=True),
+        nx.erdos_renyi_graph(100, 0.01, seed=seed, directed=True),
+        nx.erdos_renyi_graph(100, 0.05, seed=seed, directed=True),
+        nx.erdos_renyi_graph(100, 0.1, seed=seed, directed=True),
+        nx.erdos_renyi_graph(100, 0.5, seed=seed, directed=True),
+        nx.erdos_renyi_graph(1000, 0.0005, seed=seed, directed=True),
+        nx.erdos_renyi_graph(1000, 0.001, seed=seed, directed=True),
+        nx.erdos_renyi_graph(1000, 0.005, seed=seed, directed=True),
+        nx.erdos_renyi_graph(1000, 0.01, seed=seed, directed=True),
+        nx.erdos_renyi_graph(1000, 0.05, seed=seed, directed=True),
+        nx.erdos_renyi_graph(10000, 0.00005, seed=seed, directed=True),
+        nx.erdos_renyi_graph(10000, 0.0001, seed=seed, directed=True),
+        nx.erdos_renyi_graph(10000, 0.0005, seed=seed, directed=True),
+        nx.empty_graph(100, create_using=nx.DiGraph),
+        nx.empty_graph(1000, create_using=nx.DiGraph),
+        nx.empty_graph(10000, create_using=nx.DiGraph),
+        nx.complete_graph(100, create_using=nx.DiGraph),
+        nx.complete_graph(1000, create_using=nx.DiGraph),
+    ]
+    params = [
+        "Erdos Renyi (100, 0.005)",
+        "Erdos Renyi (100, 0.01)",
+        "Erdos Renyi (100, 0.05)",
+        "Erdos Renyi (100, 0.1)",
+        "Erdos Renyi (100, 0.5)",
+        "Erdos Renyi (1000, 0.0005)",
+        "Erdos Renyi (1000, 0.001)",
+        "Erdos Renyi (1000, 0.005)",
+        "Erdos Renyi (1000, 0.01)",
+        "Erdos Renyi (1000, 0.05)",
+        "Erdos Renyi (10000, 0.00005)",
+        "Erdos Renyi (10000, 0.0001)",
+        "Erdos Renyi (10000, 0.0005)",
+        "Empty (100)",
+        "Empty (1000)",
+        "Empty (10000)",
+        "Complete (100)",
+        "Complete (1000)",
+    ]
+
+    param_names = ["graph"]
+
+    def setup(self, graph):
+        self.graphs_dict = dict(zip(self.params, self._graphs))
+
+    def time_tarjan_scc(self, graph):
+        _ = list(nx.strongly_connected_components(self.graphs_dict[graph]))
+
+    def time_kosaraju_scc(self, graph):
+        _ = list(nx.kosaraju_strongly_connected_components(self.graphs_dict[graph]))
+
+
 class AlgorithmBenchmarksConnectedGraphsOnly:
     timeout = 120
     nodes = 100
@@ -76,3 +134,30 @@ class AlgorithmBenchmarksConnectedGraphsOnly:
 
     def time_square_clustering(self, graph):
         _ = nx.square_clustering(self.graphs_dict[graph])
+
+
+def _make_tournament_benchmark_graphs(seed):
+    number_of_nodes = [10, 100, 1000]
+    graphs = {}
+    for nodes in number_of_nodes:
+        G = nx.tournament.random_tournament(nodes, seed=seed)
+        graphs[f"Tournament ({nodes}, seed={seed})"] = G
+    return graphs
+
+
+class ReachabilityBenchmark:
+    timeout = 120
+    _seed = 42
+    param_names = ["graph"]
+
+    _graphs = _make_tournament_benchmark_graphs(_seed)
+    params = list(_graphs)
+
+    def setup(self, graph):
+        self.G = self._graphs[graph]
+        self.nodes = sorted(self.G)
+        rng = random.Random(self._seed)
+        self.source, self.target = rng.sample(self.nodes, 2)
+
+    def time_is_reachable(self, graph):
+        _ = nx.tournament.is_reachable(self.G, self.source, self.target)

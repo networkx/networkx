@@ -63,12 +63,12 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     ----------
     .. [1] A. Langville and C. Meyer,
        "A survey of eigenvector methods of web information retrieval."
-       http://citeseer.ist.psu.edu/713792.html
+       https://epubs.siam.org/doi/epdf/10.1137/S0036144503424786
     .. [2] Jon Kleinberg,
        Authoritative sources in a hyperlinked environment
        Journal of the ACM 46 (5): 604-32, 1999.
+       https://www.cs.cornell.edu/home/kleinber/auth.pdf
        doi:10.1145/324133.324140.
-       http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
     import numpy as np
     import scipy as sp

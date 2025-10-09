@@ -15,7 +15,7 @@ def _greedy_plus_plus(G, iterations):
             f"The number of iterations must be an integer >= 1. Provided: {iterations}"
         )
 
-    loads = dict.fromkeys(G.nodes, 0)  # Load vector for Greedy++.
+    loads = {node: 0 for node in G.nodes}  # Load vector for Greedy++.
     best_density = 0.0  # Highest density encountered.
     best_subgraph = set()  # Nodes of the best subgraph found.
 
