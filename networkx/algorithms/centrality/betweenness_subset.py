@@ -51,7 +51,7 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
         possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
-        If `None`, all edge weights are considered equal.
+        If `None`, all edge weights are 1.
         Otherwise holds the name of the edge attribute used as weight.
         Weights are used to calculate weighted shortest paths, so they are
         interpreted as distances.
@@ -145,7 +145,7 @@ def edge_betweenness_centrality_subset(
         possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
-        If `None`, all edge weights are considered equal.
+        If `None`, all edge weights are 1.
         Otherwise holds the name of the edge attribute used as weight.
         Weights are used to calculate weighted shortest paths, so they are
         interpreted as distances.
