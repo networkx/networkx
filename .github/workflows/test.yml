@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        python-version: ["3.13", "3.14-dev", "3.14t-dev"]
+        python-version: ["3.13", "3.14", "3.14t"]
     steps:
       - uses: actions/checkout@v5
       - name: Set up Python ${{ matrix.python-version }}
@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v5
       - name: Set up Python ${{ matrix.python-version }}
@@ -168,7 +168,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos]
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v5
       - name: Set up Python ${{ matrix.python-version }}
