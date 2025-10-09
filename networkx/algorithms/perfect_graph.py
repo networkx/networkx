@@ -1,37 +1,75 @@
+import itertools
+
 import networkx as nx
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["is_perfect_graph"]
 
 
+@nx._dispatchable
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def is_perfect_graph(G):
-    """Return True if G is a perfect graph, else False.
+    r"""Return True if G is a perfect graph, else False.
 
-    According to the Strong Perfect Graph Theorem, a graph is perfect
-    if and only if neither it nor its complement contains an induced
-    odd cycle of length at least 5.
+    A graph G is perfect if, for every induced subgraph H of G, the chromatic
+    number of H equals the size of the largest clique in H.
+
+    According to the **Strong Perfect Graph Theorem (SPGT)**:
+    A graph is perfect if and only if neither the graph G nor its complement
+    :math:`\overline{G}` contains an **induced odd hole** — an induced cycle of
+    odd length at least five without chords.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        The graph to check. Must be a finite, simple, undirected graph.
+
+    Returns
+    -------
+    bool
+        True if G is a perfect graph, else False.
+
+    Notes
+    -----
+    1. **Algorithm Time Complexity**
+
+       This function uses a direct approach: cycle enumeration to detect
+       chordless odd cycles in G and :math:`\overline{G}`. This implementation
+       runs in exponential time in the worst case, since the number of chordless
+       cycles can grow exponentially. It is intended for small and medium-sized
+       graphs.
+
+    2. **Comparison to Polynomial Recognition**
+
+       The perfect-graph recognition problem is theoretically solvable in
+       polynomial time. Chudnovsky *et al.* (2006) proved it can be solved in
+       :math:`O(n^9)` time via a complex structural decomposition [1]_, [2]_.
+       This implementation opts for a direct, transparent check rather than
+       implementing that high-degree polynomial-time decomposition algorithm.
+
+    References
+    ----------
+    .. [1] M. Chudnovsky, N. Robertson, P. Seymour, and R. Thomas,
+           *The Strong Perfect Graph Theorem*,
+           Annals of Mathematics, vol. 164, no. 1, pp. 51–229, 2006.
+           https://doi.org/10.4007/annals.2006.164.51
+    .. [2] M. Chudnovsky, G. Cornuéjols, X. Liu, P. Seymour, and K. Vušković,
+           *Recognizing Berge Graphs*,
+           Combinatorica 25(2): 143–186, 2005.
+           DOI: 10.1007/s00493-005-0003-8
+           Preprint available at:
+           https://web.math.princeton.edu/~pds/papers/algexp/Bergealg.pdf
     """
 
-    def has_induced_odd_hole(graph):
-        nodes = list(graph.nodes)
-        n = len(nodes)
-        for i in range(n):
-            for j in range(i + 1, n):
-                try:
-                    paths = nx.all_simple_paths(graph, nodes[i], nodes[j], cutoff=n)
-                except nx.NetworkXNoPath:
-                    continue
-                for path in paths:
-                    if len(path) < 5 or len(path) % 2 == 0:
-                        continue
-                    if graph.has_edge(path[-1], path[0]):
-                        cycle_nodes = path
-                        subG = graph.subgraph(cycle_nodes)
-                        if subG.number_of_edges() == len(cycle_nodes):
-                            return True
-        return False
-
-    if has_induced_odd_hole(G):
-        return False
-    if has_induced_odd_hole(nx.complement(G)):
-        return False
+    for cycle in _find_all_chordless_cycles(G):
+        if len(cycle) >= 5 and len(cycle) % 2 == 1:
+            return False
     return True
+
+
+def _find_all_chordless_cycles(G):
+    """Yield chordless cycles from both G and its complement."""
+    yield from itertools.chain(
+        nx.chordless_cycles(G), nx.chordless_cycles(nx.complement(G))
+    )
