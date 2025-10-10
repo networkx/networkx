@@ -24,42 +24,42 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
 
     .. math::
 
-       c_B(v) =\sum_{s\in S, t \in T} \frac{\sigma(s, t|v)}{\sigma(s, t)}
+       c_B(v) = \sum_{s \in S, t \in T} \frac{\sigma(s, t | v)}{\sigma(s, t)}
 
     where $S$ is the set of sources, $T$ is the set of targets,
     $\sigma(s, t)$ is the number of shortest $(s, t)$-paths,
-    and $\sigma(s, t|v)$ is the number of those paths
-    passing through some  node $v$ other than $s, t$.
+    and $\sigma(s, t | v)$ is the number of those paths
+    passing through some node $v$ other than $s$ and $t$.
     If $s = t$, $\sigma(s, t) = 1$,
-    and if $v \in {s, t}$, $\sigma(s, t|v) = 0$ [2]_.
-
+    and if $v \in \{s, t\}$, $\sigma(s, t | v) = 0$ [2]_.
+    The denominator $\sigma(s, t)$ is a normalization factor that can be
+    turned off to get the raw path counts.
 
     Parameters
     ----------
     G : graph
-      A NetworkX graph.
+        A NetworkX graph.
 
     sources: list of nodes
-      Nodes to use as sources for shortest paths in betweenness
+        Nodes to use as sources for shortest paths in betweenness.
 
     targets: list of nodes
-      Nodes to use as targets for shortest paths in betweenness
+        Nodes to use as targets for shortest paths in betweenness.
 
-    normalized : bool, optional
-      If True the betweenness values are normalized by $2/((n-1)(n-2))$
-      for graphs, and $1/((n-1)(n-2))$ for directed graphs where $n$
-      is the number of nodes in G.
+    normalized : bool, optional (default=False)
+        If `True`, the betweenness values are rescaled by dividing by the number of
+        possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
-      If None, all edge weights are considered equal.
-      Otherwise holds the name of the edge attribute used as weight.
-      Weights are used to calculate weighted shortest paths, so they are
-      interpreted as distances.
+        If `None`, all edge weights are 1.
+        Otherwise holds the name of the edge attribute used as weight.
+        Weights are used to calculate weighted shortest paths, so they are
+        interpreted as distances.
 
     Returns
     -------
-    nodes : dictionary
-       Dictionary of nodes with betweenness centrality as the value.
+    nodes : dict
+        Dictionary of nodes with betweenness centrality as the value.
 
     See Also
     --------
@@ -83,16 +83,8 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     The total number of paths between source and target is counted
     differently for directed and undirected graphs. Directed paths
     are easy to count. Undirected paths are tricky: should a path
-    from "u" to "v" count as 1 undirected path or as 2 directed paths?
-
-    For betweenness_centrality we report the number of undirected
-    paths when G is undirected.
-
-    For betweenness_centrality_subset the reporting is different.
-    If the source and target subsets are the same, then we want
-    to count undirected paths. But if the source and target subsets
-    differ -- for example, if sources is {0} and targets is {1},
-    then we are only counting the paths in one direction. They are
+    from ``u`` to ``v`` count as 1 undirected path or as 2 directed paths?
+    We are only counting the paths in one direction. They are
     undirected paths but we are counting them in a directed way.
     To count them as undirected paths, each should count as half a path.
 
@@ -128,39 +120,40 @@ def edge_betweenness_centrality_subset(
 
     .. math::
 
-       c_B(v) =\sum_{s\in S,t \in T} \frac{\sigma(s, t|e)}{\sigma(s, t)}
+       c_B(e) = \sum_{s \in S, t \in T} \frac{\sigma(s, t | e)}{\sigma(s, t)}
 
     where $S$ is the set of sources, $T$ is the set of targets,
     $\sigma(s, t)$ is the number of shortest $(s, t)$-paths,
-    and $\sigma(s, t|e)$ is the number of those paths
+    and $\sigma(s, t | e)$ is the number of those paths
     passing through edge $e$ [1]_.
+    The denominator $\sigma(s, t)$ is a normalization factor that can be
+    turned off to get the raw path counts.
 
     Parameters
     ----------
     G : graph
-      A networkx graph.
+        A networkx graph.
 
     sources: list of nodes
-      Nodes to use as sources for shortest paths in betweenness
+        Nodes to use as sources for shortest paths in betweenness.
 
     targets: list of nodes
-      Nodes to use as targets for shortest paths in betweenness
+        Nodes to use as targets for shortest paths in betweenness.
 
-    normalized : bool, optional
-      If True the betweenness values are normalized by `2/(n(n-1))`
-      for graphs, and `1/(n(n-1))` for directed graphs where `n`
-      is the number of nodes in G.
+    normalized : bool, optional (default=False)
+        If `True`, the betweenness values are rescaled by dividing by the number of
+        possible $(s, t)$-pairs in the graph.
 
     weight : None or string, optional (default=None)
-      If None, all edge weights are considered equal.
-      Otherwise holds the name of the edge attribute used as weight.
-      Weights are used to calculate weighted shortest paths, so they are
-      interpreted as distances.
+        If `None`, all edge weights are 1.
+        Otherwise holds the name of the edge attribute used as weight.
+        Weights are used to calculate weighted shortest paths, so they are
+        interpreted as distances.
 
     Returns
     -------
-    edges : dictionary
-       Dictionary of edges with Betweenness centrality as the value.
+    edges : dict
+        Dictionary of edges with betweenness centrality as the value.
 
     See Also
     --------
