@@ -41,9 +41,8 @@ When reviewing, focus on the following:
 
 1. **API:** The API is what users see when they first use
    NetworkX. APIs are difficult to change once released, so
-   should be simple, `functional
-   <https://en.wikipedia.org/wiki/Functional_programming>`__ (i.e. not
-   carry state), consistent with other parts of the library, and
+   should be simple, :wiki:`functional <Functional_programming>`
+   (i.e. not carry state), consistent with other parts of the library, and
    should avoid modifying input variables.  Please familiarize
    yourself with the project's :ref:`deprecation_policy`.
 

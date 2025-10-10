@@ -29,7 +29,7 @@ Feel free to reach out to use as you plan these activities.
 Creating a cookie-cutter backend repository in NetworkX
 -------------------------------------------------------
 
-- Abstract: NetworkX has recently incorporated a backend `plugin <https://en.wikipedia.org/wiki/Plug-in_(computing)>`__
+- Abstract: NetworkX has recently incorporated a backend :wiki:`plugin <Plug-in_(computing)>`
   system based on `Python entry-points <https://packaging.python.org/en/latest/specifications/entry-points/>`__.
   This project aims to develop a template backend repository to help developers
   create their own NetworkX backends with ease. The template will clearly distinguish
@@ -70,7 +70,7 @@ Adding embarrassingly parallel graph algorithms in nx-parallel
   backend that uses `joblib <https://joblib.readthedocs.io/en/latest/index.html>`__ for
   implementing parallel graph algorithms. Currently, only some of the NetworkX
   `algorithms are implemented in nx-parallel <https://github.com/networkx/nx-parallel?tab=readme-ov-file#algorithms-in-nx-parallel>`__.
-  We expect the contributor to find `embarrassingly parallel <https://en.wikipedia.org/wiki/Embarrassingly_parallel>`__
+  We expect the contributor to find :wiki:`Embarrassingly_parallel`
   graph algorithms from the :ref:`wide variety of graph algorithms <Algorithms>`
   implemented in NetworkX and then write their parallel implementations in nx-parallel.
   You can start by looking at:
