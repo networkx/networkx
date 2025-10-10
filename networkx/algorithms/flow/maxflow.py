@@ -2,6 +2,8 @@
 Maximum flow (and minimum cut) algorithms on capacitated graphs.
 """
 
+from math import isclose, isfinite
+
 import networkx as nx
 
 from .boykovkolmogorov import boykov_kolmogorov
@@ -15,6 +17,9 @@ from .utils import build_flow_dict
 default_flow_func = preflow_push
 
 __all__ = ["maximum_flow", "maximum_flow_value", "minimum_cut", "minimum_cut_value"]
+
+# A small epsilon to handle numerical precision issues in minimum cut
+_CUT_EPS = 1e-12
 
 
 @nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
@@ -397,6 +402,14 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
     :samp:`s`-:samp:`t` cut.
 
+    When capacities are floating point values, the partition is formed using
+    a small internal tolerance so that edges whose residual capacity is
+    numerically zero (i.e., :samp:`R[u][v]['capacity']` and
+    :samp:`R[u][v]['flow']` are equal within combined absolute and relative
+    tolerances) are treated as saturated and not traversed when computing
+    reachability. This makes the reachability robust to round-off error and
+    does not change the reported maximum-flow value.
+
     Specific algorithms may store extra data in :samp:`R`.
 
     The function should supports an optional boolean parameter value_only. When
@@ -456,8 +469,18 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
         raise nx.NetworkXError("cutoff should not be specified.")
 
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
+
     # Remove saturated edges from the residual network
-    cutset = [(u, v, d) for u, v, d in R.edges(data=True) if d["flow"] == d["capacity"]]
+    def _is_saturated(d):
+        cap = d["capacity"]
+        flow = d["flow"]
+        if not (isfinite(cap) and isfinite(flow)):
+            # Preserve legacy behavior for residual sentinels (inf cap, etc.)
+            return flow == cap
+        # Treat "cap == flow" up to combined abs/rel tolerance as numerically saturated
+        return isclose(cap, flow, rel_tol=_CUT_EPS, abs_tol=_CUT_EPS)
+
+    cutset = [(u, v, d) for u, v, d in R.edges(data=True) if _is_saturated(d)]
     R.remove_edges_from(cutset)
 
     # Then, reachable and non reachable nodes from source in the
