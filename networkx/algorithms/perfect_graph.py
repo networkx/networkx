@@ -45,10 +45,10 @@ def is_perfect_graph(G):
 
     See Also
     --------
-    is_chordal, is_bipartite : 
+    is_chordal, is_bipartite :
         Related checks for specific categories of perfect graphs, such as chordal
         graphs, and bipartite graphs.
-    chordless_cycles : 
+    chordless_cycles :
         Used to detect "holes" in the graph
 
     References
