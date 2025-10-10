@@ -336,6 +336,16 @@ class Graph:
         """
         return Graph
 
+    # This __new__ method just does what Python itself does automatically.
+    # We include it here as part of the dispatchable/backend interface.
+    # If your goal is to understand how the graph classes work, you can ignore
+    # this method, even when subclassing the base classes. If you are subclassing
+    # in order to provide a backend that allows class instantiation, this method
+    # can be overridden to return your own backend graph class.
+    @nx._dispatchable(name="graph__new__", graphs=None, returns_graph=True)
+    def __new__(cls, incoming_graph_data=None, **attr):
+        return object.__new__(cls)
+
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
@@ -377,6 +387,7 @@ class Graph:
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
         # load graph attributes (must be after convert)
+        attr.pop("backend", None)  # Ignore explicit `backend="networkx"`
         self.graph.update(attr)
 
     @cached_property
