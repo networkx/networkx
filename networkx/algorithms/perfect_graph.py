@@ -43,12 +43,13 @@ def is_perfect_graph(G):
     This implementation opts for a direct, transparent check rather than
     implementing that high-degree polynomial-time decomposition algorithm.
 
-    3. **Related Specialized Algorithms**
-
-        Several subclasses of perfect graphs, such as chordal graphs, bipartite graphs,
-        and comparability graphs, already have specialized recognition algorithms in
-        NetworkX (see `nx.is_chordal` and `nx.is_bipartite`).
-        This function provides a general-purpose SPGT-based check for arbitrary graphs.
+    See Also
+    --------
+    is_chordal, is_bipartite : 
+        Related checks for specific categories of perfect graphs, such as chordal
+        graphs, and bipartite graphs.
+    chordless_cycles : 
+        Used to detect "holes" in the graph
 
     References
     ----------
