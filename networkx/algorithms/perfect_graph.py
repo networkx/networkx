@@ -32,21 +32,16 @@ def is_perfect_graph(G):
 
     Notes
     -----
-    1. **Algorithm Time Complexity**
+    This function uses a direct approach: cycle enumeration to detect
+    chordless odd cycles in G and :math:`\overline{G}`. This implementation
+    runs in exponential time in the worst case, since the number of chordless
+    cycles can grow exponentially.
 
-       This function uses a direct approach: cycle enumeration to detect
-       chordless odd cycles in G and :math:`\overline{G}`. This implementation
-       runs in exponential time in the worst case, since the number of chordless
-       cycles can grow exponentially. It is intended for small and medium-sized
-       graphs.
-
-    2. **Comparison to Polynomial Recognition**
-
-       The perfect-graph recognition problem is theoretically solvable in
-       polynomial time. Chudnovsky *et al.* (2006) proved it can be solved in
-       :math:`O(n^9)` time via a complex structural decomposition [1]_, [2]_.
-       This implementation opts for a direct, transparent check rather than
-       implementing that high-degree polynomial-time decomposition algorithm.
+    The perfect-graph recognition problem is theoretically solvable in
+    polynomial time. Chudnovsky *et al.* (2006) proved it can be solved in
+    :math:`O(n^9)` time via a complex structural decomposition [1]_, [2]_.
+    This implementation opts for a direct, transparent check rather than
+    implementing that high-degree polynomial-time decomposition algorithm.
 
     3. **Related Specialized Algorithms**
 
