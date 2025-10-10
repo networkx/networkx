@@ -64,14 +64,9 @@ def is_perfect_graph(G):
            https://web.math.princeton.edu/~pds/papers/algexp/Bergealg.pdf
     """
 
-    for cycle in _find_all_chordless_cycles(G):
-        if len(cycle) >= 5 and len(cycle) % 2 == 1:
-            return False
-    return True
-
-
-def _find_all_chordless_cycles(G):
-    """Yield chordless cycles from both G and its complement."""
-    yield from itertools.chain(
-        nx.chordless_cycles(G), nx.chordless_cycles(nx.complement(G))
+    return not any(
+        (len(c) >= 5) and (len(c) % 2 == 1)
+        for c in itertools.chain(
+            nx.chordless_cycles(G), nx.chordless_cycles(nx.complement(G))
+        )
     )
