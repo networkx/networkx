@@ -1,10 +1,9 @@
 import networkx as nx
-from networkx.algorithms.perfect_graph import is_perfect_graph
 
 
 def test_chordal_graph():
     G = nx.complete_graph(5)
-    assert is_perfect_graph(G)
+    assert nx.is_perfect_graph(G)
 
 
 def test_odd_cycle():
