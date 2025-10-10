@@ -3,14 +3,14 @@
 
 repos:
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.6.2
+    rev: 787fb9f542b140ba0b2aced38e6a3e68021647a3 # frozen: v3.5.3
     hooks:
       - id: prettier
         files: \.(html|md|toml|yml|yaml)
         args: [--prose-wrap=preserve]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b # frozen: v5.0.0
     hooks:
       # Sanity checks
       - id: check-added-large-files
@@ -36,7 +36,7 @@ repos:
         exclude: test_p2g.py
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.13.2
+    rev: f0fe93c067104b76ffb58852abe79673a8429bd1 # frozen: v0.11.8
     hooks:
       - id: ruff
         args: ["--fix", "--show-fixes", "--exit-non-zero-on-fix"]
