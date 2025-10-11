@@ -100,7 +100,7 @@ Notes
 - Node and edge equality is assumed to be transitive: if A is equal to B, and
   B is equal to C, then A is equal to C.
 
-- With a method that yields subgraph_isomorphisms, we can construct functions like
+- With a method that yields subgraph isomorphisms, we can construct functions like
   ``is_subgraph_isomorphic`` by checking for any yielded mapping. And functions like
   ``is_isomorphic`` by checking whether the subgraph has the same number of nodes as
   the graph and is also subgraph isomorphic. This subpackage also allows a
@@ -255,7 +255,22 @@ def color_degree_by_node(G, n_colors, e_colors):
 
 
 class EdgeLookup:
-    """Class to handle getitem for undirected edges"""
+    """Class to handle getitem for undirected edges.
+
+    Note that `items()` iterates over one of the two representations of the edge
+    (u, v) and (v, u). So this technically doesn't violate the Mapping
+    invariant that (k,v) pairs reported by `items()` satisfy `.__getitem__(k) == v`.
+    But we are violating the spirit of the protocol by having keys available
+    for lookup by `__getitem__` that are not reported by `items()`.
+
+    Note that if we used frozensets for undirected edges we would have the same
+    behavior we see here. You could `__getitem__` either `{u, v}` or `{v, u}`
+    and get the same value -- yet `items()` would only report one of the two.
+    So from that perspective we *are* following the Mapping protocol. Our keys
+    are undirected edges. We are using 2-tuples as an imperfect representation
+    of these edges. We are not using 2-tuples as keys. Only as imperfect edges
+    and we use the edges as keys.
+    """
 
     def __init__(self, edge_dict):
         self.edge_dict = edge_dict
@@ -292,7 +307,7 @@ class ISMAGS:
 
     **Symmetry Analysis**
 
-    The constraints in ISMAGS are based off the handling in ``nauty` and it's many
+    The constraints in ISMAGS are based off the handling in ``nauty`` and its many
     variants, in particular ``saucy``, as discussed in the ISMAGS paper [1]_.
     That paper cites [3]_ for details on symmetry handling. Figure 2 of [3]_
     describes the DFS approach to symmetries used here and relying on a data structure
@@ -329,7 +344,7 @@ class ISMAGS:
 
     After finding the orbits for one symmetry, we backtrack in the DFS by removing the
     latest coupling and replacing it with a coupling from the same top node to a new
-    botom node in its degree-by-color grouping. When all possible couplings for that
+    bottom node in its degree-by-color grouping. When all possible couplings for that
     node are considered we backtrack to the previously coupled node and recouple in
     a DFS manner.
 
@@ -369,14 +384,14 @@ class ISMAGS:
       those permutations when we discovered the orbit. So we can prune the resulting
       subtree. This is the primary pruning discussed in [1]_.
     - A **Coset Point** in the DFS is a point of the tree when a node is first
-      back-tracked. That is, it's couplings have all been analyzed once and we backtrack
+      back-tracked. That is, its couplings have all been analyzed once and we backtrack
       to its parent. So, said another way, when a node is backtracked to and is about to
       be mapped to a different node for the first time, its child in the DFS has been
       completely analysed. Thus the orbit for that child at this point in the DFS is
       the full orbit for symmetries involving only that child or larger nodes in the
       node order. All smaller nodes are mapped to themselves.
       This orbit is due to symmetries not involving smaller nodes. Such an orbit is
-      called the "coset" of that node. The Coset Point does not lead pruning or to
+      called the "coset" of that node. The Coset Point does not lead to pruning or to
       more symmetries. It is the point in the process where we store the **coset** of
       the node being backtracked. We use the cosets to construct the symmetry
       constraints.
@@ -385,10 +400,10 @@ class ISMAGS:
     special nodes. Often most nodes are not coupled during the progression down the left
     side of the DFS. They are separated from other nodes during the partition refinement
     process after coupling. So they never get coupled directly. Thus the number of cosets
-    we find if typically many fewer than the number of nodes.
+    we find is typically many fewer than the number of nodes.
 
     We turn those cosets into constraints on the nodes when building non-symmetric
-    isomorphisms. The node who's coset is used is paired with each other node in the
+    isomorphisms. The node whose coset is used is paired with each other node in the
     coset. These node-pairs form the constraints. During isomorphism construction we
     always select the first of the constraint before the other. This removes subtrees
     from the DFS traversal space used to build isomorphisms.
@@ -436,7 +451,7 @@ class ISMAGS:
        https://doi.org/10.1371/journal.pone.0097896
     .. [2] https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph
     .. [3] Hadi Katebi, Karem A. Sakallah and Igor L. Markov
-       "Graph Symmetry Detection and Canonical Labeling: Diﬀerences and Synergies"
+       "Graph Symmetry Detection and Canonical Labeling: Differences and Synergies"
        in "Turing-100. The Alan Turing Centenary" Ed: A. Voronkov p. 181 -- 195, (2012).
        https://doi.org/10.29007/gzc1 https://arxiv.org/abs/1208.6271
     """
@@ -550,8 +565,11 @@ class ISMAGS:
             sgt_ = sg_things[sgt] if not sg_multiedge else self.subgraph[sgt[0]][sgt[1]]
             gt_ = g_things[gt] if not g_multiedge else self.graph[gt[0]][gt[1]]
             if thing_matcher(sgt_, gt_):
-                assert sgc not in sgc_to_gc  # 2 sg parts match same g part
-                assert gc not in gc_to_sgc  # 2 g parts match same sg part
+                if sgc in sgc_to_gc or gc in gc_to_sgc:
+                    raise NetworkXError(
+                        f"Matching function {thing_matcher} seems not transitive.\n"
+                        f"Partitions found: {sg_partition=}\n{g_partition=}"
+                    )
                 sgc_to_gc[sgc] = gc
                 gc_to_sgc[gc] = sgc
         ## return two lists and the number of partitions that match.
@@ -623,7 +641,7 @@ class ISMAGS:
             # Choose start node based on a heuristic for the min # of candidates
             # Heuristic here is length of smallest frozenset in candidates' set
             # of frozensets for that node. Using the smallest length avoids
-            # computing the intersection of the frosensets for each node.
+            # computing the intersection of the frozensets for each node.
             start_sgn = min(cand_sets, key=lambda n: min(len(x) for x in cand_sets[n]))
             cand_sets[start_sgn] = (frozenset.intersection(*cand_sets[start_sgn]),)
             yield from self._map_nodes(start_sgn, cand_sets, constraints)
@@ -638,18 +656,18 @@ class ISMAGS:
         g_deg = color_degree_by_node(self.graph, self._gn_colors, self._ge_colors)
         sg_deg = color_degree_by_node(self.subgraph, self._sgn_colors, self._sge_colors)
 
-        color_degree_candidates = defaultdict(set)
-        for sgn, (_, *needed_counts) in sg_deg.items():
-            for gn, (_, *g_counts) in g_deg.items():
+        return {
+            sgn: {
+                gn
+                for gn, (_, *g_counts) in g_deg.items()
                 if all(
-                    all(
-                        sg_cnt <= g_counts[idx][color]
-                        for color, sg_cnt in counts.items()
-                    )
+                    sg_cnt <= g_counts[idx][color]
                     for idx, counts in enumerate(needed_counts)
-                ):
-                    color_degree_candidates[sgn].add(gn)
-        return color_degree_candidates
+                    for color, sg_cnt in counts.items()
+                )
+            }
+            for sgn, (_, *needed_counts) in sg_deg.items()
+        }
 
     def largest_common_subgraph(self, symmetry=True):
         """
@@ -774,7 +792,7 @@ class ISMAGS:
         Per node in subgraph find all nodes in graph that have the same color.
         Stored as a dict-of-set-of-frozenset. The dict is keyed by node to a
         collection of frozensets of graph nodes. Each of these frozensets are
-        a restriction. The node can be mapped only to nodes in the frosenset.
+        a restriction. The node can be mapped only to nodes in the frozenset.
         Thus it must be mapped to nodes in the intersection of all these sets.
         We store the sets to delay taking the intersection of them. This helps
         for two reasons: Firstly any duplicate restriction sets can be ignored;
@@ -940,7 +958,7 @@ class ISMAGS:
                     cand_sets[sgn2] = cand_sets[sgn2] | {frozenset(gn2_cands)}
 
                 # The next node is the one that is unmapped and has fewest candidates
-                # Use the heuristic of the min size of the frosensets rather than
+                # Use the heuristic of the min size of the frozensets rather than
                 # intersection of all frozensets to delay computing intersections.
                 new_sgn = min(
                     left_to_map, key=lambda n: min(len(x) for x in cand_sets[n])
@@ -954,7 +972,6 @@ class ISMAGS:
             else:  # all gn candidates tried for sgn.
                 queue.pop()
                 if sgn in mapping:
-                    assert rev_mapping[mapping[sgn]] == sgn
                     del rev_mapping[mapping[sgn]]
                     del mapping[sgn]
 
@@ -1057,9 +1074,6 @@ class ISMAGS:
         >>> found == answer
         True
         """
-        # TODO: Note that for ISMAGS, all permutations are returned in length 1 tuples.
-        # So ``assert all(len(p) == 1 for p in permutations), f'{permutations=}'``
-        # Why is this true? If we can count on it we should be able to simplify this.
         by_len = defaultdict(list)
         for item in items:
             by_len[len(item)].append(item)
@@ -1246,5 +1260,4 @@ class ISMAGS:
                     # its first DFS traversal. DFS is about to go to previous node.
                     # Make copy so future orbit changes do not change the coset.
                     cosets[node] = orbits[orbit_id[node]].copy()
-                    assert len(cosets[node]) > 1, f"cosets[{node}]= {cosets[node]}"
         return cosets
