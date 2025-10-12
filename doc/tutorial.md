@@ -215,15 +215,17 @@ G.degree([2, 3])
 You can access nodes and edges through attributes like `G.nodes`, `G.edges`, or through their callable forms `G.nodes()` and `G.edges()`.
 Both return view objects that dynamically reflect the current graph data.
 
-Although they behave identically, each form is typically used differently in practice.
-The **attribute-like** form is convenient for modifying attributes:
-
 ```{code-cell}
 import networkx as nx
 G = nx.Graph()
 G.add_edges_from([(1, 2), (2, 3)])
 list(G.nodes), list(G.nodes()), list(G.edges), list(G.edges())
+```
 
+Although they behave identically, each form is typically used differently in practice.
+The **attribute-like** form is convenient for modifying attributes:
+
+```{code-cell}
 G.nodes[1]["color"] = "red"
 G.edges[1, 2]["weight"] = 5
 ```
@@ -231,16 +233,15 @@ G.edges[1, 2]["weight"] = 5
 Meanwhile, the method-like form is commonly used for querying or iterating:
 
 ```{code-cell}
-print(list(G.nodes(data="color")), list(G.edges(data="weight")))
-print()
+list(G.nodes(data="color")), list(G.edges(data="weight"))
+```
 
-for node, data in G.nodes(data=True):
-    print(node, data)
+```{code-cell}
+[(node, data) for node, data in G.nodes(data=True)]
+```
 
-print()
-
-for u, v, data in G.edges(data=True):
-    print((u, v), data)
+```{code-cell}
+[(u, v, data) for u, v, data in G.edges(data=True)]
 ```
 
 Both forms reference the same dynamic view objects—changes through one form are immediately visible through the other.
@@ -289,11 +290,18 @@ This follows the same attribute-like for assignment, method-like for access conv
 MG = nx.MultiGraph()
 MG.add_edge(1, 2)   # key=0
 MG.add_edge(1, 2)   # key=1
+```
 
-print(list(MG.edges))                        # → [(1, 2, 0), (1, 2, 1)]
-print(list(MG.edges()))                      # → [(1, 2), (1, 2)]
-print(list(MG.edges(keys=True, data=True)))  # → [(1, 2, 0, {}), (1, 2, 1, {})]
+```{code-cell}
+list(MG.edges)
+```
 
+```{code-cell}
+list(MG.edges())
+```
+
+```{code-cell}
+list(MG.edges(keys=True, data=True))
 ```
 
 ## Removing elements from a graph
