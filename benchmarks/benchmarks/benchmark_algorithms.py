@@ -1,5 +1,7 @@
 """Benchmarks for a certain set of algorithms"""
 
+import random
+
 import networkx as nx
 from benchmarks.utils import fetch_drug_interaction_network
 from networkx.algorithms import community
@@ -107,3 +109,30 @@ class AlgorithmBenchmarksConnectedGraphsOnly:
 
     def time_square_clustering(self, graph):
         _ = nx.square_clustering(self.graphs_dict[graph])
+
+
+def _make_tournament_benchmark_graphs(seed):
+    number_of_nodes = [10, 100, 1000]
+    graphs = {}
+    for nodes in number_of_nodes:
+        G = nx.tournament.random_tournament(nodes, seed=seed)
+        graphs[f"Tournament ({nodes}, seed={seed})"] = G
+    return graphs
+
+
+class ReachabilityBenchmark:
+    timeout = 120
+    _seed = 42
+    param_names = ["graph"]
+
+    _graphs = _make_tournament_benchmark_graphs(_seed)
+    params = list(_graphs)
+
+    def setup(self, graph):
+        self.G = self._graphs[graph]
+        self.nodes = sorted(self.G)
+        rng = random.Random(self._seed)
+        self.source, self.target = rng.sample(self.nodes, 2)
+
+    def time_is_reachable(self, graph):
+        _ = nx.tournament.is_reachable(self.G, self.source, self.target)

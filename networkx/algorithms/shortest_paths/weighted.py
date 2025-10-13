@@ -4,7 +4,7 @@ Shortest path algorithms for weighted graphs.
 
 from collections import deque
 from heapq import heappop, heappush
-from itertools import count
+from itertools import count, islice
 
 import networkx as nx
 from networkx.algorithms.shortest_paths.generic import _build_paths_from_predecessors
@@ -834,6 +834,12 @@ def _dijkstra_multisource(
     as arguments. No need to explicitly return pred or paths.
 
     """
+    # If `paths` is specified, we use a temporary internal dictionary (`pred_dict`) to
+    # store predecessors, used to reconstruct paths. However, if the caller
+    # passed in a `pred` dictionary, we must compute *all* predecessors, since the caller
+    # expects the full predecessor structure.
+    pred_dict = pred if paths is None or pred is not None else {}
+
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
     dist = {}  # dictionary of final distances
@@ -845,37 +851,56 @@ def _dijkstra_multisource(
     for source in sources:
         seen[source] = 0
         heappush(fringe, (0, next(c), source))
+    number_of_sources = len(seen)
     while fringe:
-        (d, _, v) = heappop(fringe)
+        (dist_v, _, v) = heappop(fringe)
         if v in dist:
             continue  # already searched this node.
-        dist[v] = d
+        dist[v] = dist_v
         if v == target:
             break
         for u, e in G_succ[v].items():
             cost = weight(v, u, e)
             if cost is None:
                 continue
-            vu_dist = dist[v] + cost
-            if cutoff is not None:
-                if vu_dist > cutoff:
-                    continue
+            vu_dist = dist_v + cost
+            if cutoff is not None and vu_dist > cutoff:
+                continue
             if u in dist:
                 u_dist = dist[u]
                 if vu_dist < u_dist:
                     raise ValueError("Contradictory paths found:", "negative weights?")
                 elif pred is not None and vu_dist == u_dist:
-                    pred[u].append(v)
+                    # Found another shortest path to u with equal distance (including zero-weight edges).
+                    # We must store *all* predecessors because `pred` was provided by the caller.
+                    pred_dict[u].append(v)
             elif u not in seen or vu_dist < seen[u]:
                 seen[u] = vu_dist
                 heappush(fringe, (vu_dist, next(c), u))
-                if paths is not None:
-                    paths[u] = paths[v] + [u]
-                if pred is not None:
-                    pred[u] = [v]
-            elif vu_dist == seen[u]:
-                if pred is not None:
-                    pred[u].append(v)
+                if pred_dict is not None:
+                    pred_dict[u] = [v]
+            elif pred is not None and vu_dist == seen[u]:
+                # Found another shortest path to u
+                # We must store *all* predecessors because `pred` was provided by the caller.
+                pred_dict[u].append(v)
+
+    if paths is not None:
+        # Reconstruct the path from source to target using the predecessor dictionary.
+        if target is None:
+            # Since `dist` is in increasing distance order, each predecessor's path is
+            # already computed by the time we process `v`. We skip the first
+            # `number_of_sources` entries because sources already have their paths defined.
+            for v in islice(dist, number_of_sources, None):
+                # `v` must be in `pred_dict`: any node with a distance (and not a source)
+                # has a predecessor.
+                paths[v] = paths[pred_dict[v][0]] + [v]
+        else:
+            # Caller requested the path to a specific target node.
+            path = paths[target] = [target]
+            while (current_preds := pred_dict.get(path[-1])) is not None:
+                path.append(current_preds[0])
+            # The path was built in reverse order, so reverse it at the end.
+            path.reverse()
 
     # The optional predecessor and path dictionaries can be accessed
     # by the caller via the pred and paths objects passed as arguments.
@@ -2050,10 +2075,7 @@ def goldberg_radzik(G, source, weight="weight"):
         #
         # neg_count also doubles as the DFS visit marker array.
         neg_count = {}
-        for u in relabeled:
-            # Skip visited nodes.
-            if u in neg_count:
-                continue
+        for u in relabeled - neg_count.keys():
             d_u = d[u]
             # Skip nodes without out-edges of negative reduced costs.
             if all(d_u + weight(u, v, e) >= d[v] for v, e in G_succ[u].items()):
@@ -2076,14 +2098,13 @@ def goldberg_radzik(G, source, weight="weight"):
                 t = d[u] + weight(u, v, e)
                 d_v = d[v]
                 if t < d_v:
-                    is_neg = t < d_v
                     d[v] = t
                     pred[v] = u
                     if v not in neg_count:
-                        neg_count[v] = neg_count[u] + int(is_neg)
+                        neg_count[v] = neg_count[u] + 1
                         stack.append((v, iter(G_succ[v].items())))
                         in_stack.add(v)
-                    elif v in in_stack and neg_count[u] + int(is_neg) > neg_count[v]:
+                    elif v in in_stack and neg_count[u] + 1 > neg_count[v]:
                         # (u, v) is a back edge, and the cycle formed by the
                         # path v to u and (u, v) contains at least one edge of
                         # negative reduced cost. The cycle must be of negative
@@ -2096,7 +2117,7 @@ def goldberg_radzik(G, source, weight="weight"):
         """Relax out-edges of relabeled nodes."""
         relabeled = set()
         # Scan nodes in to_scan in topological order and relax incident
-        # out-edges. Add the relabled nodes to labeled.
+        # out-edges. Add the relabeled nodes to labeled.
         for u in to_scan:
             d_u = d[u]
             for v, e in G_succ[u].items():
@@ -2107,7 +2128,7 @@ def goldberg_radzik(G, source, weight="weight"):
                     relabeled.add(v)
         return relabeled
 
-    # Set of nodes relabled in the last round of scan operations. Denoted by B
+    # Set of nodes relabeled in the last round of scan operations. Denoted by B
     # in Goldberg and Radzik's paper.
     relabeled = {source}
 
@@ -2375,61 +2396,66 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     weight = _weight_function(G, weight)
     # Init:  [Forward, Backward]
     dists = [{}, {}]  # dictionary of final distances
-    paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
+    preds = [{source: None}, {target: None}]  # dictionary of preds
+
+    def path(curr, direction):
+        ret = []
+        while curr is not None:
+            ret.append(curr)
+            curr = preds[direction][curr]
+        return list(reversed(ret)) if direction == 0 else ret
+
     fringe = [[], []]  # heap of (distance, node) for choosing node to expand
     seen = [{source: 0}, {target: 0}]  # dict of distances to seen nodes
     c = count()
     # initialize fringe heap
     heappush(fringe[0], (0, next(c), source))
     heappush(fringe[1], (0, next(c), target))
-    # neighs for extracting correct neighbor information
+    # neighbors for extracting correct neighbor information
     if G.is_directed():
-        neighs = [G._succ, G._pred]
+        neighbors = [G._succ, G._pred]
     else:
-        neighs = [G._adj, G._adj]
+        neighbors = [G._adj, G._adj]
     # variables to hold shortest discovered path
-    # finaldist = 1e30000
-    finalpath = []
-    dir = 1
+    finaldist = None
+    meetnode = None
+    direction = 1
     while fringe[0] and fringe[1]:
         # choose direction
-        # dir == 0 is forward direction and dir == 1 is back
-        dir = 1 - dir
+        # direction == 0 is forward direction and direction == 1 is back
+        direction = 1 - direction
         # extract closest to expand
-        (dist, _, v) = heappop(fringe[dir])
-        if v in dists[dir]:
+        (dist, _, v) = heappop(fringe[direction])
+        if v in dists[direction]:
             # Shortest path to v has already been found
             continue
         # update distance
-        dists[dir][v] = dist  # equal to seen[dir][v]
-        if v in dists[1 - dir]:
+        dists[direction][v] = dist  # equal to seen[direction][v]
+        if v in dists[1 - direction]:
             # if we have scanned v in both directions we are done
             # we have now discovered the shortest path
-            return (finaldist, finalpath)
+            return (finaldist, path(meetnode, 0) + path(preds[1][meetnode], 1))
 
-        for w, d in neighs[dir][v].items():
+        for w, d in neighbors[direction][v].items():
             # weight(v, w, d) for forward and weight(w, v, d) for back direction
-            cost = weight(v, w, d) if dir == 0 else weight(w, v, d)
+            cost = weight(v, w, d) if direction == 0 else weight(w, v, d)
             if cost is None:
                 continue
-            vwLength = dists[dir][v] + cost
-            if w in dists[dir]:
-                if vwLength < dists[dir][w]:
+            vwLength = dist + cost
+            if w in dists[direction]:
+                if vwLength < dists[direction][w]:
                     raise ValueError("Contradictory paths found: negative weights?")
-            elif w not in seen[dir] or vwLength < seen[dir][w]:
+            elif w not in seen[direction] or vwLength < seen[direction][w]:
                 # relaxing
-                seen[dir][w] = vwLength
-                heappush(fringe[dir], (vwLength, next(c), w))
-                paths[dir][w] = paths[dir][v] + [w]
-                if w in seen[0] and w in seen[1]:
+                seen[direction][w] = vwLength
+                heappush(fringe[direction], (vwLength, next(c), w))
+                preds[direction][w] = v
+                if w in seen[1 - direction]:
                     # see if this path is better than the already
                     # discovered shortest path
-                    totaldist = seen[0][w] + seen[1][w]
-                    if finalpath == [] or finaldist > totaldist:
-                        finaldist = totaldist
-                        revpath = paths[1][w][:]
-                        revpath.reverse()
-                        finalpath = paths[0][w] + revpath[1:]
+                    finaldist_w = vwLength + seen[1 - direction][w]
+                    if finaldist is None or finaldist > finaldist_w:
+                        finaldist, meetnode = finaldist_w, w
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 

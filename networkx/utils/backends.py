@@ -61,13 +61,21 @@ def _get_backends(group, *, load_and_call=False):
     Notes
     ------
     If a backend is defined more than once, a warning is issued.
+    If a backend name is not a valid Python identifier, the backend is
+    ignored and a warning is issued.
     The "nx_loopback" backend is removed if it exists, as it is only available during testing.
     A warning is displayed if an error occurs while loading a backend.
     """
     items = entry_points(group=group)
     rv = {}
     for ep in items:
-        if ep.name in rv:
+        if not ep.name.isidentifier():
+            warnings.warn(
+                f"networkx backend name is not a valid identifier: {ep.name!r}. Ignoring.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        elif ep.name in rv:
             warnings.warn(
                 f"networkx backend defined more than once: {ep.name}",
                 RuntimeWarning,
@@ -250,12 +258,17 @@ class _dispatchable:
             function based on input graph types.
 
         name : str, optional (default: name of `func`)
-            The name for the function as used for dispatching. If not provided,
-            the name of ``func`` will be used. ``name`` is useful to avoid name
-            conflicts, as all dispatched functions live in a single namespace.
-            For example, ``nx.tournament.is_strongly_connected`` had a name
-            conflict with the standard ``nx.is_strongly_connected``, so we used
-            ``@_dispatchable(name="tournament_is_strongly_connected")``.
+            The dispatch name for the function. It defaults to the name of `func`,
+            but can be set manually to avoid conflicts in the global dispatch
+            namespace. A common pattern is to prefix the function name with its
+            module or submodule to make it unique. For example:
+
+                - ``@_dispatchable(name="tournament_is_strongly_connected")``
+                  resolves conflict between ``nx.tournament.is_strongly_connected``
+                  and ``nx.is_strongly_connected``.
+                - ``@_dispatchable(name="approximate_node_connectivity")``
+                  resolves conflict between ``nx.approximation.node_connectivity``
+                  and ``nx.connectivity.node_connectivity``.
 
         graphs : str or dict or None, optional (default: "G")
             If a string, the parameter name of the graph, which must be the first
@@ -455,7 +468,8 @@ class _dispatchable:
 
         if name in _registered_algorithms:
             raise KeyError(
-                f"Algorithm already exists in dispatch registry: {name}"
+                f"Algorithm already exists in dispatch namespace: {name}. "
+                "Fix by assigning a unique `name=` in the `@_dispatchable` decorator."
             ) from None
         # Use the `argmap` decorator to turn `self` into a function. This does result
         # in small additional overhead compared to calling `_dispatchable` directly,
