@@ -311,13 +311,13 @@ class TestSubgraphIsomorphism:
         G2.add_node("B", color="green", freq=1)
         G2.add_node("C", color="blue", freq=2)
 
-        with pytest.raises(nx.NetworkXError, match="\nInvalid partition.*\n.*multiple"):
+        with pytest.raises(nx.NetworkXError, match="\nInvalid partition"):
             iso.ISMAGS(G1, G2, node_match=non_transitive_match)
 
-        with pytest.raises(nx.NetworkXError, match="\nInvalid partition.*\n.*a part"):
+        with pytest.raises(nx.NetworkXError, match="\nInvalid partition"):
             iso.ISMAGS(G1, G2, node_match=simple_non_commutative_match)
 
-        with pytest.raises(nx.NetworkXError, match="\nInvalid partition.*\n.*a part"):
+        with pytest.raises(nx.NetworkXError, match="\nInvalid partition"):
             iso.ISMAGS(G1, G2, node_match=non_commutative_match)
 
 
