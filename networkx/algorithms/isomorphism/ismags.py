@@ -257,15 +257,15 @@ def color_degree_by_node(G, n_colors, e_colors):
 class EdgeLookup:
     """Class to handle getitem for undirected edges.
 
-    Note that `items()` iterates over one of the two representations of the edge
+    Note that ``items()`` iterates over one of the two representations of the edge
     (u, v) and (v, u). So this technically doesn't violate the Mapping
-    invariant that (k,v) pairs reported by `items()` satisfy `.__getitem__(k) == v`.
+    invariant that (k,v) pairs reported by ``items()`` satisfy ``.__getitem__(k) == v``.
     But we are violating the spirit of the protocol by having keys available
-    for lookup by `__getitem__` that are not reported by `items()`.
+    for lookup by ``__getitem__`` that are not reported by ``items()``.
 
     Note that if we used frozensets for undirected edges we would have the same
-    behavior we see here. You could `__getitem__` either `{u, v}` or `{v, u}`
-    and get the same value -- yet `items()` would only report one of the two.
+    behavior we see here. You could ``__getitem__`` either ``{u, v}`` or ``{v, u}``
+    and get the same value -- yet ``items()`` would only report one of the two.
     So from that perspective we *are* following the Mapping protocol. Our keys
     are undirected edges. We are using 2-tuples as an imperfect representation
     of these edges. We are not using 2-tuples as keys. Only as imperfect edges
@@ -566,8 +566,9 @@ class ISMAGS:
             gt_ = g_things[gt] if not g_multiedge else self.graph[gt[0]][gt[1]]
             if thing_matcher(sgt_, gt_):
                 if sgc in sgc_to_gc or gc in gc_to_sgc:
-                    raise NetworkXError(
-                        f"Matching function {thing_matcher} seems not transitive.\n"
+                    raise nx.NetworkXError(
+                        f"Matching function {thing_matcher} seems not both commutative"
+                        " and transitive.\n"
                         f"Partitions found: {sg_partition=}\n{g_partition=}"
                     )
                 sgc_to_gc[sgc] = gc
