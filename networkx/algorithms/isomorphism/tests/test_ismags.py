@@ -286,6 +286,40 @@ class TestSubgraphIsomorphism:
             expected_symmetric + expected_asymmetric
         )
 
+    def test_exceptions_for_bad_match_functions(self):
+        def non_transitive_match(attrs1, attrs2):
+            return abs(attrs1["freq"] - attrs2["freq"]) <= 1
+
+        def simple_non_commutative_match(attrs1, attrs2):
+            return attrs1["freq"] == 1 + attrs2["freq"]
+
+        def non_commutative_match(attrs1, attrs2):
+            # red matches red and green
+            # green and blue only match themselves
+            if attrs2["color"] == "red":
+                return attrs2["color"] in {"red", "green"}
+            else:
+                return attrs1["color"] == attrs2["color"]
+
+        G1 = nx.Graph()
+        G1.add_node(0, color="red", freq=0)
+        G1.add_node(1, color="red", freq=1)
+        G1.add_node(2, color="blue", freq=2)
+
+        G2 = nx.Graph()
+        G2.add_node("A", color="red", freq=0)
+        G2.add_node("B", color="green", freq=1)
+        G2.add_node("C", color="blue", freq=2)
+
+        with pytest.raises(nx.NetworkXError, match="\nInvalid partition.*\n.*multiple"):
+            iso.ISMAGS(G1, G2, node_match=non_transitive_match)
+
+        with pytest.raises(nx.NetworkXError, match="\nInvalid partition.*\n.*a part"):
+            iso.ISMAGS(G1, G2, node_match=simple_non_commutative_match)
+
+        with pytest.raises(nx.NetworkXError, match="\nInvalid partition.*\n.*a part"):
+            iso.ISMAGS(G1, G2, node_match=non_commutative_match)
+
 
 def test_noncomparable_nodes():
     node1 = object()
