@@ -159,7 +159,7 @@ def are_all_equal(iterable):
     return all(item == first for item in iterator)
 
 
-def make_partition(items, test):
+def make_partition(items, test, check=True):
     """
     Partitions items into sets based on the outcome of ``test(item1, item2)``.
     Pairs of items for which `test` returns `True` end up in the same set.
@@ -172,6 +172,9 @@ def make_partition(items, test):
         A function that will be called with 2 arguments, taken from items.
         Should return `True` if those 2 items match/tests so need to end up in the same
         part of the partition, and `False` otherwise.
+    check : bool optional (default: True)
+        If ``True``, check that the resulting partition satisfies the match criteria.
+        Every item should match every item in its part and none outside the part.
 
     Returns
     -------
@@ -179,23 +182,49 @@ def make_partition(items, test):
         A partition as a list of sets (the parts). Each set contains some of
         the items in `items`, such that all items are in exactly one part and every
         pair of items in each part matches. The following will be true:
-        ``all(thing_matcher(*pair) for pair in itertools.combinations(set, 2))``
+        ``all(thing_matcher(*pair) for pair in itertools.combinations(items, 2))``
 
     Notes
     -----
     The function `test` is assumed to be transitive: if ``test(a, b)`` and
     ``test(b, c)`` return ``True``, then ``test(a, c)`` must also be ``True``.
+    The function `test` is assumed to be commutative: if ``test(a, b)``
+    returns ``True`` then ``test(b, a)`` returns ``True``.
     """
-    partitions = []
+    partition = []
     for item in items:
-        for partition in partitions:
-            p_item = next(iter(partition))
+        for part in partition:
+            p_item = next(iter(part))
             if test(item, p_item):
-                partition.add(item)
+                part.add(item)
                 break
         else:  # No break
-            partitions.append({item})
-    return partitions
+            partition.append({item})
+
+    if check:
+        if not all(
+            test(t1, t2) and test(t2, t1)
+            for part in partition
+            for t1, t2 in itertools.combinations(part, 2)
+        ):
+            raise nx.NetworkXError(
+                f"\nInvalid partition created with {test}.\n"
+                "Some items in a part do not match. This leads to\n"
+                f"{partition=}"
+            )
+        if not all(
+            not test(t1, t2) and not test(t2, t1)
+            for p1 in partition
+            for p2 in partition
+            if p1 != p2
+            for t1, t2 in itertools.product(p1, p2)
+        ):
+            raise nx.NetworkXError(
+                f"\nInvalid partition created with {test}.\n"
+                "Some items match multiple parts. This leads to\n"
+                f"{partition=}"
+            )
+    return [set(part) for part in partition]
 
 
 def node_to_part_ID_dict(partition):
@@ -528,6 +557,7 @@ class ISMAGS:
             return sg_partition, g_partition, 1
 
         # Use thing_matcher to create a partition
+        # Note: isinstance(G.edges(), OutEdgeDataView) is only true for multi(di)graph
         sg_multiedge = isinstance(sg_things, nx.classes.reportviews.OutEdgeDataView)
         g_multiedge = isinstance(g_things, nx.classes.reportviews.OutEdgeDataView)
         if not sg_multiedge:
@@ -565,11 +595,23 @@ class ISMAGS:
             sgt_ = sg_things[sgt] if not sg_multiedge else self.subgraph[sgt[0]][sgt[1]]
             gt_ = g_things[gt] if not g_multiedge else self.graph[gt[0]][gt[1]]
             if thing_matcher(sgt_, gt_):
-                if sgc in sgc_to_gc or gc in gc_to_sgc:
+                # TODO: remove these two if-checks when confident they never arise
+                # The `check` feature in match_partitions should ensure they do not
+                if sgc in sgc_to_gc:
                     raise nx.NetworkXError(
-                        f"Matching function {thing_matcher} seems not both commutative"
-                        " and transitive.\n"
-                        f"Partitions found: {sg_partition=}\n{g_partition=}"
+                        f"\nMatching function {thing_matcher} seems faulty.\n"
+                        f"Partition found: {sg_partition=}\n"
+                        f"So {sgt} in subgraph part {sg_partition[sgc]} matches two "
+                        f"graph parts {g_partition[gc]} and "
+                        f"{g_partition[sgc_to_gc[sgc]]}\n"
+                    )
+                if gc in gc_to_sgc:
+                    raise nx.NetworkXError(
+                        f"\nMatching function seems broken: {thing_matcher}\n"
+                        f"Partitions found: {g_partition=} {sg_partition=}\n"
+                        f"So {gt} in graph part {g_partition[gc]} matches two "
+                        f"subgraph parts {sg_partition[sgc]} and "
+                        f"{sg_partition[gc_to_sgc[gc]]}\n"
                     )
                 sgc_to_gc[sgc] = gc
                 gc_to_sgc[gc] = sgc
@@ -825,7 +867,7 @@ class ISMAGS:
                 for p in (
                     [part]
                     if are_all_equal(color_degree[n] for n in part)
-                    else sorted(make_partition(part, equal_color), key=len)
+                    else sorted(make_partition(part, equal_color, check=False), key=len)
                 )
             ]
             node_colors = node_to_part_ID_dict(partition)
@@ -1110,7 +1152,7 @@ class ISMAGS:
                         new_bottom.append(part)
                 else:
                     # This part needs to be refined
-                    refined_part = make_partition(part, equal_color)
+                    refined_part = make_partition(part, equal_color, check=False)
                     R = len(refined_part)
                     if R == 1 or R == len({len(p) for p in refined_part}):
                         # no two parts have same length -- simple case
