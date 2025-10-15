@@ -222,7 +222,7 @@ G.add_edges_from([(1, 2), (2, 3)])
 list(G.nodes), list(G.nodes()), list(G.edges), list(G.edges())
 ```
 
-Although they behave identically, each form is typically used differently in practice.
+Although they behave identically for the simple graphs, each form is typically used differently in practice.
 The **attribute-like** form is convenient for modifying attributes:
 
 ```{code-cell}
