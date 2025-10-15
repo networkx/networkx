@@ -290,9 +290,6 @@ This follows the same attribute-like for assignment, method-like for access conv
 MG = nx.MultiGraph()
 MG.add_edge(1, 2)   # key=0
 MG.add_edge(1, 2)   # key=1
-```
-
-```{code-cell}
 list(MG.edges)
 ```
 
