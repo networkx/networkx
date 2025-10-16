@@ -61,7 +61,6 @@ def find_uv_to_make_bridgeless(G: nx.Graph) -> tuple | None:
         logger.info("Graph is already bridgeless")
         return None
 
-
     bridges = list(nx.bridges(G))
     logger.info(f"Found {len(bridges)} bridges in the graph")
 
@@ -215,7 +214,6 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, any, any]] | No
             if found_ear:
                 break
 
-
         if found_ear:
             continue
 
@@ -275,11 +273,9 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, any, any]] | No
                     else:
                         all_edges.extend(current_ear)
 
-
                 found_ear = True
                 ear_count += 1
                 break
-
 
         if not found_ear:
             edge = list(H.edges())[0]
@@ -297,7 +293,6 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, any, any]] | No
     if not verify_contiguous_labeling(G, labeling):
         logger.error("Contiguous labeling verification failed, using DFS fallback")
         return dfs_labeling(G)
-
 
     logger.info("Contiguous labeling completed successfully")
     return labeling
@@ -323,7 +318,6 @@ def dfs_labeling(G: nx.Graph) -> list[tuple[int, any, any]]:
     visited_edges = set()
     labeling: List[Tuple[int, Any, Any]] = []
     label = 1
-
 
     def dfs(u):
         """
@@ -377,7 +371,6 @@ def verify_contiguous_labeling(
     if len(labeling) == 0:
         return True
 
-
     m = len(labeling)
 
     # Create mappings from label to source and target vertices
@@ -411,7 +404,6 @@ def verify_contiguous_labeling(
     # and vertex i+ belongs to one of these edges
     for i in range(1, m):
         subgraph = nx.Graph()
-        for j in range(i + 1, m + 1):
         for j in range(i + 1, m + 1):
             subgraph.add_edge(i_minus[j], i_plus[j])
 
