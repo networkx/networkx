@@ -1,3 +1,5 @@
+import pytest
+
 import networkx as nx
 from networkx.algorithms.contiguous_labeling import (
     contiguous_oriented_labeling,
@@ -81,7 +83,9 @@ def test_star_with_center():
 
 def test_diamond_with_tail():
     G = nx.Graph()
-    G.add_edges_from([("A", "B"), ("A", "C"), ("A", "D"), ("B", "D"), ("C", "D"), ("D", "E")])
+    G.add_edges_from(
+        [("A", "B"), ("A", "C"), ("A", "D"), ("B", "D"), ("C", "D"), ("D", "E")]
+    )
     result = contiguous_oriented_labeling(G)
     assert result is not None
     assert len(result) == 6
@@ -89,6 +93,7 @@ def test_diamond_with_tail():
 
 
 # === Edge and failure tests ===
+
 
 def test_empty_graph():
     G = nx.Graph()
