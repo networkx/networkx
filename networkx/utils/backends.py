@@ -144,7 +144,7 @@ def _set_configs_from_environment():
     # Config has __new__ method that returns instance with a unique type!
     type(backend_config).__doc__ = "All installed NetworkX backends and their configs."
 
-    backend_priority = BackendPriorities(algos=[], generators=[])
+    backend_priority = BackendPriorities(algos=[], generators=[], classes=[])
 
     config = NetworkXConfig(
         backend_priority=backend_priority,
@@ -475,6 +475,8 @@ class _dispatchable:
         # in small additional overhead compared to calling `_dispatchable` directly,
         # but `argmap` has the property that it can stack with other `argmap`
         # decorators "for free". Being a function is better for REPRs and type-checkers.
+        # It also allows `_dispatchable` to be used on class methods, since functions
+        # define `__get__`. Without using `argmap`, we would need to define `__get__`.
         self = argmap(_do_nothing)(self)
         _registered_algorithms[name] = self
         return self
@@ -618,7 +620,9 @@ class _dispatchable:
 
         backend_priority = nx.config.backend_priority.get(
             self.name,
-            nx.config.backend_priority.generators
+            nx.config.backend_priority.classes
+            if self.name.endswith("__new__")
+            else nx.config.backend_priority.generators
             if self._returns_graph
             else nx.config.backend_priority.algos,
         )
@@ -1821,6 +1825,10 @@ class _dispatchable:
                     f"{self.name} returned a numpy scalar {result} ({type(result)})"
                 ) from exc
             check_result(result)
+
+        if self.name.endswith("__new__"):
+            # Graph is not yet done initializing; no sense doing more here
+            return result
 
         def assert_graphs_equal(G1, G2, strict=True):
             assert G1.number_of_nodes() == G2.number_of_nodes()
