@@ -151,7 +151,9 @@ class TestRelabel:
         mapping = {"a": "aardvark", "b": "bear"}
         G = nx.relabel_nodes(G, mapping, copy=False)
         assert nodes_equal(G.nodes(), ["aardvark", "bear"])
-        assert edges_equal(G.edges(), [("aardvark", "bear"), ("aardvark", "bear")])
+        assert edges_equal(
+            G.edges(), [("aardvark", "bear"), ("aardvark", "bear")], directed=True
+        )
 
     def test_relabel_isolated_nodes_to_same(self):
         G = nx.Graph()

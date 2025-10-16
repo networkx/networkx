@@ -176,7 +176,7 @@ def test_directed_path():
     partition = [{0, 1}, {2, 3}, {4, 5}]
     M = nx.quotient_graph(G, partition, relabel=True)
     assert nodes_equal(M, [0, 1, 2])
-    assert edges_equal(M.edges(), [(0, 1), (1, 2)])
+    assert edges_equal(M.edges(), [(0, 1), (1, 2)], directed=True)
     for n in M:
         assert M.nodes[n]["nedges"] == 1
         assert M.nodes[n]["nnodes"] == 2
@@ -189,7 +189,7 @@ def test_directed_multigraph_path():
     partition = [{0, 1}, {2, 3}, {4, 5}]
     M = nx.quotient_graph(G, partition, relabel=True)
     assert nodes_equal(M, [0, 1, 2])
-    assert edges_equal(M.edges(), [(0, 1), (1, 2)])
+    assert edges_equal(M.edges(), [(0, 1), (1, 2)], directed=True)
     for n in M:
         assert M.nodes[n]["nedges"] == 1
         assert M.nodes[n]["nnodes"] == 2

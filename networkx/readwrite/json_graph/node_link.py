@@ -30,9 +30,8 @@ def node_link_data(
     target="target",
     name="id",
     key="key",
-    edges=None,
+    edges="edges",
     nodes="nodes",
-    link=None,
 ):
     """Returns data in node-link format that is suitable for JSON serialization
     and use in JavaScript documents.
@@ -52,13 +51,6 @@ def node_link_data(
         A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
     nodes : string
         A string that provides the 'nodes' attribute name for storing NetworkX-internal graph data.
-    link : string
-        .. deprecated:: 3.4
-
-           The `link` argument is deprecated and will be removed in version `3.6`.
-           Use the `edges` keyword instead.
-
-        A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
 
     Returns
     -------
@@ -74,7 +66,7 @@ def node_link_data(
     --------
     >>> from pprint import pprint
     >>> G = nx.Graph([("A", "B")])
-    >>> data1 = nx.node_link_data(G, edges="edges")
+    >>> data1 = nx.node_link_data(G)
     >>> pprint(data1)
     {'directed': False,
      'edges': [{'source': 'A', 'target': 'B'}],
@@ -96,7 +88,7 @@ def node_link_data(
     >>> s1 = json.dumps(G, default=nx.node_link_data)
     >>> pprint(s1)
     ('{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, '
-     '{"id": "B"}], "links": [{"source": "A", "target": "B"}]}')
+     '{"id": "B"}], "edges": [{"source": "A", "target": "B"}]}')
 
     The attribute names for storing NetworkX-internal graph data can
     be specified as keyword options.
@@ -114,7 +106,7 @@ def node_link_data(
 
     Notes
     -----
-    Graph, node, and link attributes are stored in this format.  Note that
+    Graph, node, and edge attributes are stored in this format.  Note that
     attribute keys will be converted to strings in order to comply with JSON.
 
     Attribute 'key' is only used for multigraphs.
@@ -126,34 +118,6 @@ def node_link_data(
     --------
     node_link_graph, adjacency_data, tree_data
     """
-    # TODO: Remove between the lines when `link` deprecation expires
-    # -------------------------------------------------------------
-    if link is not None:
-        warnings.warn(
-            "Keyword argument 'link' is deprecated; use 'edges' instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        if edges is not None:
-            raise ValueError(
-                "Both 'edges' and 'link' are specified. Use 'edges', 'link' will be remove in a future release"
-            )
-        else:
-            edges = link
-    else:
-        if edges is None:
-            warnings.warn(
-                (
-                    '\nThe default value will be `edges="edges" in NetworkX 3.6.\n\n'
-                    "To make this warning go away, explicitly set the edges kwarg, e.g.:\n\n"
-                    '  nx.node_link_data(G, edges="links") to preserve current behavior, or\n'
-                    '  nx.node_link_data(G, edges="edges") for forward compatibility.'
-                ),
-                FutureWarning,
-            )
-            edges = "links"
-    # ------------------------------------------------------------
-
     multigraph = G.is_multigraph()
 
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
@@ -186,9 +150,8 @@ def node_link_graph(
     target="target",
     name="id",
     key="key",
-    edges=None,
+    edges="edges",
     nodes="nodes",
-    link=None,
 ):
     """Returns graph from node-link data format.
 
@@ -217,13 +180,6 @@ def node_link_graph(
         A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
     nodes : string
         A string that provides the 'nodes' attribute name for storing NetworkX-internal graph data.
-    link : string
-        .. deprecated:: 3.4
-
-           The `link` argument is deprecated and will be removed in version `3.6`.
-           Use the `edges` keyword instead.
-
-        A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
 
     Returns
     -------
@@ -237,7 +193,7 @@ def node_link_graph(
 
     >>> from pprint import pprint
     >>> G = nx.Graph([("A", "B")])
-    >>> data = nx.node_link_data(G, edges="edges")
+    >>> data = nx.node_link_data(G)
     >>> pprint(data)
     {'directed': False,
      'edges': [{'source': 'A', 'target': 'B'}],
@@ -247,15 +203,15 @@ def node_link_graph(
 
     Revert data in node-link format to a graph.
 
-    >>> H = nx.node_link_graph(data, edges="edges")
+    >>> H = nx.node_link_graph(data)
     >>> print(H.edges)
     [('A', 'B')]
 
     To serialize and deserialize a graph with JSON,
 
     >>> import json
-    >>> d = json.dumps(nx.node_link_data(G, edges="edges"))
-    >>> H = nx.node_link_graph(json.loads(d), edges="edges")
+    >>> d = json.dumps(nx.node_link_data(G))
+    >>> H = nx.node_link_graph(json.loads(d))
     >>> print(G.edges, H.edges)
     [('A', 'B')] [('A', 'B')]
 
@@ -271,34 +227,6 @@ def node_link_graph(
     --------
     node_link_data, adjacency_data, tree_data
     """
-    # TODO: Remove between the lines when `link` deprecation expires
-    # -------------------------------------------------------------
-    if link is not None:
-        warnings.warn(
-            "Keyword argument 'link' is deprecated; use 'edges' instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        if edges is not None:
-            raise ValueError(
-                "Both 'edges' and 'link' are specified. Use 'edges', 'link' will be remove in a future release"
-            )
-        else:
-            edges = link
-    else:
-        if edges is None:
-            warnings.warn(
-                (
-                    '\nThe default value will be changed to `edges="edges" in NetworkX 3.6.\n\n'
-                    "To make this warning go away, explicitly set the edges kwarg, e.g.:\n\n"
-                    '  nx.node_link_graph(data, edges="links") to preserve current behavior, or\n'
-                    '  nx.node_link_graph(data, edges="edges") for forward compatibility.'
-                ),
-                FutureWarning,
-            )
-            edges = "links"
-    # -------------------------------------------------------------
-
     multigraph = data.get("multigraph", multigraph)
     directed = data.get("directed", directed)
     if multigraph:

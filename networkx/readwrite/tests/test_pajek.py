@@ -47,16 +47,18 @@ class TestPajek:
                 ("C", "D2"),
                 ("D2", "Bb"),
             ],
+            directed=True,
         )
 
-    def test_parse_pajet_mat(self):
+    def test_parse_pajek_mat(self):
         data = """*Vertices 3\n1 "one"\n2 "two"\n3 "three"\n*Matrix\n1 1 0\n0 1 0\n0 1 0\n"""
         G = nx.parse_pajek(data)
         assert set(G.nodes()) == {"one", "two", "three"}
         assert G.nodes["two"] == {"id": "2"}
         assert edges_equal(
-            set(G.edges()),
-            {("one", "one"), ("two", "one"), ("two", "two"), ("two", "three")},
+            G.edges(),
+            [("one", "one"), ("one", "two"), ("two", "two"), ("three", "two")],
+            directed=True,
         )
 
     def test_read_pajek(self, tmp_path):
@@ -68,7 +70,7 @@ class TestPajek:
 
         Gin = nx.read_pajek(fname)
         assert sorted(G.nodes()) == sorted(Gin.nodes())
-        assert edges_equal(G.edges(), Gin.edges())
+        assert edges_equal(G.edges(), Gin.edges(), directed=True)
         assert self.G.graph == Gin.graph
         for n in G:
             assert G.nodes[n] == Gin.nodes[n]
@@ -82,7 +84,7 @@ class TestPajek:
         fh.seek(0)
         H = nx.read_pajek(fh)
         assert nodes_equal(list(G), list(H))
-        assert edges_equal(list(G.edges()), list(H.edges()))
+        assert edges_equal(G.edges(), H.edges(), directed=True)
         # Graph name is left out for now, therefore it is not tested.
         # assert_equal(G.graph, H.graph)
 

@@ -541,52 +541,40 @@ def subplots():
     plt.close()
 
 
-def test_draw():
-    try:
-        functions = [
-            nx.draw_circular,
-            nx.draw_kamada_kawai,
-            nx.draw_planar,
-            nx.draw_random,
-            nx.draw_spectral,
-            nx.draw_spring,
-            nx.draw_shell,
-        ]
-        options = [{"node_color": "black", "node_size": 100, "width": 3}]
-        for function, option in itertools.product(functions, options):
-            function(barbell, **option)
-            plt.savefig("test.ps")
-    except ModuleNotFoundError:  # draw_kamada_kawai requires scipy
-        pass
-    finally:
-        try:
-            os.unlink("test.ps")
-        except OSError:
-            pass
+@pytest.mark.parametrize(
+    "function",
+    [
+        nx.draw_circular,
+        nx.draw_kamada_kawai,
+        nx.draw_planar,
+        nx.draw_random,
+        nx.draw_spectral,
+        nx.draw_spring,
+        nx.draw_shell,
+        nx.draw_forceatlas2,
+    ],
+)
+def test_draw(function, subplots, tmp_path):
+    if function == nx.draw_kamada_kawai:
+        pytest.importorskip("scipy", reason="draw_kamada_kawai requires scipy")
+    fig, _ = subplots
+    options = {"node_color": "black", "node_size": 100, "width": 3}
+    function(barbell, **options)
+    fig.savefig(tmp_path / "test.ps")
 
 
-def test_draw_shell_nlist():
-    try:
-        nlist = [list(range(4)), list(range(4, 10)), list(range(10, 14))]
-        nx.draw_shell(barbell, nlist=nlist)
-        plt.savefig("test.ps")
-    finally:
-        try:
-            os.unlink("test.ps")
-        except OSError:
-            pass
+def test_draw_shell_nlist(subplots, tmp_path):
+    fig, _ = subplots
+    nlist = [list(range(4)), list(range(4, 10)), list(range(10, 14))]
+    nx.draw_shell(barbell, nlist=nlist)
+    fig.savefig(tmp_path / "test.ps")
 
 
-def test_draw_bipartite():
-    try:
-        G = nx.complete_bipartite_graph(2, 5)
-        nx.draw_bipartite(G)
-        plt.savefig("test.ps")
-    finally:
-        try:
-            os.unlink("test.ps")
-        except OSError:
-            pass
+def test_draw_bipartite(subplots, tmp_path):
+    fig, _ = subplots
+    G = nx.complete_bipartite_graph(2, 5)
+    nx.draw_bipartite(G)
+    fig.savefig(tmp_path / "test.ps")
 
 
 def test_edge_colormap():
@@ -595,6 +583,16 @@ def test_edge_colormap():
         barbell, edge_color=colors, width=4, edge_cmap=plt.cm.Blues, with_labels=True
     )
     # plt.show()
+
+
+def test_draw_networkx_edge_labels(subplots, tmp_path):
+    fig, _ = subplots
+    edge = (0, 1)
+    G = nx.DiGraph([edge])
+    pos = {n: (n, n) for n in G}
+    nx.draw(G, pos=pos)
+    nx.draw_networkx_edge_labels(G, pos, edge_labels={edge: "edge"})
+    fig.savefig(tmp_path / "test.ps")
 
 
 def test_arrows():
@@ -903,8 +901,8 @@ def test_return_types():
 
     G = nx.frucht_graph(create_using=nx.Graph)
     dG = nx.frucht_graph(create_using=nx.DiGraph)
-    pos = nx.spring_layout(G)
-    dpos = nx.spring_layout(dG)
+    pos = nx.spring_layout(G, seed=42)
+    dpos = nx.spring_layout(dG, seed=42)
     # nodes
     nodes = nx.draw_networkx_nodes(G, pos)
     assert isinstance(nodes, PathCollection)
@@ -925,7 +923,7 @@ def test_return_types():
 
 def test_labels_and_colors():
     G = nx.cubical_graph()
-    pos = nx.spring_layout(G)  # positions for all nodes
+    pos = nx.spring_layout(G, seed=42)  # positions for all nodes
     # nodes
     nx.draw_networkx_nodes(
         G, pos, nodelist=[0, 1, 2, 3], node_color="r", node_size=500, alpha=0.75
