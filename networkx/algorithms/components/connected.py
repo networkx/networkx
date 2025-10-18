@@ -23,12 +23,12 @@ def connected_components(G):
     `G` that is connected and not part of any larger connected subgraph.
 
     A graph is connected (:func:`is_connected`) if, for every pair of distinct
-    vertices, there is a path between them. If there is a pair of vertices for
+    nodes, there is a path between them. If there is a pair of nodes for
     which such path does not exist, the graph is not connected (also referred
     to as "disconnected").
 
-    A graph consisting of a single vertex and no edges is connected.
-    Connectivity is undefined for the null graph (graph with no vertices).
+    A graph consisting of a single node and no edges is connected.
+    Connectivity is undefined for the null graph (graph with no nodes).
 
     Parameters
     ----------
@@ -100,12 +100,12 @@ def number_connected_components(G):
     `G` that is connected and not part of any larger connected subgraph.
 
     A graph is connected (:func:`is_connected`) if, for every pair of distinct
-    vertices, there is a path between them. If there is a pair of vertices for
+    nodes, there is a path between them. If there is a pair of nodes for
     which such path does not exist, the graph is not connected (also referred
     to as "disconnected").
 
-    A graph consisting of a single vertex and no edges is connected.
-    Connectivity is undefined for the null graph (graph with no vertices).
+    A graph consisting of a single node and no edges is connected.
+    Connectivity is undefined for the null graph (graph with no nodes).
 
     Parameters
     ----------
@@ -154,12 +154,12 @@ def number_connected_components(G):
 def is_connected(G):
     """Returns True if the graph is connected, False otherwise.
 
-    A graph is connected if, for every pair of distinct vertices, there is a
-    path between them. If there is a pair of vertices for which such path does
+    A graph is connected if, for every pair of distinct nodes, there is a
+    path between them. If there is a pair of nodes for which such path does
     not exist, the graph is not connected (also referred to as "disconnected").
 
-    A graph consisting of a single vertex and no edges is connected.
-    Connectivity is undefined for the null graph (graph with no vertices).
+    A graph consisting of a single node and no edges is connected.
+    Connectivity is undefined for the null graph (graph with no nodes).
 
     Parameters
     ----------
@@ -217,12 +217,12 @@ def node_connected_component(G, n):
     `G` that is connected and not part of any larger connected subgraph.
 
     A graph is connected (:func:`is_connected`) if, for every pair of distinct
-    vertices, there is a path between them. If there is a pair of vertices for
+    nodes, there is a path between them. If there is a pair of nodes for
     which such path does not exist, the graph is not connected (also referred
     to as "disconnected").
 
-    A graph consisting of a single vertex and no edges is connected.
-    Connectivity is undefined for the null graph (graph with no vertices).
+    A graph consisting of a single node and no edges is connected.
+    Connectivity is undefined for the null graph (graph with no nodes).
 
     Parameters
     ----------
