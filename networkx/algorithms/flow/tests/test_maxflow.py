@@ -1,5 +1,7 @@
 """Maximum flow algorithms test suite."""
 
+from math import isclose
+
 import pytest
 
 import networkx as nx
@@ -26,6 +28,24 @@ flow_value_funcs = {nx.maximum_flow_value, nx.minimum_cut_value}
 interface_funcs = max_min_funcs | flow_value_funcs
 all_funcs = flow_funcs | interface_funcs
 
+_RTOL = 1e-12
+_ATOL = 1e-12
+
+
+def _eq_with_tol(x, y):
+    # x == y within tolerrance
+    return isclose(x, y, rel_tol=_RTOL, abs_tol=_ATOL)
+
+
+def _leq_with_tol(x, y):
+    # x <= y within tolerance
+    return x < y or _eq_with_tol(x, y)
+
+
+def _geq_with_tol(x, y):
+    # x >= y within tolerance
+    return x > y or _eq_with_tol(x, y)
+
 
 def compute_cutset(G, partition):
     reachable, non_reachable = partition
@@ -44,17 +64,17 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
     for u in flowDict:
         for v, flow in flowDict[u].items():
             if capacity in G[u][v]:
-                assert flow <= G[u][v][capacity]
-            assert flow >= 0, errmsg
+                assert _leq_with_tol(flow, G[u][v][capacity]), errmsg
+            assert _geq_with_tol(flow, 0), errmsg
             excess[u] -= flow
             excess[v] += flow
     for u, exc in excess.items():
         if u == s:
-            assert exc == -solnValue, errmsg
+            assert _eq_with_tol(exc, -solnValue), errmsg
         elif u == t:
-            assert exc == solnValue, errmsg
+            assert _eq_with_tol(exc, solnValue), errmsg
         else:
-            assert exc == 0, errmsg
+            assert _eq_with_tol(exc, 0), errmsg
 
 
 def validate_cuts(G, s, t, solnValue, partition, capacity, flow_func):
@@ -63,7 +83,7 @@ def validate_cuts(G, s, t, solnValue, partition, capacity, flow_func):
     assert all(n in G for n in partition[1]), errmsg
     cutset = compute_cutset(G, partition)
     assert all(G.has_edge(u, v) for (u, v) in cutset), errmsg
-    assert solnValue == sum(G[u][v][capacity] for (u, v) in cutset), errmsg
+    assert _eq_with_tol(solnValue, sum(G[u][v][capacity] for (u, v) in cutset)), errmsg
     H = G.copy()
     H.remove_edges_from(cutset)
     if not G.is_directed():
@@ -79,7 +99,7 @@ def compare_flows_and_cuts(G, s, t, solnValue, capacity="capacity"):
         # Test both legacy and new implementations.
         flow_value = R.graph["flow_value"]
         flow_dict = build_flow_dict(G, R)
-        assert flow_value == solnValue, errmsg
+        assert _eq_with_tol(flow_value, solnValue), errmsg
         validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_func)
         # Minimum cut
         cut_value, partition = nx.minimum_cut(
@@ -364,6 +384,28 @@ class TestMaxflowMinCutCommon:
         #     "t": {},
         # }
         compare_flows_and_cuts(G, "s", "t", 4)
+
+    def test_float_capacity(self):
+        # Digraph where floating-point handling is important for mincut partition
+        w = 0.1
+        G = nx.DiGraph()
+        G.add_edge("a", "b", capacity=1)
+        G.add_edge("b", "a", capacity=w)
+        G.add_edge("a", "c", capacity=2)
+        G.add_edge("s", "a", capacity=2)
+        G.add_edge("s", "b", capacity=2)
+        G.add_edge("a", "t", capacity=1)
+        G.add_edge("b", "t", capacity=1)
+        G.add_edge("c", "t", capacity=2)
+        # flow solution
+        # {
+        #     "a": {"b": 0, "c": 1.1, "t": 1},
+        #     "b": {"a": 0.1, "t": 1},
+        #     "c": {"t": 1.1},
+        #     "s": {"a": 2, "b": 1.1},
+        #     "t": {}
+        # }
+        compare_flows_and_cuts(G, "s", "t", 3.1)
 
     def test_disconnected(self):
         G = nx.Graph()
