@@ -66,6 +66,7 @@ from networkx.algorithms.wiener import *
 from networkx.algorithms import approximation
 from networkx.algorithms import assortativity
 from networkx.algorithms import bipartite
+from networkx.algorithms import bipartite_ged
 from networkx.algorithms import node_classification
 from networkx.algorithms import centrality
 from networkx.algorithms import chordal
@@ -90,6 +91,7 @@ from networkx.algorithms import tree
 from networkx.algorithms.bipartite import complete_bipartite_graph
 from networkx.algorithms.bipartite import is_bipartite
 from networkx.algorithms.bipartite import projected_graph
+from networkx.algorithms.bipartite_ged import BipartiteGED
 from networkx.algorithms.connectivity import all_pairs_node_connectivity
 from networkx.algorithms.connectivity import all_node_cuts
 from networkx.algorithms.connectivity import average_node_connectivity
