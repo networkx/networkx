@@ -3,6 +3,11 @@ Maximum flow (and minimum cut) algorithms on capacitated graphs.
 """
 
 import networkx as nx
+from networkx.utils.weights_to_int import (
+    choose_scale_factor,
+    needs_integerization,
+    scale_edge_weight_to_ints,
+)
 
 from .boykovkolmogorov import boykov_kolmogorov
 from .dinitz_alg import dinitz
@@ -104,6 +109,10 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
+    If any of the edge capacities are floating-point numbers with non-zero fractional parts,
+    the capacities are scaled to integers internally to avoid errors from
+    inexact floating-point comparisons.
+
     The flow value, defined as the total flow into :samp:`t`, the sink, is
     stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
     only edges :samp:`(u, v)` such that
@@ -112,7 +121,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 
     Specific algorithms may store extra data in :samp:`R`.
 
-    The function should supports an optional boolean parameter value_only. When
+    The flow function should support an optional boolean parameter value_only. When
     True, it can optionally terminate the algorithm as soon as the maximum flow
     value and the minimum cut can be determined.
 
@@ -162,8 +171,20 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
+    scale_factor = None
+    if kwargs.get("residual") is None and needs_integerization(flowG, weight=capacity):
+        scale_factor = choose_scale_factor(flowG, weight=capacity)
+        flowG = scale_edge_weight_to_ints(
+            flowG,
+            weight=capacity,
+            scale_factor=scale_factor,
+            default_value=float("inf"),
+        )
+
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=False, **kwargs)
-    flow_dict = build_flow_dict(flowG, R)
+    flow_dict = build_flow_dict(flowG, R, scale_factor=scale_factor)
+    if scale_factor is not None:
+        R.graph["flow_value"] /= scale_factor
 
     return (R.graph["flow_value"], flow_dict)
 
@@ -251,6 +272,10 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
+    If any of the edge capacities are floating-point numbers with non-zero fractional parts,
+    the capacities are scaled to integers internally to avoid errors from
+    inexact floating-point comparisons.
+
     The flow value, defined as the total flow into :samp:`t`, the sink, is
     stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
     only edges :samp:`(u, v)` such that
@@ -259,7 +284,7 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
 
     Specific algorithms may store extra data in :samp:`R`.
 
-    The function should supports an optional boolean parameter value_only. When
+    The flow function should support an optional boolean parameter value_only. When
     True, it can optionally terminate the algorithm as soon as the maximum flow
     value and the minimum cut can be determined.
 
@@ -303,7 +328,19 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
+    scale_factor = None
+    if kwargs.get("residual") is None and needs_integerization(flowG, weight=capacity):
+        scale_factor = choose_scale_factor(flowG, weight=capacity)
+        flowG = scale_edge_weight_to_ints(
+            flowG,
+            weight=capacity,
+            scale_factor=scale_factor,
+            default_value=float("inf"),
+        )
+
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
+    if scale_factor is not None:
+        R.graph["flow_value"] /= scale_factor
 
     return R.graph["flow_value"]
 
@@ -391,6 +428,10 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
+    If any of the edge capacities are floating-point numbers with non-zero fractional parts,
+    the capacities are scaled to integers internally to avoid errors from
+    inexact floating-point comparisons.
+
     The flow value, defined as the total flow into :samp:`t`, the sink, is
     stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
     only edges :samp:`(u, v)` such that
@@ -399,7 +440,7 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 
     Specific algorithms may store extra data in :samp:`R`.
 
-    The function should supports an optional boolean parameter value_only. When
+    The flow function should support an optional boolean parameter value_only. When
     True, it can optionally terminate the algorithm as soon as the maximum flow
     value and the minimum cut can be determined.
 
@@ -455,6 +496,16 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     if kwargs.get("cutoff") is not None and flow_func is preflow_push:
         raise nx.NetworkXError("cutoff should not be specified.")
 
+    scale_factor = None
+    if kwargs.get("residual") is None and needs_integerization(flowG, weight=capacity):
+        scale_factor = choose_scale_factor(flowG, weight=capacity)
+        flowG = scale_edge_weight_to_ints(
+            flowG,
+            weight=capacity,
+            scale_factor=scale_factor,
+            default_value=float("inf"),
+        )
+
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
     # Remove saturated edges from the residual network
     cutset = [(u, v, d) for u, v, d in R.edges(data=True) if d["flow"] == d["capacity"]]
@@ -468,6 +519,9 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     # Finally add again cutset edges to the residual network to make
     # sure that it is reusable.
     R.add_edges_from(cutset)
+
+    if scale_factor is not None:
+        R.graph["flow_value"] /= scale_factor
     return (R.graph["flow_value"], partition)
 
 
@@ -551,6 +605,10 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
+    If any of the edge capacities are floating-point numbers with non-zero fractional parts,
+    the capacities are scaled to integers internally to avoid errors from
+    inexact floating-point comparisons.
+
     The flow value, defined as the total flow into :samp:`t`, the sink, is
     stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
     only edges :samp:`(u, v)` such that
@@ -559,7 +617,7 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
 
     Specific algorithms may store extra data in :samp:`R`.
 
-    The function should supports an optional boolean parameter value_only. When
+    The flow function should support an optional boolean parameter value_only. When
     True, it can optionally terminate the algorithm as soon as the maximum flow
     value and the minimum cut can be determined.
 
@@ -606,6 +664,18 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     if kwargs.get("cutoff") is not None and flow_func is preflow_push:
         raise nx.NetworkXError("cutoff should not be specified.")
 
+    scale_factor = None
+    if kwargs.get("residual") is None and needs_integerization(flowG, weight=capacity):
+        scale_factor = choose_scale_factor(flowG, weight=capacity)
+        flowG = scale_edge_weight_to_ints(
+            flowG,
+            weight=capacity,
+            scale_factor=scale_factor,
+            default_value=float("inf"),
+        )
+
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
+    if scale_factor is not None:
+        R.graph["flow_value"] /= scale_factor
 
     return R.graph["flow_value"]

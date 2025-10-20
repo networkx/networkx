@@ -106,7 +106,7 @@ class TestMaxflowLargeGraph:
             kwargs["flow_func"] = flow_func
             errmsg = f"Assertion failed in function: {flow_func.__name__}"
             flow_value = nx.maximum_flow_value(G, (0, 0), "t", **kwargs)
-            assert flow_value == pytest.approx(1.0, abs=1e-7)
+            assert flow_value == pytest.approx(1.0, abs=1e-7), errmsg
 
     def test_gl1(self):
         G = read_graph("gl1")

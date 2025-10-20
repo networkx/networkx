@@ -44,7 +44,7 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
     for u in flowDict:
         for v, flow in flowDict[u].items():
             if capacity in G[u][v]:
-                assert flow <= G[u][v][capacity]
+                assert flow <= G[u][v][capacity], errmsg
             assert flow >= 0, errmsg
             excess[u] -= flow
             excess[v] += flow
@@ -75,16 +75,17 @@ def validate_cuts(G, s, t, solnValue, partition, capacity, flow_func):
 def compare_flows_and_cuts(G, s, t, solnValue, capacity="capacity"):
     for flow_func in flow_funcs:
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        R = flow_func(G, s, t, capacity)
-        # Test both legacy and new implementations.
-        flow_value = R.graph["flow_value"]
-        flow_dict = build_flow_dict(G, R)
+        # Maximum flow
+        flow_value, flow_dict = nx.maximum_flow(
+            G, s, t, capacity=capacity, flow_func=flow_func
+        )
         assert flow_value == solnValue, errmsg
         validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_func)
         # Minimum cut
         cut_value, partition = nx.minimum_cut(
             G, s, t, capacity=capacity, flow_func=flow_func
         )
+        assert cut_value == solnValue, errmsg
         validate_cuts(G, s, t, solnValue, partition, capacity, flow_func)
 
 
@@ -364,6 +365,25 @@ class TestMaxflowMinCutCommon:
         #     "t": {},
         # }
         compare_flows_and_cuts(G, "s", "t", 4)
+
+    def test_float_capacities(self):
+        # Graph where incorrect float comparisons may fail
+        G = nx.DiGraph()
+        G.add_edge("s", "a", capacity=1)
+        G.add_edge("a", "b", capacity=1)
+        G.add_edge("b", "c", capacity=1)
+        G.add_edge("c", "t", capacity=0.1)
+        G.add_edge("s", "d", capacity=0.1)
+        G.add_edge("b", "d", capacity=0.2)
+        # flow solution
+        # {
+        #    "s": {"a": 0.1, "d": 0},
+        #    "a": {"b": 0.1},
+        #    "b": {"c": 0.1, "d": 0},
+        #    "c": {"t": 0.1},
+        #    "t": {}, "d": {}
+        # }
+        compare_flows_and_cuts(G, "s", "t", 0.1)
 
     def test_disconnected(self):
         G = nx.Graph()
