@@ -19,11 +19,8 @@ __all__ = [
 def needs_integerization(G, weight="weight"):
     """Check if any of the edge weights may lead to floating-point rounding errors."""
     for _, _, w in G.edges(data=weight):
-        # if weight not in data:
-        #    continue
-        # w = data[weight]
         if isinstance(w, (numbers.Real)) and not isinstance(w, (numbers.Rational)):
-            if math.isfinite(w) and not w.is_integer():
+            if math.isfinite(w) and not float(w).is_integer():
                 return True
     return False
 
@@ -38,14 +35,14 @@ def choose_scale_factor(
     """
     scale_factor = 1
     for _, _, w in G.edges(data=weight):
-        if not isinstance(w, (numbers.Real)) or not math.isfinite(w) or w.is_integer():
-            continue
-        # make a rational approximation with bounded denominator
-        frac = Fraction(w).limit_denominator(max_denominator)
-        scale_factor = math.lcm(scale_factor, frac.denominator)
-        if scale_factor > max_scale_factor:
-            scale_factor = max_scale_factor
-            break
+        if isinstance(w, (numbers.Real)):
+            if math.isfinite(w) and not float(w).is_integer():
+                # make a rational approximation with bounded denominator
+                frac = Fraction(w).limit_denominator(max_denominator)
+                scale_factor = math.lcm(scale_factor, frac.denominator)
+                if scale_factor > max_scale_factor:
+                    scale_factor = max_scale_factor
+                    break
     return scale_factor
 
 
