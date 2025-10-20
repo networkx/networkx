@@ -6,45 +6,66 @@ from a single source node to all other nodes in a weighted graph with
 non-negative edge weights. It was conceived by Edsger W. Dijkstra in 1956
 and is widely used in routing, network optimization, and pathfinding problems.
 
-For a general overview in the shortest path problem see
-`Shortest Paths <index.html>`_.
+Because Dijkstra's algorithm works only with non-negative edge weights,
+alternative algorithms such as Bellman-Ford or Johnson's algorithm are used
+for graphs with negative weights. For a general overview of the shortest path
+problem see `Shortest Paths <index.html>`_.
 
 Problem Definition
 ------------------
-Given a weighted graph G = (V, E) and a source vertex s ∈ V, compute the
-shortest-path distances d(s, v) from s to every vertex v ∈ V, where each
-edge (u, v) ∈ E has a non-negative weight w(u, v). Optionally, the algorithm
-can also produce the actual shortest paths.
+Given a weighted graph :math:`G = (V, E)` and a source node :math:`s \in V`,
+compute the shortest-path distances :math:`d(s, v)` from :math:`s` to every
+node :math:`v \in V`, where each edge :math:`(u, v) \in E` has a non-negative
+weight :math:`w(u, v)`. Optionally, the algorithm can also produce the actual
+shortest paths.
 
 Algorithm
 ---------
 Dijkstra's algorithm is a greedy, iterative algorithm. The main idea is to
 incrementally build a set of nodes with known shortest distances,
-selecting at each step the node with the smallest tentative distance.
+selecting at each step the node with the smallest tentative distance. At each
+step, the tentative distance of the selected node becomes final, as no shorter
+path to it can be found.
+
+A key operation in Dijkstra's algorithm is **edge relaxation**. When a node is
+selected, the algorithm examines all of its outgoing edges and checks whether
+reaching a neighboring node through it would yield a shorter path than the one
+currently known. If so, the tentative distance of that neighbor is updated.
+
+Through repeated relaxation of edges, the algorithm gradually refines the
+shortest-path estimates until all distances are finalized. The procedure can be
+summarized in three main stages: **initialization**, **iteration**, and
+**termination**, as outlined below.
 
 **Initialization**
 
-1. Assign every node a tentative distance value:
-    * `dist[s] = 0` for the source
-    * `dist[v] = ∞` for all other nodes
-2. Initialize all nodes as unvisited.
-3. Optionally, initialize a predecessor map to reconstruct shortest paths.
+1. Assign source node :math:`s` a tentative distance value of :math:`0`
+   (:math:`dist[s] = 0`).
+2. Optionally, initialize a :math:`predecessor` dict to reconstruct shortest
+   paths.
+
+At this point, all nodes are considered **unvisited** and no shortest distance
+is considered **final**.
 
 **Iteration**
 
 While there are unvisited nodes:
 
-1. Select the unvisited node u with the smallest tentative distance.
-2. For each neighbor v of u:
-    * Compute alternative distance: `alt = dist[u] + w(u, v)`
-    * If `alt < dist[v]`, update `dist[v] = alt` and set `predecessor[v] = u`.
-3. Mark u as visited. A visited node will not be checked again because this is the
-   shortest path to get to it.
+1. Select the unvisited node :math:`u` with the smallest tentative distance.
+2. Mark :math:`u` as visited. A visited node will not be checked again because
+   this is the shortest path to get to it. Distance to :math:`u` is now
+   considered **final**.
+3. **Edge relaxation**: for each neighbor :math:`v` of :math:`u`:
+    * Compute alternative distance: :math:`alt = dist[u] + w(u, v)`
+    * If :math:`alt < dist[v]`, update :math:`dist[v] = alt` and set
+      :math:`predecessor[v] = u`.
 
 **Termination**
 
-The algorithm terminates when all nodes have been visited, or when the smallest
-tentative distance among unvisited nodes is infinity.
+The algorithm terminates when all nodes have been visited. The final distances
+represent the shortest paths from the source to every reachable node. Shortest
+paths can be reconstructed by following predecessor dict backward from each
+target node to the source.
 
 Example
 -------
@@ -60,7 +81,7 @@ Consider the weighted graph:
     C ------- D
         (1)
 
-We can compute the shortest path from ``A`` to all vertices by doing:
+We can compute the shortest path from ``A`` to all nodes by doing:
 
     >>> import networkx as nx
     >>> # Create a weighted graph
@@ -86,13 +107,6 @@ In practice, Fibonacci heaps have a higher constant overhead compared to binary
 heaps, which can make them slower for typical problem sizes despite their
 better asymptotic performance. NetworkX's implementation of Dijkstra's
 algorithm uses a Python built-in binary heap.
-
-Limitations
------------
-Dijkstra's algorithm works only with non-negative edge weights and finds the
-shortest-path tree from the source to all reachable nodes. For graphs that
-contain negative edge weights, alternative algorithms such as Bellman-Ford or
-Johnson’s algorithm are required.
 
 Available Functions
 -------------------
