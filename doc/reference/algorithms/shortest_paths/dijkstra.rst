@@ -38,7 +38,8 @@ While there are unvisited nodes:
 2. For each neighbor v of u:
     * Compute alternative distance: `alt = dist[u] + w(u, v)`
     * If `alt < dist[v]`, update `dist[v] = alt` and set `predecessor[v] = u`.
-3. Mark u as visited. A visited node will not be checked again.
+3. Mark u as visited. A visited node will not be checked again because this is the
+   shortest path to get to it.
 
 **Termination**
 
