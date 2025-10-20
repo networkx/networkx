@@ -366,25 +366,6 @@ class TestMaxflowMinCutCommon:
         # }
         compare_flows_and_cuts(G, "s", "t", 4)
 
-    def test_float_capacities(self):
-        # Graph where incorrect float comparisons may fail
-        G = nx.DiGraph()
-        G.add_edge("s", "a", capacity=1)
-        G.add_edge("a", "b", capacity=1)
-        G.add_edge("b", "c", capacity=1)
-        G.add_edge("c", "t", capacity=0.1)
-        G.add_edge("s", "d", capacity=0.1)
-        G.add_edge("b", "d", capacity=0.2)
-        # flow solution
-        # {
-        #    "s": {"a": 0.1, "d": 0},
-        #    "a": {"b": 0.1},
-        #    "b": {"c": 0.1, "d": 0},
-        #    "c": {"t": 0.1},
-        #    "t": {}, "d": {}
-        # }
-        compare_flows_and_cuts(G, "s", "t", 0.1)
-
     def test_disconnected(self):
         G = nx.Graph()
         G.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 3, 1)], weight="capacity")

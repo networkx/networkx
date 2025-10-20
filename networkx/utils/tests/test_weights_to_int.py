@@ -1,3 +1,5 @@
+"""Test suite for functions related to scaling edge weights to integers."""
+
 import math
 from fractions import Fraction
 

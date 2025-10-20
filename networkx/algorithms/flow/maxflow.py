@@ -3,11 +3,6 @@ Maximum flow (and minimum cut) algorithms on capacitated graphs.
 """
 
 import networkx as nx
-from networkx.utils.weights_to_int import (
-    choose_scale_factor,
-    needs_integerization,
-    scale_edge_weight_to_ints,
-)
 
 from .boykovkolmogorov import boykov_kolmogorov
 from .dinitz_alg import dinitz
@@ -91,6 +86,10 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 
     Notes
     -----
+    This may work incorrectly if edge capacities are floating-point numbers
+    with non-zero fractional parts due to inexact floating-point comparisons.
+    We recommend scaling such capacities to integers before calling this function.
+
     The function used in the flow_func parameter has to return a residual
     network that follows NetworkX conventions:
 
@@ -108,10 +107,6 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     :samp:`R.graph['inf']`. For each edge :samp:`(u, v)` in :samp:`R`,
     :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
-
-    If any of the edge capacities are floating-point numbers with non-zero fractional parts,
-    the capacities are scaled to integers internally to avoid errors from
-    inexact floating-point comparisons.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
     stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
@@ -159,6 +154,40 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     ... ]
     True
 
+    To get around potential issues with floating-point capacities,
+    you can scale the capacities to integers:
+
+    >>> from networkx.utils.weights_to_int import scale_edge_weight_to_ints
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("s", "a", capacity=1)
+    >>> G.add_edge("a", "b", capacity=1)
+    >>> G.add_edge("b", "c", capacity=1)
+    >>> G.add_edge("c", "t", capacity=0.1)
+    >>> G.add_edge("s", "d", capacity=0.1)
+    >>> G.add_edge("b", "d", capacity=0.2)
+    >>> scale_factor = 10
+    >>> scaled_G = scale_edge_weight_to_ints(
+    ...     G, weight="capacity", scale_factor=scale_factor, default_value=float("inf")
+    ... )
+    >>> flow_value, flow_dict = nx.maximum_flow(scaled_G, "s", "t")
+
+    You can then convert the flow value and flow dict back to the original scale:
+
+    >>> flow_value /= scale_factor
+    >>> flow_value
+    0.1
+    >>> flow_dict = {
+    ...     u: {v: flow / scale_factor for v, flow in flows.items()}
+    ...     for u, flows in flow_dict.items()
+    ... }
+    >>> flow_dict["s"]
+    {'a': 0.1, 'd': 0.0}
+
+    To check if converting the capacities to integers is needed,
+    you can use `networkx.utils.weights_to_int.needs_integerization`,
+    and to choose an appropriate scale factor,
+    you can use `networkx.utils.weights_to_int.choose_scale_factor`.
+
     """
     if flow_func is None:
         if kwargs:
@@ -171,20 +200,8 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    scale_factor = None
-    if kwargs.get("residual") is None and needs_integerization(flowG, weight=capacity):
-        scale_factor = choose_scale_factor(flowG, weight=capacity)
-        flowG = scale_edge_weight_to_ints(
-            flowG,
-            weight=capacity,
-            scale_factor=scale_factor,
-            default_value=float("inf"),
-        )
-
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=False, **kwargs)
-    flow_dict = build_flow_dict(flowG, R, scale_factor=scale_factor)
-    if scale_factor is not None:
-        R.graph["flow_value"] /= scale_factor
+    flow_dict = build_flow_dict(flowG, R)
 
     return (R.graph["flow_value"], flow_dict)
 
@@ -254,6 +271,10 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
 
     Notes
     -----
+    This may work incorrectly if edge capacities are floating-point numbers
+    with non-zero fractional parts due to inexact floating-point comparisons.
+    We recommend scaling such capacities to integers before calling this function.
+
     The function used in the flow_func parameter has to return a residual
     network that follows NetworkX conventions:
 
@@ -271,10 +292,6 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     :samp:`R.graph['inf']`. For each edge :samp:`(u, v)` in :samp:`R`,
     :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
-
-    If any of the edge capacities are floating-point numbers with non-zero fractional parts,
-    the capacities are scaled to integers internally to avoid errors from
-    inexact floating-point comparisons.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
     stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
@@ -316,6 +333,31 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     ... )
     True
 
+    To get around potential issues with floating-point capacities,
+    you can scale the capacities to integers:
+
+    >>> from networkx.utils.weights_to_int import scale_edge_weight_to_ints
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("s", "a", capacity=1)
+    >>> G.add_edge("a", "b", capacity=1)
+    >>> G.add_edge("b", "c", capacity=1)
+    >>> G.add_edge("c", "t", capacity=0.1)
+    >>> G.add_edge("s", "d", capacity=0.1)
+    >>> G.add_edge("b", "d", capacity=0.2)
+    >>> scale_factor = 10
+    >>> scaled_G = scale_edge_weight_to_ints(
+    ...     G, weight="capacity", scale_factor=scale_factor, default_value=float("inf")
+    ... )
+    >>> flow_value = nx.maximum_flow_value(scaled_G, "s", "t")
+    >>> flow_value /= scale_factor
+    >>> flow_value
+    0.1
+
+    To check if converting the capacities to integers is needed,
+    you can use `networkx.utils.weights_to_int.needs_integerization`,
+    and to choose an appropriate scale factor,
+    you can use `networkx.utils.weights_to_int.choose_scale_factor`.
+
     """
     if flow_func is None:
         if kwargs:
@@ -328,19 +370,7 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    scale_factor = None
-    if kwargs.get("residual") is None and needs_integerization(flowG, weight=capacity):
-        scale_factor = choose_scale_factor(flowG, weight=capacity)
-        flowG = scale_edge_weight_to_ints(
-            flowG,
-            weight=capacity,
-            scale_factor=scale_factor,
-            default_value=float("inf"),
-        )
-
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
-    if scale_factor is not None:
-        R.graph["flow_value"] /= scale_factor
 
     return R.graph["flow_value"]
 
@@ -410,6 +440,10 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 
     Notes
     -----
+    This may work incorrectly if edge capacities are floating-point numbers
+    with non-zero fractional parts due to inexact floating-point comparisons.
+    We recommend scaling such capacities to integers before calling this function.
+
     The function used in the flow_func parameter has to return a residual
     network that follows NetworkX conventions:
 
@@ -427,10 +461,6 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     :samp:`R.graph['inf']`. For each edge :samp:`(u, v)` in :samp:`R`,
     :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
-
-    If any of the edge capacities are floating-point numbers with non-zero fractional parts,
-    the capacities are scaled to integers internally to avoid errors from
-    inexact floating-point comparisons.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
     stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
@@ -481,6 +511,31 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     >>> cut_value == nx.minimum_cut(G, "x", "y", flow_func=shortest_augmenting_path)[0]
     True
 
+    To get around potential issues with floating-point capacities,
+    you can scale the capacities to integers:
+
+    >>> from networkx.utils.weights_to_int import scale_edge_weight_to_ints
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("s", "a", capacity=1)
+    >>> G.add_edge("a", "b", capacity=1)
+    >>> G.add_edge("b", "c", capacity=1)
+    >>> G.add_edge("c", "t", capacity=0.1)
+    >>> G.add_edge("s", "d", capacity=0.1)
+    >>> G.add_edge("b", "d", capacity=0.2)
+    >>> scale_factor = 10
+    >>> scaled_G = scale_edge_weight_to_ints(
+    ...     G, weight="capacity", scale_factor=scale_factor, default_value=float("inf")
+    ... )
+    >>> cut_value, partition = nx.minimum_cut(scaled_G, "s", "t")
+    >>> cut_value /= scale_factor
+    >>> cut_value
+    0.1
+
+    To check if converting the capacities to integers is needed,
+    you can use `networkx.utils.weights_to_int.needs_integerization`,
+    and to choose an appropriate scale factor,
+    you can use `networkx.utils.weights_to_int.choose_scale_factor`.
+
     """
     if flow_func is None:
         if kwargs:
@@ -496,16 +551,6 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     if kwargs.get("cutoff") is not None and flow_func is preflow_push:
         raise nx.NetworkXError("cutoff should not be specified.")
 
-    scale_factor = None
-    if kwargs.get("residual") is None and needs_integerization(flowG, weight=capacity):
-        scale_factor = choose_scale_factor(flowG, weight=capacity)
-        flowG = scale_edge_weight_to_ints(
-            flowG,
-            weight=capacity,
-            scale_factor=scale_factor,
-            default_value=float("inf"),
-        )
-
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
     # Remove saturated edges from the residual network
     cutset = [(u, v, d) for u, v, d in R.edges(data=True) if d["flow"] == d["capacity"]]
@@ -520,8 +565,6 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     # sure that it is reusable.
     R.add_edges_from(cutset)
 
-    if scale_factor is not None:
-        R.graph["flow_value"] /= scale_factor
     return (R.graph["flow_value"], partition)
 
 
@@ -587,8 +630,9 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
 
     Notes
     -----
-    The function used in the flow_func parameter has to return a residual
-    network that follows NetworkX conventions:
+    This may work incorrectly if edge capacities are floating-point numbers
+    with non-zero fractional parts due to inexact floating-point comparisons.
+    We recommend scaling such capacities to integers before calling this function.
 
     The residual network :samp:`R` from an input graph :samp:`G` has the
     same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair
@@ -604,10 +648,6 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     :samp:`R.graph['inf']`. For each edge :samp:`(u, v)` in :samp:`R`,
     :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
-
-    If any of the edge capacities are floating-point numbers with non-zero fractional parts,
-    the capacities are scaled to integers internally to avoid errors from
-    inexact floating-point comparisons.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
     stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
@@ -649,6 +689,31 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     ... )
     True
 
+    To get around potential issues with floating-point capacities,
+    you can scale the capacities to integers:
+
+    >>> from networkx.utils.weights_to_int import scale_edge_weight_to_ints
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("s", "a", capacity=1)
+    >>> G.add_edge("a", "b", capacity=1)
+    >>> G.add_edge("b", "c", capacity=1)
+    >>> G.add_edge("c", "t", capacity=0.1)
+    >>> G.add_edge("s", "d", capacity=0.1)
+    >>> G.add_edge("b", "d", capacity=0.2)
+    >>> scale_factor = 10
+    >>> scaled_G = scale_edge_weight_to_ints(
+    ...     G, weight="capacity", scale_factor=scale_factor, default_value=float("inf")
+    ... )
+    >>> cut_value = nx.minimum_cut_value(scaled_G, "s", "t")
+    >>> cut_value /= scale_factor
+    >>> cut_value
+    0.1
+
+    To check if converting the capacities to integers is needed,
+    you can use `networkx.utils.weights_to_int.needs_integerization`,
+    and to choose an appropriate scale factor,
+    you can use `networkx.utils.weights_to_int.choose_scale_factor`.
+
     """
     if flow_func is None:
         if kwargs:
@@ -664,18 +729,6 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     if kwargs.get("cutoff") is not None and flow_func is preflow_push:
         raise nx.NetworkXError("cutoff should not be specified.")
 
-    scale_factor = None
-    if kwargs.get("residual") is None and needs_integerization(flowG, weight=capacity):
-        scale_factor = choose_scale_factor(flowG, weight=capacity)
-        flowG = scale_edge_weight_to_ints(
-            flowG,
-            weight=capacity,
-            scale_factor=scale_factor,
-            default_value=float("inf"),
-        )
-
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
-    if scale_factor is not None:
-        R.graph["flow_value"] /= scale_factor
 
     return R.graph["flow_value"]
