@@ -610,7 +610,7 @@ print(path)
 
 Even though `A -> B -> C -> D` has a total weight of `0.3`, the direct edge `A -> D` with `0.3 + 1e-17` is selected. This demonstrates that algorithms treat floating point numbers as exact, so very small differences can change the outcome.
 
-Floating point arithmetic can produce unintuitive results because certain values, such as `0.1`, cannot be represented exactly in binary. For example:
+Floating point arithmetic can produce unintuitive results because certain values, such as `0.3`, cannot be represented exactly in binary. For example:
 
 ```{code-cell}
 0.1 + 0.1 + 0.1 > 0.3
