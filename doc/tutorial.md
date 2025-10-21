@@ -589,7 +589,10 @@ supported.
 
 ## Floating point considerations
 
-Many NetworkX algorithms work with numeric values, such as edge weights. Once your input contains floating point numbers, **all results are inherently approximate** due to the limited precision of floating point arithmetic.
+Many NetworkX algorithms work with numeric values, such as edge weights. Once
+your input contains floating point numbers,
+**all results are inherently approximate** due to the limited precision of
+floating point arithmetic.
 
 For example:
 
@@ -608,15 +611,23 @@ path = nx.shortest_path(G, 'A', 'D', weight='weight')
 print(path)
 ```
 
-Even though `A -> B -> C -> D` has a total weight of `0.3`, the direct edge `A -> D` with `0.3 + 1e-17` is selected. This demonstrates that algorithms treat floating point numbers as exact, so very small differences can change the outcome.
+Even though `A -> B -> C -> D` has a total weight of `0.3`, the direct edge
+`A -> D` with `0.3 + 1e-17` is selected. This demonstrates that algorithms
+treat floating point numbers as exact, so very small differences can change the
+outcome.
 
-Floating point arithmetic can produce unintuitive results because certain values, such as `0.3`, cannot be represented exactly in binary. For example:
+Floating point arithmetic can produce unintuitive results because certain
+values, such as `0.3`, cannot be represented exactly in binary. For example:
 
 ```{code-cell}
 0.1 + 0.1 + 0.1 > 0.3
 ```
 
-In general, when using floating point numbers in NetworkX, you should expect results to be approximate rather than exact. Multiplying weights by a large number and converting them to integers can help reduce some subtle comparison issues, but it does not fully eliminate them. NetworkX does not automatically apply tolerances in numeric comparisons.
+In general, when using floating point numbers in NetworkX, you should expect
+results to be approximate rather than exact. Multiplying weights by a large
+number and converting them to integers can help reduce some subtle comparison
+issues, but it does not fully eliminate them. NetworkX does not automatically
+apply tolerances in numeric comparisons.
 
 (using-networkx-backends)=
 
