@@ -592,8 +592,9 @@ supported.
 Many NetworkX algorithms work with numeric values, such as edge weights. Once
 your input contains floating point numbers,
 **all results are inherently approximate** due to the limited precision of
-floating point arithmetic.  This is especially true for algorithms such as shortest-path,
-flows, cuts, minimum-spanning, etc. Basically any time a min or max value is computed.
+floating point arithmetic.  This is especially true for algorithms such as
+shortest-path, flows, cuts, minimum-spanning, etc. Basically any time a min or
+max value is computed.
 
 For example:
 
