@@ -118,6 +118,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="maybe_regular_expander"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="metric_closure is deprecated"
+    )
 
 
 @pytest.fixture(autouse=True)

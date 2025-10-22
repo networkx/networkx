@@ -216,17 +216,35 @@ Use methods
 {meth}`Graph.remove_nodes_from`,
 {meth}`Graph.remove_edge`
 and
-{meth}`Graph.remove_edges_from`, e.g.
+{meth}`Graph.remove_edges_from`.
+
+Removing a node also removes its incident edges:
 
 ```{code-cell}
 G.remove_node(2)
 G.remove_nodes_from("spam")
+```
+
+```{code-cell}
 list(G.nodes)
 ```
 
 ```{code-cell}
+list(G.edges)
+```
+
+Removing a specific edge only affects that edge:
+
+```{code-cell}
 G.remove_edge(1, 3)
-list(G)
+```
+
+```{code-cell}
+list(G.nodes)
+```
+
+```{code-cell}
+list(G.edges)
 ```
 
 ## Using the graph constructors

@@ -245,7 +245,7 @@ single-target query.
 :meth:`Graph.copy <networkx.Graph.copy>` to operate on a duplicate.
 
 Sentinel Node trick for Multi-Target Queries
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------------------
 
 To find the shortest path from a source node :math:`s` to the nearest of several
 target nodes :math:`\{t_1, t_2, \ldots, t_k\}`, you can:
