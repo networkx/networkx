@@ -3,8 +3,8 @@ Dijkstra's Algorithm
 
 Dijkstra's algorithm is a classical algorithm for finding the shortest paths
 from a single source node to all other nodes in a weighted graph with
-non-negative edge weights. It was conceived by Edsger W. Dijkstra in 1956
-and is widely used in routing, network optimization, and pathfinding problems.
+non-negative edge weights. It was conceived by Edsger W. Dijkstra in 1956 and
+is widely used in routing, network optimization, and pathfinding problems.
 
 Because Dijkstra's algorithm works only with non-negative edge weights,
 alternative algorithms such as Bellman-Ford or Johnson's algorithm are used
@@ -13,19 +13,18 @@ problem see `Shortest Paths <index.html>`_.
 
 Problem Definition
 ------------------
-Given a weighted graph :math:`G = (V, E)` and a source node :math:`s \in V`,
-compute the shortest-path distances :math:`d(s, v)` from :math:`s` to every
-node :math:`v \in V`, where each edge :math:`(u, v) \in E` has a non-negative
-weight :math:`w(u, v)`. Optionally, the algorithm can also produce the actual
-shortest paths.
+Given a weighted graph $G = (V, E)$ and a source node $s \in V$, compute the
+shortest-path distances $d(s, v)$ from $s$ to every node $v \in V$, where each
+edge $(u, v) \in E$ has a non-negative weight $w(u, v)$. Optionally, the
+algorithm can also produce the actual shortest paths.
 
 Algorithm
 ---------
 Dijkstra's algorithm is a greedy, iterative algorithm. The main idea is to
-incrementally build a set of nodes with known shortest distances,
-selecting at each step the node with the smallest tentative distance. At each
-step, the tentative distance of the selected node becomes final, as no shorter
-path to it can be found.
+incrementally build a set of nodes with known shortest distances, selecting at
+each step the node with the smallest tentative distance. At each step, the
+tentative distance of the selected node becomes final, as no shorter path to it
+can be found.
 
 A key operation in Dijkstra's algorithm is **edge relaxation**. When a node is
 selected, the algorithm examines all of its outgoing edges and checks whether
@@ -39,9 +38,9 @@ summarized in three main stages: **initialization**, **iteration**, and
 
 **Initialization**
 
-1. Assign source node :math:`s` a tentative distance value of :math:`0`
-   (:math:`dist[s] = 0`).
-2. Optionally, initialize a :math:`predecessor` dict to reconstruct shortest
+1. Assign source node $s$ a tentative distance value of $0$
+   ($dist[s] = 0$).
+2. Optionally, initialize a $predecessor$ dict to reconstruct shortest
    paths.
 
 At this point, all nodes are considered **unvisited** and no shortest distance
@@ -51,14 +50,14 @@ is considered **final**.
 
 While there are unvisited nodes:
 
-1. Select the unvisited node :math:`u` with the smallest tentative distance.
-2. Mark :math:`u` as visited. A visited node will not be checked again because
-   this is the shortest path to get to it. Distance to :math:`u` is now
+1. Select the unvisited node $u$ with the smallest tentative distance.
+2. Mark $u$ as visited. A visited node will not be checked again because
+   this is the shortest path to get to it. Distance to $u$ is now
    considered **final**.
-3. **Edge relaxation**: for each neighbor :math:`v` of :math:`u`:
-    * Compute alternative distance: :math:`alt = dist[u] + w(u, v)`
-    * If :math:`alt < dist[v]`, update :math:`dist[v] = alt` and set
-      :math:`predecessor[v] = u`.
+3. **Edge relaxation**. For each neighbor $v$ of $u$:
+
+   * Compute alternative distance: $alt = dist[u] + w(u, v)$
+   * If $alt < dist[v]$, update $dist[v] = alt$ and set $predecessor[v] = u$.
 
 **Termination**
 
@@ -97,11 +96,11 @@ Complexity
 
 The time complexity of Dijkstra's algorithm depends on the data structure used
 to select the node with the smallest tentative distance. Using a simple array
-results in a time complexity of :math:`O(|V|^2)`, while a binary heap reduces
-it to :math:`O((|V| + |E|) \log |V|)`. Using a Fibonacci heap further improves
-the complexity to :math:`O(|V| \log |V| + |E|)`. The space complexity of the
-algorithm is :math:`O(|V| + |E|)`, which accounts for storing the graph
-representation as well as the distance and predecessor information.
+results in a time complexity of $O(|V|^2)$, while a binary heap reduces it to
+$O((|V| + |E|) \log |V|)$. Using a Fibonacci heap further improves the
+complexity to $O(|V| \log |V| + |E|)$. The space complexity of the algorithm is
+$O(|V| + |E|)$, which accounts for storing the graph representation as well as
+the distance and predecessor information.
 
 In practice, Fibonacci heaps have a higher constant overhead compared to binary
 heaps, which can make them slower for typical problem sizes despite their
