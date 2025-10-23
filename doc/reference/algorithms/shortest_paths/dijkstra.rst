@@ -96,10 +96,10 @@ Complexity
 
 The time complexity of Dijkstra's algorithm depends on the data structure used
 to select the node with the smallest tentative distance. Using a simple array
-results in a time complexity of $O(|V|^2)$, while a binary heap reduces it to
-$O((|V| + |E|) \log |V|)$. Using a Fibonacci heap further improves the
-complexity to $O(|V| \log |V| + |E|)$. The space complexity of the algorithm is
-$O(|V| + |E|)$, which accounts for storing the graph representation as well as
+results in a time complexity of :math:`O(|V|^2)`, while a binary heap reduces it to
+:math:`O((|V| + |E|) \log |V|)`. Using a Fibonacci heap further improves the
+complexity to :math:`O(|V| \log |V| + |E|)`. The space complexity of the algorithm is
+:math:`O(|V| + |E|)`, which accounts for storing the graph representation as well as
 the distance and predecessor information.
 
 In practice, Fibonacci heaps have a higher constant overhead compared to binary
