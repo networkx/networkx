@@ -587,6 +587,50 @@ sp[3]
 See {doc}`/reference/algorithms/index` for details on graph algorithms
 supported.
 
+## Floating point considerations
+
+Many NetworkX algorithms work with numeric values, such as edge weights. Once
+your input contains floating point numbers,
+**all results are inherently approximate** due to the limited precision of
+floating point arithmetic. This is especially true for algorithms such as
+shortest-path, flows, cuts, minimum-spanning, etc. Basically any time a min or
+max value is computed.
+
+For example:
+
+```{code-cell}
+import networkx as nx
+
+eps = 1e-17
+
+G = nx.DiGraph()
+G.add_edge('A', 'B', weight=0.1)
+G.add_edge('B', 'C', weight=0.1)
+G.add_edge('C', 'D', weight=0.1)
+G.add_edge('A', 'D', weight=0.3 + eps)
+
+path = nx.shortest_path(G, 'A', 'D', weight='weight')
+print(path)
+```
+
+Even though `A -> B -> C -> D` has a total weight of `0.3`, the direct edge
+`A -> D` with `0.3 + 1e-17` is selected. This demonstrates that algorithms
+treat floating point numbers as exact, so very small differences can change the
+outcome.
+
+Floating point arithmetic can produce unintuitive results because certain
+values, such as `0.3`, cannot be represented exactly in binary. For example:
+
+```{code-cell}
+0.1 + 0.1 + 0.1 > 0.3
+```
+
+In general, when using floating point numbers in NetworkX, you should expect
+results to be approximate rather than exact. Multiplying weights by a large
+number and converting them to integers can help reduce some subtle comparison
+issues, but it does not fully eliminate them. NetworkX does not automatically
+apply tolerances in numeric comparisons.
+
 (using-networkx-backends)=
 
 ## Using NetworkX backends
