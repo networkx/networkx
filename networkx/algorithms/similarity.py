@@ -155,7 +155,7 @@ def graph_edit_distance(
         distance under or equal to upper_bound exists.
 
     timeout : numeric
-        Maximum number of seconds to execute.
+        Maximum number of seconds to search for edit paths.
         After timeout is met, the current best GED is returned.
 
     Examples
@@ -325,7 +325,7 @@ def optimal_edit_paths(
         allow comparison between rooted graphs.
 
     timeout : numeric
-        Maximum number of seconds to execute.
+        Maximum number of seconds to search for edit paths.
         After timeout is met, the current best GED is returned.
 
     Returns
@@ -517,7 +517,7 @@ def optimize_graph_edit_distance(
         allow comparison between rooted graphs.
 
     timeout : numeric
-        Maximum number of seconds to execute.
+        Maximum number of seconds to search for edit paths.
         After timeout is met, the current best GED is returned.
 
     Returns
@@ -690,7 +690,7 @@ def optimize_edit_paths(
         allow comparison between rooted graphs.
 
     timeout : numeric
-        Maximum number of seconds to execute.
+        Maximum number of seconds to search for edit paths.
         After timeout is met, the current best GED is returned.
 
     Returns
