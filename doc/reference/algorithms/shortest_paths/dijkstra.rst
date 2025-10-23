@@ -111,6 +111,7 @@ Available Functions
 -------------------
 
 .. automodule:: networkx.algorithms.shortest_paths.weighted
+   :no-index:
 .. autosummary::
    :toctree: generated/
 
