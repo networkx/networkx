@@ -1,5 +1,5 @@
 Dijkstra's Algorithm
-===================
+====================
 
 Dijkstra's algorithm is a classical algorithm for finding the shortest paths
 from a single source node to all other nodes in a weighted graph with
