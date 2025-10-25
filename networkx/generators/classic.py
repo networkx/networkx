@@ -448,10 +448,8 @@ def circulant_graph(n, offsets, create_using=None):
 
     """
     G = empty_graph(n, create_using)
-    for i in range(n):
-        for j in offsets:
-            G.add_edge(i, (i - j) % n)
-            G.add_edge(i, (i + j) % n)
+    G.add_edges_from((i, (i - j) % n) for i in range(n) for j in offsets)
+    G.add_edges_from((i, (i + j) % n) for i in range(n) for j in offsets)
     return G
 
 

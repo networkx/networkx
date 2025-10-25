@@ -26,11 +26,12 @@ c
 0 2
 """
         bytesIO = io.BytesIO(s)
-        G = read_p2g(bytesIO)
-        assert G.name == "name"
-        assert sorted(G) == ["a", "b", "c"]
-        edges = [(str(u), str(v)) for u, v in G.edges()]
-        assert edges_equal(G.edges(), [("a", "c"), ("a", "b"), ("c", "a"), ("c", "c")])
+        DG = read_p2g(bytesIO)
+        assert DG.name == "name"
+        assert sorted(DG) == ["a", "b", "c"]
+        assert edges_equal(
+            DG.edges(), [("a", "c"), ("a", "b"), ("c", "a"), ("c", "c")], directed=True
+        )
 
     def test_write_p2g(self):
         s = b"""foo
@@ -59,4 +60,4 @@ c
         write_p2g(G, fh)
         fh.seek(0)
         H = read_p2g(fh)
-        assert edges_equal(G.edges(), H.edges())
+        assert edges_equal(G.edges(), H.edges(), directed=True)

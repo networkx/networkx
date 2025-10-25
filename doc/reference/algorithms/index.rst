@@ -55,13 +55,14 @@ Algorithms
    moral
    node_classification
    operators
+   perfect_graph
    planarity
    planar_drawing
    polynomials
    reciprocity
    regular
    rich_club
-   shortest_paths
+   shortest_paths/index
    similarity
    simple_paths
    smallworld

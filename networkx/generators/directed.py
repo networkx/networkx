@@ -537,7 +537,7 @@ def _random_k_out_graph_numpy(n, k, alpha, self_loops=True, seed=None):
             v = seed.choice(nodes, p=weights / (total_weight - u_weight))
             weights[u] = u_weight
 
-        G.add_edge(u, v)
+        G.add_edge(u.item(), v.item())
         weights[v] += 1
         total_weight += 1
         out_strengths[u] += 1

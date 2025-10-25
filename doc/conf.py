@@ -16,11 +16,8 @@ filterwarnings(
 extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.autodoc",
-    "sphinx.ext.coverage",
-    "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
-    "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
     "texext",
@@ -71,6 +68,8 @@ autosummary_generate = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
+# Ignore spurious warnings related to bad interactions between the texmath
+# and myst extensions
 suppress_warnings = ["ref.citation", "ref.footnote"]
 
 # The suffix of source filenames.
@@ -124,8 +123,6 @@ pygments_style = "sphinx"
 
 # A list of prefixes that are ignored when creating the module index. (new in Sphinx 0.6)
 modindex_common_prefix = ["networkx."]
-
-doctest_global_setup = "import networkx as nx"
 
 # Options for HTML output
 # -----------------------
@@ -250,6 +247,9 @@ intersphinx_mapping = get_intersphinx_mapping(
         "nx-guides",
     }
 )
+# NOTE: generally not relevant, but prevents very long build times when other
+# projects' docs sites are not responding
+intersphinx_timeout = 0.5
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.

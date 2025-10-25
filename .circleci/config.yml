@@ -1,6 +1,7 @@
 # See: https://circleci.com/docs/2.0/language-python/
 
 version: 2.1
+
 jobs:
   documentation:
     docker:
@@ -15,14 +16,17 @@ jobs:
             sudo apt update
 
       - run:
+          # Optional dependency for more efficient matplotlib animation
+          name: Install ffmpeg
+          command: sudo apt install -y ffmpeg
+
+      - run:
           name: Install Graphviz
-          command: |
-            sudo apt install graphviz libgraphviz-dev
+          command: sudo apt install -y graphviz libgraphviz-dev
 
       - run:
           name: Install pysal dependencies
-          command: |
-            sudo apt install libspatialindex-dev
+          command: sudo apt install -y libspatialindex-dev
 
       - restore_cache:
           keys:
@@ -42,6 +46,8 @@ jobs:
             pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
             # Development version of nx-parallel backend
             pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
+            # Development version of nx-neptune backend0
+            pip install git+https://github.com/awslabs/nx-neptune.git@main --no-deps
             pip list
 
       - save_cache:
@@ -54,6 +60,7 @@ jobs:
           command: |
             source venv/bin/activate
             pip install -e '.[default,test,extra,example,doc]'
+            pip list
 
       - run:
           name: Build docs
@@ -87,6 +94,7 @@ jobs:
           command: |
             source venv/bin/activate
             pip install -e .[default,test]
+            pip list
 
       - run:
           name: Test NetworkX drawing
@@ -97,8 +105,38 @@ jobs:
       - store_artifacts:
           path: results
 
+  coverage:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - run:
+          name: Before install
+          command: |
+            sudo apt-get update
+            sudo apt-get install graphviz graphviz-dev
+      - run:
+          name: Install dependencies
+          command: |
+            python -m venv venv
+            source venv/bin/activate
+            pip install --upgrade pip
+            pip install .[default,extra,test]
+            pip list
+      - run:
+          name: Run tests
+          command: |
+            source venv/bin/activate
+            pytest --cov=networkx --cov-report=html -n 4 --doctest-modules --durations=20 --pyargs networkx
+      - store_artifacts:
+          path: htmlcov
+          destination: coverage
+
 workflows:
   documentation_and_image_comparison:
     jobs:
       - documentation
       - image
+  test-and-report-coverage:
+    jobs:
+      - coverage
