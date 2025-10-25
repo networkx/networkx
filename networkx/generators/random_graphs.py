@@ -35,6 +35,7 @@ __all__ = [
     "random_powerlaw_tree",
     "random_powerlaw_tree_sequence",
     "random_kernel_graph",
+    "random_k_lift",
 ]
 
 
@@ -1414,3 +1415,100 @@ def random_kernel_graph(
             j = math.ceil(n * kernel_root(i / n, j / n, r))
             graph.add_edge(i - 1, j - 1)
     return graph
+
+
+@py_random_state("seed")
+@nx._dispatchable(graphs=None, returns_graph=True)
+def random_k_lift(G, k, seed=None):
+    r"""Return a `k`-lift of a graph using random permutations.
+
+    The resulting graph ``H`` has `k` copies of each node from `G`.
+    For each edge ``(u, v)`` in `G`, a random permutation is used to connect the ``i``-th copy of ``u``
+    to the permuted ``i``-th copy of ``v`` in ``H``.
+
+    Parameters
+    ----------
+    G : Graph, DiGraph, MultiGraph, or MultiDiGraph
+        The base graph to lift. Any standard NetworkX graph type is supported.
+    k : int
+        The lift parameter. Each node in `G` is expanded to `k` copies.
+    seed : int, RandomState, or None (default: None)
+        Seed for the random number generator (used for permutation generation).
+        This ensures reproducibility.
+        See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    H : Graph, DiGraph, MultiGraph, or MultiDiGraph
+        The resulting `k`-lifted graph. The returned type matches the input graph type.
+
+    Notes
+    -----
+    Given a base graph `G` and a lift parameter `k`, this function performs a `k`-lift as follows:
+    - For each node ``v`` in `G`, it creates `k` copies: ``(v, 0), ..., (v, k - 1)``.
+    - For each edge ``(u, v)`` in `G`, a random permutation ``σ`` is applied to determine new edges:
+      if ``σ(i) = j``, then ``((u, i), (v, j))`` is added to ``H``.
+      The permutation is simulated by creating a shuffled list ``permutation`` of values 0 to ``k - 1``.
+      Each ``i``-th copy of ``u`` is then connected to the ``permutation[i]``-th copy of ``v``.
+
+    This operation is often used in the construction of expander graphs [1].
+    If the base graph is a decent expander (i.e., has a good spectral gap-the
+    difference between the two largest eigenvalues (in absolute value) of its adjacency matrix),
+    then its `k`-lifts are also expanders, with the spectral gap preserved
+    (or slightly reduced and stabilizing for larger `k` [3]) with high probability,
+    while producing a larger graph of the same degree.
+
+    For arbitrary input graphs, the lifted graph may be disconnected.
+    Disconnected lifts occur more often when the base graph is a poor expander.
+    Since enforcing connectivity in such cases is unlikely to
+    produce a good expander, this implementation returns the lift directly,
+    even if it is disconnected. Users who require connected results may wrap
+    this function with retries until a connected lift is found.
+
+    This implementation supports all standard NetworkX graph types.
+    While expander graphs are most commonly studied as degree-regular undirected simple graphs/multigraphs,
+    the `k`-lift operation itself is well-defined and can also be beneficial for directed [4]
+    and non-regular [5] graphs.
+
+    References
+    ----------
+    [1] Y. Bilu and N. Linial, "Lifts, Discrepancy and Nearly Optimal Spectral Gap."
+        *Combinatorica*, 26(5), pp. 495–519, 2006,
+        https://www.cs.huji.ac.il/~nati/PAPERS/raman_lift.pdf
+    [2] A. Valadarsky, G. Shahaf, M. Dinitz and M. Schapira,
+        "Xpander: Towards Optimal-Performance Datacenters.",
+        In *Proceedings of the 12th International Conference on
+        Emerging Networking Experiments and Technologies (CoNEXT)*, 2016,
+        https://dl.acm.org/doi/pdf/10.1145/2999572.2999580
+    [3] N. Agarwal, K. Chandrasekaran, A. Kolla and V. Madan,
+        "On the Expansion of Group-Based Lifts.", arXiv preprint arXiv:1311.3268v2, 2016,
+        http://arxiv.org/abs/1311.3268v2
+    [4] P. Chebolu and A. Frieze,
+        "Hamilton Cycles in Random Lifts of Directed Graphs.",
+        Department of Mathematics, Carnegie Mellon University, 2007,
+        https://www.math.cmu.edu/~af1p/Texfiles/LiftHamDir.pdf
+    [5] S. Hoory,
+        "On the Girth of Graph Lifts." arXiv:2401.01238v1, 2024,
+        https://arxiv.org/pdf/2401.01238
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(4)  # 3-regular, connected graph
+    >>> H = nx.random_k_lift(G, 4, seed=42)  # 4-lift of G
+    >>> H.number_of_nodes()
+    16
+    """
+    H = G.__class__()
+
+    # Create k copies of each node
+    H.add_nodes_from((v, i) for v in G.nodes for i in range(k))
+
+    # Apply random permutation to edges
+    edges = []
+    permutation = list(range(k))
+    for u, v in G.edges():
+        seed.shuffle(permutation)
+        edges.extend(((u, i), (v, permutation[i])) for i in range(k))
+    H.add_edges_from(edges)
+
+    return H
