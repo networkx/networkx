@@ -136,3 +136,61 @@ def test_greedy_plus_plus_edgeless_cornercase(iterations):
         0,
         set(),
     )
+
+
+@pytest.mark.parametrize("method", ("greedy++", "fista"))
+def test_fista_missing_node_label(method):
+    """Test FISTA with non-sequential node labels (e.g., [0, 1, 3] missing 2).
+    
+    This is a regression test for issue #8271 where the FISTA algorithm
+    incorrectly handled node labels that were not 0-indexed.
+    """
+    if method == "fista":
+        pytest.importorskip("numpy")
+    
+    # Create a graph with missing node label 2
+    G = nx.Graph([(0, 1), (1, 3), (0, 3)])
+    
+    density, subgraph = approx.densest_subgraph(G, iterations=1, method=method)
+    
+    # The densest subgraph should be the entire graph (all 3 nodes)
+    assert density == pytest.approx(1.0)  # 3 edges / 3 nodes
+    assert subgraph == {0, 1, 3}
+
+
+@pytest.mark.parametrize("method", ("greedy++", "fista"))
+def test_fista_offset_node_labels(method):
+    """Test FISTA with offset node labels (e.g., [1, 2, 3]).
+    
+    This is a regression test for issue #8271 where the FISTA algorithm
+    incorrectly handled node labels that were offset from 0.
+    """
+    if method == "fista":
+        pytest.importorskip("numpy")
+    
+    # Create a graph with offset node labels (1, 2, 3)
+    G = nx.Graph([(1, 2), (2, 3), (1, 3)])
+    
+    density, subgraph = approx.densest_subgraph(G, iterations=1, method=method)
+    
+    # The densest subgraph should be the entire graph (all 3 nodes)
+    assert density == pytest.approx(1.0)  # 3 edges / 3 nodes
+    assert subgraph == {1, 2, 3}
+
+
+def test_fista_string_node_labels():
+    """Test FISTA with string node labels (e.g., ['a', 'b', 'c']).
+    
+    This is a regression test for issue #8271 where the FISTA algorithm
+    incorrectly handled non-integer node labels (strings).
+    """
+    pytest.importorskip("numpy")
+    
+    # Create a graph with string node labels
+    G = nx.Graph([("a", "b"), ("b", "c"), ("a", "c")])
+    
+    density, subgraph = approx.densest_subgraph(G, iterations=1, method="fista")
+    
+    # The densest subgraph should be the entire graph (all 3 nodes)
+    assert density == pytest.approx(1.0)  # 3 edges / 3 nodes
+    assert subgraph == {"a", "b", "c"}

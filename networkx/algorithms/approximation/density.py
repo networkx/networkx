@@ -91,9 +91,10 @@ def _fractional_peeling(G, b, x, node_to_idx, edge_to_idx):
 
     remaining_nodes = set(G.nodes)
 
-    # Initialize heap with b values
-    for idx in remaining_nodes:
-        heap.insert(idx, b[idx])
+    # Initialize heap with b values (map nodes to indices)
+    for node in remaining_nodes:
+        node_idx = node_to_idx[node]
+        heap.insert(node, b[node_idx])
 
     num_edges = G.number_of_edges()
 
@@ -117,6 +118,7 @@ def _fractional_peeling(G, b, x, node_to_idx, edge_to_idx):
         for neighbor in G.neighbors(node):
             if neighbor in remaining_nodes:
                 neighbor_idx = node_to_idx[neighbor]
+                node_idx = node_to_idx[node]
                 # Take off fractional value
                 b[neighbor_idx] -= x[edge_to_idx[(neighbor, node)]]
                 num_edges -= 1
@@ -142,7 +144,7 @@ def _fista(G, iterations):
     num_undirected_edges = G.number_of_edges()
 
     # 2. Edge Mapping: Assign a unique index to each bidirectional edge
-    bidirectional_edges = [(u, v) for u, v in G.edges] + [(v, u) for u, v in G.edges]
+    bidirectional_edges = list(G.edges) + [(v, u) for u, v in G.edges]
     edge_to_idx = {edge: idx for idx, edge in enumerate(bidirectional_edges)}
 
     num_edges = len(bidirectional_edges)
