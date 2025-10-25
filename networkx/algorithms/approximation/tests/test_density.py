@@ -136,3 +136,10 @@ def test_greedy_plus_plus_edgeless_cornercase(iterations):
         0,
         set(),
     )
+
+
+@pytest.mark.parametrize("labels", ((1, 2, 3), ("a", "b", "c")))
+def test_gh_8271(labels):
+    """Smoke test for graphs with nonstandard node labels."""
+    G = nx.complete_graph(labels)
+    nx.approximation.densest_subgraph(G, method="fista")
