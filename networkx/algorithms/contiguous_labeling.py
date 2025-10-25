@@ -25,7 +25,7 @@ This corresponds to the contiguous oriented labeling definition from the paper:
 """
 
 import logging
-from typing import Optional
+from typing import Any, Optional
 
 import networkx as nx
 
@@ -88,7 +88,7 @@ def find_uv_to_make_bridgeless(G: nx.Graph) -> tuple | None:
     return None
 
 
-def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, any, any]] | None:
+def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]] | None:
     """
     Create a contiguous oriented labeling for an almost bridgeless graph.
 
@@ -298,7 +298,7 @@ def contiguous_oriented_labeling(G: nx.Graph) -> list[tuple[int, any, any]] | No
     return labeling
 
 
-def dfs_labeling(G: nx.Graph) -> list[tuple[int, any, any]]:
+def dfs_labeling(G: nx.Graph) -> list[tuple[int, Any, Any]]:
     """
     Create a simple DFS-based labeling as a fallback when the main algorithm fails.
 
@@ -316,7 +316,7 @@ def dfs_labeling(G: nx.Graph) -> list[tuple[int, any, any]]:
     """
     logger.info("Creating DFS-based labeling as fallback")
     visited_edges = set()
-    labeling: List[Tuple[int, Any, Any]] = []
+    labeling: list[tuple[int, Any, Any]] = []
     label = 1
 
     def dfs(u):
@@ -346,7 +346,7 @@ def dfs_labeling(G: nx.Graph) -> list[tuple[int, any, any]]:
 
 
 def verify_contiguous_labeling(
-    G: nx.Graph, labeling: list[tuple[int, any, any]]
+    G: nx.Graph, labeling: list[tuple[int, Any, Any]]
 ) -> bool:
     """
     Verify if the given labeling satisfies the contiguous property according to Definition 4.2.
@@ -422,7 +422,7 @@ def verify_contiguous_labeling(
     return True
 
 
-def show_labeling(labeling: list[tuple[int, any, any]]) -> None:
+def show_labeling(labeling: list[tuple[int, Any, Any]] | None) -> None:
     """
     Print a human-readable representation of the edge labeling.
 
@@ -433,8 +433,9 @@ def show_labeling(labeling: list[tuple[int, any, any]]) -> None:
         labeling (List[Tuple[int, any, any]]): The labeling to display, where each tuple
                                               is (label, from_node, to_node)
     """
-    for label, i_minus, i_plus in labeling:
-        print(f"Edge {label}: {i_minus}⁻ → {i_plus}⁺")
+    if labeling:
+        for label, i_minus, i_plus in labeling:
+            print(f"Edge {label}: {i_minus}⁻ → {i_plus}⁺")
 
 
 if __name__ == "__main__":
