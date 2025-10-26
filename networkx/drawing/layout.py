@@ -1614,7 +1614,6 @@ def forceatlas2_layout(
     node_mass=None,
     node_size=None,
     weight=None,
-    dissuade_hubs=False,
     linlog=False,
     seed=None,
     dim=2,
@@ -1654,8 +1653,6 @@ def forceatlas2_layout(
     weight : string or None, optional (default: None)
         The edge attribute that holds the numerical value used for
         the edge weight. If None, then all edge weights are 1.
-    dissuade_hubs : bool (default: False)
-        Prevents the clustering of hub nodes.
     linlog : bool (default: False)
         Uses logarithmic attraction instead of linear.
     seed : int, RandomState instance or None  optional (default=None)

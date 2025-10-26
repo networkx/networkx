@@ -23,7 +23,22 @@ def metric_closure(G, weight="weight"):
     NetworkX graph
         Metric closure of the graph `G`.
 
+    Notes
+    -----
+    .. deprecated:: 3.6
+       `metric_closure` is deprecated and will be removed in NetworkX 3.8.
+       Use :func:`networkx.all_pairs_shortest_path_length` instead.
+
     """
+    import warnings
+
+    warnings.warn(
+        "metric_closure is deprecated and will be removed in NetworkX 3.8.\n"
+        "Use nx.all_pairs_shortest_path_length instead.",
+        category=DeprecationWarning,
+        stacklevel=5,
+    )
+
     M = nx.Graph()
 
     Gnodes = set(G)

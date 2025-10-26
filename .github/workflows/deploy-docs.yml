@@ -37,6 +37,8 @@ jobs:
           pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
           # Development version of nx-parallel backend
           pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
+          # Development version of Neptune Analytics backend
+          pip install git+https://github.com/awslabs/nx-neptune.git@main --no-deps
           pip list
 
       # To set up a cross-repository deploy key:

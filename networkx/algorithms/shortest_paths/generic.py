@@ -100,6 +100,9 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     ValueError
         If `method` is not among the supported options.
 
+    NetworkXNoPath
+       If `source` and `target` are specified but no path exists between them.
+
     Examples
     --------
     >>> G = nx.path_graph(5)

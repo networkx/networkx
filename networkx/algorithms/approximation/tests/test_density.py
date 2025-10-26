@@ -153,3 +153,11 @@ def test_densest_subgraph_invalid_method():
     """Test that `method` is validated."""
     with pytest.raises(ValueError, match="not a valid choice"):
         approx.densest_subgraph(nx.complete_graph(3), method="dummy")
+
+
+@pytest.mark.parametrize("labels", ((1, 2, 3), ("a", "b", "c")))
+def test_gh_8271(labels):
+    """Test for graphs with nonstandard node labels."""
+    pytest.importorskip("numpy")
+    G = nx.complete_graph(labels)
+    assert approx.densest_subgraph(G, method="fista") == (1, set(labels))
