@@ -1,6 +1,7 @@
 """
 Flow based cut algorithms
 """
+
 import itertools
 
 import networkx as nx
@@ -9,9 +10,9 @@ import networkx as nx
 # cut algorithms.
 from networkx.algorithms.flow import build_residual_network, edmonds_karp
 
-default_flow_func = edmonds_karp
-
 from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_connectivity
+
+default_flow_func = edmonds_karp
 
 __all__ = [
     "minimum_st_node_cut",
@@ -21,6 +22,11 @@ __all__ = [
 ]
 
 
+@nx._dispatchable(
+    graphs={"G": 0, "auxiliary?": 4},
+    preserve_edge_attrs={"auxiliary": {"capacity": float("inf")}},
+    preserve_graph_attrs={"auxiliary"},
+)
 def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     """Returns the edges of the cut-set of a minimum (s, t)-cut.
 
@@ -153,6 +159,11 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     return cutset
 
 
+@nx._dispatchable(
+    graphs={"G": 0, "auxiliary?": 4},
+    preserve_node_attrs={"auxiliary": {"id": None}},
+    preserve_graph_attrs={"auxiliary"},
+)
 def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     r"""Returns a set of nodes of minimum cardinality that disconnect source
     from target in G.
@@ -195,6 +206,10 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     cutset : set
         Set of nodes that, if removed, would destroy all paths between
         source and target in G.
+
+        Returns an empty set if source and target are either in different
+        components or are directly connected by an edge, as no node removal
+        can destroy the path.
 
     Examples
     --------
@@ -280,7 +295,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     if mapping is None:
         raise nx.NetworkXError("Invalid auxiliary digraph.")
     if G.has_edge(s, t) or G.has_edge(t, s):
-        return {}
+        return set()
     kwargs = {"flow_func": flow_func, "residual": residual, "auxiliary": H}
 
     # The edge cut in the auxiliary digraph corresponds to the node cut in the
@@ -291,6 +306,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     return node_cut - {s, t}
 
 
+@nx._dispatchable
 def minimum_node_cut(G, s=None, t=None, flow_func=None):
     r"""Returns a set of nodes of minimum cardinality that disconnects G.
 
@@ -436,6 +452,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     return min_cut
 
 
+@nx._dispatchable
 def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     r"""Returns a set of edges of minimum cardinality that disconnects G.
 

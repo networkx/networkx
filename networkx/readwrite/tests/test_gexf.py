@@ -6,6 +6,61 @@ import pytest
 import networkx as nx
 
 
+def test_gexf_v1_3(tmp_path):
+    """'Basic graph' example from https://gexf.net/schema.html"""
+    # GEXF file from published example
+    data = """<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://gexf.net/1.3" version="1.3">
+    <graph mode="static" defaultedgetype="directed">
+        <nodes>
+            <node id="0" label="Hello" />
+            <node id="1" label="Word" />
+        </nodes>
+        <edges>
+            <edge source="0" target="1" />
+        </edges>
+    </graph>
+</gexf>
+"""
+    with open(fname := (tmp_path / "basic.gexf"), "w") as fh:
+        fh.write(data)
+
+    # Expected output based on xml input
+    expected = nx.DiGraph([("0", "1")])
+    nx.set_node_attributes(expected, {"0": "Hello", "1": "Word"}, name="label")
+    expected.graph = {"mode": "static", "edge_default": {}}
+
+    # Load example with version explicitly set
+    G = nx.read_gexf(fname, version="1.3")
+    assert nx.utils.graphs_equal(G, expected)
+
+    # And with the "default" version
+    G = nx.read_gexf(fname)
+    assert nx.utils.graphs_equal(G, expected)
+
+
+@pytest.mark.parametrize("time_attr", ("start", "end"))
+@pytest.mark.parametrize("dyn_attr", ("static", "dynamic"))
+def test_dynamic_graph_has_timeformat(time_attr, dyn_attr, tmp_path):
+    """Ensure that graphs which have a 'start' or 'stop' attribute get a
+    'timeformat' attribute upon parsing. See gh-7914."""
+    G = nx.MultiGraph(mode=dyn_attr)
+    G.add_node(0)
+    G.nodes[0][time_attr] = 1
+    # Write out
+    fname = tmp_path / "foo.gexf"
+    nx.write_gexf(G, fname)
+    # Check that timeformat is added to saved data
+    with open(fname) as fh:
+        assert 'timeformat="long"' in fh.read()
+    # Round-trip
+    H = nx.read_gexf(fname)
+    # If any node has a "start" or "end" attr, it is considered dynamic
+    # regardless of the graph "mode" attr
+    assert H.graph["mode"] == "dynamic"
+    assert nx.utils.nodes_equal(G.edges, H.edges)
+
+
 class TestGEXF:
     @classmethod
     def setup_class(cls):
@@ -289,7 +344,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=\
 "http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd" version="1.2">
-  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+  <meta lastmodifieddate="{time.strftime("%Y-%m-%d")}">
     <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
@@ -316,7 +371,7 @@ gexf.xsd" version="1.2">
         expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.\
 gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
-  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+  <meta lastmodifieddate="{time.strftime("%Y-%m-%d")}">
     <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
@@ -347,7 +402,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation\
 ="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd"\
  version="1.2">
-  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+  <meta lastmodifieddate="{time.strftime("%Y-%m-%d")}">
     <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">

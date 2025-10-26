@@ -90,7 +90,7 @@ Deprecations
 
 - [`#5723 <https://github.com/networkx/networkx/issues/5723>`_]
   ``nx.nx_pydot.*`` will be deprecated in the future if pydot isn't being
-  actively maintained. Users are recommended to use pygraphviz instead. 
+  actively maintained. Users are recommended to use pygraphviz instead.
 - [`#5899 <https://github.com/networkx/networkx/pull/5899>`_]
   The `attrs` keyword argument will be replaced with keyword only arguments
   `source`, `target`, `name`, `key` and `link` for `json_graph/node_link` functions.
@@ -140,7 +140,7 @@ Merged PRs
 - Remove gdal dependency (#5766)
 - Update return type of attrmatrix (#5764)
 - Remove unused deprecated argument from to_pandas_edgelist (#5778)
-- Remove deprecated function edge_betweeness (#5765)
+- Remove deprecated function edge_betweenness (#5765)
 - Remove pyyaml dependency (#5763)
 - Remove copy methods for Filter* coreviews (#5776)
 - Remove deprecated function nx.info (#5759)
@@ -163,7 +163,7 @@ Merged PRs
 - added examples to regular.py (#5642)
 - added examples to degree_alg.py (#5644)
 - Add docstring examples for triads functions (#5522)
-- Fix docbuild warnings: is_string_like is removed and identation in corona product (#5845)
+- Fix docbuild warnings: is_string_like is removed and indentation in corona product (#5845)
 - Use py_random_state to control randomness of random_triad (#5847)
 - Remove OrderedGraphs (#5813)
 - Drop NumPy 1.19 (#5856)
@@ -245,7 +245,7 @@ Merged PRs
 - Hide edges with a weight of None in A*. (#5945)
 - Add dfs_labeled_edges reporting of reverse edges due to depth_limit. (#6240)
 - Warn users about duplicate nodes in generator function input (#6237)
-- Reenable geospatial examples (#6252)
+- Re-enable geospatial examples (#6252)
 - Draft 3.0 release notes (#6232)
 - Add 2.8.x release notes (#6255)
 - doc: clarify allowed `alpha` when using nx.draw_networkx_edges (#6254)

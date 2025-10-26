@@ -15,6 +15,7 @@ and biconnected_components algorithms but might also work for other
 algorithms.
 
 """
+
 import matplotlib.pyplot as plt
 import networkx as nx
 from networkx import Graph

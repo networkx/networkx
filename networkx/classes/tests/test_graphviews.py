@@ -31,9 +31,8 @@ class TestReverseView:
         assert sorted(self.rv.edges) == expected
 
     def test_exceptions(self):
-        nxg = nx.graphviews
         G = nx.Graph()
-        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, G)
+        pytest.raises(nx.NetworkXNotImplemented, nx.reverse_view, G)
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
@@ -46,10 +45,9 @@ class TestReverseView:
         M = MyGraph()
         M.add_edge(1, 2)
         RM = nx.reverse_view(M)
-        print("RM class", RM.__class__)
+        assert RM.__class__ == MyGraph
         RMC = RM.copy()
-        print("RMC class", RMC.__class__)
-        print(RMC.edges)
+        assert RMC.__class__ == MyGraph
         assert RMC.has_edge(2, 1)
         assert RMC.my_method() == "me"
 
@@ -82,9 +80,8 @@ class TestMultiReverseView:
         assert sorted(self.rv.edges) == expected
 
     def test_exceptions(self):
-        nxg = nx.graphviews
         MG = nx.MultiGraph(self.G)
-        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, MG)
+        pytest.raises(nx.NetworkXNotImplemented, nx.reverse_view, MG)
 
 
 def test_generic_multitype():
@@ -111,8 +108,8 @@ class TestToDirected:
     def test_already_directed(self):
         dd = nx.to_directed(self.dv)
         Mdd = nx.to_directed(self.Mdv)
-        assert edges_equal(dd.edges, self.dv.edges)
-        assert edges_equal(Mdd.edges, self.Mdv.edges)
+        assert edges_equal(dd.edges, self.dv.edges, directed=True)
+        assert edges_equal(Mdd.edges, self.Mdv.edges, directed=True)
 
     def test_pickle(self):
         import pickle
@@ -147,7 +144,7 @@ class TestToUndirected:
         assert self.DG.is_directed()
         assert not self.uv.is_directed()
 
-    def test_already_directed(self):
+    def test_already_undirected(self):
         uu = nx.to_undirected(self.uv)
         Muu = nx.to_undirected(self.Muv)
         assert edges_equal(uu.edges, self.uv.edges)
@@ -207,7 +204,7 @@ class TestChainsOfViews:
 
         for G in self.graphs:
             H = pickle.loads(pickle.dumps(G, -1))
-            assert edges_equal(H.edges, G.edges)
+            assert edges_equal(H.edges, G.edges, directed=G.is_directed())
             assert nodes_equal(H.nodes, G.nodes)
 
     def test_subgraph_of_subgraph(self):
@@ -258,7 +255,7 @@ class TestChainsOfViews:
             G = nx.Graph(origG)
             SG = G.subgraph([4, 5, 6])
             H = SG.copy()
-            assert type(G) == type(H)
+            assert type(G) is type(H)
 
     def test_subgraph_todirected(self):
         SG = nx.induced_subgraph(self.G, [4, 5, 6])

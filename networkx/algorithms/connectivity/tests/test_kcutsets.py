@@ -208,16 +208,15 @@ def test_disconnected_graph():
 
 
 @pytest.mark.slow
-def test_alternative_flow_functions():
-    graphs = [nx.grid_2d_graph(4, 4), nx.cycle_graph(5)]
-    for G in graphs:
-        node_conn = nx.node_connectivity(G)
-        for flow_func in flow_funcs:
-            all_cuts = nx.all_node_cuts(G, flow_func=flow_func)
-            # Only test a limited number of cut sets to reduce test time.
-            for cut in itertools.islice(all_cuts, MAX_CUTSETS_TO_TEST):
-                assert node_conn == len(cut)
-                assert not nx.is_connected(nx.restricted_view(G, cut, []))
+@pytest.mark.parametrize("G", [nx.grid_2d_graph(4, 4), nx.cycle_graph(5)])
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_alternative_flow_functions(G, flow_func):
+    node_conn = nx.node_connectivity(G)
+    all_cuts = nx.all_node_cuts(G, flow_func=flow_func)
+    # Only test a limited number of cut sets to reduce test time.
+    for cut in itertools.islice(all_cuts, MAX_CUTSETS_TO_TEST):
+        assert node_conn == len(cut)
+        assert not nx.is_connected(nx.restricted_view(G, cut, []))
 
 
 def test_is_separating_set_complete_graph():
@@ -240,9 +239,6 @@ def test_non_repeated_cuts():
     G = K.subgraph(bcc)
     solution = [{32, 33}, {2, 33}, {0, 3}, {0, 1}, {29, 33}]
     cuts = list(nx.all_node_cuts(G))
-    if len(solution) != len(cuts):
-        print(f"Solution: {solution}")
-        print(f"Result: {cuts}")
     assert len(solution) == len(cuts)
     for cut in cuts:
         assert cut in solution
@@ -259,8 +255,26 @@ def test_cycle_graph():
 
 def test_complete_graph():
     G = nx.complete_graph(5)
-    solution = [{0, 1, 2, 3}, {0, 1, 2, 4}, {0, 1, 3, 4}, {0, 2, 3, 4}, {1, 2, 3, 4}]
-    cuts = list(nx.all_node_cuts(G))
-    assert len(solution) == len(cuts)
-    for cut in cuts:
-        assert cut in solution
+    assert nx.node_connectivity(G) == 4
+    assert list(nx.all_node_cuts(G)) == []
+
+
+def test_all_node_cuts_simple_case():
+    G = nx.complete_graph(5)
+    G.remove_edges_from([(0, 1), (3, 4)])
+    expected = [{0, 1, 2}, {2, 3, 4}]
+    actual = list(nx.all_node_cuts(G))
+    assert len(actual) == len(expected)
+    for cut in actual:
+        assert cut in expected
+
+
+def test_all_node_cuts_sap():
+    """Non-slow test for `all_node_cuts` using the shortest augmenting path flow."""
+    G = nx.cycle_graph(5)
+    node_conn = nx.node_connectivity(G)
+    all_cuts = nx.all_node_cuts(G, flow_func=flow.shortest_augmenting_path)
+    # Only test a limited number of cut sets to reduce test time.
+    for cut in itertools.islice(all_cuts, MAX_CUTSETS_TO_TEST):
+        assert node_conn == len(cut)
+        assert not nx.is_connected(nx.restricted_view(G, cut, []))

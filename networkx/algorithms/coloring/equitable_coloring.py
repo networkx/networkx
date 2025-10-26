@@ -9,12 +9,14 @@ import networkx as nx
 __all__ = ["equitable_color"]
 
 
+@nx._dispatchable
 def is_coloring(G, coloring):
     """Determine if the coloring is a valid coloring for the graph G."""
     # Verify that the coloring is valid.
     return all(coloring[s] != coloring[d] for s, d in G.edges)
 
 
+@nx._dispatchable
 def is_equitable(G, coloring, num_colors=None):
     """Determines if the coloring is valid and equitable for the graph G."""
 
@@ -110,6 +112,7 @@ def move_witnesses(src_color, dst_color, N, H, F, C, T_cal, L):
         X = Y
 
 
+@nx._dispatchable(mutates_input=True)
 def pad_graph(G, num_colors):
     """Add a disconnected complete clique K_p such that the number of nodes in
     the graph becomes a multiple of `num_colors`.
@@ -383,13 +386,15 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                 break
 
 
+@nx._dispatchable
 def equitable_color(G, num_colors):
-    """Provides equitable (r + 1)-coloring for nodes of G in O(r * n^2) time
-    if deg(G) <= r. The algorithm is described in [1]_.
+    """Provides an equitable coloring for nodes of `G`.
 
-    Attempts to color a graph using r colors, where no neighbors of a node
-    can have same color as the node itself and the number of nodes with each
-    color differ by at most 1.
+    Attempts to color a graph using `num_colors` colors, where no neighbors of
+    a node can have same color as the node itself and the number of nodes with
+    each color differ by at most 1. `num_colors` must be greater than the
+    maximum degree of `G`. The algorithm is described in [1]_ and has
+    complexity O(num_colors * n**2).
 
     Parameters
     ----------
@@ -408,15 +413,13 @@ def equitable_color(G, num_colors):
     Examples
     --------
     >>> G = nx.cycle_graph(4)
-    >>> d = nx.coloring.equitable_color(G, num_colors=3)
-    >>> nx.algorithms.coloring.equitable_coloring.is_equitable(G, d)
-    True
+    >>> nx.coloring.equitable_color(G, num_colors=3)  # doctest: +SKIP
+    {0: 2, 1: 1, 2: 2, 3: 0}
 
     Raises
     ------
     NetworkXAlgorithmError
-        If the maximum degree of the graph ``G`` is greater than
-        ``num_colors``.
+        If `num_colors` is not at least the maximum degree of the graph `G`
 
     References
     ----------

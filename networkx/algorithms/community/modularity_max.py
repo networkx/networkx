@@ -223,6 +223,7 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
         yield communities.values()
 
 
+@nx._dispatchable(edge_attrs="weight")
 def greedy_modularity_communities(
     G,
     weight=None,
@@ -308,6 +309,9 @@ def greedy_modularity_communities(
     .. [4] Newman, M. E. J."Analysis of weighted networks"
        Physical Review E 70(5 Pt 2):056131, 2004.
     """
+    if not G.size():
+        return [{n} for n in G]
+
     if (cutoff < 1) or (cutoff > G.number_of_nodes()):
         raise ValueError(f"cutoff must be between 1 and {len(G)}. Got {cutoff}.")
     if best_n is not None:
@@ -352,6 +356,7 @@ def greedy_modularity_communities(
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
 def naive_greedy_modularity_communities(G, resolution=1, weight=None):
     r"""Find communities in G using greedy modularity maximization.
 
@@ -369,6 +374,7 @@ def naive_greedy_modularity_communities(G, resolution=1, weight=None):
     Parameters
     ----------
     G : NetworkX graph
+        Graph must be simple and undirected.
 
     resolution : float (default=1)
         If resolution is less than 1, modularity favors larger communities.

@@ -1,4 +1,3 @@
-import tempfile
 from io import BytesIO
 
 import pytest
@@ -51,10 +50,10 @@ class TestSparseGraph6:
     def test_from_bytes_multigraph_graph(self):
         graph_data = b":An"
         G = nx.from_sparse6_bytes(graph_data)
-        assert type(G) == nx.Graph
+        assert isinstance(G, nx.Graph)
         multigraph_data = b":Ab"
         M = nx.from_sparse6_bytes(multigraph_data)
-        assert type(M) == nx.MultiGraph
+        assert isinstance(M, nx.MultiGraph)
 
     def test_read_sparse6(self):
         data = b":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"
@@ -66,7 +65,7 @@ class TestSparseGraph6:
 
     def test_read_many_graph6(self):
         # Read many graphs into list
-        data = b":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n" b":Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM"
+        data = b":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n:Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM"
         fh = BytesIO(data)
         glist = nx.read_sparse6(fh)
         assert len(glist) == 2
@@ -158,16 +157,10 @@ class TestWriteSparse6:
         with pytest.raises(nx.NetworkXNotImplemented):
             nx.write_sparse6(nx.DiGraph(), BytesIO())
 
-    def test_write_path(self):
-        # On Windows, we can't reopen a file that is open
-        # So, for test we get a valid name from tempfile but close it.
-        with tempfile.NamedTemporaryFile() as f:
-            fullfilename = f.name
+    def test_write_path(self, tmp_path):
+        # Get a valid temporary file name
+        fullfilename = str(tmp_path / "test.s6")
         # file should be closed now, so write_sparse6 can open it
         nx.write_sparse6(nx.null_graph(), fullfilename)
-        fh = open(fullfilename, mode="rb")
-        assert fh.read() == b">>sparse6<<:?\n"
-        fh.close()
-        import os
-
-        os.remove(fullfilename)
+        with open(fullfilename, mode="rb") as fh:
+            assert fh.read() == b">>sparse6<<:?\n"

@@ -12,11 +12,11 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.9"
+          python-version: "3.12"
 
       - name: Before install
         run: |
@@ -26,12 +26,19 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install --upgrade pip wheel setuptools
-          pip install -r requirements/default.txt -r requirements/test.txt
-          pip install -r requirements/extra.txt
+          pip install --upgrade pip
           pip install -r requirements/example.txt
-          pip install -U -r requirements/doc.txt
-          pip install .
+          pip install --upgrade .[default,test,extra,doc]
+          # Install trusted backends, but not their dependencies.
+          # We only need to use the "networkx.backend_info" entry-point.
+          # This is the nightly wheel for nx-cugraph.
+          pip install nx-cugraph-cu11 --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple --no-deps --pre
+          # Development version of GraphBLAS backend
+          pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
+          # Development version of nx-parallel backend
+          pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
+          # Development version of Neptune Analytics backend
+          pip install git+https://github.com/awslabs/nx-neptune.git@main --no-deps
           pip list
 
       # To set up a cross-repository deploy key:
@@ -45,7 +52,7 @@ jobs:
       #   - Make sure the name is the same as below: CI_DEPLOY_KEY
       - name: Install SSH agent
         if: github.ref == 'refs/heads/main'
-        uses: webfactory/ssh-agent@v0.7.0
+        uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.CI_DEPLOY_KEY }}
 

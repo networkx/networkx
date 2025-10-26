@@ -1,11 +1,13 @@
 """
 Utilities for connectivity package
 """
+
 import networkx as nx
 
 __all__ = ["build_auxiliary_node_connectivity", "build_auxiliary_edge_connectivity"]
 
 
+@nx._dispatchable(returns_graph=True)
 def build_auxiliary_node_connectivity(G):
     r"""Creates a directed graph D from an undirected graph G to compute flow
     based node connectivity.
@@ -25,7 +27,7 @@ def build_auxiliary_node_connectivity(G):
     each arc in D.
 
     A dictionary with a mapping between nodes in the original graph and the
-    auxiliary digraph is stored as a graph attribute: H.graph['mapping'].
+    auxiliary digraph is stored as a graph attribute: D.graph['mapping'].
 
     References
     ----------
@@ -58,6 +60,7 @@ def build_auxiliary_node_connectivity(G):
     return H
 
 
+@nx._dispatchable(returns_graph=True)
 def build_auxiliary_edge_connectivity(G):
     """Auxiliary digraph for computing flow based edge connectivity
 

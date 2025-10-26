@@ -12,3 +12,4 @@ Cycles
    find_cycle
    minimum_cycle_basis
    chordless_cycles
+   girth

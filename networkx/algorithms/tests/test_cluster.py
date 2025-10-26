@@ -3,6 +3,38 @@ import pytest
 import networkx as nx
 
 
+def test_square_clustering_adjacent_squares():
+    G = nx.Graph([(1, 2), (1, 3), (2, 4), (3, 4), (3, 5), (4, 6), (5, 6)])
+    # Corner nodes: C_4 == 0.5, central face nodes: C_4 = 1 / 3
+    expected = {1: 0.5, 2: 0.5, 3: 1 / 3, 4: 1 / 3, 5: 0.5, 6: 0.5}
+    assert nx.square_clustering(G) == expected
+
+
+def test_square_clustering_2d_grid():
+    G = nx.grid_2d_graph(3, 3)
+    # Central node: 4 squares out of 20 potential
+    expected = {
+        (0, 0): 1 / 3,
+        (0, 1): 0.25,
+        (0, 2): 1 / 3,
+        (1, 0): 0.25,
+        (1, 1): 0.2,
+        (1, 2): 0.25,
+        (2, 0): 1 / 3,
+        (2, 1): 0.25,
+        (2, 2): 1 / 3,
+    }
+    assert nx.square_clustering(G) == expected
+
+
+def test_square_clustering_multiple_squares_non_complete():
+    """An example where all nodes are part of all squares, but not every node
+    is connected to every other."""
+    G = nx.Graph([(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5)])
+    expected = {n: 1 for n in G}
+    assert nx.square_clustering(G) == expected
+
+
 class TestTriangles:
     def test_empty(self):
         G = nx.Graph()
@@ -43,6 +75,100 @@ class TestTriangles:
         G.add_edge(3, 3)  # ignore self-edges
         assert list(nx.triangles(G).values()) == [5, 3, 3, 5, 5]
         assert nx.triangles(G, 3) == 5
+
+
+def test_all_triangles_non_integer_nodes():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            ("a", "b"),
+            ("b", "c"),
+            ("c", "a"),  # triangle: a-b-c
+        ]
+    )
+    expected = {frozenset({"a", "b", "c"})}
+    assert {frozenset(t) for t in nx.all_triangles(G)} == expected
+
+
+def test_all_triangles_overlapping():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            (0, 1),
+            (1, 2),
+            (2, 0),  # triangle: 0-1-2
+            (0, 2),
+            (2, 3),
+            (3, 0),  # triangle: 0-2-3
+        ]
+    )
+    expected = {frozenset({0, 1, 2}), frozenset({0, 2, 3})}
+    assert {frozenset(t) for t in nx.all_triangles(G)} == expected
+
+
+def test_all_triangles_subset():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            (0, 1),
+            (1, 2),
+            (2, 0),  # triangle: 0-1-2
+            (2, 3),
+            (3, 4),
+            (4, 2),  # triangle: 2-3-4
+        ]
+    )
+    assert {frozenset(t) for t in nx.all_triangles(G, nbunch=[0, 1])} == {
+        frozenset({0, 1, 2})
+    }
+
+
+def test_all_triangles_subset_empty():
+    G = nx.Graph()
+    G.add_edges_from(
+        [
+            (0, 1),
+            (1, 2),
+            (2, 0),  # triangle: 0-1-2
+            (2, 3),
+            (3, 4),
+            (4, 2),  # triangle: 2-3-4
+            (5, 2),
+        ]
+    )
+    assert list(nx.all_triangles(G, nbunch=[5])) == []
+
+
+def test_all_triangles_no_triangles():
+    G = nx.path_graph(4)
+    assert list(nx.all_triangles(G)) == []
+
+
+def test_all_triangles_complete_graph_exact():
+    G = nx.complete_graph(4)
+
+    expected = {
+        frozenset({0, 1, 2}),
+        frozenset({0, 1, 3}),
+        frozenset({0, 2, 3}),
+        frozenset({1, 2, 3}),
+    }
+
+    assert {frozenset(t) for t in nx.all_triangles(G)} == expected
+
+
+def test_all_triangles_directed_graph():
+    G = nx.DiGraph()
+    G.add_edges_from([(0, 1), (1, 2), (2, 0)])
+    with pytest.raises(nx.NetworkXNotImplemented):
+        list(nx.all_triangles(G))
+
+
+@pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
+def test_all_triangles_multiedges(graph_type):
+    G = graph_type()
+    G.add_edges_from([(0, 1), (0, 2), (1, 2), (1, 2)])
+    assert {frozenset(t) for t in nx.all_triangles(G)} == {frozenset({0, 1, 2})}
 
 
 class TestDirectedClustering:
@@ -454,8 +580,17 @@ class TestSquareClustering:
 
     def test_peng_square_clustering(self):
         """Test eq2 for figure 1 Peng et al (2008)"""
+        # Example graph from figure 1b
         G = nx.Graph([(1, 2), (1, 3), (2, 4), (3, 4), (3, 5), (3, 6)])
-        assert nx.square_clustering(G, [1])[1] == 1 / 3
+        # From table 1, row 2
+        expected = {1: 1 / 3, 2: 1, 3: 0.2, 4: 1 / 3, 5: 0, 6: 0}
+        assert nx.square_clustering(G) == expected
+
+    def test_self_loops_square_clustering(self):
+        G = nx.path_graph(5)
+        assert nx.square_clustering(G) == {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
+        G.add_edges_from([(0, 0), (1, 1), (2, 2)])
+        assert nx.square_clustering(G) == {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
 
 
 class TestAverageClustering:

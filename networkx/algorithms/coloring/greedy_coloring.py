@@ -1,6 +1,7 @@
 """
 Greedy graph coloring using various strategies.
 """
+
 import itertools
 from collections import defaultdict, deque
 
@@ -261,11 +262,12 @@ STRATEGIES = {
 }
 
 
+@nx._dispatchable
 def greedy_color(G, strategy="largest_first", interchange=False):
     """Color a graph using various strategies of greedy graph coloring.
 
     Attempts to color a graph using as few colors as possible, where no
-    neighbours of a node can have same color as the node itself. The
+    neighbors of a node can have same color as the node itself. The
     given strategy determines the order in which nodes are colored.
 
     The strategies are described in [1]_, and smallest-last is based on
@@ -346,7 +348,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
     strategy = STRATEGIES.get(strategy, strategy)
     if not callable(strategy):
         raise nx.NetworkXError(
-            "strategy must be callable or a valid string. " f"{strategy} not valid."
+            f"strategy must be callable or a valid string. {strategy} not valid."
         )
     # Perform some validation on the arguments before executing any
     # strategy functions.
@@ -355,18 +357,18 @@ def greedy_color(G, strategy="largest_first", interchange=False):
             msg = "interchange cannot be used with independent_set"
             raise nx.NetworkXPointlessConcept(msg)
         if strategy is strategy_saturation_largest_first:
-            msg = "interchange cannot be used with" " saturation_largest_first"
+            msg = "interchange cannot be used with saturation_largest_first"
             raise nx.NetworkXPointlessConcept(msg)
     colors = {}
     nodes = strategy(G, colors)
     if interchange:
         return _greedy_coloring_with_interchange(G, nodes)
     for u in nodes:
-        # Set to keep track of colors of neighbours
-        neighbour_colors = {colors[v] for v in G[u] if v in colors}
+        # Set to keep track of colors of neighbors
+        nbr_colors = {colors[v] for v in G[u] if v in colors}
         # Find the first unused color.
         for color in itertools.count():
-            if color not in neighbour_colors:
+            if color not in nbr_colors:
                 break
         # Assign the new color to the current node.
         colors[u] = color

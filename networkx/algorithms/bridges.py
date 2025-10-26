@@ -1,4 +1,5 @@
 """Bridge-finding algorithms."""
+
 from itertools import chain
 
 import networkx as nx
@@ -8,6 +9,7 @@ __all__ = ["bridges", "has_bridges", "local_bridges"]
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def bridges(G, root=None):
     """Generate all bridges in a graph.
 
@@ -69,7 +71,6 @@ def bridges(G, root=None):
     H = nx.Graph(G) if multigraph else G
     chains = nx.chain_decomposition(H, root=root)
     chain_edges = set(chain.from_iterable(chains))
-    H_copy = H.copy()
     if root is not None:
         H = H.subgraph(nx.node_connected_component(H, root)).copy()
     for u, v in H.edges():
@@ -80,6 +81,7 @@ def bridges(G, root=None):
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def has_bridges(G, root=None):
     """Decide whether a graph has any bridges.
 
@@ -140,6 +142,7 @@ def has_bridges(G, root=None):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight")
 def local_bridges(G, with_span=True, weight=None):
     """Iterate over local bridges of `G` optionally computing the span
 

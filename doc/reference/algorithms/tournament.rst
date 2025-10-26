@@ -12,3 +12,4 @@ Tournament
    is_tournament
    random_tournament
    score_sequence
+   tournament_matrix

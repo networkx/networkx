@@ -1,6 +1,4 @@
-"""Functions for finding and evaluating cuts in a graph.
-
-"""
+"""Functions for finding and evaluating cuts in a graph."""
 
 from itertools import chain
 
@@ -21,7 +19,7 @@ __all__ = [
 # TODO STILL NEED TO UPDATE ALL THE DOCUMENTATION!
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def cut_size(G, S, T=None, weight=None):
     """Returns the size of the cut between two sets of nodes.
 
@@ -84,7 +82,7 @@ def cut_size(G, S, T=None, weight=None):
     return sum(weight for u, v, weight in edges)
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def volume(G, S, weight=None):
     """Returns the volume of a set of nodes.
 
@@ -127,7 +125,7 @@ def volume(G, S, weight=None):
     return sum(d for v, d in degree(S, weight=weight))
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def normalized_cut_size(G, S, T=None, weight=None):
     """Returns the normalized size of the cut between two sets of nodes.
 
@@ -180,7 +178,7 @@ def normalized_cut_size(G, S, T=None, weight=None):
     return num_cut_edges * ((1 / volume_S) + (1 / volume_T))
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def conductance(G, S, T=None, weight=None):
     """Returns the conductance of two sets of nodes.
 
@@ -228,7 +226,7 @@ def conductance(G, S, T=None, weight=None):
     return num_cut_edges / min(volume_S, volume_T)
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def edge_expansion(G, S, T=None, weight=None):
     """Returns the edge expansion between two node sets.
 
@@ -275,7 +273,7 @@ def edge_expansion(G, S, T=None, weight=None):
     return num_cut_edges / min(len(S), len(T))
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def mixing_expansion(G, S, T=None, weight=None):
     """Returns the mixing expansion between two node sets.
 
@@ -323,7 +321,7 @@ def mixing_expansion(G, S, T=None, weight=None):
 
 # TODO What is the generalization to two arguments, S and T? Does the
 # denominator become `min(len(S), len(T))`?
-@nx._dispatch
+@nx._dispatchable
 def node_expansion(G, S):
     """Returns the node expansion of the set `S`.
 
@@ -361,18 +359,17 @@ def node_expansion(G, S):
     return len(neighborhood) / len(S)
 
 
-# TODO What is the generalization to two arguments, S and T? Does the
-# denominator become `min(len(S), len(T))`?
-@nx._dispatch
+@nx._dispatchable
 def boundary_expansion(G, S):
     """Returns the boundary expansion of the set `S`.
 
-    The *boundary expansion* is the quotient of the size
-    of the node boundary and the cardinality of *S*. [1]
+    The *boundary expansion* of a set `S` is the ratio between the size of its
+    node boundary and the cardinality of the set itself [1]_ .
 
     Parameters
     ----------
     G : NetworkX graph
+        The input graph.
 
     S : collection
         A collection of nodes in `G`.
@@ -380,21 +377,40 @@ def boundary_expansion(G, S):
     Returns
     -------
     number
-        The boundary expansion of the set `S`.
+        The boundary expansion ratio: size of node boundary / size of `S`.
+
+    Examples
+    --------
+    The node boundary is {2, 3} (size 2), divided by ``|S|=2``:
+
+    >>> G = nx.cycle_graph(4)
+    >>> S = {0, 1}
+    >>> nx.boundary_expansion(G, S)
+    1.0
+
+    For disconnected sets, e.g. here where the node boundary is ``{1, 3, 5}``:
+
+    >>> G = nx.cycle_graph(6)
+    >>> S = {0, 2, 4}
+    >>> nx.boundary_expansion(G, S)
+    1.0
 
     See also
     --------
+    :func:`~networkx.algorithms.boundary.node_boundary`
     edge_expansion
     mixing_expansion
     node_expansion
 
+    Notes
+    -----
+    The node boundary is defined as all nodes not in `S` that are adjacent to
+    nodes in `S`.
+
     References
     ----------
     .. [1] Vadhan, Salil P.
-           "Pseudorandomness."
-           *Foundations and Trends in Theoretical Computer Science*
-           7.1–3 (2011): 1–336.
-           <https://doi.org/10.1561/0400000010>
-
+       "Pseudorandomness." *Foundations and Trends in Theoretical Computer Science*
+       7.1–3 (2011): 1–336. <https://doi.org/10.1561/0400000010>
     """
     return len(nx.node_boundary(G, S)) / len(S)

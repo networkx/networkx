@@ -1,4 +1,4 @@
-""" This module provides the functions for node classification problem.
+"""This module provides the functions for node classification problem.
 
 The functions in this module are not imported
 into the top level `networkx` namespace.
@@ -22,12 +22,14 @@ Zhu, X., Ghahramani, Z., & Lafferty, J. (2003, August).
 Semi-supervised learning using gaussian fields and harmonic functions.
 In ICML (Vol. 3, pp. 912-919).
 """
+
 import networkx as nx
 
 __all__ = ["harmonic_function", "local_and_global_consistency"]
 
 
 @nx.utils.not_implemented_for("directed")
+@nx._dispatchable(node_attrs="label_name")
 def harmonic_function(G, max_iter=30, label_name="label"):
     """Node classification by Harmonic function
 
@@ -73,7 +75,6 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     X = nx.to_scipy_sparse_array(G)  # adjacency matrix
     labels, label_dict = _get_label_info(G, label_name)
@@ -90,8 +91,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     # Build propagation matrix
     degrees = X.sum(axis=0)
     degrees[degrees == 0] = 1  # Avoid division by 0
-    # TODO: csr_array
-    D = sp.sparse.csr_array(sp.sparse.diags((1.0 / degrees), offsets=0))
+    D = sp.sparse.dia_array((1.0 / degrees, 0), shape=(n_samples, n_samples)).tocsr()
     P = (D @ X).tolil()
     P[labels[:, 0]] = 0  # labels[:, 0] indicates IDs of labeled nodes
     # Build base matrix
@@ -105,6 +105,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
 
 
 @nx.utils.not_implemented_for("directed")
+@nx._dispatchable(node_attrs="label_name")
 def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label"):
     """Node classification by Local and Global Consistency
 
@@ -152,7 +153,6 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     X = nx.to_scipy_sparse_array(G)  # adjacency matrix
     labels, label_dict = _get_label_info(G, label_name)
@@ -169,8 +169,9 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     # Build propagation matrix
     degrees = X.sum(axis=0)
     degrees[degrees == 0] = 1  # Avoid division by 0
-    # TODO: csr_array
-    D2 = np.sqrt(sp.sparse.csr_array(sp.sparse.diags((1.0 / degrees), offsets=0)))
+    D2 = sp.sparse.dia_array(
+        (1.0 / np.sqrt(degrees), 0), shape=(n_samples, n_samples)
+    ).tocsr()
     P = alpha * ((D2 @ X) @ D2)
     # Build base matrix
     B = np.zeros((n_samples, n_classes))
@@ -192,7 +193,7 @@ def _get_label_info(G, label_name):
         Name of the target label
 
     Returns
-    ----------
+    -------
     labels : numpy array, shape = [n_labeled_samples, 2]
         Array of pairs of labeled node ID and label ID
     label_dict : numpy array, shape = [n_classes]

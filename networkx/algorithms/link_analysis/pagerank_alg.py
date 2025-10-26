@@ -1,12 +1,11 @@
-"""PageRank analysis of graph structure. """
-from warnings import warn
+"""PageRank analysis of graph structure."""
 
 import networkx as nx
 
 __all__ = ["pagerank", "google_matrix"]
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def pagerank(
     G,
     alpha=0.85,
@@ -89,6 +88,7 @@ def pagerank(
     See Also
     --------
     google_matrix
+    :func:`~networkx.algorithms.bipartite.link_analysis.birank`
 
     Raises
     ------
@@ -172,7 +172,7 @@ def _pagerank_python(
     raise nx.PowerIterationFailedConvergence(max_iter)
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def google_matrix(
     G, alpha=0.85, personalization=None, nodelist=None, weight="weight", dangling=None
 ):
@@ -451,7 +451,6 @@ def _pagerank_scipy(
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     N = len(G)
     if N == 0:
@@ -461,8 +460,7 @@ def _pagerank_scipy(
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
     S = A.sum(axis=1)
     S[S != 0] = 1.0 / S[S != 0]
-    # TODO: csr_array
-    Q = sp.sparse.csr_array(sp.sparse.spdiags(S.T, 0, *A.shape))
+    Q = sp.sparse.dia_array((S.T, 0), shape=A.shape).tocsr()
     A = Q @ A
 
     # initial vector

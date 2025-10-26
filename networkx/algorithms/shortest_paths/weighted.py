@@ -4,7 +4,7 @@ Shortest path algorithms for weighted graphs.
 
 from collections import deque
 from heapq import heappop, heappush
-from itertools import count
+from itertools import count, islice
 
 import networkx as nx
 from networkx.algorithms.shortest_paths.generic import _build_paths_from_predecessors
@@ -78,6 +78,7 @@ def _weight_function(G, weight):
     return lambda u, v, data: data.get(weight, 1)
 
 
+@nx._dispatchable(edge_attrs="weight")
 def dijkstra_path(G, source, target, weight="weight"):
     """Returns the shortest weighted path from source to target in G.
 
@@ -132,7 +133,10 @@ def dijkstra_path(G, source, target, weight="weight"):
     >>> G.add_weighted_edges_from([(1, 2, 0.75), (1, 2, 0.5), (2, 3, 0.5), (1, 3, 1.5)])
     >>> nodes = nx.dijkstra_path(G, 1, 3)
     >>> edges = nx.utils.pairwise(nodes)
-    >>> list((u, v, min(G[u][v], key=lambda k: G[u][v][k].get('weight', 1))) for u, v in edges)
+    >>> list(
+    ...     (u, v, min(G[u][v], key=lambda k: G[u][v][k].get("weight", 1)))
+    ...     for u, v in edges
+    ... )
     [(1, 2, 1), (2, 3, 0)]
 
     Notes
@@ -168,6 +172,7 @@ def dijkstra_path(G, source, target, weight="weight"):
     return path
 
 
+@nx._dispatchable(edge_attrs="weight")
 def dijkstra_path_length(G, source, target, weight="weight"):
     """Returns the shortest weighted path length in G from source to target.
 
@@ -247,6 +252,7 @@ def dijkstra_path_length(G, source, target, weight="weight"):
         raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}") from err
 
 
+@nx._dispatchable(edge_attrs="weight")
 def single_source_dijkstra_path(G, source, cutoff=None, weight="weight"):
     """Find shortest weighted paths in G from a source node.
 
@@ -311,6 +317,7 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight="weight"):
     return multi_source_dijkstra_path(G, {source}, cutoff=cutoff, weight=weight)
 
 
+@nx._dispatchable(edge_attrs="weight")
 def single_source_dijkstra_path_length(G, source, cutoff=None, weight="weight"):
     """Find shortest weighted path lengths in G from a source node.
 
@@ -382,6 +389,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None, weight="weight"):
     return multi_source_dijkstra_path_length(G, {source}, cutoff=cutoff, weight=weight)
 
 
+@nx._dispatchable(edge_attrs="weight")
 def single_source_dijkstra(G, source, target=None, cutoff=None, weight="weight"):
     """Find shortest weighted paths and lengths from a source node.
 
@@ -483,6 +491,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight="weight")
     )
 
 
+@nx._dispatchable(edge_attrs="weight")
 def multi_source_dijkstra_path(G, sources, cutoff=None, weight="weight"):
     """Find shortest weighted paths in G from a given set of source
     nodes.
@@ -556,6 +565,7 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight="weight"):
     return path
 
 
+@nx._dispatchable(edge_attrs="weight")
 def multi_source_dijkstra_path_length(G, sources, cutoff=None, weight="weight"):
     """Find shortest weighted path lengths in G from a given set of
     source nodes.
@@ -637,6 +647,7 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None, weight="weight"):
     return _dijkstra_multisource(G, sources, weight, cutoff=cutoff)
 
 
+@nx._dispatchable(edge_attrs="weight")
 def multi_source_dijkstra(G, sources, target=None, cutoff=None, weight="weight"):
     """Find shortest weighted paths and lengths from a given set of
     source nodes.
@@ -823,10 +834,14 @@ def _dijkstra_multisource(
     as arguments. No need to explicitly return pred or paths.
 
     """
+    # If `paths` is specified, we use a temporary internal dictionary (`pred_dict`) to
+    # store predecessors, used to reconstruct paths. However, if the caller
+    # passed in a `pred` dictionary, we must compute *all* predecessors, since the caller
+    # expects the full predecessor structure.
+    pred_dict = pred if paths is None or pred is not None else {}
+
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
-    push = heappush
-    pop = heappop
     dist = {}  # dictionary of final distances
     seen = {}
     # fringe is heapq with 3-tuples (distance,c,node)
@@ -835,44 +850,64 @@ def _dijkstra_multisource(
     fringe = []
     for source in sources:
         seen[source] = 0
-        push(fringe, (0, next(c), source))
+        heappush(fringe, (0, next(c), source))
+    number_of_sources = len(seen)
     while fringe:
-        (d, _, v) = pop(fringe)
+        (dist_v, _, v) = heappop(fringe)
         if v in dist:
             continue  # already searched this node.
-        dist[v] = d
+        dist[v] = dist_v
         if v == target:
             break
         for u, e in G_succ[v].items():
             cost = weight(v, u, e)
             if cost is None:
                 continue
-            vu_dist = dist[v] + cost
-            if cutoff is not None:
-                if vu_dist > cutoff:
-                    continue
+            vu_dist = dist_v + cost
+            if cutoff is not None and vu_dist > cutoff:
+                continue
             if u in dist:
                 u_dist = dist[u]
                 if vu_dist < u_dist:
                     raise ValueError("Contradictory paths found:", "negative weights?")
                 elif pred is not None and vu_dist == u_dist:
-                    pred[u].append(v)
+                    # Found another shortest path to u with equal distance (including zero-weight edges).
+                    # We must store *all* predecessors because `pred` was provided by the caller.
+                    pred_dict[u].append(v)
             elif u not in seen or vu_dist < seen[u]:
                 seen[u] = vu_dist
-                push(fringe, (vu_dist, next(c), u))
-                if paths is not None:
-                    paths[u] = paths[v] + [u]
-                if pred is not None:
-                    pred[u] = [v]
-            elif vu_dist == seen[u]:
-                if pred is not None:
-                    pred[u].append(v)
+                heappush(fringe, (vu_dist, next(c), u))
+                if pred_dict is not None:
+                    pred_dict[u] = [v]
+            elif pred is not None and vu_dist == seen[u]:
+                # Found another shortest path to u
+                # We must store *all* predecessors because `pred` was provided by the caller.
+                pred_dict[u].append(v)
+
+    if paths is not None:
+        # Reconstruct the path from source to target using the predecessor dictionary.
+        if target is None:
+            # Since `dist` is in increasing distance order, each predecessor's path is
+            # already computed by the time we process `v`. We skip the first
+            # `number_of_sources` entries because sources already have their paths defined.
+            for v in islice(dist, number_of_sources, None):
+                # `v` must be in `pred_dict`: any node with a distance (and not a source)
+                # has a predecessor.
+                paths[v] = paths[pred_dict[v][0]] + [v]
+        else:
+            # Caller requested the path to a specific target node.
+            path = paths[target] = [target]
+            while (current_preds := pred_dict.get(path[-1])) is not None:
+                path.append(current_preds[0])
+            # The path was built in reverse order, so reverse it at the end.
+            path.reverse()
 
     # The optional predecessor and path dictionaries can be accessed
     # by the caller via the pred and paths objects passed as arguments.
     return dist
 
 
+@nx._dispatchable(edge_attrs="weight")
 def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
     """Compute weighted shortest path length and predecessors.
 
@@ -945,6 +980,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
     return (pred, _dijkstra(G, source, weight, pred=pred, cutoff=cutoff))
 
 
+@nx._dispatchable(edge_attrs="weight")
 def all_pairs_dijkstra(G, cutoff=None, weight="weight"):
     """Find shortest weighted paths and lengths between all nodes.
 
@@ -1013,6 +1049,7 @@ def all_pairs_dijkstra(G, cutoff=None, weight="weight"):
         yield (n, (dist, path))
 
 
+@nx._dispatchable(edge_attrs="weight")
 def all_pairs_dijkstra_path_length(G, cutoff=None, weight="weight"):
     """Compute shortest path lengths between all nodes in a weighted graph.
 
@@ -1071,6 +1108,7 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight="weight"):
         yield (n, length(G, n, cutoff=cutoff, weight=weight))
 
 
+@nx._dispatchable(edge_attrs="weight")
 def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
     """Compute shortest paths between all nodes in a weighted graph.
 
@@ -1124,7 +1162,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
         yield (n, path(G, n, cutoff=cutoff, weight=weight))
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def bellman_ford_predecessor_and_distance(
     G, source, target=None, weight="weight", heuristic=False
 ):
@@ -1230,8 +1268,15 @@ def bellman_ford_predecessor_and_distance(
     if source not in G:
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
-    if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-        raise nx.NetworkXUnbounded("Negative cycle detected.")
+    if G.is_multigraph():
+        if any(
+            weight(u, v, {k: d}) < 0
+            for u, v, k, d in nx.selfloop_edges(G, keys=True, data=True)
+        ):
+            raise nx.NetworkXUnbounded("Negative cycle detected.")
+    else:
+        if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
+            raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     dist = {source: 0}
     pred = {source: []}
@@ -1465,7 +1510,7 @@ def _inner_bellman_ford(
     return None
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def bellman_ford_path(G, source, target, weight="weight"):
     """Returns the shortest path from source to target in a weighted graph G.
 
@@ -1524,7 +1569,7 @@ def bellman_ford_path(G, source, target, weight="weight"):
     return path
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def bellman_ford_path_length(G, source, target, weight="weight"):
     """Returns the shortest path length from source to target
     in a weighted graph.
@@ -1595,7 +1640,7 @@ def bellman_ford_path_length(G, source, target, weight="weight"):
         raise nx.NetworkXNoPath(f"node {target} not reachable from {source}") from err
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def single_source_bellman_ford_path(G, source, weight="weight"):
     """Compute shortest path between source and all other reachable
     nodes for a weighted graph.
@@ -1651,7 +1696,7 @@ def single_source_bellman_ford_path(G, source, weight="weight"):
     return path
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def single_source_bellman_ford_path_length(G, source, weight="weight"):
     """Compute the shortest path length between source and all other
     reachable nodes for a weighted graph.
@@ -1714,7 +1759,7 @@ def single_source_bellman_ford_path_length(G, source, weight="weight"):
     return _bellman_ford(G, [source], weight)
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def single_source_bellman_ford(G, source, target=None, weight="weight"):
     """Compute shortest paths and lengths in a weighted graph G.
 
@@ -1808,7 +1853,7 @@ def single_source_bellman_ford(G, source, target=None, weight="weight"):
         raise nx.NetworkXNoPath(msg) from err
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def all_pairs_bellman_ford_path_length(G, weight="weight"):
     """Compute shortest path lengths between all nodes in a weighted graph.
 
@@ -1863,7 +1908,7 @@ def all_pairs_bellman_ford_path_length(G, weight="weight"):
         yield (n, dict(length(G, n, weight=weight)))
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def all_pairs_bellman_ford_path(G, weight="weight"):
     """Compute shortest paths between all nodes in a weighted graph.
 
@@ -1908,11 +1953,11 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
 
     """
     path = single_source_bellman_ford_path
-    # TODO This can be trivially parallelized.
     for n in G:
         yield (n, path(G, n, weight=weight))
 
 
+@nx._dispatchable(edge_attrs="weight")
 def goldberg_radzik(G, source, weight="weight"):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
@@ -1960,6 +2005,10 @@ def goldberg_radzik(G, source, weight="weight"):
         negative (di)cycle.  Note: any negative weight edge in an
         undirected graph is a negative cycle.
 
+        As of NetworkX v3.2, a zero weight cycle is no longer
+        incorrectly reported as a negative weight cycle.
+
+
     Examples
     --------
     >>> G = nx.path_graph(5, create_using=nx.DiGraph())
@@ -1992,8 +2041,15 @@ def goldberg_radzik(G, source, weight="weight"):
     if source not in G:
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
-    if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-        raise nx.NetworkXUnbounded("Negative cycle detected.")
+    if G.is_multigraph():
+        if any(
+            weight(u, v, {k: d}) < 0
+            for u, v, k, d in nx.selfloop_edges(G, keys=True, data=True)
+        ):
+            raise nx.NetworkXUnbounded("Negative cycle detected.")
+    else:
+        if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
+            raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     if len(G) == 1:
         return {source: None}, {source: 0}
@@ -2019,10 +2075,7 @@ def goldberg_radzik(G, source, weight="weight"):
         #
         # neg_count also doubles as the DFS visit marker array.
         neg_count = {}
-        for u in relabeled:
-            # Skip visited nodes.
-            if u in neg_count:
-                continue
+        for u in relabeled - neg_count.keys():
             d_u = d[u]
             # Skip nodes without out-edges of negative reduced costs.
             if all(d_u + weight(u, v, e) >= d[v] for v, e in G_succ[u].items()):
@@ -2044,15 +2097,14 @@ def goldberg_radzik(G, source, weight="weight"):
                     continue
                 t = d[u] + weight(u, v, e)
                 d_v = d[v]
-                if t <= d_v:
-                    is_neg = t < d_v
+                if t < d_v:
                     d[v] = t
                     pred[v] = u
                     if v not in neg_count:
-                        neg_count[v] = neg_count[u] + int(is_neg)
+                        neg_count[v] = neg_count[u] + 1
                         stack.append((v, iter(G_succ[v].items())))
                         in_stack.add(v)
-                    elif v in in_stack and neg_count[u] + int(is_neg) > neg_count[v]:
+                    elif v in in_stack and neg_count[u] + 1 > neg_count[v]:
                         # (u, v) is a back edge, and the cycle formed by the
                         # path v to u and (u, v) contains at least one edge of
                         # negative reduced cost. The cycle must be of negative
@@ -2065,7 +2117,7 @@ def goldberg_radzik(G, source, weight="weight"):
         """Relax out-edges of relabeled nodes."""
         relabeled = set()
         # Scan nodes in to_scan in topological order and relax incident
-        # out-edges. Add the relabled nodes to labeled.
+        # out-edges. Add the relabeled nodes to labeled.
         for u in to_scan:
             d_u = d[u]
             for v, e in G_succ[u].items():
@@ -2076,7 +2128,7 @@ def goldberg_radzik(G, source, weight="weight"):
                     relabeled.add(v)
         return relabeled
 
-    # Set of nodes relabled in the last round of scan operations. Denoted by B
+    # Set of nodes relabeled in the last round of scan operations. Denoted by B
     # in Goldberg and Radzik's paper.
     relabeled = {source}
 
@@ -2088,7 +2140,7 @@ def goldberg_radzik(G, source, weight="weight"):
     return pred, d
 
 
-@nx._dispatch
+@nx._dispatchable(edge_attrs="weight")
 def negative_edge_cycle(G, weight="weight", heuristic=True):
     """Returns True if there exists a negative edge cycle anywhere in G.
 
@@ -2159,6 +2211,7 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     return False
 
 
+@nx._dispatchable(edge_attrs="weight")
 def find_negative_cycle(G, source, weight="weight"):
     """Returns a cycle with negative total weight if it exists.
 
@@ -2197,7 +2250,9 @@ def find_negative_cycle(G, source, weight="weight"):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from([(0, 1, 2), (1, 2, 2), (2, 0, 1), (1, 4, 2), (4, 0, -5)])
+    >>> G.add_weighted_edges_from(
+    ...     [(0, 1, 2), (1, 2, 2), (2, 0, 1), (1, 4, 2), (4, 0, -5)]
+    ... )
     >>> nx.find_negative_cycle(G, 0)
     [4, 0, 1, 4]
 
@@ -2251,6 +2306,7 @@ def find_negative_cycle(G, source, weight="weight"):
     raise nx.NetworkXUnbounded(msg)
 
 
+@nx._dispatchable(edge_attrs="weight")
 def bidirectional_dijkstra(G, source, target, weight="weight"):
     r"""Dijkstra's algorithm for shortest paths using bidirectional search.
 
@@ -2286,7 +2342,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     Raises
     ------
     NodeNotFound
-        If either `source` or `target` is not in `G`.
+        If `source` or `target` is not in `G`.
 
     NetworkXNoPath
         If no path exists between source and target.
@@ -2328,76 +2384,82 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     shortest_path
     shortest_path_length
     """
-    if source not in G or target not in G:
-        msg = f"Either source {source} or target {target} is not in G"
-        raise nx.NodeNotFound(msg)
+    if source not in G:
+        raise nx.NodeNotFound(f"Source {source} is not in G")
+
+    if target not in G:
+        raise nx.NodeNotFound(f"Target {target} is not in G")
 
     if source == target:
         return (0, [source])
 
     weight = _weight_function(G, weight)
-    push = heappush
-    pop = heappop
     # Init:  [Forward, Backward]
     dists = [{}, {}]  # dictionary of final distances
-    paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
+    preds = [{source: None}, {target: None}]  # dictionary of preds
+
+    def path(curr, direction):
+        ret = []
+        while curr is not None:
+            ret.append(curr)
+            curr = preds[direction][curr]
+        return list(reversed(ret)) if direction == 0 else ret
+
     fringe = [[], []]  # heap of (distance, node) for choosing node to expand
     seen = [{source: 0}, {target: 0}]  # dict of distances to seen nodes
     c = count()
     # initialize fringe heap
-    push(fringe[0], (0, next(c), source))
-    push(fringe[1], (0, next(c), target))
-    # neighs for extracting correct neighbor information
+    heappush(fringe[0], (0, next(c), source))
+    heappush(fringe[1], (0, next(c), target))
+    # neighbors for extracting correct neighbor information
     if G.is_directed():
-        neighs = [G._succ, G._pred]
+        neighbors = [G._succ, G._pred]
     else:
-        neighs = [G._adj, G._adj]
+        neighbors = [G._adj, G._adj]
     # variables to hold shortest discovered path
-    # finaldist = 1e30000
-    finalpath = []
-    dir = 1
+    finaldist = None
+    meetnode = None
+    direction = 1
     while fringe[0] and fringe[1]:
         # choose direction
-        # dir == 0 is forward direction and dir == 1 is back
-        dir = 1 - dir
+        # direction == 0 is forward direction and direction == 1 is back
+        direction = 1 - direction
         # extract closest to expand
-        (dist, _, v) = pop(fringe[dir])
-        if v in dists[dir]:
+        (dist, _, v) = heappop(fringe[direction])
+        if v in dists[direction]:
             # Shortest path to v has already been found
             continue
         # update distance
-        dists[dir][v] = dist  # equal to seen[dir][v]
-        if v in dists[1 - dir]:
+        dists[direction][v] = dist  # equal to seen[direction][v]
+        if v in dists[1 - direction]:
             # if we have scanned v in both directions we are done
             # we have now discovered the shortest path
-            return (finaldist, finalpath)
+            return (finaldist, path(meetnode, 0) + path(preds[1][meetnode], 1))
 
-        for w, d in neighs[dir][v].items():
+        for w, d in neighbors[direction][v].items():
             # weight(v, w, d) for forward and weight(w, v, d) for back direction
-            cost = weight(v, w, d) if dir == 0 else weight(w, v, d)
+            cost = weight(v, w, d) if direction == 0 else weight(w, v, d)
             if cost is None:
                 continue
-            vwLength = dists[dir][v] + cost
-            if w in dists[dir]:
-                if vwLength < dists[dir][w]:
+            vwLength = dist + cost
+            if w in dists[direction]:
+                if vwLength < dists[direction][w]:
                     raise ValueError("Contradictory paths found: negative weights?")
-            elif w not in seen[dir] or vwLength < seen[dir][w]:
+            elif w not in seen[direction] or vwLength < seen[direction][w]:
                 # relaxing
-                seen[dir][w] = vwLength
-                push(fringe[dir], (vwLength, next(c), w))
-                paths[dir][w] = paths[dir][v] + [w]
-                if w in seen[0] and w in seen[1]:
+                seen[direction][w] = vwLength
+                heappush(fringe[direction], (vwLength, next(c), w))
+                preds[direction][w] = v
+                if w in seen[1 - direction]:
                     # see if this path is better than the already
                     # discovered shortest path
-                    totaldist = seen[0][w] + seen[1][w]
-                    if finalpath == [] or finaldist > totaldist:
-                        finaldist = totaldist
-                        revpath = paths[1][w][:]
-                        revpath.reverse()
-                        finalpath = paths[0][w] + revpath[1:]
+                    finaldist_w = vwLength + seen[1 - direction][w]
+                    if finaldist is None or finaldist > finaldist_w:
+                        finaldist, meetnode = finaldist_w, w
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
+@nx._dispatchable(edge_attrs="weight")
 def johnson(G, weight="weight"):
     r"""Uses Johnson's Algorithm to compute shortest paths.
 
@@ -2425,11 +2487,6 @@ def johnson(G, weight="weight"):
     -------
     distance : dictionary
         Dictionary, keyed by source and target, of shortest paths.
-
-    Raises
-    ------
-    NetworkXError
-        If given graph is not weighted.
 
     Examples
     --------
@@ -2465,9 +2522,6 @@ def johnson(G, weight="weight"):
     all_pairs_bellman_ford_path_length
 
     """
-    if not nx.is_weighted(G, weight=weight):
-        raise nx.NetworkXError("Graph is not weighted.")
-
     dist = {v: 0 for v in G}
     pred = {v: [] for v in G}
     weight = _weight_function(G, weight)

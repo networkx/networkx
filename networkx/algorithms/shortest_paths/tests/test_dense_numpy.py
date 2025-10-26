@@ -1,9 +1,8 @@
 import pytest
 
-np = pytest.importorskip("numpy")
-
-
 import networkx as nx
+
+np = pytest.importorskip("numpy")
 
 
 def test_cycle_numpy():

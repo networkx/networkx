@@ -1,4 +1,5 @@
 """Base class for MultiGraph."""
+
 from copy import deepcopy
 from functools import cached_property
 
@@ -306,6 +307,16 @@ class MultiGraph(Graph):
         """
         return MultiGraph
 
+    # This __new__ method just does what Python itself does automatically.
+    # We include it here as part of the dispatchable/backend interface.
+    # If your goal is to understand how the graph classes work, you can ignore
+    # this method, even when subclassing the base classes. If you are subclassing
+    # in order to provide a backend that allows class instantiation, this method
+    # can be overridden to return your own backend graph class.
+    @nx._dispatchable(name="multigraph__new__", graphs=None, returns_graph=True)
+    def __new__(cls, incoming_graph_data=None, multigraph_input=None, **attr):
+        return object.__new__(cls)
+
     def __init__(self, incoming_graph_data=None, multigraph_input=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
@@ -352,6 +363,7 @@ class MultiGraph(Graph):
         {'day': 'Friday'}
 
         """
+        attr.pop("backend", None)  # Ignore explicit `backend="networkx"`
         # multigraph_input can be None/True/False. So check "is not False"
         if isinstance(incoming_graph_data, dict) and multigraph_input is not False:
             Graph.__init__(self)
@@ -390,7 +402,7 @@ class MultiGraph(Graph):
         >>> G.edges[1, 2, 0]["weight"] = 3
         >>> result = set()
         >>> for edgekey, data in G[1][2].items():
-        ...     result.add(data.get('weight', 1))
+        ...     result.add(data.get("weight", 1))
         >>> result
         {1, 3}
 
@@ -520,6 +532,7 @@ class MultiGraph(Graph):
             keydict[key] = datadict
             self._adj[u][v] = keydict
             self._adj[v][u] = keydict
+        nx._clear_cache(self)
         return key
 
     def add_edges_from(self, ebunch_to_add, **attr):
@@ -616,6 +629,7 @@ class MultiGraph(Graph):
             key = self.add_edge(u, v, key)
             self[u][v][key].update(ddd)
             keylist.append(key)
+        nx._clear_cache(self)
         return keylist
 
     def remove_edge(self, u, v, key=None):
@@ -695,6 +709,7 @@ class MultiGraph(Graph):
             del self._adj[u][v]
             if u != v:  # check for selfloop
                 del self._adj[v][u]
+        nx._clear_cache(self)
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -753,6 +768,7 @@ class MultiGraph(Graph):
                 self.remove_edge(*e[:3])
             except NetworkXError:
                 pass
+        nx._clear_cache(self)
 
     def has_edge(self, u, v, key=None):
         """Returns True if the graph has an edge between nodes u and v.
@@ -1224,7 +1240,7 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        u, v : nodes, optional (Gefault=all edges)
+        u, v : nodes, optional (Default=all edges)
             If u and v are specified, return the number of edges between
             u and v. Otherwise return the total number of all edges.
 

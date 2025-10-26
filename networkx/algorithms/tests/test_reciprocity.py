@@ -4,7 +4,7 @@ import networkx as nx
 
 
 class TestReciprocity:
-    # test overall reicprocity by passing whole graph
+    # test overall reciprocity by passing whole graph
     def test_reciprocity_digraph(self):
         DG = nx.DiGraph([(1, 2), (2, 1)])
         reciprocity = nx.reciprocity(DG)

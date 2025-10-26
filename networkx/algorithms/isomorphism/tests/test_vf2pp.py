@@ -815,7 +815,7 @@ class TestMultiGraphISOVF2pp:
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
 
-        # Obtain two non-somorphic subgraphs from the graph
+        # Obtain two non-isomorphic subgraphs from the graph
         G2.remove_edges_from([(mapped[1], mapped[2]), (mapped[1], mapped[2])])
         G2.add_edge(mapped[1], mapped[4])
         H1 = nx.MultiGraph(G1.subgraph([2, 3, 4, 7]))
@@ -1024,7 +1024,8 @@ class TestMultiGraphISOVF2pp:
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert not m
 
-        # We connected the new node to opposite sides, so G1 must be symmetrical to G2. Re-structure them to be so
+        # We connected the new node to opposite sides, so G1 must be symmetrical
+        # to G2. Re-structure them to be so
         G1.remove_edges_from([(1, 3), (4, 9), (4, 9), (7, 9)])
         G2.remove_edges_from(
             [
@@ -1486,7 +1487,7 @@ class TestMultiGraphISOVF2pp:
         assert not m
 
         # Compensate in G2
-        G2.add_edges_from([(i, i) for i in range(0, 3)] * 3)
+        G2.add_edges_from([(i, i) for i in range(3)] * 3)
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
 
@@ -1524,7 +1525,7 @@ class TestMultiGraphISOVF2pp:
         assert not m
 
         # Add self-loops to non mapped nodes in G2 as well
-        G2.add_edges_from([(mapped[i], mapped[i]) for i in range(0, 3)] * 7)
+        G2.add_edges_from([(mapped[i], mapped[i]) for i in range(3)] * 7)
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert not m
 
@@ -1534,7 +1535,7 @@ class TestMultiGraphISOVF2pp:
         assert not m
 
         # Add self-loops to G1 so that they are even in both graphs
-        G1.add_edges_from([(i, i) for i in range(0, 3)] * 7)
+        G1.add_edges_from([(i, i) for i in range(3)] * 7)
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
 

@@ -21,14 +21,14 @@ The data file can be found at:
 import gzip
 import re
 
+import numpy as np
+import matplotlib.pyplot as plt
+import networkx as nx
+
 # Ignore any warnings related to downloading shpfiles with cartopy
 import warnings
 
 warnings.simplefilter("ignore")
-
-import numpy as np
-import matplotlib.pyplot as plt
-import networkx as nx
 
 
 def miles_graph():
@@ -75,7 +75,7 @@ G = miles_graph()
 print("Loaded miles_dat.txt containing 128 cities.")
 print(G)
 
-# make new graph of cites, edge if less then 300 miles between them
+# make new graph of cites, edge if less than 300 miles between them
 H = nx.Graph()
 for v in G:
     H.add_node(v)

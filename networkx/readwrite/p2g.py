@@ -2,7 +2,9 @@
 This module provides the following: read and write of p2g format
 used in metabolic pathway studies.
 
-See https://web.archive.org/web/20080626113807/http://www.cs.purdue.edu/homes/koyuturk/pathway/ for a description.
+See:
+<https://web.archive.org/web/20080626113807/http://www.cs.purdue.edu/homes/koyuturk/pathway/>
+for a description.
 
 The summary is included here:
 
@@ -31,7 +33,8 @@ edges. Observe that node labeled "c" has an outgoing edge to
 itself. Indeed, self-loops are allowed. Node index starts from 0.
 
 """
-import networkx
+
+import networkx as nx
 from networkx.utils import open_file
 
 
@@ -57,8 +60,15 @@ def write_p2g(G, path, encoding="utf-8"):
 
 
 @open_file(0, mode="r")
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_p2g(path, encoding="utf-8"):
     """Read graph in p2g format from path.
+
+    Parameters
+    ----------
+    path : string or file
+       Filename or file handle to read.
+       Filenames ending in .gz or .bz2 will be decompressed.
 
     Returns
     -------
@@ -67,13 +77,14 @@ def read_p2g(path, encoding="utf-8"):
     Notes
     -----
     If you want a DiGraph (with no self loops allowed and no edge data)
-    use D=networkx.DiGraph(read_p2g(path))
+    use D=nx.DiGraph(read_p2g(path))
     """
     lines = (line.decode(encoding) for line in path)
     G = parse_p2g(lines)
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_p2g(lines):
     """Parse p2g format graph from string or iterable.
 
@@ -83,7 +94,7 @@ def parse_p2g(lines):
     """
     description = next(lines).strip()
     # are multiedges (parallel edges) allowed?
-    G = networkx.MultiDiGraph(name=description, selfloops=True)
+    G = nx.MultiDiGraph(name=description, selfloops=True)
     nnodes, nedges = map(int, next(lines).split())
     nodelabel = {}
     nbrs = {}

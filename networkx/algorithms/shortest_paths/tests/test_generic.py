@@ -32,6 +32,67 @@ class TestGenericPath:
         cls.neg_weights.add_edge(1, 3, weight=1)
         cls.neg_weights.add_edge(2, 3, weight=-2)
 
+    def test_sentinel_trick_all_algorithms(self):
+        def reconstruct_path(pred, source, target):
+            path = [target]
+            while path[-1] != source:
+                path.append(pred[path[-1]])
+            return list(reversed(path))
+
+        # Build the test graph inline
+        G = nx.Graph()
+        G.add_edge("A", "B", weight=1)
+        G.add_edge("B", "C", weight=1)
+        G.add_edge("C", "D", weight=1)
+        G.add_edge("D", "E", weight=1)
+
+        source = "A"
+        targets = {"C", "D", "E"}
+        expected_target = "C"  # A-B-C is closest
+
+        sentinel = "_sentinel_"
+        G.add_node(sentinel)
+        for t in targets:
+            G.add_edge(t, sentinel, weight=0)
+
+        # shortest_path: Dijkstra (default)
+        path = nx.shortest_path(G, source=source, target=sentinel, weight="weight")
+        assert path[-2] == expected_target
+
+        # shortest_path: Bellman-Ford
+        path = nx.shortest_path(
+            G, source=source, target=sentinel, weight="weight", method="bellman-ford"
+        )
+        assert path[-2] == expected_target
+
+        # shortest_path: Unweighted (BFS)
+        path = nx.shortest_path(G, source=source, target=sentinel, weight=None)
+        assert path[-2] == expected_target
+
+        # bidirectional_dijkstra
+        _, path = nx.bidirectional_dijkstra(G, source, sentinel, weight="weight")
+        assert path[-2] == expected_target
+
+        # goldberg_radzik
+        pred, _ = nx.goldberg_radzik(G, source, weight="weight")
+        path = reconstruct_path(pred, source, sentinel)
+        assert path[-2] == expected_target
+
+        # astar_path with zero heuristic
+        path = nx.astar_path(
+            G, source, sentinel, heuristic=lambda u, v: 0, weight="weight"
+        )
+        assert path[-2] == expected_target
+
+        # johnson (all-pairs shortest paths)
+        paths = nx.johnson(G, weight="weight")
+        assert paths[source][sentinel][-2] == expected_target
+
+        # floyd_warshall_predecessor_and_distance
+        pred, _ = nx.floyd_warshall_predecessor_and_distance(G, weight="weight")
+        path = reconstruct_path(pred[source], source, sentinel)
+        assert path[-2] == expected_target
+
     def test_shortest_path(self):
         assert nx.shortest_path(self.cycle, 0, 3) == [0, 1, 2, 3]
         assert nx.shortest_path(self.cycle, 0, 4) == [0, 6, 5, 4]
@@ -111,7 +172,7 @@ class TestGenericPath:
 
     def test_shortest_path_length_target(self):
         answer = {0: 1, 1: 0, 2: 1}
-        sp = dict(nx.shortest_path_length(nx.path_graph(3), target=1))
+        sp = nx.shortest_path_length(nx.path_graph(3), target=1)
         assert sp == answer
         # with weights
         sp = nx.shortest_path_length(nx.path_graph(3), target=1, weight="weight")
@@ -147,48 +208,89 @@ class TestGenericPath:
         assert p == nx.single_source_shortest_path(self.cycle, 0)
 
     def test_single_source_shortest_path_length(self):
-        ans = dict(nx.shortest_path_length(self.cycle, 0))
+        ans = nx.shortest_path_length(self.cycle, 0)
         assert ans == {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1}
-        assert ans == dict(nx.single_source_shortest_path_length(self.cycle, 0))
-        ans = dict(nx.shortest_path_length(self.grid, 1))
+        assert ans == nx.single_source_shortest_path_length(self.cycle, 0)
+        ans = nx.shortest_path_length(self.grid, 1)
         assert ans[16] == 6
         # now with weights
-        ans = dict(nx.shortest_path_length(self.cycle, 0, weight="weight"))
+        ans = nx.shortest_path_length(self.cycle, 0, weight="weight")
         assert ans == {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1}
-        assert ans == dict(nx.single_source_dijkstra_path_length(self.cycle, 0))
-        ans = dict(nx.shortest_path_length(self.grid, 1, weight="weight"))
+        assert ans == nx.single_source_dijkstra_path_length(self.cycle, 0)
+        ans = nx.shortest_path_length(self.grid, 1, weight="weight")
         assert ans[16] == 6
         # weights and method specified
         ans = dict(
             nx.shortest_path_length(self.cycle, 0, weight="weight", method="dijkstra")
         )
         assert ans == {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1}
-        assert ans == dict(nx.single_source_dijkstra_path_length(self.cycle, 0))
+        assert ans == nx.single_source_dijkstra_path_length(self.cycle, 0)
         ans = dict(
             nx.shortest_path_length(
                 self.cycle, 0, weight="weight", method="bellman-ford"
             )
         )
         assert ans == {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1}
-        assert ans == dict(nx.single_source_bellman_ford_path_length(self.cycle, 0))
+        assert ans == nx.single_source_bellman_ford_path_length(self.cycle, 0)
+
+    def test_single_source_all_shortest_paths(self):
+        cycle_ans = {0: [[0]], 1: [[0, 1]], 2: [[0, 1, 2], [0, 3, 2]], 3: [[0, 3]]}
+        ans = dict(nx.single_source_all_shortest_paths(nx.cycle_graph(4), 0))
+        assert sorted(ans[2]) == cycle_ans[2]
+        ans = dict(nx.single_source_all_shortest_paths(self.grid, 1))
+        grid_ans = [
+            [1, 2, 3, 7, 11],
+            [1, 2, 6, 7, 11],
+            [1, 2, 6, 10, 11],
+            [1, 5, 6, 7, 11],
+            [1, 5, 6, 10, 11],
+            [1, 5, 9, 10, 11],
+        ]
+        assert sorted(ans[11]) == grid_ans
+        ans = dict(
+            nx.single_source_all_shortest_paths(nx.cycle_graph(4), 0, weight="weight")
+        )
+        assert sorted(ans[2]) == cycle_ans[2]
+        ans = dict(
+            nx.single_source_all_shortest_paths(
+                nx.cycle_graph(4), 0, method="bellman-ford", weight="weight"
+            )
+        )
+        assert sorted(ans[2]) == cycle_ans[2]
+        ans = dict(nx.single_source_all_shortest_paths(self.grid, 1, weight="weight"))
+        assert sorted(ans[11]) == grid_ans
+        ans = dict(
+            nx.single_source_all_shortest_paths(
+                self.grid, 1, method="bellman-ford", weight="weight"
+            )
+        )
+        assert sorted(ans[11]) == grid_ans
+        G = nx.cycle_graph(4)
+        G.add_node(4)
+        ans = dict(nx.single_source_all_shortest_paths(G, 0))
+        assert sorted(ans[2]) == [[0, 1, 2], [0, 3, 2]]
+        ans = dict(nx.single_source_all_shortest_paths(G, 4))
+        assert sorted(ans[4]) == [[4]]
 
     def test_all_pairs_shortest_path(self):
-        p = nx.shortest_path(self.cycle)
+        # shortest_path w/o source and target returns a generator instead of
+        # a dict beginning in version 3.5. Only the first call needed changed here.
+        p = dict(nx.shortest_path(self.cycle))
         assert p[0][3] == [0, 1, 2, 3]
         assert p == dict(nx.all_pairs_shortest_path(self.cycle))
-        p = nx.shortest_path(self.grid)
+        p = dict(nx.shortest_path(self.grid))
         validate_grid_path(4, 4, 1, 12, p[1][12])
         # now with weights
-        p = nx.shortest_path(self.cycle, weight="weight")
+        p = dict(nx.shortest_path(self.cycle, weight="weight"))
         assert p[0][3] == [0, 1, 2, 3]
         assert p == dict(nx.all_pairs_dijkstra_path(self.cycle))
-        p = nx.shortest_path(self.grid, weight="weight")
+        p = dict(nx.shortest_path(self.grid, weight="weight"))
         validate_grid_path(4, 4, 1, 12, p[1][12])
         # weights and method specified
-        p = nx.shortest_path(self.cycle, weight="weight", method="dijkstra")
+        p = dict(nx.shortest_path(self.cycle, weight="weight", method="dijkstra"))
         assert p[0][3] == [0, 1, 2, 3]
         assert p == dict(nx.all_pairs_dijkstra_path(self.cycle))
-        p = nx.shortest_path(self.cycle, weight="weight", method="bellman-ford")
+        p = dict(nx.shortest_path(self.cycle, weight="weight", method="bellman-ford"))
         assert p[0][3] == [0, 1, 2, 3]
         assert p == dict(nx.all_pairs_bellman_ford_path(self.cycle))
 
@@ -216,12 +318,32 @@ class TestGenericPath:
         assert ans[0] == {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1}
         assert ans == dict(nx.all_pairs_bellman_ford_path_length(self.cycle))
 
+    def test_all_pairs_all_shortest_paths(self):
+        ans = dict(nx.all_pairs_all_shortest_paths(nx.cycle_graph(4)))
+        assert sorted(ans[1][3]) == [[1, 0, 3], [1, 2, 3]]
+        ans = dict(nx.all_pairs_all_shortest_paths(nx.cycle_graph(4)), weight="weight")
+        assert sorted(ans[1][3]) == [[1, 0, 3], [1, 2, 3]]
+        ans = dict(
+            nx.all_pairs_all_shortest_paths(nx.cycle_graph(4)),
+            method="bellman-ford",
+            weight="weight",
+        )
+        assert sorted(ans[1][3]) == [[1, 0, 3], [1, 2, 3]]
+        G = nx.cycle_graph(4)
+        G.add_node(4)
+        ans = dict(nx.all_pairs_all_shortest_paths(G))
+        assert sorted(ans[4][4]) == [[4]]
+
     def test_has_path(self):
         G = nx.Graph()
         nx.add_path(G, range(3))
         nx.add_path(G, range(3, 5))
         assert nx.has_path(G, 0, 2)
         assert not nx.has_path(G, 0, 4)
+
+    def test_has_path_singleton(self):
+        G = nx.empty_graph(1)
+        assert nx.has_path(G, 0, 0)
 
     def test_all_shortest_paths(self):
         G = nx.Graph()
@@ -259,6 +381,15 @@ class TestGenericPath:
         with pytest.raises(ValueError):
             G = nx.path_graph(2)
             list(nx.all_shortest_paths(G, 0, 1, weight="weight", method="SPAM"))
+
+    def test_single_source_all_shortest_paths_bad_method(self):
+        with pytest.raises(ValueError):
+            G = nx.path_graph(2)
+            dict(
+                nx.single_source_all_shortest_paths(
+                    G, 0, weight="weight", method="SPAM"
+                )
+            )
 
     def test_all_shortest_paths_zero_weight_edge(self):
         g = nx.Graph()

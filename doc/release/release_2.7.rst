@@ -22,7 +22,7 @@ This release is the result of 7 months of work with over 166 pull requests by
 33 contributors. Highlights include:
 
 .. warning::
-   Hash values observed in outputs of 
+   Hash values observed in outputs of
    `~networkx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash`
    have changed in version 2.7 due to bug fixes. See gh-4946_ for details.
    This means that comparing hashes of the same graph computed with different
@@ -99,9 +99,9 @@ Improvements
   problem.
 - [`#4897 <https://github.com/networkx/networkx/pull/4897>`_]
   Improve the validation and performance of ``nx.is_matching``,
-  ``nx.is_maximal_matching`` and ``nx.is_perfect_matcing``.
+  ``nx.is_maximal_matching`` and ``nx.is_perfect_matching``.
 - [`#4924 <https://github.com/networkx/networkx/pull/4924>`_]
-  Fix handling of disconnected graphs whne computing
+  Fix handling of disconnected graphs when computing
   ``nx.common_neighbor_centrality``.
 - [`#4929 <https://github.com/networkx/networkx/pull/4929>`_]
   Add Louvain community detection.
@@ -156,7 +156,7 @@ Improvements
 - [`#5139 <https://github.com/networkx/networkx/pull/5139>`_]
   Add support for the `scipy.sparse` array interface.
 - [`#5144 <https://github.com/networkx/networkx/pull/5144>`_]
-  Improve readibility of ``node_classification`` functions.
+  Improve readability of ``node_classification`` functions.
 - [`#5145 <https://github.com/networkx/networkx/pull/5145>`_]
   Adopt `math.hypot` which was added in Python 3.8.
 - [`#5153 <https://github.com/networkx/networkx/pull/5153>`_]
@@ -175,7 +175,7 @@ Improvements
 - [`#5217 <https://github.com/networkx/networkx/pull/5217>`_]
   Improve performance and readability of ``betweenness_centrality``.
 - [`#5232 <https://github.com/networkx/networkx/pull/5232>`_]
-  Add support for `None` edge weights to bidirectional Djikstra algorithm.
+  Add support for `None` edge weights to bidirectional Dijkstra algorithm.
 - [`#5247 <https://github.com/networkx/networkx/pull/5247>`_]
   Improve performance of asynchronous label propagation algorithm for
   community detection, ``asyn_lpa_communities``.
@@ -263,7 +263,7 @@ A total of 166 changes have been committed.
 - Change exception varname e to err (#5130)
 - minor tweaks in assortativity docs and code (#5129)
 - Allow edge style to be a list of styles for DiGraphs (#5131)
-- Add examples and minor documentaion refactor for operators/binary.py (#5099)
+- Add examples and minor documentation refactor for operators/binary.py (#5099)
 - Improve random graphs test suite for gnp generators (issue #5092) (#5115)
 - Add note about checking for path existence to all_simple_paths. (#5059)
 - Fix message of raised exception in decorators. (#5136)
@@ -294,7 +294,7 @@ A total of 166 changes have been committed.
 - Remove unused internal solver from algebraicconnectivity (#5190)
 - Remove check/comment for scipy 1.1 behavior. (#5191)
 - Test on Python 3.10 (#5185)
-- Add regression test for ancestors/descedants w/ undir. G. (#5188)
+- Add regression test for ancestors/descendants w/ undir. G. (#5188)
 - Rm internal function, use advanced indexing instead. (#5197)
 - Fix missing import + tests in laplacian fns. (#5194)
 - Investigate pre-release test failures (#5208)

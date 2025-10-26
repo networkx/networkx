@@ -33,6 +33,7 @@ def uniform_int_from_avg(a, m, seed):
     return X1 + X2
 
 
+@py_random_state("seed")
 def choose_pref_attach(degs, seed):
     """Pick a random value, with a probability given by its weight.
 
@@ -71,6 +72,7 @@ def choose_pref_attach(degs, seed):
 class AS_graph_generator:
     """Generates random internet AS graphs."""
 
+    @py_random_state("seed")
     def __init__(self, n, seed):
         """Initializes variables. Immediate numbers are taken from [1].
 
@@ -397,6 +399,7 @@ class AS_graph_generator:
 
 
 @py_random_state(1)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_internet_as_graph(n, seed=None):
     """Generates a random undirected graph resembling the Internet AS network
 

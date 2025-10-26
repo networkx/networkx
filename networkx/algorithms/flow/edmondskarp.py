@@ -117,6 +117,7 @@ def edmonds_karp_impl(G, s, t, capacity, residual, cutoff):
     return R
 
 
+@nx._dispatchable(edge_attrs={"capacity": float("inf")}, returns_graph=True)
 def edmonds_karp(
     G, s, t, capacity="capacity", residual=None, value_only=False, cutoff=None
 ):
@@ -236,4 +237,5 @@ def edmonds_karp(
     """
     R = edmonds_karp_impl(G, s, t, capacity, residual, cutoff)
     R.graph["algorithm"] = "edmonds_karp"
+    nx._clear_cache(R)
     return R

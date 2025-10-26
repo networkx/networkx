@@ -9,65 +9,134 @@ the root.
 
 __all__ = ["nonisomorphic_trees", "number_of_nonisomorphic_trees"]
 
+from functools import lru_cache
+
 import networkx as nx
 
 
-def nonisomorphic_trees(order, create="graph"):
-    """Returns a list of nonisomporphic trees
+@nx._dispatchable(graphs=None, returns_graph=True)
+def nonisomorphic_trees(order):
+    """Generate nonisomorphic trees of specified `order`.
 
     Parameters
     ----------
     order : int
-      order of the desired tree(s)
+       order of the desired tree(s)
 
-    create : graph or matrix (default="Graph)
-      If graph is selected a list of trees will be returned,
-      if matrix is selected a list of adjancency matrix will
-      be returned
+    Yields
+    ------
+    `networkx.Graph` instances
+       A tree with `order` number of nodes that is not isomorphic to any other
+       yielded tree.
 
-    Returns
-    -------
-    G : List of NetworkX Graphs
+    Raises
+    ------
+    ValueError
+       If `order` is negative.
 
-    M : List of Adjacency matrices
+    Examples
+    --------
+    There are 11 unique (non-isomorphic) trees with 7 nodes.
 
-    References
-    ----------
+    >>> n = 7
+    >>> nit_list = list(nx.nonisomorphic_trees(n))
+    >>> len(nit_list) == nx.number_of_nonisomorphic_trees(n) == 11
+    True
 
+    All trees yielded by the generator have the specified order.
+
+    >>> all(len(G) == n for G in nx.nonisomorphic_trees(n))
+    True
+
+    Each tree is nonisomorphic to every other tree yielded by the generator.
+    >>> seen = []
+    >>> for G in nx.nonisomorphic_trees(n):
+    ...     assert not any(nx.is_isomorphic(G, H) for H in seen)
+    ...     seen.append(G)
+
+    See Also
+    --------
+    number_of_nonisomorphic_trees
     """
-
-    if order < 2:
-        raise ValueError
+    if order < 0:
+        raise ValueError("order must be non-negative")
+    if order == 0:
+        # Idiom for empty generator, i.e. list(nonisomorphic_trees(0)) == []
+        return
+        yield
+    if order == 1:
+        yield nx.empty_graph(1)
+        return
     # start at the path graph rooted at its center
     layout = list(range(order // 2 + 1)) + list(range(1, (order + 1) // 2))
 
     while layout is not None:
         layout = _next_tree(layout)
         if layout is not None:
-            if create == "graph":
-                yield _layout_to_graph(layout)
-            elif create == "matrix":
-                yield _layout_to_matrix(layout)
+            yield _layout_to_graph(layout)
             layout = _next_rooted_tree(layout)
 
 
+@nx._dispatchable(graphs=None)
 def number_of_nonisomorphic_trees(order):
-    """Returns the number of nonisomorphic trees
+    """Returns the number of nonisomorphic trees of the specified `order`.
+
+    Based on an algorithm by Alois P. Heinz in
+    `OEIS entry A000055 <https://oeis.org/A000055>`_. Complexity is ``O(n ** 3)``.
 
     Parameters
     ----------
     order : int
-      order of the desired tree(s)
+       Order of the desired tree(s).
 
     Returns
     -------
-    length : Number of nonisomorphic graphs for the given order
+    int
+       Number of nonisomorphic trees with `order` number of nodes.
 
-    References
-    ----------
+    Raises
+    ------
+    ValueError
+       If `order` is negative.
 
+    Examples
+    --------
+    >>> nx.number_of_nonisomorphic_trees(10)
+    106
+
+    See Also
+    --------
+    nonisomorphic_trees
     """
-    return sum(1 for _ in nonisomorphic_trees(order))
+    if order < 0:
+        raise ValueError("order must be non-negative")
+    return _unlabeled_trees(order)
+
+
+@lru_cache(None)
+def _unlabeled_trees(n):
+    """Implements OEIS A000055 (number of unlabeled trees)."""
+
+    value = 0
+    for k in range(n + 1):
+        value += _rooted_trees(k) * _rooted_trees(n - k)
+    if n % 2 == 0:
+        value -= _rooted_trees(n // 2)
+    return _rooted_trees(n) - value // 2
+
+
+@lru_cache(None)
+def _rooted_trees(n):
+    """Implements OEIS A000081 (number of unlabeled rooted trees)."""
+
+    if n < 2:
+        return n
+    value = 0
+    for j in range(1, n):
+        for d in range(1, n):
+            if j % d == 0:
+                value += d * _rooted_trees(d) * _rooted_trees(n - j)
+    return value // (n - 1)
 
 
 def _next_rooted_tree(predecessor, p=None):

@@ -217,21 +217,18 @@ class TestNodeViewSetOps:
         assert len(nv) == 9
 
     def test_and(self):
-        # print("G & H nodes:", gnv & hnv)
         nv = self.nv
         some_nodes = self.n_its(range(5, 12))
         assert nv & some_nodes == self.n_its(range(5, 9))
         assert some_nodes & nv == self.n_its(range(5, 9))
 
     def test_or(self):
-        # print("G | H nodes:", gnv | hnv)
         nv = self.nv
         some_nodes = self.n_its(range(5, 12))
         assert nv | some_nodes == self.n_its(range(12))
         assert some_nodes | nv == self.n_its(range(12))
 
     def test_xor(self):
-        # print("G ^ H nodes:", gnv ^ hnv)
         nv = self.nv
         some_nodes = self.n_its(range(5, 12))
         nodes = {0, 1, 2, 3, 4, 9, 10, 11}
@@ -239,7 +236,6 @@ class TestNodeViewSetOps:
         assert some_nodes ^ nv == self.n_its(nodes)
 
     def test_sub(self):
-        # print("G - H nodes:", gnv - hnv)
         nv = self.nv
         some_nodes = self.n_its(range(5, 12))
         assert nv - some_nodes == self.n_its(range(5))
@@ -596,8 +592,12 @@ class TestEdgeView:
         assert ev[0, 1] == {"foo": "bar"}
 
         # slicing
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError, match=".*does not support slicing"):
             G.edges[0:5]
+
+        # Invalid edge
+        with pytest.raises(KeyError, match=r".*edge.*is not in the graph."):
+            G.edges[0, 9]
 
     def test_call(self):
         ev = self.eview(self.G)
@@ -663,7 +663,6 @@ class TestEdgeView:
         assert len(H.edges) == num_ed + 1
 
     def test_and(self):
-        # print("G & H edges:", gnv & hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         if self.G.is_directed():
@@ -675,7 +674,6 @@ class TestEdgeView:
         return
 
     def test_or(self):
-        # print("G | H edges:", gnv | hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         result1 = {(n, n + 1) for n in range(8)}
@@ -686,7 +684,6 @@ class TestEdgeView:
         assert (some_edges | ev) in (result1, result2)
 
     def test_xor(self):
-        # print("G ^ H edges:", gnv ^ hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         if self.G.is_directed():
@@ -700,7 +697,6 @@ class TestEdgeView:
         return
 
     def test_sub(self):
-        # print("G - H edges:", gnv - hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         result = {(n, n + 1) for n in range(8)}
@@ -840,9 +836,7 @@ class TestMultiEdgeView(TestEdgeView):
         ev = evr(keys=True, data=True)
         for e in ev:
             assert len(e) == 4
-            print("edge:", e)
             if set(e[:2]) == {2, 3}:
-                print(self.G._adj[2][3])
                 assert e[2] == 0
                 assert e[3] == {"foo": "bar"}
                 checked = True
@@ -872,8 +866,12 @@ class TestMultiEdgeView(TestEdgeView):
             assert len(e) == 3
         elist = sorted([(i, i + 1, 0) for i in range(8)] + [(1, 2, 3)])
         assert sorted(ev) == elist
-        # test order of arguments:graph, nbunch, data, keys, default
-        ev = evr((1, 2), "foo", True, 1)
+        # test that the keyword arguments are passed correctly
+        ev = evr((1, 2), "foo", keys=True, default=1)
+        with pytest.raises(TypeError):
+            evr((1, 2), "foo", True, 1)
+        with pytest.raises(TypeError):
+            evr((1, 2), "foo", True, default=1)
         for e in ev:
             if set(e[:2]) == {1, 2}:
                 assert e[2] in {0, 3}
@@ -887,7 +885,6 @@ class TestMultiEdgeView(TestEdgeView):
             assert len(list(ev)) == 4
 
     def test_or(self):
-        # print("G | H edges:", gnv | hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         result = {(n, n + 1, 0) for n in range(8)}
@@ -897,7 +894,6 @@ class TestMultiEdgeView(TestEdgeView):
         assert some_edges | ev == result
 
     def test_sub(self):
-        # print("G - H edges:", gnv - hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         result = {(n, n + 1, 0) for n in range(8)}
@@ -907,7 +903,6 @@ class TestMultiEdgeView(TestEdgeView):
         assert some_edges - ev, result
 
     def test_xor(self):
-        # print("G ^ H edges:", gnv ^ hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         if self.G.is_directed():
@@ -922,7 +917,6 @@ class TestMultiEdgeView(TestEdgeView):
             assert some_edges ^ ev == result
 
     def test_and(self):
-        # print("G & H edges:", gnv & hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         if self.G.is_directed():
@@ -1417,3 +1411,11 @@ def test_cache_dict_get_set_state(graph):
     # Raises error if the cached properties and views do not work
     pickle.loads(pickle.dumps(G, -1))
     deepcopy(G)
+
+
+def test_edge_views_inherit_from_EdgeViewABC():
+    all_edge_view_classes = (v for v in dir(nx.reportviews) if "Edge" in v)
+    for eview_class in all_edge_view_classes:
+        assert issubclass(
+            getattr(nx.reportviews, eview_class), nx.reportviews.EdgeViewABC
+        )

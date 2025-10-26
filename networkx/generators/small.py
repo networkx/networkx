@@ -46,12 +46,15 @@ def _raise_on_directed(func):
     A decorator which inspects the `create_using` argument and raises a
     NetworkX exception when `create_using` is a DiGraph (class or instance) for
     graph generators that do not support directed outputs.
+
+    `create_using` may be a keyword argument or the first positional argument.
     """
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if kwargs.get("create_using") is not None:
-            G = nx.empty_graph(create_using=kwargs["create_using"])
+        create_using = args[0] if args else kwargs.get("create_using")
+        if create_using is not None:
+            G = nx.empty_graph(create_using=create_using)
             if G.is_directed():
                 raise NetworkXError("Directed Graph not supported")
         return func(*args, **kwargs)
@@ -59,40 +62,56 @@ def _raise_on_directed(func):
     return wrapper
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def LCF_graph(n, shift_list, repeats, create_using=None):
     """
     Return the cubic graph specified in LCF notation.
 
-    LCF notation (LCF=Lederberg-Coxeter-Fruchte) is a compressed
+    LCF (Lederberg-Coxeter-Fruchte) notation[1]_ is a compressed
     notation used in the generation of various cubic Hamiltonian
-    graphs of high symmetry. See, for example, dodecahedral_graph,
-    desargues_graph, heawood_graph and pappus_graph below.
+    graphs of high symmetry. See, for example, `dodecahedral_graph`,
+    `desargues_graph`, `heawood_graph` and `pappus_graph`.
 
-    n (number of nodes)
-      The starting graph is the n-cycle with nodes 0,...,n-1.
-      (The null graph is returned if n < 0.)
+    Nodes are drawn from ``range(n)``. Each node ``n_i`` is connected with
+    node ``n_i + shift % n`` where ``shift`` is given by cycling through
+    the input `shift_list` `repeat` s times.
 
-    shift_list = [s1,s2,..,sk], a list of integer shifts mod n,
+    Parameters
+    ----------
+    n : int
+       The starting graph is the `n`-cycle with nodes ``0, ..., n-1``.
+       The null graph is returned if `n` < 1.
 
-    repeats
-      integer specifying the number of times that shifts in shift_list
-      are successively applied to each v_current in the n-cycle
-      to generate an edge between v_current and v_current+shift mod n.
+    shift_list : list
+       A list of integer shifts mod `n`, ``[s1, s2, .., sk]``
 
-    For v1 cycling through the n-cycle a total of k*repeats
-    with shift cycling through shiftlist repeats times connect
-    v1 with v1+shift mod n
+    repeats : int
+       Integer specifying the number of times that shifts in `shift_list`
+       are successively applied to each current node in the n-cycle
+       to generate an edge between ``n_current`` and ``n_current + shift mod n``.
 
+    Returns
+    -------
+    G : Graph
+       A graph instance created from the specified LCF notation.
+
+    Examples
+    --------
     The utility graph $K_{3,3}$
 
     >>> G = nx.LCF_graph(6, [3, -3], 3)
+    >>> G.edges()
+    EdgeView([(0, 1), (0, 5), (0, 3), (1, 2), (1, 4), (2, 3), (2, 5), (3, 4), (4, 5)])
 
-    The Heawood graph
+    The Heawood graph:
 
     >>> G = nx.LCF_graph(14, [5, -5], 7)
+    >>> nx.is_isomorphic(G, nx.heawood_graph())
+    True
 
-    See http://mathworld.wolfram.com/LCFNotation.html for a description
-    and references.
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/LCF_notation
 
     """
     if n <= 0:
@@ -125,6 +144,7 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def bull_graph(create_using=None):
     """
     Returns the Bull Graph
@@ -158,6 +178,7 @@ def bull_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def chvatal_graph(create_using=None):
     """
     Returns the Chvátal Graph
@@ -202,6 +223,7 @@ def chvatal_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def cubical_graph(create_using=None):
     """
     Returns the 3-regular Platonic Cubical Graph
@@ -222,6 +244,10 @@ def cubical_graph(create_using=None):
     G : networkx Graph
         A cubical graph with 8 nodes and 12 edges
 
+    See Also
+    --------
+    tetrahedral_graph, octahedral_graph, dodecahedral_graph, icosahedral_graph
+
     References
     ----------
     .. [1] https://en.wikipedia.org/wiki/Cube#Cubical_graph
@@ -240,10 +266,11 @@ def cubical_graph(create_using=None):
         },
         create_using=create_using,
     )
-    G.name = ("Platonic Cubical Graph",)
+    G.name = "Platonic Cubical Graph"
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def desargues_graph(create_using=None):
     """
     Returns the Desargues Graph
@@ -274,6 +301,7 @@ def desargues_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def diamond_graph(create_using=None):
     """
     Returns the Diamond graph
@@ -302,6 +330,7 @@ def diamond_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def dodecahedral_graph(create_using=None):
     """
     Returns the Platonic Dodecahedral graph.
@@ -321,6 +350,10 @@ def dodecahedral_graph(create_using=None):
     G : networkx Graph
         Dodecahedral Graph with 20 nodes and 30 edges
 
+    See Also
+    --------
+    tetrahedral_graph, cubical_graph, octahedral_graph, icosahedral_graph
+
     References
     ----------
     .. [1] https://en.wikipedia.org/wiki/Regular_dodecahedron#Dodecahedral_graph
@@ -332,6 +365,7 @@ def dodecahedral_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def frucht_graph(create_using=None):
     """
     Returns the Frucht Graph.
@@ -378,6 +412,7 @@ def frucht_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def heawood_graph(create_using=None):
     """
     Returns the Heawood Graph, a (3,6) cage.
@@ -411,6 +446,7 @@ def heawood_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def hoffman_singleton_graph():
     """
     Returns the Hoffman-Singleton Graph.
@@ -454,6 +490,7 @@ def hoffman_singleton_graph():
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def house_graph(create_using=None):
     """
     Returns the House graph (square with triangle on top)
@@ -484,6 +521,7 @@ def house_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def house_x_graph(create_using=None):
     """
     Returns the House graph with a cross inside the house square.
@@ -513,6 +551,7 @@ def house_x_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def icosahedral_graph(create_using=None):
     """
     Returns the Platonic Icosahedral graph.
@@ -530,6 +569,10 @@ def icosahedral_graph(create_using=None):
     -------
     G : networkx Graph
         Icosahedral graph with 12 nodes and 30 edges.
+
+    See Also
+    --------
+    tetrahedral_graph, cubical_graph, octahedral_graph, dodecahedral_graph
 
     References
     ----------
@@ -555,6 +598,7 @@ def icosahedral_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def krackhardt_kite_graph(create_using=None):
     """
     Returns the Krackhardt Kite Social Network.
@@ -604,6 +648,7 @@ def krackhardt_kite_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def moebius_kantor_graph(create_using=None):
     """
     Returns the Moebius-Kantor graph.
@@ -633,6 +678,7 @@ def moebius_kantor_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def octahedral_graph(create_using=None):
     """
     Returns the Platonic Octahedral graph.
@@ -653,6 +699,10 @@ def octahedral_graph(create_using=None):
     G : networkx Graph
         Octahedral graph
 
+    See Also
+    --------
+    tetrahedral_graph, cubical_graph, dodecahedral_graph, icosahedral_graph
+
     References
     ----------
     .. [1] https://mathworld.wolfram.com/OctahedralGraph.html
@@ -667,6 +717,7 @@ def octahedral_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def pappus_graph():
     """
     Returns the Pappus graph.
@@ -690,6 +741,7 @@ def pappus_graph():
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def petersen_graph(create_using=None):
     """
     Returns the Petersen graph.
@@ -733,6 +785,7 @@ def petersen_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def sedgewick_maze_graph(create_using=None):
     """
     Return a small maze with a cycle.
@@ -765,6 +818,7 @@ def sedgewick_maze_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def tetrahedral_graph(create_using=None):
     """
     Returns the 3-regular Platonic Tetrahedral graph.
@@ -781,7 +835,11 @@ def tetrahedral_graph(create_using=None):
     Returns
     -------
     G : networkx Graph
-        Tetrahedral Grpah
+        Tetrahedral Graph
+
+    See Also
+    --------
+    cubical_graph, octahedral_graph, dodecahedral_graph, icosahedral_graph
 
     References
     ----------
@@ -789,11 +847,12 @@ def tetrahedral_graph(create_using=None):
 
     """
     G = complete_graph(4, create_using)
-    G.name = "Platonic Tetrahedral graph"
+    G.name = "Platonic Tetrahedral Graph"
     return G
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def truncated_cube_graph(create_using=None):
     """
     Returns the skeleton of the truncated cube.
@@ -851,6 +910,7 @@ def truncated_cube_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def truncated_tetrahedron_graph(create_using=None):
     """
     Returns the skeleton of the truncated Platonic tetrahedron.
@@ -881,6 +941,7 @@ def truncated_tetrahedron_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def tutte_graph(create_using=None):
     """
     Returns the Tutte graph.

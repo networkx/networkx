@@ -3,7 +3,7 @@
 Football
 ========
 
-Load football network in GML format and compute some network statistcs.
+Load football network in GML format and compute some network statistics.
 
 Shows how to download GML graph in a zipped file, unpack it, and load
 into a NetworkX graph.
