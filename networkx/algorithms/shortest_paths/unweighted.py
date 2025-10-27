@@ -35,7 +35,7 @@ def single_source_shortest_path_length(G, source, cutoff=None):
     Returns
     -------
     lengths : dict
-        Dict keyed by target node to shortest path length from source node.
+        Dict keyed by node to shortest path length from source node.
 
     Examples
     --------
@@ -211,15 +211,9 @@ def all_pairs_shortest_path_length(G, cutoff=None):
     Only include paths with length less than or equal to the `cutoff` keyword
     argument:
 
-    >>> length = dict(nx.all_pairs_shortest_path_length(G, cutoff=2))
-    >>> for node in [0, 1, 2, 3, 4]:
-    ...     nlen = length[1][node] if node in length[1] else "N/A"
-    ...     print(f"1 - {node}: {nlen}")
-    1 - 0: 1
-    1 - 1: 0
-    1 - 2: 1
-    1 - 3: 2
-    1 - 4: N/A
+    >>> path_lengths = dict(nx.all_pairs_shortest_path_length(G, cutoff=2))
+    >>> path_lengths[1]  # node 4 is too far away to appear
+    {1: 0, 0: 1, 2: 1, 3: 2}
     """
     length = single_source_shortest_path_length
     # TODO This can be trivially parallelized.
