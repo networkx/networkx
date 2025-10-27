@@ -45,7 +45,7 @@ class TestImmediateDominators:
         """
         edges = [(1, 2), (2, 1), (3, 2), (4, 1), (5, 3), (5, 4)]
         G = nx.DiGraph(edges)
-        assert nx.immediate_dominators(G, 5) == dict.fromkeys(range(1, 6), 5)
+        assert nx.immediate_dominators(G, 5) == {i: 5 for i in range(1, 6)}
 
     def test_irreducible2(self):
         """
@@ -56,7 +56,7 @@ class TestImmediateDominators:
         edges = [(1, 2), (2, 1), (2, 3), (3, 2), (4, 2), (4, 3), (5, 1), (6, 4), (6, 5)]
         G = nx.DiGraph(edges)
         result = nx.immediate_dominators(G, 6)
-        assert result == dict.fromkeys(range(1, 7), 6)
+        assert result == {i: 6 for i in range(1, 7)}
 
     def test_domrel_png(self):
         # Graph taken from https://commons.wikipedia.org/wiki/File:Domrel.png

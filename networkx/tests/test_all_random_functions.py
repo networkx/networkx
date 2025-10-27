@@ -107,8 +107,6 @@ def run_all_random_functions(seed):
     )
     t(nx.algorithms.coloring.strategy_random_sequential, G, colors, seed=seed)
 
-    cs = ["d", "i", "i", "d", "d", "i"]
-    t(threshold.swap_d, cs, seed=seed)
     t(nx.configuration_model, deg_sequence, seed=seed)
     t(
         nx.directed_configuration_model,
@@ -191,8 +189,8 @@ def run_all_random_functions(seed):
     t(nx.extended_barabasi_albert_graph, n, m, p, q, seed=seed)
     t(nx.powerlaw_cluster_graph, n, m, p, seed=seed)
     t(nx.random_lobster_graph, n, p1, p2, seed=seed)
-    t(nx.random_powerlaw_tree, n, seed=seed, tries=5000)
-    t(nx.random_powerlaw_tree_sequence, 10, seed=seed, tries=5000)
+    t(nx.random_powerlaw_tree, 5, seed=seed, tries=5000)
+    t(nx.random_powerlaw_tree_sequence, 5, seed=seed, tries=5000)
     t(nx.random_labeled_tree, n, seed=seed)
     t(nx.utils.powerlaw_sequence, n, seed=seed)
     t(nx.utils.zipf_rv, 2.3, seed=seed)

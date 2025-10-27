@@ -564,10 +564,11 @@ def spring_layout(
     >>> # suppress the returned dict and store on the graph directly
     >>> _ = nx.spring_layout(G, seed=123, store_pos_as="pos")
     >>> pprint(nx.get_node_attributes(G, "pos"))
-    {0: array([-0.61520994, -1.        ]),
-     1: array([-0.21840965, -0.35501755]),
-     2: array([0.21841264, 0.35502078]),
-     3: array([0.61520696, 0.99999677])}
+    {0: array([-0.61495802, -1.        ]),
+     1: array([-0.21789544, -0.35432583]),
+     2: array([0.21847843, 0.35527369]),
+     3: array([0.61437502, 0.99905215])}
+
 
     # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
@@ -704,7 +705,9 @@ def _fruchterman_reingold(
         )
         # update positions
         length = np.linalg.norm(displacement, axis=-1)
-        length = np.where(length < 0.01, 0.1, length)
+        # Threshold the minimum length prior to position scaling
+        # See gh-8113 for detailed discussion of the threshold
+        length = np.clip(length, a_min=0.01, a_max=None)
         delta_pos = np.einsum("ij,i->ij", displacement, t / length)
         if fixed is not None:
             # don't change positions of fixed nodes
@@ -787,7 +790,7 @@ def _sparse_fruchterman_reingold(
             # distance between points
             distance = np.sqrt((delta**2).sum(axis=0))
             # enforce minimum distance of 0.01
-            distance = np.where(distance < 0.01, 0.01, distance)
+            distance = np.clip(distance, a_min=0.01, a_max=None)
             # the adjacency matrix row
             Ai = A.getrowview(i).toarray()  # TODO: revisit w/ sparse 1D container
             # displacement "force"
@@ -796,7 +799,9 @@ def _sparse_fruchterman_reingold(
             ).sum(axis=1)
         # update positions
         length = np.sqrt((displacement**2).sum(axis=0))
-        length = np.where(length < 0.01, 0.1, length)
+        # Threshold the minimum length prior to position scaling
+        # See gh-8113 for detailed discussion of the threshold
+        length = np.clip(length, a_min=0.01, a_max=None)
         delta_pos = (displacement * t / length).T
         pos += delta_pos
         # cool temperature
@@ -1609,7 +1614,6 @@ def forceatlas2_layout(
     node_mass=None,
     node_size=None,
     weight=None,
-    dissuade_hubs=False,
     linlog=False,
     seed=None,
     dim=2,
@@ -1649,8 +1653,6 @@ def forceatlas2_layout(
     weight : string or None, optional (default: None)
         The edge attribute that holds the numerical value used for
         the edge weight. If None, then all edge weights are 1.
-    dissuade_hubs : bool (default: False)
-        Prevents the clustering of hub nodes.
     linlog : bool (default: False)
         Uses logarithmic attraction instead of linear.
     seed : int, RandomState instance or None  optional (default=None)
