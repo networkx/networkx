@@ -84,37 +84,33 @@ class TestBiadjacencyMatrix:
         assert edges_equal(B.edges(), [(0, 2), (0, 3), (0, 3), (1, 3), (1, 3), (1, 3)])
 
     @pytest.mark.parametrize(
-        "top_nodelist,bottom_nodelist,create_using",
+        "row_order,column_order,create_using",
         itertools.product(
             (None, ("a", "b"), (25, (0, 5, 10))),
             (None, ("c", "d"), (26, (0, 5, 10))),
             (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph),
         ),
     )
-    def test_from_biadjacency_nodelist(
-        self, top_nodelist, bottom_nodelist, create_using
-    ):
+    def test_from_biadjacency_nodelist(self, row_order, column_order, create_using):
         M = sp.sparse.csc_array([[1, 2], [0, 3]])
         B_default = bipartite.from_biadjacency_matrix(M, create_using=create_using())
         B = bipartite.from_biadjacency_matrix(
             M,
             create_using=create_using(),
-            top_nodelist=top_nodelist,
-            bottom_nodelist=bottom_nodelist,
+            row_order=row_order,
+            column_order=column_order,
         )
 
-        top_nodelist = top_nodelist if top_nodelist else list(range(M.shape[0]))
-        bottom_nodelist = (
-            bottom_nodelist
-            if bottom_nodelist
+        row_order = row_order if row_order else list(range(M.shape[0]))
+        column_order = (
+            column_order
+            if column_order
             else list(range(M.shape[0], M.shape[0] + M.shape[1]))
         )
 
-        top_map = dict(enumerate(top_nodelist))
+        top_map = dict(enumerate(row_order))
 
-        bottom_map = {
-            idx + M.shape[0]: node for idx, node in enumerate(bottom_nodelist)
-        }
+        bottom_map = {idx + M.shape[0]: node for idx, node in enumerate(column_order)}
 
         def map_edges(edges):
             return [(top_map[u], bottom_map[v]) for u, v in edges]
@@ -125,18 +121,18 @@ class TestBiadjacencyMatrix:
     def test_invalid_from_biadjacency_nodelist(self):
         M = sp.sparse.csc_array([[1, 2], [0, 3]])
         # For when top nodelist has the wrong length
-        top_nodelist_invalid = ["a", "b", "c"]
+        row_order_invalid = ["a", "b", "c"]
         # For when bottom nodelist has the wrong length
-        bottom_nodelist_invalid = ["c", "d", "e"]
+        column_order_invalid = ["c", "d", "e"]
         with pytest.raises(ValueError):
             bipartite.from_biadjacency_matrix(
                 M,
                 create_using=nx.MultiGraph(),
-                top_nodelist=top_nodelist_invalid,
+                row_order=row_order_invalid,
             )
         with pytest.raises(ValueError):
             bipartite.from_biadjacency_matrix(
                 M,
                 create_using=nx.MultiGraph(),
-                bottom_nodelist=bottom_nodelist_invalid,
+                column_order=column_order_invalid,
             )
