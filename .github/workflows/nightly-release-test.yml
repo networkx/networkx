@@ -10,11 +10,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos]
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
@@ -27,4 +27,4 @@ jobs:
 
       - name: Test NetworkX
         run: |
-          pytest --doctest-modules --durations=10 --pyargs networkx
+          pytest -n auto --doctest-modules --durations=10 --pyargs networkx

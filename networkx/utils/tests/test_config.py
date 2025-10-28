@@ -137,6 +137,14 @@ def test_nxconfig():
     with pytest.raises(ValueError, match="Unknown warning "):
         nx.config.warnings_to_ignore = {"bad value"}
 
+    prev = nx.config.backend_priority
+    try:
+        nx.config.backend_priority = ["networkx"]
+        assert isinstance(nx.config.backend_priority, BackendPriorities)
+        assert nx.config.backend_priority.algos == ["networkx"]
+    finally:
+        nx.config.backend_priority = prev
+
 
 def test_nxconfig_context():
     # We do some special handling so that `nx.config.backend_priority = val`

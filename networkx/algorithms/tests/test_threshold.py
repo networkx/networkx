@@ -11,6 +11,12 @@ import networkx.algorithms.threshold as nxt
 cnlti = nx.convert_node_labels_to_integers
 
 
+def test_threshold_graph_invalid_creation_sequence():
+    bad_creation_sequence = [2.0, 2, 1, 0]  # floats are not allowed
+    with pytest.raises(ValueError, match="not a valid creation sequence"):
+        nxt.threshold_graph(bad_creation_sequence)
+
+
 class TestGeneratorThreshold:
     def test_threshold_sequence_graph_test(self):
         G = nx.star_graph(10)
@@ -239,8 +245,6 @@ class TestGeneratorThreshold:
     def test_tg_creation_routines(self):
         s = nxt.left_d_threshold_sequence(5, 7)
         s = nxt.right_d_threshold_sequence(5, 7)
-        s1 = nxt.swap_d(s, 1.0, 1.0)
-        s1 = nxt.swap_d(s, 1.0, 1.0, seed=1)
 
     def test_eigenvectors(self):
         np = pytest.importorskip("numpy")

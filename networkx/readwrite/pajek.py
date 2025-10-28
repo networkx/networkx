@@ -111,7 +111,7 @@ def write_pajek(G, path, encoding="UTF-8"):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_pajek(G, "test.net")
+    >>> nx.write_pajek(G, "test.netP4")
 
     Warnings
     --------

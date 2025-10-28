@@ -61,13 +61,21 @@ def _get_backends(group, *, load_and_call=False):
     Notes
     ------
     If a backend is defined more than once, a warning is issued.
+    If a backend name is not a valid Python identifier, the backend is
+    ignored and a warning is issued.
     The "nx_loopback" backend is removed if it exists, as it is only available during testing.
     A warning is displayed if an error occurs while loading a backend.
     """
     items = entry_points(group=group)
     rv = {}
     for ep in items:
-        if ep.name in rv:
+        if not ep.name.isidentifier():
+            warnings.warn(
+                f"networkx backend name is not a valid identifier: {ep.name!r}. Ignoring.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        elif ep.name in rv:
             warnings.warn(
                 f"networkx backend defined more than once: {ep.name}",
                 RuntimeWarning,
@@ -136,7 +144,7 @@ def _set_configs_from_environment():
     # Config has __new__ method that returns instance with a unique type!
     type(backend_config).__doc__ = "All installed NetworkX backends and their configs."
 
-    backend_priority = BackendPriorities(algos=[], generators=[])
+    backend_priority = BackendPriorities(algos=[], generators=[], classes=[])
 
     config = NetworkXConfig(
         backend_priority=backend_priority,
@@ -250,12 +258,17 @@ class _dispatchable:
             function based on input graph types.
 
         name : str, optional (default: name of `func`)
-            The name for the function as used for dispatching. If not provided,
-            the name of ``func`` will be used. ``name`` is useful to avoid name
-            conflicts, as all dispatched functions live in a single namespace.
-            For example, ``nx.tournament.is_strongly_connected`` had a name
-            conflict with the standard ``nx.is_strongly_connected``, so we used
-            ``@_dispatchable(name="tournament_is_strongly_connected")``.
+            The dispatch name for the function. It defaults to the name of `func`,
+            but can be set manually to avoid conflicts in the global dispatch
+            namespace. A common pattern is to prefix the function name with its
+            module or submodule to make it unique. For example:
+
+                - ``@_dispatchable(name="tournament_is_strongly_connected")``
+                  resolves conflict between ``nx.tournament.is_strongly_connected``
+                  and ``nx.is_strongly_connected``.
+                - ``@_dispatchable(name="approximate_node_connectivity")``
+                  resolves conflict between ``nx.approximation.node_connectivity``
+                  and ``nx.connectivity.node_connectivity``.
 
         graphs : str or dict or None, optional (default: "G")
             If a string, the parameter name of the graph, which must be the first
@@ -455,12 +468,15 @@ class _dispatchable:
 
         if name in _registered_algorithms:
             raise KeyError(
-                f"Algorithm already exists in dispatch registry: {name}"
+                f"Algorithm already exists in dispatch namespace: {name}. "
+                "Fix by assigning a unique `name=` in the `@_dispatchable` decorator."
             ) from None
         # Use the `argmap` decorator to turn `self` into a function. This does result
         # in small additional overhead compared to calling `_dispatchable` directly,
         # but `argmap` has the property that it can stack with other `argmap`
         # decorators "for free". Being a function is better for REPRs and type-checkers.
+        # It also allows `_dispatchable` to be used on class methods, since functions
+        # define `__get__`. Without using `argmap`, we would need to define `__get__`.
         self = argmap(_do_nothing)(self)
         _registered_algorithms[name] = self
         return self
@@ -604,7 +620,9 @@ class _dispatchable:
 
         backend_priority = nx.config.backend_priority.get(
             self.name,
-            nx.config.backend_priority.generators
+            nx.config.backend_priority.classes
+            if self.name.endswith("__new__")
+            else nx.config.backend_priority.generators
             if self._returns_graph
             else nx.config.backend_priority.algos,
         )
@@ -1807,6 +1825,10 @@ class _dispatchable:
                     f"{self.name} returned a numpy scalar {result} ({type(result)})"
                 ) from exc
             check_result(result)
+
+        if self.name.endswith("__new__"):
+            # Graph is not yet done initializing; no sense doing more here
+            return result
 
         def assert_graphs_equal(G1, G2, strict=True):
             assert G1.number_of_nodes() == G2.number_of_nodes()

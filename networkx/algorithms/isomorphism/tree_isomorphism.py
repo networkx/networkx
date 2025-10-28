@@ -18,6 +18,8 @@ by Matthew Suderman
 http://crypto.cs.mcgill.ca/~crepeau/CS250/2004/HW5+.pdf
 """
 
+from collections import defaultdict
+
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -69,28 +71,6 @@ def root_trees(t1, root1, t2, root2):
         namemap[new] = old
 
     return (dT, namemap, newroot1, newroot2)
-
-
-# figure out the level of each node, with 0 at root
-@nx._dispatchable
-def assign_levels(G, root):
-    level = {}
-    level[root] = 0
-    for v1, v2 in nx.bfs_edges(G, root):
-        level[v2] = level[v1] + 1
-
-    return level
-
-
-# now group the nodes at each level
-def group_by_levels(levels):
-    L = {}
-    for n, lev in levels.items():
-        if lev not in L:
-            L[lev] = []
-        L[lev].append(n)
-
-    return L
 
 
 @nx._dispatchable(graphs={"t1": 0, "t2": 2})
@@ -150,14 +130,13 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
     # with unique names
     (dT, namemap, newroot1, newroot2) = root_trees(t1, root1, t2, root2)
 
-    # compute the distance from the root, with 0 for our
-    levels = assign_levels(dT, 0)
+    # Group nodes by their distance from the root
+    L = defaultdict(list)
+    for n, dist in nx.shortest_path_length(dT, source=0).items():
+        L[dist].append(n)
 
     # height
-    h = max(levels.values())
-
-    # collect nodes into a dict by level
-    L = group_by_levels(levels)
+    h = max(L)
 
     # each node has a label, initially set to 0
     label = {v: 0 for v in dT}
@@ -256,15 +235,9 @@ def tree_isomorphism(t1, t2):
     if not nx.is_tree(t2):
         raise nx.NetworkXError("t2 is not a tree")
 
-    # To be isomorphic, t1 and t2 must have the same number of nodes.
-    if nx.number_of_nodes(t1) != nx.number_of_nodes(t2):
-        return []
-
-    # Another shortcut is that the sorted degree sequences need to be the same.
-    degree_sequence1 = sorted(d for (_, d) in t1.degree())
-    degree_sequence2 = sorted(d for (_, d) in t2.degree())
-
-    if degree_sequence1 != degree_sequence2:
+    # To be isomorphic, t1 and t2 must have the same number of nodes and sorted
+    # degree sequences
+    if not nx.faster_could_be_isomorphic(t1, t2):
         return []
 
     # A tree can have either 1 or 2 centers.

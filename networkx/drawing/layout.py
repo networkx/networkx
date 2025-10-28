@@ -100,12 +100,19 @@ def random_layout(G, center=None, dim=2, seed=None, store_pos_as=None):
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.lollipop_graph(4, 3)
     >>> pos = nx.random_layout(G)
     >>> # suppress the returned dict and store on the graph directly
     >>> _ = nx.random_layout(G, seed=42, store_pos_as="pos")
-    >>> nx.get_node_attributes(G, "pos")
-    {0: array([0.37454012, 0.9507143 ], dtype=float32), 1: array([0.7319939, 0.5986585], dtype=float32), 2: array([0.15601864, 0.15599452], dtype=float32), 3: array([0.05808361, 0.8661761 ], dtype=float32), 4: array([0.601115 , 0.7080726], dtype=float32), 5: array([0.02058449, 0.96990985], dtype=float32), 6: array([0.83244264, 0.21233912], dtype=float32)}
+    >>> pprint(nx.get_node_attributes(G, "pos"))
+    {0: array([0.37454012, 0.9507143 ], dtype=float32),
+     1: array([0.7319939, 0.5986585], dtype=float32),
+     2: array([0.15601864, 0.15599452], dtype=float32),
+     3: array([0.05808361, 0.8661761 ], dtype=float32),
+     4: array([0.601115 , 0.7080726], dtype=float32),
+     5: array([0.02058449, 0.96990985], dtype=float32),
+     6: array([0.83244264, 0.21233912], dtype=float32)}
     """
     import numpy as np
 
@@ -157,12 +164,17 @@ def circular_layout(G, scale=1, center=None, dim=2, store_pos_as=None):
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.path_graph(4)
     >>> pos = nx.circular_layout(G)
     >>> # suppress the returned dict and store on the graph directly
     >>> _ = nx.circular_layout(G, store_pos_as="pos")
-    >>> nx.get_node_attributes(G, "pos")
-    {0: array([9.99999986e-01, 2.18556937e-08]), 1: array([-3.57647606e-08,  1.00000000e+00]), 2: array([-9.9999997e-01, -6.5567081e-08]), 3: array([ 1.98715071e-08, -9.99999956e-01])}
+    >>> pprint(nx.get_node_attributes(G, "pos"))
+    {0: array([9.99999986e-01, 2.18556937e-08]),
+     1: array([-3.57647606e-08,  1.00000000e+00]),
+     2: array([-9.9999997e-01, -6.5567081e-08]),
+     3: array([ 1.98715071e-08, -9.99999956e-01])}
+
 
     Notes
     -----
@@ -244,13 +256,17 @@ def shell_layout(
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.path_graph(4)
     >>> shells = [[0], [1, 2, 3]]
     >>> pos = nx.shell_layout(G, shells)
     >>> # suppress the returned dict and store on the graph directly
     >>> _ = nx.shell_layout(G, shells, store_pos_as="pos")
-    >>> nx.get_node_attributes(G, "pos")
-    {0: array([0., 0.]), 1: array([-5.00000000e-01, -4.37113883e-08]), 2: array([ 0.24999996, -0.43301272]), 3: array([0.24999981, 0.43301281])}
+    >>> pprint(nx.get_node_attributes(G, "pos"))
+    {0: array([0., 0.]),
+     1: array([-5.00000000e-01, -4.37113883e-08]),
+     2: array([ 0.24999996, -0.43301272]),
+     3: array([0.24999981, 0.43301281])}
 
     Notes
     -----
@@ -366,8 +382,14 @@ def bipartite_layout(
     directly on the nodes:
 
     >>> _ = nx.bipartite_layout(G, nodes=bottom, store_pos_as="pos")
-    >>> nx.get_node_attributes(G, "pos")
-    {0: array([ 1.  , -0.75]), 1: array([1., 0.]), 2: array([1.  , 0.75]), 3: array([-1.  , -0.75]), 4: array([-1.,  0.]), 5: array([-1.  ,  0.75])}
+    >>> from pprint import pprint
+    >>> pprint(nx.get_node_attributes(G, "pos"))
+    {0: array([ 1.  , -0.75]),
+     1: array([1., 0.]),
+     2: array([1.  , 0.75]),
+     3: array([-1.  , -0.75]),
+     4: array([-1.,  0.]),
+     5: array([-1.  ,  0.75])}
 
 
     The ``bipartite_layout`` function can be used with non-bipartite graphs
@@ -426,7 +448,7 @@ def bipartite_layout(
     return pos
 
 
-@np_random_state(10)
+@np_random_state("seed")
 def spring_layout(
     G,
     k=None,
@@ -536,12 +558,17 @@ def spring_layout(
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.path_graph(4)
     >>> pos = nx.spring_layout(G)
     >>> # suppress the returned dict and store on the graph directly
     >>> _ = nx.spring_layout(G, seed=123, store_pos_as="pos")
-    >>> nx.get_node_attributes(G, "pos")
-    {0: array([-0.61520994, -1.        ]), 1: array([-0.21840965, -0.35501755]), 2: array([0.21841264, 0.35502078]), 3: array([0.61520696, 0.99999677])}
+    >>> pprint(nx.get_node_attributes(G, "pos"))
+    {0: array([-0.61495802, -1.        ]),
+     1: array([-0.21789544, -0.35432583]),
+     2: array([0.21847843, 0.35527369]),
+     3: array([0.61437502, 0.99905215])}
+
 
     # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
@@ -561,6 +588,8 @@ def spring_layout(
 
     if method not in ("auto", "force", "energy"):
         raise ValueError("the method must be either auto, force, or energy.")
+    if method == "auto":
+        method = "force" if len(G) < 500 else "energy"
 
     G, center = _process_params(G, center, dim)
 
@@ -595,10 +624,8 @@ def spring_layout(
             nx.set_node_attributes(G, pos, store_pos_as)
         return pos
 
-    try:
-        # Sparse matrix
-        if method in ["auto", "force"] and len(G) < 500:
-            raise ValueError
+    # Sparse matrix
+    if len(G) >= 500 or method == "energy":
         A = nx.to_scipy_sparse_array(G, weight=weight, dtype="f")
         if k is None and fixed is not None:
             # We must adjust k by domain size for layouts not near 1x1
@@ -607,7 +634,7 @@ def spring_layout(
         pos = _sparse_fruchterman_reingold(
             A, k, pos_arr, fixed, iterations, threshold, dim, seed, method, gravity
         )
-    except ValueError:
+    else:
         A = nx.to_numpy_array(G, weight=weight)
         if k is None and fixed is not None:
             # We must adjust k by domain size for layouts not near 1x1
@@ -678,7 +705,9 @@ def _fruchterman_reingold(
         )
         # update positions
         length = np.linalg.norm(displacement, axis=-1)
-        length = np.where(length < 0.01, 0.1, length)
+        # Threshold the minimum length prior to position scaling
+        # See gh-8113 for detailed discussion of the threshold
+        length = np.clip(length, a_min=0.01, a_max=None)
         delta_pos = np.einsum("ij,i->ij", displacement, t / length)
         if fixed is not None:
             # don't change positions of fixed nodes
@@ -761,7 +790,7 @@ def _sparse_fruchterman_reingold(
             # distance between points
             distance = np.sqrt((delta**2).sum(axis=0))
             # enforce minimum distance of 0.01
-            distance = np.where(distance < 0.01, 0.01, distance)
+            distance = np.clip(distance, a_min=0.01, a_max=None)
             # the adjacency matrix row
             Ai = A.getrowview(i).toarray()  # TODO: revisit w/ sparse 1D container
             # displacement "force"
@@ -770,7 +799,9 @@ def _sparse_fruchterman_reingold(
             ).sum(axis=1)
         # update positions
         length = np.sqrt((displacement**2).sum(axis=0))
-        length = np.where(length < 0.01, 0.1, length)
+        # Threshold the minimum length prior to position scaling
+        # See gh-8113 for detailed discussion of the threshold
+        length = np.clip(length, a_min=0.01, a_max=None)
         delta_pos = (displacement * t / length).T
         pos += delta_pos
         # cool temperature
@@ -894,12 +925,16 @@ def kamada_kawai_layout(
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.path_graph(4)
     >>> pos = nx.kamada_kawai_layout(G)
     >>> # suppress the returned dict and store on the graph directly
     >>> _ = nx.kamada_kawai_layout(G, store_pos_as="pos")
-    >>> nx.get_node_attributes(G, "pos")
-    {0: array([0.99996577, 0.99366857]), 1: array([0.32913544, 0.33543827]), 2: array([-0.33544334, -0.32910684]), 3: array([-0.99365787, -1.        ])}
+    >>> pprint(nx.get_node_attributes(G, "pos"))
+    {0: array([0.99996577, 0.99366857]),
+     1: array([0.32913544, 0.33543827]),
+     2: array([-0.33544334, -0.32910684]),
+     3: array([-0.99365787, -1.        ])}
     """
     import numpy as np
 
@@ -1025,12 +1060,17 @@ def spectral_layout(G, weight="weight", scale=1, center=None, dim=2, store_pos_a
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.path_graph(4)
     >>> pos = nx.spectral_layout(G)
     >>> # suppress the returned dict and store on the graph directly
     >>> _ = nx.spectral_layout(G, store_pos_as="pos")
-    >>> nx.get_node_attributes(G, "pos")
-    {0: array([-1.        ,  0.76536686]), 1: array([-0.41421356, -0.76536686]), 2: array([ 0.41421356, -0.76536686]), 3: array([1.        , 0.76536686])}
+    >>> pprint(nx.get_node_attributes(G, "pos"))
+    {0: array([-1.        ,  0.76536686]),
+     1: array([-0.41421356, -0.76536686]),
+     2: array([ 0.41421356, -0.76536686]),
+     3: array([1.        , 0.76536686])}
+
 
     Notes
     -----
@@ -1114,8 +1154,7 @@ def _sparse_spectral(A, dim=2):
         raise nx.NetworkXError(msg) from err
 
     # form Laplacian matrix
-    # TODO: Rm csr_array wrapper in favor of spdiags array constructor when available
-    D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, nnodes, nnodes))
+    D = sp.sparse.dia_array((A.sum(axis=1), 0), shape=(nnodes, nnodes)).tocsr()
     L = D - A
 
     k = dim + 1
@@ -1162,12 +1201,16 @@ def planar_layout(G, scale=1, center=None, dim=2, store_pos_as=None):
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.path_graph(4)
     >>> pos = nx.planar_layout(G)
     >>> # suppress the returned dict and store on the graph directly
     >>> _ = nx.planar_layout(G, store_pos_as="pos")
-    >>> nx.get_node_attributes(G, "pos")
-    {0: array([-0.77777778, -0.33333333]), 1: array([ 1.        , -0.33333333]), 2: array([0.11111111, 0.55555556]), 3: array([-0.33333333,  0.11111111])}
+    >>> pprint(nx.get_node_attributes(G, "pos"))
+    {0: array([-0.77777778, -0.33333333]),
+     1: array([ 1.        , -0.33333333]),
+     2: array([0.11111111, 0.55555556]),
+     3: array([-0.33333333,  0.11111111])}
     """
     import numpy as np
 
@@ -1249,13 +1292,17 @@ def spiral_layout(
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.path_graph(4)
     >>> pos = nx.spiral_layout(G)
     >>> nx.draw(G, pos=pos)
     >>> # suppress the returned dict and store on the graph directly
     >>> _ = nx.spiral_layout(G, store_pos_as="pos")
-    >>> nx.get_node_attributes(G, "pos")
-    {0: array([-0.64153279, -0.68555087]), 1: array([-0.03307913, -0.46344795]), 2: array([0.34927952, 0.14899882]), 3: array([0.32533239, 1.        ])}
+    >>> pprint(nx.get_node_attributes(G, "pos"))
+    {0: array([-0.64153279, -0.68555087]),
+     1: array([-0.03307913, -0.46344795]),
+     2: array([0.34927952, 0.14899882]),
+     3: array([0.32533239, 1.        ])}
 
     Notes
     -----
@@ -1430,36 +1477,30 @@ def arf_layout(
 ):
     """Arf layout for networkx
 
-    The attractive and repulsive forces (arf) layout [1]
-    improves the spring layout in three ways. First, it
-    prevents congestion of highly connected nodes due to
-    strong forcing between nodes. Second, it utilizes the
-    layout space more effectively by preventing large gaps
-    that spring layout tends to create. Lastly, the arf
-    layout represents symmetries in the layout better than
-    the default spring layout.
+    The attractive and repulsive forces (arf) layout [1] improves the spring
+    layout in three ways. First, it prevents congestion of highly connected nodes
+    due to strong forcing between nodes. Second, it utilizes the layout space
+    more effectively by preventing large gaps that spring layout tends to create.
+    Lastly, the arf layout represents symmetries in the layout better than the
+    default spring layout.
 
     Parameters
     ----------
     G : nx.Graph or nx.DiGraph
         Networkx graph.
-
     pos : dict
         Initial  position of  the nodes.  If set  to None  a
         random layout will be used.
-
     scaling : float
         Scales the radius of the circular layout space.
-
     a : float
-        Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation of unconnected sub clusters.
-
+        Strength of springs between connected nodes. Should be larger than 1.
+        The greater a, the clearer the separation of unconnected sub clusters.
     etol : float
-        Gradient sum of spring forces must be larger than `etol` before successful termination.
-
+        Gradient sum of spring forces must be larger than `etol` before successful
+        termination.
     dt : float
         Time step for force differential equation simulations.
-
     max_iter : int
         Max iterations before termination of the algorithm.
     seed : int, RandomState instance or None  optional (default=None)
@@ -1469,16 +1510,10 @@ def arf_layout(
         number generator,
         if None, the random number generator is the RandomState instance used
         by numpy.random.
-
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
         ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
-
-    References
-    .. [1] "Self-Organization Applied to Dynamic Network Layout", M. Geipel,
-            International Journal of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
-            https://doi.org/10.1142/S0129183107011558 https://arxiv.org/abs/0704.1748
 
     Returns
     -------
@@ -1492,6 +1527,13 @@ def arf_layout(
     >>> # suppress the returned dict and store on the graph directly
     >>> G = nx.grid_graph((5, 5))
     >>> _ = nx.arf_layout(G, store_pos_as="pos")
+
+    References
+    ----------
+    .. [1] "Self-Organization Applied to Dynamic Network Layout", M. Geipel,
+            International Journal of Modern Physics C, 2007, Vol 18, No 10,
+            pp. 1537-1549.
+            https://doi.org/10.1142/S0129183107011558 https://arxiv.org/abs/0704.1748
     """
     import warnings
 
@@ -1572,7 +1614,6 @@ def forceatlas2_layout(
     node_mass=None,
     node_size=None,
     weight=None,
-    dissuade_hubs=False,
     linlog=False,
     seed=None,
     dim=2,
@@ -1612,8 +1653,6 @@ def forceatlas2_layout(
     weight : string or None, optional (default: None)
         The edge attribute that holds the numerical value used for
         the edge weight. If None, then all edge weights are 1.
-    dissuade_hubs : bool (default: False)
-        Prevents the clustering of hub nodes.
     linlog : bool (default: False)
         Uses logarithmic attraction instead of linear.
     seed : int, RandomState instance or None  optional (default=None)
@@ -1934,6 +1973,13 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None, store_pos_as
     start : node in `G`
         Starting node for bfs
 
+    align : string (default='vertical')
+        The alignment of nodes within a layer, either `"vertical"` or
+        `"horizontal"`.
+
+    scale : number (default: 1)
+        Scale factor for positions.
+
     center : array-like or None
         Coordinate pair around which to center the layout.
 
@@ -1949,12 +1995,18 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None, store_pos_as
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.path_graph(4)
     >>> pos = nx.bfs_layout(G, 0)
     >>> # suppress the returned dict and store on the graph directly
     >>> _ = nx.bfs_layout(G, 0, store_pos_as="pos")
-    >>> nx.get_node_attributes(G, "pos")
-    {0: array([-1.,  0.]), 1: array([-0.33333333,  0.        ]), 2: array([0.33333333, 0.        ]), 3: array([1., 0.])}
+    >>> pprint(nx.get_node_attributes(G, "pos"))
+    {0: array([-1.,  0.]),
+     1: array([-0.33333333,  0.        ]),
+     2: array([0.33333333, 0.        ]),
+     3: array([1., 0.])}
+
+
 
     Notes
     -----

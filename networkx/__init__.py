@@ -8,7 +8,7 @@ structure, dynamics, and functions of complex networks.
 See https://networkx.org for complete documentation.
 """
 
-__version__ = "3.5rc0.dev0"
+__version__ = "3.5.1rc0.dev0"
 
 
 # These are imported in order as listed
@@ -51,3 +51,12 @@ from networkx.linalg import *
 
 from networkx import drawing
 from networkx.drawing import *
+
+
+def __getattr__(name):
+    if name == "random_tree":
+        raise AttributeError(
+            "nx.random_tree was removed in version 3.4. Use `nx.random_labeled_tree` instead.\n"
+            "See: https://networkx.org/documentation/latest/release/release_3.4.html"
+        )
+    raise AttributeError(f"module 'networkx' has no attribute '{name}'")

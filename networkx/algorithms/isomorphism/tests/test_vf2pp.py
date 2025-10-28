@@ -1024,7 +1024,8 @@ class TestMultiGraphISOVF2pp:
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert not m
 
-        # We connected the new node to opposite sides, so G1 must be symmetrical to G2. Re-structure them to be so
+        # We connected the new node to opposite sides, so G1 must be symmetrical
+        # to G2. Re-structure them to be so
         G1.remove_edges_from([(1, 3), (4, 9), (4, 9), (7, 9)])
         G2.remove_edges_from(
             [

@@ -325,14 +325,16 @@ class TestDAG:
     def test_transitive_closure(self):
         G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
-        assert edges_equal(nx.transitive_closure(G).edges(), solution)
+        assert edges_equal(nx.transitive_closure(G).edges(), solution, directed=True)
         G = nx.DiGraph([(1, 2), (2, 3), (2, 4)])
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4)]
-        assert edges_equal(nx.transitive_closure(G).edges(), solution)
+        assert edges_equal(nx.transitive_closure(G).edges(), solution, directed=True)
         G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
         solution = [(1, 2), (2, 1), (2, 3), (3, 2), (1, 3), (3, 1)]
         soln = sorted(solution + [(n, n) for n in G])
-        assert edges_equal(sorted(nx.transitive_closure(G).edges()), soln)
+        assert edges_equal(
+            sorted(nx.transitive_closure(G).edges()), soln, directed=True
+        )
 
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
@@ -344,7 +346,9 @@ class TestDAG:
 
         G = nx.MultiDiGraph([(1, 2), (2, 3), (3, 4)])
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
-        assert edges_equal(sorted(nx.transitive_closure(G).edges()), solution)
+        assert edges_equal(
+            sorted(nx.transitive_closure(G).edges()), solution, directed=True
+        )
 
         # test if edge data is copied
         G = nx.DiGraph([(1, 2, {"a": 3}), (2, 3, {"b": 0}), (3, 4)])
@@ -366,26 +370,42 @@ class TestDAG:
         G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
         soln = sorted(solution + [(n, n) for n in G])
-        assert edges_equal(nx.transitive_closure(G).edges(), solution)
-        assert edges_equal(nx.transitive_closure(G, False).edges(), solution)
-        assert edges_equal(nx.transitive_closure(G, True).edges(), soln)
-        assert edges_equal(nx.transitive_closure(G, None).edges(), solution)
+        assert edges_equal(nx.transitive_closure(G).edges(), solution, directed=True)
+        assert edges_equal(
+            nx.transitive_closure(G, False).edges(), solution, directed=True
+        )
+        assert edges_equal(nx.transitive_closure(G, True).edges(), soln, directed=True)
+        assert edges_equal(
+            nx.transitive_closure(G, None).edges(), solution, directed=True
+        )
 
         G = nx.DiGraph([(1, 2), (2, 3), (2, 4)])
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4)]
         soln = sorted(solution + [(n, n) for n in G])
-        assert edges_equal(nx.transitive_closure(G).edges(), solution)
-        assert edges_equal(nx.transitive_closure(G, False).edges(), solution)
-        assert edges_equal(nx.transitive_closure(G, True).edges(), soln)
-        assert edges_equal(nx.transitive_closure(G, None).edges(), solution)
+        assert edges_equal(nx.transitive_closure(G).edges(), solution, directed=True)
+        assert edges_equal(
+            nx.transitive_closure(G, False).edges(), solution, directed=True
+        )
+        assert edges_equal(nx.transitive_closure(G, True).edges(), soln, directed=True)
+        assert edges_equal(
+            nx.transitive_closure(G, None).edges(), solution, directed=True
+        )
 
         G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
         solution = sorted([(1, 2), (2, 1), (2, 3), (3, 2), (1, 3), (3, 1)])
         soln = sorted(solution + [(n, n) for n in G])
-        assert edges_equal(sorted(nx.transitive_closure(G).edges()), soln)
-        assert edges_equal(sorted(nx.transitive_closure(G, False).edges()), soln)
-        assert edges_equal(sorted(nx.transitive_closure(G, None).edges()), solution)
-        assert edges_equal(sorted(nx.transitive_closure(G, True).edges()), soln)
+        assert edges_equal(
+            sorted(nx.transitive_closure(G).edges()), soln, directed=True
+        )
+        assert edges_equal(
+            sorted(nx.transitive_closure(G, False).edges()), soln, directed=True
+        )
+        assert edges_equal(
+            sorted(nx.transitive_closure(G, None).edges()), solution, directed=True
+        )
+        assert edges_equal(
+            sorted(nx.transitive_closure(G, True).edges()), soln, directed=True
+        )
 
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
@@ -406,19 +426,23 @@ class TestDAG:
         G = nx.MultiDiGraph([(1, 2), (2, 3), (3, 4)])
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
         soln = sorted(solution + [(n, n) for n in G])
-        assert edges_equal(nx.transitive_closure(G).edges(), solution)
-        assert edges_equal(nx.transitive_closure(G, False).edges(), solution)
-        assert edges_equal(nx.transitive_closure(G, True).edges(), soln)
-        assert edges_equal(nx.transitive_closure(G, None).edges(), solution)
+        assert edges_equal(nx.transitive_closure(G).edges(), solution, directed=True)
+        assert edges_equal(
+            nx.transitive_closure(G, False).edges(), solution, directed=True
+        )
+        assert edges_equal(nx.transitive_closure(G, True).edges(), soln, directed=True)
+        assert edges_equal(
+            nx.transitive_closure(G, None).edges(), solution, directed=True
+        )
 
     def test_transitive_closure_dag(self):
         G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
         transitive_closure = nx.algorithms.dag.transitive_closure_dag
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
-        assert edges_equal(transitive_closure(G).edges(), solution)
+        assert edges_equal(transitive_closure(G).edges(), solution, directed=True)
         G = nx.DiGraph([(1, 2), (2, 3), (2, 4)])
         solution = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4)]
-        assert edges_equal(transitive_closure(G).edges(), solution)
+        assert edges_equal(transitive_closure(G).edges(), solution, directed=True)
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         pytest.raises(nx.NetworkXNotImplemented, transitive_closure, G)
 
@@ -438,11 +462,11 @@ class TestDAG:
         G = nx.DiGraph([(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])
         transitive_reduction = nx.algorithms.dag.transitive_reduction
         solution = [(1, 2), (2, 3), (3, 4)]
-        assert edges_equal(transitive_reduction(G).edges(), solution)
+        assert edges_equal(transitive_reduction(G).edges(), solution, directed=True)
         G = nx.DiGraph([(1, 2), (1, 3), (1, 4), (2, 3), (2, 4)])
         transitive_reduction = nx.algorithms.dag.transitive_reduction
         solution = [(1, 2), (2, 3), (2, 4)]
-        assert edges_equal(transitive_reduction(G).edges(), solution)
+        assert edges_equal(transitive_reduction(G).edges(), solution, directed=True)
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         pytest.raises(nx.NetworkXNotImplemented, transitive_reduction, G)
 
@@ -618,8 +642,25 @@ def test_is_aperiodic_selfloop():
     assert nx.is_aperiodic(G)
 
 
+def test_is_aperiodic_null_graph_raises():
+    G = nx.DiGraph()
+    pytest.raises(nx.NetworkXPointlessConcept, nx.is_aperiodic, G)
+
+
 def test_is_aperiodic_undirected_raises():
-    G = nx.Graph()
+    G = nx.Graph([(1, 2), (2, 3), (3, 1)])
+    pytest.raises(nx.NetworkXError, nx.is_aperiodic, G)
+
+
+def test_is_aperiodic_disconnected_raises():
+    G = nx.DiGraph()
+    nx.add_cycle(G, [0, 1, 2])
+    G.add_edge(3, 3)
+    pytest.raises(nx.NetworkXError, nx.is_aperiodic, G)
+
+
+def test_is_aperiodic_weakly_connected_raises():
+    G = nx.DiGraph([(1, 2), (2, 3)])
     pytest.raises(nx.NetworkXError, nx.is_aperiodic, G)
 
 
@@ -635,27 +676,12 @@ def test_is_aperiodic_bipartite():
     assert not nx.is_aperiodic(G)
 
 
-def test_is_aperiodic_rary_tree():
-    G = nx.full_rary_tree(3, 27, create_using=nx.DiGraph())
-    assert not nx.is_aperiodic(G)
-
-
-def test_is_aperiodic_disconnected():
-    # disconnected graph
+def test_is_aperiodic_single_node():
     G = nx.DiGraph()
-    nx.add_cycle(G, [1, 2, 3, 4])
-    nx.add_cycle(G, [5, 6, 7, 8])
+    G.add_node(0)
     assert not nx.is_aperiodic(G)
-    G.add_edge(1, 3)
-    G.add_edge(5, 7)
+    G.add_edge(0, 0)
     assert nx.is_aperiodic(G)
-
-
-def test_is_aperiodic_disconnected2():
-    G = nx.DiGraph()
-    nx.add_cycle(G, [0, 1, 2])
-    G.add_edge(3, 3)
-    assert not nx.is_aperiodic(G)
 
 
 class TestDagToBranching:
@@ -756,32 +782,6 @@ def test_ancestors_descendants_undirected():
     undirected graphs."""
     G = nx.path_graph(5)
     nx.ancestors(G, 2) == nx.descendants(G, 2) == {0, 1, 3, 4}
-
-
-def test_compute_v_structures_raise():
-    G = nx.Graph()
-    with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
-        nx.compute_v_structures(G)
-
-
-def test_compute_v_structures():
-    edges = [(0, 1), (0, 2), (3, 2)]
-    G = nx.DiGraph(edges)
-
-    v_structs = set(nx.compute_v_structures(G))
-    assert len(v_structs) == 1
-    assert (0, 2, 3) in v_structs
-
-    edges = [("A", "B"), ("C", "B"), ("B", "D"), ("D", "E"), ("G", "E")]
-    G = nx.DiGraph(edges)
-    v_structs = set(nx.compute_v_structures(G))
-    assert len(v_structs) == 2
-
-
-def test_compute_v_structures_deprecated():
-    G = nx.DiGraph()
-    with pytest.deprecated_call():
-        nx.compute_v_structures(G)
 
 
 def test_v_structures_raise():

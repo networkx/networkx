@@ -9,3 +9,4 @@ Wiener Index
    wiener_index
    schultz_index
    gutman_index
+   hyper_wiener_index

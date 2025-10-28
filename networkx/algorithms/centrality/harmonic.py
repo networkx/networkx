@@ -80,10 +80,9 @@ def harmonic_centrality(G, nbunch=None, distance=None, sources=None):
     spl = partial(nx.shortest_path_length, G, weight=distance)
     for v in sources:
         dist = spl(v)
-        for u in nbunch.intersection(dist):
-            d = dist[u]
-            if d == 0:  # handle u == v and edges with 0 weight
-                continue
-            centrality[v if transposed else u] += 1 / d
+        for u, d_uv in dist.items():
+            # Ignore self-loops and edges with 0 weight
+            if d_uv != 0 and u in nbunch:
+                centrality[v if transposed else u] += 1 / d_uv
 
     return centrality

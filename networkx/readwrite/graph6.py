@@ -92,7 +92,7 @@ def from_graph6_bytes(bytes_in):
     Notes
     -----
     Per the graph6 spec, the header (e.g. ``b'>>graph6<<'``) must not be
-    followed by a newline ``\n``.
+    followed by a newline character.
 
     See Also
     --------

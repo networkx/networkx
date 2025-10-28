@@ -11,6 +11,7 @@ doc/networkx_reference.pdf
 doc/networkx_tutorial.pdf
 doc/build
 doc/ghpages_build
+doc/sg_execution_times.rst
 .coverage
 *.class
 
@@ -19,6 +20,7 @@ doc/auto_examples
 doc/modules
 doc/reference/generated
 doc/reference/algorithms/generated
+doc/reference/algorithms/shortest_paths/generated
 doc/reference/classes/generated
 doc/reference/readwrite/generated
 doc/path.to.file

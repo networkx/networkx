@@ -108,7 +108,8 @@ def all_simple_paths(G, source, target, cutoff=None):
        Single node or iterable of nodes at which to end path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths with length <= `cutoff` are returned.
+        where the mathematical "length of a path" is `len(path) -1` (number of edges).
 
     Returns
     -------
@@ -274,7 +275,8 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
        Single node or iterable of nodes at which to end path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths with length <= `cutoff` are returned.
+        Note that the length of an edge path is the number of edges.
 
     Returns
     -------
@@ -324,6 +326,22 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         >>> len(paths)
         1
 
+    You can use the `cutoff` parameter to only generate paths that are
+    shorter than a certain length:
+
+        >>> g = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 5), (1, 4), (1, 5)])
+        >>> for path in sorted(nx.all_simple_edge_paths(g, 1, 5)):
+        ...     print(path)
+        [(1, 2), (2, 3), (3, 4), (4, 5)]
+        [(1, 4), (4, 5)]
+        [(1, 5)]
+        >>> for path in sorted(nx.all_simple_edge_paths(g, 1, 5, cutoff=1)):
+        ...     print(path)
+        [(1, 5)]
+        >>> for path in sorted(nx.all_simple_edge_paths(g, 1, 5, cutoff=2)):
+        ...     print(path)
+        [(1, 4), (4, 5)]
+        [(1, 5)]
 
     Notes
     -----
@@ -886,8 +904,6 @@ def _bidirectional_dijkstra(
             Gsucc = filter_iter(Gsucc)
 
     wt = _weight_function(G, weight)
-    push = heappush
-    pop = heappop
     # Init:   Forward             Backward
     dists = [{}, {}]  # dictionary of final distances
     paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
@@ -897,8 +913,8 @@ def _bidirectional_dijkstra(
     # nodes seen
     c = count()
     # initialize fringe heap
-    push(fringe[0], (0, next(c), source))
-    push(fringe[1], (0, next(c), target))
+    heappush(fringe[0], (0, next(c), source))
+    heappush(fringe[1], (0, next(c), target))
     # neighs for extracting correct neighbor information
     neighs = [Gsucc, Gpred]
     # variables to hold shortest discovered path
@@ -910,7 +926,7 @@ def _bidirectional_dijkstra(
         # dir == 0 is forward direction and dir == 1 is back
         dir = 1 - dir
         # extract closest to expand
-        (dist, _, v) = pop(fringe[dir])
+        (dist, _, v) = heappop(fringe[dir])
         if v in dists[dir]:
             # Shortest path to v has already been found
             continue
@@ -936,7 +952,7 @@ def _bidirectional_dijkstra(
             elif w not in seen[dir] or vwLength < seen[dir][w]:
                 # relaxing
                 seen[dir][w] = vwLength
-                push(fringe[dir], (vwLength, next(c), w))
+                heappush(fringe[dir], (vwLength, next(c), w))
                 paths[dir][w] = paths[dir][v] + [w]
                 if w in seen[0] and w in seen[1]:
                     # see if this path is better than the already
