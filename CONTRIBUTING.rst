@@ -523,7 +523,7 @@ Policies
       `Aditi Juneja <https://github.com/Schefflera-Arboricola>`_,
       or `Ross Barnowski <https://github.com/rossbar>`_ , OR
 
-  - Report the violation by using
+  - Report the violation either anonymously or with your name, using
     `the NumFOCUS Code of Conduct form <https://numfocus.typeform.com/to/ynjGdT>`_.
     The report goes to the independent NumFOCUS Code of Conduct Working Group.
     You can find more information about the group members and the procedure at
