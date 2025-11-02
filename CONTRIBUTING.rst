@@ -502,10 +502,30 @@ Please `report bugs on GitHub <https://github.com/networkx/networkx/issues>`_.
 Policies
 --------
 
-All interactions with the project are subject to the
-:doc:`NetworkX code of conduct <code_of_conduct>`.
+- Deprecation Policies
 
-We also follow these policies:
+  - :doc:`NetworkX deprecation policy <deprecations>`
+  - :external+neps:doc:`Python version support <nep-0029-deprecation_policy>`
 
-* :doc:`NetworkX deprecation policy <deprecations>`
-* :external+neps:doc:`Python version support <nep-0029-deprecation_policy>`
+- Code of Conduct
+
+  This online space is operating under the
+  `NumFOCUS Code of Conduct <https://numfocus.org/code-of-conduct>`_
+  which also governs all interactions within the NetworkX project.
+  See `the NetworkX code of conduct page.
+  <https://networkx.org/documentation/stable/developer/code_of_conduct.html>`_
+
+  If you would like to report violation of Code of Conduct please
+
+  - Contact one of the NetworkX online space moderators
+
+    - `Dan Schult <https://github.com/dschult>`_,
+      `Aditi Juneja <https://github.com/Schefflera-Arboricola>`_,
+      or `Ross Barnowski <https://github.com/rossbar>`_ , OR
+
+  - Report the violation either anonymously or with your name, using
+    `the NumFOCUS Code of Conduct form <https://numfocus.typeform.com/to/ynjGdT>`_.
+    The report goes to the independent NumFOCUS Code of Conduct Working Group.
+    You can find more information about the group members and the procedure at
+    `the Code of Conduct website. <https://numfocus.org/code-of-conduct>`_
+
