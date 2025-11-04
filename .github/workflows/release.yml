@@ -7,7 +7,7 @@ on:
 jobs:
   pypi-publish:
     name: upload release to PyPI
-    if: github.repository_owner == 'networkx' && startsWith(github.ref, 'refs/tags/networkx-') && github.actor == 'jarrodmillman' && always()
+    if: github.repository_owner == 'networkx' && startsWith(github.ref, 'refs/tags/networkx-') && always()
     runs-on: ubuntu-latest
     # Specifying a GitHub environment is optional, but strongly encouraged
     environment: release
