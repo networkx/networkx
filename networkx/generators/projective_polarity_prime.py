@@ -5,7 +5,7 @@ This module constructs a graph based on the projective polarity model,
 where nodes are derived from a finite projective space PG(m, q) over GF(q),
 and edges are added based on modular dot-product orthogonality.
 
-The special case of m=2 produces the well-known
+The special case of `m=2` produces the well-known
 "Erdos-Renyi (ER) polarity graph", which is a diameter-2 graph
 that serves as the basis for the PolarFly network topology.
 
@@ -20,6 +20,11 @@ References
     "PolarFly: A Cost-Effective and Flexible Low-Diameter Topology."
     arXiv preprint arXiv:2208.01695, 2023.
     https://arxiv.org/pdf/2208.01695
+[2] S. Mattheus, and F. Pavese.
+    "A clique-free pseudorandom subgraph of the pseudo polarity
+    graph"
+    arXiv preprint arXiv:2105.03755, 2021.
+    https://arxiv.org/pdf/2105.03755
 """
 
 import itertools
@@ -35,7 +40,7 @@ def _finite_field_vectors(m, q):
     Parameters
     ----------
     m : int
-        Projective space parameter; the vectors will be of length (m+1).
+        Projective space parameter; the vectors will be of length (`m`+1). Must be an integer ≥ 2.
     q : int
         Prime number defining the size of the Galois Field.
 
@@ -50,12 +55,12 @@ def _finite_field_vectors(m, q):
 def _normalize_projective(vector, q):
     r"""Normalize a vector in projective space over GF(q).
 
-    Converts a vector to a canonical form by scaling so the first non-zero coordinate becomes 1.
+    Converts a `vector` to a canonical form by scaling so the first non-zero coordinate becomes 1.
 
     Parameters
     ----------
     vector : tuple of ints
-        A vector in GF(q)^(m+1).
+        A `vector` in GF(q)^(m+1).
     q : int
         Prime number defining the field GF(q).
 
@@ -88,7 +93,7 @@ def _projective_space(m, q):
     Parameters
     ----------
     m : int
-        Projective space dimension.
+        Projective space dimension. Must be an integer ≥ 2.
     q : int
         Prime number defining the field GF(q).
 
@@ -127,12 +132,12 @@ def projective_polarity_graph(m, q):
     r"""Generate an projective polarity graph from the projective space PG(m, q).
 
     Constructs an undirected graph where each node is a point in PG(m, q),
-    and edges connect orthogonal pairs (under modular dot product mod q).
+    and edges connect orthogonal pairs (under modular dot product mod `q`).
 
     Parameters
     ----------
     m : int
-        Dimension of the projective space PG(m, q).
+        Dimension of the projective space PG(m, q). Must be an integer ≥ 2.
     q : int
         Prime number defining GF(q). Must be prime (not a prime power).
 
@@ -144,11 +149,22 @@ def projective_polarity_graph(m, q):
     Raises
     ------
     ValueError
-        If q is not a prime number or if the resulting graph is not connected.
+        If `q` is not a prime number or if `m` is not an integer ≥ 2.
 
     Notes
     -----
-    This implementation uses modular arithmetic and only supports prime q.
+    This implementation uses modular arithmetic and only supports prime `q`.
+
+    For `m = 2`, the resulting graph corresponds to the well-known
+    Erdős–Rényi (ER) polarity graph, which is a 2-diameter topology that
+    asymptotically reaches the Moore bound on the number of nodes for a given
+    degree and diameter. This case also underlies the PolarFly data center
+    network topology [1].
+
+    For `m > 2`, the generalized projective polarity graphs maintain strong
+    connectivity, near-regularity and pseudorandom-like properties while remaining low-diameter
+    structures, though not necessarily of diameter 2. These higher-dimensional
+    variants have been studied as pseudorandom constructions, particularly their induced subgraphs [2].
 
     Examples
     --------
@@ -166,6 +182,10 @@ def projective_polarity_graph(m, q):
             "This implementation only supports prime q (not prime powers)."
         )
 
+    # check m is an integer ≥ 2
+    if not isinstance(m, int) or m < 2:
+        raise ValueError("Parameter m must be an integer ≥ 2.")
+
     G = nx.Graph()
     PG = _projective_space(m, q)
 
@@ -178,8 +198,5 @@ def projective_polarity_graph(m, q):
         for j in range(i + 1, len(PG)):
             if int(np.dot(pg_array[i], pg_array[j])) % q == 0:
                 G.add_edge(PG[i], PG[j])
-
-    if not nx.is_connected(G):
-        raise ValueError("Generated projective polarity graph is not connected.")
 
     return G
