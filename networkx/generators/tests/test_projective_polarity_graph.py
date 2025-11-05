@@ -29,7 +29,7 @@ def test_projective_polarity_graph_size_and_structure(m, q):
     degrees = [deg for _, deg in G.degree()]
     min_deg = min(degrees)
     max_deg = max(degrees)
-    assert max_deg == (q ** m - 1) / (q - 1)
+    assert max_deg == (q**m - 1) / (q - 1)
     assert min_deg >= max_deg - 1
 
 
