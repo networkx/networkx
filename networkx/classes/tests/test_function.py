@@ -23,6 +23,16 @@ class TestFunction:
         self.DGnodes = list(range(5))
         self.DGedges = [(0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2)]
 
+    def test_describe_info_dict(self):
+        info_dict = nx.classes.function._create_describe_info_dict(self.G)
+        assert info_dict["Name of Graph"] == "Test"
+        assert not info_dict["Directed"]
+        assert not info_dict["Multigraph"]
+        assert info_dict["Number of nodes"] == 5
+        assert info_dict["Number of edges"] == 5
+        assert info_dict["Average degree (min, max)"] == "2.00 (0, 4)"
+        assert info_dict["Number of connected components"] == 2
+
     def test_nodes(self):
         assert nodes_equal(self.G.nodes(), list(nx.nodes(self.G)))
         assert nodes_equal(self.DG.nodes(), list(nx.nodes(self.DG)))
