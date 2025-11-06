@@ -805,6 +805,7 @@ def generalized_petersen_graph(n, k, *, create_using=None):
     References
     ----------
     .. [1] https://mathworld.wolfram.com/GeneralizedPetersenGraph.html
+    .. [2] https://en.wikipedia.org/wiki/Generalized_Petersen_graph
     """
     if n <= 2:
         raise NetworkXError(f"n >= 3 required. Got {n=}")
