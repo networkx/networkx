@@ -1469,7 +1469,6 @@ def describe(G, describe_hook=None):
     --------
     >>> G = nx.path_graph(5)
     >>> nx.describe(G)
-    Name of Graph                  : None
     Number of nodes                : 5
     Number of edges                : 4
     Directed                       : False
@@ -1482,7 +1481,6 @@ def describe(G, describe_hook=None):
     >>> def augment_description(G):
     ...     return {"Average Shortest Path Length": nx.average_shortest_path_length(G)}
     >>> nx.describe(G, describe_hook=augment_description)
-    Name of Graph                  : None
     Number of nodes                : 5
     Number of edges                : 4
     Directed                       : False
@@ -1492,6 +1490,18 @@ def describe(G, describe_hook=None):
     Average degree (min, max)      : 1.60 (1, 2)
     Number of connected components : 1
     Average Shortest Path Length   : 2.0
+
+    >>> G.name = "Path Graph of 5 nodes"
+    >>> nx.describe(G)
+    Name of Graph                  : Path Graph of 5 nodes
+    Number of nodes                : 5
+    Number of edges                : 4
+    Directed                       : False
+    Multigraph                     : False
+    Tree                           : True
+    Bipartite                      : True
+    Average degree (min, max)      : 1.60 (1, 2)
+    Number of connected components : 1
 
     """
     info_dict = _create_describe_info_dict(G)
@@ -1503,19 +1513,22 @@ def describe(G, describe_hook=None):
     max_key_len = max(len(k) for k in info_dict)
     for key, val in info_dict.items():
         print(f"{key:<{max_key_len}} : {val}")
-    return
 
 
 def _create_describe_info_dict(G):
-    info = {
-        "Name of Graph": G.name if G.name != "" else "None",
-        "Number of nodes": len(G),
-        "Number of edges": G.number_of_edges(),
-        "Directed": G.is_directed(),
-        "Multigraph": G.is_multigraph(),
-        "Tree": nx.is_tree(G),
-        "Bipartite": nx.is_bipartite(G),
-    }
+    info = {}
+    if G.name != "":
+        info["Name of Graph"] = G.name
+    info.update(
+        {
+            "Number of nodes": len(G),
+            "Number of edges": G.number_of_edges(),
+            "Directed": G.is_directed(),
+            "Multigraph": G.is_multigraph(),
+            "Tree": nx.is_tree(G),
+            "Bipartite": nx.is_bipartite(G),
+        }
+    )
     if len(G) == 0:
         return info
 
