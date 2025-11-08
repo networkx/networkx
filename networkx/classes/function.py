@@ -1444,3 +1444,67 @@ def path_weight(G, path, weight):
         else:
             cost += G._adj[node][nbr][weight]
     return cost
+
+
+def enumerate_all_trails(G, source, target):
+    """Returns the number of all possible trails between source and target.
+    Trails are walks where all edges are distinct (can therefore go through vertices multiple times).
+
+    Parameters
+    ------
+    G : graph
+        A NetworkX graph.
+
+    source: node
+        Starting node.
+
+    target: node
+        Ending node.
+
+    Returns
+    ------
+    trail_count: integer
+        All trails between starting node and ending node.
+
+    Example
+    ------
+    >>> G = nx.Graph()
+    >>> G.add_edges_from(
+    ...     [
+    ...         (1, 2),
+    ...         (2, 3),
+    ...         (2, 6),
+    ...         (2, 7),
+    ...         (2, 10),
+    ...         (2, 11),
+    ...         (6, 3),
+    ...         (7, 3),
+    ...         (3, 4),
+    ...         (3, 8),
+    ...         (3, 9),
+    ...         (4, 8),
+    ...         (4, 9),
+    ...         (4, 10),
+    ...         (4, 11),
+    ...         (4, 5),
+    ...     ]
+    ... )
+    >>> print(enumerate_all_trails(G, 1, 5))
+    2501
+    """
+    trail_count = 0
+
+    def dfs(current_node, visited_edges):
+        nonlocal trail_count
+        for neighbour in G.neighbors(current_node):
+            edge = (current_node, neighbour)
+            inverse_edge = (neighbour, current_node)
+            if edge not in visited_edges and inverse_edge not in visited_edges:
+                new_visited_edges = visited_edges.copy()
+                new_visited_edges.add(edge)
+                if neighbour == target:
+                    trail_count += 1
+                dfs(neighbour, new_visited_edges)
+
+    dfs(source, set())
+    return trail_count
