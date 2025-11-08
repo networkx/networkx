@@ -782,7 +782,7 @@ def generalized_petersen_graph(n, k, *, create_using=None):
 
     Some well known graphs are examples of Generalized Petersen Graphs such
     as the Petersen Graph GP(5, 2), the Desargues graph GP(10, 3), the
-    Moebius-Kantor graph (GP(8, 3), and the dodecahedron graph GP(10, 2).
+    Moebius-Kantor graph GP(8, 3), and the dodecahedron graph GP(10, 2).
 
     Parameters
     ----------
