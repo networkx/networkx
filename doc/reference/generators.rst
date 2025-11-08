@@ -86,6 +86,7 @@ Small
    diamond_graph
    dodecahedral_graph
    frucht_graph
+   generalized_petersen_graph
    heawood_graph
    hoffman_singleton_graph
    house_graph
