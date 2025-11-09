@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 
 import networkx as nx
@@ -47,3 +48,11 @@ def test_random_weighted_choice():
     c = nx.utils.weighted_choice(mapping, seed=1)
     c = nx.utils.weighted_choice(mapping)
     assert c == "a"
+
+
+def test_random_sequence_low_precision():
+    rng = np.random.default_rng(seed=17)
+    x = np.exp(rng.normal(0, 1, 1000)).astype(np.float16)
+    cdf = nx.utils.cumulative_distribution(x)
+    assert len(cdf) == 1001
+    assert cdf[-1] == 1.0
