@@ -1,13 +1,12 @@
-"""Unit tests for the :mod:`networkx.algorithms.community.kernighan_lin`
-module.
-"""
-
 from itertools import permutations
 
 import pytest
 
 import networkx as nx
-from networkx.algorithms.community import kernighan_lin_bisection
+from networkx.algorithms.community import (
+    greedy_node_swap_bipartition,
+    kernighan_lin_bisection,
+)
 
 
 def assert_partition_equal(x, y):
@@ -90,3 +89,57 @@ def test_max_iter_argument():
     partition = ({"A", "B", "C"}, {"D", "E", "F"})
     C = kernighan_lin_bisection(G, partition, max_iter=1)
     assert_partition_equal(C, ({"A", "F", "C"}, {"D", "E", "B"}))
+
+
+## Test Spectral Modularity Bipartition
+
+
+def test_spectral_bipartition():
+    pytest.importorskip("scipy")
+    G = nx.barbell_graph(3, 0)
+    C = nx.community.spectral_modularity_bipartition(G)
+    soln = ({3, 4, 5}, {0, 1, 2})
+    assert set(map(frozenset, C)) == set(map(frozenset, soln))
+
+
+def test_karate_club():
+    pytest.importorskip("scipy")
+    G = nx.karate_club_graph()
+    MrHi = {v for v, club in G.nodes.data("club") if club == "Mr. Hi"}
+    Officer = {v for v, club in G.nodes.data("club") if club == "Officer"}
+    C = nx.community.spectral_modularity_bipartition(G)
+
+    # spectral method misplaces member 8
+    MrHi.remove(8)
+    Officer.add(8)
+    soln = (MrHi, Officer)
+    assert set(map(frozenset, C)) == set(map(frozenset, soln))
+
+
+## Test Node Swap Greedy Bipartition
+
+
+def test_greedy_bipartition():
+    G = nx.barbell_graph(3, 0)
+    C = nx.community.greedy_node_swap_bipartition(G)
+    soln = ({0, 1, 2}, {3, 4, 5})
+    assert set(map(frozenset, C)) == set(map(frozenset, soln))
+
+
+def test_greedy_non_disjoint_partition():
+    with pytest.raises(nx.NetworkXError):
+        G = nx.barbell_graph(3, 0)
+        C_init = ({0, 1, 2}, {2, 3, 4, 5})
+        nx.community.greedy_node_swap_bipartition(G, C_init)
+
+
+def test_too_many_blocks():
+    with pytest.raises(nx.NetworkXError):
+        G = nx.barbell_graph(3, 0)
+        C_init = ({0, 1}, {2}, {3, 4, 5})
+        nx.community.greedy_node_swap_bipartition(G, C_init)
+
+
+def test_greedy_multigraph_disallowed():
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.community.greedy_node_swap_bipartition(nx.MultiGraph())
