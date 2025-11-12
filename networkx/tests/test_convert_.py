@@ -13,9 +13,44 @@ from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
 class TestConvert:
-    def edgelists_equal(self, e1, e2):
+    # Helper functions
+    def _edgelists_equal(self, e1, e2):
         return sorted(sorted(e) for e in e1) == sorted(sorted(e) for e in e2)
+    
+    def assert_graphs_equal(self, G1, G2):
+        assert nodes_equal(sorted(G1.nodes()), sorted(G2.nodes()))
+        assert edges_equal(sorted(G1.edges(data=True)), sorted(G2.edges(data=True)))
 
+
+    def convert_graph(self, G, dest, source, create_using=None, multigraph_input=False): 
+        dod = dest(G)
+ 
+        if create_using:
+            converted_source = source(
+                dod,
+                create_using=create_using,
+                multigraph_input=multigraph_input,
+            )
+        else:
+            converted_source = source(dod)
+
+        converted_networkx = to_networkx_graph(
+            dod,
+            create_using=create_using,
+            multigraph_input=multigraph_input,
+        )
+
+        if create_using:
+            constructor_graph = create_using(dod)
+        else:
+            constructor_graph = nx.Graph(dod)
+        return {
+            "source": converted_source,
+            "networkx": converted_networkx,
+            "constructor": constructor_graph,
+        }
+        
+        
     def test_simple_graphs(self):
         for dest, source in [
             (to_dict_of_dicts, from_dict_of_dicts),
@@ -23,25 +58,23 @@ class TestConvert:
         ]:
             G = barbell_graph(10, 3)
             G.graph = {}
-            dod = dest(G)
 
-            # Dict of [dicts, lists]
-            graph_from_source = source(dod)
-            assert graphs_equal(G, graph_from_source)
-            
-            graph_from_to_networkx = to_networkx_graph(dod)
-            assert graphs_equal(G, graph_from_to_networkx)
-            
-            graph_from_to_constructor = nx.Graph(dod)
-            assert graphs_equal(G, graph_from_to_constructor)
+            converted_graphs = self.convert_graph(G, dest, source)
+            assert graphs_equal(G, converted_graphs['source'])            
+            assert graphs_equal(G, converted_graphs['networkx'])
+            assert graphs_equal(G, converted_graphs['constructor'])
 
-            # With nodelist keyword
+    def test_simple_graph_nodelist(self):
+        for dest, source in [
+			(to_dict_of_dicts, from_dict_of_dicts),
+			(to_dict_of_lists, from_dict_of_lists),
+		]:                # With nodelist keyword
             P4 = nx.path_graph(4)
             P3 = nx.path_graph(3)
-            
+
             P4.graph = {}
             P3.graph = {}
-            
+
             dod = dest(P4, nodelist=[0, 1, 2])
             Gdod = nx.Graph(dod)
             assert graphs_equal(Gdod, P3)
@@ -84,9 +117,11 @@ class TestConvert:
             graph_from_source = source(dod)
             assert nodes_equal(sorted(G.nodes()), sorted(graph_from_source.nodes()))
             assert edges_equal(sorted(G.edges()), sorted(graph_from_source.edges()))
+            
             graph_from_to_networkx = to_networkx_graph(dod)
             assert nodes_equal(sorted(G.nodes()), sorted(graph_from_to_networkx.nodes()))
             assert edges_equal(sorted(G.edges()), sorted(graph_from_to_networkx.edges()))
+            
             graph_from_to_constructor = nx.Graph(dod)
             assert nodes_equal(sorted(G.nodes()), sorted(graph_from_to_constructor.nodes()))
             assert edges_equal(sorted(G.edges()), sorted(graph_from_to_constructor.edges()))
@@ -96,9 +131,11 @@ class TestConvert:
             graph_from_source = source(dod, create_using=nx.DiGraph)
             assert sorted(G.nodes()) == sorted(graph_from_source.nodes())
             assert sorted(G.edges()) == sorted(graph_from_source.edges())
+            
             graph_from_to_networkx = to_networkx_graph(dod, create_using=nx.DiGraph)
             assert sorted(G.nodes()) == sorted(graph_from_to_networkx.nodes())
             assert sorted(G.edges()) == sorted(graph_from_to_networkx.edges())
+            
             graph_from_to_constructor = nx.DiGraph(dod)
             assert sorted(G.nodes()) == sorted(graph_from_to_constructor.nodes())
             assert sorted(G.edges()) == sorted(graph_from_to_constructor.edges())
