@@ -47,3 +47,7 @@ def test_random_weighted_choice():
     c = nx.utils.weighted_choice(mapping, seed=1)
     c = nx.utils.weighted_choice(mapping)
     assert c == "a"
+
+
+def test_random_sequence_low_precision():
+    assert nx.utils.cumulative_distribution([0.1] * 100)[-1] == 1.0
