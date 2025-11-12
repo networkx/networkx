@@ -16,6 +16,7 @@ __all__ = [
     "number_of_edges",
     "density",
     "is_directed",
+    "is_multigraph",
     "freeze",
     "is_frozen",
     "subgraph",
@@ -160,9 +161,16 @@ def degree_histogram(G):
     return [counts.get(i, 0) for i in range(max(counts) + 1 if counts else 0)]
 
 
+@nx._dispatchable
 def is_directed(G):
     """Return True if graph is directed."""
     return G.is_directed()
+
+
+@nx._dispatchable
+def is_multigraph(G):
+    """Returns True if graph is a multigraph, False otherwise."""
+    return G.is_multigraph()
 
 
 def frozen(*args, **kwargs):
