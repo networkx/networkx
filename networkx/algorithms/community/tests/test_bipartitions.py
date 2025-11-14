@@ -46,7 +46,7 @@ def test_non_disjoint_partition():
         kernighan_lin_bisection(G, partition)
 
 
-def test_too_many_blocks():
+def test_kernighan_lin_too_many_blocks():
     with pytest.raises(nx.NetworkXError):
         G = nx.barbell_graph(3, 0)
         partition = ({0, 1}, {2}, {3, 4, 5})
@@ -133,7 +133,7 @@ def test_greedy_non_disjoint_partition():
         nx.community.greedy_node_swap_bipartition(G, C_init)
 
 
-def test_too_many_blocks():
+def test_greedy_node_swap_too_many_blocks():
     with pytest.raises(nx.NetworkXError):
         G = nx.barbell_graph(3, 0)
         C_init = ({0, 1}, {2}, {3, 4, 5})
