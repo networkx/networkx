@@ -216,6 +216,7 @@ needs_scipy = [
     "algorithms/centrality/subgraph_alg.py",
     "algorithms/communicability_alg.py",
     "algorithms/community/divisive.py",
+    "algorithms/community/bipartitions.py",
     "algorithms/distance_measures.py",
     "algorithms/link_analysis/hits_alg.py",
     "algorithms/link_analysis/pagerank_alg.py",

@@ -8,11 +8,13 @@ Communities
 
 Bipartitions
 ------------
-.. automodule:: networkx.algorithms.community.kernighan_lin
+.. automodule:: networkx.algorithms.community.bipartitions
 .. autosummary::
    :toctree: generated/
 
    kernighan_lin_bisection
+   spectral_modularity_bipartition
+   greedy_node_swap_bipartition
 
 Divisive Communities
 --------------------
