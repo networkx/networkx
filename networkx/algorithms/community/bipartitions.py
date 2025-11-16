@@ -171,7 +171,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 def spectral_modularity_bipartition(G):
-    r"""Returns a bipartition of the nodes based on the spectrum of the
+    r"""Return a bipartition of the nodes based on the spectrum of the
     modularity matrix of the graph.
 
     This method calculates the eigenvector associated with the second
@@ -223,7 +223,7 @@ def spectral_modularity_bipartition(G):
     B = nx.linalg.modularity_matrix(G)
     eigenvalues, eigenvectors = np.linalg.eig(B)
     index = np.argsort(eigenvalues)[-1]
-    v2 = list(zip(np.real(eigenvectors[:, index]), G))
+    v2 = zip(np.real(eigenvectors[:, index]), G)
     left, right = set(), set()
     for u, n in v2:
         if u < 0:
@@ -235,7 +235,7 @@ def spectral_modularity_bipartition(G):
 
 @nx.utils.not_implemented_for("multigraph")
 def greedy_node_swap_bipartition(G, C_init=None, max_iter=10):
-    """Returns a bipartition of the nodes based using the greedy
+    """Return a bipartition of the nodes based using the greedy
     modularity maximization algorithm.
 
     The algorithm works by selecting a node to change communities which
@@ -291,7 +291,7 @@ def greedy_node_swap_bipartition(G, C_init=None, max_iter=10):
     if C_init is None:
         m1 = len(G) // 2
         m2 = len(G) - m1
-        some_nodes = set(random.sample(sorted(G), m1))
+        some_nodes = set(random.sample(list(G), m1))
         other_nodes = {n for n in G if n not in some_nodes}
         C = (some_nodes, other_nodes)
     else:
@@ -344,7 +344,7 @@ def greedy_node_swap_bipartition(G, C_init=None, max_iter=10):
             max_node_comm.remove(max_node)
             non_max_node_comm.add(max_node)
             Cnext_mod += max_swap
-            # store Cnext each time it reaches a high (might go lower later
+            # store Cnext each time it reaches a high (might go lower later)
             if Cnext_mod > Cmax_mod:
                 Cmax, Cmax_mod = deepcopy(Cnext), Cnext_mod
             nodes.remove(max_node)

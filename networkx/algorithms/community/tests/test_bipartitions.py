@@ -91,6 +91,18 @@ def test_max_iter_argument():
     assert_partition_equal(C, ({"A", "F", "C"}, {"D", "E", "B"}))
 
 
+def test_weight_function():
+    G = nx.cycle_graph(4)
+
+    def my_weight(u, v, d):
+        if u == 2 and v == 3:
+            return None
+        return u + v
+
+    C = kernighan_lin_bisection(G, weight=my_weight)
+    assert_partition_equal(C, ({1, 2}, {0, 3}))
+
+
 ## Test Spectral Modularity Bipartition
 
 
