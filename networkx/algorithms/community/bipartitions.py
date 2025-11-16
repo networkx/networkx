@@ -75,9 +75,18 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
         Maximum number of times to attempt swaps to find an
         improvement before giving up.
 
-    weight : key
-        Edge data key to use as weight. If None, the weights are all
-        set to one.
+    weight : string or function (default: "weight")
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -124,18 +133,24 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
         for a in A:
             side[index[a]] = 1
 
-    if G.is_multigraph():
-        edges = [
-            [
-                (index[u], sum(e.get(weight, 1) for e in d.values()))
-                for u, d in G[v].items()
-            ]
-            for v in labels
-        ]
+    # ruff: noqa: E731   skips check for no lambda functions
+    # Using shortest_paths _weight_function with sum instead of min on multiedges
+    if callable(weight):
+        sum_weight = weight
+    elif G.is_multigraph():
+        sum_weight = lambda u, v, d: sum(dd.get(weight, 1) for dd in d.values())
     else:
-        edges = [
-            [(index[u], e.get(weight, 1)) for u, e in G[v].items()] for v in labels
+        sum_weight = lambda u, v, d: d.get(weight, 1)
+
+    edges = [
+        [
+            (index[nbr], w)
+            for nbr, d in G.adj[node].items()
+            # hide edges via weight function returning None
+            if (w := sum_weight(node, nbr, d)) is not None
         ]
+        for node in labels
+    ]
 
     for i in range(max_iter):
         costs = list(_kernighan_lin_sweep(edges, side))
