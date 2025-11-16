@@ -154,7 +154,6 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
 
     for i in range(max_iter):
         costs = list(_kernighan_lin_sweep(edges, side))
-        print(f"{costs=}")
         min_cost, min_i, _ = min(costs)
         if min_cost >= 0:
             break
