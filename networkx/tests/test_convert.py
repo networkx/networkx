@@ -13,9 +13,102 @@ from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
 class TestConvert:
+    # Helper functions
     def edgelists_equal(self, e1, e2):
         return sorted(sorted(e) for e in e1) == sorted(sorted(e) for e in e2)
+    
+    def assert_graphs_equal(self, G1, G2):
+        assert nodes_equal(sorted(G1.nodes()), sorted(G2.nodes()))
+        assert edges_equal(sorted(G1.edges(data=True)), sorted(G2.edges(data=True)))
 
+    def convert_graph(self, G, dest, source, create_using=None, multigraph_input=False): 
+        dod = dest(G)
+ 
+        if create_using:
+            converted_source = source(
+                dod,
+                create_using=create_using,
+                multigraph_input=multigraph_input,
+            )
+        else:
+            converted_source = source(dod)
+
+        converted_networkx = to_networkx_graph(
+            dod,
+            create_using=create_using,
+            multigraph_input=multigraph_input,
+        )
+
+        if create_using:
+            constructor_graph = create_using(dod)
+        else:
+            constructor_graph = nx.Graph(dod)
+        return {
+            "source": converted_source,
+            "networkx": converted_networkx,
+            "constructor": constructor_graph,
+        }
+    # helper: compare graphs (optionally ignore edge data)
+    def assert_graphs_equal(self, G1, G2, ignore_edge_data=False):
+        assert nodes_equal(sorted(G1.nodes()), sorted(G2.nodes()))
+        if ignore_edge_data:
+            # compare edges without data
+            assert edges_equal(sorted(G1.edges()), sorted(G2.edges()))
+        else:
+            assert edges_equal(sorted(G1.edges(data=True)), sorted(G2.edges(data=True)))
+
+    # helper: strip edge data for comparisons
+    def strip_edge_data(self, G):
+        """Return list of edges as (u, v, {}) for comparisons where edge data is lost."""
+        return [(u, v, {}) for (u, v, d) in G.edges(data=True)]
+
+    # convert_graph stays as you corrected it (dest, source order)
+    def convert_graph(self, G, dest, source, create_using=None, multigraph_input=False):
+        dod = dest(G)
+
+        if create_using:
+            converted_source = source(
+                dod,
+                create_using=create_using,
+                multigraph_input=multigraph_input,
+            )
+        else:
+            converted_source = source(dod)
+
+        converted_networkx = to_networkx_graph(
+            dod,
+            create_using=create_using,
+            multigraph_input=multigraph_input,
+        )
+
+        if create_using:
+            constructor_graph = create_using(dod)
+        else:
+            constructor_graph = nx.Graph(dod)
+        return {
+            "source": converted_source,
+            "networkx": converted_networkx,
+            "constructor": constructor_graph,
+        }
+
+    # thin wrapper that asserts correctness for all three conversion paths
+    def convert_and_assert(self, G, dest, source, create_using=None, multigraph_input=False):
+        conversion = self.convert_graph(G, dest, source, create_using, multigraph_input)
+
+        # For to_dict_of_lists the edge data is lost — check that and compare accordingly
+        if dest is to_dict_of_lists:
+            # original with stripped edge-data
+            # compare nodes normally, compare edges without data
+            for key in ("source", "networkx", "constructor"):
+                conv = conversion[key]
+                assert nodes_equal(sorted(G.nodes()), sorted(conv.nodes()))
+                assert edges_equal(sorted(self.strip_edge_data(G)), sorted(conv.edges(data=True)))
+        else:
+            # normal full-graph compare (node + edge data)
+            for key in ("source", "networkx", "constructor"):
+                self.assert_graphs_equal(G, conversion[key], ignore_edge_data=False)
+
+    # optimized tests
     def test_simple_graphs(self):
         for dest, source in [
             (to_dict_of_dicts, from_dict_of_dicts),
@@ -23,21 +116,21 @@ class TestConvert:
         ]:
             G = barbell_graph(10, 3)
             G.graph = {}
-            dod = dest(G)
 
-            # Dict of [dicts, lists]
-            GG = source(dod)
-            assert graphs_equal(G, GG)
-            GW = to_networkx_graph(dod)
-            assert graphs_equal(G, GW)
-            GI = nx.Graph(dod)
-            assert graphs_equal(G, GI)
+            # single-line conversion + assertions (handles dol edge-data case)
+            self.convert_and_assert(G, dest, source)
 
-            # With nodelist keyword
+    def test_simple_graph_nodelist(self):
+        for dest, _ in [
+            (to_dict_of_dicts, from_dict_of_dicts),
+            (to_dict_of_lists, from_dict_of_lists),
+        ]:
             P4 = nx.path_graph(4)
             P3 = nx.path_graph(3)
+
             P4.graph = {}
             P3.graph = {}
+
             dod = dest(P4, nodelist=[0, 1, 2])
             Gdod = nx.Graph(dod)
             assert graphs_equal(Gdod, P3)
@@ -74,62 +167,19 @@ class TestConvert:
             (to_dict_of_lists, from_dict_of_lists),
         ]:
             G = cycle_graph(10)
-
-            # Dict of [dicts, lists]
-            dod = dest(G)
-            GG = source(dod)
-            assert nodes_equal(sorted(G.nodes()), sorted(GG.nodes()))
-            assert edges_equal(sorted(G.edges()), sorted(GG.edges()))
-            GW = to_networkx_graph(dod)
-            assert nodes_equal(sorted(G.nodes()), sorted(GW.nodes()))
-            assert edges_equal(sorted(G.edges()), sorted(GW.edges()))
-            GI = nx.Graph(dod)
-            assert nodes_equal(sorted(G.nodes()), sorted(GI.nodes()))
-            assert edges_equal(sorted(G.edges()), sorted(GI.edges()))
+            self.convert_and_assert(G, dest, source)
 
             G = cycle_graph(10, create_using=nx.DiGraph)
-            dod = dest(G)
-            GG = source(dod, create_using=nx.DiGraph)
-            assert sorted(G.nodes()) == sorted(GG.nodes())
-            assert sorted(G.edges()) == sorted(GG.edges())
-            GW = to_networkx_graph(dod, create_using=nx.DiGraph)
-            assert sorted(G.nodes()) == sorted(GW.nodes())
-            assert sorted(G.edges()) == sorted(GW.edges())
-            GI = nx.DiGraph(dod)
-            assert sorted(G.nodes()) == sorted(GI.nodes())
-            assert sorted(G.edges()) == sorted(GI.edges())
-
+            self.convert_and_assert(G, dest, source, create_using=nx.DiGraph)
+            
     def test_graph(self):
         g = nx.cycle_graph(10)
         G = nx.Graph()
         G.add_nodes_from(g)
         G.add_weighted_edges_from((u, v, u) for u, v in g.edges())
+        self.convert_and_assert(G, to_dict_of_dicts, from_dict_of_dicts, create_using=nx.Graph) # Dict-of-dicts round trip
+        self.convert_and_assert(G, to_dict_of_lists, from_dict_of_lists, create_using=nx.Graph)	# Dict-of-lists round trip (edge data gets dropped automatically)
 
-        # Dict of dicts
-        dod = to_dict_of_dicts(G)
-        GG = from_dict_of_dicts(dod, create_using=nx.Graph)
-        assert nodes_equal(sorted(G.nodes()), sorted(GG.nodes()))
-        assert edges_equal(sorted(G.edges()), sorted(GG.edges()))
-        GW = to_networkx_graph(dod, create_using=nx.Graph)
-        assert nodes_equal(sorted(G.nodes()), sorted(GW.nodes()))
-        assert edges_equal(sorted(G.edges()), sorted(GW.edges()))
-        GI = nx.Graph(dod)
-        assert sorted(G.nodes()) == sorted(GI.nodes())
-        assert sorted(G.edges()) == sorted(GI.edges())
-
-        # Dict of lists
-        dol = to_dict_of_lists(G)
-        GG = from_dict_of_lists(dol, create_using=nx.Graph)
-        # dict of lists throws away edge data so set it to none
-        enone = [(u, v, {}) for (u, v, d) in G.edges(data=True)]
-        assert nodes_equal(sorted(G.nodes()), sorted(GG.nodes()))
-        assert edges_equal(enone, sorted(GG.edges(data=True)))
-        GW = to_networkx_graph(dol, create_using=nx.Graph)
-        assert nodes_equal(sorted(G.nodes()), sorted(GW.nodes()))
-        assert edges_equal(enone, sorted(GW.edges(data=True)))
-        GI = nx.Graph(dol)
-        assert nodes_equal(sorted(G.nodes()), sorted(GI.nodes()))
-        assert edges_equal(enone, sorted(GI.edges(data=True)))
 
     def test_with_multiedges_self_loops(self):
         G = cycle_graph(10)
@@ -148,49 +198,49 @@ class TestConvert:
         # Dict of dicts
         # with self loops, OK
         dod = to_dict_of_dicts(XGS)
-        GG = from_dict_of_dicts(dod, create_using=nx.Graph)
-        assert nodes_equal(XGS.nodes(), GG.nodes())
-        assert edges_equal(XGS.edges(), GG.edges())
-        GW = to_networkx_graph(dod, create_using=nx.Graph)
-        assert nodes_equal(XGS.nodes(), GW.nodes())
-        assert edges_equal(XGS.edges(), GW.edges())
-        GI = nx.Graph(dod)
-        assert nodes_equal(XGS.nodes(), GI.nodes())
-        assert edges_equal(XGS.edges(), GI.edges())
+        graph_from_source = from_dict_of_dicts(dod, create_using=nx.Graph)
+        assert nodes_equal(XGS.nodes(), graph_from_source.nodes())
+        assert edges_equal(XGS.edges(), graph_from_source.edges())
+        graph_from_to_networkx = to_networkx_graph(dod, create_using=nx.Graph)
+        assert nodes_equal(XGS.nodes(), graph_from_to_networkx.nodes())
+        assert edges_equal(XGS.edges(), graph_from_to_networkx.edges())
+        graph_from_to_constructor = nx.Graph(dod)
+        assert nodes_equal(XGS.nodes(), graph_from_to_constructor.nodes())
+        assert edges_equal(XGS.edges(), graph_from_to_constructor.edges())
 
         # Dict of lists
         # with self loops, OK
         dol = to_dict_of_lists(XGS)
-        GG = from_dict_of_lists(dol, create_using=nx.Graph)
+        graph_from_source = from_dict_of_lists(dol, create_using=nx.Graph)
         # dict of lists throws away edge data so set it to none
         enone = [(u, v, {}) for (u, v, d) in XGS.edges(data=True)]
-        assert nodes_equal(sorted(XGS.nodes()), sorted(GG.nodes()))
-        assert edges_equal(enone, sorted(GG.edges(data=True)))
-        GW = to_networkx_graph(dol, create_using=nx.Graph)
-        assert nodes_equal(sorted(XGS.nodes()), sorted(GW.nodes()))
-        assert edges_equal(enone, sorted(GW.edges(data=True)))
-        GI = nx.Graph(dol)
-        assert nodes_equal(sorted(XGS.nodes()), sorted(GI.nodes()))
-        assert edges_equal(enone, sorted(GI.edges(data=True)))
+        assert nodes_equal(sorted(XGS.nodes()), sorted(graph_from_source.nodes()))
+        assert edges_equal(enone, sorted(graph_from_source.edges(data=True)))
+        graph_from_to_networkx = to_networkx_graph(dol, create_using=nx.Graph)
+        assert nodes_equal(sorted(XGS.nodes()), sorted(graph_from_to_networkx.nodes()))
+        assert edges_equal(enone, sorted(graph_from_to_networkx.edges(data=True)))
+        graph_from_to_constructor = nx.Graph(dol)
+        assert nodes_equal(sorted(XGS.nodes()), sorted(graph_from_to_constructor.nodes()))
+        assert edges_equal(enone, sorted(graph_from_to_constructor.edges(data=True)))
 
         # Dict of dicts
         # with multiedges, OK
         dod = to_dict_of_dicts(XGM)
-        GG = from_dict_of_dicts(dod, create_using=nx.MultiGraph, multigraph_input=True)
-        assert nodes_equal(sorted(XGM.nodes()), sorted(GG.nodes()))
-        assert edges_equal(sorted(XGM.edges()), sorted(GG.edges()))
-        GW = to_networkx_graph(dod, create_using=nx.MultiGraph, multigraph_input=True)
-        assert nodes_equal(sorted(XGM.nodes()), sorted(GW.nodes()))
-        assert edges_equal(sorted(XGM.edges()), sorted(GW.edges()))
-        GI = nx.MultiGraph(dod)
-        assert nodes_equal(sorted(XGM.nodes()), sorted(GI.nodes()))
-        assert sorted(XGM.edges()) == sorted(GI.edges())
+        graph_from_source = from_dict_of_dicts(dod, create_using=nx.MultiGraph, multigraph_input=True)
+        assert nodes_equal(sorted(XGM.nodes()), sorted(graph_from_source.nodes()))
+        assert edges_equal(sorted(XGM.edges()), sorted(graph_from_source.edges()))
+        graph_from_to_networkx = to_networkx_graph(dod, create_using=nx.MultiGraph, multigraph_input=True)
+        assert nodes_equal(sorted(XGM.nodes()), sorted(graph_from_to_networkx.nodes()))
+        assert edges_equal(sorted(XGM.edges()), sorted(graph_from_to_networkx.edges()))
+        graph_from_to_constructor = nx.MultiGraph(dod)
+        assert nodes_equal(sorted(XGM.nodes()), sorted(graph_from_to_constructor.nodes()))
+        assert sorted(XGM.edges()) == sorted(graph_from_to_constructor.edges())
         GE = from_dict_of_dicts(dod, create_using=nx.MultiGraph, multigraph_input=False)
         assert nodes_equal(sorted(XGM.nodes()), sorted(GE.nodes()))
         assert sorted(XGM.edges()) != sorted(GE.edges())
-        GI = nx.MultiGraph(XGM)
-        assert nodes_equal(sorted(XGM.nodes()), sorted(GI.nodes()))
-        assert edges_equal(sorted(XGM.edges()), sorted(GI.edges()))
+        graph_from_to_constructor = nx.MultiGraph(XGM)
+        assert nodes_equal(sorted(XGM.nodes()), sorted(graph_from_to_constructor.nodes()))
+        assert edges_equal(sorted(XGM.edges()), sorted(graph_from_to_constructor.edges()))
         GM = nx.MultiGraph(G)
         assert nodes_equal(sorted(GM.nodes()), sorted(G.nodes()))
         assert edges_equal(sorted(GM.edges()), sorted(G.edges()))
@@ -199,15 +249,15 @@ class TestConvert:
         # with multiedges, OK, but better write as DiGraph else you'll
         # get double edges
         dol = to_dict_of_lists(G)
-        GG = from_dict_of_lists(dol, create_using=nx.MultiGraph)
-        assert nodes_equal(sorted(G.nodes()), sorted(GG.nodes()))
-        assert edges_equal(sorted(G.edges()), sorted(GG.edges()))
-        GW = to_networkx_graph(dol, create_using=nx.MultiGraph)
-        assert nodes_equal(sorted(G.nodes()), sorted(GW.nodes()))
-        assert edges_equal(sorted(G.edges()), sorted(GW.edges()))
-        GI = nx.MultiGraph(dol)
-        assert nodes_equal(sorted(G.nodes()), sorted(GI.nodes()))
-        assert edges_equal(sorted(G.edges()), sorted(GI.edges()))
+        graph_from_source = from_dict_of_lists(dol, create_using=nx.MultiGraph)
+        assert nodes_equal(sorted(G.nodes()), sorted(graph_from_source.nodes()))
+        assert edges_equal(sorted(G.edges()), sorted(graph_from_source.edges()))
+        graph_from_to_networkx = to_networkx_graph(dol, create_using=nx.MultiGraph)
+        assert nodes_equal(sorted(G.nodes()), sorted(graph_from_to_networkx.nodes()))
+        assert edges_equal(sorted(G.edges()), sorted(graph_from_to_networkx.edges()))
+        graph_from_to_constructor = nx.MultiGraph(dol)
+        assert nodes_equal(sorted(G.nodes()), sorted(graph_from_to_constructor.nodes()))
+        assert edges_equal(sorted(G.edges()), sorted(graph_from_to_constructor.edges()))
 
     def test_edgelists(self):
         P = nx.path_graph(4)
