@@ -3,7 +3,11 @@
 
 from pathlib import Path
 
-import tomllib as toml
+try:
+    import tomllib as toml
+except ModuleNotFoundError:
+    import tomli as toml
+
 
 script_pth = Path(__file__)
 repo_dir = script_pth.parent.parent
