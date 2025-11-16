@@ -56,6 +56,12 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
     moves node individually, alternating between sides to keep the bisection
     balanced.
 
+    Kernighan-Lin is an approximate algorithm for maximal modularity bisection.
+    In [2]_ they suggest that fine-tuned improvements can be made using
+    greedy node swapping, (see `nx.community.greedy_node_swap_bipartition`).
+    The improvements are typically only a few percent of the modularity value.
+    But they claim that can make a difference between a good and excellent method.
+
     Parameters
     ----------
     G : NetworkX graph
@@ -94,6 +100,10 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
        "An efficient heuristic procedure for partitioning graphs."
        *Bell Systems Technical Journal* 49: 291--307.
        Oxford University Press 2011.
+    .. [2] M. E. J. Newman,
+       "Modularity and community structure in networks",
+       PNAS, 103 (23), p. 8577-8582,
+       https://doi.org/10.1073/pnas.0601602103
 
     """
     n = len(G)
@@ -129,6 +139,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
 
     for i in range(max_iter):
         costs = list(_kernighan_lin_sweep(edges, side))
+        print(f"{costs=}")
         min_cost, min_i, _ = min(costs)
         if min_cost >= 0:
             break
@@ -186,6 +197,10 @@ def spectral_modularity_bipartition(G):
     ----------
     .. [1] M. E. J. Newman *Networks: An Introduction*, pages 373--378
        Oxford University Press 2011.
+    .. [2] M. E. J. Newman,
+       "Modularity and community structure in networks",
+       PNAS, 103 (23), p. 8577-8582,
+       https://doi.org/10.1073/pnas.0601602103
 
     """
     import numpy as np
