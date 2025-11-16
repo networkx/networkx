@@ -17,10 +17,6 @@ class TestConvert:
     def edgelists_equal(self, e1, e2):
         return sorted(sorted(e) for e in e1) == sorted(sorted(e) for e in e2)
 
-    def assert_graphs_equal(self, G1, G2):
-        assert nodes_equal(sorted(G1.nodes()), sorted(G2.nodes()))
-        assert edges_equal(sorted(G1.edges(data=True)), sorted(G2.edges(data=True)))
-
     def convert_graph(self, G, dest, source, create_using=None, multigraph_input=False):
         dod = dest(G)
 
