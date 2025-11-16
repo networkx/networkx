@@ -127,7 +127,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
             A, B = partition
         except (TypeError, ValueError) as err:
             raise nx.NetworkXError("partition must be two sets") from err
-        if not nx.community.is_partition(G, (A, B)):
+        if not nx.community.is_partition(G, [A, B]):
             raise nx.NetworkXError("partition invalid")
         side = [0] * n
         for a in A:
