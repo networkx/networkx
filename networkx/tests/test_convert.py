@@ -17,13 +17,10 @@ class TestConvert:
     def edgelists_equal(self, e1, e2):
         return sorted(sorted(e) for e in e1) == sorted(sorted(e) for e in e2)
 
-    def convert_graph(self, G, dest, source, create_using=None, multigraph_input=False):
+    def convert_graph(self, G, dest, source, create_using=None):
         dod = dest(G)
 
-        if create_using:
-            converted_source = source(dod)
-        else:
-            converted_source = source(dod)
+        converted_source = source(dod)
 
         converted_networkx = to_networkx_graph(dod)
 
@@ -53,9 +50,13 @@ class TestConvert:
 
     # thin wrapper that asserts correctness for all three conversion paths
     def convert_and_assert(
-        self, G, dest, source, create_using=None, multigraph_input=False
+        self,
+        G,
+        dest,
+        source,
+        create_using=None,
     ):
-        conversion = self.convert_graph(G, dest, source, create_using, multigraph_input)
+        conversion = self.convert_graph(G, dest, source, create_using)
 
         # For to_dict_of_lists the edge data is lost — check that and compare accordingly
         if dest is to_dict_of_lists:
