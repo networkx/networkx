@@ -132,23 +132,26 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
         max_weight = 1
     else:
         max_weight = max(d.get(weight, 1) for u, v, d in G.edges(data=True))
-    
+
     # OPTIMIZATION: Use sparse matrix multiplication for whole-graph queries
     # Only if we are checking all nodes and scipy is available.
     use_vectorized = False
     if nodes is None:
         try:
             import scipy.sparse as sp
+
             use_vectorized = True
         except ImportError:
             pass
-            
+
     if use_vectorized:
         # 1. Create Adjacency Matrix (adj)
         nodelist = list(G)
         # weights are normalized by max weight in graph, then taken to 1/3 power
-        adj = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
-        
+        adj = nx.to_scipy_sparse_array(
+            G, nodelist=nodelist, weight=weight, format="csr"
+        )
+
         if max_weight > 0 and adj.nnz > 0:
             # This modifies adj.data in place
             adj.data = (adj.data / max_weight) ** (1 / 3)
@@ -164,7 +167,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
 
         if isinstance(weighted_triangles, np.matrix):
             weighted_triangles = np.array(weighted_triangles).flatten()
-            
+
         # 3. Yield results using standard degree lookup
         degrees = dict(G.degree(nodelist))
         for i, u in enumerate(nodelist):
