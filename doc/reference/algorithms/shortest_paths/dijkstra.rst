@@ -113,7 +113,6 @@ Available Functions
 .. automodule:: networkx.algorithms.shortest_paths.weighted
    :no-index:
 .. autosummary::
-   :toctree: generated/
 
    dijkstra_predecessor_and_distance
    dijkstra_path
