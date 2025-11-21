@@ -13,32 +13,40 @@ __all__ = [
 ]
 
 
-def _kernighan_lin_sweep(edges, side):
+def _kernighan_lin_sweep(edge_info, side):
     """
     This is a modified form of Kernighan-Lin, which moves single nodes at a
     time, alternating between sides to keep the bisection balanced.  We keep
     two min-heaps of swap costs to make optimal-next-move selection fast.
     """
-    costs0, costs1 = costs = nx.utils.BinaryHeap(), nx.utils.BinaryHeap()
-    for u, side_u, edges_u in zip(count(), side, edges):
-        cost_u = sum(w if side[v] else -w for v, w in edges_u)
-        costs[side_u].insert(u, cost_u if side_u else -cost_u)
+    heap0, heap1 = cost_heaps = nx.utils.BinaryHeap(), nx.utils.BinaryHeap()
+    # we use heap methods insert, pop, and get
+    for u, nbrs in edge_info.items():
+        cost_u = sum(wt if side[v] else -wt for v, wt in nbrs.items())
+        if side[u]:
+            heap1.insert(u, cost_u)
+        else:
+            heap0.insert(u, -cost_u)
 
-    def _update_costs(costs_x, x):
-        for y, w in edges[x]:
-            costs_y = costs[side[y]]
-            cost_y = costs_y.get(y)
-            if cost_y is not None:
-                cost_y += 2 * (-w if costs_x is costs_y else w)
-                costs_y.insert(y, cost_y, True)
+    def _update_heap_values(node):
+        side_node = side[node]
+        for nbr, wt in edge_info[node].items():
+            side_nbr = side[nbr]
+            if side_nbr == side_node:
+                wt = -wt
+            heap_nbr = cost_heaps[side_nbr]
+            if nbr in heap_nbr:
+                cost_nbr = heap_nbr.get(nbr) + 2 * wt
+                # allow_increase lets us update a value already on the heap
+                heap_nbr.insert(nbr, cost_nbr, allow_increase=True)
 
     i = 0
     totcost = 0
-    while costs0 and costs1:
-        u, cost_u = costs0.pop()
-        _update_costs(costs0, u)
-        v, cost_v = costs1.pop()
-        _update_costs(costs1, v)
+    while heap0 and heap1:
+        u, cost_u = heap0.pop()
+        _update_heap_values(u)
+        v, cost_v = heap1.pop()
+        _update_heap_values(v)
         totcost += cost_u + cost_v
         i += 1
         yield totcost, i, (u, v)
@@ -61,6 +69,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
     greedy node swapping, (see `nx.community.greedy_node_swap_bipartition`).
     The improvements are typically only a few percent of the modularity value.
     But they claim that can make a difference between a good and excellent method.
+    This function does not perform any improvements. But you can do that yourself.
 
     Parameters
     ----------
@@ -115,13 +124,12 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
        https://doi.org/10.1073/pnas.0601602103
 
     """
-    n = len(G)
-    labels = list(G)
-    seed.shuffle(labels)
-    index = {v: i for i, v in enumerate(labels)}
+    nodes = list(G)
 
     if partition is None:
-        side = [0] * (n // 2) + [1] * ((n + 1) // 2)
+        seed.shuffle(nodes)
+        mid = len(nodes) // 2
+        A, B = nodes[:mid], nodes[mid:]
     else:
         try:
             A, B = partition
@@ -129,9 +137,8 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
             raise nx.NetworkXError("partition must be two sets") from err
         if not nx.community.is_partition(G, [A, B]):
             raise nx.NetworkXError("partition invalid")
-        side = [0] * n
-        for a in A:
-            side[index[a]] = 1
+
+    side = {node: (node in A) for node in nodes}
 
     # ruff: noqa: E731   skips check for no lambda functions
     # Using shortest_paths _weight_function with sum instead of min on multiedges
@@ -142,18 +149,14 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
     else:
         sum_weight = lambda u, v, d: d.get(weight, 1)
 
-    edges = [
-        [
-            (index[nbr], w)
-            for nbr, d in G.adj[node].items()
-            # hide edges via weight function returning None
-            if (w := sum_weight(node, nbr, d)) is not None
-        ]
-        for node in labels
-    ]
+    edge_info = {
+        u: {v: wt for v, d in nbrs.items() if (wt := sum_weight(u, v, d)) is not None}
+        for u, nbrs in G._adj.items()
+    }
 
     for i in range(max_iter):
-        costs = list(_kernighan_lin_sweep(edges, side))
+        costs = list(_kernighan_lin_sweep(edge_info, side))
+        # find out how many edges to update: min_i
         min_cost, min_i, _ = min(costs)
         if min_cost >= 0:
             break
@@ -162,9 +165,9 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
             side[u] = 1
             side[v] = 0
 
-    A = {u for u, s in zip(labels, side) if s == 0}
-    B = {u for u, s in zip(labels, side) if s == 1}
-    return A, B
+    part1 = {u for u, s in side.items() if s == 0}
+    part2 = {u for u, s in side.items() if s == 1}
+    return part1, part2
 
 
 @nx.utils.not_implemented_for("directed")
@@ -292,24 +295,24 @@ def greedy_node_swap_bipartition(G, C_init=None, max_iter=10):
         m2 = len(G) - m1
         some_nodes = set(random.sample(list(G), m1))
         other_nodes = {n for n in G if n not in some_nodes}
-        C = (some_nodes, other_nodes)
+        C_best_so_far = (some_nodes, other_nodes)
     else:
         if not nx.community.is_partition(G, C_init):
             raise nx.NetworkXError("C_init is not a partition of G")
         if not len(C_init) == 2:
             raise nx.NetworkXError("C_init must be a bipartition")
-        C = deepcopy(C_init)
+        C_best_so_far = deepcopy(C_init)
 
-    C_mod = nx.community.modularity(G, C)
+    C_best_mod = nx.community.modularity(G, C_best_so_far)
 
-    Cmax, Cmax_mod = C, C_mod
+    Cmax, Cmax_mod = C_best_so_far, C_best_mod
     its = 0
     m = G.number_of_edges()
     G_degree = dict(G.degree)
 
-    while Cmax_mod >= C_mod and its < max_iter:
-        C = deepcopy(Cmax)
-        C_mod = Cmax_mod
+    while Cmax_mod >= C_best_mod and its < max_iter:
+        C_best_so_far = Cmax
+        C_best_mod = Cmax_mod
         Cnext = deepcopy(Cmax)
         Cnext_mod = Cmax_mod
         nodes = set(G)
@@ -348,4 +351,4 @@ def greedy_node_swap_bipartition(G, C_init=None, max_iter=10):
                 Cmax, Cmax_mod = deepcopy(Cnext), Cnext_mod
             nodes.remove(max_node)
         its += 1
-    return C
+    return C_best_so_far
