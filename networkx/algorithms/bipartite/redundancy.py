@@ -27,7 +27,7 @@ def node_redundancy(G, nodes=None):
         \: \exists v' \neq  v,\: (v',u) \in E\:
         \mathrm{and}\: (v',w) \in E\}|}{ \frac{|N(v)|(|N(v)|-1)}{2}},
 
-    where `N(v)` is the set of neighbors of `v` in `G`.
+    where `N(v)` is the set of neighbors of `v` in `G` [1]_.
 
     Parameters
     ----------
