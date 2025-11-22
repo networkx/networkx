@@ -30,13 +30,13 @@ def karate_club_graph():
 
     Examples
     --------
-    To get the name of the club to which a node belongs::
+    To get the name of the club to which a node belongs:
 
-        >>> G = nx.karate_club_graph()
-        >>> G.nodes[5]["club"]
-        'Mr. Hi'
-        >>> G.nodes[9]["club"]
-        'Officer'
+    >>> G = nx.karate_club_graph()
+    >>> G.nodes[5]["club"]
+    'Mr. Hi'
+    >>> G.nodes[9]["club"]
+    'Officer'
 
     References
     ----------
