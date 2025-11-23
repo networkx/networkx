@@ -144,13 +144,7 @@ def boruvka_mst_edges(
     edge_attrs={"weight": None, "partition": None}, preserve_edge_attrs="data"
 )
 def kruskal_mst_edges(
-    G,
-    minimum=True,
-    weight="weight",
-    keys=True,
-    data=True,
-    ignore_nan=False,
-    partition=None,
+    G, minimum, weight="weight", keys=True, data=True, ignore_nan=False, partition=None
 ):
     """
     Iterate over edge of a Kruskal's algorithm min/max spanning tree.
@@ -192,88 +186,80 @@ def kruskal_mst_edges(
         take the following forms: `(u, v)`, `(u, v, d)` or `(u, v, k, d)`
         depending on the `key` and `data` parameters
     """
-    num_nodes = len(G)
-    edges_needed = num_nodes - 1
-
-    def _ok_weight(w):
-        if isnan(w):
-            if ignore_nan:
-                return False
-            raise ValueError("NaN found as an edge weight.")
-        return True
-
-    # Collect candidate edges
-    included_edges, open_edges = [], []
-    is_multigraph = G.is_multigraph()
-    edge_iter = G.edges(keys=True, data=True) if is_multigraph else G.edges(data=True)
-    sign = 1 if minimum else -1
-    for edge_tup in edge_iter:
-        if is_multigraph:
-            u, v, k, d = edge_tup
-        else:
-            u, v, d = edge_tup
-        w = d.get(weight, 1)
-        if not _ok_weight(w):
-            continue
-        tup = (w * sign, u, v, k, d) if is_multigraph else (w * sign, u, v, d)
-        part = d.get(partition)
-        if part == EdgePartition.INCLUDED:
-            included_edges.append(tup)
-        elif part == EdgePartition.EXCLUDED:
-            continue
-        else:
-            open_edges.append(tup)
-    combined_edges = included_edges + sorted(open_edges, key=itemgetter(0))
-
-    # DSU with path-halving
-    parent, rank = {}, {}
-
-    def find(x):
-        if x not in parent:
-            parent[x] = x
-            rank[x] = 0
-            return x
-        while parent[x] != x:
-            parent[x] = parent[parent[x]]
-            x = parent[x]
-        return x
-
-    def union(a, b):
-        ra, rb = find(a), find(b)
-        if ra == rb:
-            return False
-        if rank[ra] < rank[rb]:
-            parent[ra] = rb
-        elif rank[ra] > rank[rb]:
-            parent[rb] = ra
-        else:
-            parent[rb] = ra
-            rank[ra] += 1
-        return True
-
-    mst_edges = []
-
-    # Iterate through sorted edges
-    if is_multigraph:
-        for _, u, v, k, d in combined_edges:
-            if union(u, v):
-                if keys:
-                    edge = (u, v, k, d) if data else (u, v, k)
-                else:
-                    edge = (u, v, d) if data else (u, v)
-                mst_edges.append(edge)
-                if len(mst_edges) == edges_needed:
-                    break
+    subtrees = UnionFind()
+    if G.is_multigraph():
+        edges = G.edges(keys=True, data=True)
     else:
-        for _, u, v, d in combined_edges:
-            if union(u, v):
-                edge = (u, v, d) if data else (u, v)
-                mst_edges.append(edge)
-                if len(mst_edges) == edges_needed:
-                    break
+        edges = G.edges(data=True)
 
-    mst_edges.sort(key=itemgetter(0, 1))
-    yield from mst_edges
+    """
+    Sort the edges of the graph with respect to the partition data.
+    Edges are returned in the following order:
+
+    * Included edges
+    * Open edges from smallest to largest weight
+    * Excluded edges
+    """
+    included_edges = []
+    open_edges = []
+    for e in edges:
+        d = e[-1]
+        wt = d.get(weight, 1)
+        if isnan(wt):
+            if ignore_nan:
+                continue
+            raise ValueError(f"NaN found as an edge weight. Edge {e}")
+
+        edge = (wt,) + e
+        if d.get(partition) == EdgePartition.INCLUDED:
+            included_edges.append(edge)
+        elif d.get(partition) == EdgePartition.EXCLUDED:
+            continue
+        else:
+            open_edges.append(edge)
+
+    if minimum:
+        sorted_open_edges = sorted(open_edges, key=itemgetter(0))
+    else:
+        sorted_open_edges = sorted(open_edges, key=itemgetter(0), reverse=True)
+
+    # Condense the lists into one
+    included_edges.extend(sorted_open_edges)
+    sorted_edges = included_edges
+    del open_edges, sorted_open_edges, included_edges
+
+    edges_needed = len(G) - 1
+    edges_added = 0
+
+    # Multigraphs need to handle edge keys in addition to edge data.
+    if G.is_multigraph():
+        for wt, u, v, k, d in sorted_edges:
+            if subtrees[u] != subtrees[v]:
+                if keys:
+                    if data:
+                        yield u, v, k, d
+                    else:
+                        yield u, v, k
+                else:
+                    if data:
+                        yield u, v, d
+                    else:
+                        yield u, v
+                subtrees.union(u, v)
+                edges_added += 1
+                if edges_added == edges_needed:
+                    return
+    else:
+        for wt, u, v, d in sorted_edges:
+            if subtrees[u] != subtrees[v]:
+                if data:
+                    yield u, v, d
+                else:
+                    yield u, v
+                subtrees.union(u, v)
+                edges_added += 1
+                if edges_added == edges_needed:
+                    return
 
 
 @nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
