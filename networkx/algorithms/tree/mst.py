@@ -204,36 +204,26 @@ def kruskal_mst_edges(
 
     # Collect candidate edges
     included_edges, open_edges = [], []
-    if G.is_multigraph():
-        for u, v, k, d in G.edges(keys=True, data=True):
-            w = d.get(weight, 1)
-            if not _ok_weight(w):
-                continue
-            tup = (w, u, v, k, d)
-            part = d.get(partition)
-            if part == EdgePartition.INCLUDED:
-                included_edges.append(tup)
-            elif part == EdgePartition.EXCLUDED:
-                continue
-            else:
-                open_edges.append(tup)
-        sorted_open_edges = sorted(open_edges, key=itemgetter(0), reverse=not minimum)
-        combined_edges = included_edges + sorted_open_edges
-    else:
-        for u, v, d in G.edges(data=True):
-            w = d.get(weight, 1)
-            if not _ok_weight(w):
-                continue
-            tup = (w, u, v, d)
-            part = d.get(partition)
-            if part == EdgePartition.INCLUDED:
-                included_edges.append(tup)
-            elif part == EdgePartition.EXCLUDED:
-                continue
-            else:
-                open_edges.append(tup)
-        sorted_open_edges = sorted(open_edges, key=itemgetter(0), reverse=not minimum)
-        combined_edges = included_edges + sorted_open_edges
+    is_multigraph = G.is_multigraph()
+    edge_iter = G.edges(keys=True, data=True) if is_multigraph else G.edges(data=True)
+    sign = 1 if minimum else -1
+    for edge_tup in edge_iter:
+        if is_multigraph:
+            u, v, k, d = edge_tup
+        else:
+            u, v, d = edge_tup
+        w = d.get(weight, 1)
+        if not _ok_weight(w):
+            continue
+        tup = (w * sign, u, v, k, d) if is_multigraph else (w * sign, u, v, d)
+        part = d.get(partition)
+        if part == EdgePartition.INCLUDED:
+            included_edges.append(tup)
+        elif part == EdgePartition.EXCLUDED:
+            continue
+        else:
+            open_edges.append(tup)
+    combined_edges = included_edges + sorted(open_edges, key=itemgetter(0))
 
     # DSU with path-halving
     parent, rank = {}, {}
@@ -264,7 +254,7 @@ def kruskal_mst_edges(
     mst_edges = []
 
     # Iterate through sorted edges
-    if G.is_multigraph():
+    if is_multigraph:
         for _, u, v, k, d in combined_edges:
             if union(u, v):
                 if keys:
@@ -282,6 +272,7 @@ def kruskal_mst_edges(
                 if len(mst_edges) == edges_needed:
                     break
 
+    mst_edges.sort(key=itemgetter(0, 1))
     yield from mst_edges
 
 
