@@ -192,7 +192,7 @@ def spectral_modularity_bipartition(G):
 
     Parameters
     ----------
-    G : NetworkX Graph, DiGraph, MultiGraph, MultiDiGraph
+    G : NetworkX Graph
 
     Returns
     --------
