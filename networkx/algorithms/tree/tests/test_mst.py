@@ -250,7 +250,7 @@ class TestBoruvka(MinimumSpanningTreeTestBase):
         with pytest.raises(nx.NetworkXNotImplemented):
             list(nx.minimum_spanning_edges(MG, algorithm=self.algo))
         with pytest.raises(nx.NetworkXNotImplemented):
-            list(nx.maximum_spanning_edges(DG, algorithm=self.algo))
+            list(nx.maximum_spanning_edges(MG, algorithm=self.algo))
 
 
 class MultigraphMSTTestBase(MinimumSpanningTreeTestBase):
