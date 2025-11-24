@@ -136,22 +136,22 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
 
     Examples
     --------
-    To get the edges in a breadth-first search::
+    To get the edges in a breadth-first search:
 
-        >>> G = nx.path_graph(3)
-        >>> list(nx.bfs_edges(G, 0))
-        [(0, 1), (1, 2)]
-        >>> list(nx.bfs_edges(G, source=0, depth_limit=1))
-        [(0, 1)]
+    >>> G = nx.path_graph(3)
+    >>> list(nx.bfs_edges(G, 0))
+    [(0, 1), (1, 2)]
+    >>> list(nx.bfs_edges(G, source=0, depth_limit=1))
+    [(0, 1)]
 
-    To get the nodes in a breadth-first search order::
+    To get the nodes in a breadth-first search order:
 
-        >>> G = nx.path_graph(3)
-        >>> root = 2
-        >>> edges = nx.bfs_edges(G, root)
-        >>> nodes = [root] + [v for u, v in edges]
-        >>> nodes
-        [2, 1, 0]
+    >>> G = nx.path_graph(3)
+    >>> root = 2
+    >>> edges = nx.bfs_edges(G, root)
+    >>> nodes = [root] + [v for u, v in edges]
+    >>> nodes
+    [2, 1, 0]
 
     Notes
     -----
