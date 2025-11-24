@@ -139,16 +139,16 @@ def test_greedy_bipartition():
 
 
 def test_greedy_non_disjoint_partition():
+    G = nx.barbell_graph(3, 0)
+    C_init = ({0, 1, 2}, {2, 3, 4, 5})
     with pytest.raises(nx.NetworkXError):
-        G = nx.barbell_graph(3, 0)
-        C_init = ({0, 1, 2}, {2, 3, 4, 5})
         nx.community.greedy_node_swap_bipartition(G, C_init)
 
 
 def test_greedy_node_swap_too_many_blocks():
+    G = nx.barbell_graph(3, 0)
+    C_init = ({0, 1}, {2}, {3, 4, 5})
     with pytest.raises(nx.NetworkXError):
-        G = nx.barbell_graph(3, 0)
-        C_init = ({0, 1}, {2}, {3, 4, 5})
         nx.community.greedy_node_swap_bipartition(G, C_init)
 
 
