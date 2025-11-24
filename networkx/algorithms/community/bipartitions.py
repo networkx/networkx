@@ -61,12 +61,12 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
     This algorithm partitions a network into two sets by iteratively
     swapping pairs of nodes to reduce the edge cut between the two sets.  The
     pairs are chosen according to a modified form of Kernighan-Lin [1]_, which
-    moves node individually, alternating between sides to keep the bisection
+    moves nodes individually, alternating between sides to keep the bisection
     balanced.
 
     Kernighan-Lin is an approximate algorithm for maximal modularity bisection.
     In [2]_ they suggest that fine-tuned improvements can be made using
-    greedy node swapping, (see `nx.community.greedy_node_swap_bipartition`).
+    greedy node swapping, (see `greedy_node_swap_bipartition`).
     The improvements are typically only a few percent of the modularity value.
     But they claim that can make a difference between a good and excellent method.
     This function does not perform any improvements. But you can do that yourself.
@@ -110,7 +110,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
     Raises
     ------
     NetworkXError
-        If partition is not a valid partition of the nodes of the graph.
+        If `partition` is not a valid partition of the nodes of the graph.
 
     References
     ----------
