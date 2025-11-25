@@ -103,7 +103,7 @@ def cycle_basis(G, root=None):
 
 
 @nx._dispatchable
-def simple_cycles(G, length_bound=None):
+def simple_cycles(G, length_bound=None, *, lower_length_bound=None):
     """Find simple cycles (elementary circuits) of a graph.
 
     A "simple cycle", or "elementary circuit", is a closed path where
@@ -141,6 +141,15 @@ def simple_cycles(G, length_bound=None):
        If `length_bound` is an int, generate all simple cycles of `G` with length at
        most `length_bound`.  Otherwise, generate all simple cycles of `G`.
 
+    lower_length_bound : int or None, optional (default=None)
+       If `lower_length_bound` is an int, generate only simple cycles of `G` with length
+       at least `lower_length_bound`.  Otherwise, the cycles are not lower-bounded in
+       length.
+
+       When both `lower_length_bound` and `length_bound` are provided, this function
+       generates all simple cycles of `G` whose lengths lie in the closed interval
+       ``[lower_length_bound, length_bound]``.
+
     Yields
     ------
     list of nodes
@@ -171,7 +180,8 @@ def simple_cycles(G, length_bound=None):
     Raises
     ------
     ValueError
-        when ``length_bound < 0``.
+        If ``length_bound < 0``, or ``lower_length_bound < 0``, or if both are
+        provided and ``lower_length_bound > length_bound``.
 
     References
     ----------
@@ -195,24 +205,35 @@ def simple_cycles(G, length_bound=None):
     chordless_cycles
     """
 
-    if length_bound is not None:
-        if length_bound == 0:
-            return
-        elif length_bound < 0:
-            raise ValueError("length bound must be non-negative")
+    if length_bound is not None and length_bound < 0:
+        raise ValueError("length bound must be non-negative")
+
+    if lower_length_bound is not None and lower_length_bound < 0:
+        raise ValueError("lower length bound must be non-negative")
+
+    if lower_length_bound is not None and length_bound is not None:
+        if lower_length_bound > length_bound:
+            raise ValueError(
+                "lower length bound must be less than or equal to length bound"
+            )
+
+    if length_bound == 0:
+        return
 
     directed = G.is_directed()
-    yield from ([v] for v, Gv in G.adj.items() if v in Gv)
+    if lower_length_bound is None or lower_length_bound <= 1:
+        yield from ([v] for v, Gv in G.adj.items() if v in Gv)
 
     if length_bound is not None and length_bound == 1:
         return
 
     if G.is_multigraph() and not directed:
-        visited = set()
-        for u, Gu in G.adj.items():
-            multiplicity = ((v, len(Guv)) for v, Guv in Gu.items() if v in visited)
-            yield from ([u, v] for v, m in multiplicity if m > 1)
-            visited.add(u)
+        if lower_length_bound is None or lower_length_bound <= 2:
+            visited = set()
+            for u, Gu in G.adj.items():
+                multiplicity = ((v, len(Guv)) for v, Guv in Gu.items() if v in visited)
+                yield from ([u, v] for v, m in multiplicity if m > 1)
+                visited.add(u)
 
     # explicitly filter out loops; implicitly filter out parallel edges
     if directed:
@@ -232,12 +253,12 @@ def simple_cycles(G, length_bound=None):
         return
 
     if directed:
-        yield from _directed_cycle_search(G, length_bound)
+        yield from _directed_cycle_search(G, lower_length_bound, length_bound)
     else:
-        yield from _undirected_cycle_search(G, length_bound)
+        yield from _undirected_cycle_search(G, lower_length_bound, length_bound)
 
 
-def _directed_cycle_search(G, length_bound):
+def _directed_cycle_search(G, lower_length_bound, length_bound):
     """A dispatch function for `simple_cycles` for directed graphs.
 
     We generate all cycles of G through binary partition.
@@ -266,6 +287,11 @@ def _directed_cycle_search(G, length_bound):
        If length_bound is an int, generate all simple cycles of G with length at most length_bound.
        Otherwise, generate all simple cycles of G.
 
+    lower_length_bound : int or None
+        If `lower_length_bound` is an int, generate only simple cycles of `G` with length
+        at least `lower_length_bound`.  Otherwise, the cycles are not lower-bounded in
+        length.
+
     Yields
     ------
     list of nodes
@@ -279,15 +305,15 @@ def _directed_cycle_search(G, length_bound):
         Gc = G.subgraph(c)
         v = next(iter(c))
         if length_bound is None:
-            yield from _johnson_cycle_search(Gc, [v])
+            yield from _johnson_cycle_search(Gc, [v], lower_length_bound)
         else:
-            yield from _bounded_cycle_search(Gc, [v], length_bound)
+            yield from _bounded_cycle_search(Gc, [v], lower_length_bound, length_bound)
         # delete v after searching G, to make sure we can find v
         G.remove_node(v)
         components.extend(c for c in scc(Gc) if len(c) >= 2)
 
 
-def _undirected_cycle_search(G, length_bound):
+def _undirected_cycle_search(G, lower_length_bound, length_bound):
     """A dispatch function for `simple_cycles` for undirected graphs.
 
     We generate all cycles of G through binary partition.
@@ -316,6 +342,11 @@ def _undirected_cycle_search(G, length_bound):
        If length_bound is an int, generate all simple cycles of G with length at most length_bound.
        Otherwise, generate all simple cycles of G.
 
+    lower_length_bound : int or None
+        If `lower_length_bound` is an int, generate only simple cycles of `G` with length
+        at least `lower_length_bound`.  Otherwise, the cycles are not lower-bounded in
+        length.
+
     Yields
     ------
     list of nodes
@@ -331,9 +362,9 @@ def _undirected_cycle_search(G, length_bound):
         G.remove_edge(*uv)
         # delete (u, v) before searching G, to avoid fake 3-cycles [u, v, u]
         if length_bound is None:
-            yield from _johnson_cycle_search(Gc, uv)
+            yield from _johnson_cycle_search(Gc, uv, lower_length_bound)
         else:
-            yield from _bounded_cycle_search(Gc, uv, length_bound)
+            yield from _bounded_cycle_search(Gc, uv, lower_length_bound, length_bound)
         components.extend(c for c in bcc(Gc) if len(c) >= 3)
 
 
@@ -353,7 +384,7 @@ class _NeighborhoodCache(dict):
         return Gv
 
 
-def _johnson_cycle_search(G, path):
+def _johnson_cycle_search(G, path, lower_length_bound):
     """The main loop of the cycle-enumeration algorithm of Johnson.
 
     Parameters
@@ -363,6 +394,11 @@ def _johnson_cycle_search(G, path):
 
     path : list
        A cycle prefix.  All cycles generated will begin with this prefix.
+
+    lower_length_bound : int or None
+        If `lower_length_bound` is an int, generate only simple cycles of `G` with length
+        at least `lower_length_bound`.  Otherwise, the cycles are not lower-bounded in
+        length.
 
     Yields
     ------
@@ -376,7 +412,8 @@ def _johnson_cycle_search(G, path):
        https://doi.org/10.1137/0204007
 
     """
-
+    if lower_length_bound is None:
+        lower_length_bound = 0
     G = _NeighborhoodCache(G)
     blocked = set(path)
     B = defaultdict(set)  # graph portions that yield no elementary circuit
@@ -387,7 +424,8 @@ def _johnson_cycle_search(G, path):
         nbrs = stack[-1]
         for w in nbrs:
             if w == start:
-                yield path[:]
+                if len(path) >= lower_length_bound:
+                    yield path[:]
                 closed[-1] = True
             elif w not in blocked:
                 path.append(w)
@@ -413,7 +451,7 @@ def _johnson_cycle_search(G, path):
                     B[w].add(v)
 
 
-def _bounded_cycle_search(G, path, length_bound):
+def _bounded_cycle_search(G, path, lower_length_bound, length_bound):
     """The main loop of the cycle-enumeration algorithm of Gupta and Suzumura.
 
     Parameters
@@ -427,6 +465,11 @@ def _bounded_cycle_search(G, path, length_bound):
     length_bound: int
         A length bound.  All cycles generated will have length at most length_bound.
 
+    lower_length_bound : int or None
+        If `lower_length_bound` is an int, generate only simple cycles of `G` with length
+        at least `lower_length_bound`.  Otherwise, the cycles are not lower-bounded in
+        length.
+
     Yields
     ------
     list of nodes
@@ -438,7 +481,10 @@ def _bounded_cycle_search(G, path, length_bound):
        A. Gupta and T. Suzumura https://arxiv.org/abs/2105.10094
 
     """
+
     G = _NeighborhoodCache(G)
+    if lower_length_bound is None:
+        lower_length_bound = 0
     lock = {v: 0 for v in path}
     B = defaultdict(set)
     start = path[0]
@@ -448,7 +494,8 @@ def _bounded_cycle_search(G, path, length_bound):
         nbrs = stack[-1]
         for w in nbrs:
             if w == start:
-                yield path[:]
+                if len(path) >= lower_length_bound:
+                    yield path[:]
                 blen[-1] = 1
             elif len(path) < lock.get(w, length_bound):
                 path.append(w)

@@ -684,23 +684,158 @@ class TestCycleEnumeration:
     def test_simple_cycles_bound_error(self):
         with pytest.raises(ValueError):
             G = nx.DiGraph()
-            for c in nx.simple_cycles(G, -1):
+            for c in nx.simple_cycles(G, length_bound=-1):
                 assert False
 
         with pytest.raises(ValueError):
             G = nx.Graph()
-            for c in nx.simple_cycles(G, -1):
-                assert False
-
-        with pytest.raises(ValueError):
-            G = nx.Graph()
-            for c in nx.chordless_cycles(G, -1):
+            for c in nx.simple_cycles(G, length_bound=-1):
                 assert False
 
         with pytest.raises(ValueError):
             G = nx.DiGraph()
-            for c in nx.chordless_cycles(G, -1):
+            for c in nx.simple_cycles(G, lower_length_bound=-1):
                 assert False
+
+        with pytest.raises(ValueError):
+            G = nx.Graph()
+            for c in nx.simple_cycles(G, lower_length_bound=-1):
+                assert False
+
+        with pytest.raises(ValueError):
+            G = nx.DiGraph()
+            for c in nx.simple_cycles(G, length_bound=2, lower_length_bound=3):
+                assert False
+
+        with pytest.raises(ValueError):
+            G = nx.Graph()
+            for c in nx.simple_cycles(G, length_bound=2, lower_length_bound=3):
+                assert False
+
+        with pytest.raises(ValueError):
+            G = nx.Graph()
+            for c in nx.chordless_cycles(G, length_bound=-1):
+                assert False
+
+        with pytest.raises(ValueError):
+            G = nx.DiGraph()
+            for c in nx.chordless_cycles(G, length_bound=-1):
+                assert False
+
+    def test_simple_cycles_lower_length_bound_directed(self):
+        DG = nx.DiGraph()
+        DG.add_edges_from(
+            [
+                (1, 2),
+                (1, 3),
+                (1, 4),
+                (2, 3),
+                (2, 5),
+                (3, 4),
+                (3, 6),
+                (4, 7),
+                (7, 1),
+            ]
+        )
+        edgeset = self.edgeset_function(DG)
+
+        result = {
+            edgeset(c)
+            for c in nx.simple_cycles(DG, lower_length_bound=3, length_bound=4)
+        }
+        expected = {edgeset(c) for c in [[1, 3, 4, 7], [1, 4, 7]]}
+        assert result == expected
+
+        result = {
+            edgeset(c)
+            for c in nx.simple_cycles(DG, lower_length_bound=4, length_bound=4)
+        }
+        expected = {edgeset([1, 3, 4, 7])}
+        assert result == expected
+
+    def test_simple_cycles_lower_length_bound_undirected(self):
+        G = nx.Graph()
+        G.add_edges_from(
+            [
+                (1, 2),
+                (1, 3),
+                (1, 4),
+                (2, 3),
+                (2, 5),
+                (3, 4),
+                (3, 6),
+                (4, 7),
+                (7, 1),
+            ]
+        )
+        edgeset = self.edgeset_function(G)
+
+        result = {
+            edgeset(c)
+            for c in nx.simple_cycles(G, lower_length_bound=3, length_bound=4)
+        }
+        expected = {
+            edgeset(c)
+            for c in [
+                [1, 2, 3],
+                [1, 2, 3, 4],
+                [1, 3, 4],
+                [1, 3, 4, 7],
+                [1, 4, 7],
+            ]
+        }
+        assert result == expected
+
+        result = {
+            edgeset(c)
+            for c in nx.simple_cycles(G, lower_length_bound=4, length_bound=4)
+        }
+        expected = {edgeset(c) for c in [[1, 2, 3, 4], [1, 3, 4, 7]]}
+        assert result == expected
+
+    def test_simple_cycles_lower_length_bound_self_loops_and_mixed(self):
+        G = nx.Graph()
+        G.add_edge(1, 1)
+        edgeset = self.edgeset_function(G)
+
+        result = {edgeset(c) for c in nx.simple_cycles(G, lower_length_bound=1)}
+        expected = {edgeset([1])}
+        assert result == expected
+
+        result = {edgeset(c) for c in nx.simple_cycles(G, lower_length_bound=2)}
+        assert result == set()
+
+        G = nx.Graph()
+        G.add_edges_from(
+            [
+                (1, 2),
+                (2, 3),
+                (2, 4),
+                (3, 1),
+                (4, 3),
+            ]
+        )
+        edgeset = self.edgeset_function(G)
+
+        result = {edgeset(c) for c in nx.simple_cycles(G, lower_length_bound=3)}
+        expected = {edgeset(c) for c in [[1, 2, 3], [1, 2, 4, 3], [2, 3, 4]]}
+        assert result == expected
+
+        result = {edgeset(c) for c in nx.simple_cycles(G, lower_length_bound=4)}
+        expected = {edgeset([1, 2, 4, 3])}
+        assert result == expected
+
+    def test_simple_cycles_lower_length_bound_multigraph_parallel_edges(self):
+        MG = nx.MultiGraph()
+        MG.add_edges_from([(1, 2), (1, 2)])
+        edgeset = self.edgeset_function(MG)
+
+        result = {edgeset(c) for c in nx.simple_cycles(MG, lower_length_bound=2)}
+        expected = {edgeset([1, 2])}
+        assert result == expected
+
+        result = {edgeset(c) for c in nx.simple_cycles(MG, lower_length_bound=3)}
+        assert result == set()
 
     def test_chordless_cycles_clique(self):
         g_family = [self.K(n) for n in range(2, 15)]
