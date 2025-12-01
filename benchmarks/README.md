@@ -1,6 +1,12 @@
 ## NetworkX ASV Benchmarks
 
-Currently we have two broad categories for benchmarks:
+NetworkX uses [`asv`](https://asv.readthedocs.io/en/latest/) to monitor for
+performance regressions and evaluate proposals for improved performance.
+Available benchmarks are available in the `benchmarks/benchmarks` subdirectory
+and are loosely organized/named to reflect either the algorithms or data structures
+that they focus on.
+
+The two most generic sets of benchmarks are:
 
 - `benchmarks_classes.py`: This covers benchmarks for performance of core
   NetworkX classes (`Graph`, `DiGraph`, `MultiGraph`, `MultiDiGraph`).
@@ -10,6 +16,9 @@ Currently we have two broad categories for benchmarks:
 - `benchmark_algorithms.py`: This runs a tiny subset of algorithms which cover
   different parts of our codebase. We use graphs with different density, and a
   real world dataset from SNAP datasets to run the algorithms.
+
+There are many other algorithms captured in other files/benchmarking classes
+within the suite.
 
 ## Running the benchmark suite
 
