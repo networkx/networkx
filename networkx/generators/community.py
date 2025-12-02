@@ -782,26 +782,26 @@ def _generate_communities(degree_seq, community_sizes, mu, max_iters, seed):
 
     """
     # This assumes the nodes in the graph will be natural numbers.
-    result = [set() for _ in community_sizes]
+    result = [[] for _ in community_sizes]
     n = len(degree_seq)
     free = list(range(n))
     for i in range(max_iters):
         v = free.pop()
-        c = seed.choice(range(len(community_sizes)))
-        # s = int(degree_seq[v] * (1 - mu) + 0.5)
         s = round(degree_seq[v] * (1 - mu))
-        # If the community is large enough, add the node to the chosen
-        # community. Otherwise, return it to the list of unaffiliated
-        # nodes.
+        c = seed.choice(range(len(community_sizes)))
+        # If the community is large enough, add the node to the chosen community.
+        # Otherwise, return it to the list of unaffiliated nodes.
         if s < community_sizes[c]:
-            result[c].add(v)
+            result[c].append(v)
         else:
             free.append(v)
         # If the community is too big, remove a node from it.
         if len(result[c]) > community_sizes[c]:
-            free.append(result[c].pop())
+            rm_node = seed.choice(result[c])
+            result[c].remove(rm_node)
+            free.append(rm_node)
         if not free:
-            return result
+            return [set(c) for c in result]
     msg = "Could not assign communities; try increasing min_community"
     raise nx.ExceededMaxIterations(msg)
 
@@ -1057,14 +1057,25 @@ def LFR_benchmark_graph(
     # inter-community degrees.
     G = nx.Graph()
     G.add_nodes_from(range(n))
-    for c in communities:
-        for u in c:
-            while G.degree(u) < round(deg_seq[u] * (1 - mu)):
-                v = seed.choice(list(c))
-                G.add_edge(u, v)
-            while G.degree(u) < deg_seq[u]:
-                v = seed.choice(range(n))
-                if v not in c:
-                    G.add_edge(u, v)
-            G.nodes[u]["community"] = c
+    for comm in communities:
+        for u in comm:
+            friends = G._adj[u].keys() & comm
+            number_of_internal_edges = round(deg_seq[u] * (1 - mu)) - len(friends)
+            if number_of_internal_edges > 0:
+                new_nbrs = seed.sample(list(comm), number_of_internal_edges)
+                G.add_edges_from((u, v) for v in new_nbrs)
+
+    for comm in communities:
+        others = [node for node in range(n) if node not in comm]
+        for u in comm:
+            # Choose nodes
+            number_of_external_edges = deg_seq[u] - len(G._adj[u])
+            if number_of_external_edges > 0:
+                if number_of_external_edges > len(others):
+                    msg = "Could not add edges; try decreasing max_degree"
+                    raise nx.exception.ExceededMaxIterations(msg)
+                new_nbrs = seed.sample(others, number_of_external_edges)
+                G.add_edges_from((u, v) for v in new_nbrs)
+
+            G.nodes[u]["community"] = comm
     return G
