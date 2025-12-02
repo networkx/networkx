@@ -7,6 +7,7 @@ __all__ = [
     "floyd_warshall_predecessor_and_distance",
     "reconstruct_path",
     "floyd_warshall_numpy",
+    "floyd_warshall_tree",
 ]
 
 
@@ -118,31 +119,32 @@ def floyd_warshall_tree(G, weight="weight"):
             parent = pred[k].get(v, k)  # path k to v in OUT_K
             adj_list[parent].append(v)
 
-    dfs_array = []
-    entry_idx = {}
-    exit_idx = {}
+        dfs_array = []
+        entry_idx = {}
+        exit_idx = {}
 
-    stack = [(k, False)]  # (node, processed_child?)
+        stack = [(k, False)]  # (node, processed_child?)
 
-    # making of dfs and skip array as discussed in the paper
-    while stack:
-        node, processed = stack.pop()
-        if not processed:
-            entry_idx[node] = len(dfs_array)
-            dfs_array.append(node)
+        # making of dfs and skip array as discussed in the paper
+        while stack:
+            node, processed = stack.pop()
+            if not processed:
+                entry_idx[node] = len(dfs_array)
+                if node != k:
+                    dfs_array.append(node)
 
-            # push a marker to set exit index after children handled
-            stack.append((node, True))
+                # push a marker to set exit index after children handled
+                stack.append((node, True))
 
-            children = adj_list[node]
+                children = adj_list[node]
 
-            if children:
-                for child in children:
-                    stack.append((child, False))
+                if children:
+                    for child in children:
+                        stack.append((child, False))
 
-        else:  # reached here since we pushed a marker
-            # exit index=first elem after subtree in dfsList
-            exit_idx[node] = len(dfs_array)
+            else:  # reached here since we pushed a marker
+                # exit index=first elem after subtree in dfsList
+                exit_idx[node] = len(dfs_array)
 
         # skip_idx=first idx after subtree of v
         skip_idx = {v: exit_idx.get(v, len(dfs_array)) for v in dfs_array}
