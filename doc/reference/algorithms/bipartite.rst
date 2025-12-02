@@ -132,4 +132,20 @@ Covering
    min_edge_cover
 
 
+Extendability
+-------------
+.. automodule:: networkx.algorithms.bipartite.extendability
+.. autosummary::
+   :toctree: generated/
+
+   maximal_extendability
+
+
+Link Analysis
+-------------
+.. automodule:: networkx.algorithms.bipartite.link_analysis
+.. autosummary::
+   :toctree: generated/
+
+   birank
 

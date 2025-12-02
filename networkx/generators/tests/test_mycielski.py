@@ -1,5 +1,7 @@
 """Unit tests for the :mod:`networkx.generators.mycielski` module."""
 
+import pytest
+
 import networkx as nx
 
 
@@ -24,3 +26,5 @@ class TestMycielski:
         assert nx.is_isomorphic(G, nx.cycle_graph(5))
         G = nx.mycielski_graph(4)
         assert nx.is_isomorphic(G, nx.mycielskian(nx.cycle_graph(5)))
+        with pytest.raises(nx.NetworkXError, match="must satisfy n >= 1"):
+            nx.mycielski_graph(0)

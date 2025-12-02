@@ -99,7 +99,7 @@ A total of 52 changes have been committed.
 - Added example under unary operators (#5625)
 - Added docstring examples to matching functions (#5617)
 - doc: fix typos in docstring and comment (#5647)
-- DOC: remove note re: non-existent param (#5648)
+- DOC: remove note re: nonexistent param (#5648)
 - added examples to covering.py (#5646)
 - added examples on chain decomposition (#5641)
 - Fix typo (#5652)

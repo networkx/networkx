@@ -9,18 +9,17 @@ jobs:
     if: github.repository == 'networkx/networkx'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.10"
+          python-version: "3.13"
 
       - name: Install packages
         run: |
-          pip install --upgrade pip wheel setuptools
-          pip install -r requirements/default.txt -r requirements/test.txt
+          pip install --upgrade pip
+          pip install .[default,test]
           pip install pytest-randomly
-          pip install .
           pip list
 
       - name: Run tests

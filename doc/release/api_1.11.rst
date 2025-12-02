@@ -37,7 +37,7 @@ Miscellaneous changes
 
 * [`#1763 <https://github.com/networkx/networkx/pull/1763>`_]
   Set up appveyor to automatically test installation on Windows machines.
-  Remove symbolic links in examples to help such istallation.
+  Remove symbolic links in examples to help such installation.
 
 Change many doc_string typos to allow sphinx
 to build the docs without errors or warnings.

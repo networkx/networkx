@@ -5,12 +5,21 @@ from networkx import Graph, NetworkXError
 from networkx.algorithms.community import asyn_fluidc
 
 
+@pytest.mark.parametrize("graph_constructor", (nx.DiGraph, nx.MultiGraph))
+def test_raises_on_directed_and_multigraphs(graph_constructor):
+    G = graph_constructor([(0, 1), (1, 2)])
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.community.asyn_fluidc(G, 1)
+
+
 def test_exceptions():
     test = Graph()
     test.add_node("a")
     pytest.raises(NetworkXError, asyn_fluidc, test, "hi")
     pytest.raises(NetworkXError, asyn_fluidc, test, -1)
     pytest.raises(NetworkXError, asyn_fluidc, test, 3)
+    with pytest.raises(ValueError, match="must be greater than 0"):
+        asyn_fluidc(test, 1, max_iter=0)
     test.add_node("b")
     pytest.raises(NetworkXError, asyn_fluidc, test, 1)
 
@@ -127,3 +136,12 @@ def test_five_clique_ring():
     communities = asyn_fluidc(test, 5, seed=9)
     result = {frozenset(c) for c in communities}
     assert result == ground_truth
+
+
+def test_asyn_fluidc_max_iter():
+    """Check that setting `max_iter` stops the algorithm early."""
+    test = nx.barbell_graph(3, 2)
+
+    c1 = asyn_fluidc(test, 2, max_iter=1, seed=42)
+    c2 = asyn_fluidc(test, 2, max_iter=100, seed=42)
+    assert {map(frozenset, c1)} != {map(frozenset, c2)}

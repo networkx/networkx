@@ -1,15 +1,6 @@
 import pytest
 
 import networkx as nx
-from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
-
-is_isomorphic = graph_could_be_isomorphic
-
-"""Generators - Small
-=====================
-
-Some small graphs
-"""
 
 null = nx.null_graph()
 
@@ -18,23 +9,26 @@ class TestGeneratorsSmall:
     def test__LCF_graph(self):
         # If n<=0, then return the null_graph
         G = nx.LCF_graph(-10, [1, 2], 100)
-        assert is_isomorphic(G, null)
+        assert nx.could_be_isomorphic(G, null)
         G = nx.LCF_graph(0, [1, 2], 3)
-        assert is_isomorphic(G, null)
+        assert nx.could_be_isomorphic(G, null)
         G = nx.LCF_graph(0, [1, 2], 10)
-        assert is_isomorphic(G, null)
+        assert nx.could_be_isomorphic(G, null)
 
         # Test that LCF(n,[],0) == cycle_graph(n)
         for a, b, c in [(5, [], 0), (10, [], 0), (5, [], 1), (10, [], 10)]:
             G = nx.LCF_graph(a, b, c)
-            assert is_isomorphic(G, nx.cycle_graph(a))
+            assert nx.could_be_isomorphic(G, nx.cycle_graph(a))
 
         # Generate the utility graph K_{3,3}
         G = nx.LCF_graph(6, [3, -3], 3)
         utility_graph = nx.complete_bipartite_graph(3, 3)
-        assert is_isomorphic(G, utility_graph)
+        assert nx.could_be_isomorphic(G, utility_graph)
 
-    def test_properties_named_small_graphs(self):
+        with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
+            G = nx.LCF_graph(6, [3, -3], 3, create_using=nx.DiGraph)
+
+    def test_properties_of_named_small_graphs(self):
         G = nx.bull_graph()
         assert sorted(G) == list(range(5))
         assert G.number_of_edges() == 5
@@ -60,6 +54,7 @@ class TestGeneratorsSmall:
         assert sorted(G) == list(range(20))
         assert G.number_of_edges() == 30
         assert [d for n, d in G.degree()] == 20 * [3]
+        assert nx.is_isomorphic(G, nx.generalized_petersen_graph(10, 3))
 
         G = nx.diamond_graph()
         assert sorted(G) == list(range(4))
@@ -73,6 +68,7 @@ class TestGeneratorsSmall:
         assert [d for n, d in G.degree()] == 20 * [3]
         assert nx.diameter(G) == 5
         assert nx.radius(G) == 5
+        assert nx.is_isomorphic(G, nx.generalized_petersen_graph(10, 2))
 
         G = nx.frucht_graph()
         assert sorted(G) == list(range(12))
@@ -80,6 +76,13 @@ class TestGeneratorsSmall:
         assert [d for n, d in G.degree()] == 12 * [3]
         assert nx.diameter(G) == 4
         assert nx.radius(G) == 3
+
+        G = nx.generalized_petersen_graph(10, 4)
+        assert sorted(G) == list(range(20))
+        assert G.number_of_edges() == 30
+        assert [d for n, d in G.degree()] == 20 * [3]
+        assert nx.diameter(G) == 4
+        assert nx.radius(G) == 4
 
         G = nx.heawood_graph()
         assert sorted(G) == list(range(14))
@@ -126,6 +129,7 @@ class TestGeneratorsSmall:
         assert G.number_of_edges() == 24
         assert [d for n, d in G.degree()] == 16 * [3]
         assert nx.diameter(G) == 4
+        assert nx.is_isomorphic(G, nx.generalized_petersen_graph(8, 3))
 
         G = nx.octahedral_graph()
         assert sorted(G) == list(range(6))
@@ -146,6 +150,7 @@ class TestGeneratorsSmall:
         assert [d for n, d in G.degree()] == 10 * [3]
         assert nx.diameter(G) == 2
         assert nx.radius(G) == 2
+        assert nx.is_isomorphic(G, nx.generalized_petersen_graph(5, 2))
 
         G = nx.sedgewick_maze_graph()
         assert sorted(G) == list(range(8))
@@ -174,9 +179,16 @@ class TestGeneratorsSmall:
         assert G.number_of_edges() == 69
         assert [d for n, d in G.degree()] == 46 * [3]
 
-        # Test create_using with directed or multigraphs on small graphs
-        pytest.raises(nx.NetworkXError, nx.tutte_graph, create_using=nx.DiGraph)
         MG = nx.tutte_graph(create_using=nx.MultiGraph)
+        assert sorted(MG.edges()) == sorted(G.edges())
+
+        # Test create_using with directed or multigraphs on small graphs
+        with pytest.raises(nx.NetworkXError, match="Directed Graph not supported "):
+            nx.generalized_petersen_graph(5, 2, create_using=nx.DiGraph)
+        with pytest.raises(nx.NetworkXError, match="Directed Graph not supported "):
+            nx.generalized_petersen_graph(5, 2, create_using=nx.MultiDiGraph)
+        G = nx.generalized_petersen_graph(5, 2)
+        MG = nx.generalized_petersen_graph(5, 2, create_using=nx.MultiGraph)
         assert sorted(MG.edges()) == sorted(G.edges())
 
 
@@ -203,3 +215,6 @@ class TestGeneratorsSmall:
 def tests_raises_with_directed_create_using(fn, create_using):
     with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
         fn(create_using=create_using)
+    # All these functions have `create_using` as the first positional argument too
+    with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
+        fn(create_using)

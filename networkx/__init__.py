@@ -8,7 +8,7 @@ structure, dynamics, and functions of complex networks.
 See https://networkx.org for complete documentation.
 """
 
-__version__ = "3.2rc0.dev0"
+__version__ = "3.7rc0.dev0"
 
 
 # These are imported in order as listed
@@ -17,11 +17,15 @@ from networkx.lazy_imports import _lazy_import
 from networkx.exception import *
 
 from networkx import utils
+from networkx.utils import _clear_cache, _dispatchable
+
+# load_and_call entry_points, set configs
+config = utils.backends._set_configs_from_environment()
+utils.config = utils.configs.config = config  # type: ignore[attr-defined]
 
 from networkx import classes
 from networkx.classes import filters
 from networkx.classes import *
-from networkx.classes import _dispatch
 
 from networkx import convert
 from networkx.convert import *
@@ -47,3 +51,12 @@ from networkx.linalg import *
 
 from networkx import drawing
 from networkx.drawing import *
+
+
+def __getattr__(name):
+    if name == "random_tree":
+        raise AttributeError(
+            "nx.random_tree was removed in version 3.4. Use `nx.random_labeled_tree` instead.\n"
+            "See: https://networkx.org/documentation/latest/release/release_3.4.html"
+        )
+    raise AttributeError(f"module 'networkx' has no attribute '{name}'")

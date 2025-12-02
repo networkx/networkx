@@ -12,6 +12,7 @@ __all__ = [
     "diamond_graph",
     "dodecahedral_graph",
     "frucht_graph",
+    "generalized_petersen_graph",
     "heawood_graph",
     "hoffman_singleton_graph",
     "house_graph",
@@ -46,53 +47,72 @@ def _raise_on_directed(func):
     A decorator which inspects the `create_using` argument and raises a
     NetworkX exception when `create_using` is a DiGraph (class or instance) for
     graph generators that do not support directed outputs.
+
+    `create_using` may be a keyword argument or the first positional argument.
     """
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if kwargs.get("create_using") is not None:
-            G = nx.empty_graph(create_using=kwargs["create_using"])
+        create_using = args[0] if args else kwargs.get("create_using")
+        if create_using is not None:
+            G = nx.empty_graph(create_using=create_using)
             if G.is_directed():
-                raise NetworkXError("Directed Graph not supported")
+                raise NetworkXError("Directed Graph not supported in create_using")
         return func(*args, **kwargs)
 
     return wrapper
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def LCF_graph(n, shift_list, repeats, create_using=None):
     """
     Return the cubic graph specified in LCF notation.
 
-    LCF notation (LCF=Lederberg-Coxeter-Fruchte) is a compressed
+    LCF (Lederberg-Coxeter-Fruchte) notation[1]_ is a compressed
     notation used in the generation of various cubic Hamiltonian
-    graphs of high symmetry. See, for example, dodecahedral_graph,
-    desargues_graph, heawood_graph and pappus_graph below.
+    graphs of high symmetry. See, for example, `dodecahedral_graph`,
+    `desargues_graph`, `heawood_graph` and `pappus_graph`.
 
-    n (number of nodes)
-      The starting graph is the n-cycle with nodes 0,...,n-1.
-      (The null graph is returned if n < 0.)
+    Nodes are drawn from ``range(n)``. Each node ``n_i`` is connected with
+    node ``n_i + shift % n`` where ``shift`` is given by cycling through
+    the input `shift_list` `repeat` s times.
 
-    shift_list = [s1,s2,..,sk], a list of integer shifts mod n,
+    Parameters
+    ----------
+    n : int
+       The starting graph is the `n`-cycle with nodes ``0, ..., n-1``.
+       The null graph is returned if `n` < 1.
 
-    repeats
-      integer specifying the number of times that shifts in shift_list
-      are successively applied to each v_current in the n-cycle
-      to generate an edge between v_current and v_current+shift mod n.
+    shift_list : list
+       A list of integer shifts mod `n`, ``[s1, s2, .., sk]``
 
-    For v1 cycling through the n-cycle a total of k*repeats
-    with shift cycling through shiftlist repeats times connect
-    v1 with v1+shift mod n
+    repeats : int
+       Integer specifying the number of times that shifts in `shift_list`
+       are successively applied to each current node in the n-cycle
+       to generate an edge between ``n_current`` and ``n_current + shift mod n``.
 
+    Returns
+    -------
+    G : Graph
+       A graph instance created from the specified LCF notation.
+
+    Examples
+    --------
     The utility graph $K_{3,3}$
 
     >>> G = nx.LCF_graph(6, [3, -3], 3)
+    >>> G.edges()
+    EdgeView([(0, 1), (0, 5), (0, 3), (1, 2), (1, 4), (2, 3), (2, 5), (3, 4), (4, 5)])
 
-    The Heawood graph
+    The Heawood graph:
 
     >>> G = nx.LCF_graph(14, [5, -5], 7)
+    >>> nx.is_isomorphic(G, nx.heawood_graph())
+    True
 
-    See http://mathworld.wolfram.com/LCFNotation.html for a description
-    and references.
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/LCF_notation
 
     """
     if n <= 0:
@@ -125,6 +145,7 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def bull_graph(create_using=None):
     """
     Returns the Bull Graph
@@ -158,6 +179,7 @@ def bull_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def chvatal_graph(create_using=None):
     """
     Returns the Chvátal Graph
@@ -202,6 +224,7 @@ def chvatal_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def cubical_graph(create_using=None):
     """
     Returns the 3-regular Platonic Cubical Graph
@@ -222,6 +245,10 @@ def cubical_graph(create_using=None):
     G : networkx Graph
         A cubical graph with 8 nodes and 12 edges
 
+    See Also
+    --------
+    tetrahedral_graph, octahedral_graph, dodecahedral_graph, icosahedral_graph
+
     References
     ----------
     .. [1] https://en.wikipedia.org/wiki/Cube#Cubical_graph
@@ -240,18 +267,19 @@ def cubical_graph(create_using=None):
         },
         create_using=create_using,
     )
-    G.name = ("Platonic Cubical Graph",)
+    G.name = "Platonic Cubical Graph"
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def desargues_graph(create_using=None):
     """
     Returns the Desargues Graph
 
     The Desargues Graph is a non-planar, distance-transitive cubic graph
-    with 20 nodes and 30 edges [1]_.
-    It is a symmetric graph. It can be represented in LCF notation
-    as [5,-5,9,-9]^5 [2]_.
+    with 20 nodes and 30 edges [1]_. It is isomorphic to the Generalized
+    Petersen Graph GP(10, 3). It is a symmetric graph. It can be represented
+    in LCF notation as [5,-5,9,-9]^5 [2]_.
 
     Parameters
     ----------
@@ -274,6 +302,7 @@ def desargues_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def diamond_graph(create_using=None):
     """
     Returns the Diamond graph
@@ -302,6 +331,7 @@ def diamond_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def dodecahedral_graph(create_using=None):
     """
     Returns the Platonic Dodecahedral graph.
@@ -321,6 +351,10 @@ def dodecahedral_graph(create_using=None):
     G : networkx Graph
         Dodecahedral Graph with 20 nodes and 30 edges
 
+    See Also
+    --------
+    tetrahedral_graph, cubical_graph, octahedral_graph, icosahedral_graph
+
     References
     ----------
     .. [1] https://en.wikipedia.org/wiki/Regular_dodecahedron#Dodecahedral_graph
@@ -332,6 +366,7 @@ def dodecahedral_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def frucht_graph(create_using=None):
     """
     Returns the Frucht Graph.
@@ -378,6 +413,7 @@ def frucht_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def heawood_graph(create_using=None):
     """
     Returns the Heawood Graph, a (3,6) cage.
@@ -411,6 +447,7 @@ def heawood_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def hoffman_singleton_graph():
     """
     Returns the Hoffman-Singleton Graph.
@@ -420,7 +457,7 @@ def hoffman_singleton_graph():
     All indices lie in ``Z % 5``: that is, the integers mod 5 [1]_.
     It is the only regular graph of vertex degree 7, diameter 2, and girth 5.
     It is the unique (7,5)-cage graph and Moore graph, and contains many
-    copies of the Petersen graph [2]_.
+    copies of the Petersen Graph [2]_.
 
     Returns
     -------
@@ -454,6 +491,7 @@ def hoffman_singleton_graph():
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def house_graph(create_using=None):
     """
     Returns the House graph (square with triangle on top)
@@ -484,6 +522,7 @@ def house_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def house_x_graph(create_using=None):
     """
     Returns the House graph with a cross inside the house square.
@@ -513,6 +552,7 @@ def house_x_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def icosahedral_graph(create_using=None):
     """
     Returns the Platonic Icosahedral graph.
@@ -530,6 +570,10 @@ def icosahedral_graph(create_using=None):
     -------
     G : networkx Graph
         Icosahedral graph with 12 nodes and 30 edges.
+
+    See Also
+    --------
+    tetrahedral_graph, cubical_graph, octahedral_graph, dodecahedral_graph
 
     References
     ----------
@@ -555,6 +599,7 @@ def icosahedral_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def krackhardt_kite_graph(create_using=None):
     """
     Returns the Krackhardt Kite Social Network.
@@ -604,13 +649,14 @@ def krackhardt_kite_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def moebius_kantor_graph(create_using=None):
     """
     Returns the Moebius-Kantor graph.
 
     The Möbius-Kantor graph is the cubic symmetric graph on 16 nodes.
     Its LCF notation is [5,-5]^8, and it is isomorphic to the generalized
-    Petersen graph [1]_.
+    Petersen Graph GP(8, 3) [1]_.
 
     Parameters
     ----------
@@ -633,6 +679,7 @@ def moebius_kantor_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def octahedral_graph(create_using=None):
     """
     Returns the Platonic Octahedral graph.
@@ -653,6 +700,10 @@ def octahedral_graph(create_using=None):
     G : networkx Graph
         Octahedral graph
 
+    See Also
+    --------
+    tetrahedral_graph, cubical_graph, dodecahedral_graph, icosahedral_graph
+
     References
     ----------
     .. [1] https://mathworld.wolfram.com/OctahedralGraph.html
@@ -667,6 +718,7 @@ def octahedral_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def pappus_graph():
     """
     Returns the Pappus graph.
@@ -690,11 +742,12 @@ def pappus_graph():
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def petersen_graph(create_using=None):
     """
-    Returns the Petersen graph.
+    Returns the Petersen Graph.
 
-    The Peterson graph is a cubic, undirected graph with 10 nodes and 15 edges [1]_.
+    The Peterson Graph is a cubic, undirected graph with 10 nodes and 15 edges [1]_.
     Julius Petersen constructed the graph as the smallest counterexample
     against the claim that a connected bridgeless cubic graph
     has an edge colouring with three colours [2]_.
@@ -707,7 +760,7 @@ def petersen_graph(create_using=None):
     Returns
     -------
     G : networkx Graph
-        Petersen graph
+        Petersen Graph
 
     References
     ----------
@@ -733,6 +786,60 @@ def petersen_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
+def generalized_petersen_graph(n, k, *, create_using=None):
+    """
+    Returns the Generalized Petersen Graph GP(n,k).
+
+    The Generalized Peterson Graph consists of an outer cycle of n nodes
+    connected to an inner circulant graph of n nodes, where nodes in the
+    inner circulant are connected to their kth nearest neighbor [1]_ [2]_.
+    A Generalized Petersen Graph is cubic with 2n nodes and 3n edges.
+
+    Some well known graphs are examples of Generalized Petersen Graphs such
+    as the Petersen Graph GP(5, 2), the Desargues graph GP(10, 3), the
+    Moebius-Kantor graph GP(8, 3), and the dodecahedron graph GP(10, 2).
+
+    Parameters
+    ----------
+    n : int
+       Number of nodes in the outer cycle and inner circulant. ``n >= 3`` is required.
+
+    k : int
+       Neighbor to connect in the inner circulant. ``1 <= k <= n/2``.
+       Note that some people require ``k < n/2`` but we and others allow equality.
+       Also, ``k < n/2`` is equivalent to ``k <= floor((n-1)/2)``
+
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Generalized Petersen Graph n k
+
+    References
+    ----------
+    .. [1] https://mathworld.wolfram.com/GeneralizedPetersenGraph.html
+    .. [2] https://en.wikipedia.org/wiki/Generalized_Petersen_graph
+    """
+    if n <= 2:
+        raise NetworkXError(f"n >= 3 required. Got {n=}")
+    if k < 1 or k > n / 2:
+        raise NetworkXError(f" Got {n=} {k=}. Need 1 <= k <= n/2")
+
+    G = nx.cycle_graph(range(n), create_using=create_using)  # u-nodes
+    if G.is_directed():
+        raise NetworkXError("Directed Graph not supported in create_using")
+    for i in range(n):
+        G.add_edge(i, n + i)  # add v-nodes and u to v edges
+        G.add_edge(n + i, n + (i + k) % n)  # edge from v_i to v_(i+k)%n
+
+    G.name = f"Generalized Petersen Graph GP({n}, {k})"
+    return G
+
+
+@nx._dispatchable(graphs=None, returns_graph=True)
 def sedgewick_maze_graph(create_using=None):
     """
     Return a small maze with a cycle.
@@ -765,6 +872,7 @@ def sedgewick_maze_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def tetrahedral_graph(create_using=None):
     """
     Returns the 3-regular Platonic Tetrahedral graph.
@@ -781,7 +889,11 @@ def tetrahedral_graph(create_using=None):
     Returns
     -------
     G : networkx Graph
-        Tetrahedral Grpah
+        Tetrahedral Graph
+
+    See Also
+    --------
+    cubical_graph, octahedral_graph, dodecahedral_graph, icosahedral_graph
 
     References
     ----------
@@ -789,11 +901,12 @@ def tetrahedral_graph(create_using=None):
 
     """
     G = complete_graph(4, create_using)
-    G.name = "Platonic Tetrahedral graph"
+    G.name = "Platonic Tetrahedral Graph"
     return G
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def truncated_cube_graph(create_using=None):
     """
     Returns the skeleton of the truncated cube.
@@ -851,6 +964,7 @@ def truncated_cube_graph(create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def truncated_tetrahedron_graph(create_using=None):
     """
     Returns the skeleton of the truncated Platonic tetrahedron.
@@ -881,6 +995,7 @@ def truncated_tetrahedron_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
 def tutte_graph(create_using=None):
     """
     Returns the Tutte graph.

@@ -2,7 +2,6 @@
 # https://github.com/scikit-image/scikit-image/blob/main/tools/generate_release_notes.py
 from subprocess import check_output
 import sys
-import string
 import shlex
 
 if len(sys.argv) < 2 or len(sys.argv) > 3:

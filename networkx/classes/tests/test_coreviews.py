@@ -322,7 +322,7 @@ class TestFilteredGraphs:
         for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
-            RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
+            RG = SubGraph(G, filter_node=nx.filters.hide_nodes([0, 1]))
             assert SG.nodes == RG.nodes
             assert SG.edges == RG.edges
             SGC = SG.copy()
@@ -335,7 +335,7 @@ class TestFilteredGraphs:
         for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
-            RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
+            RG = SubGraph(G, filter_node=nx.filters.hide_nodes([0, 1]))
             str(SG.adj)
             str(RG.adj)
             repr(SG.adj)
@@ -350,8 +350,8 @@ class TestFilteredGraphs:
         for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
-            RG = SubGraph(G, nx.filters.hide_nodes([0, 1]))
-            RsG = SubGraph(G, nx.filters.show_nodes([2, 3]))
+            RG = SubGraph(G, filter_node=nx.filters.hide_nodes([0, 1]))
+            RsG = SubGraph(G, filter_node=nx.filters.show_nodes([2, 3]))
             assert G.adj.copy() == G.adj
             assert G.adj[2].copy() == G.adj[2]
             assert SG.adj.copy() == SG.adj

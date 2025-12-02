@@ -1,4 +1,5 @@
 """Functions for generating line graphs."""
+
 from collections import defaultdict
 from functools import partial
 from itertools import combinations
@@ -10,6 +11,7 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = ["line_graph", "inverse_line_graph"]
 
 
+@nx._dispatchable(returns_graph=True)
 def line_graph(G, create_using=None):
     r"""Returns the line graph of the graph or digraph `G`.
 
@@ -47,7 +49,7 @@ def line_graph(G, create_using=None):
     attributes can be copied manually:
 
     >>> G = nx.path_graph(4)
-    >>> G.add_edges_from((u, v, {"tot": u+v}) for u, v in G.edges)
+    >>> G.add_edges_from((u, v, {"tot": u + v}) for u, v in G.edges)
     >>> G.edges(data=True)
     EdgeDataView([(0, 1, {'tot': 1}), (1, 2, {'tot': 3}), (2, 3, {'tot': 5})])
     >>> H = nx.line_graph(G)
@@ -184,7 +186,8 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     node_index = {n: i for i, n in enumerate(G)}
 
     # Lift canonical representation of nodes to edges in line graph
-    edge_key_function = lambda edge: (node_index[edge[0]], node_index[edge[1]])
+    def edge_key_function(edge):
+        return node_index[edge[0]], node_index[edge[1]]
 
     edges = set()
     for u in G:
@@ -214,6 +217,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(returns_graph=True)
 def inverse_line_graph(G):
     """Returns the inverse line graph of graph G.
 
@@ -353,12 +357,12 @@ def _odd_triangle(G, T):
         if e[0] not in G[e[1]]:
             raise nx.NetworkXError(f"Edge ({e[0]}, {e[1]}) not in graph")
 
-    T_neighbors = defaultdict(int)
+    T_nbrs = defaultdict(int)
     for t in T:
         for v in G[t]:
             if v not in T:
-                T_neighbors[v] += 1
-    return any(T_neighbors[v] in [1, 3] for v in T_neighbors)
+                T_nbrs[v] += 1
+    return any(T_nbrs[v] in [1, 3] for v in T_nbrs)
 
 
 def _find_partition(G, starting_cell):
@@ -396,7 +400,7 @@ def _find_partition(G, starting_cell):
                 for v in new_cell:
                     if (u != v) and (v not in G_partition[u]):
                         msg = (
-                            "G is not a line graph"
+                            "G is not a line graph "
                             "(partition cell not a complete subgraph)"
                         )
                         raise nx.NetworkXError(msg)

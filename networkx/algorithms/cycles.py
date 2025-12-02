@@ -24,6 +24,7 @@ __all__ = [
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def cycle_basis(G, root=None):
     """Returns a list of cycles which form a basis for cycles of G.
 
@@ -50,7 +51,7 @@ def cycle_basis(G, root=None):
     >>> G = nx.Graph()
     >>> nx.add_cycle(G, [0, 1, 2, 3])
     >>> nx.add_cycle(G, [0, 3, 4, 5])
-    >>> print(nx.cycle_basis(G, 0))
+    >>> nx.cycle_basis(G, 0)
     [[3, 4, 5, 0], [1, 2, 3, 0]]
 
     Notes
@@ -65,6 +66,7 @@ def cycle_basis(G, root=None):
     See Also
     --------
     simple_cycles
+    minimum_cycle_basis
     """
     gnodes = dict.fromkeys(G)  # set-like object that maintains node order
     cycles = []
@@ -100,10 +102,11 @@ def cycle_basis(G, root=None):
     return cycles
 
 
+@nx._dispatchable
 def simple_cycles(G, length_bound=None):
     """Find simple cycles (elementary circuits) of a graph.
 
-    A `simple cycle`, or `elementary circuit`, is a closed path where
+    A "simple cycle", or "elementary circuit", is a closed path where
     no node appears twice.  In a directed graph, two simple cycles are distinct
     if they are not cyclic permutations of each other.  In an undirected graph,
     two simple cycles are distinct if they are not cyclic permutations of each
@@ -112,13 +115,13 @@ def simple_cycles(G, length_bound=None):
     Optionally, the cycles are bounded in length.  In the unbounded case, we use
     a nonrecursive, iterator/generator version of Johnson's algorithm [1]_.  In
     the bounded case, we use a version of the algorithm of Gupta and
-    Suzumura[2]_. There may be better algorithms for some cases [3]_ [4]_ [5]_.
+    Suzumura [2]_. There may be better algorithms for some cases [3]_ [4]_ [5]_.
 
     The algorithms of Johnson, and Gupta and Suzumura, are enhanced by some
-    well-known preprocessing techniques.  When G is directed, we restrict our
-    attention to strongly connected components of G, generate all simple cycles
+    well-known preprocessing techniques.  When `G` is directed, we restrict our
+    attention to strongly connected components of `G`, generate all simple cycles
     containing a certain node, remove that node, and further decompose the
-    remainder into strongly connected components.  When G is undirected, we
+    remainder into strongly connected components.  When `G` is undirected, we
     restrict our attention to biconnected components, generate all simple cycles
     containing a particular edge, remove that edge, and further decompose the
     remainder into biconnected components.
@@ -131,12 +134,12 @@ def simple_cycles(G, length_bound=None):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-       A directed graph
+    G : NetworkX Graph
+       A networkx graph. Undirected, directed, and multigraphs are all supported.
 
     length_bound : int or None, optional (default=None)
-       If length_bound is an int, generate all simple cycles of G with length at
-       most length_bound.  Otherwise, generate all simple cycles of G.
+       If `length_bound` is an int, generate all simple cycles of `G` with length at
+       most `length_bound`.  Otherwise, generate all simple cycles of `G`.
 
     Yields
     ------
@@ -145,8 +148,7 @@ def simple_cycles(G, length_bound=None):
 
     Examples
     --------
-    >>> edges = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)]
-    >>> G = nx.DiGraph(edges)
+    >>> G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
     >>> sorted(nx.simple_cycles(G))
     [[0], [0, 1, 2], [0, 2], [1, 2], [2]]
 
@@ -161,15 +163,15 @@ def simple_cycles(G, length_bound=None):
 
     Notes
     -----
-    When length_bound is None, the time complexity is $O((n+e)(c+1))$ for $n$
-    nodes, $e$ edges and $c$ simple circuits.  Otherwise, when length_bound > 1,
+    When `length_bound` is None, the time complexity is $O((n+e)(c+1))$ for $n$
+    nodes, $e$ edges and $c$ simple circuits.  Otherwise, when ``length_bound > 1``,
     the time complexity is $O((c+n)(k-1)d^k)$ where $d$ is the average degree of
-    the nodes of G and $k$ = length_bound.
+    the nodes of `G` and $k$ = `length_bound`.
 
     Raises
     ------
     ValueError
-        when length_bound < 0.
+        when ``length_bound < 0``.
 
     References
     ----------
@@ -472,6 +474,7 @@ def _bounded_cycle_search(G, path, length_bound):
                     B[w].add(v)
 
 
+@nx._dispatchable
 def chordless_cycles(G, length_bound=None):
     """Find simple chordless cycles of a graph.
 
@@ -508,19 +511,19 @@ def chordless_cycles(G, length_bound=None):
     We use an algorithm strongly inspired by that of Dias et al [1]_.  It has
     been modified in the following ways:
 
-        1. Recursion is avoided, per Python's limitations
+        1. Recursion is avoided, per Python's limitations.
 
         2. The labeling function is not necessary, because the starting paths
-            are chosen (and deleted from the host graph) to prevent multiple
-            occurrences of the same path
+           are chosen (and deleted from the host graph) to prevent multiple
+           occurrences of the same path.
 
-        3. The search is optionally bounded at a specified length
+        3. The search is optionally bounded at a specified length.
 
         4. Support for directed graphs is provided by extending cycles along
-            forward edges, and blocking nodes along forward and reverse edges
+           forward edges, and blocking nodes along forward and reverse edges.
 
         5. Support for multigraphs is provided by omitting digons from the set
-            of forward edges
+           of forward edges.
 
     Parameters
     ----------
@@ -582,11 +585,13 @@ def chordless_cycles(G, length_bound=None):
     # Nodes with loops cannot belong to longer cycles.  Let's delete them here.
     # also, we implicitly reduce the multiplicity of edges down to 1 in the case
     # of multiedges.
+    loops = set(nx.nodes_with_selfloops(G))
+    edges = ((u, v) for u in G if u not in loops for v in G._adj[u] if v not in loops)
     if directed:
-        F = nx.DiGraph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
+        F = nx.DiGraph(edges)
         B = F.to_undirected(as_view=False)
     else:
-        F = nx.Graph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
+        F = nx.Graph(edges)
         B = None
 
     # If we're given a multigraph, we have a few cases to consider with parallel
@@ -596,7 +601,7 @@ def chordless_cycles(G, length_bound=None):
     #    must not construct longer cycles along (u, v).
     # 2. If G is not directed, then a pair of parallel edges between (u, v) is a
     #    chordless cycle unless there exists a third (or more) parallel edge.
-    # 3. If G is directed, then parallel edges do not form cyles, but do
+    # 3. If G is directed, then parallel edges do not form cycles, but do
     #    preclude back-edges from forming cycles (handled in the next section),
     #    Thus, if an edge (u, v) is duplicated and the reverse (v, u) is also
     #    present, then we remove both from F.
@@ -611,6 +616,8 @@ def chordless_cycles(G, length_bound=None):
             B = F.copy()
             visited = set()
         for u, Gu in G.adj.items():
+            if u in loops:
+                continue
             if directed:
                 multiplicity = ((v, len(Guv)) for v, Guv in Gu.items())
                 for v, m in multiplicity:
@@ -760,6 +767,7 @@ def _chordless_cycle_search(F, B, path, length_bound):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable(mutates_input=True)
 def recursive_simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
@@ -869,6 +877,7 @@ def recursive_simple_cycles(G):
     return result
 
 
+@nx._dispatchable
 def find_cycle(G, source=None, orientation=None):
     """Returns a cycle found via depth-first traversal.
 
@@ -1030,6 +1039,7 @@ def find_cycle(G, source=None, orientation=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
 def minimum_cycle_basis(G, weight=None):
     """Returns a minimum weight cycle basis for G
 
@@ -1053,8 +1063,8 @@ def minimum_cycle_basis(G, weight=None):
     >>> G = nx.Graph()
     >>> nx.add_cycle(G, [0, 1, 2, 3])
     >>> nx.add_cycle(G, [0, 3, 4, 5])
-    >>> print([sorted(c) for c in nx.minimum_cycle_basis(G)])
-    [[0, 1, 2, 3], [0, 3, 4, 5]]
+    >>> nx.minimum_cycle_basis(G)
+    [[5, 4, 3, 0], [3, 2, 1, 0]]
 
     References:
         [1] Kavitha, Telikepalli, et al. "An O(m^2n) Algorithm for
@@ -1074,89 +1084,92 @@ def minimum_cycle_basis(G, weight=None):
     )
 
 
-def _min_cycle_basis(comp, weight):
+def _min_cycle_basis(G, weight):
     cb = []
     # We  extract the edges not in a spanning tree. We do not really need a
     # *minimum* spanning tree. That is why we call the next function with
     # weight=None. Depending on implementation, it may be faster as well
-    spanning_tree_edges = list(nx.minimum_spanning_edges(comp, weight=None, data=False))
-    edges_excl = [frozenset(e) for e in comp.edges() if e not in spanning_tree_edges]
-    N = len(edges_excl)
+    tree_edges = list(nx.minimum_spanning_edges(G, weight=None, data=False))
+    chords = G.edges - tree_edges - {(v, u) for u, v in tree_edges}
 
     # We maintain a set of vectors orthogonal to sofar found cycles
-    set_orth = [{edge} for edge in edges_excl]
-    for k in range(N):
+    set_orth = [{edge} for edge in chords]
+    while set_orth:
+        base = set_orth.pop()
         # kth cycle is "parallel" to kth vector in set_orth
-        new_cycle = _min_cycle(comp, set_orth[k], weight=weight)
-        cb.append(list(set().union(*new_cycle)))
+        cycle_edges = _min_cycle(G, base, weight)
+        cb.append([v for u, v in cycle_edges])
+
         # now update set_orth so that k+1,k+2... th elements are
         # orthogonal to the newly found cycle, as per [p. 336, 1]
-        base = set_orth[k]
-        set_orth[k + 1 :] = [
-            orth ^ base if len(orth & new_cycle) % 2 else orth
-            for orth in set_orth[k + 1 :]
+        set_orth = [
+            (
+                {e for e in orth if e not in base if e[::-1] not in base}
+                | {e for e in base if e not in orth if e[::-1] not in orth}
+            )
+            if sum((e in orth or e[::-1] in orth) for e in cycle_edges) % 2
+            else orth
+            for orth in set_orth
         ]
     return cb
 
 
-def _min_cycle(G, orth, weight=None):
+def _min_cycle(G, orth, weight):
     """
     Computes the minimum weight cycle in G,
     orthogonal to the vector orth as per [p. 338, 1]
+    Use (u, 1) to indicate the lifted copy of u (denoted u' in paper).
     """
-    T = nx.Graph()
+    Gi = nx.Graph()
 
-    nodes_idx = {node: idx for idx, node in enumerate(G.nodes())}
-    idx_nodes = {idx: node for node, idx in nodes_idx.items()}
-
-    nnodes = len(nodes_idx)
-
-    # Add 2 copies of each edge in G to T. If edge is in orth, add cross edge;
-    # otherwise in-plane edge
-    for u, v, data in G.edges(data=True):
-        uidx, vidx = nodes_idx[u], nodes_idx[v]
-        edge_w = data.get(weight, 1)
-        if frozenset((u, v)) in orth:
-            T.add_edges_from(
-                [(uidx, nnodes + vidx), (nnodes + uidx, vidx)], weight=edge_w
-            )
+    # Add 2 copies of each edge in G to Gi.
+    # If edge is in orth, add cross edge; otherwise in-plane edge
+    for u, v, wt in G.edges(data=weight, default=1):
+        if (u, v) in orth or (v, u) in orth:
+            Gi.add_edges_from([(u, (v, 1)), ((u, 1), v)], Gi_weight=wt)
         else:
-            T.add_edges_from(
-                [(uidx, vidx), (nnodes + uidx, nnodes + vidx)], weight=edge_w
-            )
+            Gi.add_edges_from([(u, v), ((u, 1), (v, 1))], Gi_weight=wt)
 
-    all_shortest_pathlens = dict(nx.shortest_path_length(T, weight=weight))
-    cross_paths_w_lens = {
-        n: all_shortest_pathlens[n][nnodes + n] for n in range(nnodes)
-    }
+    # find the shortest length in Gi between n and (n, 1) for each n
+    # Note: Use "Gi_weight" for name of weight attribute
+    spl = nx.shortest_path_length
+    lift = {n: spl(Gi, source=n, target=(n, 1), weight="Gi_weight") for n in G}
 
-    # Now compute shortest paths in T, which translates to cyles in G
-    start = min(cross_paths_w_lens, key=cross_paths_w_lens.get)
-    end = nnodes + start
-    min_path = nx.shortest_path(T, source=start, target=end, weight="weight")
+    # Now compute that short path in Gi, which translates to a cycle in G
+    start = min(lift, key=lift.get)
+    end = (start, 1)
+    min_path_i = nx.shortest_path(Gi, source=start, target=end, weight="Gi_weight")
 
-    # Now we obtain the actual path, re-map nodes in T to those in G
-    min_path_nodes = [node if node < nnodes else node - nnodes for node in min_path]
+    # Now we obtain the actual path, re-map nodes in Gi to those in G
+    min_path = [n if n in G else n[0] for n in min_path_i]
+
     # Now remove the edges that occur two times
-    mcycle_pruned = _path_to_cycle(min_path_nodes)
+    # two passes: flag which edges get kept, then build it
+    edgelist = list(pairwise(min_path))
+    edgeset = set()
+    for e in edgelist:
+        if e in edgeset:
+            edgeset.remove(e)
+        elif e[::-1] in edgeset:
+            edgeset.remove(e[::-1])
+        else:
+            edgeset.add(e)
 
-    return {frozenset((idx_nodes[u], idx_nodes[v])) for u, v in mcycle_pruned}
+    min_edgelist = []
+    for e in edgelist:
+        if e in edgeset:
+            min_edgelist.append(e)
+            edgeset.remove(e)
+        elif e[::-1] in edgeset:
+            min_edgelist.append(e[::-1])
+            edgeset.remove(e[::-1])
 
-
-def _path_to_cycle(path):
-    """
-    Removes the edges from path that occur even number of times.
-    Returns a set of edges
-    """
-    edges = set()
-    for edge in pairwise(path):
-        # Toggle whether to keep the current edge.
-        edges ^= {edge}
-    return edges
+    return min_edgelist
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def girth(G):
     """Returns the girth of the graph.
 
@@ -1193,7 +1206,7 @@ def girth(G):
 
     References
     ----------
-    .. [1] https://en.wikipedia.org/wiki/Girth_(graph_theory)
+    .. [1] `Wikipedia: Girth <https://en.wikipedia.org/wiki/Girth_(graph_theory)>`_
 
     """
     girth = depth_limit = inf

@@ -11,6 +11,7 @@ __all__ = ["immediate_dominators", "dominance_frontiers"]
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable
 def immediate_dominators(G, start):
     """Returns the immediate dominators of all nodes of a directed graph.
 
@@ -26,7 +27,7 @@ def immediate_dominators(G, start):
     -------
     idom : dict keyed by nodes
         A dict containing the immediate dominators of each node reachable from
-        `start`.
+        `start`, except for `start` itself.
 
     Raises
     ------
@@ -38,25 +39,30 @@ def immediate_dominators(G, start):
 
     Notes
     -----
-    Except for `start`, the immediate dominators are the parents of their
-    corresponding nodes in the dominator tree.
+    The immediate dominators are the parents of their corresponding nodes in
+    the dominator tree. Every node reachable from `start` has an immediate
+    dominator, except for `start` itself.
 
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 5), (3, 4), (4, 5)])
     >>> sorted(nx.immediate_dominators(G, 1).items())
-    [(1, 1), (2, 1), (3, 1), (4, 3), (5, 1)]
+    [(2, 1), (3, 1), (4, 3), (5, 1)]
 
     References
     ----------
-    .. [1] K. D. Cooper, T. J. Harvey, and K. Kennedy.
-           A simple, fast dominance algorithm.
-           Software Practice & Experience, 4:110, 2001.
+    .. [1] Cooper, Keith D., Harvey, Timothy J. and Kennedy, Ken.
+           "A simple, fast dominance algorithm." (2006).
+           https://hdl.handle.net/1911/96345
+    .. [2] Lengauer, Thomas; Tarjan, Robert Endre (July 1979).
+           "A fast algorithm for finding dominators in a flowgraph".
+           ACM Transactions on Programming Languages and Systems. 1 (1): 121--141.
+           https://dl.acm.org/doi/10.1145/357062.357071
     """
     if start not in G:
         raise nx.NetworkXError("start is not in G")
 
-    idom = {start: start}
+    idom = {start: None}
 
     order = list(nx.dfs_postorder_nodes(G, start))
     dfn = {u: i for i, u in enumerate(order)}
@@ -80,9 +86,12 @@ def immediate_dominators(G, start):
                 idom[u] = new_idom
                 changed = True
 
+    del idom[start]
     return idom
 
 
+@not_implemented_for("undirected")
+@nx._dispatchable
 def dominance_frontiers(G, start):
     """Returns the dominance frontiers of all nodes of a directed graph.
 
@@ -116,15 +125,15 @@ def dominance_frontiers(G, start):
 
     References
     ----------
-    .. [1] K. D. Cooper, T. J. Harvey, and K. Kennedy.
-           A simple, fast dominance algorithm.
-           Software Practice & Experience, 4:110, 2001.
+    .. [1] Cooper, Keith D., Harvey, Timothy J. and Kennedy, Ken.
+           "A simple, fast dominance algorithm." (2006).
+           https://hdl.handle.net/1911/96345
     """
-    idom = nx.immediate_dominators(G, start)
+    idom = nx.immediate_dominators(G, start) | {start: None}
 
     df = {u: set() for u in idom}
     for u in idom:
-        if len(G.pred[u]) >= 2:
+        if u == start or len(G.pred[u]) >= 2:
             for v in G.pred[u]:
                 if v in idom:
                     while v != idom[u]:

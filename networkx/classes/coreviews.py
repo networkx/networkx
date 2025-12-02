@@ -2,6 +2,7 @@
 These ``Views`` often restrict element access, with either the entire view or
 layers of nested mappings being read-only.
 """
+
 from collections.abc import Mapping
 
 __all__ = [
@@ -264,12 +265,30 @@ class UnionMultiAdjacency(UnionAdjacency):
 
 
 class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
+    """A read-only Mapping of Mappings with filtering criteria for nodes.
+
+    It is a view into a dict-of-dict data structure, and it selects only
+    nodes that meet the criteria defined by ``NODE_OK``.
+
+    See Also
+    ========
+    FilterAdjacency
+    FilterMultiInner
+    FilterMultiAdjacency
+    """
+
     def __init__(self, d, NODE_OK):
         self._atlas = d
         self.NODE_OK = NODE_OK
 
     def __len__(self):
-        return sum(1 for n in self)
+        # check whether NODE_OK stores the number of nodes as `length`
+        # or the nodes themselves as a set `nodes`. If not, count the nodes.
+        if hasattr(self.NODE_OK, "length"):
+            return self.NODE_OK.length
+        if hasattr(self.NODE_OK, "nodes"):
+            return len(self.NODE_OK.nodes & self._atlas.keys())
+        return sum(1 for n in self._atlas if self.NODE_OK(n))
 
     def __iter__(self):
         try:  # check that NODE_OK has attr 'nodes'
@@ -293,13 +312,32 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
 
 
 class FilterAdjacency(Mapping):  # edgedict
+    """A read-only Mapping of Mappings with filtering criteria for nodes and edges.
+
+    It is a view into a dict-of-dict-of-dict data structure, and it selects nodes
+    and edges that satisfy specific criteria defined by ``NODE_OK`` and ``EDGE_OK``,
+    respectively.
+
+    See Also
+    ========
+    FilterAtlas
+    FilterMultiInner
+    FilterMultiAdjacency
+    """
+
     def __init__(self, d, NODE_OK, EDGE_OK):
         self._atlas = d
         self.NODE_OK = NODE_OK
         self.EDGE_OK = EDGE_OK
 
     def __len__(self):
-        return sum(1 for n in self)
+        # check whether NODE_OK stores the number of nodes as `length`
+        # or the nodes themselves as a set `nodes`. If not, count the nodes.
+        if hasattr(self.NODE_OK, "length"):
+            return self.NODE_OK.length
+        if hasattr(self.NODE_OK, "nodes"):
+            return len(self.NODE_OK.nodes & self._atlas.keys())
+        return sum(1 for n in self._atlas if self.NODE_OK(n))
 
     def __iter__(self):
         try:  # check that NODE_OK has attr 'nodes'
@@ -328,6 +366,18 @@ class FilterAdjacency(Mapping):  # edgedict
 
 
 class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
+    """A read-only Mapping of Mappings with filtering criteria for nodes and edges.
+
+    It is a view into a dict-of-dict-of-dict-of-dict data structure, and it selects nodes
+    and edges that meet specific criteria defined by ``NODE_OK`` and ``EDGE_OK``.
+
+    See Also
+    ========
+    FilterAtlas
+    FilterAdjacency
+    FilterMultiAdjacency
+    """
+
     def __iter__(self):
         try:  # check that NODE_OK has attr 'nodes'
             node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
@@ -347,7 +397,11 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
                 yield n
 
     def __getitem__(self, nbr):
-        if nbr in self._atlas and self.NODE_OK(nbr):
+        if (
+            nbr in self._atlas
+            and self.NODE_OK(nbr)
+            and any(self.EDGE_OK(nbr, key) for key in self._atlas[nbr])
+        ):
 
             def new_node_ok(key):
                 return self.EDGE_OK(nbr, key)
@@ -357,6 +411,20 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
 
 
 class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
+    """A read-only Mapping of Mappings with filtering criteria
+    for nodes and edges.
+
+    It is a view into a dict-of-dict-of-dict-of-dict data structure,
+    and it selects nodes and edges that satisfy specific criteria
+    defined by ``NODE_OK`` and ``EDGE_OK``, respectively.
+
+    See Also
+    ========
+    FilterAtlas
+    FilterAdjacency
+    FilterMultiInner
+    """
+
     def __getitem__(self, node):
         if node in self._atlas and self.NODE_OK(node):
 

@@ -1,5 +1,5 @@
 """Functions for computing and verifying matchings in a graph."""
-from collections import Counter
+
 from itertools import combinations, repeat
 
 import networkx as nx
@@ -17,6 +17,7 @@ __all__ = [
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatchable
 def maximal_matching(G):
     r"""Find a maximal matching in the graph.
 
@@ -81,6 +82,7 @@ def matching_dict_to_set(matching):
     return edges
 
 
+@nx._dispatchable
 def is_matching(G, matching):
     """Return True if ``matching`` is a valid matching of ``G``
 
@@ -141,6 +143,7 @@ def is_matching(G, matching):
     return True
 
 
+@nx._dispatchable
 def is_maximal_matching(G, matching):
     """Return True if ``matching`` is a maximal matching of ``G``
 
@@ -202,6 +205,7 @@ def is_maximal_matching(G, matching):
     return True
 
 
+@nx._dispatchable
 def is_perfect_matching(G, matching):
     """Return True if ``matching`` is a perfect matching for ``G``
 
@@ -255,8 +259,12 @@ def is_perfect_matching(G, matching):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight")
 def min_weight_matching(G, weight="weight"):
-    """Computing a minimum-weight maximal matching of G.
+    """Compute a minimum-weight maximum-cardinality matching of `G`.
+
+    The minimum-weight maximum-cardinality matching is the matching
+    that has the minimum weight among all maximum-cardinality matchings.
 
     Use the maximum-weight algorithm with edge weights subtracted
     from the maximum weight of all edges.
@@ -276,12 +284,6 @@ def min_weight_matching(G, weight="weight"):
     to the min weight matching using the original weights.
     Adding 1 to the max edge weight keeps all edge weights positive
     and as integers if they started as integers.
-
-    You might worry that adding 1 to each weight would make the algorithm
-    favor matchings with more edges. But we use the parameter
-    `maxcardinality=True` in `max_weight_matching` to ensure that the
-    number of edges in the competing matchings are the same and thus
-    the optimum does not change due to changes in the number of edges.
 
     Read the documentation of `max_weight_matching` for more information.
 
@@ -315,6 +317,7 @@ def min_weight_matching(G, weight="weight"):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight")
 def max_weight_matching(G, maxcardinality=False, weight="weight"):
     """Compute a maximum-weighted matching of G.
 
@@ -404,15 +407,17 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
         # and w is a vertex in b.childs[wrap(i+1)].
 
         # If b is a top-level S-blossom,
-        # b.mybestedges is a list of least-slack edges to neighbouring
+        # b.mybestedges is a list of least-slack edges to neighboring
         # S-blossoms, or None if no such list has been computed yet.
         # This is used for efficient computation of delta3.
 
         # Generate the blossom's leaf vertices.
         def leaves(self):
-            for t in self.childs:
+            stack = [*self.childs]
+            while stack:
+                t = stack.pop()
                 if isinstance(t, Blossom):
-                    yield from t.leaves()
+                    stack.extend(t.childs)
                 else:
                     yield t
 
@@ -663,30 +668,139 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
 
     # Expand the given top-level blossom.
     def expandBlossom(b, endstage):
-        # Convert sub-blossoms into top-level blossoms.
-        for s in b.childs:
-            blossomparent[s] = None
-            if isinstance(s, Blossom):
-                if endstage and blossomdual[s] == 0:
-                    # Recursively expand this sub-blossom.
-                    expandBlossom(s, endstage)
+        # This is an obnoxiously complicated recursive function for the sake of
+        # a stack-transformation.  So, we hack around the complexity by using
+        # a trampoline pattern.  By yielding the arguments to each recursive
+        # call, we keep the actual callstack flat.
+
+        def _recurse(b, endstage):
+            # Convert sub-blossoms into top-level blossoms.
+            for s in b.childs:
+                blossomparent[s] = None
+                if isinstance(s, Blossom):
+                    if endstage and blossomdual[s] == 0:
+                        # Recursively expand this sub-blossom.
+                        yield s
+                    else:
+                        for v in s.leaves():
+                            inblossom[v] = s
                 else:
-                    for v in s.leaves():
-                        inblossom[v] = s
+                    inblossom[s] = s
+            # If we expand a T-blossom during a stage, its sub-blossoms must be
+            # relabeled.
+            if (not endstage) and label.get(b) == 2:
+                # Start at the sub-blossom through which the expanding
+                # blossom obtained its label, and relabel sub-blossoms untili
+                # we reach the base.
+                # Figure out through which sub-blossom the expanding blossom
+                # obtained its label initially.
+                entrychild = inblossom[labeledge[b][1]]
+                # Decide in which direction we will go round the blossom.
+                j = b.childs.index(entrychild)
+                if j & 1:
+                    # Start index is odd; go forward and wrap.
+                    j -= len(b.childs)
+                    jstep = 1
+                else:
+                    # Start index is even; go backward.
+                    jstep = -1
+                # Move along the blossom until we get to the base.
+                v, w = labeledge[b]
+                while j != 0:
+                    # Relabel the T-sub-blossom.
+                    if jstep == 1:
+                        p, q = b.edges[j]
+                    else:
+                        q, p = b.edges[j - 1]
+                    label[w] = None
+                    label[q] = None
+                    assignLabel(w, 2, v)
+                    # Step to the next S-sub-blossom and note its forward edge.
+                    allowedge[(p, q)] = allowedge[(q, p)] = True
+                    j += jstep
+                    if jstep == 1:
+                        v, w = b.edges[j]
+                    else:
+                        w, v = b.edges[j - 1]
+                    # Step to the next T-sub-blossom.
+                    allowedge[(v, w)] = allowedge[(w, v)] = True
+                    j += jstep
+                # Relabel the base T-sub-blossom WITHOUT stepping through to
+                # its mate (so don't call assignLabel).
+                bw = b.childs[j]
+                label[w] = label[bw] = 2
+                labeledge[w] = labeledge[bw] = (v, w)
+                bestedge[bw] = None
+                # Continue along the blossom until we get back to entrychild.
+                j += jstep
+                while b.childs[j] != entrychild:
+                    # Examine the vertices of the sub-blossom to see whether
+                    # it is reachable from a neighboring S-vertex outside the
+                    # expanding blossom.
+                    bv = b.childs[j]
+                    if label.get(bv) == 1:
+                        # This sub-blossom just got label S through one of its
+                        # neighbors; leave it be.
+                        j += jstep
+                        continue
+                    if isinstance(bv, Blossom):
+                        for v in bv.leaves():
+                            if label.get(v):
+                                break
+                    else:
+                        v = bv
+                    # If the sub-blossom contains a reachable vertex, assign
+                    # label T to the sub-blossom.
+                    if label.get(v):
+                        assert label[v] == 2
+                        assert inblossom[v] == bv
+                        label[v] = None
+                        label[mate[blossombase[bv]]] = None
+                        assignLabel(v, 2, labeledge[v][0])
+                    j += jstep
+            # Remove the expanded blossom entirely.
+            label.pop(b, None)
+            labeledge.pop(b, None)
+            bestedge.pop(b, None)
+            del blossomparent[b]
+            del blossombase[b]
+            del blossomdual[b]
+
+        # Now, we apply the trampoline pattern.  We simulate a recursive
+        # callstack by maintaining a stack of generators, each yielding a
+        # sequence of function arguments.  We grow the stack by appending a call
+        # to _recurse on each argument tuple, and shrink the stack whenever a
+        # generator is exhausted.
+        stack = [_recurse(b, endstage)]
+        while stack:
+            top = stack[-1]
+            for s in top:
+                stack.append(_recurse(s, endstage))
+                break
             else:
-                inblossom[s] = s
-        # If we expand a T-blossom during a stage, its sub-blossoms must be
-        # relabeled.
-        if (not endstage) and label.get(b) == 2:
-            # Start at the sub-blossom through which the expanding
-            # blossom obtained its label, and relabel sub-blossoms untili
-            # we reach the base.
-            # Figure out through which sub-blossom the expanding blossom
-            # obtained its label initially.
-            entrychild = inblossom[labeledge[b][1]]
+                stack.pop()
+
+    # Swap matched/unmatched edges over an alternating path through blossom b
+    # between vertex v and the base vertex. Keep blossom bookkeeping
+    # consistent.
+    def augmentBlossom(b, v):
+        # This is an obnoxiously complicated recursive function for the sake of
+        # a stack-transformation.  So, we hack around the complexity by using
+        # a trampoline pattern.  By yielding the arguments to each recursive
+        # call, we keep the actual callstack flat.
+
+        def _recurse(b, v):
+            # Bubble up through the blossom tree from vertex v to an immediate
+            # sub-blossom of b.
+            t = v
+            while blossomparent[t] != b:
+                t = blossomparent[t]
+            # Recursively deal with the first sub-blossom.
+            if isinstance(t, Blossom):
+                yield (t, v)
             # Decide in which direction we will go round the blossom.
-            j = b.childs.index(entrychild)
-            if j & 1:
+            i = j = b.childs.index(t)
+            if i & 1:
                 # Start index is odd; go forward and wrap.
                 j -= len(b.childs)
                 jstep = 1
@@ -694,112 +808,43 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
                 # Start index is even; go backward.
                 jstep = -1
             # Move along the blossom until we get to the base.
-            v, w = labeledge[b]
             while j != 0:
-                # Relabel the T-sub-blossom.
+                # Step to the next sub-blossom and augment it recursively.
+                j += jstep
+                t = b.childs[j]
                 if jstep == 1:
-                    p, q = b.edges[j]
+                    w, x = b.edges[j]
                 else:
-                    q, p = b.edges[j - 1]
-                label[w] = None
-                label[q] = None
-                assignLabel(w, 2, v)
-                # Step to the next S-sub-blossom and note its forward edge.
-                allowedge[(p, q)] = allowedge[(q, p)] = True
+                    x, w = b.edges[j - 1]
+                if isinstance(t, Blossom):
+                    yield (t, w)
+                # Step to the next sub-blossom and augment it recursively.
                 j += jstep
-                if jstep == 1:
-                    v, w = b.edges[j]
-                else:
-                    w, v = b.edges[j - 1]
-                # Step to the next T-sub-blossom.
-                allowedge[(v, w)] = allowedge[(w, v)] = True
-                j += jstep
-            # Relabel the base T-sub-blossom WITHOUT stepping through to
-            # its mate (so don't call assignLabel).
-            bw = b.childs[j]
-            label[w] = label[bw] = 2
-            labeledge[w] = labeledge[bw] = (v, w)
-            bestedge[bw] = None
-            # Continue along the blossom until we get back to entrychild.
-            j += jstep
-            while b.childs[j] != entrychild:
-                # Examine the vertices of the sub-blossom to see whether
-                # it is reachable from a neighbouring S-vertex outside the
-                # expanding blossom.
-                bv = b.childs[j]
-                if label.get(bv) == 1:
-                    # This sub-blossom just got label S through one of its
-                    # neighbours; leave it be.
-                    j += jstep
-                    continue
-                if isinstance(bv, Blossom):
-                    for v in bv.leaves():
-                        if label.get(v):
-                            break
-                else:
-                    v = bv
-                # If the sub-blossom contains a reachable vertex, assign
-                # label T to the sub-blossom.
-                if label.get(v):
-                    assert label[v] == 2
-                    assert inblossom[v] == bv
-                    label[v] = None
-                    label[mate[blossombase[bv]]] = None
-                    assignLabel(v, 2, labeledge[v][0])
-                j += jstep
-        # Remove the expanded blossom entirely.
-        label.pop(b, None)
-        labeledge.pop(b, None)
-        bestedge.pop(b, None)
-        del blossomparent[b]
-        del blossombase[b]
-        del blossomdual[b]
+                t = b.childs[j]
+                if isinstance(t, Blossom):
+                    yield (t, x)
+                # Match the edge connecting those sub-blossoms.
+                mate[w] = x
+                mate[x] = w
+            # Rotate the list of sub-blossoms to put the new base at the front.
+            b.childs = b.childs[i:] + b.childs[:i]
+            b.edges = b.edges[i:] + b.edges[:i]
+            blossombase[b] = blossombase[b.childs[0]]
+            assert blossombase[b] == v
 
-    # Swap matched/unmatched edges over an alternating path through blossom b
-    # between vertex v and the base vertex. Keep blossom bookkeeping
-    # consistent.
-    def augmentBlossom(b, v):
-        # Bubble up through the blossom tree from vertex v to an immediate
-        # sub-blossom of b.
-        t = v
-        while blossomparent[t] != b:
-            t = blossomparent[t]
-        # Recursively deal with the first sub-blossom.
-        if isinstance(t, Blossom):
-            augmentBlossom(t, v)
-        # Decide in which direction we will go round the blossom.
-        i = j = b.childs.index(t)
-        if i & 1:
-            # Start index is odd; go forward and wrap.
-            j -= len(b.childs)
-            jstep = 1
-        else:
-            # Start index is even; go backward.
-            jstep = -1
-        # Move along the blossom until we get to the base.
-        while j != 0:
-            # Step to the next sub-blossom and augment it recursively.
-            j += jstep
-            t = b.childs[j]
-            if jstep == 1:
-                w, x = b.edges[j]
+        # Now, we apply the trampoline pattern.  We simulate a recursive
+        # callstack by maintaining a stack of generators, each yielding a
+        # sequence of function arguments.  We grow the stack by appending a call
+        # to _recurse on each argument tuple, and shrink the stack whenever a
+        # generator is exhausted.
+        stack = [_recurse(b, v)]
+        while stack:
+            top = stack[-1]
+            for args in top:
+                stack.append(_recurse(*args))
+                break
             else:
-                x, w = b.edges[j - 1]
-            if isinstance(t, Blossom):
-                augmentBlossom(t, w)
-            # Step to the next sub-blossom and augment it recursively.
-            j += jstep
-            t = b.childs[j]
-            if isinstance(t, Blossom):
-                augmentBlossom(t, x)
-            # Match the edge connecting those sub-blossoms.
-            mate[w] = x
-            mate[x] = w
-        # Rotate the list of sub-blossoms to put the new base at the front.
-        b.childs = b.childs[i:] + b.childs[:i]
-        b.edges = b.edges[i:] + b.edges[:i]
-        blossombase[b] = blossombase[b.childs[0]]
-        assert blossombase[b] == v
+                stack.pop()
 
     # Swap matched/unmatched edges over an alternating path between two
     # single vertices. The augmenting path runs through S-vertices v and w.
@@ -924,11 +969,11 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
                 v = queue.pop()
                 assert label[inblossom[v]] == 1
 
-                # Scan its neighbours:
+                # Scan its neighbors:
                 for w in G.neighbors(v):
                     if w == v:
                         continue  # ignore self-loops
-                    # w is a neighbour to v
+                    # w is a neighbor to v
                     bv = inblossom[v]
                     bw = inblossom[w]
                     if bv == bw:

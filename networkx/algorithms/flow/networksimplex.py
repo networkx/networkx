@@ -172,7 +172,7 @@ class _DataEssentialsAndFunctions:
         self.prev_node_dft[next_last_t] = prev_t
         self.next_node_dft[last_t] = t
         self.prev_node_dft[t] = last_t
-        # Update the subtree sizes and last descendants of the (old) acenstors
+        # Update the subtree sizes and last descendants of the (old) ancestors
         # of t.
         while s is not None:
             self.subtree_size[s] -= size_t
@@ -326,6 +326,9 @@ class _DataEssentialsAndFunctions:
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable(
+    node_attrs="demand", edge_attrs={"capacity": float("inf"), "weight": 0}
+)
 def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     r"""Find a minimum cost flow satisfying all demands in digraph G.
 
@@ -559,13 +562,9 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     faux_inf = (
         3
         * max(
-            chain(
-                [
-                    sum(c for c in DEAF.edge_capacities if c < inf),
-                    sum(abs(w) for w in DEAF.edge_weights),
-                ],
-                (abs(d) for d in DEAF.node_demands),
-            )
+            sum(c for c in DEAF.edge_capacities if c < inf),
+            sum(abs(w) for w in DEAF.edge_weights),
+            sum(abs(d) for d in DEAF.node_demands),
         )
         or 1
     )

@@ -58,8 +58,8 @@ class TestBFS:
             2: [2, 3],
             3: [4],
         }
-        assert dict(enumerate(nx.bfs_layers(self.G, sources=[0]))) == expected
-        assert dict(enumerate(nx.bfs_layers(self.G, sources=0))) == expected
+        for sources in [0, [0], (i for i in [0]), [0, 0]]:
+            assert dict(enumerate(nx.bfs_layers(self.G, sources))) == expected
 
     def test_bfs_layers_missing_source(self):
         with pytest.raises(nx.NetworkXError):

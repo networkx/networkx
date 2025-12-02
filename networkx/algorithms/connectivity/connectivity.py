@@ -14,12 +14,13 @@ from networkx.algorithms.flow import (
     build_residual_network,
     dinitz,
     edmonds_karp,
+    preflow_push,
     shortest_augmenting_path,
 )
 
-default_flow_func = edmonds_karp
-
 from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_connectivity
+
+default_flow_func = edmonds_karp
 
 __all__ = [
     "average_node_connectivity",
@@ -31,6 +32,7 @@ __all__ = [
 ]
 
 
+@nx._dispatchable(graphs={"G": 0, "auxiliary?": 4}, preserve_graph_attrs={"auxiliary"})
 def local_node_connectivity(
     G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None
 ):
@@ -113,7 +115,6 @@ def local_node_connectivity(
     >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
     >>> from networkx.algorithms.connectivity import build_auxiliary_node_connectivity
-    ...
     >>> H = build_auxiliary_node_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
@@ -126,7 +127,6 @@ def local_node_connectivity(
     >>> for u, v in itertools.combinations(G, 2):
     ...     k = local_node_connectivity(G, u, v, auxiliary=H, residual=R)
     ...     result[u][v] = k
-    ...
     >>> all(result[u][v] == 5 for u, v in itertools.combinations(G, 2))
     True
 
@@ -196,19 +196,17 @@ def local_node_connectivity(
         raise nx.NetworkXError("Invalid auxiliary digraph.")
 
     kwargs = {"flow_func": flow_func, "residual": residual}
+
+    if flow_func is not preflow_push:
+        kwargs["cutoff"] = cutoff
+
     if flow_func is shortest_augmenting_path:
-        kwargs["cutoff"] = cutoff
         kwargs["two_phase"] = True
-    elif flow_func is edmonds_karp:
-        kwargs["cutoff"] = cutoff
-    elif flow_func is dinitz:
-        kwargs["cutoff"] = cutoff
-    elif flow_func is boykov_kolmogorov:
-        kwargs["cutoff"] = cutoff
 
     return nx.maximum_flow_value(H, f"{mapping[s]}B", f"{mapping[t]}A", **kwargs)
 
 
+@nx._dispatchable
 def node_connectivity(G, s=None, t=None, flow_func=None):
     r"""Returns node connectivity for a graph or digraph G.
 
@@ -349,6 +347,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     return K
 
 
+@nx._dispatchable
 def average_node_connectivity(G, flow_func=None):
     r"""Returns the average connectivity of a graph G.
 
@@ -417,6 +416,7 @@ def average_node_connectivity(G, flow_func=None):
     return num / den
 
 
+@nx._dispatchable
 def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     """Compute node connectivity between all pairs of nodes of G.
 
@@ -484,6 +484,7 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     return all_pairs
 
 
+@nx._dispatchable(graphs={"G": 0, "auxiliary?": 4})
 def local_edge_connectivity(
     G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None
 ):
@@ -632,19 +633,17 @@ def local_edge_connectivity(
         H = auxiliary
 
     kwargs = {"flow_func": flow_func, "residual": residual}
+
+    if flow_func is not preflow_push:
+        kwargs["cutoff"] = cutoff
+
     if flow_func is shortest_augmenting_path:
-        kwargs["cutoff"] = cutoff
         kwargs["two_phase"] = True
-    elif flow_func is edmonds_karp:
-        kwargs["cutoff"] = cutoff
-    elif flow_func is dinitz:
-        kwargs["cutoff"] = cutoff
-    elif flow_func is boykov_kolmogorov:
-        kwargs["cutoff"] = cutoff
 
     return nx.maximum_flow_value(H, s, t, **kwargs)
 
 
+@nx._dispatchable
 def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
     r"""Returns the edge connectivity of the graph or digraph G.
 

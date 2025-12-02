@@ -1,6 +1,7 @@
 """
 Maximum flow (and minimum cut) algorithms on capacitated graphs.
 """
+
 import networkx as nx
 
 from .boykovkolmogorov import boykov_kolmogorov
@@ -16,6 +17,7 @@ default_flow_func = preflow_push
 __all__ = ["maximum_flow", "maximum_flow_value", "minimum_cut", "minimum_cut_value"]
 
 
+@nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
 def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Find a maximum single-commodity flow.
 
@@ -114,6 +116,10 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     True, it can optionally terminate the algorithm as soon as the maximum flow
     value and the minimum cut can be determined.
 
+    Note that the resulting maximum flow may contain flow cycles,
+    back-flow to the source, or some flow exiting the sink.
+    These are possible if there are cycles in the network.
+
     Examples
     --------
     >>> G = nx.DiGraph()
@@ -162,6 +168,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     return (R.graph["flow_value"], flow_dict)
 
 
+@nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
 def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Find the value of maximum single-commodity flow.
 
@@ -301,6 +308,7 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     return R.graph["flow_value"]
 
 
+@nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
 def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Compute the value and the node partition of a minimum (s, t)-cut.
 
@@ -455,15 +463,15 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     # Then, reachable and non reachable nodes from source in the
     # residual network form the node partition that defines
     # the minimum cut.
-    non_reachable = set(dict(nx.shortest_path_length(R, target=_t)))
+    non_reachable = set(nx.shortest_path_length(R, target=_t))
     partition = (set(flowG) - non_reachable, non_reachable)
     # Finally add again cutset edges to the residual network to make
     # sure that it is reusable.
-    if cutset is not None:
-        R.add_edges_from(cutset)
+    R.add_edges_from(cutset)
     return (R.graph["flow_value"], partition)
 
 
+@nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
 def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Compute the value of a minimum (s, t)-cut.
 

@@ -3,12 +3,15 @@
 Greedy Coloring
 ===============
 
-We attempt to color a graph using as few colors as possible, where no neighbours
+We attempt to color a graph using as few colors as possible, where no neighbors
 of a node can have same color as the node itself.
 """
+
+import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.colors as mpl
+from matplotlib import animation
 
 G = nx.dodecahedral_graph()
 

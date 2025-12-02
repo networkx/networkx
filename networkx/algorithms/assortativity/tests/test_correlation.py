@@ -1,13 +1,12 @@
 import pytest
 
-np = pytest.importorskip("numpy")
-pytest.importorskip("scipy")
-
-
 import networkx as nx
 from networkx.algorithms.assortativity.correlation import attribute_ac
 
 from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
+
+np = pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 
 class TestDegreeMixingCorrelation(BaseTestDegreeMixing):

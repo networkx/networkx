@@ -11,6 +11,7 @@ from networkx.algorithms.centrality.betweenness import (
 __all__ = ["percolation_centrality"]
 
 
+@nx._dispatchable(node_attrs="attribute", edge_attrs="weight")
 def percolation_centrality(G, attribute="percolation", states=None, weight=None):
     r"""Compute the percolation centrality for nodes.
 
@@ -37,7 +38,10 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
 
     attribute : None or string, optional (default='percolation')
       Name of the node attribute to use for percolation state, used
-      if `states` is None.
+      if `states` is None. If a node does not set the attribute the
+      state of that node will be set to the default value of 1.
+      If all nodes do not have the attribute all nodes will be set to
+      1 and the centrality measure will be equivalent to betweenness centrality.
 
     states : None or dict, optional (default=None)
       Specify percolation states for the nodes, nodes as keys states
@@ -84,7 +88,7 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
     nodes = G
 
     if states is None:
-        states = nx.get_node_attributes(nodes, attribute)
+        states = nx.get_node_attributes(nodes, attribute, default=1)
 
     # sum of all percolation states
     p_sigma_x_t = 0.0

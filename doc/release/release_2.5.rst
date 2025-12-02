@@ -86,7 +86,7 @@ API Changes
 - removed unused "has_numpy" argument from create_py_random_state
 - fixed return values when drawing empty nodes and edges
 - allow sets and frozensets of edges as input to nx.Graph()
-- "weight" can be function for astar, directional_dijksta, all_shortest_path
+- "weight" can be function for astar, directional_dijkstra, all_shortest_path
 - allow named key ids for GraphML edge writing
 - all keywords are now checked for validity in nx.draw and friends
 - EdgeDataView "in" operator checks if nodes are "in nbunch"
@@ -123,7 +123,7 @@ Deprecations
   Deprecate `betweenness_centrality_source`.
 
 - [`#4161 <https://github.com/networkx/networkx/pull/4161>`_]
-  Deprecate `edge_betweeness`.
+  Deprecate `edge_betweenness`.
 
 - [`#4161 <https://github.com/networkx/networkx/pull/4161>`_]
   Rename `_naive_greedy_modularity_communities` as `naive_greedy_modularity_communities`.
@@ -165,7 +165,7 @@ A total of 256 changes have been committed.
 - Optimize _single_shortest_path_length (#3647)
 - Fix issue 3431: Return error in case of bad input to make_small_graph (#3676)
 - avoid duplicate tests due to imports (#3684)
-- Fix typo: Laplacion -> Laplacian (#3689)
+- Fix typo: Laplacian -> Laplacian (#3689)
 - Add tests
 - Lukes algorithm implementation (#3666)
 - Remove shim that worked around using starmap
@@ -271,7 +271,7 @@ A total of 256 changes have been committed.
 - Enhancement for voterank (#3972)
 - add d-separation algorithm (#3974)
 - DOC: added see also section to find_cycle (#3999)
-- improve docs for subgraph_view filter_egde (#4010)
+- improve docs for subgraph_view filter_edge (#4010)
 - Fix exception causes in dag.py (#4000)
 - use raise from for exceptions in to_networkx_graph (#4009)
 - Fix exception causes and messages in 12 modules (#4012)
@@ -351,7 +351,7 @@ A total of 256 changes have been committed.
 - Add function to calculate path cost for a specified path (#4069)
 - Update docstring for from_pandas_edgelist (#4108)
 - Add max_weight_clique to doc (#4110)
-- Update deprecation policyt (#4112)
+- Update deprecation policy (#4112)
 - Improve modularity calculation (#4103)
 - Add team gallery (#4117)
 - CI: Setup circle CI for documentation builds (#4119)

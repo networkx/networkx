@@ -3,6 +3,7 @@
 Biadjacency matrices
 ====================
 """
+
 import itertools
 
 import networkx as nx
@@ -11,6 +12,7 @@ from networkx.convert_matrix import _generate_weighted_edges
 __all__ = ["biadjacency_matrix", "from_biadjacency_matrix"]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def biadjacency_matrix(
     G, row_order, column_order=None, dtype=None, weight="weight", format="csr"
 ):
@@ -43,8 +45,8 @@ def biadjacency_matrix(
        The edge data key used to provide each value in the matrix.
        If None, then each edge has weight 1.
 
-    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'}
-        The type of the matrix to be returned (default 'csr').  For
+    format : str in {'dense', 'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'}
+        The type of the matrix to be returned (default 'csr'). For
         some algorithms different implementations of sparse matrices
         can perform better.  See [2]_ for details.
 
@@ -109,26 +111,57 @@ def biadjacency_matrix(
         raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
 
 
-def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
+@nx._dispatchable(graphs=None, returns_graph=True)
+def from_biadjacency_matrix(
+    A,
+    create_using=None,
+    edge_attribute="weight",
+    *,
+    row_order=None,
+    column_order=None,
+):
     r"""Creates a new bipartite graph from a biadjacency matrix given as a
     SciPy sparse array.
 
     Parameters
     ----------
-    A: scipy sparse array
+    A : scipy sparse array
       A biadjacency matrix representation of a graph
 
-    create_using: NetworkX graph
+    create_using : NetworkX graph
        Use specified graph for result.  The default is Graph()
 
-    edge_attribute: string
+    edge_attribute : string
        Name of edge attribute to store matrix numeric value. The data will
        have the same type as the matrix entry (int, float, (real,imag)).
+
+    row_order : list, optional (default: range(number of rows in `A`))
+        A list of the nodes represented by the rows of the matrix `A`. Will
+        be represented in the graph as nodes with the `bipartite` attribute set
+        to 0. Must be the same length as the number of rows in `A`.
+
+    column_order : list, optional (default: range(number of columns in `A`))
+        A list of the nodes represented by the columns of the matrix `A`. Will
+        be represented in the graph as nodes with the `bipartite` attribute set
+        to 1. Must be the same length as the number of columns in `A`.
+
+    Returns
+    ---------
+    G : NetworkX graph
+        A bipartite graph with edges from the biadjacency matrix `A`, and
+        nodes from `row_order` and `column_order`.
+
+    Raises
+    --------
+    ValueError
+        If `row_order` or `column_order` are provided and are not the same
+        length as the number of rows or columns in `A`, respectively.
 
     Notes
     -----
     The nodes are labeled with the attribute `bipartite` set to an integer
-    0 or 1 representing membership in part 0 or part 1 of the bipartite graph.
+    0 or 1 representing membership in the `top` set (`bipartite=0`) or `bottom`
+    set (`bipartite=1`) of the bipartite graph.
 
     If `create_using` is an instance of :class:`networkx.MultiGraph` or
     :class:`networkx.MultiDiGraph` and the entries of `A` are of
@@ -147,6 +180,11 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
     """
     G = nx.empty_graph(0, create_using)
     n, m = A.shape
+    # Check/set row_order and column_order to have correct length and default values
+    row_order, column_order = _validate_initialize_bipartite_nodelists(
+        A, row_order, column_order
+    )
+
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n), bipartite=0)
     G.add_nodes_from(range(n, n + m), bipartite=1)
@@ -162,4 +200,33 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
         chain = itertools.chain.from_iterable
         triples = chain(((u, v, 1) for d in range(w)) for (u, v, w) in triples)
     G.add_weighted_edges_from(triples, weight=edge_attribute)
+
+    # If the user provided nodelists, relabel the nodes of the graph inplace
+    mapping = dict(
+        itertools.chain(zip(range(n), row_order), zip(range(n, n + m), column_order))
+    )
+    if len(mapping):
+        nx.relabel_nodes(G, mapping, copy=False)
     return G
+
+
+def _validate_initialize_bipartite_nodelists(A, row_order, column_order):
+    n, m = A.shape
+    # Validate nodelists if provided
+    if row_order is not None:
+        if len(row_order) != n:
+            raise ValueError(
+                "Length of row_order does not match number of rows in A ({n})"
+            )
+    else:
+        row_order = []
+
+    if column_order is not None:
+        if len(column_order) != m:
+            raise ValueError(
+                "Length of column_order does not match number of columns in A ({m})"
+            )
+    else:
+        column_order = []
+
+    return row_order, column_order

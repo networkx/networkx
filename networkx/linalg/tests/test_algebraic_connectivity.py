@@ -2,11 +2,9 @@ from math import sqrt
 
 import pytest
 
-np = pytest.importorskip("numpy")
-
-
 import networkx as nx
 
+np = pytest.importorskip("numpy")
 methods = ("tracemin_pcg", "tracemin_lu", "lanczos", "lobpcg")
 
 

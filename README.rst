@@ -2,15 +2,30 @@ NetworkX
 ========
 
 
-.. image:: https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
-  :target: https://github.com/networkx/networkx/actions?query=workflow%3A%22test%22
+.. image::
+    https://github.com/networkx/networkx/actions/workflows/test.yml/badge.svg?branch=main
+    :target: https://github.com/networkx/networkx/actions/workflows/test.yml
 
-.. image:: https://codecov.io/gh/networkx/networkx/branch/main/graph/badge.svg
-   :target: https://app.codecov.io/gh/networkx/networkx/branch/main
-   
-.. image:: https://img.shields.io/github/labels/networkx/networkx/Good%20First%20Issue?color=green&label=Contribute%20&style=flat-square
-   :target: https://github.com/networkx/networkx/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+First+Issue%22
-   
+.. image::
+    https://img.shields.io/pypi/v/networkx.svg?
+    :target: https://pypi.python.org/pypi/networkx
+
+.. image::
+    https://img.shields.io/pypi/l/networkx.svg?
+    :target: https://github.com/networkx/networkx/blob/main/LICENSE.txt
+
+.. image::
+    https://img.shields.io/pypi/pyversions/networkx.svg?
+    :target: https://pypi.python.org/pypi/networkx
+
+.. image::
+    https://img.shields.io/github/labels/networkx/networkx/good%20first%20issue?color=green&label=contribute
+    :target: https://github.com/networkx/networkx/contribute
+
+.. image::
+    https://insights.linuxfoundation.org/api/badge/health-score?project=networkx
+    :target: https://insights.linuxfoundation.org/project/networkx
+
 
 NetworkX is a Python package for the creation, manipulation,
 and study of the structure, dynamics, and functions
@@ -23,6 +38,8 @@ of complex networks.
 - **Report a security vulnerability:** https://tidelift.com/security
 - **Tutorial:** https://networkx.org/documentation/latest/tutorial.html
 - **GitHub Discussions:** https://github.com/networkx/networkx/discussions
+- **Discord (Scientific Python) invite link:** https://discord.com/invite/vur45CbwMz
+- **NetworkX meetings calendar (open to all):** https://scientific-python.org/calendars/networkx.ics
 
 Simple example
 --------------
@@ -43,15 +60,20 @@ Find the shortest path between two nodes in an undirected graph:
 Install
 -------
 
-Install the latest version of NetworkX::
+Install the latest released version of NetworkX:
+
+.. code:: shell
 
     $ pip install networkx
 
-Install with all optional dependencies::
+Install with all optional dependencies:
 
-    $ pip install networkx[all]
+.. code:: shell
 
-For additional details, please see `INSTALL.rst`.
+    $ pip install networkx[default]
+
+For additional details,
+please see the `installation guide <https://networkx.org/documentation/stable/install.html>`_.
 
 Bugs
 ----
@@ -60,14 +82,14 @@ Please report any bugs that you find `here <https://github.com/networkx/networkx
 Or, even better, fork the repository on `GitHub <https://github.com/networkx/networkx>`_
 and create a pull request (PR). We welcome all changes, big or small, and we
 will help you make the PR if you are new to `git` (just ask on the issue and/or
-see `CONTRIBUTING.rst`).
+see the `contributor guide <https://networkx.org/documentation/latest/developer/contribute.html>`_).
 
 License
 -------
 
-Released under the 3-Clause BSD license (see `LICENSE.txt`)::
+Released under the `3-clause BSD license <https://github.com/networkx/networkx/blob/main/LICENSE.txt>`_::
 
-   Copyright (C) 2004-2023 NetworkX Developers
-   Aric Hagberg <hagberg@lanl.gov>
-   Dan Schult <dschult@colgate.edu>
-   Pieter Swart <swart@lanl.gov>
+    Copyright (c) 2004-2025, NetworkX Developers
+    Aric Hagberg <hagberg@lanl.gov>
+    Dan Schult <dschult@colgate.edu>
+    Pieter Swart <swart@lanl.gov>

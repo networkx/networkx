@@ -1,16 +1,15 @@
 import pytest
 
-np = pytest.importorskip("numpy")
-pytest.importorskip("scipy")
-
 import networkx as nx
 from networkx.exception import NetworkXError
-from networkx.generators.degree_seq import havel_hakimi_graph
+
+np = pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 
 def test_incidence_matrix_simple():
     deg = [3, 2, 2, 1, 0]
-    G = havel_hakimi_graph(deg)
+    G = nx.havel_hakimi_graph(deg)
     deg = [(1, 0), (1, 0), (1, 0), (2, 0), (1, 0), (2, 1), (0, 1), (0, 1)]
     MG = nx.random_clustered_graph(deg, seed=42)
 
@@ -49,7 +48,7 @@ class TestGraphMatrix:
     @classmethod
     def setup_class(cls):
         deg = [3, 2, 2, 1, 0]
-        cls.G = havel_hakimi_graph(deg)
+        cls.G = nx.havel_hakimi_graph(deg)
         # fmt: off
         cls.OI = np.array(
             [[-1, -1, -1, 0],
@@ -66,7 +65,7 @@ class TestGraphMatrix:
              [0, 0, 0, 0, 0]]
         )
         # fmt: on
-        cls.WG = havel_hakimi_graph(deg)
+        cls.WG = nx.havel_hakimi_graph(deg)
         cls.WG.add_edges_from(
             (u, v, {"weight": 0.5, "other": 0.3}) for (u, v) in cls.G.edges()
         )

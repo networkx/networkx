@@ -1,15 +1,14 @@
 import pytest
 
 import networkx as nx
-
-np = pytest.importorskip("numpy")
-sp = pytest.importorskip("scipy")
-
 from networkx.algorithms.link_analysis.hits_alg import (
     _hits_numpy,
     _hits_python,
     _hits_scipy,
 )
+
+np = pytest.importorskip("numpy")
+sp = pytest.importorskip("scipy")
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
@@ -72,7 +71,7 @@ class TestHITS:
             _hits_scipy(G, max_iter=0)
         with pytest.raises(nx.PowerIterationFailedConvergence):
             _hits_python(G, max_iter=0)
-        with pytest.raises(ValueError):
+        with pytest.raises(nx.PowerIterationFailedConvergence):
             nx.hits(G, max_iter=0)
-        with pytest.raises(sp.sparse.linalg.ArpackNoConvergence):
+        with pytest.raises(nx.PowerIterationFailedConvergence):
             nx.hits(G, max_iter=1)

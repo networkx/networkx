@@ -1,0 +1,279 @@
+[build-system]
+build-backend = 'setuptools.build_meta'
+requires = ['setuptools>=77.0.3']
+
+[project]
+name = 'networkx'
+description = 'Python package for creating and manipulating graphs and networks'
+readme = 'README.rst'
+requires-python = '>=3.11'
+dynamic = ['version']
+keywords = [
+    'Networks',
+    'Graph Theory',
+    'Mathematics',
+    'network',
+    'graph',
+    'discrete mathematics',
+    'math',
+]
+license = "BSD-3-Clause"
+license-files = ["LICENSE.txt"]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
+    'Programming Language :: Python :: 3 :: Only',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Scientific/Engineering :: Bio-Informatics',
+    'Topic :: Scientific/Engineering :: Information Analysis',
+    'Topic :: Scientific/Engineering :: Mathematics',
+    'Topic :: Scientific/Engineering :: Physics',
+]
+dependencies = []
+
+[[project.authors]]
+name = 'Aric Hagberg'
+email = 'hagberg@lanl.gov'
+
+[[project.maintainers]]
+name = 'NetworkX Developers'
+email = 'networkx-discuss@googlegroups.com'
+
+[project.urls]
+Homepage = 'https://networkx.org/'
+"Bug Tracker" = 'https://github.com/networkx/networkx/issues'
+Documentation = 'https://networkx.org/documentation/stable/'
+"Source Code" = 'https://github.com/networkx/networkx'
+
+[project.entry-points."networkx.backends"]
+nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
+
+[project.optional-dependencies]
+benchmarking = [
+    'asv',
+    'virtualenv',
+]
+default = [
+    'numpy>=1.25',
+    'scipy>=1.11.2',
+    'matplotlib>=3.8',
+    'pandas>=2.0',
+]
+developer = [
+    'pre-commit>=4.1',
+    'mypy>=1.15',
+]
+doc = [
+    'sphinx>=8.0',
+    'pydata-sphinx-theme>=0.16',
+    'sphinx-gallery>=0.18',
+    'numpydoc>=1.8.0',
+    'pillow>=10',
+    'texext>=0.6.7',
+    'myst-nb>=1.1',
+    'intersphinx-registry',
+]
+example = [
+    'osmnx>=2.0.0',
+    'momepy>=0.7.2',
+    'contextily>=1.6',
+    'seaborn>=0.13',
+    'cairocffi>=1.7',
+    'igraph>=0.11',
+    'scikit-learn>=1.5',
+    'iplotx>=0.9.0',
+]
+extra = [
+    'lxml>=4.6',
+    'pygraphviz>=1.14',
+    'pydot>=3.0.1',
+    'sympy>=1.10',
+]
+release = [
+    'build>=0.10',
+    'twine>=4.0',
+    'wheel>=0.40',
+    'changelist==0.5',
+]
+test = [
+    'pytest>=7.2',
+    'pytest-cov>=4.0',
+    'pytest-xdist>=3.0',
+]
+test-extras = [
+    'pytest-mpl',
+    'pytest-randomly',
+]
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = false
+packages = [
+    'networkx',
+    'networkx.algorithms',
+    'networkx.algorithms.assortativity',
+    'networkx.algorithms.bipartite',
+    'networkx.algorithms.centrality',
+    'networkx.algorithms.community',
+    'networkx.algorithms.components',
+    'networkx.algorithms.connectivity',
+    'networkx.algorithms.coloring',
+    'networkx.algorithms.flow',
+    'networkx.algorithms.minors',
+    'networkx.algorithms.traversal',
+    'networkx.algorithms.isomorphism',
+    'networkx.algorithms.shortest_paths',
+    'networkx.algorithms.link_analysis',
+    'networkx.algorithms.operators',
+    'networkx.algorithms.approximation',
+    'networkx.algorithms.tree',
+    'networkx.classes',
+    'networkx.generators',
+    'networkx.drawing',
+    'networkx.linalg',
+    'networkx.readwrite',
+    'networkx.readwrite.json_graph',
+    'networkx.tests',
+    'networkx.utils',
+]
+platforms = [
+    'Linux',
+    'Mac OSX',
+    'Windows',
+    'Unix',
+]
+
+[tool.setuptools.dynamic.version]
+attr = 'networkx.__version__'
+
+[tool.setuptools.package-data]
+networkx = ['tests/*.py']
+"networkx.algorithms" = ['tests/*.py']
+"networkx.algorithms.assortativity" = ['tests/*.py']
+"networkx.algorithms.bipartite" = ['tests/*.py']
+"networkx.algorithms.centrality" = ['tests/*.py']
+"networkx.algorithms.community" = ['tests/*.py']
+"networkx.algorithms.components" = ['tests/*.py']
+"networkx.algorithms.connectivity" = ['tests/*.py']
+"networkx.algorithms.coloring" = ['tests/*.py']
+"networkx.algorithms.minors" = ['tests/*.py']
+"networkx.algorithms.flow" = [
+    'tests/*.py',
+    'tests/*.bz2',
+]
+"networkx.algorithms.isomorphism" = [
+    'tests/*.py',
+    'tests/*.*99',
+]
+"networkx.algorithms.link_analysis" = ['tests/*.py']
+"networkx.algorithms.approximation" = ['tests/*.py']
+"networkx.algorithms.operators" = ['tests/*.py']
+"networkx.algorithms.shortest_paths" = ['tests/*.py']
+"networkx.algorithms.traversal" = ['tests/*.py']
+"networkx.algorithms.tree" = ['tests/*.py']
+"networkx.classes" = ['tests/*.py']
+"networkx.generators" = [
+    'tests/*.py',
+    'atlas.dat.gz',
+]
+"networkx.drawing" = [
+    'tests/*.py',
+    'tests/baseline/*png',
+]
+"networkx.linalg" = ['tests/*.py']
+"networkx.readwrite" = ['tests/*.py']
+"networkx.readwrite.json_graph" = ['tests/*.py']
+"networkx.utils" = ['tests/*.py']
+
+[tool.changelist]
+ignored_user_logins = ["dependabot[bot]", "pre-commit-ci[bot]", "web-flow"]
+
+[tool.coverage.run]
+branch = true
+source = ["networkx"]
+omit = ["*/tests/*", "conftest.py", "*testing/test.py"]
+
+[tool.ruff.lint]
+extend-select = [
+#  "B",        # flake8-bugbear
+  "I",        # isort
+#  "ARG",      # flake8-unused-arguments
+  "C4",       # flake8-comprehensions
+#  "D",        # pydocstyle (see tool.ruff.lint.pydocstyle below)
+  "EM",       # flake8-errmsg
+  "ICN",      # flake8-import-conventions
+#  "G",        # flake8-logging-format
+  "PGH",      # pygrep-hooks
+  "PIE",      # flake8-pie
+#  "PL",       # pylint
+  "PLR0402",
+#  "PT",       # flake8-pytest-style
+#  "PTH",      # flake8-use-pathlib
+#  "RET",      # flake8-return
+#  "RUF",      # Ruff-specific
+#  "SIM",      # flake8-simplify
+  "SIM101",
+  "SIM109",
+  "SIM110",
+  "SIM118",
+  "SIM2",
+#  "T20",      # flake8-print
+  "UP",       # pyupgrade
+  "YTT",      # flake8-2020
+  "EXE",      # flake8-executable
+  "NPY",      # NumPy specific rules
+  "PD",       # pandas-vet
+#  "FURB",     # refurb
+  "PYI",      # flake8-pyi
+  "W505",     # pycodestyle docstring/comment line length (see config below)
+]
+ignore = [
+  "PLR09",    # Too many <...>
+  "PLR2004",  # Magic value used in comparison
+  "ISC001",   # Conflicts with formatter
+  "E741",     # Ambiguous variable name
+  "E722",     # Do not use bare `except`
+  "F",        # pyflakes
+  "EM101",    # Exception must not use a string literal
+  "EM102",    # Exception must not use an f-string literal
+  "PD",       # pandas-vet
+  "ICN",      # flake8-import-conventions
+  "PYI",      # flake8-pyi
+  "NPY002",   # Replace legacy `np.random.random` call with `np.random.Generator`
+  "W291",     # Trailing white space
+  "C420",     # "Unnecessary" dict comprehensions (even though they're more readable)
+]
+exclude=['doc/conf.py', '__init__.py']
+
+# Need to select D above
+#[tool.ruff.lint.pydocstyle]
+#convention = "numpy"
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 110
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ['I']
+"examples/*.py" = ['I']
+"doc/*.py" = ['I']
+"tools/*.py" = ['I']
+"networkx/classes/filters.py" = ['C416']
+"networkx/classes/reportviews.py" = ['W505']  # Ignore long docstring examples
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.mypy]
+ignore_missing_imports = true
+exclude = 'subgraphviews|reportviews'
+
+[[tool.mypy.overrides]]
+module = 'networkx.classes.reportviews'
+ignore_errors = true
