@@ -97,7 +97,7 @@ def floyd_warshall_tree(G, weight="weight"):
     pred = {}
     for u in G:
         dist[u][u] = 0
-        pred[u] = defaultdict(lambda u=u: u)
+        pred[u] = defaultdict(lambda u=u: u)  # for pred[u][v] the default value is u
 
     # initialize path distance dictionary to be the adjacency matrix
     # also set the distance to self to 0 (zero diagonal)
@@ -132,7 +132,10 @@ def floyd_warshall_tree(G, weight="weight"):
             if not processed:
                 entry_idx[node] = len(dfs_array)
 
-                if node != k:
+                if node != k:  # else dfs_array[0] = k,
+                    # and in the inner loop relaxation below, vj=k
+                    # distu[vj] > d => distu[k] > distu[k] -> False
+                    # so for skipped to last, and no vertex processed
                     dfs_array.append(node)
 
                 # push a marker to set exit index after children handled
@@ -149,7 +152,7 @@ def floyd_warshall_tree(G, weight="weight"):
                 exit_idx[node] = len(dfs_array)
 
         # skip_idx=first idx after subtree of v
-        skip_idx = {v: exit_idx.get(v, len(dfs_array)) for v in dfs_array}
+        skip_idx = {v: exit_idx[v] for v in dfs_array}
 
         # main inner loop starts here
         for u in G:
