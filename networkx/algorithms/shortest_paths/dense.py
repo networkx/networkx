@@ -86,6 +86,86 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     return A
 
 
+def floyd_warshall_tree(G, weight="weight"):
+    from collections import defaultdict
+
+    # dictionary-of-dictionaries representation for dist and pred
+    # use some defaultdict magick here
+    # for dist the default is the floating point inf value
+    dist = defaultdict(lambda: defaultdict(lambda: float("inf")))
+    pred = defaultdict(dict)
+    for u in G:
+        dist[u][u] = 0
+        for v in G:
+            pred[u][v] = u
+
+    # initialize path distance dictionary to be the adjacency matrix
+    # also set the distance to self to 0 (zero diagonal)
+    undirected = not G.is_directed()
+    for u, v, d in G.edges(data=True):
+        e_weight = d.get(weight, 1.0)
+        dist[u][v] = min(e_weight, dist[u][v])
+        if undirected:
+            dist[v][u] = min(e_weight, dist[v][u])
+
+    for k in G:
+        dist_k = dist[k]  # for speed
+        adj_list = {node: [] for node in G}  # adjacency list for OUT_K
+
+        for v in G:
+            if v == k:
+                continue
+            parent = pred[k].get(v, k)  # path k to v in OUT_K
+            adj_list[parent].append(v)
+
+    dfs_array = []
+    entry_idx = {}
+    exit_idx = {}
+
+    stack = [(k, False)]  # (node, processed_child?)
+
+    # making of dfs and skip array as discussed in the paper
+    while stack:
+        node, processed = stack.pop()
+        if not processed:
+            entry_idx[node] = len(dfs_array)
+            dfs_array.append(node)
+
+            # push a marker to set exit index after children handled
+            stack.append((node, True))
+
+            children = adj_list[node]
+
+            if children:
+                for child in children:
+                    stack.append((child, False))
+
+        else:  # reached here since we pushed a marker
+            # exit index=first elem after subtree in dfsList
+            exit_idx[node] = len(dfs_array)
+
+        # skip_idx=first idx after subtree of v
+        skip_idx = {v: exit_idx.get(v, len(dfs_array)) for v in dfs_array}
+
+        # main inner loop starts here
+        for u in G:
+            dist_u = dist[u]
+            idx = 0
+            while idx < len(dfs_array):
+                vj = dfs_array[idx]
+                d = dist_u[k] + dist_k[vj]
+                if dist_u[vj] > d:
+                    dist_u[vj] = d
+                    pred[u][vj] = pred[k][vj]
+
+                    idx += 1
+                else:
+                    # skip subtree of vj
+                    idx = skip_idx[vj]
+
+    return dict(pred), dict(dist)
+
+
 @nx._dispatchable(edge_attrs="weight")
 def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
