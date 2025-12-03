@@ -94,11 +94,9 @@ def floyd_warshall_tree(G, weight="weight"):
     # use some defaultdict magick here
     # for dist the default is the floating point inf value
     dist = defaultdict(lambda: defaultdict(lambda: float("inf")))
-    pred = {}
     for u in G:
         dist[u][u] = 0
-        pred[u] = defaultdict(lambda u=u: u)  # for pred[u][v] the default value is u
-
+    pred = defaultdict(dict)
     # initialize path distance dictionary to be the adjacency matrix
     # also set the distance to self to 0 (zero diagonal)
     undirected = not G.is_directed()
@@ -117,7 +115,7 @@ def floyd_warshall_tree(G, weight="weight"):
         for v in G:
             if v == k:
                 continue
-            parent = pred[k].get(v, k)  # path k to v in OUT_K
+            parent = pred[k].get(v, k) if k in pred else k  # path k to v in OUT_K
             adj_list[parent].append(v)
 
         dfs_array = []
@@ -163,7 +161,7 @@ def floyd_warshall_tree(G, weight="weight"):
                 d = dist_u[k] + dist_k[vj]
                 if dist_u[vj] > d:
                     dist_u[vj] = d
-                    pred[u][vj] = pred[k][vj]
+                    pred[u][vj] = pred[k].get(vj, k) if k in pred else k
 
                     idx += 1
                 else:
