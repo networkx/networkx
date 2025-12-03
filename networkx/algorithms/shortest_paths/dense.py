@@ -110,13 +110,15 @@ def floyd_warshall_tree(G, weight="weight"):
 
     for k in G:
         dist_k = dist[k]  # for speed
-        adj_list = {node: [] for node in G}  # adjacency list for OUT_K
+        # out_k will store the adjacency list of the OUT_K tree of the paper,
+        # it is a tree, there will be edge between parent -- child(s) only
+        out_k = {parent: [] for parent in G}
 
         for v in G:
             if v == k:
                 continue
-            parent = pred[k].get(v, k) if k in pred else k  # path k to v in OUT_K
-            adj_list[parent].append(v)
+            parent = pred.get(k, {}).get(v, k)  # path k to v in OUT_K
+            out_k[parent].append(v)
 
         dfs_array = []
         entry_idx = {}
@@ -139,7 +141,7 @@ def floyd_warshall_tree(G, weight="weight"):
                 # push a marker to set exit index after children handled
                 stack.append((node, True))
 
-                children = adj_list[node]
+                children = out_k[node]
 
                 if children:
                     for child in children:
@@ -161,7 +163,7 @@ def floyd_warshall_tree(G, weight="weight"):
                 d = dist_u[k] + dist_k[vj]
                 if dist_u[vj] > d:
                     dist_u[vj] = d
-                    pred[u][vj] = pred[k].get(vj, k) if k in pred else k
+                    pred[u][vj] = pred.get(k, {}).get(vj, k)
 
                     idx += 1
                 else:
