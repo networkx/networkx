@@ -111,18 +111,18 @@ def floyd_warshall_tree(G, weight="weight"):
     for k in G:
         dist_k = dist[k]  # for speed
         # out_k will store the adjacency list of the OUT_K tree of the paper,
-        # it is a tree, there will be edge between parent -- child(s) only
+        # it is a tree, parent --> list of children
         out_k = {parent: [] for parent in G}
 
+        pred_k = pred.get(k, {})  # so that new entry is not created just by reading
         for v in G:
             if v == k:
                 continue
-            parent = pred.get(k, {}).get(v, k)  # path k to v in OUT_K
+            parent = pred_k.get(v, k)  # path k to v in OUT_K
             out_k[parent].append(v)
 
         dfs_array = []
-        entry_idx = {}
-        exit_idx = {}
+        skip_idx = {}
 
         stack = [(k, False)]  # (node, processed_child?)
 
@@ -130,8 +130,6 @@ def floyd_warshall_tree(G, weight="weight"):
         while stack:
             node, processed = stack.pop()
             if not processed:
-                entry_idx[node] = len(dfs_array)
-
                 if node != k:  # else dfs_array[0] = k,
                     # and in the inner loop relaxation below, vj=k
                     # distu[vj] > d => distu[k] > distu[k] -> False
@@ -142,17 +140,12 @@ def floyd_warshall_tree(G, weight="weight"):
                 stack.append((node, True))
 
                 children = out_k[node]
-
-                if children:
-                    for child in children:
-                        stack.append((child, False))
+                for child in children:
+                    stack.append((child, False))
 
             else:  # reached here since we pushed a marker
-                # exit index=first elem after subtree in dfsList
-                exit_idx[node] = len(dfs_array)
-
-        # skip_idx=first idx after subtree of v
-        skip_idx = {v: exit_idx[v] for v in dfs_array}
+                # subtree of node is fully in dfs_array now
+                skip_idx[node] = len(dfs_array)
 
         # main inner loop starts here
         for u in G:
@@ -160,10 +153,13 @@ def floyd_warshall_tree(G, weight="weight"):
             idx = 0
             while idx < len(dfs_array):
                 vj = dfs_array[idx]
-                d = dist_u[k] + dist_k[vj]
-                if dist_u[vj] > d:
-                    dist_u[vj] = d
-                    pred[u][vj] = pred.get(k, {}).get(vj, k)
+                d_u_k_vj = dist_u[k] + dist_k[vj]
+                if dist_u[vj] > d_u_k_vj:
+                    dist_u[vj] = d_u_k_vj
+                    # by default pred[v][u] = v
+                    pred[u][vj] = pred_k.get(
+                        vj, k
+                    )  # want new entries to created in lhs
 
                     idx += 1
                 else:
