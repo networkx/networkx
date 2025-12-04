@@ -172,11 +172,10 @@ class TestVF2GraphDB:
         graph = self.create_graph(head / "si2_b06_m200.B99")
         subgraph.remove_edge(29, 28)
         gm = iso.GraphMatcher(graph, subgraph)
-        # slow: assert not gm.is_isomorphic()
-        # slow: assert not gm.subgraph_is_isomorphic()
+        assert not gm.is_isomorphic()
+        assert not gm.subgraph_is_isomorphic()
         assert gm.subgraph_is_monomorphic()
 
-    @pytest.mark.slow
     def test_subgraph_not_monomorphic(self):
         # A is the subgraph
         # B is the full graph

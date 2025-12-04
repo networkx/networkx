@@ -172,13 +172,11 @@ class TestGraphISOVF2pp:
         G1.add_edge(3, 7)
         G1.nodes[7]["label"] = "blue"
         assert vf2pp_isomorphism(G1, G2, node_label="label") is None
+
         all_self_mappings = list(vf2pp_all_isomorphisms(G1, G1))
-        print(all_self_mappings)
         assert len(all_self_mappings) == 2
-        print("There are 2 mappings\n")
-        for mapp in all_self_mappings:
-            if mapp[2] != 2:
-                print(mapp)
+        # check that one of the mappings is not the identity for node 2
+        assert sum(1 for m in all_self_mappings if m[2] == 2) == 1
 
         # Make G2 isomorphic to G1
         G2.add_edges_from([(mapped[3], "X"), (mapped[6], mapped[5])])
@@ -480,12 +478,11 @@ class TestGraphISOVF2pp:
         nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
         nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
         assert vf2pp_isomorphism(G1, G2, node_label="label")
+
         all_self_mappings = list(vf2pp_all_isomorphisms(G1, G1))
-        print(all_self_mappings)
         assert len(all_self_mappings) == 2
-        for mapp in all_self_mappings:
-            if mapp[2] != 2:
-                print(mapp)
+        # check that one of the mappings is not the identity for node 2
+        assert sum(1 for m in all_self_mappings if m[12] == 12) == 1
 
         # Add nodes of different label
         G1.add_node(0)
@@ -556,11 +553,11 @@ class TestGraphISOVF2pp:
         nx.set_node_attributes(G1, dict(zip(G1, it.cycle(labels_same))), "label")
         nx.set_node_attributes(G2, dict(zip(G2, it.cycle(labels_same))), "label")
         assert vf2pp_isomorphism(G1, G2, node_label="label")
+
         all_self_mappings = list(vf2pp_all_isomorphisms(G1, G1))
         assert len(all_self_mappings) == 48
-        for mapp in all_self_mappings:
-            if mapp[2] != 2:
-                print(mapp)
+        # check that one of the mappings is not the identity for node 2
+        assert all(sum(1 for m in all_self_mappings if m[u] == u) == 6 for u in G1)
 
         # Add different edges in each graph, maintaining symmetry
         G1.add_edges_from([(3, 6), (2, 7), (2, 5), (1, 3), (4, 7), (6, 8)])
