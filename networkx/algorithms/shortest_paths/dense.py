@@ -108,39 +108,38 @@ def floyd_warshall_tree(G, weight="weight"):
             dist[v][u] = min(e_weight, dist[v][u])
             pred[v][u] = v
 
-    for k in G:
-        dist_k = dist[k]  # for speed
-        # out_k will store the adjacency list of the OUT_K tree of the paper,
+    for w in G:
+        dist_w = dist[w]  # for speed
+        # out_w will store the adjacency list of the OUT_W tree of the paper,
         # it is a tree, parent --> list of children
-        out_k = {parent: [] for parent in G}
+        out_w = {parent: [] for parent in G}
 
-        pred_k = pred.get(k, {})  # so that new entry is not created just by reading
+        pred_w = pred.get(w, {})  # so that new entry is not created just by reading
         for v in G:
-            if v == k:
+            if v == w:
                 continue
-            parent = pred_k.get(v, k)  # path k to v in OUT_K
-            out_k[parent].append(v)
+            parent = pred_w.get(v, w)  # path w to v in OUT_W
+            out_w[parent].append(v)
 
         dfs_array = []
         skip_idx = {}
 
-        stack = [(k, False)]  # (node, processed_child?)
+        stack = [(w, False)]  # (node, processed_child?)
 
         # making of dfs and skip array as discussed in the paper
         while stack:
             node, processed = stack.pop()
             if not processed:
-                if node != k:  # else dfs_array[0] = k,
-                    # and in the inner loop relaxation below, vj=k
-                    # distu[vj] > d => distu[k] > distu[k] -> False
-                    # so for skipped to last, and no vertex processed
+                if node != w:  # else dfs_array[0] = w,
+                    # and in the inner loop relaxation below, v=w
+                    # distu[v] > d => distu[w] > distu[w] -> False
+                    # so skipped to last, and no vertex processed
                     dfs_array.append(node)
 
                 # push a marker to set exit index after children handled
                 stack.append((node, True))
 
-                children = out_k[node]
-                for child in children:
+                for child in out_w[node]:
                     stack.append((child, False))
 
             else:  # reached here since we pushed a marker
@@ -149,22 +148,25 @@ def floyd_warshall_tree(G, weight="weight"):
 
         # main inner loop starts here
         for u in G:
+            if u == w:
+                continue
             dist_u = dist[u]
+            dist_uw = dist_u[w]
+            if dist_uw == float("inf"):
+                continue
             idx = 0
             while idx < len(dfs_array):
-                vj = dfs_array[idx]
-                d_u_k_vj = dist_u[k] + dist_k[vj]
-                if dist_u[vj] > d_u_k_vj:
-                    dist_u[vj] = d_u_k_vj
-                    # by default pred[v][u] = v
-                    pred[u][vj] = pred_k.get(
-                        vj, k
-                    )  # want new entries to created in lhs
+                v = dfs_array[idx]
+                dist_uwv = dist_uw + dist_w[v]
+                if dist_u[v] > dist_uwv:
+                    dist_u[v] = dist_uwv
+                    # want new entries to created in lhs
+                    pred[u][v] = pred_w.get(v, w)
 
                     idx += 1
                 else:
-                    # skip subtree of vj
-                    idx = skip_idx[vj]
+                    # skip subtree of v
+                    idx = skip_idx[v]
 
     return dict(pred), dict(dist)
 
