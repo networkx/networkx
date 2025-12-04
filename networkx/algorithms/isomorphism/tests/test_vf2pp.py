@@ -3,7 +3,7 @@ import itertools as it
 import pytest
 
 import networkx as nx
-from networkx import vf2pp_is_isomorphic, vf2pp_isomorphism, vf2pp_all_isomorphisms
+from networkx import vf2pp_all_isomorphisms, vf2pp_is_isomorphic, vf2pp_isomorphism
 
 labels_same = ["blue"]
 
@@ -24,6 +24,7 @@ labels_many = [
 ]
 
 graph_classes = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+
 
 class TestPreCheck:
     def test_first_graph_empty(self):
@@ -844,7 +845,6 @@ class TestMultiGraphISOVF2pp:
         assert m
 
         # Obtain two non-isomorphic subgraphs from the graph
-#        G2.remove_edges_from([(mapped[1], mapped[2]), (mapped[1], mapped[2])])
         G2.add_edge(mapped[1], mapped[4])
         H1 = nx.MultiGraph(G1.subgraph([2, 3, 4, 7]))
         H2 = nx.MultiGraph(G2.subgraph([mapped[1], mapped[4], mapped[5], mapped[6]]))
@@ -1420,8 +1420,7 @@ class TestMultiGraphISOVF2pp:
         assert m
 
     def test_custom_multigraph5_same_labels(self):
-        G1 = nx.MultiGraph()
-
+        # Lots of symmetries
         #      1
         #     /|\
         #    / 2 \
@@ -1431,6 +1430,7 @@ class TestMultiGraphISOVF2pp:
         #    \ 7 /
         #     \|/
         #      8
+        G1 = nx.MultiGraph()
         edges1 = [
             (1, 5),
             (1, 2),
@@ -1611,13 +1611,13 @@ class TestDiGraphISOVF2pp:
     def test_non_isomorphic_same_degree_sequence(self):
         r"""
                 G1                           G2
-         1-------------2              1-------------2
-         | \           |              | \           |
-         |  5-------6  |              |  5-------6  |
-         |  |       |  |              |  |       |  |
-         |  8-------7  |              |  8-------7  |
-         | /           |              |           \ |
-         4-------------3              4-------------3
+        1-------------2              1-------------2
+        | \           |              | \           |
+        |  5-------6  |              |  5-------6  |
+        |  |       |  |              |  |       |  |
+        |  8-------7  |              |  8-------7  |
+        | /           |              |           \ |
+        4-------------3              4-------------3
         """
         edges1 = [
             (1, 5),

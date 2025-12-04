@@ -89,7 +89,7 @@ class TestWikipediaExample:
     def test_directed_subgraph(self):
         g1 = nx.DiGraph(self.g1edges)
         g2 = nx.DiGraph(self.g1edges)
-        g3 = g2.subgraph(["a", "b", "c", "d"]) #1, 2, 3, 4])
+        g3 = g2.subgraph(["a", "b", "c", "d"])
         gm = iso.DiGraphMatcher(g1, g3)
         assert not gm.is_isomorphic()
         assert gm.subgraph_is_isomorphic()
@@ -105,7 +105,7 @@ class TestWikipediaExample:
 
     def test_directed_subgraph_mono(self):
         g1 = nx.DiGraph(self.g1edges)
-        g2 = nx.DiGraph(['ag', 'cg', 'ci', 'di', 'bg'], create_using=nx.DiGraph)
+        g2 = nx.DiGraph(["ag", "cg", "ci", "di", "bg"], create_using=nx.DiGraph)
         gm = iso.DiGraphMatcher(g1, g2)
         assert not gm.is_isomorphic()
         assert not gm.subgraph_is_isomorphic()
