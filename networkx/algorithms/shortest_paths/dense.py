@@ -123,8 +123,6 @@ def floyd_warshall_tree(G, weight="weight"):
 
         # dfs order dict and skip dict in practical improvements in the paper
         stack = list(out_w[w])
-        seen = {w}
-        seen.update(stack)
         dfs_dict = {}  # {node: next node in dfs order}
         skip_dict = {}  # {node: next node after subtree is skipped}
 
@@ -135,10 +133,8 @@ def floyd_warshall_tree(G, weight="weight"):
             node = stack.pop()
             skip_dict[node] = stack[-1] if stack else None
 
-            new_nbrs = [nbr for nbr in out_w[node] if nbr not in seen]
-            seen.update(new_nbrs)
-            stack.extend(new_nbrs)
-        dfs_dict[node] = None
+            stack.extend(out_w[node])
+        dfs_dict[node] = None  # to prevent keyerror below
 
         # main inner loop starts here
         for u in G:
