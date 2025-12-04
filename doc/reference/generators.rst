@@ -129,7 +129,6 @@ Random Graphs
    random_shell_graph
    random_powerlaw_tree
    random_powerlaw_tree_sequence
-   random_kernel_graph
 
 
 Duplication Divergence

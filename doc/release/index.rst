@@ -13,6 +13,7 @@ Usually, this happens after a two cycle deprecation period.
 .. toctree::
    :maxdepth: 2
 
+   release_3.6
    release_3.5
    release_3.4.2
    release_3.4.1

@@ -14,7 +14,7 @@ jobs:
     outputs:
       result: ${{ steps.check.outputs.result }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/github-script@v8
         name: Check for benchmark label and new commit
@@ -38,7 +38,7 @@ jobs:
     # if: contains(github.event.pull_request.labels.*.name, 'run:benchmark') || ${{ github.event.label.name == 'run:benchmark' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
