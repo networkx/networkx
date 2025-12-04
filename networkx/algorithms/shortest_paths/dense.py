@@ -121,32 +121,24 @@ def floyd_warshall_tree(G, weight="weight"):
             parent = pred_w.get(v, w)  # path w to v in OUT_W
             out_w[parent].append(v)
 
-        dfs_array = []
-        skip_idx = {}
+        # dfs order dict and skip dict in practical improvements in the paper
+        stack = list(out_w[w])
+        seen = {w}
+        seen.update(stack)
+        dfs_dict = {}  # {node: next node in dfs order}
+        skip_dict = {}  # {node: next node after subtree is skipped}
 
-        stack = [w]
-        processed = set()
-
-        # making of dfs and skip array as discussed in the paper
+        node = w
         while stack:
+            dfs_dict[node] = stack[-1]
+
             node = stack.pop()
-            if node in processed:
-                # subtree of node is fully in dfs_array now
-                skip_idx[node] = len(dfs_array)
-                continue
+            skip_dict[node] = stack[-1] if stack else None
 
-            processed.add(node)
-            if node != w:  # else dfs_array[0] = w,
-                # and in the inner loop relaxation below, v=w
-                # distu[v] > d => distu[w] > distu[w] -> False
-                # so skipped to last, and no vertex processed
-                dfs_array.append(node)
-
-            # need to push node again for skip idx
-            stack.append(node)
-
-            for child in out_w[node]:
-                stack.append(child)
+            new_nbrs = [nbr for nbr in out_w[node] if nbr not in seen]
+            seen.update(new_nbrs)
+            stack.extend(new_nbrs)
+        dfs_dict[node] = None
 
         # main inner loop starts here
         for u in G:
@@ -156,19 +148,17 @@ def floyd_warshall_tree(G, weight="weight"):
             dist_uw = dist_u[w]
             if dist_uw == float("inf"):  # small optimization
                 continue
-            idx = 0
-            while idx < len(dfs_array):
-                v = dfs_array[idx]
+
+            v = dfs_dict[w]
+            while v in dfs_dict:
                 dist_uwv = dist_uw + dist_w[v]
                 if dist_u[v] > dist_uwv:
                     dist_u[v] = dist_uwv
-                    # want new entries to created in lhs
+                    # update/new entries to be created in lhs
                     pred[u][v] = pred_w.get(v, w)
-
-                    idx += 1
+                    v = dfs_dict[v]
                 else:
-                    # skip subtree of v
-                    idx = skip_idx[v]
+                    v = skip_dict[v]
 
     return dict(pred), dict(dist)
 
