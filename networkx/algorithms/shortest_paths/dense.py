@@ -122,19 +122,22 @@ def floyd_warshall_tree(G, weight="weight"):
             out_w[parent].append(v)
 
         # dfs order dict and skip dict in practical improvements in the paper
-        stack = list(out_w[w])
+        stack = [w]
         dfs_dict = {}  # {node: next node in dfs order}
         skip_dict = {}  # {node: next node after subtree is skipped}
 
-        node = w
+        node = None
         while stack:
-            dfs_dict[node] = stack[-1]
+            next_node = stack.pop()
 
-            node = stack.pop()
-            skip_dict[node] = stack[-1] if stack else None
+            if node is not None:
+                dfs_dict[node] = next_node
 
-            stack.extend(out_w[node])
-        dfs_dict[node] = None  # to prevent keyerror below
+            if stack:
+                skip_dict[next_node] = stack[-1]
+            stack.extend(out_w[next_node])
+
+            node = next_node
 
         # main inner loop starts here
         for u in G:
@@ -145,16 +148,17 @@ def floyd_warshall_tree(G, weight="weight"):
             if dist_uw == float("inf"):  # small optimization
                 continue
 
+            # skip w, as realxation will always fail, and skipped to last
             v = dfs_dict[w]
-            while v in dfs_dict:
+            while v is not None:
                 dist_uwv = dist_uw + dist_w[v]
                 if dist_u[v] > dist_uwv:
                     dist_u[v] = dist_uwv
                     # update/new entries to be created in lhs
                     pred[u][v] = pred_w.get(v, w)
-                    v = dfs_dict[v]
+                    v = dfs_dict.get(v, None)
                 else:
-                    v = skip_dict[v]
+                    v = skip_dict.get(v, None)
 
     return dict(pred), dict(dist)
 
