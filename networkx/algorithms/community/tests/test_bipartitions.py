@@ -15,28 +15,28 @@ def assert_partition_equal(x, y):
 
 def test_partition():
     G = nx.barbell_graph(3, 0)
-    C = kernighan_lin_bisection(G)
-    assert_partition_equal(C, [{0, 1, 2}, {3, 4, 5}])
+    split = kernighan_lin_bisection(G)
+    assert_partition_equal(split, [{0, 1, 2}, {3, 4, 5}])
 
 
 def test_partition_argument():
     G = nx.barbell_graph(3, 0)
     partition = [{0, 1, 2}, {3, 4, 5}]
-    C = kernighan_lin_bisection(G, partition)
-    assert_partition_equal(C, partition)
+    split = kernighan_lin_bisection(G, partition)
+    assert_partition_equal(split, partition)
 
 
 def test_partition_argument_non_integer_nodes():
     G = nx.Graph([("A", "B"), ("A", "C"), ("B", "C"), ("C", "D")])
     partition = ({"A", "B"}, {"C", "D"})
-    C = kernighan_lin_bisection(G, partition)
-    assert_partition_equal(C, partition)
+    split = kernighan_lin_bisection(G, partition)
+    assert_partition_equal(split, partition)
 
 
 def test_seed_argument():
     G = nx.barbell_graph(3, 0)
-    C = kernighan_lin_bisection(G, seed=1)
-    assert_partition_equal(C, [{0, 1, 2}, {3, 4, 5}])
+    split = kernighan_lin_bisection(G, seed=1)
+    assert_partition_equal(split, [{0, 1, 2}, {3, 4, 5}])
 
 
 def test_non_disjoint_partition():
@@ -87,8 +87,8 @@ def test_max_iter_argument():
         ]
     )
     partition = ({"A", "B", "C"}, {"D", "E", "F"})
-    C = kernighan_lin_bisection(G, partition, max_iter=1)
-    assert_partition_equal(C, ({"A", "F", "C"}, {"D", "E", "B"}))
+    split = kernighan_lin_bisection(G, partition, max_iter=1)
+    assert_partition_equal(split, ({"A", "F", "C"}, {"D", "E", "B"}))
 
 
 def test_weight_function():
@@ -99,8 +99,8 @@ def test_weight_function():
             return None
         return u + v
 
-    C = kernighan_lin_bisection(G, weight=my_weight)
-    assert_partition_equal(C, ({1, 2}, {0, 3}))
+    split = kernighan_lin_bisection(G, weight=my_weight)
+    assert_partition_equal(split, ({1, 2}, {0, 3}))
 
 
 ## Test Spectral Modularity Bipartition
@@ -109,9 +109,9 @@ def test_weight_function():
 def test_spectral_bipartition():
     pytest.importorskip("scipy")
     G = nx.barbell_graph(3, 0)
-    C = nx.community.spectral_modularity_bipartition(G)
+    split = nx.community.spectral_modularity_bipartition(G)
     soln = ({3, 4, 5}, {0, 1, 2})
-    assert set(map(frozenset, C)) == set(map(frozenset, soln))
+    assert set(map(frozenset, split)) == set(map(frozenset, soln))
 
 
 def test_karate_club():
@@ -119,13 +119,13 @@ def test_karate_club():
     G = nx.karate_club_graph()
     MrHi = {v for v, club in G.nodes.data("club") if club == "Mr. Hi"}
     Officer = {v for v, club in G.nodes.data("club") if club == "Officer"}
-    C = nx.community.spectral_modularity_bipartition(G)
+    split = nx.community.spectral_modularity_bipartition(G)
 
     # spectral method misplaces member 8
     MrHi.remove(8)
     Officer.add(8)
     soln = (MrHi, Officer)
-    assert set(map(frozenset, C)) == set(map(frozenset, soln))
+    assert set(map(frozenset, split)) == set(map(frozenset, soln))
 
 
 ## Test Node Swap Greedy Bipartition
@@ -133,23 +133,23 @@ def test_karate_club():
 
 def test_greedy_bipartition():
     G = nx.barbell_graph(3, 0)
-    C = nx.community.greedy_node_swap_bipartition(G)
+    split = nx.community.greedy_node_swap_bipartition(G)
     soln = ({0, 1, 2}, {3, 4, 5})
-    assert set(map(frozenset, C)) == set(map(frozenset, soln))
+    assert set(map(frozenset, split)) == set(map(frozenset, soln))
 
 
 def test_greedy_non_disjoint_partition():
     G = nx.barbell_graph(3, 0)
-    C_init = ({0, 1, 2}, {2, 3, 4, 5})
+    split = ({0, 1, 2}, {2, 3, 4, 5})
     with pytest.raises(nx.NetworkXError):
-        nx.community.greedy_node_swap_bipartition(G, C_init)
+        nx.community.greedy_node_swap_bipartition(G, init_split=split)
 
 
 def test_greedy_node_swap_too_many_blocks():
     G = nx.barbell_graph(3, 0)
-    C_init = ({0, 1}, {2}, {3, 4, 5})
+    split = ({0, 1}, {2}, {3, 4, 5})
     with pytest.raises(nx.NetworkXError):
-        nx.community.greedy_node_swap_bipartition(G, C_init)
+        nx.community.greedy_node_swap_bipartition(G, init_split=split)
 
 
 def test_greedy_multigraph_disallowed():

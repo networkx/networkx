@@ -192,7 +192,7 @@ def spectral_modularity_bipartition(G):
 
     Parameters
     ----------
-    G : NetworkX Graph
+    G : NetworkX graph
 
     Returns
     --------
@@ -236,9 +236,9 @@ def spectral_modularity_bipartition(G):
 
 
 @nx.utils.not_implemented_for("multigraph")
-def greedy_node_swap_bipartition(G, C_init=None, max_iter=10):
-    """Return a bipartition of the nodes based using the greedy
-    modularity maximization algorithm.
+def greedy_node_swap_bipartition(G, *, init_split=None, max_iter=10):
+    """Split the nodes into two communities based on greedy
+    modularity maximization.
 
     The algorithm works by selecting a node to change communities which
     will maximize the modularity. The swap is made and the community
@@ -246,12 +246,12 @@ def greedy_node_swap_bipartition(G, C_init=None, max_iter=10):
 
     Parameters
     ----------
-    G : NetworkX Graph
+    G : NetworkX graph
 
-    C_init : tuple
+    init_split : 2-tuple of sets of nodes
         Pair of sets of nodes in ``G`` providing an initial bipartition
         for the algorithm. If not specified, a random balanced partition
-        is used. If this pair is not a partition,
+        is used. If this pair of sets is not a partition of the nodes of `G`,
         :exc:`NetworkXException` is raised.
 
     max_iter : int
@@ -259,14 +259,14 @@ def greedy_node_swap_bipartition(G, C_init=None, max_iter=10):
 
     Returns
     -------
-    C : tuple
+    max_split : 2-tuple of sets of nodes
         Pair of sets of nodes of ``G``, partitioned according to a
         node swap greedy modularity maximization algorithm.
 
     Raises
     -------
     NetworkXError
-      if C_init is not a valid partition of the
+      if init_split is not a valid partition of the
       graph into two communities or if G is a MultiGraph
 
     Examples
@@ -290,37 +290,37 @@ def greedy_node_swap_bipartition(G, C_init=None, max_iter=10):
        Oxford University Press 2011.
 
     """
-    if C_init is None:
+    if init_split is None:
         m1 = len(G) // 2
         m2 = len(G) - m1
         some_nodes = set(random.sample(list(G), m1))
         other_nodes = {n for n in G if n not in some_nodes}
-        C_best_so_far = (some_nodes, other_nodes)
+        best_split_so_far = (some_nodes, other_nodes)
     else:
-        if not nx.community.is_partition(G, C_init):
-            raise nx.NetworkXError("C_init is not a partition of G")
-        if not len(C_init) == 2:
-            raise nx.NetworkXError("C_init must be a bipartition")
-        C_best_so_far = deepcopy(C_init)
+        if not nx.community.is_partition(G, init_split):
+            raise nx.NetworkXError("init_split is not a partition of G")
+        if not len(init_split) == 2:
+            raise nx.NetworkXError("init_split must be a bipartition")
+        best_split_so_far = deepcopy(init_split)
 
-    C_best_mod = nx.community.modularity(G, C_best_so_far)
+    best_mod = nx.community.modularity(G, best_split_so_far)
 
-    Cmax, Cmax_mod = C_best_so_far, C_best_mod
+    max_split, max_mod = best_split_so_far, best_mod
     its = 0
     m = G.number_of_edges()
     G_degree = dict(G.degree)
 
-    while Cmax_mod >= C_best_mod and its < max_iter:
-        C_best_so_far = Cmax
-        C_best_mod = Cmax_mod
-        Cnext = deepcopy(Cmax)
-        Cnext_mod = Cmax_mod
+    while max_mod >= best_mod and its < max_iter:
+        best_split_so_far = max_split
+        best_mod = max_mod
+        next_split = deepcopy(max_split)
+        next_mod = max_mod
         nodes = set(G)
         while nodes:
             max_swap = -1
             max_node = None
             max_node_comm = None
-            left, right = Cnext
+            left, right = next_split
             leftd = sum(G_degree[n] for n in left)
             rightd = sum(G_degree[n] for n in right)
             for n in nodes:
@@ -345,10 +345,10 @@ def greedy_node_swap_bipartition(G, C_init=None, max_iter=10):
             # swap the node from one comm to the other
             max_node_comm.remove(max_node)
             non_max_node_comm.add(max_node)
-            Cnext_mod += max_swap
-            # store Cnext each time it reaches a high (might go lower later)
-            if Cnext_mod > Cmax_mod:
-                Cmax, Cmax_mod = deepcopy(Cnext), Cnext_mod
+            next_mod += max_swap
+            # deepcopy next_split each time it reaches a high (might go lower later)
+            if next_mod > max_mod:
+                max_split, max_mod = deepcopy(next_split), next_mod
             nodes.remove(max_node)
         its += 1
-    return C_best_so_far
+    return best_split_so_far
