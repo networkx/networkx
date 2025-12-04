@@ -93,7 +93,8 @@ def floyd_warshall_tree(G, weight="weight"):
     # dictionary-of-dictionaries representation for dist and pred
     # use some defaultdict magick here
     # for dist the default is the floating point inf value
-    dist = defaultdict(lambda: defaultdict(lambda: float("inf")))
+    inf = float("inf")
+    dist = defaultdict(lambda: defaultdict(lambda: inf))
     for u in G:
         dist[u][u] = 0
     pred = defaultdict(dict)
@@ -129,14 +130,10 @@ def floyd_warshall_tree(G, weight="weight"):
         node = None
         while stack:
             next_node = stack.pop()
-
-            if node is not None:
-                dfs_dict[node] = next_node
-
+            dfs_dict[node] = next_node
             if stack:
                 skip_dict[next_node] = stack[-1]
             stack.extend(out_w[next_node])
-
             node = next_node
 
         # main inner loop starts here
@@ -145,16 +142,16 @@ def floyd_warshall_tree(G, weight="weight"):
                 continue
             dist_u = dist[u]
             dist_uw = dist_u[w]
-            if dist_uw == float("inf"):  # small optimization
+            if dist_uw == inf:  # small optimization
                 continue
 
-            # skip w, as realxation will always fail, and skipped to last
+            # note: we skip v=w as relaxation would always fail
             v = dfs_dict[w]
             while v is not None:
                 dist_uwv = dist_uw + dist_w[v]
                 if dist_u[v] > dist_uwv:
                     dist_u[v] = dist_uwv
-                    # update/new entries to be created in lhs
+                    # update/new entries to be created in pred[u]
                     pred[u][v] = pred_w.get(v, w)
                     v = dfs_dict.get(v, None)
                 else:
