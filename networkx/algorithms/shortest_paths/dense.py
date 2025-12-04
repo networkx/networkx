@@ -124,35 +124,37 @@ def floyd_warshall_tree(G, weight="weight"):
         dfs_array = []
         skip_idx = {}
 
-        stack = [(w, False)]  # (node, processed_child?)
+        stack = [w]
+        processed = set()
 
         # making of dfs and skip array as discussed in the paper
         while stack:
-            node, processed = stack.pop()
-            if not processed:
-                if node != w:  # else dfs_array[0] = w,
-                    # and in the inner loop relaxation below, v=w
-                    # distu[v] > d => distu[w] > distu[w] -> False
-                    # so skipped to last, and no vertex processed
-                    dfs_array.append(node)
-
-                # push a marker to set exit index after children handled
-                stack.append((node, True))
-
-                for child in out_w[node]:
-                    stack.append((child, False))
-
-            else:  # reached here since we pushed a marker
+            node = stack.pop()
+            if node in processed:
                 # subtree of node is fully in dfs_array now
                 skip_idx[node] = len(dfs_array)
+                continue
+
+            processed.add(node)
+            if node != w:  # else dfs_array[0] = w,
+                # and in the inner loop relaxation below, v=w
+                # distu[v] > d => distu[w] > distu[w] -> False
+                # so skipped to last, and no vertex processed
+                dfs_array.append(node)
+
+            # need to push node again for skip idx
+            stack.append(node)
+
+            for child in out_w[node]:
+                stack.append(child)
 
         # main inner loop starts here
         for u in G:
-            if u == w:
+            if u == w:  # small optimization
                 continue
             dist_u = dist[u]
             dist_uw = dist_u[w]
-            if dist_uw == float("inf"):
+            if dist_uw == float("inf"):  # small optimization
                 continue
             idx = 0
             while idx < len(dfs_array):
