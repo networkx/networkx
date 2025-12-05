@@ -208,99 +208,30 @@ G.edges([2, 'm'])
 G.degree([2, 3])
 ```
 
-## Accessing graph views
+### Access patterns
 
-### Using .nodes and .edges: attribute vs method forms
-
-You can access nodes and edges through attributes like `G.nodes`, `G.edges`, or through their callable forms `G.nodes()` and `G.edges()`.
-Both return view objects that dynamically reflect the current graph data.
+Both nodes and edges can be accessed either as attributes, e.g. `G.nodes` or
+`G.edges`, or as callables e.g. `G.nodes()` or `G.edges()`.
+The attribute-like access pattern is most convenient when setting/modifying node or
+edge data:
 
 ```{code-cell}
-import networkx as nx
-G = nx.Graph()
-G.add_edges_from([(1, 2), (2, 3)])
-list(G.nodes), list(G.nodes()), list(G.edges), list(G.edges())
+G.nodes["spam"]["color"] = "blue"
+G.edges[(1, 2)]["weight"] = 10
 ```
 
-Although they behave identically for the simple graphs, each form is typically used differently in practice.
-The **attribute-like** form is convenient for modifying attributes:
+While the callable pattern is useful for inspecting node or edge attributes
+(and edge keys for multigraphs):
 
 ```{code-cell}
-G.nodes[1]["color"] = "red"
-G.edges[1, 2]["weight"] = 5
-```
-
-Meanwhile, the method-like form is commonly used for querying or iterating:
-
-```{code-cell}
-list(G.nodes(data="color")), list(G.edges(data="weight"))
+G.edges(data=True)
 ```
 
 ```{code-cell}
-[(node, data) for node, data in G.nodes(data=True)]
+G.nodes(data="color")
 ```
 
-```{code-cell}
-[(u, v, data) for u, v, data in G.edges(data=True)]
-```
-
-Both forms reference the same dynamic view objects—changes through one form are immediately visible through the other.
-
-```{code-cell}
-G.nodes[3]["color"] = "blue"
-list(G.nodes(data="color"))
-```
-
-### Access conventions
-
-- Use `.nodes` or `.edges` (without parentheses) when **setting or updating attributes**.
-  Example: `G.nodes[1]["color"] = "red"`
-- Use `.nodes()` or `.edges()` (with parentheses) when **querying or iterating**, especially when you need options like data=... or keys=... .
-  Example: `list(G.edges(data=True))`
-- Both forms provide dynamic views of the current graph.
-
-This follows the general convention:
-_attribute-like for assignment, method-like for access_.
-
-Both forms behave the same internally, but following this convention makes code easier to read and understand.
-
-```{note}
-**Multigraphs (`MultiGraph`, `MultiDiGraph`)**
-
-For multigraphs, the attribute-like view and the method form differ in whether edge keys are included by default:
-
-- `G.edges` (attribute / view)
-  - Includes keys **by default**
-  - Iteration: `(u, v, key)`
-  - With `data=True`: `(u, v, key, data)`
-
-- `G.edges()` ({meth}`networkx.MultiGraph.edges`)
-  - Keys **not** included by default
-  - Iteration: `(u, v)`
-  - With `data=True`: `(u, v, data)`
-  - Pass `keys=True` to include keys:
-    - `(u, v, key)`
-    - With `data=True`: `(u, v, key, data)`
-
-This follows the same attribute-like for assignment, method-like for access convention, extended to support multi-edge identifiers (key).
-
-```
-
-```{code-cell}
-MG = nx.MultiGraph()
-MG.add_edge(1, 2)   # key=0
-MG.add_edge(1, 2)   # key=1
-list(MG.edges)
-```
-
-```{code-cell}
-list(MG.edges())
-```
-
-```{code-cell}
-list(MG.edges(keys=True, data=True))
-```
-
+See the [section on attributes](attributes) for details.
 ## Removing elements from a graph
 
 One can remove nodes and edges from the graph in a similar fashion to adding.
