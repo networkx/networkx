@@ -88,6 +88,78 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
 
 
 def floyd_warshall_tree(G, weight="weight"):
+    """Find all-pairs shortest path lengths using a Tree-based
+    modification of Floyd's algorithm.
+
+    This variant implements the Tree algorithm of Brodnik, Grgurovic and Pozar.
+    It reorganizes relaxations of the Floyd Warshall dynamic program around a
+    shortest path tree rooted at each intermediate vertex w. For every w, the
+    algorithm constructs the directed tree OUT_w consisting of the current
+    shortest paths from w, and then traverses this tree in depth first order.
+    By exploiting the tree structure, if a relaxation via w fails at a vertex v,
+    the algorithm can skip the entire subtree rooted at v because none of its
+    descendants can yield an improved distance.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    weight : string, optional (default= 'weight')
+       Edge data key corresponding to the edge weight.
+
+    Returns
+    -------
+    predecessor, distance : dictionaries
+       Dictionaries, keyed by source and target, of predecessors and distances
+       in the shortest path.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from(
+    ...     [
+    ...         ("s", "u", 10),
+    ...         ("s", "x", 5),
+    ...         ("u", "v", 1),
+    ...         ("u", "x", 2),
+    ...         ("v", "y", 1),
+    ...         ("x", "u", 3),
+    ...         ("x", "v", 5),
+    ...         ("x", "y", 2),
+    ...         ("y", "s", 7),
+    ...         ("y", "v", 6),
+    ...     ]
+    ... )
+    >>> predecessors, distances = nx.floyd_warshall_tree(G)
+    >>> nx.reconstruct_path("s", "v", predecessors)
+    ['s', 'x', 'u', 'v']
+
+    Notes
+    -----
+    Floyd's algorithm is appropriate for finding shortest paths
+    in dense graphs or graphs with negative weights when Dijkstra's algorithm
+    fails.  This algorithm can still fail if there are negative cycles.
+    It has worst case running time $O(|V|^3)$ with running space of $O(|V|^2)$.
+
+    For complete directed graphs with independent edge weights drawn from the
+    uniform distribution on [0, 1], the expected running time is
+    $O(|V|^2 (\log |V|)^2)$, as shown in [1]_.
+
+    See Also
+    --------
+    floyd_warshall_predecessor_and_distance
+    floyd_warshall
+    floyd_warshall_numpy
+    all_pairs_shortest_path
+    all_pairs_shortest_path_length
+
+    References
+    ----------
+    .. [1] Modifications of the Floyd Warshall algorithm with nearly quadratic
+           expected time, A. Brodnik, M. Grgurovic, R. Pozar, Ars Mathematica
+           Contemporanea, 2021.
+           https://doi.org/10.26493/1855-3974.2467.497
+    """
     from collections import defaultdict
 
     # dictionary-of-dictionaries representation for dist and pred
