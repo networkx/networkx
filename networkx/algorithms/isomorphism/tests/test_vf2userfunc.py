@@ -106,20 +106,23 @@ class TestMatch_Graph:
         assert not nx.is_isomorphic(self.g1, self.g2, edge_match=self.em)
 
     def test_colorsandweights1(self):
-        iso = nx.is_isomorphic(self.g1, self.g2, node_match=self.nm, edge_match=self.em)
-        assert not iso
+        assert not nx.is_isomorphic(
+            self.g1, self.g2, node_match=self.nm, edge_match=self.em
+        )
 
     def test_colorsandweights2(self):
         self.g1.nodes["A"]["color"] = "blue"
-        iso = nx.is_isomorphic(self.g1, self.g2, node_match=self.nm, edge_match=self.em)
-        assert iso
+        assert nx.is_isomorphic(
+            self.g1, self.g2, node_match=self.nm, edge_match=self.em
+        )
 
     def test_colorsandweights3(self):
-        # make the colords agree and the weights disagree
+        # make the colors agree and the weights disagree
         self.g1.nodes["A"]["color"] = "blue"
         self.g1.add_edge("A", "B", weight=2)
-        iso = nx.is_isomorphic(self.g1, self.g2, node_match=self.nm, edge_match=self.em)
-        assert not iso
+        assert not nx.is_isomorphic(
+            self.g1, self.g2, node_match=self.nm, edge_match=self.em
+        )
 
 
 class TestMatch_DiGraph(TestMatch_Graph):

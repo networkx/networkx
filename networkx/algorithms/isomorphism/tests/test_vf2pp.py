@@ -151,11 +151,11 @@ class TestGraphISOVF2pp:
 
         mapped = {1: "A", 2: "B", 3: "C", 4: "D", 5: "Z", 6: "E"}
         edges1 = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 6), (3, 4), (5, 1), (5, 2)]
-        # 5-1   5-1   Z---A
-        # |/|\  |/|\  |\ /|\   6-X; 2-C; 5-D; 1-A; 3-B; 7-E; 4-Z
-        # 2-3-4 2-3-4 | B-C-D
-        # |     | |/  |/  |
-        # 6     6 7   E   X
+        # 5-1   5-1   D-A
+        # |/|\  |/|\  |/|\    6-X; 2-C; 5-D; 1-A; 3-B; 7-E; 4-Z
+        # 2-3-4 2-3-4 C-B-Z
+        # |     | |/  | |/
+        # 6     6 7   X E
 
         G1.add_edges_from(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
@@ -1651,6 +1651,5 @@ def test_isomorphvf2pp_multidigraphs():
     h = nx.MultiDiGraph({0: [1, 1, 2, 2, 3], 1: [2, 3, 3], 2: [3]})
     assert nx.vf2pp_is_isomorphic(g, h)
 
-    g = nx.MultiDiGraph({0: [1, 1, 2, 2, 3], 1: [2, 3, 3], 2: [3]})
     h = nx.MultiDiGraph({0: [1, 1, 2, 2, 3], 1: [2, 3, 3], 3: [2]})
-    assert not (nx.vf2pp_is_isomorphic(g, h))
+    assert not nx.vf2pp_is_isomorphic(g, h)
