@@ -88,7 +88,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
 
 
 def floyd_warshall_tree(G, weight="weight"):
-    """Find all-pairs shortest path lengths using a Tree-based
+    r"""Find all-pairs shortest path lengths using a Tree-based
     modification of Floyd's algorithm.
 
     This variant implements the Tree algorithm of Brodnik, Grgurovic and Pozar.
@@ -150,8 +150,6 @@ def floyd_warshall_tree(G, weight="weight"):
     floyd_warshall_predecessor_and_distance
     floyd_warshall
     floyd_warshall_numpy
-    all_pairs_shortest_path
-    all_pairs_shortest_path_length
 
     References
     ----------
