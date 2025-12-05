@@ -92,13 +92,12 @@ def floyd_warshall_tree(G, weight="weight"):
     modification of Floyd's algorithm.
 
     This variant implements the Tree algorithm of Brodnik, Grgurovic and Pozar.
-    It reorganizes relaxations of the Floyd Warshall dynamic program around a
-    shortest path tree rooted at each intermediate vertex w. For every w, the
-    algorithm constructs the directed tree OUT_w consisting of the current
-    shortest paths from w, and then traverses this tree in depth first order.
-    By exploiting the tree structure, if a relaxation via w fails at a vertex v,
-    the algorithm can skip the entire subtree rooted at v because none of its
-    descendants can yield an improved distance.
+    It differs from the classical Floyd Warshall algorithm by using a shortest
+    path tree rooted at each intermediate vertex w. For every w, the algorithm
+    builds a tree OUT_w of current shortest paths and scans it in depth first
+    order. If an update at a vertex v cannot improve any distance, the algorithm
+    skips the entire subtree below v, since none of its nodes can produce a
+    shorter path, as proved in [1]_.
 
     Parameters
     ----------
