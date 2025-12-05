@@ -12,6 +12,7 @@ __all__ = [
     "diamond_graph",
     "dodecahedral_graph",
     "frucht_graph",
+    "generalized_petersen_graph",
     "heawood_graph",
     "hoffman_singleton_graph",
     "house_graph",
@@ -56,7 +57,7 @@ def _raise_on_directed(func):
         if create_using is not None:
             G = nx.empty_graph(create_using=create_using)
             if G.is_directed():
-                raise NetworkXError("Directed Graph not supported")
+                raise NetworkXError("Directed Graph not supported in create_using")
         return func(*args, **kwargs)
 
     return wrapper
@@ -276,9 +277,9 @@ def desargues_graph(create_using=None):
     Returns the Desargues Graph
 
     The Desargues Graph is a non-planar, distance-transitive cubic graph
-    with 20 nodes and 30 edges [1]_.
-    It is a symmetric graph. It can be represented in LCF notation
-    as [5,-5,9,-9]^5 [2]_.
+    with 20 nodes and 30 edges [1]_. It is isomorphic to the Generalized
+    Petersen Graph GP(10, 3). It is a symmetric graph. It can be represented
+    in LCF notation as [5,-5,9,-9]^5 [2]_.
 
     Parameters
     ----------
@@ -456,7 +457,7 @@ def hoffman_singleton_graph():
     All indices lie in ``Z % 5``: that is, the integers mod 5 [1]_.
     It is the only regular graph of vertex degree 7, diameter 2, and girth 5.
     It is the unique (7,5)-cage graph and Moore graph, and contains many
-    copies of the Petersen graph [2]_.
+    copies of the Petersen Graph [2]_.
 
     Returns
     -------
@@ -655,7 +656,7 @@ def moebius_kantor_graph(create_using=None):
 
     The Möbius-Kantor graph is the cubic symmetric graph on 16 nodes.
     Its LCF notation is [5,-5]^8, and it is isomorphic to the generalized
-    Petersen graph [1]_.
+    Petersen Graph GP(8, 3) [1]_.
 
     Parameters
     ----------
@@ -744,9 +745,9 @@ def pappus_graph():
 @nx._dispatchable(graphs=None, returns_graph=True)
 def petersen_graph(create_using=None):
     """
-    Returns the Petersen graph.
+    Returns the Petersen Graph.
 
-    The Peterson graph is a cubic, undirected graph with 10 nodes and 15 edges [1]_.
+    The Peterson Graph is a cubic, undirected graph with 10 nodes and 15 edges [1]_.
     Julius Petersen constructed the graph as the smallest counterexample
     against the claim that a connected bridgeless cubic graph
     has an edge colouring with three colours [2]_.
@@ -759,7 +760,7 @@ def petersen_graph(create_using=None):
     Returns
     -------
     G : networkx Graph
-        Petersen graph
+        Petersen Graph
 
     References
     ----------
@@ -782,6 +783,59 @@ def petersen_graph(create_using=None):
         create_using=create_using,
     )
     G.name = "Petersen Graph"
+    return G
+
+
+@nx._dispatchable(graphs=None, returns_graph=True)
+def generalized_petersen_graph(n, k, *, create_using=None):
+    """
+    Returns the Generalized Petersen Graph GP(n,k).
+
+    The Generalized Peterson Graph consists of an outer cycle of n nodes
+    connected to an inner circulant graph of n nodes, where nodes in the
+    inner circulant are connected to their kth nearest neighbor [1]_ [2]_.
+    A Generalized Petersen Graph is cubic with 2n nodes and 3n edges.
+
+    Some well known graphs are examples of Generalized Petersen Graphs such
+    as the Petersen Graph GP(5, 2), the Desargues graph GP(10, 3), the
+    Moebius-Kantor graph GP(8, 3), and the dodecahedron graph GP(10, 2).
+
+    Parameters
+    ----------
+    n : int
+       Number of nodes in the outer cycle and inner circulant. ``n >= 3`` is required.
+
+    k : int
+       Neighbor to connect in the inner circulant. ``1 <= k <= n/2``.
+       Note that some people require ``k < n/2`` but we and others allow equality.
+       Also, ``k < n/2`` is equivalent to ``k <= floor((n-1)/2)``
+
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Generalized Petersen Graph n k
+
+    References
+    ----------
+    .. [1] https://mathworld.wolfram.com/GeneralizedPetersenGraph.html
+    .. [2] https://en.wikipedia.org/wiki/Generalized_Petersen_graph
+    """
+    if n <= 2:
+        raise NetworkXError(f"n >= 3 required. Got {n=}")
+    if k < 1 or k > n / 2:
+        raise NetworkXError(f" Got {n=} {k=}. Need 1 <= k <= n/2")
+
+    G = nx.cycle_graph(range(n), create_using=create_using)  # u-nodes
+    if G.is_directed():
+        raise NetworkXError("Directed Graph not supported in create_using")
+    for i in range(n):
+        G.add_edge(i, n + i)  # add v-nodes and u to v edges
+        G.add_edge(n + i, n + (i + k) % n)  # edge from v_i to v_(i+k)%n
+
+    G.name = f"Generalized Petersen Graph GP({n}, {k})"
     return G
 
 

@@ -92,8 +92,8 @@ def _fractional_peeling(G, b, x, node_to_idx, edge_to_idx):
     remaining_nodes = set(G.nodes)
 
     # Initialize heap with b values
-    for idx in remaining_nodes:
-        heap.insert(idx, b[idx])
+    for idx, node in enumerate(G):
+        heap.insert(node, b[idx])
 
     num_edges = G.number_of_edges()
 

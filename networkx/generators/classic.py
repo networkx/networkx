@@ -1030,19 +1030,19 @@ def complete_multipartite_graph(*subset_sizes):
     Creating a complete tripartite graph, with subsets of one, two, and three
     nodes, respectively.
 
-        >>> G = nx.complete_multipartite_graph(1, 2, 3)
-        >>> [G.nodes[u]["subset"] for u in G]
-        [0, 1, 1, 2, 2, 2]
-        >>> list(G.edges(0))
-        [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
-        >>> list(G.edges(2))
-        [(2, 0), (2, 3), (2, 4), (2, 5)]
-        >>> list(G.edges(4))
-        [(4, 0), (4, 1), (4, 2)]
+    >>> G = nx.complete_multipartite_graph(1, 2, 3)
+    >>> [G.nodes[u]["subset"] for u in G]
+    [0, 1, 1, 2, 2, 2]
+    >>> list(G.edges(0))
+    [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
+    >>> list(G.edges(2))
+    [(2, 0), (2, 3), (2, 4), (2, 5)]
+    >>> list(G.edges(4))
+    [(4, 0), (4, 1), (4, 2)]
 
-        >>> G = nx.complete_multipartite_graph("a", "bc", "def")
-        >>> [G.nodes[u]["subset"] for u in sorted(G)]
-        [0, 1, 1, 2, 2, 2]
+    >>> G = nx.complete_multipartite_graph("a", "bc", "def")
+    >>> [G.nodes[u]["subset"] for u in sorted(G)]
+    [0, 1, 1, 2, 2, 2]
 
     Notes
     -----
