@@ -943,8 +943,8 @@ def test_graph_new_extra_args():
 
     G = MyGraph([], "extra arg")
     assert G.extra_arg == "extra arg"
-    
+
     G = MyGraph([(0, 1)], extra_arg="foo", name="bar")
-    assert G.extra_arg = "foo"
+    assert G.extra_arg == "foo"
     assert G.graph["name"] == "bar"
     assert nx.utils.edges_equal(G.edges, [(0, 1)])
