@@ -232,6 +232,7 @@ G.nodes(data="color")
 ```
 
 See the [section on attributes](attributes) for details.
+
 ## Removing elements from a graph
 
 One can remove nodes and edges from the graph in a similar fashion to adding.
