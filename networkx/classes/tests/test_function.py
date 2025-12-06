@@ -22,6 +22,7 @@ class TestFunction:
         self.DGout_degree = {0: 3, 1: 3, 2: 0, 3: 0, 4: 0}
         self.DGnodes = list(range(5))
         self.DGedges = [(0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2)]
+        self.MG = nx.MultiGraph()
 
     def test_describe_info_dict(self):
         info_dict = nx.classes.function._create_describe_info_dict(self.G)
@@ -78,6 +79,10 @@ class TestFunction:
     def test_is_directed(self):
         assert self.G.is_directed() == nx.is_directed(self.G)
         assert self.DG.is_directed() == nx.is_directed(self.DG)
+
+    def test_is_multigraph(self):
+        assert self.G.is_multigraph() == nx.is_multigraph(self.G)
+        assert self.MG.is_multigraph() == nx.is_multigraph(self.MG)
 
     def test_add_star(self):
         G = self.G.copy()
