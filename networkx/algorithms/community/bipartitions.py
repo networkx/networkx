@@ -195,7 +195,7 @@ def spectral_modularity_bipartition(G):
     G : NetworkX graph
 
     Returns
-    --------
+    -------
     C : tuple
         Pair of communities as two sets of nodes of ``G``, partitioned
         according to second largest eigenvalue of the modularity matrix.
@@ -264,7 +264,7 @@ def greedy_node_swap_bipartition(G, *, init_split=None, max_iter=10):
         node swap greedy modularity maximization algorithm.
 
     Raises
-    -------
+    ------
     NetworkXError
       if init_split is not a valid partition of the
       graph into two communities or if G is a MultiGraph
