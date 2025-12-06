@@ -1152,6 +1152,36 @@ def test_draw_nodes_missing_node_from_position():
         nx.draw_networkx_nodes(G, pos)
 
 
+def test_draw_networkx_nodes_node_shape_list_with_scalar_color(subplots):
+    """Ensure draw_networkx_nodes works when node_shape is a Python list.
+
+    This covers the case where node_shape is a sequence (list) and node_color
+    is a single scalar color, which should be supported.
+    """
+    fig, ax = subplots
+
+    G = nx.Graph()
+    G.add_nodes_from(range(5))
+    pos = nx.random_layout(G)
+
+    shapes = ["o", "^", "o", "^", "o"]
+
+    nodes = nx.draw_networkx_nodes(
+        G,
+        pos,
+        node_color="red",  # scalar color (supported)
+        node_shape=shapes,  # list of shapes – this used to be buggy
+        ax=ax,
+    )
+
+    # Should get a valid PathCollection back (same behavior as with numpy arrays)
+    assert isinstance(nodes, mpl.collections.PathCollection)
+    # NOTE:
+    # When node_shape is a sequence, draw_networkx_nodes internally calls
+    # ax.scatter multiple times and returns only the last PathCollection.
+    # Therefore, we intentionally do NOT assert on len(nodes.get_offsets()) here.
+
+
 # NOTE: parametrizing on marker to test both branches of internal
 # nx.draw_networkx_edges.to_marker_edge function
 @pytest.mark.parametrize("node_shape", ("o", "s"))
