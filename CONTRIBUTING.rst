@@ -368,8 +368,26 @@ If you're not sure how to do this or are having trouble, submit your pull reques
 anyway.
 We will help you create the tests and sort out any kind of problem during code review.
 
+Tests for drawing
+^^^^^^^^^^^^^^^^^
+
+When adding tests for the matplotlib-based drawing functions in ``nx_pylab.py``,
+the ``subplots`` fixture should be used to create a figure and axis object for
+each unit test.
+Using this fixture prevents figure and axis objects from being unintentionally
+re-used between tests.
+An example usage in ``networkx/drawing/tests/test_pylab.py`` would look something
+like:
+
+.. code-block:: python
+
+   def test_my_new_viz_test(subplots):
+       fig, ax = subplots
+
+       <remainder of unit test>
+
 Image comparison
-~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^
 
 .. note::
    Image comparison tests require the ``pytest-mpl`` extension, which can be
