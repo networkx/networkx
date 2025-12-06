@@ -204,7 +204,7 @@ class TestFloyd:
         path, dist = floyd_fn(GG)
 
         for u in GG:
-            dist[u][u] = 0
+            assert dist[u][u] == 0
 
     def test_zero_weight(self, floyd_fn):
         G = nx.DiGraph()
@@ -237,7 +237,7 @@ def test_floyd_warshall_consistency(seed, n, prob):
     unweighted and weighted cases. The graph may be connected or
     disconnected; behavior must remain consistent.
 
-    Note: Predecessor data can differ when multiple shortest paths exist
+    Note: Predecessor data can differ when multiple shortest paths exist.
     """
     rng = Random(seed)
 
