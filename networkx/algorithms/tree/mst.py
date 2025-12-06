@@ -226,6 +226,9 @@ def kruskal_mst_edges(
     sorted_edges = included_edges
     del open_edges, sorted_open_edges, included_edges
 
+    edges_needed = len(G) - 1
+    edges_added = 0
+
     # Multigraphs need to handle edge keys in addition to edge data.
     if G.is_multigraph():
         for wt, u, v, k, d in sorted_edges:
@@ -241,6 +244,9 @@ def kruskal_mst_edges(
                     else:
                         yield u, v
                 subtrees.union(u, v)
+                edges_added += 1
+                if edges_added == edges_needed:
+                    return
     else:
         for wt, u, v, d in sorted_edges:
             if subtrees[u] != subtrees[v]:
@@ -249,6 +255,9 @@ def kruskal_mst_edges(
                 else:
                     yield u, v
                 subtrees.union(u, v)
+                edges_added += 1
+                if edges_added == edges_needed:
+                    return
 
 
 @nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
