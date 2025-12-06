@@ -146,13 +146,13 @@ def from_biadjacency_matrix(
         to 1. Must be the same length as the number of columns in `A`.
 
     Returns
-    ---------
+    -------
     G : NetworkX graph
         A bipartite graph with edges from the biadjacency matrix `A`, and
         nodes from `row_order` and `column_order`.
 
     Raises
-    --------
+    ------
     ValueError
         If `row_order` or `column_order` are provided and are not the same
         length as the number of rows or columns in `A`, respectively.
