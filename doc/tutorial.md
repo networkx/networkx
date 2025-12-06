@@ -208,6 +208,31 @@ G.edges([2, 'm'])
 G.degree([2, 3])
 ```
 
+### Access patterns
+
+Both nodes and edges can be accessed either as attributes, e.g. `G.nodes` or
+`G.edges`, or as callables e.g. `G.nodes()` or `G.edges()`.
+The attribute-like access pattern is most convenient when setting/modifying node or
+edge data:
+
+```{code-cell}
+G.nodes["spam"]["color"] = "blue"
+G.edges[(1, 2)]["weight"] = 10
+```
+
+While the callable pattern is useful for inspecting node or edge attributes
+(and edge keys for multigraphs):
+
+```{code-cell}
+G.edges(data=True)
+```
+
+```{code-cell}
+G.nodes(data="color")
+```
+
+See the [section on attributes](attributes) for details.
+
 ## Removing elements from a graph
 
 One can remove nodes and edges from the graph in a similar fashion to adding.
