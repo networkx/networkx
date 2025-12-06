@@ -14,7 +14,7 @@ doc/ghpages_build
 doc/sg_execution_times.rst
 .coverage
 *.class
-
+.venv
 # Generated while building documentation.
 doc/auto_examples
 doc/modules
