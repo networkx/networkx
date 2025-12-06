@@ -1,3 +1,5 @@
+from random import Random
+
 import pytest
 
 import networkx as nx
@@ -222,3 +224,39 @@ class TestFloyd:
 
         pred, dist = floyd_fn(G)
         assert dist[1][3] == -14
+
+
+@pytest.mark.parametrize("seed", list(range(10)))
+@pytest.mark.parametrize("n", list(range(10, 20)))
+@pytest.mark.parametrize("prob", [x / 10 for x in range(0, 10, 2)])
+def test_floyd_warshall_consistency(seed, n, prob):
+    """Validate consistency of all Floyd-Warshall algorithm variants.
+
+    Distances returned by nx.floyd_warshall_predecessor_and_distance
+    and nx.floyd_warshall_tree must match on the same graph for both
+    unweighted and weighted cases. The graph may be connected or
+    disconnected; behavior must remain consistent.
+
+    Note: Predecessor data can differ when multiple shortest paths exist
+    """
+    rng = Random(seed)
+
+    # random graph, possibly disconnected
+    graph = nx.erdos_renyi_graph(n, prob, seed=rng)
+
+    # unweighted case
+    base_pred, base_dist = floyd_fns[0](graph)
+    for floyd_fn in floyd_fns[1:]:
+        pred, dist = floyd_fn(graph)
+        assert dist == base_dist
+
+    # weighted case
+    max_weight_list = [5, 10, 1000]
+    for max_weight in max_weight_list:
+        for u, v in graph.edges():
+            graph[u][v]["w"] = rng.randint(1, max_weight)
+
+        base_pred_w, base_dist_w = floyd_fns[0](graph, weight="w")
+        for floyd_fn in floyd_fns[1:]:
+            pred_w, dist_w = floyd_fn(graph, weight="w")
+            assert dist_w == base_dist_w
