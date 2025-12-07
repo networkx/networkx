@@ -62,3 +62,6 @@ networkx-dev/
 # Benchmark products
 benchmarks/env
 benchmarks/results
+
+# Hypothesis cache
+.hypothesis/
