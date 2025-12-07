@@ -212,6 +212,7 @@ Dense Graphs
    floyd_warshall
    floyd_warshall_predecessor_and_distance
    floyd_warshall_numpy
+   floyd_warshall_tree
    reconstruct_path
 
 
