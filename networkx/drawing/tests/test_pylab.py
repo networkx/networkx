@@ -1160,9 +1160,8 @@ def test_draw_networkx_nodes_node_shape_list_with_scalar_color(subplots):
     """
     fig, ax = subplots
 
-    G = nx.Graph()
-    G.add_nodes_from(range(5))
-    pos = nx.random_layout(G)
+    G = nx.empty_graph(5)
+    pos = {i: (i, i) for i in G}
 
     shapes = ["o", "^", "o", "^", "o"]
 
@@ -1173,13 +1172,11 @@ def test_draw_networkx_nodes_node_shape_list_with_scalar_color(subplots):
         node_shape=shapes,  # list of shapes – this used to be buggy
         ax=ax,
     )
-
-    # Should get a valid PathCollection back (same behavior as with numpy arrays)
-    assert isinstance(nodes, mpl.collections.PathCollection)
-    # NOTE:
-    # When node_shape is a sequence, draw_networkx_nodes internally calls
+    # Should get a PathCollection with an element in it (same as with numpy arrays)
+    assert len(nodes.get_offsets()) > 0
+    # NOTE: When node_shape is a sequence, draw_networkx_nodes internally calls
     # ax.scatter multiple times and returns only the last PathCollection.
-    # Therefore, we intentionally do NOT assert on len(nodes.get_offsets()) here.
+    # Therefore, we do NOT assert a value for len(nodes.get_offsets()) here.
 
 
 # NOTE: parametrizing on marker to test both branches of internal
