@@ -178,17 +178,14 @@ def floyd_warshall_tree(G, weight="weight"):
             dist[v][u] = min(e_weight, dist[v][u])
             pred[v][u] = v
 
-    for w in G:
-        dist_w = dist[w]  # for speed
+    # dont check for those w, `from` which `no` path exists
+    for w, pred_w in pred.items():
         # out_w will store the adjacency list of the OUT_W tree of the paper,
         # it is a tree, parent --> list of children
         out_w = {parent: [] for parent in G}
-
-        pred_w = pred.get(w, {})  # so that new entry is not created just by reading
-        for v in G:
+        for v, parent in pred_w.items():  # w to v path exist
             if v == w:
                 continue
-            parent = pred_w.get(v, w)  # path w to v in OUT_W
             out_w[parent].append(v)
 
         # dfs order dict and skip dict in practical improvements in the paper
@@ -205,6 +202,7 @@ def floyd_warshall_tree(G, weight="weight"):
             stack.extend(out_w[next_node])
             node = next_node
 
+        dist_w = dist[w]  # for speed
         # main inner loop starts here
         for u in G:
             if u == w:  # small optimization
@@ -221,7 +219,7 @@ def floyd_warshall_tree(G, weight="weight"):
                 if dist_u[v] > dist_uwv:
                     dist_u[v] = dist_uwv
                     # update/new entries to be created in pred[u]
-                    pred[u][v] = pred_w.get(v, w)
+                    pred[u][v] = pred_w[v]  # v must be in pred_w as checked above
                     v = dfs_dict.get(v, None)
                 else:
                     v = skip_dict.get(v, None)
