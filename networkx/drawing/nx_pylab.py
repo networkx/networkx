@@ -17,8 +17,6 @@ See Also
  - :obj:`matplotlib.patches.FancyArrowPatch`
 """
 
-import collections
-import itertools
 import math
 from numbers import Number
 
@@ -62,8 +60,9 @@ def apply_matplotlib_colors(
     src_attr : str or other attribute name
         The name of the attribute to read from the graph.
 
-    dest_attr : str or other attribute name
+    dest_attr : str or other attribute name or None
         The name of the attribute to write to on the graph.
+        If None, return color map as a dict from node name to color.
 
     map : matplotlib.colormap
         The matplotlib colormap to use.
@@ -103,13 +102,17 @@ def apply_matplotlib_colors(
         return tuple(float(x) for x in mapper.to_rgba(x))
 
     if nodes:
-        nx.set_node_attributes(
-            G, {n: do_map(G.nodes[n][src_attr]) for n in G.nodes()}, dest_attr
-        )
+        c_map = {n: do_map(G.nodes[n][src_attr]) for n in G.nodes()}
+        if dest_attr is not None:
+            nx.set_node_attributes(G, c_map, dest_attr)
+        else:
+            return c_map
     else:
-        nx.set_edge_attributes(
-            G, {e: do_map(G.edges[e][src_attr]) for e in type_iter}, dest_attr
-        )
+        c_map = {e: do_map(G.edges[e][src_attr]) for e in type_iter}
+        if dest_attr is not None:
+            nx.set_edge_attributes(G, c_map, dest_attr)
+        else:
+            return c_map
 
 
 class CurvedArrowTextBase:
@@ -370,26 +373,31 @@ def display(
     canvas : Matplotlib Axes object, optional
         Draw the graph in specified Matplotlib axes
 
-    node_pos : string or function, default "pos"
+    node_pos : string or function or dict, default "pos"
         A string naming the node attribute storing the position of nodes as a tuple.
         Or a function to be called with input `G` which returns the layout as a dict keyed
-        by node to position tuple like the NetworkX layout functions.
+        by node to position tuple like the NetworkX layout functions. Or a dict keyed from
+        node to position tuple.
         If no nodes in the graph has the attribute, a spring layout is calculated.
 
-    node_visible : string or bool, default visible
+    node_visible : string or bool or dict, default visible
         A string naming the node attribute which stores if a node should be drawn.
         If `True`, all nodes will be visible while if `False` no nodes will be visible.
         If incomplete, nodes missing this attribute will be shown by default.
+        If a dict, keys should be nodes and the values a boolean.
 
-    node_color : string, default "color"
-        A string naming the node attribute which stores the color of each node.
+    node_color : string or dict, default "color"
+        A string naming the node attribute which stores the color of each node or
+        a dict from nodes to the color, which can be a hexadecimal string, rgb or
+        rbga tuple.
         Visible nodes without this attribute will use '#1f78b4' as a default.
 
-    node_size : string or number, default "size"
-        A string naming the node attribute which stores the size of each node.
+    node_size : string or number or dict, default "size"
+        A string naming the node attribute which stores the size of each node or
+        dict from nodes to sizes.
         Visible nodes without this attribute will use a default size of 300.
 
-    node_label : string or bool, default "label"
+    node_label : string or bool or dict, default "label"
         A string naming the node attribute which stores the label of each node.
         The attribute value can be a string, False (no label for that node),
         True (the node is the label) or a dict keyed by node to the label.
@@ -410,41 +418,48 @@ def display(
 
         Visible nodes without this attribute will be treated as if the value was True.
 
-    node_shape : string, default "shape"
-        A string naming the node attribute which stores the label of each node.
+    node_shape : string or dict, default "shape"
+        A string naming the node attribute which stores the label of each node or a dict
+        from node to a matplotlib shape.
         The values of this attribute are expected to be one of the matplotlib shapes,
         one of 'so^>v<dph8'. Visible nodes without this attribute will use 'o'.
 
-    node_alpha : string, default "alpha"
-        A string naming the node attribute which stores the alpha of each node.
+    node_alpha : string or dict, default "alpha"
+        A string naming the node attribute which stores the alpha of each node or a
+        dict from node to alpha value.
         The values of this attribute are expected to be floats between 0.0 and 1.0.
         Visible nodes without this attribute will be treated as if the value was 1.0.
 
-    node_border_width : string, default "border_width"
-        A string naming the node attribute storing the width of the border of the node.
+    node_border_width : string or dict, default "border_width"
+        A string naming the node attribute storing the width of the border of the node
+        or a dict from node name to numeric width values.
         The values of this attribute are expected to be numeric. Visible nodes without
         this attribute will use the assumed default of 1.0.
 
-    node_border_color : string, default "border_color"
-        A string naming the node attribute which storing the color of the border of the node.
+    node_border_color : string or dict, default "border_color"
+        A string naming the node attribute which storing the color of the border of the node,
+        or a dict from node name to a color.
         Visible nodes missing this attribute will use the final node_color value.
 
-    edge_visible : string or bool, default "visible"
-        A string nameing the edge attribute which stores if an edge should be drawn.
+    edge_visible : string or bool or dict, default "visible"
+        A string nameing the edge attribute which stores if an edge should be drawn,
+        or a dict from node name to a boolean.
         If `True`, all edges will be drawn while if `False` no edges will be visible.
         If incomplete, edges missing this attribute will be shown by default. Values
         of this attribute are expected to be booleans.
 
-    edge_width : string or int, default "width"
-        A string nameing the edge attribute which stores the width of each edge.
+    edge_width : string or int or dict, default "width"
+        A string nameing the edge attribute which stores the width of each edge, or
+        a dict from node name to a numeric width.
         Visible edges without this attribute will use a default width of 1.0.
 
-    edge_color : string or color, default "color"
-        A string nameing the edge attribute which stores of color of each edge.
+    edge_color : string or color or dict, default "color"
+        A string nameing the edge attribute which stores of color of each edge, or
+        dict from node name to a color.
         Visible edges without this attribute will be drawn black. Each color can be
         a string or rgb (or rgba) tuple of floats from 0.0 to 1.0.
 
-    edge_label : string, default "label"
+    edge_label : string or bool or None, default "label"
         A string naming the edge attribute which stores the label of each edge.
         The values of this attribute can be a string, number or False or None. In
         the latter two cases, no edge label is displayed.
@@ -465,46 +480,52 @@ def display(
         * rotate : Whether to rotate labels to lie parallel to the edge, default: True.
         * pos : A float showing how far along the edge to put the label; default: 0.5.
 
-    edge_style : string, default "style"
-        A string naming the edge attribute which stores the style of each edge.
+    edge_style : string or dict, default "style"
+        A string naming the edge attribute which stores the style of each edge or
+        a dict from node name to a matplotlib edge style.
         Visible edges without this attribute will be drawn solid. Values of this
         attribute can be line styles, e.g. '-', '--', '-.' or ':' or words like 'solid'
         or 'dashed'. If no edge in the graph has this attribute and it is a non-default
         value, assume that it describes the edge style for all edges in the graph.
 
-    edge_alpha : string or float, default "alpha"
-        A string naming the edge attribute which stores the alpha value of each edge.
+    edge_alpha : string or float or dict, default "alpha"
+        A string naming the edge attribute which stores the alpha value of each edge,
+        or dict from node name to alpha values.
         Visible edges without this attribute will use an alpha value of 1.0.
 
-    edge_arrowstyle : string, default "arrowstyle"
+    edge_arrowstyle : string or dict, default "arrowstyle"
         A string naming the edge attribute which stores the type of arrowhead to use for
-        each edge. Visible edges without this attribute use ``"-"`` for undirected graphs
-        and ``"-|>"`` for directed graphs.
+        each edge, or a dict from node name to arrow style.
+        Visible edges without this attribute use ``"-"`` for undirected graphs and ``"-|>"``
+        for directed graphs.
 
         See `matplotlib.patches.ArrowStyle` for more options
 
-    edge_arrowsize : string or int, default "arrowsize"
+    edge_arrowsize : string or int or dict, default "arrowsize"
         A string naming the edge attribute which stores the size of the arrowhead for each
-        edge. Visible edges without this attribute will use a default value of 10.
+        edge, or a dict from node name to arrow sizes. Visible edges without this attribute
+        will use a default value of 10.
 
-    edge_curvature : string, default "curvature"
+    edge_curvature : string or dict, default "curvature"
        A string naming the edge attribute storing the curvature and connection style
-       of each edge. Visible edges without this attribute will use "arc3" as a default
-       value, resulting an a straight line between the two nodes. Curvature can be given
-       as 'arc3,rad=0.2' to specify both the style and radius of curvature.
+       of each edge, or dict from node name to curvature value. Visible edges without this
+       attribute will use "arc3" as a default value, resulting an a straight line between
+       the two nodes. Curvature can be given as 'arc3,rad=0.2' to specify both the style and
+       radius of curvature.
 
        Please see `matplotlib.patches.ConnectionStyle` and
        `matplotlib.patches.FancyArrowPatch` for more information.
 
-    edge_source_margin : string or int, default "source_margin"
+    edge_source_margin : string or int or dict, default "source_margin"
         A string naming the edge attribute which stores the minimum margin (gap) between
-        the source node and the start of the edge. Visible edges without this attribute
-        will use a default value of 0.
+        the source node and the start of the edge, or a dict from node name to source margin.
+        Visible edges without this attribute will use a default value of 0.
 
-    edge_target_margin : string or int, default "target_margin"
+    edge_target_margin : string or int or dict, default "target_margin"
         A string naming the edge attribute which stores the minimumm margin (gap) between
-        the target node and the end of the edge. Visible edges without this attribute
-        will use a default value of 0.
+        the target node and the end of the edge, or an int for all nodes, or a dict from
+        node name to target margin. Visible edges without this attribute will use a default
+        value of 0.
 
     hide_ticks : bool, default True
         Weather to remove the ticks from the axes of the matplotlib object.
@@ -574,9 +595,18 @@ def display(
         "hide_ticks": True,
     }
 
+    # Allow some undocumented kwargs to allow the old draw API to wrap display
+    compat_kwargs = [
+        "compat_force_fancy_arrows",
+        "compat_return_edge_viz_obj",
+        "compat_return_node_label_obj",
+        "compat_return_edge_label_obj",
+        "compat_edge_label_anyways",
+    ]
+
     # Check arguments
     for kwarg in kwargs:
-        if kwarg not in defaults:
+        if kwarg not in defaults and kwarg not in compat_kwargs:
             raise nx.NetworkXError(
                 f"Unrecognized visualization keyword argument: {kwarg}"
             )
@@ -596,31 +626,46 @@ def display(
 
     ### Helper methods and classes
 
-    def node_property_sequence(seq, attr):
+    def node_property_sequence(seq, attr_name):
         """Return a list of attribute values for `seq`, using a default if needed"""
 
         # All node attribute parameters start with "node_"
-        param_name = f"node_{attr}"
+        param_name = f"node_{attr_name}"
         default = defaults[param_name]
-        attr = kwargs.get(param_name, attr)
+        attr = kwargs.get(param_name, attr_name)
+
+        def get_attr(n):
+            if isinstance(attr, dict):
+                return attr.get(n, default)
+            else:
+                return node_subgraph.nodes[n].get(attr, default)
+
+        def check_attr(n):
+            if isinstance(attr, dict):
+                return n in attr
+            else:
+                return attr in node_subgraph.nodes[n]
 
         if default is None:
             # raise instead of using non-existant default value
             for n in seq:
-                if attr not in node_subgraph.nodes[n]:
-                    raise nx.NetworkXError(f"Attribute '{attr}' missing for node {n}")
+                if not check_attr(n):
+                    raise nx.NetworkXError(
+                        f"Attribute '{attr_name}' missing for node {n}"
+                    )
 
         # If `attr` is not a graph attr and was explicitly passed as an argument
         # it must be a user-default value. Allow attr=None to tell draw to skip
         # attributes which are on the graph
         if (
             attr is not None
+            and not isinstance(attr, dict)
             and nx.get_node_attributes(node_subgraph, attr) == {}
             and any(attr == v for k, v in kwargs.items() if "node" in k)
         ):
             return [attr for _ in seq]
 
-        return [node_subgraph.nodes[n].get(attr, default) for n in seq]
+        return [get_attr(n) for n in seq]
 
     def compute_colors(color, alpha):
         if isinstance(color, str):
@@ -630,10 +675,10 @@ def display(
                 return (rgba[0], rgba[1], rgba[2], alpha)
             return rgba
 
-        if isinstance(color, tuple) and len(color) == 3:
+        if isinstance(color, tuple | np.ndarray) and len(color) == 3:
             return (color[0], color[1], color[2], alpha)
 
-        if isinstance(color, tuple) and len(color) == 4:
+        if isinstance(color, tuple | np.ndarray) and len(color) == 4:
             return color
 
         raise ValueError(f"Invalid format for color: {color}")
@@ -648,75 +693,120 @@ def display(
     # - min_target_margin
 
     def collection_compatible(e):
-        return (
-            get_edge_attr(e, "arrowstyle") == "-"
-            and get_edge_attr(e, "curvature") == "arc3"
-            and get_edge_attr(e, "source_margin") == 0
-            and get_edge_attr(e, "target_margin") == 0
-            # Self-loops will use fancy arrow patches
-            and e[0] != e[1]
-        )
+        if "compat_force_fancy_arrows" in kwargs:
+            return e[0] != e[1] and not kwargs["compat_force_fancy_arrows"]
+        else:
+            return (
+                # Edge can be plotted with LineCollection since it has compatible characteristics
+                get_edge_attr(e, "arrowstyle") == "-"
+                and get_edge_attr(e, "curvature") == "arc3"
+                and get_edge_attr(e, "source_margin") == 0
+                and get_edge_attr(e, "target_margin") == 0
+                # self-loops ALWAYS get a fancy arrow
+                and e[0] != e[1]
+            )
 
-    def edge_property_sequence(seq, attr):
+    def edge_property_sequence(seq, attr_name):
         """Return a list of attribute values for `seq`, using a default if needed"""
 
-        param_name = f"edge_{attr}"
+        param_name = f"edge_{attr_name}"
         default = defaults[param_name]
-        attr = kwargs.get(param_name, attr)
+        attr = kwargs.get(param_name, attr_name)
+
+        def get_attr(e):
+            if isinstance(attr, dict):
+                return attr.get(e, default)
+            else:
+                return edge_subgraph.edges[e].get(attr, default)
+
+        def check_attr(e):
+            if isinstance(attr, dict):
+                return e in attr
+            else:
+                return attr in edge_subgraph.edges[n]
 
         if default is None:
             # raise instead of using non-existant default value
             for e in seq:
-                if attr not in edge_subgraph.edges[e]:
-                    raise nx.NetworkXError(f"Attribute '{attr}' missing for edge {e}")
+                if not check_attr(e):
+                    raise nx.NetworkXError(
+                        f"Attribute '{attr_name}' missing for edge {e}"
+                    )
 
         if (
             attr is not None
+            and not isinstance(attr, dict)
             and nx.get_edge_attributes(edge_subgraph, attr) == {}
             and any(attr == v for k, v in kwargs.items() if "edge" in k)
         ):
             return [attr for _ in seq]
 
-        return [edge_subgraph.edges[e].get(attr, default) for e in seq]
+        return [get_attr(e) for e in seq]
 
-    def get_edge_attr(e, attr):
+    def get_edge_attr(e, attr_name):
         """Return the final edge attribute value, using default if not None"""
 
-        param_name = f"edge_{attr}"
+        param_name = f"edge_{attr_name}"
         default = defaults[param_name]
-        attr = kwargs.get(param_name, attr)
+        attr = kwargs.get(param_name, attr_name)
 
-        if default is None and attr not in edge_subgraph.edges[e]:
-            raise nx.NetworkXError(f"Attribute '{attr}' missing from edge {e}")
+        def get_attr(e):
+            if isinstance(attr, dict):
+                return attr.get(e, default)
+            else:
+                return edge_subgraph.edges[e].get(attr, default)
+
+        def check_attr(e):
+            if isinstance(attr, dict):
+                return e in attr
+            else:
+                return attr in edge_subgraph.edges[e]
+
+        if default is None and not check_attr(e):
+            raise nx.NetworkXError(f"Attribute '{attr_name}' missing from edge {e}")
 
         if (
             attr is not None
+            and not isinstance(attr, dict)
             and nx.get_edge_attributes(edge_subgraph, attr) == {}
             and attr in kwargs.values()
         ):
             return attr
 
-        return edge_subgraph.edges[e].get(attr, default)
+        return get_attr(e)
 
-    def get_node_attr(n, attr, use_edge_subgraph=True):
+    def get_node_attr(n, attr_name, use_edge_subgraph=True):
         """Return the final node attribute value, using default if not None"""
         subgraph = edge_subgraph if use_edge_subgraph else node_subgraph
 
-        param_name = f"node_{attr}"
+        param_name = f"node_{attr_name}"
         default = defaults[param_name]
-        attr = kwargs.get(param_name, attr)
+        attr = kwargs.get(param_name, attr_name)
 
-        if default is None and attr not in subgraph.nodes[n]:
-            raise nx.NetworkXError(f"Attribute '{attr}' missing from node {n}")
+        def get_attr(n):
+            if isinstance(attr, dict):
+                return attr.get(n, default)
+            else:
+                return subgraph.nodes[n].get(attr, default)
+
+        def check_attr(n):
+            if isinstance(attr, dict):
+                return n in attr
+            else:
+                return attr in subgraph.nodes[n]
+
+        if default is None and not check_attr(n):
+            raise nx.NetworkXError(f"Attribute '{attr_name}' missing from node {n}")
 
         if (
             attr is not None
+            and not isinstance(attr, dict)
             and nx.get_node_attributes(subgraph, attr) == {}
             and attr in kwargs.values()
         ):
             return attr
 
-        return subgraph.nodes[n].get(attr, default)
+        return get_attr(n)
 
     # Taken from ConnectionStyleFactory
     def self_loop(edge_index, node_size):
@@ -786,8 +876,8 @@ def display(
             get_edge_attr(e, "target_margin"),
         )
         return mpl.patches.FancyArrowPatch(
-            edge_subgraph.nodes[e[0]][pos],
-            edge_subgraph.nodes[e[1]][pos],
+            pos[e[0]],
+            pos[e[1]],
             arrowstyle=get_edge_attr(e, "arrowstyle"),
             connectionstyle=(
                 get_edge_attr(e, "curvature")
@@ -798,11 +888,36 @@ def display(
                 )
             ),
             color=get_edge_attr(e, "color"),
+            alpha=get_edge_attr(e, "alpha"),
             linestyle=get_edge_attr(e, "style"),
             linewidth=get_edge_attr(e, "width"),
             mutation_scale=get_edge_attr(e, "arrowsize"),
             shrinkA=source_margin,
-            shrinkB=source_margin,
+            shrinkB=target_margin,
+            zorder=1,
+        )
+
+    def build_ghost_fancy_arrow(e):
+        node_size = kwargs.get("node_size", defaults["node_size"])
+        src_size = node_size[e[0]] if isinstance(node_size, dict) else node_size
+        tar_size = node_size[e[1]] if isinstance(node_size, dict) else node_size
+        source_margin = to_marker_edge(src_size, "o")
+        target_margin = to_marker_edge(tar_size, "o")
+        curvature = kwargs.get("edge_curvature", defaults["edge_curvature"])
+        curvature = curvature[e] if isinstance(curvature, dict) else curvature
+        return mpl.patches.FancyArrowPatch(
+            pos[e[0]],
+            pos[e[1]],
+            connectionstyle=(
+                curvature
+                if e[0] != e[1]
+                else self_loop(
+                    0 if len(e) == 2 else e[2] % 4,
+                    src_size,
+                )
+            ),
+            shrinkA=source_margin,
+            shrinkB=target_margin,
             zorder=1,
         )
 
@@ -816,6 +931,8 @@ def display(
             visible_nodes = G.nodes()
         else:
             visible_nodes = []
+    elif isinstance(node_visible, dict):
+        visible_nodes = [n for n, v in node_visible.items() if v]
     else:
         visible_nodes = [
             n for n, v in nx.get_node_attributes(G, node_visible, True).items() if v
@@ -827,33 +944,31 @@ def display(
     # default attribute name
     pos = kwargs.get("node_pos", "pos")
 
-    default_display_pos_attr = "display's position attribute name"
     if callable(pos):
-        nx.set_node_attributes(
-            node_subgraph, pos(node_subgraph), default_display_pos_attr
-        )
-        pos = default_display_pos_attr
-        kwargs["node_pos"] = default_display_pos_attr
-    elif nx.get_node_attributes(G, pos) == {}:
-        nx.set_node_attributes(
-            node_subgraph, nx.spring_layout(node_subgraph), default_display_pos_attr
-        )
-        pos = default_display_pos_attr
-        kwargs["node_pos"] = default_display_pos_attr
+        pos_map = pos(node_subgraph)
+        pos = pos_map
+        kwargs["node_pos"] = pos_map
+    elif not isinstance(pos, dict) and nx.get_node_attributes(G, pos) == {}:
+        pos_map = nx.spring_layout(node_subgraph)
+        pos = pos_map
+        kwargs["node_pos"] = pos_map
+    elif not isinstance(pos, dict):
+        pos = nx.get_node_attributes(G, pos)
 
     # Each shape requires a new scatter object since they can't have different
     # shapes.
     if len(visible_nodes) > 0:
         node_shape = kwargs.get("node_shape", "shape")
-        for shape in Counter(
-            nx.get_node_attributes(
-                node_subgraph, node_shape, defaults["node_shape"]
-            ).values()
-        ):
+        node_shape_dict = (
+            nx.get_node_attributes(node_subgraph, node_shape, defaults["node_shape"])
+            if not isinstance(node_shape, dict)
+            else node_shape
+        )
+        for shape in Counter(node_shape_dict.values()):
             # Filter position just on this shape.
             nodes_with_shape = [
                 n
-                for n, s in node_subgraph.nodes(data=node_shape)
+                for n, s in node_shape_dict.items()
                 if s == shape or (s is None and shape == defaults["node_shape"])
             ]
             # There are two property sequences to create before hand.
@@ -901,6 +1016,7 @@ def display(
     ### Draw node labels
     node_label = kwargs.get("node_label", "label")
     # Plot labels if node_label is not None and not False
+    node_label_objs = {}
     if node_label is not None and node_label is not False:
         default_dict = {}
         if isinstance(node_label, dict):
@@ -920,8 +1036,8 @@ def display(
                 lbl_text = str(lbl_text)
 
             lbl.update(default_dict)
-            x, y = node_subgraph.nodes[n][pos]
-            canvas.text(
+            x, y = pos[n]
+            t = canvas.text(
                 x,
                 y,
                 lbl_text,
@@ -936,6 +1052,8 @@ def display(
                 transform=canvas.transData,
                 bbox=lbl.get("bbox", defaults["node_label"]["bbox"]),
             )
+            if kwargs.get("compat_return_node_label_obj", False):
+                node_label_objs[n] = t
 
     ### Draw edges
 
@@ -945,15 +1063,14 @@ def display(
             visible_edges = G.edges()
         else:
             visible_edges = []
+    elif isinstance(edge_visible, dict):
+        visible_edges = [n for n, v in edge_visible.items() if v]
     else:
         visible_edges = [
             e for e, v in nx.get_edge_attributes(G, edge_visible, True).items() if v
         ]
 
     edge_subgraph = G.edge_subgraph(visible_edges)
-    nx.set_node_attributes(
-        edge_subgraph, nx.get_node_attributes(node_subgraph, pos), name=pos
-    )
 
     collection_edges = (
         [e for e in edge_subgraph.edges(keys=True) if collection_compatible(e)]
@@ -976,6 +1093,7 @@ def display(
     )
 
     # Only plot a line collection if needed
+    edge_collection = None
     if len(collection_edges) > 0:
         edge_collection = mpl.collections.LineCollection(
             edge_position,
@@ -998,20 +1116,26 @@ def display(
     ### Draw edge labels
     edge_label = kwargs.get("edge_label", "label")
     default_dict = {}
-    if isinstance(edge_label, dict):
+    if isinstance(edge_label, dict) and not all(e in G.edges for e in edge_label):
         default_dict = edge_label
         # Restore the default label attribute key of 'label'
         edge_label = "label"
 
-    # Handle multigraphs
-    edge_label_data = (
-        edge_subgraph.edges(data=edge_label, keys=True)
-        if edge_subgraph.is_multigraph()
-        else edge_subgraph.edges(data=edge_label)
-    )
+    if kwargs.get("compat_edge_label_anyways", False):
+        edge_label_data = [(e, lbl["label"]) for e, lbl in edge_label.items()]
+    else:
+        edge_label_data = (
+            edge_subgraph.edges(data=edge_label, keys=True)
+            if edge_subgraph.is_multigraph()
+            else edge_subgraph.edges(data=edge_label)
+        )
+    edge_label_objs = {}
     if edge_label is not None and edge_label is not False:
         for *e, lbl in edge_label_data:
-            e = tuple(e)
+            if kwargs.get("compat_edge_label_anyways", False):
+                e = e[0]
+            else:
+                e = tuple(e)
             # I'm not sure how I want to handle None here... For now it means no label
             if lbl is False or lbl is None:
                 continue
@@ -1030,16 +1154,20 @@ def display(
             try:
                 arrow = fancy_arrows[e]
             except KeyError:
-                arrow = build_fancy_arrow(e)
+                if kwargs.get("compat_edge_label_anyways", False):
+                    # We likely have an empty node / edge subgraph
+                    arrow = build_ghost_fancy_arrow(e)
+                else:
+                    arrow = build_fancy_arrow(e)
 
             if e[0] == e[1]:
                 # Taken directly from draw_networkx_edge_labels
                 connectionstyle_obj = arrow.get_connectionstyle()
-                posA = canvas.transData.transform(edge_subgraph.nodes[e[0]][pos])
+                posA = canvas.transData.transform(pos[e[0]])
                 path_disp = connectionstyle_obj(posA, posA)
                 path_data = canvas.transData.inverted().transform_path(path_disp)
                 x, y = path_data.vertices[0]
-                canvas.text(
+                t = canvas.text(
                     x,
                     y,
                     lbl_text,
@@ -1059,9 +1187,11 @@ def display(
                     bbox=lbl.get("bbox", defaults["edge_label"]["bbox"]),
                     zorder=1,
                 )
+                if kwargs.get("compat_return_edge_label_obj", False):
+                    edge_label_objs[e] = t
                 continue
 
-            CurvedArrowText(
+            t = CurvedArrowText(
                 arrow,
                 lbl_text,
                 size=lbl.get("size", defaults["edge_label"]["size"]),
@@ -1080,11 +1210,19 @@ def display(
                 zorder=1,
                 ax=canvas,
             )
+            if kwargs.get("compat_return_edge_label_obj", False):
+                edge_label_objs[e] = t
 
-    # If we had to add an attribute, remove it here
-    if pos == default_display_pos_attr:
-        nx.remove_node_attributes(G, default_display_pos_attr)
-
+    if kwargs.get("compat_return_edge_viz_obj", False):
+        return (
+            edge_collection
+            if edge_collection is not None
+            else list(fancy_arrows.values())
+        )
+    if kwargs.get("compat_return_node_label_obj", False):
+        return node_label_objs
+    if kwargs.get("compat_return_edge_label_obj", False):
+        return edge_label_objs
     return G
 
 
@@ -1095,6 +1233,8 @@ def draw(G, pos=None, ax=None, **kwds):
     labels or edge labels and using the full Matplotlib figure area
     and no axis labels by default.  See draw_networkx() for more
     full-featured drawing that allows title, axis labels etc.
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -1121,6 +1261,7 @@ def draw(G, pos=None, ax=None, **kwds):
 
     See Also
     --------
+    display
     draw_networkx
     draw_networkx_nodes
     draw_networkx_edges
@@ -1173,6 +1314,8 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
     Draw the graph with Matplotlib with options for node positions,
     labeling, titles, and many other drawing features.
     See draw() for simple drawing without labels or axes.
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -1312,6 +1455,7 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
 
     See Also
     --------
+    display
     draw
     draw_networkx_nodes
     draw_networkx_edges
@@ -1377,6 +1521,8 @@ def draw_networkx_nodes(
     """Draw the nodes of the graph G.
 
     This draws only the nodes of the graph G.
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -1457,16 +1603,18 @@ def draw_networkx_nodes(
 
     See Also
     --------
+    display
     draw
     draw_networkx
     draw_networkx_edges
     draw_networkx_labels
     draw_networkx_edge_labels
     """
+
     from collections.abc import Iterable
+    from itertools import cycle
 
     import matplotlib as mpl
-    import matplotlib.collections  # call as mpl.collections
     import matplotlib.pyplot as plt
     import numpy as np
 
@@ -1479,42 +1627,90 @@ def draw_networkx_nodes(
     if len(nodelist) == 0:  # empty nodelist, no drawing
         return mpl.collections.PathCollection(None)
 
-    try:
-        xy = np.asarray([pos[v] for v in nodelist])
-    except KeyError as err:
-        raise nx.NetworkXError(f"Node {err} has no position.") from err
+    disp_node_visible = {n: n in nodelist for n in G.nodes}
+    disp_node_size = (
+        node_size
+        if not isinstance(node_size, Iterable)
+        else dict(zip(nodelist, node_size))
+    )
+    mapper = None
+    if cmap is not None:
+        mapper = mpl.cm.ScalarMappable(cmap=cmap)
+    else:
+        mapper = mpl.cm.ScalarMappable(cmap=plt.get_cmap())
 
-    if isinstance(alpha, Iterable):
-        node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
-        alpha = None
+    if vmin is None:
+        if isinstance(node_color, list | np.ndarray) and all(
+            isinstance(c, Number) for c in node_color
+        ):
+            vmin = min(node_color)
+        else:
+            vmin = 0.0
+    if vmax is None:
+        if isinstance(node_color, list | np.ndarray) and all(
+            isinstance(c, Number) for c in node_color
+        ):
+            vmax = max(node_color)
+        else:
+            vmax = 1.0
+    mapper.set_clim(vmin, vmax)
 
-    if not isinstance(node_shape, np.ndarray) and not isinstance(node_shape, list):
-        node_shape = np.array([node_shape for _ in range(len(nodelist))])
+    def map_color(c):
+        if mapper is None:
+            raise nx.NetworkXError("Supplied scalar color without color map.")
 
-    for shape in np.unique(node_shape):
-        node_collection = ax.scatter(
-            xy[node_shape == shape, 0],
-            xy[node_shape == shape, 1],
-            s=node_size,
-            c=node_color,
-            marker=shape,
-            cmap=cmap,
-            vmin=vmin,
-            vmax=vmax,
-            alpha=alpha,
-            linewidths=linewidths,
-            edgecolors=edgecolors,
-            label=label,
-        )
-    if hide_ticks:
-        ax.tick_params(
-            axis="both",
-            which="both",
-            bottom=False,
-            left=False,
-            labelbottom=False,
-            labelleft=False,
-        )
+        return tuple(float(x) for x in mapper.to_rgba(c))
+
+    disp_node_color = None
+    if isinstance(node_color, Number):
+        disp_node_color = map_color(node_color)
+    elif isinstance(node_color, str):
+        disp_node_color = node_color
+    elif isinstance(node_color, (np.ndarray | list)):
+        disp_node_color = {
+            n: map_color(ns) if isinstance(ns, Number) else ns
+            for n, ns in zip(nodelist, node_color)
+        }
+
+    disp_node_shape = (
+        node_shape if isinstance(node_shape, str) else dict(zip(nodelist, node_shape))
+    )
+
+    disp_node_alpha = (
+        alpha if not isinstance(alpha, Iterable) else dict(zip(nodelist, cycle(alpha)))
+    )
+
+    disp_node_border_width = (
+        linewidths
+        if not isinstance(linewidths, Iterable)
+        else dict(zip(nodelist, linewidths))
+    )
+
+    disp_node_border_color = (
+        edgecolors
+        if not isinstance(edgecolors, (np.ndarray | list))
+        else {
+            n: map_color(c) if isinstance(c, Number) else c
+            for n, c in zip(nodelist, cycle(edgecolors))
+        }
+    )
+
+    display(
+        G,
+        canvas=ax,
+        node_pos=pos,
+        node_visible=disp_node_visible,
+        node_size=disp_node_size,
+        node_color=disp_node_color,
+        node_shape=disp_node_shape,
+        node_alpha=disp_node_alpha,
+        node_border_width=disp_node_border_width,
+        node_border_color=disp_node_border_color,
+        node_label=False,
+        edge_visible=False,
+        edge_label=False,
+        hide_ticks=hide_ticks,
+    )
 
     if margins is not None:
         if isinstance(margins, Iterable):
@@ -1522,227 +1718,11 @@ def draw_networkx_nodes(
         else:
             ax.margins(margins)
 
-    node_collection.set_zorder(2)
-    return node_collection
+    for col in ax.collections:
+        if isinstance(col, mpl.collections.PathCollection):
+            return col
 
-
-class FancyArrowFactory:
-    """Draw arrows with `matplotlib.patches.FancyarrowPatch`"""
-
-    class ConnectionStyleFactory:
-        def __init__(self, connectionstyles, selfloop_height, ax=None):
-            import matplotlib as mpl
-            import matplotlib.path  # call as mpl.path
-            import numpy as np
-
-            self.ax = ax
-            self.mpl = mpl
-            self.np = np
-            self.base_connection_styles = [
-                mpl.patches.ConnectionStyle(cs) for cs in connectionstyles
-            ]
-            self.n = len(self.base_connection_styles)
-            self.selfloop_height = selfloop_height
-
-        def curved(self, edge_index):
-            return self.base_connection_styles[edge_index % self.n]
-
-        def self_loop(self, edge_index):
-            def self_loop_connection(posA, posB, *args, **kwargs):
-                if not self.np.all(posA == posB):
-                    raise nx.NetworkXError(
-                        "`self_loop` connection style method"
-                        "is only to be used for self-loops"
-                    )
-                # this is called with _screen space_ values
-                # so convert back to data space
-                data_loc = self.ax.transData.inverted().transform(posA)
-                v_shift = 0.1 * self.selfloop_height
-                h_shift = v_shift * 0.5
-                # put the top of the loop first so arrow is not hidden by node
-                path = self.np.asarray(
-                    [
-                        # 1
-                        [0, v_shift],
-                        # 4 4 4
-                        [h_shift, v_shift],
-                        [h_shift, 0],
-                        [0, 0],
-                        # 4 4 4
-                        [-h_shift, 0],
-                        [-h_shift, v_shift],
-                        [0, v_shift],
-                    ]
-                )
-                # Rotate self loop 90 deg. if more than 1
-                # This will allow for maximum of 4 visible self loops
-                if edge_index % 4:
-                    x, y = path.T
-                    for _ in range(edge_index % 4):
-                        x, y = y, -x
-                    path = self.np.array([x, y]).T
-                return self.mpl.path.Path(
-                    self.ax.transData.transform(data_loc + path), [1, 4, 4, 4, 4, 4, 4]
-                )
-
-            return self_loop_connection
-
-    def __init__(
-        self,
-        edge_pos,
-        edgelist,
-        nodelist,
-        edge_indices,
-        node_size,
-        selfloop_height,
-        connectionstyle="arc3",
-        node_shape="o",
-        arrowstyle="-",
-        arrowsize=10,
-        edge_color="k",
-        alpha=None,
-        linewidth=1.0,
-        style="solid",
-        min_source_margin=0,
-        min_target_margin=0,
-        ax=None,
-    ):
-        import matplotlib as mpl
-        import matplotlib.patches  # call as mpl.patches
-        import matplotlib.pyplot as plt
-        import numpy as np
-
-        if isinstance(connectionstyle, str):
-            connectionstyle = [connectionstyle]
-        elif np.iterable(connectionstyle):
-            connectionstyle = list(connectionstyle)
-        else:
-            msg = "ConnectionStyleFactory arg `connectionstyle` must be str or iterable"
-            raise nx.NetworkXError(msg)
-        self.ax = ax
-        self.mpl = mpl
-        self.np = np
-        self.edge_pos = edge_pos
-        self.edgelist = edgelist
-        self.nodelist = nodelist
-        self.node_shape = node_shape
-        self.min_source_margin = min_source_margin
-        self.min_target_margin = min_target_margin
-        self.edge_indices = edge_indices
-        self.node_size = node_size
-        self.connectionstyle_factory = self.ConnectionStyleFactory(
-            connectionstyle, selfloop_height, ax
-        )
-        self.arrowstyle = arrowstyle
-        self.arrowsize = arrowsize
-        self.arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
-        self.linewidth = linewidth
-        self.style = style
-        if isinstance(arrowsize, list) and len(arrowsize) != len(edge_pos):
-            raise ValueError("arrowsize should have the same length as edgelist")
-
-    def __call__(self, i):
-        (x1, y1), (x2, y2) = self.edge_pos[i]
-        shrink_source = 0  # space from source to tail
-        shrink_target = 0  # space from  head to target
-        if (
-            self.np.iterable(self.min_source_margin)
-            and not isinstance(self.min_source_margin, str)
-            and not isinstance(self.min_source_margin, tuple)
-        ):
-            min_source_margin = self.min_source_margin[i]
-        else:
-            min_source_margin = self.min_source_margin
-
-        if (
-            self.np.iterable(self.min_target_margin)
-            and not isinstance(self.min_target_margin, str)
-            and not isinstance(self.min_target_margin, tuple)
-        ):
-            min_target_margin = self.min_target_margin[i]
-        else:
-            min_target_margin = self.min_target_margin
-
-        if self.np.iterable(self.node_size):  # many node sizes
-            source, target = self.edgelist[i][:2]
-            source_node_size = self.node_size[self.nodelist.index(source)]
-            target_node_size = self.node_size[self.nodelist.index(target)]
-            shrink_source = self.to_marker_edge(source_node_size, self.node_shape)
-            shrink_target = self.to_marker_edge(target_node_size, self.node_shape)
-        else:
-            shrink_source = self.to_marker_edge(self.node_size, self.node_shape)
-            shrink_target = shrink_source
-        shrink_source = max(shrink_source, min_source_margin)
-        shrink_target = max(shrink_target, min_target_margin)
-
-        # scale factor of arrow head
-        if isinstance(self.arrowsize, list):
-            mutation_scale = self.arrowsize[i]
-        else:
-            mutation_scale = self.arrowsize
-
-        if len(self.arrow_colors) > i:
-            arrow_color = self.arrow_colors[i]
-        elif len(self.arrow_colors) == 1:
-            arrow_color = self.arrow_colors[0]
-        else:  # Cycle through colors
-            arrow_color = self.arrow_colors[i % len(self.arrow_colors)]
-
-        if self.np.iterable(self.linewidth):
-            if len(self.linewidth) > i:
-                linewidth = self.linewidth[i]
-            else:
-                linewidth = self.linewidth[i % len(self.linewidth)]
-        else:
-            linewidth = self.linewidth
-
-        if (
-            self.np.iterable(self.style)
-            and not isinstance(self.style, str)
-            and not isinstance(self.style, tuple)
-        ):
-            if len(self.style) > i:
-                linestyle = self.style[i]
-            else:  # Cycle through styles
-                linestyle = self.style[i % len(self.style)]
-        else:
-            linestyle = self.style
-
-        if x1 == x2 and y1 == y2:
-            connectionstyle = self.connectionstyle_factory.self_loop(
-                self.edge_indices[i]
-            )
-        else:
-            connectionstyle = self.connectionstyle_factory.curved(self.edge_indices[i])
-
-        if (
-            self.np.iterable(self.arrowstyle)
-            and not isinstance(self.arrowstyle, str)
-            and not isinstance(self.arrowstyle, tuple)
-        ):
-            arrowstyle = self.arrowstyle[i]
-        else:
-            arrowstyle = self.arrowstyle
-
-        return self.mpl.patches.FancyArrowPatch(
-            (x1, y1),
-            (x2, y2),
-            arrowstyle=arrowstyle,
-            shrinkA=shrink_source,
-            shrinkB=shrink_target,
-            mutation_scale=mutation_scale,
-            color=arrow_color,
-            linewidth=linewidth,
-            connectionstyle=connectionstyle,
-            linestyle=linestyle,
-            zorder=1,  # arrows go behind nodes
-        )
-
-    def to_marker_edge(self, marker_size, marker):
-        if marker in "s^>v<d":  # `large` markers need extra space
-            return self.np.sqrt(2 * marker_size) / 2
-        else:
-            return self.np.sqrt(marker_size) / 2
+    return None
 
 
 def draw_networkx_edges(
@@ -1772,6 +1752,8 @@ def draw_networkx_edges(
     r"""Draw the edges of the graph G.
 
     This draws only the edges of the graph G.
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -1923,6 +1905,7 @@ def draw_networkx_edges(
 
     See Also
     --------
+    display
     draw
     draw_networkx
     draw_networkx_nodes
@@ -1931,10 +1914,10 @@ def draw_networkx_edges(
 
     """
     import warnings
+    from collections.abc import Iterable
+    from itertools import cycle
 
     import matplotlib as mpl
-    import matplotlib.collections  # call as mpl.collections
-    import matplotlib.colors  # call as mpl.colors
     import matplotlib.pyplot as plt
     import numpy as np
 
@@ -1956,6 +1939,9 @@ def draw_networkx_edges(
     else:
         msg = "draw_networkx_edges arg `connectionstyle` must be str or iterable"
         raise nx.NetworkXError(msg)
+
+    if isinstance(edgelist, np.ndarray):
+        edgelist = list(map(tuple, edgelist))
 
     # Some kwargs only apply to FancyArrowPatches. Warn users when they use
     # non-default values for these kwargs when LineCollection is being used
@@ -1995,13 +1981,7 @@ def draw_networkx_edges(
     if edgelist is None:
         edgelist = list(G.edges)  # (u, v, k) for multigraph (u, v) otherwise
 
-    if len(edgelist):
-        if G.is_multigraph():
-            key_count = collections.defaultdict(lambda: itertools.count(0))
-            edge_indices = [next(key_count[tuple(e[:2])]) for e in edgelist]
-        else:
-            edge_indices = [0] * len(edgelist)
-    else:  # no edges!
+    if len(edgelist) == 0:
         return []
 
     if nodelist is None:
@@ -2011,111 +1991,121 @@ def draw_networkx_edges(
     if edge_color is None:
         edge_color = "k"
 
-    # set edge positions
-    edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
-
-    # Check if edge_color is an array of floats and map to edge_cmap.
-    # This is the only case handled differently from matplotlib
-    if (
-        np.iterable(edge_color)
-        and (len(edge_color) == len(edge_pos))
-        and np.all([isinstance(c, Number) for c in edge_color])
-    ):
-        if edge_cmap is not None:
-            assert isinstance(edge_cmap, mpl.colors.Colormap)
-        else:
-            edge_cmap = plt.get_cmap()
-        if edge_vmin is None:
-            edge_vmin = min(edge_color)
-        if edge_vmax is None:
-            edge_vmax = max(edge_color)
-        color_normal = mpl.colors.Normalize(vmin=edge_vmin, vmax=edge_vmax)
-        edge_color = [edge_cmap(color_normal(e)) for e in edge_color]
-
-    # compute initial view
-    minx = np.amin(np.ravel(edge_pos[:, :, 0]))
-    maxx = np.amax(np.ravel(edge_pos[:, :, 0]))
-    miny = np.amin(np.ravel(edge_pos[:, :, 1]))
-    maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
-    w = maxx - minx
-    h = maxy - miny
-
-    # Self-loops are scaled by view extent, except in cases the extent
-    # is 0, e.g. for a single node. In this case, fall back to scaling
-    # by the maximum node size
-    selfloop_height = h if h != 0 else 0.005 * np.array(node_size).max()
-    fancy_arrow_factory = FancyArrowFactory(
-        edge_pos,
-        edgelist,
-        nodelist,
-        edge_indices,
-        node_size,
-        selfloop_height,
-        connectionstyle,
-        node_shape,
-        arrowstyle,
-        arrowsize,
-        edge_color,
-        alpha,
-        width,
-        style,
-        min_source_margin,
-        min_target_margin,
-        ax=ax,
+    disp_edge_visible = {e: e in edgelist for e in G.edges}
+    disp_edge_width = (
+        width if not isinstance(width, Iterable) else dict(zip(edgelist, cycle(width)))
+    )
+    disp_edge_style = (
+        style if isinstance(style, (str | tuple)) else dict(zip(edgelist, cycle(style)))
+    )
+    disp_edge_alpha = (
+        alpha if not isinstance(alpha, Iterable) else dict(zip(edgelist, cycle(alpha)))
     )
 
-    # Draw the edges
-    if use_linecollection:
-        edge_collection = mpl.collections.LineCollection(
-            edge_pos,
-            colors=edge_color,
-            linewidths=width,
-            antialiaseds=(1,),
-            linestyle=style,
-            alpha=alpha,
-        )
-        edge_collection.set_cmap(edge_cmap)
-        edge_collection.set_clim(edge_vmin, edge_vmax)
-        edge_collection.set_zorder(1)  # edges go behind nodes
-        edge_collection.set_label(label)
-        ax.add_collection(edge_collection)
-        edge_viz_obj = edge_collection
+    disp_edge_arrowstyle = (
+        arrowstyle
+        if isinstance(arrowstyle, str)
+        else dict(zip(edgelist, cycle(arrowstyle)))
+    )
 
-        # Make sure selfloop edges are also drawn
-        # ---------------------------------------
-        selfloops_to_draw = [loop for loop in nx.selfloop_edges(G) if loop in edgelist]
-        if selfloops_to_draw:
-            edgelist_tuple = list(map(tuple, edgelist))
-            arrow_collection = []
-            for loop in selfloops_to_draw:
-                i = edgelist_tuple.index(loop)
-                arrow = fancy_arrow_factory(i)
-                arrow_collection.append(arrow)
-                ax.add_patch(arrow)
+    if isinstance(arrowsize, Iterable):
+        if len(arrowsize) != len(edgelist):
+            raise ValueError("arrowsize should have the same length as edgelist")
+        disp_edge_arrowsize = dict(zip(edgelist, arrowsize))
     else:
-        edge_viz_obj = []
-        for i in range(len(edgelist)):
-            arrow = fancy_arrow_factory(i)
-            ax.add_patch(arrow)
-            edge_viz_obj.append(arrow)
+        disp_edge_arrowsize = arrowsize
 
-    # update view after drawing
-    padx, pady = 0.05 * w, 0.05 * h
-    corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
-    ax.update_datalim(corners)
-    ax.autoscale_view()
+    disp_node_size = (
+        node_size
+        if not isinstance(node_size, Iterable)
+        else dict(zip(nodelist, node_size))
+    )
 
-    if hide_ticks:
-        ax.tick_params(
-            axis="both",
-            which="both",
-            bottom=False,
-            left=False,
-            labelbottom=False,
-            labelleft=False,
-        )
+    if edge_cmap is not None:
+        mapper = mpl.cm.ScalarMappable(cmap=edge_cmap)
+    else:
+        mapper = mpl.cm.ScalarMappable(cmap=plt.get_cmap())
 
-    return edge_viz_obj
+    if edge_vmin is None:
+        edge_vmin = 0.0
+    if edge_vmax is None:
+        edge_vmax = 1.0
+    mapper.set_clim(edge_vmin, edge_vmax)
+
+    def map_color(c):
+        if mapper is None:
+            raise nx.NetworkXError("Supplied scalar color without color map.")
+
+        return tuple(float(x) for x in mapper.to_rgba(c))
+
+    disp_edge_color = None
+    if isinstance(edge_color, str):
+        disp_edge_color = edge_color
+    elif (
+        np.iterable(edge_color)
+        and len(edge_color) == len(edgelist)
+        and np.all([isinstance(c, Number) for c in edge_color])
+    ):
+        disp_edge_color = {
+            n: map_color(ns) for n, ns in zip(edgelist, cycle(edge_color))
+        }
+    elif (
+        # Tuple color... most likely
+        isinstance(edge_color, tuple)
+        and np.all([isinstance(c, Number) for c in edge_color])
+        and (len(edge_color) == 3 or len(edge_color) == 4)
+    ):
+        disp_edge_color = edge_color
+    elif np.iterable(edge_color):
+        disp_edge_color = dict(zip(edgelist, cycle(edge_color)))
+    else:
+        disp_edge_color = edge_color
+
+    disp_node_shape = (
+        node_shape if isinstance(node_shape, str) else dict(zip(nodelist, node_shape))
+    )
+
+    disp_edge_curvature = (
+        connectionstyle
+        if not isinstance(connectionstyle, np.ndarray | list)
+        else dict(zip(edgelist, cycle(connectionstyle)))
+    )
+
+    disp_edge_source_margin = (
+        min_source_margin
+        if not isinstance(min_source_margin, np.ndarray | list)
+        else dict(zip(edgelist, cycle(min_source_margin)))
+    )
+
+    disp_edge_target_margin = (
+        min_target_margin
+        if not isinstance(min_target_margin, np.ndarray | list)
+        else dict(zip(edgelist, cycle(min_target_margin)))
+    )
+
+    return display(
+        G,
+        ax,
+        node_pos=pos,
+        node_visible=False,
+        node_label=False,
+        edge_label=False,
+        edge_visible=disp_edge_visible,
+        edge_width=disp_edge_width,
+        edge_color=disp_edge_color,
+        edge_style=disp_edge_style,
+        edge_alpha=disp_edge_alpha,
+        edge_arrowstyle=disp_edge_arrowstyle,
+        edge_arrowsize=disp_edge_arrowsize,
+        edge_curvature=disp_edge_curvature,
+        edge_source_margin=disp_edge_source_margin,
+        edge_target_margin=disp_edge_target_margin,
+        node_shape=disp_node_shape,
+        node_size=disp_node_size,
+        hide_ticks=hide_ticks,
+        compat_force_fancy_arrows=not use_linecollection,
+        compat_return_edge_viz_obj=True,
+    )
 
 
 def draw_networkx_labels(
@@ -2135,6 +2125,8 @@ def draw_networkx_labels(
     hide_ticks=True,
 ):
     """Draw node labels on the graph G.
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2203,6 +2195,7 @@ def draw_networkx_labels(
 
     See Also
     --------
+    display
     draw
     draw_networkx
     draw_networkx_nodes
@@ -2258,17 +2251,32 @@ def draw_networkx_labels(
         )
         text_items[n] = t
 
-    if hide_ticks:
-        ax.tick_params(
-            axis="both",
-            which="both",
-            bottom=False,
-            left=False,
-            labelbottom=False,
-            labelleft=False,
-        )
+    disp_node_labels = {
+        n: {
+            "label": lab,
+            "size": get_param_value(n, font_size, "font_size"),
+            "color": get_param_value(n, font_color, "font_color"),
+            "family": get_param_value(n, font_family, "font_family"),
+            "weight": get_param_value(n, font_weight, "font_weight"),
+            "alpha": get_param_value(n, alpha, "alpha"),
+            "h_align": horizontalalignment,
+            "v_align": verticalalignment,
+        }
+        for n, lab in labels.items()
+        if n in pos
+    }
 
-    return text_items
+    return display(
+        G,
+        canvas=ax,
+        node_pos=pos,
+        node_visible=False,
+        edge_visible=False,
+        edge_label=False,
+        node_label=disp_node_labels,
+        hide_ticks=hide_ticks,
+        compat_return_node_label_obj=True,
+    )
 
 
 def draw_networkx_edge_labels(
@@ -2293,6 +2301,8 @@ def draw_networkx_edge_labels(
     hide_ticks=True,
 ):
     """Draw edge labels.
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2378,22 +2388,18 @@ def draw_networkx_edge_labels(
 
     See Also
     --------
+    display
     draw
     draw_networkx
     draw_networkx_nodes
     draw_networkx_edges
     draw_networkx_labels
     """
-    import matplotlib as mpl
+    from collections.abc import Iterable
+    from itertools import cycle
+
     import matplotlib.pyplot as plt
     import numpy as np
-
-    class CurvedArrowText(CurvedArrowTextBase, mpl.text.Text):
-        pass
-
-    # use default box of white with white border
-    if bbox is None:
-        bbox = {"boxstyle": "round", "ec": (1.0, 1.0, 1.0), "fc": (1.0, 1.0, 1.0)}
 
     if isinstance(connectionstyle, str):
         connectionstyle = [connectionstyle]
@@ -2419,35 +2425,6 @@ def draw_networkx_edge_labels(
     if nodelist is None:
         nodelist = list(G.nodes())
 
-    # set edge positions
-    edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
-
-    if G.is_multigraph():
-        key_count = collections.defaultdict(lambda: itertools.count(0))
-        edge_indices = [next(key_count[tuple(e[:2])]) for e in edgelist]
-    else:
-        edge_indices = [0] * len(edgelist)
-
-    # Used to determine self loop mid-point
-    # Note, that this will not be accurate,
-    #   if not drawing edge_labels for all edges drawn
-    h = 0
-    if edge_labels:
-        miny = np.amin(np.ravel(edge_pos[:, :, 1]))
-        maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
-        h = maxy - miny
-    selfloop_height = h if h != 0 else 0.005 * np.array(node_size).max()
-    fancy_arrow_factory = FancyArrowFactory(
-        edge_pos,
-        edgelist,
-        nodelist,
-        edge_indices,
-        node_size,
-        selfloop_height,
-        connectionstyle,
-        ax=ax,
-    )
-
     individual_params = {}
 
     def check_individual_params(p_value, p_name):
@@ -2472,75 +2449,47 @@ def draw_networkx_edge_labels(
     check_individual_params(rotate, "rotate")
     check_individual_params(label_pos, "label_pos")
 
-    text_items = {}
-    for i, (edge, label) in enumerate(zip(edgelist, labels)):
-        if not isinstance(label, str):
-            label = str(label)  # this makes "1" and 1 labeled the same
+    # use default box of white with white border
+    if bbox is None:
+        bbox = {"boxstyle": "round", "ec": (1.0, 1.0, 1.0), "fc": (1.0, 1.0, 1.0)}
 
-        n1, n2 = edge[:2]
-        arrow = fancy_arrow_factory(i)
-        if n1 == n2:
-            connectionstyle_obj = arrow.get_connectionstyle()
-            posA = ax.transData.transform(pos[n1])
-            path_disp = connectionstyle_obj(posA, posA)
-            path_data = ax.transData.inverted().transform_path(path_disp)
-            x, y = path_data.vertices[0]
-            text_items[edge] = ax.text(
-                x,
-                y,
-                label,
-                size=get_param_value(font_size, "font_size"),
-                color=get_param_value(font_color, "font_color"),
-                family=get_param_value(font_family, "font_family"),
-                weight=get_param_value(font_weight, "font_weight"),
-                alpha=get_param_value(alpha, "alpha"),
-                horizontalalignment=get_param_value(
-                    horizontalalignment, "horizontalalignment"
-                ),
-                verticalalignment=get_param_value(
-                    verticalalignment, "verticalalignment"
-                ),
-                rotation=0,
-                transform=ax.transData,
-                bbox=bbox,
-                zorder=1,
-                clip_on=clip_on,
-            )
-        else:
-            text_items[edge] = CurvedArrowText(
-                arrow,
-                label,
-                size=get_param_value(font_size, "font_size"),
-                color=get_param_value(font_color, "font_color"),
-                family=get_param_value(font_family, "font_family"),
-                weight=get_param_value(font_weight, "font_weight"),
-                alpha=get_param_value(alpha, "alpha"),
-                horizontalalignment=get_param_value(
-                    horizontalalignment, "horizontalalignment"
-                ),
-                verticalalignment=get_param_value(
-                    verticalalignment, "verticalalignment"
-                ),
-                transform=ax.transData,
-                bbox=bbox,
-                zorder=1,
-                clip_on=clip_on,
-                label_pos=get_param_value(label_pos, "label_pos"),
-                labels_horizontal=not get_param_value(rotate, "rotate"),
-                ax=ax,
-            )
+    disp_edge_curvature = (
+        connectionstyle
+        if not isinstance(connectionstyle, Iterable)
+        else dict(zip(edgelist, cycle(connectionstyle)))
+    )
 
-    if hide_ticks:
-        ax.tick_params(
-            axis="both",
-            which="both",
-            bottom=False,
-            left=False,
-            labelbottom=False,
-            labelleft=False,
-        )
+    disp_edge_lables = {
+        e: {
+            "label": lbl,
+            "size": get_param_value(font_size, "font_size"),
+            "color": get_param_value(font_color, "font_color"),
+            "family": get_param_value(font_family, "font_family"),
+            "weight": get_param_value(font_weight, "font_weight"),
+            "alpha": get_param_value(alpha, "alpha"),
+            "h_align": get_param_value(horizontalalignment, "horizontalalignment"),
+            "v_align": get_param_value(verticalalignment, "verticalalignment"),
+            "label_pos": get_param_value(label_pos, "label_pos"),
+            "rotate": get_param_value(rotate, "rotate"),
+            "bbox": bbox,
+        }
+        for e, lbl in edge_labels.items()
+    }
 
-    return text_items
+    return display(
+        G,
+        canvas=ax,
+        node_pos=pos,
+        node_visible=False,
+        node_label=False,
+        edge_visible=False,
+        edge_label=disp_edge_lables,
+        edge_curvature=disp_edge_curvature,
+        hide_ticks=hide_ticks,
+        node_size=node_size,
+        compat_return_edge_label_obj=True,
+        compat_edge_label_anyways=True,
+    )
 
 
 def draw_bipartite(G, **kwargs):
@@ -2549,6 +2498,8 @@ def draw_bipartite(G, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.bipartite_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2582,6 +2533,7 @@ def draw_bipartite(G, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.bipartite_layout`
     """
     draw(G, pos=nx.bipartite_layout(G), **kwargs)
@@ -2593,6 +2545,8 @@ def draw_circular(G, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.circular_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2621,6 +2575,7 @@ def draw_circular(G, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.circular_layout`
     """
     draw(G, pos=nx.circular_layout(G), **kwargs)
@@ -2632,6 +2587,8 @@ def draw_kamada_kawai(G, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.kamada_kawai_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2661,6 +2618,7 @@ def draw_kamada_kawai(G, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.kamada_kawai_layout`
     """
     draw(G, pos=nx.kamada_kawai_layout(G), **kwargs)
@@ -2672,6 +2630,8 @@ def draw_random(G, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.random_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2700,6 +2660,7 @@ def draw_random(G, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.random_layout`
     """
     draw(G, pos=nx.random_layout(G), **kwargs)
@@ -2714,6 +2675,8 @@ def draw_spectral(G, **kwargs):
 
     For more information about how node positions are determined, see
     `~networkx.drawing.layout.spectral_layout`.
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2742,6 +2705,7 @@ def draw_spectral(G, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.spectral_layout`
     """
     draw(G, pos=nx.spectral_layout(G), **kwargs)
@@ -2753,6 +2717,8 @@ def draw_spring(G, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.spring_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2784,6 +2750,7 @@ def draw_spring(G, **kwargs):
 
     See Also
     --------
+    display
     draw
     :func:`~networkx.drawing.layout.spring_layout`
     """
@@ -2796,6 +2763,8 @@ def draw_shell(G, nlist=None, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.shell_layout(G, nlist=nlist), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2830,6 +2799,7 @@ def draw_shell(G, nlist=None, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.shell_layout`
     """
     draw(G, pos=nx.shell_layout(G, nlist=nlist), **kwargs)
@@ -2841,6 +2811,8 @@ def draw_planar(G, **kwargs):
     This is a convenience function equivalent to::
 
         nx.draw(G, pos=nx.planar_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
@@ -2874,6 +2846,7 @@ def draw_planar(G, **kwargs):
 
     See Also
     --------
+    display
     :func:`~networkx.drawing.layout.planar_layout`
     """
     draw(G, pos=nx.planar_layout(G), **kwargs)
@@ -2885,6 +2858,8 @@ def draw_forceatlas2(G, **kwargs):
     This is a convenience function equivalent to::
 
        nx.draw(G, pos=nx.forceatlas2_layout(G), **kwargs)
+
+    .. tip:: Consider using :func:`display`, the new all-in-one drawing function.
 
     Parameters
     ----------
