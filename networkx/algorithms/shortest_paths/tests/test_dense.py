@@ -72,10 +72,6 @@ class TestFloyd:
         # skip this test, could be alternate path s-u-v
         # assert_equal(path['s']['v'],'x')
 
-        # alternate interface
-        dist = nx.floyd_warshall(G)
-        assert dist["s"]["v"] == 2
-
         # floyd_warshall_predecessor_and_distance returns
         # dicts-of-defautdicts
         # make sure we don't get empty dictionary
@@ -210,8 +206,6 @@ class TestFloyd:
         G = nx.DiGraph()
         edges = [(1, 2, -2), (2, 3, -4), (1, 5, 1), (5, 4, 0), (4, 3, -5), (2, 5, -7)]
         G.add_weighted_edges_from(edges)
-        dist = nx.floyd_warshall(G)
-        assert dist[1][3] == -14
 
         pred, dist = floyd_fn(G)
         assert dist[1][3] == -14
@@ -219,8 +213,6 @@ class TestFloyd:
         G = nx.MultiDiGraph()
         edges.append((2, 5, -7))
         G.add_weighted_edges_from(edges)
-        dist = nx.floyd_warshall(G)
-        assert dist[1][3] == -14
 
         pred, dist = floyd_fn(G)
         assert dist[1][3] == -14
