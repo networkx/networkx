@@ -132,6 +132,13 @@ Dispersion
    :toctree: generated/
 
    dispersion
+   
+Distinctiveness
+----------
+.. autosummary::
+   :toctree: generated/
+
+   distinctiveness
 
 .. _networkx.algorithms.centrality.reaching:
 
