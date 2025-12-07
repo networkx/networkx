@@ -248,7 +248,9 @@ def test_floyd_warshall_consistency(seed, n, prob):
     base_pred, base_dist = floyd_fns[0](graph)
     for floyd_fn in floyd_fns[1:]:
         pred, dist = floyd_fn(graph)
-        assert dist == base_dist
+        for u in graph:
+            for v in graph:
+                assert dist[u][v] == base_dist[u][v]
 
     # weighted case
     max_weight_list = [5, 10, 1000]
@@ -259,4 +261,6 @@ def test_floyd_warshall_consistency(seed, n, prob):
         base_pred_w, base_dist_w = floyd_fns[0](graph, weight="w")
         for floyd_fn in floyd_fns[1:]:
             pred_w, dist_w = floyd_fn(graph, weight="w")
-            assert dist_w == base_dist_w
+            for u in graph:
+                for v in graph:
+                    assert dist[u][v] == base_dist[u][v]
