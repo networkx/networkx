@@ -86,6 +86,15 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     Zero edge weights can produce an infinite number of equal length
     paths between pairs of nodes.
 
+    To avoid floating-point precision issues with weighted graphs, you can
+    convert weights to integers by passing a weight function. For example::
+
+        def round_weight(u, v, data_dict):
+            return round(1e8 * data_dict["weight"])
+
+
+        centrality = nx.group_betweenness_centrality(G, C, weight=round_weight)
+
     The total number of paths between source and target is counted
     differently for directed and undirected graphs. Directed paths
     between "u" and "v" are counted as two possible paths (one each
@@ -146,11 +155,11 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                     if not (
                         sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[v][y] == 0
                     ):
-                        if D[x][v] == D[x][y] + D[y][v]:
+                        if _float_equal(D[x][v], D[x][y] + D[y][v]):
                             dxyv = sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
-                        if D[x][y] == D[x][v] + D[v][y]:
+                        if _float_equal(D[x][y], D[x][v] + D[v][y]):
                             dxvy = sigma_m[x][v] * sigma_m[v][y] / sigma_m[x][y]
-                        if D[v][y] == D[v][x] + D[x][y]:
+                        if _float_equal(D[v][y], D[v][x] + D[x][y]):
                             dvxy = sigma_m[v][x] * sigma[x][y] / sigma[v][y]
                     sigma_m_v[x][y] = sigma_m[x][y] * (1 - dxvy)
                     PB_m_v[x][y] = PB_m[x][y] - PB_m[x][y] * dxvy
@@ -198,6 +207,15 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     return GBC[0]
 
 
+def _float_equal(a, b, epsilon=1e-10):
+    """Check if two floating-point numbers are equal within epsilon tolerance.
+
+    This is used to avoid floating-point precision issues when comparing
+    distances in shortest path calculations.
+    """
+    return abs(a - b) < epsilon
+
+
 def _group_preprocessing(G, set_v, weight):
     sigma = {}
     delta = {}
@@ -224,9 +242,9 @@ def _group_preprocessing(G, set_v, weight):
             for node in G:
                 # if node is connected to the two group nodes than continue
                 if group_node2 in D[node] and group_node1 in D[node]:
-                    if (
-                        D[node][group_node2]
-                        == D[node][group_node1] + D[group_node1][group_node2]
+                    if _float_equal(
+                        D[node][group_node2],
+                        D[node][group_node1] + D[group_node1][group_node2],
                     ):
                         PB[group_node1][group_node2] += (
                             delta[node][group_node2]
@@ -481,19 +499,19 @@ def _heuristic(k, root, DF_tree, D, nodes, greedy):
                 or root_node["sigma"][x][added_node] == 0
                 or root_node["sigma"][added_node][y] == 0
             ):
-                if D[x][added_node] == D[x][y] + D[y][added_node]:
+                if _float_equal(D[x][added_node], D[x][y] + D[y][added_node]):
                     dxyv = (
                         root_node["sigma"][x][y]
                         * root_node["sigma"][y][added_node]
                         / root_node["sigma"][x][added_node]
                     )
-                if D[x][y] == D[x][added_node] + D[added_node][y]:
+                if _float_equal(D[x][y], D[x][added_node] + D[added_node][y]):
                     dxvy = (
                         root_node["sigma"][x][added_node]
                         * root_node["sigma"][added_node][y]
                         / root_node["sigma"][x][y]
                     )
-                if D[added_node][y] == D[added_node][x] + D[x][y]:
+                if _float_equal(D[added_node][y], D[added_node][x] + D[x][y]):
                     dvxy = (
                         root_node["sigma"][added_node][x]
                         * root_node["sigma"][x][y]

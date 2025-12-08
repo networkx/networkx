@@ -100,6 +100,22 @@ class TestGroupBetweennessCentrality:
         b_answer = 5.0
         assert b == b_answer
 
+    def test_group_betweenness_floating_point_precision(self):
+        """
+        Group betweenness centrality handles floating-point precision correctly with weighted graphs
+        """
+        import random
+
+        random.seed(7)
+        G = nx.gnm_random_graph(10, 35, directed=True)
+        for u, v in G.edges():
+            G[u][v]["weight"] = random.uniform(0.1, 1.0)
+
+        C = [0, 1]
+        b = nx.group_betweenness_centrality(G, C, normalized=False, weight="weight")
+        b_answer = 10.0
+        assert abs(b - b_answer) < 1e-9
+
 
 class TestProminentGroup:
     np = pytest.importorskip("numpy")
