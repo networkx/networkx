@@ -1841,13 +1841,29 @@ class _dispatchable:
                 assert G1._adj == G2._adj
             else:
                 assert set(G1) == set(G2)
-                # Allow source/target ordering to be different for undirected graphs
-                if not G1.is_directed():
-                    assert {tuple(sorted(e, key=str)) for e in G1.edges} == {
-                        tuple(sorted(e, key=str)) for e in G2.edges
-                    }
+                # Allow order of edges to differ. Use string repr to sort different types.
+                if G1.is_directed():
+                    assert sorted(G1.edges, key=str) == sorted(G2.edges, key=str)
+                # Also allow source/target ordering within edges to differ for undirected graphs.
                 else:
-                    assert set(G1.edges) == set(G2.edges)
+                    # Preserve position of edge ID for MultiGraphs.
+                    if G1.is_multigraph():
+                        G1_edges = sorted(
+                            [sorted(e[:2], key=str) + [e[-1]] for e in G1.edges],
+                            key=str,
+                        )
+                        G2_edges = sorted(
+                            [sorted(e[:2], key=str) + [e[-1]] for e in G2.edges],
+                            key=str,
+                        )
+                    else:
+                        G1_edges = sorted(
+                            [sorted(e, key=str) for e in G1.edges], key=str
+                        )
+                        G2_edges = sorted(
+                            [sorted(e, key=str) for e in G2.edges], key=str
+                        )
+                    assert G1_edges == G2_edges
 
         if compare_inputs_to_nx:
             # Special-case algorithms that mutate input graphs
