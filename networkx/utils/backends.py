@@ -1729,6 +1729,7 @@ class _dispatchable:
             self.name,
             _LazyArgsRepr(self, converted_args, converted_kwargs),
         )
+
         try:
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except NotImplementedError as exc:
@@ -1841,7 +1842,13 @@ class _dispatchable:
                 assert G1._adj == G2._adj
             else:
                 assert set(G1) == set(G2)
-                assert set(G1.edges) == set(G2.edges)
+                # Allow source/target ordering to be different for undirected graphs
+                if not G1.is_directed():
+                    assert {tuple(sorted(e, key=str)) for e in G1.edges} == {
+                        tuple(sorted(e, key=str)) for e in G2.edges
+                    }
+                else:
+                    assert set(G1.edges) == set(G2.edges)
 
         if compare_inputs_to_nx:
             # Special-case algorithms that mutate input graphs
