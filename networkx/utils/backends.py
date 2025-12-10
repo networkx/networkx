@@ -1729,7 +1729,6 @@ class _dispatchable:
             self.name,
             _LazyArgsRepr(self, converted_args, converted_kwargs),
         )
-
         try:
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except NotImplementedError as exc:
