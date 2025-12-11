@@ -1843,9 +1843,10 @@ class _dispatchable:
                 assert set(G1) == set(G2)
                 if G1.is_directed():
                     assert set(G1.edges) == set(G2.edges)
-                # Use frozensets to allow source/target ordering within edges to differ for undirected graphs.
+                # Use frozensets to ignore source/target ordering within edges
+                # for undirected graphs.
                 else:
-                    # Preserve position of edge ID for MultiGraphs.
+                    # Preserve position of the edge key for MultiGraphs.
                     if G1.is_multigraph():
                         G1_edges = {
                             (frozenset((u, v)), key)
