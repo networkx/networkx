@@ -25,4 +25,3 @@ Reference
    backends
    configs
    glossary
-   
