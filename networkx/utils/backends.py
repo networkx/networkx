@@ -1841,7 +1841,19 @@ class _dispatchable:
                 assert G1._adj == G2._adj
             else:
                 assert set(G1) == set(G2)
-                assert set(G1.edges) == set(G2.edges)
+                if G1.is_directed():
+                    assert set(G1.edges) == set(G2.edges)
+                # Use frozensets to ignore source/target ordering within edges
+                # for undirected graphs.
+                else:
+                    # Preserve position of the edge key for MultiGraphs.
+                    if G1.is_multigraph():
+                        G1_edges = {(frozenset((u, v)), key) for u, v, key in G1.edges}
+                        G2_edges = {(frozenset((u, v)), key) for u, v, key in G2.edges}
+                    else:
+                        G1_edges = {frozenset(e) for e in G1.edges}
+                        G2_edges = {frozenset(e) for e in G2.edges}
+                    assert G1_edges == G2_edges
 
         if compare_inputs_to_nx:
             # Special-case algorithms that mutate input graphs
