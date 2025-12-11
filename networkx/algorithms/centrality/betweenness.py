@@ -25,15 +25,17 @@ def betweenness_centrality(
 
     .. math::
 
-       c_B(v) = \sum_{s, t \in V} \frac{\sigma(s, t | v)}{\sigma(s, t)}
+       c_B(v) = \frac{1}{K} \sum_{s, t \in V} \frac{\sigma(s, t | v)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
     shortest $(s, t)$-paths, and $\sigma(s, t | v)$ is the number of
     those paths passing through some node $v$ other than $s$ and $t$.
     If $s = t$, $\sigma(s, t) = 1$, and if $v \in \{s, t\}$,
     $\sigma(s, t | v) = 0$ [2]_.
-    The denominator $\sigma(s, t)$ is a normalization factor that can be
+    The denominator $\sigma(s, t)$ is a node normalization factor that can be
     turned off to get the raw path counts.
+    $K$ is a normalization factor that depends on whether endpoints are included
+    and whether the graph is directed (see Notes).
 
     Parameters
     ----------
