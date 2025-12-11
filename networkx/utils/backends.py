@@ -1848,14 +1848,8 @@ class _dispatchable:
                 else:
                     # Preserve position of the edge key for MultiGraphs.
                     if G1.is_multigraph():
-                        G1_edges = {
-                            (frozenset((u, v)), key)
-                            for u, v, key in G1.edges(keys=True)
-                        }
-                        G2_edges = {
-                            (frozenset((u, v)), key)
-                            for u, v, key in G2.edges(keys=True)
-                        }
+                        G1_edges = {(frozenset((u, v)), key) for u, v, key in G1.edges}
+                        G2_edges = {(frozenset((u, v)), key) for u, v, key in G2.edges}
                     else:
                         G1_edges = {frozenset(e) for e in G1.edges}
                         G2_edges = {frozenset(e) for e in G2.edges}

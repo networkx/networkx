@@ -351,8 +351,8 @@ class TestRelabel:
     def test_relabel_copy_false_undirected(self):
         G = nx.Graph([(0, 2), (0, 3), (1, 3)])
         nx.relabel_nodes(G, {0: "a", 1: "b"}, copy=False)
-        # Allow both edges and source/target nodes within edges to be arbitrarily ordered
-        # for undirected Graphs
-        actual = {tuple(sorted(e, key=str)) for e in G.edges}
-        expected = {tuple(sorted(e, key=str)) for e in [("a", 2), ("a", 3), ("b", 3)]}
+        # Use sets to allow both edges and source/target nodes within edges to be arbitrarily
+        # ordered for undirected Graphs
+        actual = {frozenset(e) for e in G.edges}
+        expected = {frozenset(e) for e in [("a", 2), ("a", 3), ("b", 3)]}
         assert actual == expected
