@@ -1841,10 +1841,9 @@ class _dispatchable:
                 assert G1._adj == G2._adj
             else:
                 assert set(G1) == set(G2)
-                # Allow order of edges to differ. Use string repr to sort different types.
                 if G1.is_directed():
                     assert set(G1.edges) == set(G2.edges)
-                # Also allow source/target ordering within edges to differ for undirected graphs.
+                # Use frozensets to allow source/target ordering within edges to differ for undirected graphs.
                 else:
                     # Preserve position of edge ID for MultiGraphs.
                     if G1.is_multigraph():
