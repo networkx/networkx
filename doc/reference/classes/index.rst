@@ -73,6 +73,32 @@ Core Views
    FilterMultiInner
    FilterMultiAdjacency
 
+Reporting Views
+===============
+
+NetworkX provides lightweight *reporting views* — read-only objects that
+report information about a graph without copying it. The most commonly used
+reporting views are:
+
+- ``NodeView`` — returned by ``G.nodes`` or ``G.nodes(...)``.
+- ``EdgeView`` — returned by ``G.edges`` or ``G.edges(...)``.
+- ``DegreeView`` — returned by ``G.degree`` or ``G.degree(...)``.
+
+These views are quick to create, reflect the live graph (they change when the
+graph changes), and provide Pythonic access patterns:
+
+- set-like membership and set operations for nodes and edges (``n in G.nodes``,
+  ``G.nodes & H.nodes``, ``(u, v) in G.edges``),
+- iteration (``for n in G.nodes``, ``for u, v in G.edges``),
+- mapping-style lookups (``G.nodes[n]`` returns the node attribute dict;
+  ``G.edges[u, v]`` returns the edge attribute dict),
+- data-filtered iteration via ``.data(...)``.
+
+Note
+----
+This is a short summary for the Graph Types reference page. For the full
+implementation and detailed docstrings see :mod:`networkx.classes.reportviews`.
+
 Filters
 =======
 
