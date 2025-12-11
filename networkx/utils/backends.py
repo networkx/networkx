@@ -1843,26 +1843,22 @@ class _dispatchable:
                 assert set(G1) == set(G2)
                 # Allow order of edges to differ. Use string repr to sort different types.
                 if G1.is_directed():
-                    assert sorted(G1.edges, key=str) == sorted(G2.edges, key=str)
+                    assert set(G1.edges) == set(G2.edges)
                 # Also allow source/target ordering within edges to differ for undirected graphs.
                 else:
                     # Preserve position of edge ID for MultiGraphs.
                     if G1.is_multigraph():
-                        G1_edges = sorted(
-                            [sorted(e[:2], key=str) + [e[-1]] for e in G1.edges],
-                            key=str,
-                        )
-                        G2_edges = sorted(
-                            [sorted(e[:2], key=str) + [e[-1]] for e in G2.edges],
-                            key=str,
-                        )
+                        G1_edges = {
+                            (frozenset((u, v)), key)
+                            for u, v, key in G1.edges(keys=True)
+                        }
+                        G2_edges = {
+                            (frozenset((u, v)), key)
+                            for u, v, key in G2.edges(keys=True)
+                        }
                     else:
-                        G1_edges = sorted(
-                            [sorted(e, key=str) for e in G1.edges], key=str
-                        )
-                        G2_edges = sorted(
-                            [sorted(e, key=str) for e in G2.edges], key=str
-                        )
+                        G1_edges = {frozenset(e) for e in G1.edges}
+                        G2_edges = {frozenset(e) for e in G2.edges}
                     assert G1_edges == G2_edges
 
         if compare_inputs_to_nx:
