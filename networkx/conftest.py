@@ -19,6 +19,13 @@ from importlib.metadata import entry_points
 import pytest
 
 import networkx as nx
+from networkx.classes.tests.dispatch_interface import (
+    LoopbackDiGraphTypeBased,
+    LoopbackGraphTypeBased,
+    LoopbackMultiDiGraphTypeBased,
+    LoopbackMultiGraphTypeBased,
+    LoopbackPlanarEmbeddingTypeBased,
+)
 
 
 def pytest_addoption(parser):
@@ -63,9 +70,21 @@ def pytest_configure(config):
         nx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
         nx.utils.backends.backend_info["nx_loopback"] = {}
         nx.config.backends = nx.utils.Config(
-            nx_loopback=nx.utils.Config(),
+            nx_loopback=nx.utils.Config(
+                graph_types=[
+                    "networkx.classes.tests.dispatch_interface.LoopbackGraphTypeBased",
+                    "networkx.classes.tests.dispatch_interface.LoopbackDiGraphTypeBased",
+                    "networkx.classes.tests.dispatch_interface.LoopbackMultiGraphTypeBased",
+                    "networkx.classes.tests.dispatch_interface.LoopbackMultiDiGraphTypeBased",
+                    "networkx.classes.tests.dispatch_interface.LoopbackPlanarEmbeddingTypeBased",
+                ]
+            ),
             **nx.config.backends,
         )
+        for graph_type in getattr(nx.config.backends["nx_loopback"], "graph_types", []):
+            nx.config.graph_type_backends_map.setdefault(graph_type, []).append(
+                "nx_loopback"
+            )
         fallback_to_nx = config.getoption("--fallback-to-nx")
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
