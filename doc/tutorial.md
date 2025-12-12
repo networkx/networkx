@@ -626,13 +626,13 @@ For example:
 ```{code-cell}
 import networkx as nx
 
-eps = 1e-17
+tiny = 5e-17
 
 G = nx.DiGraph()
 G.add_edge('A', 'B', weight=0.1)
 G.add_edge('B', 'C', weight=0.1)
 G.add_edge('C', 'D', weight=0.1)
-G.add_edge('A', 'D', weight=0.3 + eps)
+G.add_edge('A', 'D', weight=0.3 + tiny)
 
 path = nx.shortest_path(G, 'A', 'D', weight='weight')
 print(path)
@@ -655,6 +655,25 @@ results to be approximate rather than exact. Multiplying weights by a large
 number and converting them to integers can help reduce some subtle comparison
 issues, but it does not fully eliminate them. NetworkX does not automatically
 apply tolerances in numeric comparisons.
+
+Below is a version of the previous example using the recommended technique with
+different precision tolerances.
+
+```{code-cell}
+import networkx as nx
+
+tiny = 5e-17
+
+G = nx.DiGraph()
+G.add_edge('A', 'B', weight=0.1)
+G.add_edge('B', 'C', weight=0.1)
+G.add_edge('C', 'D', weight=0.1)
+G.add_edge('A', 'D', weight=0.3 + tiny)
+
+for precision in [16, 17]:
+    path = nx.shortest_path(G, 'A', 'D', weight=lambda u, v, d: int(d['weight'] * 10 ** precision))
+    print(f"With {precision} precision digits, path is {path}")
+```
 
 (using-networkx-backends)=
 
