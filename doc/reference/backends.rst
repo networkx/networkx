@@ -438,7 +438,7 @@ Creating a custom backend
             __networkx_backend__ = "backend_name"
             ...
 
-    Backend graph objects are also required to implement the methods ``is_directed()`` and
+    Backend graph objects are recommended to implement the methods ``is_directed()`` and
     ``is_multigraph()``. These methods return boolean values indicating the type of the graph:
 
     - ``is_directed()`` should return True if the graph is directed, and False otherwise.
@@ -448,6 +448,10 @@ Creating a custom backend
     These methods are used by NetworkX utilities such as the ``@not_implemented_for`` decorator
     to determine whether a graph meets certain type constraints and to raise an error if the
     function is not applicable to that graph type.
+
+    If not implemented, NetworkX will fall back to using the top-level functions
+    ``nx.is_directed`` and ``nx.is_multigraph``. These must be implemented by the backend
+    to avoid unnecessary conversions to standard NetworkX graph types.
 
     A backend graph instance may have a ``G.__networkx_cache__`` dict to enable
     caching, and care should be taken to clear the cache when appropriate.
