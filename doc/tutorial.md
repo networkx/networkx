@@ -671,8 +671,8 @@ G.add_edge('C', 'D', weight=0.1)
 G.add_edge('A', 'D', weight=0.3 + tiny)
 
 for precision in [16, 17]:
-  path = nx.shortest_path(G, 'A', 'D', weight=lambda u, v, d: int(d['weight'] * 10 ** precision))
-  print(f"With {precision} precision digits, path is {path}")
+    path = nx.shortest_path(G, 'A', 'D', weight=lambda u, v, d: int(d['weight'] * 10 ** precision))
+    print(f"With {precision} precision digits, path is {path}")
 ```
 
 (using-networkx-backends)=
