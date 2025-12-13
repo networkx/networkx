@@ -95,7 +95,7 @@ def unweighted_random_walk(G, start, walk_length, *, seed=None):
         Length of the random walk.
 
     seed : integer, random_state, or None (default=None)
-        Indicator of random number generation state. See :ref:`randomness`.
+        Indicator of random number generation state.
 
     Returns
     ------
@@ -128,20 +128,20 @@ def unweighted_random_walk(G, start, walk_length, *, seed=None):
 @nx._dispatchable
 @py_random_state("seed")
 def weighted_random_walk(G, start, walk_length, *, weight="weight", seed=None):
-    """Generate a weighted random walk starting at ``start``.
+    """Generate a weighted random walk starting at start.
 
     Parameters
     ----------
     G : NetworkX graph
     start : node
-        Starting node (must exist in ``G``).
+        Starting node (must exist in the graph G).
     walk_length : int
         Number of steps to traverse. Must be nonnegative.
     weight : string or None, optional (default="weight")
-        Edge attribute name to interpret as the transition weight. If ``None`` or
+        Edge attribute name to interpret as the transition weight. If None or
         the attribute is missing, the corresponding edge weight defaults to 1.
     seed : integer, random_state, or None (default=None)
-        Indicator of random number generation state. See :ref:`randomness`.
+        Indicator of random number generation state.
 
     Returns
     ------
@@ -152,7 +152,7 @@ def weighted_random_walk(G, start, walk_length, *, weight="weight", seed=None):
     Raises
     ------
     ValueError
-        If ``walk_length`` is negative or an edge weight is negative.
+        If walk_length is negative or an edge weight is negative.
     """
     if walk_length < 0:
         raise ValueError(f"`walk_length` cannot be negative: {walk_length}")
