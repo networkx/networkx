@@ -456,7 +456,7 @@ Creating a custom backend
 
        These decorators are expected to be applied at the NetworkX *frontend* level, and
        their checks are performed before dispatching to a backend via ``@_dispatchable``.
-       As a result, backend implementations can assume that graph-type constraints have 
+       As a result, backend implementations can assume that graph-type constraints have
        already been validated.
 
        This avoids duplication of logic and ensures consistent behavior across all
