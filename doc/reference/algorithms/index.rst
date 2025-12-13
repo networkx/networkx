@@ -13,6 +13,7 @@ Algorithms
    assortativity
    asteroidal
    bipartite
+   bipartite_ged
    boundary
    bridges
    broadcasting
