@@ -33,7 +33,8 @@ def betweenness_centrality(
     If $s = t$, $\sigma(s, t) = 1$, and if $v \in \{s, t\}$,
     $\sigma(s, t | v) = 0$ (when `endpoints` takes its default value of
     `False`) [2]_.
-    $P$ is a normalization factor that depends on the values of `normalized`
+    $P$ is a normalization factor representing the number of pairs of nodes
+    that have counted shortest paths. Its value depends on the values of `normalized`
     and `endpoints`, and on whether the graph is directed (see Notes). It can 
     be set to `1` with `normalized=False`.
 
