@@ -54,65 +54,83 @@ def test_hidden_weight_attr():
     assert num_walks == expected
 
 
-def test_unweighted_random_walk_reproducible():
+def test_random_walk_unweighted_reproducible():
+    """Two runs with the same seed should produce identical unweighted walks."""
     G = nx.cycle_graph(5)
-    walk_a = nx.unweighted_random_walk(G, start=0, walk_length=6, seed=5)
-    walk_b = nx.unweighted_random_walk(G, start=0, walk_length=6, seed=5)
+    walk_a = nx.random_walk(G, start=0, walk_length=6, seed=5)
+    walk_b = nx.random_walk(G, start=0, walk_length=6, seed=5)
     assert walk_a == walk_b
 
 
-def test_unweighted_random_walk_dead_end():
+def test_random_walk_unweighted_dead_end():
+    """Unweighted walk should stop immediately when the start node has no neighbors."""
     G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
-    walk = nx.unweighted_random_walk(G, start=3, walk_length=3, seed=0)
+    walk = nx.random_walk(G, start=3, walk_length=3, seed=0)
     assert walk == [3]
 
 
-def test_unweighted_random_walk_directed():
+def test_random_walk_unweighted_directed():
+    """Unweighted walk on a DiGraph should follow edge direction."""
     G = nx.DiGraph([(0, 1), (1, 2), (2, 2)])
-    walk = nx.unweighted_random_walk(G, start=0, walk_length=3, seed=0)
+    walk = nx.random_walk(G, start=0, walk_length=3, seed=0)
     assert walk == [0, 1, 2, 2]
 
 
-def test_unweighted_random_walk_negative_length():
+def test_random_walk_unweighted_negative_length():
+    """Negative walk_length should raise ValueError."""
     G = nx.path_graph(2)
     with pytest.raises(ValueError):
-        nx.unweighted_random_walk(G, start=0, walk_length=-1)
+        nx.random_walk(G, start=0, walk_length=-1)
 
 
-def test_unweighted_random_walk_missing_start():
+def test_random_walk_unweighted_missing_start():
+    """Starting from a node not in the graph should raise NodeNotFound."""
     G = nx.path_graph(2)
     with pytest.raises(nx.NodeNotFound):
-        nx.unweighted_random_walk(G, start=3, walk_length=2)
+        nx.random_walk(G, start=3, walk_length=2)
 
 
-def test_weighted_random_walk_reproducible():
+def test_random_walk_weighted_reproducible():
+    """Weighted walks should be deterministic when seed is fixed."""
     G = nx.Graph()
     G.add_edge(0, 1, weight=2)
     G.add_edge(1, 2, weight=1)
-    walk_a = nx.weighted_random_walk(G, start=0, walk_length=4, seed=0)
-    walk_b = nx.weighted_random_walk(G, start=0, walk_length=4, seed=0)
+    walk_a = nx.random_walk(G, start=0, walk_length=4, weight="weight", seed=0)
+    walk_b = nx.random_walk(G, start=0, walk_length=4, weight="weight", seed=0)
     assert walk_a == walk_b
 
 
-def test_weighted_random_walk_default_weight():
+def test_random_walk_weighted_default_weight():
+    """Missing weight attributes should default to weight 1."""
     G = nx.path_graph(3)
     H = nx.Graph()
     H.add_edge(0, 1, weight=1)
     H.add_edge(1, 2, weight=1)
-    walk = nx.weighted_random_walk(G, start=0, walk_length=3, seed=1)
-    walk_with_attrs = nx.weighted_random_walk(H, start=0, walk_length=3, seed=1)
+    walk = nx.random_walk(G, start=0, walk_length=3, weight="weight", seed=1)
+    walk_with_attrs = nx.random_walk(H, start=0, walk_length=3, weight="weight", seed=1)
     assert walk == walk_with_attrs
 
 
-def test_weighted_random_walk_zero_weight_stops():
+def test_random_walk_weighted_zero_weight_stops():
+    """Zero-weight edges should halt the walk when no positive weight neighbors remain."""
     G = nx.DiGraph()
     G.add_edge(0, 1, weight=0)
-    walk = nx.weighted_random_walk(G, start=0, walk_length=3, seed=0)
+    walk = nx.random_walk(G, start=0, walk_length=3, weight="weight", seed=0)
     assert walk == [0]
 
 
-def test_weighted_random_walk_negative_weight_raises():
+def test_random_walk_weighted_negative_weight_raises():
+    """Negative weights should raise ValueError."""
     G = nx.Graph()
     G.add_edge(0, 1, weight=-2)
     with pytest.raises(ValueError):
-        nx.weighted_random_walk(G, start=0, walk_length=1, seed=0)
+        nx.random_walk(G, start=0, walk_length=1, weight="weight", seed=0)
+
+
+def test_random_walk_unweighted_with_negative_weight_attr():
+    """Negative weight attributes are ignored when no weight parameter is given."""
+    G = nx.Graph()
+    G.add_edge(0, 1, weight=-5)
+    # Should behave as unweighted and not raise
+    walk = nx.random_walk(G, start=0, walk_length=1, seed=0)
+    assert walk == [0, 1]
