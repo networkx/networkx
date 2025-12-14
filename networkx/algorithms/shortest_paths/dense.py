@@ -154,10 +154,10 @@ def floyd_warshall_tree(G, weight="weight"):
 
     References
     ----------
-    .. [1] Modifications of the Floyd Warshall algorithm with nearly quadratic
-           expected time, A. Brodnik, M. Grgurovic, R. Pozar, Ars Mathematica
-           Contemporanea, 2021.
-           https://doi.org/10.26493/1855-3974.2467.497
+    .. [1] Brodnik, Andrej, Marko Grgurovic, and Rok Pozar.
+       "Modifications of the Floyd-Warshall algorithm with nearly quadratic expected-time."
+       Ars Math. Contemp. 22, no. 1 (2022).
+       https://doi.org/10.26493/1855-3974.2467.497
     """
     from collections import defaultdict
 
