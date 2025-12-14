@@ -87,6 +87,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     return A
 
 
+@nx._dispatchable(edge_attrs="weight")
 def floyd_warshall_tree(G, weight="weight"):
     r"""Find all-pairs shortest path lengths using a Tree-based
     modification of Floyd's algorithm.
