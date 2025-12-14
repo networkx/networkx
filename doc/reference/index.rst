@@ -3,8 +3,8 @@
 Reference
 *********
 
-:Release: |release|
-:Date: |today|
+   :Release: |release|
+   :Date: |today|
 
 .. toctree::
    :maxdepth: 2
