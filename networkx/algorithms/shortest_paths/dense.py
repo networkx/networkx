@@ -94,23 +94,25 @@ def floyd_warshall_tree(G, weight="weight"):
     This variant implements the Tree algorithm of Brodnik, Grgurovic and Pozar.
     It differs from the classical Floyd Warshall algorithm by using a shortest
     path tree rooted at each intermediate vertex w. For every w, the algorithm
-    builds a tree OUT_w of current shortest paths and scans it in depth first
-    order. If an update at a vertex v cannot improve any distance, the algorithm
-    skips the entire subtree below v, since none of its nodes can produce a
-    shorter path, as proved in [1]_.
+    builds a tree ``OUT_w`` of shortest paths for the current iteration and
+    scans the tree in depth first order. If an update at a vertex v cannot
+    improve any distance, the algorithm skips the entire subtree below v,
+    since none of its nodes can produce a shorter path, as proved in [1]_.
 
     Parameters
     ----------
     G : NetworkX graph
 
     weight : string, optional (default= 'weight')
-       Edge data key corresponding to the edge weight.
+        Edge data key corresponding to the edge weight.
 
     Returns
     -------
-    predecessor, distance : dictionaries
-       Dictionaries, keyed by source and target, of predecessors and distances
-       in the shortest path.
+    predecessor, distance : dict and dict-of-dict
+        Predecessor is a dict keyed by node to the predecessor node in
+        the shortest path. The distance output is a dict keyed by source
+        node to a dict keyed by target node to the distance value of the
+        shortest path between the source and target.
 
     Examples
     --------
