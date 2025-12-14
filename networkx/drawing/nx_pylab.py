@@ -1490,6 +1490,8 @@ def draw_networkx_nodes(
 
     if not isinstance(node_shape, np.ndarray) and not isinstance(node_shape, list):
         node_shape = np.array([node_shape for _ in range(len(nodelist))])
+    elif isinstance(node_shape, list):
+        node_shape = np.asarray(node_shape)
 
     for shape in np.unique(node_shape):
         node_collection = ax.scatter(

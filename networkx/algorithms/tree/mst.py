@@ -192,14 +192,12 @@ def kruskal_mst_edges(
     else:
         edges = G.edges(data=True)
 
-    """
-    Sort the edges of the graph with respect to the partition data.
-    Edges are returned in the following order:
+    # Sort the edges of the graph with respect to the partition data.
+    # Edges are returned in the following order:
 
-    * Included edges
-    * Open edges from smallest to largest weight
-    * Excluded edges
-    """
+    # * Included edges
+    # * Open edges from smallest to largest weight
+    # * Excluded edges
     included_edges = []
     open_edges = []
     for e in edges:

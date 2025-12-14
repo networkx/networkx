@@ -306,7 +306,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     # in order to provide a backend that allows class instantiation, this method
     # can be overridden to return your own backend graph class.
     @nx._dispatchable(name="multidigraph__new__", graphs=None, returns_graph=True)
-    def __new__(cls, incoming_graph_data=None, multigraph_input=None, **attr):
+    def __new__(cls, *args, **kwargs):
         return object.__new__(cls)
 
     def __init__(self, incoming_graph_data=None, multigraph_input=None, **attr):
