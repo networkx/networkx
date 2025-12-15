@@ -45,6 +45,7 @@ Using automatic dispatch requires setting configuration options. Every NetworkX
 configuration may also be set from an environment variable and are processed at
 the time networkx is imported.  
 
+
 .. important::
 
    **Configuration timing**
