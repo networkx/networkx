@@ -35,8 +35,8 @@ def betweenness_centrality(
     `False`) [2]_.
     $P$ is a normalization factor representing the number of pairs of nodes
     that have counted shortest paths. Its value depends on the values of `normalized`
-    and `endpoints`, and on whether the graph is directed (see Notes). It can 
-    be set to `1` with `normalized=False`.
+    and `endpoints`, and on whether the graph is directed (see Notes). It can
+    be set to ``1`` with ``normalized=False``.
 
     Parameters
     ----------
