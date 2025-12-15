@@ -1,6 +1,7 @@
 """Floyd-Warshall algorithm for shortest paths."""
 
 import networkx as nx
+from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = [
     "floyd_warshall",
@@ -294,14 +295,12 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     pred = defaultdict(dict)
     # initialize path distance dictionary to be the adjacency matrix
     # also set the distance to self to 0 (zero diagonal)
-    undirected = not G.is_directed()
-    for u, v, d in G.edges(data=True):
-        e_weight = d.get(weight, 1.0)
-        dist[u][v] = min(e_weight, dist[u][v])
-        pred[u][v] = u
-        if undirected:
-            dist[v][u] = min(e_weight, dist[v][u])
-            pred[v][u] = v
+    weight = _weight_function(G, weight)
+    G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
+    for u in G_succ:
+        for v, e_attr in G_succ[u].items():
+            dist[u][v] = weight(u, v, e_attr)
+            pred[u][v] = u
     for w in G:
         dist_w = dist[w]  # save recomputation
         for u in G:
