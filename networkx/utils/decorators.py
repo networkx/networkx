@@ -80,9 +80,21 @@ def not_implemented_for(*graph_types):
     mval = ("multigraph" in graph_types) or "graph" not in graph_types and None
     errmsg = f"not implemented for {' '.join(graph_types)} type"
 
+    # We first attempt to use the graph’s own methods to check if it is a multigraph
+    # or directed. This avoids calling the dispatchable NetworkX functions,
+    # which might not be implemented for some backends and could trigger unnecessary
+    # conversions to NetworkX graphs.
+    def is_multigraph(g):
+        func = getattr(g, "is_multigraph", None)
+        return func() if callable(func) else nx.is_multigraph(g)
+
+    def is_directed(g):
+        func = getattr(g, "is_directed", None)
+        return func() if callable(func) else nx.is_directed(g)
+
     def _not_implemented_for(g):
-        if (mval is None or mval == g.is_multigraph()) and (
-            dval is None or dval == g.is_directed()
+        if (mval is None or mval == is_multigraph(g)) and (
+            dval is None or dval == is_directed(g)
         ):
             raise nx.NetworkXNotImplemented(errmsg)
 

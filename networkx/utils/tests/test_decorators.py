@@ -2,6 +2,7 @@ import os
 import pathlib
 import random
 import tempfile
+from unittest.mock import patch
 
 import pytest
 
@@ -25,6 +26,13 @@ def test_not_implemented_decorator():
     with pytest.raises(nx.NetworkXNotImplemented):
         test_d(nx.DiGraph())
 
+    with patch("networkx.is_directed", return_value=False):
+        test_d(1)
+
+    with patch("networkx.is_directed", return_value=True):
+        with pytest.raises(nx.NetworkXNotImplemented):
+            test_d(1)
+
     @not_implemented_for("undirected")
     def test_u(G):
         pass
@@ -36,6 +44,13 @@ def test_not_implemented_decorator():
     @not_implemented_for("multigraph")
     def test_m(G):
         pass
+
+    with patch("networkx.is_multigraph", return_value=False):
+        test_m(1)
+
+    with patch("networkx.is_multigraph", return_value=True):
+        with pytest.raises(nx.NetworkXNotImplemented):
+            test_m(1)
 
     test_m(nx.Graph())
     with pytest.raises(nx.NetworkXNotImplemented):
