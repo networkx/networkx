@@ -231,7 +231,6 @@ class TestFloyd:
         # The weight function will take the multiplicative inverse of
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
-
         def weight(u, v, d):
             return 1 / d["weight"]
 
@@ -241,6 +240,15 @@ class TestFloyd:
         # very small weight.
         pred, dist = floyd_fn(G, weight)
         assert dist[0][2] == 1 / 10
+
+        def weight_02_hidden(u, v, d):
+            if u == 0 and v == 2:
+                return None  # hides direct edge 0--2
+            return 1 / d["weight"]
+
+        # Now, shortest path from 0--2 will be 0--1--2
+        pred, dist = floyd_fn(G, weight_02_hidden)
+        assert dist[0][2] == 2
 
 
 @pytest.mark.parametrize("seed", list(range(10)))

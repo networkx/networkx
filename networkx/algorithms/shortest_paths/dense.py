@@ -188,8 +188,10 @@ def floyd_warshall_tree(G, weight="weight"):
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
     for u in G_succ:
         for v, e_attr in G_succ[u].items():
-            dist[u][v] = weight(u, v, e_attr)
-            pred[u][v] = u
+            cost = weight(u, v, e_attr)
+            if cost is not None:  # for hidden edge, weight() returns None
+                dist[u][v] = cost
+                pred[u][v] = u
     # dont check for those w, `from` which `no` path exists
     for w, pred_w in pred.items():
         # out_w will store the adjacency list of the OUT_W tree of the paper,
@@ -318,8 +320,10 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
     for u in G_succ:
         for v, e_attr in G_succ[u].items():
-            dist[u][v] = weight(u, v, e_attr)
-            pred[u][v] = u
+            cost = weight(u, v, e_attr)
+            if cost is not None:  # for hidden edge, weight() returns None
+                dist[u][v] = cost
+                pred[u][v] = u
     for w in G:
         dist_w = dist[w]  # save recomputation
         for u in G:
