@@ -3,7 +3,6 @@
 Read and write graphs.
 ======================
 
-Read and write graphs.
 """
 
 import matplotlib.pyplot as plt
