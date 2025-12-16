@@ -634,7 +634,7 @@ G.add_edge('B', 'C', weight=0.1)
 G.add_edge('C', 'D', weight=0.1)
 G.add_edge('A', 'D', weight=0.3 + tiny)
 
-path = nx.shortest_path(G, 'A', 'D', weight='weight')
+path = nx.shortest_path(G, source='A', target='D', weight='weight')
 print(path)
 ```
 
@@ -660,18 +660,13 @@ Below is a version of the previous example using the recommended technique with
 different precision tolerances.
 
 ```{code-cell}
-import networkx as nx
-
-tiny = 5e-17
-
-G = nx.DiGraph()
-G.add_edge('A', 'B', weight=0.1)
-G.add_edge('B', 'C', weight=0.1)
-G.add_edge('C', 'D', weight=0.1)
-G.add_edge('A', 'D', weight=0.3 + tiny)
-
 for precision in [16, 17]:
-    path = nx.shortest_path(G, 'A', 'D', weight=lambda u, v, d: int(d['weight'] * 10 ** precision))
+    path = nx.shortest_path(
+        G,
+        source='A',
+        target='D',
+        weight=lambda u, v, d: int(d['weight'] * 10 ** precision)
+    )
     print(f"With {precision} precision digits, path is {path}")
 ```
 
