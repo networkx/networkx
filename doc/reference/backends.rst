@@ -451,16 +451,9 @@ Creating a custom backend
 
     .. note::
 
-       Backend implementations of algorithms generally **should not reapply decorators**
-       such as ``@not_implemented_for``.
-
-       These decorators are expected to be applied at the NetworkX *frontend* level, and
-       their checks are performed before dispatching to a backend via ``@_dispatchable``.
-       As a result, backend implementations can assume that graph-type constraints have
+       Decorators such as ``@not_implemented_for`` in networkx are applied prior to dispatching.
+       Backend implementations can assume that graph-type constraints have
        already been validated.
-
-       This avoids duplication of logic and ensures consistent behavior across all
-       NetworkX backends.
 
     A backend graph instance may have a ``G.__networkx_cache__`` dict to enable
     caching, and care should be taken to clear the cache when appropriate.
