@@ -10,6 +10,20 @@ The views are read-only iterable containers that are updated as the
 graph is updated. As with dicts, the graph should not be updated
 while iterating through the view. Views can be iterated multiple times.
 
+Quick overview
+==============
+
+Views are quick-to-create, live (they reflect changes to the graph), and
+provide Pythonic access patterns:
+
+    - set-like membership and set operations for nodes and edges (``n in G.nodes``,
+      ``G.nodes & H.nodes``, ``(u, v) in G.edges``),
+    - iteration (``for n in G.nodes``, ``for u, v in G.edges``),
+    - mapping-style lookups (``G.nodes[n]`` returns the node attribute dict;
+      ``G.edges[u, v]`` returns the edge attribute dict),
+    - data-filtered iteration via ``.data(...)`` and conversion to concrete
+      containers via ``list(...)`` or ``dict(...)``.
+
 Edge and Node views also allow data attribute lookup.
 The resulting attribute dict is writable as `G.edges[3, 4]['color']='red'`
 Degree views allow lookup of degree values for single nodes.
@@ -81,6 +95,20 @@ EdgeDataView
     to create 3-tuples and 4-tuples.
 
     The argument `nbunch` restricts edges to those incident to nodes in nbunch.
+
+Performance & pitfalls
+======================
+
+    - Views are **read-only** wrappers — they do not copy graph data. If you need a stable snapshot
+      (for example when you will modify the graph while iterating), materialize the view using
+      ``list(view)`` or ``dict(view)``.
+    - Avoid modifying the graph while iterating over a view (same rule as iterating a dict).
+    - DataViews that return full attribute dicts expose writable dicts (modifying those dicts
+      modifies the underlying graph attributes). Use this intentionally.
+    - Edge set operations on undirected graphs use 2-tuple representations; be careful when
+      comparing sets that may contain both ``(u, v)`` and ``(v, u)``.
+    - DegreeView with ``weight`` performs a sum over edge attributes and can be more expensive
+      than unweighted degree calculations.
 """
 
 from abc import ABC
