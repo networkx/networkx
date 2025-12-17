@@ -292,20 +292,8 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     True
 
     """
-    if flow_func is None:
-        if kwargs:
-            raise nx.NetworkXError(
-                "You have to explicitly set a flow_func if"
-                " you need to pass parameters via kwargs."
-            )
-        flow_func = default_flow_func
-
-    if not callable(flow_func):
-        raise nx.NetworkXError("flow_func has to be callable.")
-
-    R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
-
-    return R.graph["flow_value"]
+    flow_value, _ = maximum_flow(flowG, _s, _t, capacity, flow_func, **kwargs)
+    return flow_value
 
 
 @nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
@@ -592,20 +580,5 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     True
 
     """
-    if flow_func is None:
-        if kwargs:
-            raise nx.NetworkXError(
-                "You have to explicitly set a flow_func if"
-                " you need to pass parameters via kwargs."
-            )
-        flow_func = default_flow_func
-
-    if not callable(flow_func):
-        raise nx.NetworkXError("flow_func has to be callable.")
-
-    if kwargs.get("cutoff") is not None and flow_func is preflow_push:
-        raise nx.NetworkXError("cutoff should not be specified.")
-
-    R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
-
-    return R.graph["flow_value"]
+    value, _ = minimum_cut(flowG, _s, _t, capacity, flow_func, **kwargs)
+    return value
