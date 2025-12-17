@@ -96,6 +96,19 @@ EdgeDataView
 
     The argument `nbunch` restricts edges to those incident to nodes in nbunch.
 
+Common usage patterns
+=====================
+
+    - Use ``G.nodes`` for membership tests, set-like operations, and node attribute lookup.
+    - Use ``G.nodes(data=...)`` or ``G.nodes.data(attr_name, default=...)`` to
+      iterate node/data pairs or to extract a single attribute for all nodes.
+    - Use ``G.edges`` to iterate or test membership of edges.
+    - Use ``G.edges(data=...)`` or ``G.edges(nbunch=..., data=..., keys=...)`` to
+      iterate edges with data, restrict to edges incident to a set of nodes, or
+      include multigraph keys.
+    - Use ``G.degree`` to iterate ``(node, degree)`` pairs or query a single node
+      with ``G.degree[n]``.
+
 Performance & pitfalls
 ======================
 
