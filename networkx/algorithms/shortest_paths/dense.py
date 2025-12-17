@@ -105,18 +105,8 @@ def floyd_warshall_tree(G, weight="weight"):
     ----------
     G : NetworkX graph
 
-    weight : string or function, optional (default = 'weight')
-        If this is a string, then edge weights will be accessed via the
-        edge attribute with this key (that is, the weight of the edge
-        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
-        such edge attribute exists, the weight of the edge is assumed to
-        be one.
-
-        If this is a function, the weight of an edge is the value
-        returned by the function. The function must accept exactly three
-        positional arguments: the two endpoints of an edge and the
-        dictionary of edge attributes for that edge. The function must
-        return a number or None to indicate a hidden edge.
+    weight : string, optional (default= 'weight')
+        Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -192,6 +182,7 @@ def floyd_warshall_tree(G, weight="weight"):
             if cost is not None:  # for hidden edge, weight() returns None
                 dist[u][v] = cost
                 pred[u][v] = u
+
     # dont check for those w, `from` which `no` path exists
     for w, pred_w in pred.items():
         # out_w will store the adjacency list of the OUT_W tree of the paper,
@@ -249,26 +240,14 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     ----------
     G : NetworkX graph
 
-    weight : string or function, optional (default = 'weight')
-        If this is a string, then edge weights will be accessed via the
-        edge attribute with this key (that is, the weight of the edge
-        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
-        such edge attribute exists, the weight of the edge is assumed to
-        be one.
-
-        If this is a function, the weight of an edge is the value
-        returned by the function. The function must accept exactly three
-        positional arguments: the two endpoints of an edge and the
-        dictionary of edge attributes for that edge. The function must
-        return a number or None to indicate a hidden edge.
+    weight: string, optional (default= 'weight')
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
-    predecessor, distance : dict and dict-of-dict
-        Predecessor is a dict keyed by node to the predecessor node in
-        the shortest path. The distance output is a dict keyed by source
-        node to a dict keyed by target node to the distance value of the
-        shortest path between the source and target.
+    predecessor,distance : dictionaries
+       Dictionaries, keyed by source and target, of predecessors and distances
+       in the shortest path.
 
     Examples
     --------
@@ -388,26 +367,15 @@ def floyd_warshall(G, weight="weight"):
     ----------
     G : NetworkX graph
 
-    weight : string or function, optional (default = 'weight')
-        If this is a string, then edge weights will be accessed via the
-        edge attribute with this key (that is, the weight of the edge
-        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
-        such edge attribute exists, the weight of the edge is assumed to
-        be one.
-
-        If this is a function, the weight of an edge is the value
-        returned by the function. The function must accept exactly three
-        positional arguments: the two endpoints of an edge and the
-        dictionary of edge attributes for that edge. The function must
-        return a number or None to indicate a hidden edge.
+    weight: string, optional (default= 'weight')
+       Edge data key corresponding to the edge weight.
 
 
     Returns
     -------
     distance : dict
-        The distance output is a dict keyed by source node to a dict keyed
-        by target node to the distance value of the shortest path between
-        the source and target.
+       A dictionary,  keyed by source and target, of shortest paths distances
+       between nodes.
 
     Examples
     --------
