@@ -449,6 +449,12 @@ Creating a custom backend
     to determine whether a graph meets certain type constraints and to raise an error if the
     function is not applicable to that graph type.
 
+    .. note::
+
+       Decorators such as ``@not_implemented_for`` in networkx are applied prior to dispatching.
+       Backend implementations can assume that graph-type constraints have
+       already been validated.
+
     A backend graph instance may have a ``G.__networkx_cache__`` dict to enable
     caching, and care should be taken to clear the cache when appropriate.
 
