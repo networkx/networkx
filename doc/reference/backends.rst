@@ -47,7 +47,6 @@ the time networkx is imported.
 
 .. important::
 
-
    Environment variables (like ``NETWORKX_BACKEND_PRIORITY``) are read at import-time.
    Modifying the environment (e.g. setting
    ``os.environ["NETWORKX_BACKEND_PRIORITY"]``) after importing networkx has no effect.
