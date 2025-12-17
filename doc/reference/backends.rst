@@ -43,32 +43,14 @@ without converting.
 
 Using automatic dispatch requires setting configuration options. Every NetworkX
 configuration may also be set from an environment variable and are processed at
-the time networkx is imported.  
+the time networkx is imported.
 
 .. important::
 
-   **Configuration timing**
 
-   Environment variables (like ``NETWORKX_BACKEND_PRIORITY``) are read only once
-   when ``networkx`` is imported. You must set them **before** the import statement.
-
-   **Incorrect:**
-
-   .. code-block:: python
-
-      import networkx as nx
-      import os
-
-      os.environ["NETWORKX_BACKEND_PRIORITY"] = "parallel"
-
-   **Correct:**
-
-   .. code-block:: python
-
-      import os
-
-      os.environ["NETWORKX_BACKEND_PRIORITY"] = "parallel"
-      import networkx as nx
+   Environment variables (like ``NETWORKX_BACKEND_PRIORITY``) are read at import-time.
+   Modifying the environment (e.g. setting 
+   ``os.environ["NETWORKX_BACKEND_PRIORITY"]``) after importing networkx has no effect.
 
 The following configuration variables are supported:
 
