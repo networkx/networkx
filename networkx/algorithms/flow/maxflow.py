@@ -141,22 +141,22 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     >>> print(flow_dict["x"]["b"])
     1.0
 
-    When using floating point capacities, the returned flow value 
-    **is inherently approximate** due to the limited precision of
-    floating point arithmetic. 
+    When using floating point capacities, the returned flow value
+    is inherently approximate due to the limited precision of
+    floating point arithmetic.
 
     Examples
     --------
 
     >>> G = nx.DiGraph()
-    >>> G.add_edge("s","a", capacity=0.3)
-    >>> G.add_edge("s","b", capacity=0.3)
-    >>> G.add_edge("s","c", capacity=0.3)
-    >>> G.add_edge("s","d", capacity=0.1)
-    >>> G.add_edge("a","b", capacity=0.5)
-    >>> G.add_edge("b","t", capacity=0.4)
-    >>> G.add_edge("c","t", capacity=0.7)
-    >>> G.add_edge("d","t", capacity=0.9)
+    >>> G.add_edge("s", "a", capacity=0.3)
+    >>> G.add_edge("s", "b", capacity=0.3)
+    >>> G.add_edge("s", "c", capacity=0.3)
+    >>> G.add_edge("s", "d", capacity=0.1)
+    >>> G.add_edge("a", "b", capacity=0.5)
+    >>> G.add_edge("b", "t", capacity=0.4)
+    >>> G.add_edge("c", "t", capacity=0.7)
+    >>> G.add_edge("d", "t", capacity=0.9)
 
     NetworkX treats floating point values as exact and does not apply any
     automatic tolerance when comparing or accumulating them. As a result,
