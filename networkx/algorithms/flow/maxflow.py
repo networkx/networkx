@@ -154,7 +154,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     is inherently approximate due to the limited precision of
     floating point arithmetic.
 
-    Examples
+    Examples affecting comparisons
     --------
 
     >>> G = nx.DiGraph()
