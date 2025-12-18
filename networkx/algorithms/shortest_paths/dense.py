@@ -175,9 +175,8 @@ def floyd_warshall_tree(G, weight="weight"):
     # initialize path distance dictionary to be the adjacency matrix
     # also set the distance to self to 0 (zero diagonal)
     weight = _weight_function(G, weight)
-    G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
-    for u in G_succ:
-        for v, e_attr in G_succ[u].items():
+    for u, unbr in G._adj.items():
+        for v, e_attr in unbr.items():
             cost = weight(u, v, e_attr)
             if cost is not None:  # for hidden edge, weight() returns None
                 dist[u][v] = cost
@@ -296,9 +295,8 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     # initialize path distance dictionary to be the adjacency matrix
     # also set the distance to self to 0 (zero diagonal)
     weight = _weight_function(G, weight)
-    G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
-    for u in G_succ:
-        for v, e_attr in G_succ[u].items():
+    for u, unbr in G._adj.items():
+        for v, e_attr in unbr.items():
             cost = weight(u, v, e_attr)
             if cost is not None:  # for hidden edge, weight() returns None
                 dist[u][v] = cost
