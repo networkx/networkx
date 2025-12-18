@@ -178,7 +178,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     >>> import math
     >>> math.isclose(flow_value, 0.8)
     True
-    
+
     """
     if flow_func is None:
         if kwargs:
