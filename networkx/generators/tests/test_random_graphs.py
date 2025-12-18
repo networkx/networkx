@@ -502,47 +502,38 @@ def test_random_k_lift_size_and_structure(d, n, k):
 
 # Test structure and connectivity for simple DiGraph case
 def test_random_k_lift__digraph():
-    G = nx.DiGraph()
-    G.add_edges_from([(0, 1), (1, 2), (2, 0)])  # directed 3-cycle, strongly connected
-    H = nx.random_k_lift(G, 3, seed=40)
+    # directed 3-cycle, strongly connected
+    G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+    k = 3
+    H = nx.random_k_lift(G, k, seed=40)
     assert isinstance(H, nx.DiGraph)
-    assert H.number_of_nodes() == 3 * 3
+    assert H.number_of_nodes() == len(G) * k
     assert all(H.in_degree(n) == 1 for n in H)
     assert all(H.out_degree(n) == 1 for n in H)
 
 
 # Test structure and connectivity for simple MultiGraph case
 def test_random_k_lift_multigraph():
-    G = nx.MultiGraph()
-    G.add_edges_from(
-        [
-            (0, 1),
-            (0, 1),  # Two parallel edges
-            (1, 2),
-            (1, 2),  # Two parallel edges
-            (2, 0),
-            (2, 0),  # Two parallel edges
-        ]
-    )  # small 3 node multigraph with parallel edges
-    H = nx.random_k_lift(G, 2, seed=41)
+    # small 3 node multigraph with parallel edges
+    G = nx.MultiGraph([(0, 1), (0, 1), (1, 2), (1, 2), (2, 0), (2, 0)])
+    k = 2
+    H = nx.random_k_lift(G, k, seed=41)
     assert isinstance(H, nx.MultiGraph)
-    assert H.number_of_nodes() == 3 * 2
-    degrees = [deg for _, deg in H.degree()]
-    assert all(deg == 4 for deg in degrees)
+    assert H.number_of_nodes() == len(G) * k
+    assert all(deg == 4 for _, deg in H.degree)
     assert nx.is_connected(H)
 
 
 # Test structure and connectivity for simple non regular case
 def test_random_k_lift_non_regular():
     # G is a non degree regular graph with 4 nodes
-    G = nx.Graph()
-    G.add_edges_from([(0, 1), (1, 2), (1, 3), (2, 3), (0, 3)])
-    H = nx.random_k_lift(G, 3, seed=43)
-    assert H.number_of_nodes() == 4 * 3
+    G = nx.Graph([(0, 1), (1, 2), (1, 3), (2, 3), (0, 3)])
+    k = 3
+    H = nx.random_k_lift(G, k, seed=43)
+    assert H.number_of_nodes() == len(G) * k
     assert nx.is_connected(H)
     # degree distribution check
-    for v in G.nodes:
-        original_degree = G.degree[v]
-        for i in range(3):
+    for v, original_degree in G.degree:
+        for i in range(k):
             lifted_node = (v, i)
             assert H.degree[lifted_node] == original_degree
