@@ -12,6 +12,28 @@ __all__ = [
 ]
 
 
+def _init_pred_dist(G, weight):
+    """Initialize pred and dist to be used in Floyd Warshall algorithms"""
+    from collections import defaultdict
+
+    # dictionary-of-dictionaries representation for dist and pred
+    # use some defaultdict magick here
+    # for dist the default is the floating point inf value
+    dist = defaultdict(lambda: defaultdict(lambda: float("inf")))
+    pred = defaultdict(dict)
+    # initialize path distance dictionary to be the adjacency matrix
+    # also set the distance to self to 0 (zero diagonal)
+    weight = _weight_function(G, weight)
+    for u, unbr in G._adj.items():
+        dist[u][u] = 0
+        for v, e_attr in unbr.items():
+            cost = weight(u, v, e_attr)
+            if cost is not None:  # for hidden edge, weight() returns None
+                dist[u][v] = cost
+                pred[u][v] = u
+    return pred, dist
+
+
 @nx._dispatchable(edge_attrs="weight")
 def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
@@ -162,24 +184,8 @@ def floyd_warshall_tree(G, weight="weight"):
        Ars Math. Contemp. 22, no. 1 (2022).
        https://doi.org/10.26493/1855-3974.2467.497
     """
-    from collections import defaultdict
-
-    # dictionary-of-dictionaries representation for dist and pred
-    # use some defaultdict magick here
-    # for dist the default is the floating point inf value
     inf = float("inf")
-    dist = defaultdict(lambda: defaultdict(lambda: inf))
-    pred = defaultdict(dict)
-    # initialize path distance dictionary to be the adjacency matrix
-    # also set the distance to self to 0 (zero diagonal)
-    weight = _weight_function(G, weight)
-    for u, unbr in G._adj.items():
-        dist[u][u] = 0
-        for v, e_attr in unbr.items():
-            cost = weight(u, v, e_attr)
-            if cost is not None:  # for hidden edge, weight() returns None
-                dist[u][v] = cost
-                pred[u][v] = u
+    pred, dist = _init_pred_dist(G, weight)
 
     # dont check for those w, `from` which `no` path exists
     for w, pred_w in pred.items():
@@ -282,23 +288,7 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     all_pairs_shortest_path
     all_pairs_shortest_path_length
     """
-    from collections import defaultdict
-
-    # dictionary-of-dictionaries representation for dist and pred
-    # use some defaultdict magick here
-    # for dist the default is the floating point inf value
-    dist = defaultdict(lambda: defaultdict(lambda: float("inf")))
-    pred = defaultdict(dict)
-    # initialize path distance dictionary to be the adjacency matrix
-    # also set the distance to self to 0 (zero diagonal)
-    weight = _weight_function(G, weight)
-    for u, unbr in G._adj.items():
-        dist[u][u] = 0
-        for v, e_attr in unbr.items():
-            cost = weight(u, v, e_attr)
-            if cost is not None:  # for hidden edge, weight() returns None
-                dist[u][v] = cost
-                pred[u][v] = u
+    pred, dist = _init_pred_dist(G, weight)
     for w in G:
         dist_w = dist[w]  # save recomputation
         for u in G:
