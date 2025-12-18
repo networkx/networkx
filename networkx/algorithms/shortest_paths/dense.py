@@ -1,5 +1,7 @@
 """Floyd-Warshall algorithm for shortest paths."""
 
+from collections import defaultdict
+
 import networkx as nx
 from networkx.algorithms.shortest_paths.weighted import _weight_function
 
@@ -14,8 +16,6 @@ __all__ = [
 
 def _init_pred_dist(G, weight):
     """Initialize pred and dist to be used in Floyd Warshall algorithms"""
-    from collections import defaultdict
-
     # dictionary-of-dictionaries representation for dist and pred
     # use some defaultdict magick here
     # for dist the default is the floating point inf value
