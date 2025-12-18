@@ -163,6 +163,24 @@ Example:
     >>> dict(G.degree(weight="weight"))
     {0: 6, 1: 6, 2: 2, 3: 2}
 
+Degree Computation
+==================
+
+    NetworkX does not store a persistent degree value for each node. Instead, the
+    degree is computed when requested by examining the neighbor dictionary for a
+    node and counting or summing edge attributes as needed. For multigraphs the key
+    dict for each neighbor is scanned; for weighted degree the requested edge
+    attribute values are summed.
+    
+    Because computing degree accesses the adjacency structures, some applications
+    cache degree values in a separate dictionary to avoid repeated recomputation:
+    
+    .. code-block:: python
+    
+        >>> G_degree = dict(G.degree)   # make a cached snapshot of degrees
+    
+    If degrees are cached, update the cached dictionary when edges are modified.
+
 Performance & pitfalls
 ======================
 
