@@ -169,13 +169,12 @@ def floyd_warshall_tree(G, weight="weight"):
     # for dist the default is the floating point inf value
     inf = float("inf")
     dist = defaultdict(lambda: defaultdict(lambda: inf))
-    for u in G:
-        dist[u][u] = 0
     pred = defaultdict(dict)
     # initialize path distance dictionary to be the adjacency matrix
     # also set the distance to self to 0 (zero diagonal)
     weight = _weight_function(G, weight)
     for u, unbr in G._adj.items():
+        dist[u][u] = 0
         for v, e_attr in unbr.items():
             cost = weight(u, v, e_attr)
             if cost is not None:  # for hidden edge, weight() returns None
@@ -289,13 +288,12 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     # use some defaultdict magick here
     # for dist the default is the floating point inf value
     dist = defaultdict(lambda: defaultdict(lambda: float("inf")))
-    for u in G:
-        dist[u][u] = 0
     pred = defaultdict(dict)
     # initialize path distance dictionary to be the adjacency matrix
     # also set the distance to self to 0 (zero diagonal)
     weight = _weight_function(G, weight)
     for u, unbr in G._adj.items():
+        dist[u][u] = 0
         for v, e_attr in unbr.items():
             cost = weight(u, v, e_attr)
             if cost is not None:  # for hidden edge, weight() returns None
