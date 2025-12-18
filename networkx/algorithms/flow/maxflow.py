@@ -141,6 +141,15 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     >>> print(flow_dict["x"]["b"])
     1.0
 
+    You can also use alternative algorithms for computing the
+    maximum flow by using the flow_func parameter.
+
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> flow_value == nx.maximum_flow(G, "x", "y", flow_func=shortest_augmenting_path)[
+    ...     0
+    ... ]
+    True
+
     When using floating point capacities, the returned flow value
     is inherently approximate due to the limited precision of
     floating point arithmetic.
@@ -169,16 +178,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     >>> import math
     >>> math.isclose(flow_value, 0.8)
     True
-
-    You can also use alternative algorithms for computing the
-    maximum flow by using the flow_func parameter.
-
-    >>> from networkx.algorithms.flow import shortest_augmenting_path
-    >>> flow_value == nx.maximum_flow(G, "x", "y", flow_func=shortest_augmenting_path)[
-    ...     0
-    ... ]
-    True
-
+    
     """
     if flow_func is None:
         if kwargs:
