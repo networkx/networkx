@@ -171,7 +171,7 @@ Degree Computation
     node and counting or summing edge attributes as needed. For multigraphs the key
     dict for each neighbor is scanned; for weighted degree the requested edge
     attribute values are summed.
-            
+
     Because computing degree accesses the adjacency structures, some applications
     cache degree values in a separate dictionary to avoid repeated recomputation:
 
