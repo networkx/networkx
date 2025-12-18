@@ -99,15 +99,69 @@ EdgeDataView
 Common usage patterns
 =====================
 
-    - Use ``G.nodes`` for membership tests, set-like operations, and node attribute lookup.
+NodeView / NodeDataView
+-----------------------
+
+    - Use ``G.nodes`` when you need membership tests, set-like operations, or to
+      look up a node's attribute dict with ``G.nodes[n]``.
     - Use ``G.nodes(data=...)`` or ``G.nodes.data(attr_name, default=...)`` to
       iterate node/data pairs or to extract a single attribute for all nodes.
-    - Use ``G.edges`` to iterate or test membership of edges.
-    - Use ``G.edges(data=...)`` or ``G.edges(nbunch=..., data=..., keys=...)`` to
+    - Use ``list(G)`` or ``for node in G:`` to iterate over nodes.
+
+Example:
+
+.. code-block:: python
+
+    >>> G = nx.path_graph(3)
+    >>> list(G.nodes)
+    [0, 1, 2]
+    >>> G.add_node(3, color="red")
+    >>> list(G.nodes.data("color", default=None))
+    [(0, None), (1, None), (2, None), (3, 'red')]
+
+EdgeView / EdgeDataView
+-----------------------
+
+    - Use ``G.edges`` to iterate or test membership for edges.
+    - Call ``G.edges(data=...)`` or ``G.edges(nbunch=..., data=..., keys=...)`` to
       iterate edges with data, restrict to edges incident to a set of nodes, or
       include multigraph keys.
+
+.. note::
+   Iteration of ``G.edges()`` yields node pairs as 2-tuples even for multigraphs.
+   Use ``G.edges(keys=True)`` to receive 3-tuples ``(u, v, key)`` for multigraphs.
+
+Example:
+
+.. code-block:: python
+
+    >>> G = nx.Graph()
+    >>> G.add_edge(0, 1, weight=3)
+    >>> list(G.edges(data="weight", default=1))
+    [(0, 1, 3)]
+
+DegreeView
+----------
+
     - Use ``G.degree`` to iterate ``(node, degree)`` pairs or query a single node
       with ``G.degree[n]``.
+    - The function interface ``G.degree(nbunch=..., weight=...)`` allows:
+      * ``weight="attr"`` to compute weighted degree using the named edge attribute, and
+      * ``nbunch`` to restrict iteration to a subset of nodes while still allowing direct lookups.
+
+Example:
+
+.. code-block:: python
+
+    >>> G = nx.cycle_graph(4)
+    >>> dict(G.degree())
+    {0: 2, 1: 2, 2: 2, 3: 2}
+    >>> G.degree[0]
+    2
+    >>> # Add an edge with a weight attribute and compute weighted degrees:
+    >>> G.add_edge(0, 1, weight=5)
+    >>> dict(G.degree(weight="weight"))
+    {0: 6, 1: 6, 2: 2, 3: 2}
 
 Performance & pitfalls
 ======================
@@ -122,6 +176,8 @@ Performance & pitfalls
       comparing sets that may contain both ``(u, v)`` and ``(v, u)``.
     - DegreeView with ``weight`` performs a sum over edge attributes and can be more expensive
       than unweighted degree calculations.
+    - When ``G`` will not change and you need many degree lookups, store
+      the precomputed degrees using ``degrees = dict(G.degree)``.
 """
 
 from abc import ABC
