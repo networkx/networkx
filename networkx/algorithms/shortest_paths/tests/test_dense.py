@@ -218,27 +218,18 @@ class TestFloyd:
         assert dist[1][3] == -14
 
     def test_weight_function(self, floyd_fn):
-        """Tests for computing the length of the shortest path using
-        Floyd Warshall's algorithm with a user-defined weight function.
-        """
-        # Create a triangle in which the edge from node 0 to node 2 has
-        # a large weight and the other two edges have a small weight.
+        """Floyd Warshall algorithm using user defined weight function"""
         G = nx.complete_graph(3)
-        G.adj[0][2]["weight"] = 10
+        G.adj[0][2]["weight"] = 10  # assymetric
         G.adj[0][1]["weight"] = 1
         G.adj[1][2]["weight"] = 1
 
-        # The weight function will take the multiplicative inverse of
-        # the weights on the edges. This way, weights that were large
-        # before now become small and vice versa.
+        # weight function is inverse of "weight"
         def weight(u, v, d):
             return 1 / d["weight"]
 
-        # The shortest path from 0 to 2 using the actual weights on the
-        # edges should be [0, 1, 2]. However, with the above weight
-        # function, the shortest path should be [0, 2], since that has a
-        # very small weight.
         pred, dist = floyd_fn(G, weight)
+        # shortest: direct edge (smallest inverse "weight") dist=1/10
         assert dist[0][2] == 1 / 10
 
         def weight_02_hidden(u, v, d):
@@ -246,8 +237,8 @@ class TestFloyd:
                 return None  # hides direct edge 0--2
             return 1 / d["weight"]
 
-        # Now, shortest path from 0--2 will be 0--1--2
         pred, dist = floyd_fn(G, weight_02_hidden)
+        # Direct edge hidden ==> Only 1 path exist ==> dist=2
         assert dist[0][2] == 2
 
 
