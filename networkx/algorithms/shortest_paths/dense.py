@@ -7,6 +7,7 @@ __all__ = [
     "floyd_warshall_predecessor_and_distance",
     "reconstruct_path",
     "floyd_warshall_numpy",
+    "floyd_warshall_tree",
 ]
 
 
@@ -84,6 +85,150 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
         # The second term has the same shape as A due to broadcasting
         A = np.minimum(A, A[i, :][np.newaxis, :] + A[:, i][:, np.newaxis])
     return A
+
+
+@nx._dispatchable(edge_attrs="weight")
+def floyd_warshall_tree(G, weight="weight"):
+    r"""Find all-pairs shortest path lengths using a Tree-based
+    modification of Floyd's algorithm.
+
+    This variant implements the Tree algorithm of Brodnik, Grgurovic and Pozar.
+    It differs from the classical Floyd Warshall algorithm by using a shortest
+    path tree rooted at each intermediate vertex w. For every w, the algorithm
+    builds a tree ``OUT_w`` of shortest paths for the current iteration and
+    scans the tree in depth first order. If an update at a vertex v cannot
+    improve any distance, the algorithm skips the entire subtree below v,
+    since none of its nodes can produce a shorter path, as proved in [1]_.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    weight : string, optional (default= 'weight')
+        Edge data key corresponding to the edge weight.
+
+    Returns
+    -------
+    predecessor, distance : dict and dict-of-dict
+        Predecessor is a dict keyed by node to the predecessor node in
+        the shortest path. The distance output is a dict keyed by source
+        node to a dict keyed by target node to the distance value of the
+        shortest path between the source and target.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from(
+    ...     [
+    ...         ("s", "u", 10),
+    ...         ("s", "x", 5),
+    ...         ("u", "v", 1),
+    ...         ("u", "x", 2),
+    ...         ("v", "y", 1),
+    ...         ("x", "u", 3),
+    ...         ("x", "v", 5),
+    ...         ("x", "y", 2),
+    ...         ("y", "s", 7),
+    ...         ("y", "v", 6),
+    ...     ]
+    ... )
+    >>> predecessors, distances = nx.floyd_warshall_tree(G)
+    >>> nx.reconstruct_path("s", "v", predecessors)
+    ['s', 'x', 'u', 'v']
+
+    Notes
+    -----
+    Floyd's algorithm is appropriate for finding shortest paths
+    in dense graphs or graphs with negative weights when Dijkstra's algorithm
+    fails.  This algorithm can still fail if there are negative cycles.
+    It has worst case running time $O(|V|^3)$ with running space of $O(|V|^2)$.
+
+    For complete directed graphs with independent edge weights drawn from the
+    uniform distribution on [0, 1], the expected running time is
+    $O(|V|^2 (\log |V|)^2)$, as shown in [1]_.
+
+    See Also
+    --------
+    floyd_warshall_predecessor_and_distance
+    floyd_warshall
+    floyd_warshall_numpy
+
+    References
+    ----------
+    .. [1] Brodnik, Andrej, Marko Grgurovic, and Rok Pozar.
+       "Modifications of the Floyd-Warshall algorithm with
+       nearly quadratic expected-time."
+       Ars Math. Contemp. 22, no. 1 (2022).
+       https://doi.org/10.26493/1855-3974.2467.497
+    """
+    from collections import defaultdict
+
+    # dictionary-of-dictionaries representation for dist and pred
+    # use some defaultdict magick here
+    # for dist the default is the floating point inf value
+    inf = float("inf")
+    dist = defaultdict(lambda: defaultdict(lambda: inf))
+    for u in G:
+        dist[u][u] = 0
+    pred = defaultdict(dict)
+    # initialize path distance dictionary to be the adjacency matrix
+    # also set the distance to self to 0 (zero diagonal)
+    undirected = not G.is_directed()
+    for u, v, d in G.edges(data=True):
+        e_weight = d.get(weight, 1.0)
+        dist[u][v] = min(e_weight, dist[u][v])
+        pred[u][v] = u
+        if undirected:
+            dist[v][u] = min(e_weight, dist[v][u])
+            pred[v][u] = v
+
+    # dont check for those w, `from` which `no` path exists
+    for w, pred_w in pred.items():
+        # out_w will store the adjacency list of the OUT_W tree of the paper,
+        # it is a tree, parent --> list of children
+        out_w = {parent: [] for parent in G}
+        for v, parent in pred_w.items():  # w to v path exist
+            if v == w:
+                continue
+            out_w[parent].append(v)
+
+        # dfs order dict and skip dict in practical improvements in the paper
+        stack = [w]
+        dfs_dict = {}  # {node: next node in dfs order}
+        skip_dict = {}  # {node: next node after subtree is skipped}
+
+        node = None
+        while stack:
+            next_node = stack.pop()
+            dfs_dict[node] = next_node
+            if stack:
+                skip_dict[next_node] = stack[-1]
+            stack.extend(out_w[next_node])
+            node = next_node
+
+        dist_w = dist[w]  # for speed
+        # main inner loop starts here
+        for u in G:
+            if u == w:  # small optimization
+                continue
+            dist_u = dist[u]
+            dist_uw = dist_u[w]
+            if dist_uw == inf:  # small optimization
+                continue
+
+            # note: we skip v=w as relaxation would always fail
+            v = dfs_dict[w]
+            while v is not None:
+                dist_uwv = dist_uw + dist_w[v]
+                if dist_u[v] > dist_uwv:
+                    dist_u[v] = dist_uwv
+                    # update/new entries to be created in pred[u]
+                    pred[u][v] = pred_w[v]  # v must be in pred_w as checked above
+                    v = dfs_dict.get(v, None)
+                else:
+                    v = skip_dict.get(v, None)
+
+    return dict(pred), dict(dist)
 
 
 @nx._dispatchable(edge_attrs="weight")
