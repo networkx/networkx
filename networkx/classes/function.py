@@ -440,6 +440,20 @@ def edge_subgraph(G, edges):
     that odd cases like an `edge_subgraph` of a `restricted_view`
     can be created.
 
+    For MultiGraph/MultiDiGraph objects, edges must be specified as
+    (u, v, key) tuples.
+
+    Calling ``G.edges`` without any arguments on a multigraph iterates over
+    ``(u, v, key)`` triples, which can be passed directly to
+    ``edge_subgraph`` if no filtering on edge attributes is required.
+    
+    If edge attributes are needed for filtering, use
+    ``G.edges(keys=True, data=True)``, which iterates over
+    ``(u, v, key, data)`` 4-tuples. In this case, use the edge data only to
+    decide which edges to include, and pass only the corresponding
+    ``(u, v, key)`` triples to ``edge_subgraph``. Edge attributes are
+    inferred automatically from the underlying graph.
+
     Examples
     --------
     >>> G = nx.path_graph(5)
