@@ -177,7 +177,7 @@ def edge_betweenness_centrality_subset(
     The normalization might seem a little strange but it is the same
     as in edge_betweenness_centrality() and is designed to make
     edge_betweenness_centrality(G) be the same as
-    edge_betweenness_centrality_subset(G,sources=G.nodes(),targets=G.nodes(),normalized=True).
+    edge_betweenness_centrality_subset(G, sources=G, targets=G, normalized=True).
 
     References
     ----------
