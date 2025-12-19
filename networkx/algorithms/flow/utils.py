@@ -209,7 +209,7 @@ def _capacity_function(G, capacity):
         dictionary for the eedge joining those nodes. That function returns
         a number representing the capcity of an edge.
 
-    If any edge does not have an attribute with key `weight`, it is assumed to
+    If any edge does not have an attribute with key `capacity`, it is assumed to
     have infinite capacity.
 
     """
@@ -217,7 +217,7 @@ def _capacity_function(G, capacity):
     inf = float("inf")
     if callable(capacity):
         return capacity
-    # If the weight keyword argument is not callable, we assume it is a
-    # string representing the edge attribute containing the weight of
+    # If the capacity keyword argument is not callable, we assume it is a
+    # string representing the edge attribute containing the capacity of
     # the edge.
     return lambda u, v, data: data.get(capacity, inf)
