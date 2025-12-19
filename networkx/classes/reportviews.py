@@ -1,11 +1,6 @@
 """
 View Classes provide node, edge and degree "views" of a graph.
 
-Views for nodes, edges and degree are provided for all base graph classes.
-A view means a read-only object that is quick to create, automatically
-updated when the graph changes, and provides basic access like `n in V`,
-`for n in V`, `V[n]` and sometimes set operations.
-
 The views are read-only iterable containers that are updated as the
 graph is updated. As with dicts, the graph should not be updated
 while iterating through the view. Views can be iterated multiple times.
@@ -14,7 +9,7 @@ Quick overview
 ==============
 
 Views are quick-to-create, live (they reflect changes to the graph), and
-provide Pythonic access patterns:
+provide Pythonic access patterns for all base graph classes:
 
     - set-like membership and set operations for nodes and edges (``n in G.nodes``,
       ``G.nodes & H.nodes``, ``(u, v) in G.edges``),
@@ -129,7 +124,9 @@ EdgeView / EdgeDataView
 
 .. note::
    Iteration of ``G.edges()`` yields node pairs as 2-tuples even for multigraphs.
-   Use ``G.edges(keys=True)`` to receive 3-tuples ``(u, v, key)`` for multigraphs.
+   Iteration of `G.edges` yields 3-tuples for multigraphs and 2-tuples otherwise.
+   You can also use ``G.edges(keys=True, data=True)`` to receive 4-tuples
+   ``(u, v, key, data)`` for multigraphs.
 
 Example:
 
