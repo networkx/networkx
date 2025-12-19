@@ -177,7 +177,7 @@ mono_funcs = {
 morphism_funcs = is_funcs | SG_funcs | mono_funcs
 
 is_morphic_funcs = [pytest.param(fn[0], id=id) for id, fn in morphism_funcs.items()]
-mapping_iters = [pytest.param(fn[1], id=id) for id, fn in morphism_funcs.items()]
+mono_iters = [pytest.param(fn[1], id=id) for id, fn in mono_funcs.items()]
 morphic_and_mapping = [pytest.param(*fns, id=id) for id, fns in morphism_funcs.items()]
 
 is_isomorphic_funcs = [pytest.param(fn[0], id=id) for id, fn in is_funcs.items()]
@@ -186,8 +186,6 @@ is_mono_funcs = [pytest.param(fn[0], id=id) for id, fn in mono_funcs.items()]
 
 
 def check_paired_graphs(G1, G2, expected, iso_ic, symmetry, Gclass):
-    if iso_ic is NotImplemented:
-        pytest.skip("morphism function not yet implemented")
     if iso_ic(nx.Graph(), nx.Graph(), None, None, symmetry) is NotImplemented:
         pytest.skip("symmetry not yet implemented in this morphism function")
 
@@ -362,6 +360,8 @@ def cycle6_plus_3_2paths():
     G.graph["numb_symmetries"] = 6
     return G
 
+
+# TODO: add more graphs from test_ismags.py
 
 solo_graphs = [
     asymm_3triangles_kite,
@@ -585,4 +585,79 @@ def test_subgraph_triangle_square_2tails(iso_ic, symmetry, Gclass):
     check_subgraphs(G, SG, False, iso_ic, symmetry, Gclass)
 
 
-# test of mapping for subgraph iso and mono see vf2 monomorphism_iter12 etc
+@pytest.mark.parametrize("Gclass", graph_classes)
+@pytest.mark.parametrize("symmetry", [True, False])
+@pytest.mark.parametrize("iso_ic", is_SG_funcs + is_mono_funcs)
+def test_monomorphism_path_in_cycle(iso_ic, symmetry, Gclass):
+    if iso_ic is NotImplemented:
+        return
+
+    G = nx.cycle_graph(14, create_using=nx.MultiDiGraph)
+    # for multiedges
+    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    # for selfloops (node 1, 2 and 3 mapped to selves)
+    G.add_edges_from([(1, 1), (2, 2), (3, 3)])
+
+    SG = G.copy()
+    SG.remove_edge(13, 0)
+    assert G.number_of_edges() == SG.number_of_edges() + 1
+
+    mono = "mono" in iso_ic.__name__
+    check_subgraphs(G, SG, mono, iso_ic, symmetry, Gclass)
+
+
+@pytest.mark.parametrize("Gclass", graph_classes)
+@pytest.mark.parametrize("symmetry", [True, False])
+@pytest.mark.parametrize("mono_iter", mono_iters)
+def test_monomorphism_count_for_path_in_cycle(mono_iter, symmetry, Gclass):
+    if mono_iter is NotImplemented:
+        return
+
+    G = nx.cycle_graph(14, create_using=nx.MultiDiGraph)
+    # for multiedges
+    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    # for selfloops (node 1, 2 and 3 mapped to selves)
+    G.add_edges_from([(1, 1), (2, 2), (3, 3)])
+
+    SG = G.copy()
+    SG.remove_edge(13, 0)
+    assert G.number_of_edges() == SG.number_of_edges() + 1
+
+    G = Gclass(G)
+    SG = Gclass(SG)
+
+    mappings = mono_iter(G, SG, symmetry=symmetry)
+    # skip if symmetry is True for vf2 and vf2pp
+    if mappings is NotImplemented:
+        return
+    assert sum(1 for _ in mappings) == 1 if G.is_directed() else 2
+    # switch order of G and SG (bigger cannot be subgraph)
+    assert sum(1 for _ in mono_iter(SG, G, symmetry=symmetry)) == 0
+
+
+@pytest.mark.parametrize("Gclass", graph_classes)
+@pytest.mark.parametrize("symmetry", [True, False])
+@pytest.mark.parametrize("SG_ic", is_SG_funcs + is_mono_funcs)
+def test_subgraph_mono(SG_ic, symmetry, Gclass):
+    if SG_ic is NotImplemented:
+        return
+
+    # wikipedia example
+    G = Gclass(["ag", "ah", "ai", "bg", "bh", "bj", "cg", "ci", "cj", "dh", "di", "dj"])
+    SG = Gclass(["ag", "cg", "ci", "di", "bg"])
+    # check if Implemented and that G is always subgraph morphic to itself
+    result = SG_ic(G, G, symmetry=symmetry)
+    if result is NotImplemented:
+        return
+    assert result
+
+    if "mono" in SG_ic.__name__:
+        assert SG_ic(G, SG, symmetry=symmetry)
+    else:
+        assert not SG_ic(G, SG, symmetry=symmetry)
+
+    # switch order of G and SG (bigger cannot be subgraph)
+    assert not SG_ic(SG, G, symmetry=symmetry)
+
+    SG.add_edge("c", "a")
+    assert not SG_ic(G, SG, symmetry=symmetry)
