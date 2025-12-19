@@ -308,22 +308,13 @@ def _is_complete_graph(G):
     return e == max_edges
 
 
-def _find_missing_edge(G):
-    """Given a non-complete graph G, returns a missing edge."""
-    nodes = set(G)
-    for u in G:
-        missing = nodes - set(list(G[u].keys()) + [u])
-        if missing:
-            return (u, missing.pop())
-
-
 def _max_cardinality_node(G, choices, wanna_connect):
-    """Returns a the node in choices that has more connections in G
+    """Returns a node in choices that has the most connections in G
     to nodes in wanna_connect.
     """
     max_number = -1
     for x in choices:
-        number = len([y for y in G[x] if y in wanna_connect])
+        number = len(wanna_connect.intersection(G[x]))
         if number > max_number:
             max_number = number
             max_cardinality_node = x
@@ -352,20 +343,21 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
         v = _max_cardinality_node(G, unnumbered, numbered)
         unnumbered.remove(v)
         numbered.add(v)
-        clique_wanna_be = set(G[v]) & numbered
+        clique_wanna_be = numbered.intersection(G[v])
         sg = G.subgraph(clique_wanna_be)
-        if _is_complete_graph(sg):
+        try:
+            # look for an edge that is not included in sg if sg is not a clique
+            (u, w) = next(iter(nx.non_edges(sg)))
+            return (u, v, w)
+
+        except StopIteration:
             # The graph seems to be chordal by now. We update the treewidth
             current_treewidth = max(current_treewidth, len(clique_wanna_be))
             if current_treewidth > treewidth_bound:
                 raise nx.NetworkXTreewidthBoundExceeded(
                     f"treewidth_bound exceeded: {current_treewidth}"
                 )
-        else:
-            # sg is not a clique,
-            # look for an edge that is not included in sg
-            (u, w) = _find_missing_edge(sg)
-            return (u, v, w)
+
     return ()
 
 
