@@ -109,13 +109,14 @@ def build_residual_network(G, capacity):
     R = nx.DiGraph()
     R.__networkx_cache__ = None  # Disable caching
     R.add_nodes_from(G)
+
     inf = float("inf")
     capacity = _capacity_function(G, capacity)
     # Extract edges with positive capacities. Self loops excluded.
     edge_list = []
     for u, v, attr in G.edges(data=True):
         cap = capacity(u, v, attr)  # returns None for hidden edge
-        if cap is not None and cap > 0 and u != v:  # avoids hidden edge too
+        if cap > 0 and u != v and cap is not None:  # avoids hidden edge
             edge_list.append((u, v, cap))
 
     # Simulate infinity with three times the sum of the finite edge capacities
