@@ -446,7 +446,7 @@ def edge_subgraph(G, edges):
     Calling ``G.edges`` without any arguments on a multigraph iterates over
     ``(u, v, key)`` triples, which can be passed directly to
     ``edge_subgraph`` if no filtering on edge attributes is required.
-    
+
     If edge attributes are needed for filtering, use
     ``G.edges(keys=True, data=True)``, which iterates over
     ``(u, v, key, data)`` 4-tuples. In this case, use the edge data only to
