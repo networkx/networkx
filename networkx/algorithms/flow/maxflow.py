@@ -155,7 +155,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     floating point arithmetic.
 
     Examples affecting comparisons
-    --------
+    ------------------------------
 
     >>> G = nx.DiGraph()
     >>> G.add_edge("s", "a", capacity=0.3)
