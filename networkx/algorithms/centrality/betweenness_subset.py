@@ -80,7 +80,7 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
 
     The normalization might seem a little strange but it is
     designed to make betweenness_centrality(G) be the same as
-    betweenness_centrality_subset(G,sources=G.nodes(),targets=G.nodes(),normalized=True).
+    betweenness_centrality_subset(G, sources=G, targets=G, normalized=True).
 
     The total number of paths between source and target is counted
     differently for directed and undirected graphs. Directed paths
