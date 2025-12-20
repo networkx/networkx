@@ -1,11 +1,11 @@
 """
 View Classes provide node, edge and degree "views" of a graph.
 
-As with dicts, the graph should not be updated while 
+As with dicts, the graph should not be updated while
 iterating through the view. Views can be iterated multiple times.
 
-Views are quick-to-create, read-only iterable containers, 
-live (they reflect changes to the graph), and provide 
+Views are quick-to-create, read-only iterable containers,
+live (they reflect changes to the graph), and provide
 Pythonic access patterns for all base graph classes:
 
     - set-like membership and set operations for nodes and edges (``n in G.nodes``,
