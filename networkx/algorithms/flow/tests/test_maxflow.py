@@ -383,19 +383,20 @@ class TestMaxflowMinCutCommon:
     def test_capacity_func(self):
         G = nx.DiGraph()
         # directed line graph: 0---->1---->2
-        G.add_weighted_edges_from([(0, 1, 1 / 2), (1, 2, 1 / 8)], weight="spam")
+        G.add_edge(0, 1, capacity=1 / 2)
+        G.add_edge(1, 2, capacity=1 / 8)
 
-        # flow solution using capacity="spam"
+        # flow solution using capacity="capacity"
         # {
         #     0: {1: 1/8},
         #     1: {2: 1/8},
         #     2: {},
         # }
-        compare_flows_and_cuts(G, 0, 2, 1 / 8, capacity="spam")
+        compare_flows_and_cuts(G, 0, 2, 1 / 8, capacity="capacity")
 
-        # Now, define capacity function to be inverse of spam attribute
+        # Now, define my_cap function to be inverse of "capacity" attribute
         def my_cap(u, v, e_attr):
-            return 1 / e_attr["spam"]
+            return 1 / e_attr["capacity"]
 
         # flow solution using capacity=my_cap
         # {
@@ -409,7 +410,7 @@ class TestMaxflowMinCutCommon:
         def my_cap_01_hidden(u, v, e_attr):
             if u == 0 and v == 1:
                 return None
-            return 1 / e_attr["spam"]
+            return 1 / e_attr["capacity"]
 
         # flow solution using capacity=my_cap_01_hidden
         # {
