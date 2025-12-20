@@ -470,7 +470,7 @@ def edge_subgraph(G, edges):
     >>> G.add_nodes_from([1, 2])
     >>> G.add_edge(1, 2, None, kind="kind1", more_data="foo")
     >>> G.add_edge(1, 2, None, kind="kind2", even_more_data="bar")
-    
+
     >>> sub_graph = G.edge_subgraph(
     ...     (u, v, k)
     ...     for u, v, k, d in G.edges(keys=True, data=True)
