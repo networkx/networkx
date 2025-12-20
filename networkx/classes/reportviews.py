@@ -1,15 +1,12 @@
 """
 View Classes provide node, edge and degree "views" of a graph.
 
-The views are read-only iterable containers that are updated as the
-graph is updated. As with dicts, the graph should not be updated
-while iterating through the view. Views can be iterated multiple times.
+As with dicts, the graph should not be updated while 
+iterating through the view. Views can be iterated multiple times.
 
-Quick overview
-==============
-
-Views are quick-to-create, live (they reflect changes to the graph), and
-provide Pythonic access patterns for all base graph classes:
+Views are quick-to-create, read-only iterable containers, 
+live (they reflect changes to the graph), and provide 
+Pythonic access patterns for all base graph classes:
 
     - set-like membership and set operations for nodes and edges (``n in G.nodes``,
       ``G.nodes & H.nodes``, ``(u, v) in G.edges``),
@@ -19,8 +16,7 @@ provide Pythonic access patterns for all base graph classes:
     - data-filtered iteration via ``.data(...)`` and conversion to concrete
       containers via ``list(...)`` or ``dict(...)``.
 
-Edge and Node views also allow data attribute lookup.
-The resulting attribute dict is writable as `G.edges[3, 4]['color']='red'`
+The resulting attribute dict is writable as `G.edges[3, 4]['color'] = 'red'`
 Degree views allow lookup of degree values for single nodes.
 Weighted degree is supported with the `weight` argument.
 
