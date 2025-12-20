@@ -469,7 +469,9 @@ def edge_subgraph(G, edges):
     >>> G = nx.MultiDiGraph()
     >>> G.add_nodes_from([1, 2])
     >>> G.add_edge(1, 2, None, kind="kind1", more_data="foo")
+    0
     >>> G.add_edge(1, 2, None, kind="kind2", even_more_data="bar")
+    1
 
     >>> sub_graph = G.edge_subgraph(
     ...     (u, v, k)
