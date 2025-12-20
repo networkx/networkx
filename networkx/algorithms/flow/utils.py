@@ -193,25 +193,30 @@ def _capacity_function(G, capacity):
 
     Parameters
     ----------
-    G : NetworkX graph (not MultiGraph)
+    G : NetworkX graph
+        MultiGraph and MultiDiGraph are not supported.
 
-    capacity : string or function
-        If it is callable, `capacity` itself is returned. If it is a string,
-        it is assumed to be the name of the edge attribute that represents
-        the capcity of an edge. In that case, a function is returned that
-        gets the edge capcity according to the specified edge attribute.
+    capacity : string or callable
+        If callable, it must accept exactly three positional arguments
+        ``(u, v, edge_attrs)``, where `u` and `v` are the endpoints of
+        an edge and ``edge_attrs`` is the corresponding edge attribute
+        dictionary. The callable must return a numeric capacity, or None
+        to indicate that the edge is hidden.
+
+        If string, it is interpreted as the key of an edge attribute storing
+        the capacity. In this case, a function is returned that accepts
+        ``(u, v, edge_attrs)`` and returns ``edge_attrs[capacity]``.
 
     Returns
     -------
-    function
-        This function returns a callable that accepts exactly three inputs:
-        a node, an node adjacent to the first one, and the edge attribute
-        dictionary for the eedge joining those nodes. That function returns
-        a number representing the capcity of an edge.
+    callable
+        A function with signature ``(u, v, edge_attrs)`` that returns the
+        capacity of the edge joining nodes `u` and `v`.
 
-    If any edge does not have an attribute with key `capacity`, it is assumed to
-    have infinite capacity.
-
+    Notes
+    -----
+    If the specified capacity attribute is not present on an edge, that
+    edge is assumed to have infinite capacity.
     """
 
     inf = float("inf")
