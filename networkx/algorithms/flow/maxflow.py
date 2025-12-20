@@ -172,6 +172,8 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Find the value of maximum single-commodity flow.
 
+    Use `flow_value, _ = maximum_flow(...)` instead.
+
     Parameters
     ----------
     flowG : NetworkX graph
@@ -292,6 +294,13 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     True
 
     """
+    import warnings
+
+    warnings.warn(
+        "Use `flow_value, _ = maximum_flow(...)` instead.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
     flow_value, _ = maximum_flow(flowG, _s, _t, capacity, flow_func, **kwargs)
     return flow_value
 
@@ -463,6 +472,8 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Compute the value of a minimum (s, t)-cut.
 
+    Use `cut_value, _ = minimum_cut(...)` instead.
+
     Use the max-flow min-cut theorem, i.e., the capacity of a minimum
     capacity cut is equal to the flow value of a maximum flow.
 
@@ -580,5 +591,12 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     True
 
     """
+    import warnings
+
+    warnings.warn(
+        "Use `cut_value, _ = minimum_cut(...)` instead.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
     value, _ = minimum_cut(flowG, _s, _t, capacity, flow_func, **kwargs)
     return value
