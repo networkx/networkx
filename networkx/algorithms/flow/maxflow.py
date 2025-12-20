@@ -428,6 +428,18 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     >>> cut_value == nx.minimum_cut(G, "x", "y", flow_func=shortest_augmenting_path)[0]
     True
 
+    If the capacities are floating point numbers, usage of ``math.isclose``
+    is recommended for value comparison to avoid machine-dependent errors:
+
+    >>> import math
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("x", "y", capacity=0.1)
+    >>> G.add_edge("y", "z", capacity=0.1)
+    >>> G.add_edge("z", "x", capacity=0.1)
+    >>> cut_value, partition = nx.minimum_cut(G, "x", "z")
+    >>> math.isclose(cut_value, 0.1)
+    True
+
     """
     if flow_func is None:
         if kwargs:
@@ -577,6 +589,18 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     >>> cut_value == nx.minimum_cut_value(
     ...     G, "x", "y", flow_func=shortest_augmenting_path
     ... )
+    True
+
+    If the capacities are floating point numbers, usage of ``math.isclose``
+    is recommended for value comparison to avoid machine-dependent errors:
+
+    >>> import math
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("x", "y", capacity=0.1)
+    >>> G.add_edge("y", "z", capacity=0.1)
+    >>> G.add_edge("z", "x", capacity=0.1)
+    >>> cut_value = nx.minimum_cut_value(G, "x", "z")
+    >>> math.isclose(cut_value, 0.1)
     True
 
     """
