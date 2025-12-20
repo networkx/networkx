@@ -12,6 +12,7 @@ from networkx.algorithms.flow import (
     preflow_push,
     shortest_augmenting_path,
 )
+from networkx.algorithms.flow.utils import _capacity_function
 
 flow_funcs = {
     boykov_kolmogorov,
@@ -41,10 +42,12 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
     for u in G:
         assert set(G[u]) == set(flowDict[u]), errmsg
     excess = {u: 0 for u in flowDict}
+    capacity = _capacity_function(G, capacity)
     for u in flowDict:
         for v, flow in flowDict[u].items():
-            if capacity in G[u][v]:
-                assert flow <= G[u][v][capacity]
+            cap = capacity(u, v, G[u][v])
+            if cap is not None:
+                assert flow <= capacity(u, v, G[u][v])
             assert flow >= 0, errmsg
             excess[u] -= flow
             excess[v] += flow
@@ -63,7 +66,10 @@ def validate_cuts(G, s, t, solnValue, partition, capacity, flow_func):
     assert all(n in G for n in partition[1]), errmsg
     cutset = compute_cutset(G, partition)
     assert all(G.has_edge(u, v) for (u, v) in cutset), errmsg
-    assert solnValue == sum(G[u][v][capacity] for (u, v) in cutset), errmsg
+    capacity = _capacity_function(G, capacity)
+    assert solnValue == sum(
+        cap for (u, v) in cutset if (cap := capacity(u, v, G[u][v])) is not None
+    ), errmsg
     H = G.copy()
     H.remove_edges_from(cutset)
     if not G.is_directed():
@@ -373,6 +379,45 @@ class TestMaxflowMinCutCommon:
         # flow solution
         # {0: {}, 2: {3: 0}, 3: {2: 0}}
         compare_flows_and_cuts(G, 0, 3, 0)
+
+    def test_capacity_func(self):
+        G = nx.DiGraph()
+        # simple line graph 0--<1>--1--<10>--2
+        G.add_weighted_edges_from([(0, 1, 1 / 2), (1, 2, 1 / 8)], weight="spam")
+
+        # flow solution
+        # {
+        #     0: {1: 1/8},
+        #     1: {2: 1/8},
+        #     2: {},
+        # }
+        compare_flows_and_cuts(G, 0, 2, 1 / 8, capacity="spam")
+
+        # Now, define capacity function to be inverse of spam attribute
+        def my_cap(u, v, e_attr):
+            return 1 / e_attr["spam"]
+
+        # flow solution
+        # {
+        #     0: {1: 2},
+        #     1: {2: 2},
+        #     2: {},
+        # }
+        compare_flows_and_cuts(G, 0, 2, 2, capacity=my_cap)
+
+        # hide the direct edge 0--1, making G appear disconnected
+        def my_cap_01_hidden(u, v, e_attr):
+            if u == 0 and v == 1:
+                return None
+            return 1 / e_attr["spam"]
+
+        # flow solution
+        # {
+        #     0: {},
+        #     1: {2: 0},
+        #     2: {},
+        # }
+        compare_flows_and_cuts(G, 0, 2, 0, capacity=my_cap_01_hidden)
 
     def test_source_target_not_in_graph(self):
         G = nx.Graph()
