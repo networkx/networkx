@@ -440,6 +440,15 @@ def edge_subgraph(G, edges):
     that odd cases like an `edge_subgraph` of a `restricted_view`
     can be created.
 
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> H = G.edge_subgraph([(0, 1), (3, 4)])
+    >>> list(H.nodes)
+    [0, 1, 3, 4]
+    >>> list(H.edges)
+    [(0, 1), (3, 4)]
+
     For MultiGraph/MultiDiGraph objects, edges must be specified as
     (u, v, key) tuples.
 
@@ -454,14 +463,22 @@ def edge_subgraph(G, edges):
     ``(u, v, key)`` triples to ``edge_subgraph``. Edge attributes are
     inferred automatically from the underlying graph.
 
-    Examples
-    --------
-    >>> G = nx.path_graph(5)
-    >>> H = G.edge_subgraph([(0, 1), (3, 4)])
-    >>> list(H.nodes)
-    [0, 1, 3, 4]
-    >>> list(H.edges)
-    [(0, 1), (3, 4)]
+    Examples (filtering by edge attributes)
+    ---------------------------------------
+
+    >>> G = nx.MultiDiGraph()
+    >>> G.add_nodes_from([1, 2])
+    >>> G.add_edge(1, 2, None, kind="kind1", more_data="foo")
+    >>> G.add_edge(1, 2, None, kind="kind2", even_more_data="bar")
+    
+    >>> sub_graph = G.edge_subgraph(
+    ...     (u, v, k)
+    ...     for u, v, k, d in G.edges(keys=True, data=True)
+    ...     if d["kind"] == "kind1"
+    ... )
+    >>> list(sub_graph.edges(keys=True))
+    [(1, 2, 0)]
+
     """
     nxf = nx.filters
     edges = set(edges)
