@@ -382,10 +382,10 @@ class TestMaxflowMinCutCommon:
 
     def test_capacity_func(self):
         G = nx.DiGraph()
-        # simple line graph 0--<1>--1--<10>--2
+        # directed line graph: 0---->1---->2
         G.add_weighted_edges_from([(0, 1, 1 / 2), (1, 2, 1 / 8)], weight="spam")
 
-        # flow solution
+        # flow solution using capacity="spam"
         # {
         #     0: {1: 1/8},
         #     1: {2: 1/8},
@@ -397,7 +397,7 @@ class TestMaxflowMinCutCommon:
         def my_cap(u, v, e_attr):
             return 1 / e_attr["spam"]
 
-        # flow solution
+        # flow solution using capacity=my_cap
         # {
         #     0: {1: 2},
         #     1: {2: 2},
@@ -411,7 +411,7 @@ class TestMaxflowMinCutCommon:
                 return None
             return 1 / e_attr["spam"]
 
-        # flow solution
+        # flow solution using capacity=my_cap_01_hidden
         # {
         #     0: {},
         #     1: {2: 0},

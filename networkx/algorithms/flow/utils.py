@@ -116,7 +116,9 @@ def build_residual_network(G, capacity):
     edge_list = []
     for u, v, attr in G.edges(data=True):
         cap = capacity(u, v, attr)  # returns None for hidden edge
-        if cap is not None and cap > 0 and u != v:  # avoids hidden edge
+        if cap is None:  # avoids hidden edge
+            continue
+        if cap > 0 and u != v:
             edge_list.append((u, v, cap))
 
     # Simulate infinity with three times the sum of the finite edge capacities
