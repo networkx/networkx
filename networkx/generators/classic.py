@@ -375,8 +375,9 @@ def circular_ladder_graph(n, create_using=None):
 
     """
     G = ladder_graph(n, create_using)
-    G.add_edge(0, n - 1)
-    G.add_edge(n, 2 * n - 1)
+    if(n > 1):
+        G.add_edge(0, n - 1)
+        G.add_edge(n, 2 * n - 1)
     return G
 
 
