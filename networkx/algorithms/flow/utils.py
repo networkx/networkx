@@ -113,13 +113,11 @@ def build_residual_network(G, capacity):
     inf = float("inf")
     capacity = _capacity_function(G, capacity)
     # Extract edges with positive capacities. Self loops excluded.
-    edge_list = []
-    for u, v, attr in G.edges(data=True):
-        cap = capacity(u, v, attr)  # returns None for hidden edge
-        if cap is None:  # avoids hidden edge
-            continue
-        if cap > 0 and u != v:
-            edge_list.append((u, v, cap))
+    edge_list = [
+        (u, v, cap)
+        for u, v, attr in G.edges(data=True)
+        if u != v and (cap := capacity(u, v, attr)) is not None and cap > 0
+    ]
 
     # Simulate infinity with three times the sum of the finite edge capacities
     # or any positive value if the sum is zero. This allows the
