@@ -61,46 +61,21 @@ class UndirectedAlgorithmBenchmarks:
 
 class DirectedAlgorithmBenchmarks:
     timeout = 120
-    seed = 42
     _graphs = [
-        nx.erdos_renyi_graph(100, 0.005, seed=seed, directed=True),
-        nx.erdos_renyi_graph(100, 0.01, seed=seed, directed=True),
-        nx.erdos_renyi_graph(100, 0.05, seed=seed, directed=True),
-        nx.erdos_renyi_graph(100, 0.1, seed=seed, directed=True),
-        nx.erdos_renyi_graph(100, 0.5, seed=seed, directed=True),
-        nx.erdos_renyi_graph(1000, 0.0005, seed=seed, directed=True),
-        nx.erdos_renyi_graph(1000, 0.001, seed=seed, directed=True),
-        nx.erdos_renyi_graph(1000, 0.005, seed=seed, directed=True),
-        nx.erdos_renyi_graph(1000, 0.01, seed=seed, directed=True),
-        nx.erdos_renyi_graph(1000, 0.05, seed=seed, directed=True),
-        nx.erdos_renyi_graph(10000, 0.00005, seed=seed, directed=True),
-        nx.erdos_renyi_graph(10000, 0.0001, seed=seed, directed=True),
-        nx.erdos_renyi_graph(10000, 0.0005, seed=seed, directed=True),
-        nx.empty_graph(100, create_using=nx.DiGraph),
-        nx.empty_graph(1000, create_using=nx.DiGraph),
-        nx.empty_graph(10000, create_using=nx.DiGraph),
-        nx.complete_graph(100, create_using=nx.DiGraph),
-        nx.complete_graph(1000, create_using=nx.DiGraph),
+        nx.erdos_renyi_graph(100, 0.1, directed=True),
+        nx.erdos_renyi_graph(100, 0.5, directed=True),
+        nx.erdos_renyi_graph(100, 0.9, directed=True),
+        nx.erdos_renyi_graph(1000, 0.01, directed=True),
+        nx.erdos_renyi_graph(1000, 0.05, directed=True),
+        nx.erdos_renyi_graph(1000, 0.09, directed=True),
     ]
     params = [
-        "Erdos Renyi (100, 0.005)",
-        "Erdos Renyi (100, 0.01)",
-        "Erdos Renyi (100, 0.05)",
         "Erdos Renyi (100, 0.1)",
         "Erdos Renyi (100, 0.5)",
-        "Erdos Renyi (1000, 0.0005)",
-        "Erdos Renyi (1000, 0.001)",
-        "Erdos Renyi (1000, 0.005)",
+        "Erdos Renyi (100, 0.9)",
         "Erdos Renyi (1000, 0.01)",
         "Erdos Renyi (1000, 0.05)",
-        "Erdos Renyi (10000, 0.00005)",
-        "Erdos Renyi (10000, 0.0001)",
-        "Erdos Renyi (10000, 0.0005)",
-        "Empty (100)",
-        "Empty (1000)",
-        "Empty (10000)",
-        "Complete (100)",
-        "Complete (1000)",
+        "Erdos Renyi (1000, 0.09)",
     ]
 
     param_names = ["graph"]
