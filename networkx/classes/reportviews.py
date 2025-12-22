@@ -8,13 +8,13 @@ Views are quick-to-create, read-only iterable containers,
 live (they reflect changes to the graph), and provide
 Pythonic access patterns for all base graph classes:
 
-    - set-like membership and set operations for nodes and edges (``n in G.nodes``,
-      ``G.nodes & H.nodes``, ``(u, v) in G.edges``),
-    - iteration (``for n in G.nodes``, ``for u, v in G.edges``),
-    - mapping-style lookups (``G.nodes[n]`` returns the node attribute dict;
-      ``G.edges[u, v]`` returns the edge attribute dict),
-    - data-filtered iteration via ``.data(...)`` and conversion to concrete
-      containers via ``list(...)`` or ``dict(...)``.
+- set-like membership and set operations for nodes and edges (``n in G.nodes``,
+  ``G.nodes & H.nodes``, ``(u, v) in G.edges``),
+- iteration (``for n in G.nodes``, ``for u, v in G.edges``),
+- mapping-style lookups (``G.nodes[n]`` returns the node attribute dict;
+  ``G.edges[u, v]`` returns the edge attribute dict),
+- data-filtered iteration via ``.data(...)`` and conversion to concrete
+  containers via ``list(...)`` or ``dict(...)``.
 
 The resulting attribute dict is writable as `G.edges[3, 4]['color'] = 'red'`
 Degree views allow lookup of degree values for single nodes.
