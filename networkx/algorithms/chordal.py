@@ -314,7 +314,7 @@ def _max_cardinality_node(G, choices, wanna_connect):
     """
     max_number = -1
     for x in choices:
-        number = len(wanna_connect.intersection(G[x]))
+        number = sum(1 for y in G[x] if y in wanna_connect)
         if number > max_number:
             max_number = number
             max_cardinality_node = x
