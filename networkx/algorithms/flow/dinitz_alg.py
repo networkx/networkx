@@ -11,7 +11,9 @@ from networkx.utils import pairwise
 __all__ = ["dinitz"]
 
 
-@nx._dispatchable(edge_attrs={"capacity": float("inf")}, returns_graph=True)
+@nx._dispatchable(
+    edge_attrs={"capacity": float("inf")}, returns_graph=True, preserve_edge_attrs=True
+)
 def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff=None):
     """Find a maximum single-commodity flow using Dinitz' algorithm.
 

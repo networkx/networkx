@@ -77,7 +77,9 @@ class GlobalRelabelThreshold:
         self._work = 0
 
 
-@nx._dispatchable(edge_attrs={"capacity": float("inf")}, returns_graph=True)
+@nx._dispatchable(
+    edge_attrs={"capacity": float("inf")}, returns_graph=True, preserve_edge_attrs=True
+)
 def build_residual_network(G, capacity):
     """Build a residual network and initialize a zero flow.
 

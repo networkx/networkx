@@ -14,7 +14,9 @@ __all__ = ["gomory_hu_tree"]
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs={"capacity": float("inf")}, returns_graph=True)
+@nx._dispatchable(
+    edge_attrs={"capacity": float("inf")}, returns_graph=True, preserve_edge_attrs=True
+)
 def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     r"""Returns the Gomory-Hu tree of an undirected graph G.
 

@@ -163,7 +163,9 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
     return R
 
 
-@nx._dispatchable(edge_attrs={"capacity": float("inf")}, returns_graph=True)
+@nx._dispatchable(
+    edge_attrs={"capacity": float("inf")}, returns_graph=True, preserve_edge_attrs=True
+)
 def shortest_augmenting_path(
     G,
     s,

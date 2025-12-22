@@ -117,7 +117,9 @@ def edmonds_karp_impl(G, s, t, capacity, residual, cutoff):
     return R
 
 
-@nx._dispatchable(edge_attrs={"capacity": float("inf")}, returns_graph=True)
+@nx._dispatchable(
+    edge_attrs={"capacity": float("inf")}, returns_graph=True, preserve_edge_attrs=True
+)
 def edmonds_karp(
     G, s, t, capacity="capacity", residual=None, value_only=False, cutoff=None
 ):
