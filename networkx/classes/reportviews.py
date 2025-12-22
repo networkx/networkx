@@ -16,76 +16,76 @@ Pythonic access patterns for all base graph classes:
 - data-filtered iteration via ``.data(...)`` and conversion to concrete
   containers via ``list(...)`` or ``dict(...)``.
 
-The resulting attribute dict is writable as `G.edges[3, 4]['color'] = 'red'`
+The resulting attribute dict is writable as ``G.edges[3, 4]['color'] = 'red'``
 Degree views allow lookup of degree values for single nodes.
-Weighted degree is supported with the `weight` argument.
+Weighted degree is supported with the ``weight`` argument.
 
 NodeView
 ========
 
-    `V = G.nodes` (or `V = G.nodes()`) allows `len(V)`, `n in V`, set
-    operations e.g. "G.nodes & H.nodes", and `dd = G.nodes[n]`, where
-    `dd` is the node data dict. Iteration is over the nodes by default.
+``V = G.nodes`` (or ``V = G.nodes()``) allows ``len(V)``, ``n in V``, set
+operations e.g. ``G.nodes & H.nodes``, and ``dd = G.nodes[n]``, where
+``dd`` is the node data dict. Iteration is over the nodes by default.
 
 NodeDataView
 ============
 
-    To iterate over (node, data) pairs, use arguments to `G.nodes()`
-    to create a DataView e.g. `DV = G.nodes(data='color', default='red')`.
-    The DataView iterates as `for n, color in DV` and allows
-    `(n, 'red') in DV`. Using `DV = G.nodes(data=True)`, the DataViews
-    use the full datadict in writeable form also allowing contain testing as
-    `(n, {'color': 'red'}) in VD`. DataViews allow set operations when
-    data attributes are hashable.
+To iterate over ``(node, data)`` pairs, use arguments to ``G.nodes()``
+to create a DataView e.g. ``DV = G.nodes(data='color', default='red')``.
+The DataView iterates as ``for n, color in DV`` and allows
+``(n, 'red') in DV``. Using ``DV = G.nodes(data=True)``, the DataViews
+use the full datadict in writeable form also allowing contain testing as
+``(n, {'color': 'red'}) in VD``. DataViews allow set operations when
+data attributes are hashable.
 
 DegreeView
 ==========
 
-    `V = G.degree` allows iteration over (node, degree) pairs as well
-    as lookup: `deg=V[n]`. There are many flavors of DegreeView
-    for In/Out/Directed/Multi. For Directed Graphs, `G.degree`
-    counts both in and out going edges. `G.out_degree` and
-    `G.in_degree` count only specific directions.
-    Weighted degree using edge data attributes is provide via
-    `V = G.degree(weight='attr_name')` where any string with the
-    attribute name can be used. `weight=None` is the default.
-    No set operations are implemented for degrees, use NodeView.
+``V = G.degree`` allows iteration over ``(node, degree)`` pairs as well
+as lookup: ``deg = V[n]``. There are many flavors of DegreeView
+for In/Out/Directed/Multi. For Directed Graphs, ``G.degree``
+counts both in and out going edges. ``G.out_degree`` and
+``G.in_degree`` count only specific directions.
+Weighted degree using edge data attributes is provide via
+``V = G.degree(weight='attr_name')`` where any string with the
+attribute name can be used. ``weight=None`` is the default.
+No set operations are implemented for degrees, use NodeView.
 
-    The argument `nbunch` restricts iteration to nodes in nbunch.
-    The DegreeView can still lookup any node even if nbunch is specified.
+The argument ``nbunch`` restricts iteration to nodes in nbunch.
+The DegreeView can still lookup any node even if nbunch is specified.
 
 EdgeView
 ========
 
-    `V = G.edges` or `V = G.edges()` allows iteration over edges as well as
-    `e in V`, set operations and edge data lookup `dd = G.edges[2, 3]`.
-    Iteration is over 2-tuples `(u, v)` for Graph/DiGraph. For multigraphs
-    edges 3-tuples `(u, v, key)` are the default but 2-tuples can be obtained
-    via `V = G.edges(keys=False)`.
+``V = G.edges`` or ``V = G.edges()`` allows iteration over edges as well as
+``e in V``, set operations and edge data lookup ``dd = G.edges[2, 3]``.
+Iteration is over 2-tuples ``(u, v)`` for Graph/DiGraph. For multigraphs
+edges 3-tuples ``(u, v, key)`` are the default but 2-tuples can be obtained
+via ``V = G.edges(keys=False)``.
 
-    Set operations for directed graphs treat the edges as a set of 2-tuples.
-    For undirected graphs, 2-tuples are not a unique representation of edges.
-    So long as the set being compared to contains unique representations
-    of its edges, the set operations will act as expected. If the other
-    set contains both `(0, 1)` and `(1, 0)` however, the result of set
-    operations may contain both representations of the same edge.
+Set operations for directed graphs treat the edges as a set of 2-tuples.
+For undirected graphs, 2-tuples are not a unique representation of edges.
+So long as the set being compared to contains unique representations
+of its edges, the set operations will act as expected. If the other
+set contains both ``(0, 1)`` and ``(1, 0)`` however, the result of set
+operations may contain both representations of the same edge.
 
 EdgeDataView
 ============
 
-    Edge data can be reported using an EdgeDataView typically created
-    by calling an EdgeView: `DV = G.edges(data='weight', default=1)`.
-    The EdgeDataView allows iteration over edge tuples, membership checking
-    but no set operations.
+Edge data can be reported using an EdgeDataView typically created
+by calling an EdgeView: ``DV = G.edges(data='weight', default=1)``.
+The EdgeDataView allows iteration over edge tuples, membership checking
+but no set operations.
 
-    Iteration depends on `data` and `default` and for multigraph `keys`
-    If `data is False` (the default) then iterate over 2-tuples `(u, v)`.
-    If `data is True` iterate over 3-tuples `(u, v, datadict)`.
-    Otherwise iterate over `(u, v, datadict.get(data, default))`.
-    For Multigraphs, if `keys is True`, replace `u, v` with `u, v, key`
-    to create 3-tuples and 4-tuples.
+Iteration depends on ``data`` and ``default`` and for multigraph ``keys``
+If ``data is False`` (the default) then iterate over 2-tuples ``(u, v)``.
+If ``data is True`` iterate over 3-tuples ``(u, v, datadict)``.
+Otherwise iterate over ``(u, v, datadict.get(data, default))``.
+For Multigraphs, if ``keys is True``, replace ``u, v`` with `u, v, key`
+to create 3-tuples and 4-tuples.
 
-    The argument `nbunch` restricts edges to those incident to nodes in nbunch.
+The argument ``nbunch`` restricts edges to those incident to nodes in nbunch.
 
 Common usage patterns
 =====================
@@ -93,11 +93,11 @@ Common usage patterns
 NodeView / NodeDataView
 -----------------------
 
-    - Use ``G.nodes`` when you need membership tests, set-like operations, or to
-      look up a node's attribute dict with ``G.nodes[n]``.
-    - Use ``G.nodes(data=...)`` or ``G.nodes.data(attr_name, default=...)`` to
-      iterate node/data pairs or to extract a single attribute for all nodes.
-    - Use ``list(G)`` or ``for node in G:`` to iterate over nodes.
+- Use ``G.nodes`` when you need membership tests, set-like operations, or to
+  look up a node's attribute dict with ``G.nodes[n]``.
+- Use ``G.nodes(data=...)`` or ``G.nodes.data(attr_name, default=...)`` to
+  iterate node/data pairs or to extract a single attribute for all nodes.
+- Use ``list(G)`` or ``for node in G:`` to iterate over nodes.
 
 Example:
 
@@ -113,10 +113,10 @@ Example:
 EdgeView / EdgeDataView
 -----------------------
 
-    - Use ``G.edges`` to iterate or test membership for edges.
-    - Call ``G.edges(data=...)`` or ``G.edges(nbunch=..., data=..., keys=...)`` to
-      iterate edges with data, restrict to edges incident to a set of nodes, or
-      include multigraph keys.
+- Use ``G.edges`` to iterate or test membership for edges.
+- Call ``G.edges(data=...)`` or ``G.edges(nbunch=..., data=..., keys=...)`` to
+  iterate edges with data, restrict to edges incident to a set of nodes, or
+  include multigraph keys.
 
 .. note::
    Iteration of ``G.edges()`` yields node pairs as 2-tuples even for multigraphs.
@@ -136,11 +136,11 @@ Example:
 DegreeView
 ----------
 
-    - Use ``G.degree`` to iterate ``(node, degree)`` pairs or query a single node
-      with ``G.degree[n]``.
-    - The function interface ``G.degree(nbunch=..., weight=...)`` allows:
-      * ``weight="attr"`` to compute weighted degree using the named edge attribute, and
-      * ``nbunch`` to restrict iteration to a subset of nodes while still allowing direct lookups.
+- Use ``G.degree`` to iterate ``(node, degree)`` pairs or query a single node
+  with ``G.degree[n]``.
+- The function interface ``G.degree(nbunch=..., weight=...)`` allows:
+  * ``weight="attr"`` to compute weighted degree using the named edge attribute, and
+  * ``nbunch`` to restrict iteration to a subset of nodes while still allowing direct lookups.
 
 Example:
 
@@ -159,36 +159,36 @@ Example:
 Degree Computation
 ==================
 
-    NetworkX does not store a persistent degree value for each node. Instead, the
-    degree is computed when requested by examining the neighbor dictionary for a
-    node and counting or summing edge attributes as needed. For multigraphs the key
-    dict for each neighbor is scanned; for weighted degree the requested edge
-    attribute values are summed.
+NetworkX does not store a persistent degree value for each node. Instead, the
+degree is computed when requested by examining the neighbor dictionary for a
+node and counting or summing edge attributes as needed. For multigraphs the key
+dict for each neighbor is scanned; for weighted degree the requested edge
+attribute values are summed.
 
-    Because computing degree accesses the adjacency structures, some applications
-    cache degree values in a separate dictionary to avoid repeated recomputation:
+Because computing degree accesses the adjacency structures, some applications
+cache degree values in a separate dictionary to avoid repeated recomputation:
 
-    .. code-block:: python
+.. code-block:: python
 
-        >>> G_degree = dict(G.degree)   # make a cached snapshot of degrees
+    >>> G_degree = dict(G.degree)   # make a cached snapshot of degrees
 
-    If degrees are cached, update the cached dictionary when edges are modified.
+If degrees are cached, update the cached dictionary when edges are modified.
 
 Performance & pitfalls
 ======================
 
-    - Views are **read-only** wrappers — they do not copy graph data. If you need a stable snapshot
-      (for example when you will modify the graph while iterating), materialize the view using
-      ``list(view)`` or ``dict(view)``.
-    - Avoid modifying the graph while iterating over a view (same rule as iterating a dict).
-    - DataViews that return full attribute dicts expose writable dicts (modifying those dicts
-      modifies the underlying graph attributes). Use this intentionally.
-    - Edge set operations on undirected graphs use 2-tuple representations; be careful when
-      comparing sets that may contain both ``(u, v)`` and ``(v, u)``.
-    - DegreeView with ``weight`` performs a sum over edge attributes and can be more expensive
-      than unweighted degree calculations.
-    - When ``G`` will not change and you need many degree lookups, store
-      the precomputed degrees using ``degrees = dict(G.degree)``.
+- Views are **read-only** wrappers — they do not copy graph data. If you need a stable snapshot
+  (for example when you will modify the graph while iterating), materialize the view using
+  ``list(view)`` or ``dict(view)``.
+- Avoid modifying the graph while iterating over a view (same rule as iterating a dict).
+- DataViews that return full attribute dicts expose writable dicts (modifying those dicts
+  modifies the underlying graph attributes). Use this intentionally.
+- Edge set operations on undirected graphs use 2-tuple representations; be careful when
+  comparing sets that may contain both ``(u, v)`` and ``(v, u)``.
+- DegreeView with ``weight`` performs a sum over edge attributes and can be more expensive
+  than unweighted degree calculations.
+- When ``G`` will not change and you need many degree lookups, store
+  the precomputed degrees using ``degrees = dict(G.degree)``.
 """
 
 from abc import ABC
