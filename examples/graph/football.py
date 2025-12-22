@@ -19,7 +19,7 @@ import zipfile
 import matplotlib.pyplot as plt
 import networkx as nx
 
-url = "http://www-personal.umich.edu/~mejn/netdata/football.zip"
+url = "https://public.websites.umich.edu/~mejn/netdata/football.zip"
 
 sock = urllib.request.urlopen(url)  # open URL
 s = io.BytesIO(sock.read())  # read into BytesIO "file"
