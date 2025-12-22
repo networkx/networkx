@@ -80,7 +80,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     >>> G.add_node(1)
 
-    Add the nodes from any container (a list, dict, set or
+    Add the nodes from any iterable (a list, dict, set or
     even the lines from a file or the nodes from another graph).
 
     >>> G.add_nodes_from([2, 3])
@@ -476,7 +476,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> key = G.add_edge(1, 2)  # explicit two-node form
         >>> G.add_edge(*e)  # single edge as tuple of two nodes
         1
-        >>> G.add_edges_from([(1, 2)])  # add edges from iterable container
+        >>> G.add_edges_from([(1, 2)])  # add edges from iterable
         [2]
 
         Associate data to edges using keywords:
@@ -622,7 +622,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Parameters
         ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
+        nbunch : single node, iterable, or all nodes (default= all nodes)
             The view will only report edges from these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
@@ -694,7 +694,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Parameters
         ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
+        nbunch : single node, iterable, or all nodes (default= all nodes)
             The view will only report edges incident to these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
@@ -733,7 +733,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Parameters
         ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
+        nbunch : single node, iterable, or all nodes (default= all nodes)
             The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
@@ -781,7 +781,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Parameters
         ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
+        nbunch : single node, iterable, or all nodes (default= all nodes)
             The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
@@ -831,7 +831,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Parameters
         ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
+        nbunch : single node, iterable, or all nodes (default= all nodes)
             The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)

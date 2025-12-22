@@ -75,7 +75,7 @@ class MultiGraph(Graph):
 
     >>> G.add_node(1)
 
-    Add the nodes from any container (a list, dict, set or
+    Add the nodes from any iterable (a list, dict, set or
     even the lines from a file or the nodes from another graph).
 
     >>> G.add_nodes_from([2, 3])
@@ -490,7 +490,7 @@ class MultiGraph(Graph):
         >>> ekey = G.add_edge(1, 2)  # explicit two-node form
         >>> G.add_edge(*e)  # single edge as tuple of two nodes
         1
-        >>> G.add_edges_from([(1, 2)])  # add edges from iterable container
+        >>> G.add_edges_from([(1, 2)])  # add edges from iterable
         [2]
 
         Associate data to edges using keywords:
@@ -540,8 +540,8 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        ebunch_to_add : container of edges
-            Each edge given in the container will be added to the
+        ebunch_to_add : iterable of edges
+            Each edge given in the iterable will be added to the
             graph. The edges can be:
 
                 - 2-tuples (u, v) or
@@ -716,8 +716,8 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        ebunch: list or container of edge tuples
-            Each edge given in the list or container will be removed
+        ebunch : iterable of edge tuples
+            Each edge given in the iterable will be removed
             from the graph. The edges can be:
 
                 - 2-tuples (u, v) A single edge between u and v is removed.
@@ -854,7 +854,7 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
+        nbunch : single node, iterable, or all nodes (default= all nodes)
             The view will only report edges from these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
@@ -996,7 +996,7 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
+        nbunch : single node, iterable, or all nodes (default= all nodes)
             The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)

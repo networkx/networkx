@@ -391,7 +391,7 @@ class DiDegreeView:
     Parameters
     ==========
     graph : NetworkX graph-like class
-    nbunch : node, container of nodes, or None meaning all nodes (default=None)
+    nbunch : node, iterable of nodes, or None meaning all nodes (default=None)
     weight : bool or string (default=None)
 
     Notes
@@ -491,7 +491,7 @@ class DegreeView(DiDegreeView):
     Parameters
     ==========
     graph : NetworkX graph-like class
-    nbunch : node, container of nodes, or None meaning all nodes (default=None)
+    nbunch : node, iterable of nodes, or None meaning all nodes (default=None)
     weight : string or None (default=None)
 
     Notes
@@ -825,7 +825,7 @@ class EdgeDataView(OutEdgeDataView):
     This view is primarily used to iterate over the edges reporting
     edges as node-tuples with edge data optionally reported. The
     argument `nbunch` allows restriction to edges incident to nodes
-    in that container/singleton. The default (nbunch=None)
+    in that iterable/singleton. The default (nbunch=None)
     reports all edges. The arguments `data` and `default` control
     what edge data is reported. The default `data is False` reports
     only node-tuples for each edge. If `data is True` the entire edge
@@ -835,7 +835,7 @@ class EdgeDataView(OutEdgeDataView):
 
     Parameters
     ----------
-    nbunch : container of nodes, node or None (default None)
+    nbunch : iterable of nodes, node, or None (default None)
     data : False, True or string (default False)
     default : default value (default None)
 
@@ -1118,7 +1118,7 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
             attribute, the `default` value is returned.
         default : object, default=None
             The value used when an edge does not have a specific attribute
-        nbunch : container of nodes, optional (default=None)
+        nbunch : iterable of nodes, optional (default=None)
             Allows restriction to edges only involving certain nodes. All edges
             are considered by default.
 
