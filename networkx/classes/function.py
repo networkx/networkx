@@ -1355,7 +1355,31 @@ def selfloop_edges(G, data=False, keys=False, default=None):
                 )
         else:
             return ((n, n) for n, nbrs in G._adj.items() if n in nbrs)
+@nx._dispatchable
+def has_self_loops(G):
+    """Returns True if the graph has any self-loops.
 
+    This is more efficient than checking if `number_of_selfloops` > 0,
+    as it returns immediately upon finding the first self-loop.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    Returns
+    -------
+    bool
+        True if the graph has any self-loops, False otherwise.
+
+    See Also
+    --------
+    number_of_selfloops
+    nodes_with_selfloops
+    """
+    # We use the existing generator but stop at the first item
+    for _ in nodes_with_selfloops(G):
+        return True
+    return False
 
 @nx._dispatchable
 def number_of_selfloops(G):
