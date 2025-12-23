@@ -1,6 +1,9 @@
 """Floyd-Warshall algorithm for shortest paths."""
 
+from collections import defaultdict
+
 import networkx as nx
+from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = [
     "floyd_warshall",
@@ -9,6 +12,26 @@ __all__ = [
     "floyd_warshall_numpy",
     "floyd_warshall_tree",
 ]
+
+
+def _init_pred_dist(G, weight):
+    """Initialize pred and dist to be used in Floyd Warshall algorithms"""
+    # dictionary-of-dictionaries representation for dist and pred
+    # use some defaultdict magick here
+    # for dist the default is the floating point inf value
+    dist = defaultdict(lambda: defaultdict(lambda: float("inf")))
+    pred = defaultdict(dict)
+    # initialize path distance dictionary to be the adjacency matrix
+    # also set the distance to self to 0 (zero diagonal)
+    weight = _weight_function(G, weight)
+    for u, unbr in G._adj.items():
+        dist[u][u] = 0
+        for v, e_attr in unbr.items():
+            cost = weight(u, v, e_attr)
+            if cost is not None:  # for hidden edge, weight() returns None
+                dist[u][v] = cost
+                pred[u][v] = u
+    return pred, dist
 
 
 @nx._dispatchable(edge_attrs="weight")
@@ -104,8 +127,18 @@ def floyd_warshall_tree(G, weight="weight"):
     ----------
     G : NetworkX graph
 
-    weight : string, optional (default= 'weight')
-        Edge data key corresponding to the edge weight.
+    weight : string or function (default= 'weight')
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -161,26 +194,8 @@ def floyd_warshall_tree(G, weight="weight"):
        Ars Math. Contemp. 22, no. 1 (2022).
        https://doi.org/10.26493/1855-3974.2467.497
     """
-    from collections import defaultdict
-
-    # dictionary-of-dictionaries representation for dist and pred
-    # use some defaultdict magick here
-    # for dist the default is the floating point inf value
     inf = float("inf")
-    dist = defaultdict(lambda: defaultdict(lambda: inf))
-    for u in G:
-        dist[u][u] = 0
-    pred = defaultdict(dict)
-    # initialize path distance dictionary to be the adjacency matrix
-    # also set the distance to self to 0 (zero diagonal)
-    undirected = not G.is_directed()
-    for u, v, d in G.edges(data=True):
-        e_weight = d.get(weight, 1.0)
-        dist[u][v] = min(e_weight, dist[u][v])
-        pred[u][v] = u
-        if undirected:
-            dist[v][u] = min(e_weight, dist[v][u])
-            pred[v][u] = v
+    pred, dist = _init_pred_dist(G, weight)
 
     # dont check for those w, `from` which `no` path exists
     for w, pred_w in pred.items():
@@ -239,8 +254,18 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     ----------
     G : NetworkX graph
 
-    weight: string, optional (default= 'weight')
-       Edge data key corresponding to the edge weight.
+    weight : string or function (default= 'weight')
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -283,25 +308,7 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     all_pairs_shortest_path
     all_pairs_shortest_path_length
     """
-    from collections import defaultdict
-
-    # dictionary-of-dictionaries representation for dist and pred
-    # use some defaultdict magick here
-    # for dist the default is the floating point inf value
-    dist = defaultdict(lambda: defaultdict(lambda: float("inf")))
-    for u in G:
-        dist[u][u] = 0
-    pred = defaultdict(dict)
-    # initialize path distance dictionary to be the adjacency matrix
-    # also set the distance to self to 0 (zero diagonal)
-    undirected = not G.is_directed()
-    for u, v, d in G.edges(data=True):
-        e_weight = d.get(weight, 1.0)
-        dist[u][v] = min(e_weight, dist[u][v])
-        pred[u][v] = u
-        if undirected:
-            dist[v][u] = min(e_weight, dist[v][u])
-            pred[v][u] = v
+    pred, dist = _init_pred_dist(G, weight)
     for w in G:
         dist_w = dist[w]  # save recomputation
         for u in G:
@@ -366,8 +373,18 @@ def floyd_warshall(G, weight="weight"):
     ----------
     G : NetworkX graph
 
-    weight: string, optional (default= 'weight')
-       Edge data key corresponding to the edge weight.
+    weight : string or function (default= 'weight')
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number or None to indicate a hidden edge.
 
 
     Returns

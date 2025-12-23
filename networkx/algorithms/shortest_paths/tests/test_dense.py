@@ -217,6 +217,30 @@ class TestFloyd:
         pred, dist = floyd_fn(G)
         assert dist[1][3] == -14
 
+    def test_weight_function(self, floyd_fn):
+        """Floyd Warshall algorithm using user defined weight function"""
+        G = nx.complete_graph(3)
+        G.adj[0][2]["weight"] = 10  # assymetric
+        G.adj[0][1]["weight"] = 1
+        G.adj[1][2]["weight"] = 1
+
+        # weight function is inverse of "weight"
+        def weight(u, v, d):
+            return 1 / d["weight"]
+
+        pred, dist = floyd_fn(G, weight)
+        # shortest: direct edge (smallest inverse "weight") dist=1/10
+        assert dist[0][2] == 1 / 10
+
+        def weight_02_hidden(u, v, d):
+            if u == 0 and v == 2:
+                return None  # hides direct edge 0--2
+            return 1 / d["weight"]
+
+        pred, dist = floyd_fn(G, weight_02_hidden)
+        # Direct edge hidden ==> Only 1 path exist ==> dist=2
+        assert dist[0][2] == 2
+
 
 @pytest.mark.parametrize("seed", list(range(10)))
 @pytest.mark.parametrize("n", list(range(10, 20)))
