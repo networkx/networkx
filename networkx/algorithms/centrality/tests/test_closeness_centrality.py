@@ -220,7 +220,7 @@ class TestClosenessCentrality:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
             assert cr[n] == pytest.approx(dr[n], abs=1e-3)
 
-    def test_k5_closeness(self):
+    def test_k5_closeness_sp(self):
         G = nx.complete_graph(5)
         sp = dict(nx.all_pairs_shortest_path_length(G))
         c = nx.closeness_centrality(G, sp=sp)
@@ -228,7 +228,7 @@ class TestClosenessCentrality:
         for n in G:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
-    def test_p3_closeness(self):
+    def test_p3_closeness_sp(self):
         G = nx.path_graph(3)
         sp = dict(nx.all_pairs_shortest_path_length(G))
         c = nx.closeness_centrality(G, sp=sp)
@@ -236,7 +236,7 @@ class TestClosenessCentrality:
         for n in G:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
-    def test_krackhardt_closeness(self):
+    def test_krackhardt_closeness_sp(self):
         G = nx.krackhardt_kite_graph()
         sp = dict(nx.all_pairs_shortest_path_length(G))
         c = nx.closeness_centrality(G, sp=sp)
@@ -255,7 +255,7 @@ class TestClosenessCentrality:
         for n in G:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
-    def test_florentine_families_closeness(self):
+    def test_florentine_families_closeness_sp(self):
         G = nx.florentine_families_graph()
         sp = dict(nx.all_pairs_shortest_path_length(G))
         c = nx.closeness_centrality(G, sp=sp)
@@ -279,7 +279,7 @@ class TestClosenessCentrality:
         for n in G:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
-    def test_les_miserables_closeness(self):
+    def test_les_miserables_closeness_sp(self):
         G = nx.les_miserables_graph()
         sp = dict(nx.all_pairs_shortest_path_length(G))
         c = nx.closeness_centrality(G, sp=sp)
@@ -365,7 +365,7 @@ class TestClosenessCentrality:
         for n in G:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
-    def test_weighted_closeness(self):
+    def test_weighted_closeness_sp(self):
         edges = [
             ("s", "u", 10),
             ("s", "x", 5),
