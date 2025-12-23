@@ -462,7 +462,23 @@ def bmssp(
 
 
 def _get_weight_function(G, weight):
-    """Return a function that returns the weight of an edge."""
+    """Return a function that returns the weight of an edge.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The graph for which weight function is needed.
+
+    weight : string or function
+        If string, edge weights are accessed via this edge attribute key.
+        If function, it should accept (u, v, data) and return a number.
+
+    Returns
+    -------
+    weight_fn : function
+        A function that takes (u, v, data) and returns the edge weight.
+        For multigraphs, returns the minimum weight among parallel edges.
+    """
     if callable(weight):
         return weight
     
@@ -478,7 +494,21 @@ def _get_weight_function(G, weight):
 INF = float('inf')
 
 def _find_k(n):
-    """Find parameter k = floor(log(n)^(1/3))"""
+    """Find parameter k for BMSSP algorithm.
+
+    Computes k = floor(log(n)^(1/3)), which determines the branching
+    factor and pivot selection threshold in the BMSSP algorithm.
+
+    Parameters
+    ----------
+    n : int
+        Number of nodes in the graph.
+
+    Returns
+    -------
+    k : int
+        The computed parameter k, minimum value is 1.
+    """
     if n <= 1:
         return 1
     log_n = 0
@@ -498,7 +528,21 @@ def _find_k(n):
     return l
 
 def _find_t(n):
-    """Find parameter t = floor(log(n)^(2/3))"""
+    """Find parameter t for BMSSP algorithm.
+
+    Computes t = floor(log(n)^(2/3)), which determines the recursion
+    depth scaling factor in the BMSSP algorithm.
+
+    Parameters
+    ----------
+    n : int
+        Number of nodes in the graph.
+
+    Returns
+    -------
+    t : int
+        The computed parameter t, minimum value is 1.
+    """
     if n <= 1:
         return 1
     log_n = 0
@@ -519,7 +563,24 @@ def _find_t(n):
     return l
 
 def _find_l(n, t):
-    """Find recursion depth l = ceil(log(n) / t)"""
+    """Find recursion depth l for BMSSP algorithm.
+
+    Computes l = ceil(log(n) / t), which determines the maximum
+    recursion depth in the BMSSP algorithm.
+
+    Parameters
+    ----------
+    n : int
+        Number of nodes in the graph.
+
+    t : int
+        The t parameter from _find_t.
+
+    Returns
+    -------
+    l : int
+        The computed recursion depth, returns 0 if n <= 1 or t <= 0.
+    """
     if n <= 1 or t <= 0:
         return 0
     log_n = 0
@@ -530,17 +591,76 @@ def _find_l(n, t):
     return (log_n + t - 1) // t  # Ceiling division
 
 def _find_counter(n, precision=6):
-    """Calculate counter value for tie-breaking"""
+    """Calculate counter value for tie-breaking in distance comparisons.
+
+    The counter value is used to break ties between paths of equal
+    weight, ensuring deterministic path selection.
+
+    Parameters
+    ----------
+    n : int
+        Number of nodes in the graph.
+
+    precision : int, optional (default=6)
+        Decimal precision for weight calculations.
+
+    Returns
+    -------
+    counter : float
+        A small positive value used for tie-breaking.
+    """
     temp = (10 ** (precision + 1)) * (2 * n + 1)
     return 1.0 / temp
 
 def _find_edge_adj_val(n, m, precision=6):
-    """Calculate edge adjustment value for unique edge identification"""
+    """Calculate edge adjustment value for unique edge identification.
+
+    The edge adjustment value ensures each edge has a unique identifier
+    in distance calculations, which helps in deterministic path reconstruction.
+
+    Parameters
+    ----------
+    n : int
+        Number of nodes in the graph.
+
+    m : int
+        Number of edges in the graph.
+
+    precision : int, optional (default=6)
+        Decimal precision for weight calculations.
+
+    Returns
+    -------
+    edge_adj_val : float
+        A small positive value unique to each edge.
+    """
     temp = (10 ** (precision + 1)) * (2 * n + 1) * (2 * m + 1)
     return 1.0 / temp
 
 def _reconstruct_path(dest_idx, predecessor, idx_to_node):
-    """Reconstruct path from predecessor array."""
+    """Reconstruct the shortest path from predecessor array.
+
+    Traces back from the destination node to the source using the
+    predecessor array built during the BMSSP algorithm.
+
+    Parameters
+    ----------
+    dest_idx : int
+        Index of the destination node.
+
+    predecessor : list
+        Array where predecessor[i] is the index of the predecessor
+        of node i in the shortest path, or -1 if no predecessor.
+
+    idx_to_node : dict
+        Mapping from node indices to original node labels.
+
+    Returns
+    -------
+    path : list
+        List of nodes representing the shortest path from source
+        to destination.
+    """
     path = []
     current = dest_idx
     while current != -1:
@@ -550,7 +670,28 @@ def _reconstruct_path(dest_idx, predecessor, idx_to_node):
     return path
 
 def _is_pivot(root, forest, k):
-    """Check if a node is a pivot (has >= k descendants in forest)."""
+    """Check if a node is a pivot in the shortest path forest.
+
+    A node is considered a pivot if it has at least k descendants
+    (including itself) in the tight-edge forest.
+
+    Parameters
+    ----------
+    root : int
+        Index of the node to check.
+
+    forest : dict
+        Dictionary mapping node indices to lists of their children
+        in the tight-edge forest.
+
+    k : int
+        Threshold for pivot selection.
+
+    Returns
+    -------
+    is_pivot : bool
+        True if the node has at least k descendants, False otherwise.
+    """
     stack = [root]
     seen = set()
     cnt = 0
@@ -572,10 +713,47 @@ def _is_pivot(root, forest, k):
     return False
 
 def _find_pivots(B, S, n, adj, dist, cdist, predecessor, counter, k):
-    """
-    Find pivots using bounded Bellman-Ford.
-    
-    Returns (pivots, W) where W is the set of nodes within bound B.
+    """Find pivot nodes using bounded Bellman-Ford exploration.
+
+    This function performs a bounded exploration from source nodes to
+    identify pivot nodes that will be used as recursive subproblem roots.
+
+    Parameters
+    ----------
+    B : float
+        Distance bound for exploration.
+
+    S : list
+        List of source node indices.
+
+    n : int
+        Total number of nodes in the graph.
+
+    adj : list of lists
+        Adjacency list where adj[u] contains tuples (v, weight, edge_id).
+
+    dist : list
+        Current distance array (with tie-breaker adjustments).
+
+    cdist : list
+        Clean distance array (without tie-breaker adjustments).
+
+    predecessor : list
+        Predecessor array for path reconstruction.
+
+    counter : float
+        Tie-breaking counter value.
+
+    k : int
+        Parameter k for pivot selection threshold.
+
+    Returns
+    -------
+    pivots : list
+        List of pivot node indices.
+
+    W : list
+        List of node indices within the distance bound B.
     """
     # Phase 1: Bounded Bellman-Ford
     W = set(S)
@@ -632,10 +810,44 @@ def _find_pivots(B, S, n, adj, dist, cdist, predecessor, counter, k):
     return P, list(W)
 
 def _base_case(B, x, adj, dist, cdist, predecessor, counter, k):
-    """
-    Base case: Dijkstra-like exploration from single source x.
-    
-    Returns (B', S) where S is set of completed nodes.
+    """Base case: Dijkstra-like exploration from a single source.
+
+    Performs a bounded Dijkstra exploration from source node x,
+    terminating after processing k+1 nodes or exhausting the heap.
+
+    Parameters
+    ----------
+    B : float
+        Distance bound for exploration.
+
+    x : int
+        Source node index.
+
+    adj : list of lists
+        Adjacency list where adj[u] contains tuples (v, weight, edge_id).
+
+    dist : list
+        Current distance array (with tie-breaker adjustments).
+
+    cdist : list
+        Clean distance array (without tie-breaker adjustments).
+
+    predecessor : list
+        Predecessor array for path reconstruction.
+
+    counter : float
+        Tie-breaking counter value.
+
+    k : int
+        Maximum number of nodes to complete before early termination.
+
+    Returns
+    -------
+    B_new : float
+        Updated distance bound after exploration.
+
+    S : list
+        List of completed node indices.
     """
     S = []
     B_new = B
@@ -667,10 +879,59 @@ def _base_case(B, x, adj, dist, cdist, predecessor, counter, k):
     return B_new, S
 
 def _bmssp_recursive(l, B, S, n, k, t, adj, dist, cdist, predecessor, counter, target_idx=None):
-    """
-    Recursive BMSSP algorithm.
-    
-    Returns (B_comp, completed) where completed is list of completed nodes.
+    """Recursive BMSSP (Bounded Multi-Source Shortest Path) algorithm.
+
+    This is the core recursive function that implements the BMSSP algorithm.
+    It divides the problem into subproblems using pivot selection and
+    processes them recursively.
+
+    Parameters
+    ----------
+    l : int
+        Current recursion depth level.
+
+    B : float
+        Distance bound for this recursive call.
+
+    S : list
+        List of source node indices for this subproblem.
+
+    n : int
+        Total number of nodes in the graph.
+
+    k : int
+        Branching factor parameter.
+
+    t : int
+        Recursion depth scaling parameter.
+
+    adj : list of lists
+        Adjacency list where adj[u] contains tuples (v, weight, edge_id).
+
+    dist : list
+        Current distance array (with tie-breaker adjustments).
+
+    cdist : list
+        Clean distance array (without tie-breaker adjustments).
+
+    predecessor : list
+        Predecessor array for path reconstruction.
+
+    counter : float
+        Tie-breaking counter value.
+
+    target_idx : int, optional
+        Index of target node for early termination. If provided and
+        target is reached, algorithm terminates early.
+
+    Returns
+    -------
+    B_comp : float
+        Completion bound - all nodes with distance less than B_comp
+        have been fully processed.
+
+    completed : list
+        List of node indices that have been fully processed.
     """
     # Base case
     if l == 0:
