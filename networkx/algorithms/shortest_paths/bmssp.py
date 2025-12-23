@@ -3,6 +3,7 @@
 import heapq
 
 import networkx as nx
+from networkx.utils import not_implemented_for
 
 __all__ = [
     "single_source_bmssp_path",
@@ -13,6 +14,7 @@ __all__ = [
 ]
 
 
+@not_implemented_for("undirected")
 @nx._dispatchable(edge_attrs="weight")
 def single_source_bmssp_path(G, source, target, weight="weight", precision=0):
     """Returns the shortest weighted path in G from source to target
@@ -113,6 +115,7 @@ def single_source_bmssp_path(G, source, target, weight="weight", precision=0):
     return paths[target]
 
 
+@not_implemented_for("undirected")
 @nx._dispatchable(edge_attrs="weight")
 def single_source_bmssp_path_length(G, source, target, weight="weight", precision=0):
     """Returns the shortest weighted path length in G from source to target.
@@ -204,6 +207,7 @@ def single_source_bmssp_path_length(G, source, target, weight="weight", precisio
     return length[target]
 
 
+@not_implemented_for("undirected")
 @nx._dispatchable(edge_attrs="weight")
 def multi_source_bmssp_path(G, sources, weight="weight", precision=0):
     """Find shortest weighted paths in G from a given set of source
@@ -293,6 +297,7 @@ def multi_source_bmssp_path(G, sources, weight="weight", precision=0):
     return paths
 
 
+@not_implemented_for("undirected")
 @nx._dispatchable(edge_attrs="weight")
 def multi_source_bmssp_path_length(G, sources, weight="weight", precision=0):
     """Find shortest weighted path lengths in G from a given set of
@@ -385,6 +390,7 @@ def multi_source_bmssp_path_length(G, sources, weight="weight", precision=0):
     return length
 
 
+@not_implemented_for("undirected")
 @nx._dispatchable(edge_attrs="weight")
 def bmssp(G, sources, target=None, weight="weight", precision=0):
     """Uses BMSSP algorithm to find shortest weighted paths
@@ -476,9 +482,6 @@ def bmssp(G, sources, target=None, weight="weight", precision=0):
        November 19, 2025. https://doi.org/10.2139/ssrn.5777186
 
     """
-    # Validate graph is directed
-    if not G.is_directed():
-        raise nx.NetworkXNotImplemented("BMSSP algorithm only supports directed graphs")
     # Validate sources
     sources = set(sources)
     if not sources:
