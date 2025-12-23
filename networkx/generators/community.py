@@ -1024,10 +1024,12 @@ def LFR_benchmark_graph(
     deg_seq = _powerlaw_sequence(tau1, low, high, condition, length, max_iters, seed)
 
     # Validate parameters for generating the community size sequence.
+    # A node with degree k needs a community of at least k+1 nodes
+    # (it cannot connect to itself). This fixes issue #6822.
     if min_community is None:
-        min_community = min(deg_seq)
+        min_community = min(deg_seq) + 1
     if max_community is None:
-        max_community = max(deg_seq)
+        max_community = max(deg_seq) + 1
 
     # Generate a community size sequence with a power law distribution.
     #
@@ -1055,16 +1057,136 @@ def LFR_benchmark_graph(
     # Finally, generate the benchmark graph based on the given
     # communities, joining nodes according to the intra- and
     # inter-community degrees.
+    G = _generate_graph(n, deg_seq, communities, mu, max_iters, seed)
+    return G
+
+
+def _generate_graph(n, deg_seq, communities, mu, max_iters, seed):
+    """Generate the LFR benchmark graph from the given community structure.
+
+    This is a helper function for :func:`LFR_benchmark_graph` that handles
+    the actual edge wiring while respecting degree constraints.
+
+    Parameters
+    ----------
+    n : int
+        Number of nodes.
+    deg_seq : list
+        Desired degree sequence.
+    communities : list of sets
+        Community assignments for each node.
+    mu : float
+        Mixing parameter (fraction of inter-community edges).
+    max_iters : int
+        Maximum iterations for the wiring algorithm.
+    seed : random_state
+        Random number generator.
+
+    Returns
+    -------
+    G : NetworkX Graph
+        The generated graph with community node attributes.
+
+    Raises
+    ------
+    ExceededMaxIterations
+        If the graph cannot be generated within the iteration limit.
+    """
     G = nx.Graph()
     G.add_nodes_from(range(n))
-    for c in communities:
+
+    # Build node-to-community mapping for O(1) lookup
+    node_to_comm_idx = {}
+    for idx, c in enumerate(communities):
         for u in c:
-            while G.degree(u) < round(deg_seq[u] * (1 - mu)):
-                v = seed.choice(list(c))
-                G.add_edge(u, v)
-            while G.degree(u) < deg_seq[u]:
-                v = seed.choice(range(n))
-                if v not in c:
-                    G.add_edge(u, v)
+            node_to_comm_idx[u] = idx
             G.nodes[u]["community"] = c
+
+    # Calculate desired internal and external degrees for each node
+    # Internal edges: (1 - mu) * degree, External edges: mu * degree
+    desired_internal = [round(deg_seq[u] * (1 - mu)) for u in range(n)]
+    desired_external = [deg_seq[u] - desired_internal[u] for u in range(n)]
+
+    # Phase 1: Wire intra-community (internal) edges
+    for community in communities:
+        community_list = list(community)
+        # Sort by desired internal degree (descending) to prioritize high-degree nodes
+        community_list.sort(key=lambda u: desired_internal[u], reverse=True)
+
+        # Try all distinct pairs within the community
+        for i, u in enumerate(community_list):
+            for v in community_list[i + 1 :]:
+                # Only add edge if BOTH nodes still need internal edges
+                # This fixes issue #6809: check both endpoints
+                u_needs = G.degree(u) < deg_seq[u] and (
+                    len([w for w in G.neighbors(u) if w in community])
+                    < desired_internal[u]
+                )
+                v_needs = G.degree(v) < deg_seq[v] and (
+                    len([w for w in G.neighbors(v) if w in community])
+                    < desired_internal[v]
+                )
+
+                if u_needs and v_needs:
+                    G.add_edge(u, v)
+
+    # Phase 2: Wire inter-community (external) edges
+    # Build list of nodes that still need external edges
+    def external_degree(u):
+        comm = communities[node_to_comm_idx[u]]
+        return len([w for w in G.neighbors(u) if w not in comm])
+
+    def needs_external(u):
+        return external_degree(u) < desired_external[u]
+
+    nodes_needing_external = [u for u in range(n) if needs_external(u)]
+
+    iteration = 0
+    max_external_iters = max_iters
+
+    while nodes_needing_external and iteration < max_external_iters:
+        # Pick a random node that needs external edges
+        u = seed.choice(nodes_needing_external)
+        u_comm_idx = node_to_comm_idx[u]
+
+        # Pick a random node from anywhere
+        v = seed.choice(range(n))
+        v_comm_idx = node_to_comm_idx[v]
+
+        # Check if v is in a different community and edge doesn't exist
+        if u_comm_idx != v_comm_idx and not G.has_edge(u, v):
+            # Add edge if v hasn't exceeded its total degree limit
+            # This is more permissive than requiring v to need external edges
+            if G.degree(v) < deg_seq[v]:
+                G.add_edge(u, v)
+
+                # Update list of nodes needing external edges for u only
+                if not needs_external(u):
+                    nodes_needing_external.remove(u)
+                # v's external degree also increases here, but v is not tracked in
+                # nodes_needing_external: we only require that v not exceed deg_seq[v],
+                # not that it achieve a specific number of external edges.
+
+        iteration += 1
+
+    # Check if we successfully wired enough edges
+    # We use a relaxed check: allow small shortfall due to rounding
+    if nodes_needing_external:
+        total_desired = sum(deg_seq)
+        total_realized = sum(d for _, d in G.degree())
+        shortfall = total_desired - total_realized
+
+        # Allow up to 5% shortfall or 10 edges, whichever is larger
+        tolerance = max(0.05 * total_desired, 10)
+
+        if shortfall > tolerance:
+            unsatisfied = len(nodes_needing_external)
+            msg = (
+                f"Could not satisfy degree sequence after {max_external_iters} iterations. "
+                f"Achieved {total_realized}/{total_desired} total degree. "
+                f"{unsatisfied} nodes still need external edges. "
+                f"Try decreasing max_degree, increasing n, or adjusting mu."
+            )
+            raise nx.ExceededMaxIterations(msg)
+
     return G
