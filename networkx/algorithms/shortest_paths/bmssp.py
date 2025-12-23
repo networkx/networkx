@@ -5,17 +5,18 @@ import heapq
 import networkx as nx
 
 __all__ = [
-    "single_source_bmssp_path", 
+    "single_source_bmssp_path",
     "single_source_bmssp_path_length",
     "multi_source_bmssp_path",
     "multi_source_bmssp_path_length",
-    "bmssp"
+    "bmssp",
 ]
+
 
 def single_source_bmssp_path(G, source, target, weight="weight", precision=0):
     """Returns the shortest weighted path in G from source to target
 
-    Uses BMSSP algorithm to compute the shortest path length 
+    Uses BMSSP algorithm to compute the shortest path length
     between two nodes in a graph.
 
     Parameters
@@ -24,25 +25,25 @@ def single_source_bmssp_path(G, source, target, weight="weight", precision=0):
 
     source : node label
         starting node for the path
-    
+
     target : node label
         ending node for path
 
     weight : string or function
-        If this is a string, then edge weight will be accessed via the 
-        edge attribute with this key (that is, the weight of the edge 
-        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no 
-        such edge attribute exists, the weight of the edge is assumed to 
+        If this is a string, then edge weight will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
         be one.
 
-        If this is a function, the weight of an edge is the value 
-        returned by the function. The function must accept exactly three 
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
-        dictionary of edge attributes for that edge. The function must 
+        dictionary of edge attributes for that edge. The function must
         return a number or None to indicate a hidden edge.
 
     precision : int, optional (default=0)
-        Decimal precision for weight calculations. If edge weights are 
+        Decimal precision for weight calculations. If edge weights are
         integers, precision=0 is sufficient. For floating-point weights,
         use higher precision to avoid rounding errors.
 
@@ -50,17 +51,17 @@ def single_source_bmssp_path(G, source, target, weight="weight", precision=0):
             - precision=0: weights like 1, 2, 3 (integers)
             - precision=2: weights like 1.25, 3.50 (2 decimal places)
             - precision=6: weights like 0.123456 (6 decimal places)
-        
-        Note: If precision is less than the actual decimal places in 
-        weights, the result will be rounded. For example, if weight is 
-        1.25 and precision=1, the returned distance will be rounded to 
+
+        Note: If precision is less than the actual decimal places in
+        weights, the result will be rounded. For example, if weight is
+        1.25 and precision=1, the returned distance will be rounded to
         1 decimal place (e.g., 1.3).
 
     Returns
     -------
     path : list
         List of nodes in a shortest path
-    
+
     Raises
     ------
     NetworkXNotImplemented
@@ -68,7 +69,7 @@ def single_source_bmssp_path(G, source, target, weight="weight", precision=0):
 
     NodeNotFound
         If `source` is not in `G`.
-    
+
     NetworkXNoPath
         If no path exists between source and target.
 
@@ -82,7 +83,7 @@ def single_source_bmssp_path(G, source, target, weight="weight", precision=0):
     -----
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
-    
+
     The weight function can be used to hide edges by returning None.
     So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
     will find the shortest red path.
@@ -110,6 +111,7 @@ def single_source_bmssp_path(G, source, target, weight="weight", precision=0):
         raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
     return paths[target]
 
+
 def single_source_bmssp_path_length(G, source, target, weight="weight", precision=0):
     """Returns the shortest weighted path length in G from source to target.
 
@@ -127,20 +129,20 @@ def single_source_bmssp_path_length(G, source, target, weight="weight", precisio
         ending node for path
 
     weight : string or function
-        If this is a string, then edge weights will be accessed via the 
+        If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
-        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no 
-        such edge attribute exists, the weight of the edge is assumed to 
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
         be one.
 
-        If this is a function, the weight of an edge is the value 
-        returned by the function. The function must accept exactly three 
-        positional arguments: the two endpoints of an edge and the 
-        dictionary of edge attributes for that edge. The function must 
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
         return a number or None to indicate a hidden edge.
 
     precision : int, optional (default=0)
-        Decimal precision for weight calculations. If edge weights are 
+        Decimal precision for weight calculations. If edge weights are
         integers, precision=0 is sufficient. For floating-point weights,
         use higher precision to avoid rounding errors.
 
@@ -148,12 +150,12 @@ def single_source_bmssp_path_length(G, source, target, weight="weight", precisio
             - precision=0: weights like 1, 2, 3 (integers)
             - precision=2: weights like 1.25, 3.50 (2 decimal places)
             - precision=6: weights like 0.123456 (6 decimal places)
-        
-        Note: If precision is less than the actual decimal places in 
-        weights, the result will be rounded. For example, if weight is 
-        1.25 and precision=1, the returned distance will be rounded to 
+
+        Note: If precision is less than the actual decimal places in
+        weights, the result will be rounded. For example, if weight is
+        1.25 and precision=1, the returned distance will be rounded to
         1 decimal place (e.g., 1.3).
-    
+
     Returns
     -------
     length : number
@@ -169,7 +171,7 @@ def single_source_bmssp_path_length(G, source, target, weight="weight", precisio
 
     NetworkXNoPath
         If no path exists between source and target.
-    
+
     Examples
     --------
     >>> G = nx.DiGraph(nx.path_graph(5))
@@ -199,6 +201,7 @@ def single_source_bmssp_path_length(G, source, target, weight="weight", precisio
         raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
     return length[target]
 
+
 def multi_source_bmssp_path(G, sources, weight="weight", precision=0):
     """Find shortest weighted paths in G from a given set of source
     nodes.
@@ -211,26 +214,26 @@ def multi_source_bmssp_path(G, sources, weight="weight", precision=0):
     G : NetworkX graph
 
     sources : non-empty set of nodes
-        Starting nodes for paths. If this is just a set containing a 
+        Starting nodes for paths. If this is just a set containing a
         single node, then all paths computed by this function will start
-        from that node. If there are two or more nodes in the set, the 
+        from that node. If there are two or more nodes in the set, the
         computed paths may begin from any one of the start nodes.
 
     weight : string or function
-        If this is a string, then edge weights will be accessed via the 
+        If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
-        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no 
-        such edge attribute exists, the weight of the edge is assumed to 
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
         be one.
 
         If this is a function, the weight of an edge is the value
         returned by the function. The function must accept exactly three
-        positional arguments: the two endpoints of an edge and the 
-        dictionary of edge attributes for that edge. The function must 
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
         return a number or None to indicate a hidden edge.
 
     precision : int, optional (default=0)
-        Decimal precision for weight calculations. If edge weights are 
+        Decimal precision for weight calculations. If edge weights are
         integers, precision=0 is sufficient. For floating-point weights,
         use higher precision to avoid rounding errors.
 
@@ -238,14 +241,14 @@ def multi_source_bmssp_path(G, sources, weight="weight", precision=0):
             - precision=0: weights like 1, 2, 3 (integers)
             - precision=2: weights like 1.25, 3.50 (2 decimal places)
             - precision=6: weights like 0.123456 (6 decimal places)
-        
-        Note: If precision is less than the actual decimal places in 
-        weights, the result will be rounded. For example, if weight is 
-        1.25 and precision=1, the returned distance will be rounded to 
+
+        Note: If precision is less than the actual decimal places in
+        weights, the result will be rounded. For example, if weight is
+        1.25 and precision=1, the returned distance will be rounded to
         1 decimal place (e.g., 1.3).
 
     Returns
-    ------- 
+    -------
     path : dictionary
         Dictionary of shortest paths keyed by target.
 
@@ -285,11 +288,12 @@ def multi_source_bmssp_path(G, sources, weight="weight", precision=0):
     _, paths = bmssp(G, sources, weight=weight, precision=precision)
     return paths
 
+
 def multi_source_bmssp_path_length(G, sources, weight="weight", precision=0):
     """Find shortest weighted path lengths in G from a given set of
     source nodes.
 
-    Compute the shortest path length between any of the source nodes and 
+    Compute the shortest path length between any of the source nodes and
     all other reachable nodes for a weighted graph.
 
     Parameters
@@ -298,25 +302,25 @@ def multi_source_bmssp_path_length(G, sources, weight="weight", precision=0):
 
     sources : non-empty set of nodes
         Starting nodes for paths. If this is just a set containing a
-        single node, then all paths computed by this function will start 
-        from that node. If there are two or more nodes in the set, the 
+        single node, then all paths computed by this function will start
+        from that node. If there are two or more nodes in the set, the
         computed paths may begin from any one of the start nodes.
 
     weight : string or function
-        If this is a string, then edge weights will be accessed via the 
-        edge attribute with this key (that is, the weight of the edge 
-        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no 
-        such attribute exists, the weight of the edge is assumed to 
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such attribute exists, the weight of the edge is assumed to
         be one.
 
         If this is a function, the weight of an edge is the value
         returned by the function. The function must accept exactly three
-        positional arguments: the two endpoints of an edge and the 
+        positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
         return a number or None to indicate a hidden edge.
 
     precision : int, optional (default=0)
-        Decimal precision for weight calculations. If edge weights are 
+        Decimal precision for weight calculations. If edge weights are
         integers, precision=0 is sufficient. For floating-point weights,
         use higher precision to avoid rounding errors.
 
@@ -324,10 +328,10 @@ def multi_source_bmssp_path_length(G, sources, weight="weight", precision=0):
             - precision=0: weights like 1, 2, 3 (integers)
             - precision=2: weights like 1.25, 3.50 (2 decimal places)
             - precision=6: weights like 0.123456 (6 decimal places)
-        
-        Note: If precision is less than the actual decimal places in 
-        weights, the result will be rounded. For example, if weight is 
-        1.25 and precision=1, the returned distance will be rounded to 
+
+        Note: If precision is less than the actual decimal places in
+        weights, the result will be rounded. For example, if weight is
+        1.25 and precision=1, the returned distance will be rounded to
         1 decimal place (e.g., 1.3).
 
     Returns
@@ -370,13 +374,12 @@ def multi_source_bmssp_path_length(G, sources, weight="weight", precision=0):
         raise ValueError("Sources must not be empty")
     for s in sources:
         if s not in G:
-            raise nx.NodeNotFound(f"Node {s} not found in graph")    
+            raise nx.NodeNotFound(f"Node {s} not found in graph")
     length, _ = bmssp(G, sources, weight=weight, precision=precision)
     return length
 
-def bmssp(
-    G, sources, target=None, weight="weight", precision=0
-):
+
+def bmssp(G, sources, target=None, weight="weight", precision=0):
     """Uses BMSSP algorithm to find shortest weighted paths
 
     Parameters
@@ -384,8 +387,8 @@ def bmssp(
     G : NetworkX graph
 
     sources : non-empty iterable of nodes
-        Starting nodes for paths. If this is just an iterable containing 
-        a single node, then all paths computed by this function will 
+        Starting nodes for paths. If this is just an iterable containing
+        a single node, then all paths computed by this function will
         start from that node. If there are two or more nodes in this
         iterable, the computed paths may begin from any one of the start
         nodes.
@@ -408,7 +411,7 @@ def bmssp(
         return a number or None to indicate a hidden edge.
 
     precision : int, optional (default=0)
-        Decimal precision for weight calculations. If edge weights are 
+        Decimal precision for weight calculations. If edge weights are
         integers, precision=0 is sufficient. For floating-point weights,
         use higher precision to avoid rounding errors.
 
@@ -416,23 +419,23 @@ def bmssp(
             - precision=0: weights like 1, 2, 3 (integers)
             - precision=2: weights like 1.25, 3.50 (2 decimal places)
             - precision=6: weights like 0.123456 (6 decimal places)
-        
-        Note: If precision is less than the actual decimal places in 
-        weights, the result will be rounded. For example, if weight is 
-        1.25 and precision=1, the returned distance will be rounded to 
+
+        Note: If precision is less than the actual decimal places in
+        weights, the result will be rounded. For example, if weight is
+        1.25 and precision=1, the returned distance will be rounded to
         1 decimal place (e.g., 1.3).
 
     Returns
     -------
-    distance : dictionary 
-        A mapping from node to shortest distance to that node from one 
+    distance : dictionary
+        A mapping from node to shortest distance to that node from one
         of the source nodes.
-    
+
     paths : dictionary
         A mapping from node to shortest path to that node from one of
         the source nodes.
 
-    Raises 
+    Raises
     ------
     NetworkXNotImplemented
         If `G` is undirected. BMSSP algorithm only supports directed graphs.
@@ -444,7 +447,7 @@ def bmssp(
     ----------
     To read more about the BMSSP algorithm, see:
     https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5777186
-    
+
     """
     # Validate graph is directed
     if not G.is_directed():
@@ -464,7 +467,7 @@ def bmssp(
     # Create node index mapping
     node_list = list(G.nodes())
     node_to_idx = {node: idx for idx, node in enumerate(node_list)}
-    idx_to_node = {idx: node for idx, node in enumerate(node_list)}
+    idx_to_node = dict(enumerate(node_list))
     # Calculate parameters
     counter = _find_counter(n, precision)
     edge_adj_val = _find_edge_adj_val(n, m, precision)
@@ -497,8 +500,18 @@ def bmssp(
     # Run BMSSP
     target_idx = node_to_idx[target] if target is not None else None
     _bmssp_recursive(
-        l, INF, source_indices, n, k, t,
-        adj, dist, cdist, predecessor, counter, target_idx
+        l,
+        INF,
+        source_indices,
+        n,
+        k,
+        t,
+        adj,
+        dist,
+        cdist,
+        predecessor,
+        counter,
+        target_idx,
     )
     # Build result dictionaries
     distance_result = {}
@@ -532,16 +545,22 @@ def _get_weight_function(G, weight):
         For multigraphs, returns the minimum weight among parallel edges.
     """
     if callable(weight):
-        return weight    
+        return weight
     if G.is_multigraph():
+
         def weight_fn(u, v, data):
             return min(d.get(weight, 1) for d in data.values())
+
         return weight_fn
+
     def weight_fn(u, v, data):
         return data.get(weight, 1)
+
     return weight_fn
 
-INF = float('inf')
+
+INF = float("inf")
+
 
 def _find_k(n):
     """Find parameter k for BMSSP algorithm.
@@ -576,6 +595,7 @@ def _find_k(n):
     if r * r * r <= log_n:
         return r
     return l
+
 
 def _find_t(n):
     """Find parameter t for BMSSP algorithm.
@@ -612,6 +632,7 @@ def _find_t(n):
         return r
     return l
 
+
 def _find_l(n, t):
     """Find recursion depth l for BMSSP algorithm.
 
@@ -640,6 +661,7 @@ def _find_l(n, t):
         log_n += 1
     return (log_n + t - 1) // t  # Ceiling division
 
+
 def _find_counter(n, precision=6):
     """Calculate counter value for tie-breaking in distance comparisons.
 
@@ -661,6 +683,7 @@ def _find_counter(n, precision=6):
     """
     temp = (10 ** (precision + 1)) * (2 * n + 1)
     return 1.0 / temp
+
 
 def _find_edge_adj_val(n, m, precision=6):
     """Calculate edge adjustment value for unique edge identification.
@@ -686,6 +709,7 @@ def _find_edge_adj_val(n, m, precision=6):
     """
     temp = (10 ** (precision + 1)) * (2 * n + 1) * (2 * m + 1)
     return 1.0 / temp
+
 
 def _reconstruct_path(dest_idx, predecessor, idx_to_node):
     """Reconstruct the shortest path from predecessor array.
@@ -718,6 +742,7 @@ def _reconstruct_path(dest_idx, predecessor, idx_to_node):
         current = predecessor[current]
     path.reverse()
     return path
+
 
 def _is_pivot(root, forest, k):
     """Check if a node is a pivot in the shortest path forest.
@@ -757,6 +782,7 @@ def _is_pivot(root, forest, k):
             for v in forest[u]:
                 stack.append(v)
     return False
+
 
 def _find_pivots(B, S, n, adj, dist, cdist, predecessor, counter, k):
     """Find pivot nodes using bounded Bellman-Ford exploration.
@@ -808,7 +834,7 @@ def _find_pivots(B, S, n, adj, dist, cdist, predecessor, counter, k):
         W_curr = set()
         for u in W_prev:
             if dist[u] >= B:
-                continue            
+                continue
             for v, wt, edge_id in adj[u]:
                 temp = cdist[u] + wt + counter + edge_id
                 if temp <= dist[v]:
@@ -841,6 +867,7 @@ def _find_pivots(B, S, n, adj, dist, cdist, predecessor, counter, k):
         if _is_pivot(u, forest, k):
             P.append(u)
     return P, list(W)
+
 
 def _base_case(B, x, adj, dist, cdist, predecessor, counter, k):
     """Base case: Dijkstra-like exploration from a single source.
@@ -903,7 +930,10 @@ def _base_case(B, x, adj, dist, cdist, predecessor, counter, k):
                 heapq.heappush(heap, (d_new, v))
     return B_new, S
 
-def _bmssp_recursive(l, B, S, n, k, t, adj, dist, cdist, predecessor, counter, target_idx=None):
+
+def _bmssp_recursive(
+    l, B, S, n, k, t, adj, dist, cdist, predecessor, counter, target_idx=None
+):
     """Recursive BMSSP (Bounded Multi-Source Shortest Path) algorithm.
 
     This is the core recursive function that implements the BMSSP algorithm.
@@ -985,8 +1015,18 @@ def _bmssp_recursive(l, B, S, n, k, t, adj, dist, cdist, predecessor, counter, t
         S_curr = [x]
         # Recursive call
         B_new, U_curr = _bmssp_recursive(
-            l - 1, B_curr, S_curr, n, k, t,
-            adj, dist, cdist, predecessor, counter, target_idx
+            l - 1,
+            B_curr,
+            S_curr,
+            n,
+            k,
+            t,
+            adj,
+            dist,
+            cdist,
+            predecessor,
+            counter,
+            target_idx,
         )
         B_comp = min(B_comp, B_new)
         # Add completed nodes

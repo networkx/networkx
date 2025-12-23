@@ -1,14 +1,14 @@
 import pytest
 
 import networkx as nx
-
 from networkx.algorithms.shortest_paths.bmssp import (
-    single_source_bmssp_path,
-    single_source_bmssp_path_length,
+    bmssp,
     multi_source_bmssp_path,
     multi_source_bmssp_path_length,
-    bmssp,
+    single_source_bmssp_path,
+    single_source_bmssp_path_length,
 )
+
 
 class TestSingleSourceBMSSPPath:
     def test_simple_path(self):
@@ -201,10 +201,12 @@ class TestBMSSPWeightFunction:
         G.add_edge(0, 1, color="red", weight=1)
         G.add_edge(1, 2, color="red", weight=1)
         G.add_edge(0, 2, color="blue", weight=1)
+
         def red_only(u, v, d):
             if d.get("color") == "red":
                 return d.get("weight", 1)
             return None
+
         distances, paths = bmssp(G, {0}, weight=red_only, precision=0)
         assert paths[2] == [0, 1, 2]
         assert distances[2] == 2
@@ -216,11 +218,13 @@ class TestBMSSPWeightFunction:
         G.add_node(2, node_weight=6)
         G.add_edge(0, 1, weight=1)
         G.add_edge(1, 2, weight=1)
+
         def func(u, v, d):
             node_u_wt = G.nodes[u].get("node_weight", 1)
             node_v_wt = G.nodes[v].get("node_weight", 1)
             edge_wt = d.get("weight", 1)
             return node_u_wt / 2 + node_v_wt / 2 + edge_wt
+
         distances, paths = bmssp(G, {0}, weight=func, precision=0)
         # Edge 0->1: 2/2 + 4/2 + 1 = 4
         # Edge 1->2: 4/2 + 6/2 + 1 = 6
@@ -233,6 +237,7 @@ class TestBMSSPValidation:
     def test_compare_with_dijkstra(self):
         """Validate BMSSP results against Dijkstra's algorithm."""
         import random
+
         random.seed(42)
         G = nx.gnm_random_graph(50, 150, directed=True, seed=42)
         for u, v in G.edges():
@@ -247,10 +252,10 @@ class TestBMSSPValidation:
             except nx.NetworkXNoPath:
                 pass
 
-
     def test_larger_graph(self):
         """Test with a larger 100-node graph."""
         import random
+
         random.seed(123)
         G = nx.gnm_random_graph(100, 400, directed=True, seed=123)
         for u, v in G.edges():
