@@ -186,6 +186,7 @@ class TestFloyd:
                 ("x", "y", 2),
                 ("y", "s", 7),
                 ("y", "v", 6),
+                ("x", "x", 3),  # added a positive self loop
             ]
         )
         path, dist = floyd_fn(XG)

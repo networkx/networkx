@@ -25,12 +25,12 @@ def _init_pred_dist(G, weight):
     # also set the distance to self to 0 (zero diagonal)
     weight = _weight_function(G, weight)
     for u, unbr in G._adj.items():
-        dist[u][u] = 0
         for v, e_attr in unbr.items():
             cost = weight(u, v, e_attr)
             if cost is not None:  # for hidden edge, weight() returns None
                 dist[u][v] = cost
                 pred[u][v] = u
+        dist[u][u] = 0
     return pred, dist
 
 
