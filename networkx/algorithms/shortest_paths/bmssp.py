@@ -12,7 +12,7 @@ __all__ = [
     "bmssp"
 ]
 
-def single_source_bmssp_path(G, source, target, weight="weight"):
+def single_source_bmssp_path(G, source, target, weight="weight", precision=0):
     """Returns the shortest weighted path in G from source to target
 
     Uses BMSSP algorithm to compute the shortest path length 
@@ -40,6 +40,21 @@ def single_source_bmssp_path(G, source, target, weight="weight"):
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must 
         return a number or None to indicate a hidden edge.
+
+    precision : int, optional (default=0)
+        Decimal precision for weight calculations. If edge weights are 
+        integers, precision=0 is sufficient. For floating-point weights,
+        use higher precision to avoid rounding errors.
+
+        Examples:
+            - precision=0: weights like 1, 2, 3 (integers)
+            - precision=2: weights like 1.25, 3.50 (2 decimal places)
+            - precision=6: weights like 0.123456 (6 decimal places)
+        
+        Note: If precision is less than the actual decimal places in 
+        weights, the result will be rounded. For example, if weight is 
+        1.25 and precision=1, the returned distance will be rounded to 
+        1 decimal place (e.g., 1.3).
 
     Returns
     -------
@@ -90,15 +105,12 @@ def single_source_bmssp_path(G, source, target, weight="weight"):
         raise nx.NodeNotFound(f"Node {source} not found in graph")
     if target not in G:
         raise nx.NodeNotFound(f"Node {target} not found in graph")
-    
-    length, paths = bmssp(G, {source}, target=target, weight=weight)
-    
+    _, paths = bmssp(G, {source}, target=target, weight=weight, precision=precision)
     if target not in paths:
         raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
-    
     return paths[target]
 
-def single_source_bmssp_path_length(G, source, target, weight="weight"):
+def single_source_bmssp_path_length(G, source, target, weight="weight", precision=0):
     """Returns the shortest weighted path length in G from source to target.
 
     Uses bmssp algorithm to compute the shortest weighted path length
@@ -126,6 +138,21 @@ def single_source_bmssp_path_length(G, source, target, weight="weight"):
         positional arguments: the two endpoints of an edge and the 
         dictionary of edge attributes for that edge. The function must 
         return a number or None to indicate a hidden edge.
+
+    precision : int, optional (default=0)
+        Decimal precision for weight calculations. If edge weights are 
+        integers, precision=0 is sufficient. For floating-point weights,
+        use higher precision to avoid rounding errors.
+
+        Examples:
+            - precision=0: weights like 1, 2, 3 (integers)
+            - precision=2: weights like 1.25, 3.50 (2 decimal places)
+            - precision=6: weights like 0.123456 (6 decimal places)
+        
+        Note: If precision is less than the actual decimal places in 
+        weights, the result will be rounded. For example, if weight is 
+        1.25 and precision=1, the returned distance will be rounded to 
+        1 decimal place (e.g., 1.3).
     
     Returns
     -------
@@ -160,7 +187,6 @@ def single_source_bmssp_path_length(G, source, target, weight="weight"):
 
     The function :func:`bmssp` computes both path length and path
     if you need both, use that.
-
     """
     if source not in G:
         raise nx.NodeNotFound(f"Node {source} not found in graph")
@@ -168,15 +194,12 @@ def single_source_bmssp_path_length(G, source, target, weight="weight"):
         raise nx.NodeNotFound(f"Node {target} not found in graph")
     if source == target:
         return 0
-    
-    length, _ = bmssp(G, {source}, target=target, weight=weight)
-    
+    length, _ = bmssp(G, {source}, target=target, weight=weight, precision=precision)
     if target not in length:
         raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
-    
     return length[target]
 
-def multi_source_bmssp_path(G, sources, weight="weight"):
+def multi_source_bmssp_path(G, sources, weight="weight", precision=0):
     """Find shortest weighted paths in G from a given set of source
     nodes.
 
@@ -205,6 +228,21 @@ def multi_source_bmssp_path(G, sources, weight="weight"):
         positional arguments: the two endpoints of an edge and the 
         dictionary of edge attributes for that edge. The function must 
         return a number or None to indicate a hidden edge.
+
+    precision : int, optional (default=0)
+        Decimal precision for weight calculations. If edge weights are 
+        integers, precision=0 is sufficient. For floating-point weights,
+        use higher precision to avoid rounding errors.
+
+        Examples:
+            - precision=0: weights like 1, 2, 3 (integers)
+            - precision=2: weights like 1.25, 3.50 (2 decimal places)
+            - precision=6: weights like 0.123456 (6 decimal places)
+        
+        Note: If precision is less than the actual decimal places in 
+        weights, the result will be rounded. For example, if weight is 
+        1.25 and precision=1, the returned distance will be rounded to 
+        1 decimal place (e.g., 1.3).
 
     Returns
     ------- 
@@ -238,18 +276,16 @@ def multi_source_bmssp_path(G, sources, weight="weight"):
         If `sources` is empty.
     NodeNotFound
         If any of `sources` is not in `G`.
-
     """
     if not sources:
         raise ValueError("Sources must not be empty")
     for s in sources:
         if s not in G:
             raise nx.NodeNotFound(f"Node {s} not found in graph")
-    
-    _, paths = bmssp(G, sources, weight=weight)
+    _, paths = bmssp(G, sources, weight=weight, precision=precision)
     return paths
 
-def multi_source_bmssp_path_length(G, sources, weight="weight"):
+def multi_source_bmssp_path_length(G, sources, weight="weight", precision=0):
     """Find shortest weighted path lengths in G from a given set of
     source nodes.
 
@@ -278,6 +314,21 @@ def multi_source_bmssp_path_length(G, sources, weight="weight"):
         positional arguments: the two endpoints of an edge and the 
         dictionary of edge attributes for that edge. The function must
         return a number or None to indicate a hidden edge.
+
+    precision : int, optional (default=0)
+        Decimal precision for weight calculations. If edge weights are 
+        integers, precision=0 is sufficient. For floating-point weights,
+        use higher precision to avoid rounding errors.
+
+        Examples:
+            - precision=0: weights like 1, 2, 3 (integers)
+            - precision=2: weights like 1.25, 3.50 (2 decimal places)
+            - precision=6: weights like 0.123456 (6 decimal places)
+        
+        Note: If precision is less than the actual decimal places in 
+        weights, the result will be rounded. For example, if weight is 
+        1.25 and precision=1, the returned distance will be rounded to 
+        1 decimal place (e.g., 1.3).
 
     Returns
     -------
@@ -314,19 +365,17 @@ def multi_source_bmssp_path_length(G, sources, weight="weight"):
         If `sources` is empty.
     NodeNotFound
         If any of `sources` is not in `G`.
-
     """
     if not sources:
         raise ValueError("Sources must not be empty")
     for s in sources:
         if s not in G:
-            raise nx.NodeNotFound(f"Node {s} not found in graph")
-    
-    length, _ = bmssp(G, sources, weight=weight)
+            raise nx.NodeNotFound(f"Node {s} not found in graph")    
+    length, _ = bmssp(G, sources, weight=weight, precision=precision)
     return length
 
 def bmssp(
-    G, sources, target=None, weight="weight"
+    G, sources, target=None, weight="weight", precision=0
 ):
     """Uses BMSSP algorithm to find shortest weighted paths
 
@@ -358,6 +407,21 @@ def bmssp(
         dictionary of edge attributes for that edge. The function must
         return a number or None to indicate a hidden edge.
 
+    precision : int, optional (default=0)
+        Decimal precision for weight calculations. If edge weights are 
+        integers, precision=0 is sufficient. For floating-point weights,
+        use higher precision to avoid rounding errors.
+
+        Examples:
+            - precision=0: weights like 1, 2, 3 (integers)
+            - precision=2: weights like 1.25, 3.50 (2 decimal places)
+            - precision=6: weights like 0.123456 (6 decimal places)
+        
+        Note: If precision is less than the actual decimal places in 
+        weights, the result will be rounded. For example, if weight is 
+        1.25 and precision=1, the returned distance will be rounded to 
+        1 decimal place (e.g., 1.3).
+
     Returns
     -------
     distance : dictionary 
@@ -380,7 +444,6 @@ def bmssp(
     # Validate graph is directed
     if not G.is_directed():
         raise nx.NetworkXNotImplemented("BMSSP algorithm only supports directed graphs")
-    
     # Validate sources
     sources = set(sources)
     if not sources:
@@ -388,68 +451,53 @@ def bmssp(
     for s in sources:
         if s not in G:
             raise nx.NodeNotFound(f"Node {s} not found in graph")
-    
     # Get weight function
     weight_fn = _get_weight_function(G, weight)
-    
     # Build adjacency list with edge weights and IDs
     n = G.number_of_nodes()
     m = G.number_of_edges()
-    
     # Create node index mapping
     node_list = list(G.nodes())
     node_to_idx = {node: idx for idx, node in enumerate(node_list)}
     idx_to_node = {idx: node for idx, node in enumerate(node_list)}
-    
     # Calculate parameters
-    precision = 0
     counter = _find_counter(n, precision)
     edge_adj_val = _find_edge_adj_val(n, m, precision)
-    
     # Build adjacency list: adj[u] = [(v, weight, edge_id), ...]
     adj = [[] for _ in range(n)]
     edge_id = 0
-    
     for u, v, data in G.edges(data=True):
         wt = weight_fn(u, v, data)
         if wt is None:
             continue
         if wt < 0:
             raise ValueError("BMSSP algorithm does not support negative weights")
-        
         u_idx = node_to_idx[u]
         v_idx = node_to_idx[v]
         edge_id += edge_adj_val
         adj[u_idx].append((v_idx, wt, edge_id))
-    
     # Initialize distance and predecessor arrays
     dist = [INF] * n
     cdist = [INF] * n  # Clean distance (without tie-breaker adjustments)
     predecessor = [-1] * n
-    
     # Initialize sources
     source_indices = [node_to_idx[s] for s in sources]
     for src_idx in source_indices:
         dist[src_idx] = 0
         cdist[src_idx] = 0
-    
     # Get algorithm parameters
     k = _find_k(n)
     t = _find_t(n)
     l = _find_l(n, t)
-    
     # Run BMSSP
     target_idx = node_to_idx[target] if target is not None else None
-    
     _bmssp_recursive(
         l, INF, source_indices, n, k, t,
         adj, dist, cdist, predecessor, counter, target_idx
     )
-    
     # Build result dictionaries
     distance_result = {}
     paths_result = {}
-    
     for idx in range(n):
         node = idx_to_node[idx]
         if dist[idx] < INF:
@@ -457,7 +505,6 @@ def bmssp(
             distance_result[node] = round(cdist[idx], precision)
             # Reconstruct path
             paths_result[node] = _reconstruct_path(idx, predecessor, idx_to_node)
-    
     return distance_result, paths_result
 
 
@@ -480,13 +527,11 @@ def _get_weight_function(G, weight):
         For multigraphs, returns the minimum weight among parallel edges.
     """
     if callable(weight):
-        return weight
-    
+        return weight    
     if G.is_multigraph():
         def weight_fn(u, v, data):
             return min(d.get(weight, 1) for d in data.values())
         return weight_fn
-    
     def weight_fn(u, v, data):
         return data.get(weight, 1)
     return weight_fn
@@ -695,21 +740,17 @@ def _is_pivot(root, forest, k):
     stack = [root]
     seen = set()
     cnt = 0
-    
     while stack:
         u = stack.pop()
         if u in seen:
             continue
         seen.add(u)
         cnt += 1
-        
         if cnt >= k:
             return True
-        
         if u in forest:
             for v in forest[u]:
                 stack.append(v)
-    
     return False
 
 def _find_pivots(B, S, n, adj, dist, cdist, predecessor, counter, k):
@@ -758,45 +799,33 @@ def _find_pivots(B, S, n, adj, dist, cdist, predecessor, counter, k):
     # Phase 1: Bounded Bellman-Ford
     W = set(S)
     W_prev = set(S)
-    
     for i in range(k):
         W_curr = set()
-        
         for u in W_prev:
             if dist[u] >= B:
-                continue
-            
+                continue            
             for v, wt, edge_id in adj[u]:
                 temp = cdist[u] + wt + counter + edge_id
-                
                 if temp <= dist[v]:
                     dist[v] = temp
                     predecessor[v] = u
                     cdist[v] = cdist[u] + wt + counter
-                    
                     if temp < B:
                         W_curr.add(v)
-        
         W.update(W_curr)
-        
         if len(W) > k * len(S):
             return list(S), list(W)
-        
         if not W_curr:
             break
-        
         W_prev = W_curr
-    
     # Phase 2: Build tight-edge forest
     forest = {u: [] for u in W}
     indeg = {u: 0 for u in W}
-    
     for v in W:
         u = predecessor[v]
         if u != -1 and u in W:
             forest[u].append(v)
             indeg[v] += 1
-    
     # Phase 3: Pivot selection
     P = []
     for u in S:
@@ -806,7 +835,6 @@ def _find_pivots(B, S, n, adj, dist, cdist, predecessor, counter, k):
             continue
         if _is_pivot(u, forest, k):
             P.append(u)
-    
     return P, list(W)
 
 def _base_case(B, x, adj, dist, cdist, predecessor, counter, k):
@@ -851,31 +879,23 @@ def _base_case(B, x, adj, dist, cdist, predecessor, counter, k):
     """
     S = []
     B_new = B
-    
     heap = [(dist[x], x)]
-    
     while heap:
         d, u = heapq.heappop(heap)
-        
         if d > dist[u]:
             continue
-        
         # Early termination at k+1 nodes
         if len(S) >= k:
             B_new = d
             break
-        
         S.append(u)
-        
         for v, wt, edge_id in adj[u]:
             d_new = cdist[u] + wt + counter + edge_id
-            
             if d_new <= dist[v] and d_new < B:
                 dist[v] = d_new
                 predecessor[v] = u
                 cdist[v] = cdist[u] + wt + counter
                 heapq.heappush(heap, (d_new, v))
-    
     return B_new, S
 
 def _bmssp_recursive(l, B, S, n, k, t, adj, dist, cdist, predecessor, counter, target_idx=None):
@@ -936,63 +956,48 @@ def _bmssp_recursive(l, B, S, n, k, t, adj, dist, cdist, predecessor, counter, t
     # Base case
     if l == 0:
         return _base_case(B, S[0], adj, dist, cdist, predecessor, counter, k)
-    
     # Find pivots
     P, W = _find_pivots(B, S, n, adj, dist, cdist, predecessor, counter, k)
-    
     # Data structure D (min-heap)
     D = []
     D_set = set()
     for p in P:
         heapq.heappush(D, (dist[p], p))
         D_set.add(p)
-    
     B_comp = B
     for p in P:
         B_comp = min(B_comp, dist[p])
-    
     U = []  # Completed nodes
-    
     # Work budget - use n to ensure all nodes can be processed
     budget = max(n, k)
     for i in range(min(l * t, 30)):
         budget *= 2
-    
     while D:
         # Pull smallest
         B_curr, x = heapq.heappop(D)
         if x in D_set:
             D_set.discard(x)
-        
         S_curr = [x]
-        
         # Recursive call
         B_new, U_curr = _bmssp_recursive(
             l - 1, B_curr, S_curr, n, k, t,
             adj, dist, cdist, predecessor, counter, target_idx
         )
-        
         B_comp = min(B_comp, B_new)
-        
         # Add completed nodes
         U.extend(U_curr)
-        
         # Check if target reached
         if target_idx is not None and target_idx in U_curr:
             break
-        
         # Relax edges with two-window handling
         K = []  # For BatchPrepend
-        
         for u in U_curr:
             for v, wt, edge_id in adj[u]:
                 d_new = cdist[u] + wt + counter + edge_id
-                
                 if d_new <= dist[v]:
                     dist[v] = d_new
                     predecessor[v] = u
                     cdist[v] = cdist[u] + wt + counter
-                    
                     # Two-window handling
                     if B_curr <= d_new < B:
                         if v not in D_set:
@@ -1000,25 +1005,20 @@ def _bmssp_recursive(l, B, S, n, k, t, adj, dist, cdist, predecessor, counter, t
                             D_set.add(v)
                     elif B_comp <= d_new < B_curr:
                         K.append((d_new, v))
-        
         # BatchPrepend
         for d_v, v in K:
             if v not in D_set:
                 heapq.heappush(D, (d_v, v))
                 D_set.add(v)
-        
         for x in S_curr:
             if B_comp <= dist[x] < B_curr:
                 if x not in D_set:
                     heapq.heappush(D, (dist[x], x))
                     D_set.add(x)
-    
     # Final completion
     B_comp = min(B_comp, B)
-    
     completed = list(U)
     for u in W:
         if dist[u] < B_comp and u not in completed:
             completed.append(u)
-    
     return B_comp, completed
