@@ -176,7 +176,7 @@ def single_source_bmssp_path_length(G, source, target, weight="weight", precisio
     --------
     >>> G = nx.DiGraph(nx.path_graph(5))
     >>> single_source_bmssp_path_length(G, 0, 4)
-    4
+    4.0
 
     Notes
     -----
@@ -254,12 +254,12 @@ def multi_source_bmssp_path(G, sources, weight="weight", precision=0):
 
     Examples
     --------
-    >>> G = nx.path_graph(5)
-    >>> path = multi_source_bmssp_path(G, {0, 4})
+    >>> G = nx.DiGraph(nx.path_graph(5))
+    >>> path = multi_source_bmssp_path(G, {0})
     >>> path[1]
     [0, 1]
     >>> path[3]
-    [4, 3]
+    [0, 1, 2, 3]
 
     Notes
     -----
@@ -279,6 +279,7 @@ def multi_source_bmssp_path(G, sources, weight="weight", precision=0):
         If `sources` is empty.
     NodeNotFound
         If any of `sources` is not in `G`.
+
     """
     if not sources:
         raise ValueError("Sources must not be empty")
@@ -341,15 +342,15 @@ def multi_source_bmssp_path_length(G, sources, weight="weight", precision=0):
 
     Examples
     --------
-    >>> G = nx.path_graph(5)
-    >>> length = multi_source_bmssp_path_length(G, {0, 4})
+    >>> G = nx.DiGraph(nx.path_graph(5))
+    >>> length = multi_source_bmssp_path_length(G, {0})
     >>> for node in [0, 1, 2, 3, 4]:
     ...     print(f"{node}: {length[node]}")
     0: 0
-    1: 1
-    2: 2
-    3: 1
-    4: 0
+    1: 1.0
+    2: 2.0
+    3: 3.0
+    4: 4.0
 
     Notes
     -----
@@ -369,6 +370,7 @@ def multi_source_bmssp_path_length(G, sources, weight="weight", precision=0):
         If `sources` is empty.
     NodeNotFound
         If any of `sources` is not in `G`.
+
     """
     if not sources:
         raise ValueError("Sources must not be empty")
@@ -442,6 +444,23 @@ def bmssp(G, sources, target=None, weight="weight", precision=0):
 
     NodeNotFound
         If any of `sources` is not in `G`.
+
+    See Also
+    --------
+    single_source_bmssp_path
+    multi_source_bmssp_path
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_edge(0, 1, weight=1)
+    >>> G.add_edge(1, 2, weight=2)
+    >>> G.add_edge(0, 2, weight=4)
+    >>> distances, paths = bmssp(G, {0})
+    >>> distances[2]
+    3.0
+    >>> paths[2]
+    [0, 1, 2]
 
     References
     ----------
