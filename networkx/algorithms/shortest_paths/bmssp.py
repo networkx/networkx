@@ -439,6 +439,11 @@ def bmssp(
 
     NodeNotFound
         If any of `sources` is not in `G`.
+
+    References
+    ----------
+    To read more about the BMSSP algorithm, see:
+    https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5777186
     
     """
     # Validate graph is directed
