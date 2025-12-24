@@ -89,7 +89,7 @@ class TestWikipediaExample:
         assert not gm.subgraph_is_isomorphic()
         assert gm.subgraph_is_monomorphic()
 
-        # note: this shows need to recreate the matcher for each graph change
+        # note: this fails when we dont recreate the matcher for each graph change
         # Also checking not monomorphic
         g2.add_edge("c", "a")
         gm = Matcher(g1, g2)

@@ -262,6 +262,13 @@ class TestGraphISOVF2pp:
         G1 = nx.Graph()
 
         mapped = {1: 9, 2: 8, 3: 7, 4: 6, 5: 3, 8: 5, 9: 4, 7: 1, 6: 2}
+        #        3---4
+        #       /|  /|\
+        #      / | 9 | 7
+        #     1  | | | |
+        #      \ | 8 | 6
+        #       \|  \|/
+        #        2---5
         edges1 = [
             (1, 2),
             (1, 3),
@@ -394,6 +401,11 @@ class TestGraphISOVF2pp:
         assert vf2pp_isomorphism(G1, G2, node_label="label")
 
     def test_custom_graph4_different_labels(self):
+        #  1-2-3-4    10-11-12
+        #      |\|\        \|
+        #    7-8 6 5        13
+        #       \ /
+        #        9
         G1 = nx.Graph()
         edges1 = [
             (1, 2),
