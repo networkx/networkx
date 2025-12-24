@@ -40,16 +40,21 @@ class TestMinEdgeCover:
         G.add_nodes_from([1, 2, 3, 4], bipartite=0)
         G.add_nodes_from(["a", "b", "c"], bipartite=1)
         G.add_edges_from([(1, "a"), (1, "b"), (2, "b"), (2, "c"), (3, "c"), (4, "a")])
-        # Use bipartite method by prescribing the algorithm
+
+        # Use bipartite method
         min_cover = nx.min_edge_cover(
             G, nx.algorithms.bipartite.matching.eppstein_matching
         )
         assert nx.is_edge_cover(G, min_cover)
-        assert len(min_cover) == 8
-        # Use the default method which is not specialized for bipartite
+        assert len(min_cover) == 4  # Fixed: was incorrectly 8
+
+        # Use the default method
         min_cover2 = nx.min_edge_cover(G)
         assert nx.is_edge_cover(G, min_cover2)
         assert len(min_cover2) == 4
+
+        # Both methods should return same size
+        assert len(min_cover) == len(min_cover2)
 
     def test_complete_graph_even(self):
         G = nx.complete_graph(10)
@@ -62,6 +67,20 @@ class TestMinEdgeCover:
         min_cover = nx.min_edge_cover(G)
         assert nx.is_edge_cover(G, min_cover)
         assert len(min_cover) == 6
+
+    def test_bipartite_and_nonbipartite_consistency(self):
+        """Test that bipartite and non-bipartite matching give same cover size."""
+        G = nx.Graph()
+        G.add_edges_from([(0, 3), (1, 3), (1, 4), (2, 3)])
+
+        cover1 = nx.min_edge_cover(G)
+        cover2 = nx.min_edge_cover(
+            G, nx.algorithms.bipartite.matching.hopcroft_karp_matching
+        )
+
+        assert nx.is_edge_cover(G, cover1)
+        assert nx.is_edge_cover(G, cover2)
+        assert len(cover1) == len(cover2)
 
 
 class TestIsEdgeCover:

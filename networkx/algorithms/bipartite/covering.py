@@ -37,8 +37,8 @@ def min_edge_cover(G, matching_algorithm=None):
     -------
     set
         A set of the edges in a minimum edge cover of the graph, given as
-        pairs of nodes. It contains both the edges `(u, v)` and `(v, u)`
-        for given nodes `u` and `v` among the edges of minimum edge cover.
+        pairs of nodes. It contains only one of the equivalent 2-tuples
+        `(u, v)` and `(v, u)` for each edge.
 
     Notes
     -----
