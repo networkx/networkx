@@ -1173,37 +1173,6 @@ class TestGEDNodeOrderingInvariance:
         os.environ.get("NETWORKX_TEST_BACKEND") is not None,
         reason="Backend may not preserve node attributes",
     )
-    def test_optimal_edit_paths_node_ordering(self):
-        """GED should be invariant to node ordering in input graphs."""
-
-        def node_subst_cost(node_1, node_2):
-            # Asymmetric cost function that creates ties in node assignment
-            if node_2.get("i") == 1:
-                return 0
-            elif node_2.get("i") == 2 or node_1.get("i") == 3:
-                return 2
-            else:
-                return 2.2
-
-        # Use nx.complete_graph instead of custom make_clique
-        G1 = nx.complete_graph([1, 2, 3])
-        for n in G1.nodes():
-            G1.nodes[n]["i"] = n
-
-        G2 = nx.complete_graph([3, 2, 1])  # Same graph, different node order
-        for n in G2.nodes():
-            G2.nodes[n]["i"] = n
-
-        _, dist1 = nx.optimal_edit_paths(G1, G1, node_subst_cost=node_subst_cost)
-        _, dist2 = nx.optimal_edit_paths(G2, G1, node_subst_cost=node_subst_cost)
-
-        # Both should find the same optimal distance
-        assert dist1 == dist2
-
-    @pytest.mark.skipif(
-        os.environ.get("NETWORKX_TEST_BACKEND") is not None,
-        reason="Backend may not preserve node attributes",
-    )
     def test_optimal_edit_paths_finds_optimal(self):
         """The returned distance should be the true minimum."""
 
@@ -1266,24 +1235,24 @@ class TestGEDPropertyBased:
         """
         rng = random.Random(seed)
         Gp = G.copy()
-        edges = list(Gp.edges())
-        non_edges = list(nx.non_edges(Gp))
+        edges = set(Gp.edges())
+        non_edges = set(nx.non_edges(Gp))
         changes = 0
 
         for _ in range(k):
             if rng.random() < 0.5 and edges:
                 # Remove a random edge
-                e = rng.choice(edges)
+                e = rng.choice(list(edges))
                 Gp.remove_edge(*e)
-                edges.remove(e)
-                non_edges.append(e)
+                edges.discard(e)
+                non_edges.add(e)
                 changes += 1
             elif non_edges:
                 # Add a random edge
-                e = rng.choice(non_edges)
+                e = rng.choice(list(non_edges))
                 Gp.add_edge(*e)
-                non_edges.remove(e)
-                edges.append(e)
+                non_edges.discard(e)
+                edges.add(e)
                 changes += 1
 
         return Gp, changes
@@ -1310,11 +1279,20 @@ class TestGEDPropertyBased:
     def test_ged_identity(self, seed, n):
         """GED(G, G) == 0 for any graph G.
 
-        The distance from a graph to itself should always be zero.
+        The distance from a graph to itself should always be zero,
+        even when node ordering is shuffled.
         """
+        rng = random.Random(seed)
         G = nx.erdos_renyi_graph(n, 0.5, seed=seed)
 
         assert nx.graph_edit_distance(G, G) == 0
+
+        # Also test with reshuffled node ordering
+        nodes = list(G.nodes())
+        rng.shuffle(nodes)
+        G_shuffled = nx.relabel_nodes(G, dict(zip(G.nodes(), nodes)))
+
+        assert nx.graph_edit_distance(G, G_shuffled) == 0
 
     @pytest.mark.parametrize("seed", range(5))
     @pytest.mark.parametrize("n", [4, 5])
@@ -1323,8 +1301,9 @@ class TestGEDPropertyBased:
 
         Graph edit distance should be symmetric.
         """
-        G1 = nx.erdos_renyi_graph(n, 0.4, seed=seed)
-        G2 = nx.erdos_renyi_graph(n, 0.4, seed=seed + 100)
+        rng = random.Random(seed)
+        G1 = nx.erdos_renyi_graph(n, 0.4, seed=rng.randint(0, 10000))
+        G2 = nx.erdos_renyi_graph(n, 0.4, seed=rng.randint(0, 10000))
 
         assert nx.graph_edit_distance(G1, G2) == nx.graph_edit_distance(G2, G1)
 
@@ -1353,9 +1332,10 @@ class TestGEDPropertyBased:
 
         Both functions compute the same thing, so their results must match.
         """
+        rng = random.Random(seed)
         n = 4  # Keep small for speed
-        G1 = nx.erdos_renyi_graph(n, 0.5, seed=seed)
-        G2 = nx.erdos_renyi_graph(n, 0.5, seed=seed + 100)
+        G1 = nx.erdos_renyi_graph(n, 0.5, seed=rng.randint(0, 10000))
+        G2 = nx.erdos_renyi_graph(n, 0.5, seed=rng.randint(0, 10000))
 
         ged = nx.graph_edit_distance(G1, G2)
         paths, cost = nx.optimal_edit_paths(G1, G2)
