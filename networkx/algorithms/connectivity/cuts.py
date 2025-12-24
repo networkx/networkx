@@ -413,7 +413,6 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
 
     # Global minimum node cut.
     # Analog to the algorithm 11 for global node connectivity in [1].
-    
     # For complete graphs, there is no valid node cut that disconnects the graph
     if nx.density(G) == 1:
         return set()
