@@ -12,6 +12,8 @@ following constraints:
 - Each call only involves two adjacent nodes: a sender and a receiver.
 """
 
+import warnings
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -21,22 +23,15 @@ __all__ = [
 ]
 
 
-def _get_max_broadcast_value(G, U, v, values):
-    adj = sorted(set(G.neighbors(v)) & U, key=values.get, reverse=True)
-    return max(values[u] + i for i, u in enumerate(adj, start=1))
-
-
-def _get_broadcast_centers(G, v, values, target):
-    adj = sorted(G.neighbors(v), key=values.get, reverse=True)
-    j = next(i for i, u in enumerate(adj, start=1) if values[u] + i == target)
-    return set([v] + adj[:j])
-
-
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def tree_broadcast_center(G):
     """Return the broadcast center of a tree.
+
+    .. deprecated:: 3.6
+       tree_broadcast_center is deprecated and will be removed in NetworkX 3.8.
+       Use ``nx.tree.broadcast_center`` instead.
 
     The broadcast center of a graph `G` denotes the set of nodes having
     minimum broadcast time [1]_. This function implements a linear algorithm
@@ -67,44 +62,15 @@ def tree_broadcast_center(G):
     .. [1] Slater, P.J., Cockayne, E.J., Hedetniemi, S.T,
        Information dissemination in trees. SIAM J.Comput. 10(4), 692–701 (1981)
     """
-    # Assert that the graph G is a tree
+    warnings.warn(
+        "tree_broadcast_center is deprecated and will be removed in NetworkX 3.8.\n"
+        "Use `nx.tree.broadcast_center` instead.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
     if not nx.is_tree(G):
         raise nx.NotATree("G is not a tree")
-    # step 0
-    if (n := len(G)) < 3:
-        return n - 1, set(G)
-
-    # step 1
-    U = {node for node, deg in G.degree if deg == 1}
-    values = {n: 0 for n in U}
-    T = G.copy()
-    T.remove_nodes_from(U)
-
-    # step 2
-    W = {node for node, deg in T.degree if deg == 1}
-    values.update((w, G.degree[w] - 1) for w in W)
-
-    # step 3
-    while len(T) >= 2:
-        # step 4
-        w = min(W, key=values.get)
-        v = next(T.neighbors(w))
-
-        # step 5
-        U.add(w)
-        W.remove(w)
-        T.remove_node(w)
-
-        # step 6
-        if T.degree(v) == 1:
-            # update t(v)
-            values.update({v: _get_max_broadcast_value(G, U, v, values)})
-            W.add(v)
-
-    # step 7
-    v = nx.utils.arbitrary_element(T)
-    b_T = _get_max_broadcast_value(G, U, v, values)
-    return b_T, _get_broadcast_centers(G, v, values, b_T)
+    return nx.tree.broadcast_center(G)
 
 
 @not_implemented_for("directed")
@@ -112,6 +78,10 @@ def tree_broadcast_center(G):
 @nx._dispatchable
 def tree_broadcast_time(G, node=None):
     """Return the minimum broadcast time of a (node in a) tree.
+
+    .. deprecated:: 3.6
+       tree_broadcast_time is deprecated and will be removed in NetworkX 3.8.
+       Use ``nx.tree.broadcast_time`` instead.
 
     The minimum broadcast time of a node is defined as the minimum amount
     of time required to complete broadcasting starting from that node.
@@ -153,12 +123,12 @@ def tree_broadcast_time(G, node=None):
         In Computing and Combinatorics. COCOON 2019
         (Ed. D. Z. Du and C. Tian.) Springer, pp. 240-253, 2019.
     """
-    if node is not None and node not in G:
-        err = f"node {node} not in G"
-        raise nx.NodeNotFound(err)
-    b_T, b_C = tree_broadcast_center(G)
-    if node is None:
-        return b_T + sum(1 for _ in nx.bfs_layers(G, b_C)) - 1
-    return b_T + next(
-        d for d, layer in enumerate(nx.bfs_layers(G, b_C)) if node in layer
+    warnings.warn(
+        "tree_broadcast_time is deprecated and will be removed in NetworkX 3.8.\n"
+        "Use `nx.tree.broadcast_time` instead.",
+        category=DeprecationWarning,
+        stacklevel=2,
     )
+    if not nx.is_tree(G):
+        raise nx.NotATree("G is not a tree")
+    return nx.tree.broadcast_time(G, node=node)
