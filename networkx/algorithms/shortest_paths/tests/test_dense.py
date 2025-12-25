@@ -280,4 +280,4 @@ def test_floyd_warshall_consistency(seed, n, prob):
             pred_w, dist_w = floyd_fn(graph, weight="w")
             for u in graph:
                 for v in graph:
-                    assert dist[u][v] == base_dist[u][v]
+                    assert dist_w[u][v] == base_dist_w[u][v]
