@@ -449,37 +449,30 @@ def edge_subgraph(G, edges):
     >>> list(H.edges)
     [(0, 1), (3, 4)]
 
-    For MultiGraph/MultiDiGraph objects, edges must be specified as
-    (u, v, key) tuples.
-
-    Calling ``G.edges`` without any arguments on a multigraph iterates over
-    ``(u, v, key)`` triples, which can be passed directly to
-    ``edge_subgraph`` if no filtering on edge attributes is required.
-
-    If edge attributes are needed for filtering, use
-    ``G.edges(keys=True, data=True)``, which iterates over
-    ``(u, v, key, data)`` 4-tuples. In this case, use the edge data only to
-    decide which edges to include, and pass only the corresponding
-    ``(u, v, key)`` triples to ``edge_subgraph``. Edge attributes are
-    inferred automatically from the underlying graph.
-
-    Examples (filtering by edge attributes)
-    ---------------------------------------
-
-    >>> G = nx.MultiDiGraph()
-    >>> G.add_nodes_from([1, 2])
-    >>> G.add_edge(1, 2, None, kind="kind1", more_data="foo")
-    0
-    >>> G.add_edge(1, 2, None, kind="kind2", even_more_data="bar")
+    For multi graphs, `edges` must include the edge keys:
+    
+    >>> G = nx.MultiGraph(G)
+    >>> H = nx.edge_subgraph(G, [(0, 1, 0), (3, 4, 0)])
+    >>> list(H.edges)
+    [(0, 1, 0), (3, 4, 0)]
+    
+    Edge attributes can be used to filter multiedges:
+    
+    >>> G.add_edge(0, 1, color="blue")
     1
-
-    >>> sub_graph = G.edge_subgraph(
-    ...     (u, v, k)
-    ...     for u, v, k, d in G.edges(keys=True, data=True)
-    ...     if d["kind"] == "kind1"
+    >>> G.add_edge(0, 1, color="green", weight=10)
+    2
+    >>> H = nx.edge_subgraph(
+    ...     G,
+    ...     (
+    ...         (u, v, k) for u, v, k, clr
+    ...         in G.edges(keys=True, data="color")
+    ...         if clr == "green"
+    ...     ),
     ... )
-    >>> list(sub_graph.edges(keys=True))
-    [(1, 2, 0)]
+    >>> H.edges(keys=True, data=True)
+    MultiEdgeDataView([(0, 1, 2, {'color': 'green', 'weight': 10})])
+    
 
     """
     nxf = nx.filters
