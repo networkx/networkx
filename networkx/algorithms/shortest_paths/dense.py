@@ -236,7 +236,7 @@ def floyd_warshall_tree(G, weight="weight"):
                 continue
 
             # note: we skip v=w as relaxation would always fail
-            v = dfs_dict[w]
+            v = dfs_dict.get(w, None)
             while v is not None:
                 dist_uwv = dist_uw + dist_w[v]
                 if dist_u[v] > dist_uwv:
