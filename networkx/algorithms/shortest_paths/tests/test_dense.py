@@ -242,6 +242,25 @@ class TestFloyd:
         # Direct edge hidden ==> Only 1 path exist ==> dist=2
         assert dist[0][2] == 2
 
+    def test_negative_cycle(self, floyd_fn):
+        G = nx.cycle_graph(5, create_using=nx.DiGraph())
+        G.add_edge(1, 2, weight=-7)
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+        G = nx.cycle_graph(5)  # undirected Graph
+        G.add_edge(1, 2, weight=-3)
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+        G = nx.DiGraph([(1, 1, {"weight": -1})])
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+        G = nx.MultiDiGraph([(1, 1, {"weight": -1})])
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=-1)
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
 
 @pytest.mark.parametrize("seed", list(range(10)))
 @pytest.mark.parametrize("n", list(range(10, 20)))
