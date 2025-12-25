@@ -30,6 +30,8 @@ def _init_pred_dist(G, weight):
             if cost is not None:  # for hidden edge, weight() returns None
                 dist[u][v] = cost
                 pred[u][v] = u
+        if dist[u][u] < 0:  # negative self loop
+            raise nx.NetworkXUnbounded("Negative cycle detected.")
         dist[u][u] = 0
     return pred, dist
 
@@ -107,6 +109,8 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     for i in range(n):
         # The second term has the same shape as A due to broadcasting
         A = np.minimum(A, A[i, :][np.newaxis, :] + A[:, i][:, np.newaxis])
+    if np.any(np.diag(A) < 0):
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
     return A
 
 
@@ -242,7 +246,8 @@ def floyd_warshall_tree(G, weight="weight"):
                     v = dfs_dict.get(v, None)
                 else:
                     v = skip_dict.get(v, None)
-
+    if any(dist[u][u] < 0 for u in G):
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
     return dict(pred), dict(dist)
 
 
@@ -318,6 +323,8 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
                 if dist_u[v] > d:
                     dist_u[v] = d
                     pred[u][v] = pred[w][v]
+    if any(dist[u][u] < 0 for u in G):
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
     return dict(pred), dict(dist)
 
 
