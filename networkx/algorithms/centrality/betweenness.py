@@ -16,7 +16,7 @@ __all__ = ["betweenness_centrality", "edge_betweenness_centrality"]
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
 def betweenness_centrality(
-    G, k=None, normalized=True, weight=None, endpoints=False, seed=None
+    G, k=None, normalized=True, weight=None, endpoints=False, seed=None, chunk_size=None
 ):
     r"""Compute the shortest-path betweenness centrality for nodes.
 
@@ -66,6 +66,12 @@ def betweenness_centrality(
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
         Note that this is only used if ``k is not None``.
+
+    chunk_size : int, optional (default=None)
+        If not None, process source nodes in batches of this size to reduce
+        peak memory usage. The results are identical to non-chunked computation.
+        Useful for large graphs where memory is constrained. Smaller chunk sizes
+        use less memory but may have slightly higher overhead.
 
     Returns
     -------
@@ -213,25 +219,36 @@ def betweenness_centrality(
     >>> nx.betweenness_centrality(G, k=2, normalized=True, endpoints=True, seed=42)
     {0: 0.75, 1: 1.0, 2: 0.75}
     """
-    betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
+    betweenness = dict.fromkeys(G, 0.0)
     if k == len(G):
-        # This is done for performance; the result is the same regardless.
         k = None
     if k is None:
-        nodes = G
+        nodes = list(G)
     else:
         nodes = seed.sample(list(G.nodes()), k)
-    for s in nodes:
-        # single source shortest paths
-        if weight is None:  # use BFS
-            S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
-        else:  # use Dijkstra's algorithm
-            S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
-        # accumulation
-        if endpoints:
-            betweenness, _ = _accumulate_endpoints(betweenness, S, P, sigma, s)
-        else:
-            betweenness, _ = _accumulate_basic(betweenness, S, P, sigma, s)
+
+    if chunk_size is None or chunk_size >= len(nodes):
+        for s in nodes:
+            if weight is None:
+                S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
+            else:
+                S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
+            if endpoints:
+                betweenness, _ = _accumulate_endpoints(betweenness, S, P, sigma, s)
+            else:
+                betweenness, _ = _accumulate_basic(betweenness, S, P, sigma, s)
+    else:
+        for i in range(0, len(nodes), chunk_size):
+            chunk = nodes[i : i + chunk_size]
+            for s in chunk:
+                if weight is None:
+                    S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
+                else:
+                    S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
+                if endpoints:
+                    betweenness, _ = _accumulate_endpoints(betweenness, S, P, sigma, s)
+                else:
+                    betweenness, _ = _accumulate_basic(betweenness, S, P, sigma, s)
     # rescaling
     betweenness = _rescale(
         betweenness,
