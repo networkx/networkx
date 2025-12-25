@@ -251,6 +251,9 @@ class TestFloyd:
         G.add_edge(1, 2, weight=-3)
         pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
 
+        G.add_edge(1, 2, weight=-7)
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
         G = nx.DiGraph([(1, 1, {"weight": -1})])
         pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
 
@@ -259,6 +262,21 @@ class TestFloyd:
 
         G = nx.Graph()
         G.add_edge(0, 1, weight=-1)
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+        G = nx.cycle_graph(5, create_using=nx.DiGraph())
+        nx.add_cycle(G, [3, 5, 6, 7, 8, 9])
+        G.add_edge(1, 2, weight=-30)
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+    def test_zero_cycle(self, floyd_fn):
+        G = nx.cycle_graph(5, create_using=nx.DiGraph())
+        G.add_edge(2, 3, weight=-4)
+        # check that zero cycle doesn't raise
+        floyd_fn(G)
+
+        G.add_edge(2, 3, weight=-4.0001)
+        # check that negative cycle does raise
         pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
 
 
