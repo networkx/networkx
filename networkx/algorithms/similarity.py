@@ -30,6 +30,7 @@ __all__ = [
     "panther_similarity",
     "panther_vector_similarity",
     "generate_random_paths",
+    "generate_random_walks",
 ]
 
 
@@ -1605,7 +1606,7 @@ def _prepare_panther_paths(
         )
 
     # Generate the random paths and populate the index_map
-    for _ in generate_random_paths(
+    for _ in generate_random_walks(
         G,
         sample_size,
         path_length=path_length,
@@ -1965,7 +1966,7 @@ def panther_vector_similarity(
 
 @np_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
-def generate_random_paths(
+def generate_random_walks(
     G,
     sample_size,
     path_length=5,
@@ -1975,7 +1976,12 @@ def generate_random_paths(
     *,
     source=None,
 ):
-    """Randomly generate `sample_size` paths of length `path_length`.
+    """Randomly generate `sample_size` walks of length `path_length`.
+
+    A random walk can revisit nodes, unlike a path which visits each node
+    at most once.
+
+    .. versionadded:: 3.5
 
     Parameters
     ----------
@@ -2012,9 +2018,9 @@ def generate_random_paths(
     drawn from `G`:
 
     >>> G = nx.complete_graph(5)
-    >>> next(nx.generate_random_paths(G, sample_size=1, path_length=3, seed=42))
+    >>> next(nx.generate_random_walks(G, sample_size=1, path_length=3, seed=42))
     [3, 4, 2, 3]
-    >>> list(nx.generate_random_paths(G, sample_size=3, path_length=4, seed=42))
+    >>> list(nx.generate_random_walks(G, sample_size=3, path_length=4, seed=42))
     [[3, 4, 2, 3, 0], [2, 0, 2, 1, 0], [2, 0, 4, 3, 0]]
 
     By passing a dictionary into `index_map`, it will build an
@@ -2022,15 +2028,15 @@ def generate_random_paths(
 
     >>> G = nx.wheel_graph(10)
     >>> index_map = {}
-    >>> random_paths = list(
-    ...     nx.generate_random_paths(G, sample_size=3, index_map=index_map, seed=2771)
+    >>> random_walks = list(
+    ...     nx.generate_random_walks(G, sample_size=3, index_map=index_map, seed=2771)
     ... )
-    >>> random_paths
+    >>> random_walks
     [[3, 2, 1, 9, 8, 7], [4, 0, 5, 6, 7, 8], [3, 0, 5, 0, 9, 8]]
-    >>> paths_containing_node_0 = [
-    ...     random_paths[path_idx] for path_idx in index_map.get(0, [])
+    >>> walks_containing_node_0 = [
+    ...     random_walks[walk_idx] for walk_idx in index_map.get(0, [])
     ... ]
-    >>> paths_containing_node_0
+    >>> walks_containing_node_0
     [[4, 0, 5, 6, 7, 8], [3, 0, 5, 0, 9, 8]]
 
     References
@@ -2105,3 +2111,45 @@ def generate_random_paths(
                     index_map[nbr_node] = {path_index}
 
         yield path
+
+
+@np_random_state("seed")
+@nx._dispatchable(edge_attrs="weight")
+def generate_random_paths(
+    G,
+    sample_size,
+    path_length=5,
+    index_map=None,
+    weight="weight",
+    seed=None,
+    *,
+    source=None,
+):
+    """Randomly generate `sample_size` walks of length `path_length`.
+
+    .. deprecated:: 3.5
+        generate_random_paths is deprecated and will be removed in v4.0.
+        Use generate_random_walks instead.
+
+    See Also
+    --------
+    generate_random_walks
+    """
+    import warnings
+
+    warnings.warn(
+        "generate_random_paths is deprecated and will be removed in NetworkX 4.0. "
+        "Use generate_random_walks instead, as this function generates walks "
+        "(where nodes can repeat), not paths.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return generate_random_walks(
+        G,
+        sample_size,
+        path_length=path_length,
+        index_map=index_map,
+        weight=weight,
+        seed=seed,
+        source=source,
+    )
