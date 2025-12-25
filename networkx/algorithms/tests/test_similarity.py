@@ -2,6 +2,7 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms.similarity import (
+    generate_random_walks,
     graph_edit_distance,
     optimal_edit_paths,
     optimize_graph_edit_distance,
@@ -12,6 +13,14 @@ from networkx.generators.classic import (
     path_graph,
     wheel_graph,
 )
+
+
+def test_generate_random_paths_deprecation_warning():
+    """Test that generate_random_paths emits deprecation warning."""
+    pytest.importorskip("numpy")
+    G = nx.complete_graph(5)
+    with pytest.warns(DeprecationWarning, match="generate_random_walks"):
+        list(nx.generate_random_paths(G, sample_size=1, seed=42))
 
 
 @pytest.mark.parametrize("source", (10, "foo"))
@@ -970,6 +979,104 @@ class TestSimilarity:
         }
 
         assert expected_paths == list(paths)
+        assert expected_map == index_map
+
+    @pytest.mark.parametrize("num_walks", (1, 3, 10))
+    @pytest.mark.parametrize("source", (0, 1))
+    def test_generate_random_walks_with_start(self, num_walks, source):
+        G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (2, 4)])
+        index_map = {}
+
+        walk_gen = nx.generate_random_walks(
+            G,
+            num_walks,
+            path_length=2,
+            index_map=index_map,
+            source=source,
+        )
+        walks = list(walk_gen)
+
+        # There should be num_walks walks
+        assert len(walks) == num_walks
+        # And they should all start with `source`
+        assert all(w[0] == source for w in walks)
+        # The index_map for the `source` node should contain the indices for
+        # all of the generated walks.
+        assert sorted(index_map[source]) == list(range(num_walks))
+
+    def test_generate_random_walks_unweighted(self):
+        index_map = {}
+        num_walks = 10
+        path_length = 2
+        G = nx.Graph()
+        G.add_edge(0, 1)
+        G.add_edge(0, 2)
+        G.add_edge(0, 3)
+        G.add_edge(1, 2)
+        G.add_edge(2, 4)
+        walks = nx.generate_random_walks(
+            G, num_walks, path_length=path_length, index_map=index_map, seed=42
+        )
+        expected_walks = [
+            [3, 0, 3],
+            [4, 2, 1],
+            [2, 1, 0],
+            [2, 0, 3],
+            [3, 0, 1],
+            [3, 0, 1],
+            [4, 2, 0],
+            [2, 1, 0],
+            [3, 0, 2],
+            [2, 1, 2],
+        ]
+        expected_map = {
+            0: {0, 2, 3, 4, 5, 6, 7, 8},
+            1: {1, 2, 4, 5, 7, 9},
+            2: {1, 2, 3, 6, 7, 8, 9},
+            3: {0, 3, 4, 5, 8},
+            4: {1, 6},
+        }
+
+        assert expected_walks == list(walks)
+        assert expected_map == index_map
+
+    def test_generate_random_walks_weighted(self):
+        index_map = {}
+        num_walks = 10
+        path_length = 6
+        G = nx.Graph()
+        G.add_edge("a", "b", weight=0.6)
+        G.add_edge("a", "c", weight=0.2)
+        G.add_edge("c", "d", weight=0.1)
+        G.add_edge("c", "e", weight=0.7)
+        G.add_edge("c", "f", weight=0.9)
+        G.add_edge("a", "d", weight=0.3)
+        walks = nx.generate_random_walks(
+            G, num_walks, path_length=path_length, index_map=index_map, seed=42
+        )
+
+        expected_walks = [
+            ["d", "c", "f", "c", "d", "a", "b"],
+            ["e", "c", "f", "c", "f", "c", "e"],
+            ["d", "a", "b", "a", "b", "a", "c"],
+            ["b", "a", "d", "a", "b", "a", "b"],
+            ["d", "a", "b", "a", "b", "a", "d"],
+            ["d", "a", "b", "a", "b", "a", "c"],
+            ["d", "a", "b", "a", "b", "a", "b"],
+            ["f", "c", "f", "c", "f", "c", "e"],
+            ["d", "a", "d", "a", "b", "a", "b"],
+            ["e", "c", "f", "c", "e", "c", "d"],
+        ]
+        expected_map = {
+            "d": {0, 2, 3, 4, 5, 6, 8, 9},
+            "c": {0, 1, 2, 5, 7, 9},
+            "f": {0, 1, 9, 7},
+            "a": {0, 2, 3, 4, 5, 6, 8},
+            "b": {0, 2, 3, 4, 5, 6, 8},
+            "e": {1, 9, 7},
+        }
+
+        assert expected_walks == list(walks)
         assert expected_map == index_map
 
     def test_one_node_one_loop_and_empty_graph(self):
