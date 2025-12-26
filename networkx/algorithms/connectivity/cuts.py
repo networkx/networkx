@@ -268,6 +268,10 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     and undirected graphs. This implementation is based on algorithm 11
     in [1]_.
 
+    For complete graphs K_n, this function returns a set of n-1 nodes.
+    Removing those nodes leaves a single isolated node (the trivial
+    graph), which satisfies the definition of a minimum node cut.
+
     See also
     --------
     :meth:`minimum_node_cut`
@@ -380,6 +384,10 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     corresponds to the minimum node cut of G. It handles both directed
     and undirected graphs. This implementation is based on algorithm 11
     in [1]_.
+
+    For complete graphs K_n, this function returns a set of n-1 nodes.
+    Removing those nodes leaves a single isolated node (the trivial
+    graph), which satisfies the definition of a minimum node cut.
 
     See also
     --------
