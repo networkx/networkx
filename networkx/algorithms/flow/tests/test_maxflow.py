@@ -47,7 +47,7 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
         for v, flow in flowDict[u].items():
             cap = capacity(u, v, G[u][v])
             if cap is not None:
-                assert flow <= capacity(u, v, G[u][v])
+                assert flow <= cap
             assert flow >= 0, errmsg
             excess[u] -= flow
             excess[v] += flow

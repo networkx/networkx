@@ -112,7 +112,6 @@ def build_residual_network(G, capacity):
     R.__networkx_cache__ = None  # Disable caching
     R.add_nodes_from(G)
 
-    inf = float("inf")
     capacity = _capacity_function(G, capacity)
     # Extract edges with positive capacities. Self loops excluded.
     edge_list = [
@@ -131,6 +130,7 @@ def build_residual_network(G, capacity):
     # finite-capacity edge is at most 1/3 of inf, if an operation moves more
     # than 1/3 of inf units of flow to t, there must be an infinite-capacity
     # s-t path in G.
+    inf = float("inf")
     inf = 3 * sum(cap for u, v, cap in edge_list if cap != inf) or 1
     if G.is_directed():
         for u, v, cap in edge_list:
@@ -191,7 +191,7 @@ def build_flow_dict(G, R):
 
 
 def _capacity_function(G, capacity):
-    """Returns a function that returns the capacity of an edge.
+    """Returns a callable that returns the capacity of an edge.
 
     Parameters
     ----------
@@ -204,21 +204,22 @@ def _capacity_function(G, capacity):
         an edge and ``edge_attrs`` is the corresponding edge attribute
         dictionary. The callable must return a numeric capacity, or None
         to indicate that the edge is hidden.
+        In this case, the callable is returned unchanged.
 
         If string, it is interpreted as the key of an edge attribute storing
-        the capacity. In this case, a function is returned that accepts
+        the capacity. In this case, a new callable is returned that accepts
         ``(u, v, edge_attrs)`` and returns ``edge_attrs[capacity]``.
 
     Returns
     -------
     callable
-        A function with signature ``(u, v, edge_attrs)`` that returns the
+        A callable with signature ``(u, v, edge_attrs)`` that returns the
         capacity of the edge joining nodes `u` and `v`.
 
     Notes
     -----
-    If the specified capacity attribute is not present on an edge, that
-    edge is assumed to have infinite capacity.
+    If `capacity` is a string and the specified attribute is not present on
+    an edge, that edge is assumed to have infinite capacity.
     """
 
     inf = float("inf")
