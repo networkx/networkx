@@ -95,6 +95,11 @@ def all_node_cuts(G, k=None, flow_func=None):
     # Address some corner cases first.
     # For complete Graphs
 
+    # Handle single node graph (Fix for issue #7994)
+    if G.number_of_nodes() == 1:
+        yield from ()
+        return
+
     if nx.density(G) == 1:
         yield from ()
         return
