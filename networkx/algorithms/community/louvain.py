@@ -98,7 +98,7 @@ def louvain_communities(
     --------
     >>> import networkx as nx
     >>> G = nx.petersen_graph()
-    >>> nx.community.louvain_communities(G, seed=123)
+    >>> nx.community.louvain_communities(G, seed=6)
     [{0, 4, 5, 7, 9}, {1, 2, 3, 6, 8}]
 
     Notes
@@ -251,6 +251,14 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
         out_degrees = dict(G.out_degree(weight="weight"))
         Stot_in = list(in_degrees.values())
         Stot_out = list(out_degrees.values())
+
+        def _inc_or_dec(com, sign, u):
+            Stot_in[com] += sign * in_degrees[u]
+            Stot_out[com] += sign * out_degrees[u]
+
+        def _get_prod(com, u):
+            return out_degrees[u] * Stot_in[com] + in_degrees[u] * Stot_out[com]
+
         # Calculate weights for both in and out neighbors without considering self-loops
         nbrs = {}
         for u in G:
@@ -264,60 +272,43 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
     else:
         degrees = dict(G.degree(weight="weight"))
         Stot = list(degrees.values())
+
+        def _inc_or_dec(com, sign, u):
+            Stot[com] += sign * degrees[u]
+
+        def _get_prod(com, u):
+            return degrees[u] * Stot[com] / 2
+
         nbrs = {u: {v: data["weight"] for v, data in G[u].items() if v != u} for u in G}
     rand_nodes = list(G.nodes)
     seed.shuffle(rand_nodes)
     nb_moves = 1
     improvement = False
+    factor = resolution / m
     while nb_moves > 0:
         nb_moves = 0
         for u in rand_nodes:
-            best_mod = 0
+            # Get current community and neighbor weights.
             best_com = node2com[u]
             weights2com = _neighbor_weights(nbrs[u], node2com)
-            if is_directed:
-                in_degree = in_degrees[u]
-                out_degree = out_degrees[u]
-                Stot_in[best_com] -= in_degree
-                Stot_out[best_com] -= out_degree
-                remove_cost = (
-                    -weights2com[best_com] / m
-                    + resolution
-                    * (out_degree * Stot_in[best_com] + in_degree * Stot_out[best_com])
-                    / m**2
-                )
-            else:
-                degree = degrees[u]
-                Stot[best_com] -= degree
-                remove_cost = -weights2com[best_com] / m + resolution * (
-                    Stot[best_com] * degree
-                ) / (2 * m**2)
+
+            # Calculate modularity for current community.
+            _inc_or_dec(best_com, -1, u)
+            bc_prod = _get_prod(best_com, u)
+
+            # Multiply everything by `m` compared to formula because we only care about argmax.
+            best_mod = weights2com[best_com] - factor * bc_prod
+
+            # Find best community among neighbors.
             for nbr_com, wt in weights2com.items():
-                if is_directed:
-                    gain = (
-                        remove_cost
-                        + wt / m
-                        - resolution
-                        * (
-                            out_degree * Stot_in[nbr_com]
-                            + in_degree * Stot_out[nbr_com]
-                        )
-                        / m**2
-                    )
-                else:
-                    gain = (
-                        remove_cost
-                        + wt / m
-                        - resolution * (Stot[nbr_com] * degree) / (2 * m**2)
-                    )
-                if gain > best_mod:
-                    best_mod = gain
+                nc_prod = _get_prod(nbr_com, u)
+                new_mod = wt - factor * nc_prod
+                if new_mod > best_mod:
+                    best_mod = new_mod
                     best_com = nbr_com
-            if is_directed:
-                Stot_in[best_com] += in_degree
-                Stot_out[best_com] += out_degree
-            else:
-                Stot[best_com] += degree
+
+            _inc_or_dec(best_com, 1, u)
+
             if best_com != node2com[u]:
                 com = G.nodes[u].get("nodes", {u})
                 partition[node2com[u]].difference_update(com)
