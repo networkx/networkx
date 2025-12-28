@@ -67,7 +67,7 @@ def maximal_independent_set(G, nodes=None, seed=None):
     not necessarily a **maximum** independent set. A maximal independent
     set is one where no other node can be added without violating the
     independence property. A maximum independent set is the largest
-    possible independent set for the graph.
+    possible maximal independent set for the graph.
 
     To find a maximum independent set, find the maximum clique of the
     complement graph:
