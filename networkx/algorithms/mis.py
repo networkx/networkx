@@ -76,11 +76,13 @@ def maximal_independent_set(G, nodes=None, seed=None):
     -------
 
     >>> G = nx.path_graph(3)
-    >>> G.add_node("v")
-    >>> complement_G = nx.complement(G)
-    >>> max_indep_set, _ = nx.clique.max_weight_clique(complement_G, weight=None)
-    >>> print(f"Maximum Independent Set: {max_indep_set}")
-    Maximum Independent Set: [2, 0, 'v']
+    >>> nx.maximal_independent_set(G, seed = 0)
+    [1]
+    >>> nx.maximal_independent_set(G, seed = 1)
+    [0, 2]
+    >>> G_comp = nx.complement(G)
+    >>> nx.clique.max_weight_clique(G_comp, weight=None)
+    ([2, 0], 2)
 
     See Also
     --------
