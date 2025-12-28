@@ -21,10 +21,10 @@ def maximal_independent_set(G, nodes=None, seed=None):
     independent set is an independent set such that it is not possible
     to add a new node and still get an independent set.
 
-    Finding an independent set in a graph $G$ is equivalent to 
-    finding a clique in the complement graph $\bar{G}$. 
-    Many problems related to independent sets, such as 
-    finding the maximum independent set, can be solved by applying 
+    Finding an independent set in a graph $G$ is equivalent to
+    finding a clique in the complement graph $\bar{G}$.
+    Many problems related to independent sets, such as
+    finding the maximum independent set, can be solved by applying
     clique algorithms to the complement graph.
 
     Parameters
@@ -63,20 +63,20 @@ def maximal_independent_set(G, nodes=None, seed=None):
 
     Notes
     -----
-    This algorithm is greedy and finds a **maximal** independent set, 
-    not necessarily a **maximum** independent set. A maximal independent 
-    set is one where no other node can be added without violating the 
-    independence property. A maximum independent set is the largest 
+    This algorithm is greedy and finds a **maximal** independent set,
+    not necessarily a **maximum** independent set. A maximal independent
+    set is one where no other node can be added without violating the
+    independence property. A maximum independent set is the largest
     possible independent set for the graph.
 
-    To find a maximum independent set, find the maximum clique of the 
+    To find a maximum independent set, find the maximum clique of the
     complement graph:
 
     Example
     -------
-    
+
     >>> G = nx.path_graph(3)
-    >>> G.add_node('v')
+    >>> G.add_node("v")
     >>> complement_G = nx.complement(G)
     >>> max_indep_set, _ = nx.clique.max_weight_clique(complement_G, weight=None)
     >>> print(f"Maximum Independent Set: {max_indep_set}")
