@@ -1376,6 +1376,8 @@ class EdgeView(OutEdgeView):
     dataview = EdgeDataView
 
     def __len__(self):
+        if getattr(self._graph, "_number_of_edges", None) is not None:
+            return self._graph._number_of_edges
         num_nbrs = (len(nbrs) + (n in nbrs) for n, nbrs in self._nodes_nbrs())
         return sum(num_nbrs) // 2
 
