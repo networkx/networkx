@@ -921,3 +921,37 @@ class TestWeightedEdgeBetweennessCentrality:
         norm = len(G) * (len(G) - 1) / 2
         for n in sorted(G.edges(keys=True)):
             assert b[n] == pytest.approx(b_answer[n] / norm, abs=1e-7)
+
+def test_betweenness_centrality_subset_simple():
+    """Test betweenness_centrality_subset with simple path."""
+    # Test undirected path: each path counts as 0.5
+    G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+    sources = [1]
+    targets = [4]
+    bc = nx.betweenness_centrality_subset(G, sources, targets)
+    assert bc[2] == pytest.approx(0.5)
+    assert bc[3] == pytest.approx(0.5)
+
+    # Test directed path: each path counts as 1.0
+    DG = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+    bc_dir = nx.betweenness_centrality_subset(DG, sources, targets)
+    assert bc_dir[2] == pytest.approx(1.0)
+    assert bc_dir[3] == pytest.approx(1.0)
+
+def test_edge_betweenness_centrality_subset_simple():
+    """Test edge_betweenness_centrality_subset with simple path."""
+    # Test undirected path: each path counts as 0.5
+    G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+    sources = [1]
+    targets = [4]
+    ebc = nx.edge_betweenness_centrality_subset(G, sources, targets)
+    assert ebc[(1, 2)] == pytest.approx(0.5)
+    assert ebc[(2, 3)] == pytest.approx(0.5)
+    assert ebc[(3, 4)] == pytest.approx(0.5)
+
+    # Test directed path: each path counts as 1.0
+    DG = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+    ebc_dir = nx.edge_betweenness_centrality_subset(DG, sources, targets)
+    assert ebc_dir[(1, 2)] == pytest.approx(1.0)
+    assert ebc_dir[(2, 3)] == pytest.approx(1.0)
+    assert ebc_dir[(3, 4)] == pytest.approx(1.0)
