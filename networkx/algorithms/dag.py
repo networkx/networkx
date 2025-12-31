@@ -7,7 +7,6 @@ to the user to check for that.
 
 import heapq
 from collections import deque
-from functools import partial
 from itertools import combinations, product
 from math import gcd
 
