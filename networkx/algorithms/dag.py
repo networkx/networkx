@@ -7,8 +7,7 @@ to the user to check for that.
 
 import heapq
 from collections import deque
-from functools import partial
-from itertools import chain, combinations, product, starmap
+from itertools import combinations, product
 from math import gcd
 
 import networkx as nx
@@ -31,8 +30,6 @@ __all__ = [
     "dag_longest_path_length",
     "dag_to_branching",
 ]
-
-chaini = chain.from_iterable
 
 
 @nx._dispatchable
@@ -1170,9 +1167,9 @@ def root_to_leaf_paths(G):
     """
     roots = (v for v, d in G.in_degree() if d == 0)
     leaves = (v for v, d in G.out_degree() if d == 0)
-    all_paths = partial(nx.all_simple_paths, G)
-    # TODO In Python 3, this would be better as `yield from ...`.
-    return chaini(starmap(all_paths, product(roots, leaves)))
+
+    for root, leaf in product(roots, leaves):
+        yield from nx.all_simple_paths(G, root, leaf)
 
 
 @not_implemented_for("multigraph")
