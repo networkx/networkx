@@ -1,8 +1,10 @@
 """Function for computing walks in a graph."""
 
 import networkx as nx
+from networkx.utils import py_random_state
+from networkx.utils.random_sequence import weighted_choice
 
-__all__ = ["number_of_walks"]
+__all__ = ["number_of_walks", "random_walk"]
 
 
 @nx._dispatchable
@@ -75,3 +77,86 @@ def number_of_walks(G, walk_length):
         for u_idx, u in enumerate(G)
     }
     return result
+
+
+@nx._dispatchable
+@py_random_state("seed")
+def random_walk(G, start, walk_length, *, weight=None, seed=None):
+    """Generate a random walk starting at `start`.
+
+    If `weight` is None, transitions are uniform over neighbors.
+    If `weight` is a string, transitions are proportional to that edge attribute,
+    defaulting to 1 if missing. Nonpositive weights are ignored; negative weights raise.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The input graph.
+    start : node
+        Starting node for the random walk. Must exist in `G`.
+    walk_length : int
+        Number of hops in the walk (i.e, the number of edges traversed). Must be nonnegative.
+    weight : string or None, optional (default=None)
+        Edge attribute name to interpret as the transition weight. If None, each edge has
+        weight 1.
+    seed : integer, random_state, or None (default=None)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    list
+        Nodes visited in order. Terminates early if no valid next step exists.
+    """
+    if walk_length < 0:
+        raise ValueError(f"`walk_length` cannot be negative: {walk_length}")
+    if start not in G:
+        raise nx.NodeNotFound(start)
+
+    walk = [start]
+    current = start
+    is_multigraph = G.is_multigraph()
+
+    for _ in range(walk_length):
+        neighbors = list(G[current])
+        if not neighbors:
+            break
+
+        # Fast path: unweighted / uniform
+        if weight is None:
+            current = neighbors[seed.randrange(len(neighbors))]
+            walk.append(current)
+            continue
+
+        # Weighted path
+        weight_map = {}
+        for neighbor in neighbors:
+            if is_multigraph:
+                total = 0
+                # Iterate over parallel edges between `current` and `neighbor`.
+                for data in G[current][neighbor].values():
+                    val = data.get(weight, 1)
+                    if val < 0:
+                        raise ValueError(
+                            f"Edge ({current}, {neighbor}) has negative weight {val}"
+                        )
+                    total += val
+            else:
+                data = G[current][neighbor]
+                val = data.get(weight, 1)
+                if val < 0:
+                    raise ValueError(
+                        f"Edge ({current}, {neighbor}) has negative weight {val}"
+                    )
+                total = val
+
+            if total > 0:
+                weight_map[neighbor] = total
+
+        if not weight_map:
+            break
+
+        current = weighted_choice(weight_map, seed)
+        walk.append(current)
+
+    return walk
