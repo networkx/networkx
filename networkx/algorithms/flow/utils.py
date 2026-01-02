@@ -199,12 +199,12 @@ def _capacity_function(G, capacity):
         MultiGraph and MultiDiGraph are not supported.
 
     capacity : string or callable
-        If callable, it must accept exactly three positional arguments
+        If callable, the callable is returned unchanged. For it to work
+        it must accept exactly three positional arguments
         ``(u, v, edge_attrs)``, where `u` and `v` are the endpoints of
         an edge and ``edge_attrs`` is the corresponding edge attribute
-        dictionary. The callable must return a numeric capacity, or None
-        to indicate that the edge is hidden.
-        In this case, the callable is returned unchanged.
+        dictionary. The callable must return either None (to hide an edge)
+        or a number representing the capacity.
 
         If string, it is interpreted as the key of an edge attribute storing
         the capacity. In this case, a new callable is returned that accepts
