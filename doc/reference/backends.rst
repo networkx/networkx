@@ -43,8 +43,15 @@ without converting.
 
 Using automatic dispatch requires setting configuration options. Every NetworkX
 configuration may also be set from an environment variable and are processed at
-the time networkx is imported.  The following configuration variables are
-supported:
+the time networkx is imported.
+
+.. important::
+
+   Environment variables (like ``NETWORKX_BACKEND_PRIORITY``) are read at import-time.
+   Modifying the environment (e.g. setting
+   ``os.environ["NETWORKX_BACKEND_PRIORITY"]``) after importing networkx has no effect.
+
+The following configuration variables are supported:
 
 * ``nx.config.backend_priority`` (``NETWORKX_BACKEND_PRIORITY`` env var), a
   list of backends, controls dispatchable functions that don't return graphs

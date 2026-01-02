@@ -254,13 +254,15 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
 
     .. math::
 
-       c_B(e) = \sum_{s, t \in V} \frac{\sigma(s, t | e)}{\sigma(s, t)}
+       c_B(e) = \frac{1}{P} \sum_{s, t \in V} \frac{\sigma(s, t | e)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
     shortest $(s, t)$-paths, and $\sigma(s, t | e)$ is the number of
     those paths passing through edge $e$ [1]_.
-    The denominator $\sigma(s, t)$ is a normalization factor that can be
-    turned off to get the raw path counts.
+    $P$ is a normalization factor representing the number of pairs of nodes
+    that have counted shortest paths. Its value depends on the values of `normalized`
+    and `endpoints`, and on whether the graph is directed (see Notes). It can
+    be set to ``1`` with ``normalized=False``.
 
     Parameters
     ----------
