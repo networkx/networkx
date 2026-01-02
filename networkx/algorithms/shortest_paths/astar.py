@@ -77,6 +77,30 @@ def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=Non
     >>> print(nx.astar_path(G, (0, 0), (2, 2), heuristic=dist, weight="cost"))
     [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2)]
 
+    When using floating point weights, the returned path and length
+    are inherently approximate due to the limited precision of
+    floating point arithmetic.
+
+    Examples affecting comparisons
+    ------------------------------
+    >>> import math
+    >>> G = nx.Graph()
+    >>> G.add_edge("s", "a", weight=0.1)
+    >>> G.add_edge("a", "t", weight=0.2)
+    >>> path = nx.astar_path(G, "s", "t")
+    >>> # The path length is approximately 0.3
+    >>> length = sum(G[u][v]["weight"] for u, v in zip(path, path[1:]))
+    >>> length == 0.3
+    False
+    >>> math.isclose(length, 0.3)
+    True
+
+    NetworkX treats floating point values as exact. In shortest path
+    algorithms, small numerical errors can be dangerous; for example,
+    they can create "phantom" negative cycles that cause infinite loops.
+    It is recommended to use integer weights or ``math.isclose`` for
+    comparisons.
+
     Notes
     -----
     Edge weight attributes must be numerical.
