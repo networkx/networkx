@@ -97,9 +97,9 @@ def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=Non
 
     NetworkX treats floating point values as exact. In shortest path
     algorithms, small numerical errors can be dangerous; for example,
-    they can create "phantom" negative cycles that cause infinite loops.
-    It is recommended to use integer weights or ``math.isclose`` for
-    comparisons.
+    they can create 'phantom' negative cycles that cause infinite
+    loops. It is recommended to use integer weights or math.isclose
+    for comparisons.
 
     Notes
     -----
