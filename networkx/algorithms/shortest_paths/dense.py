@@ -76,6 +76,29 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
            [inf, inf,  0., -3.],
            [inf, inf,  8.,  0.]])
 
+    When using floating point weights, the returned distances are
+    inherently approximate due to the limited precision of floating
+    point arithmetic.
+
+    Examples affecting comparisons
+    ------------------------------
+    >>> import math
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("s", "a", weight=0.1)
+    >>> G.add_edge("a", "t", weight=0.2)
+    >>> fw = nx.floyd_warshall(G, weight="weight")
+    >>> length = fw["s"]["t"]
+    >>> length == 0.3
+    False
+    >>> math.isclose(length, 0.3)
+    True
+
+    NetworkX treats floating point values as exact. In shortest path
+    algorithms, small numerical errors can be dangerous; for example,
+    they can create "phantom" negative cycles that cause the algorithm
+    to report incorrect results. It is recommended to use integer
+    weights or ``math.isclose`` for comparisons.
+
     Notes
     -----
     Floyd's algorithm is appropriate for finding shortest paths in
