@@ -118,6 +118,30 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     >>> p[2][4]  # shortest path from source=2 to target=4
     [2, 3, 4]
 
+    When using floating point weights, the returned path and length
+    are inherently approximate due to the limited precision of
+    floating point arithmetic.
+
+    Examples affecting comparisons
+    ------------------------------
+    >>> import math
+    >>> G = nx.Graph()
+    >>> G.add_edge("s", "a", weight=0.1)
+    >>> G.add_edge("a", "t", weight=0.2)
+    >>> path = nx.shortest_path(G, "s", "t", weight="weight")
+    >>> # The path length is approximately 0.3
+    >>> length = sum(G[u][v]["weight"] for u, v in zip(path, path[1:]))
+    >>> length == 0.3
+    False
+    >>> math.isclose(length, 0.3)
+    True
+
+    NetworkX treats floating point values as exact. In shortest path
+    algorithms, small numerical errors can be dangerous; for example,
+    they can create "phantom" negative cycles that cause infinite loops.
+    It is recommended to use integer weights or ``math.isclose`` for
+    comparisons.
+
     Notes
     -----
     There may be more than one shortest path between a source and target.
@@ -254,6 +278,24 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
     >>> p = dict(nx.shortest_path_length(G))  # source,target not specified
     >>> p[0][4]
     4
+
+    Examples affecting comparisons
+    ------------------------------
+    >>> import math
+    >>> G = nx.Graph()
+    >>> G.add_edge("s", "a", weight=0.1)
+    >>> G.add_edge("a", "t", weight=0.2)
+    >>> length = nx.shortest_path_length(G, "s", "t", weight="weight")
+    >>> length == 0.3
+    False
+    >>> math.isclose(length, 0.3)
+    True
+
+    NetworkX treats floating point values as exact. In shortest path
+    algorithms, small numerical errors can be dangerous; for example,
+    they can create "phantom" negative cycles that cause infinite loops.
+    It is recommended to use integer weights or ``math.isclose`` for
+    comparisons.
 
     Notes
     -----
