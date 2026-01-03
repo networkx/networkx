@@ -124,6 +124,26 @@ Development Workflow
 
          pre-commit run --all-files
 
+   * In addition, the repository defines a small number of *manual-only* hooks.
+     These are not run by default because they may be slow or produce large,
+     potentially disruptive diffs. They include:
+
+      * Automatic removal of unused imports (``autoflake``)
+      * Automated syntax upgrades for newer Python versions (``pyupgrade``)
+      * Optional performance-related linting rules (``ruff`` PERF rules)
+
+   * To run all manual-only hooks on the entire codebase, use::
+
+       pre-commit run --all-files --hook-stage manual
+
+   * To run a specific manual hook, use::
+
+       pre-commit run <hook-id> --all-files --hook-stage manual
+
+   * For example::
+
+       pre-commit run autoflake --all-files --hook-stage manual
+
 5. Submit your contribution:
 
    * Push your changes back to your fork on GitHub::
