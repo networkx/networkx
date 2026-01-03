@@ -77,6 +77,24 @@ def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=Non
     >>> print(nx.astar_path(G, (0, 0), (2, 2), heuristic=dist, weight="cost"))
     [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2)]
 
+    When using floating point weights, the returned path and length
+    are inherently approximate due to the limited precision of
+    floating point arithmetic.
+
+    Examples affecting path selection:
+    ---------------------------------
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("A", "B", weight=0.1)
+    >>> G.add_edge("B", "C", weight=0.1)
+    >>> G.add_edge("C", "D", weight=0.1)
+    >>> G.add_edge("A", "D", weight=0.3)
+    >>> nx.astar_path(G, "A", "D", weight="weight")
+    ['A', 'D']
+
+    NetworkX treats floating point values as exact. Here, the direct
+    edge is chosen because the summed path A-B-C-D results in
+    0.30000000000000004, which is greater than 0.3.
+
     Notes
     -----
     Edge weight attributes must be numerical.

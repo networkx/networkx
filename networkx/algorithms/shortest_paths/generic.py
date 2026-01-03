@@ -118,6 +118,25 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     >>> p[2][4]  # shortest path from source=2 to target=4
     [2, 3, 4]
 
+    When using floating point weights, the returned path and length
+    are inherently approximate due to the limited precision of
+    floating point arithmetic.
+
+    Examples affecting path selection:
+    ---------------------------------
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("A", "B", weight=0.1)
+    >>> G.add_edge("B", "C", weight=0.1)
+    >>> G.add_edge("C", "D", weight=0.1)
+    >>> G.add_edge("A", "D", weight=0.3)
+    >>> # total weight of path A->B->C->D is 0.1 + 0.1 + 0.1 = 0.30000000000000004
+    >>> nx.shortest_path(G, "A", "D", weight="weight")
+    ['A', 'D']
+
+    Even though the path A -> B -> C -> D has a total weight that a human
+    sees as 0.3, the direct edge A -> D is selected because 0.1 + 0.1 + 0.1
+    is slightly larger than 0.3 in floating point math.
+
     Notes
     -----
     There may be more than one shortest path between a source and target.
@@ -254,6 +273,25 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
     >>> p = dict(nx.shortest_path_length(G))  # source,target not specified
     >>> p[0][4]
     4
+
+    When using floating point weights, the returned length is
+    inherently approximate due to the limited precision of
+    floating point arithmetic.
+
+    Examples affecting length calculation:
+    -------------------------------------
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("A", "B", weight=0.1)
+    >>> G.add_edge("B", "C", weight=0.1)
+    >>> G.add_edge("C", "D", weight=0.1)
+    >>> G.add_edge("A", "D", weight=0.3)
+    >>> # 0.1 + 0.1 + 0.1 is actually 0.30000000000000004
+    >>> nx.shortest_path_length(G, "A", "D", weight="weight")
+    0.3
+
+    The returned length is 0.3 (the direct edge) rather than the path
+    sum 0.30000000000000004. NetworkX treats these values as exact,
+    picking the smaller value for the shortest path.
 
     Notes
     -----

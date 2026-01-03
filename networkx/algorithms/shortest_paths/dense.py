@@ -76,6 +76,29 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
            [inf, inf,  0., -3.],
            [inf, inf,  8.,  0.]])
 
+    When using floating point weights, the returned distances are
+    inherently approximate due to the limited precision of floating
+    point arithmetic.
+
+    When using floating point weights, the returned distances are
+    inherently approximate due to the limited precision of floating
+    point arithmetic.
+
+    Examples affecting comparisons:
+    ------------------------------
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("A", "B", weight=0.1)
+    >>> G.add_edge("B", "C", weight=0.2)
+    >>> distances = nx.floyd_warshall(G, weight="weight")
+    >>> # The distance A -> C should be 0.3
+    >>> distances["A"]["C"] == 0.3
+    False
+    >>> distances["A"]["C"] > 0.3
+    True
+
+    Because 0.1 + 0.2 is slightly larger than 0.3 in binary, the
+    comparison fails.
+
     Notes
     -----
     Floyd's algorithm is appropriate for finding shortest paths in
