@@ -272,8 +272,7 @@ class TestFloyd:
     def test_zero_cycle(self, floyd_fn):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
         G.add_edge(2, 3, weight=-4)
-        # check that zero cycle doesn't raise
-        floyd_fn(G)
+        floyd_fn(G)  # check that zero cycle doesn't raise
 
         G.add_edge(2, 3, weight=-4.0001)
         # check that negative cycle does raise
@@ -291,9 +290,9 @@ def test_negative_cycle_consistency():
                     edges = ((u, v, unif(-1, max_cost)) for u, v in G.edges)
                     G.add_weighted_edges_from(edges)
 
-                    with_heuristic = nx.negative_edge_cycle(G)
+                    has_neg_cycle = nx.negative_edge_cycle(G)
                     for floyd_fn in floyd_fns:
-                        if with_heuristic:
+                        if has_neg_cycle:
                             pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
                         else:
                             floyd_fn(G)  # does not raise
