@@ -105,6 +105,8 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
         G, nodelist, multigraph_weight=min, weight=weight, nonedge=np.inf
     )
     n, m = A.shape
+    if np.any(np.diag(A) < 0):
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
     np.fill_diagonal(A, 0)  # diagonal elements should be zero
     for i in range(n):
         # The second term has the same shape as A due to broadcasting
@@ -246,6 +248,7 @@ def floyd_warshall_tree(G, weight="weight"):
                     v = dfs_dict.get(v, None)
                 else:
                     v = skip_dict.get(v, None)
+
     if any(dist[u][u] < 0 for u in G):
         raise nx.NetworkXUnbounded("Negative cycle detected.")
     return dict(pred), dict(dist)
