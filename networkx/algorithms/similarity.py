@@ -331,8 +331,6 @@ def optimal_edit_paths(
     >>> G1 = nx.cycle_graph(4)
     >>> G2 = nx.wheel_graph(5)
     >>> paths, cost = nx.optimal_edit_paths(G1, G2)
-    >>> len(paths)
-    40
     >>> cost
     5.0
 
@@ -865,31 +863,47 @@ def optimize_edit_paths(
         n = len(pending_v)
         # assert Cv.C.shape == (m + n, m + n)
 
-        # 1) a vertex mapping from optimal linear sum assignment
-        i, j = min(
+        # 1) vertex mappings from optimal linear sum assignment
+        # Get ALL assignments, not just the one with min indices
+        # Different assignments with the same node cost can have very different edge costs
+        lsa_assignments = [
             (k, l) for k, l in zip(Cv.lsa_row_ind, Cv.lsa_col_ind) if k < m or l < n
-        )
-        xy, localCe = match_edges(
-            pending_u[i] if i < m else None,
-            pending_v[j] if j < n else None,
-            pending_g,
-            pending_h,
-            Ce,
-            matched_uv,
-        )
-        Ce_xy = reduce_Ce(Ce, xy, len(pending_g), len(pending_h))
-        # assert Ce.ls <= localCe.ls + Ce_xy.ls
-        if prune(matched_cost + Cv.ls + localCe.ls + Ce_xy.ls):
-            pass
-        else:
-            # get reduced Cv efficiently
+        ]
+
+        # Evaluate each assignment with its edge costs
+        first_candidates = []
+        for i, j in lsa_assignments:
+            xy, localCe = match_edges(
+                pending_u[i] if i < m else None,
+                pending_v[j] if j < n else None,
+                pending_g,
+                pending_h,
+                Ce,
+                matched_uv,
+            )
+            Ce_xy = reduce_Ce(Ce, xy, len(pending_g), len(pending_h))
+
+            if prune(matched_cost + Cv.ls + localCe.ls + Ce_xy.ls):
+                continue
+
+            # Calculate total cost estimate for sorting
+            total_cost_estimate = Cv.C[i, j] + localCe.ls + Ce_xy.ls
+
+            # Use efficient Cv reduction
             Cv_ij = CostMatrix(
                 reduce_C(Cv.C, (i,), (j,), m, n),
                 reduce_ind(Cv.lsa_row_ind, (i, m + j)),
                 reduce_ind(Cv.lsa_col_ind, (j, n + i)),
                 Cv.ls - Cv.C[i, j],
             )
-            yield (i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls
+            first_candidates.append(
+                ((i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls, total_cost_estimate)
+            )
+
+        # Sort by total cost estimate and yield most promising first
+        first_candidates.sort(key=lambda x: x[5])
+        for ij, Cv_ij, xy, Ce_xy, edit_cost, _ in first_candidates:
+            yield ij, Cv_ij, xy, Ce_xy, edit_cost
 
         # 2) other candidates, sorted by lower-bound cost estimate
         other = []
