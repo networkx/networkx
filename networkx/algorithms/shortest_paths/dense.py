@@ -66,6 +66,14 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
         A numpy array of shortest path distances between nodes.
         If there is no path between two nodes the value is Inf.
 
+    Raises
+    ------
+    NetworkXUnbounded
+        If the (di)graph contains a negative (di)cycle, the
+        algorithm raises an exception to indicate the presence of the
+        negative (di)cycle.  Note: any negative weight edge in an
+        undirected graph is a negative cycle.
+
     Examples
     --------
     >>> G = nx.DiGraph()
@@ -153,6 +161,14 @@ def floyd_warshall_tree(G, weight="weight"):
         the shortest path. The distance output is a dict keyed by source
         node to a dict keyed by target node to the distance value of the
         shortest path between the source and target.
+
+    Raises
+    ------
+    NetworkXUnbounded
+        If the (di)graph contains a negative (di)cycle, the
+        algorithm raises an exception to indicate the presence of the
+        negative (di)cycle.  Note: any negative weight edge in an
+        undirected graph is a negative cycle.
 
     Examples
     --------
@@ -281,6 +297,14 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
        Dictionaries, keyed by source and target, of predecessors and distances
        in the shortest path.
 
+    Raises
+    ------
+    NetworkXUnbounded
+       If the (di)graph contains a negative (di)cycle, the
+       algorithm raises an exception to indicate the presence of the
+       negative (di)cycle.  Note: any negative weight edge in an
+       undirected graph is a negative cycle.
+
     Examples
     --------
     >>> G = nx.DiGraph()
@@ -402,6 +426,14 @@ def floyd_warshall(G, weight="weight"):
     distance : dict
        A dictionary,  keyed by source and target, of shortest paths distances
        between nodes.
+
+    Raises
+    ------
+    NetworkXUnbounded
+       If the (di)graph contains a negative (di)cycle, the
+       algorithm raises an exception to indicate the presence of the
+       negative (di)cycle.  Note: any negative weight edge in an
+       undirected graph is a negative cycle.
 
     Examples
     --------
