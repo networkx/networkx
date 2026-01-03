@@ -267,11 +267,11 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of predecessors in breadth-first-search from source.
 
     Note that, as might be assumed from the name, this does not search
-    "backwards" (i.e. traversing from a node to its predecessor nodes) in
-    directed graphs. Instead, this performs an ordinary breadth-first-search
-    using outgoing edges; the key difference of this function is that the
-    nodes reported by the search are reported alongside their predecessor node
-    in the search.
+    "backwards" (i.e. traversing along the incoming edges of nodes) in
+    directed graphs. Instead, this performs an ordinary "forwards"
+    breadth-first-search using outgoing edges. The term "predecessor" comes up
+    because nodes reported by the search are reported alongside their
+    predecessor node in the search.
 
     Parameters
     ----------
