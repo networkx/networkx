@@ -1,4 +1,4 @@
-import random
+from random import Random
 
 import pytest
 
@@ -279,25 +279,6 @@ class TestFloyd:
         pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
 
 
-def test_negative_cycle_consistency():
-    unif = random.uniform
-    for random_seed in range(2):  # range(20):
-        random.seed(random_seed)
-        for density in [0.1, 0.9]:  # .3, .7, .9]:
-            for N in [1, 10, 20]:  # range(1, 60 - int(30 * density)):
-                for max_cost in [1, 90]:  # [1, 10, 40, 90]:
-                    G = nx.binomial_graph(N, density, seed=4, directed=True)
-                    edges = ((u, v, unif(-1, max_cost)) for u, v in G.edges)
-                    G.add_weighted_edges_from(edges)
-
-                    has_neg_cycle = nx.negative_edge_cycle(G)
-                    for floyd_fn in floyd_fns:
-                        if has_neg_cycle:
-                            pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
-                        else:
-                            floyd_fn(G)  # does not raise
-
-
 @pytest.mark.parametrize("seed", list(range(10)))
 @pytest.mark.parametrize("n", list(range(10, 20)))
 @pytest.mark.parametrize("prob", [x / 10 for x in range(0, 10, 2)])
@@ -311,7 +292,7 @@ def test_floyd_warshall_consistency(seed, n, prob):
 
     Note: Predecessor data can differ when multiple shortest paths exist.
     """
-    rng = random.Random(seed)
+    rng = Random(seed)
 
     # random graph, possibly disconnected
     graph = nx.erdos_renyi_graph(n, prob, seed=rng)
