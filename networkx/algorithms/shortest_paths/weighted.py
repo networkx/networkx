@@ -143,24 +143,20 @@ def dijkstra_path(G, source, target, weight="weight"):
     are inherently approximate due to the limited precision of
     floating point arithmetic.
 
-    Examples affecting comparisons
-    ------------------------------
-    >>> import math
-    >>> G = nx.Graph()
-    >>> G.add_edge("s", "a", weight=0.1)
-    >>> G.add_edge("a", "t", weight=0.2)
-    >>> path = nx.dijkstra_path(G, "s", "t")
-    >>> # The path length is approximately 0.3
-    >>> length = sum(G[u][v]["weight"] for u, v in zip(path, path[1:]))
-    >>> length == 0.3
-    False
-    >>> math.isclose(length, 0.3)
-    True
+    Examples affecting path selection:
+    ---------------------------------
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("A", "B", weight=0.1)
+    >>> G.add_edge("B", "C", weight=0.1)
+    >>> G.add_edge("C", "D", weight=0.1)
+    >>> G.add_edge("A", "D", weight=0.3)
+    >>> # total weight of path A->B->C->D is 0.1 + 0.1 + 0.1 = 0.30000000000000004
+    >>> nx.dijkstra_path(G, "A", "D", weight="weight")
+    ['A', 'D']
 
-    NetworkX treats floating point values as exact. Numerical errors
-    can be dangerous in shortest path algorithms, as they can lead to
-    incorrect path selection or "phantom" negative cycles. Use integer
-    weights or ``math.isclose`` for comparisons.
+    Even though the path A -> B -> C -> D has a total weight that a human
+    sees as 0.3, the direct edge A -> D is selected because 0.1 + 0.1 + 0.1
+    is slightly larger than 0.3 in floating point math.
 
     Notes
     -----
@@ -244,22 +240,24 @@ def dijkstra_path_length(G, source, target, weight="weight"):
     >>> nx.dijkstra_path_length(G, 0, 4)
     4
 
-    Examples affecting comparisons
-    ------------------------------
-    >>> import math
-    >>> G = nx.Graph()
-    >>> G.add_edge("s", "a", weight=0.1)
-    >>> G.add_edge("a", "t", weight=0.2)
-    >>> length = nx.dijkstra_path_length(G, "s", "t")
-    >>> length == 0.3
-    False
-    >>> math.isclose(length, 0.3)
-    True
+    When using floating point weights, the returned length is
+    inherently approximate due to the limited precision of
+    floating point arithmetic.
 
-    NetworkX treats floating point values as exact. Numerical errors
-    can be dangerous in shortest path algorithms, as they can lead to
-    incorrect path selection or "phantom" negative cycles. Use integer
-    weights or ``math.isclose`` for comparisons.
+    Examples affecting length calculation:
+    -------------------------------------
+    >>> G = nx.DiGraph()
+    >>> G.add_edge("A", "B", weight=0.1)
+    >>> G.add_edge("B", "C", weight=0.1)
+    >>> G.add_edge("C", "D", weight=0.1)
+    >>> G.add_edge("A", "D", weight=0.3)
+    >>> # 0.1 + 0.1 + 0.1 is actually 0.30000000000000004
+    >>> nx.dijkstra_path_length(G, "A", "D", weight="weight")
+    0.3
+
+    The returned length is 0.3 (the direct edge) rather than the path
+    sum 0.30000000000000004. NetworkX treats these values as exact,
+    picking the smaller value for the shortest path.
 
     Notes
     -----
