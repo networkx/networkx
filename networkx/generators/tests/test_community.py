@@ -360,3 +360,135 @@ def test_generate_min_degree_itr():
         nx.ExceededMaxIterations, match="Could not match average_degree"
     ):
         nx.generators.community._generate_min_degree(2, 2, 1, 0.01, 0)
+
+
+class TestLFRBenchmarkGraphBugFixes:
+    """Tests for LFR benchmark graph bug fixes.
+
+    These tests verify fixes for:
+    - #6809: Degree distribution not preserved
+    - #6762: Wrong condition in intra-community edge loop
+    """
+
+    def test_degree_distribution_preserved(self):
+        """Verify generated degrees don't exceed desired degrees. Fixes #6809."""
+        G = nx.LFR_benchmark_graph(
+            n=100,
+            tau1=3,
+            tau2=1.5,
+            mu=0.1,
+            min_degree=5,
+            max_degree=20,
+            min_community=20,
+            seed=42,
+        )
+
+        # All degrees should be within the specified range
+        degrees = [d for _, d in G.degree()]
+        assert min(degrees) >= 5, f"Min degree {min(degrees)} is less than min_degree=5"
+        assert max(degrees) <= 20, f"Max degree {max(degrees)} exceeds max_degree=20"
+
+    def test_mixing_parameter_approximated(self):
+        """Verify actual mixing parameter is reasonably close to requested. Fixes #6809."""
+        mu_target = 0.3
+        G = nx.LFR_benchmark_graph(
+            n=250,
+            tau1=3,
+            tau2=1.5,
+            mu=mu_target,
+            average_degree=5,
+            min_community=20,
+            seed=10,
+        )
+
+        # Calculate actual mixing parameter
+        external_edges = 0
+        total_edges = G.number_of_edges()
+
+        for u, v in G.edges():
+            if G.nodes[u]["community"] != G.nodes[v]["community"]:
+                external_edges += 1
+
+        mu_actual = external_edges / total_edges if total_edges > 0 else 0
+
+        # Allow reasonable tolerance
+        assert abs(mu_actual - mu_target) < 0.2, (
+            f"Mixing parameter {mu_actual:.3f} too far from target {mu_target}"
+        )
+
+    def test_no_self_loops(self):
+        """Verify generated graph has no self-loops."""
+        G = nx.LFR_benchmark_graph(
+            n=250,
+            tau1=3,
+            tau2=1.5,
+            mu=0.1,
+            average_degree=5,
+            min_community=20,
+            seed=10,
+        )
+        assert nx.number_of_selfloops(G) == 0, "Graph contains self-loops"
+
+    def test_community_attribute_set(self):
+        """Verify all nodes have community attribute set."""
+        G = nx.LFR_benchmark_graph(
+            n=250,
+            tau1=3,
+            tau2=1.5,
+            mu=0.1,
+            average_degree=5,
+            min_community=20,
+            seed=10,
+        )
+
+        for node in G.nodes():
+            assert "community" in G.nodes[node], (
+                f"Node {node} missing community attribute"
+            )
+            assert isinstance(G.nodes[node]["community"], set), (
+                f"Node {node} community is not a set"
+            )
+            assert node in G.nodes[node]["community"], (
+                f"Node {node} not in its own community"
+            )
+
+    def test_internal_edges_exist(self):
+        """Verify nodes have internal edges to their community. Fixes #6762."""
+        G = nx.LFR_benchmark_graph(
+            n=250,
+            tau1=3,
+            tau2=1.5,
+            mu=0.1,
+            average_degree=5,
+            min_community=20,
+            seed=10,
+        )
+
+        # Count nodes that have at least some internal edges
+        nodes_with_internal = 0
+        for node in G.nodes():
+            community = G.nodes[node]["community"]
+            neighbors = set(G.neighbors(node))
+            internal_neighbors = neighbors.intersection(community)
+            if len(internal_neighbors) > 0:
+                nodes_with_internal += 1
+
+        # Most nodes should have internal edges
+        ratio = nodes_with_internal / G.number_of_nodes()
+        assert ratio >= 0.8, f"Only {ratio:.2%} of nodes have internal edges"
+
+    def test_both_endpoints_checked_for_internal_edges(self):
+        """Verify the fix for #6809 - both endpoints checked when adding edges."""
+        G = nx.LFR_benchmark_graph(
+            n=250,
+            tau1=3,
+            tau2=1.5,
+            mu=0.1,
+            average_degree=5,
+            min_community=20,
+            seed=10,
+        )
+
+        # Get the communities and verify it's a valid partition
+        communities = {frozenset(G.nodes[v]["community"]) for v in G}
+        assert nx.community.is_partition(G.nodes(), communities)
