@@ -1,4 +1,4 @@
-from random import Random
+import random
 
 import pytest
 
@@ -242,6 +242,61 @@ class TestFloyd:
         # Direct edge hidden ==> Only 1 path exist ==> dist=2
         assert dist[0][2] == 2
 
+    def test_negative_cycle(self, floyd_fn):
+        G = nx.cycle_graph(5, create_using=nx.DiGraph())
+        G.add_edge(1, 2, weight=-7)
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+        G = nx.cycle_graph(5)  # undirected Graph
+        G.add_edge(1, 2, weight=-3)
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+        G.add_edge(1, 2, weight=-7)
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+        G = nx.DiGraph([(1, 1, {"weight": -1})])
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+        G = nx.MultiDiGraph([(1, 1, {"weight": -1})])
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=-1)
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+        G = nx.cycle_graph(5, create_using=nx.DiGraph())
+        nx.add_cycle(G, [3, 5, 6, 7, 8, 9])
+        G.add_edge(1, 2, weight=-30)
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+    def test_zero_cycle(self, floyd_fn):
+        G = nx.cycle_graph(5, create_using=nx.DiGraph())
+        G.add_edge(2, 3, weight=-4)
+        floyd_fn(G)  # check that zero cycle doesn't raise
+
+        G.add_edge(2, 3, weight=-4.0001)
+        # check that negative cycle does raise
+        pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+
+
+def test_negative_cycle_consistency():
+    unif = random.uniform
+    for random_seed in range(2):  # range(20):
+        random.seed(random_seed)
+        for density in [0.1, 0.9]:  # .3, .7, .9]:
+            for N in [1, 10, 20]:  # range(1, 60 - int(30 * density)):
+                for max_cost in [1, 90]:  # [1, 10, 40, 90]:
+                    G = nx.binomial_graph(N, density, seed=4, directed=True)
+                    edges = ((u, v, unif(-1, max_cost)) for u, v in G.edges)
+                    G.add_weighted_edges_from(edges)
+
+                    has_neg_cycle = nx.negative_edge_cycle(G)
+                    for floyd_fn in floyd_fns:
+                        if has_neg_cycle:
+                            pytest.raises(nx.NetworkXUnbounded, floyd_fn, G)
+                        else:
+                            floyd_fn(G)  # does not raise
+
 
 @pytest.mark.parametrize("seed", list(range(10)))
 @pytest.mark.parametrize("n", list(range(10, 20)))
@@ -256,7 +311,7 @@ def test_floyd_warshall_consistency(seed, n, prob):
 
     Note: Predecessor data can differ when multiple shortest paths exist.
     """
-    rng = Random(seed)
+    rng = random.Random(seed)
 
     # random graph, possibly disconnected
     graph = nx.erdos_renyi_graph(n, prob, seed=rng)
@@ -280,4 +335,4 @@ def test_floyd_warshall_consistency(seed, n, prob):
             pred_w, dist_w = floyd_fn(graph, weight="w")
             for u in graph:
                 for v in graph:
-                    assert dist[u][v] == base_dist[u][v]
+                    assert dist_w[u][v] == base_dist_w[u][v]
