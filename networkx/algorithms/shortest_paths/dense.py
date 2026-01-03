@@ -66,14 +66,6 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
         A numpy array of shortest path distances between nodes.
         If there is no path between two nodes the value is Inf.
 
-    Raises
-    ------
-    NetworkXUnbounded
-        If the (di)graph contains a negative (di)cycle, the
-        algorithm raises an exception to indicate the presence of the
-        negative (di)cycle.  Note: any negative weight edge in an
-        undirected graph is a negative cycle.
-
     Examples
     --------
     >>> G = nx.DiGraph()
@@ -97,6 +89,12 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     ------
     NetworkXError
         If nodelist is not a list of the nodes in G.
+
+    NetworkXUnbounded
+        If the (di)graph contains a negative (di)cycle, the
+        algorithm raises an exception to indicate the presence of the
+        negative (di)cycle.  Note: any negative weight edge in an
+        undirected graph is a negative cycle.
     """
     import numpy as np
 
