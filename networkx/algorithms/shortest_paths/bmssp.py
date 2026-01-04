@@ -483,7 +483,11 @@ def bmssp(G, sources, target=None, weight="weight", precision=0):
 
     """
     # Validate sources
-    sources = set(sources)
+    # Handle single node or iterable of nodes
+    if hasattr(sources, "__iter__") and not isinstance(sources, str):
+        sources = set(sources)
+    else:
+        sources = {sources}
     if not sources:
         raise ValueError("Sources must not be empty")
     for s in sources:
