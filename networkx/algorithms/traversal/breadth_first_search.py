@@ -266,12 +266,17 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
 def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of predecessors in breadth-first-search from source.
 
-    Note that, as might be assumed from the name, this does not search
-    "backwards" (i.e. traversing along the incoming edges of nodes) in
-    directed graphs. Instead, this performs an ordinary "forwards"
-    breadth-first-search using outgoing edges. The term "predecessor" comes up
-    because nodes reported by the search are reported alongside their
-    predecessor node in the search.
+    Each yielded value is a tuple (node, predecessor), describing a node
+    and its predecessor in the breadth-first-search. That is, `predecessor`
+    is the node from which the BFS moved directly to `node`.
+
+    Note that the term "predecessor" has other meanings in graph theory. In a
+    directed graph, we say that a node m is a predecessor of a node n if there
+    exists a directed edge from m -> n. Although this term also applies to the
+    output node pairs of this function, we caution that this BFS is not
+    actually performed "backwards" (i.e. traversing nodes' incoming edges) in
+    directed graphs. It is instead performed as an ordinary "forwards" BFS,
+    traversing nodes' outgoing edges.
 
     Parameters
     ----------
