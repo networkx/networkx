@@ -600,7 +600,9 @@ def spring_layout(
             if node not in pos:
                 raise ValueError("nodes are fixed without positions given")
         nfixed = {node: i for i, node in enumerate(G)}
-        fixed = np.asarray([nfixed[node] for node in fixed if node in nfixed])
+        fixed = np.asarray(
+            [nfixed[node] for node in fixed if node in nfixed], dtype=int
+        )
 
     if pos is not None:
         # Determine size of existing domain to adjust initial positions
