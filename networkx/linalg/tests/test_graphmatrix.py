@@ -44,6 +44,25 @@ def test_incidence_matrix_simple():
         nx.incidence_matrix(G, nodelist=[0, 1])
 
 
+def test_incidence_matrix_format_parameter():
+    """Test that incidence_matrix supports format parameter including 'dense'."""
+    import scipy as sp
+
+    G = nx.path_graph(4)
+
+    I_csc = nx.incidence_matrix(G, format="csc")
+    assert sp.sparse.issparse(I_csc)
+    assert I_csc.format == "csc"
+
+    I_csr = nx.incidence_matrix(G, format="csr")
+    assert sp.sparse.issparse(I_csr)
+    assert I_csr.format == "csr"
+
+    I_dense = nx.incidence_matrix(G, format="dense")
+    assert isinstance(I_dense, np.ndarray)
+    np.testing.assert_equal(I_dense, I_csc.toarray())
+
+
 class TestGraphMatrix:
     @classmethod
     def setup_class(cls):
@@ -273,3 +292,23 @@ class TestGraphMatrix:
             nx.adjacency_matrix(self.no_edges_G, nodelist=[1, 3]).todense(),
             self.no_edges_A,
         )
+
+    def test_adjacency_matrix_format_parameter(self):
+        """Test that adjacency_matrix supports format parameter including 'dense'."""
+        import scipy as sp
+
+        A_csr = nx.adjacency_matrix(self.G, format="csr")
+        assert sp.sparse.issparse(A_csr)
+        assert A_csr.format == "csr"
+
+        A_csc = nx.adjacency_matrix(self.G, format="csc")
+        assert sp.sparse.issparse(A_csc)
+        assert A_csc.format == "csc"
+
+        A_coo = nx.adjacency_matrix(self.G, format="coo")
+        assert sp.sparse.issparse(A_coo)
+        assert A_coo.format == "coo"
+
+        A_dense = nx.adjacency_matrix(self.G, format="dense")
+        assert isinstance(A_dense, np.ndarray)
+        np.testing.assert_equal(A_dense, self.A)
