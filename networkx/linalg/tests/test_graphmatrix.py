@@ -62,6 +62,9 @@ def test_incidence_matrix_format_parameter():
     assert isinstance(I_dense, np.ndarray)
     np.testing.assert_equal(I_dense, I_csc.toarray())
 
+    with pytest.raises(NetworkXError, match="Unknown sparse array format"):
+        nx.incidence_matrix(G, format="invalid_format")
+
 
 class TestGraphMatrix:
     @classmethod
@@ -312,3 +315,6 @@ class TestGraphMatrix:
         A_dense = nx.adjacency_matrix(self.G, format="dense")
         assert isinstance(A_dense, np.ndarray)
         np.testing.assert_equal(A_dense, self.A)
+
+        with pytest.raises(NetworkXError, match="Unknown sparse matrix format"):
+            nx.adjacency_matrix(self.G, format="invalid_format")
