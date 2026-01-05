@@ -206,7 +206,7 @@ class TestLayout:
         npos = nx.spring_layout(self.bigG, pos=pos, fixed=[(0, 0)])
         for axis in range(2):
             assert pos[(0, 0)][axis] == pytest.approx(npos[(0, 0)][axis], abs=1e-7)
-        # Empty fixed list
+        # Empty fixed list - see gh-8446
         pos = nx.circular_layout(self.Gi)
         npos = nx.spring_layout(self.Gi, pos=pos, fixed=[])
         assert len(npos) == len(pos)
