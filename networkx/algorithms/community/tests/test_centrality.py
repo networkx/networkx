@@ -83,3 +83,37 @@ class TestGirvanNewman:
         validate_communities(communities[0], [{0}, {1, 2, 3}])
         validate_communities(communities[1], [{0}, {1}, {2, 3}])
         validate_communities(communities[2], [{0}, {1}, {2}, {3}])
+
+
+class TestGirvanNewmanKarateClub:
+    """Tests using Zachary's Karate Club - a graph from the original paper."""
+
+    def test_first_split_separates_factions(self):
+        """The first split should separate Mr. Hi (node 0) and Officer (node 33)."""
+        G = nx.karate_club_graph()
+        communities_generator = nx.community.girvan_newman(G)
+        first_split = next(communities_generator)
+
+        # Should split into exactly 2 communities
+        assert len(first_split) == 2
+
+        # Mr. Hi (0) and Officer (33) should be in different communities
+        comm1, comm2 = first_split
+        node_0_in_comm1 = 0 in comm1
+        node_33_in_comm1 = 33 in comm1
+
+        # They should NOT be in the same community
+        assert node_0_in_comm1 != node_33_in_comm1
+
+    def test_final_result_is_singletons(self):
+        """After all splits, each node should be in its own community."""
+        G = nx.karate_club_graph()
+        communities = list(nx.community.girvan_newman(G))
+
+        # Last result should have 34 communities (one per node)
+        final_communities = communities[-1]
+        assert len(final_communities) == G.number_of_nodes()
+
+        # Each community should have exactly 1 node
+        for comm in final_communities:
+            assert len(comm) == 1
