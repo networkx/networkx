@@ -188,6 +188,11 @@ class TestLayout:
         pos = nx.circular_layout(self.Gi)
         npos = nx.forceatlas2_layout(self.Gi, pos=pos)
 
+    def test_smoke_initial_pos_nonarray_forceatlas2(self):
+        pos = nx.circular_layout(self.Gi)
+        pos = {key: tuple(value) for key, value in pos.items()}
+        npos = nx.forceatlas2_layout(self.Gi, pos=pos)
+
     def test_smoke_initial_pos_fruchterman_reingold(self):
         pos = nx.circular_layout(self.Gi)
         npos = nx.fruchterman_reingold_layout(self.Gi, pos=pos)
