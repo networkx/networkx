@@ -189,6 +189,7 @@ class TestLayout:
         npos = nx.forceatlas2_layout(self.Gi, pos=pos)
 
     def test_smoke_initial_pos_nonarray_forceatlas2(self):
+        # See gh-8451
         pos = nx.circular_layout(self.Gi)
         pos = {key: tuple(value) for key, value in pos.items()}
         npos = nx.forceatlas2_layout(self.Gi, pos=pos)
