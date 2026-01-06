@@ -10,6 +10,7 @@ import networkx as nx
 __all__ = ["count_motifs"]
 
 
+@nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable
 def count_motifs(G, size=3):
     """Count occurrences of connected subgraph motifs using the ESU algorithm.

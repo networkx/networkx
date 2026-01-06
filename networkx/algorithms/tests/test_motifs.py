@@ -89,3 +89,20 @@ class TestCountMotifs:
         G.add_edges_from([("a", "b"), ("b", "c"), ("c", "a")])
         motifs = nx.count_motifs(G, size=3)
         assert sum(motifs.values()) == 1
+
+    def test_count_motifs_size_2(self):
+        """Test motif counting with size=2 (edge counting)."""
+        G = nx.path_graph(4)
+        motifs = nx.count_motifs(G, size=2)
+        assert sum(motifs.values()) == 3
+
+        G = nx.complete_graph(4)
+        motifs = nx.count_motifs(G, size=2)
+        assert sum(motifs.values()) == 6
+
+    def test_count_motifs_multigraph_not_supported(self):
+        """Multigraphs should raise NetworkXNotImplemented."""
+        G = nx.MultiGraph()
+        G.add_edges_from([(0, 1), (1, 2), (2, 0)])
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.count_motifs(G, size=3)
