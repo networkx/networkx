@@ -192,7 +192,13 @@ def strategy_connected_sequential(G, colors, traversal="bfs"):
             "Please specify one of the strings 'bfs' or"
             " 'dfs' for connected sequential ordering"
         )
-    for component in nx.connected_components(G):
+    # Use weakly_connected_components for directed graphs,
+    # connected_components for undirected graphs
+    if G.is_directed():
+        components = nx.weakly_connected_components(G)
+    else:
+        components = nx.connected_components(G)
+    for component in components:
         source = arbitrary_element(component)
         # Yield the source node, then all the nodes in the specified
         # traversal order.
@@ -224,6 +230,9 @@ def strategy_saturation_largest_first(G, colors):
             if color in distinct_colors[node]:
                 raise nx.NetworkXError("Neighboring nodes must have different colors")
 
+    # Track nodes whose colors have already been propagated to neighbors
+    processed = set(colors.keys())
+
     # If 0 nodes have been colored, simply choose the node of highest degree.
     if not colors:
         node = max(G, key=G.degree)
@@ -232,12 +241,16 @@ def strategy_saturation_largest_first(G, colors):
         # neighbor of that node.
         for v in G[node]:
             distinct_colors[v].add(0)
+        processed.add(node)
 
     while len(G) != len(colors):
-        # Update the distinct color sets for the neighbors.
-        for node, color in colors.items():
-            for neighbor in G[node]:
-                distinct_colors[neighbor].add(color)
+        # Update the distinct color sets only for newly colored nodes
+        for node in colors:
+            if node not in processed:
+                color = colors[node]
+                for neighbor in G[node]:
+                    distinct_colors[neighbor].add(color)
+                processed.add(node)
 
         # Compute the maximum saturation and the set of nodes that
         # achieve that saturation.
