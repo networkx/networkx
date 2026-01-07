@@ -266,12 +266,12 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
 def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of predecessors in breadth-first-search from source.
 
-    Each yielded ``(node, predecessor)`` tuple, describes a node and
+    Each yielded ``(node, predecessor)`` tuple describes a node and
     the node from which it is discovered in the breadth-first-search.
 
     The term "predecessor" here is not the directed graph term "predecessor".
-    We are not doing BFS in reverse direction. We are reporting the preceding
-    node for each node in a BFS.
+    We are not doing BFS in reverse direction. We are just reporting the
+    preceding node for each node in a BFS.
 
     Parameters
     ----------
