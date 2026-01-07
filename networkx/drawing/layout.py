@@ -1698,7 +1698,7 @@ def forceatlas2_layout(
         pos = nx.random_layout(G, dim=dim, seed=seed)
         pos_arr = np.array(list(pos.values()))
     elif len(pos) == len(G):
-        pos_arr = np.array([pos[node].copy() for node in G])
+        pos_arr = np.array([pos[node] for node in G])
     else:
         # set random node pos within the initial pos values
         pos_init = np.array(list(pos.values()))
