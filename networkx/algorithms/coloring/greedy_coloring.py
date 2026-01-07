@@ -121,19 +121,23 @@ def _maximal_independent_set(G):
 
 def strategy_independent_set(G, colors):
     """Uses a greedy independent set removal strategy to determine the
-    colors.
+    order in which nodes should be colored.
 
-    This function updates ``colors`` **in-place** and return ``None``,
-    unlike the other strategy functions in this module.
+    This function yields nodes in the order they should be colored by
+    repeatedly finding and removing maximal independent sets from the graph.
+    Each maximal independent set can be assigned the same color since no
+    two nodes in the set are adjacent.
 
-    This algorithm repeatedly finds and removes a maximal independent
-    set, assigning each node in the set an unused color.
-
-    ``G`` is a NetworkX graph.
+    ``G`` is a NetworkX graph. ``colors`` is ignored.
 
     This strategy is related to :func:`strategy_smallest_last`: in that
     strategy, an independent set of size one is chosen at each step
     instead of a maximal independent set.
+
+    Yields
+    ------
+    node
+        Nodes of ``G`` in the order they should be colored.
 
     """
     remaining_nodes = set(G)
