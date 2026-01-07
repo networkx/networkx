@@ -396,7 +396,7 @@ class _Node:
         self.node_id = node_id
         self.color = -1
         self.adj_list = None
-        self.adj_color = [None for _ in range(n)]
+        self.adj_color = {}
 
     def __repr__(self):
         return (
@@ -406,14 +406,17 @@ class _Node:
 
     def assign_color(self, adj_entry, color):
         adj_entry.col_prev = None
-        adj_entry.col_next = self.adj_color[color]
+        adj_entry.col_next = self.adj_color.get(color)
         self.adj_color[color] = adj_entry
         if adj_entry.col_next is not None:
             adj_entry.col_next.col_prev = adj_entry
 
     def clear_color(self, adj_entry, color):
         if adj_entry.col_prev is None:
-            self.adj_color[color] = adj_entry.col_next
+            if adj_entry.col_next is None:
+                self.adj_color.pop(color, None)
+            else:
+                self.adj_color[color] = adj_entry.col_next
         else:
             adj_entry.col_prev.col_next = adj_entry.col_next
         if adj_entry.col_next is not None:
@@ -426,7 +429,7 @@ class _Node:
             adj_node = adj_node.next
 
     def iter_neighbors_color(self, color):
-        adj_color_node = self.adj_color[color]
+        adj_color_node = self.adj_color.get(color)
         while adj_color_node is not None:
             yield adj_color_node.node_id
             adj_color_node = adj_color_node.col_next
@@ -548,11 +551,16 @@ def _greedy_coloring_with_interchange(G, nodes):
                     graph[search_node].color = (
                         col2 if graph[search_node].color == col1 else col1
                     )
-                    col2_adj = graph[search_node].adj_color[col2]
-                    graph[search_node].adj_color[col2] = graph[search_node].adj_color[
-                        col1
-                    ]
-                    graph[search_node].adj_color[col1] = col2_adj
+                    col2_adj = graph[search_node].adj_color.get(col2)
+                    col1_adj = graph[search_node].adj_color.get(col1)
+                    if col1_adj is not None:
+                        graph[search_node].adj_color[col2] = col1_adj
+                    else:
+                        graph[search_node].adj_color.pop(col2, None)
+                    if col2_adj is not None:
+                        graph[search_node].adj_color[col1] = col2_adj
+                    else:
+                        graph[search_node].adj_color.pop(col1, None)
 
                 # Update all the neighboring nodes
                 for search_node in visited:
