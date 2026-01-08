@@ -618,6 +618,7 @@ class TestCutoff:
                 )
                 assert cutoff == result, f"cutoff error in {flow_func.__name__}"
 
+
 class TestCallableCapacity:
     def test_callable_capacity_scaling(self):
         G = nx.DiGraph()
@@ -628,8 +629,7 @@ class TestCallableCapacity:
         G.add_edge("s", "c", capacity=0.3)
         G.add_edge("c", "t", capacity=0.3)
 
-       
         flow_value, _ = nx.maximum_flow(
-                G, "s", "t", capacity=lambda u, v, d: round(1e6 * d["capacity"])
-            )
+            G, "s", "t", capacity=lambda u, v, d: round(1e6 * d["capacity"])
+        )
         assert flow_value == 900000
