@@ -396,6 +396,10 @@ def diameter(G, e=None, usebounds=False, weight=None):
     --------
     eccentricity
     """
+
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Cannot compute diameter of null graph.")
+
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="diameter", weight=weight)
     if e is None:
@@ -609,6 +613,9 @@ def radius(G, e=None, usebounds=False, weight=None):
     2
 
     """
+
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Cannot compute radius of null graph.")
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="radius", weight=weight)
     if e is None:
