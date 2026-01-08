@@ -379,6 +379,13 @@ def diameter(G, e=None, usebounds=False, weight=None):
     d : integer
        Diameter of graph
 
+    Raises
+    ------
+    NetworkXError
+        If the graph consists of multiple components
+    NetworkXPointlessConcept
+        If the graph is empty
+
     Notes
     -----
     When ``usebounds=True``, the computation makes use of smart lower
@@ -598,6 +605,13 @@ def radius(G, e=None, usebounds=False, weight=None):
     -------
     r : integer
        Radius of graph
+
+    Raises
+    ------
+    NetworkXError
+        If the graph consists of multiple components
+    NetworkXPointlessConcept
+        If the graph is empty
 
     Notes
     -----
