@@ -152,6 +152,31 @@ graph_examples = [
         [(0, 1), (0, 1), (1, 2), (2, 3), (2, 3), (3, 0), (4, 5), (4, 5), (4, 5)],
         id="basic-structure-for-refining-parts-test",
     ),
+    # Example of a symmetry that impacts 2 or more steps away
+    #        3---4
+    #       /|  /|\
+    #      / | 9 | 7
+    #     1  | | | |
+    #      \ | 8 | 6
+    #       \|  \|/
+    #        2---5
+    pytest.param(
+        [],
+        [
+            (1, 2),
+            (1, 3),
+            (2, 3),
+            (3, 4),
+            (4, 5),
+            (4, 7),
+            (4, 9),
+            (5, 8),
+            (8, 9),
+            (5, 6),
+            (6, 7),
+        ],
+        id="test-impact-of-symmetry",
+    ),
 ]
 
 

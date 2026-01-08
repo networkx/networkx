@@ -68,7 +68,7 @@ jobs:
             # NOTE: bad interaction w/ blas multithreading on circleci
             export OMP_NUM_THREADS=1
             source venv/bin/activate
-            make -C doc/ html
+            make -C doc/ SPHINXOPTS="-j 2" html
 
       - store_artifacts:
           path: doc/build/html
