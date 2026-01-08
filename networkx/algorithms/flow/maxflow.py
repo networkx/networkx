@@ -170,6 +170,8 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     small numerical differences can affect comparisons.
 
     >>> flow_value, flow_dict = nx.maximum_flow(G, "s", "t")
+    >>> flow_value
+    0.8999999999999999
     >>> flow_value == 0.9
     False
 

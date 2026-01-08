@@ -112,11 +112,23 @@ def build_residual_network(G, capacity):
 
     inf = float("inf")
     # Extract edges with positive capacities. Self loops excluded.
-    edge_list = [
-        (u, v, attr)
-        for u, v, attr in G.edges(data=True)
-        if u != v and attr.get(capacity, inf) > 0
-    ]
+    if callable(capacity):
+        edge_list = []
+        for u, v, attr in G.edges(data=True):
+            if u == v:
+                continue
+            cap = capacity(u, v, attr)
+            if cap > 0:
+                edge_list.append((u, v, attr, cap))
+    else:
+        edge_list = []
+        for u, v, attr in G.edges(data=True):
+            if u == v:
+                continue
+            cap = attr.get(capacity, inf)
+            if cap > 0:
+                edge_list.append((u, v, attr, cap))
+
     # Simulate infinity with three times the sum of the finite edge capacities
     # or any positive value if the sum is zero. This allows the
     # infinite-capacity edges to be distinguished for unboundedness detection
@@ -127,18 +139,10 @@ def build_residual_network(G, capacity):
     # finite-capacity edge is at most 1/3 of inf, if an operation moves more
     # than 1/3 of inf units of flow to t, there must be an infinite-capacity
     # s-t path in G.
-    inf = (
-        3
-        * sum(
-            attr[capacity]
-            for u, v, attr in edge_list
-            if capacity in attr and attr[capacity] != inf
-        )
-        or 1
-    )
+    inf = 3 * sum(cap for u, v, attr, cap in edge_list if cap != inf) or 1
     if G.is_directed():
-        for u, v, attr in edge_list:
-            r = min(attr.get(capacity, inf), inf)
+        for u, v, attr, cap in edge_list:
+            r = min(cap, inf)
             if not R.has_edge(u, v):
                 # Both (u, v) and (v, u) must be present in the residual
                 # network.
@@ -148,9 +152,9 @@ def build_residual_network(G, capacity):
                 # The edge (u, v) was added when (v, u) was visited.
                 R[u][v]["capacity"] = r
     else:
-        for u, v, attr in edge_list:
+        for u, v, attr, cap in edge_list:
             # Add a pair of edges with equal residual capacities.
-            r = min(attr.get(capacity, inf), inf)
+            r = min(cap, inf)
             R.add_edge(u, v, capacity=r)
             R.add_edge(v, u, capacity=r)
 
