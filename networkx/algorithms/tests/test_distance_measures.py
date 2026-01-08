@@ -171,6 +171,13 @@ class TestDistance:
             DG = nx.DiGraph([(1, 2), (1, 3)])
             nx.eccentricity(DG)
 
+    def test_diameter_radius_empty_graph(self):
+        G = nx.Graph()
+        with pytest.raises(nx.NetworkXPointlessConcept, match="null graph"):
+            nx.diameter(G)
+        with pytest.raises(nx.NetworkXPointlessConcept, match="null graph"):
+            nx.radius(G)
+
 
 class TestWeightedDistance:
     def setup_method(self):
