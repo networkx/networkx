@@ -61,7 +61,7 @@ class _DataEssentialsAndFunctions:
             if cap_val == 0:
                 continue
 
-            # 3. Store Data
+            # Store Data
             self.edge_sources.append(self.node_indices[u])
             self.edge_targets.append(self.node_indices[v])
             
