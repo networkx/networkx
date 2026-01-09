@@ -993,32 +993,23 @@ class TestHiddenEdges:
         # 0 -> 2 (weight 10) is the "backup" path if 0->1 is hidden
         self.G.add_edge(0, 2, weight=10)
 
-    def test_bellman_ford_hidden_edge(self):
         def weight_fn(u, v, d):
             if u == 0 and v == 1:
                 return None  # Hide the fast path
             return d.get("weight", 1)
 
-        # Should take the long path 0->2 (cost 10)
-        dist = nx.bellman_ford_path_length(self.G, 0, 2, weight=weight_fn)
+        self.weight_fn = weight_fn
+
+    def test_bellman_ford_hidden_edge(self):
+        dist = nx.bellman_ford_path_length(self.G, 0, 2, weight=self.weight_fn)
         assert dist == 10
 
     def test_goldberg_radzik_hidden_edge(self):
-        def weight_fn(u, v, d):
-            if u == 0 and v == 1:
-                return None
-            return d.get("weight", 1)
-
-        pred, dist = nx.goldberg_radzik(self.G, 0, weight=weight_fn)
+        pred, dist = nx.goldberg_radzik(self.G, 0, weight=self.weight_fn)
         assert dist[2] == 10
 
     def test_johnson_hidden_edge(self):
-        def weight_fn(u, v, d):
-            if u == 0 and v == 1:
-                return None
-            return d.get("weight", 1)
-
-        paths = nx.johnson(self.G, weight=weight_fn)
+        paths = nx.johnson(self.G, weight=self.weight_fn)
         assert paths[0][2] == [0, 2]
 
     def test_negative_cycle_broken_by_hidden_edge(self):
@@ -1027,13 +1018,13 @@ class TestHiddenEdges:
         G.add_edge(0, 1, weight=1)
         G.add_edge(1, 0, weight=-5)  # Negative cycle!
 
-        def weight_fn(u, v, d):
+        def cycle_breaker_fn(u, v, d):
             if u == 1 and v == 0:
                 return None  # Break the cycle
             return d.get("weight", 1)
 
         # Should NOT raise NetworkXUnbounded
         try:
-            nx.bellman_ford_path(G, 0, 1, weight=weight_fn)
+            nx.bellman_ford_path(G, 0, 1, weight=cycle_breaker_fn)
         except nx.NetworkXUnbounded:
             pytest.fail("Hidden edge failed to break negative cycle")

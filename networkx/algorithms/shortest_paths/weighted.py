@@ -1411,7 +1411,7 @@ def _inner_bellman_ford(
         The weight of an edge is the value returned by the function. The
         function must accept exactly three positional arguments: the two
         endpoints of an edge and the dictionary of edge attributes for
-        that edge. The function must return a number.
+        that edge. The function must return a number or None to indicate a hidden edge.
 
     pred: dict of lists
         dict to store a list of predecessors keyed by that node
@@ -2081,14 +2081,11 @@ def goldberg_radzik(G, source, weight="weight"):
         for u in relabeled - neg_count.keys():
             d_u = d[u]
             # Skip nodes without out-edges of negative reduced costs.
-            has_neg_reduced_cost = False
-            for v, e in G_succ[u].items():
-                w = weight(u, v, e)
-                if w is not None and d_u + w < d[v]:
-                    has_neg_reduced_cost = True
-                    break
-
-            if not has_neg_reduced_cost:
+            if all(
+                d_u + cost >= d[v]
+                for v, e in G_succ[u].items()
+                if (cost := weight(u, v, e)) is not None
+            ):
                 continue
             # Nonrecursive DFS that inserts nodes reachable from u via edges of
             # nonpositive reduced costs into to_scan in (reverse) topological
@@ -2105,11 +2102,10 @@ def goldberg_radzik(G, source, weight="weight"):
                     stack.pop()
                     in_stack.remove(u)
                     continue
-
-                if weight(u, v, e) is None:
+                wt = weight(u, v, e)
+                if wt is None:
                     continue
-
-                t = d[u] + weight(u, v, e)
+                t = d[u] + wt
                 d_v = d[v]
                 if t < d_v:
                     d[v] = t
