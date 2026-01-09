@@ -697,11 +697,11 @@ def _build_paths_from_predecessors(sources, target, pred):
     seen = {target}
 
     while stack:
-        parent, children = stack[-1]
-        if parent in sources:
+        node, preds = stack[-1]
+        if node in sources:
             yield path[::-1]
 
-        for child in children:
+        for child in preds:
             if child not in seen:
                 seen.add(child)
                 path.append(child)
@@ -710,4 +710,4 @@ def _build_paths_from_predecessors(sources, target, pred):
         else:
             stack.pop()
             path.pop()
-            seen.remove(parent)
+            seen.remove(node)
