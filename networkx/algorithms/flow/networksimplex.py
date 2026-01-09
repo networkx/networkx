@@ -36,15 +36,41 @@ class _DataEssentialsAndFunctions:
             edges = G.edges(data=True, keys=True)
 
         inf = float("inf")
-        edges = (e for e in edges if e[0] != e[1] and e[-1].get(capacity, inf) != 0)
-        for i, e in enumerate(edges):
-            self.edge_sources.append(self.node_indices[e[0]])
-            self.edge_targets.append(self.node_indices[e[1]])
+
+        #Getting capacity (String vs Function)
+        if callable(capacity):
+            def get_cap(u, v, d):
+                return capacity(u, v, d)
+        else:
+            def get_cap(u, v, d):
+                return d.get(capacity, inf)
+        
+        #Iterate and Filter
+        for e in edges:
+            u, v = e[0], e[1]
+            d = e[-1]
+            
+            # Skip self-loops
+            if u == v:
+                continue
+                
+            # Get capacity using the logic above
+            cap_val = get_cap(u, v, d)
+            
+            # Skip zero-capacity edges
+            if cap_val == 0:
+                continue
+
+            # 3. Store Data
+            self.edge_sources.append(self.node_indices[u])
+            self.edge_targets.append(self.node_indices[v])
+            
             if multigraph:
                 self.edge_keys.append(e[2])
-            self.edge_indices[e[:-1]] = i
-            self.edge_capacities.append(e[-1].get(capacity, inf))
-            self.edge_weights.append(e[-1].get(weight, 0))
+                
+            self.edge_indices[e[:-1]] = len(self.edge_indices)
+            self.edge_capacities.append(cap_val)
+            self.edge_weights.append(d.get(weight, 0))
 
         # spanning tree specific data to be initialized
 
@@ -356,11 +382,18 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
         this attribute is not present, a node is considered to have 0
         demand. Default value: 'demand'.
 
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
+    capacity : string or function, optional (default='capacity')
+        If this is a string, then edge capacity will be accessed via the
+        edge attribute with this key (that is, the capacity of the edge
+        joining `u` to `v` will be ``G.edges[u, v][capacity]``). If no
+        such edge attribute exists, the capacity of the edge is assumed to
+        be infinite.
+
+        If this is a function, the capacity of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     weight : string
         Edges of the graph G are expected to have an attribute weight
