@@ -74,10 +74,9 @@ class TestDistance:
         assert e == 0
         pytest.raises(nx.NetworkXError, nx.eccentricity, G, 1)
 
-        # test against empty graph
-        G = nx.empty_graph()
-        e = nx.eccentricity(G)
-        assert e == {}
+        # test against null graph
+        G = nx.Graph()
+        pytest.raises(nx.NetworkXPointlessConcept, nx.eccentricity, G)
 
     def test_diameter(self):
         assert nx.diameter(self.G) == 6

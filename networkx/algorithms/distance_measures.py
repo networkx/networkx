@@ -286,6 +286,11 @@ def eccentricity(G, v=None, sp=None, weight=None):
     ecc : dictionary
        A dictionary of eccentricity values keyed by node.
 
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If G is the null graph (has 0 nodes).
+
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
@@ -304,6 +309,10 @@ def eccentricity(G, v=None, sp=None, weight=None):
     #        nodes=[v]
     #    else:                      # assume v is a container of nodes
     #        nodes=v
+
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Cannot compute eccentricity of null graph.")
+
     order = G.order()
     e = {}
     for n in G.nbunch_iter(v):
