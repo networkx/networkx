@@ -692,25 +692,22 @@ def _build_paths_from_predecessors(sources, target, pred):
     if target not in pred:
         raise nx.NetworkXNoPath(f"Target {target} cannot be reached from given sources")
 
+    stack = [[target, iter(pred[target])]]
+    path = [target]
     seen = {target}
-    stack = [[target, 0]]
-    top = 0
-    while top >= 0:
-        node, i = stack[top]
-        if node in sources:
-            yield [p for p, n in reversed(stack[: top + 1])]
-        if len(pred[node]) > i:
-            stack[top][1] = i + 1
-            next = pred[node][i]
-            if next in seen:
-                continue
-            else:
-                seen.add(next)
-            top += 1
-            if top == len(stack):
-                stack.append([next, 0])
-            else:
-                stack[top][:] = [next, 0]
+
+    while stack:
+        parent, children = stack[-1]
+        if parent in sources:
+            yield path[::-1]
+
+        for child in children:
+            if child not in seen:
+                seen.add(child)
+                path.append(child)
+                stack.append([child, iter(pred[child])])
+                break
         else:
-            seen.discard(node)
-            top -= 1
+            stack.pop()
+            path.pop()
+            seen.remove(parent)
