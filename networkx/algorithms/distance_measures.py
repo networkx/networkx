@@ -393,7 +393,7 @@ def diameter(G, e=None, usebounds=False, weight=None):
     NetworkXError
         If the graph consists of multiple components
     NetworkXPointlessConcept
-        If the graph is empty
+        If the graph is null (has 0 nodes).
 
     Notes
     -----
@@ -412,9 +412,6 @@ def diameter(G, e=None, usebounds=False, weight=None):
     --------
     eccentricity
     """
-
-    if len(G) == 0:
-        raise nx.NetworkXPointlessConcept("Cannot compute diameter of null graph.")
 
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="diameter", weight=weight)
@@ -620,7 +617,7 @@ def radius(G, e=None, usebounds=False, weight=None):
     NetworkXError
         If the graph consists of multiple components
     NetworkXPointlessConcept
-        If the graph is empty
+        If the graph is null (has 0 nodes).
 
     Notes
     -----
@@ -637,8 +634,6 @@ def radius(G, e=None, usebounds=False, weight=None):
 
     """
 
-    if len(G) == 0:
-        raise nx.NetworkXPointlessConcept("Cannot compute radius of null graph.")
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="radius", weight=weight)
     if e is None:
