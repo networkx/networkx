@@ -981,3 +981,59 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         validate_path(self.XG3, 0, 3, 15, nx.johnson(self.XG3)[0][3])
         validate_path(self.XG4, 0, 2, 4, nx.johnson(self.XG4)[0][2])
         validate_path(self.MXG4, 0, 2, 4, nx.johnson(self.MXG4)[0][2])
+
+
+class TestHiddenEdges:
+    """Tests for callable weights returning None (hidden edges)."""
+
+    def setup_method(self):
+        self.G = nx.DiGraph()
+        self.G.add_edge(0, 1, weight=1)
+        self.G.add_edge(1, 2, weight=2)
+        # 0 -> 2 (weight 10) is the "backup" path if 0->1 is hidden
+        self.G.add_edge(0, 2, weight=10)
+
+    def test_bellman_ford_hidden_edge(self):
+        def weight_fn(u, v, d):
+            if u == 0 and v == 1:
+                return None  # Hide the fast path
+            return d.get("weight", 1)
+
+        # Should take the long path 0->2 (cost 10)
+        dist = nx.bellman_ford_path_length(self.G, 0, 2, weight=weight_fn)
+        assert dist == 10
+
+    def test_goldberg_radzik_hidden_edge(self):
+        def weight_fn(u, v, d):
+            if u == 0 and v == 1:
+                return None
+            return d.get("weight", 1)
+
+        pred, dist = nx.goldberg_radzik(self.G, 0, weight=weight_fn)
+        assert dist[2] == 10
+
+    def test_johnson_hidden_edge(self):
+        def weight_fn(u, v, d):
+            if u == 0 and v == 1:
+                return None
+            return d.get("weight", 1)
+
+        paths = nx.johnson(self.G, weight=weight_fn)
+        assert paths[0][2] == [0, 2]
+
+    def test_negative_cycle_broken_by_hidden_edge(self):
+        """Ensure a negative cycle doesn't crash if the cycle edge is hidden."""
+        G = nx.DiGraph()
+        G.add_edge(0, 1, weight=1)
+        G.add_edge(1, 0, weight=-5)  # Negative cycle!
+
+        def weight_fn(u, v, d):
+            if u == 1 and v == 0:
+                return None  # Break the cycle
+            return d.get("weight", 1)
+
+        # Should NOT raise NetworkXUnbounded
+        try:
+            nx.bellman_ford_path(G, 0, 1, weight=weight_fn)
+        except nx.NetworkXUnbounded:
+            pytest.fail("Hidden edge failed to break negative cycle")
