@@ -261,5 +261,8 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
         edges = (
             (u, v, min(G[u][v], key=lambda k: G[u][v][k][weight])) for u, v in edges
         )
-    T = G.edge_subgraph(edges)
+    T = G.edge_subgraph(edges).copy()
+    # Explicitly add isolated terminals not captured by edges
+    # (e.g. single-node Steiner trees)
+    T.add_nodes_from((n, G.nodes[n]) for n in terminal_nodes if n not in T)
     return T
