@@ -304,3 +304,44 @@ def test_steiner_tree_non_terminal_leaves_multigraph_self_loop_edges():
 
     # Only the terminal nodes should be left
     assert list(G) == [4, 5, 6, 7]
+
+
+def test_steiner_tree_singleton_robust(method):
+    """
+    Test edge cases for singleton terminal nodes (Fix #6666).
+    Ensures that requesting a Steiner tree for a single node returns
+    that node with all original attributes and zero edges.
+    """
+    # 1. Standard Connected Graph (Subset Request)
+    # G has 2 nodes, but we only want the Steiner tree for [1]
+    G = nx.Graph()
+    G.add_node(1, color="red", size=50)
+    G.add_edge(1, 2, weight=10)
+
+    S = steiner_tree(G, [1], method=method)
+
+    assert list(S.nodes) == [1]
+    assert len(S.edges) == 0
+    assert S.nodes[1] == {"color": "red", "size": 50}
+
+    # 2. Single-Node Graph (The "True" Singleton)
+    # G has only 1 node total. It is connected by definition.
+    G_iso = nx.Graph()
+    G_iso.add_node(99, status="isolated")
+
+    S_iso = steiner_tree(G_iso, [99], method=method)
+
+    assert list(S_iso.nodes) == [99]
+    assert len(S_iso.edges) == 0
+    assert S_iso.nodes[99]["status"] == "isolated"
+
+    # 3. MultiGraph Support
+    MG = nx.MultiGraph()
+    MG.add_node("A", layer="top")
+    MG.add_edge("A", "B", weight=5)
+
+    S_multi = steiner_tree(MG, ["A"], method=method)
+
+    assert list(S_multi.nodes) == ["A"]
+    assert len(S_multi.edges) == 0
+    assert S_multi.nodes["A"]["layer"] == "top"
