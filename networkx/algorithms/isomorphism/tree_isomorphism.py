@@ -75,7 +75,7 @@ def root_trees(t1, root1, t2, root2):
 
 def _root_trees_optimized(t1, root1, t2, root2):
     """Optimized version of root_trees using list-based adjacency structure.
-    
+
     Create a tree structure combining t1 and t2 with roots root1 and root2.
     Uses list-based adjacency and computes levels during BFS for better performance.
 
