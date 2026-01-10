@@ -932,3 +932,42 @@ class TestNumberSpanningTrees:
         assert np.isclose(Nst, 0)
         Nst = nx.number_of_spanning_trees(G, root=3, weight="weight")
         assert np.isclose(Nst, 0)
+
+
+class TestMSTHiddenEdges:
+    def test_mst_hidden_edge_simple(self):
+        """Test standard hidden edge skipping."""
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=None)  # Hidden
+        G.add_edge(1, 2, weight=10)
+        G.add_edge(0, 2, weight=100)
+
+        T = nx.minimum_spanning_tree(G, weight="weight")
+        edges = sorted(tuple(sorted(e)) for e in T.edges())
+
+        # Should pick (1,2) [10] and (0,2) [100]. Total 110.
+        assert (0, 1) not in edges
+        assert (1, 2) in edges
+        assert (0, 2) in edges
+
+    def test_mst_all_ghosts(self):
+        """Test graph where ALL edges are hidden."""
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=None)
+        G.add_edge(1, 2, weight=None)
+
+        T = nx.minimum_spanning_tree(G, weight="weight")
+        assert T.number_of_edges() == 0
+
+    def test_mst_multigraph_hidden(self):
+        """Test multigraph where one key is hidden, another is visible."""
+        G = nx.MultiGraph()
+        # Edge 0-1 (Key 0): Hidden
+        G.add_edge(0, 1, key=0, weight=None)
+        # Edge 0-1 (Key 1): Visible and Cheap
+        G.add_edge(0, 1, key=1, weight=5)
+
+        T = nx.minimum_spanning_tree(G, weight="weight")
+        # Should pick the visible edge (Key 1)
+        assert T.has_edge(0, 1, key=1)
+        assert not T.has_edge(0, 1, key=0)

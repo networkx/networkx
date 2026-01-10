@@ -676,3 +676,33 @@ class TestGeneralizedDegree:
             3: {2: 2, 3: 2},
             4: {2: 2, 3: 2},
         }
+
+
+class TestClusteringHiddenEdges:
+    def test_average_clustering_hidden_edge(self):
+        # 1. Test Single Hidden Edge
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=None)  # Hidden
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(2, 0, weight=1)
+
+        # Should be 0.0 (Broken triangle)
+        # We catch ImportError because average_clustering requires numpy
+        try:
+            c = nx.average_clustering(G, weight="weight")
+            assert c == 0.0
+        except ImportError:
+            pytest.skip("Numpy not available")
+
+    def test_average_clustering_all_ghosts(self):
+        # 2. Test "All Ghost" Graph (All None) to ensure max() doesn't crash
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=None)
+        G.add_edge(1, 2, weight=None)
+        G.add_edge(2, 0, weight=None)
+
+        try:
+            c = nx.average_clustering(G, weight="weight")
+            assert c == 0.0
+        except ImportError:
+            pytest.skip("Numpy not available")

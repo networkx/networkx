@@ -131,14 +131,26 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
     if weight is None or G.number_of_edges() == 0:
         max_weight = 1
     else:
-        max_weight = max(d.get(weight, 1) for u, v, d in G.edges(data=True))
+        # Filter out None values to prevent crash in max()
+        max_weight = max(
+            (
+                d.get(weight, 1)
+                for u, v, d in G.edges(data=True)
+                if d.get(weight, 1) is not None
+            ),
+            default=1,
+        )
     if nodes is None:
         nodes_nbrs = G.adj.items()
     else:
         nodes_nbrs = ((n, G[n]) for n in G.nbunch_iter(nodes))
 
     def wt(u, v):
-        return G[u][v].get(weight, 1) / max_weight
+        # Hondle None weight
+        val = G[u][v].get(weight, 1)
+        if val is None:
+            return 0
+        return val / max_weight
 
     for i, nbrs in nodes_nbrs:
         inbrs = set(nbrs) - {i}

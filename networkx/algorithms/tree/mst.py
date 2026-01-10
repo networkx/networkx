@@ -203,6 +203,8 @@ def kruskal_mst_edges(
     for e in edges:
         d = e[-1]
         wt = d.get(weight, 1)
+        if wt is None:
+            continue
         if isnan(wt):
             if ignore_nan:
                 continue

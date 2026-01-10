@@ -473,3 +473,39 @@ class TestMinCostFlow:
         flowCost, flowDict = nx.capacity_scaling(G)
         assert 6749969302 == flowCost
         assert 6749969302 == nx.cost_of_flow(G, flowDict)
+
+
+class TestMinCostFlowHiddenEdges:
+    def test_min_cost_flow_hidden_edge(self):
+        """Test that hidden edges (None weight) are ignored (treated as no capacity)."""
+        G = nx.DiGraph()
+        # Source -> Middle (Hidden)
+        G.add_edge(0, 1, weight=None, capacity=1)
+        # Middle -> Sink
+        G.add_edge(1, 2, weight=10, capacity=1)
+
+        G.nodes[0]["demand"] = -1
+        G.nodes[2]["demand"] = 1
+
+        # FIX: Removed local 'import networkx as nx' to fix UnboundLocalError
+        with pytest.raises(nx.NetworkXUnfeasible):
+            nx.min_cost_flow(G, weight="weight")
+
+    def test_min_cost_flow_ignore_hidden_parallel_edge(self):
+        """Test that a hidden edge is ignored while a valid parallel edge is used."""
+        # FIX: Use MultiDiGraph so we can have BOTH edges (valid and hidden)
+        # between 0 and 1. DiGraph would overwrite the first one!
+        G = nx.MultiDiGraph()
+
+        # Edge 1: Valid (Cost 10)
+        G.add_edge(0, 1, weight=10, capacity=1)
+
+        # Edge 2: Hidden (weight=None). Should be ignored.
+        G.add_edge(0, 1, weight=None, capacity=1)
+
+        G.nodes[0]["demand"] = -1
+        G.nodes[1]["demand"] = 1
+
+        # Should pick the cost 10 edge
+        cost = nx.min_cost_flow_cost(G, weight="weight")
+        assert cost == 10

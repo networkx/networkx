@@ -36,7 +36,13 @@ class _DataEssentialsAndFunctions:
             edges = G.edges(data=True, keys=True)
 
         inf = float("inf")
-        edges = (e for e in edges if e[0] != e[1] and e[-1].get(capacity, inf) != 0)
+        edges = (
+            e
+            for e in edges
+            if e[0] != e[1]
+            and e[-1].get(capacity, inf) != 0
+            and e[-1].get(weight, 0) is not None
+        )
         for i, e in enumerate(edges):
             self.edge_sources.append(self.node_indices[e[0]])
             self.edge_targets.append(self.node_indices[e[1]])
@@ -521,7 +527,10 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     else:
         edges = nx.selfloop_edges(G, data=True, keys=True)
     for e in edges:
-        if abs(e[-1].get(weight, 0)) == inf:
+        wt = e[-1].get(weight, 0)
+        if wt is None:
+            continue
+        if abs(wt) == inf:
             raise nx.NetworkXError(f"edge {e[:-1]!r} has infinite weight")
 
     ###########################################################################
