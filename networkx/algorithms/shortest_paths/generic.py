@@ -701,11 +701,11 @@ def _build_paths_from_predecessors(sources, target, pred):
         if node in sources:
             yield path[::-1]
 
-        for child in preds:
-            if child not in seen:
-                seen.add(child)
-                path.append(child)
-                stack.append([child, iter(pred[child])])
+        for predecessor in preds:
+            if predecessor not in seen:
+                seen.add(predecessor)
+                path.append(predecessor)
+                stack.append([predecessor, iter(pred[predecessor])])
                 break
         else:
             stack.pop()
