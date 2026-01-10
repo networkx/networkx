@@ -921,3 +921,36 @@ class TestWeightedEdgeBetweennessCentrality:
         norm = len(G) * (len(G) - 1) / 2
         for n in sorted(G.edges(keys=True)):
             assert b[n] == pytest.approx(b_answer[n] / norm, abs=1e-7)
+
+
+class TestBetweennessCentralityHiddenEdges:
+    def setup_method(self):
+        self.G = nx.DiGraph()
+        self.G.add_edge(0, 1, weight=1)
+        self.G.add_edge(1, 2, weight=2)
+        # 0->2 is the "backup" path (weight 10)
+        self.G.add_edge(0, 2, weight=10)
+
+        def weight_fn(u, v, d):
+            if u == 0 and v == 1:
+                return None  # Hide the fast path
+            return d.get("weight", 1)
+
+        self.weight_fn = weight_fn
+
+    def test_betweenness_centrality_hidden_edge(self):
+        # Should not crash.
+        # If 0->1 is hidden, the only path is 0->2. Node 1 is skipped.
+        b = nx.betweenness_centrality(self.G, weight=self.weight_fn, normalized=False)
+        assert b[1] == 0.0
+        assert b[0] == 0.0
+        assert b[2] == 0.0
+
+    def test_edge_betweenness_centrality_hidden_edge(self):
+        # Should not crash.
+        b = nx.edge_betweenness_centrality(
+            self.G, weight=self.weight_fn, normalized=False
+        )
+        # The edge (0, 1) is hidden, so it should not be used
+        if (0, 1) in b:
+            assert b[(0, 1)] == 0.0

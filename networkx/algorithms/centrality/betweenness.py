@@ -446,7 +446,10 @@ def _single_source_dijkstra_path_basic(G, s, weight):
         S.append(v)
         D[v] = dist
         for w, edgedata in G[v].items():
-            vw_dist = dist + weight(v, w, edgedata)
+            cost = weight(v, w, edgedata)
+            if cost is None:
+                continue
+            vw_dist = dist + cost
             if w not in D and (w not in seen or vw_dist < seen[w]):
                 seen[w] = vw_dist
                 heappush(Q, (vw_dist, next(c), v, w))
