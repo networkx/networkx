@@ -61,4 +61,3 @@ networkx-dev/
 # Benchmark products
 benchmarks/env
 benchmarks/results
-venv

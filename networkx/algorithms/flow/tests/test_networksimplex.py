@@ -479,3 +479,40 @@ def test_network_simplex_unbounded_flow():
         match="negative cycle with infinite capacity found",
     ):
         nx.network_simplex(G)
+
+
+def test_callable_capacity():
+    """Test callable capacity argument."""
+    G = nx.DiGraph()
+    G.add_edge("s", "t", count=10, cost=1)
+    G.add_edge("t", "s", count=0, cost=1)  # Zero capacity edge
+    G.nodes["s"]["demand"] = -5
+    G.nodes["t"]["demand"] = 5
+
+    def cap_func(u, v, d):
+        return d.get("count", 0)
+
+    min_cost, flow_dict = nx.network_simplex(G, capacity=cap_func, weight="cost")
+
+    assert min_cost == 5  # 5 units * 1 cost
+    assert flow_dict["s"]["t"] == 5
+    assert flow_dict["t"].get("s", 0) == 0
+
+
+def test_callable_capacity_none():
+    """Test that callable returning None effectively removes the edge."""
+    G = nx.DiGraph()
+    G.add_edge("s", "t", count=10, cost=1)
+    G.add_edge("s", "hidden", count=10, cost=1)
+    G.nodes["s"]["demand"] = -5
+    G.nodes["t"]["demand"] = 5
+
+    def cap_func(u, v, d):
+        if v == "hidden":
+            return None
+        return d.get("count", 0)
+
+    min_cost, flow_dict = nx.network_simplex(G, capacity=cap_func, weight="cost")
+
+    assert min_cost == 5
+    assert "hidden" not in flow_dict["s"]

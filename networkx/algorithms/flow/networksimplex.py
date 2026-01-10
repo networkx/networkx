@@ -39,11 +39,9 @@ class _DataEssentialsAndFunctions:
 
         # Getting capacity (String vs Function)
         if callable(capacity):
-
             def get_cap(u, v, d):
                 return capacity(u, v, d)
         else:
-
             def get_cap(u, v, d):
                 return d.get(capacity, inf)
 
@@ -60,7 +58,7 @@ class _DataEssentialsAndFunctions:
             cap_val = get_cap(u, v, d)
 
             # Skip zero-capacity edges
-            if cap_val == 0:
+            if cap_val ==0 or cap_val is None:
                 continue
 
             # Store Data
