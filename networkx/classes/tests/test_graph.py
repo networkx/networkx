@@ -653,6 +653,12 @@ class TestGraph(BaseAttrGraphTester):
         assert G.nodes[2]["c"] == "red"
         assert G.nodes[3]["c"] == "blue"
 
+    def test_add_node_updates_attributes(self):
+        G = nx.Graph()
+        G.add_node(1, color="red")
+        G.add_node(1, color="blue")
+        assert G.nodes[1]["color"] == "blue"
+
     def test_add_nodes_from(self):
         G = self.Graph()
         G.add_nodes_from([0, 1, 2])
