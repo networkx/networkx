@@ -18,26 +18,81 @@ by Matthew Suderman
 http://crypto.cs.mcgill.ca/~crepeau/CS250/2004/HW5+.pdf
 """
 
+from collections import defaultdict
+
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["rooted_tree_isomorphism", "tree_isomorphism"]
 
 
-@nx._dispatchable(graphs={"t1": 0, "t2": 2})
+@nx._dispatchable(graphs={"t1": 0, "t2": 2}, returns_graph=True)
 def root_trees(t1, root1, t2, root2):
     """Create a single digraph dT of free trees t1 and t2
-    with roots root1 and root2 respectively.
+    #   with roots root1 and root2 respectively
+    # rename the nodes with consecutive integers
+    # so that all nodes get a unique name between both trees
 
-    Rename the nodes with consecutive integers so that all nodes
-    get a unique name between both trees.
+    # our new "fake" root node is 0
+    # t1 is numbers from 1 ... n
+    # t2 is numbered from n+1 to 2n
+    """
 
-    Also compute the level (distance from root) for each node during BFS
-    to avoid a separate shortest_path_length call.
+    dT = nx.DiGraph()
 
-    Our new "fake" root node is 0
-    t1 is numbers from 1 ... n
-    t2 is numbered from n+1 to 2n
+    newroot1 = 1  # left root will be 1
+    newroot2 = nx.number_of_nodes(t1) + 1  # right will be n+1
+
+    # may be overlap in node names here so need separate maps
+    # given the old name, what is the new
+    namemap1 = {root1: newroot1}
+    namemap2 = {root2: newroot2}
+
+    # add an edge from our new root to root1 and root2
+    dT.add_edge(0, namemap1[root1])
+    dT.add_edge(0, namemap2[root2])
+
+    for i, (v1, v2) in enumerate(nx.bfs_edges(t1, root1)):
+        namemap1[v2] = i + namemap1[root1] + 1
+        dT.add_edge(namemap1[v1], namemap1[v2])
+
+    for i, (v1, v2) in enumerate(nx.bfs_edges(t2, root2)):
+        namemap2[v2] = i + namemap2[root2] + 1
+        dT.add_edge(namemap2[v1], namemap2[v2])
+
+    # now we really want the inverse of namemap1 and namemap2
+    # giving the old name given the new
+    # since the values of namemap1 and namemap2 are unique
+    # there won't be collisions
+    namemap = {}
+    for old, new in namemap1.items():
+        namemap[new] = old
+    for old, new in namemap2.items():
+        namemap[new] = old
+
+    return (dT, namemap, newroot1, newroot2)
+
+
+def _root_trees_optimized(t1, root1, t2, root2):
+    """Optimized version of root_trees using list-based adjacency structure.
+    
+    Create a tree structure combining t1 and t2 with roots root1 and root2.
+    Uses list-based adjacency and computes levels during BFS for better performance.
+
+    Returns
+    -------
+    children : list of lists
+        Adjacency list representation where children[v] contains the children of node v
+    namemap : list
+        Maps new node IDs to original node names
+    levels : list
+        Distance from fake root for each node
+    newroot1 : int
+        New ID for root1
+    newroot2 : int
+        New ID for root2
+    total_nodes : int
+        Total number of nodes in the combined structure
     """
     n1 = nx.number_of_nodes(t1)
     total_nodes = n1 + nx.number_of_nodes(t2) + 1  # +1 for fake root
@@ -92,10 +147,11 @@ def _rooted_tree_isomorphism_core(t1, root1, t2, root2):
     """Core implementation of rooted tree isomorphism without is_tree checks.
 
     This is called internally when we've already verified the trees are valid.
+    Uses the optimized _root_trees_optimized for better performance.
     """
     # get the rooted tree formed by combining them with unique names
     # children: adjacency list, namemap: new->old mapping, levels: distance from root
-    (children, namemap, levels, newroot1, newroot2, total_nodes) = root_trees(
+    (children, namemap, levels, newroot1, newroot2, total_nodes) = _root_trees_optimized(
         t1, root1, t2, root2
     )
 
