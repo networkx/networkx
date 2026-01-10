@@ -355,7 +355,9 @@ class _DataEssentialsAndFunctions:
 
 @not_implemented_for("undirected")
 @nx._dispatchable(
-    node_attrs="demand", edge_attrs={"capacity": float("inf"), "weight": 0}, preserve_edge_attrs=True
+    node_attrs="demand",
+    edge_attrs={"capacity": float("inf"), "weight": 0},
+    preserve_edge_attrs=True,
 )
 def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     r"""Find a minimum cost flow satisfying all demands in digraph G.
