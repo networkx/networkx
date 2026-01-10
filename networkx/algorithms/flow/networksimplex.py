@@ -37,26 +37,28 @@ class _DataEssentialsAndFunctions:
 
         inf = float("inf")
 
-        #Getting capacity (String vs Function)
+        # Getting capacity (String vs Function)
         if callable(capacity):
+
             def get_cap(u, v, d):
                 return capacity(u, v, d)
         else:
+
             def get_cap(u, v, d):
                 return d.get(capacity, inf)
-        
-        #Iterate and Filter
+
+        # Iterate and Filter
         for e in edges:
             u, v = e[0], e[1]
             d = e[-1]
-            
+
             # Skip self-loops
             if u == v:
                 continue
-                
+
             # Get capacity using the logic above
             cap_val = get_cap(u, v, d)
-            
+
             # Skip zero-capacity edges
             if cap_val == 0:
                 continue
@@ -64,10 +66,10 @@ class _DataEssentialsAndFunctions:
             # Store Data
             self.edge_sources.append(self.node_indices[u])
             self.edge_targets.append(self.node_indices[v])
-            
+
             if multigraph:
                 self.edge_keys.append(e[2])
-                
+
             self.edge_indices[e[:-1]] = len(self.edge_indices)
             self.edge_capacities.append(cap_val)
             self.edge_weights.append(d.get(weight, 0))
