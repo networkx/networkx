@@ -154,7 +154,6 @@ def _rooted_tree_isomorphism_core(t1, root1, t2, root2):
     (children, namemap, levels, newroot1, newroot2, total_nodes) = _root_trees_optimized(
         t1, root1, t2, root2
     )
-
     # Group nodes by their level/distance from the root
     # Use list of lists since levels are consecutive integers
     h = max(levels)  # height
