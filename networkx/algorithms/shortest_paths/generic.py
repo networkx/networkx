@@ -702,12 +702,13 @@ def _build_paths_from_predecessors(sources, target, pred):
             yield path[::-1]
 
         for predecessor in preds:
-            if predecessor not in seen:
-                seen.add(predecessor)
-                path.append(predecessor)
-                stack.append([predecessor, iter(pred[predecessor])])
-                break
-        else:
+            if predecessor in seen:
+                continue
+            seen.add(predecessor)
+            path.append(predecessor)
+            stack.append([predecessor, iter(pred[predecessor])])
+            break
+        else:  # no preds left!
             stack.pop()
             path.pop()
             seen.remove(node)
