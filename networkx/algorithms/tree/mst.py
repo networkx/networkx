@@ -91,7 +91,10 @@ def boruvka_mst_edges(
         minwt = float("inf")
         boundary = None
         for e in nx.edge_boundary(G, component, data=True):
-            wt = e[-1].get(weight, 1) * sign
+            wt = e[-1].get(weight, 1)
+            if wt is None:
+                continue
+            wt = wt * sign
             if isnan(wt):
                 if ignore_nan:
                     continue
@@ -305,7 +308,10 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
         if is_multigraph:
             for v, keydict in G.adj[u].items():
                 for k, d in keydict.items():
-                    wt = d.get(weight, 1) * sign
+                    wt = d.get(weight, 1)
+                    if wt is None:
+                        continue
+                    wt = wt * sign
                     if isnan(wt):
                         if ignore_nan:
                             continue
@@ -314,7 +320,10 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                     heappush(frontier, (wt, next(c), u, v, k, d))
         else:
             for v, d in G.adj[u].items():
-                wt = d.get(weight, 1) * sign
+                wt = d.get(weight, 1)
+                if wt is None:
+                    continue
+                wt = wt * sign
                 if isnan(wt):
                     if ignore_nan:
                         continue
@@ -347,7 +356,10 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                     if w in visited:
                         continue
                     for k2, d2 in keydict.items():
-                        new_weight = d2.get(weight, 1) * sign
+                        new_weight = d2.get(weight, 1)
+                        if new_weight is None:
+                            continue
+                        new_weight = new_weight * sign
                         if isnan(new_weight):
                             if ignore_nan:
                                 continue

@@ -971,3 +971,27 @@ class TestMSTHiddenEdges:
         # Should pick the visible edge (Key 1)
         assert T.has_edge(0, 1, key=1)
         assert not T.has_edge(0, 1, key=0)
+
+    def test_mst_prim_hidden_edge(self):
+        """Test Prim's algorithm with hidden edges."""
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=None) # Hidden
+        G.add_edge(1, 2, weight=10)
+        G.add_edge(0, 2, weight=100)
+
+        T = nx.minimum_spanning_tree(G, weight="weight", algorithm="prim")
+        edges = sorted(tuple(sorted(e)) for e in T.edges())
+        assert (0, 1) not in edges
+        assert (1, 2) in edges
+
+    def test_mst_boruvka_hidden_edge(self):
+        """Test Boruvka's algorithm with hidden edges."""
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=None) # Hidden
+        G.add_edge(1, 2, weight=10)
+        G.add_edge(0, 2, weight=100)
+
+        T = nx.minimum_spanning_tree(G, weight="weight", algorithm="boruvka")
+        edges = sorted(tuple(sorted(e)) for e in T.edges())
+        assert (0, 1) not in edges
+        assert (1, 2) in edges

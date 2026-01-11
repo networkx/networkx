@@ -706,3 +706,29 @@ class TestClusteringHiddenEdges:
             assert c == 0.0
         except ImportError:
             pytest.skip("Numpy not available")
+
+    def test_average_clustering_directed_hidden_edge(self):
+        """Test hidden edges in directed clustering."""
+        G = nx.DiGraph()
+        G.add_edge(0, 1, weight=None) # Hidden
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(2, 0, weight=1)
+        # Should be 0.0, not crash
+        try:
+            c = nx.average_clustering(G, weight="weight")
+            assert c == 0.0
+        except ImportError:
+            pytest.skip("Numpy not available")
+
+    def test_average_clustering_directed_all_ghosts(self):
+        """Test directed graph where ALL edges are hidden."""
+        G = nx.DiGraph()
+        G.add_edge(0, 1, weight=None)
+        G.add_edge(1, 2, weight=None)
+        G.add_edge(2, 0, weight=None)
+
+        try:
+            c = nx.average_clustering(G, weight="weight")
+            assert c == 0.0
+        except ImportError:
+            pytest.skip("Numpy not available")
