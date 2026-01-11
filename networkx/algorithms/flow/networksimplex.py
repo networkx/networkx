@@ -40,39 +40,32 @@ class _DataEssentialsAndFunctions:
         # Getting capacity (String vs Function)
         if callable(capacity):
 
-            def get_cap(u, v, d):
-                return capacity(u, v, d)
+            def get_cap(e):
+                return capacity(e[0], e[1], e[-1])
         else:
 
-            def get_cap(u, v, d):
-                return d.get(capacity, inf)
+            def get_cap(e):
+                return e[-1].get(capacity, inf)
+        
+        # Filtering in one-pass with walrus operator
+        edges = (
+            e for e in edges if e[0] != e[1] 
+            and (cap := get_cap(e)) 
+            is not None and cap != 0
+        )
 
-        # Iterate and Filter
-        for e in edges:
-            u, v = e[0], e[1]
-            d = e[-1]
-
-            # Skip self-loops
-            if u == v:
-                continue
-
-            # Get capacity using the logic above
-            cap_val = get_cap(u, v, d)
-
-            # Skip zero-capacity edges
-            if cap_val == 0 or cap_val is None:
-                continue
-
-            # Store Data
-            self.edge_sources.append(self.node_indices[u])
-            self.edge_targets.append(self.node_indices[v])
-
+        # Populating lists
+        for i, e in enumerate(edges):
+            self.edge_sources.append(self.node_indices[e[0]])
+            self.edge_targets.append(self.node_indices[e[1]])
+            
             if multigraph:
                 self.edge_keys.append(e[2])
-
-            self.edge_indices[e[:-1]] = len(self.edge_indices)
-            self.edge_capacities.append(cap_val)
-            self.edge_weights.append(d.get(weight, 0))
+                
+            self.edge_indices[e[:-1]] = i
+            
+            self.edge_capacities.append(get_cap(e)) 
+            self.edge_weights.append(e[-1].get(weight, 0))
 
         # spanning tree specific data to be initialized
 
