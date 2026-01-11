@@ -46,25 +46,25 @@ class _DataEssentialsAndFunctions:
 
             def get_cap(e):
                 return e[-1].get(capacity, inf)
-        
+
         # Filtering in one-pass with walrus operator
         edges = (
-            e for e in edges if e[0] != e[1] 
-            and (cap := get_cap(e)) 
-            is not None and cap != 0
+            e
+            for e in edges
+            if e[0] != e[1] and (cap := get_cap(e)) is not None and cap != 0
         )
 
         # Populating lists
         for i, e in enumerate(edges):
             self.edge_sources.append(self.node_indices[e[0]])
             self.edge_targets.append(self.node_indices[e[1]])
-            
+
             if multigraph:
                 self.edge_keys.append(e[2])
-                
+
             self.edge_indices[e[:-1]] = i
-            
-            self.edge_capacities.append(get_cap(e)) 
+
+            self.edge_capacities.append(get_cap(e))
             self.edge_weights.append(e[-1].get(weight, 0))
 
         # spanning tree specific data to be initialized
