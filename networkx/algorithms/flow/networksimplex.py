@@ -35,14 +35,13 @@ class _DataEssentialsAndFunctions:
         else:
             edges = G.edges(data=True, keys=True)
 
-        inf = float("inf")
-
         # Getting capacity (String vs Function)
         if callable(capacity):
 
             def get_cap(e):
                 return capacity(e[0], e[1], e[-1])
         else:
+            inf = float("inf")
 
             def get_cap(e):
                 return e[-1].get(capacity, inf)
