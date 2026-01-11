@@ -14,18 +14,13 @@ __all__ = ["maximal_independent_set"]
 @nx._dispatchable
 def maximal_independent_set(G, nodes=None, seed=None):
     r"""Returns a random maximal independent set guaranteed to contain
-    a given set of nodes, not necessarily a maximum independent set.
+    a given set of nodes.
 
     An independent set is a set of nodes such that the subgraph
     of G induced by these nodes contains no edges. A maximal
     independent set is an independent set such that it is not possible
-    to add a new node and still get an independent set.
-
-    Finding an independent set in a graph $G$ is equivalent to
-    finding a clique in the complement graph $\bar{G}$.
-    Many problems related to independent sets, such as
-    finding the maximum independent set, can be solved by applying
-    clique algorithms to the complement graph.
+    to add a new node and still get an independent set, not necessarily 
+    a maximum independent set.
 
     Parameters
     ----------
@@ -76,6 +71,12 @@ def maximal_independent_set(G, nodes=None, seed=None):
     Notes
     -----
     This algorithm does not solve the maximum independent set problem.
+
+    Finding an independent set in a graph $G$ is equivalent to
+    finding a clique in the complement graph $\bar{G}$.
+    Many problems related to independent sets, such as
+    finding the maximum independent set, can be solved by applying
+    clique algorithms to the complement graph.
 
     See Also
     --------
