@@ -2,13 +2,16 @@
 communities).
 
 """
-
+import itertools
 from itertools import combinations
 
 import networkx as nx
 from networkx import NetworkXError
 from networkx.algorithms.community.community_utils import is_partition
 from networkx.utils.decorators import argmap
+import math
+
+import functools
 
 __all__ = ["modularity", "partition_quality"]
 
@@ -58,7 +61,7 @@ def _require_partition(G, partition):
 require_partition = argmap(_require_partition, (0, 1))
 
 
-@nx._dispatchable
+
 def intra_community_edges(G, partition):
     """Returns the number of intra-community edges for a partition of `G`.
 
@@ -76,7 +79,7 @@ def intra_community_edges(G, partition):
     return sum(G.subgraph(block).size() for block in partition)
 
 
-@nx._dispatchable
+
 def inter_community_edges(G, partition):
     """Returns the number of inter-community edges for a partition of `G`.
     according to the given
@@ -108,7 +111,7 @@ def inter_community_edges(G, partition):
     return nx.quotient_graph(G, partition, create_using=MG).size()
 
 
-@nx._dispatchable
+
 def inter_community_non_edges(G, partition):
     """Returns the number of inter-community non-edges according to the
     given partition of the nodes of `G`.
@@ -141,8 +144,33 @@ def inter_community_non_edges(G, partition):
     return inter_community_edges(nx.complement(G), partition)
 
 
-@nx._dispatchable(edge_attrs="weight")
-def modularity(G, communities, weight="weight", resolution=1):
+
+@functools.lru_cache
+def _get_degree(G, weight="weight"):
+    directed = G.is_directed()
+
+    if directed:
+        out_degree = dict(G.out_degree(weight=weight))
+        in_degree = dict(G.in_degree(weight=weight))
+        m = sum(out_degree.values())
+        norm = 1 / m**2
+    else:
+        out_degree = in_degree = dict(G.degree(weight=weight))
+        deg_sum = sum(out_degree.values())
+        m = deg_sum / 2
+        norm = 1 / deg_sum**2
+    return out_degree, in_degree, m, norm
+
+
+def modularity(
+        G,
+        communities,
+        weight="weight",
+        node_weight="weight",
+        resolution=1,
+        allow_partial=False
+        ):
+
     r"""Returns the modularity of the given partition of the graph.
 
     Modularity is defined in [1]_ as
@@ -226,37 +254,71 @@ def modularity(G, communities, weight="weight", resolution=1):
        networks" J. Stat. Mech 10008, 1-12 (2008).
        https://doi.org/10.1088/1742-5468/2008/10/P10008
     """
-    if not isinstance(communities, list):
-        communities = list(communities)
-    if not is_partition(G, communities):
+
+
+    if (not is_partition(G, communities)) and (not allow_partial):
         raise NotAPartition(G, communities)
 
+    if not isinstance(communities, list):
+        communities = list(communities)
+
+    out_degree, in_degree, m, norm = _get_degree(G, weight=weight)
+
     directed = G.is_directed()
-    if directed:
-        out_degree = dict(G.out_degree(weight=weight))
-        in_degree = dict(G.in_degree(weight=weight))
-        m = sum(out_degree.values())
-        norm = 1 / m**2
-    else:
-        out_degree = in_degree = dict(G.degree(weight=weight))
-        deg_sum = sum(out_degree.values())
-        m = deg_sum / 2
-        norm = 1 / deg_sum**2
 
     def community_contribution(community):
         comm = set(community)
         L_c = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm)
-
+    
         out_degree_sum = sum(out_degree[u] for u in comm)
         in_degree_sum = sum(in_degree[u] for u in comm) if directed else out_degree_sum
-
+    
         return L_c / m - resolution * out_degree_sum * in_degree_sum * norm
 
     return sum(map(community_contribution, communities))
 
 
+    # allow partial evaluation, i.e. subsets of partition
+    # if not is_partition(G, communities):
+    #     raise NotAPartition(G, communities)
+
+
+
+
+
+
+def constant_potts_model(
+        G,
+        communities,
+        weight="weight",
+        node_weight="node_weight",
+        resolution=1,
+        allow_partial=False
+        ):
+    r"""
+    """
+
+    if not isinstance(communities, list):
+        communities = list(communities)
+    if (not is_partition(G, communities)) and (not allow_partial):
+         raise NotAPartition(G, communities)
+
+    def community_contribution(community):
+        comm = set(community)
+        L_c = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm and u in comm)
+
+        n = 0
+        for node in community:
+            n += G.nodes[node][node_weight]
+
+        return 2*L_c - (resolution * n**2)
+
+
+    return sum(map(community_contribution, communities))
+
+
+
 @require_partition
-@nx._dispatchable
 def partition_quality(G, partition):
     """Returns the coverage and performance of a partition of G.
 
