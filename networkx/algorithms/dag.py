@@ -568,9 +568,10 @@ def all_topological_sorts(G):
             break
 
 
+@not_implemented_for("undirected")
 @nx._dispatchable
 def is_aperiodic(G):
-    """Returns True if `G` is aperiodic.
+    """Determine whether a directed graph is aperiodic.
 
     A strongly connected directed graph is aperiodic if there is no integer ``k > 1``
     that divides the length of every cycle in the graph.
@@ -585,22 +586,22 @@ def is_aperiodic(G):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph
+    G : NetworkX graph
+        A directed graph.
 
     Returns
     -------
     bool
-        True if the graph is aperiodic False otherwise
+        Whether the graph is aperiodic.
 
     Raises
     ------
+    NetworkXNotImplemented
+        If `G` is not directed.
     NetworkXError
-        If `G` is not directed
-    NetworkXError
-        If `G` is not strongly connected
+        If `G` is not strongly connected.
     NetworkXPointlessConcept
-        If `G` has no nodes
+        If `G` has no nodes.
 
     Examples
     --------
@@ -686,29 +687,26 @@ def is_aperiodic(G):
        in Shier, D. R.; Wallenius, K. T., Applied Mathematical Modeling:
        A Multidisciplinary Approach, CRC Press.
     """
-    if not G.is_directed():
-        raise nx.NetworkXError("is_aperiodic not defined for undirected graphs")
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("Graph has no nodes.")
     if not nx.is_strongly_connected(G):
         raise nx.NetworkXError("Graph is not strongly connected.")
-    s = arbitrary_element(G)
+
+    s = nx.utils.arbitrary_element(G)
     levels = {s: 0}
-    this_level = [s]
     g = 0
-    lev = 1
-    while this_level:
-        next_level = []
-        for u in this_level:
-            for v in G[u]:
-                if v in levels:  # Non-Tree Edge
-                    g = gcd(g, levels[u] - levels[v] + 1)
-                else:  # Tree Edge
-                    next_level.append(v)
-                    levels[v] = lev
-        this_level = next_level
-        lev += 1
-    return g == 1
+    # There are 3 relevant possible edge types in `dfs_labeled_edges`:
+    # "forward", "reverse", and "nontree".
+    for u, v, d in nx.dfs_labeled_edges(G, s):
+        if d == "forward":
+            # "forward" edges indicate a new node.
+            levels[v] = levels[u] + 1
+        elif d == "nontree" and (g := gcd(g, levels[u] - levels[v] + 1)) == 1:
+            # "nontree" edges indicate a previously explored node.
+            # Check whether this affects the common factor of cycle lengths.
+            return True
+        # "reverse" edges indicate backtracking in DFS and can be ignored.
+    return False
 
 
 @nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
