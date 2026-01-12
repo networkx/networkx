@@ -682,7 +682,7 @@ class TestClusteringHiddenEdges:
     def test_average_clustering_hidden_edge(self):
         # 1. Test Single Hidden Edge
         G = nx.Graph()
-        G.add_edge(0, 1, weight=None)  # Hidden
+        G.add_edge(0, 1, weight=None)
         G.add_edge(1, 2, weight=1)
         G.add_edge(2, 0, weight=1)
 
@@ -710,7 +710,7 @@ class TestClusteringHiddenEdges:
     def test_average_clustering_directed_hidden_edge(self):
         """Test hidden edges in directed clustering."""
         G = nx.DiGraph()
-        G.add_edge(0, 1, weight=None) # Hidden
+        G.add_edge(0, 1, weight=None)
         G.add_edge(1, 2, weight=1)
         G.add_edge(2, 0, weight=1)
         # Should be 0.0, not crash

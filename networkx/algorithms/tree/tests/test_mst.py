@@ -938,7 +938,7 @@ class TestMSTHiddenEdges:
     def test_mst_hidden_edge_simple(self):
         """Test standard hidden edge skipping."""
         G = nx.Graph()
-        G.add_edge(0, 1, weight=None)  # Hidden
+        G.add_edge(0, 1, weight=None)
         G.add_edge(1, 2, weight=10)
         G.add_edge(0, 2, weight=100)
 
@@ -975,7 +975,7 @@ class TestMSTHiddenEdges:
     def test_mst_prim_hidden_edge(self):
         """Test Prim's algorithm with hidden edges."""
         G = nx.Graph()
-        G.add_edge(0, 1, weight=None) # Hidden
+        G.add_edge(0, 1, weight=None)
         G.add_edge(1, 2, weight=10)
         G.add_edge(0, 2, weight=100)
 
@@ -987,7 +987,7 @@ class TestMSTHiddenEdges:
     def test_mst_boruvka_hidden_edge(self):
         """Test Boruvka's algorithm with hidden edges."""
         G = nx.Graph()
-        G.add_edge(0, 1, weight=None) # Hidden
+        G.add_edge(0, 1, weight=None)
         G.add_edge(1, 2, weight=10)
         G.add_edge(0, 2, weight=100)
 

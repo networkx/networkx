@@ -614,7 +614,9 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
         raise nx.NetworkXUnfeasible("no flow satisfies all node demands")
 
     if any(DEAF.edge_flow[i] * 2 >= faux_inf for i in range(DEAF.edge_count)) or any(
-        e[-1].get(capacity, inf) == inf and e[-1].get(weight, 0) < 0
+        e[-1].get(capacity, inf) == inf
+        and e[-1].get(weight, 0) is not None
+        and e[-1].get(weight, 0) < 0
         for e in nx.selfloop_edges(G, data=True)
     ):
         raise nx.NetworkXUnbounded("negative cycle with infinite capacity found")
@@ -661,6 +663,8 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
                 add_entry(e[:-1] + (0,))
         else:
             w = e[-1].get(weight, 0)
+            if w is None:
+                continue
             if w >= 0:
                 add_entry(e[:-1] + (0,))
             else:

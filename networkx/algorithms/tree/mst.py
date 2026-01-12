@@ -370,7 +370,10 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                 for w, d2 in G.adj[v].items():
                     if w in visited:
                         continue
-                    new_weight = d2.get(weight, 1) * sign
+                    new_weight = d2.get(weight, 1)
+                    if new_weight is None:
+                        continue
+                    new_weight = new_weight * sign
                     if isnan(new_weight):
                         if ignore_nan:
                             continue
