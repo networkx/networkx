@@ -289,7 +289,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
     Raises
     ------
     NetworkXPointlessConcept
-        If G is the null graph (has 0 nodes).
+        If G is a null graph.
 
     Examples
     --------
@@ -311,7 +311,9 @@ def eccentricity(G, v=None, sp=None, weight=None):
     #        nodes=v
 
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept("Cannot compute eccentricity of null graph.")
+        raise nx.NetworkXPointlessConcept(
+            "Cannot compute eccentricity of a null graph."
+        )
 
     order = G.order()
     e = {}
@@ -391,9 +393,9 @@ def diameter(G, e=None, usebounds=False, weight=None):
     Raises
     ------
     NetworkXError
-        If the graph consists of multiple components
+        If G has multiple components.
     NetworkXPointlessConcept
-        If the graph is null (has 0 nodes).
+        If G is a null graph.
 
     Notes
     -----
@@ -412,7 +414,6 @@ def diameter(G, e=None, usebounds=False, weight=None):
     --------
     eccentricity
     """
-
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="diameter", weight=weight)
     if e is None:
@@ -615,9 +616,9 @@ def radius(G, e=None, usebounds=False, weight=None):
     Raises
     ------
     NetworkXError
-        If the graph consists of multiple components
+        If G has multiple components.
     NetworkXPointlessConcept
-        If the graph is null (has 0 nodes).
+        If G is a null graph.
 
     Notes
     -----
@@ -633,7 +634,6 @@ def radius(G, e=None, usebounds=False, weight=None):
     2
 
     """
-
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="radius", weight=weight)
     if e is None:
