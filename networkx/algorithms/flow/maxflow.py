@@ -186,7 +186,9 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 
     Below is a version of the previous example using the recommended technique:
 
-    >>> flow_value, _ = nx.maximum_flow(G, "s", "t", capacity=lambda u, v, d: round(1e6 * d["capacity"]))
+    >>> flow_value, _ = nx.maximum_flow(
+    ...     G, "s", "t", capacity=lambda u, v, d: round(1e6 * d["capacity"])
+    ... )
     >>> flow_value
     900000
 
