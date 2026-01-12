@@ -249,7 +249,7 @@ def chordal_graph_treewidth(G):
     Parameters
     ----------
     G : graph
-      A NetworkX graph
+        A chordal graph.
 
     Returns
     -------
@@ -259,13 +259,11 @@ def chordal_graph_treewidth(G):
     Raises
     ------
     NetworkXError
-        The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
-        The algorithm can only be applied to chordal graphs. If the input
-        graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
+        If `G` is not chordal.
 
     Examples
     --------
-    >>> G = nx.barbell_graph(4, 3)
+    >>> G = nx.barbell_graph(4, 6)
     >>> nx.chordal_graph_treewidth(G)
     3
 
