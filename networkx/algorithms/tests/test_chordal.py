@@ -3,6 +3,23 @@ import pytest
 import networkx as nx
 
 
+@pytest.mark.parametrize(
+    ("G", "expected"),
+    (
+        # Actual trees (so treewidth == 1)
+        (nx.path_graph(5), 1),
+        (nx.balanced_tree(2, 3), 1),
+        (nx.star_graph(6), 1),
+        # Graphs with maximal cliques
+        (nx.cycle_graph(3), 2),
+        (nx.barbell_graph(4, 6), 3),
+        (nx.lollipop_graph(7, 2), 6),
+    ),
+)
+def test_chordal_graph_treewidth(G, expected):
+    assert nx.chordal_graph_treewidth(G) == expected
+
+
 class TestMCS:
     @classmethod
     def setup_class(cls):
