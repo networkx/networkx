@@ -97,6 +97,9 @@ class TestMCS:
     def test_graph_treewidth(self):
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
             nx.chordal_graph_treewidth(self.non_chordal_G)
+        G = nx.complete_graph(5, create_using=nx.DiGraph)
+        with pytest.raises(nx.NetworkXNotImplemented, match=".*directed"):
+            nx.chordal_graph_treewidth(G)
 
     def test_chordal_find_cliques(self):
         cliques = {
