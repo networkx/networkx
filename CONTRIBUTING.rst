@@ -31,7 +31,7 @@ Contributor Guide
 .. _automated_contributions_policy:
 
 Automated Contributions Policy
---------------------
+------------------------------
 
 Contributing to networkx requires human judgment, contextual understanding, and
 familiarity with networkx's structure and goals. It is not suitable for
