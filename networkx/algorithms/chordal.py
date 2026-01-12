@@ -244,7 +244,7 @@ def chordal_graph_cliques(G):
 
 @nx._dispatchable
 def chordal_graph_treewidth(G):
-    """Returns the treewidth of the chordal graph G.
+    """Returns the treewidth of the chordal graph `G`.
 
     Parameters
     ----------
@@ -265,21 +265,7 @@ def chordal_graph_treewidth(G):
 
     Examples
     --------
-    >>> e = [
-    ...     (1, 2),
-    ...     (1, 3),
-    ...     (2, 3),
-    ...     (2, 4),
-    ...     (3, 4),
-    ...     (3, 5),
-    ...     (3, 6),
-    ...     (4, 5),
-    ...     (4, 6),
-    ...     (5, 6),
-    ...     (7, 8),
-    ... ]
-    >>> G = nx.Graph(e)
-    >>> G.add_node(9)
+    >>> G = nx.barbell_graph(4, 3)
     >>> nx.chordal_graph_treewidth(G)
     3
 
