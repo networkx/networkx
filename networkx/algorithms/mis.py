@@ -19,7 +19,7 @@ def maximal_independent_set(G, nodes=None, seed=None):
     An independent set is a set of nodes such that the subgraph
     of G induced by these nodes contains no edges. A maximal
     independent set is an independent set such that it is not possible
-    to add a new node and still get an independent set, not necessarily 
+    to add a new node and still get an independent set, not necessarily
     a maximum independent set.
 
     Parameters
