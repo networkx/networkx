@@ -269,6 +269,11 @@ def chordal_graph_treewidth(G):
     >>> nx.chordal_graph_treewidth(G)
     3
 
+    See Also
+    --------
+    networkx.algorithms.approximation.treewidth.treewidth_min_degree
+    networkx.algorithms.approximation.treewidth.treewidth_min_fill_in
+
     References
     ----------
     .. [1] https://en.wikipedia.org/wiki/Tree_decomposition#Treewidth
