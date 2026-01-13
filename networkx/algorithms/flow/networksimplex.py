@@ -35,36 +35,37 @@ class _DataEssentialsAndFunctions:
         else:
             edges = G.edges(data=True, keys=True)
 
-        # Getting capacity (String vs Function)
-        if callable(capacity):
+        inf = float("inf")
 
-            def get_cap(e):
-                return capacity(e[0], e[1], e[-1])
-        else:
-            inf = float("inf")
+        # Iterate and Filter
+        for e in edges:
+            u, v = e[0], e[1]
+            d = e[-1]
 
-            def get_cap(e):
-                return e[-1].get(capacity, inf)
+            # Skip self-loops
+            if u == v:
+                continue
 
-        # Filtering in one-pass with walrus operator
-        edges = (
-            e
-            for e in edges
-            if e[0] != e[1] and (cap := get_cap(e)) is not None and cap != 0
-        )
+            # Calculate Capacity
+            if callable(capacity):
+                cap = capacity(u, v, d)
+            else:
+                cap = d.get(capacity, inf)
 
-        # Populating lists
-        for i, e in enumerate(edges):
-            self.edge_sources.append(self.node_indices[e[0]])
-            self.edge_targets.append(self.node_indices[e[1]])
+            # Filter: Skip if None (Hidden) or 0 (Blocked)
+            if cap is None or cap == 0:
+                continue
+
+            # Store Data
+            self.edge_sources.append(self.node_indices[u])
+            self.edge_targets.append(self.node_indices[v])
 
             if multigraph:
                 self.edge_keys.append(e[2])
 
-            self.edge_indices[e[:-1]] = i
-
-            self.edge_capacities.append(get_cap(e))
-            self.edge_weights.append(e[-1].get(weight, 0))
+            self.edge_indices[e[:-1]] = len(self.edge_indices)
+            self.edge_capacities.append(cap)
+            self.edge_weights.append(d.get(weight, 0))
 
         # spanning tree specific data to be initialized
 
@@ -562,12 +563,20 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     for e, c in zip(DEAF.edge_indices, DEAF.edge_capacities):
         if c < 0:
             raise nx.NetworkXUnfeasible(f"edge {e!r} has negative capacity")
+
     if not multigraph:
         edges = nx.selfloop_edges(G, data=True)
     else:
         edges = nx.selfloop_edges(G, data=True, keys=True)
+
     for e in edges:
-        if e[-1].get(capacity, inf) < 0:
+        d = e[-1]
+        if callable(capacity):
+            cap = capacity(e[0], e[1], d)
+        else:
+            cap = d.get(capacity, inf)
+
+        if cap is not None and cap < 0:
             raise nx.NetworkXUnfeasible(f"edge {e[:-1]!r} has negative capacity")
 
     ###########################################################################
@@ -633,9 +642,22 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     if any(DEAF.edge_flow[i] != 0 for i in range(-n, 0)):
         raise nx.NetworkXUnfeasible("no flow satisfies all node demands")
 
-    if any(DEAF.edge_flow[i] * 2 >= faux_inf for i in range(DEAF.edge_count)) or any(
-        e[-1].get(capacity, inf) == inf and e[-1].get(weight, 0) < 0
-        for e in nx.selfloop_edges(G, data=True)
+    # Check for negative cycle in self-loops
+    has_neg_cycle = False
+    for e in nx.selfloop_edges(G, data=True):
+        d = e[-1]
+        if callable(capacity):
+            cap = capacity(e[0], e[1], d)
+        else:
+            cap = d.get(capacity, inf)
+
+        if cap == inf and d.get(weight, 0) < 0:
+            has_neg_cycle = True
+            break
+
+    if (
+        any(DEAF.edge_flow[i] * 2 >= faux_inf for i in range(DEAF.edge_count))
+        or has_neg_cycle
     ):
         raise nx.NetworkXUnbounded("negative cycle with infinite capacity found")
 
@@ -675,17 +697,29 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
         ):
             add_entry(e)
         edges = G.edges(data=True, keys=True)
+
     for e in edges:
+        d = e[-1]
+        # Determine capacity for this edge
+        if callable(capacity):
+            cap = capacity(e[0], e[1], d)
+        else:
+            cap = d.get(capacity, inf)
+
         if e[0] != e[1]:
-            if e[-1].get(capacity, inf) == 0:
+            # FIX: Only add 0-flow entry if cap is 0. If cap is None, skip it entirely.
+            if cap == 0:
                 add_entry(e[:-1] + (0,))
         else:
-            w = e[-1].get(weight, 0)
+            # Self-loops
+            w = d.get(weight, 0)
             if w >= 0:
                 add_entry(e[:-1] + (0,))
             else:
-                c = e[-1][capacity]
-                flow_cost += w * c
-                add_entry(e[:-1] + (c,))
+                # Negative weight self-loop: fill with capacity
+                if cap is None:
+                    cap = 0
+                flow_cost += w * cap
+                add_entry(e[:-1] + (cap,))
 
     return flow_cost, flow_dict
