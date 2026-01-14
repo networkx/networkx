@@ -279,7 +279,7 @@ def chordal_graph_treewidth(G):
     if not is_chordal(G):
         raise nx.NetworkXError("Input graph is not chordal.")
 
-    return len(max(nx.chordal_graph_cliques(G))) - 1
+    return len(max(nx.chordal_graph_cliques(G), key=len)) - 1
 
 
 def _is_complete_graph(G):
