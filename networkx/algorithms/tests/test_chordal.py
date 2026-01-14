@@ -20,6 +20,20 @@ def test_chordal_graph_treewidth(G, expected):
     assert nx.chordal_graph_treewidth(G) == expected
 
 
+def test_chordal_graph_treewidth_highest_degree_node_not_in_clique():
+    """chordal_graph_cliques often yields the largest clique first. In this
+    example, the highest degree node (the center of the star) is *not*
+    in the largest maximal clique and thus *isn't* yielded first.
+
+    This test case fails if `max(nx.chordal_graph_cliques)` doesn't include
+    `key=len`. See gh-8470."""
+    G = nx.star_graph(10)
+    G.add_edges_from(nx.complete_graph("abcde").edges)
+    G.add_edge(5, "a")  # Connect a "spoke" on the star to the K5
+
+    assert nx.chordal_graph_treewidth(G) == 4  # len(K5) - 1
+
+
 class TestMCS:
     @classmethod
     def setup_class(cls):
