@@ -101,7 +101,7 @@ class TestMatching:
         fixture.
 
         """
-        # Verify it is a MINIMUM vertex cover using Kőnig's theorem:
+        # Verify it is a MINIMUM vertex cover using Konig's theorem:
         # In bipartite graphs, |minimum vertex cover| == |maximum matching|.
         # We check size (not specific nodes) because minimum vertex covers may not be unique.
         matching = maximum_matching(self.graph, self.top_nodes)
