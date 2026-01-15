@@ -108,7 +108,6 @@ class TestMatching:
         # maximum_matching returns a bidirectional dict {u: v, v: u}, so divide by 2 to get edge count.
         assert len(vertices) == len(matching) // 2
 
-
         # Assert that the set is truly a vertex cover.
         for u, v in self.graph.edges():
             assert u in vertices or v in vertices
