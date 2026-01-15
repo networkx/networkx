@@ -101,9 +101,14 @@ class TestMatching:
         fixture.
 
         """
-        # By Konig's theorem, the number of edges in a maximum matching equals
-        # the number of vertices in a minimum vertex cover.
-        assert len(vertices) == 5
+        # Verify it is a MINIMUM vertex cover using Kőnig's theorem:
+        # In bipartite graphs, |minimum vertex cover| == |maximum matching|.
+        # We check size (not specific nodes) because minimum vertex covers may not be unique.
+        matching = maximum_matching(self.graph, self.top_nodes)
+        # maximum_matching returns a bidirectional dict {u: v, v: u}, so divide by 2 to get edge count.
+        assert len(vertices) == len(matching) // 2
+
+
         # Assert that the set is truly a vertex cover.
         for u, v in self.graph.edges():
             assert u in vertices or v in vertices
