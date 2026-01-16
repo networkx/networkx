@@ -217,29 +217,6 @@ def graph_atlas_g():
     - graphs 1007 and 1008 with degree sequences 3333444 and 3333336,
     - graphs 1012 and 1013 with degree sequences 1244555 and 1244456.
 
-    >>> import networkx as nx
-    >>> from networkx.algorithms.isomorphism.vf2userfunc import GraphMatcher
-    >>>
-    >>> prev_key = (0, 0, "", 0)
-    >>> for n_graph, G in enumerate(nx.graph_atlas_g()):
-    >>>     nodes = len(G.nodes)
-    >>>     edges = len(G.edges)
-    >>>     degrees = ''.join(sorted(str(d[1]) for d in G.degree))
-    >>>     automorphisms = len(list(GraphMatcher(G, G).isomorphisms_iter()))
-    >>>     key = (nodes, edges, degrees, automorphisms)
-    >>>
-    >>>     is_in_order = key >= prev_key
-    >>>     if not is_in_order:
-    >>>         print(f"{n_graph-1} {prev_key}")
-    >>>         print(f"{n_graph} {key}")
-    >>>     prev_key = key
-    55 (6, 2, '001111', 16)
-    56 (6, 2, '000112', 12)
-    1007 (7, 12, '3333444', 144)
-    1008 (7, 12, '3333336', 12)
-    1012 (7, 13, '1244555', 4)
-    1013 (7, 13, '1244456', 6)
-
     References
     ----------
     .. [atlas] Ronald C. Read and Robin J. Wilson,
