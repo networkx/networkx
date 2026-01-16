@@ -2189,6 +2189,10 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     negative cycles on any component by first adding a new node connected to
     every node, and starting bellman_ford_predecessor_and_distance on that
     node.  It then removes that extra node.
+
+    Be wary of floating point errors due to rounding. A cycle with zero
+    total weight may be reported as a negative cycle due to roundoff.
+    For example, ``0.1 + 0.7 < 0.8`` is ``True`` in floating point.
     """
     if G.size() == 0:
         return False
