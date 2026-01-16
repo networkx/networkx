@@ -124,10 +124,9 @@ def is_bipartite_node_set(G, nodes):
 
     Examples
     --------
-    >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
     >>> X = set([1, 3])
-    >>> bipartite.is_bipartite_node_set(G, X)
+    >>> nx.bipartite.is_bipartite_node_set(G, X)
     True
 
     Notes
@@ -193,9 +192,8 @@ def sets(G, top_nodes=None):
 
     Examples
     --------
-    >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> X, Y = bipartite.sets(G)
+    >>> X, Y = nx.bipartite.sets(G)
     >>> list(X)
     [0, 2]
     >>> list(Y)
@@ -241,13 +239,10 @@ def density(B, nodes):
 
     Examples
     --------
-    >>> from networkx.algorithms import bipartite
     >>> G = nx.complete_bipartite_graph(3, 2)
-    >>> X = set([0, 1, 2])
-    >>> bipartite.density(G, X)
+    >>> nx.bipartite.density(G, nodes={0, 1, 2})
     1.0
-    >>> Y = set([3, 4])
-    >>> bipartite.density(G, Y)
+    >>> nx.bipartite.density(G, nodes={3, 4})
     1.0
 
     Notes
@@ -299,10 +294,8 @@ def degrees(B, nodes, weight=None):
 
     Examples
     --------
-    >>> from networkx.algorithms import bipartite
     >>> G = nx.complete_bipartite_graph(3, 2)
-    >>> Y = set([3, 4])
-    >>> degX, degY = bipartite.degrees(G, Y)
+    >>> degX, degY = nx.bipartite.degrees(G, nodes={3, 4})
     >>> dict(degX)
     {0: 2, 1: 2, 2: 2}
 
