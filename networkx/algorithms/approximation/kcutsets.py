@@ -1,6 +1,7 @@
 """Functions involving natural generalizations of the minimum cut problem."""
 
 import itertools
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -9,8 +10,9 @@ __all__ = ["minimum_multiway_cut", "minimum_k_cut"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
 def minimum_multiway_cut(G, terminals, weight=None):
-    """Compute an approximated Minimum Multiway Cut and the corresponding cut value.
+    r"""Compute an approximated Minimum Multiway Cut and the corresponding cut value.
 
     Given an undirected graph $G = (V, E)$ and a set of terminals
     $S = \{s_1, s_2, \dots ,s_k\} \subseteq V$, a multiway cut is a set of edges
@@ -40,8 +42,8 @@ def minimum_multiway_cut(G, terminals, weight=None):
         A container with a subset of nodes of G.
 
     weight : string, optional (default = None)
-        If None, every node has weight 1. If a string, use this node
-        attribute as the node weight. A node without this attribute is
+        If None, every edge has weight 1. If a string, use this edge
+        attribute as the edge weight. An edge without this attribute is
         assumed to have weight 1.
 
     Returns
@@ -51,7 +53,27 @@ def minimum_multiway_cut(G, terminals, weight=None):
 
     cutset : set
         Set of edges that, if removed from the graph, disconnects each
-         terminal from all the others.
+        terminal from all the others.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> terminals = [0, 4]
+    >>> cut_value, cutset = nx.approximation.minimum_multiway_cut(G, terminals)
+    >>> cut_value
+    1
+    >>> len(cutset)
+    1
+
+    For a weighted graph:
+
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from([(0, 1, 10), (1, 2, 5), (2, 3, 10)])
+    >>> cut_value, cutset = nx.approximation.minimum_multiway_cut(
+    ...     G, [0, 3], weight="weight"
+    ... )
+    >>> cut_value
+    5
 
     Raises
     ------
@@ -73,47 +95,35 @@ def minimum_multiway_cut(G, terminals, weight=None):
         raise nx.NetworkXError("Expected non-empty NetworkX graph!")
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
-    # only consider the terminals in G
     terminals = set(terminals) & G.nodes()
-    # raise an error if less than two terminal have been provided
     if len(terminals) < 2:
         raise nx.NetworkXError("At least two terminals should be provided.")
 
-    # extract edges weight, and set edges weights with no attribute to 1
-    edges_weights = G.edges(data=weight, default=1)
-    # create a new Graph G2
+    # Build working graph with uniform weight attribute name
     G2 = nx.Graph()
-    G2.add_weighted_edges_from(edges_weights, weight="capacity")
+    G2.add_weighted_edges_from(G.edges(data=weight, default=1), weight="capacity")
 
-    # take a non-existing node of G to be the sink
+    # Create auxiliary sink connected to all terminals with infinite capacity
     sink = next(u for u in range(len(G) + 1) if u not in G)
-    # add edges from the terminals to the sink node with infinite capacity
     G2.add_edges_from([(u, sink) for u in terminals], capacity=float("inf"))
 
+    # Compute minimum isolating cut for each terminal
     all_cuts = []
-    # compute the minimum weight isolating cut for each terminal
     for u in terminals:
-        # remove the edge from u to the sink
         G2.remove_edge(u, sink)
-        # get the cut value and the 2 partitions of nodes
         value_cut, (p1, p2) = nx.minimum_cut(G2, u, sink)
-        # get the edges crossing the cut
         edges_cut = set(nx.edge_boundary(G2, p1, p2))
-        # add to the result
         all_cuts.append((edges_cut, value_cut))
-        # re-add the edge to the sink
         G2.add_edge(u, sink, capacity=float("inf"))
 
-    # discard the heaviest cut and take the union of the rest
+    # Discard heaviest cut and union the rest (avoiding duplicate edges)
     cutset = set()
     cut_value = 0
     for u, v in itertools.chain.from_iterable(
         el[0] for el in sorted(all_cuts, key=lambda x: x[1])[:-1]
     ):
         if (u, v) not in cutset and (v, u) not in cutset:
-            # add to the cutset
             cutset.add((u, v))
-            # add the weight to the cut cost
             cut_value += G2.edges[u, v]["capacity"]
 
     return cut_value, cutset
@@ -121,8 +131,9 @@ def minimum_multiway_cut(G, terminals, weight=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
 def minimum_k_cut(G, k, weight=None):
-    """Compute an approximated Minimum k-Cut and the corresponding cut value.
+    r"""Compute an approximated Minimum k-Cut and the corresponding cut value.
 
     Given an undirected graph $G = (V, E)$ and an integer $k \geq 2$, a $k$-cut is a
     set of edges whose removal leaves at least $k$ connected components.
@@ -180,6 +191,24 @@ def minimum_k_cut(G, k, weight=None):
     If more than $k$ components are created then it's enough to throw back
     some of the removed edges until there are exactly $k$ components.
 
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> cut_value, cutset = nx.approximation.minimum_k_cut(G, k=3)
+    >>> cut_value
+    2
+    >>> G.remove_edges_from(cutset)
+    >>> len(list(nx.connected_components(G))) >= 3
+    True
+
+    For a weighted graph:
+
+    >>> G = nx.complete_graph(4)
+    >>> nx.set_edge_attributes(G, values=10, name="weight")
+    >>> cut_value, cutset = nx.approximation.minimum_k_cut(G, k=4, weight="weight")
+    >>> cut_value
+    60
+
     See also
     --------
     networkx.algorithms.flow.minimum_cut
@@ -197,37 +226,28 @@ def minimum_k_cut(G, k, weight=None):
     if not 1 <= k <= len(G):
         raise nx.NetworkXError(f"k should be within 1 and {len(G)}")
 
-    # extract edges weights, and set edges weights with no attribute to 1
-    edges_weights = G.edges(data=weight, default=1)
-    # create a new Graph G2
+    # Build working graph with uniform weight attribute name
     G2 = nx.Graph()
-    G2.add_weighted_edges_from(edges_weights, weight="capacity")
+    G2.add_weighted_edges_from(G.edges(data=weight, default=1), weight="capacity")
 
-    # build a Gomory-Hu tree T from G
+    # Build Gomory-Hu tree and get k-1 lightest edges
     T = nx.gomory_hu_tree(G2)
-    # get the k-1 cheapest edges of the Gomory-Hu tree
     min_weight_edges = sorted(T.edges(data="weight"), key=lambda x: x[2])[: k - 1]
 
-    # compute the cutset, the value is computed after as an edge might appear more than once
+    # Collect boundary edges for each cut induced by removing tree edges
     all_edges_cut = set()
     for u, v, _ in min_weight_edges:
-        # remove (u,v) from the tree
         T.remove_edge(u, v)
-        # get the connected component that contains u
         p1 = nx.node_connected_component(T, u)
-        # add the boundary edges of p1 to the cutset
         all_edges_cut |= set(nx.edge_boundary(G2, p1))
-        # re-add (u,v) to the tree
         T.add_edge(u, v)
 
-    # consider edges only in a direction
+    # Compute final cutset avoiding duplicate edges
     cutset = set()
     cut_value = 0
     for u, v in all_edges_cut:
         if (u, v) not in cutset and (v, u) not in cutset:
-            # add to the cutset
             cutset.add((u, v))
-            # add the weight to the cut cost
             cut_value += G2.edges[u, v]["capacity"]
 
     return cut_value, cutset
