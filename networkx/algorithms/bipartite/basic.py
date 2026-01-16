@@ -93,10 +93,12 @@ def is_bipartite(G):
 
     Examples
     --------
-    >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> print(bipartite.is_bipartite(G))
+    >>> nx.is_bipartite(G)
     True
+    >>> G = nx.cycle_graph(7)
+    >>> nx.is_bipartite(G)
+    False
 
     See Also
     --------
