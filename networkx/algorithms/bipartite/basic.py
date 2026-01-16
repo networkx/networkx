@@ -40,18 +40,17 @@ def color(G):
 
     Examples
     --------
-    >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> c = bipartite.color(G)
+    >>> c = nx.bipartite.color(G)
     >>> print(c)
     {0: 1, 1: 0, 2: 1, 3: 0}
 
     You can use this to set a node attribute indicating the bipartite set:
 
-    >>> nx.set_node_attributes(G, c, "bipartite")
-    >>> print(G.nodes[0]["bipartite"])
+    >>> nx.set_node_attributes(G, c, name="bipartite")
+    >>> G.nodes[0]["bipartite"]
     1
-    >>> print(G.nodes[1]["bipartite"])
+    >>> G.nodes[1]["bipartite"]
     0
     """
     if G.is_directed():
