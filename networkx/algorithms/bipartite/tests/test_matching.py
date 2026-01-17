@@ -118,8 +118,9 @@ class TestMatching:
         assert len(vertex_cover) == 5
 
         # Assert that the set is truly a vertex cover.
-        for u, v in self.graph.edges():
-            assert u in vertex_cover or v in vertex_cover
+        assert all(
+            u in vertex_cover or v in vertex_cover for u, v in self.graph.edges()
+        )
 
         # Assert the expected vertices for this fixture (keep the test explicit).
         assert set(vertex_cover) == {0, 2, 3, 4, 5}
