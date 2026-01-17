@@ -600,7 +600,9 @@ def spring_layout(
             if node not in pos:
                 raise ValueError("nodes are fixed without positions given")
         nfixed = {node: i for i, node in enumerate(G)}
-        fixed = np.asarray([nfixed[node] for node in fixed if node in nfixed])
+        fixed = np.asarray(
+            [nfixed[node] for node in fixed if node in nfixed], dtype=int
+        )
 
     if pos is not None:
         # Determine size of existing domain to adjust initial positions
@@ -1696,7 +1698,7 @@ def forceatlas2_layout(
         pos = nx.random_layout(G, dim=dim, seed=seed)
         pos_arr = np.array(list(pos.values()))
     elif len(pos) == len(G):
-        pos_arr = np.array([pos[node].copy() for node in G])
+        pos_arr = np.array([pos[node] for node in G])
     else:
         # set random node pos within the initial pos values
         pos_init = np.array(list(pos.values()))

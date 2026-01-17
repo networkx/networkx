@@ -188,6 +188,12 @@ class TestLayout:
         pos = nx.circular_layout(self.Gi)
         npos = nx.forceatlas2_layout(self.Gi, pos=pos)
 
+    def test_smoke_initial_pos_nonarray_forceatlas2(self):
+        # See gh-8451
+        pos = nx.circular_layout(self.Gi)
+        pos = {key: tuple(value) for key, value in pos.items()}
+        npos = nx.forceatlas2_layout(self.Gi, pos=pos)
+
     def test_smoke_initial_pos_fruchterman_reingold(self):
         pos = nx.circular_layout(self.Gi)
         npos = nx.fruchterman_reingold_layout(self.Gi, pos=pos)
@@ -206,6 +212,10 @@ class TestLayout:
         npos = nx.spring_layout(self.bigG, pos=pos, fixed=[(0, 0)])
         for axis in range(2):
             assert pos[(0, 0)][axis] == pytest.approx(npos[(0, 0)][axis], abs=1e-7)
+        # Empty fixed list - see gh-8446
+        pos = nx.circular_layout(self.Gi)
+        npos = nx.spring_layout(self.Gi, pos=pos, fixed=[])
+        assert len(npos) == len(pos)
 
     def test_center_parameter(self):
         G = nx.path_graph(1)

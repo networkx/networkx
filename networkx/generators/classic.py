@@ -373,7 +373,28 @@ def circular_ladder_graph(n, create_using=None):
 
         >>> nx.draw(nx.circular_ladder_graph(5))
 
+    Parameters
+    ----------
+    n : int
+        The length of the ladder. Must be at least 2.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : Graph
+        A circular ladder graph.
+
+    Raises
+    ------
+    ValueError
+        If `n` is less than 2.
+    NetworkXError
+        If `create_using` is a directed graph.
+
     """
+    if n < 2:
+        raise ValueError("n must be at least 2 for circular_ladder_graph")
     G = ladder_graph(n, create_using)
     G.add_edge(0, n - 1)
     G.add_edge(n, 2 * n - 1)
