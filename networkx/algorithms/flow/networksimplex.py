@@ -10,6 +10,48 @@ from math import ceil, sqrt
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+"""
+Minimum cost flow algorithms on directed connected graphs.
+"""
+
+__all__ = ["network_simplex"]
+
+from itertools import chain, islice, repeat
+from math import ceil, sqrt
+
+import networkx as nx
+from networkx.utils import not_implemented_for
+
+
+def _capacity_callable(capacity):
+    """Returns a function that returns the capacity of an edge.
+
+    Parameters
+    ----------
+    capacity : string or function
+        If it is callable, `capacity` itself is returned. If it is a string,
+        it is assumed to be the name of the edge attribute that represents
+        the capacity of an edge. In that case, a function is returned that
+        gets the edge capacity according to the specified edge attribute.
+
+    Returns
+    -------
+    function
+        This function returns a callable that accepts exactly three inputs:
+        a node, an node adjacent to the first one, and the edge attribute
+        dictionary for the edge joining those nodes. That function returns
+        a number representing the capacity of an edge.
+    """
+    if callable(capacity):
+        return capacity
+    
+    inf = float("inf")
+    # If capacity is a string, return a lookup function
+    # Note: We do not handle Multigraphs differently here (like _weight_function does)
+    # because the Network Simplex implementation iterates over edges explicitly,
+    # treating parallel edges as distinct entities.
+    return lambda u, v, d: d.get(capacity, inf)
+
 
 class _DataEssentialsAndFunctions:
     def __init__(
@@ -35,7 +77,9 @@ class _DataEssentialsAndFunctions:
         else:
             edges = G.edges(data=True, keys=True)
 
-        inf = float("inf")
+        # Optimization: 'capacity' is guaranteed to be a callable here
+        # because network_simplex (the caller) normalizes it using _capacity_callable.
+        get_cap = capacity
 
         # Iterate and Filter
         for e in edges:
@@ -46,11 +90,8 @@ class _DataEssentialsAndFunctions:
             if u == v:
                 continue
 
-            # Calculate Capacity
-            if callable(capacity):
-                cap = capacity(u, v, d)
-            else:
-                cap = d.get(capacity, inf)
+            # Calculate Capacity (Fast call)
+            cap = get_cap(u, v, d)
 
             # Filter: Skip if None (Hidden) or 0 (Blocked)
             if cap is None or cap == 0:
@@ -524,6 +565,9 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     ###########################################################################
     # Problem essentials extraction and sanity check
     ###########################################################################
+    
+    # --- DECORATOR IMPLEMENTATION (Applied Manually) ---
+    capacity = _capacity_callable(capacity)
 
     if len(G) == 0:
         raise nx.NetworkXError("graph has no nodes")
@@ -563,19 +607,16 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     for e, c in zip(DEAF.edge_indices, DEAF.edge_capacities):
         if c < 0:
             raise nx.NetworkXUnfeasible(f"edge {e!r} has negative capacity")
-
+    
     if not multigraph:
         edges = nx.selfloop_edges(G, data=True)
     else:
         edges = nx.selfloop_edges(G, data=True, keys=True)
-
+        
     for e in edges:
         d = e[-1]
-        if callable(capacity):
-            cap = capacity(e[0], e[1], d)
-        else:
-            cap = d.get(capacity, inf)
-
+        cap = capacity(e[0], e[1], d)
+            
         if cap is not None and cap < 0:
             raise nx.NetworkXUnfeasible(f"edge {e[:-1]!r} has negative capacity")
 
@@ -646,19 +687,13 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     has_neg_cycle = False
     for e in nx.selfloop_edges(G, data=True):
         d = e[-1]
-        if callable(capacity):
-            cap = capacity(e[0], e[1], d)
-        else:
-            cap = d.get(capacity, inf)
+        cap = capacity(e[0], e[1], d)
 
         if cap == inf and d.get(weight, 0) < 0:
             has_neg_cycle = True
             break
 
-    if (
-        any(DEAF.edge_flow[i] * 2 >= faux_inf for i in range(DEAF.edge_count))
-        or has_neg_cycle
-    ):
+    if any(DEAF.edge_flow[i] * 2 >= faux_inf for i in range(DEAF.edge_count)) or has_neg_cycle:
         raise nx.NetworkXUnbounded("negative cycle with infinite capacity found")
 
     ###########################################################################
@@ -697,14 +732,11 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
         ):
             add_entry(e)
         edges = G.edges(data=True, keys=True)
-
+        
     for e in edges:
         d = e[-1]
         # Determine capacity for this edge
-        if callable(capacity):
-            cap = capacity(e[0], e[1], d)
-        else:
-            cap = d.get(capacity, inf)
+        cap = capacity(e[0], e[1], d)
 
         if e[0] != e[1]:
             # FIX: Only add 0-flow entry if cap is 0. If cap is None, skip it entirely.
