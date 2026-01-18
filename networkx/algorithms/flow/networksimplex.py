@@ -10,18 +10,6 @@ from math import ceil, sqrt
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-"""
-Minimum cost flow algorithms on directed connected graphs.
-"""
-
-__all__ = ["network_simplex"]
-
-from itertools import chain, islice, repeat
-from math import ceil, sqrt
-
-import networkx as nx
-from networkx.utils import not_implemented_for
-
 
 def _capacity_callable(capacity):
     """Returns a function that returns the capacity of an edge.
