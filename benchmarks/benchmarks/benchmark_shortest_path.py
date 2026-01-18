@@ -66,6 +66,5 @@ class AllShortestPathsGrid:
         self.target = (N - 1, N - 1)
 
     def time_all_shortest_paths(self, N):
-        collections.deque(
-            nx.all_shortest_paths(self.G, self.source, self.target), maxlen=0
-        )
+        for _ in nx.all_shortest_paths(self.G, self.source, self.target):
+            pass
