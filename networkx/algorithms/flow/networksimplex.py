@@ -44,7 +44,7 @@ def _capacity_callable(capacity):
     """
     if callable(capacity):
         return capacity
-    
+
     inf = float("inf")
     # If capacity is a string, return a lookup function
     # Note: We do not handle Multigraphs differently here (like _weight_function does)
@@ -565,7 +565,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     ###########################################################################
     # Problem essentials extraction and sanity check
     ###########################################################################
-    
+
     # --- DECORATOR IMPLEMENTATION (Applied Manually) ---
     capacity = _capacity_callable(capacity)
 
@@ -607,16 +607,16 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     for e, c in zip(DEAF.edge_indices, DEAF.edge_capacities):
         if c < 0:
             raise nx.NetworkXUnfeasible(f"edge {e!r} has negative capacity")
-    
+
     if not multigraph:
         edges = nx.selfloop_edges(G, data=True)
     else:
         edges = nx.selfloop_edges(G, data=True, keys=True)
-        
+
     for e in edges:
         d = e[-1]
         cap = capacity(e[0], e[1], d)
-            
+
         if cap is not None and cap < 0:
             raise nx.NetworkXUnfeasible(f"edge {e[:-1]!r} has negative capacity")
 
@@ -693,7 +693,10 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
             has_neg_cycle = True
             break
 
-    if any(DEAF.edge_flow[i] * 2 >= faux_inf for i in range(DEAF.edge_count)) or has_neg_cycle:
+    if (
+        any(DEAF.edge_flow[i] * 2 >= faux_inf for i in range(DEAF.edge_count))
+        or has_neg_cycle
+    ):
         raise nx.NetworkXUnbounded("negative cycle with infinite capacity found")
 
     ###########################################################################
@@ -732,7 +735,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
         ):
             add_entry(e)
         edges = G.edges(data=True, keys=True)
-        
+
     for e in edges:
         d = e[-1]
         # Determine capacity for this edge
