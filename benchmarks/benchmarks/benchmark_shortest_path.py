@@ -1,6 +1,5 @@
 """Benchmarks for a certain set of algorithms"""
 
-import collections
 import random
 
 import networkx as nx
