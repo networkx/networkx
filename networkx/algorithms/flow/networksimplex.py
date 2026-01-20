@@ -10,35 +10,7 @@ from math import ceil, sqrt
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-
-def _capacity_callable(capacity):
-    """Returns a function that returns the capacity of an edge.
-
-    Parameters
-    ----------
-    capacity : string or function
-        If it is callable, `capacity` itself is returned. If it is a string,
-        it is assumed to be the name of the edge attribute that represents
-        the capacity of an edge. In that case, a function is returned that
-        gets the edge capacity according to the specified edge attribute.
-
-    Returns
-    -------
-    function
-        This function returns a callable that accepts exactly three inputs:
-        a node, an node adjacent to the first one, and the edge attribute
-        dictionary for the edge joining those nodes. That function returns
-        a number representing the capacity of an edge.
-    """
-    if callable(capacity):
-        return capacity
-
-    inf = float("inf")
-    # If capacity is a string, return a lookup function
-    # Note: We do not handle Multigraphs differently here (like _weight_function does)
-    # because the Network Simplex implementation iterates over edges explicitly,
-    # treating parallel edges as distinct entities.
-    return lambda u, v, d: d.get(capacity, inf)
+from .utils import _capacity_function
 
 
 class _DataEssentialsAndFunctions:
@@ -65,36 +37,35 @@ class _DataEssentialsAndFunctions:
         else:
             edges = G.edges(data=True, keys=True)
 
-        # Optimization: 'capacity' is guaranteed to be a callable here
-        # because network_simplex (the caller) normalizes it using _capacity_callable.
-        get_cap = capacity
+        inf = float("inf")
 
-        # Iterate and Filter
-        for e in edges:
-            u, v = e[0], e[1]
-            d = e[-1]
+        # Optimization: Normalize capacity to a callable using the shared utility
+        # This removes the need to check "if callable" inside loops
+        get_cap = _capacity_function(G, capacity)
 
-            # Skip self-loops
-            if u == v:
-                continue
+        # Filtering in one-pass with walrus operator
+        # Catch the capacity in 'cap' to check it, preventing double-calculation overhead
+        edges = (
+            e
+            for e in edges
+            if e[0] != e[1]
+            and (cap := get_cap(e[0], e[1], e[-1])) is not None
+            and cap != 0
+        )
 
-            # Calculate Capacity (Fast call)
-            cap = get_cap(u, v, d)
-
-            # Filter: Skip if None (Hidden) or 0 (Blocked)
-            if cap is None or cap == 0:
-                continue
-
-            # Store Data
-            self.edge_sources.append(self.node_indices[u])
-            self.edge_targets.append(self.node_indices[v])
+        # Populating lists
+        for i, e in enumerate(edges):
+            self.edge_sources.append(self.node_indices[e[0]])
+            self.edge_targets.append(self.node_indices[e[1]])
 
             if multigraph:
                 self.edge_keys.append(e[2])
 
             self.edge_indices[e[:-1]] = len(self.edge_indices)
-            self.edge_capacities.append(cap)
-            self.edge_weights.append(d.get(weight, 0))
+
+            # Recalculate is cheap here since it's just a lookup or simple call
+            self.edge_capacities.append(get_cap(e[0], e[1], e[-1]))
+            self.edge_weights.append(e[-1].get(weight, 0))
 
         # spanning tree specific data to be initialized
 
@@ -554,8 +525,8 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     # Problem essentials extraction and sanity check
     ###########################################################################
 
-    # --- DECORATOR IMPLEMENTATION (Applied Manually) ---
-    capacity = _capacity_callable(capacity)
+    # --- DECORATOR IMPLEMENTATION (Using Shared Utility) ---
+    capacity = _capacity_function(G, capacity)
 
     if len(G) == 0:
         raise nx.NetworkXError("graph has no nodes")
