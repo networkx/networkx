@@ -227,7 +227,9 @@ def chordal_graph_cliques(G):
             numbered = {v}
             clique_wanna_be = {v}
             while unnumbered:
-                v = _max_cardinality_node(C, unnumbered, numbered)
+                # The node from the unnumbered set with the most connections
+                # to nodes in the numbered set
+                v = max(unnumbered, key=lambda n: len(G._adj[n].keys() & numbered))
                 unnumbered.remove(v)
                 numbered.add(v)
                 new_clique_wanna_be = set(C.neighbors(v)) & numbered
@@ -303,13 +305,6 @@ def _find_missing_edge(G):
             return (u, missing.pop())
 
 
-def _max_cardinality_node(G, choices, wanna_connect):
-    """Returns a the node in choices that has more connections in G
-    to nodes in wanna_connect.
-    """
-    return max(choices, key=lambda n: len(G._adj[n].keys() & wanna_connect))
-
-
 def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
     """Given a graph G, starts a max cardinality search
     (starting from s if s is given and from an arbitrary node otherwise)
@@ -329,7 +324,9 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
     numbered = {s}
     current_treewidth = -1
     while unnumbered:  # and current_treewidth <= treewidth_bound:
-        v = _max_cardinality_node(G, unnumbered, numbered)
+        # The node from the unnumbered set with the most connections
+        # to nodes in the numbered set
+        v = max(unnumbered, key=lambda n: len(G._adj[n].keys() & numbered))
         unnumbered.remove(v)
         numbered.add(v)
         clique_wanna_be = set(G[v]) & numbered
