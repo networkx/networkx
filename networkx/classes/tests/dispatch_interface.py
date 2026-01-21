@@ -13,39 +13,80 @@
 import networkx as nx
 from networkx import DiGraph, Graph, MultiDiGraph, MultiGraph, PlanarEmbedding
 from networkx.classes.reportviews import NodeView
+from networkx.utils.configs import Config
+
+
+class LoopbackGraphTypeBased(Graph):
+    __networkx_backend__ = None  # type: ignore[assignment]
 
 
 class LoopbackGraph(Graph):
     __networkx_backend__ = "nx_loopback"
 
 
+class LoopbackDiGraphTypeBased(DiGraph):
+    __networkx_backend__ = None  # type: ignore[assignment]
+
+
 class LoopbackDiGraph(DiGraph):
     __networkx_backend__ = "nx_loopback"
+
+
+class LoopbackMultiGraphTypeBased(MultiGraph):
+    __networkx_backend__ = None  # type: ignore[assignment]
 
 
 class LoopbackMultiGraph(MultiGraph):
     __networkx_backend__ = "nx_loopback"
 
 
+class LoopbackMultiDiGraphTypeBased(MultiDiGraph):
+    __networkx_backend__ = None  # type: ignore[assignment]
+
+
 class LoopbackMultiDiGraph(MultiDiGraph):
     __networkx_backend__ = "nx_loopback"
+
+
+class LoopbackPlanarEmbeddingTypeBased(PlanarEmbedding):
+    __networkx_backend__ = None  # type: ignore[assignment]
 
 
 class LoopbackPlanarEmbedding(PlanarEmbedding):
     __networkx_backend__ = "nx_loopback"
 
 
-def convert(graph):
+def convert(graph, type_based_dispatch):
     if isinstance(graph, PlanarEmbedding):
-        return LoopbackPlanarEmbedding(graph)
+        return (
+            LoopbackPlanarEmbeddingTypeBased(graph)
+            if type_based_dispatch
+            else LoopbackPlanarEmbedding(graph)
+        )
     if isinstance(graph, MultiDiGraph):
-        return LoopbackMultiDiGraph(graph)
+        return (
+            LoopbackMultiDiGraphTypeBased(graph)
+            if type_based_dispatch
+            else LoopbackMultiDiGraph(graph)
+        )
     if isinstance(graph, MultiGraph):
-        return LoopbackMultiGraph(graph)
+        return (
+            LoopbackMultiGraphTypeBased(graph)
+            if type_based_dispatch
+            else LoopbackMultiGraph(graph)
+        )
     if isinstance(graph, DiGraph):
-        return LoopbackDiGraph(graph)
+        return (
+            LoopbackDiGraphTypeBased(graph)
+            if type_based_dispatch
+            else LoopbackDiGraph(graph)
+        )
     if isinstance(graph, Graph):
-        return LoopbackGraph(graph)
+        return (
+            LoopbackGraphTypeBased(graph)
+            if type_based_dispatch
+            else LoopbackGraph(graph)
+        )
     raise TypeError(f"Unsupported type of graph: {type(graph)}")
 
 
@@ -74,6 +115,7 @@ class LoopbackBackendInterface:
         preserve_graph_attrs=None,
         name=None,
         graph_name=None,
+        type_based_dispatch=False,
     ):
         if name in {
             # Raise if input graph changes. See test_dag.py::test_topological_sort6
@@ -88,21 +130,43 @@ class LoopbackBackendInterface:
             new_graph = Graph()
             new_graph.add_nodes_from(graph.items())
             graph = new_graph
-            G = LoopbackGraph()
+            G = LoopbackGraphTypeBased() if type_based_dispatch else LoopbackGraph()
         elif not isinstance(graph, Graph):
             raise TypeError(
                 f"Bad type for graph argument {graph_name} in {name}: {type(graph)}"
             )
-        elif graph.__class__ in {Graph, LoopbackGraph}:
-            G = LoopbackGraph()
-        elif graph.__class__ in {DiGraph, LoopbackDiGraph}:
-            G = LoopbackDiGraph()
-        elif graph.__class__ in {MultiGraph, LoopbackMultiGraph}:
-            G = LoopbackMultiGraph()
-        elif graph.__class__ in {MultiDiGraph, LoopbackMultiDiGraph}:
-            G = LoopbackMultiDiGraph()
-        elif graph.__class__ in {PlanarEmbedding, LoopbackPlanarEmbedding}:
-            G = LoopbackDiGraph()  # or LoopbackPlanarEmbedding
+        elif graph.__class__ in {Graph, LoopbackGraph, LoopbackGraphTypeBased}:
+            G = LoopbackGraphTypeBased() if type_based_dispatch else LoopbackGraph()
+        elif graph.__class__ in {DiGraph, LoopbackDiGraph, LoopbackDiGraphTypeBased}:
+            G = LoopbackDiGraphTypeBased() if type_based_dispatch else LoopbackDiGraph()
+        elif graph.__class__ in {
+            MultiGraph,
+            LoopbackMultiGraph,
+            LoopbackMultiGraphTypeBased,
+        }:
+            G = (
+                LoopbackMultiGraphTypeBased()
+                if type_based_dispatch
+                else LoopbackMultiGraph()
+            )
+        elif graph.__class__ in {
+            MultiDiGraph,
+            LoopbackMultiDiGraph,
+            LoopbackMultiDiGraphTypeBased,
+        }:
+            G = (
+                LoopbackMultiDiGraphTypeBased()
+                if type_based_dispatch
+                else LoopbackMultiDiGraph()
+            )
+        elif graph.__class__ in {
+            PlanarEmbedding,
+            LoopbackPlanarEmbedding,
+            LoopbackDiGraphTypeBased,
+        }:
+            G = (
+                LoopbackDiGraphTypeBased() if type_based_dispatch else LoopbackDiGraph()
+            )  # or LoopbackPlanarEmbedding
         else:
             # Would be nice to handle these better some day
             # nx.algorithms.approximation.kcomponents._AntiGraph
