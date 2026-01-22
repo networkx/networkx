@@ -74,19 +74,17 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     --------
     Undirected graph:
 
-    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4)])
-    >>> sources = [1]
-    >>> targets = [4]
-    >>> nx.betweenness_centrality_subset(G, sources, targets, normalized=False)
-    {1: 0.0, 2: 0.5, 3: 0.5, 4: 0.0}
+    >>> G = nx.path_graph(5)
+    >>> nx.betweenness_centrality(G, normalized=False)
+    {0: 0.0, 1: 3.0, 2: 4.0, 3: 3.0, 4: 0.0}
+    >>> nx.betweenness_centrality_subset(G, sources=[0], targets=[4], normalized=False)
+    {0: 0.0, 1: 0.5, 2: 0.5, 3: 0.5, 4: 0.0}
 
     Directed graph:
 
-    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
-    >>> sources = [1]
-    >>> targets = [4]
-    >>> nx.betweenness_centrality_subset(G, sources, targets)
-    {1: 0.0, 2: 1.0, 3: 1.0, 4: 0.0}
+    >>> G = nx.path_graph(4, create_using=nx.DiGraph)
+    >>> nx.betweenness_centrality_subset(G, sources=[0], targets=[3])
+    {0: 0.0, 1: 1.0, 2: 1.0, 3: 0.0}
 
     Notes
     -----
@@ -188,19 +186,17 @@ def edge_betweenness_centrality_subset(
     --------
     Undirected graph:
 
-    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4)])
-    >>> sources = [1]
-    >>> targets = [4]
-    >>> nx.edge_betweenness_centrality_subset(G, sources, targets)
-    {(1, 2): 0.5, (2, 3): 0.5, (3, 4): 0.5}
+    >>> G = nx.path_graph(5)
+    >>> nx.edge_betweenness_centrality(G, normalized=False)
+    {(0, 1): 4.0, (1, 2): 6.0, (2, 3): 6.0, (3, 4): 4.0}
+    >>> nx.edge_betweenness_centrality_subset(G, sources=[0], targets=[4])
+    {(0, 1): 0.5, (1, 2): 0.5, (2, 3): 0.5, (3, 4): 0.5}
 
     Directed graph:
 
-    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
-    >>> sources = [1]
-    >>> targets = [4]
-    >>> nx.edge_betweenness_centrality_subset(G, sources, targets)
-    {(1, 2): 1.0, (2, 3): 1.0, (3, 4): 1.0}
+    >>> G = nx.path_graph(4, create_using=nx.DiGraph)
+    >>> nx.edge_betweenness_centrality_subset(G, sources=[0], targets=[3])
+    {(0, 1): 1.0, (1, 2): 1.0, (2, 3): 1.0}
 
     Notes
     -----
