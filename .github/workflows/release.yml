@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-python@v6
         name: Install Python
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Build wheels
         run: |
