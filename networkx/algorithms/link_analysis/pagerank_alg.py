@@ -107,9 +107,33 @@ def pagerank(
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
 
     """
-    return _pagerank_scipy(
-        G, alpha, personalization, max_iter, tol, nstart, weight, dangling
-    )
+    try:
+        return _pagerank_scipy(
+            G,
+            alpha=alpha,
+            personalization=personalization,
+            max_iter=max_iter,
+            tol=tol,
+            nstart=nstart,
+            weight=weight,
+            dangling=dangling,
+        )
+    except ImportError as e:
+        # If missing optional deps (numpy/scipy), raise an actionable message.
+        # Let other ImportErrors bubble up unchanged.
+        msg = str(e).lower()
+        name = getattr(e, "name", "")
+        if (
+            name in ("numpy", "scipy")
+            or "no module named" in msg
+            and ("numpy" in msg or "scipy" in msg)
+        ):
+            raise ImportError(
+                "pagerank requires the optional dependencies 'numpy' and 'scipy'. "
+                "Install them with: pip install numpy scipy "
+                "or install NetworkX with optional deps: pip install 'networkx[default]'."
+            ) from e
+        raise
 
 
 def _pagerank_python(
@@ -449,8 +473,15 @@ def _pagerank_scipy(
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    import numpy as np
-    import scipy as sp
+    try:
+        import numpy as np
+        import scipy as sp
+    except ImportError as e:
+        raise ImportError(
+            "pagerank requires the optional dependencies 'numpy' and 'scipy'. "
+            "Install them with: pip install numpy scipy "
+            "or install NetworkX with optional deps: pip install 'networkx[default]'."
+        ) from e
 
     N = len(G)
     if N == 0:

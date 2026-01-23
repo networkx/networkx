@@ -1,3 +1,4 @@
+import builtins
 import random
 
 import pytest
@@ -211,3 +212,25 @@ class TestPageRankScipy(TestPageRank):
     def test_empty_scipy(self):
         G = nx.Graph()
         assert _pagerank_scipy(G) == {}
+
+    def test_pagerank_scipy_missing_deps_has_actionable_message(self, monkeypatch):
+        real_import = builtins.__import__
+
+        def fake_import(name, *args, **kwargs):
+            if name in ("numpy", "scipy"):
+                raise ImportError(f"No module named '{name}'")
+            return real_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", fake_import)
+
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2), (2, 0)])
+
+        with pytest.raises(ImportError) as excinfo:
+            _pagerank_scipy(G)
+
+        msg = str(excinfo.value).lower()
+        assert "pagerank requires" in msg
+        assert "numpy" in msg
+        assert "scipy" in msg
+        assert "networkx[default]" in msg or "pip install" in msg
