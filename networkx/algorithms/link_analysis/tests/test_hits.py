@@ -4,7 +4,6 @@ import networkx as nx
 from networkx.algorithms.link_analysis.hits_alg import (
     _hits_numpy,
     _hits_python,
-    _hits_scipy,
 )
 
 np = pytest.importorskip("numpy")
@@ -39,7 +38,7 @@ class TestHITS:
         for n in G:
             assert a[n] == pytest.approx(G.a[n], abs=1e-4)
 
-    @pytest.mark.parametrize("hits_alg", (nx.hits, _hits_python, _hits_scipy))
+    @pytest.mark.parametrize("hits_alg", (nx.hits, _hits_python))
     def test_hits(self, hits_alg):
         G = self.G
         h, a = hits_alg(G, tol=1.0e-08)
@@ -59,16 +58,11 @@ class TestHITS:
         assert nx.hits(G) == ({}, {})
         assert _hits_numpy(G) == ({}, {})
         assert _hits_python(G) == ({}, {})
-        assert _hits_scipy(G) == ({}, {})
 
     def test_hits_not_convergent(self):
         G = nx.path_graph(50)
         with pytest.raises(nx.PowerIterationFailedConvergence):
-            _hits_scipy(G, max_iter=1)
-        with pytest.raises(nx.PowerIterationFailedConvergence):
             _hits_python(G, max_iter=1)
-        with pytest.raises(nx.PowerIterationFailedConvergence):
-            _hits_scipy(G, max_iter=0)
         with pytest.raises(nx.PowerIterationFailedConvergence):
             _hits_python(G, max_iter=0)
         with pytest.raises(nx.PowerIterationFailedConvergence):
