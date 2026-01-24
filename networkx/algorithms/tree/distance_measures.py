@@ -60,7 +60,7 @@ def center(G):
     [2]
     """
     # Self-loops make the graph cyclic, thus not a tree.
-    if any(True for _ in nx.selfloop_edges(G)):
+    if nx.number_of_selfloops(G):
         raise nx.NotATree("input graph is not a tree")
 
     center_candidates_degree = dict(G.degree)
