@@ -202,6 +202,31 @@ class TestLayout:
         pos = nx.circular_layout(self.Gi)
         npos = nx.arf_layout(self.Gi, pos=pos)
 
+    def test_zero_iterations_fruchterman_reingold(self):
+        pos = nx.circular_layout(self.Gi)
+        for method in ["force", "energy"]:
+            npos = nx.fruchterman_reingold_layout(
+                self.Gi,
+                pos=pos,
+                method=method,
+                scale=None,
+                iterations=0,
+            )
+            for edge in npos:
+                for axis in range(2):
+                    assert pos[edge][axis] == npos[edge][axis]
+
+    def test_zero_iterations_arf(self):
+        pos = nx.circular_layout(self.Gi)
+        npos = nx.arf_layout(
+            self.Gi,
+            pos=pos,
+            max_iter=0,
+        )
+        for edge in npos:
+            for axis in range(2):
+                assert pos[edge][axis] == npos[edge][axis]
+
     def test_fixed_node_fruchterman_reingold(self):
         # Dense version (numpy based)
         pos = nx.circular_layout(self.Gi)
