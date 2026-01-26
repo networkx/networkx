@@ -18,13 +18,14 @@ def _graph_components_with_selfloops(n_components):
 def _multigraph_components_with_selfloops(n_components):
     G = nx.MultiGraph()
     for c in range(n_components):
-        u = 2 * c
-        v = 2 * c + 1
-        # parallel edges
-        G.add_edge(u, v, key=0)
-        G.add_edge(u, v, key=1)
-        # self-loop
-        G.add_edge(u, u, key=0)
+        a = 3 * c
+        b = 3 * c + 1
+        d = 3 * c + 2
+
+        G.add_edge(a, b)  # leaf at a
+        G.add_edge(b, d)
+        G.add_edge(b, d)  # parallel edge
+        G.add_edge(b, b)  # self-loop
     return G
 
 
@@ -68,6 +69,7 @@ class TestCenter:
             _graph_components_with_selfloops(3),
             _multigraph_components_with_selfloops(1),
             _multigraph_components_with_selfloops(2),
+            _multigraph_components_with_selfloops(3),
         ),
     )
     def test_center_non_tree(self, G):
