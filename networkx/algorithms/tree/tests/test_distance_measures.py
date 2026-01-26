@@ -4,6 +4,27 @@ import pytest
 
 import networkx as nx
 
+def _graph_components_with_selfloops(n_components):
+    G = nx.Graph()
+    for c in range(n_components):
+        u = 2 * c
+        v = 2 * c + 1
+        G.add_edge(u, v)  # make the component non-trivial
+        G.add_edge(u, u)  # self-loop
+    return G
+
+
+def _multigraph_components_with_selfloops(n_components):
+    G = nx.MultiGraph()
+    for c in range(n_components):
+        u = 2 * c
+        v = 2 * c + 1
+        # parallel edges
+        G.add_edge(u, v, key=0)
+        G.add_edge(u, v, key=1)
+        # self-loop
+        G.add_edge(u, u, key=0)
+    return G
 
 class TestCenter:
     @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
@@ -40,6 +61,11 @@ class TestCenter:
             nx.Graph([(0, 1), (1, 2), (3, 4)]),
             nx.Graph([(0, 1), (1, 2), (3, 4), (4, 5)]),
             nx.Graph([(0, 0)]),
+            _graph_components_with_selfloops(1),
+            _graph_components_with_selfloops(2),
+            _graph_components_with_selfloops(3),
+            _multigraph_components_with_selfloops(1),
+            _multigraph_components_with_selfloops(2),
         ),
     )
     def test_center_non_tree(self, G):
