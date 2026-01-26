@@ -82,11 +82,15 @@ def center(G):
         leaves = new_leaves
 
     n = len(center_candidates_degree)
-    # check disconnected or cyclic
-    if (n == 2 and not leaves) or n not in {1, 2}:
-        # We have detected graph is not a tree. This check does not cover all cases.
-        # For example, `nx.Graph([(0, 0)])` will not raise an error.
-        raise nx.NotATree("input graph is not a tree")
+    if n == 1:
+        (deg,) = center_candidates_degree.values()
+        if deg != 0:
+            raise nx.NotATree("input graph is not a tree")
+    elif n == 2:
+        if set(center_candidates_degree.values()) != {1} or not leaves:
+            raise nx.NotATree("input graph is not a tree")
+    else:
+        raise nx.NotATree("input graph is not a tree")        
 
     return list(center_candidates_degree)
 
