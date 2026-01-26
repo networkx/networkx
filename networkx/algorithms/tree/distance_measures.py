@@ -59,10 +59,6 @@ def center(G):
     >>> nx.tree.center(G)
     [2]
     """
-    # Self-loops make the graph cyclic, thus not a tree.
-    if any(True for _ in nx.selfloop_edges(G)):
-        raise nx.NotATree("input graph is not a tree")
-
     center_candidates_degree = dict(G.degree)
     leaves = {node for node, degree in center_candidates_degree.items() if degree == 1}
 
@@ -82,6 +78,12 @@ def center(G):
         leaves = new_leaves
 
     n = len(center_candidates_degree)
+<<<<<<< HEAD
+=======
+    # Tree invariant at termination:
+    # - n == 1: residual degree must be 0
+    # - n == 2: both residual degrees must be 1 (and we must have made progress)
+>>>>>>> 109beceae (tree.center: rely on residual degree invariants)
     if n == 1:
         (deg,) = center_candidates_degree.values()
         if deg != 0:
