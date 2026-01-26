@@ -78,12 +78,6 @@ def center(G):
         leaves = new_leaves
 
     n = len(center_candidates_degree)
-<<<<<<< HEAD
-=======
-    # Tree invariant at termination:
-    # - n == 1: residual degree must be 0
-    # - n == 2: both residual degrees must be 1 (and we must have made progress)
->>>>>>> 109beceae (tree.center: rely on residual degree invariants)
     if n == 1:
         (deg,) = center_candidates_degree.values()
         if deg != 0:
@@ -92,7 +86,7 @@ def center(G):
         if set(center_candidates_degree.values()) != {1} or not leaves:
             raise nx.NotATree("input graph is not a tree")
     else:
-        raise nx.NotATree("input graph is not a tree")        
+        raise nx.NotATree("input graph is not a tree")
 
     return list(center_candidates_degree)
 
