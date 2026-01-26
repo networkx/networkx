@@ -244,11 +244,7 @@ Which displays a message like::
 
 Inside the conflicted file, you'll find sections like these::
 
-   <<<<<<< HEAD
-   The way the text looks in your branch
-   =======
-   The way the text looks in the main branch
-   >>>>>>> main
+The way the text looks in your branch
 
 Choose one version of the text that should be kept, and delete the
 rest::
