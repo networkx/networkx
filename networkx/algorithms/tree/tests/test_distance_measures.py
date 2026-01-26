@@ -4,6 +4,7 @@ import pytest
 
 import networkx as nx
 
+
 def _graph_components_with_selfloops(n_components):
     G = nx.Graph()
     for c in range(n_components):
@@ -25,6 +26,7 @@ def _multigraph_components_with_selfloops(n_components):
         # self-loop
         G.add_edge(u, u, key=0)
     return G
+
 
 class TestCenter:
     @pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
