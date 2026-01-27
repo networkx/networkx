@@ -1114,8 +1114,8 @@ class DiGraph(Graph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.degree(0)  # node 0 with degree 1
         1
-        >>> list(G.degree([0, 1, 2]))
-        [(0, 1), (1, 2), (2, 2)]
+        >>> dict(G.degree([0, 1, 2]))
+        {0: 1, 1: 2, 2: 2}
 
         """
         return DiDegreeView(self)
@@ -1161,8 +1161,8 @@ class DiGraph(Graph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.in_degree(0)  # node 0 with degree 0
         0
-        >>> list(G.in_degree([0, 1, 2]))
-        [(0, 0), (1, 1), (2, 1)]
+        >>> dict(G.in_degree([0, 1, 2]))
+        {0: 0, 1: 1, 2: 1}
 
         """
         return InDegreeView(self)
@@ -1208,8 +1208,8 @@ class DiGraph(Graph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.out_degree(0)  # node 0 with degree 1
         1
-        >>> list(G.out_degree([0, 1, 2]))
-        [(0, 1), (1, 1), (2, 1)]
+        >>> dict(G.out_degree([0, 1, 2]))
+        {0: 1, 1: 1, 2: 1}
 
         """
         return OutDegreeView(self)
