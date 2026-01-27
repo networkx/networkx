@@ -210,15 +210,15 @@ class TestLayout:
         pos = nx.circular_layout(self.Gi)
         npos = layout_fn(self.Gi, pos=pos, method=method, iterations=0, scale=None)
         assert pos.keys() == npos.keys()
-        for edge in npos:
-            for axis in range(2):
-                assert pos[edge][axis] == pytest.approx(npos[edge][axis], abs=1e-7)
+        for node, p in npos.items():
+            assert np.allclose(pos[node], p)
 
     def test_zero_iterations_arf(self):
         pos = nx.circular_layout(self.Gi)
         npos = nx.arf_layout(self.Gi, pos=pos, max_iter=0)
-        for node, p in npos:
-            assert np.all_close(p, pos[node])
+        assert pos.keys() == npos.keys()
+        for node, p in npos.items():
+            assert np.allclose(pos[node], p)
 
     def test_fixed_node_fruchterman_reingold(self):
         # Dense version (numpy based)
