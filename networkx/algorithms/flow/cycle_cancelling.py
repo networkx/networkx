@@ -57,7 +57,7 @@ def cycle_cancelling(
             raise ValueError(f"Edge ({u},{v}) has negative weight ({data[weight]}).")
 
     if negative_cycle_func is None:
-        from networkx.algorithms.cycles.mean_cycle import karp
+        from networkx.algorithms.cycles.karp import karp
 
         negative_cycle_func = karp
 
