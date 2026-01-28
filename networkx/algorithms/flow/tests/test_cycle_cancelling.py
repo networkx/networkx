@@ -3,7 +3,7 @@ import random
 import pytest
 
 import networkx as nx
-from networkx.algorithms.flow import cycle_cancelling
+from networkx.algorithms.flow.cycle_cancelling import cycle_cancelling
 
 # -------------------------
 # Helpers
