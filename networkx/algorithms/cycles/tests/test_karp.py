@@ -3,7 +3,6 @@ import math
 import pytest
 
 import networkx as nx
-from networkx.algorithms.cycles.karp import karp
 
 
 def mean_cycle_weight(G, cycle, weight="weight"):
@@ -24,7 +23,7 @@ def mean_cycle_weight(G, cycle, weight="weight"):
 def test_karp_raises_on_empty_graph():
     G = nx.DiGraph()
     with pytest.raises(nx.NetworkXError, match="Empty graph"):
-        karp(G)
+        nx.karp(G)
 
 
 def test_karp_finds_negative_self_loop():
@@ -32,7 +31,7 @@ def test_karp_finds_negative_self_loop():
     G = nx.DiGraph()
     G.add_edge("A", "A", weight=-2)
 
-    cycle = karp(G)
+    cycle = nx.karp(G)
     assert cycle[0] == "A" and cycle[-1] == "A"
     assert len(cycle) == 2  # ["A","A"]
 
@@ -47,7 +46,7 @@ def test_karp_raises_when_no_negative_mean_cycle():
     G.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 0, 1)], weight="weight")
 
     with pytest.raises(nx.NetworkXError, match="No negative mean cycle found"):
-        karp(G)
+        nx.karp(G)
 
 
 def test_karp_multidigraph_keeps_min_weight_parallel_edge():
@@ -59,7 +58,7 @@ def test_karp_multidigraph_keeps_min_weight_parallel_edge():
         "v", "u", weight=1
     )  # completes a cycle: u->v->u mean = (-10 + 1)/2 = -4.5
 
-    cycle = karp(MG)
+    cycle = nx.karp(MG)
     # After preprocessing, cycle should exist and be negative
     # Convert to simple DiGraph with min edge chosen to compute mean:
     G = nx.DiGraph()
@@ -87,7 +86,7 @@ def test_karp_prefers_more_negative_mean_among_multiple_cycles():
     G.add_edge("x", "y", weight=-10)
     G.add_edge("y", "x", weight=1)
 
-    cycle = karp(G)
+    cycle = nx.karp(G)
     mu = mean_cycle_weight(G, cycle)
 
     # Should pick the more negative mean cycle

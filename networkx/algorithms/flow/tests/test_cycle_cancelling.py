@@ -3,7 +3,6 @@ import random
 import pytest
 
 import networkx as nx
-from networkx.algorithms.flow.cycle_cancelling import cycle_cancelling
 
 # -------------------------
 # Helpers
@@ -138,7 +137,7 @@ def test_cycle_cancelling_matches_networkx_on_small_graph_1():
     cost_ref = nx.cost_of_flow(G, flow_ref, weight="weight")
     val_ref = _flow_value(flow_ref, s)
 
-    flow_cc, cost_cc = cycle_cancelling(
+    flow_cc, cost_cc = nx.cycle_cancelling(
         G.copy(), s, t, capacity="capacity", weight="weight"
     )
 
@@ -155,7 +154,7 @@ def test_cycle_cancelling_matches_networkx_on_small_graph_2():
     cost_ref = nx.cost_of_flow(G, flow_ref, weight="weight")
     val_ref = _flow_value(flow_ref, s)
 
-    flow_cc, cost_cc = cycle_cancelling(
+    flow_cc, cost_cc = nx.cycle_cancelling(
         G.copy(), s, t, capacity="capacity", weight="weight"
     )
 
@@ -169,21 +168,21 @@ def test_cycle_cancelling_rejects_non_digraph():
     UG = nx.Graph()
     UG.add_edge(0, 1, capacity=1, weight=1)
     with pytest.raises((TypeError, nx.NetworkXError)):
-        cycle_cancelling(UG, 0, 1, capacity="capacity", weight="weight")
+        nx.cycle_cancelling(UG, 0, 1, capacity="capacity", weight="weight")
 
 
 def test_cycle_cancelling_raises_on_missing_capacity():
     G = nx.DiGraph()
     G.add_edge(0, 1, weight=1)  # missing capacity
     with pytest.raises((ValueError, nx.NetworkXError, KeyError)):
-        cycle_cancelling(G, 0, 1, capacity="capacity", weight="weight")
+        nx.cycle_cancelling(G, 0, 1, capacity="capacity", weight="weight")
 
 
 def test_cycle_cancelling_raises_on_missing_weight():
     G = nx.DiGraph()
     G.add_edge(0, 1, capacity=1)  # missing weight
     with pytest.raises((ValueError, nx.NetworkXError, KeyError)):
-        cycle_cancelling(G, 0, 1, capacity="capacity", weight="weight")
+        nx.cycle_cancelling(G, 0, 1, capacity="capacity", weight="weight")
 
 
 def test_cycle_cancelling_multidigraph_parallel_edges_matches_reference():
@@ -195,7 +194,7 @@ def test_cycle_cancelling_multidigraph_parallel_edges_matches_reference():
     val_ref = _flow_value(flow_ref, s)
 
     # Your algorithm run on MultiDiGraph (if supported). If not supported, change to expect TypeError.
-    flow_cc, cost_cc = cycle_cancelling(
+    flow_cc, cost_cc = nx.cycle_cancelling(
         MG.copy(), s, t, capacity="capacity", weight="weight"
     )
 
@@ -238,7 +237,7 @@ def test_cycle_cancelling_random_small_fixed_seed_matches_networkx():
         cost_ref = nx.cost_of_flow(G, flow_ref, weight="weight")
         val_ref = _flow_value(flow_ref, s)
 
-        flow_cc, cost_cc = cycle_cancelling(
+        flow_cc, cost_cc = nx.cycle_cancelling(
             G.copy(), s, t, capacity="capacity", weight="weight"
         )
 

@@ -1,10 +1,10 @@
-import math
-from copy import deepcopy
-
 import networkx as nx
-from networkx.exception import NetworkXError, NetworkXUnbounded
+from networkx.exception import NetworkXError
+from networkx.utils import not_implemented_for
 
 
+@not_implemented_for("undirected")
+@nx._dispatchable
 def cycle_cancelling(
     G,
     s,
@@ -57,9 +57,7 @@ def cycle_cancelling(
             raise ValueError(f"Edge ({u},{v}) has negative weight ({data[weight]}).")
 
     if negative_cycle_func is None:
-        from networkx.algorithms.cycles.karp import karp
-
-        negative_cycle_func = karp
+        negative_cycle_func = nx.karp
 
     if not callable(negative_cycle_func):
         raise nx.NetworkXError("finding negative cycle func has to be callable.")
@@ -74,7 +72,7 @@ def cycle_cancelling(
         G_cap.add_edge(u, v, capacity=data[capacity])
 
     max_flow_return = nx.maximum_flow(
-        G_cap, s, t, flow_func=None
+        G_cap, s, t, flow_func=flow_func
     )  # flow_dict is a nested dict
     flow_dict = max_flow_return[1]
 
