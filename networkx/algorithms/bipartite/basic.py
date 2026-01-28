@@ -6,7 +6,6 @@ Bipartite Graph Algorithms
 
 import networkx as nx
 from networkx.algorithms.components import connected_components
-from networkx.exception import AmbiguousSolution
 
 __all__ = [
     "is_bipartite",
@@ -140,7 +139,7 @@ def is_bipartite_node_set(G, nodes):
 
     if len(S) < len(nodes):
         # this should maybe just return False?
-        raise AmbiguousSolution(
+        raise nx.AmbiguousSolution(
             "The input node set contains duplicates.\n"
             "This may lead to incorrect results when using it in bipartite algorithms.\n"
             "Consider using set(nodes) as the input"

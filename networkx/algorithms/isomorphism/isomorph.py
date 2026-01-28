@@ -6,7 +6,6 @@ import itertools
 from collections import Counter
 
 import networkx as nx
-from networkx.exception import NetworkXError
 
 __all__ = [
     "could_be_isomorphic",
@@ -329,7 +328,7 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     elif (not G1.is_directed()) and (not G2.is_directed()):
         GM = nx.algorithms.isomorphism.GraphMatcher
     else:
-        raise NetworkXError("Graphs G1 and G2 are not of the same type.")
+        raise nx.NetworkXError("Graphs G1 and G2 are not of the same type.")
 
     gm = GM(G1, G2, node_match=node_match, edge_match=edge_match)
 

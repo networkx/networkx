@@ -15,7 +15,6 @@ import numbers
 
 import networkx as nx
 from networkx.classes import Graph
-from networkx.exception import NetworkXError
 from networkx.utils import nodes_or_number, pairwise
 
 __all__ = [
@@ -134,9 +133,9 @@ def kneser_graph(n, k):
     True
     """
     if n <= 0:
-        raise NetworkXError("n should be greater than zero")
+        raise nx.NetworkXError("n should be greater than zero")
     if k <= 0 or k > n:
-        raise NetworkXError("k should be greater than zero and smaller than n")
+        raise nx.NetworkXError("k should be greater than zero and smaller than n")
 
     G = nx.Graph()
     # Create all k-subsets of [0, 1, ..., n-1]
@@ -247,14 +246,14 @@ def barbell_graph(m1, m2, create_using=None):
 
     """
     if m1 < 2:
-        raise NetworkXError("Invalid graph description, m1 should be >=2")
+        raise nx.NetworkXError("Invalid graph description, m1 should be >=2")
     if m2 < 0:
-        raise NetworkXError("Invalid graph description, m2 should be >=0")
+        raise nx.NetworkXError("Invalid graph description, m2 should be >=0")
 
     # left barbell
     G = complete_graph(m1, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
 
     # connecting path
     G.add_nodes_from(range(m1, m1 + m2 - 1))
@@ -561,13 +560,13 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
         https://mathworld.wolfram.com/Dorogovtsev-Goltsev-MendesGraph.html
     """
     if n < 0:
-        raise NetworkXError("n must be greater than or equal to 0")
+        raise nx.NetworkXError("n must be greater than or equal to 0")
 
     G = empty_graph(0, create_using)
     if G.is_directed():
-        raise NetworkXError("directed graph not supported")
+        raise nx.NetworkXError("directed graph not supported")
     if G.is_multigraph():
-        raise NetworkXError("multigraph not supported")
+        raise nx.NetworkXError("multigraph not supported")
 
     G.add_edge(0, 1)
     new_node = 2  # next node to be added
@@ -697,7 +696,7 @@ def ladder_graph(n, create_using=None):
     """
     G = empty_graph(2 * n, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     G.add_edges_from(pairwise(range(n)))
     G.add_edges_from(pairwise(range(n, 2 * n)))
     G.add_edges_from((v, v + n) for v in range(n))
@@ -745,7 +744,7 @@ def lollipop_graph(m, n, create_using=None):
     m, m_nodes = m
     M = len(m_nodes)
     if M < 2:
-        raise NetworkXError("Invalid description: m should indicate at least 2 nodes")
+        raise nx.NetworkXError("Invalid description: m should indicate at least 2 nodes")
 
     n, n_nodes = n
     if isinstance(m, numbers.Integral) and isinstance(n, numbers.Integral):
@@ -755,7 +754,7 @@ def lollipop_graph(m, n, create_using=None):
     # the ball
     G = complete_graph(m_nodes, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
 
     # the stick
     G.add_nodes_from(n_nodes)
@@ -763,7 +762,7 @@ def lollipop_graph(m, n, create_using=None):
         G.add_edges_from(pairwise(n_nodes))
 
     if len(G) != M + N:
-        raise NetworkXError("Nodes must be distinct in containers m and n")
+        raise nx.NetworkXError("Nodes must be distinct in containers m and n")
 
     # connect ball to stick
     if M > 0 and N > 0:
@@ -917,7 +916,7 @@ def tadpole_graph(m, n, create_using=None):
     m, m_nodes = m
     M = len(m_nodes)
     if M < 2:
-        raise NetworkXError("Invalid description: m should indicate at least 2 nodes")
+        raise nx.NetworkXError("Invalid description: m should indicate at least 2 nodes")
 
     n, n_nodes = n
     if isinstance(m, numbers.Integral) and isinstance(n, numbers.Integral):
@@ -926,7 +925,7 @@ def tadpole_graph(m, n, create_using=None):
     # the circle
     G = cycle_graph(m_nodes, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
 
     # the stick
     nx.add_path(G, [m_nodes[-1]] + list(n_nodes))
@@ -978,7 +977,7 @@ def turan_graph(n, r):
     """
 
     if not 1 <= r <= n:
-        raise NetworkXError("Must satisfy 1 <= r <= n")
+        raise nx.NetworkXError("Must satisfy 1 <= r <= n")
 
     partitions = [n // r] * (r - (n % r)) + [n // r + 1] * (n % r)
     G = complete_multipartite_graph(*partitions)
@@ -1011,7 +1010,7 @@ def wheel_graph(n, create_using=None):
     _, nodes = n
     G = empty_graph(nodes, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
 
     if len(nodes) > 1:
         hub, *rim = nodes
@@ -1095,7 +1094,7 @@ def complete_multipartite_graph(*subset_sizes):
         subsets = subset_sizes
     else:
         if any(size < 0 for size in subset_sizes):
-            raise NetworkXError(f"Negative number of nodes not valid: {subset_sizes}")
+            raise nx.NetworkXError(f"Negative number of nodes not valid: {subset_sizes}")
 
     # add nodes with subset attribute
     # while checking that ints are not mixed with iterables
@@ -1103,7 +1102,7 @@ def complete_multipartite_graph(*subset_sizes):
         for i, subset in enumerate(subsets):
             G.add_nodes_from(subset, subset=i)
     except TypeError as err:
-        raise NetworkXError("Arguments must be all ints or all iterables") from err
+        raise nx.NetworkXError("Arguments must be all ints or all iterables") from err
 
     # Across subsets, all nodes should be adjacent.
     # We can use itertools.combinations() because undirected.
