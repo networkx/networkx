@@ -18,7 +18,12 @@ class TestBFS:
 
     def test_predecessor(self):
         with pytest.deprecated_call():
-            assert dict(nx.bfs_predecessors(self.G, source=0)) == {1: 0, 2: 1, 3: 1, 4: 2}
+            assert dict(nx.bfs_predecessors(self.G, source=0)) == {
+                1: 0,
+                2: 1,
+                3: 1,
+                4: 2,
+            }
 
     def test_bfs_tree(self):
         T = nx.bfs_tree(self.G, source=0)
