@@ -3,7 +3,7 @@ import math
 import pytest
 
 import networkx as nx
-from networkx.algorithms.cycles.mean_cycle import karp
+from networkx.algorithms.cycles import karp
 
 
 def mean_cycle_weight(G, cycle, weight="weight"):
