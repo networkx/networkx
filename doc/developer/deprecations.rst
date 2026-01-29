@@ -80,3 +80,7 @@ Version 3.8
 ~~~~~~~~~~~
 * Remove ``maybe_regular_expander`` from ``networkx.generators.expanders``.
 * In ``algorithms/approximation/steinertree.py`` remove ``metric_closure`` and related tests.
+
+Version 3.9
+~~~~~~~~~~~
+* Remove ``bfs_predecessors`` from ``networkx.algorithms.traversal.breadth_first_searcph``.
