@@ -202,6 +202,24 @@ class TestLayout:
         pos = nx.circular_layout(self.Gi)
         npos = nx.arf_layout(self.Gi, pos=pos)
 
+    @pytest.mark.parametrize("method", ("force", "energy"))
+    @pytest.mark.parametrize(
+        "layout_fn", (nx.spring_layout, nx.fruchterman_reingold_layout)
+    )
+    def test_zero_iterations_fruchterman_reingold(self, method, layout_fn):
+        pos = nx.circular_layout(self.Gi)
+        npos = layout_fn(self.Gi, pos=pos, method=method, iterations=0, scale=None)
+        assert pos.keys() == npos.keys()
+        for node, p in npos.items():
+            assert np.allclose(pos[node], p)
+
+    def test_zero_iterations_arf(self):
+        pos = nx.circular_layout(self.Gi)
+        npos = nx.arf_layout(self.Gi, pos=pos, max_iter=0)
+        assert pos.keys() == npos.keys()
+        for node, p in npos.items():
+            assert np.allclose(pos[node], p)
+
     def test_fixed_node_fruchterman_reingold(self):
         # Dense version (numpy based)
         pos = nx.circular_layout(self.Gi)

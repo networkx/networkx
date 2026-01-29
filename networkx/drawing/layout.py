@@ -824,6 +824,10 @@ def _energy_fruchterman_reingold(
     if gravity <= 0:
         raise ValueError(f"the gravity must be positive.")
 
+    # Zero iterations, return initial positions
+    if iterations == 0:
+        return pos.copy()
+
     # make sure we have a Compressed Sparse Row format
     try:
         A = A.tocsr()
@@ -1576,7 +1580,7 @@ def arf_layout(
     # looping variables
     error = etol + 1
     n_iter = 0
-    while error > etol:
+    while error > etol and n_iter < max_iter:
         diff = p[:, np.newaxis] - p[np.newaxis]
         A = np.linalg.norm(diff, axis=-1)[..., np.newaxis]
         # attraction_force - repulsions force
@@ -1589,8 +1593,6 @@ def arf_layout(
         p += change * dt
 
         error = np.linalg.norm(change, axis=-1).sum()
-        if n_iter > max_iter:
-            break
         n_iter += 1
 
     pos = dict(zip(G.nodes(), p))
