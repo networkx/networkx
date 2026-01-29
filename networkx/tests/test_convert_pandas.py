@@ -290,7 +290,7 @@ class TestConvertPandas:
         assert graphs_equal(G, Gtrue)
 
     def test_nonexisting_edgekey_raises(self):
-        with pytest.raises(nx.exception.NetworkXError):
+        with pytest.raises(nx.NetworkXError):
             nx.from_pandas_edgelist(
                 self.df,
                 source="source",

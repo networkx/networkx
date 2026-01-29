@@ -15,7 +15,6 @@ from networkx.classes.reportviews import (
     OutMultiDegreeView,
     OutMultiEdgeView,
 )
-from networkx.exception import NetworkXError
 
 __all__ = ["MultiDiGraph"]
 
@@ -582,7 +581,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         try:
             d = self._adj[u][v]
         except KeyError as err:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph.") from err
+            raise nx.NetworkXError(f"The edge {u}-{v} is not in the graph.") from err
         # remove the edge with specified data
         if key is None:
             d.popitem()
@@ -591,7 +590,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 del d[key]
             except KeyError as err:
                 msg = f"The edge {u}-{v} with key {key} is not in the graph."
-                raise NetworkXError(msg) from err
+                raise nx.NetworkXError(msg) from err
         if len(d) == 0:
             # remove the key entries if last edge
             del self._succ[u][v]
