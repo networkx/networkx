@@ -44,5 +44,10 @@ def test_spectral_graph_forge():
 
     # invalid transformation mode, checking the error raising
     pytest.raises(
-        nx.NetworkXError, spectral_graph_forge, G, 0.1, transformation="unknown", seed=seed
+        nx.NetworkXError,
+        spectral_graph_forge,
+        G,
+        0.1,
+        transformation="unknown",
+        seed=seed,
     )

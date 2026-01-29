@@ -365,7 +365,9 @@ def parse_gml_lines(lines, label, destringizer):
     def unexpected(curr_token, expected):
         category, value, lineno, pos = curr_token
         value = repr(value) if value is not None else "EOF"
-        raise nx.NetworkXError(f"expected {expected}, found {value} at ({lineno}, {pos})")
+        raise nx.NetworkXError(
+            f"expected {expected}, found {value} at ({lineno}, {pos})"
+        )
 
     def consume(curr_token, category, expected):
         if curr_token.category == category:
@@ -475,7 +477,9 @@ def parse_gml_lines(lines, label, destringizer):
         try:
             return dct.pop(attr)
         except KeyError as err:
-            raise nx.NetworkXError(f"{category} #{i} has no {attr!r} attribute") from err
+            raise nx.NetworkXError(
+                f"{category} #{i} has no {attr!r} attribute"
+            ) from err
 
     nodes = graph.get("node", [])
     mapping = {}

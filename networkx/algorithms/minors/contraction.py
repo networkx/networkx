@@ -330,7 +330,9 @@ def quotient_graph(
         G = G.subgraph(partition_nodes)
     # Each node in the graph/subgraph must be in exactly one block.
     if not nx.community.is_partition(G, partition):
-        raise nx.NetworkXException("each node must be in exactly one part of `partition`")
+        raise nx.NetworkXException(
+            "each node must be in exactly one part of `partition`"
+        )
     return _quotient_graph(
         G,
         partition,

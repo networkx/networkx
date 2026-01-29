@@ -744,7 +744,9 @@ def lollipop_graph(m, n, create_using=None):
     m, m_nodes = m
     M = len(m_nodes)
     if M < 2:
-        raise nx.NetworkXError("Invalid description: m should indicate at least 2 nodes")
+        raise nx.NetworkXError(
+            "Invalid description: m should indicate at least 2 nodes"
+        )
 
     n, n_nodes = n
     if isinstance(m, numbers.Integral) and isinstance(n, numbers.Integral):
@@ -916,7 +918,9 @@ def tadpole_graph(m, n, create_using=None):
     m, m_nodes = m
     M = len(m_nodes)
     if M < 2:
-        raise nx.NetworkXError("Invalid description: m should indicate at least 2 nodes")
+        raise nx.NetworkXError(
+            "Invalid description: m should indicate at least 2 nodes"
+        )
 
     n, n_nodes = n
     if isinstance(m, numbers.Integral) and isinstance(n, numbers.Integral):
@@ -1094,7 +1098,9 @@ def complete_multipartite_graph(*subset_sizes):
         subsets = subset_sizes
     else:
         if any(size < 0 for size in subset_sizes):
-            raise nx.NetworkXError(f"Negative number of nodes not valid: {subset_sizes}")
+            raise nx.NetworkXError(
+                f"Negative number of nodes not valid: {subset_sizes}"
+            )
 
     # add nodes with subset attribute
     # while checking that ints are not mixed with iterables
