@@ -47,7 +47,7 @@ def node_attribute_xy(G, attribute, nodes=None):
     """
     nodes = set(G) if nodes is None else set(nodes)
     n_attrs = G.nodes(data=attribute, default=None)
-    for u, v in G.edges(nbunch=nodes):
+    for u, v in G.to_directed().edges(nbunch=nodes):
         yield (n_attrs[u], n_attrs[v])
 
 
