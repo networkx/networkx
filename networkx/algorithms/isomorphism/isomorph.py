@@ -26,7 +26,7 @@ def could_be_isomorphic(G1, G2, *, properties="dtc"):
     G1, G2 : graphs
        The two graphs `G1` and `G2` must be the same type.
 
-    properties : str, default="dct"
+    properties : str, default="dtc"
        Determines which properties of the graph are checked. Each character
        indicates a particular property as follows:
 
@@ -136,26 +136,7 @@ def fast_could_be_isomorphic(G1, G2):
     Checks for matching degree and triangle sequences. The triangle
     sequence contains the number of triangles each node is part of.
     """
-    # Check global properties
-    if G1.order() != G2.order():
-        return False
-
-    # Check local properties
-    d1 = G1.degree()
-    t1 = nx.triangles(G1)
-    props1 = [[d, t1[v]] for v, d in d1]
-    props1.sort()
-
-    d2 = G2.degree()
-    t2 = nx.triangles(G2)
-    props2 = [[d, t2[v]] for v, d in d2]
-    props2.sort()
-
-    if props1 != props2:
-        return False
-
-    # OK...
-    return True
+    return could_be_isomorphic(G1, G2, properties="dt")
 
 
 def fast_graph_could_be_isomorphic(G1, G2):
@@ -190,19 +171,7 @@ def faster_could_be_isomorphic(G1, G2):
     -----
     Checks for matching degree sequences.
     """
-    # Check global properties
-    if G1.order() != G2.order():
-        return False
-
-    # Check local properties
-    d1 = sorted(d for n, d in G1.degree())
-    d2 = sorted(d for n, d in G2.degree())
-
-    if d1 != d2:
-        return False
-
-    # OK...
-    return True
+    return could_be_isomorphic(G1, G2, properties="d")
 
 
 def faster_graph_could_be_isomorphic(G1, G2):
