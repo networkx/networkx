@@ -556,7 +556,7 @@ lollipop = nx.lollipop_graph(10, 20)
     ~generators.random_graphs.erdos_renyi_graph
     ~generators.random_graphs.watts_strogatz_graph
     ~generators.random_graphs.barabasi_albert_graph
-    ~generators.random_graphs.random_lobster
+    ~generators.random_graphs.random_lobster_graph
 ```
 
 like so:
@@ -565,7 +565,7 @@ like so:
 er = nx.erdos_renyi_graph(100, 0.15)
 ws = nx.watts_strogatz_graph(30, 3, 0.1)
 ba = nx.barabasi_albert_graph(100, 5)
-red = nx.random_lobster(100, 0.9, 0.9)
+red = nx.random_lobster_graph(100, 0.9, 0.9)
 ```
 
 ### 5. Reading a graph stored in a file using common graph formats
