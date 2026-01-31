@@ -29,7 +29,6 @@ __all__ = [
     "dual_barabasi_albert_graph",
     "extended_barabasi_albert_graph",
     "powerlaw_cluster_graph",
-    "random_lobster",
     "random_lobster_graph",
     "random_shell_graph",
     "random_powerlaw_tree",
@@ -1150,25 +1149,6 @@ def random_lobster_graph(n, p1, p2, seed=None, *, create_using=None):
                 current_node += 1
                 L.add_edge(cat_node, current_node)
     return L  # voila, un lobster!
-
-
-@py_random_state(3)
-@nx._dispatchable(graphs=None, returns_graph=True)
-def random_lobster(n, p1, p2, seed=None, *, create_using=None):
-    """
-    .. deprecated:: 3.5
-       `random_lobster` is a deprecated alias
-       for `random_lobster_graph`.
-       Use `random_lobster_graph` instead.
-    """
-    import warnings
-
-    warnings.warn(
-        "`random_lobster` is deprecated, use `random_lobster_graph` instead.",
-        category=DeprecationWarning,
-        stacklevel=2,
-    )
-    return random_lobster_graph(n, p1, p2, seed=seed, create_using=create_using)
 
 
 @py_random_state(1)
