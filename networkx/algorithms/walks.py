@@ -4,7 +4,7 @@ import networkx as nx
 from networkx.utils import py_random_state
 from networkx.utils.random_sequence import weighted_choice
 
-__all__ = ["number_of_walks", "random_walk"]
+__all__ = ["number_of_walks", "random_walk_single_source"]
 
 
 @nx._dispatchable
@@ -81,7 +81,9 @@ def number_of_walks(G, walk_length):
 
 @nx._dispatchable
 @py_random_state("seed")
-def random_walk(G, start, walk_length, *, weight=None, seed=None):
+def random_walk_single_source(
+    G, start=None, walk_length=None, *, weight=None, seed=None
+):
     """Generate a random walk starting at `start`.
 
     If `weight` is None, transitions are uniform over neighbors.
@@ -92,10 +94,12 @@ def random_walk(G, start, walk_length, *, weight=None, seed=None):
     ----------
     G : NetworkX graph
         The input graph.
-    start : node
-        Starting node for the random walk. Must exist in `G`.
-    walk_length : int
-        Number of hops in the walk (i.e, the number of edges traversed). Must be nonnegative.
+    start : node or None, optional (default=None)
+        Starting node for the random walk. If None, a random node from `G` is used.
+    walk_length : int or None
+        Number of hops in the walk (i.e, the number of edges traversed). Must be
+        nonnegative. If None, a length is chosen uniformly at random from
+        ``0`` to ``G.number_of_nodes()`` (inclusive).
     weight : string or None, optional (default=None)
         Edge attribute name to interpret as the transition weight. If None, each edge has
         weight 1.
@@ -108,9 +112,17 @@ def random_walk(G, start, walk_length, *, weight=None, seed=None):
     list
         Nodes visited in order. Terminates early if no valid next step exists.
     """
+    if walk_length is None:
+        walk_length = seed.randrange(G.number_of_nodes() + 1)
     if walk_length < 0:
         raise ValueError(f"`walk_length` cannot be negative: {walk_length}")
-    if start not in G:
+
+    if start is None:
+        start_nodes = list(G)
+        if not start_nodes:
+            raise nx.NodeNotFound("`start` cannot be None for an empty graph")
+        start = start_nodes[seed.randrange(len(start_nodes))]
+    elif start not in G:
         raise nx.NodeNotFound(start)
 
     walk = [start]
@@ -124,7 +136,7 @@ def random_walk(G, start, walk_length, *, weight=None, seed=None):
 
         # Fast path: unweighted / uniform
         if weight is None:
-            current = neighbors[seed.randrange(len(neighbors))]
+            current = seed.choice(neighbors)
             walk.append(current)
             continue
 
