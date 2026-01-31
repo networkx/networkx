@@ -79,7 +79,7 @@ def number_of_walks(G, walk_length):
     return result
 
 
-@nx._dispatchable
+@nx._dispatchable(edge_attrs="weight")
 @py_random_state("seed")
 def random_walk_single_source(
     G, start=None, walk_length=None, *, weight=None, seed=None
