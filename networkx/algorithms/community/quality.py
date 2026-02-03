@@ -144,12 +144,16 @@ def inter_community_non_edges(G, partition):
     return inter_community_edges(nx.complement(G), partition)
 
 
-# this doesn't actually work because G is mutable and therefore won't be
-# cached, so degree will be computed each time. Could implement a custom
-# cache that assumes G has no changed
-
 @functools.lru_cache
 def _get_degree(G, weight="weight"):
+    """
+    These values are required for computing modularity, or modularity
+    deltas when a node is moved from one community to another.
+
+    Since these values are required for making many comparisons in
+    louvain and leiden they are cached.
+    """
+
     directed = G.is_directed()
 
     if directed:
