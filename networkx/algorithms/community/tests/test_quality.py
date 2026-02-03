@@ -7,7 +7,7 @@ import pytest
 
 import networkx as nx
 from networkx import barbell_graph
-from networkx.algorithms.community import modularity, partition_quality
+from networkx.algorithms.community import modularity, partition_quality, constant_potts_model
 from networkx.algorithms.community.quality import inter_community_edges
 
 
@@ -42,6 +42,9 @@ class TestCoverage:
         partition = [{0, 1, 2}, {3, 4, 5}]
         assert 6 / 7 == pytest.approx(partition_quality(G, partition)[0], abs=1e-7)
 
+def test_cpm():
+    # need to implement equivalent tests as for test_modularity
+    assert False
 
 def test_modularity():
     G = nx.barbell_graph(3, 0)
