@@ -144,6 +144,9 @@ def inter_community_non_edges(G, partition):
     return inter_community_edges(nx.complement(G), partition)
 
 
+# this doesn't actually work because G is mutable and therefore won't be
+# cached, so degree will be computed each time. Could implement a custom
+# cache that assumes G has no changed
 
 @functools.lru_cache
 def _get_degree(G, weight="weight"):
@@ -278,15 +281,6 @@ def modularity(
     return sum(map(community_contribution, communities))
 
 
-    # allow partial evaluation, i.e. subsets of partition
-    # if not is_partition(G, communities):
-    #     raise NotAPartition(G, communities)
-
-
-
-
-
-
 def constant_potts_model(
         G,
         communities,
@@ -300,6 +294,7 @@ def constant_potts_model(
 
     if not isinstance(communities, list):
         communities = list(communities)
+
     if (not is_partition(G, communities)) and (not allow_partial):
          raise NotAPartition(G, communities)
 
@@ -309,9 +304,9 @@ def constant_potts_model(
 
         n = 0
         for node in community:
-            n += G.nodes[node][node_weight]
+            n += G.nodes[node].get(node_weight, 1)
 
-        return 2*L_c - (resolution * n**2)
+        return L_c - resolution*(n**2)
 
 
     return sum(map(community_contribution, communities))
