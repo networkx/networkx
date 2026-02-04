@@ -1,31 +1,15 @@
 """Functions for detecting communities based on Leiden Community Detection
 algorithm.
-
-These functions do not have NetworkX implementations.
-They may only be run with an installable :doc:`backend </backends>`
-that supports them.
 """
 
 import itertools
-from collections import deque
+from collections import defaultdict, deque
+import math
+import random
 
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
-
-__all__ = ["leiden_communities", "leiden_partitions"]
-
-"""Functions for detecting communities based on Louvain Community Detection
-Algorithm"""
-
-import itertools
-import random
-from collections import defaultdict, deque
-
-import networkx as nx
-from networkx.utils import py_random_state
-
 from networkx.algorithms.community.quality import constant_potts_model
-import math
 
 __all__ = ["leiden_communities", "leiden_partitions"]
 
@@ -41,8 +25,8 @@ def leiden_communities(
     max_level=None,
     seed=None,
     quality_function=constant_potts_model,
-    theta=0.1
-):
+    theta=0.01
+    ):
     r"""Find the best partition of a graph using the Louvain Community Detection
     Algorithm.
 
@@ -149,7 +133,16 @@ def leiden_communities(
     :any:`leiden_communities`
     """
 
-    partitions = leiden_partitions(G, weight, node_weight, resolution, threshold, seed, quality_function, theta)
+    partitions = leiden_partitions(
+        G,
+        weight,
+        node_weight,
+        resolution,
+        threshold,
+        seed,
+        quality_function,
+        theta
+    )
 
     if max_level is not None:
         if max_level <= 0:
@@ -169,8 +162,8 @@ def leiden_partitions(
     threshold=0.0000001,
     seed=None,
     quality_function=constant_potts_model,
-    theta=0.1
-):
+    theta=0.01
+    ):
     """Yield partitions for each level of the Louvain Community Detection Algorithm
 
     Louvain Community Detection Algorithm is a simple method to extract the community
@@ -260,7 +253,13 @@ def leiden_partitions(
         for node in G.nodes():
                 graph.nodes[node][node_weight] = 1
 
-    quality = quality_function(graph, partition, resolution=resolution, weight=weight, node_weight=node_weight)
+    quality = quality_function(
+        graph,
+        partition,
+        resolution=resolution,
+        weight='weight',
+        node_weight='node_weight'
+    )
 
     inner_partition = None
     improvement = True
@@ -287,7 +286,11 @@ def leiden_partitions(
         )
         
         new_quality = quality_function(
-            graph, inner_partition_refined, resolution=resolution, weight='weight', node_weight='node_weight'
+            graph,
+            inner_partition_refined,
+            resolution=resolution,
+            weight='weight',
+            node_weight='node_weight'
         )
 
         graph = _gen_graph(graph, inner_partition_refined)
@@ -302,19 +305,9 @@ def leiden_partitions(
         quality = new_quality
 
 
-def _is_valid_refinement(p, ref_p):
-    
-    val = True
-    for c1 in ref_p:
-        for c2 in p:
-            if c1.issubset(c2):
-                break
-        else:
-            val = False
-    return val
 
 def _update_partition(G, partition):
-    partition = [set() for _ in range(len(G.nodes()))]
+    partition = [set() for _ in G.nodes()]
     for i, u in enumerate(G.nodes()):
         partition[i].update(G.nodes[u]['nodes'])
 
@@ -342,6 +335,7 @@ def _refine_partition(G, partition, resolution, quality_function, seed, theta):
     return inner_partition_refined
 
 def _merge_node_subset(G, partition, node2com, S, resolution, quality_function, seed, theta):
+    
     S_size = _size_of_node_set(G, S, 'node_weight')
 
     R = set()
@@ -391,9 +385,11 @@ def _merge_node_subset(G, partition, node2com, S, resolution, quality_function, 
 
                         if quality_delta > 0:
                             candidate_comm.append(i)
+                            # it is quite easy to get overflow in this math.exp(...)
+                            # numpy handles this more elegantly
                             try:
                                 val = math.exp(quality_delta/theta)
-                            except:
+                            except OverflowError:
                                 val = float('inf')
                             candidate_comm_delta.append(val)
                         partition[comm].add(u)
@@ -402,10 +398,21 @@ def _merge_node_subset(G, partition, node2com, S, resolution, quality_function, 
             if len(candidate_comm)>0:
 
                 def _sample_from_discrete(vals):
+                    # if there is overflow error then vals can contain
+                    # the value float('inf') in which case we will have
+                    # 
+                    # cumsum_vals = float('inf')
+                    # max_val = float('inf')
+                    # random_val = float('inf')
+                    # 
+                    # and the function will always return 
+                    # i = <index of the first float('inf') in vals>
+
+                    # I do not know if this is desirable behaviour
+                    
                     cumsum_vals = _cumulative_sum(vals)
                     max_val = cumsum_vals[-1]
-    
-                    random_val = seed.uniform(0,max_val)
+                    random_val = seed.uniform(0, max_val)
     
                     for i, v in enumerate(cumsum_vals):
                         if random_val <= v:
@@ -416,14 +423,15 @@ def _merge_node_subset(G, partition, node2com, S, resolution, quality_function, 
                 partition[comm].remove(u)
                 partition[new_comm].add(u)
                 node2com[u] = new_comm
-                
-                move = f'moving node {u} from {comm} to {new_comm}'
-                
 
     return partition, node2com
 
 
 def _cumulative_sum(val_list):
+    """
+    returns the cumulative sum of a list of numerical values
+    same as the np.cumsum(val_array)
+    """
     cumsum_vals = []
     
     running_total = 0
@@ -434,8 +442,16 @@ def _cumulative_sum(val_list):
     return cumsum_vals
 
 def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution, seed=None,):
+    
     inner_partition = [{u} for u in G.nodes()]
     node2com = {u: i for i, u in enumerate(G.nodes())}
+    
+    # unlike louvain, instead of beginning each iteration with the singleton
+    # partition, each iteration uses the (unrefined) partition from the previous
+    # step as the starting communities when moving nodes
+    # this section of code initilises nodes into those communities.
+    # if no partition is passed from the previous step (i.e. during the
+    # first iteration) then this is skipped and the singleton partition is used.
     if seed_partition:
         for i, u in enumerate(G.nodes()):
             for j, C in enumerate(seed_partition):
@@ -449,6 +465,7 @@ def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution,
                     inner_partition[old_com].remove(u)
                     inner_partition[best_com].add(u)
 
+    
     rand_nodes = list(G.nodes)
     seed.shuffle(rand_nodes)
     node_queue = deque(rand_nodes)
@@ -458,14 +475,17 @@ def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution,
     while node_queue:
         u = node_queue.pop()
 
-        best_delta=0
+        best_delta = 0
         old_com = node2com[u]
         best_com = old_com
 
+
+        # for each node in the queue, we measure the change in quality
+        # from moving that node to each other community, keeping track of
+        # the community that gives the greatest improvement best_com
         for new_com in {i for i in node2com.values()}:
 
-            if new_com != old_com:
-                
+            if new_com != old_com:            
                 q1 = quality_function(
                     G,
                     [inner_partition[new_com], inner_partition[old_com]],
@@ -493,7 +513,7 @@ def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution,
                 inner_partition[new_com].remove(u)
                 inner_partition[old_com].add(u)
 
-        if (best_delta > 0) & (improvement==True):
+        if best_delta > 0:
             com = G.nodes[u].get("nodes", {u})
             
             partition[node2com[u]].difference_update(com)
@@ -506,7 +526,6 @@ def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution,
             neighbours = set(G.adj[u])
             nodes_to_visit = neighbours - inner_partition[best_com]
             
-            improvement = False
             for v in nodes_to_visit:
                 if v not in node_queue:
                     node_queue.appendleft(v)
@@ -518,7 +537,15 @@ def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution,
 
 
 def _gen_graph(G, partition):
-    """Generate a new graph based on the partitions of a given graph"""
+    """
+    Generate a new graph based on the partitions of a given graph
+
+    New node weight is the sum of existing node weights.
+
+    Edge weight between new nodes is the sum of edge weights
+    over the edges connecting pairs of communities.
+    """
+
     H = G.__class__()
     node2com = {}
 
@@ -559,7 +586,6 @@ def _size_of_node_set(G, nodes, node_weight):
 def _community_edge_size(G, C1, C2, weight):
     return sum(wt for u, v, wt in G.edges(C1, data=weight) if u in C1 and v in C2)
 
-
 def _convert_multigraph(G, weight, is_directed):
     """Convert a Multigraph to normal Graph"""
     if is_directed:
@@ -574,3 +600,17 @@ def _convert_multigraph(G, weight, is_directed):
         else:
             H.add_edge(u, v, weight=wt)
     return H
+
+def _is_valid_refinement(p, ref_p):
+    """
+    helper function useful during debugging, checking whether
+    a refined partition ref_p is a true refinement of a partition p
+    """
+    val = True
+    for c1 in ref_p:
+        for c2 in p:
+            if c1.issubset(c2):
+                break
+        else:
+            val = False
+    return val
