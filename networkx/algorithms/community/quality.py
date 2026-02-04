@@ -61,7 +61,6 @@ def _require_partition(G, partition):
 require_partition = argmap(_require_partition, (0, 1))
 
 
-
 def intra_community_edges(G, partition):
     """Returns the number of intra-community edges for a partition of `G`.
 
@@ -173,7 +172,7 @@ def modularity(
         G,
         communities,
         weight="weight",
-        node_weight="weight",
+        node_weight=None,
         resolution=1,
         allow_partial=False
         ):
@@ -223,9 +222,26 @@ def modularity(
         as a weight. If None or an edge does not have that attribute,
         then that edge has weight 1.
 
+    node_weight: (default=None)
+        This parameter plays no role, but is included to provide a consistent
+        API with other partition quality functions which require this
+        parameter (e.g. constant_potts_model) for use in community detection
+        algorithms (e.g. louvain and leiden).
+
     resolution : float (default=1)
         If resolution is less than 1, modularity favors larger communities.
         Greater than 1 favors smaller communities.
+    
+    allow_partial : bool (default=False)
+        If set to True, modularity will be calculated for a set of
+        communities that do not necessarily form a complete partition.
+        This is useful for computing modularity deltas when moving
+        a node u from community C1 -> C2. The change in modularity can
+        be calculated by evaluating on [C1, C2] before and after moving
+        the node u.
+        
+        If allow_partial=False then the error NotAPartition will be
+        raised if communities is not a partition.
 
     Returns
     -------
@@ -235,7 +251,7 @@ def modularity(
     Raises
     ------
     NotAPartition
-        If `communities` is not a partition of the nodes of `G`.
+        If `communities` is not a partition of the nodes of `G` and allow_partial=False
 
     Examples
     --------
@@ -294,6 +310,54 @@ def constant_potts_model(
         allow_partial=False
         ):
     r"""
+    As defined in [1]_
+
+        https://doi.org/10.48550/arXiv.1104.3083
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    communities : list or iterable of set of nodes
+        These node sets must represent a partition of G's nodes.
+
+    weight : string or None, optional (default="weight")
+        The edge attribute that holds the numerical value used
+        as a weight. If None or an edge does not have that attribute,
+        then that edge has weight 1.
+
+    node_weight : string or None, optional (default='node_weight')
+        The node attribute that holds the numerical value used as
+        a weight.
+
+    resolution : float (default=1)
+        If resolution is less than 1, constant_potts_model favors larger communities.
+    
+    allow_partial : bool (default=False)
+        If set to True, modularity will be calculated for a set of
+        communities that do not necessarily form a complete partition.
+        This is useful for computing modularity deltas when moving
+        a node u from community C1 -> C2. The change in modularity can
+        be calculated by evaluating on [C1, C2] before and after moving
+        the node u.
+        
+        If allow_partial=False then the error NotAPartition will be
+        raised if communities is not a partition.
+
+    Returns
+    -------
+    Q : float
+        The modularity of the partition.
+
+    Raises
+    ------
+    NotAPartition
+        If `communities` is not a partition of the nodes of `G` and allow_partial=False
+    
+    References
+    ----------
+    .. [1] V.A. Traag, P. Van Dooren, Y. Nesterov "Narrow scope for
+       resolution-limit-free community detection" <https://arxiv.org/abs/1104.3083>
     """
 
     if not isinstance(communities, list):
@@ -311,7 +375,6 @@ def constant_potts_model(
             n += G.nodes[node].get(node_weight, 1)
 
         return L_c - resolution*(n**2)
-
 
     return sum(map(community_contribution, communities))
 

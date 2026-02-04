@@ -27,56 +27,8 @@ def leiden_communities(
     quality_function=constant_potts_model,
     theta=0.01
     ):
-    r"""Find the best partition of a graph using the Louvain Community Detection
-    Algorithm.
-
-    Louvain Community Detection Algorithm is a simple method to extract the community
-    structure of a network. This is a heuristic method based on modularity optimization. [1]_
-
-    The algorithm works in 2 steps. On the first step it assigns every node to be
-    in its own community and then for each node it tries to find the maximum positive
-    modularity gain by moving each node to all of its neighbor communities. If no positive
-    gain is achieved the node remains in its original community.
-
-    The modularity gain obtained by moving an isolated node $i$ into a community $C$ can
-    easily be calculated by the following formula (combining [1]_ [2]_ and some algebra):
-
-    .. math::
-        \Delta Q = \frac{k_{i,in}}{2m} - \gamma\frac{ \Sigma_{tot} \cdot k_i}{2m^2}
-
-    where $m$ is the size of the graph, $k_{i,in}$ is the sum of the weights of the links
-    from $i$ to nodes in $C$, $k_i$ is the sum of the weights of the links incident to node $i$,
-    $\Sigma_{tot}$ is the sum of the weights of the links incident to nodes in $C$ and $\gamma$
-    is the resolution parameter.
-
-    For the directed case the modularity gain can be computed using this formula according to [3]_
-
-    .. math::
-        \Delta Q = \frac{k_{i,in}}{m}
-        - \gamma\frac{k_i^{out} \cdot\Sigma_{tot}^{in} + k_i^{in} \cdot \Sigma_{tot}^{out}}{m^2}
-
-    where $k_i^{out}$, $k_i^{in}$ are the outer and inner weighted degrees of node $i$ and
-    $\Sigma_{tot}^{in}$, $\Sigma_{tot}^{out}$ are the sum of in-going and out-going links incident
-    to nodes in $C$.
-
-    The first phase continues until no individual move can improve the modularity.
-
-    The second phase consists in building a new network whose nodes are now the communities
-    found in the first phase. To do so, the weights of the links between the new nodes are given by
-    the sum of the weight of the links between nodes in the corresponding two communities. Once this
-    phase is complete it is possible to reapply the first phase creating bigger communities with
-    increased modularity.
-
-    The above two phases are executed until no modularity gain is achieved (or is less than
-    the `threshold`, or until `max_levels` is reached).
-
-    Be careful with self-loops in the input graph. These are treated as
-    previously reduced communities -- as if the process had been started
-    in the middle of the algorithm. Large self-loop edge weights thus
-    represent strong communities and in practice may be hard to add
-    other nodes to.  If your input graph edge weights for self-loops
-    do not represent already reduced communities you may want to remove
-    the self-loops before inputting that graph.
+    r"""Find the best partition of a graph using the Leiden Community Detection
+    Algorithm [1]_.
 
     Parameters
     ----------
@@ -84,7 +36,11 @@ def leiden_communities(
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
-    node_weight:
+    node_weight : string or None, optional (default=None)
+        The name of a node attribute that holds the numerical value
+        used as a weight for nodes. If None then each node has weight 1.
+        Through each iteration of the algorithm, the weight of a node
+        is calculated as the sum of the constituent nodes, see [1]_.
     resolution : float, optional (default=1)
         If resolution is less than 1, the algorithm favors larger communities.
         Greater than 1 favors smaller communities
@@ -99,6 +55,13 @@ def leiden_communities(
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    quality_function : function (default="constant_potts_model")
+        The algorithm optimises for a measure of quality. By default
+        the constant_potts_model is used, but this can be changed (e.g.
+        modularity)
+    theta : float (default=0.01)
+        Parameter that determines the degree of randomness in the
+        _refine_partition step of the algorithm,
 
     Returns
     -------
@@ -120,16 +83,12 @@ def leiden_communities(
 
     References
     ----------
-    .. [1] Blondel, V.D. et al. Fast unfolding of communities in
-       large networks. J. Stat. Mech 10008, 1-12(2008). https://doi.org/10.1088/1742-5468/2008/10/P10008
-    .. [2] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
+    .. [1] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
        well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
-    .. [3] Nicolas Dugué, Anthony Perez. Directed Louvain : maximizing modularity in directed networks.
-        [Research Report] Université d’Orléans. 2015. hal-01231784. https://hal.archives-ouvertes.fr/hal-01231784
 
     See Also
     --------
-    louvain_partitions
+    leiden_partitions
     :any:`leiden_communities`
     """
 
@@ -164,67 +123,13 @@ def leiden_partitions(
     quality_function=constant_potts_model,
     theta=0.01
     ):
-    """Yield partitions for each level of the Louvain Community Detection Algorithm
-
-    Louvain Community Detection Algorithm is a simple method to extract the community
-    structure of a network. This is a heuristic method based on modularity optimization. [1]_
-
-    The partitions at each level (step of the algorithm) form a dendrogram of communities.
-    A dendrogram is a diagram representing a tree and each level represents
-    a partition of the G graph. The top level contains the smallest communities
-    and as you traverse to the bottom of the tree the communities get bigger
-    and the overall modularity increases making the partition better.
-
-    Each level is generated by executing the two phases of the Louvain Community
-    Detection Algorithm.
-
-    Be careful with self-loops in the input graph. These are treated as
-    previously reduced communities -- as if the process had been started
-    in the middle of the algorithm. Large self-loop edge weights thus
-    represent strong communities and in practice may be hard to add
-    other nodes to.  If your input graph edge weights for self-loops
-    do not represent already reduced communities you may want to remove
-    the self-loops before inputting that graph.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-    weight : string or None, optional (default="weight")
-     The name of an edge attribute that holds the numerical value
-     used as a weight. If None then each edge has weight 1.
-    resolution : float, optional (default=1)
-        If resolution is less than 1, the algorithm favors larger communities.
-        Greater than 1 favors smaller communities
-    threshold : float, optional (default=0.0000001)
-     Modularity gain threshold for each level. If the gain of modularity
-     between 2 levels of the algorithm is less than the given threshold
-     then the algorithm stops and returns the resulting communities.
-    seed : integer, random_state, or None (default)
-     Indicator of random number generation state.
-     See :ref:`Randomness<randomness>`.
-
-    Yields
-    ------
-    list
-        A list of sets (partition of `G`). Each set represents one community and contains
-        all the nodes that constitute it.
-
-    References
-    ----------
-    .. [1] Blondel, V.D. et al. Fast unfolding of communities in
-       large networks. J. Stat. Mech 10008, 1-12(2008)
-
-    See Also
-    --------
-    louvain_communities
-    :any:`leiden_partitions`
     """
+    """
+
     partition = [{u} for u in G.nodes()]
     if nx.is_empty(G):
         yield partition
         return
-    
-
 
     is_directed = G.is_directed()
     if G.is_multigraph():
@@ -265,7 +170,6 @@ def leiden_partitions(
     improvement = True
 
     while improvement:
-               
        
         partition, inner_partition, improvement = _move_nodes_fast(
             graph,
@@ -305,14 +209,99 @@ def leiden_partitions(
         quality = new_quality
 
 
+def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution, seed=None,):
+    
+    inner_partition = [{u} for u in G.nodes()]
+    node2com = {u: i for i, u in enumerate(G.nodes())}
+    
+    # unlike louvain, instead of beginning each iteration with the singleton
+    # partition, each iteration uses the (unrefined) partition from the previous
+    # step as the starting communities when moving nodes
+    # this section of code initilises nodes into those communities.
+    # if no partition is passed from the previous step (i.e. during the
+    # first iteration) then this is skipped and the singleton partition is used.
+    if seed_partition:
+        for i, u in enumerate(G.nodes()):
+            for j, C in enumerate(seed_partition):
+                if u in C:
+                    old_com = i
+                    best_com = j
+                    com = G.nodes[u].get("nodes", {u})
+                    partition[node2com[u]].difference_update(com)
+                    partition[best_com].update(com)
+                    node2com[u] = best_com
+                    inner_partition[old_com].remove(u)
+                    inner_partition[best_com].add(u)
 
-def _update_partition(G, partition):
-    partition = [set() for _ in G.nodes()]
-    for i, u in enumerate(G.nodes()):
-        partition[i].update(G.nodes[u]['nodes'])
+    
+    rand_nodes = list(G.nodes)
+    seed.shuffle(rand_nodes)
+    node_queue = deque(rand_nodes)
 
-    return partition
+    improvement = False
+    
+    while node_queue:
+        u = node_queue.pop()
 
+        best_delta = 0
+        old_com = node2com[u]
+        best_com = old_com
+
+
+        # for each node in the queue, we measure the change in quality
+        # from moving that node to each other community, keeping track of
+        # the community that gives the greatest improvement best_com
+        for new_com in {i for i in node2com.values()}:
+
+            if new_com != old_com:            
+                q1 = quality_function(
+                    G,
+                    [inner_partition[new_com], inner_partition[old_com]],
+                    resolution=resolution,
+                    allow_partial=True
+                )
+
+                inner_partition[old_com].remove(u)
+                inner_partition[new_com].add(u)
+
+                q2 = quality_function(
+                    G,
+                    [inner_partition[new_com], inner_partition[old_com]],
+                    resolution=resolution,
+                    allow_partial=True
+                )
+
+                quality_delta = q2 - q1
+
+                if quality_delta > best_delta:
+                    best_delta = quality_delta
+                    best_com = new_com
+                    improvement = True
+
+                inner_partition[new_com].remove(u)
+                inner_partition[old_com].add(u)
+
+        if best_delta > 0:
+            com = G.nodes[u].get("nodes", {u})
+            
+            partition[node2com[u]].difference_update(com)
+            partition[best_com].update(com)
+            node2com[u] = best_com
+            
+            inner_partition[old_com].remove(u)
+            inner_partition[best_com].add(u)
+            
+            neighbours = set(G.adj[u])
+            nodes_to_visit = neighbours - inner_partition[best_com]
+            
+            for v in nodes_to_visit:
+                if v not in node_queue:
+                    node_queue.appendleft(v)
+
+    partition = list(filter(len, partition))
+    inner_partition = list(filter(len, inner_partition))
+
+    return partition, inner_partition, improvement
 
 
 def _refine_partition(G, partition, resolution, quality_function, seed, theta):
@@ -441,99 +430,13 @@ def _cumulative_sum(val_list):
 
     return cumsum_vals
 
-def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution, seed=None,):
-    
-    inner_partition = [{u} for u in G.nodes()]
-    node2com = {u: i for i, u in enumerate(G.nodes())}
-    
-    # unlike louvain, instead of beginning each iteration with the singleton
-    # partition, each iteration uses the (unrefined) partition from the previous
-    # step as the starting communities when moving nodes
-    # this section of code initilises nodes into those communities.
-    # if no partition is passed from the previous step (i.e. during the
-    # first iteration) then this is skipped and the singleton partition is used.
-    if seed_partition:
-        for i, u in enumerate(G.nodes()):
-            for j, C in enumerate(seed_partition):
-                if u in C:
-                    old_com = i
-                    best_com = j
-                    com = G.nodes[u].get("nodes", {u})
-                    partition[node2com[u]].difference_update(com)
-                    partition[best_com].update(com)
-                    node2com[u] = best_com
-                    inner_partition[old_com].remove(u)
-                    inner_partition[best_com].add(u)
 
-    
-    rand_nodes = list(G.nodes)
-    seed.shuffle(rand_nodes)
-    node_queue = deque(rand_nodes)
+def _update_partition(G, partition):
+    partition = [set() for _ in G.nodes()]
+    for i, u in enumerate(G.nodes()):
+        partition[i].update(G.nodes[u]['nodes'])
 
-    improvement = False
-    
-    while node_queue:
-        u = node_queue.pop()
-
-        best_delta = 0
-        old_com = node2com[u]
-        best_com = old_com
-
-
-        # for each node in the queue, we measure the change in quality
-        # from moving that node to each other community, keeping track of
-        # the community that gives the greatest improvement best_com
-        for new_com in {i for i in node2com.values()}:
-
-            if new_com != old_com:            
-                q1 = quality_function(
-                    G,
-                    [inner_partition[new_com], inner_partition[old_com]],
-                    resolution=resolution,
-                    allow_partial=True
-                )
-
-                inner_partition[old_com].remove(u)
-                inner_partition[new_com].add(u)
-
-                q2 = quality_function(
-                    G,
-                    [inner_partition[new_com], inner_partition[old_com]],
-                    resolution=resolution,
-                    allow_partial=True
-                )
-
-                quality_delta = q2 - q1
-
-                if quality_delta > best_delta:
-                    best_delta = quality_delta
-                    best_com = new_com
-                    improvement = True
-
-                inner_partition[new_com].remove(u)
-                inner_partition[old_com].add(u)
-
-        if best_delta > 0:
-            com = G.nodes[u].get("nodes", {u})
-            
-            partition[node2com[u]].difference_update(com)
-            partition[best_com].update(com)
-            node2com[u] = best_com
-            
-            inner_partition[old_com].remove(u)
-            inner_partition[best_com].add(u)
-            
-            neighbours = set(G.adj[u])
-            nodes_to_visit = neighbours - inner_partition[best_com]
-            
-            for v in nodes_to_visit:
-                if v not in node_queue:
-                    node_queue.appendleft(v)
-
-    partition = list(filter(len, partition))
-    inner_partition = list(filter(len, inner_partition))
-
-    return partition, inner_partition, improvement
+    return partition
 
 
 def _gen_graph(G, partition):
