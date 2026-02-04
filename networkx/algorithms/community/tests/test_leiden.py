@@ -60,7 +60,7 @@ def test_connected_communities():
         for C in part:
             assert check_connected_community(G, C)
 
-def test_connected_communities():
+def test_connected_communities_modularity():
 
     for i in range(10):
         G = nx.karate_club_graph()
@@ -71,11 +71,7 @@ def test_connected_communities():
             assert check_connected_community(G, C)
 
 
-
-
-
-
-def test_connected_communities():
+def test_connected_communities_no_weights():
 
     for i in range(10):
         G = nx.karate_club_graph()
