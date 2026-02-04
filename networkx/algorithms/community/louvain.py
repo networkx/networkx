@@ -75,7 +75,12 @@ def louvain_communities(
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
-    node_weight:
+    node_weight : string or None, optional (default=None)
+        The name of a node attribute that holds the numerical value
+        used as a weight. If None then each node has weight 1.
+        Required parameter for certain quality functions (e.g.
+        constant_potts_model) but not required for modularity which
+        is the default.
     resolution : float, optional (default=1)
         If resolution is less than 1, the algorithm favors larger communities.
         Greater than 1 favors smaller communities
@@ -90,6 +95,10 @@ def louvain_communities(
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    quality_function : function (default=modularity)
+        The louvain algorithm optimises a measure of quality of partition.
+        The default is modularity, but other measures can be used (e.g.
+        constant_potts_model).
 
     Returns
     -------
@@ -167,6 +176,12 @@ def louvain_partitions(
     weight : string or None, optional (default="weight")
      The name of an edge attribute that holds the numerical value
      used as a weight. If None then each edge has weight 1.
+    node_weight : string or None, optional (default=None)
+     The name of a node attribute that holds the numerical value
+     used as a weight. If None then each node has weight 1.
+     Required parameter for certain quality functions (e.g.
+     constant_potts_model) but not required for modularity which
+     is the default.
     resolution : float, optional (default=1)
         If resolution is less than 1, the algorithm favors larger communities.
         Greater than 1 favors smaller communities
@@ -177,6 +192,10 @@ def louvain_partitions(
     seed : integer, random_state, or None (default)
      Indicator of random number generation state.
      See :ref:`Randomness<randomness>`.
+    quality_function : function (default=modularity)
+     The louvain algorithm optimises a measure of quality of partition.
+     The default is modularity, but other measures can be used (e.g.
+     constant_potts_model).
 
     Yields
     ------
@@ -250,10 +269,12 @@ def _one_level(G, partition, quality_function, resolution, is_directed=False, se
     ----------
     G : NetworkX Graph/DiGraph
         The graph from which to detect communities
-    m : number
-        The size of the graph `G`.
     partition : list of sets of nodes
         A valid partition of the graph `G`
+    quality_function : function
+        The louvain algorithm optimises a measure of quality of partition.
+        The default is modularity, but other measures can be used (e.g.
+        constant_potts_model).
     resolution : positive number
         The resolution parameter for computing the modularity of a partition
     is_directed : bool
@@ -283,14 +304,22 @@ def _one_level(G, partition, quality_function, resolution, is_directed=False, se
             for new_com in {i for i in node2com.values()}:
 
                 if new_com != old_com:
-                    q1 = quality_function(G, [inner_partition[new_com], inner_partition[old_com]],
-                                          resolution=resolution, allow_partial=True)
+                    q1 = quality_function(
+                        G,
+                        [inner_partition[new_com], inner_partition[old_com]],
+                        resolution=resolution,
+                        allow_partial=True
+                    )
 
                     inner_partition[old_com].remove(u)
                     inner_partition[new_com].add(u)
 
-                    q2 = quality_function(G, [inner_partition[new_com], inner_partition[old_com]],
-                                          resolution=resolution, allow_partial=True)
+                    q2 = quality_function(
+                        G,
+                        [inner_partition[new_com], inner_partition[old_com]],
+                        resolution=resolution,
+                        allow_partial=True
+                    )
 
                     quality_delta = q2 - q1
 
