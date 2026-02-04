@@ -13,7 +13,7 @@ import math
 
 import functools
 
-__all__ = ["modularity", "partition_quality"]
+__all__ = ["modularity", "partition_quality", "constant_potts_model"]
 
 
 class NotAPartition(NetworkXError):
