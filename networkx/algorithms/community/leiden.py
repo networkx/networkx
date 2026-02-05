@@ -127,6 +127,8 @@ def leiden_partitions(
     """
 
     partition = [{u} for u in G.nodes()]
+    inner_partition = None
+    
     if nx.is_empty(G):
         yield partition
         return
@@ -166,20 +168,22 @@ def leiden_partitions(
         node_weight='node_weight'
     )
 
-    inner_partition = None
-    improvement = True
+    
+    improvement_made = True
 
-    while improvement:
+    while improvement_made:
        
-        partition, inner_partition, improvement = _move_nodes_fast(
+        # _move_nodes_fast plays the same role as _one_level in the
+        # networkx implementation of the louvain algorithm
+        inner_partition = _move_nodes_fast(
             graph,
-            partition,
             inner_partition,
             quality_function,
             resolution,
             seed=seed
         )
         
+
         inner_partition_refined = _refine_partition(
             graph,
             inner_partition,
@@ -199,17 +203,21 @@ def leiden_partitions(
 
         graph = _gen_graph(graph, inner_partition_refined)
         
-        partition = _update_partition(graph, partition)
+        # the partition of the underlying graph is read from the
+        # node attribute 'nodes', which is set during _gen_graph
+        partition = [set() for _ in graph.nodes()]
+        for i, u in enumerate(graph.nodes()):
+            partition[i].update(graph.nodes[u]['nodes'])
 
         yield [s.copy() for s in partition]
         
-        if new_quality - quality <= threshold:
-            return
-
+        improvement_made = (new_quality - quality) > threshold
         quality = new_quality
+    
+    return
 
 
-def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution, seed=None,):
+def _move_nodes_fast(G, seed_partition, quality_function, resolution, seed=None,):
     
     inner_partition = [{u} for u in G.nodes()]
     node2com = {u: i for i, u in enumerate(G.nodes())}
@@ -226,9 +234,6 @@ def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution,
                 if u in C:
                     old_com = i
                     best_com = j
-                    com = G.nodes[u].get("nodes", {u})
-                    partition[node2com[u]].difference_update(com)
-                    partition[best_com].update(com)
                     node2com[u] = best_com
                     inner_partition[old_com].remove(u)
                     inner_partition[best_com].add(u)
@@ -237,8 +242,6 @@ def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution,
     rand_nodes = list(G.nodes)
     seed.shuffle(rand_nodes)
     node_queue = deque(rand_nodes)
-
-    improvement = False
     
     while node_queue:
         u = node_queue.pop()
@@ -276,7 +279,6 @@ def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution,
                 if quality_delta > best_delta:
                     best_delta = quality_delta
                     best_com = new_com
-                    improvement = True
 
                 inner_partition[new_com].remove(u)
                 inner_partition[old_com].add(u)
@@ -284,8 +286,6 @@ def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution,
         if best_delta > 0:
             com = G.nodes[u].get("nodes", {u})
             
-            partition[node2com[u]].difference_update(com)
-            partition[best_com].update(com)
             node2com[u] = best_com
             
             inner_partition[old_com].remove(u)
@@ -298,10 +298,9 @@ def _move_nodes_fast(G, partition, seed_partition, quality_function, resolution,
                 if v not in node_queue:
                     node_queue.appendleft(v)
 
-    partition = list(filter(len, partition))
     inner_partition = list(filter(len, inner_partition))
 
-    return partition, inner_partition, improvement
+    return inner_partition
 
 
 def _refine_partition(G, partition, resolution, quality_function, seed, theta):
@@ -429,14 +428,6 @@ def _cumulative_sum(val_list):
         cumsum_vals.append(running_total)
 
     return cumsum_vals
-
-
-def _update_partition(G, partition):
-    partition = [set() for _ in G.nodes()]
-    for i, u in enumerate(G.nodes()):
-        partition[i].update(G.nodes[u]['nodes'])
-
-    return partition
 
 
 def _gen_graph(G, partition):
