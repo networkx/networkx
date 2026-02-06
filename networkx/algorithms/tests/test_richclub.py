@@ -137,6 +137,38 @@ def test_rich_club_leq_3_nodes_normalized():
             rc = nx.rich_club_coefficient(G, normalized=True)
 
 
+def test_richclub_zerodivision():
+    """Test that ZeroDivisionError is avoided when random graph has zero coefficient.
+
+    Regression test for issue #8485.
+    When the randomized graph has a zero rich-club coefficient for a degree k,
+    but the original graph does not, the normalization would divide by zero.
+    The fix returns NaN in this case.
+    """
+    import math
+
+    # This graph structure can produce zero rich-club coefficients in
+    # randomized versions due to its sparse connectivity
+    G = nx.Graph()
+    G.add_nodes_from(["A", "A_1", "A_2", "B", "B_1", "B_2", "C", "D"])
+    G.add_edge("A", "A_1")
+    G.add_edge("A", "A_2")
+    G.add_edge("B", "B_1")
+    G.add_edge("B", "B_2")
+    G.add_edge("A", "B")
+    G.add_edge("C", "D")
+
+    # Run many times to increase chance of hitting the edge case
+    # where random graph has zero coefficient
+    for _ in range(100):
+        rc = nx.rich_club_coefficient(G, normalized=True, Q=1, seed=None)
+        # Check that all values are either valid floats or NaN (not exceptions)
+        for k, v in rc.items():
+            assert isinstance(v, float), f"Expected float, got {type(v)}"
+            # If v is NaN, that's acceptable (division by zero case handled)
+            # If v is a normal float, that's also fine
+
+
 # def test_richclub2_normalized():
 #    T = nx.balanced_tree(2,10)
 #    rcNorm = nx.richclub.rich_club_coefficient(T,Q=2)

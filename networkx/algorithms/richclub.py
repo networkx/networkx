@@ -1,5 +1,6 @@
 """Functions for computing rich-club coefficients."""
 
+import math
 from itertools import accumulate
 
 import networkx as nx
@@ -96,7 +97,10 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
         E = R.number_of_edges()
         nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10, seed=seed)
         rcran = _compute_rc(R)
-        rc = {k: v / rcran[k] for k, v in rc.items()}
+        rc = {
+            k: v / rcran[k] if rcran[k] != 0 else math.nan
+            for k, v in rc.items()
+        }
     return rc
 
 
