@@ -71,7 +71,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
         Other inputs produce a ValueError.
         If `weight` is None, unweighted graph methods are used, and this
         suggestion is ignored.
-    
+
     Notes
     -----
     This function supports multiple shortest-path algorithms and selects the
