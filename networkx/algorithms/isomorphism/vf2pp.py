@@ -523,17 +523,17 @@ def _feasibility(node1, node2, graph_info, state_info):
     G1 = graph_info.G1
 
     # does this node pair follow the rules of morphism PT
-    if not _consistent(node1, node2, graph_info, state_info):
+    if not _feasible_node_pair(node1, node2, graph_info, state_info):
         return False
 
     # if we look ahead to the next nodes mapped will this fail then?
-    if _cut(node1, node2, graph_info, state_info):
+    if not _feasible_look_ahead(node1, node2, graph_info, state_info):
         return False
 
     return True
 
 
-def _cut(u, v, graph_info, state_info):
+def _feasible_look_ahead(u, v, graph_info, state_info):
     SG_fits, MONO_fits, directed, G1, G2, G1_labels, G2_labels, _, _, _ = graph_info
     _, _, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde = state_info
     multigraph = G1.is_multigraph() or G2.is_multigraph()
@@ -543,7 +543,7 @@ def _cut(u, v, graph_info, state_info):
     v_labels_successors = nx.utils.groups({nbr: G2_labels[nbr] for nbr in vnbrs})
 
     if not SG_fits(u_labels_successors.keys(), v_labels_successors.keys()):
-        return True
+        return False
 
     if directed:
         upreds, vpreds = G1._pred[u], G2._pred[v]
@@ -552,7 +552,7 @@ def _cut(u, v, graph_info, state_info):
 
         # check matching pred labels before looping over individual successors
         if not SG_fits(u_labels_predecessors.keys(), v_labels_predecessors.keys()):
-            return True
+            return False
 
     if v_labels_successors:
         for label, unbrs in u_labels_successors.items():
@@ -564,16 +564,16 @@ def _cut(u, v, graph_info, state_info):
                 ucnts = sorted((G1.number_of_edges(u, x) for x in unbrs), reverse=True)
                 vcnts = sorted((G2.number_of_edges(v, x) for x in vnbrs), reverse=True)
                 if any(not MONO_fits(uc, vc) for uc, vc in zip(ucnts, vcnts)):
-                    return True
+                    return False
             if not SG_fits(len(T1 & unbrs), len(T2 & vnbrs)):
-                return True
+                return False
             if directed and not SG_fits(len(T1_in & unbrs), len(T2_in & vnbrs)):
-                return True
+                return False
             if MONO_fits is not operator.le:  # Only check if PT is not MONO
                 if not SG_fits(len(T1_tilde & unbrs), len(T2_tilde & vnbrs)):
-                    return True
+                    return False
     if not directed:
-        return False
+        return True
 
     # same for predecessors
     if v_labels_predecessors:
@@ -585,18 +585,18 @@ def _cut(u, v, graph_info, state_info):
                 vcnts = sorted((G2.number_of_edges(v, x) for x in vpred), reverse=True)
                 mess = [(uc, vc) for uc, vc in zip(ucnts, vcnts)]
                 if any(not MONO_fits(uc, vc) for uc, vc in zip(ucnts, vcnts)):
-                    return True
+                    return False
             if not SG_fits(len(T1 & upred), len(T2 & vpred)):
-                return True
+                return False
             if directed and not SG_fits(len(T1_in & upred), len(T2_in & vpred)):
-                return True
+                return False
             if MONO_fits is not operator.le:  # Only check if PT is not MONO
                 if not SG_fits(len(T1_tilde & upred), len(T2_tilde & vpred)):
-                    return True
-    return False
+                    return False
+    return True
 
 
-def _consistent(u, v, graph_info, state_info):
+def _feasible_node_pair(u, v, graph_info, state_info):
     _, MONO_op, directed, G1, G2, *_ = graph_info
     mapping, rev_map = state_info.mapping, state_info.reverse_mapping
     multigraph = G1.is_multigraph() or G2.is_multigraph()
