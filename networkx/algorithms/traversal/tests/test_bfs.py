@@ -17,7 +17,13 @@ class TestBFS:
         assert dict(nx.bfs_successors(self.G, source=0)) == {0: [1], 1: [2, 3], 2: [4]}
 
     def test_predecessor(self):
-        assert dict(nx.bfs_predecessors(self.G, source=0)) == {1: 0, 2: 1, 3: 1, 4: 2}
+        with pytest.deprecated_call():
+            assert dict(nx.bfs_predecessors(self.G, source=0)) == {
+                1: 0,
+                2: 1,
+                3: 1,
+                4: 2,
+            }
 
     def test_bfs_tree(self):
         T = nx.bfs_tree(self.G, source=0)
@@ -153,20 +159,22 @@ class TestBreadthLimitedSearch:
         assert result == {8: [9], 2: [3], 7: [2, 8]}
 
     def test_limited_bfs_predecessor(self):
-        assert dict(nx.bfs_predecessors(self.G, source=1, depth_limit=3)) == {
-            0: 1,
-            2: 1,
-            3: 2,
-            4: 3,
-            7: 2,
-            8: 7,
-        }
-        assert dict(nx.bfs_predecessors(self.D, source=7, depth_limit=2)) == {
-            2: 7,
-            3: 2,
-            8: 7,
-            9: 8,
-        }
+        with pytest.deprecated_call():
+            assert dict(nx.bfs_predecessors(self.G, source=1, depth_limit=3)) == {
+                0: 1,
+                2: 1,
+                3: 2,
+                4: 3,
+                7: 2,
+                8: 7,
+            }
+        with pytest.deprecated_call():
+            assert dict(nx.bfs_predecessors(self.D, source=7, depth_limit=2)) == {
+                2: 7,
+                3: 2,
+                8: 7,
+                9: 8,
+            }
 
     def test_limited_bfs_tree(self):
         T = nx.bfs_tree(self.G, source=3, depth_limit=1)
