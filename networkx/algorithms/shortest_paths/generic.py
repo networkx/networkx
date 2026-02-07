@@ -71,25 +71,34 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
         Other inputs produce a ValueError.
         If `weight` is None, unweighted graph methods are used, and this
         suggestion is ignored.
+    
+    Notes
+    -----
+    This function supports multiple shortest-path algorithms and selects the
+    appropriate method based on the provided parameters.
+
+    There may be more than one shortest path between a source and target.
+    This returns only one of them.
+
 
     Returns
     -------
-    path: list or dictionary or iterator
+    path: list or dict or iterator
         All returned paths include both the source and target in the path.
 
         If the source and target are both specified, return a single list
         of nodes in a shortest path from the source to the target.
 
-        If only the source is specified, return a dictionary keyed by
+        If only the source is specified, return a dict keyed by
         targets with a list of nodes in a shortest path from the source
         to one of the targets.
 
-        If only the target is specified, return a dictionary keyed by
+        If only the target is specified, return a dict keyed by
         sources with a list of nodes in a shortest path from one of the
         sources to the target.
 
         If neither the source nor target are specified, return an iterator
-        over (source, dictionary) where dictionary is keyed by target to
+        over (source, dict) where dict is keyed by target to
         list of nodes in a shortest path from the source to the target.
 
     Raises
@@ -118,10 +127,6 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     >>> p[2][4]  # shortest path from source=2 to target=4
     [2, 3, 4]
 
-    Notes
-    -----
-    There may be more than one shortest path between a source and target.
-    This returns only one of them.
 
     See Also
     --------
@@ -203,7 +208,7 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
         If this is a function, the weight of an edge is the value
         returned by the function. The function must accept exactly
         three positional arguments: the two endpoints of an edge and
-        the dictionary of edge attributes for that edge.
+        the dict of edge attributes for that edge.
         The function must return a number.
 
     method : string, optional (default = 'dijkstra')
@@ -226,7 +231,7 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
         to the shortest path length from that source to the target.
 
         If neither the source nor target are specified, return an iterator
-        over (source, dictionary) where dictionary is keyed by target to
+        over (source, dict) where dict is keyed by target to
         shortest path length from source to that target.
 
     Raises
@@ -351,7 +356,7 @@ def average_shortest_path_length(G, weight=None, method=None):
         If this is a function, the weight of an edge is the value
         returned by the function. The function must accept exactly
         three positional arguments: the two endpoints of an edge and
-        the dictionary of edge attributes for that edge.
+        the dict of edge attributes for that edge.
         The function must return a number.
 
     method : string, optional (default = 'unweighted' or 'dijkstra')
@@ -459,7 +464,7 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
         If this is a function, the weight of an edge is the value
         returned by the function. The function must accept exactly
         three positional arguments: the two endpoints of an edge and
-        the dictionary of edge attributes for that edge.
+        the dict of edge attributes for that edge.
         The function must return a number.
 
     method : string, optional (default = 'dijkstra')
@@ -534,7 +539,7 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
         If this is a function, the weight of an edge is the value
         returned by the function. The function must accept exactly
         three positional arguments: the two endpoints of an edge and
-        the dictionary of edge attributes for that edge.
+        the dict of edge attributes for that edge.
         The function must return a number.
 
     method : string, optional (default = 'dijkstra')
@@ -546,7 +551,7 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
 
     Returns
     -------
-    paths : generator of dictionary
+    paths : generator of dict
         A generator of all paths between source and all nodes in the graph.
 
     Raises
@@ -604,7 +609,7 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
         If this is a function, the weight of an edge is the value
         returned by the function. The function must accept exactly
         three positional arguments: the two endpoints of an edge and
-        the dictionary of edge attributes for that edge.
+        the dict of edge attributes for that edge.
         The function must return a number.
 
     method : string, optional (default = 'dijkstra')
@@ -616,8 +621,8 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
 
     Returns
     -------
-    paths : generator of dictionary
-        Dictionary of arrays, keyed by source and target, of all shortest paths.
+    paths : generator of dict
+        Dicty of lists, keyed by source and target, of all shortest paths.
 
     Raises
     ------
@@ -662,7 +667,7 @@ def _build_paths_from_predecessors(sources, target, pred):
        Ending node for path.
 
     pred : dict
-       A dictionary of predecessor lists, keyed by node
+       dict of predecessor lists, keyed by node
 
     Returns
     -------
