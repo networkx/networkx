@@ -2,16 +2,16 @@
 communities).
 
 """
+
+import functools
 import itertools
+import math
 from itertools import combinations
 
 import networkx as nx
 from networkx import NetworkXError
 from networkx.algorithms.community.community_utils import is_partition
 from networkx.utils.decorators import argmap
-import math
-
-import functools
 
 __all__ = ["modularity", "partition_quality", "constant_potts_model"]
 
@@ -78,7 +78,6 @@ def intra_community_edges(G, partition):
     return sum(G.subgraph(block).size() for block in partition)
 
 
-
 def inter_community_edges(G, partition):
     """Returns the number of inter-community edges for a partition of `G`.
     according to the given
@@ -108,7 +107,6 @@ def inter_community_edges(G, partition):
     #
     MG = nx.MultiDiGraph if G.is_directed() else nx.MultiGraph
     return nx.quotient_graph(G, partition, create_using=MG).size()
-
 
 
 def inter_community_non_edges(G, partition):
@@ -169,14 +167,8 @@ def _get_degree(G, weight="weight"):
 
 
 def modularity(
-        G,
-        communities,
-        weight="weight",
-        node_weight=None,
-        resolution=1,
-        allow_partial=False
-        ):
-
+    G, communities, weight="weight", node_weight=None, resolution=1, allow_partial=False
+):
     r"""Returns the modularity of the given partition of the graph.
 
     Modularity is defined in [1]_ as
@@ -231,7 +223,7 @@ def modularity(
     resolution : float (default=1)
         If resolution is less than 1, modularity favors larger communities.
         Greater than 1 favors smaller communities.
-    
+
     allow_partial : bool (default=False)
         If set to True, modularity will be calculated for a set of
         communities that do not necessarily form a complete partition.
@@ -239,7 +231,7 @@ def modularity(
         a node u from community C1 -> C2. The change in modularity can
         be calculated by evaluating on [C1, C2] before and after moving
         the node u.
-        
+
         If allow_partial=False then the error NotAPartition will be
         raised if communities is not a partition.
 
@@ -278,7 +270,6 @@ def modularity(
        https://doi.org/10.1088/1742-5468/2008/10/P10008
     """
 
-
     if (not is_partition(G, communities)) and (not allow_partial):
         raise NotAPartition(G, communities)
 
@@ -292,23 +283,23 @@ def modularity(
     def community_contribution(community):
         comm = set(community)
         L_c = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm)
-    
+
         out_degree_sum = sum(out_degree[u] for u in comm)
         in_degree_sum = sum(in_degree[u] for u in comm) if directed else out_degree_sum
-    
+
         return L_c / m - resolution * out_degree_sum * in_degree_sum * norm
 
     return sum(map(community_contribution, communities))
 
 
 def constant_potts_model(
-        G,
-        communities,
-        weight="weight",
-        node_weight="node_weight",
-        resolution=1,
-        allow_partial=False
-        ):
+    G,
+    communities,
+    weight="weight",
+    node_weight="node_weight",
+    resolution=1,
+    allow_partial=False,
+):
     r"""
     As defined in [1]_
 
@@ -332,7 +323,7 @@ def constant_potts_model(
 
     resolution : float (default=1)
         If resolution is less than 1, constant_potts_model favors larger communities.
-    
+
     allow_partial : bool (default=False)
         If set to True, modularity will be calculated for a set of
         communities that do not necessarily form a complete partition.
@@ -340,7 +331,7 @@ def constant_potts_model(
         a node u from community C1 -> C2. The change in modularity can
         be calculated by evaluating on [C1, C2] before and after moving
         the node u.
-        
+
         If allow_partial=False then the error NotAPartition will be
         raised if communities is not a partition.
 
@@ -353,7 +344,7 @@ def constant_potts_model(
     ------
     NotAPartition
         If `communities` is not a partition of the nodes of `G` and allow_partial=False
-    
+
     References
     ----------
     .. [1] V.A. Traag, P. Van Dooren, Y. Nesterov "Narrow scope for
@@ -364,20 +355,23 @@ def constant_potts_model(
         communities = list(communities)
 
     if (not is_partition(G, communities)) and (not allow_partial):
-         raise NotAPartition(G, communities)
+        raise NotAPartition(G, communities)
 
     def community_contribution(community):
         comm = set(community)
-        L_c = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm and u in comm)
+        L_c = sum(
+            wt
+            for u, v, wt in G.edges(comm, data=weight, default=1)
+            if v in comm and u in comm
+        )
 
         n = 0
         for node in community:
             n += G.nodes[node].get(node_weight, 1)
 
-        return L_c - resolution*(n**2)
+        return L_c - resolution * (n**2)
 
     return sum(map(community_contribution, communities))
-
 
 
 @require_partition

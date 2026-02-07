@@ -2,21 +2,27 @@
 Algorithm"""
 
 import itertools
+import math
 from collections import defaultdict, deque
 
 import networkx as nx
+from networkx.algorithms.community import modularity
 from networkx.utils import py_random_state
 
-from networkx.algorithms.community import modularity
-
-import math
 __all__ = ["louvain_communities", "louvain_partitions"]
 
 
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
 def louvain_communities(
-    G, weight="weight", node_weight=None, resolution=1, threshold=0.0000001, max_level=None, seed=None, quality_function=modularity
+    G,
+    weight="weight",
+    node_weight=None,
+    resolution=1,
+    threshold=0.0000001,
+    max_level=None,
+    seed=None,
+    quality_function=modularity,
 ):
     r"""Find the best partition of a graph using the Louvain Community Detection
     Algorithm.
@@ -133,7 +139,9 @@ def louvain_communities(
     :any:`leiden_communities`
     """
 
-    partitions = louvain_partitions(G, weight, node_weight, resolution, threshold, seed, quality_function)
+    partitions = louvain_partitions(
+        G, weight, node_weight, resolution, threshold, seed, quality_function
+    )
 
     if max_level is not None:
         if max_level <= 0:
@@ -146,7 +154,13 @@ def louvain_communities(
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
 def louvain_partitions(
-    G, weight="weight", node_weight=None, resolution=1, threshold=0.0000001, seed=None, quality_function=modularity
+    G,
+    weight="weight",
+    node_weight=None,
+    resolution=1,
+    threshold=0.0000001,
+    seed=None,
+    quality_function=modularity,
 ):
     """Yield partitions for each level of the Louvain Community Detection Algorithm
 
@@ -227,20 +241,22 @@ def louvain_partitions(
         if weight:
             graph.add_weighted_edges_from(G.edges(data=weight, default=1))
         else:
-            weight = 'weight'
+            weight = "weight"
             graph.add_edges_from(G.edges())
             for e in graph.edges():
                 graph.edges[e][weight] = 1
- 
+
     if node_weight:
         for node in G.nodes():
-            graph.nodes[node]['node_weight'] = G.nodes[node][node_weight]
+            graph.nodes[node]["node_weight"] = G.nodes[node][node_weight]
     else:
-        node_weight='node_weight'
+        node_weight = "node_weight"
         for node in G.nodes():
-                graph.nodes[node][node_weight] = 1
+            graph.nodes[node][node_weight] = 1
 
-    quality = quality_function(graph, partition, resolution=resolution, weight=weight, node_weight=node_weight)
+    quality = quality_function(
+        graph, partition, resolution=resolution, weight=weight, node_weight=node_weight
+    )
 
     partition, inner_partition, improvement = _one_level(
         graph, partition, quality_function, resolution, is_directed, seed
@@ -262,7 +278,9 @@ def louvain_partitions(
         )
 
 
-def _one_level(G, partition, quality_function, resolution, is_directed=False, seed=None):
+def _one_level(
+    G, partition, quality_function, resolution, is_directed=False, seed=None
+):
     """Calculate one level of the Louvain partitions tree
 
     Parameters
@@ -294,21 +312,19 @@ def _one_level(G, partition, quality_function, resolution, is_directed=False, se
     improvement = False
 
     while nb_moves > 0:
-
         nb_moves = 0
         for u in rand_nodes:
             best_delta = 0
             old_com = node2com[u]
             best_com = old_com
 
-            for new_com in {i for i in node2com.values()}:
-
+            for new_com in set(node2com.values()):
                 if new_com != old_com:
                     q1 = quality_function(
                         G,
                         [inner_partition[new_com], inner_partition[old_com]],
                         resolution=resolution,
-                        allow_partial=True
+                        allow_partial=True,
                     )
 
                     inner_partition[old_com].remove(u)
@@ -318,7 +334,7 @@ def _one_level(G, partition, quality_function, resolution, is_directed=False, se
                         G,
                         [inner_partition[new_com], inner_partition[old_com]],
                         resolution=resolution,
-                        allow_partial=True
+                        allow_partial=True,
                     )
 
                     quality_delta = q2 - q1
@@ -355,19 +371,17 @@ def _gen_graph(G, partition):
         new_size = 0
         nodes = set()
         for node in part:
-            new_size += G.nodes[node]['node_weight']
+            new_size += G.nodes[node]["node_weight"]
             node2com[node] = i
             nodes.update(G.nodes[node].get("nodes", {node}))
 
         H.add_node(i, nodes=nodes, node_weight=new_size)
 
-
-
     for node1, node2, wt in G.edges(data=True):
-        wt = wt['weight']
+        wt = wt["weight"]
         com1 = node2com[node1]
         com2 = node2com[node2]
-        temp = H.get_edge_data(com1, com2, {'weight': 0})['weight']
+        temp = H.get_edge_data(com1, com2, {"weight": 0})["weight"]
         H.add_edge(com1, com2, weight=wt + temp)
 
     return H
@@ -382,7 +396,7 @@ def _convert_multigraph(G, weight, is_directed):
     H.add_nodes_from(G)
     for u, v, wt in G.edges(data=weight, default=1):
         if H.has_edge(u, v):
-            H[u][v]['weight'] += wt
+            H[u][v]["weight"] += wt
         else:
             H.add_edge(u, v, weight=wt)
     return H

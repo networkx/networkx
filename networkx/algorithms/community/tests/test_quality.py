@@ -7,7 +7,11 @@ import pytest
 
 import networkx as nx
 from networkx import barbell_graph
-from networkx.algorithms.community import modularity, partition_quality, constant_potts_model
+from networkx.algorithms.community import (
+    constant_potts_model,
+    modularity,
+    partition_quality,
+)
 from networkx.algorithms.community.quality import inter_community_edges
 
 
@@ -42,75 +46,76 @@ class TestCoverage:
         partition = [{0, 1, 2}, {3, 4, 5}]
         assert 6 / 7 == pytest.approx(partition_quality(G, partition)[0], abs=1e-7)
 
+
 def test_cpm():
     G = nx.barbell_graph(3, 0)
     partition = [{0, 1, 2}, {3, 4, 5}]
     gamma = 0.1
     cpm = constant_potts_model(G, partition, resolution=gamma)
     assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
-    
+
     partition = [{0, 1, 2}, {3, 4, 5}]
     gamma = 1
     cpm = constant_potts_model(G, partition, resolution=gamma)
     assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
-    
+
     partition = [{i} for i in G.nodes()]
     gamma = 1
     cpm = constant_potts_model(G, partition, resolution=gamma)
-    assert -6*gamma == cpm
-
+    assert -6 * gamma == cpm
 
     G = nx.barbell_graph(3, 0)
     partition = [{0, 1, 2}, {3, 4, 5}]
-    G.nodes[0]['foo']=2
-    G.nodes[1]['foo']=3
-    G.nodes[2]['foo']=4
-    G.nodes[3]['foo']=2
-    G.nodes[4]['foo']=8
-    G.nodes[5]['foo']=10
-    
-    G.edges[(0, 1)]['bar'] = 1
-    G.edges[(0, 2)]['bar'] = 2
-    G.edges[(1, 2)]['bar'] = 3
-    G.edges[(2, 3)]['bar'] = 4
-    G.edges[(3, 4)]['bar'] = 3
-    G.edges[(3, 5)]['bar'] = 2
-    G.edges[(4, 5)]['bar'] = 1
-    
+    G.nodes[0]["foo"] = 2
+    G.nodes[1]["foo"] = 3
+    G.nodes[2]["foo"] = 4
+    G.nodes[3]["foo"] = 2
+    G.nodes[4]["foo"] = 8
+    G.nodes[5]["foo"] = 10
+
+    G.edges[(0, 1)]["bar"] = 1
+    G.edges[(0, 2)]["bar"] = 2
+    G.edges[(1, 2)]["bar"] = 3
+    G.edges[(2, 3)]["bar"] = 4
+    G.edges[(3, 4)]["bar"] = 3
+    G.edges[(3, 5)]["bar"] = 2
+    G.edges[(4, 5)]["bar"] = 1
+
     gamma = 1
     cpm = constant_potts_model(G, partition, resolution=gamma)
     assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
-    cpm = constant_potts_model(G, partition, weight='bar', node_weight='foo', resolution=gamma)
-    assert (6 - gamma*9**2) + (6 - gamma * 20**2)
-    
-    
+    cpm = constant_potts_model(
+        G, partition, weight="bar", node_weight="foo", resolution=gamma
+    )
+    assert (6 - gamma * 9**2) + (6 - gamma * 20**2)
+
     gamma = 0.2
     cpm = constant_potts_model(G, partition, resolution=gamma)
     assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
-    cpm = constant_potts_model(G, partition, weight='bar', node_weight='foo', resolution=gamma)
-    assert (6 - gamma*9**2) + (6 - gamma * 20**2)
-    
-    
+    cpm = constant_potts_model(
+        G, partition, weight="bar", node_weight="foo", resolution=gamma
+    )
+    assert (6 - gamma * 9**2) + (6 - gamma * 20**2)
+
     G = nx.barbell_graph(3, 0)
     partition = [{0, 1, 2}, {3, 4, 5}]
-    G.nodes[0]['node_weight']=2
-    G.nodes[1]['node_weight']=3
-    G.nodes[2]['node_weight']=4
-    G.nodes[3]['node_weight']=2
-    G.nodes[4]['node_weight']=8
-    G.nodes[5]['node_weight']=10
-    
-    G.edges[(0, 1)]['weight'] = 1
-    G.edges[(0, 2)]['weight'] = 2
-    G.edges[(1, 2)]['weight'] = 3
-    G.edges[(2, 3)]['weight'] = 4
-    G.edges[(3, 4)]['weight'] = 3
-    G.edges[(3, 5)]['weight'] = 2
-    G.edges[(4, 5)]['weight'] = 1
-    
-    cpm = constant_potts_model(G, partition, resolution=gamma)
-    assert (6 - gamma*9**2) + (6 - gamma * 20**2)
+    G.nodes[0]["node_weight"] = 2
+    G.nodes[1]["node_weight"] = 3
+    G.nodes[2]["node_weight"] = 4
+    G.nodes[3]["node_weight"] = 2
+    G.nodes[4]["node_weight"] = 8
+    G.nodes[5]["node_weight"] = 10
 
+    G.edges[(0, 1)]["weight"] = 1
+    G.edges[(0, 2)]["weight"] = 2
+    G.edges[(1, 2)]["weight"] = 3
+    G.edges[(2, 3)]["weight"] = 4
+    G.edges[(3, 4)]["weight"] = 3
+    G.edges[(3, 5)]["weight"] = 2
+    G.edges[(4, 5)]["weight"] = 1
+
+    cpm = constant_potts_model(G, partition, resolution=gamma)
+    assert (6 - gamma * 9**2) + (6 - gamma * 20**2)
 
 
 def test_modularity():
