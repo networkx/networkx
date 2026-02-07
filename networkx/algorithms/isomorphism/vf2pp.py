@@ -69,37 +69,45 @@ References
 """
 
 import collections
+import operator
 
 import networkx as nx
 
-__all__ = ["vf2pp_isomorphism", "vf2pp_is_isomorphic", "vf2pp_all_isomorphisms"]
+__all__ = [
+    "vf2pp_isomorphism",
+    "vf2pp_is_isomorphic",
+    "vf2pp_all_isomorphisms",
+    "vf2pp_all_SG_isomorphisms",
+    "vf2pp_all_monomorphisms",
+]
 
-_GraphParameters = collections.namedtuple(
-    "_GraphParameters",
+_GraphInfo = collections.namedtuple(
+    "_GraphInfo",
     [
+        "SG_fits",  # function to check if G1 fits in G2 for subgraph(or not) PT
+        "MONO_fits",  # function to check if G1 fits in G2 for monomorphism(or not) PT
+        "directed",
         "G1",
         "G2",
         "G1_labels",
         "G2_labels",
-        "nodes_of_G1Labels",
-        "nodes_of_G2Labels",
-        "G2_nodes_of_degree",
+        "G1_degree",
+        "G2_degree",
+        "G2_by_label",
     ],
 )
 
-_StateParameters = collections.namedtuple(
-    "_StateParameters",
+_StateInfo = collections.namedtuple(
+    "_StateInfo",
     [
         "mapping",
         "reverse_mapping",
-        "T1",
-        "T1_in",
-        "T1_tilde",
-        "T1_tilde_in",
-        "T2",
-        "T2_in",
-        "T2_tilde",
-        "T2_tilde_in",
+        "T1",  # border_outgoing unmapped nodes connected from SG mapped nodes
+        "T1_in",  # border_incoming of unmapped nodes connected from SG mapped nodes
+        "T1_tilde",  # wilds (not mapped or on border)
+        "T2",  # border_out for G
+        "T2_in",  # border_in for G
+        "T2_tilde",  # wilds for G
     ],
 )
 
@@ -129,7 +137,7 @@ def vf2pp_isomorphism(G1, G2, node_label=None, default_label=None):
         Node mapping if the two graphs are isomorphic. None otherwise.
     """
     try:
-        mapping = next(vf2pp_all_isomorphisms(G1, G2, node_label, default_label))
+        mapping = next(_all_morphisms(G1, G2, node_label, default_label, PT="ISO"))
         return mapping
     except StopIteration:
         return None
@@ -159,9 +167,11 @@ def vf2pp_is_isomorphic(G1, G2, node_label=None, default_label=None):
     bool
         True if the two graphs are isomorphic, False otherwise.
     """
-    if vf2pp_isomorphism(G1, G2, node_label, default_label) is not None:
+    try:
+        next(_all_morphisms(G1, G2, node_label, default_label, PT="ISO"))
         return True
-    return False
+    except StopIteration:
+        return False
 
 
 @nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
@@ -188,191 +198,170 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=None):
     dict
         Isomorphic mapping between the nodes in `G1` and `G2`.
     """
-    if G1.number_of_nodes() == 0 or G2.number_of_nodes() == 0:
+    yield from _all_morphisms(G1, G2, node_label, default_label, PT="ISO")
+
+
+@nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
+def vf2pp_all_SG_isomorphisms(G1, G2, node_label=None, default_label=None):
+    yield from _all_morphisms(G1, G2, node_label, default_label, PT="IND")
+
+
+@nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
+def vf2pp_all_monomorphisms(G1, G2, node_label=None, default_label=None):
+    yield from _all_morphisms(G1, G2, node_label, default_label, PT="MONO")
+
+
+def _all_morphisms(G1, G2, node_label, default_label, PT):
+    N1, N2 = len(G1), len(G2)
+    if N1 == 0 or N2 == 0:
         return False
 
-    # Create the degree dicts based on graph type
-    if G1.is_directed():
-        G1_degree = {
-            n: (in_degree, out_degree)
-            for (n, in_degree), (_, out_degree) in zip(G1.in_degree, G1.out_degree)
-        }
-        G2_degree = {
-            n: (in_degree, out_degree)
-            for (n, in_degree), (_, out_degree) in zip(G2.in_degree, G2.out_degree)
-        }
-    else:
-        G1_degree = dict(G1.degree)
-        G2_degree = dict(G2.degree)
+    directed = G1.is_directed()
+    if directed != G2.is_directed():
+        raise nx.NetworkXError("G1 and G2 must have the same directedness")
 
-    if not G1.is_directed():
-        find_candidates = _find_candidates
-        restore_Tinout = _restore_Tinout
-    else:
+    if directed:
         find_candidates = _find_candidates_Di
         restore_Tinout = _restore_Tinout_Di
+    else:
+        find_candidates = _find_candidates
+        restore_Tinout = _restore_Tinout
 
-    # Check that both graphs have the same number of nodes and degree sequence
-    if G1.order() != G2.order():
+    # Cache needed info about degree labels and problem type (PT)
+    graph_info, state_info = _init_info(G1, G2, node_label, default_label, PT)
+    SG_fits, _, _, _, _, G1_labels, G2_labels, _, _, G2_by_label = graph_info
+
+    if not SG_fits(N1, N2):
+        print(f"failed by number_of_nodes: {N1=} {N2=} {SG_fits=}")
         return False
-    if sorted(G1_degree.values()) != sorted(G2_degree.values()):
-        return False
 
-    # Initialize parameters and cache necessary information about degree and labels
-    graph_params, state_params = _initialize_parameters(
-        G1, G2, G2_degree, node_label, default_label
-    )
+    # Not Part of VF2++.  Maybe include in another alg.
+    #    if PT == "ISO":
+    #        # For ISO Check that both graphs have the same degree sequence
+    #        deg_seq1, deg_seq2 = sorted(G1_degree.values()), sorted(G2_degree.values())
+    #        if deg_seq1 != deg_seq2:
+    #            return False
+    #    else:
+    #        # it is harder to check the degree sequence for PT in "IND", "MONO". Let's not.
+    #        pass
 
-    # Check if G1 and G2 have the same labels, and that number of nodes per label
-    # is equal between the two graphs
-    if not _precheck_label_properties(graph_params):
+    # precheck label properties:
+    # Check if G1 and G2 have the same labels, and
+    # check number of nodes per label fits between the two graphs
+    G1_by_label = nx.utils.groups(G1_labels)
+    if any(
+        label not in G1_by_label or not SG_fits(len(G1_by_label[label]), len(nodes))
+        for label, nodes in G2_by_label.items()
+    ):
+        print("failed by labels")
         return False
 
     # Calculate the optimal node ordering
-    node_order = _matching_order(graph_params)
+    node_order = _matching_order(graph_info)
+    order_index = {node: i for i, node in enumerate(node_order)}
+    start_node = node_order[0]
+    args = (graph_info, state_info)
 
     # Initialize the stack
-    stack = []
-    candidates = iter(
-        find_candidates(node_order[0], graph_params, state_params, G1_degree)
-    )
-    stack.append((node_order[0], candidates))
+    stack = [(start_node, iter(find_candidates(start_node, *args)))]
 
-    mapping = state_params.mapping
-    reverse_mapping = state_params.reverse_mapping
+    mapping = state_info.mapping
+    reverse_mapping = state_info.reverse_mapping
 
     # Index of the node from the order, currently being examined
-    matching_node = 1
+    node_number = 0
 
     while stack:
-        current_node, candidate_nodes = stack[-1]
+        current_node, candidate_iter = stack[-1]
 
         try:
-            candidate = next(candidate_nodes)
+            candidate = next(candidate_iter)
         except StopIteration:
-            # If no remaining candidates, return to a previous state, and follow another branch
+            # No more candidates. Can we throw out this node and still get a morphism?
+            if N1 - N2 > node_number - len(mapping):
+                node_number += 1
+                node = node_order[node_number]
+                stack[-1] = (node, iter(find_candidates(node, *args)))
+                continue
+            # No new nodes to try. We must backtrack and try a new branch
             stack.pop()
-            matching_node -= 1
             if stack:
-                # Pop the previously added u-v pair, and look for a different candidate _v for u
-                popped_node1, _ = stack[-1]
-                popped_node2 = mapping[popped_node1]
-                mapping.pop(popped_node1)
-                reverse_mapping.pop(popped_node2)
-                restore_Tinout(popped_node1, popped_node2, graph_params, state_params)
-            continue
+                # Go to previous node and update state
+                node = stack[-1][0]
+                node_number = order_index[node]
 
-        if _feasibility(current_node, candidate, graph_params, state_params):
-            # Terminate if mapping is extended to its full
-            if len(mapping) == G2.number_of_nodes() - 1:
+                cand = mapping[node]
+                mapping.pop(node)
+                reverse_mapping.pop(cand)
+                restore_Tinout(node, cand, graph_info, state_info)
+                continue
+            return
+
+        if _feasibility(current_node, candidate, graph_info, state_info):
+            # Yield mapping if extended to all G1
+            if len(mapping) == G1.number_of_nodes() - 1:
                 cp_mapping = mapping.copy()
                 cp_mapping[current_node] = candidate
                 yield cp_mapping
                 continue
 
-            # Feasibility rules pass, so extend the mapping and update the parameters
+            # Feasibility rules pass, so extend the mapping and update Tinout
             mapping[current_node] = candidate
             reverse_mapping[candidate] = current_node
-            _update_Tinout(current_node, candidate, graph_params, state_params)
+            _update_Tinout(current_node, candidate, graph_info, state_info)
             # Append the next node and its candidates to the stack
-            candidates = iter(
-                find_candidates(
-                    node_order[matching_node], graph_params, state_params, G1_degree
-                )
-            )
-            stack.append((node_order[matching_node], candidates))
-            matching_node += 1
+            node_number += 1
+            node = node_order[node_number]
+            tmp = find_candidates(node, *args)
+            stack.append((node, iter(tmp)))
+            continue
 
 
-def _precheck_label_properties(graph_params):
-    G1, G2, G1_labels, G2_labels, nodes_of_G1Labels, nodes_of_G2Labels, _ = graph_params
-    if any(
-        label not in nodes_of_G1Labels or len(nodes_of_G1Labels[label]) != len(nodes)
-        for label, nodes in nodes_of_G2Labels.items()
-    ):
-        return False
-    return True
+def _init_info(G1, G2, node_label, default_label, PT):
+    SG_fits = operator.eq if PT == "ISO" else operator.le
+    MONO_fits = operator.eq if PT != "MONO" else operator.le
+    directed = G1.is_directed()
 
-
-def _initialize_parameters(G1, G2, G2_degree, node_label=None, default_label=-1):
-    """Initializes all the necessary parameters for VF2++
-
-    Parameters
-    ----------
-    G1,G2: NetworkX Graph or MultiGraph instances.
-        The two graphs to check for isomorphism or monomorphism
-
-    G1_labels,G2_labels: dict
-        The label of every node in G1 and G2 respectively
-
-    Returns
-    -------
-    graph_params: namedtuple
-        Contains all the Graph-related parameters:
-
-        G1,G2
-        G1_labels,G2_labels: dict
-
-    state_params: namedtuple
-        Contains all the State-related parameters:
-
-        mapping: dict
-            The mapping as extended so far. Maps nodes of G1 to nodes of G2
-
-        reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1.
-            It's basically "mapping" reversed
-
-        T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
-            that are not in the mapping, but are neighbors of nodes that are.
-
-        T1_out, T2_out: set
-            Ti_out contains all the nodes from Gi, that are neither in the mapping
-            nor in Ti
-    """
+    # Create the labels dicts based on node_label and default_label
     G1_labels = dict(G1.nodes(data=node_label, default=default_label))
     G2_labels = dict(G2.nodes(data=node_label, default=default_label))
+    G2_by_label = nx.utils.groups(G2_labels)
 
-    graph_params = _GraphParameters(
+    # Create the degree dicts based on graph type
+    if directed:
+        G1_degree = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
+        G2_degree = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
+    else:
+        G1_degree = dict(G1.degree)
+        G2_degree = dict(G2.degree)
+
+    graph_info = _GraphInfo(
+        SG_fits,
+        MONO_fits,
+        directed,
         G1,
         G2,
         G1_labels,
         G2_labels,
-        nx.utils.groups(G1_labels),
-        nx.utils.groups(G2_labels),
-        nx.utils.groups(G2_degree),
+        G1_degree,
+        G2_degree,
+        G2_by_label,
     )
 
+    mapping, rev_mapping = {}, {}
     T1, T1_in = set(), set()
     T2, T2_in = set(), set()
-    if G1.is_directed():
-        T1_tilde, T1_tilde_in = (
-            set(G1.nodes()),
-            set(),
-        )  # todo: do we need Ti_tilde_in? What nodes does it have?
-        T2_tilde, T2_tilde_in = set(G2.nodes()), set()
-    else:
-        T1_tilde, T1_tilde_in = set(G1.nodes()), set()
-        T2_tilde, T2_tilde_in = set(G2.nodes()), set()
+    T1_tilde = set(G1.nodes())
+    T2_tilde = set(G2.nodes())
 
-    state_params = _StateParameters(
-        {},
-        {},
-        T1,
-        T1_in,
-        T1_tilde,
-        T1_tilde_in,
-        T2,
-        T2_in,
-        T2_tilde,
-        T2_tilde_in,
+    state_info = _StateInfo(
+        mapping, rev_mapping, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde
     )
 
-    return graph_params, state_params
+    return graph_info, state_info
 
 
-def _matching_order(graph_params):
+def _matching_order(graph_info):
     """The node ordering as introduced in VF2++.
 
     Notes
@@ -384,27 +373,14 @@ def _matching_order(graph_params):
     will be able to recognize inconsistencies early, proceeding to go deep into
     the search tree only if it's needed.
 
-    Parameters
-    ----------
-    graph_params: namedtuple
-        Contains:
-
-            G1,G2: NetworkX Graph or MultiGraph instances.
-                The two graphs to check for isomorphism or monomorphism.
-
-            G1_labels,G2_labels: dict
-                The label of every node in G1 and G2 respectively.
-
     Returns
     -------
     node_order: list
         The ordering of the nodes.
     """
-    G1, G2, G1_labels, _, _, nodes_of_G2Labels, _ = graph_params
-    if not G1 and not G2:
-        return {}
+    _, _, directed, G1, G2, G1_labels, _, _, _, nodes_of_G2Labels = graph_info
 
-    if G1.is_directed():
+    if directed:
         G1 = G1.to_undirected(as_view=True)
 
     V1_unordered = set(G1.nodes())
@@ -417,7 +393,7 @@ def _matching_order(graph_params):
         rarest_nodes = [
             n for n in V1_unordered if label_rarity[G1_labels[n]] == max_rarity
         ]
-        max_node = max(rarest_nodes, key=G1.degree)
+        max_node = max(rarest_nodes, key=G1.degree.__getitem__)
 
         for dlevel_nodes in nx.bfs_layers(G1, max_node):
             nodes_to_add = dlevel_nodes.copy()
@@ -445,137 +421,97 @@ def _matching_order(graph_params):
     return node_order
 
 
-def _find_candidates(
-    u, graph_params, state_params, G1_degree
-):  # todo: make the 4th argument the degree of u
-    """Given node u of G1, finds the candidates of u from G2.
-
-    Parameters
-    ----------
-    u: Graph node
-        The node from G1 for which to find the candidates from G2.
-
-    graph_params: namedtuple
-        Contains all the Graph-related parameters:
-
-        G1,G2: NetworkX Graph or MultiGraph instances.
-            The two graphs to check for isomorphism or monomorphism
-
-        G1_labels,G2_labels: dict
-            The label of every node in G1 and G2 respectively
-
-    state_params: namedtuple
-        Contains all the State-related parameters:
-
-        mapping: dict
-            The mapping as extended so far. Maps nodes of G1 to nodes of G2
-
-        reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes
-            of G1. It's basically "mapping" reversed
-
-        T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
-            that are not in the mapping, but are neighbors of nodes that are.
-
-        T1_tilde, T2_tilde: set
-            Ti_tilde contains all the nodes from Gi, that are neither in the
-            mapping nor in Ti
-
-    Returns
-    -------
-    candidates: set
-        The nodes from G2 which are candidates for u.
-    """
-    G1, G2, G1_labels, _, _, nodes_of_G2Labels, G2_nodes_of_degree = graph_params
-    mapping, reverse_mapping, _, _, _, _, _, _, T2_tilde, _ = state_params
+def _find_candidates(u, graph_info, state_info):
+    """Given node u of G1, finds the candidates of u from G2."""
+    # TODO: move checks that don't depend on state to _init_info and store in
+    # dict keyed by node to sets of cands based solely on label/degree/loop
+    # Then find_candidate shrinks this for any rules determined by the mapping
+    # state. That is syntatic feasibility. This moves "CUT" into find_candidates.
+    # The point is: why put more candidates on the stack if we can test them here?
+    SG_fits, MONO_fits, _, G1, G2, G1_lbls, _, G1_deg, G2_deg, G2_by_label = graph_info
+    mapping, reverse_mapping, _, _, _, _, _, T2_tilde = state_info
+    u_label, u_deg, u_loops = G1_lbls[u], G1_deg[u], G1.number_of_edges(u, u)
 
     covered_nbrs = [nbr for nbr in G1[u] if nbr in mapping]
-    if not covered_nbrs:
-        candidates = set(nodes_of_G2Labels[G1_labels[u]])
-        candidates.intersection_update(G2_nodes_of_degree[G1_degree[u]])
-        candidates.intersection_update(T2_tilde)
-        candidates.difference_update(reverse_mapping)
-        if G1.is_multigraph():
-            candidates.difference_update(
-                {
-                    node
-                    for node in candidates
-                    if G1.number_of_edges(u, u) != G2.number_of_edges(node, node)
-                }
-            )
-        return candidates
+    if covered_nbrs:
+        # cands = G2_by_label[u_label].difference(reverse_mapping)
+        nbr = covered_nbrs[0]
+        cands = G2._adj[mapping[nbr]].keys() & G2_by_label[u_label]
+        cands -= reverse_mapping.keys()
 
-    nbr1 = covered_nbrs[0]
-    common_nodes = set(G2[mapping[nbr1]])
+        for nbr in covered_nbrs[1:]:
+            cands.intersection_update(G2._adj[mapping[nbr]])
 
-    for nbr1 in covered_nbrs[1:]:
-        common_nodes.intersection_update(G2[mapping[nbr1]])
+        result = {
+            n
+            for n in cands
+            if MONO_fits(u_loops, G2.number_of_edges(n, n))
+            if SG_fits(u_deg, G2_deg[n])
+        }
+        # if no cands, return for ISO or IND, but for MONO go on as if no covered nbrs
+        if result or MONO_fits == operator.eq:
+            return result
 
-    common_nodes.difference_update(reverse_mapping)
-    common_nodes.intersection_update(G2_nodes_of_degree[G1_degree[u]])
-    common_nodes.intersection_update(nodes_of_G2Labels[G1_labels[u]])
-    if G1.is_multigraph():
-        common_nodes.difference_update(
-            {
-                node
-                for node in common_nodes
-                if G1.number_of_edges(u, u) != G2.number_of_edges(node, node)
-            }
-        )
-    return common_nodes
+    # covered nbrs don't give any candidates. Look at uncovered nbrs
+    cands = {v for v in G2_by_label[u_label] if SG_fits(u_deg, G2_deg[v])}
+    if MONO_fits == operator.eq:
+        cands.intersection_update(T2_tilde)
+    else:
+        cands.difference_update(reverse_mapping)
+    result = {n for n in cands if MONO_fits(u_loops, G2.number_of_edges(n, n))}
+    return result
 
 
-def _find_candidates_Di(u, graph_params, state_params, G1_degree):
-    G1, G2, G1_labels, _, _, nodes_of_G2Labels, G2_nodes_of_degree = graph_params
-    mapping, reverse_mapping, _, _, _, _, _, _, T2_tilde, _ = state_params
+def _find_candidates_Di(u, graph_info, state_info):
+    SG_fits, MONO_fits, _, G1, G2, G1_lbls, _, G1_deg, G2_deg, G2_by_label = graph_info
+    mapping, reverse_mapping, _, _, _, _, _, T2_tilde = state_info
+    u_label, u_deg, u_loops = G1_lbls[u], G1_deg[u], G1.number_of_edges(u, u)
 
     covered_successors = [succ for succ in G1[u] if succ in mapping]
     covered_predecessors = [pred for pred in G1.pred[u] if pred in mapping]
 
-    if not (covered_successors or covered_predecessors):
-        candidates = set(nodes_of_G2Labels[G1_labels[u]])
-        candidates.intersection_update(G2_nodes_of_degree[G1_degree[u]])
-        candidates.intersection_update(T2_tilde)
-        candidates.difference_update(reverse_mapping)
-        if G1.is_multigraph():
-            candidates.difference_update(
-                {
-                    node
-                    for node in candidates
-                    if G1.number_of_edges(u, u) != G2.number_of_edges(node, node)
-                }
-            )
-        return candidates
+    if covered_successors or covered_predecessors:
+        if covered_successors:
+            succ = covered_successors[0]
+            cands = G2._pred[mapping[succ]].keys() - reverse_mapping.keys()
 
-    if covered_successors:
-        succ1 = covered_successors[0]
-        common_nodes = set(G2.pred[mapping[succ1]])
+            for succ in covered_successors[1:]:
+                cands.intersection_update(G2._pred[mapping[succ]])
+        else:
+            pred = covered_predecessors.pop()
+            cands = set(G2._adj[mapping[pred]])
+            cands.difference_update(reverse_mapping)
 
-        for succ1 in covered_successors[1:]:
-            common_nodes.intersection_update(G2.pred[mapping[succ1]])
+        for pred in covered_predecessors:
+            cands.intersection_update(G2._adj[mapping[pred]])
+
+        cands.intersection_update(G2_by_label[u_label])
+        result = {
+            v
+            for v in cands
+            if MONO_fits(u_loops, G2.number_of_edges(v, v))
+            if all(SG_fits(ud, vd) for ud, vd in zip(u_deg, G2_deg[v]))
+        }
+        # if no cands, return for ISO or IND, but for MONO go on as if no covered nbrs
+        if result or MONO_fits == operator.eq:
+            return result
+
+    # covered nbrs don't give any candidates. Look at uncovered nbrs
+    cands = set(G2_by_label[u_label])
+    if MONO_fits == operator.eq:
+        cands.intersection_update(T2_tilde)
     else:
-        pred1 = covered_predecessors.pop()
-        common_nodes = set(G2[mapping[pred1]])
-
-    for pred1 in covered_predecessors:
-        common_nodes.intersection_update(G2[mapping[pred1]])
-
-    common_nodes.difference_update(reverse_mapping)
-    common_nodes.intersection_update(G2_nodes_of_degree[G1_degree[u]])
-    common_nodes.intersection_update(nodes_of_G2Labels[G1_labels[u]])
-    if G1.is_multigraph():
-        common_nodes.difference_update(
-            {
-                node
-                for node in common_nodes
-                if G1.number_of_edges(u, u) != G2.number_of_edges(node, node)
-            }
-        )
-    return common_nodes
+        cands.difference_update(reverse_mapping)
+    result = {
+        n
+        for n in cands
+        if MONO_fits(u_loops, G2.number_of_edges(n, n))
+        if all(SG_fits(*ds) for ds in zip(u_deg, G2_deg[n]))
+    }
+    return result
 
 
-def _feasibility(node1, node2, graph_params, state_params):
+def _feasibility(node1, node2, graph_info, state_info):
     """Given a candidate pair of nodes u and v from G1 and G2 respectively,
     checks if it's feasible to extend the mapping, i.e. if u and v can be matched.
 
@@ -583,252 +519,134 @@ def _feasibility(node1, node2, graph_params, state_params):
     -----
     This function performs all the necessary checking by applying both consistency
     and cutting rules.
-
-    Parameters
-    ----------
-    node1, node2: Graph node
-        The candidate pair of nodes being checked for matching
-
-    graph_params: namedtuple
-        Contains all the Graph-related parameters:
-
-        G1,G2: NetworkX Graph or MultiGraph instances.
-            The two graphs to check for isomorphism or monomorphism
-
-        G1_labels,G2_labels: dict
-            The label of every node in G1 and G2 respectively
-
-    state_params: namedtuple
-        Contains all the State-related parameters:
-
-        mapping: dict
-            The mapping as extended so far. Maps nodes of G1 to nodes of G2
-
-        reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes
-            of G1. It's basically "mapping" reversed
-
-        T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
-            that are not in the mapping, but are neighbors of nodes that are.
-
-        T1_out, T2_out: set
-            Ti_out contains all the nodes from Gi, that are neither in the mapping
-            nor in Ti
-
-    Returns
-    -------
-    True if all checks are successful, False otherwise.
     """
-    G1 = graph_params.G1
+    G1 = graph_info.G1
 
-    if _cut_PT(node1, node2, graph_params, state_params):
+    # does this node pair follow the rules of morphism PT
+    if not _consistent(node1, node2, graph_info, state_info):
         return False
 
-    if G1.is_multigraph():
-        if not _consistent_PT(node1, node2, graph_params, state_params):
-            return False
+    # if we look ahead to the next nodes mapped will this fail then?
+    if _cut(node1, node2, graph_info, state_info):
+        return False
 
     return True
 
 
-def _cut_PT(u, v, graph_params, state_params):
-    """Implements the cutting rules for the ISO problem.
+def _cut(u, v, graph_info, state_info):
+    SG_fits, MONO_fits, directed, G1, G2, G1_labels, G2_labels, _, _, _ = graph_info
+    _, _, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde = state_info
+    multigraph = G1.is_multigraph() or G2.is_multigraph()
 
-    Parameters
-    ----------
-    u, v: Graph node
-        The two candidate nodes being examined.
+    unbrs, vnbrs = G1._adj[u], G2._adj[v]
+    u_labels_successors = nx.utils.groups({nbr: G1_labels[nbr] for nbr in unbrs})
+    v_labels_successors = nx.utils.groups({nbr: G2_labels[nbr] for nbr in vnbrs})
 
-    graph_params: namedtuple
-        Contains all the Graph-related parameters:
-
-        G1,G2: NetworkX Graph or MultiGraph instances.
-            The two graphs to check for isomorphism or monomorphism
-
-        G1_labels,G2_labels: dict
-            The label of every node in G1 and G2 respectively
-
-    state_params: namedtuple
-        Contains all the State-related parameters:
-
-        mapping: dict
-            The mapping as extended so far. Maps nodes of G1 to nodes of G2
-
-        reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes
-            of G1. It's basically "mapping" reversed
-
-        T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
-            that are not in the mapping, but are neighbors of nodes that are.
-
-        T1_tilde, T2_tilde: set
-            Ti_out contains all the nodes from Gi, that are neither in the
-            mapping nor in Ti
-
-    Returns
-    -------
-    True if we should prune this branch, i.e. the node pair failed the cutting checks. False otherwise.
-    """
-    G1, G2, G1_labels, G2_labels, _, _, _ = graph_params
-    (
-        _,
-        _,
-        T1,
-        T1_in,
-        T1_tilde,
-        _,
-        T2,
-        T2_in,
-        T2_tilde,
-        _,
-    ) = state_params
-
-    u_labels_predecessors, v_labels_predecessors = {}, {}
-    if G1.is_directed():
-        u_labels_predecessors = nx.utils.groups(
-            {n1: G1_labels[n1] for n1 in G1.pred[u]}
-        )
-        v_labels_predecessors = nx.utils.groups(
-            {n2: G2_labels[n2] for n2 in G2.pred[v]}
-        )
-
-        if set(u_labels_predecessors.keys()) != set(v_labels_predecessors.keys()):
-            return True
-
-    u_labels_successors = nx.utils.groups({n1: G1_labels[n1] for n1 in G1[u]})
-    v_labels_successors = nx.utils.groups({n2: G2_labels[n2] for n2 in G2[v]})
-
-    # if the neighbors of u, do not have the same labels as those of v, NOT feasible.
-    if set(u_labels_successors.keys()) != set(v_labels_successors.keys()):
+    if not SG_fits(u_labels_successors.keys(), v_labels_successors.keys()):
         return True
 
-    for label, G1_nbh in u_labels_successors.items():
-        G2_nbh = v_labels_successors[label]
+    if directed:
+        upreds, vpreds = G1._pred[u], G2._pred[v]
+        u_labels_predecessors = nx.utils.groups({n1: G1_labels[n1] for n1 in upreds})
+        v_labels_predecessors = nx.utils.groups({n2: G2_labels[n2] for n2 in vpreds})
 
-        if G1.is_multigraph():
-            # Check for every neighbor in the neighborhood, if u-nbr1 has same edges as v-nbr2
-            u_nbrs_edges = sorted(G1.number_of_edges(u, x) for x in G1_nbh)
-            v_nbrs_edges = sorted(G2.number_of_edges(v, x) for x in G2_nbh)
-            if any(
-                u_nbr_edges != v_nbr_edges
-                for u_nbr_edges, v_nbr_edges in zip(u_nbrs_edges, v_nbrs_edges)
-            ):
+        # check matching pred labels before looping over individual successors
+        if not SG_fits(u_labels_predecessors.keys(), v_labels_predecessors.keys()):
+            return True
+
+    if v_labels_successors:
+        for label, unbrs in u_labels_successors.items():
+            vnbrs = v_labels_successors[label]
+
+            if multigraph:
+                # Check multiedges to ensure enough edges in G to fit SG
+                # use sorted edge counts. cut if len_G < len(SG) for any count-pair
+                ucnts = sorted((G1.number_of_edges(u, x) for x in unbrs), reverse=True)
+                vcnts = sorted((G2.number_of_edges(v, x) for x in vnbrs), reverse=True)
+                if any(not MONO_fits(uc, vc) for uc, vc in zip(ucnts, vcnts)):
+                    return True
+            if not SG_fits(len(T1 & unbrs), len(T2 & vnbrs)):
                 return True
-
-        if len(T1.intersection(G1_nbh)) != len(T2.intersection(G2_nbh)):
-            return True
-        if len(T1_tilde.intersection(G1_nbh)) != len(T2_tilde.intersection(G2_nbh)):
-            return True
-        if G1.is_directed() and len(T1_in.intersection(G1_nbh)) != len(
-            T2_in.intersection(G2_nbh)
-        ):
-            return True
-
-    if not G1.is_directed():
+            if directed and not SG_fits(len(T1_in & unbrs), len(T2_in & vnbrs)):
+                return True
+            if MONO_fits is not operator.le:  # Only check if PT is not MONO
+                if not SG_fits(len(T1_tilde & unbrs), len(T2_tilde & vnbrs)):
+                    return True
+    if not directed:
         return False
 
-    for label, G1_pred in u_labels_predecessors.items():
-        G2_pred = v_labels_predecessors[label]
+    # same for predecessors
+    if v_labels_predecessors:
+        for label, upred in u_labels_predecessors.items():
+            vpred = v_labels_predecessors[label]
 
-        if G1.is_multigraph():
-            # Check for every neighbor in the neighborhood, if u-nbr1 has same edges as v-nbr2
-            u_pred_edges = sorted(G1.number_of_edges(u, x) for x in G1_pred)
-            v_pred_edges = sorted(G2.number_of_edges(v, x) for x in G2_pred)
-            if any(
-                u_nbr_edges != v_nbr_edges
-                for u_nbr_edges, v_nbr_edges in zip(u_pred_edges, v_pred_edges)
-            ):
+            if multigraph:
+                ucnts = sorted((G1.number_of_edges(u, x) for x in upred), reverse=True)
+                vcnts = sorted((G2.number_of_edges(v, x) for x in vpred), reverse=True)
+                mess = [(uc, vc) for uc, vc in zip(ucnts, vcnts)]
+                if any(not MONO_fits(uc, vc) for uc, vc in zip(ucnts, vcnts)):
+                    return True
+            if not SG_fits(len(T1 & upred), len(T2 & vpred)):
                 return True
-
-        if len(T1.intersection(G1_pred)) != len(T2.intersection(G2_pred)):
-            return True
-        if len(T1_tilde.intersection(G1_pred)) != len(T2_tilde.intersection(G2_pred)):
-            return True
-        if len(T1_in.intersection(G1_pred)) != len(T2_in.intersection(G2_pred)):
-            return True
-
+            if directed and not SG_fits(len(T1_in & upred), len(T2_in & vpred)):
+                return True
+            if MONO_fits is not operator.le:  # Only check if PT is not MONO
+                if not SG_fits(len(T1_tilde & upred), len(T2_tilde & vpred)):
+                    return True
     return False
 
 
-def _consistent_PT(u, v, graph_params, state_params):
-    """Checks the consistency of extending the mapping using the current node pair.
+def _consistent(u, v, graph_info, state_info):
+    _, MONO_op, directed, G1, G2, *_ = graph_info
+    mapping, rev_map = state_info.mapping, state_info.reverse_mapping
+    multigraph = G1.is_multigraph() or G2.is_multigraph()
+    unbrs, vnbrs = G1._adj[u], G2._adj[v]
+    if directed:
+        upreds, vpreds = G1._pred[u], G2._pred[v]
 
-    Parameters
-    ----------
-    u, v: Graph node
-        The two candidate nodes being examined.
-
-    graph_params: namedtuple
-        Contains all the Graph-related parameters:
-
-        G1,G2: NetworkX Graph or MultiGraph instances.
-            The two graphs to check for isomorphism or monomorphism
-
-        G1_labels,G2_labels: dict
-            The label of every node in G1 and G2 respectively
-
-    state_params: namedtuple
-        Contains all the State-related parameters:
-
-        mapping: dict
-            The mapping as extended so far. Maps nodes of G1 to nodes of G2
-
-        reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1.
-            It's basically "mapping" reversed
-
-        T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
-            that are not in the mapping, but are neighbors of nodes that are.
-
-        T1_out, T2_out: set
-            Ti_out contains all the nodes from Gi, that are neither in the mapping
-            nor in Ti
-
-    Returns
-    -------
-    True if the pair passes all the consistency checks successfully. False otherwise.
-    """
-    G1, G2 = graph_params.G1, graph_params.G2
-    mapping, reverse_mapping = state_params.mapping, state_params.reverse_mapping
-
-    for neighbor in G1[u]:
-        if neighbor in mapping:
-            if G1.number_of_edges(u, neighbor) != G2.number_of_edges(
-                v, mapping[neighbor]
-            ):
+    if not multigraph:
+        if any(mapping[n] not in vnbrs for n in unbrs if n in mapping):
+            return False
+        if MONO_op == operator.eq:
+            if any(rev_map[n] not in unbrs for n in vnbrs if n in rev_map):
                 return False
 
-    for neighbor in G2[v]:
-        if neighbor in reverse_mapping:
-            if G1.number_of_edges(u, reverse_mapping[neighbor]) != G2.number_of_edges(
-                v, neighbor
-            ):
-                return False
+        if not directed:
+            return True
 
-    if not G1.is_directed():
+        if any(mapping[n] not in vpreds for n in upreds if n in mapping):
+            return False
+        if MONO_op == operator.eq:
+            if any(rev_map[n] not in upreds for n in vpreds if n in rev_map):
+                return False
         return True
 
-    for predecessor in G1.pred[u]:
-        if predecessor in mapping:
-            if G1.number_of_edges(predecessor, u) != G2.number_of_edges(
-                mapping[predecessor], v
+    else:
+        G1ne, G2ne = G1.number_of_edges, G2.number_of_edges
+        if not all(
+            MONO_op(G1ne(u, n), G2ne(v, mapping[n])) for n in unbrs if n in mapping
+        ):
+            return False
+        if MONO_op == operator.eq:
+            if not all(
+                MONO_op(G1ne(u, rev_map[n]), G2ne(v, n)) for n in vnbrs if n in rev_map
             ):
                 return False
 
-    for predecessor in G2.pred[v]:
-        if predecessor in reverse_mapping:
-            if G1.number_of_edges(
-                reverse_mapping[predecessor], u
-            ) != G2.number_of_edges(predecessor, v):
+        if not directed:
+            return True
+
+        if not all(
+            MONO_op(G1ne(n, u), G2ne(mapping[n], v)) for n in upreds if n in mapping
+        ):
+            return False
+        if MONO_op == operator.eq:
+            if any(G1ne(rev_map[n], u) != G2ne(n, v) for n in vpreds if n in rev_map):
                 return False
+        return True
 
-    return True
 
-
-def _update_Tinout(new_node1, new_node2, graph_params, state_params):
+def _update_Tinout(new_node1, new_node2, graph_info, state_info):
     """Updates the Ti/Ti_out (i=1,2) when a new node pair u-v is added to the mapping.
 
     Notes
@@ -839,56 +657,12 @@ def _update_Tinout(new_node1, new_node2, graph_params, state_params):
     checking which nodes satisfy the necessary conditions. Instead, in every step
     of the algorithm we focus exclusively on the two nodes that are being added
     to the mapping, incrementally updating Ti/Ti_out.
-
-    Parameters
-    ----------
-    new_node1, new_node2: Graph node
-        The two new nodes, added to the mapping.
-
-    graph_params: namedtuple
-        Contains all the Graph-related parameters:
-
-        G1,G2: NetworkX Graph or MultiGraph instances.
-            The two graphs to check for isomorphism or monomorphism
-
-        G1_labels,G2_labels: dict
-            The label of every node in G1 and G2 respectively
-
-    state_params: namedtuple
-        Contains all the State-related parameters:
-
-        mapping: dict
-            The mapping as extended so far. Maps nodes of G1 to nodes of G2
-
-        reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1.
-            It's basically "mapping" reversed
-
-        T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
-            that are not in the mapping, but are neighbors of nodes that are.
-
-        T1_tilde, T2_tilde: set
-            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti
     """
-    G1, G2, _, _, _, _, _ = graph_params
-    (
-        mapping,
-        reverse_mapping,
-        T1,
-        T1_in,
-        T1_tilde,
-        T1_tilde_in,
-        T2,
-        T2_in,
-        T2_tilde,
-        T2_tilde_in,
-    ) = state_params
+    _, _, directed, G1, G2, *_ = graph_info
+    mapping, rev_mapping, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde = state_info
 
-    uncovered_successors_G1 = {succ for succ in G1[new_node1] if succ not in mapping}
-    uncovered_successors_G2 = {
-        succ for succ in G2[new_node2] if succ not in reverse_mapping
-    }
+    uncovered_successors_G1 = {s for s in G1[new_node1] if s not in mapping}
+    uncovered_successors_G2 = {s for s in G2[new_node2] if s not in rev_mapping}
 
     # Add the uncovered neighbors of node1 and node2 in T1 and T2 respectively
     T1.update(uncovered_successors_G1)
@@ -901,78 +675,30 @@ def _update_Tinout(new_node1, new_node2, graph_params, state_params):
     T1_tilde.discard(new_node1)
     T2_tilde.discard(new_node2)
 
-    if not G1.is_directed():
+    if not directed:
         return
 
-    uncovered_predecessors_G1 = {
-        pred for pred in G1.pred[new_node1] if pred not in mapping
-    }
-    uncovered_predecessors_G2 = {
-        pred for pred in G2.pred[new_node2] if pred not in reverse_mapping
-    }
+    uncovered_preds_G1 = {p for p in G1.pred[new_node1] if p not in mapping}
+    uncovered_preds_G2 = {p for p in G2.pred[new_node2] if p not in rev_mapping}
 
-    T1_in.update(uncovered_predecessors_G1)
-    T2_in.update(uncovered_predecessors_G2)
+    T1_in.update(uncovered_preds_G1)
+    T2_in.update(uncovered_preds_G2)
     T1_in.discard(new_node1)
     T2_in.discard(new_node2)
 
-    T1_tilde.difference_update(uncovered_predecessors_G1)
-    T2_tilde.difference_update(uncovered_predecessors_G2)
+    T1_tilde.difference_update(uncovered_preds_G1)
+    T2_tilde.difference_update(uncovered_preds_G2)
     T1_tilde.discard(new_node1)
     T2_tilde.discard(new_node2)
 
 
-def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
+def _restore_Tinout(popped_node1, popped_node2, graph_info, state_info):
     """Restores the previous version of Ti/Ti_out when a node pair is deleted
     from the mapping.
-
-    Parameters
-    ----------
-    popped_node1, popped_node2: Graph node
-        The two nodes deleted from the mapping.
-
-    graph_params: namedtuple
-        Contains all the Graph-related parameters:
-
-        G1,G2: NetworkX Graph or MultiGraph instances.
-            The two graphs to check for isomorphism or monomorphism
-
-        G1_labels,G2_labels: dict
-            The label of every node in G1 and G2 respectively
-
-    state_params: namedtuple
-        Contains all the State-related parameters:
-
-        mapping: dict
-            The mapping as extended so far. Maps nodes of G1 to nodes of G2
-
-        reverse_mapping: dict
-            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1.
-            It's basically "mapping" reversed
-
-        T1, T2: set
-            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes
-            that are not in the mapping, but are neighbors of nodes that are.
-
-        T1_tilde, T2_tilde: set
-            Ti_out contains all the nodes from Gi, that are neither in the mapping
-            nor in Ti
     """
-    # If the node we want to remove from the mapping, has at least one covered
-    # neighbor, add it to T1.
-    G1, G2, _, _, _, _, _ = graph_params
-    (
-        mapping,
-        reverse_mapping,
-        T1,
-        T1_in,
-        T1_tilde,
-        T1_tilde_in,
-        T2,
-        T2_in,
-        T2_tilde,
-        T2_tilde_in,
-    ) = state_params
+    # If node to remove from the mapping has >=1 covered neighbor, add it to T1
+    _, _, directed, G1, G2, *_ = graph_info
+    mapping, reverse_mapping, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde = state_info
 
     is_added = False
     for neighbor in G1[popped_node1]:
@@ -1008,21 +734,10 @@ def _restore_Tinout(popped_node1, popped_node2, graph_params, state_params):
         T2_tilde.add(popped_node2)
 
 
-def _restore_Tinout_Di(popped_node1, popped_node2, graph_params, state_params):
-    # If the node we want to remove from the mapping, has at least one covered neighbor, add it to T1.
-    G1, G2, _, _, _, _, _ = graph_params
-    (
-        mapping,
-        reverse_mapping,
-        T1,
-        T1_in,
-        T1_tilde,
-        T1_tilde_in,
-        T2,
-        T2_in,
-        T2_tilde,
-        T2_tilde_in,
-    ) = state_params
+def _restore_Tinout_Di(popped_node1, popped_node2, graph_info, state_info):
+    # If the node to remove from the mapping has >=1 covered neighbor, add it to T1.
+    _, _, directed, G1, G2, *_ = graph_info
+    mapping, reverse_mapping, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde = state_info
 
     is_added = False
     for successor in G1[popped_node1]:
