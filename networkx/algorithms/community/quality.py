@@ -9,14 +9,13 @@ import math
 from itertools import combinations
 
 import networkx as nx
-from networkx import NetworkXError
 from networkx.algorithms.community.community_utils import is_partition
 from networkx.utils.decorators import argmap
 
 __all__ = ["modularity", "partition_quality", "constant_potts_model"]
 
 
-class NotAPartition(NetworkXError):
+class NotAPartition(nx.NetworkXError):
     """Raised if a given collection is not a partition."""
 
     def __init__(self, G, collection):

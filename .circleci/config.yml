@@ -60,6 +60,7 @@ jobs:
           command: |
             source venv/bin/activate
             pip install -e '.[default,test,extra,example,doc]'
+            pip install -e .
             pip list
 
       - run:

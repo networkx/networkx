@@ -142,7 +142,7 @@ def test_directed_havel_hakimi():
     # Test non-graphical sequence
     dout = [1000, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
     din = [103, 102, 102, 102, 102, 102, 102, 102, 102, 102]
-    pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
+    pytest.raises(nx.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
     # Test valid sequences
     dout = [1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
     din = [2, 2, 2, 2, 2, 2, 2, 2, 0, 2]
@@ -153,10 +153,10 @@ def test_directed_havel_hakimi():
     assert sorted(din) == sorted(din2)
     # Test unequal sums
     din = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-    pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
+    pytest.raises(nx.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
     # Test for negative values
     din = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -2]
-    pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
+    pytest.raises(nx.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
 
 
 @pytest.mark.parametrize(

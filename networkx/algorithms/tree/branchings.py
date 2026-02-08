@@ -736,7 +736,7 @@ def maximum_spanning_arborescence(
     nx._clear_cache(B)
 
     if not is_arborescence(B):
-        raise nx.exception.NetworkXException("No maximum spanning arborescence in G.")
+        raise nx.NetworkXException("No maximum spanning arborescence in G.")
 
     return B
 
@@ -754,7 +754,7 @@ def minimum_spanning_arborescence(
     )
 
     if not is_arborescence(B):
-        raise nx.exception.NetworkXException("No minimum spanning arborescence in G.")
+        raise nx.NetworkXException("No minimum spanning arborescence in G.")
 
     return B
 

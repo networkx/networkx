@@ -161,7 +161,10 @@ def to_agraph(N):
         a = A.get_node(n)
         for key, val in nodedata.items():
             if key == "pos":
-                a.attr["pos"] = f"{val[0]},{val[1]}!"
+                if isinstance(val, str):
+                    a.attr["pos"] = val
+                else:
+                    a.attr["pos"] = f"{val[0]},{val[1]}!"
             else:
                 a.attr[key] = str(val)
 

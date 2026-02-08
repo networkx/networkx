@@ -33,7 +33,6 @@ __all__ = [
 from functools import wraps
 
 import networkx as nx
-from networkx.exception import NetworkXError
 from networkx.generators.classic import (
     complete_graph,
     cycle_graph,
@@ -57,7 +56,7 @@ def _raise_on_directed(func):
         if create_using is not None:
             G = nx.empty_graph(create_using=create_using)
             if G.is_directed():
-                raise NetworkXError("Directed Graph not supported in create_using")
+                raise nx.NetworkXError("Directed Graph not supported in create_using")
         return func(*args, **kwargs)
 
     return wrapper
@@ -121,7 +120,7 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
     # start with the n-cycle
     G = cycle_graph(n, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     G.name = "LCF_graph"
     nodes = sorted(G)
 
@@ -824,13 +823,13 @@ def generalized_petersen_graph(n, k, *, create_using=None):
     .. [2] https://en.wikipedia.org/wiki/Generalized_Petersen_graph
     """
     if n <= 2:
-        raise NetworkXError(f"n >= 3 required. Got {n=}")
+        raise nx.NetworkXError(f"n >= 3 required. Got {n=}")
     if k < 1 or k > n / 2:
-        raise NetworkXError(f" Got {n=} {k=}. Need 1 <= k <= n/2")
+        raise nx.NetworkXError(f" Got {n=} {k=}. Need 1 <= k <= n/2")
 
     G = nx.cycle_graph(range(n), create_using=create_using)  # u-nodes
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported in create_using")
+        raise nx.NetworkXError("Directed Graph not supported in create_using")
     for i in range(n):
         G.add_edge(i, n + i)  # add v-nodes and u to v edges
         G.add_edge(n + i, n + (i + k) % n)  # edge from v_i to v_(i+k)%n
