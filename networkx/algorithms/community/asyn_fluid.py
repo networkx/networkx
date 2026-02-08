@@ -4,7 +4,6 @@ from collections import Counter
 
 import networkx as nx
 from networkx.algorithms.components import is_connected
-from networkx.exception import NetworkXError
 from networkx.utils import groups, not_implemented_for, py_random_state
 
 __all__ = ["asyn_fluidc"]
@@ -69,13 +68,13 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
     """
     # Initial checks
     if not isinstance(k, int):
-        raise NetworkXError("k must be an integer.")
+        raise nx.NetworkXError("k must be an integer.")
     if not k > 0:
-        raise NetworkXError("k must be greater than 0.")
+        raise nx.NetworkXError("k must be greater than 0.")
     if not is_connected(G):
-        raise NetworkXError("Fluid Communities require connected Graphs.")
+        raise nx.NetworkXError("Fluid Communities require connected Graphs.")
     if len(G) < k:
-        raise NetworkXError("k cannot be bigger than the number of nodes.")
+        raise nx.NetworkXError("k cannot be bigger than the number of nodes.")
     if max_iter <= 0:
         msg = f"{max_iter=} must be greater than 0"
         raise ValueError(msg)

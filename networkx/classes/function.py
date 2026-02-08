@@ -448,6 +448,32 @@ def edge_subgraph(G, edges):
     [0, 1, 3, 4]
     >>> list(H.edges)
     [(0, 1), (3, 4)]
+
+    For multi graphs, `edges` must include the edge keys:
+
+    >>> G = nx.MultiGraph(G)
+    >>> H = nx.edge_subgraph(G, [(0, 1, 0), (3, 4, 0)])
+    >>> list(H.edges)
+    [(0, 1, 0), (3, 4, 0)]
+
+    Edge attributes can be used to filter multiedges:
+
+    >>> G.add_edge(0, 1, color="blue")
+    1
+    >>> G.add_edge(0, 1, color="green", weight=10)
+    2
+    >>> H = nx.edge_subgraph(
+    ...     G,
+    ...     (
+    ...         (u, v, k)
+    ...         for u, v, k, clr in G.edges(keys=True, data="color")
+    ...         if clr == "green"
+    ...     ),
+    ... )
+    >>> H.edges(keys=True, data=True)
+    MultiEdgeDataView([(0, 1, 2, {'color': 'green', 'weight': 10})])
+
+
     """
     nxf = nx.filters
     edges = set(edges)

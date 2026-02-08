@@ -1,6 +1,9 @@
 """Floyd-Warshall algorithm for shortest paths."""
 
+from collections import defaultdict
+
 import networkx as nx
+from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = [
     "floyd_warshall",
@@ -9,6 +12,28 @@ __all__ = [
     "floyd_warshall_numpy",
     "floyd_warshall_tree",
 ]
+
+
+def _init_pred_dist(G, weight):
+    """Initialize pred and dist to be used in Floyd Warshall algorithms"""
+    # dictionary-of-dictionaries representation for dist and pred
+    # use some defaultdict magick here
+    # for dist the default is the floating point inf value
+    dist = defaultdict(lambda: defaultdict(lambda: float("inf")))
+    pred = defaultdict(dict)
+    # initialize path distance dictionary to be the adjacency matrix
+    # also set the distance to self to 0 (zero diagonal)
+    weight = _weight_function(G, weight)
+    for u, unbr in G._adj.items():
+        for v, e_attr in unbr.items():
+            cost = weight(u, v, e_attr)
+            if cost is not None:  # for hidden edge, weight() returns None
+                dist[u][v] = cost
+                pred[u][v] = u
+        if dist[u][u] < 0:  # negative self loop
+            raise nx.NetworkXUnbounded("Negative cycle detected.")
+        dist[u][u] = 0
+    return pred, dist
 
 
 @nx._dispatchable(edge_attrs="weight")
@@ -64,6 +89,12 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     ------
     NetworkXError
         If nodelist is not a list of the nodes in G.
+
+    NetworkXUnbounded
+        If the (di)graph contains a negative (di)cycle, the
+        algorithm raises an exception to indicate the presence of the
+        negative (di)cycle.  Note: any negative weight edge in an
+        undirected graph is a negative cycle.
     """
     import numpy as np
 
@@ -80,10 +111,14 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
         G, nodelist, multigraph_weight=min, weight=weight, nonedge=np.inf
     )
     n, m = A.shape
+    if np.any(np.diag(A) < 0):
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
     np.fill_diagonal(A, 0)  # diagonal elements should be zero
     for i in range(n):
         # The second term has the same shape as A due to broadcasting
         A = np.minimum(A, A[i, :][np.newaxis, :] + A[:, i][:, np.newaxis])
+    if np.any(np.diag(A) < 0):
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
     return A
 
 
@@ -104,8 +139,18 @@ def floyd_warshall_tree(G, weight="weight"):
     ----------
     G : NetworkX graph
 
-    weight : string, optional (default= 'weight')
-        Edge data key corresponding to the edge weight.
+    weight : string or function (default= 'weight')
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -114,6 +159,14 @@ def floyd_warshall_tree(G, weight="weight"):
         the shortest path. The distance output is a dict keyed by source
         node to a dict keyed by target node to the distance value of the
         shortest path between the source and target.
+
+    Raises
+    ------
+    NetworkXUnbounded
+        If the (di)graph contains a negative (di)cycle, the
+        algorithm raises an exception to indicate the presence of the
+        negative (di)cycle.  Note: any negative weight edge in an
+        undirected graph is a negative cycle.
 
     Examples
     --------
@@ -161,26 +214,8 @@ def floyd_warshall_tree(G, weight="weight"):
        Ars Math. Contemp. 22, no. 1 (2022).
        https://doi.org/10.26493/1855-3974.2467.497
     """
-    from collections import defaultdict
-
-    # dictionary-of-dictionaries representation for dist and pred
-    # use some defaultdict magick here
-    # for dist the default is the floating point inf value
     inf = float("inf")
-    dist = defaultdict(lambda: defaultdict(lambda: inf))
-    for u in G:
-        dist[u][u] = 0
-    pred = defaultdict(dict)
-    # initialize path distance dictionary to be the adjacency matrix
-    # also set the distance to self to 0 (zero diagonal)
-    undirected = not G.is_directed()
-    for u, v, d in G.edges(data=True):
-        e_weight = d.get(weight, 1.0)
-        dist[u][v] = min(e_weight, dist[u][v])
-        pred[u][v] = u
-        if undirected:
-            dist[v][u] = min(e_weight, dist[v][u])
-            pred[v][u] = v
+    pred, dist = _init_pred_dist(G, weight)
 
     # dont check for those w, `from` which `no` path exists
     for w, pred_w in pred.items():
@@ -217,7 +252,7 @@ def floyd_warshall_tree(G, weight="weight"):
                 continue
 
             # note: we skip v=w as relaxation would always fail
-            v = dfs_dict[w]
+            v = dfs_dict.get(w, None)
             while v is not None:
                 dist_uwv = dist_uw + dist_w[v]
                 if dist_u[v] > dist_uwv:
@@ -228,6 +263,8 @@ def floyd_warshall_tree(G, weight="weight"):
                 else:
                     v = skip_dict.get(v, None)
 
+    if any(dist[u][u] < 0 for u in G):
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
     return dict(pred), dict(dist)
 
 
@@ -239,14 +276,32 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     ----------
     G : NetworkX graph
 
-    weight: string, optional (default= 'weight')
-       Edge data key corresponding to the edge weight.
+    weight : string or function (default= 'weight')
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number or None to indicate a hidden edge.
 
     Returns
     -------
     predecessor,distance : dictionaries
        Dictionaries, keyed by source and target, of predecessors and distances
        in the shortest path.
+
+    Raises
+    ------
+    NetworkXUnbounded
+       If the (di)graph contains a negative (di)cycle, the
+       algorithm raises an exception to indicate the presence of the
+       negative (di)cycle.  Note: any negative weight edge in an
+       undirected graph is a negative cycle.
 
     Examples
     --------
@@ -283,25 +338,7 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     all_pairs_shortest_path
     all_pairs_shortest_path_length
     """
-    from collections import defaultdict
-
-    # dictionary-of-dictionaries representation for dist and pred
-    # use some defaultdict magick here
-    # for dist the default is the floating point inf value
-    dist = defaultdict(lambda: defaultdict(lambda: float("inf")))
-    for u in G:
-        dist[u][u] = 0
-    pred = defaultdict(dict)
-    # initialize path distance dictionary to be the adjacency matrix
-    # also set the distance to self to 0 (zero diagonal)
-    undirected = not G.is_directed()
-    for u, v, d in G.edges(data=True):
-        e_weight = d.get(weight, 1.0)
-        dist[u][v] = min(e_weight, dist[u][v])
-        pred[u][v] = u
-        if undirected:
-            dist[v][u] = min(e_weight, dist[v][u])
-            pred[v][u] = v
+    pred, dist = _init_pred_dist(G, weight)
     for w in G:
         dist_w = dist[w]  # save recomputation
         for u in G:
@@ -311,6 +348,8 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
                 if dist_u[v] > d:
                     dist_u[v] = d
                     pred[u][v] = pred[w][v]
+    if any(dist[u][u] < 0 for u in G):
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
     return dict(pred), dict(dist)
 
 
@@ -366,8 +405,18 @@ def floyd_warshall(G, weight="weight"):
     ----------
     G : NetworkX graph
 
-    weight: string, optional (default= 'weight')
-       Edge data key corresponding to the edge weight.
+    weight : string or function (default= 'weight')
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
+
+       If this is a function, the weight of an edge is the value
+       returned by the function. The function must accept exactly three
+       positional arguments: the two endpoints of an edge and the
+       dictionary of edge attributes for that edge. The function must
+       return a number or None to indicate a hidden edge.
 
 
     Returns
@@ -375,6 +424,14 @@ def floyd_warshall(G, weight="weight"):
     distance : dict
        A dictionary,  keyed by source and target, of shortest paths distances
        between nodes.
+
+    Raises
+    ------
+    NetworkXUnbounded
+       If the (di)graph contains a negative (di)cycle, the
+       algorithm raises an exception to indicate the presence of the
+       negative (di)cycle.  Note: any negative weight edge in an
+       undirected graph is a negative cycle.
 
     Examples
     --------
