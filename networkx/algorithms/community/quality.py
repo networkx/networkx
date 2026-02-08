@@ -10,7 +10,7 @@ from networkx import NetworkXError
 from networkx.algorithms.community.community_utils import is_partition
 from networkx.utils.decorators import argmap
 
-__all__ = ["modularity", "partition_quality"]
+__all__ = ["constant_potts_model", "modularity", "partition_quality"]
 
 
 class NotAPartition(NetworkXError):
