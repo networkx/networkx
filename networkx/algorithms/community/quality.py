@@ -255,6 +255,96 @@ def modularity(G, communities, weight="weight", resolution=1):
     return sum(map(community_contribution, communities))
 
 
+def constant_potts_model(
+    G,
+    communities,
+    weight="weight",
+    node_weight="node_weight",
+    resolution=1,
+    allow_partial=False,
+):
+    r"""
+    TODO - improve the description and motivation of cpm here.
+
+    Computes the Constant-Potts Model, which is a measure of quality of a
+    partition, as defined in [1]_ as
+    
+    .. math::
+        Q = \sum_{C \in P} E(C,C) - \gamma n_C^2
+
+    Where E(C,C) is the sum of all edge weights within the community C,
+    \gamma is the resolution parameter, and n_C is the sum of the weights of
+    the nodes in C.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    communities : list or iterable of set of nodes
+        These node sets must represent a partition of G's nodes.
+
+    weight : string or None, optional (default="weight")
+        The edge attribute that holds the numerical value used
+        as a weight. If None or an edge does not have that attribute,
+        then that edge has weight 1.
+
+    node_weight : string or None, optional (default='node_weight')
+        The node attribute that holds the numerical value used as
+        a weight.
+
+    resolution : float (default=1)
+        If resolution is less than 1, constant_potts_model favors larger communities.
+
+    allow_partial : bool (default=False)
+        If set to True, modularity will be calculated for a set of
+        communities that do not necessarily form a complete partition.
+        This is useful for computing modularity deltas when moving
+        a node u from community C1 -> C2. The change in modularity can
+        be calculated by evaluating on [C1, C2] before and after moving
+        the node u.
+
+        If allow_partial=False then the error NotAPartition will be
+        raised if communities is not a partition.
+
+    Returns
+    -------
+    Q : float
+        The modularity of the partition.
+
+    Raises
+    ------
+    NotAPartition
+        If `communities` is not a partition of the nodes of `G` and allow_partial=False
+
+    References
+    ----------
+    .. [1] V.A. Traag, P. Van Dooren, Y. Nesterov "Narrow scope for
+       resolution-limit-free community detection" <https://arxiv.org/abs/1104.3083>
+    """
+
+    if not isinstance(communities, list):
+        communities = list(communities)
+
+    if (not is_partition(G, communities)) and (not allow_partial):
+        raise NotAPartition(G, communities)
+    
+    def community_contribution(community):
+        comm = set(community)
+        L_c = sum(
+            wt
+            for u, v, wt in G.edges(comm, data=weight, default=1)
+            if v in comm and u in comm
+        )
+
+        n = 0
+        for node in community:
+            n += G.nodes[node].get(node_weight, 1)
+
+        return L_c - resolution * (n**2)
+
+    return sum(map(community_contribution, communities))
+
+
 @require_partition
 @nx._dispatchable
 def partition_quality(G, partition):
