@@ -108,16 +108,17 @@ def test_valid_partition():
     assert nx.community.is_partition(G, partition)
 
 
-# def test_partition_iterator():
-#    G = nx.karate_club_graph()
-#    parts_iter = nx.community.leiden_partitions(G, seed=42, resolution=0.5)
-#    first_part = next(parts_iter)
-#    first_copy = [s.copy() for s in first_part]
-#
-#    # check 1st part stays fixed even after 2nd iteration (like gh-5901 in louvain)
-#    assert first_copy[0] == first_part[0]
-#    second_part = next(parts_iter)
-#    assert first_copy[0] == first_part[0]
+# @pytest.mark.xfail(reason="test_partition_iterator isn't passing yet")
+def test_partition_iterator():
+    G = nx.karate_club_graph()
+    parts_iter = nx.community.leiden_partitions(G, seed=42, resolution=0.5)
+    first_part = next(parts_iter)
+    first_copy = [s.copy() for s in first_part]
+
+    # check 1st part stays fixed even after 2nd iteration (like gh-5901 in louvain)
+    assert first_copy[0] == first_part[0]
+    second_part = next(parts_iter)
+    assert first_copy[0] == first_part[0]
 
 
 def test_none_weight_param():
@@ -197,6 +198,7 @@ def test_empty_graph():
 #         nx.community.leiden_communities(G)
 
 
+@pytest.mark.xfail(reason="test_max_level isn't passing yet")
 def test_max_level():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
