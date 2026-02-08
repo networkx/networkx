@@ -7,7 +7,11 @@ import pytest
 
 import networkx as nx
 from networkx import barbell_graph
-from networkx.algorithms.community import constant_potts_model, modularity, partition_quality
+from networkx.algorithms.community import (
+    constant_potts_model,
+    modularity,
+    partition_quality,
+)
 from networkx.algorithms.community.quality import inter_community_edges
 
 
@@ -65,6 +69,7 @@ def test_modularity():
     G.add_edges_from([(2, 1), (2, 3), (3, 4)])
     C = [{1, 2}, {3, 4}]
     assert 2 / 9 == pytest.approx(modularity(G, C), abs=1e-7)
+
 
 def test_cpm():
     G = nx.barbell_graph(3, 0)

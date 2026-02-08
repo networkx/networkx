@@ -268,7 +268,7 @@ def constant_potts_model(
 
     Computes the Constant-Potts Model, which is a measure of quality of a
     partition, as defined in [1]_ as
-    
+
     .. math::
         Q = \sum_{C \in P} E(C,C) - \gamma n_C^2
 
@@ -327,7 +327,7 @@ def constant_potts_model(
 
     if (not is_partition(G, communities)) and (not allow_partial):
         raise NotAPartition(G, communities)
-    
+
     def community_contribution(community):
         comm = set(community)
         L_c = sum(
