@@ -18,7 +18,8 @@ from networkx.algorithms.isomorphism.vf2pp import (
     _StateInfo,
     _update_Tinout,
 )
-from networkx.utils import groups
+
+graph_classes = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 
 five_dicts = ({},) * 5
 six_sets = (set(),) * 6
@@ -42,7 +43,7 @@ class TestNodeOrdering:
 
         l1 = dict(zip(G1, it.cycle(labels_many)))
         l2 = dict(zip(G2, it.cycle(labels_many)))
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         G1_deg = dict(G1.degree)
         G2_deg = dict(G2.degree)
         g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
@@ -90,7 +91,7 @@ class TestNodeOrdering:
         G2 = G1.copy()
         l1 = dict(zip(G1, it.cycle(labels)))
         l2 = dict(zip(G2, it.cycle(labels)))
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         G1_deg = dict(G1.degree)
         G2_deg = dict(G2.degree)
         g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
@@ -106,7 +107,7 @@ class TestNodeOrdering:
         G2 = G1.copy()
 
         l1 = l2 = {0: "black", 1: "blue", 2: "blue", 3: "red", 4: "red", 5: "blue"}
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         G1_deg = dict(G1.degree)
         G2_deg = dict(G2.degree)
         g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
@@ -142,7 +143,7 @@ class TestGraphCandidateSelection:
         G2_deg = dict(G2.degree)
         l1 = dict(G1.nodes(data="label", default=-1))
         l2 = dict(G2.nodes(data="label", default=-1))
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -195,7 +196,7 @@ class TestGraphCandidateSelection:
         G2_deg = dict(G2.degree)
         l1 = dict(zip(G1, it.cycle(labels_many)))
         l2 = dict(zip([self.mapped[n] for n in G1], it.cycle(labels_many)))
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -245,7 +246,7 @@ class TestGraphCandidateSelection:
         # u = 7, expected={self.mapped[v] for v in [u, 8]}, g_info_manylbls_87same, s_info2456
         l1[8] = l1[7]
         l2[self.mapped[8]] = l1[7]
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         candidates = _find_candidates(u, g_info, s_info)
@@ -261,7 +262,7 @@ class TestGraphCandidateSelection:
         G2_deg = dict(G2.degree)
         l1 = dict(G1.nodes(data=None, default=-1))
         l2 = dict(G2.nodes(data=None, default=-1))
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -294,7 +295,7 @@ class TestGraphCandidateSelection:
         G2_deg = dict(G2.degree)
         l1 = dict(zip(G1, it.cycle(labels_many)))
         l2 = dict(zip([self.mapped[n] for n in G1], it.cycle(labels_many)))
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -320,7 +321,7 @@ class TestGraphCandidateSelection:
         # Assign to 2, the same label as 6
         l1[2] = l1[u]
         l2[self.mapped[2]] = l1[u]
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         # u = 6, expected={self.mapped[v] for v in [u, 2]}, g_info_manylbls_62same, s_info78245
@@ -355,7 +356,7 @@ class TestDiGraphCandidateSelection:
         G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
         l1 = dict(G1.nodes(data="label", default=-1))
         l2 = dict(G2.nodes(data="label", default=-1))
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -408,7 +409,7 @@ class TestDiGraphCandidateSelection:
         G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
         l1 = dict(zip(G1, it.cycle(labels_many)))
         l2 = dict(zip(G2, it.cycle(labels_many)))
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
 
         g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
@@ -463,7 +464,7 @@ class TestDiGraphCandidateSelection:
 
         l1[8] = l1[7]
         l2[self.mapped[8]] = l1[7]
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         # u = 7, expected={self.mapped[v] for v in [u]}, g_info_Di_manylbls_78same, s_info246_5
@@ -480,7 +481,7 @@ class TestDiGraphCandidateSelection:
         G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
         l1 = dict(G1.nodes(data="label", default=-1))
         l2 = dict(G2.nodes(data="label", default=-1))
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -533,7 +534,7 @@ class TestDiGraphCandidateSelection:
         G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
         l1 = dict(zip(G1, it.cycle(labels_many)))
         l2 = dict(zip([self.mapped[n] for n in G1], it.cycle(labels_many)))
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -561,7 +562,7 @@ class TestDiGraphCandidateSelection:
         # Assign to 2, the same label as 6
         l1[2] = l1[u]
         l2[self.mapped[2]] = l1[u]
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         # u = 6, expected={self.mapped[v] for v in [u, 2]}, g_info_Di_manylbls_24switch_26same, s_info246_578
@@ -589,7 +590,7 @@ class TestDiGraphCandidateSelection:
         G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
         l1 = dict(G1.nodes(data="label", default=-1))
         l2 = dict(G2.nodes(data="label", default=-1))
-        l2groups = groups(l2)
+        l2groups = nx.utils.groups(l2)
         g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         m = {1: 1, 2: 2, 3: 3}
@@ -610,9 +611,6 @@ class TestDiGraphCandidateSelection:
         assert candidates == set()
         # Notice how the regular candidate selection method returns wrong result.
         assert _find_candidates(u, g_info, s_info) == {4}
-
-
-graph_classes = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
@@ -754,8 +752,9 @@ class TestDiGraphISOFeasibility:
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {n: "blue" for n in G2.nodes()}
         l1.update({5: "green"})  # Change the label of one neighbor of u
+        l2groups = nx.utils.groups(l2)
 
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, l2groups)
         mapping = {0: "a", 1: "b", 2: "c", 3: "d"}
         rev_map = {"a": 0, "b": 1, "c": 2, "d": 3}
         s_info = _StateInfo(mapping, rev_map, *six_sets)
@@ -794,8 +793,9 @@ class TestDiGraphISOFeasibility:
 
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {n: "blue" for n in G2.nodes()}
+        l2groups = nx.utils.groups(l2)
 
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, l2groups)
         s_info = _StateInfo(
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
@@ -838,8 +838,9 @@ class TestDiGraphISOFeasibility:
         G2 = nx.relabel_nodes(G1, mapped)
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {n: "blue" for n in G2.nodes()}
+        l2groups = nx.utils.groups(l2)
 
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, l2groups)
         mapping = {0: "a", 1: "b", 2: "c", 3: "d"}
         rev_map = {"a": 0, "b": 1, "c": 2, "d": 3}
         if directed:
@@ -902,7 +903,8 @@ class TestDiGraphISOFeasibility:
 
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {n: "blue" for n in G2.nodes()}
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
+        l2groups = nx.utils.groups(l2)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, l2groups)
 
         assert _feasible_look_ahead(u, v, g_info, s_info)
 
@@ -938,8 +940,9 @@ class TestDiGraphISOFeasibility:
         G2.add_edges_from([(v, "i"), (v, "i"), (v, "i"), (v, "j")])
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {n: "blue" for n in G2.nodes()}
+        l2groups = nx.utils.groups(l2)
         directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, l2groups)
 
         assert _feasible_look_ahead(u, v, g_info, s_info)
 
@@ -1005,8 +1008,9 @@ class TestDiGraphISOFeasibility:
             }
         )
         l2 = {mapped[n]: l for n, l in l1.items()}
+        l2groups = nx.utils.groups(l2)
 
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, l2groups)
         mapping = {0: "a", 1: "b", 2: "c", 3: "d"}
         rev_map = {"a": 0, "b": 1, "c": 2, "d": 3}
         if directed:
@@ -1101,8 +1105,9 @@ class TestDiGraphISOFeasibility:
         G2 = nx.relabel_nodes(G1, mapped)
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {n: "blue" for n in G2.nodes()}
+        l2groups = nx.utils.groups(l2)
 
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, l2groups)
         m = {0: "a", 1: "b", 2: "c"}
         rev_m = {"a": 0, "b": 1, "c": 2}
         s_info = _StateInfo(m, rev_m, {3, 5}, {4, 5}, {6}, {"d", "f"}, {"f"}, {"g"})
@@ -1145,9 +1150,10 @@ class TestDiGraphISOFeasibility:
 
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {mapped[n]: "blue" for n in G1.nodes()}
+        l2groups = nx.utils.groups(l2)
 
         directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, l2groups)
         s_info = _StateInfo(
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
@@ -1212,8 +1218,6 @@ class TestDiGraphISOFeasibility:
         G2 = nx.relabel_nodes(G1, mapped)
 
         l1 = {n: "none" for n in G1.nodes()}
-        l2 = {}
-
         l1.update(
             {
                 9: "blue",
@@ -1226,10 +1230,11 @@ class TestDiGraphISOFeasibility:
                 5: "yellow",
             }
         )
-        l2.update({mapped[n]: l for n, l in l1.items()})
+        l2 = {mapped[n]: l for n, l in l1.items()}
+        l2groups = nx.utils.groups(l2)
 
         directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, l2groups)
         s_info = _StateInfo(
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
@@ -1266,145 +1271,8 @@ class TestDiGraphISOFeasibility:
         assert _feasible_node_pair(u, v, g_info, s_info)
 
 
-class TestGraphTinoutUpdating:
-    edges = [
-        (1, 3),
-        (2, 3),
-        (3, 4),
-        (4, 9),
-        (4, 5),
-        (3, 9),
-        (5, 8),
-        (5, 7),
-        (8, 7),
-        (6, 7),
-    ]
-    mapped = dict(enumerate("xabcdefghi"))
-    G1 = nx.Graph()
-    G1.add_edges_from(edges)
-    G1.add_node(0)
-    G2 = nx.relabel_nodes(G1, mapping=mapped)
-
-    def test_updating(self):
-        G2_degree = dict(self.G2.degree)
-        g_info, s_info = _init_info(self.G1, self.G2, None, None, "ISO")
-        m, m_rev, T1, _, T1_tilde, T2, _, T2_tilde = s_info
-
-        # Add node to the mapping
-        m[4] = self.mapped[4]
-        m_rev[self.mapped[4]] = 4
-        _update_Tinout(4, self.mapped[4], g_info, s_info)
-
-        assert T1 == {3, 5, 9}
-        assert T2 == {"c", "i", "e"}
-        assert T1_tilde == {0, 1, 2, 6, 7, 8}
-        assert T2_tilde == {"x", "a", "b", "f", "g", "h"}
-
-        # Add node to the mapping
-        m[5] = self.mapped[5]
-        m_rev.update({self.mapped[5]: 5})
-        _update_Tinout(5, self.mapped[5], g_info, s_info)
-
-        assert T1 == {3, 9, 8, 7}
-        assert T2 == {"c", "i", "h", "g"}
-        assert T1_tilde == {0, 1, 2, 6}
-        assert T2_tilde == {"x", "a", "b", "f"}
-
-        # Add node to the mapping
-        m[6] = self.mapped[6]
-        m_rev.update({self.mapped[6]: 6})
-        _update_Tinout(6, self.mapped[6], g_info, s_info)
-
-        assert T1 == {3, 9, 8, 7}
-        assert T2 == {"c", "i", "h", "g"}
-        assert T1_tilde == {0, 1, 2}
-        assert T2_tilde == {"x", "a", "b"}
-
-        # Add node to the mapping
-        m[3] = self.mapped[3]
-        m_rev.update({self.mapped[3]: 3})
-        _update_Tinout(3, self.mapped[3], g_info, s_info)
-
-        assert T1 == {1, 2, 9, 8, 7}
-        assert T2 == {"a", "b", "i", "h", "g"}
-        assert T1_tilde == {0}
-        assert T2_tilde == {"x"}
-
-        # Add node to the mapping
-        m[0] = self.mapped[0]
-        m_rev.update({self.mapped[0]: 0})
-        _update_Tinout(0, self.mapped[0], g_info, s_info)
-
-        assert T1 == {1, 2, 9, 8, 7}
-        assert T2 == {"a", "b", "i", "h", "g"}
-        assert T1_tilde == set()
-        assert T2_tilde == set()
-
-    def test_restoring(self):
-        m = {0: "x", 3: "c", 4: "d", 5: "e", 6: "f"}
-        m_rev = {"x": 0, "c": 3, "d": 4, "e": 5, "f": 6}
-
-        T1 = {1, 2, 7, 9, 8}
-        T2 = {"a", "b", "g", "i", "h"}
-        T1_tilde = set()
-        T2_tilde = set()
-
-        directed = self.G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, self.G1, self.G2, *five_dicts)
-        s_info = _StateInfo(m, m_rev, T1, None, T1_tilde, T2, None, T2_tilde)
-
-        # Remove a node from the mapping
-        m.pop(0)
-        m_rev.pop("x")
-        _restore_Tinout(0, self.mapped[0], g_info, s_info)
-
-        assert T1 == {1, 2, 7, 9, 8}
-        assert T2 == {"a", "b", "g", "i", "h"}
-        assert T1_tilde == {0}
-        assert T2_tilde == {"x"}
-
-        # Remove a node from the mapping
-        m.pop(6)
-        m_rev.pop("f")
-        _restore_Tinout(6, self.mapped[6], g_info, s_info)
-
-        assert T1 == {1, 2, 7, 9, 8}
-        assert T2 == {"a", "b", "g", "i", "h"}
-        assert T1_tilde == {0, 6}
-        assert T2_tilde == {"x", "f"}
-
-        # Remove a node from the mapping
-        m.pop(3)
-        m_rev.pop("c")
-        _restore_Tinout(3, self.mapped[3], g_info, s_info)
-
-        assert T1 == {7, 9, 8, 3}
-        assert T2 == {"g", "i", "h", "c"}
-        assert T1_tilde == {0, 6, 1, 2}
-        assert T2_tilde == {"x", "f", "a", "b"}
-
-        # Remove a node from the mapping
-        m.pop(5)
-        m_rev.pop("e")
-        _restore_Tinout(5, self.mapped[5], g_info, s_info)
-
-        assert T1 == {9, 3, 5}
-        assert T2 == {"i", "c", "e"}
-        assert T1_tilde == {0, 6, 1, 2, 7, 8}
-        assert T2_tilde == {"x", "f", "a", "b", "g", "h"}
-
-        # Remove a node from the mapping
-        m.pop(4)
-        m_rev.pop("d")
-        _restore_Tinout(4, self.mapped[4], g_info, s_info)
-
-        assert T1 == set()
-        assert T2 == set()
-        assert T1_tilde == set(self.G1.nodes())
-        assert T2_tilde == set(self.G2.nodes())
-
-
-class TestDiGraphTinoutUpdating:
+@pytest.mark.parametrize("Gclass", graph_classes)
+class TestTinoutUpdating:
     edges = [
         (1, 3),
         (3, 2),
@@ -1417,152 +1285,187 @@ class TestDiGraphTinoutUpdating:
         (8, 7),
         (7, 6),
     ]
-    mapped = dict(enumerate("xabcdefghi"))
-    G1 = nx.DiGraph(edges)
-    G1.add_node(0)
-    G2 = nx.relabel_nodes(G1, mapping=mapped)
 
-    def test_updating(self):
-        G2_degree = {
-            n: (in_degree, out_degree)
-            for (n, in_degree), (_, out_degree) in zip(
-                self.G2.in_degree, self.G2.out_degree
-            )
-        }
-        g_info, s_info = _init_info(self.G1, self.G2, None, None, "ISO")
-        m, m_rev, T1_out, T1_in, T1_tilde, T2_out, T2_in, T2_tilde = s_info
+    @staticmethod
+    def check_Ts(directed, s_info, eT1, eT1_in, eT1_tilde, eT2, eT2_in, eT2_tilde):
+        # eT1 for expected T1 value. s_info holds actual values.
+        T1, T1_in, T1_tilde, T2, T2_in, T2_tilde = s_info[2:]
+        if directed:
+            assert T1 == eT1
+            assert T1_in == eT1_in
+            assert T2 == eT2
+            assert T2_in == eT2_in
+        else:
+            assert T1 == (eT1 | eT1_in)
+            assert T2 == (eT2 | eT2_in)
 
-        # Add node to the mapping
-        m[4] = self.mapped[4]
-        m_rev[self.mapped[4]] = 4
-        _update_Tinout(4, self.mapped[4], g_info, s_info)
+        assert T1_tilde == eT1_tilde
+        assert T2_tilde == eT2_tilde
 
-        assert T1_out == {5, 9}
-        assert T1_in == {3}
-        assert T2_out == {"i", "e"}
-        assert T2_in == {"c"}
-        assert T1_tilde == {0, 1, 2, 6, 7, 8}
-        assert T2_tilde == {"x", "a", "b", "f", "g", "h"}
+    def test_updating(self, Gclass):
+        mapped = dict(enumerate("xabcdefghi"))
+        G1 = Gclass(self.edges)
+        G1.add_node(0)
+        G2 = nx.relabel_nodes(G1, mapping=mapped)
+        directed = G1.is_directed()
 
-        # Add node to the mapping
-        m[5] = self.mapped[5]
-        m_rev[self.mapped[5]] = 5
-        _update_Tinout(5, self.mapped[5], g_info, s_info)
-
-        assert T1_out == {9, 8, 7}
-        assert T1_in == {3}
-        assert T2_out == {"i", "g", "h"}
-        assert T2_in == {"c"}
-        assert T1_tilde == {0, 1, 2, 6}
-        assert T2_tilde == {"x", "a", "b", "f"}
+        g_info, s_info = _init_info(G1, G2, None, None, "ISO")
+        m, m_rev, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde = s_info
 
         # Add node to the mapping
-        m[6] = self.mapped[6]
-        m_rev[self.mapped[6]] = 6
-        _update_Tinout(6, self.mapped[6], g_info, s_info)
+        m[4] = mapped[4]
+        m_rev[mapped[4]] = 4
+        _update_Tinout(4, mapped[4], g_info, s_info)
 
-        assert T1_out == {9, 8, 7}
-        assert T1_in == {3, 7}
-        assert T2_out == {"i", "g", "h"}
-        assert T2_in == {"c", "g"}
-        assert T1_tilde == {0, 1, 2}
-        assert T2_tilde == {"x", "a", "b"}
-
-        # Add node to the mapping
-        m[3] = self.mapped[3]
-        m_rev[self.mapped[3]] = 3
-        _update_Tinout(3, self.mapped[3], g_info, s_info)
-
-        assert T1_out == {9, 8, 7, 2}
-        assert T1_in == {7, 1}
-        assert T2_out == {"i", "g", "h", "b"}
-        assert T2_in == {"g", "a"}
-        assert T1_tilde == {0}
-        assert T2_tilde == {"x"}
+        T1 = {5, 9}
+        T1_in = {3}
+        T2 = {"i", "e"}
+        T2_in = {"c"}
+        T1_tilde = {0, 1, 2, 6, 7, 8}
+        T2_tilde = {"x", "a", "b", "f", "g", "h"}
+        self.check_Ts(directed, s_info, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
 
         # Add node to the mapping
-        m[0] = self.mapped[0]
-        m_rev[self.mapped[0]] = 0
-        _update_Tinout(0, self.mapped[0], g_info, s_info)
+        m[5] = mapped[5]
+        m_rev[mapped[5]] = 5
+        _update_Tinout(5, mapped[5], g_info, s_info)
 
-        assert T1_out == {9, 8, 7, 2}
-        assert T1_in == {7, 1}
-        assert T2_out == {"i", "g", "h", "b"}
-        assert T2_in == {"g", "a"}
-        assert T1_tilde == set()
-        assert T2_tilde == set()
+        T1 = {9, 8, 7}
+        T1_in = {3}
+        T2 = {"i", "g", "h"}
+        T2_in = {"c"}
+        T1_tilde = {0, 1, 2, 6}
+        T2_tilde = {"x", "a", "b", "f"}
+        self.check_Ts(directed, s_info, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
 
-    def test_restoring(self):
+        # Add node to the mapping
+        m[6] = mapped[6]
+        m_rev[mapped[6]] = 6
+        _update_Tinout(6, mapped[6], g_info, s_info)
+
+        T1 = {9, 8, 7}
+        T1_in = {3, 7}
+        T2 = {"i", "g", "h"}
+        T2_in = {"c", "g"}
+        T1_tilde = {0, 1, 2}
+        T2_tilde = {"x", "a", "b"}
+        self.check_Ts(directed, s_info, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
+
+        # Add node to the mapping
+        m[3] = mapped[3]
+        m_rev[mapped[3]] = 3
+        _update_Tinout(3, mapped[3], g_info, s_info)
+
+        T1 = {9, 8, 7, 2}
+        T1_in = {7, 1}
+        T2 = {"i", "g", "h", "b"}
+        T2_in = {"g", "a"}
+        T1_tilde = {0}
+        T2_tilde = {"x"}
+        self.check_Ts(directed, s_info, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
+
+        # Add node to the mapping
+        m[0] = mapped[0]
+        m_rev[mapped[0]] = 0
+        _update_Tinout(0, mapped[0], g_info, s_info)
+
+        # T1 = {9, 8, 7, 2}
+        # T1_in = {7, 1}
+        # T2 = {"i", "g", "h", "b"}
+        # T2_in = {"g", "a"}
+        T1_tilde = set()
+        T2_tilde = set()
+        self.check_Ts(directed, s_info, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
+
+    def test_restoring(self, Gclass):
+        mapped = dict(enumerate("xabcdefghi"))
+        G1 = Gclass(self.edges)
+        G1.add_node(0)
+        G2 = nx.relabel_nodes(G1, mapping=mapped)
+        directed = G1.is_directed()
+        _restore_Ts = _restore_Tinout_Di if directed else _restore_Tinout
+
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, *five_dicts)
+
         m = {0: "x", 3: "c", 4: "d", 5: "e", 6: "f"}
         m_rev = {"x": 0, "c": 3, "d": 4, "e": 5, "f": 6}
 
-        T1_out = {2, 7, 9, 8}
-        T1_in = {1, 7}
-        T2_out = {"b", "g", "i", "h"}
-        T2_in = {"a", "g"}
-        T1_tilde = set()
-        T2_tilde = set()
+        # initial T sets
+        t1 = {2, 7, 9, 8}
+        t1_in = {1, 7}
+        t2 = {"b", "g", "i", "h"}
+        t2_in = {"a", "g"}
+        t1_tilde = set()
+        t2_tilde = set()
 
-        directed = self.G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, self.G1, self.G2, *five_dicts)
-        s_info = _StateInfo(m, m_rev, T1_out, T1_in, T1_tilde, T2_out, T2_in, T2_tilde)
+        if directed:
+            s_info = _StateInfo(m, m_rev, t1, t1_in, t1_tilde, t2, t2_in, t2_tilde)
+        else:
+            t1 = t1 | t1_in
+            t2 = t2 | t2_in
+            s_info = _StateInfo(m, m_rev, t1, set(), t1_tilde, t2, set(), t2_tilde)
 
         # Remove a node from the mapping
         m.pop(0)
         m_rev.pop("x")
-        _restore_Tinout_Di(0, self.mapped[0], g_info, s_info)
+        _restore_Ts(0, mapped[0], g_info, s_info)
 
-        assert T1_out == {2, 7, 9, 8}
-        assert T1_in == {1, 7}
-        assert T2_out == {"b", "g", "i", "h"}
-        assert T2_in == {"a", "g"}
-        assert T1_tilde == {0}
-        assert T2_tilde == {"x"}
+        T1 = {2, 7, 9, 8}
+        T1_in = {1, 7}
+        T2 = {"b", "g", "i", "h"}
+        T2_in = {"a", "g"}
+        T1_tilde = {0}
+        T2_tilde = {"x"}
+        self.check_Ts(directed, s_info, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
 
         # Remove a node from the mapping
         m.pop(6)
         m_rev.pop("f")
-        _restore_Tinout_Di(6, self.mapped[6], g_info, s_info)
+        _restore_Ts(6, mapped[6], g_info, s_info)
 
-        assert T1_out == {2, 9, 8, 7}
-        assert T1_in == {1}
-        assert T2_out == {"b", "i", "h", "g"}
-        assert T2_in == {"a"}
-        assert T1_tilde == {0, 6}
-        assert T2_tilde == {"x", "f"}
+        T1 = {2, 9, 8, 7}
+        T1_in = {1}
+        T2 = {"b", "i", "h", "g"}
+        T2_in = {"a"}
+        T1_tilde = {0, 6}
+        T2_tilde = {"x", "f"}
+        self.check_Ts(directed, s_info, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
 
         # Remove a node from the mapping
         m.pop(3)
         m_rev.pop("c")
-        _restore_Tinout_Di(3, self.mapped[3], g_info, s_info)
+        _restore_Ts(3, mapped[3], g_info, s_info)
 
-        assert T1_out == {9, 8, 7}
-        assert T1_in == {3}
-        assert T2_out == {"i", "h", "g"}
-        assert T2_in == {"c"}
-        assert T1_tilde == {0, 6, 1, 2}
-        assert T2_tilde == {"x", "f", "a", "b"}
+        T1 = {9, 8, 7}
+        T1_in = {3}
+        T2 = {"i", "h", "g"}
+        T2_in = {"c"}
+        T1_tilde = {0, 6, 1, 2}
+        T2_tilde = {"x", "f", "a", "b"}
+        self.check_Ts(directed, s_info, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
 
         # Remove a node from the mapping
         m.pop(5)
         m_rev.pop("e")
-        _restore_Tinout_Di(5, self.mapped[5], g_info, s_info)
+        _restore_Ts(5, mapped[5], g_info, s_info)
 
-        assert T1_out == {9, 5}
-        assert T1_in == {3}
-        assert T2_out == {"i", "e"}
-        assert T2_in == {"c"}
-        assert T1_tilde == {0, 6, 1, 2, 8, 7}
-        assert T2_tilde == {"x", "f", "a", "b", "h", "g"}
+        T1 = {9, 5}
+        T1_in = {3}
+        T2 = {"i", "e"}
+        T2_in = {"c"}
+        T1_tilde = {0, 6, 1, 2, 8, 7}
+        T2_tilde = {"x", "f", "a", "b", "h", "g"}
+        self.check_Ts(directed, s_info, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
 
         # Remove a node from the mapping
         m.pop(4)
         m_rev.pop("d")
-        _restore_Tinout_Di(4, self.mapped[4], g_info, s_info)
+        _restore_Ts(4, mapped[4], g_info, s_info)
 
-        assert T1_out == set()
-        assert T1_in == set()
-        assert T2_out == set()
-        assert T2_in == set()
-        assert T1_tilde == set(self.G1.nodes())
-        assert T2_tilde == set(self.G2.nodes())
+        T1 = set()
+        T1_in = set()
+        T2 = set()
+        T2_in = set()
+        T1_tilde = set(G1)
+        T2_tilde = set(G2)
+        self.check_Ts(directed, s_info, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
