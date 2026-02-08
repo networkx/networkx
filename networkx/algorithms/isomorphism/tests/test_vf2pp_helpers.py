@@ -612,1174 +612,49 @@ class TestDiGraphCandidateSelection:
         assert _find_candidates(u, g_info, s_info) == {4}
 
 
-class TestGraphISOFeasibility:
-    def test_feasible_node_pair_covered_neighbors(self):
-        G1 = nx.Graph([(0, 1), (1, 2), (3, 0), (3, 2)])
-        G2 = nx.Graph([("a", "b"), ("b", "c"), ("k", "a"), ("k", "c")])
-        g_info = _GraphInfo(*two_eq, False, G1, G2, *five_dicts)
-        mapping = {0: "a", 1: "b", 2: "c"}
-        rev_map = {"a": 0, "b": 1, "c": 2}
-        s_info = _StateInfo(mapping, rev_map, *six_sets)
-        u, v = 3, "k"
-        assert _feasible_node_pair(u, v, g_info, s_info)
+graph_classes = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 
-    def test_feasible_node_pair_no_covered_neighbors(self):
-        G1 = nx.Graph([(0, 1), (1, 2), (3, 4), (3, 5)])
-        G2 = nx.Graph([("a", "b"), ("b", "c"), ("k", "w"), ("k", "z")])
-        g_info = _GraphInfo(*two_eq, False, G1, G2, *five_dicts)
-        mapping = {0: "a", 1: "b", 2: "c"}
-        rev_map = {"a": 0, "b": 1, "c": 2}
-        s_info = _StateInfo(mapping, rev_map, *six_sets)
-        u, v = 3, "k"
-        assert _feasible_node_pair(u, v, g_info, s_info)
 
-    def test_feasible_node_pair_mixed_covered_uncovered_neighbors(self):
-        G1 = nx.Graph([(0, 1), (1, 2), (3, 0), (3, 2), (3, 4), (3, 5)])
-        G2 = nx.Graph(
-            [("a", "b"), ("b", "c"), ("k", "a"), ("k", "c"), ("k", "w"), ("k", "z")]
-        )
-        g_info = _GraphInfo(*two_eq, False, G1, G2, *five_dicts)
-        mapping = {0: "a", 1: "b", 2: "c"}
-        rev_map = {"a": 0, "b": 1, "c": 2}
-        s_info = _StateInfo(mapping, rev_map, *six_sets)
-        u, v = 3, "k"
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-    def test_feasible_node_pair_fail_cases(self):
-        G1 = nx.Graph(
-            [
-                (0, 1),
-                (1, 2),
-                (10, 0),
-                (10, 3),
-                (10, 4),
-                (10, 5),
-                (10, 6),
-                (4, 1),
-                (5, 3),
-            ]
-        )
-        G2 = nx.Graph(
-            [
-                ("a", "b"),
-                ("b", "c"),
-                ("k", "a"),
-                ("k", "d"),
-                ("k", "e"),
-                ("k", "f"),
-                ("k", "g"),
-                ("e", "b"),
-                ("f", "d"),
-            ]
-        )
-        g_info = _GraphInfo(*two_eq, False, G1, G2, *five_dicts)
-        mapping = {0: "a", 1: "b", 2: "c", 3: "d"}
-        rev_map = {"a": 0, "b": 1, "c": 2, "d": 3}
-        s_info = _StateInfo(mapping, rev_map, *six_sets)
-        u, v = 10, "k"
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # Delete one uncovered neighbor of u. Notice how it still passes the test.
-        # Two reasons for this:
-        #   1. If u, v had different degrees from the beginning, they wouldn't
-        #      be selected as candidates in the first place.
-        #   2. Even if they are selected, consistency is basically 1-look-ahead,
-        #      meaning that we take into consideration the relation of the
-        #      candidates with their mapped neighbors. The node we deleted is
-        #      not a covered neighbor.
-        #      Such nodes will be checked by the _feasible_look_ahead function, which is
-        #      basically the 2-look-ahead, checking the relation of the
-        #      candidates with T1, T2 (in which belongs the node we just deleted).
-        G1.remove_node(6)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # Add one more covered neighbor of u in G1
-        G1.add_edge(u, 2)
-        assert not _feasible_node_pair(u, v, g_info, s_info)
-
-        # Compensate in G2
-        G2.add_edge(v, "c")
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # Add one more covered neighbor of v in G2
-        G2.add_edge(v, "x")
-        G1.add_node(7)
-        s_info.mapping.update({7: "x"})
-        s_info.reverse_mapping.update({"x": 7})
-        assert not _feasible_node_pair(u, v, g_info, s_info)
-
-        # Compendate in G1
-        G1.add_edge(u, 7)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
-    def test_feasible_look_ahead_mismatched_labels(self, graph_type):
-        G1 = graph_type(
-            [
-                (0, 1),
-                (1, 2),
-                (10, 0),
-                (10, 3),
-                (10, 4),
-                (10, 5),
-                (10, 6),
-                (4, 1),
-                (5, 3),
-            ]
-        )
-        G2 = graph_type(
-            [
-                ("a", "b"),
-                ("b", "c"),
-                ("k", "a"),
-                ("k", "d"),
-                ("k", "e"),
-                ("k", "f"),
-                ("k", "g"),
-                ("e", "b"),
-                ("f", "d"),
-            ]
-        )
-
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
-        l1.update({6: "green"})  # Change the label of one neighbor of u
-
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        mapping = {0: "a", 1: "b", 2: "c", 3: "d"}
-        rev_map = {"a": 0, "b": 1, "c": 2, "d": 3}
-        s_info = _StateInfo(mapping, rev_map, *six_sets)
-
-        u, v = 10, "k"
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-    def test_feasible_look_ahead_matched_labels(self):
-        G1 = nx.Graph(
-            [
-                (0, 1),
-                (1, 2),
-                (10, 0),
-                (10, 3),
-                (10, 4),
-                (10, 5),
-                (10, 6),
-                (4, 1),
-                (5, 3),
-            ]
-        )
-        G2 = nx.Graph(
-            [
-                ("a", "b"),
-                ("b", "c"),
-                ("k", "a"),
-                ("k", "d"),
-                ("k", "e"),
-                ("k", "f"),
-                ("k", "g"),
-                ("e", "b"),
-                ("f", "d"),
-            ]
-        )
-
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
-
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c", 3: "d"},
-            {"a": 0, "b": 1, "c": 2, "d": 3},
-            {4, 5},
-            None,
-            {6},
-            {"e", "f"},
-            None,
-            {"g"},
-        )
-
-        u, v = 10, "k"
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-    def test_feasible_look_ahead_same_labels(self):
-        G1 = nx.Graph(
-            [
-                (0, 1),
-                (1, 2),
-                (10, 0),
-                (10, 3),
-                (10, 4),
-                (10, 5),
-                (10, 6),
-                (4, 1),
-                (5, 3),
-            ]
-        )
-        mapped = dict(enumerate("abcdefg"))
-        mapped[10] = "k"
-        G2 = nx.relabel_nodes(G1, mapped)
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
-
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c", 3: "d"},
-            {"a": 0, "b": 1, "c": 2, "d": 3},
-            {4, 5},
-            None,
-            {6},
-            {"e", "f"},
-            None,
-            {"g"},
-        )
-
-        u, v = 10, "k"
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change intersection between G1[u] and T1, so it's not the same as the
-        # one between G2[v] and T2
-        G1.remove_edge(u, 4)
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Compensate in G2
-        G2.remove_edge(v, mapped[4])
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change intersection between G2[v] and T2_tilde, so it's not the same
-        # as the one between G1[u] and T1_tilde
-        G2.remove_edge(v, mapped[6])
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Compensate in G1
-        G1.remove_edge(u, 6)
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Add disconnected nodes, which will form the new Ti_out
-        G1.add_nodes_from([6, 7, 8])
-        G2.add_nodes_from(["g", "y", "z"])
-        s_info.T1_tilde.update({6, 7, 8})
-        s_info.T2_tilde.update({"g", "y", "z"})
-
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Add some new nodes to the mapping
-        s_info.mapping.update({6: "g", 7: "y"})
-        s_info.reverse_mapping.update({"g": 6, "y": 7})
-
-        # Add more nodes to T1, T2.
-        G1.add_edges_from([(6, 20), (7, 20), (6, 21)])
-        G2.add_edges_from([("g", "i"), ("g", "j"), ("y", "j")])
-
-        s_info.mapping.update({20: "j", 21: "i"})
-        s_info.reverse_mapping.update({"j": 20, "i": 21})
-        s_info.T1.update({20, 21})
-        s_info.T2.update({"i", "j"})
-        s_info.T1_tilde.difference_update({6, 7})
-        s_info.T2_tilde.difference_update({"g", "y"})
-
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Add nodes from the new T1 and T2, as neighbors of u and v respectively
-        G1.add_edges_from([(u, 20), (u, 21)])
-        G2.add_edges_from([(v, "i"), (v, "j")])
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change the edges, maintaining the G1[u]-T1 intersection
-        G1.remove_edge(u, 20)
-        G1.add_edge(u, 4)
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Connect u to 8 which is still in T1_tilde
-        G1.add_edge(u, 8)
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Same for v and z, so that inters(G1[u], T1out) == inters(G2[v], T2out)
-        G2.add_edge(v, "z")
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-    def test_feasible_look_ahead_different_labels(self):
-        G1 = nx.Graph(
-            [
-                (0, 1),
-                (1, 2),
-                (1, 14),
-                (0, 4),
-                (1, 5),
-                (2, 6),
-                (3, 7),
-                (3, 6),
-                (4, 10),
-                (4, 9),
-                (6, 10),
-                (20, 9),
-                (20, 15),
-                (20, 12),
-                (20, 11),
-                (12, 13),
-                (11, 13),
-                (20, 8),
-                (20, 3),
-                (20, 5),
-                (20, 0),
-            ]
-        )
-        mapped = dict(enumerate("abcdefghijklmnop"))
-        mapped[20] = "x"
-
-        G2 = nx.relabel_nodes(G1, mapped)
-
-        l1 = {n: "none" for n in G1.nodes()}
-        l2 = {}
-
-        l1.update(
-            {
-                9: "blue",
-                15: "blue",
-                12: "blue",
-                11: "green",
-                3: "green",
-                8: "red",
-                0: "red",
-                5: "yellow",
-            }
-        )
-        l2.update({mapped[n]: l for n, l in l1.items()})
-
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c", 3: "d"},
-            {"a": 0, "b": 1, "c": 2, "d": 3},
-            {4, 5, 6, 7, 14},
-            None,
-            {9, 10, 15, 12, 11, 13, 8},
-            {"e", "f", "g", "h", "o"},
-            None,
-            {"j", "k", "l", "m", "n", "i", "p"},
-        )
-
-        u, v = 20, "x"
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change the orientation of the labels on neighbors of u compared to
-        # neighbors of v. Leave the structure intact
-        l1.update({9: "red"})
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # compensate in G2
-        l2.update({mapped[9]: "red"})
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change the intersection of G1[u] and T1
-        G1.add_edge(u, 4)
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Same for G2[v] and T2
-        G2.add_edge(v, mapped[4])
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change the intersection of G2[v] and T2_tilde
-        G2.remove_edge(v, mapped[8])
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Same for G1[u] and T1_tilde
-        G1.remove_edge(u, 8)
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Put 8 and mapped[8] in T1 and T2, resp, by connecting to covered nodes
-        G1.add_edge(8, 3)
-        G2.add_edge(mapped[8], mapped[3])
-        s_info.T1.add(8)
-        s_info.T2.add(mapped[8])
-        s_info.T1_tilde.remove(8)
-        s_info.T2_tilde.remove(mapped[8])
-
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Remove neighbor of u from T1
-        G1.remove_node(5)
-        l1.pop(5)
-        s_info.T1.remove(5)
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Same in G2
-        G2.remove_node(mapped[5])
-        l2.pop(mapped[5])
-        s_info.T2.remove(mapped[5])
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-    def test_all_feasibility_same_labels(self):
-        G1 = nx.Graph(
-            [
-                (0, 1),
-                (1, 2),
-                (1, 14),
-                (0, 4),
-                (1, 5),
-                (2, 6),
-                (3, 7),
-                (3, 6),
-                (4, 10),
-                (4, 9),
-                (6, 10),
-                (20, 9),
-                (20, 15),
-                (20, 12),
-                (20, 11),
-                (12, 13),
-                (11, 13),
-                (20, 8),
-                (20, 2),
-                (20, 5),
-                (20, 0),
-            ]
-        )
-        mapped = dict(enumerate("abcdefghijklmnop"))
-        mapped[20] = "x"
-        G2 = nx.relabel_nodes(G1, mapped)
-
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {mapped[n]: "blue" for n in G1.nodes()}
-
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c", 3: "d"},
-            {"a": 0, "b": 1, "c": 2, "d": 3},
-            {4, 5, 6, 7, 14},
-            None,
-            {9, 10, 15, 12, 11, 13, 8},
-            {"e", "f", "g", "h", "o"},
-            None,
-            {"j", "k", "l", "m", "n", "i", "p"},
-        )
-
-        u, v = 20, "x"
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change structure in G2 such that, ONLY consistency is harmed
-        G2.remove_edge(mapped[20], mapped[2])
-        G2.add_edge(mapped[20], mapped[3])
-
-        # Consistency check fails, while the cutting rules are satisfied!
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-        assert not _feasible_node_pair(u, v, g_info, s_info)
-
-        # Compensate in G1 and make it consistent
-        G1.remove_edge(20, 2)
-        G1.add_edge(20, 3)
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # ONLY fail the cutting check
-        G2.add_edge(v, mapped[10])
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-    def test_all_feasibility_different_labels(self):
-        G1 = nx.Graph(
-            [
-                (0, 1),
-                (1, 2),
-                (1, 14),
-                (0, 4),
-                (1, 5),
-                (2, 6),
-                (3, 7),
-                (3, 6),
-                (4, 10),
-                (4, 9),
-                (6, 10),
-                (20, 9),
-                (20, 15),
-                (20, 12),
-                (20, 11),
-                (12, 13),
-                (11, 13),
-                (20, 8),
-                (20, 2),
-                (20, 5),
-                (20, 0),
-            ]
-        )
-        mapped = dict(enumerate("abcdefghijklmnop"))
-        mapped[20] = "x"
-        G2 = nx.relabel_nodes(G1, mapped)
-
-        l1 = {n: "none" for n in G1.nodes()}
-        l2 = {}
-
-        l1.update(
-            {
-                9: "blue",
-                15: "blue",
-                12: "blue",
-                11: "green",
-                2: "green",
-                8: "red",
-                0: "red",
-                5: "yellow",
-            }
-        )
-        l2.update({mapped[n]: l for n, l in l1.items()})
-
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c", 3: "d"},
-            {"a": 0, "b": 1, "c": 2, "d": 3},
-            {4, 5, 6, 7, 14},
-            None,
-            {9, 10, 15, 12, 11, 13, 8},
-            {"e", "f", "g", "h", "o"},
-            None,
-            {"j", "k", "l", "m", "n", "i", "p"},
-        )
-
-        u, v = 20, "x"
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change structure in G2 such that, ONLY consistency is harmed
-        G2.remove_edge(mapped[20], mapped[2])
-        G2.add_edge(mapped[20], mapped[3])
-        l2.update({mapped[3]: "green"})
-
-        # Consistency check fails, while the cutting rules are satisfied!
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-        assert not _feasible_node_pair(u, v, g_info, s_info)
-
-        # Compensate in G1 and make it consistent
-        G1.remove_edge(20, 2)
-        G1.add_edge(20, 3)
-        l1.update({3: "green"})
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # ONLY fail the cutting check
-        l1.update({5: "red"})
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-
-class TestMultiGraphISOFeasibility:
-    def test_feasible_node_pair_covered_neighbors(self):
-        G1 = nx.MultiGraph(
-            [(0, 1), (0, 1), (1, 2), (3, 0), (3, 0), (3, 0), (3, 2), (3, 2)]
-        )
-        G2 = nx.MultiGraph(
-            [
-                ("a", "b"),
-                ("a", "b"),
-                ("b", "c"),
-                ("k", "a"),
-                ("k", "a"),
-                ("k", "a"),
-                ("k", "c"),
-                ("k", "c"),
-            ]
-        )
-        g_info = _GraphInfo(*two_eq, False, G1, G2, *five_dicts)
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, *six_sets
-        )
-        u, v = 3, "k"
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-    def test_feasible_node_pair_no_covered_neighbors(self):
-        G1 = nx.MultiGraph([(0, 1), (0, 1), (1, 2), (3, 4), (3, 4), (3, 5)])
-        G2 = nx.MultiGraph([("a", "b"), ("b", "c"), ("k", "w"), ("k", "w"), ("k", "z")])
-        g_info = _GraphInfo(*two_eq, False, G1, G2, *five_dicts)
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, *six_sets
-        )
-        u, v = 3, "k"
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-    def test_feasible_node_pair_mixed_covered_uncovered_neighbors(self):
-        G1 = nx.MultiGraph(
-            [(0, 1), (1, 2), (3, 0), (3, 0), (3, 0), (3, 2), (3, 2), (3, 4), (3, 5)]
-        )
-        G2 = nx.MultiGraph(
-            [
-                ("a", "b"),
-                ("b", "c"),
-                ("k", "a"),
-                ("k", "a"),
-                ("k", "a"),
-                ("k", "c"),
-                ("k", "c"),
-                ("k", "w"),
-                ("k", "z"),
-            ]
-        )
-        g_info = _GraphInfo(*two_eq, False, G1, G2, *five_dicts)
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, *six_sets
-        )
-        u, v = 3, "k"
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-    def test_feasible_node_pair_fail_cases(self):
-        G1 = nx.MultiGraph(
-            [
-                (0, 1),
-                (1, 2),
-                (10, 0),
-                (10, 0),
-                (10, 0),
-                (10, 3),
-                (10, 3),
-                (10, 4),
-                (10, 5),
-                (10, 6),
-                (10, 6),
-                (4, 1),
-                (5, 3),
-            ]
-        )
-        mapped = dict(enumerate("abcdefg"))
-        mapped[10] = "k"
-        G2 = nx.relabel_nodes(G1, mapped)
-
-        g_info = _GraphInfo(*two_eq, False, G1, G2, *five_dicts)
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c", 3: "d"},
-            {"a": 0, "b": 1, "c": 2, "d": 3},
-            *six_sets,
-        )
-        u, v = 10, "k"
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # Delete one uncovered neighbor of u. Notice how it still passes the test.
-        # Two reasons for this:
-        # 1. If u, v had different degrees from the beginning, they wouldn't be
-        #    selected as candidates in the first place.
-        # 2. Even if they are selected, consistency is basically 1-look-ahead,
-        #    meaning that we take into consideration the relation of the candidates
-        #    with their mapped neighbors. The node we deleted is not a covered
-        #    neighbor. Such nodes will be checked by the cut function, which
-        #    is basically the 2-look-ahead, checking the relation of the candidates
-        #    with T1, T2 (in which belongs the node we just deleted).
-        G1.remove_node(6)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # Add one more covered neighbor of u in G1
-        G1.add_edge(u, 2)
-        assert not _feasible_node_pair(u, v, g_info, s_info)
-
-        # Compensate in G2
-        G2.add_edge(v, "c")
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # Add one more covered neighbor of v in G2
-        G2.add_edge(v, "x")
-        G1.add_node(7)
-        s_info.mapping.update({7: "x"})
-        s_info.reverse_mapping.update({"x": 7})
-        assert not _feasible_node_pair(u, v, g_info, s_info)
-
-        # Compendate in G1
-        G1.add_edge(u, 7)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # Delete an edge between u and a covered neighbor
-        G1.remove_edges_from([(u, 0), (u, 0)])
-        assert not _feasible_node_pair(u, v, g_info, s_info)
-
-        # Compensate in G2
-        G2.remove_edges_from([(v, mapped[0]), (v, mapped[0])])
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # Remove an edge between v and a covered neighbor
-        G2.remove_edge(v, mapped[3])
-        assert not _feasible_node_pair(u, v, g_info, s_info)
-
-        # Compensate in G1
-        G1.remove_edge(u, 3)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-    def test_feasible_look_ahead_same_labels(self):
-        G1 = nx.MultiGraph(
-            [
-                (0, 1),
-                (1, 2),
-                (10, 0),
-                (10, 0),
-                (10, 0),
-                (10, 3),
-                (10, 3),
-                (10, 4),
-                (10, 4),
-                (10, 5),
-                (10, 5),
-                (10, 5),
-                (10, 5),
-                (10, 6),
-                (10, 6),
-                (4, 1),
-                (5, 3),
-            ]
-        )
-        mapped = dict(enumerate("abcdefg"))
-        mapped[10] = "k"
-        G2 = nx.relabel_nodes(G1, mapped)
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
-
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c", 3: "d"},
-            {"a": 0, "b": 1, "c": 2, "d": 3},
-            {4, 5},
-            None,
-            {6},
-            {"e", "f"},
-            None,
-            {"g"},
-        )
-
-        u, v = 10, "k"
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Remove one of the multiple edges between u and a neighbor
-        G1.remove_edge(u, 4)
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Compensate in G2
-        G1.remove_edge(u, 4)
-        G2.remove_edges_from([(v, mapped[4]), (v, mapped[4])])
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change intersection between G2[v] and T2_tilde, so it's not the same
-        # as the one between G1[u] and T1_tilde
-        G2.remove_edge(v, mapped[6])
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Compensate in G1
-        G1.remove_edge(u, 6)
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Add more edges between u and neighbor which belongs in T1_tilde
-        G1.add_edges_from([(u, 5), (u, 5), (u, 5)])
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Compensate in G2
-        G2.add_edges_from([(v, mapped[5]), (v, mapped[5]), (v, mapped[5])])
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Add disconnected nodes, which will form the new Ti_out
-        G1.add_nodes_from([6, 7, 8])
-        G2.add_nodes_from(["g", "y", "z"])
-        G1.add_edges_from([(u, 6), (u, 6), (u, 6), (u, 8)])
-        G2.add_edges_from([(v, "g"), (v, "g"), (v, "g"), (v, "z")])
-
-        s_info.T1_tilde.update({6, 7, 8})
-        s_info.T2_tilde.update({"g", "y", "z"})
-
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Add some new nodes to the mapping
-        s_info.mapping.update({6: "g", 7: "y"})
-        s_info.reverse_mapping.update({"g": 6, "y": 7})
-
-        # Add more nodes to T1, T2.
-        G1.add_edges_from([(6, 20), (7, 20), (6, 21)])
-        G2.add_edges_from([("g", "i"), ("g", "j"), ("y", "j")])
-
-        s_info.T1.update({20, 21})
-        s_info.T2.update({"i", "j"})
-        s_info.T1_tilde.difference_update({6, 7})
-        s_info.T2_tilde.difference_update({"g", "y"})
-
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Remove some edges
-        G2.remove_edge(v, "g")
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        G1.remove_edge(u, 6)
-        G1.add_edge(u, 8)
-        G2.add_edge(v, "z")
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Add nodes from the new T1 and T2, as neighbors of u and v respectively
-        G1.add_edges_from([(u, 20), (u, 20), (u, 20), (u, 21)])
-        G2.add_edges_from([(v, "i"), (v, "i"), (v, "i"), (v, "j")])
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {n: "blue" for n in G2.nodes()}
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change the edges
-        G1.remove_edge(u, 20)
-        G1.add_edge(u, 4)
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        G2.remove_edge(v, "i")
-        G2.add_edge(v, mapped[4])
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-    def test_feasible_look_ahead_different_labels(self):
-        G1 = nx.MultiGraph(
-            [
-                (0, 1),
-                (0, 1),
-                (1, 2),
-                (1, 2),
-                (1, 14),
-                (0, 4),
-                (1, 5),
-                (2, 6),
-                (3, 7),
-                (3, 6),
-                (4, 10),
-                (4, 9),
-                (6, 10),
-                (20, 9),
-                (20, 9),
-                (20, 9),
-                (20, 15),
-                (20, 15),
-                (20, 12),
-                (20, 11),
-                (20, 11),
-                (20, 11),
-                (12, 13),
-                (11, 13),
-                (20, 8),
-                (20, 8),
-                (20, 3),
-                (20, 3),
-                (20, 5),
-                (20, 5),
-                (20, 5),
-                (20, 0),
-                (20, 0),
-                (20, 0),
-            ]
-        )
-        mapped = dict(enumerate("abcdefghijklmnop"))
-        mapped[20] = "x"
-        G2 = nx.relabel_nodes(G1, mapped)
-
-        l1 = {n: "none" for n in G1.nodes()}
-        l2 = {}
-
-        l1.update(
-            {
-                9: "blue",
-                15: "blue",
-                12: "blue",
-                11: "green",
-                3: "green",
-                8: "red",
-                0: "red",
-                5: "yellow",
-            }
-        )
-        l2.update({mapped[n]: l for n, l in l1.items()})
-
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c", 3: "d"},
-            {"a": 0, "b": 1, "c": 2, "d": 3},
-            {4, 5, 6, 7, 14},
-            None,
-            {9, 10, 15, 12, 11, 13, 8},
-            {"e", "f", "g", "h", "o"},
-            None,
-            {"j", "k", "l", "m", "n", "i", "p"},
-        )
-
-        u, v = 20, "x"
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change the orientation of the labels on neighbors of u compared to
-        # neighbors of v. Leave the structure intact
-        l1.update({9: "red"})
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # compensate in G2
-        l2.update({mapped[9]: "red"})
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change the intersection of G1[u] and T1
-        G1.add_edge(u, 4)
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Same for G2[v] and T2
-        G2.add_edge(v, mapped[4])
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Delete one from the multiple edges
-        G2.remove_edge(v, mapped[8])
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Same for G1[u] and T1_tilde
-        G1.remove_edge(u, 8)
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Put 8 and mapped[8] in T1 and T2, resp, by connecting to covered nodes
-        G1.add_edges_from([(8, 3), (8, 3), (8, u)])
-        G2.add_edges_from([(mapped[8], mapped[3]), (mapped[8], mapped[3])])
-        s_info.T1.add(8)
-        s_info.T2.add(mapped[8])
-        s_info.T1_tilde.remove(8)
-        s_info.T2_tilde.remove(mapped[8])
-
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Fix uneven edges
-        G1.remove_edge(8, u)
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Remove neighbor of u from T1
-        G1.remove_node(5)
-        l1.pop(5)
-        s_info.T1.remove(5)
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Same in G2
-        G2.remove_node(mapped[5])
-        l2.pop(mapped[5])
-        s_info.T2.remove(mapped[5])
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-    def test_all_feasibility_same_labels(self):
-        G1 = nx.MultiGraph(
-            [
-                (0, 1),
-                (0, 1),
-                (1, 2),
-                (1, 2),
-                (1, 14),
-                (0, 4),
-                (1, 5),
-                (2, 6),
-                (3, 7),
-                (3, 6),
-                (4, 10),
-                (4, 9),
-                (6, 10),
-                (20, 9),
-                (20, 9),
-                (20, 9),
-                (20, 15),
-                (20, 15),
-                (20, 12),
-                (20, 11),
-                (20, 11),
-                (20, 11),
-                (12, 13),
-                (11, 13),
-                (20, 8),
-                (20, 8),
-                (20, 3),
-                (20, 3),
-                (20, 5),
-                (20, 5),
-                (20, 5),
-                (20, 0),
-                (20, 0),
-                (20, 0),
-            ]
-        )
-        mapped = dict(enumerate("abcdefghijklmnop"))
-        mapped[20] = "x"
-        G2 = nx.relabel_nodes(G1, mapped)
-        l1 = {n: "blue" for n in G1.nodes()}
-        l2 = {mapped[n]: "blue" for n in G1.nodes()}
-
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c", 3: "d"},
-            {"a": 0, "b": 1, "c": 2, "d": 3},
-            {4, 5, 6, 7, 14},
-            None,
-            {9, 10, 15, 12, 11, 13, 8},
-            {"e", "f", "g", "h", "o"},
-            None,
-            {"j", "k", "l", "m", "n", "i", "p"},
-        )
-
-        u, v = 20, "x"
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change structure in G2 such that, ONLY consistency is harmed
-        G2.remove_edges_from([(mapped[20], mapped[3]), (mapped[20], mapped[3])])
-        G2.add_edges_from([(mapped[20], mapped[2]), (mapped[20], mapped[2])])
-
-        # Consistency check fails, while the cutting rules are satisfied!
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-        assert not _feasible_node_pair(u, v, g_info, s_info)
-
-        # Compensate in G1 and make it consistent
-        G1.remove_edges_from([(20, 3), (20, 3)])
-        G1.add_edges_from([(20, 2), (20, 2)])
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # ONLY fail the cutting check
-        G2.add_edges_from([(v, mapped[10])] * 5)
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # Pass all tests
-        G1.add_edges_from([(u, 10)] * 5)
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-    def test_all_feasibility_different_labels(self):
-        G1 = nx.MultiGraph(
-            [
-                (0, 1),
-                (0, 1),
-                (1, 2),
-                (1, 2),
-                (1, 14),
-                (0, 4),
-                (1, 5),
-                (2, 6),
-                (3, 7),
-                (3, 6),
-                (4, 10),
-                (4, 9),
-                (6, 10),
-                (20, 9),
-                (20, 9),
-                (20, 9),
-                (20, 15),
-                (20, 15),
-                (20, 12),
-                (20, 11),
-                (20, 11),
-                (20, 11),
-                (12, 13),
-                (11, 13),
-                (20, 8),
-                (20, 8),
-                (20, 2),
-                (20, 2),
-                (20, 5),
-                (20, 5),
-                (20, 5),
-                (20, 0),
-                (20, 0),
-                (20, 0),
-            ]
-        )
-        mapped = dict(enumerate("abcdefghijklmnop"))
-        mapped[20] = "x"
-        G2 = nx.relabel_nodes(G1, mapped)
-        l1 = {n: "none" for n in G1.nodes()}
-        l1.update(
-            {
-                9: "blue",
-                15: "blue",
-                12: "blue",
-                11: "green",
-                2: "green",
-                8: "red",
-                0: "red",
-                5: "yellow",
-            }
-        )
-        l2 = {mapped[n]: l for n, l in l1.items()}
-
-        directed = G1.is_directed()
-        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c", 3: "d"},
-            {"a": 0, "b": 1, "c": 2, "d": 3},
-            {4, 5, 6, 7, 14},
-            None,
-            {9, 10, 15, 12, 11, 13, 8},
-            {"e", "f", "g", "h", "o"},
-            None,
-            {"j", "k", "l", "m", "n", "i", "p"},
-        )
-
-        u, v = 20, "x"
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-
-        # Change structure in G2 such that, ONLY consistency is harmed
-        G2.remove_edges_from([(mapped[20], mapped[2]), (mapped[20], mapped[2])])
-        G2.add_edges_from([(mapped[20], mapped[3]), (mapped[20], mapped[3])])
-        l2.update({mapped[3]: "green"})
-
-        # Consistency check fails, while the cutting rules are satisfied!
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-        assert not _feasible_node_pair(u, v, g_info, s_info)
-
-        # Compensate in G1 and make it consistent
-        G1.remove_edges_from([(20, 2), (20, 2)])
-        G1.add_edges_from([(20, 3), (20, 3)])
-        l1.update({3: "green"})
-        assert _feasible_look_ahead(u, v, g_info, s_info)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-        # ONLY fail the cutting check
-        l1.update({5: "red"})
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
-        assert _feasible_node_pair(u, v, g_info, s_info)
-
-
+@pytest.mark.parametrize("Gclass", graph_classes)
 class TestDiGraphISOFeasibility:
-    def test_feasible_node_pair_covered_neighbors(self):
-        G1 = nx.DiGraph([(0, 1), (1, 2), (0, 3), (2, 3)])
-        G2 = nx.DiGraph([("a", "b"), ("b", "c"), ("a", "k"), ("c", "k")])
-        g_info = _GraphInfo(*two_eq, True, G1, G2, *five_dicts)
+    def test_feasible_node_pair_covered_neighbors(self, Gclass):
+        directed = Gclass.is_directed(None)
+        G1 = Gclass([(0, 1), (1, 2), (0, 3), (2, 3)])
+        G2 = Gclass([("a", "b"), ("b", "c"), ("a", "k"), ("c", "k")])
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, *five_dicts)
         s_info = _StateInfo(
             {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, *six_sets
         )
         u, v = 3, "k"
         assert _feasible_node_pair(u, v, g_info, s_info)
 
-    def test_feasible_node_pair_no_covered_neighbors(self):
-        G1 = nx.DiGraph([(0, 1), (1, 2), (3, 4), (3, 5)])
-        G2 = nx.DiGraph([("a", "b"), ("b", "c"), ("k", "w"), ("k", "z")])
-        g_info = _GraphInfo(*two_eq, True, G1, G2, *five_dicts)
+    def test_feasible_node_pair_no_covered_neighbors(self, Gclass):
+        directed = Gclass.is_directed(None)
+        G1 = Gclass([(0, 1), (1, 2), (3, 4), (3, 5)])
+        G2 = Gclass([("a", "b"), ("b", "c"), ("k", "w"), ("k", "z")])
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, *five_dicts)
         s_info = _StateInfo(
             {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, *six_sets
         )
         u, v = 3, "k"
         assert _feasible_node_pair(u, v, g_info, s_info)
 
-    def test_feasible_node_pair_mixed_covered_uncovered_neighbors(self):
-        G1 = nx.DiGraph([(0, 1), (1, 2), (3, 0), (3, 2), (3, 4), (3, 5)])
-        G2 = nx.DiGraph(
+    def test_feasible_node_pair_mixed_covered_uncovered_neighbors(self, Gclass):
+        directed = Gclass.is_directed(None)
+        G1 = Gclass([(0, 1), (1, 2), (3, 0), (3, 2), (3, 4), (3, 5)])
+        G2 = Gclass(
             [("a", "b"), ("b", "c"), ("k", "a"), ("k", "c"), ("k", "w"), ("k", "z")]
         )
-        g_info = _GraphInfo(*two_eq, True, G1, G2, *five_dicts)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, *five_dicts)
         s_info = _StateInfo(
             {0: "a", 1: "b", 2: "c"}, {"a": 0, "b": 1, "c": 2}, *six_sets
         )
         u, v = 3, "k"
         assert _feasible_node_pair(u, v, g_info, s_info)
 
-    def test_feasible_node_pair_fail_cases(self):
-        G1 = nx.DiGraph(
+    def test_feasible_node_pair_fail_cases(self, Gclass):
+        directed = Gclass.is_directed(None)
+        G1 = Gclass(
             [
                 (0, 1),
                 (2, 1),
@@ -1792,7 +667,7 @@ class TestDiGraphISOFeasibility:
                 (5, 3),
             ]
         )
-        G2 = nx.DiGraph(
+        G2 = Gclass(
             [
                 ("a", "b"),
                 ("c", "b"),
@@ -1805,7 +680,7 @@ class TestDiGraphISOFeasibility:
                 ("f", "d"),
             ]
         )
-        g_info = _GraphInfo(*two_eq, True, G1, G2, *five_dicts)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, *five_dicts)
         s_info = _StateInfo(
             {0: "a", 1: "b", 2: "c", 3: "d"},
             {"a": 0, "b": 1, "c": 2, "d": 3},
@@ -1847,8 +722,9 @@ class TestDiGraphISOFeasibility:
         G1.add_edge(u, 7)
         assert _feasible_node_pair(u, v, g_info, s_info)
 
-    def test_feasible_look_ahead_mismatched_labels(self):
-        G1 = nx.DiGraph(
+    def test_feasible_look_ahead_mismatched_labels(self, Gclass):
+        directed = Gclass.is_directed(None)
+        G1 = Gclass(
             [
                 (0, 1),
                 (2, 1),
@@ -1861,7 +737,7 @@ class TestDiGraphISOFeasibility:
                 (5, 3),
             ]
         )
-        G2 = nx.DiGraph(
+        G2 = Gclass(
             [
                 ("a", "b"),
                 ("c", "b"),
@@ -1879,7 +755,6 @@ class TestDiGraphISOFeasibility:
         l2 = {n: "blue" for n in G2.nodes()}
         l1.update({5: "green"})  # Change the label of one neighbor of u
 
-        directed = G1.is_directed()
         g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
         mapping = {0: "a", 1: "b", 2: "c", 3: "d"}
         rev_map = {"a": 0, "b": 1, "c": 2, "d": 3}
@@ -1888,8 +763,9 @@ class TestDiGraphISOFeasibility:
         u, v = 10, "k"
         assert not _feasible_look_ahead(u, v, g_info, s_info)
 
-    def test_feasible_look_ahead_matched_labels(self):
-        G1 = nx.DiGraph(
+    def test_feasible_look_ahead_matched_labels(self, Gclass):
+        directed = Gclass.is_directed(None)
+        G1 = Gclass(
             [
                 (0, 1),
                 (2, 1),
@@ -1902,7 +778,7 @@ class TestDiGraphISOFeasibility:
                 (5, 3),
             ]
         )
-        G2 = nx.DiGraph(
+        G2 = Gclass(
             [
                 ("a", "b"),
                 ("c", "b"),
@@ -1919,7 +795,6 @@ class TestDiGraphISOFeasibility:
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {n: "blue" for n in G2.nodes()}
 
-        directed = G1.is_directed()
         g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
         s_info = _StateInfo(
             {0: "a", 1: "b", 2: "c", 3: "d"},
@@ -1935,15 +810,24 @@ class TestDiGraphISOFeasibility:
         u, v = 10, "k"
         assert _feasible_look_ahead(u, v, g_info, s_info)
 
-    def test_feasible_look_ahead_same_labels(self):
-        G1 = nx.DiGraph(
+    def test_feasible_look_ahead_same_labels(self, Gclass):
+        directed = Gclass.is_directed(None)
+        G1 = Gclass(
             [
                 (0, 1),
                 (2, 1),
                 (10, 0),
+                (10, 0),
+                (10, 0),
+                (10, 3),
                 (10, 3),
                 (10, 4),
+                (10, 4),
                 (5, 10),
+                (5, 10),
+                (5, 10),
+                (5, 10),
+                (10, 6),
                 (10, 6),
                 (1, 4),
                 (5, 3),
@@ -1955,38 +839,40 @@ class TestDiGraphISOFeasibility:
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {n: "blue" for n in G2.nodes()}
 
-        directed = G1.is_directed()
         g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c", 3: "d"},
-            {"a": 0, "b": 1, "c": 2, "d": 3},
-            {4},
-            {5, 10},
-            {6},
-            {"e"},
-            {"f", "k"},
-            {"g"},
-        )
+        mapping = {0: "a", 1: "b", 2: "c", 3: "d"}
+        rev_map = {"a": 0, "b": 1, "c": 2, "d": 3}
+        if directed:
+            # (T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
+            T_info = ({4, 10}, {5, 10}, {6}, {"e"}, {"f", "k"}, {"g"})
+        else:
+            T_info = ({4, 5, 10}, None, {6}, {"e", "f", "k"}, None, {"g"})
+        s_info = _StateInfo(mapping, rev_map, *T_info)
 
         u, v = 10, "k"
         assert _feasible_look_ahead(u, v, g_info, s_info)
 
-        # Change intersection between G1[u] and T1_out, so it's not the same as
-        # the one between G2[v] and T2_out
+        # Remove one of the multiple edges between u and a neighbor
         G1.remove_edge(u, 4)
         assert not _feasible_look_ahead(u, v, g_info, s_info)
 
+        # Change intersection between G1[u] and T1_out, so it's not the same as
+        # the one between G2[v] and T2_out
+        if G1.is_multigraph():  # such edge is left only when multigraph
+            G1.remove_edge(u, 4)
+        assert not _feasible_look_ahead(u, v, g_info, s_info)
+
         # Compensate in G2
-        G2.remove_edge(v, mapped[4])
+        G2.remove_edges_from([(v, mapped[4])] * 2)
         assert _feasible_look_ahead(u, v, g_info, s_info)
 
         # Change intersection between G1[u] and T1_in, so it's not the same as
         # the one between G2[v] and T2_in
-        G1.remove_edge(5, u)
+        G1.remove_edges_from([(5, u)] * 4)
         assert not _feasible_look_ahead(u, v, g_info, s_info)
 
         # Compensate in G2
-        G2.remove_edge(mapped[5], v)
+        G2.remove_edges_from([(mapped[5], v)] * 4)
         assert _feasible_look_ahead(u, v, g_info, s_info)
 
         # Change intersection between G2[v] and T2_tilde, so it's not the same
@@ -1998,12 +884,58 @@ class TestDiGraphISOFeasibility:
         G1.remove_edge(u, 6)
         assert _feasible_look_ahead(u, v, g_info, s_info)
 
-        # Add disconnected nodes, which will form the new Ti_tilde
-        G1.add_nodes_from([6, 7, 8])
-        G2.add_nodes_from(["g", "y", "z"])
-        s_info.T1_tilde.update({6, 7, 8})
-        s_info.T2_tilde.update({"g", "y", "z"})
+        # Add more edges between u and neighbor which belongs in T1_in
+        G1.add_edges_from([(u, 5), (u, 5), (u, 5)])
+        assert not _feasible_look_ahead(u, v, g_info, s_info)
 
+        # Compensate in G2
+        G2.add_edges_from([(v, mapped[5]), (v, mapped[5]), (v, mapped[5])])
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+
+        # Add disconnected nodes, which will form the new Ti_tilde
+        G1.add_nodes_from([7, 8, 9])
+        G2.add_nodes_from(["y", "z", "w"])
+        G1.add_edges_from([(u, 6), (u, 6), (u, 6)])
+        G2.add_edges_from([(v, "g"), (v, "g"), (v, "g")])
+        s_info.T1_tilde.update({7, 8, 9})
+        s_info.T2_tilde.update({"y", "z", "w"})
+
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {n: "blue" for n in G2.nodes()}
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
+
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+
+        # Add some new nodes to the mapping
+        s_info.mapping.update({6: "g", 7: "y"})
+        s_info.reverse_mapping.update({"g": 6, "y": 7})
+
+        # Add more nodes to T1, T2.
+        G1.add_edges_from([(6, 20), (7, 20), (6, 21)])
+        G2.add_edges_from([("g", "i"), ("y", "i"), ("g", "j")])
+
+        s_info.T1.update({20, 21})
+        s_info.T2.update({"i", "j"})
+        s_info.T1_tilde.difference_update({6, 7})
+        s_info.T2_tilde.difference_update({"g", "y"})
+
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+
+        # Remove some edges
+        G2.remove_edge(v, "g")
+        if G2.is_multigraph():
+            assert not _feasible_look_ahead(u, v, g_info, s_info)
+        else:
+            assert _feasible_look_ahead(u, v, g_info, s_info)
+
+        G1.remove_edge(u, 6)
+        G1.add_edge(u, 8)
+        G2.add_edge(v, "z")
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+
+        # Add nodes from the new T1 and T2, as neighbors of u and v respectively
+        G1.add_edges_from([(u, 20), (u, 20), (u, 20), (u, 21)])
+        G2.add_edges_from([(v, "i"), (v, "i"), (v, "i"), (v, "j")])
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {n: "blue" for n in G2.nodes()}
         directed = G1.is_directed()
@@ -2011,8 +943,26 @@ class TestDiGraphISOFeasibility:
 
         assert _feasible_look_ahead(u, v, g_info, s_info)
 
-    def test_feasible_look_ahead_different_labels(self):
-        G1 = nx.DiGraph(
+        # Change the edges, maintaining the G1[u]-T1 intersection
+        G1.remove_edge(u, 21)
+        G1.add_edge(u, 4)
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+
+        G2.remove_edge(v, "j")
+        G2.add_edge(v, mapped[4])
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+
+        # Connect u to 9 which is still in T1_tilde
+        G1.add_edge(u, 9)
+        assert not _feasible_look_ahead(u, v, g_info, s_info)
+
+        # Same for v and z, so that inters(G1[u], T1out) == inters(G2[v], T2out)
+        G2.add_edge(v, "w")
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+
+    def test_feasible_look_ahead_different_labels(self, Gclass):
+        directed = Gclass.is_directed(None)
+        G1 = Gclass(
             [
                 (0, 1),
                 (1, 2),
@@ -2056,18 +1006,29 @@ class TestDiGraphISOFeasibility:
         )
         l2 = {mapped[n]: l for n, l in l1.items()}
 
-        directed = G1.is_directed()
         g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c", 3: "d"},
-            {"a": 0, "b": 1, "c": 2, "d": 3},
-            {4, 5, 6, 7, 20},
-            {14, 20},
-            {9, 10, 15, 12, 11, 13, 8},
-            {"e", "f", "g", "x"},
-            {"o", "x"},
-            {"j", "k", "l", "m", "n", "i", "p"},
-        )
+        mapping = {0: "a", 1: "b", 2: "c", 3: "d"}
+        rev_map = {"a": 0, "b": 1, "c": 2, "d": 3}
+        if directed:
+            # (T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
+            T_info = (
+                {4, 5, 6, 7, 20},
+                {14, 20},
+                {9, 10, 15, 12, 11, 13, 8},
+                {"e", "f", "g", "x"},
+                {"o", "x"},
+                {"j", "k", "l", "m", "n", "i", "p"},
+            )
+        else:
+            T_info = (
+                {4, 5, 6, 7, 14},
+                None,
+                {9, 10, 15, 12, 11, 13, 8},
+                {"e", "f", "g", "h", "o"},
+                None,
+                {"j", "k", "l", "m", "n", "i", "p"},
+            )
+        s_info = _StateInfo(mapping, rev_map, *T_info)
 
         u, v = 20, "x"
         assert _feasible_look_ahead(u, v, g_info, s_info)
@@ -2106,13 +1067,17 @@ class TestDiGraphISOFeasibility:
         assert _feasible_look_ahead(u, v, g_info, s_info)
 
         # Put 8 and mapped[8] in T1 and T2, resp, by connecting to covered nodes
-        G1.add_edge(8, 3)
-        G2.add_edge(mapped[8], mapped[3])
+        G1.add_edges_from([(8, 3), (8, 3), (8, u)])
+        G2.add_edges_from([(mapped[8], mapped[3]), (mapped[8], mapped[3])])
         s_info.T1.add(8)
         s_info.T2.add(mapped[8])
         s_info.T1_tilde.remove(8)
         s_info.T2_tilde.remove(mapped[8])
 
+        assert not _feasible_look_ahead(u, v, g_info, s_info)
+
+        # Fix uneven edges
+        G1.remove_edge(8, u)
         assert _feasible_look_ahead(u, v, g_info, s_info)
 
         # Remove neighbor of u from T1
@@ -2127,33 +1092,178 @@ class TestDiGraphISOFeasibility:
         s_info.T2.remove(mapped[5])
         assert _feasible_look_ahead(u, v, g_info, s_info)
 
-    def test_predecessor_T1_in_fail(self):
-        G1 = nx.DiGraph(
-            [(0, 1), (0, 3), (4, 0), (1, 5), (5, 2), (3, 6), (4, 6), (6, 5)]
-        )
+    def test_predecessor_T1_in_fail(self, Gclass):
+        directed = Gclass.is_directed(Gclass)
+        if not directed:
+            return
+        G1 = Gclass([(0, 1), (0, 3), (4, 0), (1, 5), (5, 2), (3, 6), (4, 6), (6, 5)])
         mapped = dict(enumerate("abcdefg"))
         G2 = nx.relabel_nodes(G1, mapped)
         l1 = {n: "blue" for n in G1.nodes()}
         l2 = {n: "blue" for n in G2.nodes()}
 
-        directed = G1.is_directed()
         g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
-        s_info = _StateInfo(
-            {0: "a", 1: "b", 2: "c"},
-            {"a": 0, "b": 1, "c": 2},
-            {3, 5},
-            {4, 5},
-            {6},
-            {"d", "f"},
-            {"f"},  # mapped[4] is missing from T2_in
-            {"g"},
-        )
+        m = {0: "a", 1: "b", 2: "c"}
+        rev_m = {"a": 0, "b": 1, "c": 2}
+        s_info = _StateInfo(m, rev_m, {3, 5}, {4, 5}, {6}, {"d", "f"}, {"f"}, {"g"})
 
         u, v = 6, "g"
         assert not _feasible_look_ahead(u, v, g_info, s_info)
 
         s_info.T2_in.add("e")
         assert _feasible_look_ahead(u, v, g_info, s_info)
+
+    def test_all_feasibility_same_labels(self, Gclass):
+        G1 = Gclass(
+            [
+                (0, 1),
+                (1, 2),
+                (14, 1),
+                (0, 4),
+                (1, 5),
+                (2, 6),
+                (3, 7),
+                (3, 6),
+                (4, 10),
+                (4, 9),
+                (6, 10),
+                (20, 9),
+                (20, 15),
+                (20, 12),
+                (20, 11),
+                (12, 13),
+                (11, 13),
+                (20, 8),
+                (20, 2),
+                (20, 5),
+                (20, 0),
+            ]
+        )
+        mapped = dict(enumerate("abcdefghijklmnop"))
+        mapped[20] = "x"
+        G2 = nx.relabel_nodes(G1, mapped)
+
+        l1 = {n: "blue" for n in G1.nodes()}
+        l2 = {mapped[n]: "blue" for n in G1.nodes()}
+
+        directed = G1.is_directed()
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
+        s_info = _StateInfo(
+            {0: "a", 1: "b", 2: "c", 3: "d"},
+            {"a": 0, "b": 1, "c": 2, "d": 3},
+            {4, 5, 6, 7},
+            {14},
+            {9, 10, 15, 12, 11, 13, 8},
+            {"e", "f", "g", "h"},
+            {"o"},
+            {"j", "k", "l", "m", "n", "i", "p"},
+        )
+
+        u, v = 20, "x"
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+
+        # Change structure in G2 such that, ONLY consistency is harmed
+        G2.remove_edge(mapped[20], mapped[2])
+        G2.add_edge(mapped[20], mapped[3])
+
+        # Consistency check fails, while the cutting rules are satisfied!
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+        assert not _feasible_node_pair(u, v, g_info, s_info)
+
+        # Compensate in G1 and make it consistent
+        G1.remove_edge(20, 2)
+        G1.add_edge(20, 3)
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+        assert _feasible_node_pair(u, v, g_info, s_info)
+
+        # ONLY fail the cutting check
+        G2.add_edge(v, mapped[10])
+        assert not _feasible_look_ahead(u, v, g_info, s_info)
+        assert _feasible_node_pair(u, v, g_info, s_info)
+
+    def test_all_feasibility_different_labels(self, Gclass):
+        G1 = Gclass(
+            [
+                (0, 1),
+                (1, 2),
+                (1, 14),
+                (0, 4),
+                (1, 5),
+                (2, 6),
+                (3, 7),
+                (3, 6),
+                (4, 10),
+                (4, 9),
+                (6, 10),
+                (20, 9),
+                (20, 15),
+                (20, 12),
+                (20, 11),
+                (12, 13),
+                (11, 13),
+                (20, 8),
+                (20, 2),
+                (20, 5),
+                (20, 0),
+            ]
+        )
+        mapped = dict(enumerate("abcdefghijklmnop"))
+        mapped[20] = "x"
+        G2 = nx.relabel_nodes(G1, mapped)
+
+        l1 = {n: "none" for n in G1.nodes()}
+        l2 = {}
+
+        l1.update(
+            {
+                9: "blue",
+                15: "blue",
+                12: "blue",
+                11: "green",
+                2: "green",
+                8: "red",
+                0: "red",
+                5: "yellow",
+            }
+        )
+        l2.update({mapped[n]: l for n, l in l1.items()})
+
+        directed = G1.is_directed()
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, {}, {}, groups(l2))
+        s_info = _StateInfo(
+            {0: "a", 1: "b", 2: "c", 3: "d"},
+            {"a": 0, "b": 1, "c": 2, "d": 3},
+            {4, 5, 6, 7},
+            {14},
+            {9, 10, 15, 12, 11, 13, 8},
+            {"e", "f", "g", "h"},
+            {"o"},
+            {"j", "k", "l", "m", "n", "i", "p"},
+        )
+
+        u, v = 20, "x"
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+
+        # Change structure in G2 such that, ONLY consistency is harmed
+        G2.remove_edge(mapped[20], mapped[2])
+        G2.add_edge(mapped[20], mapped[3])
+        l2.update({mapped[3]: "green"})
+
+        # Consistency check fails, while the cutting rules are satisfied!
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+        assert not _feasible_node_pair(u, v, g_info, s_info)
+
+        # Compensate in G1 and make it consistent
+        G1.remove_edge(20, 2)
+        G1.add_edge(20, 3)
+        l1.update({3: "green"})
+        assert _feasible_look_ahead(u, v, g_info, s_info)
+        assert _feasible_node_pair(u, v, g_info, s_info)
+
+        # ONLY fail the cutting check
+        l1.update({5: "red"})
+        assert not _feasible_look_ahead(u, v, g_info, s_info)
+        assert _feasible_node_pair(u, v, g_info, s_info)
 
 
 class TestGraphTinoutUpdating:
