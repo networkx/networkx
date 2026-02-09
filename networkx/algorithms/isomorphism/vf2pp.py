@@ -7,11 +7,25 @@ An implementation of the VF2++ algorithm [1]_ for Graph Isomorphism testing.
 
 The simplest interface to use this module is to call:
 
-`vf2pp_is_isomorphic`: to check whether two graphs are isomorphic.
-`vf2pp_isomorphism`: to obtain the node mapping between two graphs,
-in case they are isomorphic.
-`vf2pp_all_isomorphisms`: to generate all possible mappings between two graphs,
-if isomorphic.
+`vf2pp_is_isomorphic`: check whether two graphs are isomorphic.
+`vf2pp_isomorphism`: obtain the node isomorphism mapping between two graphs,
+if they are isomorphic.
+`vf2pp_all_isomorphisms`: generate all possible isomorphism mappings between
+two graphs, if isomorphic.
+
+`vf2pp_is_subgraph_isomorphic`: check whether a specified graph
+is isomorphic to an induced subgraph of the other graph.
+`vf2pp_subgraph_isomorphism`: obtain the node isomorphism mapping between a
+specified graph and any induced subgraph of the other graph, if possible.
+`vf2pp_all_subgraph_isomorphisms`: generate all possible isomorphism mappings
+between the specified induced subgraph and the graph.
+
+`vf2pp_is_monomorphic`: check whether two graphs are monomorphic. That is,
+the node and edge sets of one are subsets of the other's node and edge sets.
+`vf2pp_monomorphism`: obtain the node monomorphism mapping between a
+specified graph and any subgraph of the other graph, if possible.
+`vf2pp_all_monomorphisms`: generate all possible monomorphism mappings
+between the specified subgraph and the graph.
 
 Introduction
 ------------
@@ -20,12 +34,19 @@ introducing new easy-to-check cutting rules and determining the optimal access
 order of nodes. It is also implemented in a non-recursive manner, which saves
 both time and space, when compared to its previous counterpart.
 
-The optimal node ordering is obtained after taking into consideration both the
-degree but also the label rarity of each node.
-This way we place the nodes that are more likely to match, first in the order,
-thus examining the most promising branches in the beginning.
-The rules also consider node labels, making it easier to prune unfruitful
-branches early in the process.
+An improved node ordering is obtained after taking into consideration both the
+degree and the label rarity of each node.
+This way we consider the nodes that eliminate the most branches of the possible
+mapping search tree, so we can cut out unfruitful branches early in the process.
+
+Warning: The VF2++ paper uses the symbols `G1` and `G2` for the two graphs of
+interest just as the VF2 paper does. But for subgraph functions the first graph
+is smaller in VF2++ while the second is smaller for VF2 and for ISMAGS. This
+implementation, VF2pp, matches the VF2 and ISMAGS notation with the second
+input being no larger than the first. To avoid confusion with the papers we
+name the graphs `FG` and `SG` for full graph and smaller graph. For VF2pp,
+`SG` corresponds to the paper's `G1` while `FG` corresponds to `G2`. This does
+not matter for the isomorphism functions (where the graphs have the same size).
 
 Examples
 --------
@@ -44,21 +65,70 @@ True
 
 With node labels:
 
->>> G1 = nx.path_graph(4)
->>> G2 = nx.path_graph(4)
 >>> mapped = {1: 1, 2: 2, 3: 3, 0: 0}
 >>> nx.set_node_attributes(
 ...     G1, dict(zip(G1, ["blue", "red", "green", "yellow"])), "label"
 ... )
 >>> nx.set_node_attributes(
-...     G2,
-...     dict(zip([mapped[u] for u in G1], ["blue", "red", "green", "yellow"])),
-...     "label",
+...     G2, dict(zip(G2, ["blue", "red", "green", "yellow"])), "label"
 ... )
 >>> nx.vf2pp_is_isomorphic(G1, G2, node_label="label")
 True
 >>> nx.vf2pp_isomorphism(G1, G2, node_label="label")
 {1: 1, 2: 2, 0: 0, 3: 3}
+
+For subgraph isomorphism we look for induced subgraphs of G2 that are
+isomorphic to G1. The process is similar to graph isomorphism with a
+different function:
+
+>>> G1 = nx.path_graph(3)
+>>> G2 = nx.path_graph(4)
+>>> nx.vf2pp_is_subgraph_isomorphic(G1, G2, node_label=None)
+True
+>>> nx.vf2pp_subgraph_isomorphism(G1, G2, node_label=None)
+{1: 1, 2: 2, 0: 0}
+
+With node labels:
+
+>>> mapped = {1: 1, 2: 2, 3: 3, 0: 0}
+>>> nx.set_node_attributes(G1, dict(zip(G1, ["blue", "red", "green"])), "label")
+>>> nx.set_node_attributes(
+...     G2, dict(zip(G2, ["blue", "red", "green", "yellow"])), "label"
+... )
+>>> nx.vf2pp_is_subgraph_isomorphic(G1, G2, node_label="label")
+True
+>>> nx.vf2pp_subgraph_isomorphism(G1, G2, node_label="label")
+{1: 1, 2: 2, 0: 0}
+
+For subgraph monomorphism we look for possibly non-induced subgraphs
+of G2 that are isomorphic to G1. That means we only need a subset of nodes
+and edges of the first that map to nodes and edges of the second. But
+not all edges in the second graph need to be mapped to, even if that edge
+involves two nodes that are mapped to.
+
+A classic example of this is a path graph mapping to a subgraph of a
+cycle graph with the same number of nodes. The missing edge in the path
+graph means that no subgraph isomorphism exists. But a monomorphism exists
+because not all induced edges need to be mapped to.
+
+>>> G1 = nx.path_graph(4)
+>>> G2 = nx.cycle_graph(4)
+>>> nx.vf2pp_is_monomorphic(G1, G2, node_label=None)
+True
+>>> nx.vf2pp_monomorphism(G1, G2, node_label=None)
+{1: 1, 2: 2, 0: 0}
+
+With node labels:
+
+>>> mapped = {1: 1, 2: 2, 3: 3, 0: 0}
+>>> nx.set_node_attributes(G1, dict(zip(G1, ["blue", "red", "green"])), "label")
+>>> nx.set_node_attributes(
+...     G2, dict(zip(G2, ["blue", "red", "green", "yellow"])), "label"
+... )
+>>> nx.vf2pp_is_monomorphic(G1, G2, node_label="label")
+True
+>>> nx.vf2pp_monomorphism(G1, G2, node_label="label")
+{1: 1, 2: 2, 0: 0}
 
 References
 ----------
@@ -77,7 +147,11 @@ __all__ = [
     "vf2pp_isomorphism",
     "vf2pp_is_isomorphic",
     "vf2pp_all_isomorphisms",
-    "vf2pp_all_SG_isomorphisms",
+    "vf2pp_subgraph_isomorphism",
+    "vf2pp_is_subgraph_isomorphic",
+    "vf2pp_all_subgraph_isomorphisms",
+    "vf2pp_monomorphism",
+    "vf2pp_is_monomorphic",
     "vf2pp_all_monomorphisms",
 ]
 
@@ -101,13 +175,13 @@ _StateInfo = collections.namedtuple(
     "_StateInfo",
     [
         "mapping",
-        "reverse_mapping",
+        "rev_map",
         "T1",  # border_outgoing unmapped nodes connected from SG mapped nodes
         "T1_in",  # border_incoming of unmapped nodes connected from SG mapped nodes
         "T1_tilde",  # wilds (not mapped or on border)
-        "T2",  # border_out for G
-        "T2_in",  # border_in for G
-        "T2_tilde",  # wilds for G
+        "T2",  # border_out of mapping in G2
+        "T2_in",  # border_in of mapping in G2
+        "T2_tilde",  # wilds (unseen nodes) in G2
     ],
 )
 
@@ -202,12 +276,188 @@ def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=None):
 
 
 @nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
-def vf2pp_all_SG_isomorphisms(G1, G2, node_label=None, default_label=None):
+def vf2pp_subgraph_isomorphism(G1, G2, node_label=None, default_label=None):
+    """Return an isomorphic mapping between nodes of `G1` and `G2` if it exists.
+
+    Parameters
+    ----------
+    G1, G2 : NetworkX Graph or MultiGraph instances.
+        The two graphs to check for isomorphism.
+
+    node_label : str, optional
+        The name of the node attribute to be used when comparing nodes.
+        The default is `None`, meaning node attributes are not considered
+        in the comparison. Any node that doesn't have the `node_label`
+        attribute uses `default_label` instead.
+
+    default_label : scalar
+        Default value to use when a node doesn't have an attribute
+        named `node_label`. Default is `None`.
+
+    Returns
+    -------
+    dict or None
+        Isomorphism mapping nodes of one graph to nodes of the other.
+        If not subgraph isomorphic, return None.
+    """
+    try:
+        mapping = next(_all_morphisms(G1, G2, node_label, default_label, PT="IND"))
+        return mapping
+    except StopIteration:
+        return None
+
+
+@nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
+def vf2pp_is_subgraph_morphic(G1, G2, node_label=None, default_label=None):
+    """Examines whether G1 and G2 are isomorphic.
+
+    Parameters
+    ----------
+    G1, G2 : NetworkX Graph or MultiGraph instances.
+        The two graphs to check for isomorphism.
+
+    node_label : str, optional
+        The name of the node attribute to be used when comparing nodes.
+        The default is `None`, meaning node attributes are not considered
+        in the comparison. Any node that doesn't have the `node_label`
+        attribute uses `default_label` instead.
+
+    default_label : scalar
+        Default value to use when a node doesn't have an attribute
+        named `node_label`. Default is `None`.
+
+    Returns
+    -------
+    bool
+        True if the two graphs are isomorphic, False otherwise.
+    """
+    try:
+        next(_all_morphisms(G1, G2, node_label, default_label, PT="IND"))
+        return True
+    except StopIteration:
+        return False
+
+
+@nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
+def vf2pp_all_subgraph_isomorphisms(G1, G2, node_label=None, default_label=None):
+    """Yields all the possible subgraph isomorphisms between G1 and G2.
+
+    Parameters
+    ----------
+    G1, G2 : NetworkX Graph or MultiGraph instances.
+        The two graphs to check for subgraph isomorphisms.
+
+    node_label : str, optional
+        The name of the node attribute to be used when comparing nodes.
+        The default is `None`, meaning node attributes are not considered
+        in the comparison. Any node that doesn't have the `node_label`
+        attribute uses `default_label` instead.
+
+    default_label : scalar
+        Default value to use when a node doesn't have an attribute
+        named `node_label`. Default is `None`.
+
+    Yields
+    ------
+    dict
+        Subgraph isomorphisms mapping the nodes in `G1` to nodes in `G2`.
+    """
     yield from _all_morphisms(G1, G2, node_label, default_label, PT="IND")
 
 
 @nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
+def vf2pp_monomorphism(G1, G2, node_label=None, default_label=None):
+    """Return a monomorphic mapping between `G1` and `G2` if it exists.
+
+    Parameters
+    ----------
+    G1, G2 : NetworkX Graph or MultiGraph instances.
+        The two graphs to check for monomorphism.
+
+    node_label : str, optional
+        The name of the node attribute to be used when comparing nodes.
+        The default is `None`, meaning node attributes are not considered
+        in the comparison. Any node that doesn't have the `node_label`
+        attribute uses `default_label` instead.
+
+    default_label : scalar
+        Default value to use when a node doesn't have an attribute
+        named `node_label`. Default is `None`.
+
+    Returns
+    -------
+    dict or None
+        Node mapping if the two graphs are isomorphic. None otherwise.
+    """
+    try:
+        mapping = next(_all_morphisms(G1, G2, node_label, default_label, PT="MONO"))
+        return mapping
+    except StopIteration:
+        return None
+
+
+@nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
+def vf2pp_is_monomorphic(G1, G2, node_label=None, default_label=None):
+    """Examines whether G1 and G2 are monomorphic.
+
+    Parameters
+    ----------
+    G1, G2 : NetworkX Graph or MultiGraph instances.
+        The two graphs to check for monomorphism.
+
+    node_label : str, optional
+        The name of the node attribute to be used when comparing nodes.
+        The default is `None`, meaning node attributes are not considered
+        in the comparison. Any node that doesn't have the `node_label`
+        attribute uses `default_label` instead.
+
+    default_label : scalar
+        Default value to use when a node doesn't have an attribute
+        named `node_label`. Default is `None`.
+
+    Returns
+    -------
+    bool
+        True if the two graphs are monomorphic, False otherwise.
+    """
+    try:
+        next(_all_morphisms(G1, G2, node_label, default_label, PT="MONO"))
+        return True
+    except StopIteration:
+        return False
+
+
+@nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
 def vf2pp_all_monomorphisms(G1, G2, node_label=None, default_label=None):
+    """Yields all the possible monomorphisms between nodes of G1 and G2.
+
+    A monomorphism means that edges between two nodes in G1 must connect the
+    image nodes of those two nodes in G2, but that edges in G2 do not have
+    to have pre-image edges in G1. The mapping is injective not bijective.
+    The mapped nodes have to maintain the G1 connections, but not the G1
+    disconnections. Maintaining edges and non-edges is provided by the
+    subgraph isomorphism functions.
+
+    Parameters
+    ----------
+    G1, G2 : NetworkX Graph or MultiGraph instances.
+        The two graphs to check for isomorphism.
+
+    node_label : str, optional
+        The name of the node attribute to be used when comparing nodes.
+        The default is `None`, meaning node attributes are not considered
+        in the comparison. Any node that doesn't have the `node_label`
+        attribute uses `default_label` instead.
+
+    default_label : scalar
+        Default value to use when a node doesn't have an attribute
+        named `node_label`. Default is `None`.
+
+    Yields
+    ------
+    dict
+        Isomorphic mapping between the nodes in `G1` and `G2`.
+    """
     yield from _all_morphisms(G1, G2, node_label, default_label, PT="MONO")
 
 
@@ -246,8 +496,8 @@ def _all_morphisms(G1, G2, node_label, default_label, PT):
     #        pass
 
     # precheck label properties:
-    # Check if G1 and G2 have the same labels, and
-    # check number of nodes per label fits between the two graphs
+    # Check if G1 and G2 have the same labels, and check that the
+    # number of nodes per label fits between the two graphs
     G1_by_label = nx.utils.groups(G1_labels)
     if any(
         label not in G1_by_label or not SG_fits(len(G1_by_label[label]), len(nodes))
@@ -266,7 +516,7 @@ def _all_morphisms(G1, G2, node_label, default_label, PT):
     stack = [(start_node, iter(find_candidates(start_node, *args)))]
 
     mapping = state_info.mapping
-    reverse_mapping = state_info.reverse_mapping
+    rev_map = state_info.rev_map
 
     # Index of the node from the order, currently being examined
     node_number = 0
@@ -292,7 +542,7 @@ def _all_morphisms(G1, G2, node_label, default_label, PT):
 
                 cand = mapping[node]
                 mapping.pop(node)
-                reverse_mapping.pop(cand)
+                rev_map.pop(cand)
                 restore_Tinout(node, cand, graph_info, state_info)
                 continue
             return
@@ -307,7 +557,7 @@ def _all_morphisms(G1, G2, node_label, default_label, PT):
 
             # Feasibility rules pass, so extend the mapping and update Tinout
             mapping[current_node] = candidate
-            reverse_mapping[candidate] = current_node
+            rev_map[candidate] = current_node
             _update_Tinout(current_node, candidate, graph_info, state_info)
             # Append the next node and its candidates to the stack
             node_number += 1
@@ -429,15 +679,15 @@ def _find_candidates(u, graph_info, state_info):
     # state. That is syntatic feasibility. This moves "CUT" into find_candidates.
     # The point is: why put more candidates on the stack if we can test them here?
     SG_fits, MONO_fits, _, G1, G2, G1_lbls, _, G1_deg, G2_deg, G2_by_label = graph_info
-    mapping, reverse_mapping, _, _, _, _, _, T2_tilde = state_info
+    mapping, rev_map, _, _, _, _, _, T2_tilde = state_info
     u_label, u_deg, u_loops = G1_lbls[u], G1_deg[u], G1.number_of_edges(u, u)
 
     covered_nbrs = [nbr for nbr in G1[u] if nbr in mapping]
     if covered_nbrs:
-        # cands = G2_by_label[u_label].difference(reverse_mapping)
+        # cands = G2_by_label[u_label].difference(rev_map)
         nbr = covered_nbrs[0]
         cands = G2._adj[mapping[nbr]].keys() & G2_by_label[u_label]
-        cands -= reverse_mapping.keys()
+        cands -= rev_map.keys()
 
         for nbr in covered_nbrs[1:]:
             cands.intersection_update(G2._adj[mapping[nbr]])
@@ -457,14 +707,14 @@ def _find_candidates(u, graph_info, state_info):
     if MONO_fits == operator.eq:
         cands.intersection_update(T2_tilde)
     else:
-        cands.difference_update(reverse_mapping)
+        cands.difference_update(rev_map)
     result = {n for n in cands if MONO_fits(u_loops, G2.number_of_edges(n, n))}
     return result
 
 
 def _find_candidates_Di(u, graph_info, state_info):
     SG_fits, MONO_fits, _, G1, G2, G1_lbls, _, G1_deg, G2_deg, G2_by_label = graph_info
-    mapping, reverse_mapping, _, _, _, _, _, T2_tilde = state_info
+    mapping, rev_map, _, _, _, _, _, T2_tilde = state_info
     u_label, u_deg, u_loops = G1_lbls[u], G1_deg[u], G1.number_of_edges(u, u)
 
     covered_successors = [succ for succ in G1[u] if succ in mapping]
@@ -473,14 +723,14 @@ def _find_candidates_Di(u, graph_info, state_info):
     if covered_successors or covered_predecessors:
         if covered_successors:
             succ = covered_successors[0]
-            cands = G2._pred[mapping[succ]].keys() - reverse_mapping.keys()
+            cands = G2._pred[mapping[succ]].keys() - rev_map.keys()
 
             for succ in covered_successors[1:]:
                 cands.intersection_update(G2._pred[mapping[succ]])
         else:
             pred = covered_predecessors.pop()
             cands = set(G2._adj[mapping[pred]])
-            cands.difference_update(reverse_mapping)
+            cands.difference_update(rev_map)
 
         for pred in covered_predecessors:
             cands.intersection_update(G2._adj[mapping[pred]])
@@ -501,7 +751,7 @@ def _find_candidates_Di(u, graph_info, state_info):
     if MONO_fits == operator.eq:
         cands.intersection_update(T2_tilde)
     else:
-        cands.difference_update(reverse_mapping)
+        cands.difference_update(rev_map)
     result = {
         n
         for n in cands
@@ -598,7 +848,7 @@ def _feasible_look_ahead(u, v, graph_info, state_info):
 
 def _feasible_node_pair(u, v, graph_info, state_info):
     _, MONO_op, directed, G1, G2, *_ = graph_info
-    mapping, rev_map = state_info.mapping, state_info.reverse_mapping
+    mapping, rev_map = state_info.mapping, state_info.rev_map
     multigraph = G1.is_multigraph() or G2.is_multigraph()
     unbrs, vnbrs = G1._adj[u], G2._adj[v]
     if directed:
@@ -698,7 +948,7 @@ def _restore_Tinout(popped_node1, popped_node2, graph_info, state_info):
     """
     # If node to remove from the mapping has >=1 covered neighbor, add it to T1
     _, _, directed, G1, G2, *_ = graph_info
-    mapping, reverse_mapping, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde = state_info
+    mapping, rev_map, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde = state_info
 
     is_added = False
     for neighbor in G1[popped_node1]:
@@ -721,11 +971,11 @@ def _restore_Tinout(popped_node1, popped_node2, graph_info, state_info):
 
     is_added = False
     for neighbor in G2[popped_node2]:
-        if neighbor in reverse_mapping:
+        if neighbor in rev_map:
             is_added = True
             T2.add(popped_node2)
         else:
-            if any(nbr in reverse_mapping for nbr in G2[neighbor]):
+            if any(nbr in rev_map for nbr in G2[neighbor]):
                 continue
             T2.discard(neighbor)
             T2_tilde.add(neighbor)
@@ -737,7 +987,7 @@ def _restore_Tinout(popped_node1, popped_node2, graph_info, state_info):
 def _restore_Tinout_Di(popped_node1, popped_node2, graph_info, state_info):
     # If the node to remove from the mapping has >=1 covered neighbor, add it to T1.
     _, _, directed, G1, G2, *_ = graph_info
-    mapping, reverse_mapping, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde = state_info
+    mapping, rev_map, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde = state_info
 
     is_added = False
     for successor in G1[popped_node1]:
@@ -782,14 +1032,14 @@ def _restore_Tinout_Di(popped_node1, popped_node2, graph_info, state_info):
 
     is_added = False
     for successor in G2[popped_node2]:
-        if successor in reverse_mapping:
+        if successor in rev_map:
             is_added = True
             T2_in.add(popped_node2)
         else:
-            if not any(pred in reverse_mapping for pred in G2.pred[successor]):
+            if not any(pred in rev_map for pred in G2.pred[successor]):
                 T2.discard(successor)
 
-            if not any(succ in reverse_mapping for succ in G2[successor]):
+            if not any(succ in rev_map for succ in G2[successor]):
                 T2_in.discard(successor)
 
             if successor not in T2:
@@ -797,17 +1047,17 @@ def _restore_Tinout_Di(popped_node1, popped_node2, graph_info, state_info):
                     T2_tilde.add(successor)
 
     for predecessor in G2.pred[popped_node2]:
-        if predecessor in reverse_mapping:
+        if predecessor in rev_map:
             # if a neighbor of the excluded node1 is in the mapping, keep node1 in T1
             is_added = True
             T2.add(popped_node2)
         else:
             # check if its neighbor has another connection with a covered node.
             # If not, only then exclude it from T1
-            if not any(pred in reverse_mapping for pred in G2.pred[predecessor]):
+            if not any(pred in rev_map for pred in G2.pred[predecessor]):
                 T2.discard(predecessor)
 
-            if not any(succ in reverse_mapping for succ in G2[predecessor]):
+            if not any(succ in rev_map for succ in G2[predecessor]):
                 T2_in.discard(predecessor)
 
             if not (predecessor in T2 or predecessor in T2_in):

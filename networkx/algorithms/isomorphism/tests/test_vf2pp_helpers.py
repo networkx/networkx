@@ -558,7 +558,7 @@ class TestISOFeasibility:
         G2.add_edge(v, "x")
         G1.add_node(7)
         s_info.mapping.update({7: "x"})
-        s_info.reverse_mapping.update({"x": 7})
+        s_info.rev_map.update({"x": 7})
         assert not _feasible_node_pair(u, v, g_info, s_info)
 
         # Compensate in G1
@@ -755,7 +755,7 @@ class TestISOFeasibility:
 
         # Add some new nodes to the mapping
         s_info.mapping.update({6: "g", 7: "y"})
-        s_info.reverse_mapping.update({"g": 6, "y": 7})
+        s_info.rev_map.update({"g": 6, "y": 7})
 
         # Add more nodes to T1, T2.
         G1.add_edges_from([(6, 20), (7, 20), (6, 21)])
@@ -1153,7 +1153,7 @@ class TestTinoutUpdating:
         directed = G1.is_directed()
 
         g_info, s_info = _init_info(G1, G2, None, None, "ISO")
-        m, m_rev = s_info.mapping, s_info.reverse_mapping
+        m, m_rev = s_info.mapping, s_info.rev_map
 
         # Add node to the mapping
         m[4] = mapped[4]
