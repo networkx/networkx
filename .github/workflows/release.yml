@@ -21,19 +21,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v6
-        name: Install Python
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: "3.11"
+          environments: build-release
+          cache: true
+          locked: true
 
       - name: Build wheels
         run: |
           git clean -fxd
-          pip install -U .[release]
-          python -m build --sdist --wheel
+          pixi run -e build-release build-dist
 
       - name: Verify the distribution
-        run: twine check --strict dist/*
+        run: pixi run -e build-release verify-dist
 
       - name: Generate artifact attestation for sdist and wheel
         uses: actions/attest-build-provenance@00014ed6ed5efc5b1ab7f7f34a39eb55d41aa4f8 # v3.1.0

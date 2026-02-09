@@ -13,33 +13,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - name: Set up Python
-        uses: actions/setup-python@v6
+
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: "3.12"
+          environments: docs
+          cache: true
+          locked: true
 
-      - name: Before install
-        run: |
-          sudo apt-get update
-          sudo apt-get install graphviz graphviz-dev
-          sudo apt-get install libspatialindex-dev
-
-      - name: Install packages
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements/example.txt
-          pip install --upgrade .[default,test,extra,doc]
-          # Install trusted backends, but not their dependencies.
-          # We only need to use the "networkx.backend_info" entry-point.
-          # This is the nightly wheel for nx-cugraph.
-          pip install nx-cugraph-cu11 --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple --no-deps --pre
-          # Development version of GraphBLAS backend
-          pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
-          # Development version of nx-parallel backend
-          pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
-          # Development version of Neptune Analytics backend
-          pip install git+https://github.com/awslabs/nx-neptune.git@main --no-deps
-          pip list
+      - name: Install backend stubs
+        run: pixi run -e docs install-backend-stubs
 
       # To set up a cross-repository deploy key:
       # 1. Create a key pair:
@@ -58,9 +40,7 @@ jobs:
 
       - name: Build docs
         if: github.ref == 'refs/heads/main'
-        run: |
-          export DISPLAY=:99
-          make -C doc/ html
+        run: pixi run -e docs docs-build
 
       - name: Deploy docs
         if: github.ref == 'refs/heads/main'
