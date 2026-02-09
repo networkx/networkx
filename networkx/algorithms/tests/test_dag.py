@@ -642,30 +642,60 @@ def test_is_aperiodic_selfloop():
     assert nx.is_aperiodic(G)
 
 
-def test_is_aperiodic_null_graph_raises():
+def test_is_aperiodic_forward_edge():
+    G = nx.DiGraph([(0, 1), (0, 2), (1, 3), (2, 3), (3, 0)])
+    assert not nx.is_aperiodic(G)
+
+
+def test_is_aperiodic_multiedge():
+    G = nx.MultiDiGraph()
+    nx.add_cycle(G, [0, 1, 2])
+    G.add_edge(0, 1)
+    assert not nx.is_aperiodic(G)
+    G.add_edge(1, 0)
+    assert nx.is_aperiodic(G)
+
+
+def test_is_aperiodic_two_cycles1():
     G = nx.DiGraph()
-    pytest.raises(nx.NetworkXPointlessConcept, nx.is_aperiodic, G)
+    nx.add_cycle(G, [0, 1, 2, 3])
+    nx.add_cycle(G, [0, 4, 2])
+    assert nx.is_aperiodic(G)
 
 
-def test_is_aperiodic_undirected_raises():
-    G = nx.Graph([(1, 2), (2, 3), (3, 1)])
-    pytest.raises(nx.NetworkXError, nx.is_aperiodic, G)
-
-
-def test_is_aperiodic_disconnected_raises():
+def test_is_aperiodic_two_cycles2():
     G = nx.DiGraph()
     nx.add_cycle(G, [0, 1, 2])
-    G.add_edge(3, 3)
-    pytest.raises(nx.NetworkXError, nx.is_aperiodic, G)
+    nx.add_cycle(G, [0, 4, 2])
+    assert not nx.is_aperiodic(G)
 
 
-def test_is_aperiodic_weakly_connected_raises():
-    G = nx.DiGraph([(1, 2), (2, 3)])
-    pytest.raises(nx.NetworkXError, nx.is_aperiodic, G)
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.MultiGraph))
+def test_is_aperiodic_undirected_raises(graph_type):
+    G = graph_type([(1, 2), (2, 3), (3, 1)])
+    with pytest.raises(
+        nx.NetworkXNotImplemented, match="not implemented for undirected"
+    ):
+        nx.is_aperiodic(G)
 
 
-def test_is_aperiodic_empty_graph():
-    G = nx.empty_graph(create_using=nx.DiGraph)
+@pytest.mark.parametrize(
+    "G",
+    [
+        nx.DiGraph([(1, 2), (2, 3)]),
+        nx.DiGraph([(0, 1), (1, 0), (2, 2)]),
+        nx.DiGraph([(0, 1), (1, 2), (0, 3), (3, 4), (4, 0)]),
+        nx.DiGraph([(0, 1), (1, 2), (2, 1)]),
+        nx.empty_graph(3, create_using=nx.DiGraph),
+    ],
+)
+def test_is_aperiodic_not_sc_raises(G):
+    with pytest.raises(nx.NetworkXError, match="not strongly connected"):
+        nx.is_aperiodic(G)
+
+
+def test_is_aperiodic_null_graph():
+    G = nx.DiGraph()
     with pytest.raises(nx.NetworkXPointlessConcept, match="Graph has no nodes."):
         nx.is_aperiodic(G)
 

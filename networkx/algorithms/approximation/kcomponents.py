@@ -7,7 +7,6 @@ from functools import cached_property
 
 import networkx as nx
 from networkx.algorithms.approximation import local_node_connectivity
-from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
 
 __all__ = ["k_components"]
@@ -241,7 +240,7 @@ class _AntiGraph(nx.Graph):
         try:
             return iter(set(self._adj) - set(self._adj[n]) - {n})
         except KeyError as err:
-            raise NetworkXError(f"The node {n} is not in the graph.") from err
+            raise nx.NetworkXError(f"The node {n} is not in the graph.") from err
 
     class AntiAtlasView(Mapping):
         """An adjacency inner dict for AntiGraph"""

@@ -125,7 +125,8 @@ Random Graphs
    extended_barabasi_albert_graph
    powerlaw_cluster_graph
    random_kernel_graph
-   random_lobster
+   random_k_lift
+   random_lobster_graph
    random_shell_graph
    random_powerlaw_tree
    random_powerlaw_tree_sequence

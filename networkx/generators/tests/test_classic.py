@@ -189,6 +189,10 @@ class TestGeneratorClassic:
         mG = nx.circular_ladder_graph(5, create_using=nx.MultiGraph)
         assert edges_equal(mG.edges(), G.edges())
 
+        for n in (0, 1):
+            with pytest.raises(ValueError, match="n must be at least 2"):
+                nx.circular_ladder_graph(n)
+
     def test_circulant_graph(self):
         # Ci_n(1) is the cycle graph for all n
         Ci6_1 = nx.circulant_graph(6, [1])

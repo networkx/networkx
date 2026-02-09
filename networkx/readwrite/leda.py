@@ -14,7 +14,6 @@ See http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fi
 __all__ = ["read_leda", "parse_leda"]
 
 import networkx as nx
-from networkx.exception import NetworkXError
 from networkx.utils import open_file
 
 
@@ -102,7 +101,9 @@ def parse_leda(lines):
         try:
             s, t, reversal, label = next(lines).split()
         except BaseException as err:
-            raise NetworkXError(f"Too few fields in LEDA.GRAPH edge {i + 1}") from err
+            raise nx.NetworkXError(
+                f"Too few fields in LEDA.GRAPH edge {i + 1}"
+            ) from err
         # BEWARE: no handling of reversal edges
         G.add_edge(node[int(s)], node[int(t)], label=label[2:-2])
     return G

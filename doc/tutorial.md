@@ -556,7 +556,7 @@ lollipop = nx.lollipop_graph(10, 20)
     ~generators.random_graphs.erdos_renyi_graph
     ~generators.random_graphs.watts_strogatz_graph
     ~generators.random_graphs.barabasi_albert_graph
-    ~generators.random_graphs.random_lobster
+    ~generators.random_graphs.random_lobster_graph
 ```
 
 like so:
@@ -565,7 +565,7 @@ like so:
 er = nx.erdos_renyi_graph(100, 0.15)
 ws = nx.watts_strogatz_graph(30, 3, 0.1)
 ba = nx.barabasi_albert_graph(100, 5)
-red = nx.random_lobster(100, 0.9, 0.9)
+red = nx.random_lobster_graph(100, 0.9, 0.9)
 ```
 
 ### 5. Reading a graph stored in a file using common graph formats
@@ -674,7 +674,7 @@ for precision in [16, 17]:
 
 ## Using NetworkX backends
 
-NetworkX can be configured to use separate thrid-party backends to improve
+NetworkX can be configured to use separate third-party backends to improve
 performance and add functionality. Backends are optional, installed separately,
 and can be enabled either directly in the user's code or through environment
 variables.
