@@ -13,7 +13,7 @@
     "branches": ["main"],
     "environment_type": "conda",
     "show_commit_url": "http://github.com/networkx/networkx/commit/",
-    "pythons": ["3.11", "3.12", "3.13"],
+    "pythons": ["3.12", "3.13"],
     "matrix": {
          "numpy": [],
          "scipy": [],

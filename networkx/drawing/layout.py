@@ -600,7 +600,9 @@ def spring_layout(
             if node not in pos:
                 raise ValueError("nodes are fixed without positions given")
         nfixed = {node: i for i, node in enumerate(G)}
-        fixed = np.asarray([nfixed[node] for node in fixed if node in nfixed])
+        fixed = np.asarray(
+            [nfixed[node] for node in fixed if node in nfixed], dtype=int
+        )
 
     if pos is not None:
         # Determine size of existing domain to adjust initial positions
@@ -821,6 +823,10 @@ def _energy_fruchterman_reingold(
 
     if gravity <= 0:
         raise ValueError(f"the gravity must be positive.")
+
+    # Zero iterations, return initial positions
+    if iterations == 0:
+        return pos.copy()
 
     # make sure we have a Compressed Sparse Row format
     try:
@@ -1574,7 +1580,7 @@ def arf_layout(
     # looping variables
     error = etol + 1
     n_iter = 0
-    while error > etol:
+    while error > etol and n_iter < max_iter:
         diff = p[:, np.newaxis] - p[np.newaxis]
         A = np.linalg.norm(diff, axis=-1)[..., np.newaxis]
         # attraction_force - repulsions force
@@ -1587,8 +1593,6 @@ def arf_layout(
         p += change * dt
 
         error = np.linalg.norm(change, axis=-1).sum()
-        if n_iter > max_iter:
-            break
         n_iter += 1
 
     pos = dict(zip(G.nodes(), p))
@@ -1696,7 +1700,7 @@ def forceatlas2_layout(
         pos = nx.random_layout(G, dim=dim, seed=seed)
         pos_arr = np.array(list(pos.values()))
     elif len(pos) == len(G):
-        pos_arr = np.array([pos[node].copy() for node in G])
+        pos_arr = np.array([pos[node] for node in G])
     else:
         # set random node pos within the initial pos values
         pos_init = np.array(list(pos.values()))

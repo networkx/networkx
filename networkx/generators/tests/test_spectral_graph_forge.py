@@ -3,9 +3,8 @@ import pytest
 pytest.importorskip("numpy")
 pytest.importorskip("scipy")
 
-
+import networkx as nx
 from networkx import is_isomorphic
-from networkx.exception import NetworkXError
 from networkx.generators import karate_club_graph
 from networkx.generators.spectral_graph_forge import spectral_graph_forge
 from networkx.utils import nodes_equal
@@ -45,5 +44,10 @@ def test_spectral_graph_forge():
 
     # invalid transformation mode, checking the error raising
     pytest.raises(
-        NetworkXError, spectral_graph_forge, G, 0.1, transformation="unknown", seed=seed
+        nx.NetworkXError,
+        spectral_graph_forge,
+        G,
+        0.1,
+        transformation="unknown",
+        seed=seed,
     )
