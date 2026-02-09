@@ -126,7 +126,7 @@ Random Graphs
    powerlaw_cluster_graph
    random_kernel_graph
    random_k_lift
-   random_lobster
+   random_lobster_graph
    random_shell_graph
    random_powerlaw_tree
    random_powerlaw_tree_sequence

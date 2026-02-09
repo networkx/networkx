@@ -37,7 +37,6 @@ from io import StringIO
 from typing import Any, NamedTuple
 
 import networkx as nx
-from networkx.exception import NetworkXError
 from networkx.utils import open_file
 
 __all__ = ["read_gml", "parse_gml", "generate_gml", "write_gml"]
@@ -185,7 +184,7 @@ def read_gml(path, label="label", destringizer=None):
             try:
                 line = line.decode("ascii")
             except UnicodeDecodeError as err:
-                raise NetworkXError("input is not ASCII-encoded") from err
+                raise nx.NetworkXError("input is not ASCII-encoded") from err
             if not isinstance(line, str):
                 lines = str(lines)
             if line and line[-1] == "\n":
@@ -251,7 +250,7 @@ def parse_gml(lines, label="label", destringizer=None):
             try:
                 line.decode("ascii")
             except UnicodeDecodeError as err:
-                raise NetworkXError("input is not ASCII-encoded") from err
+                raise nx.NetworkXError("input is not ASCII-encoded") from err
         if not isinstance(line, str):
             line = str(line)
         return line
@@ -267,7 +266,7 @@ def parse_gml(lines, label="label", destringizer=None):
                 if line and line[-1] == "\n":
                     line = line[:-1]
                 if line.find("\n") != -1:
-                    raise NetworkXError("input line contains newline")
+                    raise nx.NetworkXError("input line contains newline")
                 yield line
 
     G = parse_gml_lines(filter_lines(lines), label, destringizer)
@@ -344,7 +343,7 @@ def parse_gml_lines(lines, label, destringizer):
                 match = tokens.match(line, pos)
                 if match is None:
                     m = f"cannot tokenize {line[pos:]} at ({lineno + 1}, {pos + 1})"
-                    raise NetworkXError(m)
+                    raise nx.NetworkXError(m)
                 for i in range(len(patterns)):
                     group = match.group(i + 1)
                     if group is not None:
@@ -366,7 +365,9 @@ def parse_gml_lines(lines, label, destringizer):
     def unexpected(curr_token, expected):
         category, value, lineno, pos = curr_token
         value = repr(value) if value is not None else "EOF"
-        raise NetworkXError(f"expected {expected}, found {value} at ({lineno}, {pos})")
+        raise nx.NetworkXError(
+            f"expected {expected}, found {value} at ({lineno}, {pos})"
+        )
 
     def consume(curr_token, category, expected):
         if curr_token.category == category:
@@ -454,10 +455,10 @@ def parse_gml_lines(lines, label, destringizer):
         if curr_token.category is not None:  # EOF
             unexpected(curr_token, "EOF")
         if "graph" not in dct:
-            raise NetworkXError("input contains no graph")
+            raise nx.NetworkXError("input contains no graph")
         graph = dct["graph"]
         if isinstance(graph, list):
-            raise NetworkXError("input contains more than one graph")
+            raise nx.NetworkXError("input contains more than one graph")
         return graph
 
     tokens = tokenize()
@@ -476,7 +477,9 @@ def parse_gml_lines(lines, label, destringizer):
         try:
             return dct.pop(attr)
         except KeyError as err:
-            raise NetworkXError(f"{category} #{i} has no {attr!r} attribute") from err
+            raise nx.NetworkXError(
+                f"{category} #{i} has no {attr!r} attribute"
+            ) from err
 
     nodes = graph.get("node", [])
     mapping = {}
@@ -484,11 +487,11 @@ def parse_gml_lines(lines, label, destringizer):
     for i, node in enumerate(nodes if isinstance(nodes, list) else [nodes]):
         id = pop_attr(node, "node", "id", i)
         if id in G:
-            raise NetworkXError(f"node id {id!r} is duplicated")
+            raise nx.NetworkXError(f"node id {id!r} is duplicated")
         if label is not None and label != "id":
             node_label = pop_attr(node, "node", label, i)
             if node_label in node_labels:
-                raise NetworkXError(f"node label {node_label!r} is duplicated")
+                raise nx.NetworkXError(f"node label {node_label!r} is duplicated")
             node_labels.add(node_label)
             mapping[id] = node_label
         G.add_node(id, **node)
@@ -498,9 +501,9 @@ def parse_gml_lines(lines, label, destringizer):
         source = pop_attr(edge, "edge", "source", i)
         target = pop_attr(edge, "edge", "target", i)
         if source not in G:
-            raise NetworkXError(f"edge #{i} has undefined source {source!r}")
+            raise nx.NetworkXError(f"edge #{i} has undefined source {source!r}")
         if target not in G:
-            raise NetworkXError(f"edge #{i} has undefined target {target!r}")
+            raise nx.NetworkXError(f"edge #{i} has undefined target {target!r}")
         if not multigraph:
             if not G.has_edge(source, target):
                 G.add_edge(source, target, **edge)
@@ -710,9 +713,9 @@ def generate_gml(G, stringizer=None):
 
     def stringize(key, value, ignored_keys, indent, in_list=False):
         if not isinstance(key, str):
-            raise NetworkXError(f"{key!r} is not a string")
+            raise nx.NetworkXError(f"{key!r} is not a string")
         if not valid_keys.match(key):
-            raise NetworkXError(f"{key!r} is not a valid key")
+            raise nx.NetworkXError(f"{key!r} is not a valid key")
         if not isinstance(key, str):
             key = str(key)
         if key not in ignored_keys:
@@ -766,11 +769,11 @@ def generate_gml(G, stringizer=None):
                     try:
                         value = stringizer(value)
                     except ValueError as err:
-                        raise NetworkXError(
+                        raise nx.NetworkXError(
                             f"{value!r} cannot be converted into a string"
                         ) from err
                 if not isinstance(value, str):
-                    raise NetworkXError(f"{value!r} is not a string")
+                    raise nx.NetworkXError(f"{value!r} is not a string")
                 yield indent + key + ' "' + escape(value) + '"'
 
     multigraph = G.is_multigraph()
