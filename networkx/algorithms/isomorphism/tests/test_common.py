@@ -585,60 +585,60 @@ def test_subgraph_triangle_square_2tails(iso_ic, symmetry, Gclass):
     3-4-5-6
     """
     mono = "mono" in iso_ic.__name__
-    G = asymm_triangle_square_2tails()
+    FG = asymm_triangle_square_2tails()
 
-    SG = G.subgraph([2, 3, 4, 7]).copy()
-    assert iso_ic(Gclass(G), Gclass(SG), symmetry=symmetry)
+    SG = FG.subgraph([2, 3, 4, 7]).copy()
+    assert iso_ic(Gclass(FG), Gclass(SG), symmetry=symmetry)
     SG.remove_edge(2, 3)
 
     if "ismags" not in iso_ic.__name__:
         # FIXME: check why fails ismags but not vf2 or vf2pp
-        assert mono == iso_ic(Gclass(G), Gclass(SG), symmetry=symmetry)
+        assert mono == iso_ic(Gclass(FG), Gclass(SG), symmetry=symmetry)
 
     SG.add_edges_from([(7, 3), (7, 4)])
-    assert not iso_ic(Gclass(G), Gclass(SG), symmetry=symmetry)
+    assert not iso_ic(Gclass(FG), Gclass(SG), symmetry=symmetry)
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
 @pytest.mark.parametrize("symmetry", [False, True])
 @pytest.mark.parametrize("iso_ic", is_subgraph_funcs + is_mono_funcs)
 def test_monomorphism_path_in_cycle(iso_ic, symmetry, Gclass):
-    G = nx.cycle_graph(14, create_using=nx.MultiDiGraph)
+    FG = nx.cycle_graph(14, create_using=nx.MultiDiGraph)
     # for multiedges
-    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    FG.add_edges_from([e for i, e in enumerate(FG.edges) if i % 2 == 0])
     # for selfloops (node 1, 2 and 3 mapped to selves)
-    G.add_edges_from([(1, 1), (2, 2), (3, 3)])
+    FG.add_edges_from([(1, 1), (2, 2), (3, 3)])
 
-    SG = G.copy()
+    SG = FG.copy()
     SG.remove_edge(13, 0)
-    assert G.number_of_edges() == SG.number_of_edges() + 1
+    assert FG.number_of_edges() == SG.number_of_edges() + 1
 
     mono = "mono" in iso_ic.__name__
-    assert mono == iso_ic(Gclass(G), Gclass(SG), symmetry=symmetry)
+    assert mono == iso_ic(Gclass(FG), Gclass(SG), symmetry=symmetry)
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
 @pytest.mark.parametrize("symmetry", [True, False])
 @pytest.mark.parametrize("mono_iter", mono_iters)
 def test_monomorphism_count_for_path_in_cycle(mono_iter, symmetry, Gclass):
-    G = nx.cycle_graph(14, create_using=nx.MultiDiGraph)
+    FG = nx.cycle_graph(14, create_using=nx.MultiDiGraph)
     # for multiedges
-    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    FG.add_edges_from([e for i, e in enumerate(FG.edges) if i % 2 == 0])
     # for selfloops (node 1, 2 and 3 mapped to selves)
-    G.add_edges_from([(1, 1), (2, 2), (3, 3)])
+    FG.add_edges_from([(1, 1), (2, 2), (3, 3)])
 
-    SG = G.copy()
+    SG = FG.copy()
     SG.remove_edge(13, 0)
-    assert G.number_of_edges() == SG.number_of_edges() + 1
+    assert FG.number_of_edges() == SG.number_of_edges() + 1
 
-    G = Gclass(G)
+    FG = Gclass(FG)
     SG = Gclass(SG)
 
-    mappings = mono_iter(G, SG, symmetry=symmetry)
-    assert sum(1 for _ in mappings) == (1 if G.is_directed() else 2)
+    mappings = mono_iter(FG, SG, symmetry=symmetry)
+    assert sum(1 for _ in mappings) == (1 if FG.is_directed() else 2)
 
-    # switch order of G and SG (bigger cannot be subgraph)
-    assert sum(1 for _ in mono_iter(SG, G, symmetry=symmetry)) == 0
+    # switch order of FG and SG (bigger cannot be subgraph)
+    assert sum(1 for _ in mono_iter(SG, FG, symmetry=symmetry)) == 0
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
@@ -646,19 +646,21 @@ def test_monomorphism_count_for_path_in_cycle(mono_iter, symmetry, Gclass):
 @pytest.mark.parametrize("SG_ic", is_subgraph_funcs + is_mono_funcs)
 def test_subgraph_mono(SG_ic, symmetry, Gclass):
     # wikipedia example
-    G = Gclass(["ag", "ah", "ai", "bg", "bh", "bj", "cg", "ci", "cj", "dh", "di", "dj"])
+    FG = Gclass(
+        ["ag", "ah", "ai", "bg", "bh", "bj", "cg", "ci", "cj", "dh", "di", "dj"]
+    )
     SG = Gclass([(1, 5), (8, 5), (8, 4), (3, 4), (6, 5)])
-    # check that G is always subgraph morphic to itself
-    assert SG_ic(G, G, symmetry=symmetry)
+    # check that FG is always subgraph morphic to itself
+    assert SG_ic(FG, FG, symmetry=symmetry)
 
     # true if is_mono, false if is_SG
-    assert SG_ic(G, SG, symmetry=symmetry) == ("mono" in SG_ic.__name__)
+    assert SG_ic(FG, SG, symmetry=symmetry) == ("mono" in SG_ic.__name__)
 
-    # switch order of G and SG (bigger cannot be subgraph)
-    assert not SG_ic(SG, G, symmetry=symmetry)
+    # switch order of FG and SG (bigger cannot be subgraph)
+    assert not SG_ic(SG, FG, symmetry=symmetry)
 
     SG.add_edge(8, 1)
-    assert not SG_ic(G, SG, symmetry=symmetry)
+    assert not SG_ic(FG, SG, symmetry=symmetry)
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
@@ -666,21 +668,21 @@ def test_subgraph_mono(SG_ic, symmetry, Gclass):
 @pytest.mark.parametrize("SG_ic", is_subgraph_funcs + is_mono_funcs + is_iso_funcs)
 def test_subgraph_mono_small(SG_ic, symmetry, Gclass):
     # small cycles
-    G = nx.cycle_graph("abcd", create_using=Gclass)
+    FG = nx.cycle_graph("abcd", create_using=Gclass)
     SG = nx.path_graph(3, create_using=Gclass)
     subgraph_morph = "subgraph" in SG_ic.__name__
     mono_morph = "mono" in SG_ic.__name__
     not_multi = subgraph_morph and not SG.is_multigraph()
     # isolated node not in SG. is_iso => False, is_subgraph_* => True
-    assert SG_ic(G, SG, symmetry=symmetry) == subgraph_morph
+    assert SG_ic(FG, SG, symmetry=symmetry) == subgraph_morph
 
     # add isolated node so SG_iso is False, but SG_mono still True
     SG.add_node(3)
-    assert SG_ic(G, SG, symmetry=symmetry) == mono_morph
+    assert SG_ic(FG, SG, symmetry=symmetry) == mono_morph
 
     # add edge to SG so not any kind of morphism
     SG.add_edge(0, 2)
-    assert not SG_ic(G, SG, symmetry=symmetry)
+    assert not SG_ic(FG, SG, symmetry=symmetry)
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
@@ -688,40 +690,42 @@ def test_subgraph_mono_small(SG_ic, symmetry, Gclass):
 @pytest.mark.parametrize("SG_ic", is_subgraph_funcs + is_mono_funcs + is_iso_funcs)
 def test_multiedge_mono_subgraph(SG_ic, symmetry, Gclass):
     # small cycles
-    G = nx.cycle_graph("abcd", create_using=Gclass)
+    FG = nx.cycle_graph("abcd", create_using=Gclass)
     SG = nx.path_graph(3, create_using=Gclass)
     subgraph_morph = "subgraph" in SG_ic.__name__
     mono_morph = "mono" in SG_ic.__name__
     not_multi = subgraph_morph and not SG.is_multigraph()
 
     # add multiedges
-    G.add_edges_from(["ab", "ab"])
+    FG.add_edges_from(["ab", "ab"])
     SG.add_edges_from([(0, 1), (0, 1)])
-    assert SG_ic(G, SG, symmetry=symmetry) == not_multi or subgraph_morph
-    G.add_edges_from(["ab"])
+    assert SG_ic(FG, SG, symmetry=symmetry) == not_multi or subgraph_morph
+    FG.add_edges_from(["ab"])
 
     # FIXME: check why fails ismags_SG with multigraphs but not vf2 or vf2pp
     if "ismags" in SG_ic.__name__:
-        assert SG_ic(G, SG, symmetry=symmetry) == (not_multi or subgraph_morph)
+        assert SG_ic(FG, SG, symmetry=symmetry) == (not_multi or subgraph_morph)
         SG.add_edges_from([(0, 1), (0, 1)])
-        assert SG_ic(G, SG, symmetry=symmetry) == (not_multi or subgraph_morph)
+        assert SG_ic(FG, SG, symmetry=symmetry) == (not_multi or subgraph_morph)
     else:
-        assert SG_ic(G, SG, symmetry=symmetry) == (not_multi or mono_morph)
+        assert SG_ic(FG, SG, symmetry=symmetry) == (not_multi or mono_morph)
         SG.add_edges_from([(0, 1), (0, 1)])
-        assert SG_ic(G, SG, symmetry=symmetry) == not_multi
+        assert SG_ic(FG, SG, symmetry=symmetry) == not_multi
 
-    G.add_edges_from(["ab"])
-    assert SG_ic(G, SG, symmetry=symmetry) == (not_multi or subgraph_morph)
+    FG.add_edges_from(["ab"])
+    assert SG_ic(FG, SG, symmetry=symmetry) == (not_multi or subgraph_morph)
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
 @pytest.mark.parametrize("symmetry", [True, False])
 @pytest.mark.parametrize("SG_ic", is_subgraph_funcs + is_mono_funcs + is_iso_funcs)
 def test_twist(SG_ic, symmetry, Gclass):
-    G = Gclass(["ag", "ah", "ai", "bg", "bh", "bj", "cg", "ci", "cj", "dh", "di", "dj"])
+    FG = Gclass(
+        ["ag", "ah", "ai", "bg", "bh", "bj", "cg", "ci", "cj", "dh", "di", "dj"]
+    )
     # change "ai" and "cj" to "ac" and "ij"
     SG = Gclass(
         ["ag", "ah", "ac", "bg", "bh", "bj", "cg", "ci", "ij", "dh", "di", "dj"]
     )
 
-    assert not SG_ic(G, SG, symmetry=symmetry)
+    assert not SG_ic(FG, SG, symmetry=symmetry)
