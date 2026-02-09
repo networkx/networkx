@@ -150,7 +150,6 @@ def vf2pp_iter(G1, G2, node_label=None, edge_label=None, symmetry=False):
 
 
 def vf2pp_is_subgraph_iso(G1, G2, node_label=None, edge_label=None, symmetry=False):
-    G1, G2 = G2, G1
     if symmetry:
         pytest.xfail("vf2pp does not handle symmetries yet")
         return nx.vf2pp_all_isomorphisms(G1, G2, symmetry=symmetry)
@@ -167,7 +166,6 @@ def vf2pp_is_subgraph_iso(G1, G2, node_label=None, edge_label=None, symmetry=Fal
 
 
 def vf2pp_subgraph_iter(G1, G2, node_label=None, edge_label=None, symmetry=False):
-    G1, G2 = G2, G1
     if symmetry:
         pytest.xfail("vf2pp does not handle symmetries yet")
         return nx.vf2pp_all_subgraph_isomorphisms(G1, G2, symmetry=symmetry)
@@ -180,7 +178,6 @@ def vf2pp_subgraph_iter(G1, G2, node_label=None, edge_label=None, symmetry=False
 
 
 def vf2pp_is_subgraph_mono(G1, G2, node_label=None, edge_label=None, symmetry=False):
-    G1, G2 = G2, G1
     if symmetry:
         pytest.xfail("vf2pp does not handle symmetries yet")
         try:
@@ -205,7 +202,6 @@ def vf2pp_is_subgraph_mono(G1, G2, node_label=None, edge_label=None, symmetry=Fa
 
 
 def vf2pp_mono_iter(G1, G2, node_label=None, edge_label=None, symmetry=False):
-    G1, G2 = G2, G1
     if symmetry:
         pytest.xfail("vf2pp does not handle symmetries yet")
         return nx.vf2pp_all_monomorphisms(G1, G2, symmetry=symmetry)
@@ -672,11 +668,11 @@ def test_subgraph_mono_small(SG_ic, symmetry, Gclass):
     # small cycles
     G = nx.cycle_graph("abcd", create_using=Gclass)
     SG = nx.path_graph(3, create_using=Gclass)
-    SG_morph = "SG" in SG_ic.__name__
+    subgraph_morph = "subgraph" in SG_ic.__name__
     mono_morph = "mono" in SG_ic.__name__
-    not_multi = SG_morph and not SG.is_multigraph()
+    not_multi = subgraph_morph and not SG.is_multigraph()
     # isolated node not in SG. is_iso => False, is_subgraph_* => True
-    assert SG_ic(G, SG, symmetry=symmetry) == SG_morph
+    assert SG_ic(G, SG, symmetry=symmetry) == subgraph_morph
 
     # add isolated node so SG_iso is False, but SG_mono still True
     SG.add_node(3)
@@ -694,28 +690,28 @@ def test_multiedge_mono_subgraph(SG_ic, symmetry, Gclass):
     # small cycles
     G = nx.cycle_graph("abcd", create_using=Gclass)
     SG = nx.path_graph(3, create_using=Gclass)
-    SG_morph = "SG" in SG_ic.__name__
+    subgraph_morph = "subgraph" in SG_ic.__name__
     mono_morph = "mono" in SG_ic.__name__
-    not_multi = SG_morph and not SG.is_multigraph()
+    not_multi = subgraph_morph and not SG.is_multigraph()
 
     # add multiedges
     G.add_edges_from(["ab", "ab"])
     SG.add_edges_from([(0, 1), (0, 1)])
-    assert SG_ic(G, SG, symmetry=symmetry) == not_multi or SG_morph
+    assert SG_ic(G, SG, symmetry=symmetry) == not_multi or subgraph_morph
     G.add_edges_from(["ab"])
 
     # FIXME: check why fails ismags_SG with multigraphs but not vf2 or vf2pp
     if "ismags" in SG_ic.__name__:
-        assert SG_ic(G, SG, symmetry=symmetry) == (not_multi or SG_morph)
+        assert SG_ic(G, SG, symmetry=symmetry) == (not_multi or subgraph_morph)
         SG.add_edges_from([(0, 1), (0, 1)])
-        assert SG_ic(G, SG, symmetry=symmetry) == (not_multi or SG_morph)
+        assert SG_ic(G, SG, symmetry=symmetry) == (not_multi or subgraph_morph)
     else:
         assert SG_ic(G, SG, symmetry=symmetry) == (not_multi or mono_morph)
         SG.add_edges_from([(0, 1), (0, 1)])
         assert SG_ic(G, SG, symmetry=symmetry) == not_multi
 
     G.add_edges_from(["ab"])
-    assert SG_ic(G, SG, symmetry=symmetry) == (not_multi or SG_morph)
+    assert SG_ic(G, SG, symmetry=symmetry) == (not_multi or subgraph_morph)
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
@@ -728,4 +724,4 @@ def test_twist(SG_ic, symmetry, Gclass):
         ["ag", "ah", "ac", "bg", "bh", "bj", "cg", "ci", "ij", "dh", "di", "dj"]
     )
 
-    assert not SG_ic(G, SG, symmetry=symmetry)  # == ("SG" in SG_ic.__name__)
+    assert not SG_ic(G, SG, symmetry=symmetry)
