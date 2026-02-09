@@ -8,18 +8,12 @@ jobs:
   documentation:
     # Do not attempt to deploy documentation on forks
     if: github.repository_owner == 'networkx'
-
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v6
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           environments: docs
-          cache: true
-          locked: true
-
       - name: Install backend stubs
         run: pixi run -e docs install-backend-stubs
 

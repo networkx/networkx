@@ -11,12 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           environments: type-check
-          cache: true
-          locked: true
-
       - name: Run mypy
         run: pixi run -e type-check type-check

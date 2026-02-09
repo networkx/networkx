@@ -15,13 +15,9 @@ jobs:
         environment: [test-base-py313, test-base-py314, test-base-py314t]
     steps:
       - uses: actions/checkout@v6
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           environments: ${{ matrix.environment }}
-          cache: true
-          locked: true
-
       - name: Test NetworkX
         run: pixi run -e ${{ matrix.environment }} test-base
 
@@ -34,16 +30,11 @@ jobs:
           [test-default-py312, test-default-py313, test-default-py314]
     steps:
       - uses: actions/checkout@v6
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           environments: ${{ matrix.environment }}
-          cache: true
-          locked: true
-
       - name: Test for warnings at import time
         run: pixi run -e ${{ matrix.environment }} check-import
-
       - name: Test NetworkX
         run: pixi run -e ${{ matrix.environment }} test-default
 
@@ -51,16 +42,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           environments: test-default-no-scipy-py312
-          cache: true
-          locked: true
-
       - name: Test for warnings at import time
         run: pixi run -e test-default-no-scipy-py312 check-import
-
       - name: Test NetworkX
         run: pixi run -e test-default-no-scipy-py312 test-default
 
@@ -68,13 +54,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           environments: test-default-py314
-          cache: true
-          locked: true
-
       - name: Test Dispatching
         run: pixi run -e test-default-py314 test-dispatch
 
@@ -86,13 +68,15 @@ jobs:
         environment: [test-extra-py312, test-extra-py313]
     steps:
       - uses: actions/checkout@v6
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           environments: ${{ matrix.environment }}
-          cache: true
-          locked: true
-
+      - name: pixi config
+        shell: bash -e {0}
+        run: |
+          echo "::group::pixi config"
+          pixi config set run-post-link-scripts insecure
+          echo "::endgroup::"
       - name: Test NetworkX
         run: pixi run -e ${{ matrix.environment }} test-default
 
@@ -104,16 +88,11 @@ jobs:
         environment: [prerelease-py312, prerelease-py313, prerelease-py314]
     steps:
       - uses: actions/checkout@v6
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           environments: ${{ matrix.environment }}
-          cache: true
-          locked: true
-
       - name: Install pre-release packages
         run: pixi run -e ${{ matrix.environment }} install-prerelease
-
       - name: Test NetworkX
         run: pixi run -e ${{ matrix.environment }} test-prerelease
 
@@ -121,13 +100,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           environments: test-default-py313
-          cache: true
-          locked: true
-
       - name: Run slow tests
         # NOTE: --runslow adds slow tests to the collection while -m slow
         # filters out tests that are *not* marked slow, leaving only the

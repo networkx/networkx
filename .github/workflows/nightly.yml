@@ -7,29 +7,20 @@ jobs:
   cron:
     # Do not attempt to upload nightly through forks
     if: github.repository_owner == 'networkx'
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           environments: build-release
-          cache: true
-          locked: true
-
       - name: Build a wheel and a sdist
         run: pixi run -e build-release build-dist
-
       - name: Verify the distribution
         run: pixi run -e build-release verify-dist
-
       - name: List contents of sdist
         run: pixi run -e build-release python -m tarfile --list dist/networkx-*.tar.gz
-
       - name: List contents of wheel
         run: pixi run -e build-release python -m zipfile --list dist/networkx-*.whl
-
       - name: Upload nightly wheel
         uses: scientific-python/upload-nightly-action@5748273c71e2d8d3a61f3a11a16421c8954f9ecf # 0.6.3
         with:
