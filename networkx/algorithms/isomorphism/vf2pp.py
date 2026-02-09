@@ -13,7 +13,7 @@ if they are isomorphic.
 `vf2pp_all_isomorphisms`: generate all possible isomorphism mappings between
 two graphs, if isomorphic.
 
-`vf2pp_is_subgraph_isomorphic`: check whether a specified graph
+`vf2pp_subgraph_is_isomorphic`: check whether a specified graph
 is isomorphic to an induced subgraph of the other graph.
 `vf2pp_subgraph_isomorphism`: obtain the node isomorphism mapping between a
 specified graph and any induced subgraph of the other graph, if possible.
@@ -83,7 +83,7 @@ different function:
 
 >>> SG = nx.path_graph(3)
 >>> FG = nx.path_graph(4)
->>> nx.vf2pp_is_subgraph_isomorphic(FG, SG, node_label=None)
+>>> nx.vf2pp_subgraph_is_isomorphic(FG, SG, node_label=None)
 True
 >>> nx.vf2pp_subgraph_isomorphism(FG, SG, node_label=None)
 {1: 1, 2: 2, 0: 0}
@@ -95,7 +95,7 @@ With node labels:
 >>> nx.set_node_attributes(
 ...     FG, dict(zip(FG, ["blue", "red", "green", "yellow"])), "label"
 ... )
->>> nx.vf2pp_is_subgraph_isomorphic(FG, SG, node_label="label")
+>>> nx.vf2pp_subgraph_is_isomorphic(FG, SG, node_label="label")
 True
 >>> nx.vf2pp_subgraph_isomorphism(FG, SG, node_label="label")
 {1: 1, 2: 2, 0: 0}
@@ -148,7 +148,7 @@ __all__ = [
     "vf2pp_is_isomorphic",
     "vf2pp_all_isomorphisms",
     "vf2pp_subgraph_isomorphism",
-    "vf2pp_is_subgraph_isomorphic",
+    "vf2pp_subgraph_is_isomorphic",
     "vf2pp_all_subgraph_isomorphisms",
     "vf2pp_monomorphism",
     "vf2pp_is_monomorphic",
@@ -308,7 +308,7 @@ def vf2pp_subgraph_isomorphism(FG, SG, node_label=None, default_label=None):
 
 
 @nx._dispatchable(graphs={"FG": 0, "SG": 1}, node_attrs={"node_label": "default_label"})
-def vf2pp_is_subgraph_isomorphic(FG, SG, node_label=None, default_label=None):
+def vf2pp_subgraph_is_isomorphic(FG, SG, node_label=None, default_label=None):
     """Examines whether SG and FG are isomorphic.
 
     Parameters
