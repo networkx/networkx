@@ -24,7 +24,7 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
 
     .. math::
 
-       c_B(v) = \sum_{s \in S, t \in T} \frac{\sigma(s, t | v)}{\sigma(s, t)}
+       c_B(v) = \frac{1}{P} \sum_{s \in S, t \in T} \frac{\sigma(s, t | v)}{\sigma(s, t)}
 
     where $S$ is the set of sources, $T$ is the set of targets,
     $\sigma(s, t)$ is the number of shortest $(s, t)$-paths,
@@ -32,8 +32,10 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     passing through some node $v$ other than $s$ and $t$.
     If $s = t$, $\sigma(s, t) = 1$,
     and if $v \in \{s, t\}$, $\sigma(s, t | v) = 0$ [2]_.
-    The denominator $\sigma(s, t)$ is a normalization factor that can be
-    turned off to get the raw path counts.
+    $P$ is a normalization factor representing the number of pairs of nodes
+    that have counted shortest paths. Its value depends on the values of `normalized`
+    and `endpoints`, and on whether the graph is directed (see Notes). It can
+    be set to ``1`` with ``normalized=False``.
 
     Parameters
     ----------
@@ -78,7 +80,7 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
 
     The normalization might seem a little strange but it is
     designed to make betweenness_centrality(G) be the same as
-    betweenness_centrality_subset(G,sources=G.nodes(),targets=G.nodes()).
+    betweenness_centrality_subset(G, sources=G, targets=G, normalized=True).
 
     The total number of paths between source and target is counted
     differently for directed and undirected graphs. Directed paths
@@ -120,14 +122,16 @@ def edge_betweenness_centrality_subset(
 
     .. math::
 
-       c_B(e) = \sum_{s \in S, t \in T} \frac{\sigma(s, t | e)}{\sigma(s, t)}
+       c_B(e) = \frac{1}{P} \sum_{s \in S, t \in T} \frac{\sigma(s, t | e)}{\sigma(s, t)}
 
     where $S$ is the set of sources, $T$ is the set of targets,
     $\sigma(s, t)$ is the number of shortest $(s, t)$-paths,
     and $\sigma(s, t | e)$ is the number of those paths
     passing through edge $e$ [1]_.
-    The denominator $\sigma(s, t)$ is a normalization factor that can be
-    turned off to get the raw path counts.
+    $P$ is a normalization factor representing the number of pairs of nodes
+    that have counted shortest paths. Its value depends on the values of `normalized`
+    and `endpoints`, and on whether the graph is directed (see Notes). It can
+    be set to ``1`` with ``normalized=False``.
 
     Parameters
     ----------
@@ -173,7 +177,7 @@ def edge_betweenness_centrality_subset(
     The normalization might seem a little strange but it is the same
     as in edge_betweenness_centrality() and is designed to make
     edge_betweenness_centrality(G) be the same as
-    edge_betweenness_centrality_subset(G,sources=G.nodes(),targets=G.nodes()).
+    edge_betweenness_centrality_subset(G, sources=G, targets=G, normalized=True).
 
     References
     ----------

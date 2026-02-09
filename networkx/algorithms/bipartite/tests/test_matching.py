@@ -95,20 +95,6 @@ class TestMatching:
         # dictionary.
         assert all(u == M[M[u]] for u in range(12) if u in M)
 
-    def check_vertex_cover(self, vertices):
-        """Asserts that the given set of vertices is the vertex cover we
-        expected from the bipartite graph constructed in the :meth:`setup`
-        fixture.
-
-        """
-        # By Konig's theorem, the number of edges in a maximum matching equals
-        # the number of vertices in a minimum vertex cover.
-        assert len(vertices) == 5
-        # Assert that the set is truly a vertex cover.
-        for u, v in self.graph.edges():
-            assert u in vertices or v in vertices
-        # TODO Assert that the vertices are the correct ones.
-
     def test_eppstein_matching(self):
         """Tests that David Eppstein's implementation of the Hopcroft--Karp
         algorithm produces a maximum cardinality matching.
@@ -127,7 +113,17 @@ class TestMatching:
         """Test for converting a maximum matching to a minimum vertex cover."""
         matching = maximum_matching(self.graph, self.top_nodes)
         vertex_cover = to_vertex_cover(self.graph, matching, self.top_nodes)
-        self.check_vertex_cover(vertex_cover)
+
+        # For this fixture graph, the minimum vertex cover has size 5.
+        assert len(vertex_cover) == 5
+
+        # Assert that the set is truly a vertex cover.
+        assert all(
+            u in vertex_cover or v in vertex_cover for u, v in self.graph.edges()
+        )
+
+        # Assert the expected vertices for this fixture (keep the test explicit).
+        assert set(vertex_cover) == {0, 2, 3, 4, 5}
 
     def test_eppstein_matching_simple(self):
         match = eppstein_matching(self.simple_graph)

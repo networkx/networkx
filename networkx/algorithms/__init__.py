@@ -39,6 +39,7 @@ from networkx.algorithms.operators import *
 from networkx.algorithms.planarity import *
 from networkx.algorithms.planar_drawing import *
 from networkx.algorithms.polynomials import *
+from networkx.algorithms.perfect_graph import *
 from networkx.algorithms.reciprocity import *
 from networkx.algorithms.regular import *
 from networkx.algorithms.richclub import *

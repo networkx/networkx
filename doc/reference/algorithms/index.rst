@@ -56,6 +56,7 @@ Algorithms
    moral
    node_classification
    operators
+   perfect_graph
    planarity
    planar_drawing
    polynomials

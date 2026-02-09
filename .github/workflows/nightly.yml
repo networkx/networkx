@@ -10,10 +10,10 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Install Python requirements
         run: |
           python -m pip install -r requirements/release.txt
@@ -27,7 +27,7 @@ jobs:
       - name: List contents of wheel
         run: python -m zipfile --list dist/networkx-*.whl
       - name: Upload nighlty wheel
-        uses: scientific-python/upload-nightly-action@b36e8c0c10dbcfd2e05bf95f17ef8c14fd708dbf # 0.6.2
+        uses: scientific-python/upload-nightly-action@5748273c71e2d8d3a61f3a11a16421c8954f9ecf # 0.6.3
         with:
           anaconda_nightly_upload_token: ${{ secrets.ANACONDA_NIGHTLY }}
           artifacts_path: dist/
