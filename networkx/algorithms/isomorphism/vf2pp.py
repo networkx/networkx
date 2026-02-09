@@ -60,22 +60,19 @@ Without node labels:
 >>> FG = nx.path_graph(4)
 >>> nx.vf2pp_is_isomorphic(FG, SG, node_label=None)
 True
->>> nx.vf2pp_isomorphism(FG, SG, node_label=None)
-{1: 1, 2: 2, 0: 0, 3: 3}
+>>> map = nx.vf2pp_isomorphism(FG, SG, node_label=None)
+>>> map == {1: 1, 2: 2, 0: 0, 3: 3}
+True
 
 With node labels:
 
->>> mapped = {1: 1, 2: 2, 3: 3, 0: 0}
->>> nx.set_node_attributes(
-...     SG, dict(zip(SG, ["blue", "red", "green", "yellow"])), "label"
-... )
->>> nx.set_node_attributes(
-...     FG, dict(zip(FG, ["blue", "red", "green", "yellow"])), "label"
-... )
+>>> nx.set_node_attributes(SG, dict(zip(SG, ["blue", "red", "cyan", "pink"])), "label")
+>>> nx.set_node_attributes(FG, dict(zip(FG, ["blue", "red", "cyan", "pink"])), "label")
 >>> nx.vf2pp_is_isomorphic(FG, SG, node_label="label")
 True
->>> nx.vf2pp_isomorphism(FG, SG, node_label="label")
-{1: 1, 2: 2, 0: 0, 3: 3}
+>>> map = nx.vf2pp_isomorphism(FG, SG, node_label="label")
+>>> map == {1: 1, 2: 2, 0: 0, 3: 3}
+True
 
 For subgraph isomorphism we look for induced subgraphs of FG that are
 isomorphic to SG. The process is similar to graph isomorphism with a
@@ -85,20 +82,19 @@ different function:
 >>> FG = nx.path_graph(4)
 >>> nx.vf2pp_subgraph_is_isomorphic(FG, SG, node_label=None)
 True
->>> nx.vf2pp_subgraph_isomorphism(FG, SG, node_label=None)
-{1: 1, 2: 2, 0: 0}
+>>> map = nx.vf2pp_subgraph_isomorphism(FG, SG, node_label=None)
+>>> map == {1: 1, 2: 2, 0: 0}
+True
 
 With node labels:
 
->>> mapped = {1: 1, 2: 2, 3: 3, 0: 0}
->>> nx.set_node_attributes(SG, dict(zip(SG, ["blue", "red", "green"])), "label")
->>> nx.set_node_attributes(
-...     FG, dict(zip(FG, ["blue", "red", "green", "yellow"])), "label"
-... )
+>>> nx.set_node_attributes(SG, dict(zip(SG, ["blue", "red", "cyan"])), "label")
+>>> nx.set_node_attributes(FG, dict(zip(FG, ["blue", "red", "cyan", "pink"])), "label")
 >>> nx.vf2pp_subgraph_is_isomorphic(FG, SG, node_label="label")
 True
->>> nx.vf2pp_subgraph_isomorphism(FG, SG, node_label="label")
-{1: 1, 2: 2, 0: 0}
+>>> map = nx.vf2pp_subgraph_isomorphism(FG, SG, node_label="label")
+>>> map == {1: 1, 2: 2, 0: 0}
+True
 
 For subgraph monomorphism we look for possibly non-induced subgraphs
 of FG that are isomorphic to SG. That means we only need a subset of nodes
@@ -115,20 +111,19 @@ because not all induced edges need to be mapped to.
 >>> FG = nx.cycle_graph(4)
 >>> nx.vf2pp_is_monomorphic(FG, SG, node_label=None)
 True
->>> nx.vf2pp_monomorphism(FG, SG, node_label=None)
-{1: 1, 2: 2, 0: 0}
+>>> map = nx.vf2pp_monomorphism(FG, SG, node_label=None)
+>>> map == {1: 0, 2: 1, 0: 3, 3: 2}
+True
 
 With node labels:
 
->>> mapped = {1: 1, 2: 2, 3: 3, 0: 0}
->>> nx.set_node_attributes(SG, dict(zip(SG, ["blue", "red", "green"])), "label")
->>> nx.set_node_attributes(
-...     FG, dict(zip(FG, ["blue", "red", "green", "yellow"])), "label"
-... )
+>>> nx.set_node_attributes(SG, dict(zip(SG, ["blue", "red", "cyan", "pink"])), "label")
+>>> nx.set_node_attributes(FG, dict(zip(FG, ["blue", "red", "cyan", "pink"])), "label")
 >>> nx.vf2pp_is_monomorphic(FG, SG, node_label="label")
 True
->>> nx.vf2pp_monomorphism(FG, SG, node_label="label")
-{1: 1, 2: 2, 0: 0}
+>>> map = nx.vf2pp_monomorphism(FG, SG, node_label="label")
+>>> map == {1: 1, 2: 2, 0: 0, 3: 3}
+True
 
 References
 ----------
@@ -482,7 +477,6 @@ def _all_morphisms(FG, SG, node_label, default_label, PT):
     SG_fits, _, _, _, _, SG_labels, FG_labels, _, _, FG_by_label = graph_info
 
     if not SG_fits(N1, N2):
-        print(f"failed by number_of_nodes: {N1=} {N2=} {SG_fits=}")
         return False
 
     # Not Part of VF2++.  Maybe include in another alg.
@@ -499,11 +493,15 @@ def _all_morphisms(FG, SG, node_label, default_label, PT):
     # Check if SG and FG have the same labels, and check that the
     # number of nodes per label fits between the two graphs
     SG_by_label = nx.utils.groups(SG_labels)
-    if any(
-        label not in SG_by_label or not SG_fits(len(SG_by_label[label]), len(nodes))
-        for label, nodes in FG_by_label.items()
-    ):
-        print("failed by labels")
+    try:
+        labels_mismatch = any(
+            (SG_fits == operator.eq and label not in FG_by_label)
+            or not SG_fits(len(nodes), len(FG_by_label[label]))
+            for label, nodes in SG_by_label.items()
+        )
+    except KeyError:
+        return False
+    if labels_mismatch:
         return False
 
     # Calculate the optimal node ordering
