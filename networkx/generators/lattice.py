@@ -173,13 +173,6 @@ def hypercube_graph(n):
     networkx.Graph
         The n-dimensional hypercube graph as an undirected graph.
 
-    See Also
-    --------
-    grid_2d_graph, triangular_lattice_graph, hexagonal_lattice_graph :
-        2D lattice graphs
-    grid_graph :
-        A more general N-dimensional grid
-
     Examples
     --------
     >>> G = nx.hypercube_graph(3)

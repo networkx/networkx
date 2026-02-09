@@ -72,4 +72,3 @@ Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 Version 3.8
 ~~~~~~~~~~~
 * Remove ``maybe_regular_expander`` from ``networkx.generators.expanders``.
-* In ``algorithms/approximation/steinertree.py`` remove ``metric_closure`` and related tests.
