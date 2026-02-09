@@ -31,12 +31,7 @@ jobs:
       matrix:
         os: [ubuntu, macos, windows]
         environment:
-          [
-            test-default-py311,
-            test-default-py312,
-            test-default-py313,
-            test-default-py314,
-          ]
+          [test-default-py312, test-default-py313, test-default-py314]
     steps:
       - uses: actions/checkout@v6
 
@@ -88,7 +83,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        environment: [test-extra-py311, test-extra-py312, test-extra-py313]
+        environment: [test-extra-py312, test-extra-py313]
     steps:
       - uses: actions/checkout@v6
 
@@ -106,23 +101,21 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos]
-        python-version: ["3.12", "3.13", "3.14"]
+        environment: [prerelease-py312, prerelease-py313, prerelease-py314]
     steps:
       - uses: actions/checkout@v6
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
 
-      - name: Install packages
-        run: |
-          pip install --upgrade pip
-          pip install --pre .[default,test]
-          pip list
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          environments: ${{ matrix.environment }}
+          cache: true
+          locked: true
+
+      - name: Install pre-release packages
+        run: pixi run -e ${{ matrix.environment }} install-prerelease
 
       - name: Test NetworkX
-        run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        run: pixi run -e ${{ matrix.environment }} test-prerelease
 
   slow-tests:
     runs-on: ubuntu-latest

@@ -288,9 +288,6 @@ networkx = { path = ".", editable = true }
 
 # --- Python version features ---
 
-[tool.pixi.feature.py311.dependencies]
-python = "3.11.*"
-
 [tool.pixi.feature.py312.dependencies]
 python = "3.12.*"
 
@@ -355,6 +352,10 @@ install-backend-stubs = """pip install --no-deps --pre \
   git+https://github.com/networkx/nx-parallel.git@main \
   git+https://github.com/awslabs/nx-neptune.git@main"""
 
+[tool.pixi.feature.prerelease.tasks]
+install-prerelease = "pip install --upgrade pip && pip install --pre '.[default,test]' && pip list"
+test-prerelease = "pytest -n auto --doctest-modules --durations=10 --pyargs networkx"
+
 [tool.pixi.feature.release.tasks]
 build-dist = "python -m build --sdist --wheel"
 verify-dist = "twine check --strict dist/*"
@@ -367,19 +368,21 @@ test-base-py313 = { features = ["test", "py313"], solve-group = "py313" }
 test-base-py314 = { features = ["test", "py314"], solve-group = "py314" }
 test-base-py314t = { features = ["test", "py314t"], solve-group = "py314t" }
 # Default test (with numpy/scipy/matplotlib/pandas)
-test-default-py311 = { features = ["test", "default", "py311"], solve-group = "py311" }
 test-default-py312 = { features = ["test", "default", "py312"], solve-group = "py312" }
 test-default-py313 = { features = ["test", "default", "py313"], solve-group = "py313" }
 test-default-py314 = { features = ["test", "default", "py314"], solve-group = "py314" }
 # Default without scipy
 test-default-no-scipy-py312 = { features = ["test", "default-no-scipy", "py312"], solve-group = "py312" }
 # Extra test (with graphviz from conda)
-test-extra-py311 = { features = ["test", "default", "extra", "py311"], solve-group = "py311" }
 test-extra-py312 = { features = ["test", "default", "extra", "py312"], solve-group = "py312" }
 test-extra-py313 = { features = ["test", "default", "extra", "py313"], solve-group = "py313" }
 # Single-purpose environments
 lint = { features = ["developer", "py313"], solve-group = "py313" }
-type-check = { features = ["developer", "py311"], solve-group = "py311" }
+type-check = { features = ["developer", "py312"], solve-group = "py312" }
 docs = { features = ["test", "default", "extra", "doc", "example", "py312"], solve-group = "py312" }
-build-release = { features = ["release", "py311"], solve-group = "py311" }
+build-release = { features = ["release", "py312"], solve-group = "py312" }
+# Prerelease (pixi manages Python, pip install --pre handles deps)
+prerelease-py312 = { features = ["prerelease", "py312"], solve-group = "py312" }
+prerelease-py313 = { features = ["prerelease", "py313"], solve-group = "py313" }
+prerelease-py314 = { features = ["prerelease", "py314"], solve-group = "py314" }
 test-randomly = { features = ["test", "default", "test-extras", "py313"], solve-group = "py313" }
