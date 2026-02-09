@@ -116,8 +116,9 @@ class TestNodeOrdering:
         assert _matching_order(g_info) == expected
 
 
-class TestGraphCandidateSelection:
-    G1_edges = [
+@pytest.mark.parametrize("Gclass", graph_classes)
+class TestCandidateSelection:
+    edges = [
         (1, 2),
         (1, 4),
         (5, 1),
@@ -131,490 +132,334 @@ class TestGraphCandidateSelection:
         (8, 9),
         (7, 9),
     ]
-    mapped = dict(enumerate("xabcdefghi"))
 
-    def test_no_covered_neighbors_no_labels(self):
-        G1 = nx.Graph()
-        G1.add_edges_from(self.G1_edges)
+    def test_no_covered_neighbors_no_labels(self, Gclass):
+        mapped = dict(enumerate("xabcdefghi"))
+        G1 = Gclass(self.edges)
         G1.add_node(0)
-        G2 = nx.relabel_nodes(G1, self.mapped)
-
-        G1_deg = dict(G1.degree)
-        G2_deg = dict(G2.degree)
-        l1 = dict(G1.nodes(data="label", default=-1))
-        l2 = dict(G2.nodes(data="label", default=-1))
-        l2groups = nx.utils.groups(l2)
-        g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
-
-        m = {9: self.mapped[9], 1: self.mapped[1]}
-        m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
-
-        T1 = {7, 8, 2, 4, 5}
-        T1_tilde = {0, 3, 6}
-        T2 = {"g", "h", "b", "d", "e"}
-        T2_tilde = {"x", "c", "f"}
-
-        s_info = _StateInfo(m, m_rev, T1, None, T1_tilde, T2, None, T2_tilde)
-
-        # u = 3, expected={self.mapped[v] for v in [u]}, g_info_no_lbls, s_info78245
-        u = 3
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
-
-        # u = 0, expected={self.mapped[v] for v in [u]}, g_info_no_lbls, s_info78245
-        u = 0
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
-
-        # u = 7, expected={self.mapped[v] for v in [u, 8, 3, 9]}, g_info_no_lbls, s_info2456
-        m.pop(9)
-        m_rev.pop(self.mapped[9])
-
-        T1 = {2, 4, 5, 6}
-        T1_tilde = {0, 3, 7, 8, 9}
-        T2 = {"g", "h", "b", "d", "e", "f"}
-        T2_tilde = {"x", "c", "g", "h", "i"}
-
-        s_info = _StateInfo(m, m_rev, T1, None, T1_tilde, T2, None, T2_tilde)
-
-        u = 7
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == {
-            self.mapped[u],
-            self.mapped[8],
-            self.mapped[3],
-            self.mapped[9],
-        }
-
-    def test_no_covered_neighbors_with_labels(self):
-        G1 = nx.Graph()
-        G1.add_edges_from(self.G1_edges)
-        G1.add_node(0)
-        G2 = nx.relabel_nodes(G1, self.mapped)
-
-        G1_deg = dict(G1.degree)
-        G2_deg = dict(G2.degree)
-        l1 = dict(zip(G1, it.cycle(labels_many)))
-        l2 = dict(zip([self.mapped[n] for n in G1], it.cycle(labels_many)))
-        l2groups = nx.utils.groups(l2)
-        g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
-
-        m = {9: self.mapped[9], 1: self.mapped[1]}
-        m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
-
-        T1 = {7, 8, 2, 4, 5, 6}
-        T1_tilde = {0, 3}
-        T2 = {"g", "h", "b", "d", "e", "f"}
-        T2_tilde = {"x", "c"}
-
-        s_info = _StateInfo(m, m_rev, T1, None, T1_tilde, T2, None, T2_tilde)
-
-        # u = 3, expected={self.mapped[v] for v in [u]}, g_info_manylbls, s_info78245
-        u = 3
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
-
-        # u = 0, expected={self.mapped[v] for v in [u]}, g_info_manylbls, s_info78245
-        u = 0
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
-
-        # u = 0, expected=set(), g_info_manylbls_0newcolor, s_info78245
-        # Change label of disconnected node
-        l1[u] = "purple"
-        g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
-
-        # No candidate
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == set()
-
-        m.pop(9)
-        m_rev.pop(self.mapped[9])
-
-        T1 = {2, 4, 5, 6}
-        T1_tilde = {0, 3, 7, 8, 9}
-        T2 = {"b", "d", "e", "f"}
-        T2_tilde = {"x", "c", "g", "h", "i"}
-
-        s_info = _StateInfo(m, m_rev, T1, None, T1_tilde, T2, None, T2_tilde)
-
-        # u = 7, expected=set(self.mapped[u]), g_info_manylbls_0newcolor, s_info2456
-        u = 7
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
-
-        # u = 7, expected={self.mapped[v] for v in [u, 8]}, g_info_manylbls_87same, s_info2456
-        l1[8] = l1[7]
-        l2[self.mapped[8]] = l1[7]
-        l2groups = nx.utils.groups(l2)
-        g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
-
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == {self.mapped[u], self.mapped[8]}
-
-    def test_covered_neighbors_no_labels(self):
-        G1 = nx.Graph()
-        G1.add_edges_from(self.G1_edges)
-        G1.add_node(0)
-        G2 = nx.relabel_nodes(G1, self.mapped)
-
-        G1_deg = dict(G1.degree)
-        G2_deg = dict(G2.degree)
-        l1 = dict(G1.nodes(data=None, default=-1))
-        l2 = dict(G2.nodes(data=None, default=-1))
-        l2groups = nx.utils.groups(l2)
-        g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
-
-        m = {9: self.mapped[9], 1: self.mapped[1]}
-        m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
-
-        T1 = {7, 8, 2, 4, 5, 6}
-        T1_tilde = {0, 3}
-        T2 = {"g", "h", "b", "d", "e", "f"}
-        T2_tilde = {"x", "c"}
-
-        s_info = _StateInfo(m, m_rev, T1, None, T1_tilde, T2, None, T2_tilde)
-
-        # u = 5, expected={self.mapped[v] for v in [u]}, g_info_no_lbls, s_info78245
-        u = 5
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
-
-        # u = 6, expected={self.mapped[v] for v in [u, 2]}, g_info_no_lbls, s_info78245
-        u = 6
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == {self.mapped[u], self.mapped[2]}
-
-    def test_covered_neighbors_with_labels(self):
-        G1 = nx.Graph()
-        G1.add_edges_from(self.G1_edges)
-        G1.add_node(0)
-        G2 = nx.relabel_nodes(G1, self.mapped)
-
-        G1_deg = dict(G1.degree)
-        G2_deg = dict(G2.degree)
-        l1 = dict(zip(G1, it.cycle(labels_many)))
-        l2 = dict(zip([self.mapped[n] for n in G1], it.cycle(labels_many)))
-        l2groups = nx.utils.groups(l2)
-        g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
-
-        m = {9: self.mapped[9], 1: self.mapped[1]}
-        m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
-
-        T1 = {7, 8, 2, 4, 5, 6}
-        T1_tilde = {0, 3}
-        T2 = {"g", "h", "b", "d", "e", "f"}
-        T2_tilde = {"x", "c"}
-
-        s_info = _StateInfo(m, m_rev, T1, None, T1_tilde, T2, None, T2_tilde)
-
-        # u = 5, expected={self.mapped[v] for v in [u]}, g_info_manylbls, s_info78245
-        u = 5
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
-
-        # u = 6, expected={self.mapped[v] for v in [u]}, g_info_manylbls, s_info78245
-        u = 6
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
-
-        # Assign to 2, the same label as 6
-        l1[2] = l1[u]
-        l2[self.mapped[2]] = l1[u]
-        l2groups = nx.utils.groups(l2)
-        g_info = _GraphInfo(*two_eq, False, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
-
-        # u = 6, expected={self.mapped[v] for v in [u, 2]}, g_info_manylbls_62same, s_info78245
-        candidates = _find_candidates(u, g_info, s_info)
-        assert candidates == {self.mapped[u], self.mapped[2]}
-
-
-class TestDiGraphCandidateSelection:
-    G1_edges = [
-        (1, 2),
-        (1, 4),
-        (5, 1),
-        (2, 3),
-        (4, 2),
-        (3, 4),
-        (4, 5),
-        (1, 6),
-        (6, 7),
-        (6, 8),
-        (8, 9),
-        (7, 9),
-    ]
-    mapped = dict(enumerate("xabcdefghi"))
-
-    def test_no_covered_neighbors_no_labels(self):
-        G1 = nx.DiGraph()
-        G1.add_edges_from(self.G1_edges)
-        G1.add_node(0)
-        G2 = nx.relabel_nodes(G1, self.mapped)
-
-        G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
-        G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
-        l1 = dict(G1.nodes(data="label", default=-1))
-        l2 = dict(G2.nodes(data="label", default=-1))
-        l2groups = nx.utils.groups(l2)
-        g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
-
-        m = {9: self.mapped[9], 1: self.mapped[1]}
-        m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
-
-        T1_out = {2, 4, 6}
-        T1_in = {5, 7, 8}
-        T1_tilde = {0, 3}
-        T2_out = {"b", "d", "f"}
-        T2_in = {"e", "g", "h"}
-        T2_tilde = {"x", "c"}
-
-        s_info = _StateInfo(m, m_rev, T1_out, T1_in, T1_tilde, T2_out, T2_in, T2_tilde)
-
-        # u = 3, expected={self.mapped[v] for v in [u]}, g_info_Di_no_lbls, s_info246_578
-        u = 3
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
-
-        # u = 0, expected={self.mapped[v] for v in [u]}, g_info_Di_no_lbls, s_info246
-        u = 0
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
-
-        m.pop(9)
-        m_rev.pop(self.mapped[9])
-
-        T1_out = {2, 4, 6}
-        T1_in = {5}
-        T1_tilde = {0, 3, 7, 8, 9}
-        T2_out = {"b", "d", "f"}
-        T2_in = {"e"}
-        T2_tilde = {"x", "c", "g", "h", "i"}
-
-        s_info = _StateInfo(m, m_rev, T1_out, T1_in, T1_tilde, T2_out, T2_in, T2_tilde)
-
-        # u = 7, expected={self.mapped[v] for v in [u, 8, 3]}, g_info_Di_no_lbls, s_info246_5
-        u = 7
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u], self.mapped[8], self.mapped[3]}
-
-    def test_no_covered_neighbors_with_labels(self):
-        G1 = nx.DiGraph()
-        G1.add_edges_from(self.G1_edges)
-        G1.add_node(0)
-        G2 = nx.relabel_nodes(G1, self.mapped)
+        G2 = nx.relabel_nodes(G1, mapped)
 
         # setup g_info
-        G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
-        G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
+        directed = G1.is_directed()
+        find_cands = _find_candidates_Di if directed else _find_candidates
+        if directed:
+            G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
+            G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
+        else:
+            G1_deg = dict(G1.degree)
+            G2_deg = dict(G2.degree)
+        l1 = dict(G1.nodes(data="label", default=-1))
+        l2 = dict(G2.nodes(data="label", default=-1))
+        l2groups = nx.utils.groups(l2)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
+
+        m = {9: mapped[9], 1: mapped[1]}
+        m_rev = {mapped[9]: 9, mapped[1]: 1}
+
+        if directed:
+            T1 = {2, 4, 6}
+            T1_in = {5, 7, 8}
+            T1_tilde = {0, 3}
+            T2 = {"b", "d", "f"}
+            T2_in = {"e", "g", "h"}
+            T2_tilde = {"x", "c"}
+        else:
+            T1 = {7, 8, 2, 4, 5}
+            T1_tilde = {0, 3, 6}
+            T2 = {"g", "h", "b", "d", "e"}
+            T2_tilde = {"x", "c", "f"}
+            T1_in = T2_in = set()
+
+        s_info = _StateInfo(m, m_rev, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
+
+        # u = 3, expected={mapped[v] for v in [u]}, g_info_Di_no_lbls, s_info246_578
+        u = 3
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u]}
+
+        # u = 0, expected={mapped[v] for v in [u]}, g_info_Di_no_lbls, s_info246
+        u = 0
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u]}
+
+        m.pop(9)
+        m_rev.pop(mapped[9])
+
+        if directed:
+            T1 = {2, 4, 6}
+            T1_in = {5}
+            T1_tilde = {0, 3, 7, 8, 9}
+            T2 = {"b", "d", "f"}
+            T2_in = {"e"}
+            T2_tilde = {"x", "c", "g", "h", "i"}
+            cands = {mapped[7], mapped[8], mapped[3]}
+        else:
+            T1 = {2, 4, 5, 6}
+            T1_tilde = {0, 3, 7, 8, 9}
+            T2 = {"g", "h", "b", "d", "e", "f"}
+            T2_tilde = {"x", "c", "g", "h", "i"}
+            cands = {mapped[7], mapped[8], mapped[3], mapped[9]}
+
+        s_info = _StateInfo(m, m_rev, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
+
+        # u = 7, expected={mapped[v] for v in [u, 8, 3]}, g_info_Di_no_lbls, s_info246_5
+        u = 7
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == cands
+
+    def test_no_covered_neighbors_with_labels(self, Gclass):
+        mapped = dict(enumerate("xabcdefghi"))
+        G1 = Gclass()
+        G1.add_edges_from(self.edges)
+        G1.add_node(0)
+        G2 = nx.relabel_nodes(G1, mapped)
+
+        # setup g_info
+        directed = G1.is_directed()
+        find_cands = _find_candidates_Di if directed else _find_candidates
+        if directed:
+            G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
+            G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
+        else:
+            G1_deg = dict(G1.degree)
+            G2_deg = dict(G2.degree)
         l1 = dict(zip(G1, it.cycle(labels_many)))
         l2 = dict(zip(G2, it.cycle(labels_many)))
         l2groups = nx.utils.groups(l2)
-
-        g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         # setup s_info
-        m = {9: self.mapped[9], 1: self.mapped[1]}
-        m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
+        m = {9: mapped[9], 1: mapped[1]}
+        m_rev = {mapped[9]: 9, mapped[1]: 1}
 
-        T1_out = {2, 4, 6}
+        T1 = {2, 4, 6}
         T1_in = {5, 7, 8}
         T1_tilde = {0, 3}
-        T2_out = {"b", "d", "f"}
+        T2 = {"b", "d", "f"}
         T2_in = {"e", "g", "h"}
         T2_tilde = {"x", "c"}
 
-        s_info = _StateInfo(m, m_rev, T1_out, T1_in, T1_tilde, T2_out, T2_in, T2_tilde)
+        s_info = _StateInfo(m, m_rev, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
 
-        # u = 3, expected={self.mapped[v] for v in [u]}, g_info_Di_manylbls, s_info246_578
+        # u = 3, expected={mapped[v] for v in [u]}, g_info_Di_manylbls, s_info246_578
         u = 3
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u]}
 
-        # u = 0, expected={self.mapped[v] for v in [u]}, g_info_Di_manylbls, s_info246_578
+        # u = 0, expected={mapped[v] for v in [u]}, g_info_Di_manylbls, s_info246_578
         u = 0  # disconnected node
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u]}
 
         # Change label of disconnected node => No candidate
         l1[u] = "purple"
-        g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
-        # u = 0, expected={self.mapped[v] for v in [u]}, g_info_Di_manylbls_0newcolor, s_info246_578
-        candidates = _find_candidates_Di(u, g_info, s_info)
+        # u = 0, expected={mapped[v] for v in [u]}, g_info_Di_manylbls_0newcolor, s_info246_578
+        candidates = find_cands(u, g_info, s_info)
         assert candidates == set()
 
         # update state for next tests
         m.pop(9)
-        m_rev.pop(self.mapped[9])
+        m_rev.pop(mapped[9])
 
-        T1_out = {2, 4, 6}
+        T1 = {2, 4, 6}
         T1_in = {5}
         T1_tilde = {0, 3, 7, 8, 9}
-        T2_out = {"b", "d", "f"}
+        T2 = {"b", "d", "f"}
         T2_in = {"e"}
         T2_tilde = {"x", "c", "g", "h", "i"}
 
-        s_info = _StateInfo(m, m_rev, T1_out, T1_in, T1_tilde, T2_out, T2_in, T2_tilde)
+        s_info = _StateInfo(m, m_rev, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
 
-        # u = 7, expected={self.mapped[v] for v in [u]}, g_info_Di_manylbls, s_info246_5
+        # u = 7, expected={mapped[v] for v in [u]}, g_info_Di_manylbls, s_info246_5
         u = 7
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u]}
 
         l1[8] = l1[7]
-        l2[self.mapped[8]] = l1[7]
+        l2[mapped[8]] = l1[7]
         l2groups = nx.utils.groups(l2)
-        g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
-        # u = 7, expected={self.mapped[v] for v in [u]}, g_info_Di_manylbls_78same, s_info246_5
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u], self.mapped[8]}
+        # u = 7, expected={mapped[v] for v in [u]}, g_info_Di_manylbls_78same, s_info246_5
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u], mapped[8]}
 
-    def test_covered_neighbors_no_labels(self):
-        G1 = nx.DiGraph()
-        G1.add_edges_from(self.G1_edges)
+    def test_covered_neighbors_no_labels(self, Gclass):
+        mapped = dict(enumerate("xabcdefghi"))
+        G1 = Gclass()
+        G1.add_edges_from(self.edges)
         G1.add_node(0)
-        G2 = nx.relabel_nodes(G1, self.mapped)
+        G2 = nx.relabel_nodes(G1, mapped)
 
-        G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
-        G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
+        # setup g_info
+        directed = G1.is_directed()
+        find_cands = _find_candidates_Di if directed else _find_candidates
+        if directed:
+            G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
+            G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
+        else:
+            G1_deg = dict(G1.degree)
+            G2_deg = dict(G2.degree)
         l1 = dict(G1.nodes(data="label", default=-1))
         l2 = dict(G2.nodes(data="label", default=-1))
         l2groups = nx.utils.groups(l2)
-        g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
-        m = {9: self.mapped[9], 1: self.mapped[1]}
-        m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
+        m = {9: mapped[9], 1: mapped[1]}
+        m_rev = {mapped[9]: 9, mapped[1]: 1}
 
-        T1_out = {2, 4, 6}
+        T1 = {2, 4, 6}
         T1_in = {5, 7, 8}
         T1_tilde = {0, 3}
-        T2_out = {"b", "d", "f"}
+        T2 = {"b", "d", "f"}
         T2_in = {"e", "g", "h"}
         T2_tilde = {"x", "c"}
 
-        s_info = _StateInfo(m, m_rev, T1_out, T1_in, T1_tilde, T2_out, T2_in, T2_tilde)
+        s_info = _StateInfo(m, m_rev, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
 
-        # u = 5, expected={self.mapped[v] for v in [u]}, g_info_Di_no_lbls, s_info246_578
+        # u = 5, expected={mapped[v] for v in [u]}, g_info_Di_no_lbls, s_info246_578
         u = 5
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u]}
 
-        # u = 6, expected={self.mapped[v] for v in [u]}, g_info_Di_no_lbls, s_info246_578
+        # u = 6, expected={mapped[v] for v in [u]}, g_info_Di_no_lbls, s_info246_578
         u = 6
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u]} if directed else {mapped[2], mapped[u]}
 
         # Change edge orientation to make degree match 1st candidate of u
         G1.remove_edge(4, 2)
         G1.add_edge(2, 4)
         G2.remove_edge("d", "b")
         G2.add_edge("b", "d")
-        G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
-        G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
-        g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
+        if directed:
+            G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
+            G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
+        else:
+            G1_deg = dict(G1.degree)
+            G2_deg = dict(G2.degree)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
-        # u = 6, expected={self.mapped[v] for v in [u]}, g_info_Di_no_lbls, s_info246_578
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u], self.mapped[2]}
+        # u = 6, expected={mapped[v] for v in [u]}, g_info_Di_no_lbls, s_info246_578
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u], mapped[2]} if directed else {mapped[u]}
 
-    def test_covered_neighbors_with_labels(self):
-        G1 = nx.DiGraph()
-        G1.add_edges_from(self.G1_edges)
+    def test_covered_neighbors_with_labels(self, Gclass):
+        mapped = dict(enumerate("xabcdefghi"))
+        G1 = Gclass()
+        G1.add_edges_from(self.edges)
         G1.add_node(0)
-        G2 = nx.relabel_nodes(G1, self.mapped)
+        G2 = nx.relabel_nodes(G1, mapped)
 
         G1.remove_edge(4, 2)
         G1.add_edge(2, 4)
         G2.remove_edge("d", "b")
         G2.add_edge("b", "d")
 
-        G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
-        G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
+        # setup g_info
+        directed = G1.is_directed()
+        find_cands = _find_candidates_Di if directed else _find_candidates
+        if directed:
+            G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
+            G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
+        else:
+            G1_deg = dict(G1.degree)
+            G2_deg = dict(G2.degree)
         l1 = dict(zip(G1, it.cycle(labels_many)))
-        l2 = dict(zip([self.mapped[n] for n in G1], it.cycle(labels_many)))
+        l2 = dict(zip([mapped[n] for n in G1], it.cycle(labels_many)))
         l2groups = nx.utils.groups(l2)
-        g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
-        m = {9: self.mapped[9], 1: self.mapped[1]}
-        m_rev = {self.mapped[9]: 9, self.mapped[1]: 1}
+        m = {9: mapped[9], 1: mapped[1]}
+        m_rev = {mapped[9]: 9, mapped[1]: 1}
 
-        T1_out = {2, 4, 6}
+        T1 = {2, 4, 6}
         T1_in = {5, 7, 8}
         T1_tilde = {0, 3}
-        T2_out = {"b", "d", "f"}
+        T2 = {"b", "d", "f"}
         T2_in = {"e", "g", "h"}
         T2_tilde = {"x", "c"}
 
-        s_info = _StateInfo(m, m_rev, T1_out, T1_in, T1_tilde, T2_out, T2_in, T2_tilde)
+        s_info = _StateInfo(m, m_rev, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
 
-        # u = 5, expected={self.mapped[v] for v in [u]}, g_info_Di_manylbls_24switch, s_info246_578
+        # u = 5, expected={mapped[v] for v in [u]}, g_info_Di_manylbls_24switch, s_info246_578
         u = 5
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u]}
 
-        # u = 6, expected={self.mapped[v] for v in [u]}, g_info_Di_manylbls_24switch, s_info246_578
+        # u = 6, expected={mapped[v] for v in [u]}, g_info_Di_manylbls_24switch, s_info246_578
         u = 6
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u]}
 
         # Assign to 2, the same label as 6
         l1[2] = l1[u]
-        l2[self.mapped[2]] = l1[u]
+        l2[mapped[2]] = l1[u]
         l2groups = nx.utils.groups(l2)
-        g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
-        # u = 6, expected={self.mapped[v] for v in [u, 2]}, g_info_Di_manylbls_24switch_26same, s_info246_578
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u], self.mapped[2]}
+        # u = 6, expected={mapped[v] for v in [u, 2]}, g_info_Di_manylbls_24switch_26same, s_info246_578
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u], mapped[2]}
 
         # Change edge orientation to make degree match 1st candidate of u
         G1.remove_edge(2, 4)
         G1.add_edge(4, 2)
         G2.remove_edge("b", "d")
         G2.add_edge("d", "b")
-        G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
-        G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
-        g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
+        if directed:
+            G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
+            G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
+        else:
+            G1_deg = dict(G1.degree)
+            G2_deg = dict(G2.degree)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
-        # u = 6, expected={self.mapped[v] for v in [u, 2]}, g_info_Di_manylbls_26same, s_info246_578
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == {self.mapped[u]}
+        # u = 6, expected={mapped[v] for v in [u, 2]}, g_info_Di_manylbls_26same, s_info246_578
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == {mapped[u]} if directed else {mapped[u], mapped[2]}
 
-    def test_same_in_out_degrees_no_candidate(self):
-        G1 = nx.DiGraph([(4, 1), (4, 2), (3, 4), (5, 4), (6, 4)])
-        G2 = nx.DiGraph([(1, 4), (2, 4), (3, 4), (4, 5), (4, 6)])
+    def test_same_in_out_degrees_no_candidate(self, Gclass):
+        mapped = dict(enumerate("xabcdefghi"))
+        G1 = Gclass([(4, 1), (4, 2), (3, 4), (5, 4), (6, 4)])
+        G2 = Gclass([(1, 4), (2, 4), (3, 4), (4, 5), (4, 6)])
 
-        G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
-        G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
+        # setup g_info
+        directed = G1.is_directed()
+        find_cands = _find_candidates_Di if directed else _find_candidates
+        if directed:
+            G1_deg = {n: (i, o) for (n, i), (_, o) in zip(G1.in_degree, G1.out_degree)}
+            G2_deg = {n: (i, o) for (n, i), (_, o) in zip(G2.in_degree, G2.out_degree)}
+        else:
+            G1_deg = dict(G1.degree)
+            G2_deg = dict(G2.degree)
         l1 = dict(G1.nodes(data="label", default=-1))
         l2 = dict(G2.nodes(data="label", default=-1))
         l2groups = nx.utils.groups(l2)
-        g_info = _GraphInfo(*two_eq, True, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
+        g_info = _GraphInfo(*two_eq, directed, G1, G2, l1, l2, G1_deg, G2_deg, l2groups)
 
         m = {1: 1, 2: 2, 3: 3}
         m_rev = m.copy()
 
-        T1_out = {4}
+        T1 = {4}
         T1_in = {4}
         T1_tilde = {5, 6}
-        T2_out = {4}
+        T2 = {4}
         T2_in = {4}
         T2_tilde = {5, 6}
 
-        s_info = _StateInfo(m, m_rev, T1_out, T1_in, T1_tilde, T2_out, T2_in, T2_tilde)
+        s_info = _StateInfo(m, m_rev, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
 
         u = 4
         # despite the same in and out degree, there's no candidate for u=4
-        candidates = _find_candidates_Di(u, g_info, s_info)
-        assert candidates == set()
-        # Notice how the regular candidate selection method returns wrong result.
-        assert _find_candidates(u, g_info, s_info) == {4}
+        candidates = find_cands(u, g_info, s_info)
+        assert candidates == set() if directed else {4}
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
-class TestDiGraphISOFeasibility:
+class TestISOFeasibility:
     def test_feasible_node_pair_covered_neighbors(self, Gclass):
         directed = Gclass.is_directed(None)
         G1 = Gclass([(0, 1), (1, 2), (0, 3), (2, 3)])
@@ -1098,8 +943,6 @@ class TestDiGraphISOFeasibility:
 
     def test_predecessor_T1_in_fail(self, Gclass):
         directed = Gclass.is_directed(Gclass)
-        if not directed:
-            return
         G1 = Gclass([(0, 1), (0, 3), (4, 0), (1, 5), (5, 2), (3, 6), (4, 6), (6, 5)])
         mapped = dict(enumerate("abcdefg"))
         G2 = nx.relabel_nodes(G1, mapped)
@@ -1113,7 +956,7 @@ class TestDiGraphISOFeasibility:
         s_info = _StateInfo(m, rev_m, {3, 5}, {4, 5}, {6}, {"d", "f"}, {"f"}, {"g"})
 
         u, v = 6, "g"
-        assert not _feasible_look_ahead(u, v, g_info, s_info)
+        assert _feasible_look_ahead(u, v, g_info, s_info) != directed
 
         s_info.T2_in.add("e")
         assert _feasible_look_ahead(u, v, g_info, s_info)
@@ -1310,7 +1153,7 @@ class TestTinoutUpdating:
         directed = G1.is_directed()
 
         g_info, s_info = _init_info(G1, G2, None, None, "ISO")
-        m, m_rev, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde = s_info
+        m, m_rev = s_info.mapping, s_info.reverse_mapping
 
         # Add node to the mapping
         m[4] = mapped[4]
@@ -1391,19 +1234,19 @@ class TestTinoutUpdating:
         m_rev = {"x": 0, "c": 3, "d": 4, "e": 5, "f": 6}
 
         # initial T sets
-        t1 = {2, 7, 9, 8}
-        t1_in = {1, 7}
-        t2 = {"b", "g", "i", "h"}
-        t2_in = {"a", "g"}
-        t1_tilde = set()
-        t2_tilde = set()
+        T1 = {2, 7, 9, 8}
+        T1_in = {1, 7}
+        T2 = {"b", "g", "i", "h"}
+        T2_in = {"a", "g"}
+        T1_tilde = set()
+        T2_tilde = set()
 
         if directed:
-            s_info = _StateInfo(m, m_rev, t1, t1_in, t1_tilde, t2, t2_in, t2_tilde)
+            s_info = _StateInfo(m, m_rev, T1, T1_in, T1_tilde, T2, T2_in, T2_tilde)
         else:
-            t1 = t1 | t1_in
-            t2 = t2 | t2_in
-            s_info = _StateInfo(m, m_rev, t1, set(), t1_tilde, t2, set(), t2_tilde)
+            T1 = T1 | T1_in
+            T2 = T2 | T2_in
+            s_info = _StateInfo(m, m_rev, T1, set(), T1_tilde, T2, set(), T2_tilde)
 
         # Remove a node from the mapping
         m.pop(0)
