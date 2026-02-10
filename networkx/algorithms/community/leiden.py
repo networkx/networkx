@@ -108,10 +108,12 @@ def leiden_partitions(
     seed=None,
     quality_function=constant_potts_model,
     theta=0.01,
-):
-    """ """
+    ):
+    """
+    TODO - doc string
+    """
 
-    partition = [{u} for u in G.nodes()]
+    partition = [{u} for u in G]
     inner_partition = None
 
     if nx.is_empty(G):
@@ -120,29 +122,43 @@ def leiden_partitions(
 
     is_directed = G.is_directed()
     if G.is_multigraph():
+        # this is the same as how louvain handles multigraph inputs
         graph = _convert_multigraph(G, weight, is_directed)
-        weight = "weight"
     else:
+        # if the weight parameter is defined then we use this value for
+        # edge weights within the algorithm, defaulting to 1 where the
+        # attribute does not exist
+        # else if weight is None then all edges are given a weight of 1
         if weight:
             graph = G.__class__()
             graph.add_nodes_from(G)
             graph.add_weighted_edges_from(G.edges(data=weight, default=1))
-            weight = "weight"
         else:
-            weight = "weight"
             graph = G.__class__()
             graph.add_nodes_from(G)
             graph.add_edges_from(G.edges())
-            for e in graph.edges():
-                graph.edges[e][weight] = 1
+            nx.set_edge_attributes(graph, 1, name='weight')
+
+    
+    # if a node_weight value is set, then the values with this name are
+    # set as the 'node_weight' attribute. For nodes that do not have the
+    # node_weight attribute, the 'node_weight' is set to 1
+
+    # I don't know if this is the right way to handle this, and instead
+    # raise an exception. Is it better to make the user set missing
+    # node_weight attributes explicitly before calling the function?
+
+    # if node_weight is not set then all nodes are initialised with the 
+    # value 1.
 
     if node_weight:
-        for node in G.nodes():
-            graph.nodes[node]["node_weight"] = G.nodes[node][node_weight]
+        nx.set_node_attributes(
+            graph,
+            {u: G.nodes[u].get(node_weight, 1) for u in G},
+            name='node_weight'
+        )
     else:
-        node_weight = "node_weight"
-        for node in G.nodes():
-            graph.nodes[node][node_weight] = 1
+        nx.set_node_attributes(graph, 1, name='node_weight')
 
     quality = quality_function(
         graph,
@@ -175,14 +191,27 @@ def leiden_partitions(
 
         graph = _gen_graph(graph, inner_partition_refined)
 
-        # the partition of the underlying graph is read from the
-        # node attribute 'nodes', which is set during _gen_graph
-        partition = [set() for _ in graph.nodes()]
-        for i, u in enumerate(graph.nodes()):
+        # the partition of the original underlying graph is read from
+        # the node attribute 'nodes', which is set during _gen_graph(...)
+        # Each node in graph represents a community in the original graph
+        # and the node holds this information in the attribute 'nodes'.
+
+        # This is different to how louvain keeps track of the global
+        # partition, which is tracked through the individual moves in
+        # _one_level(...). For leiden, these changes would have to be
+        # tracked through both _move_nodes_fast and _refine_partition
+        # but _refine_partition resets to a singleton partition anyway
+        # so it wasn't clear to me: 1) how to do this; and, 2) whether
+        # it's worth doing this.
+
+        partition = [set() for _ in graph]
+        for i, u in enumerate(graph):
             partition[i].update(graph.nodes[u]["nodes"])
 
         yield [s.copy() for s in partition]
 
+        # We stop once the overall change in quality between iterations is
+        # close to zero.
         improvement_made = (new_quality - quality) > threshold
         quality = new_quality
 
@@ -196,17 +225,17 @@ def _move_nodes_fast(
     resolution,
     seed=None,
 ):
-    inner_partition = [{u} for u in G.nodes()]
-    node2com = {u: i for i, u in enumerate(G.nodes())}
+    inner_partition = [{u} for u in G]
+    node2com = {u: i for i, u in enumerate(G)}
 
-    # unlike louvain, instead of beginning each iteration with the singleton
+    # Unlike louvain, instead of beginning each iteration with the singleton
     # partition, each iteration uses the (unrefined) partition from the previous
-    # step as the starting communities when moving nodes
-    # this section of code initilises nodes into those communities.
+    # step as the starting communities when moving nodes.
+    # This section of code initilises nodes into those communities.
     # if no partition is passed from the previous step (i.e. during the
     # first iteration) then this is skipped and the singleton partition is used.
     if seed_partition:
-        for i, u in enumerate(G.nodes()):
+        for i, u in enumerate(G):
             for j, C in enumerate(seed_partition):
                 if u in C:
                     old_com = i
@@ -231,6 +260,7 @@ def _move_nodes_fast(
         # the community that gives the greatest improvement best_com
         for new_com in set(node2com.values()):
             if new_com != old_com:
+                
                 q1 = quality_function(
                     G,
                     [inner_partition[new_com], inner_partition[old_com]],
@@ -276,8 +306,8 @@ def _move_nodes_fast(
 
 
 def _refine_partition(G, partition, resolution, quality_function, seed, theta):
-    node2com = {u: i for i, u in enumerate(G.nodes())}
-    inner_partition_refined = [{u} for u in G.nodes()]
+    node2com = {u: i for i, u in enumerate(G)}
+    inner_partition_refined = [{u} for u in G]
 
     for C in partition:
         inner_partition_refined, node2com = _merge_node_subset(
@@ -296,34 +326,74 @@ def _refine_partition(G, partition, resolution, quality_function, seed, theta):
 
 
 def _merge_node_subset(
-    G, partition, node2com, S, resolution, quality_function, seed, theta
-):
+        G,
+        partition,
+        node2com,
+        S,
+        resolution,
+        quality_function,
+        seed,
+        theta
+        ):
+    
     S_size = _size_of_node_set(G, S, "node_weight")
 
+    # first, the sufficiently well-connected nodes within S
+    # are identified and added to the set R.
     R = set()
     for u in S:
         u_size = _get_node_size(G, u, "node_weight")
         community_factor = _community_edge_size(G, {u}, S - {u}, "weight")
         factor_comparison = resolution * u_size * (S_size - u_size)
-
         if community_factor > factor_comparison:
             R.add(u)
 
+
+    # TODO this section of the code has many nested if statements which
+    # makes me this there's probably a more elegant solution. However,
+    # this approach does closely follow the pseudocode in the paper [1]
     for u in R:
         comm = node2com[u]
-        if len(partition[comm]) == 1:
+        if partition[comm] == {u}:
+            # if the community that u belongs to is the singleton {u}, then
+            # we will proceed to merge it probabilistically with another
+            # community within S.
+
+            # first we identify candidate communities to merge u into
+            # and then the final community is randomly selected from these
+            # according to a probability distribution which is partly
+            # defined by the relative quality_delta (bigger increase in
+            # quality makes choosing that community more likely, but
+            # the algorithm does not greedily choose the greatest increase)
+            
+            # we therefore track both the communities and their respective
+            # probabilities in order to define the probabilty distribution
+            # to select the community that u will be moved into
+
+            # if u is not in a singleton partition then we move on to the
+            # next node.
             candidate_comm = []
-            candidate_comm_delta = []
+            candidate_comm_prob = []
+
             for i, C in enumerate(partition):
+                
                 if comm == i:
+                    # we only want to consider moving u to a different
+                    # community, not its current community.
                     pass
-                elif len(C) == 0:
-                    pass
+                
                 elif C.issubset(S):
+                    # We only consider merging u into a community that
+                    # is within S. This is what is means for the resulting
+                    # partition to be a refinement of S.
+
                     E = _community_edge_size(G, C, S - C, "weight")
                     C_size = _size_of_node_set(G, C, "node_weight")
+                    
                     comm_comparison = resolution * C_size * (S_size - C_size)
+                    
                     if E > comm_comparison:
+
                         q1 = quality_function(
                             G,
                             [partition[comm], partition[i]],
@@ -344,42 +414,90 @@ def _merge_node_subset(
                         quality_delta = q2 - q1
 
                         if quality_delta > 0:
+
+                            # since moving u to the candidate community C
+                            # (at index i) we will add it to the list of
+                            # candidate communities
                             candidate_comm.append(i)
+                            
+                            # we also need to keep track of the probability
+                            # that u will be added to C, as opposed to another
+                            # candidate in the list. The relative probability
+                            # is calcualted at as e^(quality_delta/theta)
+
                             # it is quite easy to get overflow in this math.exp(...)
-                            # numpy handles this more elegantly
+                            # numpy handles this more elegantly.
                             try:
                                 val = math.exp(quality_delta / theta)
                             except OverflowError:
                                 val = float("inf")
-                            candidate_comm_delta.append(val)
+                            
+                            candidate_comm_prob.append(val)
+
                         partition[comm].add(u)
                         partition[i].remove(u)
 
+            # if there are candidate communities identified i.e.
+            # if candidate_comm is not empty, then the next stage
+            # selects the community to move u into.
+            
             if len(candidate_comm) > 0:
 
-                def _sample_from_discrete(vals):
-                    # if there is overflow error then vals can contain
-                    # the value float('inf') in which case we will have
-                    #
-                    # cumsum_vals = float('inf')
-                    # max_val = float('inf')
-                    # random_val = float('inf')
-                    #
-                    # and the function will always return
-                    # i = <index of the first float('inf') in vals>
+                # This function is an inverse transform sampling of the list
+                # of relative probability values.
 
-                    # I do not know if this is desirable behaviour
+                # the reason this function is defined inline is to make the
+                # randomness determined by the same seed value making the
+                # entire algorithm deterministic for set seed values. There
+                # may be a more elegant way to get this same behaviour.
+                
+                def _inverse_transform_sample(vals):
+                    """
+                    This function takes a list of values representing
+                    relative probabilities and randomly returns an index:
+
+                    e.g. for vals = [1, 2, 2], the function should return
+                    0 half as often as 1. It should return 1 and 2 with the
+                    same relative frequency.
+
+                    The function first calculates the cumulative sum of 
+                    values, e.g.
+
+                    cumsum_vals = [1, 3, 5].
+
+                    Then random_val uniformly sampled from the range (0,5).
+                    The function  then returns the index from the first value
+                    in cumsum_vals that is greater than this random_val.
+                    """
 
                     cumsum_vals = _cumulative_sum(vals)
                     max_val = cumsum_vals[-1]
                     random_val = seed.uniform(0, max_val)
 
+                    # if there is overflow math.exp(...) such that
+                    # candidate_comm_prob contains an float('inf') value,
+                    # then we will have:
+                    #
+                    #     max_val = float('inf')
+                    #     random_val = float('inf')
+                    #
+                    # and the function will always return
+                    #     
+                    #    i = <index of the first float('inf') in vals>
+
+                    # I do not know if this is desirable behaviour
+                    
                     for i, v in enumerate(cumsum_vals):
                         if random_val <= v:
+                            # by construction random_val <= cumsum_vals[-1],
+                            # thereore this function will always return a
+                            # valid index value
                             return i
 
-                random_index = _sample_from_discrete(candidate_comm_delta)
+                # The community to move u into is chosen at random
+                random_index = _inverse_transform_sample(candidate_comm_prob)
                 new_comm = candidate_comm[random_index]
+
                 partition[comm].remove(u)
                 partition[new_comm].add(u)
                 node2com[u] = new_comm
@@ -441,18 +559,30 @@ def _gen_graph(G, partition):
 
 
 def _get_node_size(G, node, node_weight):
-    size = G.nodes[node].get(node_weight, 1)
-    return size
+    """
+    The leiden algorithm uses a size value for nodes, where
+    in the aggregated graphs, the size of a node is defined
+    as the sum of the sizes of its member nodes.
+
+    By default nodes are initialised with size 1, but the
+    algorithm can accept arbitrary float node weights
+    """
+    return G.nodes[node].get(node_weight, 1)
 
 
-def _size_of_node_set(G, nodes, node_weight):
-    size = 0
-    for u in nodes:
-        size += _get_node_size(G, u, node_weight)
-    return size
+def _size_of_node_set(G, C, node_weight):
+    """
+    Returns sum of the node weights of a set of nodes.
+    i.e. the quantity n_C from the leiden docs.
+    """
+    return sum(wt for u, wt in G.nodes(data=node_weight) if u in C)
 
 
 def _community_edge_size(G, C1, C2, weight):
+    """
+    Returns the sum of all edge weight for edges between communites C1 and
+    C2 i.e. the quantity E(C1, C2) from the leiden docs.
+    """
     return sum(wt for u, v, wt in G.edges(C1, data=weight) if u in C1 and v in C2)
 
 
