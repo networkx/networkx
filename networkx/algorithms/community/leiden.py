@@ -5,7 +5,7 @@ algorithm.
 import itertools
 import math
 import random
-from collections import defaultdict, deque
+from collections import deque
 
 import networkx as nx
 from networkx.algorithms.community.quality import constant_potts_model
