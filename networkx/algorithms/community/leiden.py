@@ -258,8 +258,6 @@ def _move_nodes_fast(
                 inner_partition[old_com].add(u)
 
         if best_delta > 0:
-            com = G.nodes[u].get("nodes", {u})
-
             node2com[u] = best_com
 
             inner_partition[old_com].remove(u)
