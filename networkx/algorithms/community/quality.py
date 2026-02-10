@@ -335,9 +335,7 @@ def constant_potts_model(
             if v in comm and u in comm
         )
 
-        n = 0
-        for node in community:
-            n += G.nodes[node].get(node_weight, 1)
+        n = sum(G.nodes[node].get(node_weight, 1) for node in community)
 
         return L_c - resolution * (n**2)
 
