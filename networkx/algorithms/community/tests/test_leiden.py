@@ -39,6 +39,7 @@ def test_connected_communities_LFR():
     for C in partition:
         assert check_connected_community(G, C)
 
+
 def test_expected():
     G = nx.karate_club_graph()
 
@@ -51,14 +52,16 @@ def test_expected():
         {17},
         {20},
         {32, 33, 8, 14, 15, 18, 22, 23, 26, 27, 29, 30},
-        {24, 25, 28, 31}
+        {24, 25, 28, 31},
     ]
 
     assert part == part_expected
 
     G = nx.karate_club_graph()
 
-    part = nx.algorithms.community.leiden.leiden_communities(G, weight=None, resolution=0.2, seed=1)
+    part = nx.algorithms.community.leiden.leiden_communities(
+        G, weight=None, resolution=0.2, seed=1
+    )
 
     part_expected = [
         {10, 4},
@@ -78,7 +81,7 @@ def test_expected():
         {26, 29},
         {8, 30},
         {24, 25, 31},
-        {32, 33, 20, 23, 15}
+        {32, 33, 20, 23, 15},
     ]
 
     assert part == part_expected

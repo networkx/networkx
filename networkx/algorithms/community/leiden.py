@@ -108,7 +108,7 @@ def leiden_partitions(
     seed=None,
     quality_function=constant_potts_model,
     theta=0.01,
-    ):
+):
     """
     TODO - doc string
     """
@@ -137,9 +137,8 @@ def leiden_partitions(
             graph = G.__class__()
             graph.add_nodes_from(G)
             graph.add_edges_from(G.edges())
-            nx.set_edge_attributes(graph, 1, name='weight')
+            nx.set_edge_attributes(graph, 1, name="weight")
 
-    
     # if a node_weight value is set, then the values with this name are
     # set as the 'node_weight' attribute. For nodes that do not have the
     # node_weight attribute, the 'node_weight' is set to 1
@@ -148,17 +147,15 @@ def leiden_partitions(
     # raise an exception. Is it better to make the user set missing
     # node_weight attributes explicitly before calling the function?
 
-    # if node_weight is not set then all nodes are initialised with the 
+    # if node_weight is not set then all nodes are initialised with the
     # value 1.
 
     if node_weight:
         nx.set_node_attributes(
-            graph,
-            {u: G.nodes[u].get(node_weight, 1) for u in G},
-            name='node_weight'
+            graph, {u: G.nodes[u].get(node_weight, 1) for u in G}, name="node_weight"
         )
     else:
-        nx.set_node_attributes(graph, 1, name='node_weight')
+        nx.set_node_attributes(graph, 1, name="node_weight")
 
     quality = quality_function(
         graph,
@@ -260,7 +257,6 @@ def _move_nodes_fast(
         # the community that gives the greatest improvement best_com
         for new_com in set(node2com.values()):
             if new_com != old_com:
-                
                 q1 = quality_function(
                     G,
                     [inner_partition[new_com], inner_partition[old_com]],
@@ -326,16 +322,8 @@ def _refine_partition(G, partition, resolution, quality_function, seed, theta):
 
 
 def _merge_node_subset(
-        G,
-        partition,
-        node2com,
-        S,
-        resolution,
-        quality_function,
-        seed,
-        theta
-        ):
-    
+    G, partition, node2com, S, resolution, quality_function, seed, theta
+):
     S_size = _size_of_node_set(G, S, "node_weight")
 
     # first, the sufficiently well-connected nodes within S
@@ -347,7 +335,6 @@ def _merge_node_subset(
         factor_comparison = resolution * u_size * (S_size - u_size)
         if community_factor > factor_comparison:
             R.add(u)
-
 
     # TODO this section of the code has many nested if statements which
     # makes me this there's probably a more elegant solution. However,
@@ -365,7 +352,7 @@ def _merge_node_subset(
             # defined by the relative quality_delta (bigger increase in
             # quality makes choosing that community more likely, but
             # the algorithm does not greedily choose the greatest increase)
-            
+
             # we therefore track both the communities and their respective
             # probabilities in order to define the probabilty distribution
             # to select the community that u will be moved into
@@ -376,12 +363,11 @@ def _merge_node_subset(
             candidate_comm_prob = []
 
             for i, C in enumerate(partition):
-                
                 if comm == i:
                     # we only want to consider moving u to a different
                     # community, not its current community.
                     pass
-                
+
                 elif C.issubset(S):
                     # We only consider merging u into a community that
                     # is within S. This is what is means for the resulting
@@ -389,11 +375,10 @@ def _merge_node_subset(
 
                     E = _community_edge_size(G, C, S - C, "weight")
                     C_size = _size_of_node_set(G, C, "node_weight")
-                    
-                    comm_comparison = resolution * C_size * (S_size - C_size)
-                    
-                    if E > comm_comparison:
 
+                    comm_comparison = resolution * C_size * (S_size - C_size)
+
+                    if E > comm_comparison:
                         q1 = quality_function(
                             G,
                             [partition[comm], partition[i]],
@@ -414,12 +399,11 @@ def _merge_node_subset(
                         quality_delta = q2 - q1
 
                         if quality_delta > 0:
-
                             # since moving u to the candidate community C
                             # (at index i) we will add it to the list of
                             # candidate communities
                             candidate_comm.append(i)
-                            
+
                             # we also need to keep track of the probability
                             # that u will be added to C, as opposed to another
                             # candidate in the list. The relative probability
@@ -431,7 +415,7 @@ def _merge_node_subset(
                                 val = math.exp(quality_delta / theta)
                             except OverflowError:
                                 val = float("inf")
-                            
+
                             candidate_comm_prob.append(val)
 
                         partition[comm].add(u)
@@ -440,9 +424,8 @@ def _merge_node_subset(
             # if there are candidate communities identified i.e.
             # if candidate_comm is not empty, then the next stage
             # selects the community to move u into.
-            
-            if len(candidate_comm) > 0:
 
+            if len(candidate_comm) > 0:
                 # This function is an inverse transform sampling of the list
                 # of relative probability values.
 
@@ -450,7 +433,7 @@ def _merge_node_subset(
                 # randomness determined by the same seed value making the
                 # entire algorithm deterministic for set seed values. There
                 # may be a more elegant way to get this same behaviour.
-                
+
                 def _inverse_transform_sample(vals):
                     """
                     This function takes a list of values representing
@@ -460,7 +443,7 @@ def _merge_node_subset(
                     0 half as often as 1. It should return 1 and 2 with the
                     same relative frequency.
 
-                    The function first calculates the cumulative sum of 
+                    The function first calculates the cumulative sum of
                     values, e.g.
 
                     cumsum_vals = [1, 3, 5].
@@ -482,11 +465,11 @@ def _merge_node_subset(
                     #     random_val = float('inf')
                     #
                     # and the function will always return
-                    #     
+                    #
                     #    i = <index of the first float('inf') in vals>
 
                     # I do not know if this is desirable behaviour
-                    
+
                     for i, v in enumerate(cumsum_vals):
                         if random_val <= v:
                             # by construction random_val <= cumsum_vals[-1],
