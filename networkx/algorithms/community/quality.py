@@ -286,14 +286,14 @@ def constant_potts_model(
         the parameter \gamma acts as the inner and outer edge density
         threshold. That is, suppose there is a community [C] with [E(C, C)]
         edges and [n_C] nodes. Then it is better to split it into two
-        communities r and s whenever 
+        communities r and s whenever
 
         .. math::
             \frac{[E(r,s)]}{2 n_r n_s} < \gamma
 
         where [E(r,s)] is the number [or weighted sum] of links between
         community r and s. This ratio is exactly the density of links between
-        community r and s. So, the link density between communities should be 
+        community r and s. So, the link density between communities should be
         lower than \gamma, while the link density within communities should
         be higher than \gamma."
 

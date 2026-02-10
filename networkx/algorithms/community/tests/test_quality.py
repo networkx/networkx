@@ -128,7 +128,7 @@ def test_cpm():
     # compare cpm against the value computed by hand using the
     # formula stated in the definition of constant_potts_model
     assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
-    
+
     cpm = constant_potts_model(
         G, partition, weight="bar", node_weight="foo", resolution=gamma
     )
