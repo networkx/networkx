@@ -146,7 +146,7 @@ class TestAllGraphTypesEdgeCases:
 
 
 class TestGraphISOVF2pp:
-    def test_custom_grapSH_same_labels(self):
+    def test_custom_graph1_same_labels(self):
         SG = nx.Graph()
 
         mapped = {1: "A", 2: "B", 3: "C", 4: "D", 5: "Z", 6: "E"}
@@ -189,7 +189,7 @@ class TestGraphISOVF2pp:
         FG.remove_edges_from([(mapped[1], mapped[5]), (mapped[1], mapped[2])])
         assert vf2pp_isomorphism(FG, SG, node_label="label")
 
-    def test_custom_grapFH_same_labels(self):
+    def test_custom_graph2_same_labels(self):
         SG = nx.Graph()
 
         mapped = {1: "A", 2: "C", 3: "D", 4: "E", 5: "G", 7: "B", 6: "F"}
@@ -219,7 +219,7 @@ class TestGraphISOVF2pp:
         FH.add_edges_from([(mapped[1], mapped[6]), (mapped[4], mapped[6])])
         assert vf2pp_isomorphism(FH, SH, node_label="label")
 
-    def test_custom_grapFH_different_labels(self):
+    def test_custom_graph2_different_labels(self):
         SG = nx.Graph()
 
         mapped = {1: "A", 2: "C", 3: "D", 4: "E", 5: "G", 7: "B", 6: "F"}
@@ -710,7 +710,7 @@ class TestGraphISOVF2pp:
 
 
 class TestMultiGraphISOVF2pp:
-    def test_custom_multigrapSH_same_labels(self):
+    def test_custom_multigraph1_same_labels(self):
         SG = nx.MultiGraph()
 
         mapped = {1: "A", 2: "B", 3: "C", 4: "D", 5: "Z", 6: "E"}
@@ -763,7 +763,7 @@ class TestMultiGraphISOVF2pp:
         m = vf2pp_isomorphism(FG, SG, node_label="label")
         assert m
 
-    def test_custom_multigrapSH_different_labels(self):
+    def test_custom_multigraph1_different_labels(self):
         SG = nx.MultiGraph()
 
         mapped = {1: "A", 2: "B", 3: "C", 4: "D", 5: "Z", 6: "E"}
@@ -821,7 +821,7 @@ class TestMultiGraphISOVF2pp:
         assert m
         assert m == mapped
 
-    def test_custom_multigrapFH_same_labels(self):
+    def test_custom_multigraph2_same_labels(self):
         SG = nx.MultiGraph()
 
         mapped = {1: "A", 2: "C", 3: "D", 4: "E", 5: "G", 7: "B", 6: "F"}
@@ -886,7 +886,7 @@ class TestMultiGraphISOVF2pp:
         m = vf2pp_isomorphism(FH, SH, node_label="label")
         assert not m
 
-    def test_custom_multigrapFH_different_labels(self):
+    def test_custom_multigraph2_different_labels(self):
         SG = nx.MultiGraph()
 
         mapped = {1: "A", 2: "C", 3: "D", 4: "E", 5: "G", 7: "B", 6: "F"}

@@ -225,9 +225,9 @@ is_funcs = {
     "ismags": (ismags_is_iso, ismags_iter),
 }
 SG_funcs = {
-    "vf2_SG": (vf2_subgraph_is_iso, vf2_subgraph_iter),
-    "vf2pp_SG": (vf2pp_subgraph_is_iso, vf2pp_subgraph_iter),
-    "ismags_SG": (ismags_subgraph_is_iso, ismags_subgraph_iter),
+    "vf2_subgraph": (vf2_subgraph_is_iso, vf2_subgraph_iter),
+    "vf2pp_subgraph": (vf2pp_subgraph_is_iso, vf2pp_subgraph_iter),
+    "ismags_subgraph": (ismags_subgraph_is_iso, ismags_subgraph_iter),
 }
 mono_funcs = {
     "vf2_mono": (vf2_subgraph_is_mono, vf2_mono_iter),
@@ -659,7 +659,7 @@ def test_subgraph_mono(SG_ic, symmetry, Gclass):
     # check that FG is always subgraph morphic to itself
     assert SG_ic(FG, FG, symmetry=symmetry)
 
-    # true if is_mono, false if is_SG
+    # true if is_mono, false if subgraph_is_iso
     assert SG_ic(FG, SG, symmetry=symmetry) == ("mono" in SG_ic.__name__)
 
     # switch order of FG and SG (bigger cannot be subgraph)
@@ -678,7 +678,7 @@ def test_subgraph_mono_small(SG_ic, symmetry, Gclass):
     SG = nx.path_graph(3, create_using=Gclass)
     subgraph_morph = "subgraph" in SG_ic.__name__
     mono_morph = "mono" in SG_ic.__name__
-    not_multi = subgraph_morph and not SG.is_multigraph()
+
     # isolated node not in SG. is_iso => False, subgraph_is_* => True
     assert SG_ic(FG, SG, symmetry=symmetry) == subgraph_morph
 
@@ -705,7 +705,7 @@ def test_multiedge_mono_subgraph(SG_ic, symmetry, Gclass):
     # add multiedges
     FG.add_edges_from(["ab", "ab"])
     SG.add_edges_from([(0, 1), (0, 1)])
-    assert SG_ic(FG, SG, symmetry=symmetry) == not_multi or subgraph_morph
+    assert SG_ic(FG, SG, symmetry=symmetry) == (not_multi or subgraph_morph)
     FG.add_edges_from(["ab"])
 
     # FIXME: check why fails ismags_SG with multigraphs but not vf2 or vf2pp

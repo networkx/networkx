@@ -39,14 +39,14 @@ degree and the label rarity of each node.
 This way we consider the nodes that eliminate the most branches of the possible
 mapping search tree, so we can cut out unfruitful branches early in the process.
 
-Warning: The VF2++ paper uses the symbols `G1` and `G2` for the two graphs of
+Warning: The VF2++ paper uses the symbols ``G1`` and ``G2`` for the two graphs of
 interest just as the VF2 paper does. But for subgraph functions the first graph
 is smaller in VF2++ while the second is smaller for VF2 and for ISMAGS. This
 implementation, VF2pp, matches the VF2 and ISMAGS notation with the second
 input being no larger than the first. To avoid confusion with the papers we
-name the graphs `FG` and `SG` for full graph and smaller graph. For VF2pp,
-`SG` corresponds to the paper's `G1` while `FG` corresponds to `G2`. This does
-not matter for the isomorphism functions (where the graphs have the same size).
+name the graphs ``FG`` and ``SG`` for full graph and smaller graph. For VF2pp,
+``SG`` corresponds to the paper's ``G1`` while ``FG`` corresponds to ``G2``. This
+does not matter for the isomorphism functions (where the graphs have the same size).
 
 Examples
 --------
@@ -192,13 +192,13 @@ def vf2pp_isomorphism(FG, SG, node_label=None, default_label=None):
 
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
-        The default is `None`, meaning node attributes are not considered
+        The default is ``None``, meaning node attributes are not considered
         in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
         Default value to use when a node doesn't have an attribute
-        named `node_label`. Default is `None`.
+        named `node_label`. Default is ``None``.
 
     Returns
     -------
@@ -223,13 +223,13 @@ def vf2pp_is_isomorphic(FG, SG, node_label=None, default_label=None):
 
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
-        The default is `None`, meaning node attributes are not considered
+        The default is ``None``, meaning node attributes are not considered
         in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
         Default value to use when a node doesn't have an attribute
-        named `node_label`. Default is `None`.
+        named `node_label`. Default is ``None``.
 
     Returns
     -------
@@ -254,13 +254,13 @@ def vf2pp_all_isomorphisms(FG, SG, node_label=None, default_label=None):
 
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
-        The default is `None`, meaning node attributes are not considered
+        The default is ``None``, meaning node attributes are not considered
         in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
         Default value to use when a node doesn't have an attribute
-        named `node_label`. Default is `None`.
+        named `node_label`. Default is ``None``.
 
     Yields
     ------
@@ -281,13 +281,13 @@ def vf2pp_subgraph_isomorphism(FG, SG, node_label=None, default_label=None):
 
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
-        The default is `None`, meaning node attributes are not considered
+        The default is ``None``, meaning node attributes are not considered
         in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
         Default value to use when a node doesn't have an attribute
-        named `node_label`. Default is `None`.
+        named `node_label`. Default is ``None``.
 
     Returns
     -------
@@ -313,13 +313,13 @@ def vf2pp_subgraph_is_isomorphic(FG, SG, node_label=None, default_label=None):
 
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
-        The default is `None`, meaning node attributes are not considered
+        The default is ``None``, meaning node attributes are not considered
         in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
         Default value to use when a node doesn't have an attribute
-        named `node_label`. Default is `None`.
+        named `node_label`. Default is ``None``.
 
     Returns
     -------
@@ -344,13 +344,13 @@ def vf2pp_all_subgraph_isomorphisms(FG, SG, node_label=None, default_label=None)
 
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
-        The default is `None`, meaning node attributes are not considered
+        The default is ``None``, meaning node attributes are not considered
         in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
         Default value to use when a node doesn't have an attribute
-        named `node_label`. Default is `None`.
+        named `node_label`. Default is ``None``.
 
     Yields
     ------
@@ -371,13 +371,13 @@ def vf2pp_monomorphism(FG, SG, node_label=None, default_label=None):
 
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
-        The default is `None`, meaning node attributes are not considered
+        The default is ``None``, meaning node attributes are not considered
         in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
         Default value to use when a node doesn't have an attribute
-        named `node_label`. Default is `None`.
+        named `node_label`. Default is ``None``.
 
     Returns
     -------
@@ -402,13 +402,13 @@ def vf2pp_is_monomorphic(FG, SG, node_label=None, default_label=None):
 
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
-        The default is `None`, meaning node attributes are not considered
+        The default is ``None``, meaning node attributes are not considered
         in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
         Default value to use when a node doesn't have an attribute
-        named `node_label`. Default is `None`.
+        named `node_label`. Default is ``None``.
 
     Returns
     -------
@@ -440,13 +440,13 @@ def vf2pp_all_monomorphisms(FG, SG, node_label=None, default_label=None):
 
     node_label : str, optional
         The name of the node attribute to be used when comparing nodes.
-        The default is `None`, meaning node attributes are not considered
+        The default is ``None``, meaning node attributes are not considered
         in the comparison. Any node that doesn't have the `node_label`
         attribute uses `default_label` instead.
 
     default_label : scalar
         Default value to use when a node doesn't have an attribute
-        named `node_label`. Default is `None`.
+        named `node_label`. Default is ``None``.
 
     Yields
     ------
