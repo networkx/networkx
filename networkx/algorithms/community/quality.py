@@ -279,7 +279,7 @@ def constant_potts_model(
     ----------
     G : NetworkX Graph
 
-    communities : list or iterable of set of nodes
+    communities : list or iterable of sets of nodes
         These node sets must represent a partition of G's nodes.
 
     weight : string or None, optional (default="weight")
@@ -329,15 +329,9 @@ def constant_potts_model(
 
     def community_contribution(community):
         comm = set(community)
-        L_c = sum(
-            wt
-            for u, v, wt in G.edges(comm, data=weight, default=1)
-            if v in comm and u in comm
-        )
+        L_c = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm)
 
-        n = 0
-        for node in community:
-            n += G.nodes[node].get(node_weight, 1)
+        n = sum(G.nodes[node].get(node_weight, 1) for node in community)
 
         return L_c - resolution * (n**2)
 
