@@ -279,7 +279,7 @@ def constant_potts_model(
     ----------
     G : NetworkX Graph
 
-    communities : list or iterable of set of nodes
+    communities : list or iterable of sets of nodes
         These node sets must represent a partition of G's nodes.
 
     weight : string or None, optional (default="weight")
