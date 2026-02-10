@@ -329,11 +329,7 @@ def constant_potts_model(
 
     def community_contribution(community):
         comm = set(community)
-        L_c = sum(
-            wt
-            for u, v, wt in G.edges(comm, data=weight, default=1)
-            if v in comm and u in comm
-        )
+        L_c = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm)
 
         n = sum(G.nodes[node].get(node_weight, 1) for node in community)
 
