@@ -83,7 +83,7 @@ def test_cpm():
     cpm = constant_potts_model(G, partition, resolution=gamma)
     assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
 
-    partition = [{i} for i in G.nodes()]
+    partition = [{i} for i in G]
     gamma = 1
     cpm = constant_potts_model(G, partition, resolution=gamma)
     assert -6 * gamma == cpm
