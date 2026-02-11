@@ -186,6 +186,11 @@ collect_ignore = []
 
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
+    "algorithms/backbone/bipartite.py",
+    "algorithms/backbone/measures.py",
+    "algorithms/backbone/statistical.py",
+    "algorithms/backbone/structural.py",
+    "algorithms/backbone/unweighted.py",
     "algorithms/centrality/current_flow_closeness.py",
     "algorithms/centrality/laplacian.py",
     "algorithms/node_classification.py",
@@ -202,6 +207,9 @@ needs_numpy = [
 needs_scipy = [
     "algorithms/approximation/traveling_salesman.py",
     "algorithms/assortativity/correlation.py",
+    "algorithms/backbone/bipartite.py",
+    "algorithms/backbone/measures.py",
+    "algorithms/backbone/statistical.py",
     "algorithms/assortativity/mixing.py",
     "algorithms/assortativity/pairs.py",
     "algorithms/bipartite/matrix.py",

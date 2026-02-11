@@ -1,8 +1,5 @@
 """Evaluation measures for comparing backbones against their original network."""
 
-import numpy as np
-from scipy import stats as sp_stats
-
 import networkx as nx
 
 __all__ = [
@@ -225,6 +222,9 @@ def ks_degree(original, backbone):
     >>> ks_degree(G, G)
     0.0
     """
+    import numpy as np
+    from scipy import stats as sp_stats
+
     orig_deg = np.array([d for _, d in original.degree()])
     bb_deg = np.array([d for _, d in backbone.degree()])
     if len(orig_deg) == 0 or len(bb_deg) == 0:
@@ -264,6 +264,9 @@ def ks_weight(original, backbone, weight="weight"):
     >>> ks_weight(G, G)
     0.0
     """
+    import numpy as np
+    from scipy import stats as sp_stats
+
     orig_w = np.array([d.get(weight, 0) for _, _, d in original.edges(data=True)])
     bb_w = np.array([d.get(weight, 0) for _, _, d in backbone.edges(data=True)])
     if len(orig_w) == 0 or len(bb_w) == 0:

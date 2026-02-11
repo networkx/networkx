@@ -12,11 +12,6 @@ fdsm
     Fixed Degree Sequence Model (Neal et al. 2021).
 """
 
-import itertools
-
-import numpy as np
-from scipy import stats as sp_stats
-
 import networkx as nx
 
 __all__ = ["sdsm", "fdsm"]
@@ -46,6 +41,8 @@ def _bipartite_projection_matrix(B, agent_nodes):
     observed : np.ndarray of shape (n_agents, n_agents)
         Observed co-occurrence counts (symmetric).
     """
+    import numpy as np
+
     agent_set = set(agent_nodes)
     agents = sorted(agent_set)
     artifacts = sorted(set(B.nodes()) - agent_set)
@@ -130,6 +127,9 @@ def sdsm(B, agent_nodes, alpha=0.05, weight=None):
     >>> "sdsm_pvalue" in backbone[1][2]
     True
     """
+    import numpy as np
+    from scipy import stats as sp_stats
+
     _validate_bipartite(B, agent_nodes)
     agents, artifacts, R, observed = _bipartite_projection_matrix(B, agent_nodes)
 
@@ -240,6 +240,8 @@ def fdsm(B, agent_nodes, alpha=0.05, trials=1000, seed=None):
     >>> "fdsm_pvalue" in backbone[1][2]
     True
     """
+    import numpy as np
+
     _validate_bipartite(B, agent_nodes)
     agents, artifacts, R, observed = _bipartite_projection_matrix(B, agent_nodes)
 
@@ -275,6 +277,8 @@ def _random_bipartite_matrix(row_sums, col_sums, rng):
 
     Uses a greedy fill followed by Curveball swaps for randomisation.
     """
+    import numpy as np
+
     nrows = len(row_sums)
     ncols = len(col_sums)
 
