@@ -4,22 +4,10 @@ import networkx as nx
 from networkx.algorithms.community import leiden_communities, leiden_partitions
 from networkx.algorithms.community.quality import constant_potts_model, modularity
 
-# Leiden is not yet implemented by networkx, so only run tests in this file for
-# backends that implement Leiden.
-# no_backends_for_leiden_communities = (
-#     "not set(nx.config.backend_priority.algos) & leiden_communities.backends"
-# )
-
-# no_backends_for_leiden_partitions = (
-#     "not set(nx.config.backend_priority.algos) & leiden_partitions.backends"
-# )
-
-# def test_leiden_with_nx_backend():
-#     G = nx.karate_club_graph()
-#     with pytest.raises(NotImplementedError):
-#         nx.community.leiden_partitions(G, backend="networkx")
-#     with pytest.raises(NotImplementedError):
-#         nx.community.leiden_communities(G, backend="networkx")
+def _equivalent_partitions(P1, P2):
+    P1 = {frozenset(C) for C in P1}
+    P2 = {frozenset(C) for C in P2}
+    return P1 == P2
 
 
 def check_connected_community(G, community):
@@ -55,7 +43,7 @@ def test_expected():
         {24, 25, 28, 31},
     ]
 
-    assert part == part_expected
+    assert _equivalent_partitions(part, part_expected)
 
     G = nx.karate_club_graph()
 
@@ -84,7 +72,7 @@ def test_expected():
         {32, 33, 20, 23, 15},
     ]
 
-    assert part == part_expected
+    assert _equivalent_partitions(part, part_expected)
 
 
 def test_connected_communities():
