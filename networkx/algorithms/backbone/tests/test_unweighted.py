@@ -4,9 +4,9 @@ Covers: sparsify, lspar, and local_degree.
 """
 
 import pytest
-from backbone.unweighted import local_degree, lspar, sparsify
 
 import networkx as nx
+from networkx.algorithms.backbone.unweighted import local_degree, lspar, sparsify
 
 
 def _make_unweighted_community():
@@ -100,7 +100,7 @@ def test_sparsify_preserves_nodes():
 
 def test_sparsify_raises_on_directed():
     G = nx.DiGraph([(0, 1), (1, 2)])
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXNotImplemented):
         sparsify(G)
 
 

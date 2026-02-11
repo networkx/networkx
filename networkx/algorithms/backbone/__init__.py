@@ -10,8 +10,12 @@ structural
     global_threshold_filter, strongest_n_ties, high_salience_skeleton,
     metric_backbone, ultrametric_backbone, doubly_stochastic_filter,
     h_backbone, modularity_backbone, planar_maximally_filtered_graph,
-    maximum_spanning_tree_backbone, neighborhood_overlap, jaccard_backbone,
-    dice_backbone, cosine_backbone
+    maximum_spanning_tree_backbone
+proximity
+    neighborhood_overlap, jaccard_backbone, dice_backbone, cosine_backbone,
+    hub_promoted_index, hub_depressed_index, lhn_local_index,
+    preferential_attachment_score, adamic_adar_index,
+    resource_allocation_index, graph_distance_proximity, local_path_index
 hybrid
     glab_filter
 bipartite
@@ -29,6 +33,7 @@ from networkx.algorithms.backbone.bipartite import *
 from networkx.algorithms.backbone.filters import *
 from networkx.algorithms.backbone.hybrid import *
 from networkx.algorithms.backbone.measures import *
+from networkx.algorithms.backbone.proximity import *
 from networkx.algorithms.backbone.statistical import *
 from networkx.algorithms.backbone.structural import *
 from networkx.algorithms.backbone.unweighted import *
@@ -51,10 +56,19 @@ __all__ = [
     "modularity_backbone",
     "planar_maximally_filtered_graph",
     "maximum_spanning_tree_backbone",
+    # Proximity
     "neighborhood_overlap",
     "jaccard_backbone",
     "dice_backbone",
     "cosine_backbone",
+    "hub_promoted_index",
+    "hub_depressed_index",
+    "lhn_local_index",
+    "preferential_attachment_score",
+    "adamic_adar_index",
+    "resource_allocation_index",
+    "graph_distance_proximity",
+    "local_path_index",
     # Hybrid
     "glab_filter",
     # Bipartite

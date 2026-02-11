@@ -5,16 +5,16 @@ ecm_filter, and lans_filter.
 """
 
 import pytest
-from backbone.filters import threshold_filter
-from backbone.statistical import (
+
+import networkx as nx
+from networkx.algorithms.backbone.filters import threshold_filter
+from networkx.algorithms.backbone.statistical import (
     disparity_filter,
     ecm_filter,
     lans_filter,
     marginal_likelihood_filter,
     noise_corrected_filter,
 )
-
-import networkx as nx
 
 # ── Disparity Filter ─────────────────────────────────────────────────────
 

@@ -4,10 +4,10 @@ Covers: glab_filter (Globally and Locally Adaptive Backbone).
 """
 
 import pytest
-from backbone.filters import threshold_filter
-from backbone.hybrid import glab_filter
 
 import networkx as nx
+from networkx.algorithms.backbone.filters import threshold_filter
+from networkx.algorithms.backbone.hybrid import glab_filter
 
 
 def test_glab_pvalues_added(two_cluster_undirected):
@@ -40,7 +40,7 @@ def test_glab_c_parameter(two_cluster_undirected):
 
 
 def test_glab_raises_on_directed(two_cluster_directed):
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXNotImplemented):
         glab_filter(two_cluster_directed)
 
 

@@ -7,8 +7,10 @@ planar_maximally_filtered_graph.
 """
 
 import pytest
-from backbone.filters import threshold_filter
-from backbone.structural import (
+
+import networkx as nx
+from networkx.algorithms.backbone.filters import threshold_filter
+from networkx.algorithms.backbone.structural import (
     doubly_stochastic_filter,
     global_threshold_filter,
     h_backbone,
@@ -20,8 +22,6 @@ from backbone.structural import (
     strongest_n_ties,
     ultrametric_backbone,
 )
-
-import networkx as nx
 
 # ── Global Threshold Filter ─────────────────────────────────────────────
 
@@ -264,7 +264,7 @@ def test_high_salience_complete_uniform_moderate(complete_uniform):
 
 
 def test_high_salience_raises_on_directed(two_cluster_directed):
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXNotImplemented):
         high_salience_skeleton(two_cluster_directed)
 
 
@@ -301,7 +301,7 @@ def test_metric_complete_uniform_keeps_all():
 
 
 def test_metric_raises_on_directed(two_cluster_directed):
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXNotImplemented):
         metric_backbone(two_cluster_directed)
 
 
@@ -326,7 +326,7 @@ def test_ultrametric_is_subgraph(two_cluster_undirected):
 
 
 def test_ultrametric_raises_on_directed(two_cluster_directed):
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXNotImplemented):
         ultrametric_backbone(two_cluster_directed)
 
 
@@ -356,7 +356,7 @@ def test_mst_maximises_total_weight(triangle_unequal):
 
 
 def test_mst_raises_on_directed(two_cluster_directed):
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXNotImplemented):
         maximum_spanning_tree_backbone(two_cluster_directed)
 
 
@@ -384,7 +384,7 @@ def test_doubly_stochastic_complete_uniform_symmetric(complete_uniform):
 
 
 def test_doubly_stochastic_raises_on_directed(two_cluster_directed):
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXNotImplemented):
         doubly_stochastic_filter(two_cluster_directed)
 
 
@@ -421,7 +421,7 @@ def test_h_backbone_triangle(triangle_unequal):
 
 
 def test_h_backbone_raises_on_directed(two_cluster_directed):
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXNotImplemented):
         h_backbone(two_cluster_directed)
 
 
@@ -448,7 +448,7 @@ def test_modularity_node_filtering(two_cluster_undirected):
 
 
 def test_modularity_raises_on_directed(two_cluster_directed):
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXNotImplemented):
         modularity_backbone(two_cluster_directed)
 
 
@@ -483,7 +483,7 @@ def test_pmfg_prefers_heavy_edges(two_cluster_undirected):
 
 
 def test_pmfg_raises_on_directed(two_cluster_directed):
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXNotImplemented):
         planar_maximally_filtered_graph(two_cluster_directed)
 
 

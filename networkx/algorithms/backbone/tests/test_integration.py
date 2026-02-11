@@ -5,32 +5,34 @@ invariants across the full pipeline.
 """
 
 import pytest
-from backbone.filters import (
+
+import networkx as nx
+from networkx.algorithms.backbone.filters import (
     consensus_backbone,
     fraction_filter,
     threshold_filter,
 )
-from backbone.hybrid import glab_filter
-from backbone.measures import (
+from networkx.algorithms.backbone.hybrid import glab_filter
+from networkx.algorithms.backbone.measures import (
     compare_backbones,
     edge_fraction,
     node_fraction,
     weight_fraction,
 )
-from backbone.proximity import (
+from networkx.algorithms.backbone.proximity import (
     cosine_backbone,
     dice_backbone,
     jaccard_backbone,
     neighborhood_overlap,
 )
-from backbone.statistical import (
+from networkx.algorithms.backbone.statistical import (
     disparity_filter,
     ecm_filter,
     lans_filter,
     marginal_likelihood_filter,
     noise_corrected_filter,
 )
-from backbone.structural import (
+from networkx.algorithms.backbone.structural import (
     doubly_stochastic_filter,
     global_threshold_filter,
     h_backbone,
@@ -42,8 +44,6 @@ from backbone.structural import (
     strongest_n_ties,
     ultrametric_backbone,
 )
-
-import networkx as nx
 
 # ── End-to-end pipelines ─────────────────────────────────────────────────
 

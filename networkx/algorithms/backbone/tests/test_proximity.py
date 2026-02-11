@@ -11,8 +11,10 @@ and cross-method relationship properties.
 import math
 
 import pytest
-from backbone.filters import threshold_filter
-from backbone.proximity import (
+
+import networkx as nx
+from networkx.algorithms.backbone.filters import threshold_filter
+from networkx.algorithms.backbone.proximity import (
     adamic_adar_index,
     cosine_backbone,
     dice_backbone,
@@ -26,8 +28,6 @@ from backbone.proximity import (
     preferential_attachment_score,
     resource_allocation_index,
 )
-
-import networkx as nx
 
 # ── Local fixtures ────────────────────────────────────────────────────────
 

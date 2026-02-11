@@ -5,9 +5,9 @@ fdsm (Fixed Degree Sequence Model).
 """
 
 import pytest
-from backbone.bipartite import fdsm, sdsm
 
 import networkx as nx
+from networkx.algorithms.backbone.bipartite import fdsm, sdsm
 
 
 def _make_bipartite():
