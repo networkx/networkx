@@ -4,6 +4,7 @@ import networkx as nx
 from networkx.algorithms.community import leiden_communities, leiden_partitions
 from networkx.algorithms.community.quality import constant_potts_model, modularity
 
+
 def _equivalent_partitions(P1, P2):
     P1 = {frozenset(C) for C in P1}
     P2 = {frozenset(C) for C in P2}
