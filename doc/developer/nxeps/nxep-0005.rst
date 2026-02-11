@@ -1,0 +1,625 @@
+.. _NXEP5:
+
+============================================
+NXEP 5 — Network Backbone Extraction Module
+============================================
+
+:Author: Brian C. Keegan <brian.keegan@colorado.edu>
+:Status: Draft
+:Type: Standards Track
+:Created: 2026-02-11
+:Resolution: TBD
+
+
+Abstract
+--------
+
+This NXEP proposes adding a new ``networkx.algorithms.backbone`` submodule that implements a comprehensive suite of backbone extraction and network sparsification algorithms for weighted, unweighted, and bipartite projection networks.  The module would consolidate over 30 algorithms drawn from two peer-reviewed open-source packages — **netbone** (Yassin et al., 2023) and **backbone** (Neal, 2022) — together with a unified evaluation framework. Backbone extraction is a fundamental operation in network science that currently requires external dependencies; integrating it directly into NetworkX gives users first-class access alongside existing analysis tools, using familiar API conventions.
+
+
+Motivation and Scope
+--------------------
+
+The problem
+^^^^^^^^^^^
+
+Real-world networks are typically dense, noisy, or both.  Backbone extraction reduces a dense or noisy network to a sparse subgraph that preserves structurally important features such as multiscale edge significance, community structure, hub-and-spoke topology, or shortest-path connectivity while removing redundant or statistically insignificant connections.
+
+Backbone extraction is one of the most widely used preprocessing steps in network science, with applications in transportation planning, political science (legislative cosponsorship), neuroscience (connectome simplification), trade economics, and computational social science.  Despite this, NetworkX currently offers no built-in backbone extraction methods. Users must install separate packages (netbone_ for Python, `backbone (R)`_ for R), translate outputs between representations, or implement algorithms from scratch.
+
+.. _netbone: https://gitlab.liris.cnrs.fr/coregraphie/netbone
+.. _`backbone` (R): https://github.com/zpneal/backbone
+.. _linkprediction: https://cran.r-project.org/web/packages/linkprediction/vignettes/proxfun.html
+
+Who it affects
+^^^^^^^^^^^^^^
+
+Any NetworkX user working with weighted networks that need simplification before analysis or visualisation.  This is especially common in social network analysis, transportation network modelling, financial network analysis, and systems biology — domains that constitute a large share of the NetworkX user base.
+
+What the proposal solves
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Integrating backbone extraction directly into NetworkX would:
+
+1. Provide backbone extraction as a first-class citizen alongside existing analysis tools (centrality, community detection, components).
+2. Enable seamless analysis pipelines: load graph → extract backbone → analyse/visualise, all within ``nx.Graph`` objects.
+3. Standardise API conventions with NetworkX's existing patterns: graphs in, graphs out; scores as edge attributes; numpydoc docstrings; ``@not_implemented_for`` decorators.
+4. Reduce dependency fragmentation — researchers need not install and learn separate package APIs for this core operation.
+5. Provide a built-in evaluation framework (``compare_backbones``) that enables principled method selection rather than ad-hoc choices.
+
+Scope
+^^^^^
+
+The proposed module covers five families of backbone extraction algorithms plus filtering utilities and evaluation measures:
+
+1. **Statistical methods** (5) — null-model hypothesis tests producing edge p-values.
+2. **Structural methods** (10) — topology-based extraction and scoring.
+3. **Proximity methods** (12) — neighborhood overlap and link-prediction indices for scoring structural embeddedness.
+4. **Hybrid methods** (1) — combinations of statistical and structural approaches.
+5. **Bipartite projection methods** (2) — significance tests for bipartite projections.
+6. **Unweighted methods** (3) — sparsification for unweighted graphs.
+7. **Filtering utilities** (4) — threshold, fraction, boolean, and consensus filters.
+8. **Evaluation measures** (7) — metrics for comparing backbone quality.
+
+Key requirements
+^^^^^^^^^^^^^^^^
+
+- No new external dependencies (only numpy, scipy, and stdlib).
+- All functions accept ``nx.Graph`` or ``nx.DiGraph`` and return the same type.
+- Scores and p-values are stored as edge attributes, separating scoring from filtering to maximise flexibility.
+- Full numpydoc docstrings with mathematical descriptions, references (Chicago style with DOIs), and examples.
+- ≥95% test coverage with property-based tests, regression tests, and cross-validation against reference implementations.
+
+
+Usage and Impact
+----------------
+
+The proposed API follows a **score-then-filter** pattern.  Backbone methods compute a score or p-value for each edge (or node) and store it as an edge attribute.  Users then apply one of the generic filter functions to produce a backbone subgraph.  This separation gives users full control over thresholds and enables method comparison workflows.
+
+Example 1: Statistical backbone with the disparity filter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    import networkx as nx
+    from networkx.algorithms.backbone import disparity_filter, threshold_filter
+
+    G = nx.les_miserables_graph()
+
+    # Score every edge with a p-value under the disparity null model
+    G_scored = disparity_filter(G)
+
+    # Retain only statistically significant edges (alpha = 0.05)
+    backbone_G = threshold_filter(G_scored, "disparity_pvalue", 0.05, "below")
+    print(f"Backbone: {backbone_G.number_of_edges()} of {G.number_of_edges()} edges")
+
+Example 2: Structural backbone — metric backbone and salience
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    from networkx.algorithms.backbone import (
+        metric_backbone,
+        high_salience_skeleton,
+        threshold_filter,
+    )
+
+    # Metric backbone: edges that are themselves shortest paths
+    bb_metric = metric_backbone(G)
+
+    # Salience skeleton: edges appearing in many shortest-path trees
+    G_sal = high_salience_skeleton(G)
+    bb_sal = threshold_filter(G_sal, "salience", 0.5, "above")
+
+Example 3: Proximity-based backbone — embedded vs. bridging edges
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    from networkx.algorithms.backbone import jaccard_backbone, threshold_filter
+
+    G_jac = jaccard_backbone(G)
+
+    # High-overlap edges: structurally embedded within communities bb_embedded = threshold_filter(G_jac, "jaccard", 0.3, "above")
+
+    # Zero-overlap edges: bridges between communities bb_bridges = threshold_filter(G_jac, "jaccard", 0.01, "below")
+
+Example 4: Comparing multiple backbone methods
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    from networkx.algorithms.backbone.measures import (
+        compare_backbones,
+        edge_fraction,
+        weight_fraction,
+        reachability,
+    )
+
+    results = compare_backbones(
+        G,
+        backbones={
+            "disparity": backbone,
+            "metric": bb_metric,
+            "salience_0.5": bb_sal,
+            "jaccard_0.3": bb_embedded,
+        },
+        measures=[edge_fraction, weight_fraction, reachability],
+    )
+    # Returns: {method_name: {measure_name: value}}
+
+Example 5: Bipartite projection backbone
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    from networkx.algorithms.backbone.bipartite import sdsm
+
+    # B is a bipartite graph (e.g. senators × bills) backbone = sdsm(B, agent_nodes=senators, alpha=0.05) # Returns unipartite backbone among agent_nodes with "sdsm_pvalue" attributes
+
+Example 6: Consensus backbone
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    from networkx.algorithms.backbone import consensus_backbone
+
+    # Edges that survive BOTH the disparity filter AND the salience skeleton bb_consensus = consensus_backbone(backbone, bb_sal)
+
+Impact on the ecosystem
+^^^^^^^^^^^^^^^^^^^^^^^
+
+This proposal would make NetworkX a self-contained toolkit for the full network analysis pipeline from raw data through sparsification to downstream analysis.  It would reduce the need for external backbone libraries and establish NetworkX conventions that third-party tools can build on.  The evaluation framework (``compare_backbones``) directly supports reproducible research workflows.
+
+
+Backward compatibility
+----------------------
+
+This NXEP introduces a new submodule and does not modify any existing NetworkX code.  There are no backward compatibility concerns.
+
+The ``networkx.algorithms.backbone`` namespace is currently unused.  All new public functions are added to this namespace and exposed via ``nx.backbone.*`` or direct import.
+
+
+Detailed description
+--------------------
+
+Module structure
+^^^^^^^^^^^^^^^^
+
+::
+
+    networkx/algorithms/backbone/
+    ├── __init__.py          # Public API; star imports from submodules
+    ├── statistical.py       # 5 statistical (null-model) methods
+    ├── structural.py        # 10 structural (topology-based) methods
+    ├── proximity.py         # 12 neighborhood overlap / link prediction indices
+    ├── hybrid.py            # 1 hybrid method (GLAB)
+    ├── bipartite.py         # 2 bipartite projection methods (SDSM, FDSM)
+    ├── unweighted.py        # 3 unweighted sparsification methods
+    ├── filters.py           # 4 generic filtering utilities
+    ├── measures.py          # 7 evaluation metrics
+    └── tests/
+        ├── conftest.py      # Shared fixtures
+        ├── test_statistical.py
+        ├── test_structural.py
+        ├── test_proximity.py
+        ├── test_hybrid.py
+        ├── test_bipartite.py
+        ├── test_unweighted.py
+        ├── test_filters.py
+        ├── test_measures.py
+        └── test_integration.py
+
+Design principles
+^^^^^^^^^^^^^^^^^
+
+1. **NetworkX-native I/O.**  All functions accept ``nx.Graph`` or ``nx.DiGraph`` as their first parameter and return the same type. Functions requiring undirected input use the ``@not_implemented_for("directed")`` decorator.
+
+2. **Edge attribute convention.**  Backbone methods annotate edges with scores or p-values (e.g. ``"disparity_pvalue"``, ``"salience"``, ``"jaccard"``).  This allows users to inspect intermediate results and apply custom thresholds.
+
+3. **Separation of scoring and filtering.**  Methods compute scores; users apply filters explicitly via ``threshold_filter``, ``fraction_filter``, or ``boolean_filter``.  This mirrors the netbone architecture and maximises flexibility for comparison workflows.
+
+4. **No new dependencies.**  All algorithms use only ``numpy`` and ``scipy`` (both existing NetworkX dependencies) plus the standard library.
+
+5. **Consistent with NetworkX conventions.**  Import style (``import scipy as sp``), decorator usage (``@nx._dispatchable``), numpydoc docstrings, and Chicago-style references with DOIs follow the `contributor guidelines`_.
+
+.. _`contributor guidelines`: https://networkx.org/documentation/latest/developer/contribute.html#guidelines
+
+Statistical methods (``backbone.statistical``)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These methods test whether an edge's weight is statistically significant under a null model.  Each produces a p-value (or z-score) that can be filtered with ``threshold_filter``.
+
+``disparity_filter``
+    Tests normalised edge weight against a uniform null.  The p-value is ``1 - (k-1)(1-p)^(k-2)``; for undirected edges the minimum of both endpoints is used.
+
+    *Reference:* Serrano, M. Á., Boguñá, M., & Vespignani, A. (2009). "Extracting the multiscale backbone of complex weighted networks." *PNAS*, 106(16), 6483–6488. https://doi.org/10.1073/pnas.0808904106
+
+``noise_corrected_filter``
+    Bayesian framework modelling edge weights as binomial outcomes. Computes a z-score measuring standard deviations above the expected weight ``E[w] = s_u·s_v/W``.
+
+    *Reference:* Coscia, M. & Neffke, F. M. (2017). "Network backboning with noisy data." *Proc. IEEE ICDE*, 425–436. https://doi.org/10.1109/ICDE.2017.100
+
+``marginal_likelihood_filter``
+    Binomial null model considering both endpoint strengths jointly. P-value via ``Binom(s_u, s_v/(W-s_u))``.
+
+    *Reference:* Dianati, N. (2016). "Unwinding the hairball graph: Pruning algorithms for weighted complex networks." *Physical Review E*, 93, 012304. https://doi.org/10.1103/PhysRevE.93.012304
+
+``ecm_filter``
+    Enhanced Configuration Model.  Maximum-entropy null preserving expected degree *and* strength sequences via iterative Lagrange multipliers.
+
+    *Reference:* Gemmetto, V., Cardillo, A., & Garlaschelli, D. (2017). "Irreducible network backbones: unbiased graph filtering via maximum entropy." arXiv:1706.00230.
+
+``lans_filter``
+    Locally Adaptive Network Sparsification.  Nonparametric: uses the empirical CDF of each node's edge weights.  No distributional assumptions.
+
+    *Reference:* Foti, N. J., Hughes, J. M., & Rockmore, D. N. (2011). "Nonparametric sparsification of complex multiscale networks." *PLoS ONE*, 6(2), e16431. https://doi.org/10.1371/journal.pone.0016431
+
+Structural methods (``backbone.structural``)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Topology-based extraction that operates directly on network structure and edge weights.
+
+``global_threshold_filter``
+    Retains edges with weight ≥ threshold. Simplest method but ignores local structure.
+
+``strongest_n_ties``
+    Each node keeps its *n* strongest edges.
+
+``high_salience_skeleton``
+    Edge salience = fraction of all shortest-path trees containing that edge.  Bimodal distribution near 0 and 1.
+
+    *Reference:* Grady, D., Thiemann, C., & Brockmann, D. (2012). "Robust classification of salient links in complex networks." *Nature Communications*, 3, 864. https://doi.org/10.1038/ncomms1847
+
+``metric_backbone``
+    Edge retained iff its direct distance ``1/w`` equals the shortest-path distance (sum of distances).
+
+    *Reference:* Simas, T., Correia, R. B., & Rocha, L. M. (2021). "The distance backbone of complex networks." *J. Complex Networks*, 9, cnab021. https://doi.org/10.1093/comnet/cnab021
+
+``ultrametric_backbone``
+    Like metric backbone but using minimax (bottleneck) path distance.
+
+    *Reference:* Simas et al. (2021), as above.
+
+``doubly_stochastic_filter``
+    Sinkhorn–Knopp normalisation to a doubly-stochastic matrix, then edges added in descending normalised weight until the graph is connected.
+
+    *Reference:* Slater, P. B. (2009). "A two-stage algorithm for extracting the multiscale backbone of complex weighted networks." *PNAS*, 106(26), E66. https://doi.org/10.1073/pnas.0904725106
+
+``h_backbone``
+    h-index of the weight sequence: keep *h* edges with weight ≥ *h*, plus top-*h* bridging edges by betweenness.
+
+    *Reference:* Zhang, R. J., Stanley, H. E., & Ye, F. Y. (2018). "Extracting h-backbone as a core structure in weighted networks." *Scientific Reports*, 8, 14356. https://doi.org/10.1038/s41598-018-32430-1
+
+``modularity_backbone``
+    Node vitality = modularity change when node is removed.  Filters nodes by contribution to community structure.
+
+    *Reference:* Rajeh, S., Savonnet, M., Leclercq, E., & Cherifi, H. (2022). "Modularity-based backbone extraction in weighted complex networks." *NetSci-X 2022*, 67–79.
+
+``planar_maximally_filtered_graph``
+    Greedily adds edges from heaviest to lightest while maintaining planarity.  At most ``3(n-2)`` edges.
+
+    *Reference:* Tumminello, M., Aste, T., Di Matteo, T., & Mantegna, R. N. (2005). "A tool for filtering information in complex systems." *PNAS*, 102(30), 10421–10426. https://doi.org/10.1073/pnas.0500298102
+
+``maximum_spanning_tree_backbone``
+    Maximum weight spanning tree.  Connected, ``n-1`` edges, maximum total weight.
+
+    *Reference:* Kruskal, J. B. (1956). "On the shortest spanning subtree of a graph." *Proc. AMS*, 7(1), 48–50.
+
+Proximity methods (``backbone.proximity``)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Score each existing edge by the topological similarity of its endpoints. High scores indicate *structurally embedded* edges between nodes sharing many neighbors; low scores indicate *bridging* edges.  All methods operate on topology only (weights are ignored) and support directed graphs using the out-neighbor convention.
+
+**Local proximity indices:**
+
+``neighborhood_overlap``
+    Raw count of shared neighbors ``|N(u) ∩ N(v)|``.
+
+``jaccard_backbone``
+    Jaccard similarity ``|N(u) ∩ N(v)| / |N(u) ∪ N(v)|``.  Strictest normaliser — bridge edges score 0.
+
+    *Reference:* Jaccard, P. (1901). "Distribution de la flore alpine dans le bassin des Dranses." *Bull. Soc. Vaudoise Sci. Nat.*, 37, 241–272.
+
+``dice_backbone``
+    Dice / Sørensen coefficient ``2·|N(u)∩N(v)| / (k_u + k_v)``. Always ≥ Jaccard for the same edge.
+
+    *Reference:* Dice, L. R. (1945). "Measures of the amount of ecologic association between species." *Ecology*, 26(3), 297–302. https://doi.org/10.2307/1932409
+
+``cosine_backbone``
+    Cosine / Salton index ``|N(u)∩N(v)| / √(k_u · k_v)``.
+
+    *Reference:* Salton, G. & McGill, M. J. (1983). *Introduction to Modern Information Retrieval*. McGraw-Hill.
+
+``hub_promoted_index``
+    ``|N(u)∩N(v)| / min(k_u, k_v)``.  Edges incident to hubs are promoted.
+
+    *Reference:* Ravasz, E. et al. (2002). "Hierarchical organization of modularity in metabolic networks." *Science*, 297(5586), 1551–1555. https://doi.org/10.1126/science.1073374
+
+``hub_depressed_index``
+    ``|N(u)∩N(v)| / max(k_u, k_v)``.  Edges between high-degree nodes are penalised.
+
+    *Reference:* Zhou, T., Lü, L., & Zhang, Y.-C. (2009). "Predicting missing links via local information." *Eur. Phys. J. B*, 71, 623–630. https://doi.org/10.1140/epjb/e2009-00335-8
+
+``lhn_local_index``
+    Leicht–Holme–Newman index ``|N(u)∩N(v)| / (k_u · k_v)``.
+
+    *Reference:* Leicht, E. A., Holme, P., & Newman, M. E. J. (2006). "Vertex similarity in networks." *Physical Review E*, 73, 026120. https://doi.org/10.1103/PhysRevE.73.026120
+
+``preferential_attachment_score``
+    ``k_u · k_v``.  Does not use common neighbors — scores edges purely by the product of endpoint degrees.
+
+    *Reference:* Barabási, A.-L. & Albert, R. (1999). "Emergence of scaling in random networks." *Science*, 286(5439), 509–512. https://doi.org/10.1126/science.286.5439.509
+
+``adamic_adar_index``
+    ``Σ_{w ∈ N(u)∩N(v)} 1/log(k_w)``.  Weights common neighbors by the inverse of their log-degree.
+
+    *Reference:* Adamic, L. A. & Adar, E. (2003). "Friends and neighbors on the Web." *Social Networks*, 25(3), 211–230. https://doi.org/10.1016/S0378-8733(03)00009-1
+
+``resource_allocation_index``
+    ``Σ_{w ∈ N(u)∩N(v)} 1/k_w``.  Like Adamic–Adar but penalises high-degree intermediaries more strongly.
+
+    *Reference:* Zhou et al. (2009), as above.
+
+**Quasi-local proximity indices:**
+
+``graph_distance_proximity``
+    Reciprocal of shortest-path distance ``1/d(u,v)``.
+
+    *Reference:* Lü, L. & Zhou, T. (2011). "Link prediction in complex networks: A survey." *Physica A*, 390(6), 1150–1170. https://doi.org/10.1016/j.physa.2010.11.027
+
+``local_path_index``
+    ``|A²(u,v)| + ε·|A³(u,v)|``.  Combines second-order and third-order path information.
+
+    *Reference:* Lü, L., Jin, C.-H., & Zhou, T. (2009). "Similarity index based on local random walk and length of shortest paths." *Physical Review E*, 80, 046122. https://doi.org/10.1103/PhysRevE.80.046122
+
+**Key inequality for local indices:** For any edge with at least one common neighbor: HDI ≤ Jaccard ≤ Cosine ≤ Dice ≤ HPI.
+
+Hybrid methods (``backbone.hybrid``)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``glab_filter``
+    Globally and Locally Adaptive Backbone.  Combines edge betweenness centrality (global involvement) with a degree-dependent significance test.
+
+    *Reference:* Zhang, X., Zhang, Z., Zhao, H., Wang, Q., & Zhu, J. (2014). "Extracting the globally and locally adaptive backbone of complex networks." *PLoS ONE*, 9(6), e100428. https://doi.org/10.1371/journal.pone.0100428
+
+Bipartite projection methods (``backbone.bipartite``)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``sdsm``
+    Stochastic Degree Sequence Model.  Constrains random bipartite networks to match row/column sums on average.  Normal approximation for p-values.
+
+    *Reference:* Neal, Z. P. (2014). "The backbone of bipartite projections." *Social Networks*, 39, 84–97. https://doi.org/10.1016/j.socnet.2014.06.001
+
+``fdsm``
+    Fixed Degree Sequence Model.  Monte Carlo with exact degree preservation via Curveball swaps.
+
+    *Reference:* Neal, Z. P., Domagalski, R., & Sagan, B. (2021). "Comparing alternatives to the fixed degree sequence model." *Scientific Reports*, 11, 23929. https://doi.org/10.1038/s41598-021-03238-3
+
+Unweighted methods (``backbone.unweighted``)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``sparsify``
+    Generic framework: score → normalise → filter → connect.  Supports Jaccard, degree, triangle, quadrangle, and random scoring.
+
+    *Reference:* Neal, Z. P. (2022). "backbone: An R package to extract network backbones." *PLOS ONE*, 17(5), e0269137. https://doi.org/10.1371/journal.pone.0269137
+
+``lspar``
+    Local Sparsification.  Jaccard scoring + rank normalisation + degree filtering.  Best for preserving community structure.
+
+    *Reference:* Satuluri, V., Parthasarathy, S., & Ruan, Y. (2011). "Local graph sparsification for scalable clustering." *ACM SIGMOD*, 721–732. https://doi.org/10.1145/1989323.1989399
+
+``local_degree``
+    Degree scoring + rank normalisation + degree filtering.  Best for preserving hub-and-spoke structure.
+
+    *Reference:* Hamann, M., Lindner, G., Meyerhenke, H., Staudt, C. L., & Wagner, D. (2016). "Structure-preserving sparsification methods for social networks." *Soc. Netw. Anal. Min.*, 6(1), 22. https://doi.org/10.1007/s13278-016-0332-2
+
+Filtering utilities (``backbone.filters``)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``threshold_filter(G, score, threshold, mode)``
+    Retain edges with score above or below a threshold.
+
+``fraction_filter(G, score, fraction, ascending)``
+    Retain the top/bottom fraction of edges by score.
+
+``boolean_filter(G, score)``
+    Retain edges where a boolean attribute is ``True``.
+
+``consensus_backbone(*backbones)``
+    Intersection of multiple backbone graphs.
+
+Evaluation measures (``backbone.measures``)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``node_fraction(G, backbone)``
+    Fraction of original nodes with edges in the backbone.
+
+``edge_fraction(G, backbone)``
+    Fraction of original edges preserved.
+
+``weight_fraction(G, backbone)``
+    Fraction of total edge weight preserved.
+
+``reachability(backbone)``
+    Fraction of node pairs that can communicate.
+
+``ks_degree(G, backbone)``
+    Kolmogorov–Smirnov statistic between degree distributions.
+
+``ks_weight(G, backbone)``
+    Kolmogorov–Smirnov statistic between weight distributions.
+
+``compare_backbones(G, backbones, measures)``
+    Compare multiple backbones across any set of measures.
+
+Algorithm complexity
+^^^^^^^^^^^^^^^^^^^^
+
+======================================== ============================ =============
+Method                                   Time                         Space
+======================================== ============================ =============
+Disparity, NC, ML, LANS                  O(m)                         O(m)
+ECM filter                               O(m · iterations)            O(n + m)
+Salience, Metric, Ultrametric            O(n(m + n log n))            O(n + m)
+Doubly stochastic                        O(n² · iterations)           O(n²)
+PMFG                                     O(m log m · planarity)       O(n + m)
+All proximity indices                    O(m · k_max)                 O(m)
+SDSM                                     O(agents² · artifacts)       O(agents²)
+FDSM                                     O(trials · m_bipartite)      O(agents²)
+L-Spar, Local degree                     O(m · k_max)                 O(m)
+======================================== ============================ =============
+
+Where n = nodes, m = edges, k_max = maximum degree.
+
+Handling directed networks
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Statistical methods support directed networks by computing p-values from the source node's out-strength and out-degree.  Structural methods that rely on shortest paths or undirected topology (salience, metric backbone, doubly stochastic, h-backbone, PMFG, MST) use the ``@not_implemented_for("directed")`` decorator and raise ``NetworkXNotImplemented`` for directed input.  Proximity methods support directed graphs using the out-neighbor convention.
+
+
+Related Work
+------------
+
+Existing implementations
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+**netbone** (Python, CC BY 4.0)
+    12 weighted backbone methods plus an evaluation framework.  Yassin, A., Cherifi, H., Seba, H., & Togni, O. (2023). "An evaluation tool for backbone extraction techniques in weighted complex networks." *Scientific Reports*, 13, 17000. https://doi.org/10.1038/s41598-023-42076-3
+
+**backbone** (R, GPL-3.0)
+    Bipartite projection backbones and unweighted sparsification.  Neal, Z. P. (2022). "backbone: An R package to extract network backbones." *PLOS ONE*, 17(5), e0269137. https://doi.org/10.1371/journal.pone.0269137
+
+**graph-tool** (C++/Python, LGPL-3.0)
+    Edge filtering via stochastic block models — a different approach to network simplification based on generative models rather than significance testing.
+
+**igraph** (C/Python/R, GPL-2.0)
+    No dedicated backbone extraction module.
+
+Comparative evaluation
+^^^^^^^^^^^^^^^^^^^^^^
+
+Yassin et al. (2025) provide a systematic comparison of eight structural backbone methods across 33 real-world networks, establishing the hierarchical containment ``PLAM ⊂ MSP ⊂ UMB ⊂ MB`` and finding that the doubly stochastic filter best preserves weight and degree distributions. This comparative analysis directly informs the proposed module's evaluation measures and method selection guidance.
+
+Yassin, A., Cherifi, H., Seba, H., & Togni, O. (2025). "Exploring weighted network backbone extraction: A comparative analysis of structural techniques." *PLOS ONE*, 20(5), e0322298. https://doi.org/10.1371/journal.pone.0322298
+Full reference list
+^^^^^^^^^^^^^^^^^^^
+
+.. [1] Serrano, M. Á., Boguñá, M., & Vespignani, A. (2009). "Extracting the multiscale backbone of complex weighted networks." *PNAS*, 106(16), 6483–6488. https://doi.org/10.1073/pnas.0808904106
+
+.. [2] Coscia, M. & Neffke, F. M. (2017). "Network backboning with noisy data." *Proc. IEEE ICDE*, 425–436. https://doi.org/10.1109/ICDE.2017.100
+
+.. [3] Dianati, N. (2016). "Unwinding the hairball graph: Pruning algorithms for weighted complex networks." *Physical Review E*, 93, 012304. https://doi.org/10.1103/PhysRevE.93.012304
+
+.. [4] Gemmetto, V., Cardillo, A., & Garlaschelli, D. (2017). "Irreducible network backbones: unbiased graph filtering via maximum entropy." arXiv:1706.00230.
+
+.. [5] Foti, N. J., Hughes, J. M., & Rockmore, D. N. (2011). "Nonparametric sparsification of complex multiscale networks." *PLoS ONE*, 6(2), e16431. https://doi.org/10.1371/journal.pone.0016431
+
+.. [6] Grady, D., Thiemann, C., & Brockmann, D. (2012). "Robust classification of salient links in complex networks." *Nature Communications*, 3, 864. https://doi.org/10.1038/ncomms1847
+
+.. [7] Simas, T., Correia, R. B., & Rocha, L. M. (2021). "The distance backbone of complex networks." *J. Complex Networks*, 9, cnab021. https://doi.org/10.1093/comnet/cnab021
+
+.. [8] Slater, P. B. (2009). "A two-stage algorithm for extracting the multiscale backbone of complex weighted networks." *PNAS*, 106(26), E66. https://doi.org/10.1073/pnas.0904725106
+
+.. [9] Zhang, R. J., Stanley, H. E., & Ye, F. Y. (2018). "Extracting h-backbone as a core structure in weighted networks." *Scientific Reports*, 8, 14356. https://doi.org/10.1038/s41598-018-32430-1
+
+.. [10] Rajeh, S., Savonnet, M., Leclercq, E., & Cherifi, H. (2022). "Modularity-based backbone extraction in weighted complex networks." *NetSci-X 2022*, 67–79.
+
+.. [11] Tumminello, M., Aste, T., Di Matteo, T., & Mantegna, R. N. (2005). "A tool for filtering information in complex systems." *PNAS*, 102(30), 10421–10426. https://doi.org/10.1073/pnas.0500298102
+
+.. [12] Zhang, X., Zhang, Z., Zhao, H., Wang, Q., & Zhu, J. (2014). "Extracting the globally and locally adaptive backbone of complex networks." *PLoS ONE*, 9(6), e100428. https://doi.org/10.1371/journal.pone.0100428
+
+.. [13] Neal, Z. P. (2014). "The backbone of bipartite projections: Inferring relationships from co-authorship, co-sponsorship, co-attendance and other co-behaviors." *Social Networks*, 39, 84–97. https://doi.org/10.1016/j.socnet.2014.06.001
+
+.. [14] Neal, Z. P., Domagalski, R., & Sagan, B. (2021). "Comparing alternatives to the fixed degree sequence model." *Scientific Reports*, 11, 23929. https://doi.org/10.1038/s41598-021-03238-3
+
+.. [15] Satuluri, V., Parthasarathy, S., & Ruan, Y. (2011). "Local graph sparsification for scalable clustering." *ACM SIGMOD*, 721–732. https://doi.org/10.1145/1989323.1989399
+
+.. [16] Hamann, M., Lindner, G., Meyerhenke, H., Staudt, C. L., & Wagner, D. (2016). "Structure-preserving sparsification methods for social networks." *Soc. Netw. Anal. Min.*, 6(1), 22. https://doi.org/10.1007/s13278-016-0332-2
+
+.. [17] Jaccard, P. (1901). "Distribution de la flore alpine dans le bassin des Dranses et dans quelques régions voisines." *Bull. Soc. Vaudoise Sci. Nat.*, 37, 241–272.
+
+.. [18] Yassin, A., Cherifi, H., Seba, H., & Togni, O. (2023). "An evaluation tool for backbone extraction techniques in weighted complex networks." *Scientific Reports*, 13, 17000. https://doi.org/10.1038/s41598-023-42076-3
+
+.. [19] Neal, Z. P. (2022). "backbone: An R package to extract network backbones." *PLOS ONE*, 17(5), e0269137. https://doi.org/10.1371/journal.pone.0269137
+
+.. [20] Yassin, A., Cherifi, H., Seba, H., & Togni, O. (2025). "Exploring weighted network backbone extraction: A comparative analysis of structural techniques." *PLOS ONE*, 20(5), e0322298. https://doi.org/10.1371/journal.pone.0322298
+
+
+Implementation
+--------------
+
+Implementation can proceed in discrete phases.  Each phase is independently mergeable and testable.
+
+Phase 1: Core infrastructure and statistical methods
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1. Create ``networkx/algorithms/backbone/`` package structure with ``__init__.py``, ``filters.py``, and ``measures.py``.
+2. Implement the 5 statistical methods in ``statistical.py`` (disparity, noise-corrected, marginal likelihood, ECM, LANS).
+3. Add filtering utilities (threshold, fraction, boolean, consensus).
+4. Add evaluation measures (node/edge/weight fractions, reachability, KS statistics, ``compare_backbones``).
+5. Full test suite for phase 1 functions.
+
+Phase 2: Documentation and gallery
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1. API reference documentation integrated under Algorithms → Backbone.
+2. Gallery example: "Extracting the backbone of the Les Misérables co-occurrence network."
+3. Comparison table with method selection guidance.
+4. Update ``CHANGES.rst``.
+
+Phase 3: Proximity methods
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1. Implement the 12 proximity indices in ``proximity.py`` (neighborhood overlap, Jaccard, Dice, cosine, HPI, HDI, LHN, preferential attachment, Adamic–Adar, resource allocation, graph distance, local path index).
+2. Test suite with exact value verification, cross-method inequality invariants (HDI ≤ Jaccard ≤ Cosine ≤ Dice ≤ HPI), and bridge detection.
+
+Phase 4: Hybrid, bipartite, and unweighted methods
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1. Implement GLAB filter in ``hybrid.py``.
+2. Implement SDSM and FDSM in ``bipartite.py``.
+3. Implement sparsify, lspar, and local_degree in ``unweighted.py``.
+4. Full test suites for all three submodules.
+
+Phase 5: Structural methods
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1. Implement the 10 structural methods in ``structural.py`` (threshold, strongest-n-ties, salience, metric, ultrametric, doubly stochastic, h-backbone, modularity, PMFG, MST).
+2. Test suite including property-based tests for the hierarchical containment ``PLAM ⊂ MSP ⊂ UMB ⊂ MB``.
+
+A reference implementation with 261 passing tests is available at: https://github.com/brianckeegan/networkx_backbone
+
+
+Alternatives
+------------
+
+Alternative 1: Keep backbone extraction in external packages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Users could continue using netbone and backbone (R) as standalone packages. However, netbone depends on NetworkX internally and returns NetworkX graphs, so tight integration would reduce API friction and dependency management overhead.  The R backbone package is inaccessible to Python-only workflows. Fragmentation also means no unified evaluation framework.
+
+Alternative 2: Minimal module with only the most-cited methods
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A narrower module containing only the 3–5 most widely used methods (global filter, disparity filter, salience skeleton, metric backbone) would reduce review burden.  However, the phased implementation plan already supports incremental merging.  Omitting the evaluation framework would significantly reduce the module's value for comparative research workflows, which are the primary use case motivating netbone and backbone.
+
+Alternative 3: Score-and-filter integrated in a single call
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Each backbone function could accept an ``alpha`` parameter and return the filtered backbone directly, combining scoring and filtering.  The separated design was chosen because it gives users flexibility to compare thresholds without recomputing scores, enables the ``compare_backbones`` workflow, and mirrors the architecture validated by netbone.
+
+Alternative 4: Separate proximity indices from backbone module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Proximity indices like Jaccard, Adamic–Adar, and resource allocation are often associated with link prediction rather than backbone extraction. NetworkX already has ``nx.jaccard_coefficient`` and similar functions, but these return generators over *non-edges* for prediction.  The backbone proximity module scores *existing edges* by the topological similarity of their endpoints, serving a distinct purpose (identifying structurally embedded vs. bridging edges).  Keeping them in the backbone module maintains coherence with the score-then-filter pattern.
+
+
+Discussion
+----------
+
+- *Mailing list thread:* https://groups.google.com/g/networkx-discuss/c/qUinctprlps
+- *GitHub issue (to be created):* Sloppy closed PR here https://github.com/networkx/networkx/pull/8510
+- Yassin et al. (2023) netbone repository: https://gitlab.liris.cnrs.fr/coregraphie/netbone
+- Neal (2022) backbone R package: https://github.com/zpneal/backbone
+- Yassin et al. (2025) structural comparison companion repo: https://github.com/al1yass2n/structural-backbone-methods-comparison
