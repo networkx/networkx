@@ -54,6 +54,7 @@ def test_sparsify_quadrangles_score():
 
 
 def test_sparsify_random_score():
+    pytest.importorskip("numpy")
     G = _make_unweighted_community()
     bb = sparsify(G, escore="random", normalize="rank", filter="degree", s=0.5)
     assert bb.number_of_edges() > 0

@@ -87,30 +87,40 @@ def test_reachability_directed():
 
 def test_ks_degree_identical(two_cluster_undirected):
     """KS degree stat of a graph with itself should be 0."""
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     assert ks_degree(two_cluster_undirected, two_cluster_undirected) == pytest.approx(
         0.0
     )
 
 
 def test_ks_degree_different(two_cluster_undirected):
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     bb = global_threshold_filter(two_cluster_undirected, threshold=50)
     stat = ks_degree(two_cluster_undirected, bb)
     assert 0 <= stat <= 1
 
 
 def test_ks_weight_identical(two_cluster_undirected):
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     assert ks_weight(two_cluster_undirected, two_cluster_undirected) == pytest.approx(
         0.0
     )
 
 
 def test_ks_weight_different(two_cluster_undirected):
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     bb = global_threshold_filter(two_cluster_undirected, threshold=50)
     stat = ks_weight(two_cluster_undirected, bb)
     assert 0 < stat <= 1
 
 
 def test_ks_empty_backbone(two_cluster_undirected):
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     bb = nx.Graph()
     assert ks_degree(two_cluster_undirected, bb) == 1.0
     assert ks_weight(two_cluster_undirected, bb) == 1.0

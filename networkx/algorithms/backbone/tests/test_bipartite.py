@@ -9,6 +9,9 @@ import pytest
 import networkx as nx
 from networkx.algorithms.backbone.bipartite import fdsm, sdsm
 
+np = pytest.importorskip("numpy")
+sp = pytest.importorskip("scipy")
+
 
 def _make_bipartite():
     """Simple bipartite graph: 3 agents, 4 artifacts.

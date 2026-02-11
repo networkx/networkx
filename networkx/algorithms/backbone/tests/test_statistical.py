@@ -176,6 +176,7 @@ def test_noise_corrected_uniform_weights_low_scores(complete_uniform):
 
 
 def test_marginal_likelihood_pvalues_added(two_cluster_undirected):
+    pytest.importorskip("scipy")
     H = marginal_likelihood_filter(two_cluster_undirected)
     for u, v, d in H.edges(data=True):
         assert "ml_pvalue" in d
@@ -183,18 +184,21 @@ def test_marginal_likelihood_pvalues_added(two_cluster_undirected):
 
 
 def test_marginal_likelihood_preserves_structure(two_cluster_undirected):
+    pytest.importorskip("scipy")
     H = marginal_likelihood_filter(two_cluster_undirected)
     assert H.number_of_edges() == two_cluster_undirected.number_of_edges()
 
 
 def test_marginal_likelihood_heavy_edges_significant(two_cluster_undirected):
     """The bridge (w=1) should get a high p-value (not significant)."""
+    pytest.importorskip("scipy")
     H = marginal_likelihood_filter(two_cluster_undirected)
     bridge_pval = H[3][4]["ml_pvalue"]
     assert bridge_pval > 0.5
 
 
 def test_marginal_likelihood_directed(two_cluster_directed):
+    pytest.importorskip("scipy")
     H = marginal_likelihood_filter(two_cluster_directed)
     assert H.is_directed()
     for u, v, d in H.edges(data=True):
@@ -202,6 +206,7 @@ def test_marginal_likelihood_directed(two_cluster_directed):
 
 
 def test_marginal_likelihood_single_edge(single_edge_graph):
+    pytest.importorskip("scipy")
     H = marginal_likelihood_filter(single_edge_graph)
     assert "ml_pvalue" in H["x"]["y"]
 
@@ -210,6 +215,7 @@ def test_marginal_likelihood_single_edge(single_edge_graph):
 
 
 def test_ecm_pvalues_added(triangle_unequal):
+    pytest.importorskip("numpy")
     H = ecm_filter(triangle_unequal)
     for u, v, d in H.edges(data=True):
         assert "ecm_pvalue" in d
@@ -217,11 +223,13 @@ def test_ecm_pvalues_added(triangle_unequal):
 
 
 def test_ecm_preserves_structure(triangle_unequal):
+    pytest.importorskip("numpy")
     H = ecm_filter(triangle_unequal)
     assert H.number_of_edges() == triangle_unequal.number_of_edges()
 
 
 def test_ecm_directed(two_cluster_directed):
+    pytest.importorskip("numpy")
     H = ecm_filter(two_cluster_directed)
     assert H.is_directed()
     for u, v, d in H.edges(data=True):
@@ -230,6 +238,7 @@ def test_ecm_directed(two_cluster_directed):
 
 def test_ecm_small_graph(single_edge_graph):
     """Should work on very small graphs without crashing."""
+    pytest.importorskip("numpy")
     H = ecm_filter(single_edge_graph)
     assert "ecm_pvalue" in H["x"]["y"]
 

@@ -364,6 +364,7 @@ def test_mst_raises_on_directed(two_cluster_directed):
 
 
 def test_doubly_stochastic_weight_added(two_cluster_undirected):
+    pytest.importorskip("numpy")
     H = doubly_stochastic_filter(two_cluster_undirected)
     for u, v, d in H.edges(data=True):
         assert "ds_weight" in d
@@ -371,6 +372,7 @@ def test_doubly_stochastic_weight_added(two_cluster_undirected):
 
 
 def test_doubly_stochastic_preserves_structure(two_cluster_undirected):
+    pytest.importorskip("numpy")
     H = doubly_stochastic_filter(two_cluster_undirected)
     assert H.number_of_nodes() == two_cluster_undirected.number_of_nodes()
     assert H.number_of_edges() == two_cluster_undirected.number_of_edges()
@@ -378,17 +380,20 @@ def test_doubly_stochastic_preserves_structure(two_cluster_undirected):
 
 def test_doubly_stochastic_complete_uniform_symmetric(complete_uniform):
     """K5 with uniform weights: all ds_weights should be equal."""
+    pytest.importorskip("numpy")
     H = doubly_stochastic_filter(complete_uniform)
     weights = [d["ds_weight"] for _, _, d in H.edges(data=True)]
     assert max(weights) - min(weights) < 1e-4
 
 
 def test_doubly_stochastic_raises_on_directed(two_cluster_directed):
+    pytest.importorskip("numpy")
     with pytest.raises(nx.NetworkXNotImplemented):
         doubly_stochastic_filter(two_cluster_directed)
 
 
 def test_doubly_stochastic_filtering_by_ds_weight(two_cluster_undirected):
+    pytest.importorskip("numpy")
     H = doubly_stochastic_filter(two_cluster_undirected)
     bb = threshold_filter(H, "ds_weight", 0.1, "above")
     assert bb.number_of_edges() <= two_cluster_undirected.number_of_edges()

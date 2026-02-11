@@ -559,6 +559,7 @@ def test_dist_directed():
 
 
 def test_lp_added():
+    pytest.importorskip("numpy")
     G = _make_overlap_graph()
     H = local_path_index(G)
     for u, v, d in H.edges(data=True):
@@ -568,6 +569,7 @@ def test_lp_added():
 
 def test_lp_values_triangle():
     """In K_3, each edge has 1 common neighbor (A^2 score = 1)."""
+    pytest.importorskip("numpy")
     G = nx.complete_graph(3)
     H = local_path_index(G, epsilon=0.0)
     for u, v, d in H.edges(data=True):
@@ -575,6 +577,7 @@ def test_lp_values_triangle():
 
 
 def test_lp_complete_graph():
+    pytest.importorskip("numpy")
     G = nx.complete_graph(4)
     H = local_path_index(G, epsilon=0.0)
     for u, v, d in H.edges(data=True):
@@ -583,6 +586,7 @@ def test_lp_complete_graph():
 
 def test_lp_epsilon_increases_score():
     """Positive epsilon should increase scores when A^3 > 0."""
+    pytest.importorskip("numpy")
     G = _make_overlap_graph()
     H0 = local_path_index(G, epsilon=0.0)
     H1 = local_path_index(G, epsilon=1.0)
@@ -592,6 +596,7 @@ def test_lp_epsilon_increases_score():
 
 def test_lp_path_graph():
     """In a path graph, adjacent nodes have A^2 = 0 (no common neighbors)."""
+    pytest.importorskip("numpy")
     G = nx.path_graph(3)
     H = local_path_index(G, epsilon=0.0)
     assert H[0][1]["lp"] == pytest.approx(0.0)
@@ -599,6 +604,7 @@ def test_lp_path_graph():
 
 
 def test_lp_directed():
+    pytest.importorskip("numpy")
     G = nx.DiGraph([("a", "b"), ("a", "c"), ("b", "c")])
     H = local_path_index(G)
     assert H.is_directed()
@@ -729,6 +735,7 @@ def test_pa_independent_of_overlap():
 
 def test_all_proximity_undirected(two_cluster_undirected):
     """Smoke test: run every proximity method on an undirected graph."""
+    pytest.importorskip("numpy")
     for method, attr in [
         (neighborhood_overlap, "overlap"),
         (jaccard_backbone, "jaccard"),
@@ -751,6 +758,7 @@ def test_all_proximity_undirected(two_cluster_undirected):
 
 def test_all_proximity_directed():
     """Smoke test: run every proximity method on a directed graph."""
+    pytest.importorskip("numpy")
     G = nx.DiGraph([("a", "b"), ("a", "c"), ("b", "c"), ("c", "a")])
     for method, attr in [
         (neighborhood_overlap, "overlap"),

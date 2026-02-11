@@ -181,6 +181,8 @@ def test_self_loop_handling():
 
 
 def test_all_statistical_undirected(two_cluster_undirected):
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     G = two_cluster_undirected
     for method, attr in [
         (disparity_filter, "disparity_pvalue"),
@@ -196,6 +198,8 @@ def test_all_statistical_undirected(two_cluster_undirected):
 
 
 def test_all_statistical_directed(two_cluster_directed):
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     G = two_cluster_directed
     for method, attr in [
         (disparity_filter, "disparity_pvalue"),
@@ -213,6 +217,7 @@ def test_all_statistical_directed(two_cluster_directed):
 
 def test_all_structural_scored_undirected(two_cluster_undirected):
     """Structural methods that return scored graphs."""
+    pytest.importorskip("numpy")
     G = two_cluster_undirected
     for method, attr in [
         (high_salience_skeleton, "salience"),
