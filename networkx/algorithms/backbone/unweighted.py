@@ -23,7 +23,7 @@ __all__ = ["sparsify", "lspar", "local_degree"]
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(returns_graph=True)
+@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
 def sparsify(G, escore="jaccard", normalize="rank", filter="degree", s=0.5, umst=False):
     """Sparsify an unweighted graph using a score-normalise-filter pipeline.
 
@@ -126,7 +126,7 @@ def sparsify(G, escore="jaccard", normalize="rank", filter="degree", s=0.5, umst
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(returns_graph=True)
+@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
 def lspar(G, s=0.5):
     """Compute the Local Sparsification backbone.
 
@@ -169,7 +169,7 @@ def lspar(G, s=0.5):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(returns_graph=True)
+@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
 def local_degree(G, s=0.3):
     """Compute the Local Degree backbone.
 

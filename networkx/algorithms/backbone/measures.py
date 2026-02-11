@@ -13,7 +13,7 @@ __all__ = [
 ]
 
 
-@nx._dispatchable
+@nx._dispatchable(graphs={"original": 0, "backbone": 1})
 def node_fraction(original, backbone):
     """Compute the fraction of original nodes that appear in the backbone.
 
@@ -54,7 +54,7 @@ def node_fraction(original, backbone):
     return len(bb_nodes_with_edges) / len(orig_nodes_with_edges)
 
 
-@nx._dispatchable
+@nx._dispatchable(graphs={"original": 0, "backbone": 1})
 def edge_fraction(original, backbone):
     """Compute the fraction of original edges preserved in the backbone.
 
@@ -89,7 +89,7 @@ def edge_fraction(original, backbone):
     return backbone.number_of_edges() / original.number_of_edges()
 
 
-@nx._dispatchable(edge_attrs="weight")
+@nx._dispatchable(graphs={"original": 0, "backbone": 1}, edge_attrs="weight")
 def weight_fraction(original, backbone, weight="weight"):
     """Compute the fraction of total edge weight preserved in the backbone.
 
@@ -190,7 +190,7 @@ def reachability(G):
     return reachable / total_pairs
 
 
-@nx._dispatchable
+@nx._dispatchable(graphs={"original": 0, "backbone": 1})
 def ks_degree(original, backbone):
     """Compute the Kolmogorov-Smirnov statistic between degree distributions.
 
@@ -233,7 +233,7 @@ def ks_degree(original, backbone):
     return float(stat)
 
 
-@nx._dispatchable(edge_attrs="weight")
+@nx._dispatchable(graphs={"original": 0, "backbone": 1}, edge_attrs="weight")
 def ks_weight(original, backbone, weight="weight"):
     """Compute the Kolmogorov-Smirnov statistic between weight distributions.
 

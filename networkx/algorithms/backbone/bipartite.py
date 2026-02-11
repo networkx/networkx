@@ -72,7 +72,7 @@ def _bipartite_projection_matrix(B, agent_nodes):
 # =====================================================================
 
 
-@nx._dispatchable(returns_graph=True)
+@nx._dispatchable(graphs="B", preserve_edge_attrs=True, returns_graph=True)
 def sdsm(B, agent_nodes, alpha=0.05, weight=None):
     """Extract a backbone from a bipartite projection using the SDSM.
 
@@ -187,7 +187,7 @@ def sdsm(B, agent_nodes, alpha=0.05, weight=None):
 # =====================================================================
 
 
-@nx._dispatchable(returns_graph=True)
+@nx._dispatchable(graphs="B", preserve_edge_attrs=True, returns_graph=True)
 def fdsm(B, agent_nodes, alpha=0.05, trials=1000, seed=None):
     """Extract a backbone from a bipartite projection using the FDSM.
 

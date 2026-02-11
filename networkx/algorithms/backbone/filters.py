@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-@nx._dispatchable(returns_graph=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def threshold_filter(G, score, threshold, mode="below", filter_on="edges"):
     """Retain edges or nodes whose score passes a threshold test.
 
@@ -95,7 +95,7 @@ def threshold_filter(G, score, threshold, mode="below", filter_on="edges"):
         raise ValueError(f"filter_on must be 'edges' or 'nodes', got {filter_on!r}")
 
 
-@nx._dispatchable(returns_graph=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def fraction_filter(G, score, fraction, ascending=True, filter_on="edges"):
     """Retain the top or bottom fraction of edges or nodes by score.
 
@@ -171,7 +171,7 @@ def fraction_filter(G, score, fraction, ascending=True, filter_on="edges"):
         raise ValueError(f"filter_on must be 'edges' or 'nodes', got {filter_on!r}")
 
 
-@nx._dispatchable(returns_graph=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def boolean_filter(G, score):
     """Retain edges whose boolean score attribute is truthy.
 
