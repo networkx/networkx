@@ -1,6 +1,7 @@
 """Shared graph-builder fixtures for backbone tests."""
 
 import pytest
+
 import networkx as nx
 
 

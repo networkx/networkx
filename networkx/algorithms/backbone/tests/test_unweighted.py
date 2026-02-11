@@ -4,9 +4,9 @@ Covers: sparsify, lspar, and local_degree.
 """
 
 import pytest
-import networkx as nx
+from backbone.unweighted import local_degree, lspar, sparsify
 
-from backbone.unweighted import sparsify, lspar, local_degree
+import networkx as nx
 
 
 def _make_unweighted_community():

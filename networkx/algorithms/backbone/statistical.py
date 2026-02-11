@@ -20,9 +20,11 @@ lans_filter
 """
 
 import math
-import networkx as nx
+
 import numpy as np
 from scipy import stats as sp_stats
+
+import networkx as nx
 
 __all__ = [
     "disparity_filter",
@@ -36,6 +38,7 @@ __all__ = [
 # =====================================================================
 # Helper: validate positive weights
 # =====================================================================
+
 
 def _validate_weights(G, weight):
     """Check that all edges have a positive weight attribute."""
@@ -51,8 +54,10 @@ def _validate_weights(G, weight):
 # 1. Disparity filter — Serrano et al. (2009)
 # =====================================================================
 
+
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def disparity_filter(G, weight="weight"):
-    """Compute disparity filter p-values for each edge.
+    r"""Compute disparity filter p-values for each edge.
 
     The disparity filter [1]_ tests whether an edge's weight is
     statistically significant compared to a null model where each node's
@@ -70,21 +75,51 @@ def disparity_filter(G, weight="weight"):
 
     Parameters
     ----------
-    G : nx.Graph or nx.DiGraph
-        Input weighted graph.
-    weight : str
+    G : graph
+        A NetworkX graph.
+
+    weight : string, optional (default="weight")
         Edge attribute key for weights.  All weights must be positive.
 
     Returns
     -------
-    H : same type as G
-        Copy of *G* with ``"disparity_pvalue"`` added as an edge attribute.
+    H : graph
+        A copy of *G* (same type) with ``"disparity_pvalue"`` added as an
+        edge attribute.
+
+    Raises
+    ------
+    NetworkXError
+        If any edge has a non-positive or missing weight.
+
+    See Also
+    --------
+    noise_corrected_filter : Bayesian binomial significance scores.
+    marginal_likelihood_filter : Binomial null considering both endpoints.
+    ecm_filter : Enhanced configuration model p-values.
+    lans_filter : Nonparametric, empirical CDF-based p-values.
+
+    Notes
+    -----
+    The algorithm runs in $O(m)$ time where $m$ is the number of edges,
+    since each edge is visited a constant number of times.  Degree-one
+    nodes always produce a p-value of 1.0.
 
     References
     ----------
     .. [1] Serrano, M. A., Boguna, M., & Vespignani, A. (2009).
        Extracting the multiscale backbone of complex weighted networks.
        *PNAS*, 106(16), 6483-6488.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import disparity_filter
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 1.0), (0, 2, 2.0)])
+    >>> H = disparity_filter(G)
+    >>> "disparity_pvalue" in H[0][1]
+    True
     """
     H = G.copy()
     _validate_weights(H, weight)
@@ -125,8 +160,10 @@ def _disparity_node_pvalue(w, s, k):
 # 2. Noise-corrected filter — Coscia & Neffke (2017)
 # =====================================================================
 
+
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def noise_corrected_filter(G, weight="weight"):
-    """Compute noise-corrected edge significance scores.
+    r"""Compute noise-corrected edge significance scores.
 
     Uses a Bayesian framework where each edge weight is modelled as the
     outcome of a binomial process [1]_.  The expected weight of edge
@@ -143,21 +180,50 @@ def noise_corrected_filter(G, weight="weight"):
 
     Parameters
     ----------
-    G : nx.Graph or nx.DiGraph
-        Input weighted graph.
-    weight : str
-        Edge attribute key for weights.
+    G : graph
+        A NetworkX graph.
+
+    weight : string, optional (default="weight")
+        Edge attribute key for weights.  All weights must be positive.
 
     Returns
     -------
-    H : same type as G
-        Copy of *G* with ``"nc_score"`` edge attribute (z-score; higher
-        means more significant).
+    H : graph
+        A copy of *G* (same type) with ``"nc_score"`` edge attribute
+        (z-score; higher means more significant).
+
+    Raises
+    ------
+    NetworkXError
+        If any edge has a non-positive or missing weight.
+
+    See Also
+    --------
+    disparity_filter : Disparity filter p-values.
+    marginal_likelihood_filter : Binomial null considering both endpoints.
+    ecm_filter : Enhanced configuration model p-values.
+    lans_filter : Nonparametric, empirical CDF-based p-values.
+
+    Notes
+    -----
+    The z-score is computed as
+    $z = (w - n \cdot p) / \sqrt{n \cdot p \cdot (1 - p)}$
+    where $n = W$ and $p = s_u \cdot s_v / W^2$.
 
     References
     ----------
     .. [1] Coscia, M. & Neffke, F. M. (2017). Network backboning with
        noisy data. *Proc. IEEE ICDE*, 425-436.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import noise_corrected_filter
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 1.0), (0, 2, 2.0)])
+    >>> H = noise_corrected_filter(G)
+    >>> "nc_score" in H[0][1]
+    True
     """
     H = G.copy()
     _validate_weights(H, weight)
@@ -197,6 +263,8 @@ def noise_corrected_filter(G, weight="weight"):
 # 3. Marginal likelihood filter — Dianati (2016)
 # =====================================================================
 
+
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def marginal_likelihood_filter(G, weight="weight"):
     r"""Compute marginal likelihood p-values for each edge.
 
@@ -212,21 +280,50 @@ def marginal_likelihood_filter(G, weight="weight"):
 
     Parameters
     ----------
-    G : nx.Graph or nx.DiGraph
-        Input weighted graph (integer weights recommended).
-    weight : str
-        Edge attribute key for weights.
+    G : graph
+        A NetworkX graph.  Integer weights are recommended.
+
+    weight : string, optional (default="weight")
+        Edge attribute key for weights.  All weights must be positive.
 
     Returns
     -------
-    H : same type as G
-        Copy of *G* with ``"ml_pvalue"`` edge attribute.
+    H : graph
+        A copy of *G* (same type) with ``"ml_pvalue"`` edge attribute.
+
+    Raises
+    ------
+    NetworkXError
+        If any edge has a non-positive or missing weight.
+
+    See Also
+    --------
+    disparity_filter : Disparity filter p-values.
+    noise_corrected_filter : Bayesian binomial significance scores.
+    ecm_filter : Enhanced configuration model p-values.
+    lans_filter : Nonparametric, empirical CDF-based p-values.
+
+    Notes
+    -----
+    Edge weights are rounded to the nearest integer for the binomial
+    survival function computation.  The binomial parameters are
+    $n = \mathrm{round}(s_u)$ and $p = \min(s_v / (W - s_u), 1)$.
 
     References
     ----------
     .. [1] Dianati, N. (2016). Unwinding the hairball graph: Pruning
        algorithms for weighted complex networks. *Physical Review E*,
        93, 012304.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import marginal_likelihood_filter
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 1.0), (0, 2, 2.0)])
+    >>> H = marginal_likelihood_filter(G)
+    >>> "ml_pvalue" in H[0][1]
+    True
     """
     H = G.copy()
     _validate_weights(H, weight)
@@ -264,12 +361,14 @@ def marginal_likelihood_filter(G, weight="weight"):
 # 4. ECM filter — Gemmetto et al. (2017)
 # =====================================================================
 
+
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def ecm_filter(G, weight="weight", max_iter=1000, tol=1e-6):
-    """Compute ECM (Enhanced Configuration Model) p-values.
+    r"""Compute ECM (Enhanced Configuration Model) p-values.
 
     The ECM [1]_ is a maximum-entropy null model for weighted networks
     that preserves the expected degree *and* strength sequence.  Lagrange
-    multipliers (x_i, y_i) are assigned to each node and solved
+    multipliers $(x_i, y_i)$ are assigned to each node and solved
     iteratively.  The expected weight of edge (u, v) is::
 
         <w_uv> = (x_u * x_v * y_u * y_v) / (1 - y_u * y_v)
@@ -279,25 +378,58 @@ def ecm_filter(G, weight="weight", max_iter=1000, tol=1e-6):
 
     Parameters
     ----------
-    G : nx.Graph or nx.DiGraph
-        Input weighted graph.
-    weight : str
-        Edge attribute key for weights.
-    max_iter : int
-        Maximum iterations for the fixed-point solver.
-    tol : float
-        Convergence tolerance.
+    G : graph
+        A NetworkX graph.
+
+    weight : string, optional (default="weight")
+        Edge attribute key for weights.  All weights must be positive.
+
+    max_iter : int, optional (default=1000)
+        Maximum number of iterations for the fixed-point solver.
+
+    tol : float, optional (default=1e-6)
+        Convergence tolerance for the Lagrange multipliers.
 
     Returns
     -------
-    H : same type as G
-        Copy of *G* with ``"ecm_pvalue"`` edge attribute.
+    H : graph
+        A copy of *G* (same type) with ``"ecm_pvalue"`` edge attribute.
+
+    Raises
+    ------
+    NetworkXError
+        If any edge has a non-positive or missing weight.
+
+    See Also
+    --------
+    disparity_filter : Disparity filter p-values.
+    noise_corrected_filter : Bayesian binomial significance scores.
+    marginal_likelihood_filter : Binomial null considering both endpoints.
+    lans_filter : Nonparametric, empirical CDF-based p-values.
+
+    Notes
+    -----
+    The fixed-point iteration alternately updates $x_i$ and $y_i$ for
+    each node to match the observed degree and strength.  Convergence
+    is declared when the maximum absolute change in both $x$ and $y$
+    falls below *tol*.  The geometric distribution parameter is
+    $q = y_u \cdot y_v$, and the p-value is $q^{\mathrm{round}(w)}$.
 
     References
     ----------
     .. [1] Gemmetto, V., Cardillo, A., & Garlaschelli, D. (2017).
        Irreducible network backbones: unbiased graph filtering via
        maximum entropy. arXiv:1706.00230.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import ecm_filter
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 1.0), (0, 2, 2.0)])
+    >>> H = ecm_filter(G)
+    >>> "ecm_pvalue" in H[0][1]
+    True
     """
     H = G.copy()
     _validate_weights(H, weight)
@@ -316,9 +448,7 @@ def ecm_filter(G, weight="weight", max_iter=1000, tol=1e-6):
         )
     else:
         deg = np.array([G.degree(v) for v in nodes], dtype=float)
-        strength = np.array(
-            [G.degree(v, weight=weight) for v in nodes], dtype=float
-        )
+        strength = np.array([G.degree(v, weight=weight) for v in nodes], dtype=float)
 
     # Initialise Lagrange multipliers
     deg_sum = deg.sum()
@@ -386,12 +516,14 @@ def ecm_filter(G, weight="weight", max_iter=1000, tol=1e-6):
 # 5. LANS — Foti et al. (2011)
 # =====================================================================
 
+
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def lans_filter(G, weight="weight"):
-    """Compute LANS (Locally Adaptive Network Sparsification) p-values.
+    r"""Compute LANS (Locally Adaptive Network Sparsification) p-values.
 
     LANS [1]_ is a nonparametric method that makes no distributional
     assumptions.  For each edge (u, v), it computes the fraction of
-    edges at node *u* (and node *v*) that have weight <= w_uv — the
+    edges at node *u* (and node *v*) that have weight <= w_uv --- the
     empirical CDF value.  The edge p-value is one minus the maximum
     of the two eCDF values (so lower p means more significant).
 
@@ -399,21 +531,51 @@ def lans_filter(G, weight="weight"):
 
     Parameters
     ----------
-    G : nx.Graph or nx.DiGraph
-        Input weighted graph.
-    weight : str
-        Edge attribute key for weights.
+    G : graph
+        A NetworkX graph.
+
+    weight : string, optional (default="weight")
+        Edge attribute key for weights.  All weights must be positive.
 
     Returns
     -------
-    H : same type as G
-        Copy of *G* with ``"lans_pvalue"`` edge attribute.
+    H : graph
+        A copy of *G* (same type) with ``"lans_pvalue"`` edge attribute.
+
+    Raises
+    ------
+    NetworkXError
+        If any edge has a non-positive or missing weight.
+
+    See Also
+    --------
+    disparity_filter : Disparity filter p-values.
+    noise_corrected_filter : Bayesian binomial significance scores.
+    marginal_likelihood_filter : Binomial null considering both endpoints.
+    ecm_filter : Enhanced configuration model p-values.
+
+    Notes
+    -----
+    The method is entirely nonparametric: it ranks each edge against
+    the other edges incident to the same node, using a sorted-list
+    binary search for $O(\log k)$ per edge-endpoint lookup.  Total
+    runtime is $O(m \log k_{\max})$.
 
     References
     ----------
     .. [1] Foti, N. J., Hughes, J. M., & Rockmore, D. N. (2011).
        Nonparametric sparsification of complex multiscale networks.
        *PLoS ONE*, 6(2), e16431.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import lans_filter
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 1.0), (0, 2, 2.0)])
+    >>> H = lans_filter(G)
+    >>> "lans_pvalue" in H[0][1]
+    True
     """
     H = G.copy()
     _validate_weights(H, weight)

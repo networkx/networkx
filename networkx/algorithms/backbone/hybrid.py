@@ -11,56 +11,74 @@ glab_filter
 """
 
 import math
+
 import networkx as nx
+from networkx.utils import not_implemented_for
 
 __all__ = ["glab_filter"]
 
 
+@not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def glab_filter(G, weight="weight", c=0.5):
-    """Compute GLAB (Globally and Locally Adaptive Backbone) p-values.
+    r"""Compute GLAB (Globally and Locally Adaptive Backbone) p-values.
 
     The GLAB method [1]_ combines global and local information.  For each
-    edge it computes an *involvement* score—the fraction of all shortest
-    paths that pass through the edge—and then tests significance using a
+    edge it computes an *involvement* score --- the fraction of all shortest
+    paths that pass through the edge --- and then tests significance using a
     degree-dependent null model.
 
-    The involvement *I(e)* of edge *e = (u, v)* is::
+    The involvement $I(e)$ of edge $e = (u, v)$ is::
 
         I(e) = sum_{s,t} [sigma_{st}(e) / sigma_{st}]  /  [n*(n-1)/2]
 
-    where sigma_{st} is the total number of shortest paths from *s* to *t*
-    and sigma_{st}(e) is the number that pass through *e*.
+    where $\sigma_{st}$ is the total number of shortest paths from *s* to
+    *t* and $\sigma_{st}(e)$ is the number that pass through *e*.
 
     The p-value is computed as::
 
-        p(e) = 1 - (1 - I(e))^((k_u * k_v)^c)
+        p(e) = (1 - I(e))^((k_u * k_v)^c)
 
-    where *k_u*, *k_v* are the degrees of the endpoints and *c* controls
+    where $k_u$, $k_v$ are the degrees of the endpoints and *c* controls
     how much degree amplifies significance.
 
     Parameters
     ----------
-    G : nx.Graph
-        Undirected weighted graph.
-    weight : str
-        Edge attribute key (used as distance = 1/weight for shortest paths).
-    c : float
-        Involvement parameter controlling degree influence (default 0.5).
+    G : graph
+        A NetworkX graph.
+    weight : string, optional (default="weight")
+        Edge attribute key (used as ``distance = 1 / weight`` for
+        shortest-path computation).
+    c : float, optional (default=0.5)
+        Involvement parameter controlling degree influence.  Higher
+        values make high-degree endpoints more likely to be significant.
 
     Returns
     -------
-    H : nx.Graph
-        Copy of *G* with ``"glab_pvalue"`` edge attribute.
+    H : graph
+        A copy of *G* with a ``"glab_pvalue"`` edge attribute.
+
+    See Also
+    --------
+    disparity_filter : Local statistical backbone method.
+    high_salience_skeleton : Salience based on shortest-path trees.
 
     References
     ----------
     .. [1] Zhang, X., Zhang, Z., Zhao, H., Wang, Q., & Zhu, J. (2014).
        Extracting the globally and locally adaptive backbone of complex
        networks. *PLoS ONE*, 9(6), e100428.
-    """
-    if G.is_directed():
-        raise nx.NetworkXError("glab_filter is defined for undirected graphs only.")
 
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import glab_filter
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from([(0, 1, 5.0), (1, 2, 3.0), (0, 2, 1.0)])
+    >>> H = glab_filter(G)
+    >>> "glab_pvalue" in H[0][1]
+    True
+    """
     H = G.copy()
     n = G.number_of_nodes()
     if n <= 1 or G.number_of_edges() == 0:
@@ -93,7 +111,7 @@ def glab_filter(G, weight="weight", c=0.5):
         exponent = (ku * kv) ** c
 
         # p-value: probability under null of seeing this involvement
-        # Higher involvement → smaller p-value (more significant)
+        # Higher involvement -> smaller p-value (more significant)
         pval = (1.0 - involvement) ** exponent
         pval = max(min(pval, 1.0), 0.0)
 

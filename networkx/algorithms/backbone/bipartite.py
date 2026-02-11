@@ -13,9 +13,11 @@ fdsm
 """
 
 import itertools
-import networkx as nx
+
 import numpy as np
 from scipy import stats as sp_stats
+
+import networkx as nx
 
 __all__ = ["sdsm", "fdsm"]
 
@@ -40,7 +42,7 @@ def _bipartite_projection_matrix(B, agent_nodes):
     artifacts : list
         Ordered list of artifact nodes.
     R : np.ndarray of shape (n_agents, n_artifacts)
-        Binary incidence matrix (agents × artifacts).
+        Binary incidence matrix (agents x artifacts).
     observed : np.ndarray of shape (n_agents, n_agents)
         Observed co-occurrence counts (symmetric).
     """
@@ -72,40 +74,61 @@ def _bipartite_projection_matrix(B, agent_nodes):
 # 1. SDSM — Neal (2014)
 # =====================================================================
 
+
+@nx._dispatchable(returns_graph=True)
 def sdsm(B, agent_nodes, alpha=0.05, weight=None):
-    """Stochastic Degree Sequence Model backbone.
+    """Extract a backbone from a bipartite projection using the SDSM.
 
-    The SDSM [1]_ generates random bipartite networks that preserve
-    the row and column sums *on average* (as probabilities).  The
-    probability of a cell being 1 is determined by a logistic model
-    fitted to match row and column totals.
+    The Stochastic Degree Sequence Model [1]_ generates random bipartite
+    networks that preserve the row and column sums *on average* (as
+    probabilities).  The probability of a cell being 1 is determined by a
+    logistic model fitted to match row and column totals.
 
-    The p-value for each pair of agents is computed analytically
-    using a Poisson-binomial approximation (normal).
+    The p-value for each pair of agents is computed analytically using a
+    Poisson-binomial approximation (normal).
 
     Parameters
     ----------
-    B : nx.Graph
-        Bipartite graph.
+    B : graph
+        A bipartite NetworkX graph.
     agent_nodes : iterable
         Nodes in the "agent" partition.
-    alpha : float
-        Significance level (edges with p-value < alpha are retained).
-    weight : str or None
+    alpha : float, optional (default=0.05)
+        Significance level.  Edges with p-value < *alpha* are retained.
+    weight : None or string, optional (default=None)
         Not used for SDSM (bipartite is unweighted); reserved for API
         consistency.
 
     Returns
     -------
-    backbone : nx.Graph
+    backbone : graph
         Unipartite backbone among agent nodes.  Each edge has a
         ``"sdsm_pvalue"`` attribute.
+
+    Raises
+    ------
+    NetworkXError
+        If *B* is not bipartite or *agent_nodes* contains nodes not in *B*.
+
+    See Also
+    --------
+    fdsm : Fixed Degree Sequence Model backbone.
 
     References
     ----------
     .. [1] Neal, Z. P. (2014). The backbone of bipartite projections:
        Inferring relationships from co-authorship, co-sponsorship,
        co-attendance and other co-behaviors. *Social Networks*, 39, 84-97.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import sdsm
+    >>> B = nx.Graph()
+    >>> B.add_edges_from([(1, "a"), (1, "b"), (2, "a"), (2, "c"), (3, "b"), (3, "c")])
+    >>> backbone = sdsm(B, agent_nodes=[1, 2, 3])
+    >>> "sdsm_pvalue" in backbone[1][2]
+    True
     """
     _validate_bipartite(B, agent_nodes)
     agents, artifacts, R, observed = _bipartite_projection_matrix(B, agent_nodes)
@@ -163,38 +186,59 @@ def sdsm(B, agent_nodes, alpha=0.05, weight=None):
 # 2. FDSM — Neal et al. (2021)
 # =====================================================================
 
-def fdsm(B, agent_nodes, alpha=0.05, trials=1000, seed=None):
-    """Fixed Degree Sequence Model backbone.
 
-    The FDSM [1]_ uses Monte Carlo simulation to estimate p-values.
-    Each trial generates a random bipartite graph that *exactly*
-    preserves both the row sums (agent degrees) and column sums
+@nx._dispatchable(returns_graph=True)
+def fdsm(B, agent_nodes, alpha=0.05, trials=1000, seed=None):
+    """Extract a backbone from a bipartite projection using the FDSM.
+
+    The Fixed Degree Sequence Model [1]_ uses Monte Carlo simulation to
+    estimate p-values.  Each trial generates a random bipartite graph that
+    *exactly* preserves both the row sums (agent degrees) and column sums
     (artifact degrees), then computes the co-occurrence matrix.
 
     Parameters
     ----------
-    B : nx.Graph
-        Bipartite graph.
+    B : graph
+        A bipartite NetworkX graph.
     agent_nodes : iterable
         Nodes in the "agent" partition.
-    alpha : float
+    alpha : float, optional (default=0.05)
         Significance level.
-    trials : int
+    trials : int, optional (default=1000)
         Number of Monte Carlo randomisations.
-    seed : int or None
+    seed : integer, random_state, or None (default)
         Random seed for reproducibility.
 
     Returns
     -------
-    backbone : nx.Graph
+    backbone : graph
         Unipartite backbone among agent nodes.  Each edge has an
         ``"fdsm_pvalue"`` attribute.
+
+    Raises
+    ------
+    NetworkXError
+        If *B* is not bipartite or *agent_nodes* contains nodes not in *B*.
+
+    See Also
+    --------
+    sdsm : Stochastic Degree Sequence Model backbone.
 
     References
     ----------
     .. [1] Neal, Z. P., Domagalski, R., & Sagan, B. (2021). Comparing
        alternatives to the fixed degree sequence model. *Scientific
        Reports*, 11, 23929.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import fdsm
+    >>> B = nx.Graph()
+    >>> B.add_edges_from([(1, "a"), (1, "b"), (2, "a"), (2, "c"), (3, "b"), (3, "c")])
+    >>> backbone = fdsm(B, agent_nodes=[1, 2, 3], trials=100, seed=42)
+    >>> "fdsm_pvalue" in backbone[1][2]
+    True
     """
     _validate_bipartite(B, agent_nodes)
     agents, artifacts, R, observed = _bipartite_projection_matrix(B, agent_nodes)

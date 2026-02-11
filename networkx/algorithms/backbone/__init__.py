@@ -10,12 +10,8 @@ structural
     global_threshold_filter, strongest_n_ties, high_salience_skeleton,
     metric_backbone, ultrametric_backbone, doubly_stochastic_filter,
     h_backbone, modularity_backbone, planar_maximally_filtered_graph,
-    maximum_spanning_tree_backbone
-proximity
-    neighborhood_overlap, jaccard_backbone, dice_backbone, cosine_backbone,
-    hub_promoted_index, hub_depressed_index, lhn_local_index,
-    preferential_attachment_score, adamic_adar_index,
-    resource_allocation_index, graph_distance_proximity, local_path_index
+    maximum_spanning_tree_backbone, neighborhood_overlap, jaccard_backbone,
+    dice_backbone, cosine_backbone
 hybrid
     glab_filter
 bipartite
@@ -29,72 +25,13 @@ measures
     ks_degree, ks_weight, compare_backbones
 """
 
-# Statistical methods
-from backbone.statistical import (
-    disparity_filter,
-    noise_corrected_filter,
-    marginal_likelihood_filter,
-    ecm_filter,
-    lans_filter,
-)
-
-# Structural methods
-from backbone.structural import (
-    global_threshold_filter,
-    strongest_n_ties,
-    high_salience_skeleton,
-    metric_backbone,
-    ultrametric_backbone,
-    doubly_stochastic_filter,
-    h_backbone,
-    modularity_backbone,
-    planar_maximally_filtered_graph,
-    maximum_spanning_tree_backbone,
-)
-
-# Proximity methods
-from backbone.proximity import (
-    neighborhood_overlap,
-    jaccard_backbone,
-    dice_backbone,
-    cosine_backbone,
-    hub_promoted_index,
-    hub_depressed_index,
-    lhn_local_index,
-    preferential_attachment_score,
-    adamic_adar_index,
-    resource_allocation_index,
-    graph_distance_proximity,
-    local_path_index,
-)
-
-# Hybrid methods
-from backbone.hybrid import glab_filter
-
-# Bipartite projection methods
-from backbone.bipartite import sdsm, fdsm
-
-# Unweighted methods
-from backbone.unweighted import sparsify, lspar, local_degree
-
-# Filtering utilities
-from backbone.filters import (
-    threshold_filter,
-    fraction_filter,
-    boolean_filter,
-    consensus_backbone,
-)
-
-# Evaluation measures
-from backbone.measures import (
-    node_fraction,
-    edge_fraction,
-    weight_fraction,
-    reachability,
-    ks_degree,
-    ks_weight,
-    compare_backbones,
-)
+from networkx.algorithms.backbone.bipartite import *
+from networkx.algorithms.backbone.filters import *
+from networkx.algorithms.backbone.hybrid import *
+from networkx.algorithms.backbone.measures import *
+from networkx.algorithms.backbone.statistical import *
+from networkx.algorithms.backbone.structural import *
+from networkx.algorithms.backbone.unweighted import *
 
 __all__ = [
     # Statistical
@@ -114,19 +51,10 @@ __all__ = [
     "modularity_backbone",
     "planar_maximally_filtered_graph",
     "maximum_spanning_tree_backbone",
-    # Proximity
     "neighborhood_overlap",
     "jaccard_backbone",
     "dice_backbone",
     "cosine_backbone",
-    "hub_promoted_index",
-    "hub_depressed_index",
-    "lhn_local_index",
-    "preferential_attachment_score",
-    "adamic_adar_index",
-    "resource_allocation_index",
-    "graph_distance_proximity",
-    "local_path_index",
     # Hybrid
     "glab_filter",
     # Bipartite

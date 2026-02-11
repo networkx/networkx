@@ -5,46 +5,45 @@ invariants across the full pipeline.
 """
 
 import pytest
-import networkx as nx
-
-from backbone.statistical import (
-    disparity_filter,
-    noise_corrected_filter,
-    marginal_likelihood_filter,
-    ecm_filter,
-    lans_filter,
-)
-from backbone.structural import (
-    global_threshold_filter,
-    high_salience_skeleton,
-    metric_backbone,
-    ultrametric_backbone,
-    maximum_spanning_tree_backbone,
-    strongest_n_ties,
-    doubly_stochastic_filter,
-    h_backbone,
-    modularity_backbone,
-    planar_maximally_filtered_graph,
-)
-from backbone.proximity import (
-    neighborhood_overlap,
-    jaccard_backbone,
-    dice_backbone,
-    cosine_backbone,
+from backbone.filters import (
+    consensus_backbone,
+    fraction_filter,
+    threshold_filter,
 )
 from backbone.hybrid import glab_filter
-from backbone.filters import (
-    threshold_filter,
-    fraction_filter,
-    consensus_backbone,
-)
 from backbone.measures import (
-    node_fraction,
-    edge_fraction,
-    weight_fraction,
     compare_backbones,
+    edge_fraction,
+    node_fraction,
+    weight_fraction,
+)
+from backbone.proximity import (
+    cosine_backbone,
+    dice_backbone,
+    jaccard_backbone,
+    neighborhood_overlap,
+)
+from backbone.statistical import (
+    disparity_filter,
+    ecm_filter,
+    lans_filter,
+    marginal_likelihood_filter,
+    noise_corrected_filter,
+)
+from backbone.structural import (
+    doubly_stochastic_filter,
+    global_threshold_filter,
+    h_backbone,
+    high_salience_skeleton,
+    maximum_spanning_tree_backbone,
+    metric_backbone,
+    modularity_backbone,
+    planar_maximally_filtered_graph,
+    strongest_n_ties,
+    ultrametric_backbone,
 )
 
+import networkx as nx
 
 # ── End-to-end pipelines ─────────────────────────────────────────────────
 

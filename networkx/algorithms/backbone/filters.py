@@ -15,30 +15,53 @@ __all__ = [
 ]
 
 
+@nx._dispatchable(returns_graph=True)
 def threshold_filter(G, score, threshold, mode="below", filter_on="edges"):
-    """Retain edges/nodes whose score passes a threshold test.
+    """Retain edges or nodes whose score passes a threshold test.
 
     Parameters
     ----------
-    G : nx.Graph or nx.DiGraph
-        Graph with a computed score attribute on edges or nodes.
-    score : str
+    G : graph
+        A NetworkX graph with a computed score attribute on edges or nodes.
+    score : string
         Attribute name to filter on.
     threshold : float
         Cutoff value.
-    mode : {"below", "above"}
-        ``"below"`` keeps elements with score < threshold (typical for
-        p-values).  ``"above"`` keeps elements with score ≥ threshold
-        (typical for salience / importance scores).
-    filter_on : {"edges", "nodes"}
+    mode : {"below", "above"}, optional (default="below")
+        ``"below"`` keeps elements with ``score < threshold`` (typical for
+        p-values).  ``"above"`` keeps elements with ``score >= threshold``
+        (typical for salience or importance scores).
+    filter_on : {"edges", "nodes"}, optional (default="edges")
         Whether to filter edges or nodes.
 
     Returns
     -------
-    H : same type as G
-        Filtered subgraph.  When filtering edges, all original nodes are
-        preserved.  When filtering nodes, only retained nodes and their
-        mutual edges are preserved.
+    H : graph
+        Filtered subgraph of the same type as *G*.  When filtering edges,
+        all original nodes are preserved.  When filtering nodes, only
+        retained nodes and their mutual edges are preserved.
+
+    Raises
+    ------
+    ValueError
+        If *mode* is not ``"below"`` or ``"above"``, or if *filter_on* is
+        not ``"edges"`` or ``"nodes"``.
+
+    See Also
+    --------
+    fraction_filter : Retain a fixed fraction of elements.
+    boolean_filter : Retain edges with a boolean attribute.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import disparity_filter, threshold_filter
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 1.0), (0, 2, 2.0)])
+    >>> H = disparity_filter(G)
+    >>> filtered = threshold_filter(H, "disparity_pvalue", 0.5)
+    >>> filtered.number_of_edges() <= H.number_of_edges()
+    True
     """
     if mode not in ("below", "above"):
         raise ValueError(f"mode must be 'below' or 'above', got {mode!r}")
@@ -72,24 +95,49 @@ def threshold_filter(G, score, threshold, mode="below", filter_on="edges"):
         raise ValueError(f"filter_on must be 'edges' or 'nodes', got {filter_on!r}")
 
 
+@nx._dispatchable(returns_graph=True)
 def fraction_filter(G, score, fraction, ascending=True, filter_on="edges"):
-    """Retain the top or bottom fraction of edges/nodes by score.
+    """Retain the top or bottom fraction of edges or nodes by score.
 
     Parameters
     ----------
-    G : nx.Graph or nx.DiGraph
-    score : str
-        Attribute name.
+    G : graph
+        A NetworkX graph with a computed score attribute.
+    score : string
+        Attribute name to sort on.
     fraction : float
         Fraction of elements to retain, in (0, 1].
-    ascending : bool
-        If True, keep the elements with the *smallest* scores (e.g.
-        lowest p-values).  If False, keep the *largest*.
-    filter_on : {"edges", "nodes"}
+    ascending : bool, optional (default=True)
+        If ``True``, keep the elements with the *smallest* scores (e.g.
+        lowest p-values).  If ``False``, keep the *largest*.
+    filter_on : {"edges", "nodes"}, optional (default="edges")
+        Whether to filter edges or nodes.
 
     Returns
     -------
-    H : same type as G
+    H : graph
+        Filtered subgraph of the same type as *G*.
+
+    Raises
+    ------
+    ValueError
+        If *fraction* is not in (0, 1] or *filter_on* is invalid.
+
+    See Also
+    --------
+    threshold_filter : Filter by an absolute score cutoff.
+    boolean_filter : Retain edges with a boolean attribute.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import disparity_filter, fraction_filter
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 1.0), (0, 2, 2.0)])
+    >>> H = disparity_filter(G)
+    >>> filtered = fraction_filter(H, "disparity_pvalue", 0.5)
+    >>> filtered.number_of_edges() <= H.number_of_edges()
+    True
     """
     if not 0 < fraction <= 1:
         raise ValueError("fraction must be in (0, 1]")
@@ -123,18 +171,37 @@ def fraction_filter(G, score, fraction, ascending=True, filter_on="edges"):
         raise ValueError(f"filter_on must be 'edges' or 'nodes', got {filter_on!r}")
 
 
+@nx._dispatchable(returns_graph=True)
 def boolean_filter(G, score):
-    """Retain edges whose boolean score attribute is True.
+    """Retain edges whose boolean score attribute is truthy.
 
     Parameters
     ----------
-    G : nx.Graph or nx.DiGraph
-    score : str
-        Edge attribute name (should contain bool values).
+    G : graph
+        A NetworkX graph.
+    score : string
+        Edge attribute name (should contain boolean values).
 
     Returns
     -------
-    H : same type as G
+    H : graph
+        A new graph of the same type as *G* containing only edges for
+        which ``data[score]`` is truthy.  All original nodes are preserved.
+
+    See Also
+    --------
+    threshold_filter : Filter by a numeric score threshold.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import boolean_filter
+    >>> G = nx.Graph()
+    >>> G.add_edge(0, 1, keep=True)
+    >>> G.add_edge(1, 2, keep=False)
+    >>> H = boolean_filter(G, "keep")
+    >>> sorted(H.edges())
+    [(0, 1)]
     """
     H = G.__class__()
     H.add_nodes_from(G.nodes(data=True))
@@ -153,12 +220,33 @@ def consensus_backbone(*backbones):
 
     Parameters
     ----------
-    *backbones : nx.Graph
+    *backbones : graph
         Two or more backbone graphs (must share the same node identifiers).
 
     Returns
     -------
-    H : same type as first backbone
+    H : graph
+        A new graph of the same type as the first backbone, containing
+        only edges present in every input.
+
+    Raises
+    ------
+    ValueError
+        If fewer than 2 backbones are provided.
+
+    See Also
+    --------
+    threshold_filter : Filter a single backbone by score.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import consensus_backbone
+    >>> G1 = nx.Graph([(0, 1), (1, 2)])
+    >>> G2 = nx.Graph([(0, 1), (2, 3)])
+    >>> H = consensus_backbone(G1, G2)
+    >>> sorted(H.edges())
+    [(0, 1)]
     """
     if len(backbones) < 2:
         raise ValueError("consensus_backbone requires at least 2 graphs")

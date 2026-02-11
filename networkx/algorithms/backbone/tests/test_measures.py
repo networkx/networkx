@@ -5,19 +5,18 @@ ks_degree, ks_weight, and compare_backbones.
 """
 
 import pytest
-import networkx as nx
-
-from backbone.structural import global_threshold_filter, strongest_n_ties
 from backbone.measures import (
-    node_fraction,
+    compare_backbones,
     edge_fraction,
-    weight_fraction,
-    reachability,
     ks_degree,
     ks_weight,
-    compare_backbones,
+    node_fraction,
+    reachability,
+    weight_fraction,
 )
+from backbone.structural import global_threshold_filter, strongest_n_ties
 
+import networkx as nx
 
 # ── Node / Edge / Weight Fraction ─────────────────────────────────────────
 

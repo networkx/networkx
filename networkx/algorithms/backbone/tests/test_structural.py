@@ -7,22 +7,21 @@ planar_maximally_filtered_graph.
 """
 
 import pytest
-import networkx as nx
-
+from backbone.filters import threshold_filter
 from backbone.structural import (
-    global_threshold_filter,
-    high_salience_skeleton,
-    metric_backbone,
-    ultrametric_backbone,
-    maximum_spanning_tree_backbone,
-    strongest_n_ties,
     doubly_stochastic_filter,
+    global_threshold_filter,
     h_backbone,
+    high_salience_skeleton,
+    maximum_spanning_tree_backbone,
+    metric_backbone,
     modularity_backbone,
     planar_maximally_filtered_graph,
+    strongest_n_ties,
+    ultrametric_backbone,
 )
-from backbone.filters import threshold_filter
 
+import networkx as nx
 
 # ── Global Threshold Filter ─────────────────────────────────────────────
 

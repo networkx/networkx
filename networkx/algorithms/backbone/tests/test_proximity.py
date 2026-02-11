@@ -11,24 +11,23 @@ and cross-method relationship properties.
 import math
 
 import pytest
-import networkx as nx
-
-from backbone.proximity import (
-    neighborhood_overlap,
-    jaccard_backbone,
-    dice_backbone,
-    cosine_backbone,
-    hub_promoted_index,
-    hub_depressed_index,
-    lhn_local_index,
-    preferential_attachment_score,
-    adamic_adar_index,
-    resource_allocation_index,
-    graph_distance_proximity,
-    local_path_index,
-)
 from backbone.filters import threshold_filter
+from backbone.proximity import (
+    adamic_adar_index,
+    cosine_backbone,
+    dice_backbone,
+    graph_distance_proximity,
+    hub_depressed_index,
+    hub_promoted_index,
+    jaccard_backbone,
+    lhn_local_index,
+    local_path_index,
+    neighborhood_overlap,
+    preferential_attachment_score,
+    resource_allocation_index,
+)
 
+import networkx as nx
 
 # ── Local fixtures ────────────────────────────────────────────────────────
 
@@ -388,9 +387,9 @@ def test_pa_added():
 def test_pa_values():
     G = _make_overlap_graph()
     H = preferential_attachment_score(G)
-    assert H["A"]["B"]["pa"] == 6   # 2 * 3
-    assert H["B"]["C"]["pa"] == 9   # 3 * 3
-    assert H["B"]["D"]["pa"] == 6   # 3 * 2
+    assert H["A"]["B"]["pa"] == 6  # 2 * 3
+    assert H["B"]["C"]["pa"] == 9  # 3 * 3
+    assert H["B"]["D"]["pa"] == 6  # 3 * 2
 
 
 def test_pa_complete_graph():
@@ -404,9 +403,9 @@ def test_pa_path_graph():
     """Endpoint nodes have degree 1, interior have degree 2."""
     G = nx.path_graph(4)
     H = preferential_attachment_score(G)
-    assert H[0][1]["pa"] == 2   # 1 * 2
-    assert H[1][2]["pa"] == 4   # 2 * 2
-    assert H[2][3]["pa"] == 2   # 2 * 1
+    assert H[0][1]["pa"] == 2  # 1 * 2
+    assert H[1][2]["pa"] == 4  # 2 * 2
+    assert H[2][3]["pa"] == 2  # 2 * 1
 
 
 def test_pa_directed():

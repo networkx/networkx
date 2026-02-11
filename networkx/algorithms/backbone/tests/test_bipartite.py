@@ -5,9 +5,9 @@ fdsm (Fixed Degree Sequence Model).
 """
 
 import pytest
-import networkx as nx
+from backbone.bipartite import fdsm, sdsm
 
-from backbone.bipartite import sdsm, fdsm
+import networkx as nx
 
 
 def _make_bipartite():
@@ -22,11 +22,17 @@ def _make_bipartite():
     artifacts = ["F1", "F2", "F3", "F4"]
     B.add_nodes_from(agents, bipartite=0)
     B.add_nodes_from(artifacts, bipartite=1)
-    B.add_edges_from([
-        ("A1", "F1"), ("A1", "F2"), ("A1", "F3"),
-        ("A2", "F1"), ("A2", "F2"),
-        ("A3", "F3"), ("A3", "F4"),
-    ])
+    B.add_edges_from(
+        [
+            ("A1", "F1"),
+            ("A1", "F2"),
+            ("A1", "F3"),
+            ("A2", "F1"),
+            ("A2", "F2"),
+            ("A3", "F3"),
+            ("A3", "F4"),
+        ]
+    )
     return B, agents
 
 

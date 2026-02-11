@@ -48,13 +48,14 @@ for social networks." *JASIST*, 58(7), 1019–1031.
 
 import math
 
-import networkx as nx
 import numpy as np
 
+import networkx as nx
 
 # =====================================================================
 # Helper
 # =====================================================================
+
 
 def _neighbor_sets(G):
     """Return a dict mapping each node to its set of neighbors."""
@@ -64,6 +65,7 @@ def _neighbor_sets(G):
 # =====================================================================
 # Local methods — moved from structural.py
 # =====================================================================
+
 
 def neighborhood_overlap(G):
     """Score each edge by the raw neighborhood overlap of its endpoints.
@@ -284,6 +286,7 @@ def cosine_backbone(G):
 # =====================================================================
 # Local methods — new
 # =====================================================================
+
 
 def hub_promoted_index(G):
     r"""Score each edge by the Hub Promoted Index of its endpoint neighborhoods.
@@ -602,6 +605,7 @@ def resource_allocation_index(G):
 # =====================================================================
 # Quasi-local methods
 # =====================================================================
+
 
 def graph_distance_proximity(G):
     r"""Score each edge by the reciprocal of shortest-path distance.

@@ -5,15 +5,14 @@ consensus_backbone.
 """
 
 import pytest
-import networkx as nx
-
 from backbone.filters import (
-    threshold_filter,
-    fraction_filter,
     boolean_filter,
     consensus_backbone,
+    fraction_filter,
+    threshold_filter,
 )
 
+import networkx as nx
 
 # ── Threshold Filter ─────────────────────────────────────────────────────
 

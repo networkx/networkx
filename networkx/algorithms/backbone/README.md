@@ -12,10 +12,10 @@ The implementation consolidates methods from two open-source packages:
 
 - **netbone** — Yassin, A., Cherifi, H., Seba, H., & Togni, O. (2023). "An
   evaluation tool for backbone extraction techniques in weighted complex
-  networks." *Scientific Reports*, 13, 17000.
+  networks." _Scientific Reports_, 13, 17000.
   https://doi.org/10.1038/s41598-023-42076-3
 - **backbone** — Neal, Z. P. (2022). "backbone: An R package to extract network
-  backbones." *PLOS ONE*, 17(5), e0269137.
+  backbones." _PLOS ONE_, 17(5), e0269137.
   https://doi.org/10.1371/journal.pone.0269137
 
 ---
@@ -26,35 +26,36 @@ The implementation consolidates methods from two open-source packages:
 
 These methods test edge significance against a null model and assign p-values.
 
-| Function | Description | Reference |
-|---|---|---|
-| `disparity_filter` | Tests normalised edge weight against a uniform null. The p-value is `1 - (k-1)(1-p)^(k-2)`. For undirected edges, the minimum of both endpoints is used. | Serrano, M. Á., Boguñá, M., & Vespignani, A. (2009). "Extracting the multiscale backbone of complex weighted networks." *PNAS*, 106(16), 6483–6488. https://doi.org/10.1073/pnas.0808904106 |
-| `noise_corrected_filter` | Bayesian framework modelling edge weights as binomial outcomes. Computes a z-score measuring standard deviations above the expected weight `E[w] = s_u·s_v/W`. | Coscia, M. & Neffke, F. M. (2017). "Network backboning with noisy data." *Proc. IEEE ICDE*, 425–436. https://doi.org/10.1109/ICDE.2017.100 |
-| `marginal_likelihood_filter` | Binomial null model considering both endpoint strengths jointly. P-value via `Binom(s_u, s_v/(W-s_u))`. | Dianati, N. (2016). "Unwinding the hairball graph: Pruning algorithms for weighted complex networks." *Physical Review E*, 93, 012304. https://doi.org/10.1103/PhysRevE.93.012304 |
-| `ecm_filter` | Enhanced Configuration Model. Maximum-entropy null preserving expected degree *and* strength sequences via iterative Lagrange multipliers. | Gemmetto, V., Cardillo, A., & Garlaschelli, D. (2017). "Irreducible network backbones: unbiased graph filtering via maximum entropy." arXiv:1706.00230. |
-| `lans_filter` | Locally Adaptive Network Sparsification. Nonparametric: uses the empirical CDF of each node's edge weights. No distributional assumptions. | Foti, N. J., Hughes, J. M., & Rockmore, D. N. (2011). "Nonparametric sparsification of complex multiscale networks." *PLoS ONE*, 6(2), e16431. https://doi.org/10.1371/journal.pone.0016431 |
+| Function                     | Description                                                                                                                                                    | Reference                                                                                                                                                                                   |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `disparity_filter`           | Tests normalised edge weight against a uniform null. The p-value is `1 - (k-1)(1-p)^(k-2)`. For undirected edges, the minimum of both endpoints is used.       | Serrano, M. Á., Boguñá, M., & Vespignani, A. (2009). "Extracting the multiscale backbone of complex weighted networks." _PNAS_, 106(16), 6483–6488. https://doi.org/10.1073/pnas.0808904106 |
+| `noise_corrected_filter`     | Bayesian framework modelling edge weights as binomial outcomes. Computes a z-score measuring standard deviations above the expected weight `E[w] = s_u·s_v/W`. | Coscia, M. & Neffke, F. M. (2017). "Network backboning with noisy data." _Proc. IEEE ICDE_, 425–436. https://doi.org/10.1109/ICDE.2017.100                                                  |
+| `marginal_likelihood_filter` | Binomial null model considering both endpoint strengths jointly. P-value via `Binom(s_u, s_v/(W-s_u))`.                                                        | Dianati, N. (2016). "Unwinding the hairball graph: Pruning algorithms for weighted complex networks." _Physical Review E_, 93, 012304. https://doi.org/10.1103/PhysRevE.93.012304           |
+| `ecm_filter`                 | Enhanced Configuration Model. Maximum-entropy null preserving expected degree _and_ strength sequences via iterative Lagrange multipliers.                     | Gemmetto, V., Cardillo, A., & Garlaschelli, D. (2017). "Irreducible network backbones: unbiased graph filtering via maximum entropy." arXiv:1706.00230.                                     |
+| `lans_filter`                | Locally Adaptive Network Sparsification. Nonparametric: uses the empirical CDF of each node's edge weights. No distributional assumptions.                     | Foti, N. J., Hughes, J. M., & Rockmore, D. N. (2011). "Nonparametric sparsification of complex multiscale networks." _PLoS ONE_, 6(2), e16431. https://doi.org/10.1371/journal.pone.0016431 |
 
 ### Structural Methods (`backbone.structural`)
 
 These methods operate on topology and edge weights directly.
 
-| Function | Description | Reference |
-|---|---|---|
-| `global_threshold_filter` | Retains edges with weight ≥ threshold. Simplest method but ignores local structure. | — |
-| `strongest_n_ties` | Each node keeps its *n* strongest edges (OR semantics across endpoints). | — |
-| `high_salience_skeleton` | Edge salience = fraction of all shortest-path trees containing that edge. Bimodal distribution near 0 and 1. | Grady, D., Thiemann, C., & Brockmann, D. (2012). "Robust classification of salient links in complex networks." *Nature Communications*, 3, 864. https://doi.org/10.1038/ncomms1847 |
-| `metric_backbone` | Edge retained iff its direct distance `1/w` equals the shortest-path distance (sum of distances). | Simas, T., Correia, R. B., & Rocha, L. M. (2021). "The distance backbone of complex networks." *J. Complex Networks*, 9, cnab021. https://doi.org/10.1093/comnet/cnab021 |
-| `ultrametric_backbone` | Like metric backbone but using minimax (bottleneck) path distance. | Simas et al. (2021), as above. |
-| `doubly_stochastic_filter` | Sinkhorn-Knopp normalisation to a doubly-stochastic matrix. Preserves weight and degree distributions well. | Slater, P. B. (2009). "A two-stage algorithm for extracting the multiscale backbone of complex weighted networks." *PNAS*, 106(26), E66. https://doi.org/10.1073/pnas.0904725106 |
-| `h_backbone` | h-index of the weight sequence: keep h edges with weight ≥ h, plus top-h bridging edges by betweenness. | Zhang, R. J., Stanley, H. E., & Ye, F. Y. (2018). "Extracting h-backbone as a core structure in weighted networks." *Scientific Reports*, 8, 14356. https://doi.org/10.1038/s41598-018-32430-1 |
-| `modularity_backbone` | Node vitality = modularity change when node is removed. Filters nodes by contribution to community structure. | Rajeh, S., Savonnet, M., Leclercq, E., & Cherifi, H. (2022). "Modularity-based backbone extraction in weighted complex networks." *NetSci-X 2022*, 67–79. |
-| `planar_maximally_filtered_graph` | Greedily adds edges from heaviest to lightest while maintaining planarity. At most 3(n−2) edges. | Tumminello, M., Aste, T., Di Matteo, T., & Mantegna, R. N. (2005). "A tool for filtering information in complex systems." *PNAS*, 102(30), 10421–10426. https://doi.org/10.1073/pnas.0500298102 |
-| `maximum_spanning_tree_backbone` | Maximum weight spanning tree. Connected, n−1 edges, maximum total weight. | Kruskal, J. B. (1956). "On the shortest spanning subtree of a graph." *Proc. AMS*, 7(1), 48–50. |
+| Function                          | Description                                                                                                   | Reference                                                                                                                                                                                       |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `global_threshold_filter`         | Retains edges with weight ≥ threshold. Simplest method but ignores local structure.                           | —                                                                                                                                                                                               |
+| `strongest_n_ties`                | Each node keeps its _n_ strongest edges (OR semantics across endpoints).                                      | —                                                                                                                                                                                               |
+| `high_salience_skeleton`          | Edge salience = fraction of all shortest-path trees containing that edge. Bimodal distribution near 0 and 1.  | Grady, D., Thiemann, C., & Brockmann, D. (2012). "Robust classification of salient links in complex networks." _Nature Communications_, 3, 864. https://doi.org/10.1038/ncomms1847              |
+| `metric_backbone`                 | Edge retained iff its direct distance `1/w` equals the shortest-path distance (sum of distances).             | Simas, T., Correia, R. B., & Rocha, L. M. (2021). "The distance backbone of complex networks." _J. Complex Networks_, 9, cnab021. https://doi.org/10.1093/comnet/cnab021                        |
+| `ultrametric_backbone`            | Like metric backbone but using minimax (bottleneck) path distance.                                            | Simas et al. (2021), as above.                                                                                                                                                                  |
+| `doubly_stochastic_filter`        | Sinkhorn-Knopp normalisation to a doubly-stochastic matrix. Preserves weight and degree distributions well.   | Slater, P. B. (2009). "A two-stage algorithm for extracting the multiscale backbone of complex weighted networks." _PNAS_, 106(26), E66. https://doi.org/10.1073/pnas.0904725106                |
+| `h_backbone`                      | h-index of the weight sequence: keep h edges with weight ≥ h, plus top-h bridging edges by betweenness.       | Zhang, R. J., Stanley, H. E., & Ye, F. Y. (2018). "Extracting h-backbone as a core structure in weighted networks." _Scientific Reports_, 8, 14356. https://doi.org/10.1038/s41598-018-32430-1  |
+| `modularity_backbone`             | Node vitality = modularity change when node is removed. Filters nodes by contribution to community structure. | Rajeh, S., Savonnet, M., Leclercq, E., & Cherifi, H. (2022). "Modularity-based backbone extraction in weighted complex networks." _NetSci-X 2022_, 67–79.                                       |
+| `planar_maximally_filtered_graph` | Greedily adds edges from heaviest to lightest while maintaining planarity. At most 3(n−2) edges.              | Tumminello, M., Aste, T., Di Matteo, T., & Mantegna, R. N. (2005). "A tool for filtering information in complex systems." _PNAS_, 102(30), 10421–10426. https://doi.org/10.1073/pnas.0500298102 |
+| `maximum_spanning_tree_backbone`  | Maximum weight spanning tree. Connected, n−1 edges, maximum total weight.                                     | Kruskal, J. B. (1956). "On the shortest spanning subtree of a graph." _Proc. AMS_, 7(1), 48–50.                                                                                                 |
+
 ### Proximity Methods (`backbone.proximity`)
 
 These methods score each existing edge by the topological proximity (similarity)
-of its endpoints. They identify *structurally embedded* edges — edges between
-nodes that share many neighbors — versus *bridging* edges that connect otherwise
+of its endpoints. They identify _structurally embedded_ edges — edges between
+nodes that share many neighbors — versus _bridging_ edges that connect otherwise
 separate parts of the network. All methods work on both weighted and unweighted
 graphs (weights are ignored; only topology matters) and support directed graphs
 using the out-neighbor convention.
@@ -64,25 +65,25 @@ structure) and **quasi-local** indices (incorporating short-range path informati
 
 #### Local Proximity Indices
 
-| Function | Formula | Description | Reference |
-|---|---|---|---|
-| `neighborhood_overlap` | `\|N(u) ∩ N(v)\|` | Raw count of shared neighbors. Unnormalized; use a normalized variant for degree-corrected scoring. | — |
-| `jaccard_backbone` | `n_uv / (k_u + k_v - n_uv)` | Jaccard similarity [0, 1]. Strictest normaliser — edges score high only when endpoints share many neighbors relative to their combined neighborhood. Bridge edges score 0. | Jaccard, P. (1901). "Distribution de la flore alpine dans le bassin des Dranses et dans quelques régions voisines." *Bulletin de la Société Vaudoise des Sciences Naturelles*, 37, 241–272. |
-| `dice_backbone` | `2·n_uv / (k_u + k_v)` | Dice / Sørensen coefficient [0, 1]. Always ≥ Jaccard for the same edge. Gives more credit to overlap between low-degree nodes. | Dice, L. R. (1945). "Measures of the amount of ecologic association between species." *Ecology*, 26(3), 297–302. https://doi.org/10.2307/1932409 |
-| `cosine_backbone` | `n_uv / √(k_u · k_v)` | Cosine / Salton index [0, 1]. Uses the geometric mean of degrees as denominator. Penalises degree disparity less than Jaccard but more than Dice. | Salton, G. & McGill, M. J. (1983). *Introduction to Modern Information Retrieval*. McGraw-Hill. |
-| `hub_promoted_index` | `n_uv / min(k_u, k_v)` | Hub Promoted Index [0, 1]. Normalises by the smaller degree, so edges incident to hubs are promoted. | Ravasz, E., Somera, A. L., Mongru, D. A., Oltvai, Z. N., & Barabási, A.-L. (2002). "Hierarchical organization of modularity in metabolic networks." *Science*, 297(5586), 1551–1555. https://doi.org/10.1126/science.1073374 |
-| `hub_depressed_index` | `n_uv / max(k_u, k_v)` | Hub Depressed Index [0, 1]. Normalises by the larger degree, so edges between high-degree nodes are penalised. Always ≤ HPI. | Zhou, T., Lü, L., & Zhang, Y.-C. (2009). "Predicting missing links via local information." *European Physical Journal B*, 71, 623–630. https://doi.org/10.1140/epjb/e2009-00335-8 |
-| `lhn_local_index` | `n_uv / (k_u · k_v)` | Leicht–Holme–Newman local similarity index. Normalises by the product of degrees, penalising high-degree node pairs more aggressively than any other local index. | Leicht, E. A., Holme, P., & Newman, M. E. J. (2006). "Vertex similarity in networks." *Physical Review E*, 73, 026120. https://doi.org/10.1103/PhysRevE.73.026120 |
-| `preferential_attachment_score` | `k_u · k_v` | Preferential attachment score. Unlike all other indices, this does **not** use common neighbors — it scores edges purely by the product of endpoint degrees. High-degree node pairs score highest. | Barabási, A.-L. & Albert, R. (1999). "Emergence of scaling in random networks." *Science*, 286(5439), 509–512. https://doi.org/10.1126/science.286.5439.509 |
-| `adamic_adar_index` | `Σ_{w ∈ N(u)∩N(v)} 1/log(k_w)` | Adamic–Adar index. Weights each common neighbor by the inverse of its log-degree, giving more credit to rare shared neighbors. | Adamic, L. A. & Adar, E. (2003). "Friends and neighbors on the Web." *Social Networks*, 25(3), 211–230. https://doi.org/10.1016/S0378-8733(03)00009-1 |
-| `resource_allocation_index` | `Σ_{w ∈ N(u)∩N(v)} 1/k_w` | Resource allocation index. Like Adamic–Adar but penalises high-degree intermediaries more strongly (1/k instead of 1/log k). | Zhou et al. (2009), as above. |
+| Function                        | Formula                        | Description                                                                                                                                                                                        | Reference                                                                                                                                                                                                                    |
+| ------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `neighborhood_overlap`          | `\|N(u) ∩ N(v)\|`              | Raw count of shared neighbors. Unnormalized; use a normalized variant for degree-corrected scoring.                                                                                                | —                                                                                                                                                                                                                            |
+| `jaccard_backbone`              | `n_uv / (k_u + k_v - n_uv)`    | Jaccard similarity [0, 1]. Strictest normaliser — edges score high only when endpoints share many neighbors relative to their combined neighborhood. Bridge edges score 0.                         | Jaccard, P. (1901). "Distribution de la flore alpine dans le bassin des Dranses et dans quelques régions voisines." _Bulletin de la Société Vaudoise des Sciences Naturelles_, 37, 241–272.                                  |
+| `dice_backbone`                 | `2·n_uv / (k_u + k_v)`         | Dice / Sørensen coefficient [0, 1]. Always ≥ Jaccard for the same edge. Gives more credit to overlap between low-degree nodes.                                                                     | Dice, L. R. (1945). "Measures of the amount of ecologic association between species." _Ecology_, 26(3), 297–302. https://doi.org/10.2307/1932409                                                                             |
+| `cosine_backbone`               | `n_uv / √(k_u · k_v)`          | Cosine / Salton index [0, 1]. Uses the geometric mean of degrees as denominator. Penalises degree disparity less than Jaccard but more than Dice.                                                  | Salton, G. & McGill, M. J. (1983). _Introduction to Modern Information Retrieval_. McGraw-Hill.                                                                                                                              |
+| `hub_promoted_index`            | `n_uv / min(k_u, k_v)`         | Hub Promoted Index [0, 1]. Normalises by the smaller degree, so edges incident to hubs are promoted.                                                                                               | Ravasz, E., Somera, A. L., Mongru, D. A., Oltvai, Z. N., & Barabási, A.-L. (2002). "Hierarchical organization of modularity in metabolic networks." _Science_, 297(5586), 1551–1555. https://doi.org/10.1126/science.1073374 |
+| `hub_depressed_index`           | `n_uv / max(k_u, k_v)`         | Hub Depressed Index [0, 1]. Normalises by the larger degree, so edges between high-degree nodes are penalised. Always ≤ HPI.                                                                       | Zhou, T., Lü, L., & Zhang, Y.-C. (2009). "Predicting missing links via local information." _European Physical Journal B_, 71, 623–630. https://doi.org/10.1140/epjb/e2009-00335-8                                            |
+| `lhn_local_index`               | `n_uv / (k_u · k_v)`           | Leicht–Holme–Newman local similarity index. Normalises by the product of degrees, penalising high-degree node pairs more aggressively than any other local index.                                  | Leicht, E. A., Holme, P., & Newman, M. E. J. (2006). "Vertex similarity in networks." _Physical Review E_, 73, 026120. https://doi.org/10.1103/PhysRevE.73.026120                                                            |
+| `preferential_attachment_score` | `k_u · k_v`                    | Preferential attachment score. Unlike all other indices, this does **not** use common neighbors — it scores edges purely by the product of endpoint degrees. High-degree node pairs score highest. | Barabási, A.-L. & Albert, R. (1999). "Emergence of scaling in random networks." _Science_, 286(5439), 509–512. https://doi.org/10.1126/science.286.5439.509                                                                  |
+| `adamic_adar_index`             | `Σ_{w ∈ N(u)∩N(v)} 1/log(k_w)` | Adamic–Adar index. Weights each common neighbor by the inverse of its log-degree, giving more credit to rare shared neighbors.                                                                     | Adamic, L. A. & Adar, E. (2003). "Friends and neighbors on the Web." _Social Networks_, 25(3), 211–230. https://doi.org/10.1016/S0378-8733(03)00009-1                                                                        |
+| `resource_allocation_index`     | `Σ_{w ∈ N(u)∩N(v)} 1/k_w`      | Resource allocation index. Like Adamic–Adar but penalises high-degree intermediaries more strongly (1/k instead of 1/log k).                                                                       | Zhou et al. (2009), as above.                                                                                                                                                                                                |
 
 #### Quasi-Local Proximity Indices
 
-| Function | Formula | Description | Reference |
-|---|---|---|---|
-| `graph_distance_proximity` | `1 / d(u, v)` | Reciprocal of shortest-path distance. For existing edges this is always 1.0 (since adjacent nodes have distance 1). Most useful as a baseline or when extended to non-edges. | Lü, L. & Zhou, T. (2011). "Link prediction in complex networks: A survey." *Physica A*, 390(6), 1150–1170. https://doi.org/10.1016/j.physa.2010.11.027 |
-| `local_path_index` | `\|A²(u,v)\| + ε·\|A³(u,v)\|` | Local path index combining second-order paths (common neighbors) and third-order paths, weighted by parameter ε. Captures local clustering beyond immediate neighbors. | Lü, L., Jin, C.-H., & Zhou, T. (2009). "Similarity index based on local random walk and length of shortest paths." *Physical Review E*, 80, 046122. https://doi.org/10.1103/PhysRevE.80.046122 |
+| Function                   | Formula                       | Description                                                                                                                                                                  | Reference                                                                                                                                                                                      |
+| -------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `graph_distance_proximity` | `1 / d(u, v)`                 | Reciprocal of shortest-path distance. For existing edges this is always 1.0 (since adjacent nodes have distance 1). Most useful as a baseline or when extended to non-edges. | Lü, L. & Zhou, T. (2011). "Link prediction in complex networks: A survey." _Physica A_, 390(6), 1150–1170. https://doi.org/10.1016/j.physa.2010.11.027                                         |
+| `local_path_index`         | `\|A²(u,v)\| + ε·\|A³(u,v)\|` | Local path index combining second-order paths (common neighbors) and third-order paths, weighted by parameter ε. Captures local clustering beyond immediate neighbors.       | Lü, L., Jin, C.-H., & Zhou, T. (2009). "Similarity index based on local random walk and length of shortest paths." _Physical Review E_, 80, 046122. https://doi.org/10.1103/PhysRevE.80.046122 |
 
 **Key relationships among local indices.** For any edge (u, v) with at least one
 common neighbor, the following inequalities hold:
@@ -97,45 +98,45 @@ endpoint degrees.
 
 ### Hybrid Methods (`backbone.hybrid`)
 
-| Function | Description | Reference |
-|---|---|---|
-| `glab_filter` | Globally and Locally Adaptive Backbone. Combines edge betweenness centrality (global involvement) with a degree-dependent significance test. | Zhang, X., Zhang, Z., Zhao, H., Wang, Q., & Zhu, J. (2014). "Extracting the globally and locally adaptive backbone of complex networks." *PLoS ONE*, 9(6), e100428. https://doi.org/10.1371/journal.pone.0100428 |
+| Function      | Description                                                                                                                                  | Reference                                                                                                                                                                                                        |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `glab_filter` | Globally and Locally Adaptive Backbone. Combines edge betweenness centrality (global involvement) with a degree-dependent significance test. | Zhang, X., Zhang, Z., Zhao, H., Wang, Q., & Zhu, J. (2014). "Extracting the globally and locally adaptive backbone of complex networks." _PLoS ONE_, 9(6), e100428. https://doi.org/10.1371/journal.pone.0100428 |
 
 ### Bipartite Projection Methods (`backbone.bipartite`)
 
-| Function | Description | Reference |
-|---|---|---|
-| `sdsm` | Stochastic Degree Sequence Model. Constrains random bipartite networks to match row/column sums on average. Normal approximation for p-values. | Neal, Z. P. (2014). "The backbone of bipartite projections." *Social Networks*, 39, 84–97. https://doi.org/10.1016/j.socnet.2014.06.001 |
-| `fdsm` | Fixed Degree Sequence Model. Monte Carlo with exact degree preservation via Curveball swaps. | Neal, Z. P., Domagalski, R., & Sagan, B. (2021). "Comparing alternatives to the fixed degree sequence model." *Scientific Reports*, 11, 23929. https://doi.org/10.1038/s41598-021-03238-3 |
+| Function | Description                                                                                                                                    | Reference                                                                                                                                                                                 |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sdsm`   | Stochastic Degree Sequence Model. Constrains random bipartite networks to match row/column sums on average. Normal approximation for p-values. | Neal, Z. P. (2014). "The backbone of bipartite projections." _Social Networks_, 39, 84–97. https://doi.org/10.1016/j.socnet.2014.06.001                                                   |
+| `fdsm`   | Fixed Degree Sequence Model. Monte Carlo with exact degree preservation via Curveball swaps.                                                   | Neal, Z. P., Domagalski, R., & Sagan, B. (2021). "Comparing alternatives to the fixed degree sequence model." _Scientific Reports_, 11, 23929. https://doi.org/10.1038/s41598-021-03238-3 |
 
 ### Unweighted Methods (`backbone.unweighted`)
 
-| Function | Description | Reference |
-|---|---|---|
-| `sparsify` | Generic framework: score → normalise → filter → connect. Supports Jaccard, degree, triangle, quadrangle, and random scoring. | Neal (2022), as above. |
-| `lspar` | Local Sparsification. Jaccard scoring + rank normalisation + degree filtering. Best for preserving community structure. | Satuluri, V., Parthasarathy, S., & Ruan, Y. (2011). "Local graph sparsification for scalable clustering." *ACM SIGMOD*, 721–732. https://doi.org/10.1145/1989323.1989399 |
-| `local_degree` | Degree scoring + rank normalisation + degree filtering. Best for preserving hub-and-spoke structure. | Hamann, M., Lindner, G., Meyerhenke, H., Staudt, C. L., & Wagner, D. (2016). "Structure-preserving sparsification methods for social networks." *Social Network Analysis and Mining*, 6(1), 22. https://doi.org/10.1007/s13278-016-0332-2 |
+| Function       | Description                                                                                                                  | Reference                                                                                                                                                                                                                                 |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sparsify`     | Generic framework: score → normalise → filter → connect. Supports Jaccard, degree, triangle, quadrangle, and random scoring. | Neal (2022), as above.                                                                                                                                                                                                                    |
+| `lspar`        | Local Sparsification. Jaccard scoring + rank normalisation + degree filtering. Best for preserving community structure.      | Satuluri, V., Parthasarathy, S., & Ruan, Y. (2011). "Local graph sparsification for scalable clustering." _ACM SIGMOD_, 721–732. https://doi.org/10.1145/1989323.1989399                                                                  |
+| `local_degree` | Degree scoring + rank normalisation + degree filtering. Best for preserving hub-and-spoke structure.                         | Hamann, M., Lindner, G., Meyerhenke, H., Staudt, C. L., & Wagner, D. (2016). "Structure-preserving sparsification methods for social networks." _Social Network Analysis and Mining_, 6(1), 22. https://doi.org/10.1007/s13278-016-0332-2 |
 
 ### Filtering Utilities (`backbone.filters`)
 
-| Function | Description |
-|---|---|
-| `threshold_filter` | Retain edges/nodes with score above or below a threshold. |
-| `fraction_filter` | Retain the top or bottom fraction of edges/nodes by score. |
-| `boolean_filter` | Retain edges where a boolean attribute is True. |
-| `consensus_backbone` | Intersection of multiple backbone graphs. |
+| Function             | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
+| `threshold_filter`   | Retain edges/nodes with score above or below a threshold.  |
+| `fraction_filter`    | Retain the top or bottom fraction of edges/nodes by score. |
+| `boolean_filter`     | Retain edges where a boolean attribute is True.            |
+| `consensus_backbone` | Intersection of multiple backbone graphs.                  |
 
 ### Evaluation Measures (`backbone.measures`)
 
-| Function | Description |
-|---|---|
-| `node_fraction` | Fraction of original nodes with edges in the backbone. |
-| `edge_fraction` | Fraction of original edges preserved. |
-| `weight_fraction` | Fraction of total edge weight preserved. |
-| `reachability` | Fraction of node pairs that can communicate. |
-| `ks_degree` | Kolmogorov-Smirnov statistic between degree distributions. |
-| `ks_weight` | Kolmogorov-Smirnov statistic between weight distributions. |
-| `compare_backbones` | Compare multiple backbones across any set of measures. |
+| Function            | Description                                                |
+| ------------------- | ---------------------------------------------------------- |
+| `node_fraction`     | Fraction of original nodes with edges in the backbone.     |
+| `edge_fraction`     | Fraction of original edges preserved.                      |
+| `weight_fraction`   | Fraction of total edge weight preserved.                   |
+| `reachability`      | Fraction of node pairs that can communicate.               |
+| `ks_degree`         | Kolmogorov-Smirnov statistic between degree distributions. |
+| `ks_weight`         | Kolmogorov-Smirnov statistic between weight distributions. |
+| `compare_backbones` | Compare multiple backbones across any set of measures.     |
 
 ---
 
@@ -316,7 +317,7 @@ is the companion code for:
 
 > Yassin, A., Cherifi, H., Seba, H., & Togni, O. (2025). "Exploring weighted
 > network backbone extraction: A comparative analysis of structural techniques."
-> *PLOS ONE*, 20(5), e0322298. https://doi.org/10.1371/journal.pone.0322298
+> _PLOS ONE_, 20(5), e0322298. https://doi.org/10.1371/journal.pone.0322298
 
 The repo provides scripts and data for comparing **eight structural backbone
 methods** across **33 real-world networks** spanning social, biological,
@@ -342,16 +343,16 @@ infrastructure, and economic domains.
 
 The paper evaluates these structural methods (all available in our module):
 
-| Abbreviation | Our function | Category |
-|---|---|---|
-| MSP | `maximum_spanning_tree_backbone` | Single-structure |
-| PLAM | *(primary linkage analysis; essentially `strongest_n_ties(G, n=1)`)* | Single-structure |
-| UMB | `ultrametric_backbone` | Single-structure |
-| MB | `metric_backbone` | Single-structure |
-| HSS | `high_salience_skeleton` | Score-based |
-| DS | `doubly_stochastic_filter` | Score-based |
-| HB | `h_backbone` | Score-based |
-| PMFG | `planar_maximally_filtered_graph` | Single-structure |
+| Abbreviation | Our function                                                         | Category         |
+| ------------ | -------------------------------------------------------------------- | ---------------- |
+| MSP          | `maximum_spanning_tree_backbone`                                     | Single-structure |
+| PLAM         | _(primary linkage analysis; essentially `strongest_n_ties(G, n=1)`)_ | Single-structure |
+| UMB          | `ultrametric_backbone`                                               | Single-structure |
+| MB           | `metric_backbone`                                                    | Single-structure |
+| HSS          | `high_salience_skeleton`                                             | Score-based      |
+| DS           | `doubly_stochastic_filter`                                           | Score-based      |
+| HB           | `h_backbone`                                                         | Score-based      |
+| PMFG         | `planar_maximally_filtered_graph`                                    | Single-structure |
 
 ### Key findings relevant to our implementation
 
@@ -451,18 +452,18 @@ pytest backbone/tests/ -v
 
 Tests are organized by category:
 
-| Test file | Coverage |
-|---|---|
-| `test_statistical.py` | disparity, noise-corrected, marginal likelihood, ECM, LANS filters |
-| `test_structural.py` | threshold, strongest-n, salience, metric/ultrametric, doubly stochastic, h-backbone, modularity, PMFG, MST |
-| `test_proximity.py` | All 12 proximity indices: neighborhood overlap, Jaccard, Dice, cosine, HPI, HDI, LHN, PA, Adamic–Adar, resource allocation, graph distance, local path index |
-| `test_filters.py` | threshold, fraction, boolean, consensus filters |
-| `test_measures.py` | node/edge/weight fractions, reachability, KS statistics, compare_backbones |
-| `test_hybrid.py` | GLAB filter |
-| `test_bipartite.py` | SDSM, FDSM |
-| `test_unweighted.py` | sparsify, lspar, local_degree |
-| `test_integration.py` | End-to-end pipelines, monotonicity, edge cases, smoke tests |
-| `conftest.py` | Shared fixtures (two-cluster, star, path, triangle, complete, disconnected) |
+| Test file             | Coverage                                                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `test_statistical.py` | disparity, noise-corrected, marginal likelihood, ECM, LANS filters                                                                                           |
+| `test_structural.py`  | threshold, strongest-n, salience, metric/ultrametric, doubly stochastic, h-backbone, modularity, PMFG, MST                                                   |
+| `test_proximity.py`   | All 12 proximity indices: neighborhood overlap, Jaccard, Dice, cosine, HPI, HDI, LHN, PA, Adamic–Adar, resource allocation, graph distance, local path index |
+| `test_filters.py`     | threshold, fraction, boolean, consensus filters                                                                                                              |
+| `test_measures.py`    | node/edge/weight fractions, reachability, KS statistics, compare_backbones                                                                                   |
+| `test_hybrid.py`      | GLAB filter                                                                                                                                                  |
+| `test_bipartite.py`   | SDSM, FDSM                                                                                                                                                   |
+| `test_unweighted.py`  | sparsify, lspar, local_degree                                                                                                                                |
+| `test_integration.py` | End-to-end pipelines, monotonicity, edge cases, smoke tests                                                                                                  |
+| `conftest.py`         | Shared fixtures (two-cluster, star, path, triangle, complete, disconnected)                                                                                  |
 
 Test fixtures include hand-crafted graphs with known structure (two-cluster
 barbell, star, path, triangle, complete uniform, disconnected components) and
@@ -475,13 +476,13 @@ synthetic graphs for smoke tests.
 All algorithms are attributed to their original papers in function docstrings.
 Implementation draws from:
 
-- **netbone**: Yassin, A. et al. (2023). *Scientific Reports*, 13, 17000.
+- **netbone**: Yassin, A. et al. (2023). _Scientific Reports_, 13, 17000.
   CC BY 4.0. https://gitlab.liris.cnrs.fr/coregraphie/netbone
-- **backbone (R)**: Neal, Z. P. (2022). *PLOS ONE*, 17(5), e0269137.
+- **backbone (R)**: Neal, Z. P. (2022). _PLOS ONE_, 17(5), e0269137.
   GPL-3.0. https://github.com/zpneal/backbone
 
 The comparative evaluation framework is informed by:
 
 - Yassin, A., Cherifi, H., Seba, H., & Togni, O. (2025). "Exploring weighted
   network backbone extraction: A comparative analysis of structural techniques."
-  *PLOS ONE*, 20(5), e0322298. https://doi.org/10.1371/journal.pone.0322298
+  _PLOS ONE_, 20(5), e0322298. https://doi.org/10.1371/journal.pone.0322298
