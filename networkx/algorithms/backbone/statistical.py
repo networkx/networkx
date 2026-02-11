@@ -21,9 +21,6 @@ lans_filter
 
 import math
 
-import numpy as np
-from scipy import stats as sp_stats
-
 import networkx as nx
 
 __all__ = [
@@ -325,6 +322,8 @@ def marginal_likelihood_filter(G, weight="weight"):
     >>> "ml_pvalue" in H[0][1]
     True
     """
+    from scipy import stats as sp_stats
+
     H = G.copy()
     _validate_weights(H, weight)
 
@@ -431,6 +430,8 @@ def ecm_filter(G, weight="weight", max_iter=1000, tol=1e-6):
     >>> "ecm_pvalue" in H[0][1]
     True
     """
+    import numpy as np
+
     H = G.copy()
     _validate_weights(H, weight)
 

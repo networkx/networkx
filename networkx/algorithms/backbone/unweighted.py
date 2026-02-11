@@ -16,8 +16,6 @@ local_degree
 
 import math
 
-import numpy as np
-
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -256,6 +254,8 @@ def _score_edges(G, method):
             scores[(min(u, v), max(u, v))] = count
 
     elif method == "random":
+        import numpy as np
+
         rng = np.random.default_rng(42)
         for u, v in G.edges():
             scores[(min(u, v), max(u, v))] = rng.random()

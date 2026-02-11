@@ -40,8 +40,6 @@ cosine_backbone
 import heapq
 import math
 
-import numpy as np
-
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -460,6 +458,8 @@ def doubly_stochastic_filter(G, weight="weight", max_iter=1000, tol=1e-8):
     >>> "ds_weight" in H[0][1]
     True
     """
+    import numpy as np
+
     nodes = sorted(G.nodes())
     n = len(nodes)
     if n == 0:

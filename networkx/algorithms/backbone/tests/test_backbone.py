@@ -36,8 +36,6 @@ from networkx.algorithms.backbone.measures import (
     reachability,
     weight_fraction,
 )
-
-# ── Import the backbone module ──────────────────────────────────────────
 from networkx.algorithms.backbone.statistical import (
     disparity_filter,
     ecm_filter,
@@ -62,6 +60,9 @@ from networkx.algorithms.backbone.structural import (
     ultrametric_backbone,
 )
 from networkx.algorithms.backbone.unweighted import local_degree, lspar, sparsify
+
+np = pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 # ========================================================================
 # Fixtures: reusable graph builders
