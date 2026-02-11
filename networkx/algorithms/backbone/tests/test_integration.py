@@ -25,6 +25,8 @@ from backbone.structural import (
     h_backbone,
     modularity_backbone,
     planar_maximally_filtered_graph,
+)
+from backbone.proximity import (
     neighborhood_overlap,
     jaccard_backbone,
     dice_backbone,
