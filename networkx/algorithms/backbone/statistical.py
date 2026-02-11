@@ -52,7 +52,7 @@ def _validate_weights(G, weight):
 # =====================================================================
 
 
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def disparity_filter(G, weight="weight"):
     r"""Compute disparity filter p-values for each edge.
 
@@ -158,7 +158,7 @@ def _disparity_node_pvalue(w, s, k):
 # =====================================================================
 
 
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def noise_corrected_filter(G, weight="weight"):
     r"""Compute noise-corrected edge significance scores.
 
@@ -261,7 +261,7 @@ def noise_corrected_filter(G, weight="weight"):
 # =====================================================================
 
 
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def marginal_likelihood_filter(G, weight="weight"):
     r"""Compute marginal likelihood p-values for each edge.
 
@@ -361,7 +361,7 @@ def marginal_likelihood_filter(G, weight="weight"):
 # =====================================================================
 
 
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def ecm_filter(G, weight="weight", max_iter=1000, tol=1e-6):
     r"""Compute ECM (Enhanced Configuration Model) p-values.
 
@@ -518,7 +518,7 @@ def ecm_filter(G, weight="weight", max_iter=1000, tol=1e-6):
 # =====================================================================
 
 
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def lans_filter(G, weight="weight"):
     r"""Compute LANS (Locally Adaptive Network Sparsification) p-values.
 

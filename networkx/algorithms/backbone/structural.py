@@ -66,7 +66,7 @@ __all__ = [
 # =====================================================================
 
 
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def global_threshold_filter(G, threshold, weight="weight"):
     """Return a subgraph containing only edges whose weight meets a threshold.
 
@@ -117,7 +117,7 @@ def global_threshold_filter(G, threshold, weight="weight"):
 # =====================================================================
 
 
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def strongest_n_ties(G, n=1, weight="weight"):
     """Retain the *n* strongest edges for every node.
 
@@ -188,7 +188,7 @@ def strongest_n_ties(G, n=1, weight="weight"):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def high_salience_skeleton(G, weight="weight"):
     """Compute edge salience from shortest-path tree participation.
 
@@ -267,7 +267,7 @@ def high_salience_skeleton(G, weight="weight"):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def metric_backbone(G, weight="weight"):
     """Extract the metric backbone using sum-of-distances shortest paths.
 
@@ -319,7 +319,7 @@ def metric_backbone(G, weight="weight"):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def ultrametric_backbone(G, weight="weight"):
     """Extract the ultrametric backbone using max-distance (minimax) paths.
 
@@ -406,7 +406,7 @@ def _distance_backbone(G, weight="weight", ultrametric=False):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def doubly_stochastic_filter(G, weight="weight", max_iter=1000, tol=1e-8):
     """Compute the doubly-stochastic backbone via Sinkhorn-Knopp normalization.
 
@@ -504,7 +504,7 @@ def doubly_stochastic_filter(G, weight="weight", max_iter=1000, tol=1e-8):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def h_backbone(G, weight="weight"):
     r"""Extract the h-backbone of a weighted graph.
 
@@ -685,7 +685,7 @@ def modularity_backbone(G, weight="weight"):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def planar_maximally_filtered_graph(G, weight="weight"):
     """Construct the Planar Maximally Filtered Graph (PMFG).
 
@@ -757,7 +757,7 @@ def planar_maximally_filtered_graph(G, weight="weight"):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def maximum_spanning_tree_backbone(G, weight="weight"):
     """Extract the maximum spanning tree as a backbone.
 
@@ -801,7 +801,7 @@ def _neighbor_sets(G):
     return {v: set(G.neighbors(v)) for v in G}
 
 
-@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def neighborhood_overlap(G):
     """Score each edge by the raw neighborhood overlap of its endpoints.
 
@@ -849,7 +849,7 @@ def neighborhood_overlap(G):
     return H
 
 
-@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def jaccard_backbone(G):
     r"""Score each edge by the Jaccard similarity of its endpoint neighborhoods.
 
@@ -914,7 +914,7 @@ def jaccard_backbone(G):
     return H
 
 
-@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def dice_backbone(G):
     r"""Score each edge by the Dice similarity of its endpoint neighborhoods.
 
@@ -972,7 +972,7 @@ def dice_backbone(G):
     return H
 
 
-@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def cosine_backbone(G):
     r"""Score each edge by the cosine similarity of its endpoint neighborhoods.
 

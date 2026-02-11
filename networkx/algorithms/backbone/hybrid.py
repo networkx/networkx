@@ -19,7 +19,7 @@ __all__ = ["glab_filter"]
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_all_attrs=True, returns_graph=True)
 def glab_filter(G, weight="weight", c=0.5):
     r"""Compute GLAB (Globally and Locally Adaptive Backbone) p-values.
 
