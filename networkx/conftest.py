@@ -188,6 +188,7 @@ needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
     "algorithms/backbone/bipartite.py",
     "algorithms/backbone/measures.py",
+    "algorithms/backbone/proximity.py",
     "algorithms/backbone/statistical.py",
     "algorithms/backbone/structural.py",
     "algorithms/backbone/unweighted.py",

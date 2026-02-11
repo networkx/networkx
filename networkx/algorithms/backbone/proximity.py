@@ -48,8 +48,6 @@ for social networks." *JASIST*, 58(7), 1019–1031.
 
 import math
 
-import numpy as np
-
 import networkx as nx
 
 # =====================================================================
@@ -705,6 +703,8 @@ def local_path_index(G, epsilon=0.01):
     >>> H[0][1]["lp"] > 0
     True
     """
+    import numpy as np  # noqa: F401  (needed by nx.to_numpy_array)
+
     H = G.copy()
     nodelist = list(G.nodes())
     A = nx.to_numpy_array(G, nodelist=nodelist)
