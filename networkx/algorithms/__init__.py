@@ -1,5 +1,6 @@
 from networkx.algorithms.assortativity import *
 from networkx.algorithms.asteroidal import *
+from networkx.algorithms.backbone import *
 from networkx.algorithms.boundary import *
 from networkx.algorithms.broadcasting import *
 from networkx.algorithms.bridges import *
@@ -64,6 +65,7 @@ from networkx.algorithms.wiener import *
 # Make certain subpackages available to the user as direct imports from
 # the `networkx` namespace.
 from networkx.algorithms import approximation
+from networkx.algorithms import backbone
 from networkx.algorithms import assortativity
 from networkx.algorithms import bipartite
 from networkx.algorithms import node_classification

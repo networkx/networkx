@@ -15,14 +15,18 @@ local_degree
 """
 
 import math
+
 import networkx as nx
 import numpy as np
+from networkx.utils import not_implemented_for
 
 __all__ = ["sparsify", "lspar", "local_degree"]
 
 
+@not_implemented_for("directed")
+@nx._dispatchable(returns_graph=True)
 def sparsify(G, escore="jaccard", normalize="rank", filter="degree", s=0.5, umst=False):
-    """Generic sparsification framework.
+    """Sparsify an unweighted graph using a score-normalise-filter pipeline.
 
     Follows the four-step pipeline from Neal (2022) [1]_:
 
@@ -35,43 +39,55 @@ def sparsify(G, escore="jaccard", normalize="rank", filter="degree", s=0.5, umst
 
     Parameters
     ----------
-    G : nx.Graph
-        Input unweighted graph.
-    escore : str
-        Edge scoring method:
-        - ``"jaccard"``: Jaccard coefficient of endpoint neighbourhoods
-        - ``"degree"``: Degree of the neighbour
-        - ``"triangles"``: Number of triangles containing the edge
-        - ``"quadrangles"``: Number of 4-cycles containing the edge
-        - ``"random"``: Uniform random score
-    normalize : str or None
-        Normalisation method: ``"rank"`` (rank within neighbourhood) or
-        ``None`` (no normalisation).
-    filter : str
-        Filtering method:
-        - ``"degree"``: Each node keeps ceil(d^s) of its top-scored edges
-        - ``"threshold"``: Keep edges with normalised score >= s
-    s : float
+    G : graph
+        A NetworkX graph.
+    escore : string, optional (default="jaccard")
+        Edge scoring method.  One of ``"jaccard"``, ``"degree"``,
+        ``"triangles"``, ``"quadrangles"``, or ``"random"``.
+    normalize : string or None, optional (default="rank")
+        Normalisation method.  ``"rank"`` normalises scores by ranking
+        within each node's neighbourhood.  ``None`` skips normalisation.
+    filter : string, optional (default="degree")
+        Filtering method.  ``"degree"`` keeps ``ceil(d^s)`` top-scored
+        edges per node.  ``"threshold"`` keeps edges with normalised
+        score >= *s*.
+    s : float, optional (default=0.5)
         Sparsification parameter.  For ``filter="degree"``, controls
         density (0 = sparsest, 1 = keep all).  For ``filter="threshold"``,
         is the cutoff value.
-    umst : bool
-        If True, add the union of minimum spanning trees (using negative
-        scores as weights) to guarantee connectivity.
+    umst : bool, optional (default=False)
+        If ``True``, add the union of minimum spanning trees (using
+        negative scores as weights) to guarantee connectivity.
 
     Returns
     -------
-    H : nx.Graph
+    H : graph
         Sparsified backbone.
+
+    Raises
+    ------
+    ValueError
+        If *filter* is not ``"degree"`` or ``"threshold"``.
+
+    See Also
+    --------
+    lspar : Convenience wrapper using Jaccard scoring.
+    local_degree : Convenience wrapper using degree scoring.
 
     References
     ----------
     .. [1] Neal, Z. P. (2022). backbone: An R package to extract network
        backbones. *PLOS ONE*, 17(5), e0269137.
-    """
-    if G.is_directed():
-        raise nx.NetworkXError("sparsify is defined for undirected graphs only.")
 
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import sparsify
+    >>> G = nx.karate_club_graph()
+    >>> H = sparsify(G, s=0.5)
+    >>> H.number_of_edges() < G.number_of_edges()
+    True
+    """
     # Step 1: Score edges
     scores = _score_edges(G, escore)
 
@@ -110,51 +126,89 @@ def sparsify(G, escore="jaccard", normalize="rank", filter="degree", s=0.5, umst
     return H
 
 
+@not_implemented_for("directed")
+@nx._dispatchable(returns_graph=True)
 def lspar(G, s=0.5):
-    """Local Sparsification backbone (Satuluri et al. 2011).
+    """Compute the Local Sparsification backbone.
 
-    Convenience wrapper: Jaccard scoring, rank normalisation, degree
-    filtering.  Best for preserving community structure.
+    Convenience wrapper around :func:`sparsify` using Jaccard scoring,
+    rank normalisation, and degree filtering.  Best for preserving
+    community structure [1]_.
 
     Parameters
     ----------
-    G : nx.Graph
-    s : float
+    G : graph
+        A NetworkX graph.
+    s : float, optional (default=0.5)
         Sparsification exponent (0 = sparsest, 1 = keep all).
 
     Returns
     -------
-    H : nx.Graph
+    H : graph
+        Sparsified backbone.
+
+    See Also
+    --------
+    sparsify : Full sparsification framework with all options.
+    local_degree : Degree-based scoring variant.
 
     References
     ----------
     .. [1] Satuluri, V., Parthasarathy, S., & Ruan, Y. (2011). Local
        graph sparsification for scalable clustering. *ACM SIGMOD*, 721-732.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import lspar
+    >>> G = nx.karate_club_graph()
+    >>> H = lspar(G, s=0.5)
+    >>> H.number_of_edges() < G.number_of_edges()
+    True
     """
     return sparsify(G, escore="jaccard", normalize="rank", filter="degree", s=s)
 
 
+@not_implemented_for("directed")
+@nx._dispatchable(returns_graph=True)
 def local_degree(G, s=0.3):
-    """Local Degree backbone (Hamann et al. 2016).
+    """Compute the Local Degree backbone.
 
-    Convenience wrapper: degree scoring, rank normalisation, degree
-    filtering.  Best for preserving hub-and-spoke structure.
+    Convenience wrapper around :func:`sparsify` using degree scoring,
+    rank normalisation, and degree filtering.  Best for preserving
+    hub-and-spoke structure [1]_.
 
     Parameters
     ----------
-    G : nx.Graph
-    s : float
-        Sparsification exponent.
+    G : graph
+        A NetworkX graph.
+    s : float, optional (default=0.3)
+        Sparsification exponent (0 = sparsest, 1 = keep all).
 
     Returns
     -------
-    H : nx.Graph
+    H : graph
+        Sparsified backbone.
+
+    See Also
+    --------
+    sparsify : Full sparsification framework with all options.
+    lspar : Jaccard-based scoring variant.
 
     References
     ----------
     .. [1] Hamann, M., Lindner, G., Meyerhenke, H., Staudt, C. L., &
        Wagner, D. (2016). Structure-preserving sparsification methods for
        social networks. *Social Network Analysis and Mining*, 6(1), 22.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.backbone import local_degree
+    >>> G = nx.karate_club_graph()
+    >>> H = local_degree(G, s=0.3)
+    >>> H.number_of_edges() < G.number_of_edges()
+    True
     """
     return sparsify(G, escore="degree", normalize="rank", filter="degree", s=s)
 
