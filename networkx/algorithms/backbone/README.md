@@ -50,19 +50,50 @@ These methods operate on topology and edge weights directly.
 | `modularity_backbone` | Node vitality = modularity change when node is removed. Filters nodes by contribution to community structure. | Rajeh, S., Savonnet, M., Leclercq, E., & Cherifi, H. (2022). "Modularity-based backbone extraction in weighted complex networks." *NetSci-X 2022*, 67–79. |
 | `planar_maximally_filtered_graph` | Greedily adds edges from heaviest to lightest while maintaining planarity. At most 3(n−2) edges. | Tumminello, M., Aste, T., Di Matteo, T., & Mantegna, R. N. (2005). "A tool for filtering information in complex systems." *PNAS*, 102(30), 10421–10426. https://doi.org/10.1073/pnas.0500298102 |
 | `maximum_spanning_tree_backbone` | Maximum weight spanning tree. Connected, n−1 edges, maximum total weight. | Kruskal, J. B. (1956). "On the shortest spanning subtree of a graph." *Proc. AMS*, 7(1), 48–50. |
-| `neighborhood_overlap` | Raw count of shared neighbors `|N(u) ∩ N(v)|` for each edge. Unnormalized; use Jaccard, Dice, or cosine for degree-corrected variants. | — |
-| `jaccard_backbone` | Jaccard similarity: `n_uv / (k_u + k_v - n_uv)`. Ranges [0, 1]. Strictest normaliser — edges score high only when endpoints share many neighbors relative to their combined neighborhood size. Bridge edges between communities score 0. | Jaccard, P. (1901). "Distribution de la flore alpine dans le bassin des Dranses et dans quelques régions voisines." *Bulletin de la Société Vaudoise des Sciences Naturelles*, 37, 241–272. |
-| `dice_backbone` | Dice similarity: `2·n_uv / (k_u + k_v)`. Always ≥ Jaccard for the same edge. Gives more credit to overlap between low-degree nodes. | Dice, L. R. (1945). "Measures of the amount of ecologic association between species." *Ecology*, 26(3), 297–302. https://doi.org/10.2307/1932409 |
-| `cosine_backbone` | Cosine similarity: `n_uv / √(k_u · k_v)`. Uses the geometric mean of degrees as denominator. Penalises degree disparity less than Jaccard but more than Dice. | Salton, G. & McGill, M. J. (1983). *Introduction to Modern Information Retrieval*. McGraw-Hill. |
+### Proximity Methods (`backbone.proximity`)
 
-**Neighborhood overlap methods** score edges by the structural similarity of
-their endpoints rather than by edge weight. They identify *structurally
-embedded* edges — edges between nodes that share many neighbors — versus
-*bridging* edges that connect otherwise separate parts of the network. All
-three normalised measures (Jaccard, Dice, cosine) satisfy the mathematical
-inequality Jaccard ≤ Cosine ≤ 1 and Jaccard ≤ Dice ≤ 1 for any edge. They
-work on both weighted and unweighted graphs (weights are ignored; only topology
-matters) and support directed graphs using the out-neighbor convention.
+These methods score each existing edge by the topological proximity (similarity)
+of its endpoints. They identify *structurally embedded* edges — edges between
+nodes that share many neighbors — versus *bridging* edges that connect otherwise
+separate parts of the network. All methods work on both weighted and unweighted
+graphs (weights are ignored; only topology matters) and support directed graphs
+using the out-neighbor convention.
+
+The methods are organized into **local** indices (based on immediate neighborhood
+structure) and **quasi-local** indices (incorporating short-range path information).
+
+#### Local Proximity Indices
+
+| Function | Formula | Description | Reference |
+|---|---|---|---|
+| `neighborhood_overlap` | `\|N(u) ∩ N(v)\|` | Raw count of shared neighbors. Unnormalized; use a normalized variant for degree-corrected scoring. | — |
+| `jaccard_backbone` | `n_uv / (k_u + k_v - n_uv)` | Jaccard similarity [0, 1]. Strictest normaliser — edges score high only when endpoints share many neighbors relative to their combined neighborhood. Bridge edges score 0. | Jaccard, P. (1901). "Distribution de la flore alpine dans le bassin des Dranses et dans quelques régions voisines." *Bulletin de la Société Vaudoise des Sciences Naturelles*, 37, 241–272. |
+| `dice_backbone` | `2·n_uv / (k_u + k_v)` | Dice / Sørensen coefficient [0, 1]. Always ≥ Jaccard for the same edge. Gives more credit to overlap between low-degree nodes. | Dice, L. R. (1945). "Measures of the amount of ecologic association between species." *Ecology*, 26(3), 297–302. https://doi.org/10.2307/1932409 |
+| `cosine_backbone` | `n_uv / √(k_u · k_v)` | Cosine / Salton index [0, 1]. Uses the geometric mean of degrees as denominator. Penalises degree disparity less than Jaccard but more than Dice. | Salton, G. & McGill, M. J. (1983). *Introduction to Modern Information Retrieval*. McGraw-Hill. |
+| `hub_promoted_index` | `n_uv / min(k_u, k_v)` | Hub Promoted Index [0, 1]. Normalises by the smaller degree, so edges incident to hubs are promoted. | Ravasz, E., Somera, A. L., Mongru, D. A., Oltvai, Z. N., & Barabási, A.-L. (2002). "Hierarchical organization of modularity in metabolic networks." *Science*, 297(5586), 1551–1555. https://doi.org/10.1126/science.1073374 |
+| `hub_depressed_index` | `n_uv / max(k_u, k_v)` | Hub Depressed Index [0, 1]. Normalises by the larger degree, so edges between high-degree nodes are penalised. Always ≤ HPI. | Zhou, T., Lü, L., & Zhang, Y.-C. (2009). "Predicting missing links via local information." *European Physical Journal B*, 71, 623–630. https://doi.org/10.1140/epjb/e2009-00335-8 |
+| `lhn_local_index` | `n_uv / (k_u · k_v)` | Leicht–Holme–Newman local similarity index. Normalises by the product of degrees, penalising high-degree node pairs more aggressively than any other local index. | Leicht, E. A., Holme, P., & Newman, M. E. J. (2006). "Vertex similarity in networks." *Physical Review E*, 73, 026120. https://doi.org/10.1103/PhysRevE.73.026120 |
+| `preferential_attachment_score` | `k_u · k_v` | Preferential attachment score. Unlike all other indices, this does **not** use common neighbors — it scores edges purely by the product of endpoint degrees. High-degree node pairs score highest. | Barabási, A.-L. & Albert, R. (1999). "Emergence of scaling in random networks." *Science*, 286(5439), 509–512. https://doi.org/10.1126/science.286.5439.509 |
+| `adamic_adar_index` | `Σ_{w ∈ N(u)∩N(v)} 1/log(k_w)` | Adamic–Adar index. Weights each common neighbor by the inverse of its log-degree, giving more credit to rare shared neighbors. | Adamic, L. A. & Adar, E. (2003). "Friends and neighbors on the Web." *Social Networks*, 25(3), 211–230. https://doi.org/10.1016/S0378-8733(03)00009-1 |
+| `resource_allocation_index` | `Σ_{w ∈ N(u)∩N(v)} 1/k_w` | Resource allocation index. Like Adamic–Adar but penalises high-degree intermediaries more strongly (1/k instead of 1/log k). | Zhou et al. (2009), as above. |
+
+#### Quasi-Local Proximity Indices
+
+| Function | Formula | Description | Reference |
+|---|---|---|---|
+| `graph_distance_proximity` | `1 / d(u, v)` | Reciprocal of shortest-path distance. For existing edges this is always 1.0 (since adjacent nodes have distance 1). Most useful as a baseline or when extended to non-edges. | Lü, L. & Zhou, T. (2011). "Link prediction in complex networks: A survey." *Physica A*, 390(6), 1150–1170. https://doi.org/10.1016/j.physa.2010.11.027 |
+| `local_path_index` | `\|A²(u,v)\| + ε·\|A³(u,v)\|` | Local path index combining second-order paths (common neighbors) and third-order paths, weighted by parameter ε. Captures local clustering beyond immediate neighbors. | Lü, L., Jin, C.-H., & Zhou, T. (2009). "Similarity index based on local random walk and length of shortest paths." *Physical Review E*, 80, 046122. https://doi.org/10.1103/PhysRevE.80.046122 |
+
+**Key relationships among local indices.** For any edge (u, v) with at least one
+common neighbor, the following inequalities hold:
+
+- HDI ≤ Jaccard ≤ Cosine ≤ Dice ≤ HPI
+- LHN ≤ HDI (since k_u · k_v ≥ max(k_u, k_v) when both degrees > 1)
+
+All common-neighbor–based indices (Jaccard, Dice, cosine, HPI, HDI, LHN,
+Adamic–Adar, resource allocation) return 0 for bridge edges with no shared
+neighbors. Preferential attachment is the exception: it depends only on
+endpoint degrees.
 
 ### Hybrid Methods (`backbone.hybrid`)
 
@@ -126,8 +157,12 @@ from backbone.structural import (
     h_backbone,
     planar_maximally_filtered_graph,
     maximum_spanning_tree_backbone,
+)
+from backbone.proximity import (
     jaccard_backbone,
     cosine_backbone,
+    adamic_adar_index,
+    hub_promoted_index,
 )
 from backbone.hybrid import glab_filter
 from backbone.filters import threshold_filter, fraction_filter, consensus_backbone
@@ -189,15 +224,21 @@ G_glab = glab_filter(G, c=0.5)
 bb_glab = threshold_filter(G_glab, "glab_pvalue", 0.1, "below")
 ```
 
-### 4. Neighborhood overlap: embedded vs. bridging edges
+### 4. Proximity metrics: embedded vs. bridging edges
 
-Neighborhood overlap methods score edges by the structural similarity of their
-endpoints — how many neighbors two characters share. Edges with high scores
-connect characters embedded in the same social circle; edges with low scores
-bridge otherwise separate groups.
+Proximity methods score edges by the topological similarity of their
+endpoints — how many neighbors two characters share, weighted by various
+normalisation schemes. Edges with high scores connect characters embedded
+in the same social circle; edges with low scores bridge otherwise separate
+groups.
 
 ```python
-from backbone.structural import jaccard_backbone, cosine_backbone
+from backbone.proximity import (
+    jaccard_backbone,
+    cosine_backbone,
+    adamic_adar_index,
+    hub_promoted_index,
+)
 
 # Score every edge by Jaccard similarity of endpoint neighborhoods
 G_jac = jaccard_backbone(G)
@@ -214,6 +255,14 @@ print(f"Bridge edges: {bb_bridges.number_of_edges()} edges")
 # Cosine similarity offers a softer normalisation
 G_cos = cosine_backbone(G)
 bb_cosine = threshold_filter(G_cos, "cosine", 0.4, "above")
+
+# Adamic-Adar weights common neighbors by rarity (1/log(degree))
+G_aa = adamic_adar_index(G)
+bb_aa = fraction_filter(G_aa, "adamic_adar", 0.3, ascending=False)
+
+# Hub Promoted Index favours edges incident to hubs
+G_hpi = hub_promoted_index(G)
+bb_hpi = threshold_filter(G_hpi, "hpi", 0.3, "above")
 ```
 
 ### 6. Comparing backbones
@@ -231,6 +280,8 @@ backbones = {
     "glab_0.1": bb_glab,
     "jaccard_0.3": bb_embedded,
     "cosine_0.4": bb_cosine,
+    "adamic_adar_30%": bb_aa,
+    "hpi_0.3": bb_hpi,
 }
 
 results = compare_backbones(
@@ -385,21 +436,37 @@ Following NetworkX conventions:
 
 ```bash
 # Run all backbone tests
-pytest backbone/tests/test_backbone.py -v
+pytest backbone/tests/ -v
 
-# 182 tests covering:
-#   - All 20+ backbone extraction algorithms
+# 261 tests across 10 test modules covering:
+#   - All 30+ backbone extraction and proximity scoring algorithms
 #   - Directed and undirected weighted graphs
-#   - Statistical, structural, hybrid, bipartite, and unweighted methods
+#   - Statistical, structural, proximity, hybrid, bipartite, and unweighted methods
+#   - 12 proximity indices with value verification and cross-method invariants
 #   - Filtering utilities and evaluation measures
 #   - Edge cases (empty graphs, single nodes, self-loops)
 #   - End-to-end pipelines and cross-method comparisons
 #   - Monotonicity and containment properties
 ```
 
+Tests are organized by category:
+
+| Test file | Coverage |
+|---|---|
+| `test_statistical.py` | disparity, noise-corrected, marginal likelihood, ECM, LANS filters |
+| `test_structural.py` | threshold, strongest-n, salience, metric/ultrametric, doubly stochastic, h-backbone, modularity, PMFG, MST |
+| `test_proximity.py` | All 12 proximity indices: neighborhood overlap, Jaccard, Dice, cosine, HPI, HDI, LHN, PA, Adamic–Adar, resource allocation, graph distance, local path index |
+| `test_filters.py` | threshold, fraction, boolean, consensus filters |
+| `test_measures.py` | node/edge/weight fractions, reachability, KS statistics, compare_backbones |
+| `test_hybrid.py` | GLAB filter |
+| `test_bipartite.py` | SDSM, FDSM |
+| `test_unweighted.py` | sparsify, lspar, local_degree |
+| `test_integration.py` | End-to-end pipelines, monotonicity, edge cases, smoke tests |
+| `conftest.py` | Shared fixtures (two-cluster, star, path, triangle, complete, disconnected) |
+
 Test fixtures include hand-crafted graphs with known structure (two-cluster
 barbell, star, path, triangle, complete uniform, disconnected components) and
-NetworkX's bundled datasets for smoke tests.
+synthetic graphs for smoke tests.
 
 ---
 
