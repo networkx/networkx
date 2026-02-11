@@ -14,9 +14,10 @@ fdsm
 
 import itertools
 
-import networkx as nx
 import numpy as np
 from scipy import stats as sp_stats
+
+import networkx as nx
 
 __all__ = ["sdsm", "fdsm"]
 

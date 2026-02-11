@@ -16,8 +16,9 @@ local_degree
 
 import math
 
-import networkx as nx
 import numpy as np
+
+import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = ["sparsify", "lspar", "local_degree"]
@@ -217,6 +218,7 @@ def local_degree(G, s=0.3):
 # Internal helpers
 # =====================================================================
 
+
 def _score_edges(G, method):
     """Compute edge scores.  Returns dict {(min(u,v), max(u,v)): score}."""
     scores = {}
@@ -300,7 +302,7 @@ def _degree_filter(G, scores, s):
         d = G.degree(u)
         if d == 0:
             continue
-        n_keep = max(1, math.ceil(d ** s))
+        n_keep = max(1, math.ceil(d**s))
 
         # Get edges with scores
         edge_scores = []

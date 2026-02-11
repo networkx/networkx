@@ -1,8 +1,9 @@
 """Evaluation measures for comparing backbones against their original network."""
 
-import networkx as nx
 import numpy as np
 from scipy import stats as sp_stats
+
+import networkx as nx
 
 __all__ = [
     "node_fraction",
@@ -302,7 +303,9 @@ def compare_backbones(original, backbones, measures=None, weight="weight"):
     --------
     >>> import networkx as nx
     >>> from networkx.algorithms.backbone import (
-    ...     compare_backbones, node_fraction, edge_fraction
+    ...     compare_backbones,
+    ...     node_fraction,
+    ...     edge_fraction,
     ... )
     >>> G = nx.complete_graph(5)
     >>> H = nx.path_graph(5)

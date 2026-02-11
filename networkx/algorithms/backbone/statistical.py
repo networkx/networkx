@@ -21,9 +21,10 @@ lans_filter
 
 import math
 
-import networkx as nx
 import numpy as np
 from scipy import stats as sp_stats
+
+import networkx as nx
 
 __all__ = [
     "disparity_filter",
@@ -38,6 +39,7 @@ __all__ = [
 # Helper: validate positive weights
 # =====================================================================
 
+
 def _validate_weights(G, weight):
     """Check that all edges have a positive weight attribute."""
     for u, v, data in G.edges(data=True):
@@ -51,6 +53,7 @@ def _validate_weights(G, weight):
 # =====================================================================
 # 1. Disparity filter — Serrano et al. (2009)
 # =====================================================================
+
 
 @nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def disparity_filter(G, weight="weight"):
@@ -157,6 +160,7 @@ def _disparity_node_pvalue(w, s, k):
 # 2. Noise-corrected filter — Coscia & Neffke (2017)
 # =====================================================================
 
+
 @nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def noise_corrected_filter(G, weight="weight"):
     r"""Compute noise-corrected edge significance scores.
@@ -259,6 +263,7 @@ def noise_corrected_filter(G, weight="weight"):
 # 3. Marginal likelihood filter — Dianati (2016)
 # =====================================================================
 
+
 @nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def marginal_likelihood_filter(G, weight="weight"):
     r"""Compute marginal likelihood p-values for each edge.
@@ -356,6 +361,7 @@ def marginal_likelihood_filter(G, weight="weight"):
 # 4. ECM filter — Gemmetto et al. (2017)
 # =====================================================================
 
+
 @nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def ecm_filter(G, weight="weight", max_iter=1000, tol=1e-6):
     r"""Compute ECM (Enhanced Configuration Model) p-values.
@@ -442,9 +448,7 @@ def ecm_filter(G, weight="weight", max_iter=1000, tol=1e-6):
         )
     else:
         deg = np.array([G.degree(v) for v in nodes], dtype=float)
-        strength = np.array(
-            [G.degree(v, weight=weight) for v in nodes], dtype=float
-        )
+        strength = np.array([G.degree(v, weight=weight) for v in nodes], dtype=float)
 
     # Initialise Lagrange multipliers
     deg_sum = deg.sum()
@@ -511,6 +515,7 @@ def ecm_filter(G, weight="weight", max_iter=1000, tol=1e-6):
 # =====================================================================
 # 5. LANS — Foti et al. (2011)
 # =====================================================================
+
 
 @nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def lans_filter(G, weight="weight"):
