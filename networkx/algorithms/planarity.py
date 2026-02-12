@@ -3,8 +3,7 @@ from copy import deepcopy
 
 import networkx as nx
 
-__all__ = ["check_planarity", "is_planar", "PlanarEmbedding"]
-
+__all__ = ["check_planarity","is_planar","PlanarEmbedding","faces_from_planar_embedding"]
 
 @nx._dispatchable
 def is_planar(G):
@@ -1461,3 +1460,46 @@ class PlanarEmbedding(nx.DiGraph):
             for v, d in nbrs.items()
         )
         return G
+
+
+def faces_from_planar_embedding(embedding: PlanarEmbedding):
+    """Return facial boundary walks from a planar embedding.
+
+    Parameters
+    ----------
+    embedding : networkx.algorithms.planarity.PlanarEmbedding
+        A valid planar embedding.
+
+    Returns
+    -------
+    faces : list of lists
+        Facial boundary walks as node sequences in cyclic order.
+        Walks are not guaranteed to be simple cycles: vertices can repeat,
+        for example around bridges or articulation points.
+
+    Notes
+    -----
+    This function traverses each directed half-edge exactly once.
+    For disconnected embeddings, a unique global outer face is not
+    distinguished by the combinatorial embedding.
+    """
+    if not isinstance(embedding, PlanarEmbedding):
+        raise TypeError(
+            "embedding must be a networkx.algorithms.planarity.PlanarEmbedding"
+        )
+
+    visited_half_edges = set()
+    faces = []
+
+    for u in embedding:
+        for v in embedding.neighbors_cw_order(u):
+            if (u, v) in visited_half_edges:
+                continue
+            face = embedding.traverse_face(
+                u,
+                v,
+                mark_half_edges=visited_half_edges,
+            )
+            faces.append(face)
+
+    return faces
