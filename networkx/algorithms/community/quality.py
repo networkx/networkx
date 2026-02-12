@@ -254,6 +254,116 @@ def modularity(G, communities, weight="weight", resolution=1):
     return sum(map(community_contribution, communities))
 
 
+def _constant_potts_model_remove_cost(
+    G, node, community, resolution, weight="weight", node_weight="node_weight"
+):
+    r"""
+    The change in CPM value from removing node from the community. Can be used
+    with
+
+        constant_potts_model_add_cost
+
+    to compute the overall quality delta from moving a node u from community A
+    to community B
+
+    This function uses a formula derived as follows. Let u_wt be the weight of
+    the node u, and let n_A be the sum of weights of nodes in A, and
+    let A'= A\{u}.
+
+    Then
+
+        rem_cost = (E(A', A') - r*n_A'^2) - (E(A, A) - r*n_A^2)
+                 = E(A', A') - E(A, A) - r*n_A'^2 + r*n_A^2
+                 = E(A', A') - E(A, A) - r*(n_A'^2 - n_A^2)
+
+    where E(X,Y) is the sum of weights of edges between the nodes in X
+    and the nodes in Y.
+
+    Letting
+
+        E_D = E(A', A') - E(A, A)
+            = -E({u}, A)
+
+    and noting that n_A = n_A' + u_wt where u_wt is the weight of
+    the node u we have
+
+        rem_cost = E_D - r*(n_A'^2 - (n_A' + u_wt)^2)
+                 = E_D - r*(-2*n_A'*u_wt - u_wt^2)
+                 = E_D + r*(2*n_A'*u_wt - u_wt^2)
+
+    and therefore to compute rem_cost we only need to compute
+    the terms E_D, n_A' and u_wt
+
+    """
+
+    n_A_prime = sum(
+        wt for u, wt in G.nodes(data=node_weight) if u in community - {node}
+    )
+
+    u_wt = G.nodes[node][node_weight]
+
+    # E_D is -1*(the sum of edge weights between u and the members of A)
+    # that is, E_D = -1*E_diff where E_diff is defined
+    E_diff = sum(wt for u, v, wt in G.edges({node}, data=weight) if v in community)
+
+    rem_cost = resolution * (2 * n_A_prime * u_wt + u_wt**2) - E_diff
+
+    return rem_cost
+
+
+def _constant_potts_model_add_cost(
+    G, node, community, resolution, weight="weight", node_weight="node_weight"
+):
+    r"""
+    The change in CPM value from adding a node to the community. Can be used
+    with
+
+        constant_potts_model_remove_cost
+
+    to compute the overall quality delta from moving a node u from community A
+    to community B
+
+    This function uses a formula derived as follows. Let u_wt be the weight of
+    the node u, and let n_B be the sum of weights of nodes in B, and
+    let B'= B \union {u}.
+
+    Then
+
+        add_cost = (E(B', B') - r*n_B'^2) - (E(B, B) - r*n_B^2)
+                 = E(B', B') - E(B, B) - r*n_B'^2 + r*n_B^2
+                 = E(B', B') - E(B, B) - r*(n_B'^2 - n_B^2)
+
+    where E(X,Y) is the sum of weights of edges between the nodes in X
+    and the nodes in Y.
+
+    Letting
+
+        E_D = E(B', B') - E(B, B)
+            = E({u}, B')
+
+    and noting that n_B' = n_B + u_wt where u_wt is the weight of
+    the node u we have
+
+        rem_cost = E_D - r*((n_B + u_wt)^2 - n_B^2)
+                 = E_D - r*(n_B^2 + 2*n_B*u_wt + u_wt^2 - n_B^2)
+                 = E_D - r*(2*n_B*u_wt + u_wt^2)
+
+    and therefore to compute rem_cost we only need to compute
+    the terms E_D, n_B and u_wt
+
+    """
+    n_B = sum(wt for u, wt in G.nodes(data=node_weight) if u in community)
+    u_wt = G.nodes[node][node_weight]
+
+    # E_D is the sum of weights between u and the members of B'
+    E_D = sum(
+        wt for u, v, wt in G.edges({node}, data=weight) if v in community.union({node})
+    )
+    add_cost = E_D - resolution * (2 * n_B * u_wt + u_wt**2)
+
+    return add_cost
+
+
 def constant_potts_model(
     G,
     communities,
