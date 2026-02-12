@@ -1,4 +1,5 @@
 from collections import defaultdict
+from collections.abc import Hashable
 from copy import deepcopy
 
 import networkx as nx
@@ -1494,7 +1495,7 @@ def faces_from_planar_embedding(embedding: PlanarEmbedding):
             "embedding must be a networkx.algorithms.planarity.PlanarEmbedding"
         )
 
-    visited_half_edges = set()
+    visited_half_edges: set[tuple[Hashable, Hashable]] = set()
     faces = []
 
     for u in embedding:
