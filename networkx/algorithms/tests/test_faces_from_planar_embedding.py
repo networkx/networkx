@@ -1,8 +1,8 @@
 from collections import Counter
 
-import networkx as nx
 import pytest
 
+import networkx as nx
 from networkx.algorithms.planarity import faces_from_planar_embedding
 
 

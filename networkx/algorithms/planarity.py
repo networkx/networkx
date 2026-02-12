@@ -3,7 +3,13 @@ from copy import deepcopy
 
 import networkx as nx
 
-__all__ = ["check_planarity","is_planar","PlanarEmbedding","faces_from_planar_embedding"]
+__all__ = [
+    "check_planarity",
+    "is_planar",
+    "PlanarEmbedding",
+    "faces_from_planar_embedding",
+]
+
 
 @nx._dispatchable
 def is_planar(G):
