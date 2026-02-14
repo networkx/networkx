@@ -543,9 +543,7 @@ def test_subgraph_triangle_square_2tails(iso_ic, symmetry, Gclass):
     assert iso_ic(Gclass(G), Gclass(SG), symmetry=symmetry)
     SG.remove_edge(2, 3)
 
-    if "ismags" not in iso_ic.__name__:
-        # FIXME: check why fails ismags but not vf2
-        assert mono == iso_ic(Gclass(G), Gclass(SG), symmetry=symmetry)
+    assert mono == iso_ic(Gclass(G), Gclass(SG), symmetry=symmetry)
 
     SG.add_edges_from([(7, 3), (7, 4)])
     assert not iso_ic(Gclass(G), Gclass(SG), symmetry=symmetry)
