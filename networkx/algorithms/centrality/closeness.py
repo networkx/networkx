@@ -140,10 +140,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True, sp=None):
         if sp is None:
             sp_node = path_length(G, n)
         else:
-            try:
-                sp_node = sp[n]
-            except TypeError as err:
-                raise nx.NetworkXError('Format of "sp" is invalid.') from err
+            sp_node = sp[n]
 
         totsp = sum(sp_node.values())
         len_G = len(G)
