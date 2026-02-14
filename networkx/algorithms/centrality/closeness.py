@@ -111,6 +111,17 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True, sp=None):
     if G.is_directed():
         G = G.reverse()  # create a reversed graph view
 
+    if G.is_directed() and sp is not None:
+        try:
+            # reverse the sp
+            rev_sp = {x: {} for x in G.nodes()}
+            for key1, dict1 in sp.items():
+                for key2, value in dict1.items():
+                    rev_sp[key2][key1] = value
+            sp = rev_sp
+        except TypeError as err:
+            raise nx.NetworkXError('Format of "sp" is invalid.') from err
+
     if distance is not None:
         # use Dijkstra's algorithm with specified attribute as edge weight
         path_length = functools.partial(
@@ -130,14 +141,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True, sp=None):
             sp_node = path_length(G, n)
         else:
             try:
-                if G.is_directed():
-                    # code to "inverts" sp
-                    sp_node = {}
-                    for x in G.nodes():
-                        if n in sp[x]:
-                            sp_node[x] = sp[x][n]
-                else:
-                    sp_node = sp[n]
+                sp_node = sp[n]
             except TypeError as err:
                 raise nx.NetworkXError('Format of "sp" is invalid.') from err
 
