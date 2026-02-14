@@ -65,17 +65,17 @@ def test_random_walk_unweighted_reproducible():
 
 
 def test_random_walk_unweighted_dead_end():
-    """Unweighted walk should stop immediately when the start node has no neighbors."""
+    """Unweighted walk should yield start and stop at a dead end."""
     G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
     walk = list(nx.random_walk(G, start=3, seed=0))
-    assert walk == []
+    assert walk == [3]
 
 
 def test_random_walk_unweighted_directed():
     """Unweighted walk on a DiGraph should follow edge direction."""
     G = nx.DiGraph([(0, 1), (1, 2), (2, 2)])
-    walk = list(islice(nx.random_walk(G, start=0, seed=0), 3))
-    assert walk == [1, 2, 2]
+    walk = list(islice(nx.random_walk(G, start=0, seed=0), 4))
+    assert walk == [0, 1, 2, 2]
 
 
 def test_random_walk_missing_start():
@@ -149,11 +149,11 @@ def test_random_walk_weighted_default_weight():
 
 
 def test_random_walk_weighted_zero_weight_stops():
-    """Zero-weight edges should halt the walk when no positive weight neighbors remain."""
+    """Zero-weight edges should halt the walk after yielding the start node."""
     G = nx.DiGraph()
     G.add_edge(0, 1, weight=0)
     walk = list(nx.random_walk(G, start=0, weight="weight", seed=0))
-    assert walk == []
+    assert walk == [0]
 
 
 def test_random_walk_weighted_negative_weight_raises():
@@ -161,7 +161,7 @@ def test_random_walk_weighted_negative_weight_raises():
     G = nx.Graph()
     G.add_edge(0, 1, weight=-2)
     with pytest.raises(ValueError):
-        list(islice(nx.random_walk(G, start=0, weight="weight", seed=0), 1))
+        list(islice(nx.random_walk(G, start=0, weight="weight", seed=0), 2))
 
 
 def test_random_walk_unweighted_with_negative_weight_attr():
@@ -169,5 +169,5 @@ def test_random_walk_unweighted_with_negative_weight_attr():
     G = nx.Graph()
     G.add_edge(0, 1, weight=-5)
     # Should behave as unweighted and not raise
-    walk = list(islice(nx.random_walk(G, start=0, seed=0), 1))
-    assert walk == [1]
+    walk = list(islice(nx.random_walk(G, start=0, seed=0), 2))
+    assert walk == [0, 1]

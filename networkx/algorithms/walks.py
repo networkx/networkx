@@ -85,8 +85,8 @@ def number_of_walks(G, walk_length):
 def random_walk(G, start, *, weight=None, seed=None):
     """Yields nodes visited by a random walk starting at `start`.
 
-    The generator yields one node per hop and terminates when there is no valid
-    outgoing transition. The `start` node is not yielded; it is the initial state.
+    The generator yields nodes in walk order, including `start` as the first
+    yielded node, and terminates when there is no valid outgoing transition.
 
     If `weight` is None, transitions are uniform over neighbors. If `weight` is
     a string, transitions are proportional to that edge attribute, defaulting to
@@ -113,27 +113,29 @@ def random_walk(G, start, *, weight=None, seed=None):
     if start not in G:
         raise nx.NodeNotFound(start)
 
+    adj = G._adj
     current = start
     while True:
-        neighbours = G[current]
+        yield current
+        neighbours = adj[current]
         if not neighbours:
             return
 
-        # Sample using a single weighted path for both weighted and unweighted
-        # random walks (when weight is None, each edge weight is 1).
-        weight_map = {}
+        if weight is None:
+            current = seed.choice(list(neighbours))
+            continue
+
+        positive_weights = {}
         for neighbor, edge_data in neighbours.items():
-            total = 1 if weight is None else edge_data.get(weight, 1)
-            if total < 0:
+            edge_weight = edge_data.get(weight, 1)
+            if edge_weight < 0:
                 raise ValueError(
-                    f"Edge ({current}, {neighbor}) has negative weight {total}"
+                    f"Edge ({current}, {neighbor}) has negative weight {edge_weight}"
                 )
+            if edge_weight > 0:
+                positive_weights[neighbor] = edge_weight
 
-            if total > 0:
-                weight_map[neighbor] = total
-
-        if not weight_map:
+        if not positive_weights:
             return
 
-        current = weighted_choice(weight_map, seed)
-        yield current
+        current = weighted_choice(positive_weights, seed)
