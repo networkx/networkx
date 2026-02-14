@@ -3,6 +3,7 @@ Closeness centrality measures.
 """
 
 import functools
+from collections import defaultdict
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -111,16 +112,13 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True, sp=None):
     if G.is_directed():
         G = G.reverse()  # create a reversed graph view
 
-    if G.is_directed() and sp is not None:
-        try:
+        if sp is not None:
             # reverse the sp
-            rev_sp = {x: {} for x in G.nodes()}
+            rev_sp = defaultdict(dict)  # handles missing keys by defaulting to {}
             for key1, dict1 in sp.items():
                 for key2, value in dict1.items():
                     rev_sp[key2][key1] = value
             sp = rev_sp
-        except TypeError as err:
-            raise nx.NetworkXError('Format of "sp" is invalid.') from err
 
     if distance is not None:
         # use Dijkstra's algorithm with specified attribute as edge weight
