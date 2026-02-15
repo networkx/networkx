@@ -2,7 +2,6 @@
 
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
-from networkx.utils.random_sequence import weighted_choice
 
 __all__ = ["number_of_walks", "random_walk"]
 
@@ -82,7 +81,7 @@ def number_of_walks(G, walk_length):
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 @py_random_state("seed")
-def random_walk(G, start, *, weight=None, seed=None):
+def random_walk(G, *, start, weight=None, seed=None):
     """Yields nodes visited by a random walk starting at `start`.
 
     The generator yields nodes in walk order, including `start` as the first
@@ -125,7 +124,8 @@ def random_walk(G, start, *, weight=None, seed=None):
             current = seed.choice(list(neighbours))
             continue
 
-        positive_weights = {}
+        positive_neighbours = []
+        positive_weights = []
         for neighbor, edge_data in neighbours.items():
             edge_weight = edge_data.get(weight, 1)
             if edge_weight < 0:
@@ -133,9 +133,10 @@ def random_walk(G, start, *, weight=None, seed=None):
                     f"Edge ({current}, {neighbor}) has negative weight {edge_weight}"
                 )
             if edge_weight > 0:
-                positive_weights[neighbor] = edge_weight
+                positive_neighbours.append(neighbor)
+                positive_weights.append(edge_weight)
 
-        if not positive_weights:
+        if not positive_neighbours:
             return
 
-        current = weighted_choice(positive_weights, seed)
+        current = seed.choices(positive_neighbours, weights=positive_weights, k=1)[0]

@@ -59,33 +59,39 @@ def test_hidden_weight_attr():
 def test_random_walk_unweighted_reproducible():
     """Two runs with the same seed should produce identical unweighted walks."""
     G = nx.cycle_graph(5)
-    walk_a = list(islice(nx.random_walk(G, start=0, seed=5), 6))
-    walk_b = list(islice(nx.random_walk(G, start=0, seed=5), 6))
-    assert walk_a == walk_b
+    walk_a = islice(nx.random_walk(G, start=0, seed=5), 6)
+    walk_b = islice(nx.random_walk(G, start=0, seed=5), 6)
+    assert list(walk_a) == list(walk_b)
 
 
 def test_random_walk_unweighted_dead_end():
     """Unweighted walk should yield start and stop at a dead end."""
     G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
-    walk = list(nx.random_walk(G, start=3, seed=0))
-    assert walk == [3]
+    walk = nx.random_walk(G, start=3, seed=0)
+    assert list(walk) == [3]
 
 
 def test_random_walk_unweighted_directed():
     """Unweighted walk on a DiGraph should follow edge direction."""
     G = nx.DiGraph([(0, 1), (1, 2), (2, 2)])
-    walk = list(islice(nx.random_walk(G, start=0, seed=0), 4))
-    assert walk == [0, 1, 2, 2]
+    walk = islice(nx.random_walk(G, start=0, seed=0), 4)
+    assert list(walk) == [0, 1, 2, 2]
 
 
-def test_random_walk_missing_start():
+def test_random_walk_omitted_start_raises_typeerror():
     """Omitting start should raise TypeError."""
     G = nx.cycle_graph(5)
     with pytest.raises(TypeError):
         nx.random_walk(G)
 
 
-def test_random_walk_unweighted_missing_start():
+def test_random_walk_start_must_be_keyword():
+    G = nx.path_graph(2)
+    with pytest.raises(TypeError):
+        nx.random_walk(G, 0)
+
+
+def test_random_walk_missing_start_node_raises_nodenotfound():
     """Starting from a node not in the graph should raise NodeNotFound."""
     G = nx.path_graph(2)
     with pytest.raises(nx.NodeNotFound):
@@ -106,33 +112,30 @@ def test_random_walk_multigraph_not_implemented():
 
 
 def test_random_walk_weighted_reproducible():
-    """Weighted walks should be deterministic when seed is fixed."""
+    """Using the same integer seed should reproduce the same weighted walk."""
     G = nx.Graph()
     G.add_edge(0, 1, weight=2)
     G.add_edge(1, 2, weight=1)
-    walk_a = list(islice(nx.random_walk(G, start=0, weight="weight", seed=0), 4))
-    walk_b = list(islice(nx.random_walk(G, start=0, weight="weight", seed=0), 4))
-    assert walk_a == walk_b
+    walk_a = islice(nx.random_walk(G, start=0, weight="weight", seed=0), 4)
+    walk_b = islice(nx.random_walk(G, start=0, weight="weight", seed=0), 4)
+    assert list(walk_a) == list(walk_b)
 
 
-def test_random_walk_weighted_with_randomstate_seed():
-    """Weighted walks support non-default np.random.RandomState seeds."""
+def test_random_walk_weighted_with_generator_seed():
+    """Using the same NumPy Generator seed should reproduce the same weighted walk."""
     G = nx.Graph()
     G.add_edge(0, 1, weight=2)
     G.add_edge(0, 2, weight=1)
-    walk_a = list(
-        islice(
-            nx.random_walk(G, start=0, weight="weight", seed=np.random.RandomState(7)),
-            4,
-        )
+    seed = 7
+    walk_a = islice(
+        nx.random_walk(G, start=0, weight="weight", seed=np.random.default_rng(seed)),
+        4,
     )
-    walk_b = list(
-        islice(
-            nx.random_walk(G, start=0, weight="weight", seed=np.random.RandomState(7)),
-            4,
-        )
+    walk_b = islice(
+        nx.random_walk(G, start=0, weight="weight", seed=np.random.default_rng(seed)),
+        4,
     )
-    assert walk_a == walk_b
+    assert list(walk_a) == list(walk_b)
 
 
 def test_random_walk_weighted_default_weight():
@@ -141,19 +144,17 @@ def test_random_walk_weighted_default_weight():
     H = nx.Graph()
     H.add_edge(0, 1, weight=1)
     H.add_edge(1, 2, weight=1)
-    walk = list(islice(nx.random_walk(G, start=0, weight="weight", seed=1), 3))
-    walk_with_attrs = list(
-        islice(nx.random_walk(H, start=0, weight="weight", seed=1), 3)
-    )
-    assert walk == walk_with_attrs
+    walk = islice(nx.random_walk(G, start=0, weight="weight", seed=1), 3)
+    walk_with_attrs = islice(nx.random_walk(H, start=0, weight="weight", seed=1), 3)
+    assert list(walk) == list(walk_with_attrs)
 
 
 def test_random_walk_weighted_zero_weight_stops():
     """Zero-weight edges should halt the walk after yielding the start node."""
     G = nx.DiGraph()
     G.add_edge(0, 1, weight=0)
-    walk = list(nx.random_walk(G, start=0, weight="weight", seed=0))
-    assert walk == [0]
+    walk = nx.random_walk(G, start=0, weight="weight", seed=0)
+    assert list(walk) == [0]
 
 
 def test_random_walk_weighted_negative_weight_raises():
@@ -169,5 +170,5 @@ def test_random_walk_unweighted_with_negative_weight_attr():
     G = nx.Graph()
     G.add_edge(0, 1, weight=-5)
     # Should behave as unweighted and not raise
-    walk = list(islice(nx.random_walk(G, start=0, seed=0), 2))
-    assert walk == [0, 1]
+    walk = islice(nx.random_walk(G, start=0, seed=0), 2)
+    assert list(walk) == [0, 1]
