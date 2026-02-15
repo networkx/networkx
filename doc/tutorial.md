@@ -556,7 +556,7 @@ lollipop = nx.lollipop_graph(10, 20)
     ~generators.random_graphs.erdos_renyi_graph
     ~generators.random_graphs.watts_strogatz_graph
     ~generators.random_graphs.barabasi_albert_graph
-    ~generators.random_graphs.random_lobster
+    ~generators.random_graphs.random_lobster_graph
 ```
 
 like so:
@@ -565,7 +565,7 @@ like so:
 er = nx.erdos_renyi_graph(100, 0.15)
 ws = nx.watts_strogatz_graph(30, 3, 0.1)
 ba = nx.barabasi_albert_graph(100, 5)
-red = nx.random_lobster(100, 0.9, 0.9)
+red = nx.random_lobster_graph(100, 0.9, 0.9)
 ```
 
 ### 5. Reading a graph stored in a file using common graph formats
@@ -626,15 +626,15 @@ For example:
 ```{code-cell}
 import networkx as nx
 
-eps = 1e-17
+tiny = 5e-17
 
 G = nx.DiGraph()
 G.add_edge('A', 'B', weight=0.1)
 G.add_edge('B', 'C', weight=0.1)
 G.add_edge('C', 'D', weight=0.1)
-G.add_edge('A', 'D', weight=0.3 + eps)
+G.add_edge('A', 'D', weight=0.3 + tiny)
 
-path = nx.shortest_path(G, 'A', 'D', weight='weight')
+path = nx.shortest_path(G, source='A', target='D', weight='weight')
 print(path)
 ```
 
@@ -656,11 +656,25 @@ number and converting them to integers can help reduce some subtle comparison
 issues, but it does not fully eliminate them. NetworkX does not automatically
 apply tolerances in numeric comparisons.
 
+Below is a version of the previous example using the recommended technique with
+different precision tolerances.
+
+```{code-cell}
+for precision in [16, 17]:
+    path = nx.shortest_path(
+        G,
+        source='A',
+        target='D',
+        weight=lambda u, v, d: int(d['weight'] * 10 ** precision)
+    )
+    print(f"With {precision} precision digits, path is {path}")
+```
+
 (using-networkx-backends)=
 
 ## Using NetworkX backends
 
-NetworkX can be configured to use separate thrid-party backends to improve
+NetworkX can be configured to use separate third-party backends to improve
 performance and add functionality. Backends are optional, installed separately,
 and can be enabled either directly in the user's code or through environment
 variables.

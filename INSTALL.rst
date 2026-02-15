@@ -1,7 +1,7 @@
 Install
 =======
 
-NetworkX requires Python 3.11, 3.12, 3.13, or 3.14.  If you do not already
+NetworkX requires Python 3.12, 3.13, or 3.14.  If you do not already
 have a Python environment configured on your computer, please see the
 instructions for installing the full `scientific Python stack
 <https://scipy.org/install.html>`_.

@@ -73,6 +73,19 @@ Core Views
    FilterMultiInner
    FilterMultiAdjacency
 
+Reporting Views
+===============
+
+.. automodule:: networkx.classes.reportviews
+.. autosummary::
+   :toctree: generated/
+
+   NodeView
+   NodeDataView
+   EdgeView
+   EdgeDataView
+   DegreeView
+
 Filters
 =======
 

@@ -15,7 +15,6 @@ from networkx.classes.reportviews import (
     OutMultiDegreeView,
     OutMultiEdgeView,
 )
-from networkx.exception import NetworkXError
 
 __all__ = ["MultiDiGraph"]
 
@@ -582,7 +581,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         try:
             d = self._adj[u][v]
         except KeyError as err:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph.") from err
+            raise nx.NetworkXError(f"The edge {u}-{v} is not in the graph.") from err
         # remove the edge with specified data
         if key is None:
             d.popitem()
@@ -591,7 +590,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 del d[key]
             except KeyError as err:
                 msg = f"The edge {u}-{v} with key {key} is not in the graph."
-                raise NetworkXError(msg) from err
+                raise nx.NetworkXError(msg) from err
         if len(d) == 0:
             # remove the key entries if last edge
             del self._succ[u][v]
@@ -758,12 +757,12 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.degree(0)  # node 0 with degree 1
         1
-        >>> list(G.degree([0, 1, 2]))
-        [(0, 1), (1, 2), (2, 2)]
+        >>> dict(G.degree([0, 1, 2]))
+        {0: 1, 1: 2, 2: 2}
         >>> G.add_edge(0, 1)  # parallel edge
         1
-        >>> list(G.degree([0, 1, 2]))  # parallel edges are counted
-        [(0, 2), (1, 3), (2, 2)]
+        >>> dict(G.degree([0, 1, 2]))  # parallel edges are counted
+        {0: 2, 1: 3, 2: 2}
 
         """
         return DiMultiDegreeView(self)
@@ -809,12 +808,12 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.in_degree(0)  # node 0 with degree 0
         0
-        >>> list(G.in_degree([0, 1, 2]))
-        [(0, 0), (1, 1), (2, 1)]
+        >>> dict(G.in_degree([0, 1, 2]))
+        {0: 0, 1: 1, 2: 1}
         >>> G.add_edge(0, 1)  # parallel edge
         1
-        >>> list(G.in_degree([0, 1, 2]))  # parallel edges counted
-        [(0, 0), (1, 2), (2, 1)]
+        >>> dict(G.in_degree([0, 1, 2]))  # parallel edges counted
+        {0: 0, 1: 2, 2: 1}
 
         """
         return InMultiDegreeView(self)
@@ -859,12 +858,12 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.out_degree(0)  # node 0 with degree 1
         1
-        >>> list(G.out_degree([0, 1, 2]))
-        [(0, 1), (1, 1), (2, 1)]
+        >>> dict(G.out_degree([0, 1, 2]))
+        {0: 1, 1: 1, 2: 1}
         >>> G.add_edge(0, 1)  # parallel edge
         1
-        >>> list(G.out_degree([0, 1, 2]))  # counts parallel edges
-        [(0, 2), (1, 1), (2, 1)]
+        >>> dict(G.out_degree([0, 1, 2]))  # counts parallel edges
+        {0: 2, 1: 1, 2: 1}
 
         """
         return OutMultiDegreeView(self)
