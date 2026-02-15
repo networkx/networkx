@@ -121,6 +121,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="metric_closure is deprecated"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nbfs_predecessors"
+    )
 
 
 @pytest.fixture(autouse=True)
