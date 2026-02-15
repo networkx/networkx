@@ -379,7 +379,7 @@ test-extra-py313 = { features = ["test", "default", "extra", "py313"], solve-gro
 # Single-purpose environments
 lint = { features = ["developer", "py313"], solve-group = "py313" }
 type-check = { features = ["developer", "py312"], solve-group = "py312" }
-docs = { features = ["test", "default", "extra", "doc", "example", "py312"], solve-group = "py312" }
+docs = { features = ["test", "default", "extra", "doc", "example", "py313"], solve-group = "py313" }
 build-release = { features = ["release", "py312"], solve-group = "py312" }
 # Prerelease (pixi manages Python, pip install --pre handles deps)
 prerelease-py312 = { features = ["prerelease", "py312"], solve-group = "py312" }
