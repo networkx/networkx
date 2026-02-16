@@ -200,7 +200,7 @@ class TestClosenessCentrality:
         G = nx.union(nx.path_graph(4), nx.path_graph([4, 5, 6]))
         sp = dict(nx.all_pairs_shortest_path_length(G))
         c = nx.closeness_centrality(G, sp=sp)
-        cwf = nx.closeness_centrality(G, wf_improved=False)
+        cwf = nx.closeness_centrality(G, wf_improved=False, sp=sp)
         res = {0: 0.25, 1: 0.375, 2: 0.375, 3: 0.25, 4: 0.222, 5: 0.333, 6: 0.222}
         wf_res = {0: 0.5, 1: 0.75, 2: 0.75, 3: 0.5, 4: 0.667, 5: 1.0, 6: 0.667}
         for n in G:
@@ -212,8 +212,9 @@ class TestClosenessCentrality:
         sp = dict(nx.all_pairs_shortest_path_length(G))
         c = nx.closeness_centrality(G, sp=sp)
 
-        # sp = dict(nx.all_pairs_shortest_path_length(G.reverse()))
-        cr = nx.closeness_centrality(G.reverse())
+        G_rev = G.reverse()
+        sp_rev = dict(nx.all_pairs_shortest_path_length(G_rev))
+        cr = nx.closeness_centrality(G_rev, sp=sp_rev)
         d = {0: 0.0, 1: 0.500, 2: 0.667}
         dr = {0: 0.667, 1: 0.500, 2: 0.0}
         for n in G:
@@ -393,8 +394,9 @@ class TestClosenessCentrality:
         sp = dict(nx.all_pairs_shortest_path_length(G))
         c = nx.closeness_centrality(G, sp=sp)
 
-        # sp = dict(nx.all_pairs_shortest_path_length(G.reverse()))
-        cr = nx.closeness_centrality(G.reverse())
+        G_rev = G.reverse()
+        sp_rev = dict(nx.all_pairs_shortest_path_length(G_rev))
+        cr = nx.closeness_centrality(G_rev, sp=sp_rev)
         d = {0: 0.4, 1: 0.4, 2: 0.4, 3: 0.4, 4: 0.4}
         dr = {0: 0.4, 1: 0.4, 2: 0.4, 3: 0.4, 4: 0.4}
         for n in G:
