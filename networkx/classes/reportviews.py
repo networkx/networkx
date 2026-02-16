@@ -576,6 +576,23 @@ class DiDegreeView:
     def __len__(self):
         return len(self._nodes)
 
+    def __contains__(self, key):
+        return key in self._nodes
+
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def __eq__(self, other):
+        if isinstance(other, DiDegreeView):
+            return dict(self) == dict(other)
+        elif isinstance(other, Mapping):
+            return dict(self) == dict(other.items())
+        else:
+            return NotImplemented
+
     def __str__(self):
         return str(list(self))
 
