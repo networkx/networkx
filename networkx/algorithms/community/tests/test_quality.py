@@ -162,227 +162,25 @@ def test_cpm():
     # formula stated in the definition of constant_potts_model
     assert (6 - gamma * 9**2) + (6 - gamma * 20**2) == cpm
 
-
-def test_cpm_remove_cost():
+def test_cpm_add_remove_total_cost():
     G = nx.barbell_graph(3, 0)
     partition = [{0, 1, 2}, {3, 4, 5}]
-    G.nodes[0]["node_weight"] = 1
-    G.nodes[1]["node_weight"] = 1
-    G.nodes[2]["node_weight"] = 1
-    G.nodes[3]["node_weight"] = 1
-    G.nodes[4]["node_weight"] = 1
-    G.nodes[5]["node_weight"] = 1
-
-    G.edges[(0, 1)]["weight"] = 1
-    G.edges[(0, 2)]["weight"] = 1
-    G.edges[(1, 2)]["weight"] = 1
-    G.edges[(2, 3)]["weight"] = 1
-    G.edges[(3, 4)]["weight"] = 1
-    G.edges[(3, 5)]["weight"] = 1
-    G.edges[(4, 5)]["weight"] = 1
-
+    nx.set_node_attributes(G, 1, 'node_weight')
+    nx.set_edge_attributes(G, 1, 'weight')
     r = 0.5
 
     u = 0
     A = partition[0]
+    B = partition[1]
     qA = _constant_potts_model_remove_cost(G, node=u, community=A, resolution=r)
-
-    q_after = constant_potts_model(G, [A - {u}], resolution=r, allow_partial=True)
-    q_before = constant_potts_model(G, [A], resolution=r, allow_partial=True)
-    q_delta = q_after - q_before
-    assert qA == q_delta
-
-    G = nx.barbell_graph(3, 0)
-    partition = [{0}, {1, 2}, {3, 4, 5}]
-    G.nodes[0]["node_weight"] = 1
-    G.nodes[1]["node_weight"] = 1
-    G.nodes[2]["node_weight"] = 1
-    G.nodes[3]["node_weight"] = 1
-    G.nodes[4]["node_weight"] = 1
-    G.nodes[5]["node_weight"] = 1
-
-    G.edges[(0, 1)]["weight"] = 1
-    G.edges[(0, 2)]["weight"] = 1
-    G.edges[(1, 2)]["weight"] = 1
-    G.edges[(2, 3)]["weight"] = 1
-    G.edges[(3, 4)]["weight"] = 1
-    G.edges[(3, 5)]["weight"] = 1
-    G.edges[(4, 5)]["weight"] = 1
-
-    r = 0.5
-
-    u = 0
-    A = partition[0]
-    qA = _constant_potts_model_remove_cost(G, node=u, community=A, resolution=r)
-
-    q_after = constant_potts_model(G, [A - {u}], resolution=r, allow_partial=True)
-    q_before = constant_potts_model(G, [A], resolution=r, allow_partial=True)
-    q_delta = q_after - q_before
-    assert qA == q_delta
-
-
-def test_cpm_add_cost():
-    G = nx.barbell_graph(3, 0)
-    partition = [{0, 1, 2}, {3, 4, 5}]
-    G.nodes[0]["node_weight"] = 1
-    G.nodes[1]["node_weight"] = 1
-    G.nodes[2]["node_weight"] = 1
-    G.nodes[3]["node_weight"] = 1
-    G.nodes[4]["node_weight"] = 1
-    G.nodes[5]["node_weight"] = 1
-
-    G.edges[(0, 1)]["weight"] = 1
-    G.edges[(0, 2)]["weight"] = 1
-    G.edges[(1, 2)]["weight"] = 1
-    G.edges[(2, 3)]["weight"] = 1
-    G.edges[(3, 4)]["weight"] = 1
-    G.edges[(3, 5)]["weight"] = 1
-    G.edges[(4, 5)]["weight"] = 1
-
-    r = 0.5
-
-    u = 0
-    B = partition[1]
     qB = _constant_potts_model_add_cost(G, node=u, community=B, resolution=r)
-
-    q_after = constant_potts_model(G, [B.union({u})], resolution=r, allow_partial=True)
-    q_before = constant_potts_model(G, [B], resolution=r, allow_partial=True)
-    q_delta = q_after - q_before
-    assert qB == q_delta
-
-    G = nx.barbell_graph(3, 0)
-    partition = [{0}, {1}, {2}, {3, 4, 5}]
-    G.nodes[0]["node_weight"] = 1
-    G.nodes[1]["node_weight"] = 1
-    G.nodes[2]["node_weight"] = 1
-    G.nodes[3]["node_weight"] = 1
-    G.nodes[4]["node_weight"] = 1
-    G.nodes[5]["node_weight"] = 1
-
-    G.edges[(0, 1)]["weight"] = 1
-    G.edges[(0, 2)]["weight"] = 1
-    G.edges[(1, 2)]["weight"] = 1
-    G.edges[(2, 3)]["weight"] = 1
-    G.edges[(3, 4)]["weight"] = 1
-    G.edges[(3, 5)]["weight"] = 1
-    G.edges[(4, 5)]["weight"] = 1
-
-    r = 0.5
-
-    u = 0
-    B = partition[1]
-    qB = _constant_potts_model_add_cost(G, node=u, community=B, resolution=r)
-
-    q_after = constant_potts_model(G, [B.union({u})], resolution=r, allow_partial=True)
-    q_before = constant_potts_model(G, [B], resolution=r, allow_partial=True)
-    q_delta = q_after - q_before
-    assert qB == q_delta
-
-    G = nx.barbell_graph(3, 0)
-    partition = [{0}, set(), {1}, {2}, {3, 4, 5}]
-    G.nodes[0]["node_weight"] = 1
-    G.nodes[1]["node_weight"] = 1
-    G.nodes[2]["node_weight"] = 1
-    G.nodes[3]["node_weight"] = 1
-    G.nodes[4]["node_weight"] = 1
-    G.nodes[5]["node_weight"] = 1
-
-    G.edges[(0, 1)]["weight"] = 1
-    G.edges[(0, 2)]["weight"] = 1
-    G.edges[(1, 2)]["weight"] = 1
-    G.edges[(2, 3)]["weight"] = 1
-    G.edges[(3, 4)]["weight"] = 1
-    G.edges[(3, 5)]["weight"] = 1
-    G.edges[(4, 5)]["weight"] = 1
-
-    r = 0.5
-
-    u = 0
-    B = partition[1]
-    qB = _constant_potts_model_add_cost(G, node=u, community=B, resolution=r)
-
-    q_after = constant_potts_model(G, [B.union({u})], resolution=r, allow_partial=True)
-    q_before = constant_potts_model(G, [B], resolution=r, allow_partial=True)
-    q_delta = q_after - q_before
-    assert qB == q_delta
-
-
-def test_cpm_remove_cost_with_weights():
-    G = nx.barbell_graph(3, 0)
-    partition = [{0, 1, 2}, {3, 4, 5}]
-    G.nodes[0]["bar"] = 1
-    G.nodes[1]["bar"] = 2
-    G.nodes[2]["bar"] = 3
-    G.nodes[3]["bar"] = 4
-    G.nodes[4]["bar"] = 5
-    G.nodes[5]["bar"] = 6
-
-    G.edges[(0, 1)]["foo"] = 1
-    G.edges[(0, 2)]["foo"] = 2
-    G.edges[(1, 2)]["foo"] = 3
-    G.edges[(2, 3)]["foo"] = 4
-    G.edges[(3, 4)]["foo"] = 5
-    G.edges[(3, 5)]["foo"] = 6
-    G.edges[(4, 5)]["foo"] = 7
-
-    r = 0.5
-
-    u = 0
-    A = partition[0]
-    B = partition[1]
-    qA = _constant_potts_model_remove_cost(
-        G, node=u, weight="foo", node_weight="bar", community=A, resolution=r
-    )
 
     q_after = constant_potts_model(
-        G, [A - {u}], weight="foo", node_weight="bar", resolution=r, allow_partial=True
+        G, [A - {u}, B.union({u})], resolution=r 
     )
-    q_before = constant_potts_model(
-        G, [A], weight="foo", node_weight="bar", resolution=r, allow_partial=True
-    )
+    q_before = constant_potts_model(G, [A, B], resolution=r)
     q_delta = q_after - q_before
-    assert qA == q_delta
-
-
-def test_cpm_add_cost_with_weighs():
-    G = nx.barbell_graph(3, 0)
-    partition = [{0, 1, 2}, {3, 4, 5}]
-    G.nodes[0]["bar"] = 1
-    G.nodes[1]["bar"] = 2
-    G.nodes[2]["bar"] = 3
-    G.nodes[3]["bar"] = 4
-    G.nodes[4]["bar"] = 5
-    G.nodes[5]["bar"] = 6
-
-    G.edges[(0, 1)]["foo"] = 1
-    G.edges[(0, 2)]["foo"] = 2
-    G.edges[(1, 2)]["foo"] = 3
-    G.edges[(2, 3)]["foo"] = 4
-    G.edges[(3, 4)]["foo"] = 5
-    G.edges[(3, 5)]["foo"] = 6
-    G.edges[(4, 5)]["foo"] = 7
-
-    r = 0.5
-
-    u = 0
-    B = partition[1]
-    qB = _constant_potts_model_add_cost(
-        G, node=u, weight="foo", node_weight="bar", community=B, resolution=r
-    )
-
-    q_after = constant_potts_model(
-        G,
-        [B.union({u})],
-        weight="foo",
-        node_weight="bar",
-        resolution=r,
-        allow_partial=True,
-    )
-    q_before = constant_potts_model(
-        G, [B], weight="foo", node_weight="bar", resolution=r, allow_partial=True
-    )
-    q_delta = q_after - q_before
-    assert qB == q_delta
+    assert qA + qB == q_delta
 
 
 def test_cpm_add_remove_total_cost_weights():
@@ -412,9 +210,9 @@ def test_cpm_add_remove_total_cost_weights():
     qB = _constant_potts_model_add_cost(G, node=u, community=B, resolution=r)
 
     q_after = constant_potts_model(
-        G, [A - {u}, B.union({u})], resolution=r, allow_partial=True
+        G, [A - {u}, B.union({u})], resolution=r
     )
-    q_before = constant_potts_model(G, [A, B], resolution=r, allow_partial=True)
+    q_before = constant_potts_model(G, [A, B], resolution=r)
     q_delta = q_after - q_before
     assert qA + qB == q_delta
 

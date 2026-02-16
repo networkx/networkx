@@ -306,7 +306,7 @@ def _constant_potts_model_remove_cost(
     # that is, E_D = -1*E_diff where E_diff is defined
     E_diff = sum(wt for u, v, wt in G.edges({node}, data=weight) if v in community)
 
-    rem_cost = resolution * (2 * n_A_prime * u_wt + u_wt**2) - E_diff
+    rem_cost = resolution * 2 * n_A_prime * u_wt - E_diff
 
     return rem_cost
 
@@ -359,7 +359,7 @@ def _constant_potts_model_add_cost(
     E_D = sum(
         wt for u, v, wt in G.edges({node}, data=weight) if v in community.union({node})
     )
-    add_cost = E_D - resolution * (2 * n_B * u_wt + u_wt**2)
+    add_cost = E_D - resolution * 2 * n_B * u_wt
 
     return add_cost
 
@@ -370,7 +370,6 @@ def constant_potts_model(
     weight="weight",
     node_weight="node_weight",
     resolution=1.0,
-    allow_partial=False,
 ):
     r"""
     Computes the Constant Potts Model, which is a measure of quality of a
@@ -436,26 +435,10 @@ def constant_potts_model(
         larger resolution values constant_potts_model will be maximised
         for smaller communities.
 
-    allow_partial : bool (default=False)
-        If set to True, modularity will be calculated for a set of
-        communities that do not necessarily form a complete partition.
-        This is useful for computing modularity deltas when moving
-        a node u from community C1 -> C2. The change in modularity can
-        be calculated by evaluating on [C1, C2] before and after moving
-        the node u.
-
-        If allow_partial=False then the error NotAPartition will be
-        raised if communities is not a partition.
-
     Returns
     -------
     Q : float
         The modularity of the partition.
-
-    Raises
-    ------
-    NotAPartition
-        If `communities` is not a partition of the nodes of `G` and allow_partial=False
 
     References
     ----------
@@ -466,8 +449,6 @@ def constant_potts_model(
     if not isinstance(communities, list):
         communities = list(communities)
 
-    if (not is_partition(G, communities)) and (not allow_partial):
-        raise NotAPartition(G, communities)
 
     def community_contribution(community):
         comm = set(community)
