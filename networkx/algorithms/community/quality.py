@@ -449,7 +449,6 @@ def constant_potts_model(
     if not isinstance(communities, list):
         communities = list(communities)
 
-
     def community_contribution(community):
         comm = set(community)
         E_c = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm)

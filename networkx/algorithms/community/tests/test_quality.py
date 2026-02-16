@@ -162,11 +162,12 @@ def test_cpm():
     # formula stated in the definition of constant_potts_model
     assert (6 - gamma * 9**2) + (6 - gamma * 20**2) == cpm
 
+
 def test_cpm_add_remove_total_cost():
     G = nx.barbell_graph(3, 0)
     partition = [{0, 1, 2}, {3, 4, 5}]
-    nx.set_node_attributes(G, 1, 'node_weight')
-    nx.set_edge_attributes(G, 1, 'weight')
+    nx.set_node_attributes(G, 1, "node_weight")
+    nx.set_edge_attributes(G, 1, "weight")
     r = 0.5
 
     u = 0
@@ -175,9 +176,7 @@ def test_cpm_add_remove_total_cost():
     qA = _constant_potts_model_remove_cost(G, node=u, community=A, resolution=r)
     qB = _constant_potts_model_add_cost(G, node=u, community=B, resolution=r)
 
-    q_after = constant_potts_model(
-        G, [A - {u}, B.union({u})], resolution=r 
-    )
+    q_after = constant_potts_model(G, [A - {u}, B.union({u})], resolution=r)
     q_before = constant_potts_model(G, [A, B], resolution=r)
     q_delta = q_after - q_before
     assert qA + qB == q_delta
@@ -209,9 +208,7 @@ def test_cpm_add_remove_total_cost_weights():
     qA = _constant_potts_model_remove_cost(G, node=u, community=A, resolution=r)
     qB = _constant_potts_model_add_cost(G, node=u, community=B, resolution=r)
 
-    q_after = constant_potts_model(
-        G, [A - {u}, B.union({u})], resolution=r
-    )
+    q_after = constant_potts_model(G, [A - {u}, B.union({u})], resolution=r)
     q_before = constant_potts_model(G, [A, B], resolution=r)
     q_delta = q_after - q_before
     assert qA + qB == q_delta
