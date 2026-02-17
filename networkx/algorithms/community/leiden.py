@@ -8,17 +8,21 @@ import random
 from collections import deque
 
 import networkx as nx
-from networkx.algorithms.community.quality import constant_potts_model
+from networkx.algorithms.community.quality import (
+    _cpm_delta_partial_eval_add,
+    _cpm_delta_partial_eval_remove,
+    constant_potts_model,
+)
 from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = ["leiden_communities", "leiden_partitions"]
 
 
-def _get_quality_remove_cost(quality_function):
+def _get_quality_delta_partial_eval_remove(quality_function):
     """
-    Returns a function quality_remove_cost which is used within
+    Returns a function quality_delta_partial_eval_remove which is used within
     the _move_nodes_fast and _refine_partiton stages in conjunction
-    with a similarly defined quality_add_cost function which together
+    with a similarly defined quality_delta_partial_eval_add function which together
     are used to efficiently compute quality_deltas when moving
     nodes between communities.
 
@@ -35,10 +39,10 @@ def _get_quality_remove_cost(quality_function):
     -------
     function
 
-        Returns a function quality_remove_cost which has the
+        Returns a function quality_delta_partial_eval_remove which has the
         following behaviour: for a node u and community A
 
-            quality_remove_cost(G, u, A, quality_function, resolution)
+            quality_delta_partial_eval_remove(G, u, A, quality_function, resolution)
 
         returns the overall change in quality (as defined
         by the quality_function) that occurs when the node u
@@ -48,8 +52,8 @@ def _get_quality_remove_cost(quality_function):
     # This method allows us to invoke optimised versions of these
     # delta functions, i.e we could have something like
     #
-    # if quality_function == constant_potts_model:
-    #     return constant_potts_remove_cost
+    if quality_function == constant_potts_model:
+        return _cpm_delta_partial_eval_remove
     #
     # if qualty_function == modularity:
     #  return modularity_remove_cost
@@ -62,16 +66,16 @@ def _get_quality_remove_cost(quality_function):
     # still allowing the use of more efficient methods where
     # they exist.
 
-    def quality_remove_cost(
+    def quality_delta_partial_eval_remove(
         G, node, community, resolution, weight="weight", node_weight="node_weight"
     ):
+
         q_before = quality_function(
             G,
             [community],
             resolution=resolution,
             weight=weight,
             node_weight="node_weight",
-            allow_partial=True,
         )
 
         q_after = quality_function(
@@ -80,19 +84,18 @@ def _get_quality_remove_cost(quality_function):
             resolution=resolution,
             weight=weight,
             node_weight="node_weight",
-            allow_partial=True,
         )
 
         return q_after - q_before
 
-    return quality_remove_cost
+    return quality_delta_partial_eval_remove
 
 
-def _get_quality_add_cost(quality_function):
+def _get_quality_delta_partial_eval_add(quality_function):
     """
-    Returns a function quality_add_cost which is used within
+    Returns a function quality_delta_partial_eval_add which is used within
     the _move_nodes_fast and _refine_partiton stages in conjunction
-    with a similarly defined quality_remove_cost function which together
+    with a similarly defined quality_delta_partial_eval_remove function which together
     are used to efficiently compute quality_deltas when moving
     nodes between communities.
 
@@ -109,10 +112,10 @@ def _get_quality_add_cost(quality_function):
     -------
     function
 
-        Returns a function quality_remove_cost which has the
+        Returns a function quality_delta_partial_eval_remove which has the
         following behaviour: for a node u and community B
 
-            quality_add_cost(G, u, A, quality_function, resolution)
+            quality_delta_partial_eval_add(G, u, A, quality_function, resolution)
 
         returns the overall change in quality (as defined
         by the quality_function) that occurs when the node u
@@ -122,8 +125,8 @@ def _get_quality_add_cost(quality_function):
     # This method allows us to invoke optimised versions of these
     # delta functions, i.e we could have something like
     #
-    # if quality_function == constant_potts_model:
-    #     return constant_potts_add_cost
+    if quality_function == constant_potts_model:
+        return _cpm_delta_partial_eval_add
     #
     # if qualty_function == modularity:
     #  return modularity_add_cost
@@ -136,7 +139,7 @@ def _get_quality_add_cost(quality_function):
     # still allowing the use of more efficient methods where
     # they exist.
 
-    def quality_add_cost(
+    def quality_delta_partial_eval_add(
         G, node, community, resolution, weight="weight", node_weight="node_weight"
     ):
         q_before = quality_function(
@@ -145,7 +148,6 @@ def _get_quality_add_cost(quality_function):
             resolution=resolution,
             weight=weight,
             node_weight="node_weight",
-            allow_partial=True,
         )
 
         q_after = quality_function(
@@ -154,12 +156,11 @@ def _get_quality_add_cost(quality_function):
             resolution=resolution,
             weight=weight,
             node_weight="node_weight",
-            allow_partial=True,
         )
 
         return q_after - q_before
 
-    return quality_add_cost
+    return quality_delta_partial_eval_add
 
 
 @py_random_state("seed")
@@ -173,6 +174,8 @@ def leiden_communities(
     max_level=None,
     seed=None,
     quality_function=constant_potts_model,
+    quality_delta_partial_eval_remove=None,
+    quality_delta_partial_eval_add=None,
     theta=0.01,
 ):
     r"""Find the best partition of a graph using the Leiden Community Detection
@@ -234,7 +237,16 @@ def leiden_communities(
     """
 
     partitions = leiden_partitions(
-        G, weight, node_weight, resolution, threshold, seed, quality_function, theta
+        G,
+        weight=weight,
+        node_weight=node_weight,
+        resolution=resolution,
+        threshold=threshold,
+        seed=seed,
+        quality_function=quality_function,
+        quality_delta_partial_eval_remove=None,
+        quality_delta_partial_eval_add=None,
+        theta=theta,
     )
 
     if max_level is not None:
@@ -255,14 +267,36 @@ def leiden_partitions(
     threshold=0.0000001,
     seed=None,
     quality_function=constant_potts_model,
+    quality_delta_partial_eval_remove=None,
+    quality_delta_partial_eval_add=None,
     theta=0.01,
 ):
     """
     TODO - doc string
     """
 
-    quality_add_cost = _get_quality_add_cost(quality_function)
-    quality_remove_cost = _get_quality_remove_cost(quality_function)
+    # as well as providing a custom quality function for the algorithm
+    # the user can define a pair of functions that partially evaluate
+    # the quality delta associated with moving a node from one
+    # community to another.
+
+    # note that the partial_eval functions are not necessary at all
+    # for the algorithm to run correctly, they are purely for
+    # making the computations more efficient. We could include an
+    # assertion that checks the relationship between quality_function
+    # and the pair of partial evaluation functions on a simple
+    # graph in order to provide the user with an error/warning if these
+    # are not behaving as expected.
+
+    if quality_delta_partial_eval_add is None:
+        quality_delta_partial_eval_add = _get_quality_delta_partial_eval_add(
+            quality_function
+        )
+
+    if quality_delta_partial_eval_remove is None:
+        quality_delta_partial_eval_remove = _get_quality_delta_partial_eval_remove(
+            quality_function
+        )
 
     partition = [{u} for u in G]
     inner_partition = None
@@ -325,8 +359,8 @@ def leiden_partitions(
             graph,
             inner_partition,
             quality_function,
-            quality_remove_cost,
-            quality_add_cost,
+            quality_delta_partial_eval_remove,
+            quality_delta_partial_eval_add,
             resolution,
             seed=seed,
         )
@@ -336,8 +370,8 @@ def leiden_partitions(
             inner_partition,
             resolution,
             quality_function,
-            quality_remove_cost,
-            quality_add_cost,
+            quality_delta_partial_eval_remove,
+            quality_delta_partial_eval_add,
             seed,
             theta,
         )
@@ -383,8 +417,8 @@ def _move_nodes_fast(
     G,
     seed_partition,
     quality_function,
-    quality_remove_cost,
-    quality_add_cost,
+    quality_delta_partial_eval_remove,
+    quality_delta_partial_eval_add,
     resolution,
     seed=None,
 ):
@@ -420,7 +454,7 @@ def _move_nodes_fast(
 
         # this value is the overall change in quality that occurs
         # when node u is removed from its current community
-        q_A = quality_remove_cost(
+        q_A = quality_delta_partial_eval_remove(
             G, node=u, community=inner_partition[old_com], resolution=resolution
         )
 
@@ -431,7 +465,7 @@ def _move_nodes_fast(
             if new_com != old_com:
                 # this quantity is the overall change in quality that
                 # occurs wen the node u is added the the new community
-                q_B = quality_add_cost(
+                q_B = quality_delta_partial_eval_add(
                     G, node=u, community=inner_partition[new_com], resolution=resolution
                 )
 
@@ -466,11 +500,12 @@ def _refine_partition(
     partition,
     resolution,
     quality_function,
-    quality_remove_cost,
-    quality_add_cost,
+    quality_delta_partial_eval_remove,
+    quality_delta_partial_eval_add,
     seed,
     theta,
 ):
+
     node2com = {u: i for i, u in enumerate(G)}
     inner_partition_refined = [{u} for u in G]
 
@@ -482,8 +517,8 @@ def _refine_partition(
             C,
             resolution,
             quality_function,
-            quality_remove_cost,
-            quality_add_cost,
+            quality_delta_partial_eval_remove,
+            quality_delta_partial_eval_add,
             seed,
             theta,
         )
@@ -499,8 +534,8 @@ def _merge_node_subset(
     S,
     resolution,
     quality_function,
-    quality_remove_cost,
-    quality_add_cost,
+    quality_delta_partial_eval_remove,
+    quality_delta_partial_eval_add,
     seed,
     theta,
 ):
@@ -517,7 +552,7 @@ def _merge_node_subset(
             R.add(u)
 
     # TODO this section of the code has many nested if statements which
-    # makes me this there's probably a more elegant solution. However,
+    # makes me think there's probably a more elegant solution. However,
     # this approach does closely follow the pseudocode in the paper [1]
     for u in R:
         comm = node2com[u]
@@ -544,7 +579,7 @@ def _merge_node_subset(
 
             # this is the change in quality that occurs from removing node
             # u from its current community
-            q_A = quality_remove_cost(
+            q_A = quality_delta_partial_eval_remove(
                 G, node=u, community=partition[comm], resolution=resolution
             )
 
@@ -567,7 +602,7 @@ def _merge_node_subset(
                     if E > comm_comparison:
                         # the change in quality the occurs from moving node u
                         # into the new community
-                        q_B = quality_add_cost(
+                        q_B = quality_delta_partial_eval_add(
                             G, node=u, community=partition[i], resolution=resolution
                         )
 
