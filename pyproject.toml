@@ -311,6 +311,7 @@ pandas = ">=2.0"
 
 [tool.pixi.feature.doc.dependencies]
 libspatialindex = "*"
+pip = "*"
 
 # extra: pygraphviz comes from conda (needs graphviz C library), not pypi
 [tool.pixi.feature.extra.dependencies]
