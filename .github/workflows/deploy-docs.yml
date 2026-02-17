@@ -17,6 +17,7 @@ jobs:
           environments: docs
       - name: Register graphviz plugins
         run: pixi run -e docs dot -c
+      - run: pixi run -e docs pip -V
       - name: Install backend stubs
         run: pixi run -e docs install-backend-stubs
 
