@@ -8,7 +8,7 @@ on:
 jobs:
   documentation:
     # Do not attempt to deploy documentation on forks
-    # if: github.repository_owner == 'networkx'
+    if: github.repository_owner == 'networkx'
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
@@ -30,24 +30,24 @@ jobs:
       # 3. Add private key as a secret to networkx/networkx repo
       #   - Settings -> Secrets -> New Repository Secret
       #   - Make sure the name is the same as below: CI_DEPLOY_KEY
-      # - name: Install SSH agent
-      #   if: github.ref == 'refs/heads/main'
-      #   uses: webfactory/ssh-agent@v0.9.1
-      #   with:
-      #     ssh-private-key: ${{ secrets.CI_DEPLOY_KEY }}
+      - name: Install SSH agent
+        if: github.ref == 'refs/heads/main'
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.CI_DEPLOY_KEY }}
 
       - name: Build docs
         if: github.ref == 'refs/heads/main'
         run: pixi run -e docs docs-build
 
-      # - name: Deploy docs
-      #   if: github.ref == 'refs/heads/main'
-      #   uses: JamesIves/github-pages-deploy-action@releases/v4
-      #   with:
-      #     git-config-name: nx-doc-deploy-bot
-      #     git-config-email: nx-doc-deploy-bot@nomail
-      #     folder: doc/build/html
-      #     repository-name: networkx/documentation
-      #     branch: gh-pages
-      #     target-folder: latest
-      #     ssh-key: true
+      - name: Deploy docs
+        if: github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          git-config-name: nx-doc-deploy-bot
+          git-config-email: nx-doc-deploy-bot@nomail
+          folder: doc/build/html
+          repository-name: networkx/documentation
+          branch: gh-pages
+          target-folder: latest
+          ssh-key: true
