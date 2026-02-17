@@ -254,13 +254,69 @@ def modularity(G, communities, weight="weight", resolution=1):
     return sum(map(community_contribution, communities))
 
 
+def _cpm_delta_partial_eval_remove(
+    G, node, community, resolution, weight="weight", node_weight="node_weight"
+):
+    r"""
+    Let P = [A, B, C, D,...] be a partition, and let P' = [A', B', C, D,...]
+    be the partition obtained by moving the node u from community A to
+    community B, that is where A' = A\{u} and B = B \union {u}
+
+    The overall change in quality associated with this move is
+
+        q_delta = constant_potts_mode(G, P') - constant_potts_model(G, P)
+
+    Throughout the algorithm the quality q_delta will be computed by
+    calculating two intermediate values q_rem and q_add satisfying the
+    property that
+
+        q_delta = q_rem + q_add
+
+    The current function is one of a pair of similar functions
+    that compute these values with
+
+    q_rem = _cpm_delta_partial_eval_remove(G, u, A)
+    q_add = _cpm_delta_partial_eval_add(G, u, B)
+
+    """
+
+    n_A_prime = sum(
+        wt for u, wt in G.nodes(data=node_weight) if u in community - {node}
+    )
+    u_wt = G.nodes[node][node_weight]
+    E_diff = sum(
+        wt for _, v, wt in G.edges({node}, data=weight) if v in community - {node}
+    )
+
+    return resolution * 2 * n_A_prime * u_wt - E_diff
+
+
+def _cpm_delta_partial_eval_add(
+    G, node, community, resolution, weight="weight", node_weight="node_weight"
+):
+    r"""
+    One of a pair of partial evaluation functions. See
+
+        _cpm_delta_partial_eval_remove
+
+    for more details.
+    """
+    n_B = sum(wt for u, wt in G.nodes(data=node_weight) if u in community)
+
+    # could optimise by passing u_wt directly as a parameter rather than
+    # making this lookup
+    u_wt = G.nodes[node][node_weight]
+
+    E_D = sum(wt for _, v, wt in G.edges({node}, data=weight) if v in community)
+    return E_D - resolution * 2 * n_B * u_wt
+
+
 def constant_potts_model(
     G,
     communities,
     weight="weight",
     node_weight="node_weight",
     resolution=1.0,
-    allow_partial=False,
 ):
     r"""
     Computes the Constant Potts Model, which is a measure of quality of a
@@ -326,26 +382,10 @@ def constant_potts_model(
         larger resolution values constant_potts_model will be maximised
         for smaller communities.
 
-    allow_partial : bool (default=False)
-        If set to True, modularity will be calculated for a set of
-        communities that do not necessarily form a complete partition.
-        This is useful for computing modularity deltas when moving
-        a node u from community C1 -> C2. The change in modularity can
-        be calculated by evaluating on [C1, C2] before and after moving
-        the node u.
-
-        If allow_partial=False then the error NotAPartition will be
-        raised if communities is not a partition.
-
     Returns
     -------
     Q : float
         The modularity of the partition.
-
-    Raises
-    ------
-    NotAPartition
-        If `communities` is not a partition of the nodes of `G` and allow_partial=False
 
     References
     ----------
@@ -355,9 +395,6 @@ def constant_potts_model(
 
     if not isinstance(communities, list):
         communities = list(communities)
-
-    if (not is_partition(G, communities)) and (not allow_partial):
-        raise NotAPartition(G, communities)
 
     def community_contribution(community):
         comm = set(community)
