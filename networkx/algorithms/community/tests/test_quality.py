@@ -13,8 +13,8 @@ from networkx.algorithms.community import (
     partition_quality,
 )
 from networkx.algorithms.community.quality import (
-    _constant_potts_model_add_cost,
-    _constant_potts_model_remove_cost,
+    _cpm_delta_partial_eval_add,
+    _cpm_delta_partial_eval_remove,
     inter_community_edges,
 )
 
@@ -173,8 +173,8 @@ def test_cpm_add_remove_total_cost():
     u = 0
     A = partition[0]
     B = partition[1]
-    qA = _constant_potts_model_remove_cost(G, node=u, community=A, resolution=r)
-    qB = _constant_potts_model_add_cost(G, node=u, community=B, resolution=r)
+    qA = _cpm_delta_partial_eval_remove(G, node=u, community=A, resolution=r)
+    qB = _cpm_delta_partial_eval_add(G, node=u, community=B, resolution=r)
 
     q_after = constant_potts_model(G, [A - {u}, B.union({u})], resolution=r)
     q_before = constant_potts_model(G, [A, B], resolution=r)
@@ -192,6 +192,12 @@ def test_cpm_add_remove_total_cost_weights():
     G.nodes[4]["node_weight"] = 5
     G.nodes[5]["node_weight"] = 6
 
+    # the add and remove functions should cancel terms which come from
+    # self-loops and hence we add some weighted self-loops
+    for i in range(6):
+        G.add_edge(i, i)
+        G.edges[(i, i)]["weight"] = i + 2
+
     G.edges[(0, 1)]["weight"] = 1
     G.edges[(0, 2)]["weight"] = 2
     G.edges[(1, 2)]["weight"] = 3
@@ -205,8 +211,8 @@ def test_cpm_add_remove_total_cost_weights():
     u = 0
     A = partition[0]
     B = partition[1]
-    qA = _constant_potts_model_remove_cost(G, node=u, community=A, resolution=r)
-    qB = _constant_potts_model_add_cost(G, node=u, community=B, resolution=r)
+    qA = _cpm_delta_partial_eval_remove(G, node=u, community=A, resolution=r)
+    qB = _cpm_delta_partial_eval_add(G, node=u, community=B, resolution=r)
 
     q_after = constant_potts_model(G, [A - {u}, B.union({u})], resolution=r)
     q_before = constant_potts_model(G, [A, B], resolution=r)
