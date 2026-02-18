@@ -112,7 +112,8 @@ def random_walk(G, *, start, weight=None, seed=None):
     if start not in G:
         raise nx.NodeNotFound(start)
 
-    yield (node := start)
+    node = start
+    yield node
     while nbrs := G._adj[node]:
         if weight is None:
             node = seed.choice(list(nbrs))
