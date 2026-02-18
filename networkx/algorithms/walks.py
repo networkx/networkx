@@ -114,14 +114,14 @@ def random_walk(G, *, start, weight=None, seed=None):
 
     yield (node := start)
     while nbrs := G._adj[node]:
-        if weight is not None:
+        if weight is None:
+            node = seed.choice(list(nbrs))
+        else:
             wts = [nbr.get(weight, 1) for nbr in nbrs.values()]
             if any(w < 0 for w in wts):
                 raise ValueError("random_walk doesn't support negative weights")
             if sum(wts) == 0:
                 return
-        else:
-            wts = None
+            node = seed.choices(list(nbrs), weights=wts, k=1)[0]
 
-        node = seed.choices(list(nbrs), weights=wts, k=1)[0]
         yield node
