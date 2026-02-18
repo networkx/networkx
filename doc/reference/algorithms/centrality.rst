@@ -189,3 +189,14 @@ Laplacian
    :toctree: generated/
 
    laplacian_centrality
+
+Voting-Based Centrality
+---------
+.. autosummary::
+   :toctree: generated/
+
+   satisfaction_approval_centrality
+   pairwise_centrality
+   sequential_proportional_voting
+   borda_centrality
+   single_transferable_vote
