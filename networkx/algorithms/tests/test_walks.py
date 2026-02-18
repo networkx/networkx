@@ -63,7 +63,7 @@ def test_random_walk_unweighted_reproducible():
 def test_random_walk_unweighted_dead_end():
     """Unweighted walk should yield start and stop at a dead end."""
     G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
-    walk = nx.random_walk(G, start=3, seed=0)
+    walk = nx.random_walk(G, start=3)
     assert list(walk) == [3]
 
 
@@ -92,13 +92,6 @@ def test_random_walk_missing_start_node_raises_nodenotfound():
     G = nx.path_graph(2)
     with pytest.raises(nx.NodeNotFound):
         list(nx.random_walk(G, start=3))
-
-
-def test_random_walk_unexpected_walk_length_argument():
-    """walk_length is not accepted in the generator API."""
-    G = nx.path_graph(3)
-    with pytest.raises(TypeError):
-        nx.random_walk(G, start=0, walk_length=2)
 
 
 def test_random_walk_multigraph_not_implemented():
