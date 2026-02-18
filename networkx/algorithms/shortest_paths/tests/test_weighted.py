@@ -938,7 +938,9 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         G.add_weighted_edges_from(
             [("0", "3", 3), ("0", "1", -5), ("0", "2", 2), ("1", "2", 4), ("2", "3", 1)]
         )
-        paths = nx.johnson(G)
+        paths = {}
+        pred = {}
+        dist = nx.johnson(G, paths=paths, pred=pred)
         assert paths == {
             "1": {"1": ["1"], "3": ["1", "2", "3"], "2": ["1", "2"]},
             "0": {
@@ -949,6 +951,44 @@ class TestJohnsonAlgorithm(WeightedTestBase):
             },
             "3": {"3": ["3"]},
             "2": {"3": ["2", "3"], "2": ["2"]},
+        }
+        assert dist == {
+            "1": {"1": 0, "3": 5, "2": 4},
+            "0": {
+                "1": -5,
+                "0": 0,
+                "3": 0,
+                "2": -1,
+            },
+            "3": {"3": 0},
+            "2": {"3": 1, "2": 0},
+        }
+        assert pred == {
+            "1": {"1": [], "3": ["2"], "2": ["1"]},
+            "0": {
+                "1": ["0"],
+                "0": [],
+                "3": ["2"],
+                "2": ["1"],
+            },
+            "3": {"3": []},
+            "2": {"3": ["2"], "2": []},
+        }
+        # test calculating paths/dist/pred
+        assert paths == nx.johnson(G)
+        assert dist == nx.johnson(G, dist={})
+        pred = {}
+        nx.johnson(G, pred=pred)
+        assert pred == {
+            "1": {"1": [], "3": ["2"], "2": ["1"]},
+            "0": {
+                "1": ["0"],
+                "0": [],
+                "3": ["2"],
+                "2": ["1"],
+            },
+            "3": {"3": []},
+            "2": {"3": ["2"], "2": []},
         }
 
     def test_unweighted_graph(self):
