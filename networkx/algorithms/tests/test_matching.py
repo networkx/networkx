@@ -17,6 +17,7 @@ from networkx.utils import edges_equal
         {(5, 0)},  # for both edge orders
         {(0, 5), (2, 3)},  # node not in G, but other edge is valid matching
         {(5, 5), (2, 3)},  # Self-loop hits node not in G validation first
+        {(0, 1), (0, 2), (0, 5)},  # Ensure validity gets checked before returning
     ),
 )
 def test_is_matching_node_not_in_G(fn, edgeset):
@@ -35,6 +36,7 @@ def test_is_matching_node_not_in_G(fn, edgeset):
     (
         {(0, 1, 2), (2, 3)},  # 3-tuple
         {(0,), (2, 3)},  # 1-tuple
+        {(0, 1), (0, 2), (0,)},  # Ensure validity gets checked before returning
     ),
 )
 def test_is_matching_invalid_edge(fn, edgeset):
