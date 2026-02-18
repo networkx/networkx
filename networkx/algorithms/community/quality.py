@@ -333,7 +333,7 @@ def constant_potts_model(
     The interpretation of the resolution parameter \gamma is explained as
     follows in page 3 of [1]_:
 
-       "[The Constant Potts Model] tries to maximize the number of
+        [The Constant Potts Model] tries to maximize the number of
         internal edges while at the same time keeping relatively small
         communities.
 
@@ -350,7 +350,7 @@ def constant_potts_model(
         community r and s. This ratio is exactly the density of links between
         community r and s. So, the link density between communities should be
         lower than \gamma, while the link density within communities should
-        be higher than \gamma."
+        be higher than \gamma.
 
     The Constant Potts Model is similar to modularity, but overcomes the
     so-called resolution limit problem when used in community detection
