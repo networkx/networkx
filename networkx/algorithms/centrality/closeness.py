@@ -62,13 +62,14 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True, *, sp=None)
       it is the same as the original formula.
 
     sp : dict of dicts, optional
-       All pairs shortest path lengths as a dictionary of dictionaries
-       sp[i][j] gives the shortest path length from source i to target j.
-       This allows you to provide precomputed shortest-path info to speed up the calculation.
-        If you have already computed shortest paths, or if you will need to later, you can avoid
-        computing it inside this function. This function assumes `sp` is a proper dict-of-dict
-        for all pairs shortest paths as produced by the networkx functions for that.
-        If `sp` is set, the `distance` argument will be ignored.
+      All pairs shortest path lengths as a dictionary of dictionaries
+      sp[i][j] gives the shortest path length from source i to target j.
+      This allows you to provide precomputed shortest-path info to speed
+      up the calculation. If you have already computed shortest paths,
+      or if you will need to later, you can avoid computing it inside
+      this function. This function assumes `sp` is a proper dict-of-dict
+      for all pairs shortest paths as produced by the networkx functions
+      for that. If `sp` is set, the `distance` argument will be ignored.
 
     Returns
     -------
@@ -84,8 +85,8 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True, *, sp=None)
     See Also
     --------
     betweenness_centrality, load_centrality, eigenvector_centrality,
-    degree_centrality, incremental_closeness_centrality, all_pairs_shortest_path_length,
-    all_pairs_dijkstra_path_length
+    degree_centrality, incremental_closeness_centrality,
+    all_pairs_shortest_path_length, all_pairs_dijkstra_path_length
 
     Notes
     -----
