@@ -832,7 +832,8 @@ class ISMAGS:
 
     def _get_node_color_candidate_sets(self):
         """
-        Per node in subgraph find all nodes in graph that have the same color.
+        For each node in subgraph store all nodes in graph with same color
+        and self-loop count. These sets should not change so we cache them.
         Stored as a dict-of-set-of-frozenset. The dict is keyed by node to a
         collection of frozensets of graph nodes. Each of these frozensets are
         a restriction. The node can be mapped only to nodes in the frozenset.
@@ -844,14 +845,20 @@ class ISMAGS:
         we want to avoid that. But I wonder if checking hash/equality when `add`ing
         removes the benefit of avoiding computing intersections.
         """
-        candidate_sets = defaultdict(set)
+        g_loops = {n: self.graph.number_of_edges(n, n) for n in self.graph}
+
+        candidate_sets = {}
         for sgn in self.subgraph.nodes:
             sgn_color = self._sgn_colors[sgn]
-            if sgn_color >= self.N_node_colors:  # color has no candidates
-                candidate_sets[sgn]  # creates empty set entry in defaultdict
-            else:
-                candidate_sets[sgn].add(frozenset(self._gn_partition[sgn_color]))
-        return dict(candidate_sets)
+            if sgn_color >= self.N_node_colors:
+                # color has no candidates in gn
+                candidate_sets[sgn] = {frozenset()}
+                continue
+            # TODO make work for monomorphism (<=)
+            loops = self.subgraph.number_of_edges(sgn, sgn)
+            c = (n for n in self._gn_partition[sgn_color] if loops == g_loops[n])
+            candidate_sets[sgn] = {frozenset(c)}  # cands for sgn must be in c
+        return candidate_sets
 
     @classmethod
     def _refine_node_partition(cls, graph, partition, edge_colors):
