@@ -331,7 +331,7 @@ def constant_potts_model(
     \gamma is the resolution parameter
 
     The interpretation of the resolution parameter \gamma is explained as
-    follows in page 3 of [1]:
+    follows in page 3 of [1]_:
 
        "[The Constant Potts Model] tries to maximize the number of
         internal edges while at the same time keeping relatively small
@@ -389,7 +389,8 @@ def constant_potts_model(
     References
     ----------
     .. [1] V.A. Traag, P. Van Dooren, Y. Nesterov "Narrow scope for
-       resolution-limit-free community detection" <https://arxiv.org/abs/1104.3083>
+       resolution-limit-free community detection"
+       <https://arxiv.org/abs/1104.3083>
     """
 
     if not isinstance(communities, list):
