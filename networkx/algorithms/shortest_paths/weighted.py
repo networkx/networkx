@@ -59,7 +59,7 @@ def _weight_function(G, weight):
     function
         This function returns a callable that accepts exactly three inputs:
         a node, an node adjacent to the first one, and the edge attribute
-        dictionary for the eedge joining those nodes. That function returns
+        dictionary for the edge joining those nodes. That function returns
         a number representing the weight of an edge.
 
     If `G` is a multigraph, and `weight` is not callable, the
