@@ -29,6 +29,7 @@ from networkx.algorithms.hybrid import *
 from networkx.algorithms.link_analysis import *
 from networkx.algorithms.link_prediction import *
 from networkx.algorithms.lowest_common_ancestors import *
+from networkx.algorithms.modular import *
 from networkx.algorithms.isolate import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.minors import *
