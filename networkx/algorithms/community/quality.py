@@ -279,14 +279,13 @@ def _cpm_delta_partial_eval_remove(
     q_add = _cpm_delta_partial_eval_add(G, u, B)
 
     """
+    A_prime = community - {node}
 
-    n_A_prime = sum(
-        wt for u, wt in G.nodes(data=node_weight) if u in community - {node}
-    )
+    n_A_prime = sum(wt for u, wt in G.nodes(data=node_weight) if u in A_prime)
+
     u_wt = G.nodes[node][node_weight]
-    E_diff = sum(
-        wt for _, v, wt in G.edges({node}, data=weight) if v in community - {node}
-    )
+
+    E_diff = sum(wt for _, v, wt in G.edges({node}, data=weight) if v in A_prime)
 
     return resolution * 2 * n_A_prime * u_wt - E_diff
 
@@ -332,9 +331,9 @@ def constant_potts_model(
     \gamma is the resolution parameter
 
     The interpretation of the resolution parameter \gamma is explained as
-    follows in page 3 of [1]:
+    follows in page 3 of [1]_:
 
-       "[The Constant Potts Model] tries to maximize the number of
+        [The Constant Potts Model] tries to maximize the number of
         internal edges while at the same time keeping relatively small
         communities.
 
@@ -351,7 +350,7 @@ def constant_potts_model(
         community r and s. This ratio is exactly the density of links between
         community r and s. So, the link density between communities should be
         lower than \gamma, while the link density within communities should
-        be higher than \gamma."
+        be higher than \gamma.
 
     The Constant Potts Model is similar to modularity, but overcomes the
     so-called resolution limit problem when used in community detection
@@ -390,7 +389,8 @@ def constant_potts_model(
     References
     ----------
     .. [1] V.A. Traag, P. Van Dooren, Y. Nesterov "Narrow scope for
-       resolution-limit-free community detection" <https://arxiv.org/abs/1104.3083>
+       resolution-limit-free community detection"
+       <https://arxiv.org/abs/1104.3083>
     """
 
     if not isinstance(communities, list):
