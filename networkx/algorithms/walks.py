@@ -112,31 +112,16 @@ def random_walk(G, *, start, weight=None, seed=None):
     if start not in G:
         raise nx.NodeNotFound(start)
 
-    adj = G._adj
-    node = start
-    while True:
+    yield (node := start)
+    while nbrs := G._adj[node]:
+        if weight is not None:
+            wts = [nbr.get(weight, 1) for nbr in nbrs.values()]
+            if any(w < 0 for w in wts):
+                raise ValueError("random_walk doesn't support negative weights")
+            if sum(wts) == 0:
+                return
+        else:
+            wts = None
+
+        node = seed.choices(list(nbrs), weights=wts, k=1)[0]
         yield node
-        nbrs = adj[node]
-        if not nbrs:
-            return
-
-        if weight is None:
-            node = seed.choice(list(nbrs))
-            continue
-
-        positive_nbrs = []
-        positive_weights = []
-        for nbr, edge_data in nbrs.items():
-            edge_weight = edge_data.get(weight, 1)
-            if edge_weight < 0:
-                raise ValueError(
-                    f"Edge ({node}, {nbr}) has negative weight {edge_weight}"
-                )
-            if edge_weight > 0:
-                positive_nbrs.append(nbr)
-                positive_weights.append(edge_weight)
-
-        if not positive_nbrs:
-            return
-
-        node = seed.choices(positive_nbrs, weights=positive_weights, k=1)[0]
