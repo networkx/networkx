@@ -279,13 +279,16 @@ def _cpm_delta_partial_eval_remove(
     q_add = _cpm_delta_partial_eval_add(G, u, B)
 
     """
+    A_prime = community - {node}
 
     n_A_prime = sum(
-        wt for u, wt in G.nodes(data=node_weight) if u in community - {node}
+        wt for u, wt in G.nodes(data=node_weight) if u in A_prime
     )
+
     u_wt = G.nodes[node][node_weight]
+    
     E_diff = sum(
-        wt for _, v, wt in G.edges({node}, data=weight) if v in community - {node}
+        wt for _, v, wt in G.edges({node}, data=weight) if v in A_prime
     )
 
     return resolution * 2 * n_A_prime * u_wt - E_diff
