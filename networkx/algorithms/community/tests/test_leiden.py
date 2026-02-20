@@ -133,12 +133,17 @@ def test_cpm_increase():
     )
     partition = [{u} for u in G.nodes()]
     r = 0.3
-    cpm = constant_potts_model(G, partition, weight=None, node_weight=None, resolution=r)
+    cpm = constant_potts_model(
+        G, partition, weight=None, node_weight=None, resolution=r
+    )
     partition = nx.community.leiden_communities(
         G, quality_function=constant_potts_model, resolution=r, seed=10
     )
 
-    assert constant_potts_model(G, partition, weight=None, node_weight=None, resolution=r) > cpm
+    assert (
+        constant_potts_model(G, partition, weight=None, node_weight=None, resolution=r)
+        > cpm
+    )
 
 
 def test_valid_partition():
