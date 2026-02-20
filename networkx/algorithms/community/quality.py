@@ -404,7 +404,7 @@ def constant_potts_model(
 
         return E_c - resolution * (n_c**2)
 
-    return sum(map(community_contribution, communities))
+    return sum(community_contribution(c) for c in communities)
 
 
 @require_partition
