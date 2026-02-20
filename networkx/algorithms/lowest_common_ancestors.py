@@ -108,16 +108,22 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
             common_ancestors = ancestor_cache[v] & ancestor_cache[w]
 
             if common_ancestors:
-                common_ancestor = next(iter(common_ancestors))
-                while True:
-                    successor = None
-                    for lower_ancestor in G.successors(common_ancestor):
-                        if lower_ancestor in common_ancestors:
-                            successor = lower_ancestor
-                            break
-                    if successor is None:
-                        break
-                    common_ancestor = successor
+                # Find a lowest common ancestor: a common ancestor with no
+                # descendant that is also a common ancestor.  The previous
+                # greedy-descent approach could get stuck when the path from
+                # a root to the true LCA passes through non-common-ancestor
+                # nodes.
+                #
+                # We iterate through common_ancestors and look for one whose
+                # successors (in the transitive closure restricted to common
+                # ancestors) are empty — i.e. it has no "lower" common
+                # ancestor below it.
+                ca_graph = G.subgraph(common_ancestors)
+                # Any node with out-degree 0 in the common-ancestor subgraph
+                # is a valid lowest common ancestor.
+                common_ancestor = next(
+                    n for n in ca_graph if ca_graph.out_degree(n) == 0
+                )
                 yield ((v, w), common_ancestor)
 
     return generate_lca_from_pairs(G, pairs)
