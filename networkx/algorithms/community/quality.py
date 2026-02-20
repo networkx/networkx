@@ -313,9 +313,9 @@ def _cpm_delta_partial_eval_add(
 def constant_potts_model(
     G,
     communities,
-    weight="weight",
-    node_weight="node_weight",
-    resolution=1.0,
+    weight,
+    node_weight,
+    resolution,
 ):
     r"""
     Computes the Constant Potts Model, which is a measure of quality of a
@@ -328,7 +328,46 @@ def constant_potts_model(
 
     E(C,C) is the sum of all edge weights within the community C,
     n_C is the sum of the weights of the nodes in C.
-    \gamma is the resolution parameter
+    \gamma is the resolution parameter. See Notes below for more
+    more detail on resolution parameter.
+
+    The Constant Potts Model is similar to modularity, but overcomes the
+    so-called resolution limit problem when used in community detection
+    algorithms like leiden and louvain.
+
+    The Constant Potts Model is used by default in the leiden community
+    detection algorithm
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    communities : list or iterable of sets of nodes
+        These node sets must represent a partition of G's nodes.
+
+    weight : string or None, optional
+        The edge attribute that holds the numerical value used
+        as a weight. If None or an edge does not have that attribute,
+        then that edge has weight 1.
+
+    node_weight : string or None, optional
+        The node attribute that holds the numerical value used as
+        a weight. If None or an edge does not have tha attribute,
+        then the node is treated as having weight 1
+
+    resolution : float
+        For smaller resolution values, the constant_potts_model will be
+        maximised by a partition consisting of larger communities; for
+        larger resolution values constant_potts_model will be maximised
+        for smaller communities.
+
+    Returns
+    -------
+    Q : float
+        The Constant Potts Model value of the partition.
+
+    Notes
+    -----
 
     The interpretation of the resolution parameter \gamma is explained as
     follows in page 3 of [1]_:
@@ -351,40 +390,6 @@ def constant_potts_model(
         community r and s. So, the link density between communities should be
         lower than \gamma, while the link density within communities should
         be higher than \gamma.
-
-    The Constant Potts Model is similar to modularity, but overcomes the
-    so-called resolution limit problem when used in community detection
-    algorithms like leiden and louvain.
-
-    Usually Constant Potts Model is used by default in the leiden community
-    detection algorithm
-
-    Parameters
-    ----------
-    G : NetworkX Graph
-
-    communities : list or iterable of sets of nodes
-        These node sets must represent a partition of G's nodes.
-
-    weight : string or None, optional (default="weight")
-        The edge attribute that holds the numerical value used
-        as a weight. If None or an edge does not have that attribute,
-        then that edge has weight 1.
-
-    node_weight : string or None, optional (default='node_weight')
-        The node attribute that holds the numerical value used as
-        a weight.
-
-    resolution : float (default=1.0)
-        For smaller resolution values, the constant_potts_model will be
-        maximised by a partition consisting of larger communities; for
-        larger resolution values constant_potts_model will be maximised
-        for smaller communities.
-
-    Returns
-    -------
-    Q : float
-        The modularity of the partition.
 
     References
     ----------
