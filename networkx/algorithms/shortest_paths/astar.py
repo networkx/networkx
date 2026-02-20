@@ -162,7 +162,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=Non
             else:
                 h = heuristic(neighbor, target)
 
-            if cutoff and ncost + h > cutoff:
+            if cutoff is not None and ncost + h > cutoff:
                 continue
 
             enqueued[neighbor] = ncost, h
