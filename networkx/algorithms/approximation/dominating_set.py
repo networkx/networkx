@@ -1,7 +1,7 @@
 """Functions for finding node and edge dominating sets.
 
-A `dominating set`_ for an undirected graph *G* with vertex set *V*
-and edge set *E* is a subset *D* of *V* such that every vertex not in
+A `dominating set`_ for an undirected graph *G* with node set *V*
+and edge set *E* is a subset *D* of *V* such that every node not in
 *D* is adjacent to at least one member of *D*. An `edge dominating set`_
 is a subset *F* of *E* such that every edge not in *F* is
 incident to an endpoint of at least one edge in *F*.
@@ -89,33 +89,31 @@ def min_weighted_dominating_set(G, weight=None):
 
         """
         v, neighborhood = node_and_neighborhood
-        # Use the intersection with uncovered vertices, not just the
+        # Use the intersection with uncovered nodes, not just the
         # difference with the dominating set.  A node's neighbors may
         # already be dominated (covered by an adjacent dom_set member)
         # without being in dom_set themselves.  See #8523.
-        uncovered = len(neighborhood & vertices)
+        uncovered = len(neighborhood & uncovered_nodes)
         if uncovered == 0:
             return float("inf")
         return G.nodes[v].get(weight, 1) / uncovered
 
-    # This is a set of all vertices not already covered by the
-    # dominating set.
-    vertices = set(G)
-    # This is a dictionary mapping each node to the closed neighborhood
-    # of that node.
+    # A set of all nodes not yet covered by the dominating set.
+    uncovered_nodes = set(G)
+    # A dict mapping each node to its closed neighborhood.
     neighborhoods = {v: {v} | set(G[v]) for v in G}
 
-    # Continue until all vertices are adjacent to some node in the
+    # Continue until all nodes are adjacent to some node in the
     # dominating set.
-    while vertices:
+    while uncovered_nodes:
         # Find the most cost-effective node to add, along with its
         # closed neighborhood.
         dom_node, min_set = min(neighborhoods.items(), key=_cost)
-        # Add the node to the dominating set and reduce the remaining
-        # set of nodes to cover.
+        # Add the node to the dominating set and reduce the
+        # remaining set of nodes to cover.
         dom_set.add(dom_node)
         del neighborhoods[dom_node]
-        vertices -= min_set
+        uncovered_nodes -= min_set
 
     return dom_set
 
