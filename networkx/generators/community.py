@@ -1025,9 +1025,9 @@ def LFR_benchmark_graph(
 
     # Validate parameters for generating the community size sequence.
     if min_community is None:
-        min_community = min(deg_seq)
+        min_community = min(deg_seq) + 1
     if max_community is None:
-        max_community = max(deg_seq)
+        max_community = max(deg_seq) + 1
 
     # Generate a community size sequence with a power law distribution.
     #
@@ -1050,21 +1050,72 @@ def LFR_benchmark_graph(
     # Generate the communities based on the given degree sequence and
     # community sizes.
     max_iters *= 10 * n
+
     communities = _generate_communities(deg_seq, comms, mu, max_iters, seed)
 
     # Finally, generate the benchmark graph based on the given
     # communities, joining nodes according to the intra- and
     # inter-community degrees.
+
     G = nx.Graph()
     G.add_nodes_from(range(n))
+
+    desired_internal_degree = [round(deg_seq[u] * (1 - mu)) for u in range(n)]
+    desired_external_degree = [
+        deg_seq[u] - desired_internal_degree[u] for u in range(n)
+    ]
+
+    realized_internal_degree = [0 for _ in range(n)]
+    realized_external_degree = [0 for _ in range(n)]
+
     for c in communities:
-        for u in c:
-            while G.degree(u) < round(deg_seq[u] * (1 - mu)):
-                v = seed.choice(list(c))
-                G.add_edge(u, v)
-            while G.degree(u) < deg_seq[u]:
-                v = seed.choice(range(n))
-                if v not in c:
-                    G.add_edge(u, v)
+        comm_degrees = [desired_internal_degree[u] for u in c]
+        comm_sort_by_deg = [u for _, u in sorted(zip(comm_degrees, c), reverse=True)]
+
+        for u in comm_sort_by_deg:
             G.nodes[u]["community"] = c
+
+            for v in comm_sort_by_deg:
+                check_u = realized_internal_degree[u] < desired_internal_degree[u]
+                check_v = realized_internal_degree[v] < desired_internal_degree[v]
+
+                if (check_u and check_v) and u != v:
+                    G.add_edge(u, v)
+                    realized_internal_degree[u] += 1
+                    realized_internal_degree[v] += 1
+
+    q = len(communities)
+    comm_sizes = [len(c) for c in communities]
+    comm_idx_sort_by_size = [
+        i for _, i in sorted(zip(comm_sizes, range(q)), reverse=True)
+    ]
+
+    for i in comm_idx_sort_by_size:
+        ci = communities[i]
+        ci_degrees = [desired_external_degree[u] for u in ci]
+        ci_sort_by_deg = [u for _, u in sorted(zip(ci_degrees, ci), reverse=True)]
+
+        for u in ci_sort_by_deg:
+            its = 0
+
+            while (
+                realized_external_degree[u] < desired_external_degree[u]
+                and its < 10 * n
+            ):
+                j = i
+                while j == i:
+                    j = seed.choice(range(q))
+
+                cj = communities[j]
+                v = seed.choice(list(cj))
+
+                check_v = realized_external_degree[v] < desired_external_degree[v]
+
+                if check_v:
+                    G.add_edge(u, v)
+                    realized_external_degree[u] += 1
+                    realized_external_degree[v] += 1
+
+                its += 1
+
     return G
