@@ -48,7 +48,7 @@ def min_weighted_dominating_set(G, weight=None):
     --------
     >>> G = nx.Graph([(0, 1), (0, 4), (1, 4), (1, 2), (2, 3), (3, 4), (2, 5)])
     >>> nx.approximation.min_weighted_dominating_set(G)
-    {1, 2, 4}
+    {1, 2}
 
     Raises
     ------
@@ -89,7 +89,14 @@ def min_weighted_dominating_set(G, weight=None):
 
         """
         v, neighborhood = node_and_neighborhood
-        return G.nodes[v].get(weight, 1) / len(neighborhood - dom_set)
+        # Use the intersection with uncovered vertices, not just the
+        # difference with the dominating set.  A node's neighbors may
+        # already be dominated (covered by an adjacent dom_set member)
+        # without being in dom_set themselves.  See #8523.
+        uncovered = len(neighborhood & vertices)
+        if uncovered == 0:
+            return float("inf")
+        return G.nodes[v].get(weight, 1) / uncovered
 
     # This is a set of all vertices not already covered by the
     # dominating set.

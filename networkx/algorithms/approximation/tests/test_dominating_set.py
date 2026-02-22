@@ -44,6 +44,21 @@ class TestMinWeightDominatingSet:
         G = nx.Graph()
         assert min_weighted_dominating_set(G) == set()
 
+    def test_cost_accounts_for_already_dominated(self):
+        """Tests that the greedy cost function considers nodes dominated by
+        neighbors of the dominating set, not just nodes in the set itself.
+
+        Regression test for #8523.
+        """
+        # K5 + path 4-5-6: nodes 0-4 form a clique, 5 and 6 hang off node 4.
+        # Optimal dominating set has 2 nodes (e.g. {4, 5} or {0, 5}).
+        graph = nx.complete_graph(5)
+        graph.add_edge(4, 5)
+        graph.add_edge(5, 6)
+        dom_set = min_weighted_dominating_set(graph)
+        assert nx.is_dominating_set(graph, dom_set)
+        assert len(dom_set) <= 3  # greedy should find a small set, not 5
+
     def test_min_edge_dominating_set(self):
         graph = nx.path_graph(5)
         dom_set = min_edge_dominating_set(graph)
