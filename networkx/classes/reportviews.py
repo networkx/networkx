@@ -1208,7 +1208,7 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
             case (u, v):
                 return (u, v)
             case _:
-                raise ValueError("Edge must have length 2 or 3")
+                raise ValueError("Edge must have length 2")
 
     # EdgeDataView methods
     def __call__(self, nbunch=None, data=False, *, default=None):
