@@ -51,13 +51,14 @@ class TestMinWeightDominatingSet:
         Regression test for #8523.
         """
         # K5 + path 4-5-6: nodes 0-4 form a clique, 5 and 6 hang off node 4.
-        # Optimal dominating set has 2 nodes (e.g. {4, 5} or {0, 5}).
+        # Any minimum dominating set has 2 nodes: one from the clique (0-4)
+        # and one from the tail (5 or 6). E.g. {0, 5}, {4, 6}, {2, 5}, etc.
         graph = nx.complete_graph(5)
         graph.add_edge(4, 5)
         graph.add_edge(5, 6)
         dom_set = min_weighted_dominating_set(graph)
         assert nx.is_dominating_set(graph, dom_set)
-        assert (dom_set == {4, 5}) or (dom_set == {0, 5})
+        assert len(dom_set) == 2
 
     def test_min_edge_dominating_set(self):
         graph = nx.path_graph(5)
