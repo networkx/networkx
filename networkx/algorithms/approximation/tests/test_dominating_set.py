@@ -57,7 +57,7 @@ class TestMinWeightDominatingSet:
         graph.add_edge(5, 6)
         dom_set = min_weighted_dominating_set(graph)
         assert nx.is_dominating_set(graph, dom_set)
-        assert len(dom_set) <= 3  # greedy should find a small set, not 5
+        assert (dom_set == {4, 5}) or (dom_set == {0, 5})
 
     def test_min_edge_dominating_set(self):
         graph = nx.path_graph(5)
