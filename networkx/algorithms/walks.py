@@ -104,10 +104,106 @@ def random_walk(G, *, start, weight=None, seed=None):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
-    Returns
-    -------
-    iterator
-        An iterator yielding visited nodes in walk order.
+    Yields
+    ------
+    node
+        The next node in the random walk
+
+    Raises
+    ------
+    nx.NodeNotFound
+        If `start` is not in `G`
+    ValueError
+        If `weight` is not None and a negative weight is encountered.
+
+    Examples
+    --------
+    The `random_walk` generator is designed to be very flexible, thus there is
+    no default condition for terminating a walk.
+
+    .. warning::
+       Calling ``list(nx.random_walk(G, start=n))`` will result in an infinite
+       loop if `G` is undirected (or strongly connected if directed).
+
+    >>> G = nx.cycle_graph(10)
+
+    To generate a walk with a given length:
+
+    >>> walk_length = 4
+    >>> rw = nx.random_walk(G, start=0, seed=99)
+    >>> [next(rw) for _ in range(walk_length)]
+    [0, 9, 0, 1]
+
+    or with `itertools.islice`:
+
+    >>> import itertools
+
+    >>> rw = nx.random_walk(G, start=0, seed=99)
+    >>> list(itertools.islice(rw, walk_length))
+    [0, 9, 0, 1]
+
+    One may want to terminate a walk when a specific node (or set of nodes) is
+    reached; for example, transitioning from one "barbell" to the other:
+
+    >>> G = nx.barbell_graph(5, 0)
+    >>> terminal_nodes = set(range(5, 10))
+    >>> rwg = nx.random_walk(G, start=0, seed=999999)
+    >>> rw = []
+    >>> while (node := next(rwg)) not in terminal_nodes:
+    ...     rw.append(node)
+    >>> rw
+    [0, 2, 1, 2, 4]
+
+    Or perform a walk with a termination probability for each step:
+
+    >>> import random
+    >>> random.seed(4242)
+
+    >>> G = nx.complete_graph(10)
+    >>> rwg = nx.random_walk(G, start=0, seed=999)
+    >>> termination_probability = 0.25
+    >>> rw = []
+    >>> while random.random() > termination_probability:
+    ...     rw.append(next(rwg))
+    >>> rw
+    [0, 2]
+
+    `random_walk` can be combined with distance constraints to sample local
+    regions in a graph:
+
+    >>> G = nx.balanced_tree(2, 3)
+    >>> distances = nx.single_source_shortest_path_length(G, source=0)
+    >>> distance_limit = 3
+    >>> rwg = nx.random_walk(G, start=0, seed=99)
+    >>> local_walk = []
+    >>> while distances[(n := next(rwg))] < distance_limit:
+    ...     local_walk.append(n)
+    >>> local_walk
+    [0, 2, 5, 2, 6, 2, 0, 1, 0, 1, 3]
+
+    The `weight` keyword can be used to indicate an edge attribute to use for
+    weighted sampling:
+
+    >>> G = nx.path_graph(3)
+    >>> nx.set_edge_attributes(G, {(0, 1): 2, (1, 2): 10}, name="weight")
+    >>> rw = nx.random_walk(G, start=1, weight="weight", seed=2048)
+    >>> list(itertools.islice(rw, 10))
+    [1, 2, 1, 2, 1, 2, 1, 2, 1, 0]
+
+    When performing a weighted walk, edges with 0 weight are ignored:
+
+    >>> G = nx.star_graph(5)
+    >>> nx.set_edge_attributes(G, {(0, n): 0 for n in range(2, len(G))}, name="weight")
+    >>> rw = nx.random_walk(G, start=0, weight="weight")
+    >>> list(itertools.islice(rw, 4))
+    [0, 1, 0, 1]
+
+    For directed graphs, if a node with 0 outdegree is reached, the walk will
+    terminate:
+
+    >>> G = nx.path_graph(5, create_using=nx.DiGraph)
+    >>> list(nx.random_walk(G, start=3))
+    [3, 4]
     """
     if start not in G:
         raise nx.NodeNotFound(start)
