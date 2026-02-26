@@ -159,7 +159,7 @@ def _lazy_import(fullname):
     """
     try:
         return sys.modules[fullname]
-    except:
+    except Exception:
         pass
 
     # Not previously loaded -- look it up

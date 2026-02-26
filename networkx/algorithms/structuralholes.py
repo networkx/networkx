@@ -155,7 +155,7 @@ def effective_size(G, nodes=None, weight=None):
         import scipy as sp
 
         has_scipy = True
-    except:
+    except Exception:
         has_scipy = False
 
     if nodes is None and has_scipy:
@@ -271,7 +271,7 @@ def constraint(G, nodes=None, weight=None):
         import scipy as sp
 
         has_scipy = True
-    except:
+    except Exception:
         has_scipy = False
 
     if nodes is None and has_scipy:

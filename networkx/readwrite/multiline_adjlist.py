@@ -293,7 +293,7 @@ def parse_multiline_adjlist(
             else:
                 try:  # try to evaluate
                     edgedata = literal_eval(data)
-                except:
+                except Exception:
                     edgedata = {}
             G.add_edge(u, v, **edgedata)
 

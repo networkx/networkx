@@ -60,7 +60,7 @@ positions = dict(zip(delaunay_graph.nodes, coordinates))
 ax = cells.plot(facecolor="lightblue", alpha=0.50, edgecolor="cornsilk", linewidth=2)
 try:  # Try-except for issues with timeout/parsing failures in CI
     add_basemap(ax)
-except:
+except Exception:
     pass
 
 ax.axis("off")

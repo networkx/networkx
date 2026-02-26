@@ -118,7 +118,7 @@ def cd_index(G, node, time_delta, *, time="time", weight=None):
         target_date = G.nodes[node][time] + time_delta
         # keep the predecessors that existed before the target date
         pred = {i for i in G.pred[node] if G.nodes[i][time] <= target_date}
-    except:
+    except Exception:
         raise nx.NetworkXError(
             "Addition and comparison are not supported between 'time_delta' "
             "and 'time' types."
