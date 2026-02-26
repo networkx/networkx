@@ -148,37 +148,37 @@ def random_walk(G, *, start, weight=None, seed=None):
     >>> G = nx.barbell_graph(5, 0)
     >>> terminal_nodes = set(range(5, 10))
     >>> rwg = nx.random_walk(G, start=0, seed=999999)
-    >>> rw = []
-    >>> while (node := next(rwg)) not in terminal_nodes:
-    ...     rw.append(node)
-    >>> rw
+    >>> list(itertools.takewhile(lambda n: n not in terminal_nodes, rwg))
     [0, 2, 1, 2, 4]
 
     Or perform a walk with a termination probability for each step:
 
     >>> import random
-    >>> random.seed(4242)
+    >>> random.seed(5040)
+    >>> termination_probability = 0.25
 
     >>> G = nx.complete_graph(10)
-    >>> rwg = nx.random_walk(G, start=0, seed=999)
-    >>> termination_probability = 0.25
-    >>> rw = []
-    >>> while random.random() > termination_probability:
-    ...     rw.append(next(rwg))
-    >>> rw
-    [0, 2]
+    >>> list(
+    ...     itertools.takewhile(
+    ...         lambda _: random.random() > termination_probability,
+    ...         nx.random_walk(G, start=0, seed=999),
+    ...     )
+    ... )
+    [0, 2, 9, 7]
 
     `random_walk` can be combined with distance constraints to sample local
     regions in a graph:
 
     >>> G = nx.balanced_tree(2, 3)
-    >>> distances = nx.single_source_shortest_path_length(G, source=0)
+    >>> distance = nx.single_source_shortest_path_length(G, source=0)
     >>> distance_limit = 3
-    >>> rwg = nx.random_walk(G, start=0, seed=99)
-    >>> local_walk = []
-    >>> while distances[(n := next(rwg))] < distance_limit:
-    ...     local_walk.append(n)
-    >>> local_walk
+
+    >>> list(
+    ...     itertools.takewhile(
+    ...         lambda n: distance[n] < distance_limit,
+    ...         nx.random_walk(G, start=0, seed=99),
+    ...     )
+    ... )
     [0, 2, 5, 2, 6, 2, 0, 1, 0, 1, 3]
 
     The `weight` keyword can be used to indicate an edge attribute to use for
@@ -204,6 +204,12 @@ def random_walk(G, *, start, weight=None, seed=None):
     >>> G = nx.path_graph(5, create_using=nx.DiGraph)
     >>> list(nx.random_walk(G, start=3))
     [3, 4]
+
+    Self-loop edges are included in the neighbor sampling:
+
+    >>> G = nx.Graph([(0, 0)])
+    >>> list(itertools.islice(nx.random_walk(G, start=0), 5))
+    [0, 0, 0, 0, 0]
     """
     if start not in G:
         raise nx.NodeNotFound(start)
