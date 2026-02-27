@@ -26,7 +26,7 @@ import zipfile
 import matplotlib.pyplot as plt
 import networkx as nx
 
-doc_current = pathlib.Path(__file__).resolve().parent
+doc_current = pathlib.Path.cwd()
 football_zip = doc_current / "examples" / "graph" / "football.zip"
 
 zf = zipfile.ZipFile(football_zip)  # zipfile object
