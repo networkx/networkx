@@ -110,7 +110,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     if isinstance(data, list | tuple | nx.reportviews.EdgeViewABC | Iterator):
         try:
             return from_edgelist(data, create_using=create_using)
-        except:
+        except Exception:
             pass
 
     # pygraphviz  agraph

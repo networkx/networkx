@@ -53,7 +53,7 @@ for i, facet in enumerate(ax):
     cases.plot(marker=".", color="orangered", ax=facet)
     try:  # For issues with downloading/parsing basemaps in CI
         add_basemap(facet)
-    except:
+    except Exception:
         pass
     facet.set_title(("KNN-3", "50-meter Distance Band")[i])
     facet.axis("off")

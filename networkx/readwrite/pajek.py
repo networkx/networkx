@@ -223,7 +223,7 @@ def parse_pajek(lines):
                     G.nodes[label].update(
                         {"x": float(x), "y": float(y), "shape": shape}
                     )
-                except:
+                except Exception:
                     pass
                 extra_attr = zip(splitline[5::2], splitline[6::2])
                 G.nodes[label].update(extra_attr)
@@ -253,7 +253,7 @@ def parse_pajek(lines):
                     # there should always be a single value on the edge?
                     w = splitline[2:3]
                     edge_data.update({"weight": float(w[0])})
-                except:
+                except Exception:
                     pass
                     # if there isn't, just assign a 1
                 #                    edge_data.update({'value':1})

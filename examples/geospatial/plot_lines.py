@@ -77,7 +77,7 @@ for i, facet in enumerate(ax):
     facet.axis("off")
     try:  # For issues with downloading/parsing in CI
         add_basemap(facet)
-    except:
+    except Exception:
         pass
 nx.draw(
     G_primal, {n: [n[0], n[1]] for n in list(G_primal.nodes)}, ax=ax[1], node_size=50
@@ -96,7 +96,7 @@ for i, facet in enumerate(ax):
     facet.axis("off")
     try:  # For issues with downloading/parsing in CI
         add_basemap(facet)
-    except:
+    except Exception:
         pass
 nx.draw(G_dual, {n: [n[0], n[1]] for n in list(G_dual.nodes)}, ax=ax[1], node_size=50)
 plt.show()

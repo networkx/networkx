@@ -408,7 +408,7 @@ class GraphML:
         # These additions to types allow writing numpy types
         try:
             import numpy as np
-        except:
+        except Exception:
             pass
         else:
             # prepend so that python types are created upon read (last entry wins)

@@ -319,7 +319,7 @@ def pygraphviz_layout(G, prog="neato", root=None, args=""):
         try:
             xs = node.attr["pos"].split(",")
             node_pos[n] = tuple(float(x) for x in xs)
-        except:
+        except Exception:
             print("no position for node", n)
             node_pos[n] = (0.0, 0.0)
     return node_pos
