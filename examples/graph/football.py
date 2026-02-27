@@ -20,20 +20,16 @@ To use from a zipfile and no internet, start with
        https://arxiv.org/abs/cond-mat/0112110
 """
 
-import urllib.request
-import io
+import pathlib
 import zipfile
 
 import matplotlib.pyplot as plt
 import networkx as nx
 
-url = "https://raw.githubusercontent.com/networkx/networkx/main/examples/graph/football.zip"
+doc_current = pathlib.Path(__file__).resolve().parent
+football_zip = doc_current / "examples" / "graph" / "football.zip"
 
-sock = urllib.request.urlopen(url)  # open URL
-s = io.BytesIO(sock.read())  # read into BytesIO "file"
-sock.close()
-
-zf = zipfile.ZipFile(s)  # zipfile object
+zf = zipfile.ZipFile(football_zip)  # zipfile object
 txt = zf.read("football.txt").decode()  # read info file
 gml = zf.read("football.gml").decode()  # read gml data
 # throw away bogus first line with # from mejn files
