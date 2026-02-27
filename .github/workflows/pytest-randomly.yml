@@ -10,17 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: "3.13"
-
-      - name: Install packages
-        run: |
-          pip install --upgrade pip
-          pip install .[default,test]
-          pip install pytest-randomly
-          pip list
-
+          environments: test-randomly
       - name: Run tests
-        run: pytest --doctest-modules --durations=10 --pyargs networkx
+        run: pixi run -e test-randomly test-default

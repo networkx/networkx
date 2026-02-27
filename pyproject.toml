@@ -277,3 +277,114 @@ disable_error_code = ["var-annotated"]
 [[tool.mypy.overrides]]
 module = 'networkx.classes.reportviews'
 ignore_errors = true
+
+# ---- Pixi configuration ----
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+
+[tool.pixi.pypi-dependencies]
+networkx = { path = ".", editable = true }
+
+# --- Python version features ---
+
+[tool.pixi.feature.py312.dependencies]
+python = "3.12.*"
+
+[tool.pixi.feature.py313.dependencies]
+python = "3.13.*"
+
+[tool.pixi.feature.py314.dependencies]
+python = "3.14.*"
+
+[tool.pixi.feature.py314t.dependencies]
+python-freethreading = "3.14.*"
+
+# --- Dependency features ---
+# Most pypi-dependencies are auto-created from [project.optional-dependencies].
+# Only features that differ from or have no matching optional-deps group are listed here.
+
+[tool.pixi.feature.default-no-scipy.pypi-dependencies]
+numpy = ">=1.25"
+matplotlib = ">=3.8"
+pandas = ">=2.0"
+
+[tool.pixi.feature.doc.dependencies]
+libspatialindex = "*"
+pip = "*"
+
+# extra: pygraphviz comes from conda (needs graphviz C library), not pypi
+[tool.pixi.feature.extra.dependencies]
+graphviz = "*"
+pygraphviz = ">=1.14"
+
+[tool.pixi.feature.extra.pypi-dependencies]
+lxml = ">=4.6"
+pydot = ">=3.0.1"
+sympy = ">=1.10"
+
+[tool.pixi.feature.example.dependencies]
+proj = "*"
+gdal = "*"
+cairo = "*"
+rasterio = "*"
+
+# --- Task definitions ---
+
+[tool.pixi.feature.test.tasks]
+test-base = "pytest -n auto --durations=10 --pyargs networkx"
+test-default = "pytest -n auto --doctest-modules --durations=10 --pyargs networkx"
+check-import = "python -Werror -c 'import networkx'"
+test-slow = "pytest -n auto --durations=20 --runslow -m slow --pyargs networkx"
+test-dispatch = { cmd = "pytest -n auto --doctest-modules --durations=10 --pyargs networkx", env = { NETWORKX_TEST_BACKEND = "nx_loopback" } }
+
+[tool.pixi.feature.developer.tasks]
+lint = "pre-commit run --all-files --show-diff-on-failure --color always"
+type-check = "mypy -p networkx"
+
+[tool.pixi.feature.doc.tasks]
+docs-build = { cmd = "make -C doc/ html", env = { DISPLAY = ":99" } }
+# TODO: convert to pypi-dependencies once pixi supports --no-deps
+# https://github.com/prefix-dev/pixi/issues/1417
+install-backend-stubs = """pip install --no-deps --pre \
+  --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple \
+  nx-cugraph-cu11 \
+  git+https://github.com/python-graphblas/graphblas-algorithms.git@main \
+  git+https://github.com/networkx/nx-parallel.git@main \
+  git+https://github.com/awslabs/nx-neptune.git@main"""
+
+[tool.pixi.feature.prerelease.tasks]
+install-prerelease = "pip install --upgrade pip && pip install --pre '.[default,test]' && pip list"
+test-prerelease = "pytest -n auto --doctest-modules --durations=10 --pyargs networkx"
+
+[tool.pixi.feature.release.tasks]
+build-dist = "python -m build --sdist --wheel"
+verify-dist = "twine check --strict dist/*"
+
+# --- Environment definitions ---
+
+[tool.pixi.environments]
+# Base test (no default deps)
+test-base-py313 = { features = ["test", "py313"], solve-group = "py313" }
+test-base-py314 = { features = ["test", "py314"], solve-group = "py314" }
+test-base-py314t = { features = ["test", "py314t"], solve-group = "py314t" }
+# Default test (with numpy/scipy/matplotlib/pandas)
+test-default-py312 = { features = ["test", "default", "py312"], solve-group = "py312" }
+test-default-py313 = { features = ["test", "default", "py313"], solve-group = "py313" }
+test-default-py314 = { features = ["test", "default", "py314"], solve-group = "py314" }
+# Default without scipy
+test-default-no-scipy-py312 = { features = ["test", "default-no-scipy", "py312"], solve-group = "py312" }
+# Extra test (with graphviz from conda)
+test-extra-py312 = { features = ["test", "default", "extra", "py312"], solve-group = "py312" }
+test-extra-py313 = { features = ["test", "default", "extra", "py313"], solve-group = "py313" }
+# Single-purpose environments
+lint = { features = ["developer", "py313"], solve-group = "py313" }
+type-check = { features = ["developer", "py312"], solve-group = "py312" }
+docs = { features = ["test", "default", "extra", "doc", "example", "py312"], solve-group = "py312" }
+build-release = { features = ["release", "py312"], solve-group = "py312" }
+# Prerelease (pixi manages Python, pip install --pre handles deps)
+prerelease-py312 = { features = ["prerelease", "py312"], solve-group = "py312" }
+prerelease-py313 = { features = ["prerelease", "py313"], solve-group = "py313" }
+prerelease-py314 = { features = ["prerelease", "py314"], solve-group = "py314" }
+test-randomly = { features = ["test", "default", "test-extras", "py313"], solve-group = "py313" }

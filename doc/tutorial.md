@@ -674,7 +674,7 @@ for precision in [16, 17]:
 
 ## Using NetworkX backends
 
-NetworkX can be configured to use separate thrid-party backends to improve
+NetworkX can be configured to use separate third-party backends to improve
 performance and add functionality. Backends are optional, installed separately,
 and can be enabled either directly in the user's code or through environment
 variables.

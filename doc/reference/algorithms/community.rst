@@ -101,6 +101,7 @@ Measuring partitions
    :toctree: generated/
 
    modularity
+   constant_potts_model
    partition_quality
 
 Partitions via centrality measures
