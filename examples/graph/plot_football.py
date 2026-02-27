@@ -6,8 +6,7 @@ Football
 Load football network in GML format and compute some network statistics.
 Data provided by authors of [1]_
 
-Shows how to download GML graph in a zipped file, unpack it, and load
-into a NetworkX graph.
+Shows how to unpack a zipped GML file and load it into a NetworkX graph.
 
 Requires Internet connection to download the URL
 https://github.com/networkx/networkx/blob/main/examples/graph/football.zip
