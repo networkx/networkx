@@ -9,7 +9,7 @@ __all__ = ["bethe_hessian_matrix"]
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatchable
-def bethe_hessian_matrix(G, r=None, nodelist=None):
+def bethe_hessian_matrix(G, r=None, nodelist=None, format="csr"):
     r"""Returns the Bethe Hessian matrix of G.
 
     The Bethe Hessian is a family of matrices parametrized by r, defined as
@@ -32,10 +32,15 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
        The rows and columns are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by ``G.nodes()``.
 
+    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok', 'dense'}
+        The format of the result (default 'csr'). For 'dense', a NumPy array
+        is returned. See `scipy.sparse` documentation for other formats.
+
     Returns
     -------
-    H : scipy.sparse.csr_array
-      The Bethe Hessian matrix of `G`, with parameter `r`.
+    H : scipy.sparse.csr_array or NumPy ndarray
+      The Bethe Hessian matrix of `G`, with parameter `r`. Returns a NumPy
+      array if ``format='dense'``.
 
     Examples
     --------
@@ -74,4 +79,4 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     n, m = A.shape
     D = sp.sparse.dia_array((A.sum(axis=1), 0), shape=(m, n)).tocsr()
     I = sp.sparse.eye_array(m, n, format="csr")
-    return (r**2 - 1) * I - r * A + D
+    return ((r**2 - 1) * I - r * A + D).asformat(format)

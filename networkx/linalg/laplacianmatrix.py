@@ -20,7 +20,7 @@ __all__ = [
 
 
 @nx._dispatchable(edge_attrs="weight")
-def laplacian_matrix(G, nodelist=None, weight="weight"):
+def laplacian_matrix(G, nodelist=None, weight="weight", format="csr"):
     """Returns the Laplacian matrix of G.
 
     The graph Laplacian is the matrix L = D - A, where
@@ -39,10 +39,14 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
        The edge data key used to compute each value in the matrix.
        If None, then each edge has weight 1.
 
+    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok', 'dense'}
+        The format of the result (default 'csr'). For 'dense', a NumPy array
+        is returned. See `scipy.sparse` documentation for other formats.
+
     Returns
     -------
-    L : SciPy sparse array
-      The Laplacian matrix of G.
+    L : SciPy sparse array or NumPy ndarray
+      The Laplacian matrix of G. Returns a NumPy array if ``format='dense'``.
 
     Notes
     -----
@@ -126,11 +130,11 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     n, m = A.shape
     D = sp.sparse.dia_array((A.sum(axis=1), 0), shape=(m, n)).tocsr()
-    return D - A
+    return (D - A).asformat(format)
 
 
 @nx._dispatchable(edge_attrs="weight")
-def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
+def normalized_laplacian_matrix(G, nodelist=None, weight="weight", format="csr"):
     r"""Returns the normalized Laplacian matrix of G.
 
     The normalized graph Laplacian is the matrix
@@ -155,10 +159,15 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
        The edge data key used to compute each value in the matrix.
        If None, then each edge has weight 1.
 
+    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok', 'dense'}
+        The format of the result (default 'csr'). For 'dense', a NumPy array
+        is returned. See `scipy.sparse` documentation for other formats.
+
     Returns
     -------
-    N : SciPy sparse array
-      The normalized Laplacian matrix of G.
+    N : SciPy sparse array or NumPy ndarray
+      The normalized Laplacian matrix of G. Returns a NumPy array if
+      ``format='dense'``.
 
     Notes
     -----
@@ -240,7 +249,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
     DH = sp.sparse.dia_array((diags_sqrt, 0), shape=(n, n)).tocsr()
-    return DH @ (L @ DH)
+    return (DH @ (L @ DH)).asformat(format)
 
 
 ###############################################################################

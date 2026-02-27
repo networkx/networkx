@@ -219,7 +219,7 @@ def score_sequence(G):
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 @nx._dispatchable(preserve_edge_attrs={"G": {"weight": 1}})
-def tournament_matrix(G):
+def tournament_matrix(G, format="csr"):
     r"""Returns the tournament matrix for the given tournament graph.
 
     This function requires SciPy.
@@ -244,10 +244,15 @@ def tournament_matrix(G):
     G : NetworkX graph
         A directed graph representing a tournament.
 
+    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok', 'dense'}
+        The format of the result (default 'csr'). For 'dense', a NumPy array
+        is returned. See `scipy.sparse` documentation for other formats.
+
     Returns
     -------
-    SciPy sparse array
-        The tournament matrix of the tournament graph `G`.
+    SciPy sparse array or NumPy ndarray
+        The tournament matrix of the tournament graph `G`. Returns a NumPy
+        array if ``format='dense'``.
 
     Raises
     ------
@@ -255,8 +260,8 @@ def tournament_matrix(G):
         If SciPy is not available.
 
     """
-    A = nx.adjacency_matrix(G)
-    return A - A.T
+    A = nx.adjacency_matrix(G, format="csr")
+    return (A - A.T).asformat(format)
 
 
 @not_implemented_for("undirected")
