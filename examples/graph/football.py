@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 doc_current = pathlib.Path.cwd()
-football_zip = doc_current / "examples" / "graph" / "football.zip"
+football_zip = doc_current / "football.zip"
 
 zf = zipfile.ZipFile(football_zip)  # zipfile object
 txt = zf.read("football.txt").decode()  # read info file
