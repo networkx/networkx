@@ -27,7 +27,7 @@ import zipfile
 import matplotlib.pyplot as plt
 import networkx as nx
 
-url = "https://github.com/networkx/networkx/raw/refs/heads/main/examples/graph/football.zip"
+url = "https://raw.githubusercontent.com/networkx/networkx/main/examples/graph/football.zip"
 
 sock = urllib.request.urlopen(url)  # open URL
 s = io.BytesIO(sock.read())  # read into BytesIO "file"
