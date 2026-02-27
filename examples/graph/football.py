@@ -10,7 +10,7 @@ Shows how to download GML graph in a zipped file, unpack it, and load
 into a NetworkX graph.
 
 Requires Internet connection to download the URL
-https://github.com/networkx/networkx/blob/main/examples/graph/football.zip
+https://github.com/networkx/networkx/raw/refs/heads/main/examples/graph/football.zip
 To use from a zipfile and no internet, start with
 `s = openfile(zipfilename)` and then the code starting at zipfile line ("zf = ...").
 
@@ -27,7 +27,7 @@ import zipfile
 import matplotlib.pyplot as plt
 import networkx as nx
 
-url = "https://github.com/networkx/networkx/blob/main/examples/graph/football.zip"
+url = "https://github.com/networkx/networkx/raw/refs/heads/main/examples/graph/football.zip"
 
 sock = urllib.request.urlopen(url)  # open URL
 s = io.BytesIO(sock.read())  # read into BytesIO "file"
