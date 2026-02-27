@@ -29,7 +29,7 @@ import networkx as nx
 doc_current = pathlib.Path.cwd()
 football_zip = doc_current / "examples" / "graph" / "football.zip"
 
-zf = zipfile.ZipFile(s)  # zipfile object
+zf = zipfile.ZipFile(football_zip)  # zipfile object
 txt = zf.read("football.txt").decode()  # read info file
 gml = zf.read("football.gml").decode()  # read gml data
 # throw away bogus first line with # from mejn files
