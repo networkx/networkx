@@ -1,6 +1,7 @@
 """Functions which help end users define customize node_match and
 edge_match functions to use during isomorphism checks.
 """
+
 import itertools
 import math
 import types
@@ -73,7 +74,8 @@ def node_match_to_label(node_match, Glist, attrname):
     Examples
     ========
     >>> iso = nx.isomorphism
-    >>> def node_match(d1, d2): return d1["tint"] == d2["tint"] and d1["hue"] == d2["hue"]
+    >>> def node_match(d1, d2):
+    ...     return d1["tint"] == d2["tint"] and d1["hue"] == d2["hue"]
 
     >>> G = nx.path_graph(4)
     >>> H = G.copy()
@@ -182,7 +184,8 @@ def edge_match_to_label(edge_match, Glist, attrname):
     ========
     >>> iso = nx.isomorphism
     >>> set_ea = nx.set_edge_attributes
-    >>> def edge_match(d1, d2): return d1["tint"] == d2["tint"] and d1["hue"] == d2["hue"]
+    >>> def edge_match(d1, d2):
+    ...     return d1["tint"] == d2["tint"] and d1["hue"] == d2["hue"]
 
     >>> G = nx.path_graph(5)
     >>> H = G.copy()
