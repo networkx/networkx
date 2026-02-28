@@ -7,11 +7,11 @@ Load football network in GML format and compute some network statistics.
 Data provided by authors of [1]_
 
 Shows how to unpack a zipped GML file and load it into a NetworkX graph.
+This example uses the pathlib library for filename manipulation.
 
-Requires Internet connection to download the URL
-https://github.com/networkx/networkx/blob/main/examples/graph/football.zip
-To use from a zipfile and no internet, start with
-`s = openfile(zipfilename)` and then the code starting at zipfile line ("zf = ...").
+The data file can be found at:
+
+- https://public.websites.umich.edu/~mejn/netdata/football.zip
 
 .. [1] M. Girvan and M. E. J. Newman,
        Community structure in social and biological networks,
