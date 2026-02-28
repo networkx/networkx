@@ -2,29 +2,87 @@
 # pre-commit install
 
 repos:
-  - repo: https://github.com/psf/black
-    rev: 22.10.0
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
     hooks:
-      - id: black
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.2.2
-    hooks:
-      - id: pyupgrade
-        args: [--py38-plus]
-  - repo: https://github.com/asottile/blacken-docs
-    rev: v1.12.1
-    hooks:
-      - id: blacken-docs
-  - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
-    hooks:
-      - id: isort
-        name: isort (python)
-        args: ["--profile", "black", "--filter-files", "--skip", "__init__.py"]
-        files: ^networkx/
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.7.1
+      # Sanity checks
+      - id: check-added-large-files
+        exclude: pixi.lock
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-illegal-windows-names
+      - id: check-merge-conflict
+      # Checks based on file type
+      - id: check-ast
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: check-yaml
+      # Detect mistakes
+      - id: debug-statements
+      - id: detect-private-key
+      - id: forbid-submodules
+      # Automatic fixes
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: trailing-whitespace
+        exclude_types: [svg, xml]
+        exclude: test_p2g.py
+
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.8.1
     hooks:
       - id: prettier
-        files: \.(html|md|yml|yaml)
+        files: \.(html|md|toml|yml|yaml)
         args: [--prose-wrap=preserve]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.0
+    hooks:
+      - id: ruff
+        args: ["--fix", "--show-fixes", "--exit-non-zero-on-fix"]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: generate_requirements.py
+        name: generate_requirements.py
+        language: system
+        entry: python tools/generate_requirements.py
+        files: "pyproject.toml|requirements/.*\\.txt|tools/generate_requirements.py"
+
+  - repo: local
+    hooks:
+      - id: check-import-conventions
+        name: Check import conventions; see CONTRIBUTING.rst#guidelines
+        language: pygrep
+        entry: "^ *import (networkx(,|$| (?!as nx))|numpy(?! as np)|scipy(?! as sp)|pandas(?! as pd)|matplotlib(,|$)|matplotlib.pyplot(?! as plt)|matplotlib (?!as mpl))"
+
+  # The hooks below do not run automatically (may be too slow, bothersome, or low value).
+  # They can be run manually such as before releasing a new version or annually. To run:
+  #
+  #   $ pre-commit run --all-files --hook-stage manual
+  #
+  # Automatically remove unused imports (but not as aggressively as ruff rule F401)
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.3.1
+    hooks:
+      - id: autoflake
+        stages: [manual]
+        args: [--in-place]
+
+  # Automatically upgrade syntax for newer versions of Python (may do more than ruff)
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.21.2
+    hooks:
+      - id: pyupgrade
+        stages: [manual]
+        args: [--py311-plus]
+
+  # Additional ruff rules that may be nice to check occasionally, but not require
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.0
+    hooks:
+      - id: ruff
+        stages: [manual]
+        args: [--select=PERF]

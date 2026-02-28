@@ -1,16 +1,13 @@
 import pytest
 
 import networkx as nx
-
-np = pytest.importorskip("numpy")
-sp = pytest.importorskip("scipy")
-import scipy.sparse  # call as sp.sparse
-
 from networkx.algorithms.link_analysis.hits_alg import (
     _hits_numpy,
     _hits_python,
-    _hits_scipy,
 )
+
+np = pytest.importorskip("numpy")
+sp = pytest.importorskip("scipy")
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
@@ -20,7 +17,6 @@ from networkx.algorithms.link_analysis.hits_alg import (
 class TestHITS:
     @classmethod
     def setup_class(cls):
-
         G = nx.DiGraph()
 
         edges = [(1, 3), (1, 5), (2, 1), (3, 5), (5, 4), (5, 3), (6, 5)]
@@ -42,7 +38,7 @@ class TestHITS:
         for n in G:
             assert a[n] == pytest.approx(G.a[n], abs=1e-4)
 
-    @pytest.mark.parametrize("hits_alg", (nx.hits, _hits_python, _hits_scipy))
+    @pytest.mark.parametrize("hits_alg", (nx.hits, _hits_python))
     def test_hits(self, hits_alg):
         G = self.G
         h, a = hits_alg(G, tol=1.0e-08)
@@ -62,19 +58,14 @@ class TestHITS:
         assert nx.hits(G) == ({}, {})
         assert _hits_numpy(G) == ({}, {})
         assert _hits_python(G) == ({}, {})
-        assert _hits_scipy(G) == ({}, {})
 
     def test_hits_not_convergent(self):
         G = nx.path_graph(50)
         with pytest.raises(nx.PowerIterationFailedConvergence):
-            _hits_scipy(G, max_iter=1)
-        with pytest.raises(nx.PowerIterationFailedConvergence):
             _hits_python(G, max_iter=1)
         with pytest.raises(nx.PowerIterationFailedConvergence):
-            _hits_scipy(G, max_iter=0)
-        with pytest.raises(nx.PowerIterationFailedConvergence):
             _hits_python(G, max_iter=0)
-        with pytest.raises(ValueError):
+        with pytest.raises(nx.PowerIterationFailedConvergence):
             nx.hits(G, max_iter=0)
-        with pytest.raises(sp.sparse.linalg.ArpackNoConvergence):
+        with pytest.raises(nx.PowerIterationFailedConvergence):
             nx.hits(G, max_iter=1)

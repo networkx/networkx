@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`networkx.generators.stochastic` module."""
+
 import pytest
 
 import networkx as nx
@@ -43,7 +44,7 @@ class TestStochasticGraph:
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (0, 1), (0, 2), (0, 2)])
         S = nx.stochastic_graph(G)
-        d = dict(weight=0.25)
+        d = {"weight": 0.25}
         assert sorted(S.edges(data=True)) == [
             (0, 1, d),
             (0, 1, d),

@@ -205,7 +205,7 @@ API Changes
   Removed ``draw_nx``, please use ``draw`` or ``draw_networkx``.
 
 * [`#1662 <https://github.com/networkx/networkx/pull/1662>`_]
-  Rewrote ``topolgical_sort`` as a generator.  It no longer accepts
+  Rewrote ``topological_sort`` as a generator.  It no longer accepts
   ``reverse`` or ``nbunch`` arguments and is slightly faster.
   Added ``lexicographical_topological_sort``, which accepts a key.
 
@@ -427,7 +427,7 @@ Merged PRs
 - Fix code escaping. (#2214)
 - Add adjlist_outer_dict_factory. (#2222)
 - Typo in scale free network generator documentation (#2225)
-- Add link to nx.drawing.layout instead of mentionning nx.layout. (#2224)
+- Add link to nx.drawing.layout instead of mentioning nx.layout. (#2224)
 - Example not working in tutorial (#2230)
 - don't assume nodes are sortable when running dag_longest_path (#2228)
 - Correct typo (#2236)
@@ -451,12 +451,12 @@ Merged PRs
 - Fix broken link to the description of the P2G format. (#2211)
 - Test ordering (#2209)
 - add example of node weights (#2250)
-- added paramether nbunch (#2253)
+- added parameter nbunch (#2253)
 - Adds unit tests for using dtype with to_numpy_matrix (#2257)
 - Adds chain decomposition algorithm. (#2284)
 - add the Hoffman-Singleton graph (#2275)
 - Allow grid_graph generator to accept tuple dim argument (#2320)
-- psuedo -> pseudo (fixing typo) (#2322)
+- pseudo -> pseudo (fixing typo) (#2322)
 - Corrects navigable small world graph param docs (#2321)
 - Fix bug in find_cycle. (#2324)
 - flip source target (#2309)
@@ -508,4 +508,4 @@ Merged PRs
 - Prep beta release (#2624)
 - Refactor travis tests and deploy docs with travis (#2647)
 - matplotlib 2.1 deprecated is_string_like (#2659)
-- topolgical_sort, lexicographical_topological_sort (#1662)
+- topological_sort, lexicographical_topological_sort (#1662)

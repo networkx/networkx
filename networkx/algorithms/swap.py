@@ -1,5 +1,4 @@
-"""Swap edges in a graph.
-"""
+"""Swap edges in a graph."""
 
 import math
 
@@ -9,8 +8,9 @@ from networkx.utils import py_random_state
 __all__ = ["double_edge_swap", "connected_double_edge_swap", "directed_edge_swap"]
 
 
-@py_random_state(3)
 @nx.utils.not_implemented_for("undirected")
+@py_random_state(3)
+@nx._dispatchable(mutates_input=True, returns_graph=True)
 def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     """Swap three edges in a directed graph while keeping the node degrees fixed.
 
@@ -46,7 +46,7 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     NetworkXError
         If `G` is not directed, or
         If nswap > max_tries, or
-        If there are fewer than 4 nodes in `G`
+        If there are fewer than 4 nodes or 3 edges in `G`.
     NetworkXAlgorithmError
         If the number of swap attempts exceeds `max_tries` before `nswap` swaps are made
 
@@ -55,6 +55,8 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     Does not enforce any connectivity constraints.
 
     The graph G is modified in place.
+
+    A later swap is allowed to undo a previous swap.
 
     References
     ----------
@@ -70,7 +72,9 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("DiGraph has fewer than four nodes.")
+    if len(G.edges) < 3:
+        raise nx.NetworkXError("DiGraph has fewer than 3 edges")
 
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
@@ -128,6 +132,7 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatchable(mutates_input=True, returns_graph=True)
 def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     """Swap two edges in the graph while keeping the node degrees fixed.
 
@@ -161,6 +166,15 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     G : graph
        The graph after double edge swaps.
 
+    Raises
+    ------
+    NetworkXError
+        If `G` is directed, or
+        If `nswap` > `max_tries`, or
+        If there are fewer than 4 nodes or 2 edges in `G`.
+    NetworkXAlgorithmError
+        If the number of swap attempts exceeds `max_tries` before `nswap` swaps are made
+
     Notes
     -----
     Does not enforce any connectivity constraints.
@@ -174,7 +188,9 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has fewer than four nodes.")
+    if len(G.edges) < 2:
+        raise nx.NetworkXError("Graph has fewer than 2 edges")
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
     # probability weighted by degree.
@@ -214,6 +230,7 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatchable(mutates_input=True)
 def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
     """Attempts the specified number of double-edge swaps in the graph `G`.
 
@@ -285,13 +302,13 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has fewer than four nodes.")
     n = 0
     swapcount = 0
     deg = G.degree()
     # Label key for nodes
-    dk = list(n for n, d in G.degree())
-    cdf = nx.utils.cumulative_distribution(list(d for n, d in G.degree()))
+    dk = [n for n, d in G.degree()]
+    cdf = nx.utils.cumulative_distribution([d for n, d in G.degree()])
     discrete_sequence = nx.utils.discrete_sequence
     window = 1
     while n < nswap:

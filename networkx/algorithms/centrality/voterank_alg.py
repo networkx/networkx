@@ -1,13 +1,16 @@
 """Algorithm to select influential nodes in a graph using VoteRank."""
 
+import networkx as nx
+
 __all__ = ["voterank"]
 
 
+@nx._dispatchable
 def voterank(G, number_of_nodes=None):
     """Select a list of influential nodes in a graph using VoteRank algorithm
 
     VoteRank [1]_ computes a ranking of the nodes in a graph G based on a
-    voting scheme. With VoteRank, all nodes vote for each of its in-neighbours
+    voting scheme. With VoteRank, all nodes vote for each of its in-neighbors
     and the node with the highest votes is elected iteratively. The voting
     ability of out-neighbors of elected nodes is decreased in subsequent turns.
 

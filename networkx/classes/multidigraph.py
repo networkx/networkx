@@ -1,9 +1,10 @@
 """Base class for MultiDiGraph."""
+
 from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-import networkx.convert as convert
+from networkx import convert
 from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
@@ -14,7 +15,6 @@ from networkx.classes.reportviews import (
     OutMultiDegreeView,
     OutMultiEdgeView,
 )
-from networkx.exception import NetworkXError
 
 __all__ = ["MultiDiGraph"]
 
@@ -298,6 +298,16 @@ class MultiDiGraph(MultiGraph, DiGraph):
     edge_key_dict_factory = dict
     # edge_attr_dict_factory = dict
 
+    # This __new__ method just does what Python itself does automatically.
+    # We include it here as part of the dispatchable/backend interface.
+    # If your goal is to understand how the graph classes work, you can ignore
+    # this method, even when subclassing the base classes. If you are subclassing
+    # in order to provide a backend that allows class instantiation, this method
+    # can be overridden to return your own backend graph class.
+    @nx._dispatchable(name="multidigraph__new__", graphs=None, returns_graph=True)
+    def __new__(cls, *args, **kwargs):
+        return object.__new__(cls)
+
     def __init__(self, incoming_graph_data=None, multigraph_input=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
@@ -344,6 +354,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         {'day': 'Friday'}
 
         """
+        attr.pop("backend", None)  # Ignore explicit `backend="networkx"`
         # multigraph_input can be None/True/False. So check "is not False"
         if isinstance(incoming_graph_data, dict) and multigraph_input is not False:
             DiGraph.__init__(self)
@@ -508,6 +519,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             keydict[key] = datadict
             self._succ[u][v] = keydict
             self._pred[v][u] = keydict
+        nx._clear_cache(self)
         return key
 
     def remove_edge(self, u, v, key=None):
@@ -569,7 +581,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         try:
             d = self._adj[u][v]
         except KeyError as err:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph.") from err
+            raise nx.NetworkXError(f"The edge {u}-{v} is not in the graph.") from err
         # remove the edge with specified data
         if key is None:
             d.popitem()
@@ -578,11 +590,12 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 del d[key]
             except KeyError as err:
                 msg = f"The edge {u}-{v} with key {key} is not in the graph."
-                raise NetworkXError(msg) from err
+                raise nx.NetworkXError(msg) from err
         if len(d) == 0:
             # remove the key entries if last edge
             del self._succ[u][v]
             del self._pred[v][u]
+        nx._clear_cache(self)
 
     @cached_property
     def edges(self):
@@ -639,7 +652,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> G = nx.MultiDiGraph()
         >>> nx.add_path(G, [0, 1, 2])
         >>> key = G.add_edge(2, 3, weight=5)
-        >>> key2 = G.add_edge(1, 2) # second edge between these nodes
+        >>> key2 = G.add_edge(1, 2)  # second edge between these nodes
         >>> [e for e in G.edges()]
         [(0, 1), (1, 2), (1, 2), (2, 3)]
         >>> list(G.edges(data=True))  # default data is {} (empty dict)
@@ -744,12 +757,12 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.degree(0)  # node 0 with degree 1
         1
-        >>> list(G.degree([0, 1, 2]))
-        [(0, 1), (1, 2), (2, 2)]
-        >>> G.add_edge(0, 1) # parallel edge
+        >>> dict(G.degree([0, 1, 2]))
+        {0: 1, 1: 2, 2: 2}
+        >>> G.add_edge(0, 1)  # parallel edge
         1
-        >>> list(G.degree([0, 1, 2])) # parallel edges are counted
-        [(0, 2), (1, 3), (2, 2)]
+        >>> dict(G.degree([0, 1, 2]))  # parallel edges are counted
+        {0: 2, 1: 3, 2: 2}
 
         """
         return DiMultiDegreeView(self)
@@ -758,7 +771,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     def in_degree(self):
         """A DegreeView for (node, in_degree) or in_degree for single node.
 
-        The node in-degree is the number of edges pointing in to the node.
+        The node in-degree is the number of edges pointing into the node.
         The weighted node degree is the sum of the edge weights for
         edges incident to that node.
 
@@ -795,12 +808,12 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.in_degree(0)  # node 0 with degree 0
         0
-        >>> list(G.in_degree([0, 1, 2]))
-        [(0, 0), (1, 1), (2, 1)]
-        >>> G.add_edge(0, 1) # parallel edge
+        >>> dict(G.in_degree([0, 1, 2]))
+        {0: 0, 1: 1, 2: 1}
+        >>> G.add_edge(0, 1)  # parallel edge
         1
-        >>> list(G.in_degree([0, 1, 2])) # parallel edges counted
-        [(0, 0), (1, 2), (2, 1)]
+        >>> dict(G.in_degree([0, 1, 2]))  # parallel edges counted
+        {0: 0, 1: 2, 2: 1}
 
         """
         return InMultiDegreeView(self)
@@ -845,12 +858,12 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.out_degree(0)  # node 0 with degree 1
         1
-        >>> list(G.out_degree([0, 1, 2]))
-        [(0, 1), (1, 1), (2, 1)]
-        >>> G.add_edge(0, 1) # parallel edge
+        >>> dict(G.out_degree([0, 1, 2]))
+        {0: 1, 1: 1, 2: 1}
+        >>> G.add_edge(0, 1)  # parallel edge
         1
-        >>> list(G.out_degree([0, 1, 2])) # counts parallel edges
-        [(0, 2), (1, 1), (2, 1)]
+        >>> dict(G.out_degree([0, 1, 2]))  # counts parallel edges
+        {0: 2, 1: 1, 2: 1}
 
         """
         return OutMultiDegreeView(self)
@@ -960,4 +973,4 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 for u, v, k, d in self.edges(keys=True, data=True)
             )
             return H
-        return nx.graphviews.reverse_view(self)
+        return nx.reverse_view(self)

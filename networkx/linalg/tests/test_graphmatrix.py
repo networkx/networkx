@@ -1,20 +1,18 @@
 import pytest
 
+import networkx as nx
+
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
-
-import networkx as nx
-from networkx.exception import NetworkXError
-from networkx.generators.degree_seq import havel_hakimi_graph
 
 
 def test_incidence_matrix_simple():
     deg = [3, 2, 2, 1, 0]
-    G = havel_hakimi_graph(deg)
+    G = nx.havel_hakimi_graph(deg)
     deg = [(1, 0), (1, 0), (1, 0), (2, 0), (1, 0), (2, 1), (0, 1), (0, 1)]
     MG = nx.random_clustered_graph(deg, seed=42)
 
-    I = nx.incidence_matrix(G).todense().astype(int)
+    I = nx.incidence_matrix(G, dtype=int).todense()
     # fmt: off
     expected = np.array(
         [[1, 1, 1, 0],
@@ -26,7 +24,7 @@ def test_incidence_matrix_simple():
     # fmt: on
     np.testing.assert_equal(I, expected)
 
-    I = nx.incidence_matrix(MG).todense().astype(int)
+    I = nx.incidence_matrix(MG, dtype=int).todense()
     # fmt: off
     expected = np.array(
         [[1, 0, 0, 0, 0, 0, 0],
@@ -41,7 +39,7 @@ def test_incidence_matrix_simple():
     # fmt: on
     np.testing.assert_equal(I, expected)
 
-    with pytest.raises(NetworkXError):
+    with pytest.raises(nx.NetworkXError):
         nx.incidence_matrix(G, nodelist=[0, 1])
 
 
@@ -49,7 +47,7 @@ class TestGraphMatrix:
     @classmethod
     def setup_class(cls):
         deg = [3, 2, 2, 1, 0]
-        cls.G = havel_hakimi_graph(deg)
+        cls.G = nx.havel_hakimi_graph(deg)
         # fmt: off
         cls.OI = np.array(
             [[-1, -1, -1, 0],
@@ -66,7 +64,7 @@ class TestGraphMatrix:
              [0, 0, 0, 0, 0]]
         )
         # fmt: on
-        cls.WG = havel_hakimi_graph(deg)
+        cls.WG = nx.havel_hakimi_graph(deg)
         cls.WG.add_edges_from(
             (u, v, {"weight": 0.5, "other": 0.3}) for (u, v) in cls.G.edges()
         )
@@ -103,101 +101,80 @@ class TestGraphMatrix:
 
     def test_incidence_matrix(self):
         "Conversion to incidence matrix"
-        I = (
-            nx.incidence_matrix(
-                self.G,
-                nodelist=sorted(self.G),
-                edgelist=sorted(self.G.edges()),
-                oriented=True,
-            )
-            .todense()
-            .astype(int)
-        )
+        I = nx.incidence_matrix(
+            self.G,
+            nodelist=sorted(self.G),
+            edgelist=sorted(self.G.edges()),
+            oriented=True,
+            dtype=int,
+        ).todense()
         np.testing.assert_equal(I, self.OI)
 
-        I = (
-            nx.incidence_matrix(
-                self.G,
-                nodelist=sorted(self.G),
-                edgelist=sorted(self.G.edges()),
-                oriented=False,
-            )
-            .todense()
-            .astype(int)
-        )
+        I = nx.incidence_matrix(
+            self.G,
+            nodelist=sorted(self.G),
+            edgelist=sorted(self.G.edges()),
+            oriented=False,
+            dtype=int,
+        ).todense()
         np.testing.assert_equal(I, np.abs(self.OI))
 
-        I = (
-            nx.incidence_matrix(
-                self.MG,
-                nodelist=sorted(self.MG),
-                edgelist=sorted(self.MG.edges()),
-                oriented=True,
-            )
-            .todense()
-            .astype(int)
-        )
+        I = nx.incidence_matrix(
+            self.MG,
+            nodelist=sorted(self.MG),
+            edgelist=sorted(self.MG.edges()),
+            oriented=True,
+            dtype=int,
+        ).todense()
         np.testing.assert_equal(I, self.OI)
 
-        I = (
-            nx.incidence_matrix(
-                self.MG,
-                nodelist=sorted(self.MG),
-                edgelist=sorted(self.MG.edges()),
-                oriented=False,
-            )
-            .todense()
-            .astype(int)
-        )
+        I = nx.incidence_matrix(
+            self.MG,
+            nodelist=sorted(self.MG),
+            edgelist=sorted(self.MG.edges()),
+            oriented=False,
+            dtype=int,
+        ).todense()
         np.testing.assert_equal(I, np.abs(self.OI))
 
-        I = (
-            nx.incidence_matrix(
-                self.MG2,
-                nodelist=sorted(self.MG2),
-                edgelist=sorted(self.MG2.edges()),
-                oriented=True,
-            )
-            .todense()
-            .astype(int)
-        )
+        I = nx.incidence_matrix(
+            self.MG2,
+            nodelist=sorted(self.MG2),
+            edgelist=sorted(self.MG2.edges()),
+            oriented=True,
+            dtype=int,
+        ).todense()
         np.testing.assert_equal(I, self.MGOI)
 
-        I = (
-            nx.incidence_matrix(
-                self.MG2,
-                nodelist=sorted(self.MG),
-                edgelist=sorted(self.MG2.edges()),
-                oriented=False,
-            )
-            .todense()
-            .astype(int)
-        )
+        I = nx.incidence_matrix(
+            self.MG2,
+            nodelist=sorted(self.MG),
+            edgelist=sorted(self.MG2.edges()),
+            oriented=False,
+            dtype=int,
+        ).todense()
         np.testing.assert_equal(I, np.abs(self.MGOI))
 
+        I = nx.incidence_matrix(self.G, dtype=np.uint8)
+        assert I.dtype == np.uint8
+
     def test_weighted_incidence_matrix(self):
-        I = (
-            nx.incidence_matrix(
-                self.WG,
-                nodelist=sorted(self.WG),
-                edgelist=sorted(self.WG.edges()),
-                oriented=True,
-            )
-            .todense()
-            .astype(int)
-        )
+        I = nx.incidence_matrix(
+            self.WG,
+            nodelist=sorted(self.WG),
+            edgelist=sorted(self.WG.edges()),
+            oriented=True,
+            dtype=int,
+        ).todense()
         np.testing.assert_equal(I, self.OI)
 
-        I = (
-            nx.incidence_matrix(
-                self.WG,
-                nodelist=sorted(self.WG),
-                edgelist=sorted(self.WG.edges()),
-                oriented=False,
-            )
-            .todense()
-            .astype(int)
-        )
+        I = nx.incidence_matrix(
+            self.WG,
+            nodelist=sorted(self.WG),
+            edgelist=sorted(self.WG.edges()),
+            oriented=False,
+            dtype=int,
+        ).todense()
         np.testing.assert_equal(I, np.abs(self.OI))
 
         # np.testing.assert_equal(nx.incidence_matrix(self.WG,oriented=True,

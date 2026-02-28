@@ -1,0 +1,38 @@
+name: Build Wheel and Release
+on:
+  push:
+    tags:
+      - networkx-*
+
+jobs:
+  pypi-publish:
+    name: upload release to PyPI
+    if: github.repository_owner == 'networkx' && startsWith(github.ref, 'refs/tags/networkx-') && always()
+    runs-on: ubuntu-latest
+    # Specifying a GitHub environment is optional, but strongly encouraged
+    environment: release
+    permissions:
+      # IMPORTANT: this permission is mandatory for trusted publishing
+      id-token: write
+      attestations: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          environments: build-release
+      - name: Build wheels
+        run: |
+          git clean -fxd
+          pixi run -e build-release build-dist
+      - name: Verify the distribution
+        run: pixi run -e build-release verify-dist
+      - name: Generate artifact attestation for sdist and wheel
+        uses: actions/attest-build-provenance@96278af6caaf10aea03fd8d33a09a777ca52d62f # v3.2.0
+        with:
+          subject-path: "dist/networkx-*"
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

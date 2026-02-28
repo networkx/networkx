@@ -30,44 +30,18 @@ class TestConfigurationModel:
         """
         deg_seq = [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
         G = nx.configuration_model(deg_seq, seed=12345678)
-        assert sorted((d for n, d in G.degree()), reverse=True) == [
-            5,
-            3,
-            3,
-            3,
-            3,
-            2,
-            2,
-            2,
-            1,
-            1,
-            1,
-        ]
-        assert sorted((d for n, d in G.degree(range(len(deg_seq)))), reverse=True) == [
-            5,
-            3,
-            3,
-            3,
-            3,
-            2,
-            2,
-            2,
-            1,
-            1,
-            1,
-        ]
+        assert sorted(dict(G.degree).values()) == sorted(deg_seq)
+        assert sorted(dict(G.degree(range(len(deg_seq)))).values()) == sorted(deg_seq)
 
-    def test_random_seed(self):
+    @pytest.mark.parametrize("seed", [10, 1000])
+    def test_random_seed(self, seed):
         """Tests that each call with the same random seed generates the
         same graph.
 
         """
         deg_seq = [3] * 12
-        G1 = nx.configuration_model(deg_seq, seed=1000)
-        G2 = nx.configuration_model(deg_seq, seed=1000)
-        assert nx.is_isomorphic(G1, G2)
-        G1 = nx.configuration_model(deg_seq, seed=10)
-        G2 = nx.configuration_model(deg_seq, seed=10)
+        G1 = nx.configuration_model(deg_seq, seed=seed)
+        G2 = nx.configuration_model(deg_seq, seed=seed)
         assert nx.is_isomorphic(G1, G2)
 
     def test_directed_disallowed(self):
@@ -87,19 +61,19 @@ class TestConfigurationModel:
             nx.configuration_model([1, 2])
 
 
-def test_directed_configuation_raise_unequal():
+def test_directed_configuration_raise_unequal():
     with pytest.raises(nx.NetworkXError):
         zin = [5, 3, 3, 3, 3, 2, 2, 2, 1, 1]
         zout = [5, 3, 3, 3, 3, 2, 2, 2, 1, 2]
         nx.directed_configuration_model(zin, zout)
 
 
-def test_directed_configuation_model():
+def test_directed_configuration_model():
     G = nx.directed_configuration_model([], [], seed=0)
     assert len(G) == 0
 
 
-def test_simple_directed_configuation_model():
+def test_simple_directed_configuration_model():
     G = nx.directed_configuration_model([1, 1], [1, 1], seed=0)
     assert len(G) == 2
 
@@ -111,34 +85,22 @@ def test_expected_degree_graph_empty():
     assert dict(G.degree()) == {}
 
 
-def test_expected_degree_graph():
-    # test that fixed seed delivers the same graph
-    deg_seq = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
-    G1 = nx.expected_degree_graph(deg_seq, seed=1000)
-    assert len(G1) == 12
-
-    G2 = nx.expected_degree_graph(deg_seq, seed=1000)
-    assert nx.is_isomorphic(G1, G2)
-
-    G1 = nx.expected_degree_graph(deg_seq, seed=10)
-    G2 = nx.expected_degree_graph(deg_seq, seed=10)
+@pytest.mark.parametrize("seed", [10, 42, 1000])
+@pytest.mark.parametrize("deg_seq", [[3] * 12, [2, 0], [10, 2, 2, 2, 2]])
+def test_expected_degree_graph(seed, deg_seq):
+    G1 = nx.expected_degree_graph(deg_seq, seed=seed)
+    G2 = nx.expected_degree_graph(deg_seq, seed=seed)
+    assert len(G1) == len(G2) == len(deg_seq)
     assert nx.is_isomorphic(G1, G2)
 
 
 def test_expected_degree_graph_selfloops():
-    deg_seq = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+    deg_seq = [3] * 12
     G1 = nx.expected_degree_graph(deg_seq, seed=1000, selfloops=False)
     G2 = nx.expected_degree_graph(deg_seq, seed=1000, selfloops=False)
+    assert len(G1) == len(G2) == len(deg_seq)
     assert nx.is_isomorphic(G1, G2)
-    assert len(G1) == 12
-
-
-def test_expected_degree_graph_skew():
-    deg_seq = [10, 2, 2, 2, 2]
-    G1 = nx.expected_degree_graph(deg_seq, seed=1000)
-    G2 = nx.expected_degree_graph(deg_seq, seed=1000)
-    assert nx.is_isomorphic(G1, G2)
-    assert len(G1) == 5
+    assert nx.number_of_selfloops(G1) == nx.number_of_selfloops(G2) == 0
 
 
 def test_havel_hakimi_construction():
@@ -169,18 +131,18 @@ def test_directed_havel_hakimi():
     p = 1.0 / r
     for i in range(r):
         G1 = nx.erdos_renyi_graph(n, p * (i + 1), None, True)
-        din1 = list(d for n, d in G1.in_degree())
-        dout1 = list(d for n, d in G1.out_degree())
+        din1 = [d for n, d in G1.in_degree()]
+        dout1 = [d for n, d in G1.out_degree()]
         G2 = nx.directed_havel_hakimi_graph(din1, dout1)
-        din2 = list(d for n, d in G2.in_degree())
-        dout2 = list(d for n, d in G2.out_degree())
+        din2 = [d for n, d in G2.in_degree()]
+        dout2 = [d for n, d in G2.out_degree()]
         assert sorted(din1) == sorted(din2)
         assert sorted(dout1) == sorted(dout2)
 
     # Test non-graphical sequence
     dout = [1000, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
     din = [103, 102, 102, 102, 102, 102, 102, 102, 102, 102]
-    pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
+    pytest.raises(nx.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
     # Test valid sequences
     dout = [1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
     din = [2, 2, 2, 2, 2, 2, 2, 2, 0, 2]
@@ -191,24 +153,49 @@ def test_directed_havel_hakimi():
     assert sorted(din) == sorted(din2)
     # Test unequal sums
     din = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-    pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
+    pytest.raises(nx.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
     # Test for negative values
     din = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -2]
-    pytest.raises(nx.exception.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
+    pytest.raises(nx.NetworkXError, nx.directed_havel_hakimi_graph, din, dout)
 
 
-def test_degree_sequence_tree():
-    z = [1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-    G = nx.degree_sequence_tree(z)
-    assert len(G) == len(z)
-    assert len(list(G.edges())) == sum(z) / 2
+@pytest.mark.parametrize(
+    "deg_seq",
+    [
+        [0],
+        [1, 1],
+        [2, 2, 2, 1, 1],
+        [3, 1, 1, 1],
+        [4, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 2, 2, 2, 3, 4],
+    ],
+)
+def test_degree_sequence_tree(deg_seq):
+    G = nx.degree_sequence_tree(deg_seq)
+    assert sorted(dict(G.degree).values()) == sorted(deg_seq)
+    assert nx.is_tree(G)
 
-    pytest.raises(
-        nx.NetworkXError, nx.degree_sequence_tree, z, create_using=nx.DiGraph()
-    )
 
-    z = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-    pytest.raises(nx.NetworkXError, nx.degree_sequence_tree, z)
+@pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
+def test_degree_sequence_tree_directed(graph_type):
+    with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
+        nx.degree_sequence_tree([1, 1], create_using=graph_type())
+
+
+@pytest.mark.parametrize(
+    "deg_seq",
+    [
+        [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4],
+        [],
+        [2, 0],
+        [-1, 3],
+        [1, 16, 1, 4, 0, 0, 1, 1, 0, 1, 2, 0, 1, 0, 1, 5, 1, 2, 1, 0],
+    ],
+)
+def test_degree_sequence_tree_invalid_degree_sequence(deg_seq):
+    """Test invalid degree sequences raise an error."""
+    with pytest.raises(nx.NetworkXError, match="tree must have"):
+        nx.degree_sequence_tree(deg_seq)
 
 
 def test_random_degree_sequence_graph():
@@ -224,7 +211,14 @@ def test_random_degree_sequence_graph_raise():
 
 def test_random_degree_sequence_large():
     G1 = nx.fast_gnp_random_graph(100, 0.1, seed=42)
+    d1 = [d for n, d in G1.degree()]
+    G2 = nx.random_degree_sequence_graph(d1, seed=42)
+    d2 = [d for n, d in G2.degree()]
+    assert sorted(d1) == sorted(d2)
+
+
+def test_random_degree_sequence_iterator():
+    G1 = nx.fast_gnp_random_graph(100, 0.1, seed=42)
     d1 = (d for n, d in G1.degree())
     G2 = nx.random_degree_sequence_graph(d1, seed=42)
-    d2 = (d for n, d in G2.degree())
-    assert sorted(d1) == sorted(d2)
+    assert len(G2) > 0

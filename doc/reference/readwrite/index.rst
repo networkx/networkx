@@ -9,6 +9,7 @@ Reading and writing graphs
 
    adjlist
    multiline_adjlist
+   dot
    edgelist
    gexf
    gml
@@ -18,3 +19,4 @@ Reading and writing graphs
    sparsegraph6
    pajek
    matrix_market
+   text

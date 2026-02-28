@@ -9,7 +9,12 @@ from collections import Counter
 
 import networkx as nx
 from networkx.generators.classic import empty_graph
-from networkx.utils import discrete_sequence, py_random_state, weighted_choice
+from networkx.utils import (
+    discrete_sequence,
+    np_random_state,
+    py_random_state,
+    weighted_choice,
+)
 
 __all__ = [
     "gn_graph",
@@ -21,6 +26,7 @@ __all__ = [
 
 
 @py_random_state(3)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def gn_graph(n, kernel=None, create_using=None, seed=None):
     """Returns the growing network (GN) digraph with `n` nodes.
 
@@ -53,7 +59,7 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
 
     To specify an attachment kernel, use the `kernel` keyword argument::
 
-    >>> D = nx.gn_graph(10, kernel=lambda x: x ** 1.5)  # A_k = k^1.5
+    >>> D = nx.gn_graph(10, kernel=lambda x: x**1.5)  # A_k = k^1.5
 
     References
     ----------
@@ -88,13 +94,14 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def gnr_graph(n, p, create_using=None, seed=None):
     """Returns the growing network with redirection (GNR) digraph with `n`
     nodes and redirection probability `p`.
 
     The GNR graph is built by adding nodes one at a time with a link to one
     previously added node.  The previous target node is chosen uniformly at
-    random.  With probabiliy `p` the link is instead "redirected" to the
+    random.  With probability `p` the link is instead "redirected" to the
     successor node of the target.
 
     The graph is always a (directed) tree.
@@ -141,6 +148,7 @@ def gnr_graph(n, p, create_using=None, seed=None):
 
 
 @py_random_state(2)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def gnc_graph(n, create_using=None, seed=None):
     """Returns the growing network with copying (GNC) digraph with `n` nodes.
 
@@ -179,7 +187,8 @@ def gnc_graph(n, create_using=None, seed=None):
     return G
 
 
-@py_random_state(7)
+@py_random_state(6)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def scale_free_graph(
     n,
     alpha=0.41,
@@ -187,7 +196,6 @@ def scale_free_graph(
     gamma=0.05,
     delta_in=0.2,
     delta_out=0,
-    create_using=None,
     seed=None,
     initial_graph=None,
 ):
@@ -212,22 +220,12 @@ def scale_free_graph(
         Bias for choosing nodes from in-degree distribution.
     delta_out : float
         Bias for choosing nodes from out-degree distribution.
-    create_using : NetworkX graph constructor, optional
-        The default is a MultiDiGraph 3-cycle.
-        If a graph instance, use it without clearing first.
-        If a graph constructor, call it to construct an empty graph.
-
-        .. deprecated:: 3.0
-
-           create_using is deprecated, use `initial_graph` instead.
-
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
     initial_graph : MultiDiGraph instance, optional
         Build the scale-free graph starting from this initial MultiDiGraph,
         if provided.
-
 
     Returns
     -------
@@ -259,37 +257,13 @@ def scale_free_graph(
                 return seed.choice(node_list)
         return seed.choice(candidates)
 
-    if create_using is not None:
-        import warnings
-
-        warnings.warn(
-            "The create_using argument is deprecated and will be removed in the future.\n\n"
-            "To create a scale free graph from an existing MultiDiGraph, use\n"
-            "initial_graph instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-    # TODO: Rm all this complicated logic when deprecation expires and replace
-    # with commented code:
-    #    if initial_graph is not None and hasattr(initial_graph, "_adj"):
-    #        G = initial_graph
-    #    else:
-    #        # Start with 3-cycle
-    #        G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 0)])
-    if create_using is not None and hasattr(create_using, "_adj"):
-        if initial_graph is not None:
-            raise ValueError(
-                "Cannot set both create_using and initial_graph. Set create_using=None."
-            )
-        G = create_using
+    if initial_graph is not None and hasattr(initial_graph, "_adj"):
+        if not isinstance(initial_graph, nx.MultiDiGraph):
+            raise nx.NetworkXError("initial_graph must be a MultiDiGraph.")
+        G = initial_graph
     else:
-        if initial_graph is not None and hasattr(initial_graph, "_adj"):
-            G = initial_graph
-        else:
-            G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 0)])
-    if not (G.is_directed() and G.is_multigraph()):
-        raise nx.NetworkXError("MultiDiGraph required in initial_graph")
+        # Start with 3-cycle
+        G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 0)])
 
     if alpha <= 0:
         raise ValueError("alpha must be > 0.")
@@ -365,6 +339,7 @@ def scale_free_graph(
 
 
 @py_random_state(4)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True, seed=None):
     """Returns a random `k`-out graph with uniform attachment.
 
@@ -444,9 +419,13 @@ def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True, see
     return G
 
 
-@py_random_state(4)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
     """Returns a random `k`-out graph with preferential attachment.
+
+    .. versionchanged:: 3.5
+       Different implementations will be used based on whether NumPy is
+       available. See Notes for details.
 
     A random `k`-out graph with preferential attachment is a
     multidigraph generated by the following algorithm.
@@ -462,7 +441,7 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
     5. If each node has out-degree `k`, halt, otherwise repeat from
        step 2.
 
-    For more information on this model of random graph, see [1].
+    For more information on this model of random graph, see [1]_.
 
     Parameters
     ----------
@@ -503,28 +482,91 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
     The returned multidigraph may not be strongly connected, or even
     weakly connected.
 
+    `random_k_out_graph` has two implementations: an array-based formulation that
+    uses `numpy` (``_random_k_out_graph_numpy``), and a pure-Python
+    implementation (``_random_k_out_graph_python``).
+    The NumPy implementation is more performant, especially for large `n`, and is
+    therefore used by default. If NumPy is not installed in the environment,
+    then the pure Python implementation is executed.
+    However, you can explicitly control which implementation is executed by directly
+    calling the corresponding function::
+
+        # Use numpy if available, else Python
+        nx.random_k_out_graph(1000, 5, alpha=1)
+
+        # Use the numpy-based implementation (raises ImportError if numpy not installed)
+        nx.generators.directed._random_k_out_graph_numpy(1000, 5, alpha=1)
+
+        # Use the Python-based implementation
+        nx.generators.directed._random_k_out_graph_python(1000, 5, alpha=1)
+
     References
     ----------
-    [1]: Peterson, Nicholas R., and Boris Pittel.
-         "Distance between two random `k`-out digraphs, with and without
-         preferential attachment."
-         arXiv preprint arXiv:1311.5961 (2013).
-         <https://arxiv.org/abs/1311.5961>
+    .. [1] Peterson, Nicholas R., and Boris Pittel.
+       "Distance between two random `k`-out digraphs, with and without preferential attachment."
+       arXiv preprint arXiv:1311.5961 (2013) <https://arxiv.org/abs/1311.5961>.
 
     """
     if alpha < 0:
         raise ValueError("alpha must be positive")
+    try:  # Use numpy if available, otherwise fall back to pure Python implementation
+        return _random_k_out_graph_numpy(n, k, alpha, self_loops, seed)
+    except ImportError:
+        return _random_k_out_graph_python(n, k, alpha, self_loops, seed)
+
+
+@np_random_state(4)
+def _random_k_out_graph_numpy(n, k, alpha, self_loops=True, seed=None):
+    import numpy as np
+
+    G = nx.empty_graph(n, create_using=nx.MultiDiGraph)
+    nodes = np.arange(n)
+    remaining_mask = np.full(n, True)
+    weights = np.full(n, alpha)
+    total_weight = n * alpha
+    out_strengths = np.zeros(n)
+
+    for i in range(k * n):
+        u = seed.choice(nodes[remaining_mask])
+
+        if self_loops:
+            v = seed.choice(nodes, p=weights / total_weight)
+        else:  # Ignore weight of u when selecting v
+            u_weight = weights[u]
+            weights[u] = 0
+            v = seed.choice(nodes, p=weights / (total_weight - u_weight))
+            weights[u] = u_weight
+
+        G.add_edge(u.item(), v.item())
+        weights[v] += 1
+        total_weight += 1
+        out_strengths[u] += 1
+        if out_strengths[u] == k:
+            remaining_mask[u] = False
+    return G
+
+
+@py_random_state(4)
+def _random_k_out_graph_python(n, k, alpha, self_loops=True, seed=None):
     G = nx.empty_graph(n, create_using=nx.MultiDiGraph)
     weights = Counter({v: alpha for v in G})
+    out_strengths = Counter({v: 0 for v in G})
+
     for i in range(k * n):
-        u = seed.choice([v for v, d in G.out_degree() if d < k])
+        u = seed.choice(list(out_strengths.keys()))
         # If self-loops are not allowed, make the source node `u` have
         # weight zero.
         if not self_loops:
-            adjustment = Counter({u: weights[u]})
-        else:
-            adjustment = Counter()
-        v = weighted_choice(weights - adjustment, seed=seed)
+            uweight = weights.pop(u)
+
+        v = weighted_choice(weights, seed=seed)
+
+        if not self_loops:
+            weights[u] = uweight
+
         G.add_edge(u, v)
         weights[v] += 1
+        out_strengths[u] += 1
+        if out_strengths[u] == k:
+            out_strengths.pop(u)
     return G

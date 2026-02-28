@@ -1,7 +1,7 @@
 """Functions for finding node and edge dominating sets.
 
-A `dominating set`_ for an undirected graph *G* with vertex set *V*
-and edge set *E* is a subset *D* of *V* such that every vertex not in
+A `dominating set`_ for an undirected graph *G* with node set *V*
+and edge set *E* is a subset *D* of *V* such that every node not in
 *D* is adjacent to at least one member of *D*. An `edge dominating set`_
 is a subset *F* of *E* such that every edge not in *F* is
 incident to an endpoint of at least one edge in *F*.
@@ -11,6 +11,8 @@ incident to an endpoint of at least one edge in *F*.
 
 """
 
+import networkx as nx
+
 from ...utils import not_implemented_for
 from ..matching import maximal_matching
 
@@ -19,6 +21,7 @@ __all__ = ["min_weighted_dominating_set", "min_edge_dominating_set"]
 
 # TODO Why doesn't this algorithm work for directed graphs?
 @not_implemented_for("directed")
+@nx._dispatchable(node_attrs="weight")
 def min_weighted_dominating_set(G, weight=None):
     r"""Returns a dominating set that approximates the minimum weight node
     dominating set.
@@ -40,6 +43,17 @@ def min_weighted_dominating_set(G, weight=None):
         w(V)) w(V^*)`, where `w(V)` denotes the sum of the weights of
         each node in the graph and `w(V^*)` denotes the sum of the
         weights of each node in the minimum weight dominating set.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 4), (1, 4), (1, 2), (2, 3), (3, 4), (2, 5)])
+    >>> nx.approximation.min_weighted_dominating_set(G)
+    {1, 2}
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
 
     Notes
     -----
@@ -75,30 +89,36 @@ def min_weighted_dominating_set(G, weight=None):
 
         """
         v, neighborhood = node_and_neighborhood
-        return G.nodes[v].get(weight, 1) / len(neighborhood - dom_set)
+        # Use the intersection with uncovered nodes, not just the
+        # difference with the dominating set.  A node's neighbors may
+        # already be dominated (covered by an adjacent dom_set member)
+        # without being in dom_set themselves.  See #8523.
+        uncovered = len(neighborhood & uncovered_nodes)
+        if uncovered == 0:
+            return float("inf")
+        return G.nodes[v].get(weight, 1) / uncovered
 
-    # This is a set of all vertices not already covered by the
-    # dominating set.
-    vertices = set(G)
-    # This is a dictionary mapping each node to the closed neighborhood
-    # of that node.
+    # A set of all nodes not yet covered by the dominating set.
+    uncovered_nodes = set(G)
+    # A dict mapping each node to its closed neighborhood.
     neighborhoods = {v: {v} | set(G[v]) for v in G}
 
-    # Continue until all vertices are adjacent to some node in the
+    # Continue until all nodes are adjacent to some node in the
     # dominating set.
-    while vertices:
+    while uncovered_nodes:
         # Find the most cost-effective node to add, along with its
         # closed neighborhood.
         dom_node, min_set = min(neighborhoods.items(), key=_cost)
-        # Add the node to the dominating set and reduce the remaining
-        # set of nodes to cover.
+        # Add the node to the dominating set and reduce the
+        # remaining set of nodes to cover.
         dom_set.add(dom_node)
         del neighborhoods[dom_node]
-        vertices -= min_set
+        uncovered_nodes -= min_set
 
     return dom_set
 
 
+@nx._dispatchable
 def min_edge_dominating_set(G):
     r"""Returns minimum cardinality edge dominating set.
 
@@ -111,6 +131,17 @@ def min_edge_dominating_set(G):
     -------
     min_edge_dominating_set : set
       Returns a set of dominating edges whose size is no more than 2 * OPT.
+
+    Examples
+    --------
+    >>> G = nx.petersen_graph()
+    >>> nx.approximation.min_edge_dominating_set(G)
+    {(0, 1), (4, 9), (6, 8), (5, 7), (2, 3)}
+
+    Raises
+    ------
+    ValueError
+        If the input graph `G` is empty.
 
     Notes
     -----

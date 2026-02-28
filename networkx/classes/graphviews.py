@@ -8,7 +8,7 @@ a graph to reverse directed edges, or treat a directed graph
 as undirected, etc. This module provides those graph views.
 
 The resulting views are essentially read-only graphs that
-report data from the orignal graph object. We provide an
+report data from the original graph object. We provide an
 attribute G._graph which points to the underlying graph object.
 
 Note: Since graphviews look like graphs, one can end up with
@@ -23,6 +23,7 @@ the chain is tricky and much harder with restricted_views than
 with induced subgraphs.
 Often it is easiest to use .copy() to avoid chains.
 """
+
 import networkx as nx
 from networkx.classes.coreviews import (
     FilterAdjacency,
@@ -32,19 +33,79 @@ from networkx.classes.coreviews import (
     UnionMultiAdjacency,
 )
 from networkx.classes.filters import no_filter
-from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
 
 __all__ = ["generic_graph_view", "subgraph_view", "reverse_view"]
 
 
 def generic_graph_view(G, create_using=None):
+    """Returns a read-only view of `G`.
+
+    The graph `G` and its attributes are not copied but viewed through the new graph object
+    of the same class as `G` (or of the class specified in `create_using`).
+
+    Parameters
+    ----------
+    G : graph
+        A directed/undirected graph/multigraph.
+
+    create_using : NetworkX graph constructor, optional (default=None)
+       Graph type to create. If graph instance, then cleared before populated.
+       If `None`, then the appropriate Graph type is inferred from `G`.
+
+    Returns
+    -------
+    newG : graph
+        A view of the input graph `G` and its attributes as viewed through
+        the `create_using` class.
+
+    Raises
+    ------
+    NetworkXError
+        If `G` is a multigraph (or multidigraph) but `create_using` is not, or vice versa.
+
+    Notes
+    -----
+    The returned graph view is read-only (cannot modify the graph).
+    Yet the view reflects any changes in `G`. The intent is to mimic dict views.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2, weight=0.3)
+    >>> G.add_edge(2, 3, weight=0.5)
+    >>> G.edges(data=True)
+    EdgeDataView([(1, 2, {'weight': 0.3}), (2, 3, {'weight': 0.5})])
+
+    The view exposes the attributes from the original graph.
+
+    >>> viewG = nx.graphviews.generic_graph_view(G)
+    >>> viewG.edges(data=True)
+    EdgeDataView([(1, 2, {'weight': 0.3}), (2, 3, {'weight': 0.5})])
+
+    Changes to `G` are reflected in `viewG`.
+
+    >>> G.remove_edge(2, 3)
+    >>> G.edges(data=True)
+    EdgeDataView([(1, 2, {'weight': 0.3})])
+
+    >>> viewG.edges(data=True)
+    EdgeDataView([(1, 2, {'weight': 0.3})])
+
+    We can change the graph type with the `create_using` parameter.
+
+    >>> type(G)
+    <class 'networkx.classes.graph.Graph'>
+    >>> viewDG = nx.graphviews.generic_graph_view(G, create_using=nx.DiGraph)
+    >>> type(viewDG)
+    <class 'networkx.classes.digraph.DiGraph'>
+    """
     if create_using is None:
         newG = G.__class__()
     else:
         newG = nx.empty_graph(0, create_using)
     if G.is_multigraph() != newG.is_multigraph():
-        raise NetworkXError("Multigraph for G must agree with create_using")
+        raise nx.NetworkXError("Multigraph for G must agree with create_using")
     newG = nx.freeze(newG)
 
     # create view by assigning attributes from G
@@ -71,7 +132,7 @@ def generic_graph_view(G, create_using=None):
     return newG
 
 
-def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
+def subgraph_view(G, *, filter_node=no_filter, filter_edge=no_filter):
     """View of `G` applying a filter on nodes and edges.
 
     `subgraph_view` provides a read-only view of the input graph that excludes
@@ -118,7 +179,6 @@ def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
 
     >>> def filter_node(n1):
     ...     return n1 != 5
-    ...
     >>> view = nx.subgraph_view(G, filter_node=filter_node)
     >>> view.nodes()
     NodeView((0, 1, 2, 3, 4))
@@ -129,12 +189,15 @@ def subgraph_view(G, filter_node=no_filter, filter_edge=no_filter):
     >>> G[3][4]["cross_me"] = False
     >>> def filter_edge(n1, n2):
     ...     return G[n1][n2].get("cross_me", True)
-    ...
     >>> view = nx.subgraph_view(G, filter_edge=filter_edge)
     >>> view.edges()
     EdgeView([(0, 1), (1, 2), (2, 3), (4, 5)])
 
-    >>> view = nx.subgraph_view(G, filter_node=filter_node, filter_edge=filter_edge,)
+    >>> view = nx.subgraph_view(
+    ...     G,
+    ...     filter_node=filter_node,
+    ...     filter_edge=filter_edge,
+    ... )
     >>> view.nodes()
     NodeView((0, 1, 2, 3, 4))
     >>> view.edges()

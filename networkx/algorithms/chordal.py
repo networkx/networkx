@@ -5,6 +5,7 @@ A graph is chordal if every cycle of length at least 4 has a chord
 (an edge joining two nodes not adjacent in the cycle).
 https://en.wikipedia.org/wiki/Chordal_graph
 """
+
 import sys
 
 import networkx as nx
@@ -28,6 +29,7 @@ class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def is_chordal(G):
     """Checks whether G is a chordal graph.
 
@@ -73,6 +75,8 @@ def is_chordal(G):
     search. It returns False when it finds that the separator for any node
     is not a clique.  Based on the algorithms in [1]_.
 
+    Self loops are ignored.
+
     References
     ----------
     .. [1] R. E. Tarjan and M. Yannakakis, Simple linear-time algorithms
@@ -80,9 +84,12 @@ def is_chordal(G):
        selectively reduce acyclic hypergraphs, SIAM J. Comput., 13 (1984),
        pp. 566–579.
     """
+    if len(G.nodes) <= 3:
+        return True
     return len(_find_chordality_breaker(G)) == 0
 
 
+@nx._dispatchable
 def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
     """Returns the set of induced nodes in the path from s to t.
 
@@ -130,6 +137,8 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
     The algorithm is inspired by Algorithm 4 in [1]_.
     A formal definition of induced node can also be found on that reference.
 
+    Self Loops are ignored
+
     References
     ----------
     .. [1] Learning Bounded Treewidth Bayesian Networks.
@@ -160,6 +169,7 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
     return induced_nodes
 
 
+@nx._dispatchable
 def chordal_graph_cliques(G):
     """Returns all maximal cliques of a chordal graph.
 
@@ -217,7 +227,9 @@ def chordal_graph_cliques(G):
             numbered = {v}
             clique_wanna_be = {v}
             while unnumbered:
-                v = _max_cardinality_node(C, unnumbered, numbered)
+                # The node from the unnumbered set with the most connections
+                # to nodes in the numbered set
+                v = max(unnumbered, key=lambda n: len(G._adj[n].keys() & numbered))
                 unnumbered.remove(v)
                 numbered.add(v)
                 new_clique_wanna_be = set(C.neighbors(v)) & numbered
@@ -232,13 +244,14 @@ def chordal_graph_cliques(G):
             yield frozenset(clique_wanna_be)
 
 
+@nx._dispatchable
 def chordal_graph_treewidth(G):
-    """Returns the treewidth of the chordal graph G.
+    """Returns the treewidth of the chordal graph `G`.
 
     Parameters
     ----------
     G : graph
-      A NetworkX graph
+        A chordal graph.
 
     Returns
     -------
@@ -248,29 +261,18 @@ def chordal_graph_treewidth(G):
     Raises
     ------
     NetworkXError
-        The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
-        The algorithm can only be applied to chordal graphs. If the input
-        graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
+        If `G` is not chordal.
 
     Examples
     --------
-    >>> e = [
-    ...     (1, 2),
-    ...     (1, 3),
-    ...     (2, 3),
-    ...     (2, 4),
-    ...     (3, 4),
-    ...     (3, 5),
-    ...     (3, 6),
-    ...     (4, 5),
-    ...     (4, 6),
-    ...     (5, 6),
-    ...     (7, 8),
-    ... ]
-    >>> G = nx.Graph(e)
-    >>> G.add_node(9)
+    >>> G = nx.barbell_graph(4, 6)
     >>> nx.chordal_graph_treewidth(G)
     3
+
+    See Also
+    --------
+    networkx.algorithms.approximation.treewidth.treewidth_min_degree
+    networkx.algorithms.approximation.treewidth.treewidth_min_fill_in
 
     References
     ----------
@@ -279,10 +281,7 @@ def chordal_graph_treewidth(G):
     if not is_chordal(G):
         raise nx.NetworkXError("Input graph is not chordal.")
 
-    max_clique = -1
-    for clique in nx.chordal_graph_cliques(G):
-        max_clique = max(max_clique, len(clique))
-    return max_clique - 1
+    return len(max(nx.chordal_graph_cliques(G), key=len)) - 1
 
 
 def _is_complete_graph(G):
@@ -306,19 +305,6 @@ def _find_missing_edge(G):
             return (u, missing.pop())
 
 
-def _max_cardinality_node(G, choices, wanna_connect):
-    """Returns a the node in choices that has more connections in G
-    to nodes in wanna_connect.
-    """
-    max_number = -1
-    for x in choices:
-        number = len([y for y in G[x] if y in wanna_connect])
-        if number > max_number:
-            max_number = number
-            max_cardinality_node = x
-    return max_cardinality_node
-
-
 def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
     """Given a graph G, starts a max cardinality search
     (starting from s if s is given and from an arbitrary node otherwise)
@@ -326,9 +312,11 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 
     If it does find one, it returns (u,v,w) where u,v,w are the three
     nodes that together with s are involved in the cycle.
+
+    It ignores any self loops.
     """
-    if nx.number_of_selfloops(G) > 0:
-        raise nx.NetworkXError("Input graph is not chordal.")
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Graph has no nodes.")
     unnumbered = set(G)
     if s is None:
         s = arbitrary_element(G)
@@ -336,7 +324,9 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
     numbered = {s}
     current_treewidth = -1
     while unnumbered:  # and current_treewidth <= treewidth_bound:
-        v = _max_cardinality_node(G, unnumbered, numbered)
+        # The node from the unnumbered set with the most connections
+        # to nodes in the numbered set
+        v = max(unnumbered, key=lambda n: len(G._adj[n].keys() & numbered))
         unnumbered.remove(v)
         numbered.add(v)
         clique_wanna_be = set(G[v]) & numbered
@@ -357,6 +347,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(returns_graph=True)
 def complete_to_chordal_graph(G):
     """Return a copy of G completed to a chordal graph
 

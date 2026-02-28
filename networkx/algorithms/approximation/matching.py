@@ -8,11 +8,13 @@ edges; that is, no two edges share a common vertex.
 
 `Wikipedia: Matching <https://en.wikipedia.org/wiki/Matching_(graph_theory)>`_
 """
+
 import networkx as nx
 
 __all__ = ["min_maximal_matching"]
 
 
+@nx._dispatchable
 def min_maximal_matching(G):
     r"""Returns the minimum maximal matching of G. That is, out of all maximal
     matchings of the graph G, the smallest is returned.
@@ -31,7 +33,7 @@ def min_maximal_matching(G):
 
     Notes
     -----
-    The algorithm computes an approximate solution fo the minimum maximal
+    The algorithm computes an approximate solution for the minimum maximal
     cardinality matching problem. The solution is no more than 2 * OPT in size.
     Runtime is $O(|E|)$.
 

@@ -1,108 +1,119 @@
 Release Process
 ===============
 
-- Update the release notes:
+- Set release variables:
 
-  1. Review and cleanup ``doc/release/release_dev.rst``,
+  .. code-block:: bash
 
-  2. Fix code in documentation by running
-     ``cd doc && make doctest``.
+      export VERSION=<version number>
+      export PREVIOUS=<previous version number>
+      export ORG="networkx"
+      export REPO="networkx"
 
-  3. Make a list of merges and contributors by running
-     ``doc/release/contribs.py <tag of previous release>``.
+  If this is a prerelease:
 
-  4. Paste this list at the end of the ``release_dev.rst``. Scan the PR titles
-     for highlights, deprecations, and API changes, and mention these in the
-     relevant sections of the notes.
+  .. code-block:: bash
 
-  5. Rename to ``doc/release/release_<major>.<minor>.rst``.
+      export NOTES="doc/release/release_dev.rst"
 
-  6. Copy ``doc/release/release_template.rst`` to
-     ``doc/release/release_dev.rst`` for the next release.
+  If this is release:
 
-  7. Add ``release_<major>.<minor>`` to ``doc/release/index.rst``.
+  .. code-block:: bash
 
-- Delete developer banner on docs::
+      export NOTES="doc/release/release_${VERSION}.rst"
+      git rm doc/release/release_dev.rst
 
-   git rm doc/_templates/layout.html
+- Autogenerate release notes:
+
+  .. code-block:: bash
+
+      changelist ${ORG}/${REPO} networkx-${PREVIOUS} main --version ${VERSION} --out ${NOTES} --format rst
+      changelist ${ORG}/${REPO} networkx-${PREVIOUS} main --version ${VERSION} --out ${VERSION}.md
+
+  .. note::
+     The release notes are generated twice here - the reST version is included in
+     the documentation, while the markdown version is included with releases
+     on GitHub.
+
+- Edit ``doc/_static/version_switcher.json`` in order to add the release, move the
+  key value pair ``"preferred": true`` to the most recent stable version, and commit.
+  For an ``rc``, skip this step.
+
+- Update ``doc/release/index.rst``.
 
 - Update ``__version__`` in ``networkx/__init__.py``.
 
-- Commit changes::
+- Commit changes:
 
-   git add networkx/__init__.py
-   git commit -m "Designate X.X release"
+  .. code-block:: bash
 
-- Add the version number as a tag in git::
+      git add networkx/__init__.py ${NOTES} doc/_static/version_switcher.json doc/release/index.rst
+      git commit -m "Designate ${VERSION} release"
 
-   git tag -s [-u <key-id>] networkx-<major>.<minor> -m 'signed <major>.<minor> tag'
+- Add the version number as a tag in git:
 
-  (If you do not have a gpg key, use -m instead; it is important for
-  Debian packaging that the tags are annotated)
+  .. code-block:: bash
 
-- Push the new meta-data to github::
+      git tag -s networkx-${VERSION} -m "signed ${VERSION} tag"
 
-   git push --tags origin main
+- Push the new meta-data to github:
 
-  (where ``origin`` is the name of the
-   ``github.com:networkx/networkx`` repository.)
+  .. code-block:: bash
 
-- Review the github release page::
+      git push --tags origin main
 
-   https://github.com/networkx/networkx/tags
+  (where ``origin`` is the name of the ``github.com:networkx/networkx`` repository.)
 
-- Pin badges in ``README.rst``::
-
-  - https://github.com/networkx/networkx/workflows/test/badge.svg?tag=networkx-<major>.<minor>
-  - https://github.com/networkx/networkx/actions?query=branch%3Anetworkx-<major>.<minor>
-
-- Publish on PyPi::
-
-   git clean -fxd
-   pip install -r requirements/release.txt
-   python -m build --sdist --wheel
-   twine upload -s dist/*
-
-- Unpin badges in ``README.rst``::
-
-   git restore README.rst 
+- Review the github release page: https://github.com/networkx/networkx/tags
 
 - Update documentation on the web:
-  The documentation is kept in a separate repo: networkx/documentation
+
+  .. note::
+     This step does not apply to rc releases.
+
+  The documentation is kept in a separate repo:
+  https://github.com/networkx/documentation
 
   - Wait for the CI service to deploy to GitHub Pages
   - Sync your branch with the remote repo: ``git pull``.
   - Copy the documentation built by the CI service.
-    Assuming you are at the top-level of the ``documentation`` repo::
+    Assuming you are at the top-level of the ``documentation`` repo:
 
-      # FIXME - use eol_banner.html
-      cp -a latest ../networkx-<major>.<minor>
-      git reset --hard <commit from last release>
-      mv ../networkx-<major>.<minor> .
-      ln -sfn networkx-<major>.<minor> stable
-      git add networkx-<major>.<minor> stable
-      git commit -m "Add <major>.<minor> docs"
-      git push  # force push---be careful!
+    .. code-block:: bash
+
+        # FIXME - use eol_banner.html
+        cp -a latest ../networkx-${VERSION}
+        git reset --hard <commit from last release>
+        mv ../networkx-${VERSION} .
+        rm -rf stable
+        cp -rf networkx-${VERSION} stable
+        git add networkx-${VERSION} stable
+        git commit -m "Add ${VERSION} docs"
+        git push  # force push---be careful!
+
 
 - Update ``__version__`` in ``networkx/__init__.py``.
+  The new version should increment either the patch number or the rc number
+  depending on whether or not the release is an rc.
+  For example, if you are releasing version ``X.Y``, the ``__version__`` should
+  be updated to ``X.Y.1rc0.dev0``.
+  If instead the release is an rc, then increment the rc number --- for example,
+  if releasing ``X.Yrc0``, the ``__version__`` should be updated to ``X.Yrc1.dev0``.
 
-- Create ``doc/_templates/layout.html`` with::
+  - Commit and push changes:
 
-    {% extends "!layout.html" %}
+    .. code-block:: bash
 
-    {% block content %}
-      {% include "dev_banner.html" %}
-      {{ super() }}
-    {% endblock %}
-
- - Commit and push changes::
-
-    git add networkx/__init__.py doc/_templates/layout.html
-    git commit -m "Bump release version"
-    git push origin main
+        git add networkx/__init__.py
+        git commit -m "Bump release version"
+        git push origin main
 
 - Update the web frontpage:
-  The webpage is kept in a separate repo: networkx/website
+
+  .. note::
+     This step does not apply to rc releases.
+
+  The webpage is kept in a separate repo: https://github.com/networkx/website
 
   - Sync your branch with the remote repo: ``git pull``.
     If you try to ``make github`` when your branch is out of sync, it

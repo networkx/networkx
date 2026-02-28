@@ -39,6 +39,12 @@ class NetworkXPointlessConcept(NetworkXException):
     The null graph is sometimes considered a pointless concept [1]_,
     thus the name of the exception.
 
+    Notes
+    -----
+    Null graphs and empty graphs are often used interchangeably but they
+    are well defined in NetworkX. An ``empty_graph`` is a graph with ``n`` nodes
+    and 0 edges, and a ``null_graph`` is a graph with 0 nodes and 0 edges.
+
     References
     ----------
     .. [1] Harary, F. and Read, R. "Is the Null Graph a Pointless

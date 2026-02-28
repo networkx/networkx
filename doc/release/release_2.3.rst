@@ -33,7 +33,7 @@ This release is the result of 6 months of work with over 92 pull requests by
 - Added Equitable coloring algorithms
 - Added planar layout algorithms
 - Les Miserables network example
-- Javascript example update
+- JavaScript example update
 
 Improvements
 ------------

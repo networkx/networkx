@@ -36,35 +36,44 @@ releases is not a strict rule and in some cases, the developers can agree on a
 different procedure upon justification (like when we can't detect the change,
 or it involves moving or deleting an entire function for example).
 
+Procedure
+---------
+To set up a function for deprecation:
+
+- Use a deprecation warning to warn users. For example::
+
+      msg = "curly_hair is deprecated and will be removed in v3.0. Use sum() instead."
+      warnings.warn(msg, DeprecationWarning)
+
+- Add a warnings filter to ``networkx/conftest.py``::
+
+      warnings.filterwarnings(
+          "ignore", category=DeprecationWarning, message=<start of message>
+      )
+
+- Add a reminder to ``doc/developer/deprecations.rst`` for the team
+  to remove the deprecated functionality in the future. For example:
+
+  .. code-block:: rst
+
+     * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
+
+.. note::
+
+   To reviewers: make sure the merge message has a brief description of the
+   change(s) and if the PR closes an issue add, for example, "Closes #123"
+   where 123 is the issue number.
+
 Todo
 ----
 
 Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 
-Version 3.0
+Version 3.8
 ~~~~~~~~~~~
+* Remove ``maybe_regular_expander`` from ``networkx.generators.expanders``.
+* In ``algorithms/approximation/steinertree.py`` remove ``metric_closure`` and related tests.
 
-* In ``readwrite/gml.py`` remove ``literal_stringizer`` and related tests.
-* In ``readwrite/gml.py`` remove ``literal_destringizer`` and related tests.
-* Remove ``copy`` method in the coreview Filtered-related classes and related tests.
-* In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
-* In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
-* In ``convert_matrix.py`` remove ``order`` kwarg from ``to_pandas_edgelist`` and docstring
-* In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
-* In ``algorithms/link_analysis/pagerank_alg.py``, remove the
-  ``np.asmatrix`` wrappers on the return values of ``google_matrix`` and remove
-  the associated FutureWarning.
-* In ``linalg/attrmatrix.py`` remove the FutureWarning, update the
-  return type by removing ``np.asmatrix``, and update the docstring to
-  reflect that the function returns a ``numpy.ndarray`` instance.
-* In ``algorithms/distance_measures.py`` remove ``extrema_bounding``.
-* In ``algorithms/matching.py``, remove parameter ``maxcardinality`` from ``min_weight_matching``.
-
-
-Version 3.2
+Version 3.9
 ~~~~~~~~~~~
-* In ``generators/directed.py`` remove the ``create_using`` keyword argument
-  for the ``scale_free_graph`` function.
-* Remove pydot functionality ``drawing/nx_pydot.py``, if pydot is still not being maintained. See #5723
-* In ``readwrite/json_graph/node_link.py`` remove the ``attrs` keyword code 
-  and docstring in ``node_link_data`` and ``node_link_graph``. Also the associated tests.
+* Remove ``bfs_predecessors`` from ``networkx.algorithms.traversal.breadth_first_searcph``.

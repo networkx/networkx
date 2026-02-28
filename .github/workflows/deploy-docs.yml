@@ -8,33 +8,16 @@ jobs:
   documentation:
     # Do not attempt to deploy documentation on forks
     if: github.repository_owner == 'networkx'
-
     runs-on: ubuntu-22.04
-
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v3
+      - uses: actions/checkout@v6
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: "3.9"
-
-      - name: Before install
-        run: |
-          sudo apt-get update
-          sudo apt-get install graphviz graphviz-dev
-          sudo apt-get install texlive texlive-latex-extra latexmk texlive-xetex
-          sudo apt-get install fonts-freefont-otf xindy
-          sudo apt-get install libspatialindex-dev
-
-      - name: Install packages
-        run: |
-          pip install --upgrade pip wheel setuptools
-          pip install -r requirements/default.txt -r requirements/test.txt
-          pip install -r requirements/extra.txt
-          pip install -r requirements/example.txt
-          pip install -U -r requirements/doc.txt
-          pip install .
-          pip list
+          environments: docs
+      - name: Register graphviz plugins
+        run: pixi run -e docs dot -c
+      - name: Install backend stubs
+        run: pixi run -e docs install-backend-stubs
 
       # To set up a cross-repository deploy key:
       # 1. Create a key pair:
@@ -47,26 +30,22 @@ jobs:
       #   - Make sure the name is the same as below: CI_DEPLOY_KEY
       - name: Install SSH agent
         if: github.ref == 'refs/heads/main'
-        uses: webfactory/ssh-agent@v0.5.4
+        uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.CI_DEPLOY_KEY }}
 
       - name: Build docs
         if: github.ref == 'refs/heads/main'
-        run: |
-          export DISPLAY=:99
-          make -C doc/ html
-          make -C doc/ latexpdf LATEXOPTS="-file-line-error -halt-on-error"
-          cp -a doc/build/latex/networkx_reference.pdf doc/build/html/_downloads/.
+        run: pixi run -e docs docs-build
 
       - name: Deploy docs
         if: github.ref == 'refs/heads/main'
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          GIT_CONFIG_NAME: nx-doc-deploy-bot
-          GIT_CONFIG_EMAIL: nx-doc-deploy-bot@nomail
-          FOLDER: doc/build/html
-          REPOSITORY_NAME: networkx/documentation
-          BRANCH: gh-pages
-          TARGET_FOLDER: latest
-          SSH: true
+          git-config-name: nx-doc-deploy-bot
+          git-config-email: nx-doc-deploy-bot@nomail
+          folder: doc/build/html
+          repository-name: networkx/documentation
+          branch: gh-pages
+          target-folder: latest
+          ssh-key: true

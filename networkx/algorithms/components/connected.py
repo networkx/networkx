@@ -1,4 +1,5 @@
 """Connected components."""
+
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -12,20 +13,32 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatchable
 def connected_components(G):
     """Generate connected components.
+
+    The connected components of an undirected graph partition the graph into
+    disjoint sets of nodes. Each of these sets induces a subgraph of graph
+    `G` that is connected and not part of any larger connected subgraph.
+
+    A graph is connected (:func:`is_connected`) if, for every pair of distinct
+    nodes, there is a path between them. If there is a pair of nodes for
+    which such path does not exist, the graph is not connected (also referred
+    to as "disconnected").
+
+    A graph consisting of a single node and no edges is connected.
+    Connectivity is undefined for the null graph (graph with no nodes).
 
     Parameters
     ----------
     G : NetworkX graph
        An undirected graph
 
-    Returns
-    -------
-    comp : generator of sets
-       A generator of sets of nodes, one for each component of G.
+    Yields
+    ------
+    comp : set
+       A set of nodes in one connected component of the graph.
 
     Raises
     ------
@@ -52,24 +65,47 @@ def connected_components(G):
 
     See Also
     --------
-    strongly_connected_components
-    weakly_connected_components
+    number_connected_components
+    is_connected
+    number_weakly_connected_components
+    number_strongly_connected_components
 
     Notes
     -----
-    For undirected graphs only.
+    This function is for undirected graphs only. For directed graphs, use
+    :func:`strongly_connected_components` or
+    :func:`weakly_connected_components`.
+
+    The algorithm is based on a Breadth-First Search (BFS) traversal and its
+    time complexity is $O(n + m)$, where $n$ is the number of nodes and $m$ the
+    number of edges in the graph.
 
     """
     seen = set()
+    n = len(G)  # must be outside the loop to avoid performance hit with graph views
     for v in G:
         if v not in seen:
-            c = _plain_bfs(G, v)
+            c = _plain_bfs(G, n - len(seen), v)
             seen.update(c)
             yield c
 
 
+@not_implemented_for("directed")
+@nx._dispatchable
 def number_connected_components(G):
     """Returns the number of connected components.
+
+    The connected components of an undirected graph partition the graph into
+    disjoint sets of nodes. Each of these sets induces a subgraph of graph
+    `G` that is connected and not part of any larger connected subgraph.
+
+    A graph is connected (:func:`is_connected`) if, for every pair of distinct
+    nodes, there is a path between them. If there is a pair of nodes for
+    which such path does not exist, the graph is not connected (also referred
+    to as "disconnected").
+
+    A graph consisting of a single node and no edges is connected.
+    Connectivity is undefined for the null graph (graph with no nodes).
 
     Parameters
     ----------
@@ -81,6 +117,11 @@ def number_connected_components(G):
     n : integer
        Number of connected components
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
+
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (1, 2), (5, 6), (3, 4)])
@@ -90,20 +131,35 @@ def number_connected_components(G):
     See Also
     --------
     connected_components
+    is_connected
     number_weakly_connected_components
     number_strongly_connected_components
 
     Notes
     -----
-    For undirected graphs only.
+    This function is for undirected graphs only. For directed graphs, use
+    :func:`number_strongly_connected_components` or
+    :func:`number_weakly_connected_components`.
+
+    The algorithm is based on a Breadth-First Search (BFS) traversal and its
+    time complexity is $O(n + m)$, where $n$ is the number of nodes and $m$ the
+    number of edges in the graph.
 
     """
-    return sum(1 for cc in connected_components(G))
+    return sum(1 for _ in connected_components(G))
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def is_connected(G):
     """Returns True if the graph is connected, False otherwise.
+
+    A graph is connected if, for every pair of distinct nodes, there is a
+    path between them. If there is a pair of nodes for which such path does
+    not exist, the graph is not connected (also referred to as "disconnected").
+
+    A graph consisting of a single node and no edges is connected.
+    Connectivity is undefined for the null graph (graph with no nodes).
 
     Parameters
     ----------
@@ -113,7 +169,7 @@ def is_connected(G):
     Returns
     -------
     connected : bool
-      True if the graph is connected, false otherwise.
+      True if the graph is connected, False otherwise.
 
     Raises
     ------
@@ -136,19 +192,37 @@ def is_connected(G):
 
     Notes
     -----
-    For undirected graphs only.
+    This function is for undirected graphs only. For directed graphs, use
+    :func:`is_strongly_connected` or :func:`is_weakly_connected`.
+
+    The algorithm is based on a Breadth-First Search (BFS) traversal and its
+    time complexity is $O(n + m)$, where $n$ is the number of nodes and $m$ the
+    number of edges in the graph.
 
     """
-    if len(G) == 0:
+    n = len(G)
+    if n == 0:
         raise nx.NetworkXPointlessConcept(
-            "Connectivity is undefined ", "for the null graph."
+            "Connectivity is undefined for the null graph."
         )
-    return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
+    return len(next(connected_components(G))) == n
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def node_connected_component(G, n):
     """Returns the set of nodes in the component of graph containing node n.
+
+    A connected component is a set of nodes that induces a subgraph of graph
+    `G` that is connected and not part of any larger connected subgraph.
+
+    A graph is connected (:func:`is_connected`) if, for every pair of distinct
+    nodes, there is a path between them. If there is a pair of nodes for
+    which such path does not exist, the graph is not connected (also referred
+    to as "disconnected").
+
+    A graph consisting of a single node and no edges is connected.
+    Connectivity is undefined for the null graph (graph with no nodes).
 
     Parameters
     ----------
@@ -180,22 +254,29 @@ def node_connected_component(G, n):
 
     Notes
     -----
-    For undirected graphs only.
+    This function is for undirected graphs only.
+
+    The algorithm is based on a Breadth-First Search (BFS) traversal and its
+    time complexity is $O(n + m)$, where $n$ is the number of nodes and $m$ the
+    number of edges in the graph.
 
     """
-    return _plain_bfs(G, n)
+    return _plain_bfs(G, len(G), n)
 
 
-def _plain_bfs(G, source):
+def _plain_bfs(G, n, source):
     """A fast BFS node generator"""
-    G_adj = G.adj
-    seen = set()
-    nextlevel = {source}
+    adj = G._adj
+    seen = {source}
+    nextlevel = [source]
     while nextlevel:
         thislevel = nextlevel
-        nextlevel = set()
+        nextlevel = []
         for v in thislevel:
-            if v not in seen:
-                seen.add(v)
-                nextlevel.update(G_adj[v])
+            for w in adj[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+            if len(seen) == n:
+                return seen
     return seen

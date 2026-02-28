@@ -8,6 +8,24 @@ import networkx as nx
 from networkx.utils import edges_equal
 
 
+def test_hexagonal_lattice_no_pos():
+    # Test positions are note computed/stored when with_positions=False
+    G = nx.hexagonal_lattice_graph(6, 6, with_positions=False)
+    assert all(pos is None for _, pos in G.nodes(data="pos"))
+
+
+@pytest.mark.parametrize(
+    "lattice_graph", (nx.triangular_lattice_graph, nx.hexagonal_lattice_graph)
+)
+def test_2D_lattice_no_contraction_leftovers(lattice_graph):
+    """hexagonal_lattice_graph and triangular_lattice_graph use nx.contracted_nodes
+    under-the-hood when periodic=True. Check that there are no leftover
+    "contraction" node attributes on the returned graph."""
+    G = lattice_graph(6, 6, with_positions=False, periodic=True)
+    assert all(data == {} for _, data in G.nodes(data=True))
+    assert all(data == {} for _, _, data in G.edges(data=True))
+
+
 class TestGrid2DGraph:
     """Unit tests for :func:`networkx.generators.lattice.grid_2d_graph`"""
 
@@ -159,7 +177,7 @@ class TestTriangularLatticeGraph:
             G = nx.triangular_lattice_graph(m, n)
             N = (n + 1) // 2
             assert len(G) == (m + 1) * (1 + N) - (n % 2) * ((m + 1) // 2)
-        for (i, j) in G.nodes():
+        for i, j in G.nodes():
             nbrs = G[(i, j)]
             if i < N:
                 assert (i + 1, j) in nbrs

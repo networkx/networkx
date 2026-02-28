@@ -3,15 +3,15 @@ import random
 import pytest
 
 import networkx as nx
-
-np = pytest.importorskip("numpy")
-pytest.importorskip("scipy")
-
 from networkx.algorithms.link_analysis.pagerank_alg import (
     _pagerank_numpy,
     _pagerank_python,
     _pagerank_scipy,
 )
+from networkx.classes.tests import dispatch_interface
+
+np = pytest.importorskip("numpy")
+pytest.importorskip("scipy")
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
@@ -87,7 +87,7 @@ class TestPageRank:
         M = nx.google_matrix(G, alpha=0.9, nodelist=sorted(G))
         _, ev = np.linalg.eig(M.T)
         p = ev[:, 0] / ev[:, 0].sum()
-        for (a, b) in zip(p, self.G.pagerank.values()):
+        for a, b in zip(p, self.G.pagerank.values()):
             assert a == pytest.approx(b, abs=1e-7)
 
     @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python, _pagerank_numpy))

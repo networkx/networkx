@@ -1,0 +1,390 @@
+[build-system]
+build-backend = 'setuptools.build_meta'
+requires = ['setuptools>=77.0.3']
+
+[project]
+name = 'networkx'
+description = 'Python package for creating and manipulating graphs and networks'
+readme = 'README.rst'
+requires-python = '>=3.12,!=3.14.1'
+dynamic = ['version']
+keywords = [
+    'Networks',
+    'Graph Theory',
+    'Mathematics',
+    'network',
+    'graph',
+    'discrete mathematics',
+    'math',
+]
+license = "BSD-3-Clause"
+license-files = ["LICENSE.txt"]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
+    'Programming Language :: Python :: 3 :: Only',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Scientific/Engineering :: Bio-Informatics',
+    'Topic :: Scientific/Engineering :: Information Analysis',
+    'Topic :: Scientific/Engineering :: Mathematics',
+    'Topic :: Scientific/Engineering :: Physics',
+]
+dependencies = []
+
+[[project.authors]]
+name = 'Aric Hagberg'
+email = 'hagberg@lanl.gov'
+
+[[project.maintainers]]
+name = 'NetworkX Developers'
+email = 'networkx-discuss@googlegroups.com'
+
+[project.urls]
+Homepage = 'https://networkx.org/'
+"Bug Tracker" = 'https://github.com/networkx/networkx/issues'
+Documentation = 'https://networkx.org/documentation/stable/'
+"Source Code" = 'https://github.com/networkx/networkx'
+
+[project.entry-points."networkx.backends"]
+nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
+
+[project.optional-dependencies]
+benchmarking = [
+    'asv',
+    'virtualenv',
+]
+default = [
+    'numpy>=2',
+    'scipy>=1.13',
+    'matplotlib>=3.9',
+    'pandas>=2.3.0',
+]
+developer = [
+    'pre-commit>=4.1',
+    'mypy>=1.15',
+]
+doc = [
+    'sphinx>=8.0',
+    'pydata-sphinx-theme>=0.16',
+    'sphinx-gallery>=0.18',
+    'numpydoc>=1.8.0',
+    'pillow>=10',
+    'texext>=0.6.7',
+    'myst-nb>=1.1',
+    'intersphinx-registry',
+]
+example = [
+    'osmnx>=2.0.0',
+    'momepy>=0.7.2',
+    'contextily>=1.6',
+    'seaborn>=0.13',
+    'cairocffi>=1.7',
+    'igraph>=0.11',
+    'scikit-learn>=1.5',
+    'iplotx>=0.9.0',
+]
+extra = [
+    'lxml>=4.6',
+    'pygraphviz>=1.14',
+    'pydot>=3.0.1',
+    'sympy>=1.10',
+]
+release = [
+    'build>=0.10',
+    'twine>=4.0',
+    'wheel>=0.40',
+    'changelist==0.5',
+]
+test = [
+    'pytest>=7.2',
+    'pytest-cov>=4.0',
+    'pytest-xdist>=3.0',
+]
+test-extras = [
+    'pytest-mpl',
+    'pytest-randomly',
+]
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = false
+packages = [
+    'networkx',
+    'networkx.algorithms',
+    'networkx.algorithms.assortativity',
+    'networkx.algorithms.bipartite',
+    'networkx.algorithms.centrality',
+    'networkx.algorithms.community',
+    'networkx.algorithms.components',
+    'networkx.algorithms.connectivity',
+    'networkx.algorithms.coloring',
+    'networkx.algorithms.flow',
+    'networkx.algorithms.minors',
+    'networkx.algorithms.traversal',
+    'networkx.algorithms.isomorphism',
+    'networkx.algorithms.shortest_paths',
+    'networkx.algorithms.link_analysis',
+    'networkx.algorithms.operators',
+    'networkx.algorithms.approximation',
+    'networkx.algorithms.tree',
+    'networkx.classes',
+    'networkx.generators',
+    'networkx.drawing',
+    'networkx.linalg',
+    'networkx.readwrite',
+    'networkx.readwrite.json_graph',
+    'networkx.tests',
+    'networkx.utils',
+]
+platforms = [
+    'Linux',
+    'Mac OSX',
+    'Windows',
+    'Unix',
+]
+
+[tool.setuptools.dynamic.version]
+attr = 'networkx.__version__'
+
+[tool.setuptools.package-data]
+networkx = ['tests/*.py']
+"networkx.algorithms" = ['tests/*.py']
+"networkx.algorithms.assortativity" = ['tests/*.py']
+"networkx.algorithms.bipartite" = ['tests/*.py']
+"networkx.algorithms.centrality" = ['tests/*.py']
+"networkx.algorithms.community" = ['tests/*.py']
+"networkx.algorithms.components" = ['tests/*.py']
+"networkx.algorithms.connectivity" = ['tests/*.py']
+"networkx.algorithms.coloring" = ['tests/*.py']
+"networkx.algorithms.minors" = ['tests/*.py']
+"networkx.algorithms.flow" = [
+    'tests/*.py',
+    'tests/*.bz2',
+]
+"networkx.algorithms.isomorphism" = [
+    'tests/*.py',
+    'tests/*.*99',
+]
+"networkx.algorithms.link_analysis" = ['tests/*.py']
+"networkx.algorithms.approximation" = ['tests/*.py']
+"networkx.algorithms.operators" = ['tests/*.py']
+"networkx.algorithms.shortest_paths" = ['tests/*.py']
+"networkx.algorithms.traversal" = ['tests/*.py']
+"networkx.algorithms.tree" = ['tests/*.py']
+"networkx.classes" = ['tests/*.py']
+"networkx.generators" = [
+    'tests/*.py',
+    'atlas.dat.gz',
+]
+"networkx.drawing" = [
+    'tests/*.py',
+    'tests/baseline/*png',
+]
+"networkx.linalg" = ['tests/*.py']
+"networkx.readwrite" = ['tests/*.py']
+"networkx.readwrite.json_graph" = ['tests/*.py']
+"networkx.utils" = ['tests/*.py']
+
+[tool.changelist]
+ignored_user_logins = ["dependabot[bot]", "pre-commit-ci[bot]", "web-flow"]
+
+[tool.coverage.run]
+branch = true
+source = ["networkx"]
+omit = ["*/tests/*", "conftest.py", "*testing/test.py"]
+
+[tool.ruff.lint]
+extend-select = [
+#  "B",        # flake8-bugbear
+  "I",        # isort
+#  "ARG",      # flake8-unused-arguments
+  "C4",       # flake8-comprehensions
+#  "D",        # pydocstyle (see tool.ruff.lint.pydocstyle below)
+  "EM",       # flake8-errmsg
+  "ICN",      # flake8-import-conventions
+#  "G",        # flake8-logging-format
+  "PGH",      # pygrep-hooks
+  "PIE",      # flake8-pie
+#  "PL",       # pylint
+  "PLR0402",
+#  "PT",       # flake8-pytest-style
+#  "PTH",      # flake8-use-pathlib
+#  "RET",      # flake8-return
+#  "RUF",      # Ruff-specific
+#  "SIM",      # flake8-simplify
+  "SIM101",
+  "SIM109",
+  "SIM110",
+  "SIM118",
+  "SIM2",
+#  "T20",      # flake8-print
+  "UP",       # pyupgrade
+  "YTT",      # flake8-2020
+  "EXE",      # flake8-executable
+  "NPY",      # NumPy specific rules
+  "PD",       # pandas-vet
+#  "FURB",     # refurb
+  "PYI",      # flake8-pyi
+  "W505",     # pycodestyle docstring/comment line length (see config below)
+]
+ignore = [
+  "PLR09",    # Too many <...>
+  "PLR2004",  # Magic value used in comparison
+  "ISC001",   # Conflicts with formatter
+  "E741",     # Ambiguous variable name
+  "E722",     # Do not use bare `except`
+  "F",        # pyflakes
+  "EM101",    # Exception must not use a string literal
+  "EM102",    # Exception must not use an f-string literal
+  "PD",       # pandas-vet
+  "ICN",      # flake8-import-conventions
+  "PYI",      # flake8-pyi
+  "NPY002",   # Replace legacy `np.random.random` call with `np.random.Generator`
+  "W291",     # Trailing white space
+  "C420",     # "Unnecessary" dict comprehensions (even though they're more readable)
+]
+exclude=['doc/conf.py', '__init__.py']
+
+# Need to select D above
+#[tool.ruff.lint.pydocstyle]
+#convention = "numpy"
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 110
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ['I']
+"examples/*.py" = ['I']
+"doc/*.py" = ['I']
+"tools/*.py" = ['I']
+"networkx/classes/filters.py" = ['C416']
+"networkx/classes/reportviews.py" = ['W505']  # Ignore long docstring examples
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.mypy]
+ignore_missing_imports = true
+exclude = 'subgraphviews|reportviews'
+disable_error_code = ["var-annotated"]
+
+[[tool.mypy.overrides]]
+module = 'networkx.classes.reportviews'
+ignore_errors = true
+
+# ---- Pixi configuration ----
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+
+[tool.pixi.pypi-dependencies]
+networkx = { path = ".", editable = true }
+
+# --- Python version features ---
+
+[tool.pixi.feature.py312.dependencies]
+python = "3.12.*"
+
+[tool.pixi.feature.py313.dependencies]
+python = "3.13.*"
+
+[tool.pixi.feature.py314.dependencies]
+python = "3.14.*"
+
+[tool.pixi.feature.py314t.dependencies]
+python-freethreading = "3.14.*"
+
+# --- Dependency features ---
+# Most pypi-dependencies are auto-created from [project.optional-dependencies].
+# Only features that differ from or have no matching optional-deps group are listed here.
+
+[tool.pixi.feature.default-no-scipy.pypi-dependencies]
+numpy = ">=1.25"
+matplotlib = ">=3.8"
+pandas = ">=2.0"
+
+[tool.pixi.feature.doc.dependencies]
+libspatialindex = "*"
+pip = "*"
+
+# extra: pygraphviz comes from conda (needs graphviz C library), not pypi
+[tool.pixi.feature.extra.dependencies]
+graphviz = "*"
+pygraphviz = ">=1.14"
+
+[tool.pixi.feature.extra.pypi-dependencies]
+lxml = ">=4.6"
+pydot = ">=3.0.1"
+sympy = ">=1.10"
+
+[tool.pixi.feature.example.dependencies]
+proj = "*"
+gdal = "*"
+cairo = "*"
+rasterio = "*"
+
+# --- Task definitions ---
+
+[tool.pixi.feature.test.tasks]
+test-base = "pytest -n auto --durations=10 --pyargs networkx"
+test-default = "pytest -n auto --doctest-modules --durations=10 --pyargs networkx"
+check-import = "python -Werror -c 'import networkx'"
+test-slow = "pytest -n auto --durations=20 --runslow -m slow --pyargs networkx"
+test-dispatch = { cmd = "pytest -n auto --doctest-modules --durations=10 --pyargs networkx", env = { NETWORKX_TEST_BACKEND = "nx_loopback" } }
+
+[tool.pixi.feature.developer.tasks]
+lint = "pre-commit run --all-files --show-diff-on-failure --color always"
+type-check = "mypy -p networkx"
+
+[tool.pixi.feature.doc.tasks]
+docs-build = { cmd = "make -C doc/ html", env = { DISPLAY = ":99" } }
+# TODO: convert to pypi-dependencies once pixi supports --no-deps
+# https://github.com/prefix-dev/pixi/issues/1417
+install-backend-stubs = """pip install --no-deps --pre \
+  --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple \
+  nx-cugraph-cu11 \
+  git+https://github.com/python-graphblas/graphblas-algorithms.git@main \
+  git+https://github.com/networkx/nx-parallel.git@main \
+  git+https://github.com/awslabs/nx-neptune.git@main"""
+
+[tool.pixi.feature.prerelease.tasks]
+install-prerelease = "pip install --upgrade pip && pip install --pre '.[default,test]' && pip list"
+test-prerelease = "pytest -n auto --doctest-modules --durations=10 --pyargs networkx"
+
+[tool.pixi.feature.release.tasks]
+build-dist = "python -m build --sdist --wheel"
+verify-dist = "twine check --strict dist/*"
+
+# --- Environment definitions ---
+
+[tool.pixi.environments]
+# Base test (no default deps)
+test-base-py313 = { features = ["test", "py313"], solve-group = "py313" }
+test-base-py314 = { features = ["test", "py314"], solve-group = "py314" }
+test-base-py314t = { features = ["test", "py314t"], solve-group = "py314t" }
+# Default test (with numpy/scipy/matplotlib/pandas)
+test-default-py312 = { features = ["test", "default", "py312"], solve-group = "py312" }
+test-default-py313 = { features = ["test", "default", "py313"], solve-group = "py313" }
+test-default-py314 = { features = ["test", "default", "py314"], solve-group = "py314" }
+# Default without scipy
+test-default-no-scipy-py312 = { features = ["test", "default-no-scipy", "py312"], solve-group = "py312" }
+# Extra test (with graphviz from conda)
+test-extra-py312 = { features = ["test", "default", "extra", "py312"], solve-group = "py312" }
+test-extra-py313 = { features = ["test", "default", "extra", "py313"], solve-group = "py313" }
+# Single-purpose environments
+lint = { features = ["developer", "py313"], solve-group = "py313" }
+type-check = { features = ["developer", "py312"], solve-group = "py312" }
+docs = { features = ["test", "default", "extra", "doc", "example", "py312"], solve-group = "py312" }
+build-release = { features = ["release", "py312"], solve-group = "py312" }
+# Prerelease (pixi manages Python, pip install --pre handles deps)
+prerelease-py312 = { features = ["prerelease", "py312"], solve-group = "py312" }
+prerelease-py313 = { features = ["prerelease", "py313"], solve-group = "py313" }
+prerelease-py314 = { features = ["prerelease", "py314"], solve-group = "py314" }
+test-randomly = { features = ["test", "default", "test-extras", "py313"], solve-group = "py313" }

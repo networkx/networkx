@@ -1,22 +1,23 @@
+import itertools
+
 import pytest
+
+import networkx as nx
+from networkx.utils import graphs_equal
 
 np = pytest.importorskip("numpy")
 npt = pytest.importorskip("numpy.testing")
 
-import networkx as nx
-from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
-from networkx.utils import graphs_equal
-
 
 class TestConvertNumpyArray:
     def setup_method(self):
-        self.G1 = barbell_graph(10, 3)
-        self.G2 = cycle_graph(10, create_using=nx.DiGraph)
+        self.G1 = nx.barbell_graph(10, 3)
+        self.G2 = nx.cycle_graph(10, create_using=nx.DiGraph)
         self.G3 = self.create_weighted(nx.Graph())
         self.G4 = self.create_weighted(nx.DiGraph())
 
     def create_weighted(self, G):
-        g = cycle_graph(4)
+        g = nx.cycle_graph(4)
         G.add_nodes_from(g)
         G.add_weighted_edges_from((u, v, 10 + u) for u, v in g.edges())
         return G
@@ -61,8 +62,8 @@ class TestConvertNumpyArray:
 
     def test_nodelist(self):
         """Conversion from graph to array to graph with nodelist."""
-        P4 = path_graph(4)
-        P3 = path_graph(3)
+        P4 = nx.path_graph(4)
+        P3 = nx.path_graph(3)
         nodelist = list(P3)
         A = nx.to_numpy_array(P4, nodelist=nodelist)
         GA = nx.Graph(A)
@@ -72,10 +73,18 @@ class TestConvertNumpyArray:
         nodelist += [nodelist[0]]
         pytest.raises(nx.NetworkXError, nx.to_numpy_array, P3, nodelist=nodelist)
 
+        # Make nodelist invalid by including nonexistent nodes
+        nodelist = [-1, 0, 1]
+        with pytest.raises(
+            nx.NetworkXError,
+            match=f"Nodes {nodelist - P3.nodes} in nodelist is not in G",
+        ):
+            nx.to_numpy_array(P3, nodelist=nodelist)
+
     def test_weight_keyword(self):
         WP4 = nx.Graph()
-        WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
-        P4 = path_graph(4)
+        WP4.add_edges_from((n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3))
+        P4 = nx.path_graph(4)
         A = nx.to_numpy_array(P4)
         np.testing.assert_equal(A, nx.to_numpy_array(WP4, weight=None))
         np.testing.assert_equal(0.5 * A, nx.to_numpy_array(WP4))
@@ -84,33 +93,39 @@ class TestConvertNumpyArray:
     def test_from_numpy_array_type(self):
         A = np.array([[1]])
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == int
+        assert isinstance(G[0][0]["weight"], int)
 
         A = np.array([[1]]).astype(float)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == float
+        assert isinstance(G[0][0]["weight"], float)
 
         A = np.array([[1]]).astype(str)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == str
+        assert isinstance(G[0][0]["weight"], str)
 
         A = np.array([[1]]).astype(bool)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == bool
+        assert isinstance(G[0][0]["weight"], bool)
 
         A = np.array([[1]]).astype(complex)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == complex
+        assert isinstance(G[0][0]["weight"], complex)
 
         A = np.array([[1]]).astype(object)
         pytest.raises(TypeError, nx.from_numpy_array, A)
+
+        A = np.array([[[1, 1, 1], [1, 1, 1]], [[1, 1, 1], [1, 1, 1]]])
+        with pytest.raises(
+            nx.NetworkXError, match=f"Input array must be 2D, not {A.ndim}"
+        ):
+            g = nx.from_numpy_array(A)
 
     def test_from_numpy_array_dtype(self):
         dt = [("weight", float), ("cost", int)]
         A = np.array([[(1.0, 2)]], dtype=dt)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == float
-        assert type(G[0][0]["cost"]) == int
+        assert isinstance(G[0][0]["weight"], float)
+        assert isinstance(G[0][0]["cost"], int)
         assert G[0][0]["cost"] == 2
         assert G[0][0]["weight"] == 1.0
 
@@ -149,6 +164,34 @@ class TestConvertNumpyArray:
             A, parallel_edges=False, create_using=nx.MultiDiGraph
         )
         assert graphs_equal(actual, expected)
+
+    @pytest.mark.parametrize(
+        "dt",
+        (
+            None,  # default
+            int,  # integer dtype
+            np.dtype(
+                [("weight", "f8"), ("color", "i1")]
+            ),  # Structured dtype with named fields
+        ),
+    )
+    def test_from_numpy_array_no_edge_attr(self, dt):
+        A = np.array([[0, 1], [1, 0]], dtype=dt)
+        G = nx.from_numpy_array(A, edge_attr=None)
+        assert "weight" not in G.edges[0, 1]
+        assert len(G.edges[0, 1]) == 0
+
+    def test_from_numpy_array_multiedge_no_edge_attr(self):
+        A = np.array([[0, 2], [2, 0]])
+        G = nx.from_numpy_array(A, create_using=nx.MultiDiGraph, edge_attr=None)
+        assert all("weight" not in e for _, e in G[0][1].items())
+        assert len(G[0][1][0]) == 0
+
+    def test_from_numpy_array_custom_edge_attr(self):
+        A = np.array([[0, 2], [3, 0]])
+        G = nx.from_numpy_array(A, edge_attr="cost")
+        assert "weight" not in G.edges[0, 1]
+        assert G.edges[0, 1]["cost"] == 3
 
     def test_symmetric(self):
         """Tests that a symmetric array has edges added only once to an
@@ -351,3 +394,138 @@ def test_to_numpy_array_structured_multigraph_raises(graph_type):
     dtype = np.dtype([("weight", int), ("cost", int)])
     with pytest.raises(nx.NetworkXError, match="Structured arrays are not supported"):
         nx.to_numpy_array(G, dtype=dtype, weight=None)
+
+
+def test_from_numpy_array_nodelist_bad_size():
+    """An exception is raised when `len(nodelist) != A.shape[0]`."""
+    n = 5  # Number of nodes
+    A = np.diag(np.ones(n - 1), k=1)  # Adj. matrix for P_n
+    expected = nx.path_graph(n)
+
+    assert graphs_equal(nx.from_numpy_array(A, edge_attr=None), expected)
+    nodes = list(range(n))
+    assert graphs_equal(
+        nx.from_numpy_array(A, edge_attr=None, nodelist=nodes), expected
+    )
+
+    # Too many node labels
+    nodes = list(range(n + 1))
+    with pytest.raises(ValueError, match="nodelist must have the same length as A"):
+        nx.from_numpy_array(A, nodelist=nodes)
+
+    # Too few node labels
+    nodes = list(range(n - 1))
+    with pytest.raises(ValueError, match="nodelist must have the same length as A"):
+        nx.from_numpy_array(A, nodelist=nodes)
+
+
+@pytest.mark.parametrize(
+    "nodes",
+    (
+        [4, 3, 2, 1, 0],
+        [9, 7, 1, 2, 8],
+        ["a", "b", "c", "d", "e"],
+        [(0, 0), (1, 1), (2, 3), (0, 2), (3, 1)],
+        ["A", 2, 7, "spam", (1, 3)],
+    ),
+)
+def test_from_numpy_array_nodelist(nodes):
+    A = np.diag(np.ones(4), k=1)
+    # Without edge attributes
+    expected = nx.relabel_nodes(
+        nx.path_graph(5), mapping=dict(enumerate(nodes)), copy=True
+    )
+    G = nx.from_numpy_array(A, edge_attr=None, nodelist=nodes)
+    assert graphs_equal(G, expected)
+
+    # With edge attributes
+    nx.set_edge_attributes(expected, 1.0, name="weight")
+    G = nx.from_numpy_array(A, nodelist=nodes)
+    assert graphs_equal(G, expected)
+
+
+@pytest.mark.parametrize(
+    "nodes",
+    (
+        [4, 3, 2, 1, 0],
+        [9, 7, 1, 2, 8],
+        ["a", "b", "c", "d", "e"],
+        [(0, 0), (1, 1), (2, 3), (0, 2), (3, 1)],
+        ["A", 2, 7, "spam", (1, 3)],
+    ),
+)
+def test_from_numpy_array_nodelist_directed(nodes):
+    A = np.diag(np.ones(4), k=1)
+    # Without edge attributes
+    H = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 4)])
+    expected = nx.relabel_nodes(H, mapping=dict(enumerate(nodes)), copy=True)
+    G = nx.from_numpy_array(A, create_using=nx.DiGraph, edge_attr=None, nodelist=nodes)
+    assert graphs_equal(G, expected)
+
+    # With edge attributes
+    nx.set_edge_attributes(expected, 1.0, name="weight")
+    G = nx.from_numpy_array(A, create_using=nx.DiGraph, nodelist=nodes)
+    assert graphs_equal(G, expected)
+
+
+@pytest.mark.parametrize(
+    "nodes",
+    (
+        [4, 3, 2, 1, 0],
+        [9, 7, 1, 2, 8],
+        ["a", "b", "c", "d", "e"],
+        [(0, 0), (1, 1), (2, 3), (0, 2), (3, 1)],
+        ["A", 2, 7, "spam", (1, 3)],
+    ),
+)
+def test_from_numpy_array_nodelist_multigraph(nodes):
+    A = np.array(
+        [
+            [0, 1, 0, 0, 0],
+            [1, 0, 2, 0, 0],
+            [0, 2, 0, 3, 0],
+            [0, 0, 3, 0, 4],
+            [0, 0, 0, 4, 0],
+        ]
+    )
+
+    H = nx.MultiGraph()
+    for i, edge in enumerate(((0, 1), (1, 2), (2, 3), (3, 4))):
+        H.add_edges_from(itertools.repeat(edge, i + 1))
+    expected = nx.relabel_nodes(H, mapping=dict(enumerate(nodes)), copy=True)
+
+    G = nx.from_numpy_array(
+        A,
+        parallel_edges=True,
+        create_using=nx.MultiGraph,
+        edge_attr=None,
+        nodelist=nodes,
+    )
+    assert graphs_equal(G, expected)
+
+
+@pytest.mark.parametrize(
+    "nodes",
+    (
+        [4, 3, 2, 1, 0],
+        [9, 7, 1, 2, 8],
+        ["a", "b", "c", "d", "e"],
+        [(0, 0), (1, 1), (2, 3), (0, 2), (3, 1)],
+        ["A", 2, 7, "spam", (1, 3)],
+    ),
+)
+@pytest.mark.parametrize("graph", (nx.complete_graph, nx.cycle_graph, nx.wheel_graph))
+def test_from_numpy_array_nodelist_rountrip(graph, nodes):
+    G = graph(5)
+    A = nx.to_numpy_array(G)
+    expected = nx.relabel_nodes(G, mapping=dict(enumerate(nodes)), copy=True)
+    H = nx.from_numpy_array(A, edge_attr=None, nodelist=nodes)
+    assert graphs_equal(H, expected)
+
+    # With an isolated node
+    G = graph(4)
+    G.add_node("foo")
+    A = nx.to_numpy_array(G)
+    expected = nx.relabel_nodes(G, mapping=dict(zip(G.nodes, nodes)), copy=True)
+    H = nx.from_numpy_array(A, edge_attr=None, nodelist=nodes)
+    assert graphs_equal(H, expected)

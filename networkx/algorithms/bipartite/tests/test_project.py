@@ -14,6 +14,9 @@ class TestBipartiteProject:
         P = bipartite.projected_graph(G, [0, 2])
         assert nodes_equal(list(P), [0, 2])
         assert edges_equal(list(P.edges()), [(0, 2)])
+        G = nx.MultiGraph([(0, 1)])
+        with pytest.raises(nx.NetworkXError, match="not defined for multigraphs"):
+            bipartite.projected_graph(G, [0])
 
     def test_path_projected_properties_graph(self):
         G = nx.path_graph(4)
@@ -66,16 +69,22 @@ class TestBipartiteProject:
         assert edges_equal(list(P.edges()), [(0, 2)])
         P[0][2]["weight"] = 1
 
+    def test_digraph_weighted_projection(self):
+        G = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 4)])
+        P = bipartite.overlap_weighted_projected_graph(G, [1, 3])
+        assert nx.get_edge_attributes(P, "weight") == {(1, 3): 1.0}
+        assert len(P) == 2
+
     def test_path_weighted_projected_directed_graph(self):
         G = nx.DiGraph()
         nx.add_path(G, range(4))
         P = bipartite.weighted_projected_graph(G, [1, 3])
         assert nodes_equal(list(P), [1, 3])
-        assert edges_equal(list(P.edges()), [(1, 3)])
+        assert edges_equal(list(P.edges()), [(1, 3)], directed=True)
         P[1][3]["weight"] = 1
         P = bipartite.weighted_projected_graph(G, [0, 2])
         assert nodes_equal(list(P), [0, 2])
-        assert edges_equal(list(P.edges()), [(0, 2)])
+        assert edges_equal(list(P.edges()), [(0, 2)], directed=True)
         P[0][2]["weight"] = 1
 
     def test_star_projected_graph(self):
@@ -124,13 +133,13 @@ class TestBipartiteProject:
         G.add_edge("A", 2)
         G.add_edge("B", 2)
         P = bipartite.projected_graph(G, "AB")
-        assert edges_equal(list(P.edges()), [("A", "B")])
+        assert edges_equal(list(P.edges()), [("A", "B")], directed=True)
         P = bipartite.weighted_projected_graph(G, "AB")
-        assert edges_equal(list(P.edges()), [("A", "B")])
+        assert edges_equal(list(P.edges()), [("A", "B")], directed=True)
         assert P["A"]["B"]["weight"] == 1
 
         P = bipartite.projected_graph(G, "AB", multigraph=True)
-        assert edges_equal(list(P.edges()), [("A", "B")])
+        assert edges_equal(list(P.edges()), [("A", "B")], directed=True)
 
         G = nx.DiGraph()
         G.add_edge("A", 1)
@@ -138,13 +147,13 @@ class TestBipartiteProject:
         G.add_edge("A", 2)
         G.add_edge(2, "B")
         P = bipartite.projected_graph(G, "AB")
-        assert edges_equal(list(P.edges()), [("A", "B")])
+        assert edges_equal(list(P.edges()), [("A", "B")], directed=True)
         P = bipartite.weighted_projected_graph(G, "AB")
-        assert edges_equal(list(P.edges()), [("A", "B")])
+        assert edges_equal(list(P.edges()), [("A", "B")], directed=True)
         assert P["A"]["B"]["weight"] == 2
 
         P = bipartite.projected_graph(G, "AB", multigraph=True)
-        assert edges_equal(list(P.edges()), [("A", "B"), ("A", "B")])
+        assert edges_equal(list(P.edges()), [("A", "B"), ("A", "B")], directed=True)
 
 
 class TestBipartiteWeightedProjection:
@@ -353,14 +362,14 @@ class TestBipartiteWeightedProjection:
         )
         assert nodes_equal(list(G), [0, 2, 4])
         assert edges_equal(
-            list(list(G.edges(data=True))),
+            list(G.edges(data=True)),
             [(0, 2, {"weight": 1}), (2, 4, {"weight": 1})],
         )
 
         G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4])
         assert nodes_equal(list(G), [0, 2, 4])
         assert edges_equal(
-            list(list(G.edges(data=True))),
+            list(G.edges(data=True)),
             [(0, 2, {"weight": 1}), (2, 4, {"weight": 1})],
         )
         B = nx.DiGraph()
@@ -368,7 +377,9 @@ class TestBipartiteWeightedProjection:
         G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4])
         assert nodes_equal(list(G), [0, 2, 4])
         assert edges_equal(
-            list(G.edges(data=True)), [(0, 2, {"weight": 1}), (2, 4, {"weight": 1})]
+            list(G.edges(data=True)),
+            [(0, 2, {"weight": 1}), (2, 4, {"weight": 1})],
+            directed=True,
         )
 
     def test_generic_weighted_projected_graph_custom(self):

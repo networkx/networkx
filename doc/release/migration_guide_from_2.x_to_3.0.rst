@@ -1,8 +1,8 @@
 :orphan:
 
-*****************************
-Preparing for the 3.0 release
-*****************************
+*******************************
+Migration guide from 2.X to 3.0
+*******************************
 
 .. note::
    Much of the work leading to the NetworkX 3.0 release will be included
@@ -11,7 +11,7 @@ Preparing for the 3.0 release
    ongoing work and will help you understand what changes you can make now
    to minimize the disruption caused by the move to 3.0.
 
-This is a guide for people moving from NetworkX 2.X to NetworkX 3.0
+This is a guide for people moving from NetworkX 2.X to NetworkX 3.0.
 
 Any issues with these can be discussed on the `mailing list
 <https://groups.google.com/forum/#!forum/networkx-discuss>`_.
@@ -29,13 +29,10 @@ However, NetworkX 3.0 includes many changes and improvements centered around
 tighter integration with other scientific Python libraries; namely
 ``numpy``, ``scipy``, ``matplotlib``, and ``pandas``.
 
-There are no dependencies for NetworkX's core funtionality, such as the data
+There are no dependencies for NetworkX's core functionality, such as the data
 structures (``Graph``, ``DiGraph``, etc.) and common algorithms, but some
 functionality, e.g. functions found in the ``networkx.linalg`` package, are
 only available if these additional libraries are installed.
-
-.. **TODO**: Generate a table showing dependencies of individual nx objects?
-.. Probably overkill...
 
 Improved integration with scientific Python
 -------------------------------------------
@@ -98,7 +95,7 @@ This means that calling ``nx.pagerank`` now requires SciPy to be installed.
 The original Python implementation is still available for pedagogical
 purposes as ``networkx.algorithms.link_analysis.pagerank_alg._pagerank_python``
 but is not exposed publicly to discourage it's use.
-  
+
 Supporting `numpy.random.Generator`
 -----------------------------------
 
@@ -113,7 +110,7 @@ in other words, the ``seed`` argument now accepts `numpy.random.Generator` insta
 The `numpy.random.Generator` interface includes several improvements over the
 original `numpy.random.RandomState`, including better statistical properties
 and improved performance.
-However ``Generator`` is not stream-compatibile with ``RandomState`` and
+However ``Generator`` is not stream-compatible with ``RandomState`` and
 does not guarantee stream-compatibility with future versions of NumPy.
 Therefore, the best-practice is to be explicit when using random number
 generators.
@@ -179,27 +176,19 @@ improving supported for array representations of multi-attribute adjacency::
 Deprecated code
 ---------------
 
-The 2.6 release deprecates over 30 functions.
-See :ref:`networkx_2.6`.
-
-.. **TODO**: A table summarizing one deprecation per row w/ 3 columns: 1. the
-.. deprecated function, 2. the old usage, 3. the replacement usage.
-
----
-
-The functions `read_gpickle` and `write_gpickle` will be removed in 3.0.
+The functions `read_gpickle` and `write_gpickle` were removed in 3.0.
 You can read and write NetworkX graphs as Python pickles.
 
 >>> import pickle
 >>> G = nx.path_graph(4)
 >>> with open('test.gpickle', 'wb') as f:
 ...     pickle.dump(G, f, pickle.HIGHEST_PROTOCOL)
-... 
+...
 >>> with open('test.gpickle', 'rb') as f:
 ...     G = pickle.load(f)
-... 
+...
 
-The functions `read_yaml` and `write_yaml` will be removed in 3.0.
+The functions `read_yaml` and `write_yaml` were removed in 3.0.
 You can read and write NetworkX graphs in YAML format
 using pyyaml.
 
@@ -207,6 +196,6 @@ using pyyaml.
 >>> G = nx.path_graph(4)
 >>> with open('test.yaml', 'w') as f:
 ...     yaml.dump(G, f)
-... 
+...
 >>> with open('test.yaml', 'r') as f:
 ...     G = yaml.load(f, Loader=yaml.Loader)

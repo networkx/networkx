@@ -1,6 +1,8 @@
 """
-    Functions for constructing matrix-like objects from graph attributes.
+Functions for constructing matrix-like objects from graph attributes.
 """
+
+import networkx as nx
 
 __all__ = ["attr_matrix", "attr_sparse_matrix"]
 
@@ -10,8 +12,8 @@ def _node_value(G, node_attr):
 
     We return a function expecting a node as its sole argument. Then, in the
     simplest scenario, the returned function will return G.nodes[u][node_attr].
-    However, we also handle the case when `node_attr` is None or when it is a
-    function itself.
+    However, we also handle the case when `node_attr` is None (returns the node)
+    or when `node_attr` is a function itself.
 
     Parameters
     ----------
@@ -141,6 +143,7 @@ def _edge_value(G, edge_attr):
     return value
 
 
+@nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def attr_matrix(
     G,
     edge_attr=None,
@@ -166,7 +169,7 @@ def attr_matrix(
     G : graph
         The NetworkX graph used to construct the attribute matrix.
 
-    edge_attr : str, optional
+    edge_attr : str, optional (default: number of edges for each matrix element)
         Each element of the matrix represents a running total of the
         specified edge attribute for edges whose node attributes correspond
         to the rows/cols of the matrix. The attribute must be present for
@@ -174,20 +177,21 @@ def attr_matrix(
         just count the number of edges whose node attributes correspond
         to the matrix element.
 
-    node_attr : str, optional
+    node_attr : str, optional (default: use nodes of the graph)
         Each row and column in the matrix represents a particular value
         of the node attribute.  The attribute must be present for all nodes
         in the graph. Note, the values of this attribute should be reliably
         hashable. So, float values are not recommended. If no attribute is
         specified, then the rows and columns will be the nodes of the graph.
 
-    normalized : bool, optional
+    normalized : bool, optional (default: False)
         If True, then each row is normalized by the summation of its values.
 
-    rc_order : list, optional
+    rc_order : list, optional (default: order of nodes in G)
         A list of the node attribute values. This list specifies the ordering
         of rows and columns of the array. If no ordering is provided, then
-        the ordering will be random (and also, a return value).
+        the ordering will be the same as the node order in `G`.
+        When `rc_order` is `None`, the function returns a 2-tuple ``(matrix, ordering)``
 
     Other Parameters
     ----------------
@@ -304,6 +308,7 @@ def attr_matrix(
         return M
 
 
+@nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def attr_sparse_matrix(
     G, edge_attr=None, node_attr=None, normalized=False, rc_order=None, dtype=None
 ):
@@ -323,28 +328,28 @@ def attr_sparse_matrix(
     G : graph
         The NetworkX graph used to construct the NumPy matrix.
 
-    edge_attr : str, optional
+    edge_attr : str, optional (default: number of edges for each matrix element)
         Each element of the matrix represents a running total of the
         specified edge attribute for edges whose node attributes correspond
-        to the rows/cols of the matirx. The attribute must be present for
+        to the rows/cols of the matrix. The attribute must be present for
         all edges in the graph. If no attribute is specified, then we
         just count the number of edges whose node attributes correspond
         to the matrix element.
 
-    node_attr : str, optional
+    node_attr : str, optional (default: use nodes of the graph)
         Each row and column in the matrix represents a particular value
         of the node attribute.  The attribute must be present for all nodes
         in the graph. Note, the values of this attribute should be reliably
         hashable. So, float values are not recommended. If no attribute is
         specified, then the rows and columns will be the nodes of the graph.
 
-    normalized : bool, optional
+    normalized : bool, optional (default: False)
         If True, then each row is normalized by the summation of its values.
 
-    rc_order : list, optional
+    rc_order : list, optional (default: order of nodes in G)
         A list of the node attribute values. This list specifies the ordering
-        of rows and columns of the array. If no ordering is provided, then
-        the ordering will be random (and also, a return value).
+        of rows and columns of the array and the return value. If no ordering
+        is provided, then the ordering will be that of nodes in `G`.
 
     Other Parameters
     ----------------
@@ -425,7 +430,6 @@ def attr_sparse_matrix(
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)

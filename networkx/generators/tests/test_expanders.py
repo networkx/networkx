@@ -1,6 +1,4 @@
-"""Unit tests for the :mod:`networkx.generators.expanders` module.
-
-"""
+"""Unit tests for the :mod:`networkx.generators.expanders` module."""
 
 import pytest
 
@@ -23,7 +21,6 @@ def test_margulis_gabber_galil_graph_properties(n):
 def test_margulis_gabber_galil_graph_eigvals(n):
     np = pytest.importorskip("numpy")
     sp = pytest.importorskip("scipy")
-    import scipy.linalg
 
     g = nx.margulis_gabber_galil_graph(n)
     # Eigenvalues are already sorted using the scipy eigvalsh,
@@ -60,8 +57,68 @@ def test_paley_graph(p):
     # If p = 1 mod 4, -1 is a square mod 4 and therefore the
     # edge in the Paley graph are symmetric.
     if p % 4 == 1:
-        for (u, v) in G.edges:
+        for u, v in G.edges:
             assert (v, u) in G.edges
+
+
+@pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
+def test_maybe_regular_expander_graph(d, n):
+    pytest.importorskip("numpy")
+    G = nx.maybe_regular_expander_graph(n, d, seed=1729)
+
+    assert len(G) == n, "Should have n nodes"
+    assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
+    assert nx.is_k_regular(G, d), "Should be d-regular"
+
+
+def test_maybe_regular_expander_graph_max_tries():
+    pytest.importorskip("numpy")
+    d, n = 4, 10
+    msg = "Too many iterations in maybe_regular_expander_graph"
+    with pytest.raises(nx.NetworkXError, match=msg):
+        nx.maybe_regular_expander_graph(n, d, max_tries=100, seed=6818)  # See gh-8048
+
+    nx.maybe_regular_expander_graph(n, d, max_tries=130, seed=6818)
+
+
+def test_maybe_regular_expander_deprecated():
+    pytest.importorskip("numpy")
+    d, n = 2, 7
+    with pytest.deprecated_call():
+        G = nx.maybe_regular_expander(n, d, seed=1729)
+
+    assert len(G) == n, "Should have n nodes"
+    assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
+    assert nx.is_k_regular(G, d), "Should be d-regular"
+
+
+@pytest.mark.parametrize("n", (3, 5, 6, 10))
+def test_is_regular_expander(n):
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+    G = nx.complete_graph(n)
+
+    assert nx.is_regular_expander(G), "Should be a regular expander"
+
+
+@pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16), (4, 2000)])
+def test_random_regular_expander(d, n):
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+    G = nx.random_regular_expander_graph(n, d, seed=1729)
+
+    assert len(G) == n, "Should have n nodes"
+    assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
+    assert nx.is_k_regular(G, d), "Should be d-regular"
+    assert nx.is_regular_expander(G), "Should be a regular expander"
+
+
+def test_random_regular_expander_explicit_construction():
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+    G = nx.random_regular_expander_graph(d=4, n=5, seed=1729)
+
+    assert len(G) == 5 and len(G.edges) == 10, "Should be a complete graph"
 
 
 @pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph, nx.MultiDiGraph))
@@ -85,3 +142,41 @@ def test_paley_graph_badinput():
         nx.NetworkXError, match="`create_using` cannot be a multigraph."
     ):
         nx.paley_graph(3, create_using=nx.MultiGraph)
+
+
+def test_maybe_regular_expander_graph_badinput():
+    pytest.importorskip("numpy")
+
+    with pytest.raises(nx.NetworkXError, match="n must be a positive integer"):
+        nx.maybe_regular_expander_graph(n=-1, d=2)
+
+    with pytest.raises(nx.NetworkXError, match="d must be greater than or equal to 2"):
+        nx.maybe_regular_expander_graph(n=10, d=0)
+
+    with pytest.raises(nx.NetworkXError, match="Need n-1>= d to have room"):
+        nx.maybe_regular_expander_graph(n=5, d=6)
+
+
+def test_is_regular_expander_badinput():
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+
+    with pytest.raises(nx.NetworkXError, match="epsilon must be non negative"):
+        nx.is_regular_expander(nx.Graph(), epsilon=-1)
+
+
+def test_random_regular_expander_badinput():
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+
+    with pytest.raises(nx.NetworkXError, match="n must be a positive integer"):
+        nx.random_regular_expander_graph(n=-1, d=2)
+
+    with pytest.raises(nx.NetworkXError, match="d must be greater than or equal to 2"):
+        nx.random_regular_expander_graph(n=10, d=0)
+
+    with pytest.raises(nx.NetworkXError, match="Need n-1>= d to have room"):
+        nx.random_regular_expander_graph(n=5, d=6)
+
+    with pytest.raises(nx.NetworkXError, match="epsilon must be non negative"):
+        nx.random_regular_expander_graph(n=4, d=2, epsilon=-1)

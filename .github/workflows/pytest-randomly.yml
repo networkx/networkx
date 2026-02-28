@@ -9,19 +9,9 @@ jobs:
     if: github.repository == 'networkx/networkx'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v6
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: "3.9"
-
-      - name: Install packages
-        run: |
-          pip install --upgrade pip wheel setuptools
-          pip install -r requirements/default.txt -r requirements/test.txt
-          pip install pytest-randomly
-          pip install .
-          pip list
-
+          environments: test-randomly
       - name: Run tests
-        run: pytest --doctest-modules --durations=10 --pyargs networkx
+        run: pixi run -e test-randomly test-default

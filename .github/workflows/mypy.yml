@@ -9,24 +9,10 @@ concurrency:
 jobs:
   type-check:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.9]
-
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+      - uses: actions/checkout@v6
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install packages
-        run: |
-          pip install --upgrade pip wheel setuptools
-          pip install -r requirements/developer.txt
-          pip install -e .
-          pip list
-
-      - name: run mypy
-        run: mypy -p networkx
+          environments: type-check
+      - name: Run mypy
+        run: pixi run -e type-check type-check

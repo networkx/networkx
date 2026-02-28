@@ -1,6 +1,7 @@
 """
 Threshold Graphs - Creation, manipulation and identification.
 """
+
 from math import sqrt
 
 import networkx as nx
@@ -9,6 +10,7 @@ from networkx.utils import py_random_state
 __all__ = ["is_threshold_graph", "find_threshold_graph"]
 
 
+@nx._dispatchable
 def is_threshold_graph(G):
     """
     Returns `True` if `G` is a threshold graph.
@@ -37,18 +39,18 @@ def is_threshold_graph(G):
     ----------
     .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
     """
-    return is_threshold_sequence(list(d for n, d in G.degree()))
+    return is_threshold_sequence([d for n, d in G.degree()])
 
 
 def is_threshold_sequence(degree_sequence):
     """
-    Returns True if the sequence is a threshold degree seqeunce.
+    Returns True if the sequence is a threshold degree sequence.
 
     Uses the property that a threshold graph must be constructed by
     adding either dominating or isolated nodes. Thus, it can be
     deconstructed iteratively by removing a node of degree zero or a
     node that connects to the remaining nodes.  If this deconstruction
-    failes then the sequence is not a threshold sequence.
+    fails then the sequence is not a threshold sequence.
     """
     ds = degree_sequence[:]  # get a copy so we don't destroy original
     ds.sort()
@@ -95,7 +97,7 @@ def creation_sequence(degree_sequence, with_labels=False, compact=False):
         raise ValueError("compact sequences cannot be labeled")
 
     # make an indexed copy
-    if isinstance(degree_sequence, dict):  # labeled degree seqeunce
+    if isinstance(degree_sequence, dict):  # labeled degree sequence
         ds = [[degree, label] for (label, degree) in degree_sequence.items()]
     else:
         ds = [[d, i] for i, d in enumerate(degree_sequence)]
@@ -300,6 +302,7 @@ def weights_to_creation_sequence(
 
 
 # Manipulating NetworkX.Graphs in context of threshold graphs
+@nx._dispatchable(graphs=None, returns_graph=True)
 def threshold_graph(creation_sequence, create_using=None):
     """
     Create a threshold graph from the creation sequence or compact
@@ -326,8 +329,7 @@ def threshold_graph(creation_sequence, create_using=None):
         cs = uncompact(creation_sequence)
         ci = list(enumerate(cs))
     else:
-        print("not a valid creation sequence type")
-        return None
+        raise ValueError("not a valid creation sequence")
 
     G = nx.empty_graph(0, create_using)
     if G.is_directed():
@@ -351,13 +353,14 @@ def threshold_graph(creation_sequence, create_using=None):
     return G
 
 
+@nx._dispatchable
 def find_alternating_4_cycle(G):
     """
     Returns False if there aren't any alternating 4 cycles.
     Otherwise returns the cycle as [a,b,c,d] where (a,b)
     and (c,d) are edges and (a,c) and (b,d) are not.
     """
-    for (u, v) in G.edges():
+    for u, v in G.edges():
         for w in G.nodes():
             if not G.has_edge(u, w) and u != w:
                 for x in G.neighbors(w):
@@ -366,6 +369,7 @@ def find_alternating_4_cycle(G):
     return False
 
 
+@nx._dispatchable(returns_graph=True)
 def find_threshold_graph(G, create_using=None):
     """
     Returns a threshold subgraph that is close to largest in `G`.
@@ -390,7 +394,7 @@ def find_threshold_graph(G, create_using=None):
     >>> from networkx.algorithms.threshold import find_threshold_graph
     >>> G = nx.barbell_graph(3, 3)
     >>> T = find_threshold_graph(G)
-    >>> T.nodes # may vary
+    >>> T.nodes  # may vary
     NodeView((7, 8, 5, 6))
 
     References
@@ -400,6 +404,7 @@ def find_threshold_graph(G, create_using=None):
     return threshold_graph(find_creation_sequence(G), create_using)
 
 
+@nx._dispatchable
 def find_creation_sequence(G):
     """
     Find a threshold subgraph that is close to largest in G.
@@ -540,9 +545,6 @@ def degree_correlation(creation_sequence):
     ds = degree_sequence(cs)
     for i, sym in enumerate(cs):
         if sym == "d":
-            if i != rdi[0]:
-                print("Logic error in degree_correlation", i, rdi)
-                raise ValueError
             rdi.pop(0)
         degi = ds[i]
         for dj in rdi:
@@ -569,7 +571,7 @@ def shortest_path(creation_sequence, u, v):
     u and v must be integers in (0,len(sequence)) referring
     to the position of the desired vertices in the sequence.
 
-    For a labeled creation_sequence, u and v are labels of veritices.
+    For a labeled creation_sequence, u and v are labels of vertices.
 
     Use cs=creation_sequence(degree_sequence,with_labels=True)
     to convert a degree sequence to a creation sequence.
@@ -663,18 +665,18 @@ def betweenness_sequence(creation_sequence, normalized=True):
     """
     Return betweenness for the threshold graph with the given creation
     sequence.  The result is unscaled.  To scale the values
-    to the iterval [0,1] divide by (n-1)*(n-2).
+    to the interval [0,1] divide by (n-1)*(n-2).
     """
     cs = creation_sequence
     seq = []  # betweenness
     lastchar = "d"  # first node is always a 'd'
-    dr = float(cs.count("d"))  # number of d's to the right of curren pos
+    dr = float(cs.count("d"))  # number of d's to the right of current pos
     irun = 0  # number of i's in the last run
     drun = 0  # number of d's in the last run
     dlast = 0.0  # betweenness of last d
     for i, c in enumerate(cs):
         if c == "d":  # cs[i]=="d":
-            # betweennees = amt shared with eariler d's and i's
+            # betweenness = amt shared with earlier d's and i's
             #             + new isolated nodes covered
             #             + new paths to all previous nodes
             b = dlast + (irun - 1) * irun / dr + 2 * irun * (i - drun - irun) / dr
@@ -825,7 +827,7 @@ def random_threshold_sequence(n, p, seed=None):
     """
     Create a random threshold sequence of size n.
     A creation sequence is built by randomly choosing d's with
-    probabiliy p and i's with probability 1-p.
+    probability p and i's with probability 1-p.
 
     s=nx.random_threshold_sequence(10,0.5)
 
@@ -857,15 +859,36 @@ def random_threshold_sequence(n, p, seed=None):
 # and a keyword parameter?
 def right_d_threshold_sequence(n, m):
     """
-    Create a skewed threshold graph with a given number
-    of vertices (n) and a given number of edges (m).
+    Returns a "right-dominated" threshold sequence with `n` vertices and `m` edges.
 
-    The routine returns an unlabeled creation sequence
-    for the threshold graph.
+    Each vertex in the sequence is either dominant or isolated.
+    In the "right-dominated" version, once the basic sequence is formed,
+    isolated vertices may be flipped to dominant from the right in order
+    to reach the target number of edges.
 
-    FIXME: describe algorithm
+    Parameters
+    ----------
+    n : int
+        Number of vertices.
+    m : int
+        Number of edges.
 
+    Returns
+    -------
+    A list of 'd' (dominant) and 'i' (isolated) forming a right-dominated threshold sequence.
+
+    Raises
+    ------
+    ValueError
+        If `m` exceeds the maximum number of edges.
+
+    Examples
+    --------
+    >>> from networkx.algorithms.threshold import right_d_threshold_sequence
+    >>> right_d_threshold_sequence(5, 3)
+    ['d', 'i', 'i', 'd', 'i']
     """
+
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
 
     #  m <n : not enough edges, make disconnected
@@ -891,15 +914,49 @@ def right_d_threshold_sequence(n, m):
 
 def left_d_threshold_sequence(n, m):
     """
-    Create a skewed threshold graph with a given number
-    of vertices (n) and a given number of edges (m).
+    Returns a "left-dominated" threshold sequence with `n` vertices and `m` edges.
 
-    The routine returns an unlabeled creation sequence
-    for the threshold graph.
+    Each vertex in the sequence is either dominant or isolated.
+    In the "left-dominated" version, once the basic sequence is formed,
+    isolated vertices may be flipped to dominant from the left in order
+    to reach the target number of edges.
 
-    FIXME: describe algorithm
+    Parameters
+    ----------
+    n : int
+        Number of vertices.
+    m : int
+        Number of edges.
 
+    Returns
+    -------
+    A list of 'd' (dominant) and 'i' (isolated) forming a left-dominated threshold sequence.
+
+    Raises
+    ------
+    ValueError
+        If `m` exceeds the maximum number of edges.
+
+    Examples
+    --------
+    For certain small cases, both left and right dominated versions produce
+    the same sequence. However, for larger values of `m`, the difference in
+    flipping order becomes evident. For instance, compare the sequences for
+    ``n=6, m=8``:
+
+    >>> from networkx.algorithms.threshold import left_d_threshold_sequence
+    >>> seq = left_d_threshold_sequence(6, 8)
+    >>> seq
+    ['d', 'd', 'd', 'i', 'i', 'd']
+
+    In contrast, the right-dominated version yields:
+
+    >>> from networkx.algorithms.threshold import right_d_threshold_sequence
+    >>> right_seq = right_d_threshold_sequence(6, 8)
+    >>> right_seq
+    ['d', 'i', 'i', 'd', 'i', 'd']
     """
+
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
 
     #  m <n : not enough edges, make disconnected
@@ -921,54 +978,4 @@ def left_d_threshold_sequence(n, m):
         ind += 1
     if sum > m:  # be sure not to change the first vertex
         cs[sum - m] = "i"
-    return cs
-
-
-@py_random_state(3)
-def swap_d(cs, p_split=1.0, p_combine=1.0, seed=None):
-    """
-    Perform a "swap" operation on a threshold sequence.
-
-    The swap preserves the number of nodes and edges
-    in the graph for the given sequence.
-    The resulting sequence is still a threshold sequence.
-
-    Perform one split and one combine operation on the
-    'd's of a creation sequence for a threshold graph.
-    This operation maintains the number of nodes and edges
-    in the graph, but shifts the edges from node to node
-    maintaining the threshold quality of the graph.
-
-    seed : integer, random_state, or None (default)
-        Indicator of random number generation state.
-        See :ref:`Randomness<randomness>`.
-    """
-    # preprocess the creation sequence
-    dlist = [i for (i, node_type) in enumerate(cs[1:-1]) if node_type == "d"]
-    # split
-    if seed.random() < p_split:
-        choice = seed.choice(dlist)
-        split_to = seed.choice(range(choice))
-        flip_side = choice - split_to
-        if split_to != flip_side and cs[split_to] == "i" and cs[flip_side] == "i":
-            cs[choice] = "i"
-            cs[split_to] = "d"
-            cs[flip_side] = "d"
-            dlist.remove(choice)
-            # don't add or combine may reverse this action
-            # dlist.extend([split_to,flip_side])
-    #            print >>sys.stderr,"split at %s to %s and %s"%(choice,split_to,flip_side)
-    # combine
-    if seed.random() < p_combine and dlist:
-        first_choice = seed.choice(dlist)
-        second_choice = seed.choice(dlist)
-        target = first_choice + second_choice
-        if target >= len(cs) or cs[target] == "d" or first_choice == second_choice:
-            return cs
-        # OK to combine
-        cs[first_choice] = "i"
-        cs[second_choice] = "i"
-        cs[target] = "d"
-    #        print >>sys.stderr,"combine %s and %s to make %s."%(first_choice,second_choice,target)
-
     return cs

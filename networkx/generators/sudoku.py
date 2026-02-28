@@ -42,11 +42,11 @@ References
 """
 
 import networkx as nx
-from networkx.exception import NetworkXError
 
 __all__ = ["sudoku_graph"]
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def sudoku_graph(n=3):
     """Returns the n-Sudoku graph. The default value of n is 3.
 
@@ -91,7 +91,7 @@ def sudoku_graph(n=3):
     """
 
     if n < 0:
-        raise NetworkXError("The order must be greater than or equal to zero.")
+        raise nx.NetworkXError("The order must be greater than or equal to zero.")
 
     n2 = n * n
     n3 = n2 * n
@@ -105,14 +105,14 @@ def sudoku_graph(n=3):
         return G
 
     # Add edges for cells in the same row
-    for row_no in range(0, n2):
+    for row_no in range(n2):
         row_start = row_no * n2
         for j in range(1, n2):
             for i in range(j):
                 G.add_edge(row_start + i, row_start + j)
 
     # Add edges for cells in the same column
-    for col_no in range(0, n2):
+    for col_no in range(n2):
         for j in range(col_no, n4, n2):
             for i in range(col_no, j, n2):
                 G.add_edge(i, j)

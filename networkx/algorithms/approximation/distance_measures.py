@@ -7,6 +7,7 @@ __all__ = ["diameter"]
 
 
 @py_random_state(1)
+@nx._dispatchable(name="approximate_diameter")
 def diameter(G, seed=None):
     """Returns a lower bound on the diameter of the graph G.
 
@@ -38,6 +39,15 @@ def diameter(G, seed=None):
     -------
     d : integer
        Lower Bound on the Diameter of G
+
+    Examples
+    --------
+    >>> G = nx.path_graph(10)  # undirected graph
+    >>> nx.diameter(G)
+    9
+    >>> G = nx.cycle_graph(3, create_using=nx.DiGraph)  # directed graph
+    >>> nx.diameter(G)
+    2
 
     Raises
     ------

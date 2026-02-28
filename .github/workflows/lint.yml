@@ -9,23 +9,10 @@ concurrency:
 jobs:
   format:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.8]
-
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+      - uses: actions/checkout@v6
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install packages
-        run: |
-          pip install --upgrade pip wheel setuptools
-          pip install -r requirements/developer.txt
-          pip list
-
+          environments: lint
       - name: Lint
-        run: pre-commit run --all-files --show-diff-on-failure --color always
+        run: pixi run -e lint lint

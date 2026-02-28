@@ -3,6 +3,37 @@ import pytest
 import networkx as nx
 
 
+@pytest.mark.parametrize(
+    ("G", "expected"),
+    (
+        # Actual trees (so treewidth == 1)
+        (nx.path_graph(5), 1),
+        (nx.balanced_tree(2, 3), 1),
+        (nx.star_graph(6), 1),
+        # Graphs with maximal cliques
+        (nx.cycle_graph(3), 2),
+        (nx.barbell_graph(4, 6), 3),
+        (nx.lollipop_graph(7, 2), 6),
+    ),
+)
+def test_chordal_graph_treewidth(G, expected):
+    assert nx.chordal_graph_treewidth(G) == expected
+
+
+def test_chordal_graph_treewidth_highest_degree_node_not_in_clique():
+    """chordal_graph_cliques often yields the largest clique first. In this
+    example, the highest degree node (the center of the star) is *not*
+    in the largest maximal clique and thus *isn't* yielded first.
+
+    This test case fails if `max(nx.chordal_graph_cliques)` doesn't include
+    `key=len`. See gh-8470."""
+    G = nx.star_graph(10)
+    G.add_edges_from(nx.complete_graph("abcde").edges)
+    G.add_edge(5, "a")  # Connect a "spoke" on the star to the K5
+
+    assert nx.chordal_graph_treewidth(G) == 4  # len(K5) - 1
+
+
 class TestMCS:
     @classmethod
     def setup_class(cls):
@@ -60,11 +91,11 @@ class TestMCS:
         assert not nx.is_chordal(self.non_chordal_G)
         assert nx.is_chordal(self.chordal_G)
         assert nx.is_chordal(self.connected_chordal_G)
+        assert nx.is_chordal(nx.Graph())
         assert nx.is_chordal(nx.complete_graph(3))
         assert nx.is_chordal(nx.cycle_graph(3))
         assert not nx.is_chordal(nx.cycle_graph(5))
-        with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
-            nx.is_chordal(self.self_loop_G)
+        assert nx.is_chordal(self.self_loop_G)
 
     def test_induced_nodes(self):
         G = nx.generators.classic.path_graph(10)
@@ -80,6 +111,9 @@ class TestMCS:
     def test_graph_treewidth(self):
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
             nx.chordal_graph_treewidth(self.non_chordal_G)
+        G = nx.complete_graph(5, create_using=nx.DiGraph)
+        with pytest.raises(nx.NetworkXNotImplemented, match=".*directed"):
+            nx.chordal_graph_treewidth(G)
 
     def test_chordal_find_cliques(self):
         cliques = {
@@ -89,22 +123,22 @@ class TestMCS:
             frozenset([2, 3, 4]),
             frozenset([3, 4, 5, 6]),
         }
-        assert {c for c in nx.chordal_graph_cliques(self.chordal_G)} == cliques
+        assert set(nx.chordal_graph_cliques(self.chordal_G)) == cliques
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
-            {c for c in nx.chordal_graph_cliques(self.non_chordal_G)}
+            set(nx.chordal_graph_cliques(self.non_chordal_G))
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
-            {c for c in nx.chordal_graph_cliques(self.self_loop_G)}
+            set(nx.chordal_graph_cliques(self.self_loop_G))
 
     def test_chordal_find_cliques_path(self):
         G = nx.path_graph(10)
         cliqueset = nx.chordal_graph_cliques(G)
-        for (u, v) in G.edges():
+        for u, v in G.edges():
             assert frozenset([u, v]) in cliqueset or frozenset([v, u]) in cliqueset
 
     def test_chordal_find_cliquesCC(self):
         cliques = {frozenset([1, 2, 3]), frozenset([2, 3, 4]), frozenset([3, 4, 5, 6])}
         cgc = nx.chordal_graph_cliques
-        assert {c for c in cgc(self.connected_chordal_G)} == cliques
+        assert set(cgc(self.connected_chordal_G)) == cliques
 
     def test_complete_to_chordal_graph(self):
         fgrg = nx.fast_gnp_random_graph

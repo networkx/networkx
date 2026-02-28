@@ -6,7 +6,7 @@ and has been developed with the help of many others. Thanks to everyone who has
 improved NetworkX by contributing code, bug reports (and fixes), documentation,
 and input on design, features, and the future of NetworkX.
 
-.. include:: team.rst
+.. include:: teams.inc
 
 Contributors
 ------------
@@ -52,7 +52,7 @@ to add your name to the bottom of the list.
 - Ben Reilly
 - Leo Lopes
 - Jordi Torrents, GitHub: `jtorrents <https://github.com/jtorrents>`_
-- Dheeraj M R
+- Dheeraj M R, GitHub: `dheerajrav <https://github.com/dheerajrav>`_
 - Franck Kalala
 - Simon Knight
 - Conrad Lee
@@ -67,7 +67,7 @@ to add your name to the bottom of the list.
 - Vincent Gauthier
 - chebee7i, GitHub: `chebee7i <https://github.com/chebee7i>`_
 - Jeffrey Finkelstein
-- Jean-Gabriel Young, Github: `jg-you <https://github.com/jgyou>`_
+- Jean-Gabriel Young, GitHub: `jg-you <https://github.com/jgyou>`_
 - Andrey Paramonov, http://aparamon.msk.ru
 - Mridul Seth, GitHub: `MridulS <https://github.com/MridulS>`_
 - Thodoris Sotiropoulos, GitHub: `theosotr <https://github.com/theosotr>`_
@@ -78,18 +78,18 @@ to add your name to the bottom of the list.
 - Jarrod Millman, GitHub: `jarrodmillman <https://github.com/jarrodmillman>`_
 - Andre Weltsch
 - Lewis Robbins
-- Mads Jensen, Github: `atombrella <https://github.com/atombrella>`_
+- Mads Jensen, GitHub: `atombrella <https://github.com/atombrella>`_
 - Edward L. Platt, `elplatt <https://elplatt.com>`_
-- James Owen, Github: `leamingrad <https://github.com/leamingrad>`_
-- Robert Gmyr, Github: `gmyr <https://github.com/gmyr>`_
+- James Owen, GitHub: `leamingrad <https://github.com/leamingrad>`_
+- Robert Gmyr, GitHub: `gmyr <https://github.com/gmyr>`_
 - Mike Trenfield
-- Jon Crall, Github: `Erotemic <https://github.com/Erotemic>`_
-- Issa Moradnejad, Github: `Moradnejad <https://github.com/Moradnejad>`_, LinkedIn: `Issa Moradnejad <https://linkedin.com/in/moradnejad/>`_
-- Brian Kiefer, Github: `bkief <https://github.com/bkief>`_
+- Jon Crall, GitHub: `Erotemic <https://github.com/Erotemic>`_
+- Issa Moradnejad, GitHub: `Moradnejad <https://github.com/Moradnejad>`_, LinkedIn: `Issa Moradnejad <https://linkedin.com/in/moradnejad/>`_
+- Brian Kiefer, GitHub: `bkief <https://github.com/bkief>`_
 - Julien Klaus
-- Peter C. Kroon, Github: `pckroon <https://github.com/pckroon>`_
-- Weisheng Si, Github: `ws4u <https://github.com/ws4u>`_
-- Haakon H. Rød, Gitlab: `haakonhr <https://gitlab.com/haakonhr>`_, `<https://haakonhr.gitlab.io>`_
+- Peter C. Kroon, GitHub: `pckroon <https://github.com/pckroon>`_
+- Weisheng Si, GitHub: `ws4u <https://github.com/ws4u>`_
+- Haakon H. Rød, GitLab: `haakonhr <https://gitlab.com/haakonhr>`_, `<https://haakonhr.gitlab.io>`_
 - Efraim Rodrigues, GitHub: `efraimrodrigues <https://github.com/efraimrodrigues>`_, LinkedIn: `efraim-rodrigues <https://linkedin.com/in/efraim-rodrigues/>`_
 - Erwan Le Merrer
 - Søren Fuglede Jørgensen, GitHub: `fuglede <https://github.com/fuglede>`_
@@ -134,17 +134,29 @@ to add your name to the bottom of the list.
 - Alessandro Luongo
 - Huston Hedinger
 - Oleguer Sagarra
-- Kazimierz Wojciechowski, Github: `kazimierz-256 <https://github.com/kazimierz-256>`_, LinkedIn: `wojciechowski-kazimierz <https://linkedin.com/in/wojciechowski-kazimierz/>`_
-- Gaetano Pietro Paolo Carpinato, Github: `Carghaez <https://github.com/Carghaez>`_, LinkedIn: `gaetanocarpinato <https://linkedin.com/in/gaetanocarpinato/>`_
-- Arun Nampally, Github: `arunwise <https://github.com/arunwise>`_, LinkedIn: `arun-nampally-b57845b7 <https://www.linkedin.com/in/arun-nampally-b57845b7/>`_
+- Kazimierz Wojciechowski, GitHub: `kazimierz-256 <https://github.com/kazimierz-256>`_, LinkedIn: `wojciechowski-kazimierz <https://linkedin.com/in/wojciechowski-kazimierz/>`_
+- Gaetano Pietro Paolo Carpinato, GitHub: `Carghaez <https://github.com/Carghaez>`_, LinkedIn: `gaetanocarpinato <https://linkedin.com/in/gaetanocarpinato/>`_
+- Arun Nampally, GitHub: `arunwise <https://github.com/arunwise>`_, LinkedIn: `arun-nampally-b57845b7 <https://www.linkedin.com/in/arun-nampally-b57845b7/>`_
 - Ryan Duve
-- Shashi Prakash Tripathi, Github: `itsshavar <https://github.com/itsshavar>`_, LinkedIn: `itsshashitripathi <https://www.linkedin.com/in/itsshashitripathi/>`_
+- Shashi Prakash Tripathi, GitHub: `itsshavar <https://github.com/itsshavar>`_, LinkedIn: `itsshashitripathi <https://www.linkedin.com/in/itsshashitripathi/>`_
 - Danny Niquette
-- James Trimble, Github: `jamestrimble <https://github.com/jamestrimble>`_
-- Matthias Bruhns, Github: `mbruhns <https://github.com/mbruhns>`_
+- James Trimble, GitHub: `jamestrimble <https://github.com/jamestrimble>`_
+- Matthias Bruhns, GitHub: `mbruhns <https://github.com/mbruhns>`_
 - Philip Boalch
-- Matt Schwennesen, Github: `mjschwenne <https://github.com/mjschwenne>`_
-- Andrew Knyazev, Github: `lobpcg <https://github.com/lobpcg>`_, LinkedIn: `andrew-knyazev <https://www.linkedin.com/in/andrew-knyazev>`_
+- Matt Schwennesen, GitHub: `mjschwenne <https://github.com/mjschwenne>`_
+- Andrew Knyazev, GitHub: `lobpcg <https://github.com/lobpcg>`_, LinkedIn: `andrew-knyazev <https://www.linkedin.com/in/andrew-knyazev>`_
+- Luca Cappelletti, GitHub: `LucaCappelletti94 <https://github.com/LucaCappelletti94>`_
+- Sultan Orazbayev, GitHub: `SultanOrazbayev <https://github.com/SultanOrazbayev>`_, LinkedIn: `Sultan Orazbayev <https://www.linkedin.com/in/sultan-orazbayev/>`_
+- Paolo Boldi, Github: `https://github.com/boldip`
+- Davide D'Ascenzo, Github: `https://github.com/kidara`
+- Flavio Furia, Github: `https://github.com/flaviofuria`
+- Sebastiano Vigna, Github: `https://github.com/vigna`
+- Aaron Zolnai-Lucas, GitHub: `aaronzo <https://github.com/aaronzo>`_, LinkedIn: `aaronzolnailucas <https://www.linkedin.com/in/aaronzolnailucas/>`_
+- Erik Welch, GitHub: `eriknw <https://github.com/eriknw>`_, LinkedIn: `eriknwelch <https://www.linkedin.com/in/eriknwelch/>`_
+- Mohamed Rezk, Github: `mohamedrezk122 <https://github.com/mohamedrezk122>`_
+- Orion Sehn, GitHub: `OrionSehn <https://github.com/OrionSehn>`_
+- Berlin Cho, GitHub: `berlincho <https://github.com/berlincho>`_
+- Alejandro Candioti, GitHub: `amcandio <https://github.com/amcandio>`_, LinkedIn: <https://www.linkedin.com/in/amcandio/>
 
 A supplementary (but still incomplete) list of contributors is given by the
 list of names that have commits in ``networkx``'s
@@ -160,7 +172,7 @@ of the earlier versions of NetworkX can be found
 Support
 -------
 
-NetworkX acknowledges support from the following research groups:
+NetworkX acknowledges support from the following organizations:
 
 - `Center for Nonlinear Studies <http://cnls.lanl.gov>`_, Los Alamos National
   Laboratory, PI: Aric Hagberg
@@ -175,9 +187,18 @@ NetworkX acknowledges support from the following research groups:
   Wisconsin Institute for Discovery, University of Wisconsin-Madison,
   PIs: Jessica C. Flack and David C. Krakauer
 
+- `Colgate University <https://www.colgate.edu/>`_
+
+- `California Institute of Technology <https://www.caltech.edu/>`_
+
+- `Berkeley Institute for Data Science <https://bids.berkeley.edu/>`_
+
+- `NVIDIA Corporation <https://www.nvidia.com/>`_
+
 NetworkX acknowledges the following financial support:
 
-- Google Summer of Code via Python Software Foundation
+- Google Summer of Code via Python Software Foundation (2013, 2015),
+  NumFOCUS (2021-2024)
 
 - U.S. Army Research Office grant W911NF-12-1-0288
 
@@ -190,3 +211,9 @@ NetworkX acknowledges the following financial support:
 
 - U.S. Army Research Laboratory and the U.S. Army Research Office under
   contract number W911NF-13-1-0340
+
+- Chan Zuckerberg Initiative Essential Open Source Software for Science
+  EOSS2-0000000066 and EOSS4-0000000138
+
+- Wellcome Trust via CZI, Wellcome and Kavli EOSS Cycle 6 (EOSS6-000000368)
+

@@ -2,7 +2,7 @@
 
 .. warning::
     This parser uses the standard xml library present in Python, which is
-    insecure - see :doc:`library/xml` for additional information.
+    insecure - see :external+python:mod:`xml` for additional information.
     Only parse GEFX files you trust.
 
 GEXF (Graph Exchange XML Format) is a language for describing complex
@@ -16,6 +16,7 @@ Format
 GEXF is an XML format.  See http://gexf.net/schema.html for the
 specification and http://gexf.net/basic.html for examples.
 """
+
 import itertools
 import time
 from xml.etree.ElementTree import (
@@ -42,6 +43,14 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
     Node attributes are checked according to the version of the GEXF
     schemas used for parameters which are not user defined,
     e.g. visualization 'viz' [2]_. See example for usage.
+
+    .. warning::
+
+       The `GEXF specification <https://gexf.net/schema.html>`_ reserves some
+       keywords (e.g. ``id``, ``pid``, ``label``, etc.) for specifying node/edge
+       metadata in the file format. Ensure NetworkX node/edge attribute names
+       do not use these special keywords to guarantee all attributes are preserved
+       as expected when roundtripping to/from GEXF format.
 
     Parameters
     ----------
@@ -133,6 +142,7 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
 
 
 @open_file(0, mode="rb")
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     """Read graph in GEXF format from path.
 
@@ -142,8 +152,8 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     Parameters
     ----------
     path : file or string
-       File or file name to read.
-       File names ending in .gz or .bz2 will be decompressed.
+       Filename or file handle to read.
+       Filenames ending in .gz or .bz2 will be decompressed.
     node_type: Python type (default: None)
        Convert node ids to this type if not None.
     relabel : bool (default: False)
@@ -177,27 +187,44 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
 
 
 class GEXF:
-    versions = {}
-    d = {
-        "NS_GEXF": "http://www.gexf.net/1.1draft",
-        "NS_VIZ": "http://www.gexf.net/1.1draft/viz",
-        "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
-        "SCHEMALOCATION": " ".join(
-            ["http://www.gexf.net/1.1draft", "http://www.gexf.net/1.1draft/gexf.xsd"]
-        ),
-        "VERSION": "1.1",
+    versions = {
+        "1.1draft": {
+            "NS_GEXF": "http://www.gexf.net/1.1draft",
+            "NS_VIZ": "http://www.gexf.net/1.1draft/viz",
+            "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
+            "SCHEMALOCATION": " ".join(
+                [
+                    "http://www.gexf.net/1.1draft",
+                    "http://www.gexf.net/1.1draft/gexf.xsd",
+                ]
+            ),
+            "VERSION": "1.1",
+        },
+        "1.2draft": {
+            "NS_GEXF": "http://www.gexf.net/1.2draft",
+            "NS_VIZ": "http://www.gexf.net/1.2draft/viz",
+            "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
+            "SCHEMALOCATION": " ".join(
+                [
+                    "http://www.gexf.net/1.2draft",
+                    "http://www.gexf.net/1.2draft/gexf.xsd",
+                ]
+            ),
+            "VERSION": "1.2",
+        },
+        "1.3": {
+            "NS_GEXF": "http://gexf.net/1.3",
+            "NS_VIZ": "http://gexf.net/1.3/viz",
+            "NS_XSI": "http://w3.org/2001/XMLSchema-instance",
+            "SCHEMALOCATION": " ".join(
+                [
+                    "http://gexf.net/1.3",
+                    "http://gexf.net/1.3/gexf.xsd",
+                ]
+            ),
+            "VERSION": "1.3",
+        },
     }
-    versions["1.1draft"] = d
-    d = {
-        "NS_GEXF": "http://www.gexf.net/1.2draft",
-        "NS_VIZ": "http://www.gexf.net/1.2draft/viz",
-        "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
-        "SCHEMALOCATION": " ".join(
-            ["http://www.gexf.net/1.2draft", "http://www.gexf.net/1.2draft/gexf.xsd"]
-        ),
-        "VERSION": "1.2",
-    }
-    versions["1.2draft"] = d
 
     def construct_types(self):
         types = [
@@ -224,7 +251,6 @@ class GEXF:
                 (np.float64, "float"),
                 (np.float32, "float"),
                 (np.float16, "float"),
-                (np.float_, "float"),
                 (np.int_, "int"),
                 (np.int8, "int"),
                 (np.int16, "int"),
@@ -478,7 +504,7 @@ class GEXFWriter(GEXF):
                     e.attrib["for"] = attr_id
                     e.attrib["value"] = str(val)
                     # Handle nan, inf, -inf differently
-                    if val_type == float:
+                    if val_type is float:
                         if e.attrib["value"] == "inf":
                             e.attrib["value"] = "INF"
                         elif e.attrib["value"] == "nan":
@@ -503,7 +529,7 @@ class GEXFWriter(GEXF):
                 else:
                     e.attrib["value"] = str(v)
                     # Handle float nan, inf, -inf differently
-                    if val_type == float:
+                    if val_type is float:
                         if e.attrib["value"] == "inf":
                             e.attrib["value"] = "INF"
                         elif e.attrib["value"] == "nan":
@@ -564,7 +590,7 @@ class GEXFWriter(GEXF):
                         r=str(color.get("r")),
                         g=str(color.get("g")),
                         b=str(color.get("b")),
-                        a=str(color.get("a")),
+                        a=str(color.get("a", 1.0)),
                     )
                 element.append(e)
 
@@ -637,21 +663,21 @@ class GEXFWriter(GEXF):
         return node_or_edge_data
 
     def alter_graph_mode_timeformat(self, start_or_end):
-        # If 'start' or 'end' appears, alter Graph mode to dynamic and
-        # set timeformat
-        if self.graph_element.get("mode") == "static":
-            if start_or_end is not None:
-                if isinstance(start_or_end, str):
-                    timeformat = "date"
-                elif isinstance(start_or_end, float):
-                    timeformat = "double"
-                elif isinstance(start_or_end, int):
-                    timeformat = "long"
-                else:
-                    raise nx.NetworkXError(
-                        "timeformat should be of the type int, float or str"
-                    )
-                self.graph_element.set("timeformat", timeformat)
+        # If 'start' or 'end' appears, set timeformat
+        if start_or_end is not None:
+            if isinstance(start_or_end, str):
+                timeformat = "date"
+            elif isinstance(start_or_end, float):
+                timeformat = "double"
+            elif isinstance(start_or_end, int):
+                timeformat = "long"
+            else:
+                raise nx.NetworkXError(
+                    "timeformat should be of the type int, float or str"
+                )
+            self.graph_element.set("timeformat", timeformat)
+            # If Graph mode is static, alter to dynamic
+            if self.graph_element.get("mode") == "static":
                 self.graph_element.set("mode", "dynamic")
 
     def write(self, fh):
@@ -1042,9 +1068,7 @@ def relabel_gexf_graph(G):
     x, y = zip(*mapping)
     if len(set(y)) != len(G):
         raise nx.NetworkXError(
-            "Failed to relabel nodes: "
-            "duplicate node labels found. "
-            "Use relabel=False."
+            "Failed to relabel nodes: duplicate node labels found. Use relabel=False."
         )
     mapping = dict(mapping)
     H = nx.relabel_nodes(G, mapping)

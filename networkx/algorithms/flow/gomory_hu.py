@@ -1,6 +1,7 @@
 """
 Gomory-Hu tree of undirected Graphs.
 """
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -13,6 +14,9 @@ __all__ = ["gomory_hu_tree"]
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(
+    edge_attrs={"capacity": float("inf")}, returns_graph=True, preserve_edge_attrs=True
+)
 def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     r"""Returns the Gomory-Hu tree of an undirected graph G.
 
@@ -39,11 +43,18 @@ def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     G : NetworkX graph
         Undirected graph
 
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
+    capacity : string or function (default= 'capacity')
+        If this is a string, then edge capacity will be accessed via the
+        edge attribute with this key (that is, the capacity of the edge
+        joining `u` to `v` will be ``G.edges[u, v][capacity]``). If no
+        such edge attribute exists, the capacity of the edge is assumed to
+        be infinite.
+
+        If this is a function, the capacity of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     flow_func : function
         Function to perform the underlying flow computations. Default value
@@ -83,7 +94,7 @@ def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     10
     >>> nx.minimum_cut_value(G, u, v)
     10
-    >>> # The Comory-Hu tree also has the property that removing the
+    >>> # The Gomory-Hu tree also has the property that removing the
     ... # edge with the minimum weight in the shortest path between
     ... # any two nodes leaves two connected components that form
     ... # a partition of the nodes in G that defines the minimum s-t
@@ -115,7 +126,7 @@ def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     Notes
     -----
     This implementation is based on Gusfield approach [1]_ to compute
-    Comory-Hu trees, which does not require node contractions and has
+    Gomory-Hu trees, which does not require node contractions and has
     the same computational complexity than the original method.
 
     See also

@@ -1,9 +1,9 @@
 """
 Generators for the small graph atlas.
 """
+
 import gzip
-import os
-import os.path
+import importlib.resources
 from itertools import islice
 
 import networkx as nx
@@ -15,9 +15,6 @@ __all__ = ["graph_atlas", "graph_atlas_g"]
 #: The graphs are labeled starting from 0 and extending to (but not
 #: including) this number.
 NUM_GRAPHS = 1253
-
-#: The absolute path representing the directory containing this file.
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 #: The path to the data file containing the graph edge lists.
 #:
@@ -51,7 +48,9 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 #:             f.write(bytes(f'NODES {len(G)}\n', encoding='utf-8'))
 #:             write_edgelist(G, f, data=False)
 #:
-ATLAS_FILE = os.path.join(THIS_DIR, "atlas.dat.gz")
+
+# Path to the atlas file
+ATLAS_FILE = importlib.resources.files("networkx.generators") / "atlas.dat.gz"
 
 
 def _generate_graphs():
@@ -88,6 +87,7 @@ def _generate_graphs():
             yield G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def graph_atlas(i):
     """Returns graph number `i` from the Graph Atlas.
 
@@ -126,6 +126,7 @@ def graph_atlas(i):
     return next(islice(_generate_graphs(), i, None))
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def graph_atlas_g():
     """Returns the list of all graphs with up to seven nodes named in the
     Graph Atlas.
@@ -148,6 +149,55 @@ def graph_atlas_g():
         A list of :class:`~networkx.Graph` objects, the one at index *i*
         corresponding to the graph *i* in the Graph Atlas.
 
+    Examples
+    --------
+    >>> from pprint import pprint
+    >>> atlas = nx.graph_atlas_g()
+
+    There are 1253 graphs in the atlas
+
+    >>> len(atlas)
+    1253
+
+    The number of graphs with *n* nodes, where *n* ranges from 0 to 7:
+
+    >>> from collections import Counter
+    >>> num_nodes_per_graph = [len(G) for G in atlas]
+    >>> Counter(num_nodes_per_graph)
+    Counter({7: 1044, 6: 156, 5: 34, 4: 11, 3: 4, 2: 2, 0: 1, 1: 1})
+
+    Since the atlas is ordered by the number of nodes in the graph, all graphs
+    with *n* nodes can be obtained by slicing the atlas. For example, all
+    graphs with 5 nodes:
+
+    >>> G5_list = atlas[19:53]
+    >>> all(len(G) == 5 for G in G5_list)
+    True
+
+    Or all graphs with at least 3 nodes but fewer than 7 nodes:
+
+    >>> G3_6_list = atlas[4:209]
+
+    More generally, the indices that partition the atlas by the number of nodes
+    per graph:
+
+    >>> import itertools
+    >>> partition_indices = [0] + list(
+    ...     itertools.accumulate(Counter(num_nodes_per_graph).values())  # cumsum
+    ... )
+    >>> partition_indices
+    [0, 1, 2, 4, 8, 19, 53, 209, 1253]
+    >>> partition_mapping = dict(enumerate(itertools.pairwise(partition_indices)))
+    >>> pprint(partition_mapping)
+    {0: (0, 1),
+     1: (1, 2),
+     2: (2, 4),
+     3: (4, 8),
+     4: (8, 19),
+     5: (19, 53),
+     6: (53, 209),
+     7: (209, 1253)}
+
     See also
     --------
     graph_atlas
@@ -165,7 +215,7 @@ def graph_atlas_g():
 
     - graphs 55 and 56 with degree sequences 001111 and 000112,
     - graphs 1007 and 1008 with degree sequences 3333444 and 3333336,
-    - graphs 1012 and 1213 with degree sequences 1244555 and 1244456.
+    - graphs 1012 and 1013 with degree sequences 1244555 and 1244456.
 
     References
     ----------

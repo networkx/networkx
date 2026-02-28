@@ -1,5 +1,5 @@
-""" Fast approximation for k-component structure
-"""
+"""Fast approximation for k-component structure"""
+
 import itertools
 from collections import defaultdict
 from collections.abc import Mapping
@@ -7,13 +7,13 @@ from functools import cached_property
 
 import networkx as nx
 from networkx.algorithms.approximation import local_node_connectivity
-from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
 
 __all__ = ["k_components"]
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(name="approximate_k_components")
 def k_components(G, min_density=0.95):
     r"""Returns the approximate k-component structure of a graph G.
 
@@ -212,7 +212,7 @@ class _AntiGraph(nx.Graph):
     def single_edge_dict(self):
         return self.all_edge_dict
 
-    edge_attr_dict_factory = single_edge_dict  # type: ignore
+    edge_attr_dict_factory = single_edge_dict  # type: ignore[assignment]
 
     def __getitem__(self, n):
         """Returns a dict of neighbors of node n in the dense graph.
@@ -240,7 +240,7 @@ class _AntiGraph(nx.Graph):
         try:
             return iter(set(self._adj) - set(self._adj[n]) - {n})
         except KeyError as err:
-            raise NetworkXError(f"The node {n} is not in the graph.") from err
+            raise nx.NetworkXError(f"The node {n} is not in the graph.") from err
 
     class AntiAtlasView(Mapping):
         """An adjacency inner dict for AntiGraph"""

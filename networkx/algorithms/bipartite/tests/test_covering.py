@@ -1,5 +1,5 @@
 import networkx as nx
-import networkx.algorithms.bipartite as bipartite
+from networkx.algorithms import bipartite
 
 
 class TestMinEdgeCover:

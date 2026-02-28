@@ -13,7 +13,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch
+@nx._dispatchable
 def is_simple_path(G, nodes):
     """Returns True if and only if `nodes` form a simple path in `G`.
 
@@ -72,15 +72,26 @@ def is_simple_path(G, nodes):
     # NetworkXPointlessConcept here.
     if len(nodes) == 0:
         return False
+
     # If the list is a single node, just check that the node is actually
     # in the graph.
     if len(nodes) == 1:
         return nodes[0] in G
-    # Test that no node appears more than once, and that each
-    # adjacent pair of nodes is adjacent.
-    return len(set(nodes)) == len(nodes) and all(v in G[u] for u, v in pairwise(nodes))
+
+    # check that all nodes in the list are in the graph, if at least one
+    # is not in the graph, then this is not a simple path
+    if not all(n in G for n in nodes):
+        return False
+
+    # If the list contains repeated nodes, then it's not a simple path
+    if len(set(nodes)) != len(nodes):
+        return False
+
+    # Test that each adjacent pair of nodes is adjacent.
+    return all(v in G[u] for u, v in pairwise(nodes))
 
 
+@nx._dispatchable
 def all_simple_paths(G, source, target, cutoff=None):
     """Generate all simple paths in the graph G from source to target.
 
@@ -97,7 +108,8 @@ def all_simple_paths(G, source, target, cutoff=None):
        Single node or iterable of nodes at which to end path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths with length <= `cutoff` are returned.
+        where the mathematical "length of a path" is `len(path) -1` (number of edges).
 
     Returns
     -------
@@ -157,6 +169,17 @@ def all_simple_paths(G, source, target, cutoff=None):
         [0, 3]
         [0, 3, 1, 2]
         [0, 3, 2]
+
+    The singleton path from ``source`` to itself is considered a simple path and is
+    included in the results:
+
+        >>> G = nx.empty_graph(5)
+        >>> list(nx.all_simple_paths(G, source=0, target=0))
+        [[0]]
+
+        >>> G = nx.path_graph(3)
+        >>> list(nx.all_simple_paths(G, source=0, target={0, 1, 2}))
+        [[0], [0, 1], [0, 1, 2]]
 
     Iterate over each path from the root nodes to the leaf nodes in a
     directed acyclic graph using a functional programming approach::
@@ -231,85 +254,11 @@ def all_simple_paths(G, source, target, cutoff=None):
     all_shortest_paths, shortest_path, has_path
 
     """
-    if source not in G:
-        raise nx.NodeNotFound(f"source node {source} not in graph")
-    if target in G:
-        targets = {target}
-    else:
-        try:
-            targets = set(target)
-        except TypeError as err:
-            raise nx.NodeNotFound(f"target node {target} not in graph") from err
-    if source in targets:
-        return _empty_generator()
-    if cutoff is None:
-        cutoff = len(G) - 1
-    if cutoff < 1:
-        return _empty_generator()
-    if G.is_multigraph():
-        return _all_simple_paths_multigraph(G, source, targets, cutoff)
-    else:
-        return _all_simple_paths_graph(G, source, targets, cutoff)
+    for edge_path in all_simple_edge_paths(G, source, target, cutoff):
+        yield [source] + [edge[1] for edge in edge_path]
 
 
-def _empty_generator():
-    yield from ()
-
-
-def _all_simple_paths_graph(G, source, targets, cutoff):
-    visited = dict.fromkeys([source])
-    stack = [iter(G[source])]
-    while stack:
-        children = stack[-1]
-        child = next(children, None)
-        if child is None:
-            stack.pop()
-            visited.popitem()
-        elif len(visited) < cutoff:
-            if child in visited:
-                continue
-            if child in targets:
-                yield list(visited) + [child]
-            visited[child] = None
-            if targets - set(visited.keys()):  # expand stack until find all targets
-                stack.append(iter(G[child]))
-            else:
-                visited.popitem()  # maybe other ways to child
-        else:  # len(visited) == cutoff:
-            for target in (targets & (set(children) | {child})) - set(visited.keys()):
-                yield list(visited) + [target]
-            stack.pop()
-            visited.popitem()
-
-
-def _all_simple_paths_multigraph(G, source, targets, cutoff):
-    visited = dict.fromkeys([source])
-    stack = [(v for u, v in G.edges(source))]
-    while stack:
-        children = stack[-1]
-        child = next(children, None)
-        if child is None:
-            stack.pop()
-            visited.popitem()
-        elif len(visited) < cutoff:
-            if child in visited:
-                continue
-            if child in targets:
-                yield list(visited) + [child]
-            visited[child] = None
-            if targets - set(visited.keys()):
-                stack.append((v for u, v in G.edges(child)))
-            else:
-                visited.popitem()
-        else:  # len(visited) == cutoff:
-            for target in targets - set(visited.keys()):
-                count = ([child] + list(children)).count(target)
-                for i in range(count):
-                    yield list(visited) + [target]
-            stack.pop()
-            visited.popitem()
-
-
+@nx._dispatchable
 def all_simple_edge_paths(G, source, target, cutoff=None):
     """Generate lists of edges for all simple paths in G from source to target.
 
@@ -326,7 +275,8 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
        Single node or iterable of nodes at which to end path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths with length <= `cutoff` are returned.
+        Note that the length of an edge path is the number of edges.
 
     Returns
     -------
@@ -363,6 +313,35 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         [(1, 2, 'k0'), (2, 3, 'k0')]
         [(1, 2, 'k1'), (2, 3, 'k0')]
 
+    When ``source`` is one of the targets, the empty path starting and ending at
+    ``source`` without traversing any edge is considered a valid simple edge path
+    and is included in the results:
+
+        >>> G = nx.Graph()
+        >>> G.add_node(0)
+        >>> paths = list(nx.all_simple_edge_paths(G, 0, 0))
+        >>> for path in paths:
+        ...     print(path)
+        []
+        >>> len(paths)
+        1
+
+    You can use the `cutoff` parameter to only generate paths that are
+    shorter than a certain length:
+
+        >>> g = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 5), (1, 4), (1, 5)])
+        >>> for path in sorted(nx.all_simple_edge_paths(g, 1, 5)):
+        ...     print(path)
+        [(1, 2), (2, 3), (3, 4), (4, 5)]
+        [(1, 4), (4, 5)]
+        [(1, 5)]
+        >>> for path in sorted(nx.all_simple_edge_paths(g, 1, 5, cutoff=1)):
+        ...     print(path)
+        [(1, 5)]
+        >>> for path in sorted(nx.all_simple_edge_paths(g, 1, 5, cutoff=2)):
+        ...     print(path)
+        [(1, 4), (4, 5)]
+        [(1, 5)]
 
     Notes
     -----
@@ -382,55 +361,66 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
 
     """
     if source not in G:
-        raise nx.NodeNotFound("source node %s not in graph" % source)
+        raise nx.NodeNotFound(f"source node {source} not in graph")
+
     if target in G:
         targets = {target}
     else:
         try:
             targets = set(target)
-        except TypeError:
-            raise nx.NodeNotFound("target node %s not in graph" % target)
-    if source in targets:
-        return []
-    if cutoff is None:
-        cutoff = len(G) - 1
-    if cutoff < 1:
-        return []
-    if G.is_multigraph():
-        for simp_path in _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
-            yield simp_path
-    else:
-        for simp_path in _all_simple_paths_graph(G, source, targets, cutoff):
-            yield list(zip(simp_path[:-1], simp_path[1:]))
+        except TypeError as err:
+            raise nx.NodeNotFound(f"target node {target} not in graph") from err
+
+    cutoff = cutoff if cutoff is not None else len(G) - 1
+
+    if cutoff >= 0 and targets:
+        yield from _all_simple_edge_paths(G, source, targets, cutoff)
 
 
-def _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
-    if not cutoff or cutoff < 1:
-        return []
-    visited = [source]
-    stack = [iter(G.edges(source, keys=True))]
+def _all_simple_edge_paths(G, source, targets, cutoff):
+    # We simulate recursion with a stack, keeping the current path being explored
+    # and the outgoing edge iterators at each point in the stack.
+    # To avoid unnecessary checks, the loop is structured in a way such that a path
+    # is considered for yielding only after a new node/edge is added.
+    # We bootstrap the search by adding a dummy iterator to the stack that only yields
+    # a dummy edge to source (so that the trivial path has a chance of being included).
+
+    get_edges = (
+        (lambda node: G.edges(node, keys=True))
+        if G.is_multigraph()
+        else (lambda node: G.edges(node))
+    )
+
+    # The current_path is a dictionary that maps nodes in the path to the edge that was
+    # used to enter that node (instead of a list of edges) because we want both a fast
+    # membership test for nodes in the path and the preservation of insertion order.
+    current_path = {None: None}
+    stack = [iter([(None, source)])]
 
     while stack:
-        children = stack[-1]
-        child = next(children, None)
-        if child is None:
+        # 1. Try to extend the current path.
+        next_edge = next((e for e in stack[-1] if e[1] not in current_path), None)
+        if next_edge is None:
+            # All edges of the last node in the current path have been explored.
             stack.pop()
-            visited.pop()
-        elif len(visited) < cutoff:
-            if child[1] in targets:
-                yield visited[1:] + [child]
-            elif child[1] not in [v[0] for v in visited[1:]]:
-                visited.append(child)
-                stack.append(iter(G.edges(child[1], keys=True)))
-        else:  # len(visited) == cutoff:
-            for (u, v, k) in [child] + list(children):
-                if v in targets:
-                    yield visited[1:] + [(u, v, k)]
-            stack.pop()
-            visited.pop()
+            current_path.popitem()
+            continue
+        previous_node, next_node, *_ = next_edge
+
+        # 2. Check if we've reached a target.
+        if next_node in targets:
+            yield (list(current_path.values()) + [next_edge])[2:]  # remove dummy edge
+
+        # 3. Only expand the search through the next node if it makes sense.
+        if len(current_path) - 1 < cutoff and (
+            targets - current_path.keys() - {next_node}
+        ):
+            current_path[next_node] = next_edge
+            stack.append(iter(get_edges(next_node)))
 
 
 @not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
 def shortest_simple_paths(G, source, target, weight=None):
     """Generate all simple paths in the graph G from source to target,
        starting from shortest ones.
@@ -457,7 +447,10 @@ def shortest_simple_paths(G, source, target, weight=None):
         If it is a function, the weight of an edge is the value returned
         by the function. The function must accept exactly three positional
         arguments: the two endpoints of an edge and the dictionary of edge
-        attributes for that edge. The function must return a number.
+        attributes for that edge. The function must return a number or None.
+        The weight function can be used to hide edges by returning None.
+        So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+        will find the shortest red path.
 
         If None all edges are considered to have unit weight. Default
         value None.
@@ -537,7 +530,7 @@ def shortest_simple_paths(G, source, target, weight=None):
 
         shortest_path_func = _bidirectional_dijkstra
 
-    listA = list()
+    listA = []
     listB = PathBuffer()
     prev_path = None
     while True:
@@ -580,7 +573,7 @@ def shortest_simple_paths(G, source, target, weight=None):
 class PathBuffer:
     def __init__(self):
         self.paths = set()
-        self.sortedpaths = list()
+        self.sortedpaths = []
         self.counter = count()
 
     def __len__(self):
@@ -732,7 +725,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
             Gpred = filter_iter(Gpred)
             Gsucc = filter_iter(Gsucc)
 
-    # predecesssor and successors in search
+    # predecessor and successors in search
     pred = {source: None}
     succ = {target: None}
 
@@ -784,19 +777,24 @@ def _bidirectional_dijkstra(
     G : NetworkX graph
 
     source : node
-       Starting node.
+        Starting node.
 
     target : node
-       Ending node.
+        Ending node.
 
     weight: string, function, optional (default='weight')
-       Edge data key or weight function corresponding to the edge weight
+        Edge data key or weight function corresponding to the edge weight
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     ignore_nodes : container of nodes
-       nodes to ignore, optional
+        nodes to ignore, optional
 
     ignore_edges : container of edges
-       edges to ignore, optional
+        edges to ignore, optional
 
     Returns
     -------
@@ -816,6 +814,10 @@ def _bidirectional_dijkstra(
     -----
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
+
+    The weight function can be used to hide edges by returning None.
+    So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+    will find the shortest red path.
 
     In practice  bidirectional Dijkstra is much more than twice as fast as
     ordinary Dijkstra.
@@ -901,8 +903,7 @@ def _bidirectional_dijkstra(
             Gpred = filter_iter(Gpred)
             Gsucc = filter_iter(Gsucc)
 
-    push = heappush
-    pop = heappop
+    wt = _weight_function(G, weight)
     # Init:   Forward             Backward
     dists = [{}, {}]  # dictionary of final distances
     paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
@@ -912,8 +913,8 @@ def _bidirectional_dijkstra(
     # nodes seen
     c = count()
     # initialize fringe heap
-    push(fringe[0], (0, next(c), source))
-    push(fringe[1], (0, next(c), target))
+    heappush(fringe[0], (0, next(c), source))
+    heappush(fringe[1], (0, next(c), target))
     # neighs for extracting correct neighbor information
     neighs = [Gsucc, Gpred]
     # variables to hold shortest discovered path
@@ -925,7 +926,7 @@ def _bidirectional_dijkstra(
         # dir == 0 is forward direction and dir == 1 is back
         dir = 1 - dir
         # extract closest to expand
-        (dist, _, v) = pop(fringe[dir])
+        (dist, _, v) = heappop(fringe[dir])
         if v in dists[dir]:
             # Shortest path to v has already been found
             continue
@@ -936,14 +937,14 @@ def _bidirectional_dijkstra(
             # we have now discovered the shortest path
             return (finaldist, finalpath)
 
-        wt = _weight_function(G, weight)
         for w in neighs[dir](v):
             if dir == 0:  # forward
                 minweight = wt(v, w, G.get_edge_data(v, w))
-                vwLength = dists[dir][v] + minweight
             else:  # back, must remember to change v,w->w,v
                 minweight = wt(w, v, G.get_edge_data(w, v))
-                vwLength = dists[dir][v] + minweight
+            if minweight is None:
+                continue
+            vwLength = dists[dir][v] + minweight
 
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
@@ -951,7 +952,7 @@ def _bidirectional_dijkstra(
             elif w not in seen[dir] or vwLength < seen[dir][w]:
                 # relaxing
                 seen[dir][w] = vwLength
-                push(fringe[dir], (vwLength, next(c), w))
+                heappush(fringe[dir], (vwLength, next(c), w))
                 paths[dir][w] = paths[dir][v] + [w]
                 if w in seen[0] and w in seen[1]:
                     # see if this path is better than the already

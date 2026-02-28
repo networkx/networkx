@@ -1,15 +1,16 @@
 """
 Closeness centrality measures.
 """
+
 import functools
 
 import networkx as nx
-from networkx.exception import NetworkXError
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["closeness_centrality", "incremental_closeness_centrality"]
 
 
+@nx._dispatchable(edge_attrs="distance")
 def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     r"""Compute closeness centrality for nodes.
 
@@ -136,6 +137,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(mutates_input=True)
 def incremental_closeness_centrality(
     G, edge, prev_cc=None, insertion=True, wf_improved=True
 ):
@@ -230,7 +232,7 @@ def incremental_closeness_centrality(
        http://sariyuce.com/papers/bigdata13.pdf
     """
     if prev_cc is not None and set(prev_cc.keys()) != set(G.nodes()):
-        raise NetworkXError("prev_cc and G do not have the same nodes")
+        raise nx.NetworkXError("prev_cc and G do not have the same nodes")
 
     # Unpack edge
     (u, v) = edge

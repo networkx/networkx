@@ -32,6 +32,12 @@ class TestFlowClosenessCentrality:
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
+    def test_current_flow_closeness_centrality_not_connected(self):
+        G = nx.Graph()
+        G.add_nodes_from([1, 2, 3])
+        with pytest.raises(nx.NetworkXError):
+            nx.current_flow_closeness_centrality(G)
+
 
 class TestWeightedFlowClosenessCentrality:
     pass

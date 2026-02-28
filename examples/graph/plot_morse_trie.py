@@ -8,7 +8,9 @@ A letter can be encoded by tracing the path from the corresponding node in the
 tree to the root node, reversing the order of the symbols encountered along
 the path.
 """
+
 import networkx as nx
+import string
 
 # Unicode characters to represent the dots/dashes (or dits/dahs) of Morse code
 dot = "•"
@@ -77,6 +79,7 @@ nx.draw(G, pos=pos, with_labels=True)
 elabels = {(u, v): l for u, v, l in G.edges(data="char")}
 nx.draw_networkx_edge_labels(G, pos, edge_labels=elabels)
 
+
 # A letter can be encoded by following the path from the given letter (node) to
 # the root node
 def morse_encode(letter):
@@ -88,7 +91,6 @@ def morse_encode(letter):
 
 
 # Verify that the trie encoding is correct
-import string
 
 for letter in string.ascii_lowercase:
     assert morse_encode(letter) == morse_direct_mapping[letter]

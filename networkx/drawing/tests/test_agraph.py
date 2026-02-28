@@ -1,14 +1,13 @@
 """Unit tests for PyGraphviz interface."""
-import os
-import tempfile
+
+import warnings
 
 import pytest
 
-pygraphviz = pytest.importorskip("pygraphviz")
-
-
 import networkx as nx
 from networkx.utils import edges_equal, graphs_equal, nodes_equal
+
+pygraphviz = pytest.importorskip("pygraphviz")
 
 
 class TestAGraph:
@@ -21,30 +20,29 @@ class TestAGraph:
 
     def assert_equal(self, G1, G2):
         assert nodes_equal(G1.nodes(), G2.nodes())
-        assert edges_equal(G1.edges(), G2.edges())
+        assert edges_equal(G1.edges(), G2.edges(), directed=G1.is_directed())
         assert G1.graph["metal"] == G2.graph["metal"]
 
-    def agraph_checks(self, G):
+    @pytest.mark.parametrize(
+        "G", (nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph())
+    )
+    def test_agraph_roundtripping(self, G, tmp_path):
         G = self.build_graph(G)
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
         self.assert_equal(G, H)
 
-        fd, fname = tempfile.mkstemp()
+        fname = tmp_path / "test.dot"
         nx.drawing.nx_agraph.write_dot(H, fname)
         Hin = nx.nx_agraph.read_dot(fname)
         self.assert_equal(H, Hin)
-        os.close(fd)
-        os.unlink(fname)
 
-        (fd, fname) = tempfile.mkstemp()
+        fname = tmp_path / "fh_test.dot"
         with open(fname, "w") as fh:
             nx.drawing.nx_agraph.write_dot(H, fh)
 
         with open(fname) as fh:
             Hin = nx.nx_agraph.read_dot(fh)
-        os.close(fd)
-        os.unlink(fname)
         self.assert_equal(H, Hin)
 
     def test_from_agraph_name(self):
@@ -73,18 +71,6 @@ class TestAGraph:
         H = nx.nx_agraph.from_agraph(A)
         assert isinstance(H, nx.Graph)
         assert ("0", "1", {"key": "foo"}) in H.edges(data=True)
-
-    def test_undirected(self):
-        self.agraph_checks(nx.Graph())
-
-    def test_directed(self):
-        self.agraph_checks(nx.DiGraph())
-
-    def test_multi_undirected(self):
-        self.agraph_checks(nx.MultiGraph())
-
-    def test_multi_directed(self):
-        self.agraph_checks(nx.MultiDiGraph())
 
     def test_to_agraph_with_nodedata(self):
         G = nx.Graph()
@@ -188,13 +174,10 @@ class TestAGraph:
         G = nx.Graph()
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
-        # assert graphs_equal(G, H)
+        assert graphs_equal(G, H)
         AA = nx.nx_agraph.to_agraph(H)
         HH = nx.nx_agraph.from_agraph(AA)
         assert graphs_equal(H, HH)
-        G.graph["graph"] = {}
-        G.graph["node"] = {}
-        G.graph["edge"] = {}
         assert graphs_equal(G, HH)
 
     @pytest.mark.xfail(reason="integer->string node conversion in round trip")
@@ -240,3 +223,39 @@ class TestAGraph:
         pos = list(pos.values())
         assert len(pos) == 5
         assert len(pos[0]) == 3
+
+    def test_no_warnings_raised(self):
+        # Test that no warnings are raised when Networkx graph
+        # is converted to Pygraphviz graph and 'pos'
+        # attribute is given
+        G = nx.Graph()
+        G.add_node(0, pos=(0, 0))
+        G.add_node(1, pos=(1, 1))
+        A = nx.nx_agraph.to_agraph(G)
+        with warnings.catch_warnings(record=True) as record:
+            A.layout()
+        assert len(record) == 0
+
+    def test_to_agraph_preserves_string_positions(self):
+        # see gh-8203
+        AG = pygraphviz.AGraph(directed=True)
+        AG.add_node("1", label="1", pos="0.0,0.0!")
+        AG.add_node("2", label="2", pos="100.0,0.0!")
+        AG.add_edge("1", "2")
+
+        G = nx.nx_agraph.from_agraph(AG)
+        A = nx.nx_agraph.to_agraph(G)
+
+        assert A.get_node("1").attr["pos"] == "0.0,0.0!"
+        assert A.get_node("2").attr["pos"] == "100.0,0.0!"
+
+    def test_to_agraph_converts_tuple_positions(self):
+        G = nx.DiGraph()
+        G.add_node("1", pos=(0.0, 0.0))
+        G.add_node("2", pos=(100.0, 50.0))
+        G.add_edge("1", "2")
+
+        A = nx.nx_agraph.to_agraph(G)
+
+        assert A.get_node("1").attr["pos"] == "0.0,0.0!"
+        assert A.get_node("2").attr["pos"] == "100.0,50.0!"

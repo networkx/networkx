@@ -33,6 +33,7 @@ important in operations research and theoretical computer science.
 
 http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
+
 import math
 
 import networkx as nx
@@ -124,6 +125,7 @@ def move_one_node(soln, seed):
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight")
 def christofides(G, weight="weight", tree=None):
     """Approximate a solution of the traveling salesman problem
 
@@ -196,7 +198,10 @@ def _shortcutting(circuit):
     return nodes
 
 
-def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, method=None):
+@nx._dispatchable(edge_attrs="weight")
+def traveling_salesman_problem(
+    G, weight="weight", nodes=None, cycle=True, method=None, **kwargs
+):
     """Find the shortest path in `G` connecting specified nodes
 
     This function allows approximate solution to the traveling salesman
@@ -222,6 +227,10 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     the biggest weight edge is removed to make a Hamiltonian path.
     Then each edge on the new complete graph used for that analysis is
     replaced by the shortest_path between those nodes on the original graph.
+    If the input graph `G` includes edges with weights that do not adhere to
+    the triangle inequality, such as when `G` is not a complete graph (i.e
+    length of non-existent edges is infinity), then the returned path may
+    contain some repeating nodes (other than the starting node).
 
     Parameters
     ----------
@@ -251,18 +260,16 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
         :func:`simulated_annealing_tsp` and :func:`threshold_accepting_tsp`.
 
         If `method is None`: use :func:`christofides` for undirected `G` and
-        :func:`threshold_accepting_tsp` for directed `G`.
+        :func:`asadpour_atsp` for directed `G`.
 
-        To specify parameters for these provided functions, construct lambda
-        functions that state the specific value. `method` must have 2 inputs.
-        (See examples).
+    **kwargs : dict
+        Other keyword arguments to be passed to the `method` function passed in.
 
     Returns
     -------
     list
         List of nodes in `G` along a path with an approximation of the minimal
         path through `nodes`.
-
 
     Raises
     ------
@@ -281,14 +288,26 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
     True
 
-    Build (curry) your own function to provide parameter values to the methods.
+    While no longer required, you can still build (curry) your own function
+    to provide parameter values to the methods.
 
     >>> SA_tsp = nx.approximation.simulated_annealing_tsp
-    >>> method = lambda G, wt: SA_tsp(G, "greedy", weight=wt, temp=500)
+    >>> method = lambda G, weight: SA_tsp(G, "greedy", weight=weight, temp=500)
     >>> path = tsp(G, cycle=False, method=method)
     >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
     True
 
+    Otherwise, pass other keyword arguments directly into the tsp function.
+
+    >>> path = tsp(
+    ...     G,
+    ...     cycle=False,
+    ...     method=nx.approximation.simulated_annealing_tsp,
+    ...     init_cycle="greedy",
+    ...     temp=500,
+    ... )
+    >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
+    True
     """
     if method is None:
         if G.is_directed():
@@ -315,8 +334,11 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
         for v in nodes:
             if u == v:
                 continue
-            GG.add_edge(u, v, weight=dist[u][v])
-    best_GG = method(GG, weight)
+            # Ensure that the weight attribute on GG has the
+            # same name as the input graph
+            GG.add_edge(u, v, **{weight: dist[u][v]})
+
+    best_GG = method(GG, weight=weight, **kwargs)
 
     if not cycle:
         # find and remove the biggest edge
@@ -335,6 +357,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
 
 @not_implemented_for("undirected")
 @py_random_state(2)
+@nx._dispatchable(edge_attrs="weight", mutates_input=True)
 def asadpour_atsp(G, weight="weight", seed=None, source=None):
     """
     Returns an approximate solution to the traveling salesman problem.
@@ -401,8 +424,12 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     >>> import networkx as nx
     >>> import networkx.algorithms.approximation as approx
     >>> G = nx.complete_graph(3, create_using=nx.DiGraph)
-    >>> nx.set_edge_attributes(G, {(0, 1): 2, (1, 2): 2, (2, 0): 2, (0, 2): 1, (2, 1): 1, (1, 0): 1}, "weight")
-    >>> tour = approx.asadpour_atsp(G,source=0)
+    >>> nx.set_edge_attributes(
+    ...     G,
+    ...     {(0, 1): 2, (1, 2): 2, (2, 0): 2, (0, 2): 1, (2, 1): 1, (1, 0): 1},
+    ...     "weight",
+    ... )
+    >>> tour = approx.asadpour_atsp(G, source=0)
     >>> tour
     [0, 2, 1, 0]
     """
@@ -411,7 +438,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
 
     # Check that G is a complete graph
     N = len(G) - 1
-    if N < 2:
+    if N < 1:
         raise nx.NetworkXError("G must have at least two nodes")
     # This check ignores selfloops which is what we want here.
     if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
@@ -419,6 +446,11 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     # Check that the source vertex, if given, is in the graph
     if source is not None and source not in G.nodes:
         raise nx.NetworkXError("Given source node not in G.")
+    # handle 2 node case
+    if N == 1:
+        if source is None:
+            return list(G)
+        return [source, next(n for n in G if n != source)]
 
     opt_hk, z_star = held_karp_ascent(G, weight)
 
@@ -427,7 +459,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     # a dict
     if not isinstance(z_star, dict):
         # Here we are using the shortcutting method to go from the list of edges
-        # returned from eularian_circuit to a list of nodes
+        # returned from eulerian_circuit to a list of nodes
         return _shortcutting(nx.eulerian_circuit(z_star, source=source))
 
     # Create the undirected support of z_star
@@ -484,6 +516,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     return _shortcutting(circuit)
 
 
+@nx._dispatchable(edge_attrs="weight", mutates_input=True, returns_graph=True)
 def held_karp_ascent(G, weight="weight"):
     """
     Minimizes the Held-Karp relaxation of the TSP for `G`
@@ -530,7 +563,7 @@ def held_karp_ascent(G, weight="weight"):
            pp.1138-1162
     """
     import numpy as np
-    import scipy.optimize as optimize
+    import scipy as sp
 
     def k_pi():
         """
@@ -639,7 +672,7 @@ def held_karp_ascent(G, weight="weight"):
         for n in G:
             d[n] = 0
         del n
-        # 2. Find a 1-Aborescence T^k such that k is in K(pi, d).
+        # 2. Find a 1-Arborescence T^k such that k is in K(pi, d).
         minimum_1_arborescences = k_pi()
         while True:
             # Reduce K(pi) to K(pi, d)
@@ -674,7 +707,9 @@ def held_karp_ascent(G, weight="weight"):
                     a_eq[n_count][arb_count] = deg - 2
                     n_count -= 1
                 a_eq[len(G)][arb_count] = 1
-            program_result = optimize.linprog(c, A_eq=a_eq, b_eq=b_eq)
+            program_result = sp.optimize.linprog(
+                c, A_eq=a_eq, b_eq=b_eq, method="highs-ipm"
+            )
             # If the constants exist, then the direction of ascent doesn't
             if program_result.success:
                 # There is no direction of ascent
@@ -756,6 +791,7 @@ def held_karp_ascent(G, weight="weight"):
         for u, v, d in G.edges(data=True):
             d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
         dir_ascent, k_d = direction_of_ascent()
+    nx._clear_cache(G)
     # k_d is no longer an individual 1-arborescence but rather a set of
     # minimal 1-arborescences at the maximum point of the polytope and should
     # be reflected as such
@@ -766,6 +802,7 @@ def held_karp_ascent(G, weight="weight"):
     for k in k_max:
         if len([n for n in k if k.degree(n) == 2]) == G.order():
             # Tour found
+            # TODO: this branch does not restore original_edge_weights of G!
             return k.size(weight), k
 
     # Write the original edge weights back to G and every member of k_max at
@@ -785,7 +822,7 @@ def held_karp_ascent(G, weight="weight"):
     # reference [1]
     z_star = {}
     scale_factor = (G.order() - 1) / G.order()
-    for u, v in x_star.keys():
+    for u, v in x_star:
         frequency = x_star[(u, v)] + x_star[(v, u)]
         if frequency > 0:
             z_star[(u, v)] = scale_factor * frequency
@@ -794,6 +831,7 @@ def held_karp_ascent(G, weight="weight"):
     return next(k_max.__iter__()).size(weight), z_star
 
 
+@nx._dispatchable
 def spanning_tree_distribution(G, z):
     """
     Find the asadpour exponential distribution of spanning trees.
@@ -847,9 +885,9 @@ def spanning_tree_distribution(G, z):
         # Create the laplacian matrices
         for u, v, d in G.edges(data=True):
             d[lambda_key] = exp(gamma[(u, v)])
-        G_Kirchhoff = nx.total_spanning_tree_weight(G, lambda_key)
+        G_Kirchhoff = nx.number_of_spanning_trees(G, weight=lambda_key)
         G_e = nx.contracted_edge(G, e, self_loops=False)
-        G_e_Kirchhoff = nx.total_spanning_tree_weight(G_e, lambda_key)
+        G_e_Kirchhoff = nx.number_of_spanning_trees(G_e, weight=lambda_key)
 
         # Multiply by the weight of the contracted edge since it is not included
         # in the total weight of the contracted graph.
@@ -904,6 +942,7 @@ def spanning_tree_distribution(G, z):
     return gamma
 
 
+@nx._dispatchable(edge_attrs="weight")
 def greedy_tsp(G, weight="weight", source=None):
     """Return a low cost cycle starting at `source` and its cost.
 
@@ -942,11 +981,22 @@ def greedy_tsp(G, weight="weight", source=None):
     --------
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from({
-    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
-    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
-    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2)
-    ... })
+    >>> G.add_weighted_edges_from(
+    ...     {
+    ...         ("A", "B", 3),
+    ...         ("A", "C", 17),
+    ...         ("A", "D", 14),
+    ...         ("B", "A", 3),
+    ...         ("B", "C", 12),
+    ...         ("B", "D", 16),
+    ...         ("C", "A", 13),
+    ...         ("C", "B", 12),
+    ...         ("C", "D", 4),
+    ...         ("D", "A", 14),
+    ...         ("D", "B", 15),
+    ...         ("D", "C", 2),
+    ...     }
+    ... )
     >>> cycle = approx.greedy_tsp(G, source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle
@@ -996,6 +1046,7 @@ def greedy_tsp(G, weight="weight", source=None):
 
 
 @py_random_state(9)
+@nx._dispatchable(edge_attrs="weight")
 def simulated_annealing_tsp(
     G,
     init_cycle,
@@ -1026,7 +1077,7 @@ def simulated_annealing_tsp(
     Parameters
     ----------
     G : Graph
-        `G` should be a complete weighted undirected graph.
+        `G` should be a complete weighted graph.
         The distance between all pairs of nodes should be included.
 
     init_cycle : list of all nodes or "greedy"
@@ -1104,11 +1155,22 @@ def simulated_annealing_tsp(
     --------
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from({
-    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
-    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
-    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2)
-    ... })
+    >>> G.add_weighted_edges_from(
+    ...     {
+    ...         ("A", "B", 3),
+    ...         ("A", "C", 17),
+    ...         ("A", "D", 14),
+    ...         ("B", "A", 3),
+    ...         ("B", "C", 12),
+    ...         ("B", "D", 16),
+    ...         ("C", "A", 13),
+    ...         ("C", "B", 12),
+    ...         ("C", "D", 4),
+    ...         ("D", "A", 14),
+    ...         ("D", "B", 15),
+    ...         ("D", "C", 2),
+    ...     }
+    ... )
     >>> cycle = approx.simulated_annealing_tsp(G, "greedy", source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle
@@ -1214,6 +1276,7 @@ def simulated_annealing_tsp(
 
 
 @py_random_state(9)
+@nx._dispatchable(edge_attrs="weight")
 def threshold_accepting_tsp(
     G,
     init_cycle,
@@ -1241,7 +1304,7 @@ def threshold_accepting_tsp(
     Parameters
     ----------
     G : Graph
-        `G` should be a complete weighted undirected graph.
+        `G` should be a complete weighted graph.
         The distance between all pairs of nodes should be included.
 
     init_cycle : list or "greedy"
@@ -1320,11 +1383,22 @@ def threshold_accepting_tsp(
     --------
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from({
-    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
-    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
-    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2)
-    ... })
+    >>> G.add_weighted_edges_from(
+    ...     {
+    ...         ("A", "B", 3),
+    ...         ("A", "C", 17),
+    ...         ("A", "D", 14),
+    ...         ("B", "A", 3),
+    ...         ("B", "C", 12),
+    ...         ("B", "D", 16),
+    ...         ("C", "A", 13),
+    ...         ("C", "B", 12),
+    ...         ("C", "D", 4),
+    ...         ("D", "A", 14),
+    ...         ("D", "B", 15),
+    ...         ("D", "C", 2),
+    ...     }
+    ... )
     >>> cycle = approx.threshold_accepting_tsp(G, "greedy", source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle

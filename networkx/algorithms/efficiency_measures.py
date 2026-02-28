@@ -1,7 +1,6 @@
 """Provides functions for computing the efficiency of nodes and graphs."""
 
 import networkx as nx
-from networkx.exception import NetworkXNoPath
 
 from ..utils import not_implemented_for
 
@@ -9,6 +8,7 @@ __all__ = ["efficiency", "local_efficiency", "global_efficiency"]
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def efficiency(G, u, v):
     """Returns the efficiency of a pair of nodes in a graph.
 
@@ -53,12 +53,13 @@ def efficiency(G, u, v):
     """
     try:
         eff = 1 / nx.shortest_path_length(G, u, v)
-    except NetworkXNoPath:
+    except nx.NetworkXNoPath:
         eff = 0
     return eff
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def global_efficiency(G):
     """Returns the average global efficiency of the graph.
 
@@ -119,6 +120,7 @@ def global_efficiency(G):
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def local_efficiency(G):
     """Returns the average local efficiency of the graph.
 
@@ -160,6 +162,5 @@ def local_efficiency(G):
            <https://doi.org/10.1103/PhysRevLett.87.198701>
 
     """
-    # TODO This summation can be trivially parallelized.
     efficiency_list = (global_efficiency(G.subgraph(G[v])) for v in G)
     return sum(efficiency_list) / len(G)

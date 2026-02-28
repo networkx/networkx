@@ -30,7 +30,15 @@ Branchings and Spanning Arborescences
    maximum_spanning_arborescence
    minimum_spanning_arborescence
    ArborescenceIterator
-   Edmonds
+
+Distance Measures
+-----------------
+.. automodule:: networkx.algorithms.tree.distance_measures
+.. autosummary::
+   :toctree: generated/
+
+   center
+   centroid
 
 Encoding and decoding
 ---------------------
@@ -49,7 +57,7 @@ Operations
 .. autosummary::
    :toctree: generated/
 
-   join
+   join_trees
 
 Spanning Trees
 --------------
@@ -63,6 +71,7 @@ Spanning Trees
    minimum_spanning_edges
    maximum_spanning_edges
    SpanningTreeIterator
+   number_of_spanning_trees
 
 Decomposition
 -------------

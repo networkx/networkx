@@ -71,7 +71,7 @@ class TestHarmonicFunction:
         for i in label_removed:
             del G.nodes[i][label_name]
         predicted = node_classification.harmonic_function(G, label_name=label_name)
-        label_not_removed = set(list(range(len(G)))) - label_removed
+        label_not_removed = set(range(len(G))) - label_removed
         for i in label_not_removed:
             assert predicted[i] == G.nodes[i][label_name]
 

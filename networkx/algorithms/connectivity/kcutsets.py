@@ -1,6 +1,7 @@
 """
 Kanevsky all minimum node k cutsets algorithm.
 """
+
 import copy
 from collections import defaultdict
 from itertools import combinations
@@ -21,6 +22,7 @@ default_flow_func = edmonds_karp
 __all__ = ["all_node_cuts"]
 
 
+@nx._dispatchable
 def all_node_cuts(G, k=None, flow_func=None):
     r"""Returns all minimum k cutsets of an undirected graph G.
 
@@ -92,10 +94,11 @@ def all_node_cuts(G, k=None, flow_func=None):
 
     # Address some corner cases first.
     # For complete Graphs
+
     if nx.density(G) == 1:
-        for cut_set in combinations(G, len(G) - 1):
-            yield set(cut_set)
+        yield from ()
         return
+
     # Initialize data structures.
     # Keep track of the cuts already computed so we do not repeat them.
     seen = []
@@ -108,7 +111,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     # Shallow copy is enough.
     original_H_pred = copy.copy(H._pred)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(capacity="capacity", residual=R)
+    kwargs = {"capacity": "capacity", "residual": R}
     # Define default flow function
     if flow_func is None:
         flow_func = default_flow_func
@@ -129,7 +132,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     for x in X:
         # step 3: Compute local connectivity flow of x with all other
         # non adjacent nodes in G
-        non_adjacent = set(G) - X - set(G[x])
+        non_adjacent = set(G) - {x} - set(G[x])
         for v in non_adjacent:
             # step 4: compute maximum flow in an Even-Tarjan reduction H of G
             # and step 5: build the associated residual network R
@@ -189,7 +192,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                         cutset.update((u, w) for w in original_H_pred[u] if w not in S)
                     # The edges in H that form the cutset are internal edges
                     # (ie edges that represent a node of the original graph G)
-                    if any([H_nodes[u]["id"] != H_nodes[w]["id"] for u, w in cutset]):
+                    if any(H_nodes[u]["id"] != H_nodes[w]["id"] for u, w in cutset):
                         continue
                     node_cut = {H_nodes[u]["id"] for u, _ in cutset}
 

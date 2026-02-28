@@ -7,7 +7,7 @@ Read and write graphs in GraphML format.
 .. warning::
 
     This parser uses the standard xml library present in Python, which is
-    insecure - see :doc:`library/xml` for additional information.
+    insecure - see :external+python:mod:`xml` for additional information.
     Only parse GraphML files you trust.
 
 This implementation does not support mixed graphs (directed and unidirected
@@ -40,6 +40,7 @@ http://graphml.graphdrawing.org/specification.html for the specification and
 http://graphml.graphdrawing.org/primer/graphml-primer.html
 for examples.
 """
+
 import warnings
 from collections import defaultdict
 
@@ -233,14 +234,15 @@ def generate_graphml(
 
 
 @open_file(0, mode="rb")
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False):
     """Read graph in GraphML format from path.
 
     Parameters
     ----------
     path : file or string
-       File or filename to write.
-       Filenames ending in .gz or .bz2 will be compressed.
+       Filename or file handle to read.
+       Filenames ending in .gz or .bz2 will be decompressed.
 
     node_type: Python type (default: str)
        Convert node ids to this type
@@ -305,6 +307,7 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
     return glist[0]
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_graphml(
     graphml_string, node_type=str, edge_key_type=int, force_multigraph=False
 ):
@@ -413,7 +416,6 @@ class GraphML:
                 (np.float64, "float"),
                 (np.float32, "float"),
                 (np.float16, "float"),
-                (np.float_, "float"),
                 (np.int_, "int"),
                 (np.int8, "int"),
                 (np.int16, "int"),
@@ -454,7 +456,7 @@ class GraphML:
             return self.xml_type[key]
         except KeyError as err:
             raise TypeError(
-                f"GraphML does not support type {type(key)} as data values."
+                f"GraphML does not support type {key} as data values."
             ) from err
 
 
@@ -643,8 +645,8 @@ class GraphMLWriter(GraphML):
         # data that needs to be added to them.
         # We postpone processing in order to do type inference/generalization.
         # See self.attr_type
-        for (xml_obj, data) in self.attributes.items():
-            for (k, v, scope, default) in data:
+        for xml_obj, data in self.attributes.items():
+            for k, v, scope, default in data:
                 xml_obj.append(
                     self.add_data(
                         str(k), self.attr_type(k, scope, v), str(v), scope, default
@@ -825,7 +827,7 @@ class GraphMLWriterLxml(GraphMLWriter):
     def __str__(self):
         return object.__str__(self)
 
-    def dump(self):
+    def dump(self, stream=None):
         self._graphml.__exit__(None, None, None)
         self._xml_base.__exit__(None, None, None)
 
@@ -969,7 +971,7 @@ class GraphMLReader(GraphML):
             text = data_element.text
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element)) == 0:
-                if data_type == bool:
+                if data_type is bool:
                     # Ignore cases.
                     # http://docs.oracle.com/javase/6/docs/api/java/lang/
                     # Boolean.html#parseBoolean%28java.lang.String%29
@@ -981,7 +983,7 @@ class GraphMLReader(GraphML):
                 node_label = None
                 # set GenericNode's configuration as shape type
                 gn = data_element.find(f"{{{self.NS_Y}}}GenericNode")
-                if gn:
+                if gn is not None:
                     data["shape_type"] = gn.get("configuration")
                 for node_type in ["GenericNode", "ShapeNode", "SVGNode", "ImageNode"]:
                     pref = f"{{{self.NS_Y}}}{node_type}/{{{self.NS_Y}}}"
@@ -997,7 +999,7 @@ class GraphMLReader(GraphML):
                 if node_label is not None:
                     data["label"] = node_label.text
 
-                # check all the different types of edges avaivable in yEd.
+                # check all the different types of edges available in yEd.
                 for edge_type in [
                     "PolyLineEdge",
                     "SplineEdge",
@@ -1009,9 +1011,10 @@ class GraphMLReader(GraphML):
                     edge_label = data_element.find(f"{pref}EdgeLabel")
                     if edge_label is not None:
                         break
-
                 if edge_label is not None:
                     data["label"] = edge_label.text
+            elif text is None:
+                data[data_name] = ""
         return data
 
     def find_graphml_keys(self, graph_element):
@@ -1041,7 +1044,7 @@ class GraphMLReader(GraphML):
             if default is not None:
                 # Handle default values identically to data element values
                 python_type = graphml_keys[attr_id]["type"]
-                if python_type == bool:
+                if python_type is bool:
                     graphml_key_defaults[attr_id] = self.convert_bool[
                         default.text.lower()
                     ]

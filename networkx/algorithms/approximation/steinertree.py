@@ -7,6 +7,7 @@ __all__ = ["metric_closure", "steiner_tree"]
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def metric_closure(G, weight="weight"):
     """Return the metric closure of a graph.
 
@@ -22,7 +23,22 @@ def metric_closure(G, weight="weight"):
     NetworkX graph
         Metric closure of the graph `G`.
 
+    Notes
+    -----
+    .. deprecated:: 3.6
+       `metric_closure` is deprecated and will be removed in NetworkX 3.8.
+       Use :func:`networkx.all_pairs_shortest_path_length` instead.
+
     """
+    import warnings
+
+    warnings.warn(
+        "metric_closure is deprecated and will be removed in NetworkX 3.8.\n"
+        "Use nx.all_pairs_shortest_path_length instead.",
+        category=DeprecationWarning,
+        stacklevel=5,
+    )
+
     M = nx.Graph()
 
     Gnodes = set(G)
@@ -30,7 +46,7 @@ def metric_closure(G, weight="weight"):
     # check for connected graph while processing first node
     all_paths_iter = nx.all_pairs_dijkstra(G, weight=weight)
     u, (distance, path) = next(all_paths_iter)
-    if Gnodes - set(distance):
+    if len(G) != len(distance):
         msg = "G is not a connected graph. metric_closure is not defined."
         raise nx.NetworkXError(msg)
     Gnodes.remove(u)
@@ -47,37 +63,39 @@ def metric_closure(G, weight="weight"):
 
 
 def _mehlhorn_steiner_tree(G, terminal_nodes, weight):
-    paths = nx.multi_source_dijkstra_path(G, terminal_nodes)
+    distances, paths = nx.multi_source_dijkstra(G, terminal_nodes, weight=weight)
 
     d_1 = {}
     s = {}
     for v in G.nodes():
         s[v] = paths[v][0]
-        d_1[(v, s[v])] = len(paths[v]) - 1
+        d_1[(v, s[v])] = distances[v]
 
     # G1-G4 names match those from the Mehlhorn 1988 paper.
     G_1_prime = nx.Graph()
+    # iterate over all edges to complete d1
     for u, v, data in G.edges(data=True):
         su, sv = s[u], s[v]
         weight_here = d_1[(u, su)] + data.get(weight, 1) + d_1[(v, sv)]
         if not G_1_prime.has_edge(su, sv):
-            G_1_prime.add_edge(su, sv, weight=weight_here)
+            G_1_prime.add_edge(su, sv, weight_d1=weight_here)
         else:
-            new_weight = min(weight_here, G_1_prime[su][sv][weight])
-            G_1_prime.add_edge(su, sv, weight=new_weight)
+            new_weight = min(weight_here, G_1_prime[su][sv]["weight_d1"])
+            G_1_prime.add_edge(su, sv, weight_d1=new_weight)
 
-    G_2 = nx.minimum_spanning_edges(G_1_prime, data=True)
+    G_2 = nx.minimum_spanning_edges(G_1_prime, data=True, weight="weight_d1")
 
     G_3 = nx.Graph()
-    for u, v, d in G_2:
-        path = nx.shortest_path(G, u, v, weight)
+    for u, v, _ in G_2:
+        path = nx.shortest_path(G, u, v, weight=weight)
         for n1, n2 in pairwise(path):
-            G_3.add_edge(n1, n2)
+            G_3.add_edge(n1, n2, weight=G[n1][n2].get(weight, 1))
 
-    G_3_mst = list(nx.minimum_spanning_edges(G_3, data=False))
+    G_3_mst = list(nx.minimum_spanning_edges(G_3, data=False, weight=weight))
     if G.is_multigraph():
         G_3_mst = (
-            (u, v, min(G[u][v], key=lambda k: G[u][v][k][weight])) for u, v in G_3_mst
+            (u, v, min(G[u][v], key=lambda k: G[u][v][k].get(weight, 1)))
+            for u, v in G_3_mst
         )
     G_4 = G.edge_subgraph(G_3_mst).copy()
     _remove_nonterminal_leaves(G_4, terminal_nodes)
@@ -85,18 +103,35 @@ def _mehlhorn_steiner_tree(G, terminal_nodes, weight):
 
 
 def _kou_steiner_tree(G, terminal_nodes, weight):
-    # H is the subgraph induced by terminal_nodes in the metric closure M of G.
-    M = metric_closure(G, weight=weight)
-    H = M.subgraph(terminal_nodes)
+    # Compute the metric closure only for terminal nodes
+    # Create a complete graph H from the metric edges
+    H = nx.Graph()
+    unvisited_terminals = set(terminal_nodes)
 
-    # Use the 'distance' attribute of each edge provided by M.
+    # check for connected graph while processing first node
+    u = unvisited_terminals.pop()
+    distances, paths = nx.single_source_dijkstra(G, source=u, weight=weight)
+    if len(G) != len(distances):
+        msg = "G is not a connected graph."
+        raise nx.NetworkXError(msg)
+    for v in unvisited_terminals:
+        H.add_edge(u, v, distance=distances[v], path=paths[v])
+
+    # first node done -- now process the rest
+    for u in unvisited_terminals.copy():
+        distances, paths = nx.single_source_dijkstra(G, source=u, weight=weight)
+        unvisited_terminals.remove(u)
+        for v in unvisited_terminals:
+            H.add_edge(u, v, distance=distances[v], path=paths[v])
+
+    # Use the 'distance' attribute of each edge provided by H.
     mst_edges = nx.minimum_spanning_edges(H, weight="distance", data=True)
 
     # Create an iterator over each edge in each shortest path; repeats are okay
     mst_all_edges = chain.from_iterable(pairwise(d["path"]) for u, v, d in mst_edges)
     if G.is_multigraph():
         mst_all_edges = (
-            (u, v, min(G[u][v], key=lambda k: G[u][v][k][weight]))
+            (u, v, min(G[u][v], key=lambda k: G[u][v][k].get(weight, 1)))
             for u, v in mst_all_edges
         )
 
@@ -112,10 +147,21 @@ def _kou_steiner_tree(G, terminal_nodes, weight):
 
 
 def _remove_nonterminal_leaves(G, terminals):
-    terminals_set = set(terminals)
-    for n in list(G.nodes):
-        if n not in terminals_set and G.degree(n) == 1:
-            G.remove_node(n)
+    terminal_set = set(terminals)
+    leaves = {n for n in G if len(set(G[n]) - {n}) == 1}
+    nonterminal_leaves = leaves - terminal_set
+
+    while nonterminal_leaves:
+        # Removing a node may create new non-terminal leaves, so we limit
+        # search for candidate non-terminal nodes to neighbors of current
+        # non-terminal nodes
+        candidate_leaves = set.union(*(set(G[n]) for n in nonterminal_leaves))
+        candidate_leaves -= nonterminal_leaves | terminal_set
+        # Remove current set of non-terminal nodes
+        G.remove_nodes_from(nonterminal_leaves)
+        # Find any new non-terminal nodes from the set of candidates
+        leaves = {n for n in candidate_leaves if len(set(G[n]) - {n}) == 1}
+        nonterminal_leaves = leaves - terminal_set
 
 
 ALGORITHMS = {
@@ -125,6 +171,7 @@ ALGORITHMS = {
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     r"""Return an approximation to the minimum Steiner tree of a graph.
 
@@ -134,20 +181,21 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
 
     The approximation algorithm is specified with the `method` keyword
     argument. All three available algorithms produce a tree whose weight is
-    within a (2 - (2 / l)) factor of the weight of the optimal Steiner tree,
-    where *l* is the minimum number of leaf nodes across all possible Steiner
+    within a ``(2 - (2 / l))`` factor of the weight of the optimal Steiner tree,
+    where ``l`` is the minimum number of leaf nodes across all possible Steiner
     trees.
 
-    * `kou` [2]_ (runtime $O(|S| |V|^2)$) computes the minimum spanning tree of
-    the subgraph of the metric closure of *G* induced by the terminal nodes,
-    where the metric closure of *G* is the complete graph in which each edge is
-    weighted by the shortest path distance between the nodes in *G*.
-    * `mehlhorn` [3]_ (runtime $O(|E|+|V|\log|V|)$) modifies Kou et al.'s
-    algorithm, beginning by finding the closest terminal node for each
-    non-terminal. This data is used to create a complete graph containing only
-    the terminal nodes, in which edge is weighted with the shortest path
-    distance between them. The algorithm then proceeds in the same way as Kou
-    et al..
+    * ``"kou"`` [2]_ (runtime $O(|S| |V|^2)$) computes the minimum spanning tree of
+      the subgraph of the metric closure of *G* induced by the terminal nodes,
+      where the metric closure of *G* is the complete graph in which each edge is
+      weighted by the shortest path distance between the nodes in *G*.
+
+    * ``"mehlhorn"`` [3]_ (runtime $O(|E|+|V|\log|V|)$) modifies Kou et al.'s
+      algorithm, beginning by finding the closest terminal node for each
+      non-terminal. This data is used to create a complete graph containing only
+      the terminal nodes, in which edge is weighted with the shortest path
+      distance between them. The algorithm then proceeds in the same way as Kou
+      et al..
 
     Parameters
     ----------
@@ -161,7 +209,7 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
         Use the edge attribute specified by this string as the edge weight.
         Any edge attribute not present defaults to 1.
 
-    method : string, optional (default = 'kou')
+    method : string, optional (default = 'mehlhorn')
         The algorithm to use to approximate the Steiner tree.
         Supported options: 'kou', 'mehlhorn'.
         Other inputs produce a ValueError.
@@ -171,6 +219,14 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     NetworkX graph
         Approximation to the minimum steiner tree of `G` induced by
         `terminal_nodes` .
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is directed.
+
+    ValueError
+        If the specified `method` is not supported.
 
     Notes
     -----
@@ -192,20 +248,12 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
            https://doi.org/10.1016/0020-0190(88)90066-X.
     """
     if method is None:
-        import warnings
-
-        msg = (
-            "steiner_tree will change default method from 'kou' to 'mehlhorn'"
-            "in version 3.2.\nSet the `method` kwarg to remove this warning."
-        )
-        warnings.warn(msg, FutureWarning, stacklevel=4)
-        method = "kou"
+        method = "mehlhorn"
 
     try:
         algo = ALGORITHMS[method]
     except KeyError as e:
-        msg = f"{method} is not a valid choice for an algorithm."
-        raise ValueError(msg) from e
+        raise ValueError(f"{method} is not a valid choice for an algorithm.") from e
 
     edges = algo(G, terminal_nodes, weight)
     # For multigraph we should add the minimal weight edge keys

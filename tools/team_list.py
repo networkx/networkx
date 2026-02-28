@@ -6,8 +6,10 @@ import requests
 project = "networkx"
 core = "core-developers"
 emeritus = "emeritus-developers"
+steering = "steering-council"
 core_url = f"https://api.github.com/orgs/{project}/teams/{core}/members"
 emeritus_url = f"https://api.github.com/orgs/{project}/teams/{emeritus}/members"
+steering_url = f"https://api.github.com/orgs/{project}/teams/{steering}/members"
 
 
 token = os.environ.get("GH_TOKEN", None)
@@ -33,6 +35,9 @@ core = sorted(resp, key=lambda user: user["login"].lower())
 resp = api(emeritus_url)
 emeritus = sorted(resp, key=lambda user: user["login"].lower())
 
+resp = api(steering_url)
+steering = sorted(resp, key=lambda user: user["login"].lower())
+
 
 def render_team(team):
     for member in team:
@@ -43,17 +48,17 @@ def render_team(team):
 .. raw:: html
 
    <div class="team-member">
-     <a href="https://github.com/{member['login']}" class="team-member-name">
+     <a href="https://github.com/{member["login"]}" class="team-member-name">
         <div class="team-member-photo">
            <img
-             src="{member['avatar_url']}&s=40"
+             src="{member["avatar_url"]}&s=40"
              loading="lazy"
-             alt="Avatar picture of @{profile['login']}"
+             alt="Avatar picture of @{profile["login"]}"
            />
         </div>
-        {profile['name'] if profile['name'] else '@' + profile['login']}
+        {profile["name"] if profile["name"] else "@" + profile["login"]}
      </a>
-     <div class="team-member-handle">@{member['login']}</div>
+     <div class="team-member-handle">@{member["login"]}</div>
    </div>
 """
         )
@@ -61,6 +66,8 @@ def render_team(team):
 
 print(
     """
+.. _core-developers-team:
+
 Core Developers
 ---------------
 
@@ -83,3 +90,16 @@ We thank these previously-active core developers for their contributions to Netw
 )
 
 render_team(emeritus)
+
+print(
+    """
+.. _steering-council-team:
+
+Steering Council
+----------------
+
+
+"""
+)
+
+render_team(steering)

@@ -6,6 +6,8 @@
 digraphs on three nodes.
 
 """
+
+import networkx as nx
 from networkx.classes import DiGraph
 
 __all__ = ["triad_graph"]
@@ -32,13 +34,30 @@ TRIAD_EDGES = {
 }
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def triad_graph(triad_name):
     """Returns the triad graph with the given name.
 
     Each string in the following tuple is a valid triad name::
 
-        ('003', '012', '102', '021D', '021U', '021C', '111D', '111U',
-         '030T', '030C', '201', '120D', '120U', '120C', '210', '300')
+        (
+            "003",
+            "012",
+            "102",
+            "021D",
+            "021U",
+            "021C",
+            "111D",
+            "111U",
+            "030T",
+            "030C",
+            "201",
+            "120D",
+            "120U",
+            "120C",
+            "210",
+            "300",
+        )
 
     Each triad name corresponds to one of the possible valid digraph on
     three nodes.

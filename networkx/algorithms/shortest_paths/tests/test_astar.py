@@ -45,19 +45,25 @@ class TestAStar:
         assert nx.astar_path_length(self.XG, "s", "v") == 9
 
     def test_astar_directed_weight_function(self):
-        w1 = lambda u, v, d: d["weight"]
+        def w1(u, v, d):
+            return d["weight"]
+
         assert nx.astar_path(self.XG, "x", "u", weight=w1) == ["x", "u"]
         assert nx.astar_path_length(self.XG, "x", "u", weight=w1) == 3
         assert nx.astar_path(self.XG, "s", "v", weight=w1) == ["s", "x", "u", "v"]
         assert nx.astar_path_length(self.XG, "s", "v", weight=w1) == 9
 
-        w2 = lambda u, v, d: None if (u, v) == ("x", "u") else d["weight"]
+        def w2(u, v, d):
+            return None if (u, v) == ("x", "u") else d["weight"]
+
         assert nx.astar_path(self.XG, "x", "u", weight=w2) == ["x", "y", "s", "u"]
         assert nx.astar_path_length(self.XG, "x", "u", weight=w2) == 19
         assert nx.astar_path(self.XG, "s", "v", weight=w2) == ["s", "x", "v"]
         assert nx.astar_path_length(self.XG, "s", "v", weight=w2) == 10
 
-        w3 = lambda u, v, d: d["weight"] + 10
+        def w3(u, v, d):
+            return d["weight"] + 10
+
         assert nx.astar_path(self.XG, "x", "u", weight=w3) == ["x", "u"]
         assert nx.astar_path_length(self.XG, "x", "u", weight=w3) == 13
         assert nx.astar_path(self.XG, "s", "v", weight=w3) == ["s", "x", "v"]
@@ -176,6 +182,44 @@ class TestAStar:
         with pytest.raises(nx.NodeNotFound):
             nx.astar_path(self.XG, "s", "moon")
 
+    def test_astar_cutoff(self):
+        with pytest.raises(nx.NetworkXNoPath):
+            # optimal path_length in XG is 9
+            nx.astar_path(self.XG, "s", "v", cutoff=8.0)
+        with pytest.raises(nx.NetworkXNoPath):
+            nx.astar_path_length(self.XG, "s", "v", cutoff=8.0)
+
+    def test_astar_admissible_heuristic_with_cutoff(self):
+        heuristic_values = {"s": 36, "y": 4, "x": 0, "u": 0, "v": 0}
+
+        def h(u, v):
+            return heuristic_values[u]
+
+        assert nx.astar_path_length(self.XG, "s", "v") == 9
+        assert nx.astar_path_length(self.XG, "s", "v", heuristic=h) == 9
+        assert nx.astar_path_length(self.XG, "s", "v", heuristic=h, cutoff=12) == 9
+        assert nx.astar_path_length(self.XG, "s", "v", heuristic=h, cutoff=9) == 9
+        with pytest.raises(nx.NetworkXNoPath):
+            nx.astar_path_length(self.XG, "s", "v", heuristic=h, cutoff=8)
+
+    def test_astar_inadmissible_heuristic_with_cutoff(self):
+        heuristic_values = {"s": 36, "y": 14, "x": 10, "u": 10, "v": 0}
+
+        def h(u, v):
+            return heuristic_values[u]
+
+        # optimal path_length in XG is 9. This heuristic gives over-estimate.
+        assert nx.astar_path_length(self.XG, "s", "v", heuristic=h) == 10
+        assert nx.astar_path_length(self.XG, "s", "v", heuristic=h, cutoff=15) == 10
+        with pytest.raises(nx.NetworkXNoPath):
+            nx.astar_path_length(self.XG, "s", "v", heuristic=h, cutoff=9)
+        with pytest.raises(nx.NetworkXNoPath):
+            nx.astar_path_length(self.XG, "s", "v", heuristic=h, cutoff=12)
+
+    def test_astar_cutoff2(self):
+        assert nx.astar_path(self.XG, "s", "v", cutoff=10.0) == ["s", "x", "u", "v"]
+        assert nx.astar_path_length(self.XG, "s", "v") == 9
+
     def test_cycle(self):
         C = nx.cycle_graph(7)
         assert nx.astar_path(C, 0, 3) == [0, 1, 2, 3]
@@ -194,3 +238,17 @@ class TestAStar:
         G.add_edges_from(pairwise(nodes, cyclic=True))
         path = nx.astar_path(G, nodes[0], nodes[2])
         assert len(path) == 3
+
+    def test_astar_NetworkXNoPath(self):
+        """Tests that exception is raised when there exists no
+        path between source and target"""
+        G = nx.gnp_random_graph(10, 0.2, seed=10)
+        with pytest.raises(nx.NetworkXNoPath):
+            nx.astar_path(G, 4, 9)
+
+    def test_astar_NodeNotFound(self):
+        """Tests that exception is raised when either
+        source or target is not in graph"""
+        G = nx.gnp_random_graph(10, 0.2, seed=10)
+        with pytest.raises(nx.NodeNotFound):
+            nx.astar_path_length(G, 11, 9)

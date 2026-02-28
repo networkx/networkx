@@ -1,11 +1,19 @@
 import gc
 import pickle
 import platform
+import weakref
 
 import pytest
 
 import networkx as nx
 from networkx.utils import edges_equal, graphs_equal, nodes_equal
+
+
+def test_degree_node_not_found_exception_message():
+    """See gh-7740"""
+    G = nx.path_graph(5)
+    with pytest.raises(nx.NetworkXError, match="Node.*is not in the graph"):
+        G.degree(100)
 
 
 class BaseGraphTester:
@@ -71,7 +79,19 @@ class BaseGraphTester:
         G = self.Graph()
 
         def count_objects_of_type(_type):
-            return sum(1 for obj in gc.get_objects() if isinstance(obj, _type))
+            # Iterating over all objects tracked by gc can include weak references
+            # whose weakly-referenced objects may no longer exist. Calling `isinstance`
+            # on such a weak reference will raise ReferenceError. There are at least
+            # three workarounds for this: one is to compare type names instead of using
+            # `isinstance` such as `type(obj).__name__ == typename`, another is to use
+            # `type(obj) == _type`, and the last is to ignore ProxyTypes as we do below.
+            # NOTE: even if this safeguard is deemed unnecessary to pass NetworkX tests,
+            # we should still keep it for maximum safety for other NetworkX backends.
+            return sum(
+                1
+                for obj in gc.get_objects()
+                if not isinstance(obj, weakref.ProxyTypes) and isinstance(obj, _type)
+            )
 
         gc.collect()
         before = count_objects_of_type(self.Graph)
@@ -126,7 +146,7 @@ class BaseGraphTester:
         # node not in graph doesn't get caught upon creation of iterator
         bunch = G.nbunch_iter(-1)
         # but gets caught when iterator used
-        with pytest.raises(nx.NetworkXError, match="is not a node or a sequence"):
+        with pytest.raises(nx.NetworkXError, match="is not in the graph"):
             list(bunch)
         # unhashable doesn't get caught upon creation of iterator
         bunch = G.nbunch_iter([0, 1, 2, {}])
@@ -761,7 +781,7 @@ class TestGraph(BaseAttrGraphTester):
         assert G.get_edge_data(-1, 0, default=1) == 1
 
     def test_update(self):
-        # specify both edgees and nodes
+        # specify both edges and nodes
         G = self.K3.copy()
         G.update(nodes=[3, (4, {"size": 2})], edges=[(4, 5), (6, 7, {"weight": 2})])
         nlist = [
@@ -905,3 +925,26 @@ class TestEdgeSubgraph:
 
         """
         assert self.G.graph is self.H.graph
+
+
+def test_graph_new_extra_args():
+    """Test that subclasses can accept additional arguments.
+
+    See: https://github.com/networkx/networkx/issues/8367
+    """
+
+    class MyGraph(nx.Graph):
+        def __init__(self, incoming_graph_data=None, extra_arg=None, **attr):
+            super().__init__(incoming_graph_data, **attr)
+            self.extra_arg = extra_arg
+
+    G = MyGraph(extra_arg="extra arg")
+    assert G.extra_arg == "extra arg"
+
+    G = MyGraph([], "extra arg")
+    assert G.extra_arg == "extra arg"
+
+    G = MyGraph([(0, 1)], extra_arg="foo", name="bar")
+    assert G.extra_arg == "foo"
+    assert G.graph["name"] == "bar"
+    assert nx.utils.edges_equal(G.edges, [(0, 1)])

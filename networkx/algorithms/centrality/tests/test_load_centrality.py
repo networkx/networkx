@@ -6,7 +6,6 @@ import networkx as nx
 class TestLoadCentrality:
     @classmethod
     def setup_class(cls):
-
         G = nx.Graph()
         G.add_edge(0, 1, weight=3)
         G.add_edge(0, 2, weight=2)
@@ -274,7 +273,7 @@ class TestLoadCentrality:
         # centrality". https://arxiv.org/pdf/physics/0511084
 
         # Notice that unlike here, their calculation adds to 1 to the
-        # betweennes of every node i for every path from i to every
+        # betweenness of every node i for every path from i to every
         # other node.  This is exactly what it should be, based on
         # Eqn. (1) in their paper: the eqn is B(v) = \sum_{s\neq t,
         # s\neq v}{\frac{\sigma_{st}(v)}{\sigma_{st}}}, therefore,

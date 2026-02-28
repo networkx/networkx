@@ -1,6 +1,7 @@
 from networkx.algorithms.assortativity import *
 from networkx.algorithms.asteroidal import *
 from networkx.algorithms.boundary import *
+from networkx.algorithms.broadcasting import *
 from networkx.algorithms.bridges import *
 from networkx.algorithms.chains import *
 from networkx.algorithms.centrality import *
@@ -37,6 +38,8 @@ from networkx.algorithms.non_randomness import *
 from networkx.algorithms.operators import *
 from networkx.algorithms.planarity import *
 from networkx.algorithms.planar_drawing import *
+from networkx.algorithms.polynomials import *
+from networkx.algorithms.perfect_graph import *
 from networkx.algorithms.reciprocity import *
 from networkx.algorithms.regular import *
 from networkx.algorithms.richclub import *
@@ -50,12 +53,13 @@ from networkx.algorithms.structuralholes import *
 from networkx.algorithms.sparsifiers import *
 from networkx.algorithms.summarization import *
 from networkx.algorithms.swap import *
+from networkx.algorithms.time_dependent import *
 from networkx.algorithms.traversal import *
 from networkx.algorithms.triads import *
 from networkx.algorithms.vitality import *
 from networkx.algorithms.voronoi import *
+from networkx.algorithms.walks import *
 from networkx.algorithms.wiener import *
-from networkx.algorithms.polynomials import *
 
 # Make certain subpackages available to the user as direct imports from
 # the `networkx` namespace.
@@ -127,3 +131,4 @@ from networkx.algorithms.tree.decomposition import *
 from networkx.algorithms.tree.mst import *
 from networkx.algorithms.tree.operations import *
 from networkx.algorithms.tree.recognition import *
+from networkx.algorithms.tournament import is_tournament

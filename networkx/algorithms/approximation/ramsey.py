@@ -1,6 +1,7 @@
 """
 Ramsey numbers.
 """
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -11,6 +12,7 @@ __all__ = ["ramsey_R2"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def ramsey_R2(G):
     r"""Compute the largest clique and largest independent set in `G`.
 

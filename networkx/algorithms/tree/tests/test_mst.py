@@ -9,6 +9,10 @@ from networkx.utils import edges_equal, nodes_equal
 def test_unknown_algorithm():
     with pytest.raises(ValueError):
         nx.minimum_spanning_tree(nx.Graph(), algorithm="random")
+    with pytest.raises(
+        ValueError, match="random is not a valid choice for an algorithm."
+    ):
+        nx.maximum_spanning_edges(nx.Graph(), algorithm="random")
 
 
 class MinimumSpanningTreeTestBase:
@@ -104,6 +108,19 @@ class MinimumSpanningTreeTestBase:
         with pytest.raises(ValueError):
             list(edges)
 
+    def test_nan_weights_MultiGraph(self):
+        G = nx.MultiGraph()
+        G.add_edge(0, 12, weight=float("nan"))
+        edges = nx.minimum_spanning_edges(
+            G, algorithm="prim", data=False, ignore_nan=False
+        )
+        with pytest.raises(ValueError):
+            list(edges)
+        # test default for ignore_nan as False
+        edges = nx.minimum_spanning_edges(G, algorithm="prim", data=False)
+        with pytest.raises(ValueError):
+            list(edges)
+
     def test_nan_weights_order(self):
         # now try again with a nan edge at the beginning of G.nodes
         edges = [
@@ -165,7 +182,7 @@ class MinimumSpanningTreeTestBase:
         assert edges_equal(actual, self.maximum_spanning_edgelist)
 
     def test_disconnected(self):
-        G = nx.Graph([(0, 1, dict(weight=1)), (2, 3, dict(weight=2))])
+        G = nx.Graph([(0, 1, {"weight": 1}), (2, 3, {"weight": 2})])
         T = nx.minimum_spanning_tree(G, algorithm=self.algo)
         assert nodes_equal(list(T), list(range(4)))
         assert edges_equal(list(T.edges()), [(0, 1), (2, 3)])
@@ -201,6 +218,14 @@ class MinimumSpanningTreeTestBase:
         assert nodes_equal(sorted(T), list(range(4)))
         assert edges_equal(sorted(T.edges()), [(0, 1), (0, 2)])
 
+    def test_minimum_spanning_edges_directed_raises(self):
+        DG = nx.DiGraph()
+        DG.add_edge(0, 1, weight=1)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            list(nx.minimum_spanning_edges(DG, algorithm=self.algo))
+        with pytest.raises(nx.NetworkXNotImplemented):
+            list(nx.maximum_spanning_edges(DG, algorithm=self.algo))
+
 
 class TestBoruvka(MinimumSpanningTreeTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
@@ -218,6 +243,14 @@ class TestBoruvka(MinimumSpanningTreeTestBase):
         # orientation, so we need to sort each edge individually.
         actual = sorted((min(u, v), max(u, v), d) for u, v, d in edges)
         assert edges_equal(actual, self.minimum_spanning_edgelist)
+
+    def test_minimum_spanning_edges_multigraph_raises(self):
+        MG = nx.MultiGraph()
+        MG.add_edge(0, 1, weight=1)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            list(nx.minimum_spanning_edges(MG, algorithm=self.algo))
+        with pytest.raises(nx.NetworkXNotImplemented):
+            list(nx.maximum_spanning_edges(MG, algorithm=self.algo))
 
 
 class MultigraphMSTTestBase(MinimumSpanningTreeTestBase):
@@ -253,6 +286,44 @@ class TestKruskal(MultigraphMSTTestBase):
 
     algorithm = "kruskal"
 
+    def test_key_data_bool(self):
+        """Tests that the keys and data values are included in
+        MST edges based on whether keys and data parameters are
+        true or false"""
+        G = nx.MultiGraph()
+        G.add_edge(1, 2, key=1, weight=2)
+        G.add_edge(1, 2, key=2, weight=3)
+        G.add_edge(3, 2, key=1, weight=2)
+        G.add_edge(3, 1, key=1, weight=4)
+
+        # keys are included and data is not included
+        mst_edges = nx.minimum_spanning_edges(
+            G, algorithm=self.algo, keys=True, data=False
+        )
+        assert edges_equal([(1, 2, 1), (2, 3, 1)], list(mst_edges))
+
+        # keys are not included and data is included
+        mst_edges = nx.minimum_spanning_edges(
+            G, algorithm=self.algo, keys=False, data=True
+        )
+        assert edges_equal(
+            [(1, 2, {"weight": 2}), (2, 3, {"weight": 2})], list(mst_edges)
+        )
+
+        # both keys and data are not included
+        mst_edges = nx.minimum_spanning_edges(
+            G, algorithm=self.algo, keys=False, data=False
+        )
+        assert edges_equal([(1, 2), (2, 3)], list(mst_edges))
+
+        # both keys and data are included
+        mst_edges = nx.minimum_spanning_edges(
+            G, algorithm=self.algo, keys=True, data=True
+        )
+        assert edges_equal(
+            [(1, 2, 1, {"weight": 2}), (2, 3, 1, {"weight": 2})], list(mst_edges)
+        )
+
 
 class TestPrim(MultigraphMSTTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
@@ -260,6 +331,37 @@ class TestPrim(MultigraphMSTTestBase):
     """
 
     algorithm = "prim"
+
+    def test_prim_mst_edges_simple_graph(self):
+        H = nx.Graph()
+        H.add_edge(1, 2, key=2, weight=3)
+        H.add_edge(3, 2, key=1, weight=2)
+        H.add_edge(3, 1, key=1, weight=4)
+
+        mst_edges = nx.minimum_spanning_edges(H, algorithm=self.algo, ignore_nan=True)
+        assert edges_equal(
+            [(1, 2, {"key": 2, "weight": 3}), (2, 3, {"key": 1, "weight": 2})],
+            list(mst_edges),
+        )
+
+    def test_ignore_nan(self):
+        """Tests that the edges with NaN weights are ignored or
+        raise an Error based on ignore_nan is true or false"""
+        H = nx.MultiGraph()
+        H.add_edge(1, 2, key=1, weight=float("nan"))
+        H.add_edge(1, 2, key=2, weight=3)
+        H.add_edge(3, 2, key=1, weight=2)
+        H.add_edge(3, 1, key=1, weight=4)
+
+        # NaN weight edges are ignored when ignore_nan=True
+        mst_edges = nx.minimum_spanning_edges(H, algorithm=self.algo, ignore_nan=True)
+        assert edges_equal(
+            [(1, 2, 2, {"weight": 3}), (2, 3, 1, {"weight": 2})], list(mst_edges)
+        )
+
+        # NaN weight edges raise Error when ignore_nan=False
+        with pytest.raises(ValueError):
+            list(nx.minimum_spanning_edges(H, algorithm=self.algo, ignore_nan=False))
 
     def test_multigraph_keys_tree(self):
         G = nx.MultiGraph()
@@ -366,6 +468,68 @@ class TestSpanningTreeIterator:
         for tree in nx.SpanningTreeIterator(self.G, minimum=False):
             actual = sorted(tree.edges(data=True))
             assert edges_equal(actual, self.spanning_trees[tree_index])
+            tree_index -= 1
+
+
+class TestSpanningTreeMultiGraphIterator:
+    """
+    Uses the same graph as the above class but with an added edge of twice the weight.
+    """
+
+    def setup_method(self):
+        # New graph
+        edges = [
+            (0, 1, 5),
+            (0, 1, 10),
+            (1, 2, 4),
+            (1, 2, 8),
+            (1, 4, 6),
+            (1, 4, 12),
+            (2, 3, 5),
+            (2, 3, 10),
+            (2, 4, 7),
+            (2, 4, 14),
+            (3, 4, 3),
+            (3, 4, 6),
+        ]
+        self.G = nx.MultiGraph()
+        self.G.add_weighted_edges_from(edges)
+
+        # There are 128 trees. I'd rather not list all 128 here, and computing them
+        # on such a small graph actually doesn't take that long.
+        from itertools import combinations
+
+        self.spanning_trees = []
+        for e in combinations(self.G.edges, 4):
+            tree = self.G.edge_subgraph(e)
+            if nx.is_tree(tree):
+                self.spanning_trees.append(sorted(tree.edges(keys=True, data=True)))
+
+    def test_minimum_spanning_tree_iterator_multigraph(self):
+        """
+        Tests that the spanning trees are correctly returned in increasing order
+        """
+        tree_index = 0
+        last_weight = 0
+        for tree in nx.SpanningTreeIterator(self.G):
+            actual = sorted(tree.edges(keys=True, data=True))
+            weight = sum([e[3]["weight"] for e in actual])
+            assert actual in self.spanning_trees
+            assert weight >= last_weight
+            tree_index += 1
+
+    def test_maximum_spanning_tree_iterator_multigraph(self):
+        """
+        Tests that the spanning trees are correctly returned in decreasing order
+        """
+        tree_index = 127
+        # Maximum weight tree is 46
+        last_weight = 50
+        for tree in nx.SpanningTreeIterator(self.G, minimum=False):
+            actual = sorted(tree.edges(keys=True, data=True))
+            weight = sum([e[3]["weight"] for e in actual])
+            assert actual in self.spanning_trees
+            assert weight <= last_weight
             tree_index -= 1
 
 
@@ -620,3 +784,151 @@ def test_random_spanning_tree_additive_large():
     # Assert that p is greater than the significance level so that we do not
     # reject the null hypothesis
     assert not p < 0.05
+
+
+def test_random_spanning_tree_empty_graph():
+    G = nx.Graph()
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 0
+    assert len(rst.edges) == 0
+
+
+def test_random_spanning_tree_single_node_graph():
+    G = nx.Graph()
+    G.add_node(0)
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 1
+    assert len(rst.edges) == 0
+
+
+def test_random_spanning_tree_single_node_loop():
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_edge(0, 0)
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 1
+    assert len(rst.edges) == 0
+
+
+class TestNumberSpanningTrees:
+    @classmethod
+    def setup_class(cls):
+        global np
+        np = pytest.importorskip("numpy")
+        sp = pytest.importorskip("scipy")
+
+    def test_nst_disconnected(self):
+        G = nx.empty_graph(2)
+        assert np.isclose(nx.number_of_spanning_trees(G), 0)
+
+    def test_nst_no_nodes(self):
+        G = nx.Graph()
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.number_of_spanning_trees(G)
+
+    def test_nst_weight(self):
+        G = nx.Graph()
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(1, 3, weight=1)
+        G.add_edge(2, 3, weight=2)
+        # weights are ignored
+        assert np.isclose(nx.number_of_spanning_trees(G), 3)
+        # including weight
+        assert np.isclose(nx.number_of_spanning_trees(G, weight="weight"), 5)
+
+    def test_nst_negative_weight(self):
+        G = nx.Graph()
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(1, 3, weight=-1)
+        G.add_edge(2, 3, weight=-2)
+        # weights are ignored
+        assert np.isclose(nx.number_of_spanning_trees(G), 3)
+        # including weight
+        assert np.isclose(nx.number_of_spanning_trees(G, weight="weight"), -1)
+
+    def test_nst_selfloop(self):
+        # self-loops are ignored
+        G = nx.complete_graph(3)
+        G.add_edge(1, 1)
+        assert np.isclose(nx.number_of_spanning_trees(G), 3)
+
+    def test_nst_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edge(1, 2)
+        G.add_edge(1, 2)
+        G.add_edge(1, 3)
+        G.add_edge(2, 3)
+        assert np.isclose(nx.number_of_spanning_trees(G), 5)
+
+    def test_nst_complete_graph(self):
+        # this is known as Cayley's formula
+        N = 5
+        G = nx.complete_graph(N)
+        assert np.isclose(nx.number_of_spanning_trees(G), N ** (N - 2))
+
+    def test_nst_path_graph(self):
+        G = nx.path_graph(5)
+        assert np.isclose(nx.number_of_spanning_trees(G), 1)
+
+    def test_nst_cycle_graph(self):
+        G = nx.cycle_graph(5)
+        assert np.isclose(nx.number_of_spanning_trees(G), 5)
+
+    def test_nst_directed_noroot(self):
+        G = nx.empty_graph(3, create_using=nx.MultiDiGraph)
+        with pytest.raises(nx.NetworkXError):
+            nx.number_of_spanning_trees(G)
+
+    def test_nst_directed_root_not_exist(self):
+        G = nx.empty_graph(3, create_using=nx.MultiDiGraph)
+        with pytest.raises(nx.NetworkXError):
+            nx.number_of_spanning_trees(G, root=42)
+
+    def test_nst_directed_not_weak_connected(self):
+        G = nx.DiGraph()
+        G.add_edge(1, 2)
+        G.add_edge(3, 4)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=1), 0)
+
+    def test_nst_directed_cycle_graph(self):
+        G = nx.DiGraph()
+        G = nx.cycle_graph(7, G)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 1)
+
+    def test_nst_directed_complete_graph(self):
+        G = nx.DiGraph()
+        G = nx.complete_graph(7, G)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 7**5)
+
+    def test_nst_directed_multi(self):
+        G = nx.MultiDiGraph()
+        G = nx.cycle_graph(3, G)
+        G.add_edge(1, 2)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 2)
+
+    def test_nst_directed_selfloop(self):
+        G = nx.MultiDiGraph()
+        G = nx.cycle_graph(3, G)
+        G.add_edge(1, 1)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 1)
+
+    def test_nst_directed_weak_connected(self):
+        G = nx.MultiDiGraph()
+        G = nx.cycle_graph(3, G)
+        G.remove_edge(1, 2)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 0)
+
+    def test_nst_directed_weighted(self):
+        # from root=1:
+        # arborescence 1: 1->2, 1->3, weight=2*1
+        # arborescence 2: 1->2, 2->3, weight=2*3
+        G = nx.DiGraph()
+        G.add_edge(1, 2, weight=2)
+        G.add_edge(1, 3, weight=1)
+        G.add_edge(2, 3, weight=3)
+        Nst = nx.number_of_spanning_trees(G, root=1, weight="weight")
+        assert np.isclose(Nst, 8)
+        Nst = nx.number_of_spanning_trees(G, root=2, weight="weight")
+        assert np.isclose(Nst, 0)
+        Nst = nx.number_of_spanning_trees(G, root=3, weight="weight")
+        assert np.isclose(Nst, 0)

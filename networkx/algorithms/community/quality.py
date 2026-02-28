@@ -6,15 +6,13 @@ communities).
 from itertools import combinations
 
 import networkx as nx
-from networkx import NetworkXError
 from networkx.algorithms.community.community_utils import is_partition
-from networkx.utils import not_implemented_for
 from networkx.utils.decorators import argmap
 
-__all__ = ["modularity", "partition_quality"]
+__all__ = ["constant_potts_model", "modularity", "partition_quality"]
 
 
-class NotAPartition(NetworkXError):
+class NotAPartition(nx.NetworkXError):
     """Raised if a given collection is not a partition."""
 
     def __init__(self, G, collection):
@@ -59,7 +57,7 @@ def _require_partition(G, partition):
 require_partition = argmap(_require_partition, (0, 1))
 
 
-@nx._dispatch
+@nx._dispatchable
 def intra_community_edges(G, partition):
     """Returns the number of intra-community edges for a partition of `G`.
 
@@ -77,7 +75,7 @@ def intra_community_edges(G, partition):
     return sum(G.subgraph(block).size() for block in partition)
 
 
-@nx._dispatch
+@nx._dispatchable
 def inter_community_edges(G, partition):
     """Returns the number of inter-community edges for a partition of `G`.
     according to the given
@@ -109,6 +107,7 @@ def inter_community_edges(G, partition):
     return nx.quotient_graph(G, partition, create_using=MG).size()
 
 
+@nx._dispatchable
 def inter_community_non_edges(G, partition):
     """Returns the number of inter-community non-edges according to the
     given partition of the nodes of `G`.
@@ -141,6 +140,7 @@ def inter_community_non_edges(G, partition):
     return inter_community_edges(nx.complement(G), partition)
 
 
+@nx._dispatchable(edge_attrs="weight")
 def modularity(G, communities, weight="weight", resolution=1):
     r"""Returns the modularity of the given partition of the graph.
 
@@ -150,9 +150,10 @@ def modularity(G, communities, weight="weight", resolution=1):
         Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \gamma\frac{k_ik_j}{2m}\right)
             \delta(c_i,c_j)
 
-    where $m$ is the number of edges, $A$ is the adjacency matrix of `G`,
-    $k_i$ is the degree of $i$, $\gamma$ is the resolution parameter,
-    and $\delta(c_i, c_j)$ is 1 if $i$ and $j$ are in the same community else 0.
+    where $m$ is the number of edges (or sum of all edge weights as in [5]_),
+    $A$ is the adjacency matrix of `G`, $k_i$ is the (weighted) degree of $i$,
+    $\gamma$ is the resolution parameter, and $\delta(c_i, c_j)$ is 1 if $i$ and
+    $j$ are in the same community else 0.
 
     According to [2]_ (and verified by some algebra) this can be reduced to
 
@@ -193,7 +194,7 @@ def modularity(G, communities, weight="weight", resolution=1):
     Returns
     -------
     Q : float
-        The modularity of the paritition.
+        The modularity of the partition.
 
     Raises
     ------
@@ -202,11 +203,10 @@ def modularity(G, communities, weight="weight", resolution=1):
 
     Examples
     --------
-    >>> import networkx.algorithms.community as nx_comm
     >>> G = nx.barbell_graph(3, 0)
-    >>> nx_comm.modularity(G, [{0, 1, 2}, {3, 4, 5}])
+    >>> nx.community.modularity(G, [{0, 1, 2}, {3, 4, 5}])
     0.35714285714285715
-    >>> nx_comm.modularity(G, nx_comm.label_propagation_communities(G))
+    >>> nx.community.modularity(G, nx.community.label_propagation_communities(G))
     0.35714285714285715
 
     References
@@ -221,7 +221,9 @@ def modularity(G, communities, weight="weight", resolution=1):
     .. [4] M. E. J. Newman, "Equivalence between modularity optimization and
        maximum likelihood methods for community detection"
        Phys. Rev. E 94, 052315, 2016. https://doi.org/10.1103/PhysRevE.94.052315
-
+    .. [5] Blondel, V.D. et al. "Fast unfolding of communities in large
+       networks" J. Stat. Mech 10008, 1-12 (2008).
+       https://doi.org/10.1088/1742-5468/2008/10/P10008
     """
     if not isinstance(communities, list):
         communities = list(communities)
@@ -252,7 +254,163 @@ def modularity(G, communities, weight="weight", resolution=1):
     return sum(map(community_contribution, communities))
 
 
+def _cpm_delta_partial_eval_remove(
+    G, node, community, resolution, weight="weight", node_weight="node_weight"
+):
+    r"""
+    Let P = [A, B, C, D,...] be a partition, and let P' = [A', B', C, D,...]
+    be the partition obtained by moving the node u from community A to
+    community B, that is where A' = A\{u} and B = B \union {u}
+
+    The overall change in quality associated with this move is
+
+        q_delta = constant_potts_mode(G, P') - constant_potts_model(G, P)
+
+    Throughout the algorithm the quality q_delta will be computed by
+    calculating two intermediate values q_rem and q_add satisfying the
+    property that
+
+        q_delta = q_rem + q_add
+
+    The current function is one of a pair of similar functions
+    that compute these values with
+
+    q_rem = _cpm_delta_partial_eval_remove(G, u, A)
+    q_add = _cpm_delta_partial_eval_add(G, u, B)
+
+    """
+    A_prime = community - {node}
+
+    n_A_prime = sum(wt for u, wt in G.nodes(data=node_weight) if u in A_prime)
+
+    u_wt = G.nodes[node][node_weight]
+
+    E_diff = sum(wt for _, v, wt in G.edges({node}, data=weight) if v in A_prime)
+
+    return resolution * 2 * n_A_prime * u_wt - E_diff
+
+
+def _cpm_delta_partial_eval_add(
+    G, node, community, resolution, weight="weight", node_weight="node_weight"
+):
+    r"""
+    One of a pair of partial evaluation functions. See
+
+        _cpm_delta_partial_eval_remove
+
+    for more details.
+    """
+    n_B = sum(wt for u, wt in G.nodes(data=node_weight) if u in community)
+
+    # could optimise by passing u_wt directly as a parameter rather than
+    # making this lookup
+    u_wt = G.nodes[node][node_weight]
+
+    E_D = sum(wt for _, v, wt in G.edges({node}, data=weight) if v in community)
+    return E_D - resolution * 2 * n_B * u_wt
+
+
+def constant_potts_model(
+    G,
+    communities,
+    weight,
+    node_weight,
+    resolution,
+):
+    r"""
+    Computes the Constant Potts Model, which is a measure of quality of a
+    partition. This is defined in [1]_ as
+
+    .. math::
+        Q = \sum_{C \in P} E(C,C) - \gamma n_C^2
+
+    Where
+
+    E(C,C) is the sum of all edge weights within the community C,
+    n_C is the sum of the weights of the nodes in C.
+    \gamma is the resolution parameter. See Notes below for more
+    more detail on resolution parameter.
+
+    The Constant Potts Model is similar to modularity, but overcomes the
+    so-called resolution limit problem when used in community detection
+    algorithms like leiden and louvain.
+
+    The Constant Potts Model is used by default in the leiden community
+    detection algorithm
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    communities : list or iterable of sets of nodes
+        These node sets must represent a partition of G's nodes.
+
+    weight : string or None, optional
+        The edge attribute that holds the numerical value used
+        as a weight. If None or an edge does not have that attribute,
+        then that edge has weight 1.
+
+    node_weight : string or None, optional
+        The node attribute that holds the numerical value used as
+        a weight. If None or an edge does not have tha attribute,
+        then the node is treated as having weight 1
+
+    resolution : float
+        For smaller resolution values, the constant_potts_model will be
+        maximised by a partition consisting of larger communities; for
+        larger resolution values constant_potts_model will be maximised
+        for smaller communities.
+
+    Returns
+    -------
+    Q : float
+        The Constant Potts Model value of the partition.
+
+    Notes
+    -----
+
+    The interpretation of the resolution parameter \gamma is explained as
+    follows in page 3 of [1]_:
+
+        [The Constant Potts Model] tries to maximize the number of
+        internal edges while at the same time keeping relatively small
+        communities.
+
+        [The resolution, \gamma] balances these two imperatives. In fact,
+        the parameter \gamma acts as the inner and outer edge density
+        threshold. That is, suppose there is a community [C] with [E(C, C)]
+        edges and [n_C] nodes. Then it is better to split it into two
+        communities r and s whenever
+
+        .. math::
+            \frac{[E(r,s)]}{2 n_r n_s} < \gamma
+
+        where [E(r,s)] is the number [or weighted sum] of links between
+        community r and s. This ratio is exactly the density of links between
+        community r and s. So, the link density between communities should be
+        lower than \gamma, while the link density within communities should
+        be higher than \gamma.
+
+    References
+    ----------
+    .. [1] V.A. Traag, P. Van Dooren, Y. Nesterov "Narrow scope for
+       resolution-limit-free community detection"
+       <https://arxiv.org/abs/1104.3083>
+    """
+
+    def community_contribution(community):
+        comm = set(community)
+        E_c = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm)
+
+        n_c = sum(G.nodes[node].get(node_weight, 1) for node in community)
+
+        return E_c - resolution * (n_c**2)
+
+    return sum(community_contribution(c) for c in communities)
+
+
 @require_partition
+@nx._dispatchable
 def partition_quality(G, partition):
     """Returns the coverage and performance of a partition of G.
 
@@ -263,7 +421,8 @@ def partition_quality(G, partition):
     intra-community edges plus inter-community non-edges divided by the total
     number of potential edges.
 
-    This algorithm has complexity $O(C^2 + L)$ where C is the number of communities and L is the number of links.
+    This algorithm has complexity $O(C^2 + L)$ where C is the number of
+    communities and L is the number of links.
 
     Parameters
     ----------

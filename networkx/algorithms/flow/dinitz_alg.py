@@ -1,6 +1,7 @@
 """
 Dinitz' algorithm for maximum flow problems.
 """
+
 from collections import deque
 
 import networkx as nx
@@ -10,6 +11,9 @@ from networkx.utils import pairwise
 __all__ = ["dinitz"]
 
 
+@nx._dispatchable(
+    edge_attrs={"capacity": float("inf")}, returns_graph=True, preserve_edge_attrs=True
+)
 def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff=None):
     """Find a maximum single-commodity flow using Dinitz' algorithm.
 
@@ -34,11 +38,18 @@ def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff
     t : node
         Sink node for the flow.
 
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
+    capacity : string or function (default= 'capacity')
+        If this is a string, then edge capacity will be accessed via the
+        edge attribute with this key (that is, the capacity of the edge
+        joining `u` to `v` will be ``G.edges[u, v][capacity]``). If no
+        such edge attribute exists, the capacity of the edge is assumed to
+        be infinite.
+
+        If this is a function, the capacity of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     residual : NetworkX graph
         Residual network on which the algorithm is to be executed. If None, a
@@ -134,6 +145,7 @@ def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff
     """
     R = dinitz_impl(G, s, t, capacity, residual, cutoff)
     R.graph["algorithm"] = "dinitz"
+    nx._clear_cache(R)
     return R
 
 
@@ -167,35 +179,59 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
 
     def breath_first_search():
         parents = {}
-        queue = deque([s])
+        vertex_dist = {s: 0}
+        queue = deque([(s, 0)])
+        # Record all the potential edges of shortest augmenting paths
         while queue:
             if t in parents:
                 break
-            u = queue.popleft()
-            for v in R_succ[u]:
-                attr = R_succ[u][v]
-                if v not in parents and attr["capacity"] - attr["flow"] > 0:
-                    parents[v] = u
-                    queue.append(v)
+            u, dist = queue.popleft()
+            for v, attr in R_succ[u].items():
+                if attr["capacity"] - attr["flow"] > 0:
+                    if v in parents:
+                        if vertex_dist[v] == dist + 1:
+                            parents[v].append(u)
+                    else:
+                        parents[v] = deque([u])
+                        vertex_dist[v] = dist + 1
+                        queue.append((v, dist + 1))
         return parents
 
     def depth_first_search(parents):
+        # DFS to find all the shortest augmenting paths
         """Build a path using DFS starting from the sink"""
-        path = []
+        total_flow = 0
         u = t
-        flow = INF
-        while u != s:
-            path.append(u)
-            v = parents[u]
-            flow = min(flow, R_pred[u][v]["capacity"] - R_pred[u][v]["flow"])
+        # path also functions as a stack
+        path = [u]
+        # The loop ends with no augmenting path left in the layered graph
+        while True:
+            if len(parents[u]) > 0:
+                v = parents[u][0]
+                path.append(v)
+            else:
+                path.pop()
+                if len(path) == 0:
+                    break
+                v = path[-1]
+                parents[v].popleft()
+            # Augment the flow along the path found
+            if v == s:
+                flow = INF
+                for u, v in pairwise(path):
+                    flow = min(flow, R_pred[u][v]["capacity"] - R_pred[u][v]["flow"])
+                for u, v in pairwise(reversed(path)):
+                    R_pred[v][u]["flow"] += flow
+                    R_pred[u][v]["flow"] -= flow
+                    # Find the proper node to continue the search
+                    if R_pred[v][u]["capacity"] - R_pred[v][u]["flow"] == 0:
+                        parents[v].popleft()
+                        while path[-1] != v:
+                            path.pop()
+                total_flow += flow
+                v = path[-1]
             u = v
-        path.append(s)
-        # Augment the flow along the path found
-        if flow > 0:
-            for u, v in pairwise(path):
-                R_pred[u][v]["flow"] += flow
-                R_pred[v][u]["flow"] -= flow
-        return flow
+        return total_flow
 
     flow_value = 0
     while flow_value < cutoff:

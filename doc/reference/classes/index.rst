@@ -73,6 +73,19 @@ Core Views
    FilterMultiInner
    FilterMultiAdjacency
 
+Reporting Views
+===============
+
+.. automodule:: networkx.classes.reportviews
+.. autosummary::
+   :toctree: generated/
+
+   NodeView
+   NodeDataView
+   EdgeView
+   EdgeDataView
+   DegreeView
+
 Filters
 =======
 
@@ -95,16 +108,3 @@ Filters
    show_diedges
    show_multidiedges
    show_multiedges
-
-Backends
-========
-
-.. note:: This is an experimental feature to dispatch your computations to an
-   alternate backend like GraphBLAS, instead of using pure Python dictionaries
-   for computation. Things will change and break in the future!
-
-.. automodule:: networkx.classes.backends
-.. autosummary::
-   :toctree: generated/
-
-   _dispatch

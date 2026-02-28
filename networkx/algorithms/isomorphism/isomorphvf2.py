@@ -5,7 +5,9 @@ VF2 Algorithm
 
 An implementation of VF2 algorithm for graph isomorphism testing.
 
-The simplest interface to use this module is to call networkx.is_isomorphic().
+The simplest interface to use this module is to call the
+:func:`is_isomorphic <networkx.algorithms.isomorphism.is_isomorphic>`
+function.
 
 Introduction
 ------------
@@ -21,9 +23,10 @@ to check for semantic feasibility. Feasibility, then, is defined
 as the logical AND of the two functions.
 
 To include a semantic check, the (Di)GraphMatcher class should be
-subclassed, and the semantic_feasibility() function should be
-redefined.  By default, the semantic feasibility function always
-returns True.  The effect of this is that semantics are not
+subclassed, and the
+:meth:`semantic_feasibility <networkx.algorithms.isomorphism.GraphMatcher.semantic_feasibility>`
+function should be redefined.  By default, the semantic feasibility function always
+returns ``True``.  The effect of this is that semantics are not
 considered in the matching of G1 and G2.
 
 Examples
@@ -47,8 +50,8 @@ GM.mapping stores the isomorphism mapping from G1 to G2.
 Suppose G1 and G2 are isomorphic directed graphs.
 Verification is as follows:
 
->>> G1 = nx.path_graph(4, create_using=nx.DiGraph())
->>> G2 = nx.path_graph(4, create_using=nx.DiGraph())
+>>> G1 = nx.path_graph(4, create_using=nx.DiGraph)
+>>> G2 = nx.path_graph(4, create_using=nx.DiGraph)
 >>> DiGM = isomorphism.DiGraphMatcher(G1, G2)
 >>> DiGM.is_isomorphic()
 True
@@ -65,43 +68,44 @@ Subgraph Isomorphism
 Graph theory literature can be ambiguous about the meaning of the
 above statement, and we seek to clarify it now.
 
-In the VF2 literature, a mapping M is said to be a graph-subgraph
-isomorphism iff M is an isomorphism between G2 and a subgraph of G1.
-Thus, to say that G1 and G2 are graph-subgraph isomorphic is to say
-that a subgraph of G1 is isomorphic to G2.
+In the VF2 literature, a mapping ``M`` is said to be a graph-subgraph
+isomorphism iff ``M`` is an isomorphism between ``G2`` and a subgraph of ``G1``.
+Thus, to say that ``G1`` and ``G2`` are graph-subgraph isomorphic is to say
+that a subgraph of ``G1`` is isomorphic to ``G2``.
 
-Other literature uses the phrase 'subgraph isomorphic' as in 'G1 does
-not have a subgraph isomorphic to G2'.  Another use is as an in adverb
-for isomorphic.  Thus, to say that G1 and G2 are subgraph isomorphic
-is to say that a subgraph of G1 is isomorphic to G2.
+Other literature uses the phrase 'subgraph isomorphic' as in '``G1`` does
+not have a subgraph isomorphic to ``G2``'.  Another use is as an in adverb
+for isomorphic.  Thus, to say that ``G1`` and ``G2`` are subgraph isomorphic
+is to say that a subgraph of ``G1`` is isomorphic to ``G2``.
 
 Finally, the term 'subgraph' can have multiple meanings. In this
 context, 'subgraph' always means a 'node-induced subgraph'. Edge-induced
 subgraph isomorphisms are not directly supported, but one should be
-able to perform the check by making use of nx.line_graph(). For
+able to perform the check by making use of
+:func:`line_graph <networkx.generators.line.line_graph>`. For
 subgraphs which are not induced, the term 'monomorphism' is preferred
 over 'isomorphism'.
 
-Let G=(N,E) be a graph with a set of nodes N and set of edges E.
+Let ``G = (N, E)`` be a graph with a set of nodes ``N`` and set of edges ``E``.
 
-If G'=(N',E') is a subgraph, then:
-    N' is a subset of N
-    E' is a subset of E
+If ``G' = (N', E')`` is a subgraph, then:
+    ``N'`` is a subset of ``N`` and
+    ``E'`` is a subset of ``E``.
 
-If G'=(N',E') is a node-induced subgraph, then:
-    N' is a subset of N
-    E' is the subset of edges in E relating nodes in N'
+If ``G' = (N', E')`` is a node-induced subgraph, then:
+    ``N'`` is a subset of ``N`` and
+    ``E'`` is the subset of edges in ``E`` relating nodes in ``N'``.
 
-If G'=(N',E') is an edge-induced subgraph, then:
-    N' is the subset of nodes in N related by edges in E'
-    E' is a subset of E
+If ``G' = (N', E')`` is an edge-induced subgraph, then:
+    ``N'`` is the subset of nodes in ``N`` related by edges in ``E'`` and
+    ``E'`` is a subset of ``E``.
 
-If G'=(N',E') is a monomorphism, then:
-    N' is a subset of N
-    E' is a subset of the set of edges in E relating nodes in N'
+If ``G' = (N', E')`` is a monomorphism, then:
+    ``N'`` is a subset of ``N`` and
+    ``E'`` is a subset of the set of edges in ``E`` relating nodes in ``N'``.
 
-Note that if G' is a node-induced subgraph of G, then it is always a
-subgraph monomorphism of G, but the opposite is not always true, as a
+Note that if ``G'`` is a node-induced subgraph of ``G``, then it is always a
+subgraph monomorphism of ``G``, but the opposite is not always true, as a
 monomorphism can have fewer edges.
 
 References
@@ -116,11 +120,12 @@ References
       Algorithm for Matching Large Graphs", 3rd IAPR-TC15 Workshop
       on Graph-based Representations in Pattern Recognition, Cuen,
       pp. 149-159, 2001.
-      https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.101.5342
+      https://www.researchgate.net/publication/200034365_An_Improved_Algorithm_for_Matching_Large_Graphs
 
 See Also
 --------
-syntactic_feasibility(), semantic_feasibility()
+:meth:`semantic_feasibility <networkx.algorithms.isomorphism.GraphMatcher.semantic_feasibility>`
+:meth:`syntactic_feasibility <networkx.algorithms.isomorphism.GraphMatcher.syntactic_feasibility>`
 
 Notes
 -----
@@ -140,6 +145,8 @@ polynomial-time algorithm is known to exist).
 # Complexity Sciences Center and Physics Department, UC Davis.
 
 import sys
+
+import networkx as nx
 
 __all__ = ["GraphMatcher", "DiGraphMatcher"]
 
@@ -167,6 +174,22 @@ class GraphMatcher:
         >>> G2 = nx.path_graph(4)
         >>> GM = isomorphism.GraphMatcher(G1, G2)
         """
+        if G1.is_directed() != G2.is_directed():
+            raise nx.NetworkXError("G1 and G2 must have the same directedness")
+
+        is_directed_matcher = self._is_directed_matcher()
+        if not is_directed_matcher and (G1.is_directed() or G2.is_directed()):
+            raise nx.NetworkXError(
+                "(Multi-)GraphMatcher() not defined for directed graphs. "
+                "Use (Multi-)DiGraphMatcher() instead."
+            )
+
+        if is_directed_matcher and not (G1.is_directed() and G2.is_directed()):
+            raise nx.NetworkXError(
+                "(Multi-)DiGraphMatcher() not defined for undirected graphs. "
+                "Use (Multi-)GraphMatcher() instead."
+            )
+
         self.G1 = G1
         self.G2 = G2
         self.G1_nodes = set(G1.nodes())
@@ -185,6 +208,9 @@ class GraphMatcher:
 
         # Initialize state
         self.initialize()
+
+    def _is_directed_matcher(self):
+        return False
 
     def reset_recursion_limit(self):
         """Restores the recursion limit."""
@@ -319,7 +345,7 @@ class GraphMatcher:
                         newstate.restore()
 
     def semantic_feasibility(self, G1_node, G2_node):
-        """Returns True if adding (G1_node, G2_node) is symantically feasible.
+        """Returns True if adding (G1_node, G2_node) is semantically feasible.
 
         The semantic feasibility function should return True if it is
         acceptable to add the candidate pair (G1_node, G2_node) to the current
@@ -359,7 +385,27 @@ class GraphMatcher:
         return True
 
     def subgraph_is_isomorphic(self):
-        """Returns True if a subgraph of G1 is isomorphic to G2."""
+        """Returns `True` if a subgraph of ``G1`` is isomorphic to ``G2``.
+
+        Examples
+        --------
+        When creating the `GraphMatcher`, the order of the arguments is important
+
+        >>> G = nx.Graph([("A", "B"), ("B", "C"), ("A", "C")])
+        >>> H = nx.Graph([(0, 1), (1, 2), (0, 2), (1, 3), (0, 4)])
+
+        Check whether a subgraph of G is isomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(G, H)
+        >>> isomatcher.subgraph_is_isomorphic()
+        False
+
+        Check whether a subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
+        >>> isomatcher.subgraph_is_isomorphic()
+        True
+        """
         try:
             x = next(self.subgraph_isomorphisms_iter())
             return True
@@ -367,30 +413,87 @@ class GraphMatcher:
             return False
 
     def subgraph_is_monomorphic(self):
-        """Returns True if a subgraph of G1 is monomorphic to G2."""
+        """Returns `True` if a subgraph of ``G1`` is monomorphic to ``G2``.
+
+        Examples
+        --------
+        When creating the `GraphMatcher`, the order of the arguments is important.
+
+        >>> G = nx.Graph([("A", "B"), ("B", "C")])
+        >>> H = nx.Graph([(0, 1), (1, 2), (0, 2)])
+
+        Check whether a subgraph of G is monomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(G, H)
+        >>> isomatcher.subgraph_is_monomorphic()
+        False
+
+        Check whether a subgraph of H is monomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
+        >>> isomatcher.subgraph_is_monomorphic()
+        True
+        """
         try:
             x = next(self.subgraph_monomorphisms_iter())
             return True
         except StopIteration:
             return False
 
-    #    subgraph_is_isomorphic.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
-
     def subgraph_isomorphisms_iter(self):
-        """Generator over isomorphisms between a subgraph of G1 and G2."""
+        """Generator over isomorphisms between a subgraph of ``G1`` and ``G2``.
+
+        Examples
+        --------
+        When creating the `GraphMatcher`, the order of the arguments is important
+
+        >>> G = nx.Graph([("A", "B"), ("B", "C"), ("A", "C")])
+        >>> H = nx.Graph([(0, 1), (1, 2), (0, 2), (1, 3), (0, 4)])
+
+        Yield isomorphic mappings between ``H`` and subgraphs of ``G``:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(G, H)
+        >>> list(isomatcher.subgraph_isomorphisms_iter())
+        []
+
+        Yield isomorphic mappings  between ``G`` and subgraphs of ``H``:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
+        >>> next(isomatcher.subgraph_isomorphisms_iter())
+        {0: 'A', 1: 'B', 2: 'C'}
+
+        """
         # Declare that we are looking for graph-subgraph isomorphism.
         self.test = "subgraph"
         self.initialize()
         yield from self.match()
 
     def subgraph_monomorphisms_iter(self):
-        """Generator over monomorphisms between a subgraph of G1 and G2."""
+        """Generator over monomorphisms between a subgraph of ``G1`` and ``G2``.
+
+        Examples
+        --------
+        When creating the `GraphMatcher`, the order of the arguments is important.
+
+        >>> G = nx.Graph([("A", "B"), ("B", "C")])
+        >>> H = nx.Graph([(0, 1), (1, 2), (0, 2)])
+
+        Yield monomorphic mappings between ``H`` and subgraphs of ``G``:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(G, H)
+        >>> list(isomatcher.subgraph_monomorphisms_iter())
+        []
+
+        Yield monomorphic mappings  between ``G`` and subgraphs of ``H``:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
+        >>> next(isomatcher.subgraph_monomorphisms_iter())
+        {0: 'A', 1: 'B', 2: 'C'}
+        """
         # Declare that we are looking for graph-subgraph monomorphism.
         self.test = "mono"
         self.initialize()
         yield from self.match()
-
-    #    subgraph_isomorphisms_iter.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
 
     def syntactic_feasibility(self, G1_node, G2_node):
         """Returns True if adding (G1_node, G2_node) is syntactically feasible.
@@ -447,7 +550,7 @@ class GraphMatcher:
         if self.test != "mono":
             for neighbor in self.G1[G1_node]:
                 if neighbor in self.core_1:
-                    if not (self.core_1[neighbor] in self.G2[G2_node]):
+                    if self.core_1[neighbor] not in self.G2[G2_node]:
                         return False
                     elif self.G1.number_of_edges(
                         neighbor, G1_node
@@ -456,7 +559,7 @@ class GraphMatcher:
 
         for neighbor in self.G2[G2_node]:
             if neighbor in self.core_2:
-                if not (self.core_2[neighbor] in self.G1[G1_node]):
+                if self.core_2[neighbor] not in self.G1[G1_node]:
                     return False
                 elif self.test == "mono":
                     if self.G1.number_of_edges(
@@ -484,7 +587,7 @@ class GraphMatcher:
                 if (neighbor in self.inout_2) and (neighbor not in self.core_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -506,7 +609,7 @@ class GraphMatcher:
                 if neighbor not in self.inout_2:
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -537,6 +640,9 @@ class DiGraphMatcher(GraphMatcher):
         >>> DiGM = isomorphism.DiGraphMatcher(G1, G2)
         """
         super().__init__(G1, G2)
+
+    def _is_directed_matcher(self):
+        return True
 
     def candidate_pairs_iter(self):
         """Iterator over candidate pairs of nodes in G1 and G2."""
@@ -672,7 +778,7 @@ class DiGraphMatcher(GraphMatcher):
         if self.test != "mono":
             for predecessor in self.G1.pred[G1_node]:
                 if predecessor in self.core_1:
-                    if not (self.core_1[predecessor] in self.G2.pred[G2_node]):
+                    if self.core_1[predecessor] not in self.G2.pred[G2_node]:
                         return False
                     elif self.G1.number_of_edges(
                         predecessor, G1_node
@@ -681,7 +787,7 @@ class DiGraphMatcher(GraphMatcher):
 
         for predecessor in self.G2.pred[G2_node]:
             if predecessor in self.core_2:
-                if not (self.core_2[predecessor] in self.G1.pred[G1_node]):
+                if self.core_2[predecessor] not in self.G1.pred[G1_node]:
                     return False
                 elif self.test == "mono":
                     if self.G1.number_of_edges(
@@ -702,7 +808,7 @@ class DiGraphMatcher(GraphMatcher):
         if self.test != "mono":
             for successor in self.G1[G1_node]:
                 if successor in self.core_1:
-                    if not (self.core_1[successor] in self.G2[G2_node]):
+                    if self.core_1[successor] not in self.G2[G2_node]:
                         return False
                     elif self.G1.number_of_edges(
                         G1_node, successor
@@ -711,7 +817,7 @@ class DiGraphMatcher(GraphMatcher):
 
         for successor in self.G2[G2_node]:
             if successor in self.core_2:
-                if not (self.core_2[successor] in self.G1[G1_node]):
+                if self.core_2[successor] not in self.G1[G1_node]:
                     return False
                 elif self.test == "mono":
                     if self.G1.number_of_edges(
@@ -725,7 +831,6 @@ class DiGraphMatcher(GraphMatcher):
                         return False
 
         if self.test != "mono":
-
             # Look ahead 1
 
             # R_termin
@@ -740,7 +845,7 @@ class DiGraphMatcher(GraphMatcher):
                 if (predecessor in self.in_2) and (predecessor not in self.core_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -757,7 +862,7 @@ class DiGraphMatcher(GraphMatcher):
                 if (successor in self.in_2) and (successor not in self.core_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -776,7 +881,7 @@ class DiGraphMatcher(GraphMatcher):
                 if (predecessor in self.out_2) and (predecessor not in self.core_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -793,7 +898,7 @@ class DiGraphMatcher(GraphMatcher):
                 if (successor in self.out_2) and (successor not in self.core_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -815,7 +920,7 @@ class DiGraphMatcher(GraphMatcher):
                 if (predecessor not in self.in_2) and (predecessor not in self.out_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -833,7 +938,7 @@ class DiGraphMatcher(GraphMatcher):
                 if (successor not in self.in_2) and (successor not in self.out_2):
                     num2 += 1
             if self.test == "graph":
-                if not (num1 == num2):
+                if num1 != num2:
                     return False
             else:  # self.test == 'subgraph'
                 if not (num1 >= num2):
@@ -841,6 +946,102 @@ class DiGraphMatcher(GraphMatcher):
 
         # Otherwise, this node pair is syntactically feasible!
         return True
+
+    def subgraph_is_isomorphic(self):
+        """Returns `True` if a subgraph of ``G1`` is isomorphic to ``G2``.
+
+        Examples
+        --------
+        When creating the `DiGraphMatcher`, the order of the arguments is important
+
+        >>> G = nx.DiGraph([("A", "B"), ("B", "A"), ("B", "C"), ("C", "B")])
+        >>> H = nx.DiGraph(nx.path_graph(5))
+
+        Check whether a subgraph of G is isomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
+        >>> isomatcher.subgraph_is_isomorphic()
+        False
+
+        Check whether a subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
+        >>> isomatcher.subgraph_is_isomorphic()
+        True
+        """
+        return super().subgraph_is_isomorphic()
+
+    def subgraph_is_monomorphic(self):
+        """Returns `True` if a subgraph of ``G1`` is monomorphic to ``G2``.
+
+        Examples
+        --------
+        When creating the `DiGraphMatcher`, the order of the arguments is important.
+
+        >>> G = nx.DiGraph([("A", "B"), ("C", "B"), ("D", "C")])
+        >>> H = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 2)])
+
+        Check whether a subgraph of G is monomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
+        >>> isomatcher.subgraph_is_monomorphic()
+        False
+
+        Check whether a subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
+        >>> isomatcher.subgraph_is_monomorphic()
+        True
+        """
+        return super().subgraph_is_monomorphic()
+
+    def subgraph_isomorphisms_iter(self):
+        """Generator over isomorphisms between a subgraph of ``G1`` and ``G2``.
+
+        Examples
+        --------
+        When creating the `DiGraphMatcher`, the order of the arguments is important
+
+        >>> G = nx.DiGraph([("B", "C"), ("C", "B"), ("C", "D"), ("D", "C")])
+        >>> H = nx.DiGraph(nx.path_graph(5))
+
+        Yield isomorphic mappings between ``H`` and subgraphs of ``G``:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
+        >>> list(isomatcher.subgraph_isomorphisms_iter())
+        []
+
+        Yield isomorphic mappings between ``G`` and subgraphs of ``H``:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
+        >>> next(isomatcher.subgraph_isomorphisms_iter())
+        {0: 'B', 1: 'C', 2: 'D'}
+        """
+        return super().subgraph_isomorphisms_iter()
+
+    def subgraph_monomorphisms_iter(self):
+        """Generator over monomorphisms between a subgraph of ``G1`` and ``G2``.
+
+        Examples
+        --------
+        When creating the `DiGraphMatcher`, the order of the arguments is important.
+
+        >>> G = nx.DiGraph([("A", "B"), ("C", "B"), ("D", "C")])
+        >>> H = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 2)])
+
+        Yield monomorphic mappings between ``H`` and subgraphs of ``G``:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
+        >>> list(isomatcher.subgraph_monomorphisms_iter())
+        []
+
+        Yield monomorphic mappings between ``G`` and subgraphs of ``H``:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
+        >>> next(isomatcher.subgraph_monomorphisms_iter())
+        {3: 'A', 2: 'B', 1: 'C', 0: 'D'}
+        """
+        return super().subgraph_monomorphisms_iter()
 
 
 class GMState:

@@ -1,6 +1,7 @@
 """
 Moody and White algorithm for k-components
 """
+
 from collections import defaultdict
 from itertools import combinations
 from operator import itemgetter
@@ -17,6 +18,7 @@ __all__ = ["k_components"]
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def k_components(G, flow_func=None):
     r"""Returns the k-component structure of a graph G.
 
@@ -104,7 +106,7 @@ def k_components(G, flow_func=None):
     """
     # Dictionary with connectivity level (k) as keys and a list of
     # sets of nodes that form a k-component as values. Note that
-    # k-compoents can overlap (but only k - 1 nodes).
+    # k-components can overlap (but only k - 1 nodes).
     k_components = defaultdict(list)
     # Define default flow function
     if flow_func is None:
@@ -167,7 +169,7 @@ def _consolidate(sets, k):
 
     """
     G = nx.Graph()
-    nodes = {i: s for i, s in enumerate(sets)}
+    nodes = dict(enumerate(sets))
     G.add_nodes_from(nodes)
     G.add_edges_from(
         (u, v) for u, v in combinations(nodes, 2) if len(nodes[u] & nodes[v]) >= k
@@ -178,29 +180,23 @@ def _consolidate(sets, k):
 
 def _generate_partition(G, cuts, k):
     def has_nbrs_in_partition(G, node, partition):
-        for n in G[node]:
-            if n in partition:
-                return True
-        return False
+        return any(n in partition for n in G[node])
 
     components = []
-    nodes = {n for n, d in G.degree() if d > k} - {n for cut in cuts for n in cut}
+    n_in_cuts = {n for cut in cuts for n in cut}
+    nodes = {n for n, d in G.degree() if d > k} - n_in_cuts
     H = G.subgraph(nodes)
-    for cc in nx.connected_components(H):
-        component = set(cc)
-        for cut in cuts:
-            for node in cut:
-                if has_nbrs_in_partition(G, node, cc):
-                    component.add(node)
+    for cc in map(set, nx.connected_components(H)):
+        component = cc | {n for n in n_in_cuts if has_nbrs_in_partition(G, n, cc)}
         if len(component) < G.order():
             components.append(component)
     yield from _consolidate(components, k + 1)
 
 
 def _reconstruct_k_components(k_comps):
-    result = dict()
-    max_k = max(k_comps)
-    for k in reversed(range(1, max_k + 1)):
+    result = {}
+    max_k = max(k_comps) if k_comps else 0
+    for k in range(max_k, 0, -1):
         if k == max_k:
             result[k] = list(_consolidate(k_comps[k], k))
         elif k not in k_comps:
@@ -216,9 +212,9 @@ def _reconstruct_k_components(k_comps):
 
 
 def build_k_number_dict(kcomps):
-    result = {}
-    for k, comps in sorted(kcomps.items(), key=itemgetter(0)):
-        for comp in comps:
-            for node in comp:
-                result[node] = k
-    return result
+    return {
+        node: k
+        for k, comps in sorted(kcomps.items(), key=itemgetter(0))
+        for comp in comps
+        for node in comp
+    }

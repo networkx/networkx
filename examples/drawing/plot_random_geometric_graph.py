@@ -25,7 +25,7 @@ for n in pos:
         dmin = d
 
 # color by path length from node near center
-p = dict(nx.single_source_shortest_path_length(G, ncenter))
+p = nx.single_source_shortest_path_length(G, ncenter)
 
 plt.figure(figsize=(8, 8))
 nx.draw_networkx_edges(G, pos, alpha=0.4)

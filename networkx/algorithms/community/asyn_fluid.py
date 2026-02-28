@@ -2,15 +2,17 @@
 
 from collections import Counter
 
+import networkx as nx
 from networkx.algorithms.components import is_connected
-from networkx.exception import NetworkXError
 from networkx.utils import groups, not_implemented_for, py_random_state
 
 __all__ = ["asyn_fluidc"]
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 @py_random_state(3)
-@not_implemented_for("directed", "multigraph")
+@nx._dispatchable
 def asyn_fluidc(G, k, max_iter=100, seed=None):
     """Returns communities in `G` as detected by Fluid Communities algorithm.
 
@@ -22,7 +24,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
     The algorithm proceeds as follows. First each of the initial k communities
     is initialized in a random vertex in the graph. Then the algorithm iterates
     over all vertices in a random order, updating the community of each vertex
-    based on its own community and the communities of its neighbours. This
+    based on its own community and the communities of its neighbors. This
     process is performed several times until convergence.
     At all times, each community has a total density of 1, which is equally
     distributed among the vertices it contains. If a vertex changes of
@@ -36,7 +38,8 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
 
     Parameters
     ----------
-    G : Graph
+    G : NetworkX graph
+        Graph must be simple and undirected.
 
     k : integer
         The number of communities to be found.
@@ -65,13 +68,16 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
     """
     # Initial checks
     if not isinstance(k, int):
-        raise NetworkXError("k must be an integer.")
+        raise nx.NetworkXError("k must be an integer.")
     if not k > 0:
-        raise NetworkXError("k must be greater than 0.")
+        raise nx.NetworkXError("k must be greater than 0.")
     if not is_connected(G):
-        raise NetworkXError("Fluid Communities require connected Graphs.")
+        raise nx.NetworkXError("Fluid Communities require connected Graphs.")
     if len(G) < k:
-        raise NetworkXError("k cannot be bigger than the number of nodes.")
+        raise nx.NetworkXError("k cannot be bigger than the number of nodes.")
+    if max_iter <= 0:
+        msg = f"{max_iter=} must be greater than 0"
+        raise ValueError(msg)
     # Initialization
     max_density = 1.0
     vertices = list(G)
@@ -79,13 +85,13 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
     communities = {n: i for i, n in enumerate(vertices[:k])}
     density = {}
     com_to_numvertices = {}
-    for vertex in communities.keys():
+    for vertex in communities:
         com_to_numvertices[communities[vertex]] = 1
         density[communities[vertex]] = max_density
     # Set up control variables and start iterating
     iter_count = 0
     cont = True
-    while cont:
+    while cont and iter_count < max_iter:
         cont = False
         iter_count += 1
         # Loop over all vertices in graph in a random order
@@ -99,7 +105,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
                 com_counter.update({communities[vertex]: density[communities[vertex]]})
             except KeyError:
                 pass
-            # Gather neighbour vertex communities
+            # Gather neighbor vertex communities
             for v in G[vertex]:
                 try:
                     com_counter.update({communities[v]: density[communities[v]]})
@@ -120,6 +126,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
                         new_com = communities[vertex]
                 except KeyError:
                     pass
+
                 # If vertex community changes...
                 if new_com == -1:
                     # Set flag of non-convergence
@@ -140,8 +147,6 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
                     density[communities[vertex]] = (
                         max_density / com_to_numvertices[communities[vertex]]
                     )
-        # If maximum iterations reached --> output actual results
-        if iter_count > max_iter:
-            break
+    # If maximum iterations reached --> output actual results
     # Return results by grouping communities as list of vertices
     return iter(groups(communities).values())

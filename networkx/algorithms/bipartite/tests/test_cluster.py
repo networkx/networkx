@@ -1,7 +1,7 @@
 import pytest
 
 import networkx as nx
-import networkx.algorithms.bipartite as bipartite
+from networkx.algorithms import bipartite
 from networkx.algorithms.bipartite.cluster import cc_dot, cc_max, cc_min
 
 

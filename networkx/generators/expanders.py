@@ -1,11 +1,18 @@
-"""Provides explicit constructions of expander graphs.
+"""Provides explicit constructions of expander graphs."""
 
-"""
 import itertools
 
 import networkx as nx
 
-__all__ = ["margulis_gabber_galil_graph", "chordal_cycle_graph", "paley_graph"]
+__all__ = [
+    "margulis_gabber_galil_graph",
+    "chordal_cycle_graph",
+    "paley_graph",
+    "maybe_regular_expander",
+    "maybe_regular_expander_graph",
+    "is_regular_expander",
+    "random_regular_expander_graph",
+]
 
 
 # Other discrete torus expanders can be constructed by using the following edge
@@ -40,6 +47,7 @@ __all__ = ["margulis_gabber_galil_graph", "chordal_cycle_graph", "paley_graph"]
 #     (x, (y + (2*x + 1)) % n),
 #     (x, (y + (2*x + 2)) % n),
 #
+@nx._dispatchable(graphs=None, returns_graph=True)
 def margulis_gabber_galil_graph(n, create_using=None):
     r"""Returns the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
 
@@ -70,8 +78,8 @@ def margulis_gabber_galil_graph(n, create_using=None):
         msg = "`create_using` must be an undirected multigraph."
         raise nx.NetworkXError(msg)
 
-    for (x, y) in itertools.product(range(n), repeat=2):
-        for (u, v) in (
+    for x, y in itertools.product(range(n), repeat=2):
+        for u, v in (
             ((x + 2 * y) % n, y),
             ((x + (2 * y + 1)) % n, y),
             (x, (y + 2 * x) % n),
@@ -82,12 +90,16 @@ def margulis_gabber_galil_graph(n, create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def chordal_cycle_graph(p, create_using=None):
     """Returns the chordal cycle graph on `p` nodes.
 
     The returned graph is a cycle graph on `p` nodes with chords joining each
     vertex `x` to its inverse modulo `p`. This graph is a (mildly explicit)
-    3-regular expander [1]_.
+    3-regular expander [1]_ when viewed as a simple graph. The default return
+    type is a MultiGraph, which has 6-regular nodes due to the symmetric nature
+    of the edge additions. Use ``nx.Graph(nx.chordal_cycle_graph(p))`` to obtain
+    the 3-regular simple graph.
 
     `p` *must* be a prime number.
 
@@ -145,23 +157,26 @@ def chordal_cycle_graph(p, create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def paley_graph(p, create_using=None):
-    """Returns the Paley (p-1)/2-regular graph on p nodes.
+    r"""Returns the Paley $\frac{(p-1)}{2}$ -regular graph on $p$ nodes.
 
-    The returned graph is a graph on Z/pZ with edges between x and y
-    if and only if x-y is a nonzero square in Z/pZ.
+    The returned graph is a graph on $\mathbb{Z}/p\mathbb{Z}$ with edges between $x$ and $y$
+    if and only if $x-y$ is a nonzero square in $\mathbb{Z}/p\mathbb{Z}$.
 
-    If p = 1 mod 4, -1 is a square in Z/pZ and therefore x-y is a square if and
-    only if y-x is also a square, i.e the edges in the Paley graph are symmetric.
+    If $p \equiv 1  \pmod 4$, $-1$ is a square in
+    $\mathbb{Z}/p\mathbb{Z}$ and therefore $x-y$ is a square if and
+    only if $y-x$ is also a square, i.e the edges in the Paley graph are symmetric.
 
-    If p = 3 mod 4, -1 is not a square in Z/pZ and therefore either x-y or y-x
-    is a square in Z/pZ but not both.
+    If $p \equiv 3 \pmod 4$, $-1$ is not a square in $\mathbb{Z}/p\mathbb{Z}$
+    and therefore either $x-y$ or $y-x$ is a square in $\mathbb{Z}/p\mathbb{Z}$ but not both.
 
     Note that a more general definition of Paley graphs extends this construction
-    to graphs over q=p^n vertices, by using the finite field F_q instead of Z/pZ.
+    to graphs over $q=p^n$ vertices, by using the finite field $F_q$ instead of
+    $\mathbb{Z}/p\mathbb{Z}$.
     This construction requires to compute squares in general finite fields and is
-    not what is implemented here (i.e paley_graph(25) does not return the true
-    Paley graph associated with 5^2).
+    not what is implemented here (i.e `paley_graph(25)` does not return the true
+    Paley graph associated with $5^2$).
 
     Parameters
     ----------
@@ -200,4 +215,288 @@ def paley_graph(p, create_using=None):
         for x2 in square_set:
             G.add_edge(x, (x + x2) % p)
     G.graph["name"] = f"paley({p})"
+    return G
+
+
+@nx.utils.decorators.np_random_state("seed")
+@nx._dispatchable(graphs=None, returns_graph=True)
+def maybe_regular_expander_graph(n, d, *, create_using=None, max_tries=100, seed=None):
+    r"""Utility for creating a random regular expander.
+
+    Returns a random $d$-regular graph on $n$ nodes which is an expander
+    graph with very good probability.
+
+    Parameters
+    ----------
+    n : int
+      The number of nodes.
+    d : int
+      The degree of each node.
+    create_using : Graph Instance or Constructor
+      Indicator of type of graph to return.
+      If a Graph-type instance, then clear and use it.
+      If a constructor, call it to create an empty graph.
+      Use the Graph constructor by default.
+    max_tries : int. (default: 100)
+      The number of allowed loops when generating each independent cycle
+    seed : (default: None)
+      Seed used to set random number generation state. See :ref`Randomness<randomness>`.
+
+    Notes
+    -----
+    The nodes are numbered from $0$ to $n - 1$.
+
+    The graph is generated by taking $d / 2$ random independent cycles.
+
+    Joel Friedman proved that in this model the resulting
+    graph is an expander with probability
+    $1 - O(n^{-\tau})$ where $\tau = \lceil (\sqrt{d - 1}) / 2 \rceil - 1$. [1]_
+
+    Examples
+    --------
+    >>> G = nx.maybe_regular_expander_graph(n=200, d=6, seed=8020)
+
+    Returns
+    -------
+    G : graph
+        The constructed undirected graph.
+
+    Raises
+    ------
+    NetworkXError
+        If $d % 2 != 0$ as the degree must be even.
+        If $n - 1$ is less than $ 2d $ as the graph is complete at most.
+        If max_tries is reached
+
+    See Also
+    --------
+    is_regular_expander
+    random_regular_expander_graph
+
+    References
+    ----------
+    .. [1] Joel Friedman,
+       A Proof of Alon's Second Eigenvalue Conjecture and Related Problems, 2004
+       https://arxiv.org/abs/cs/0405020
+
+    """
+
+    import numpy as np
+
+    if n < 1:
+        raise nx.NetworkXError("n must be a positive integer")
+
+    if not (d >= 2):
+        raise nx.NetworkXError("d must be greater than or equal to 2")
+
+    if not (d % 2 == 0):
+        raise nx.NetworkXError("d must be even")
+
+    if not (n - 1 >= d):
+        raise nx.NetworkXError(
+            f"Need n-1>= d to have room for {d // 2} independent cycles with {n} nodes"
+        )
+
+    G = nx.empty_graph(n, create_using)
+
+    if n < 2:
+        return G
+
+    cycles = []
+    edges = set()
+
+    # Create d / 2 cycles
+    for i in range(d // 2):
+        iterations = max_tries
+        # Make sure the cycles are independent to have a regular graph
+        while len(edges) != (i + 1) * n:
+            iterations -= 1
+            # Faster than random.permutation(n) since there are only
+            # (n-1)! distinct cycles against n! permutations of size n
+            cycle = seed.permutation(n - 1).tolist()
+            cycle.append(n - 1)
+
+            new_edges = {
+                (u, v)
+                for u, v in nx.utils.pairwise(cycle, cyclic=True)
+                if (u, v) not in edges and (v, u) not in edges
+            }
+            # If the new cycle has no edges in common with previous cycles
+            # then add it to the list otherwise try again
+            if len(new_edges) == n:
+                cycles.append(cycle)
+                edges.update(new_edges)
+
+            if iterations == 0:
+                msg = "Too many iterations in maybe_regular_expander_graph"
+                raise nx.NetworkXError(msg)
+
+    G.add_edges_from(edges)
+
+    return G
+
+
+def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None):
+    """
+    .. deprecated:: 3.6
+       `maybe_regular_expander` is a deprecated alias
+       for `maybe_regular_expander_graph`.
+       Use `maybe_regular_expander_graph` instead.
+    """
+    import warnings
+
+    warnings.warn(
+        "maybe_regular_expander is deprecated, "
+        "use `maybe_regular_expander_graph` instead.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+    return maybe_regular_expander_graph(
+        n, d, create_using=create_using, max_tries=max_tries, seed=seed
+    )
+
+
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
+@nx._dispatchable(preserve_edge_attrs={"G": {"weight": 1}})
+def is_regular_expander(G, *, epsilon=0):
+    r"""Determines whether the graph G is a regular expander. [1]_
+
+    An expander graph is a sparse graph with strong connectivity properties.
+
+    More precisely, this helper checks whether the graph is a
+    regular $(n, d, \lambda)$-expander with $\lambda$ close to
+    the Alon-Boppana bound and given by
+    $\lambda = 2 \sqrt{d - 1} + \epsilon$. [2]_
+
+    In the case where $\epsilon = 0$ then if the graph successfully passes the test
+    it is a Ramanujan graph. [3]_
+
+    A Ramanujan graph has spectral gap almost as large as possible, which makes them
+    excellent expanders.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+    epsilon : int, float, default=0
+
+    Returns
+    -------
+    bool
+        Whether the given graph is a regular $(n, d, \lambda)$-expander
+        where $\lambda = 2 \sqrt{d - 1} + \epsilon$.
+
+    Examples
+    --------
+    >>> G = nx.random_regular_expander_graph(20, 4)
+    >>> nx.is_regular_expander(G)
+    True
+
+    See Also
+    --------
+    maybe_regular_expander_graph
+    random_regular_expander_graph
+
+    References
+    ----------
+    .. [1] Expander graph, https://en.wikipedia.org/wiki/Expander_graph
+    .. [2] Alon-Boppana bound, https://en.wikipedia.org/wiki/Alon%E2%80%93Boppana_bound
+    .. [3] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
+
+    """
+
+    import numpy as np
+    import scipy as sp
+
+    if epsilon < 0:
+        raise nx.NetworkXError("epsilon must be non negative")
+
+    if not nx.is_regular(G):
+        return False
+
+    _, d = nx.utils.arbitrary_element(G.degree)
+
+    A = nx.adjacency_matrix(G, dtype=float)
+    lams = sp.sparse.linalg.eigsh(A, which="LM", k=2, return_eigenvectors=False)
+
+    # lambda2 is the second biggest eigenvalue
+    lambda2 = min(lams)
+
+    # Use bool() to convert numpy scalar to Python Boolean
+    return bool(abs(lambda2) < 2 * np.sqrt(d - 1) + epsilon)
+
+
+@nx.utils.decorators.np_random_state("seed")
+@nx._dispatchable(graphs=None, returns_graph=True)
+def random_regular_expander_graph(
+    n, d, *, epsilon=0, create_using=None, max_tries=100, seed=None
+):
+    r"""Returns a random regular expander graph on $n$ nodes with degree $d$.
+
+    An expander graph is a sparse graph with strong connectivity properties. [1]_
+
+    More precisely the returned graph is a $(n, d, \lambda)$-expander with
+    $\lambda = 2 \sqrt{d - 1} + \epsilon$, close to the Alon-Boppana bound. [2]_
+
+    In the case where $\epsilon = 0$ it returns a Ramanujan graph.
+    A Ramanujan graph has spectral gap almost as large as possible,
+    which makes them excellent expanders. [3]_
+
+    Parameters
+    ----------
+    n : int
+      The number of nodes.
+    d : int
+      The degree of each node.
+    epsilon : int, float, default=0
+    max_tries : int, (default: 100)
+      The number of allowed loops,
+      also used in the `maybe_regular_expander_graph` utility
+    seed : (default: None)
+      Seed used to set random number generation state. See :ref`Randomness<randomness>`.
+
+    Raises
+    ------
+    NetworkXError
+        If max_tries is reached
+
+    Examples
+    --------
+    >>> G = nx.random_regular_expander_graph(20, 4)
+    >>> nx.is_regular_expander(G)
+    True
+
+    Notes
+    -----
+    This loops over `maybe_regular_expander_graph` and can be slow when
+    $n$ is too big or $\epsilon$ too small.
+
+    See Also
+    --------
+    maybe_regular_expander_graph
+    is_regular_expander
+
+    References
+    ----------
+    .. [1] Expander graph, https://en.wikipedia.org/wiki/Expander_graph
+    .. [2] Alon-Boppana bound, https://en.wikipedia.org/wiki/Alon%E2%80%93Boppana_bound
+    .. [3] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
+
+    """
+    G = maybe_regular_expander_graph(
+        n, d, create_using=create_using, max_tries=max_tries, seed=seed
+    )
+    iterations = max_tries
+
+    while not is_regular_expander(G, epsilon=epsilon):
+        iterations -= 1
+        G = maybe_regular_expander_graph(
+            n=n, d=d, create_using=create_using, max_tries=max_tries, seed=seed
+        )
+
+        if iterations == 0:
+            raise nx.NetworkXError(
+                "Too many iterations in random_regular_expander_graph"
+            )
+
     return G

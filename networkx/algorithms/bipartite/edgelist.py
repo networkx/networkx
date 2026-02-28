@@ -22,6 +22,7 @@ Arbitrary data::
 
 For each edge (u, v) the node u is assigned to part 0 and the node v to part 1.
 """
+
 __all__ = ["generate_edgelist", "write_edgelist", "parse_edgelist", "read_edgelist"]
 
 import networkx as nx
@@ -57,16 +58,16 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
     >>> G.add_nodes_from([0, 2], bipartite=0)
     >>> G.add_nodes_from([1, 3], bipartite=1)
     >>> nx.write_edgelist(G, "test.edgelist")
-    >>> fh = open("test.edgelist", "wb")
+    >>> fh = open("test.edgelist_open", "wb")
     >>> nx.write_edgelist(G, fh)
     >>> nx.write_edgelist(G, "test.edgelist.gz")
-    >>> nx.write_edgelist(G, "test.edgelist.gz", data=False)
+    >>> nx.write_edgelist(G, "test.edgelist_nodata.gz", data=False)
 
     >>> G = nx.Graph()
     >>> G.add_edge(1, 2, weight=7, color="red")
-    >>> nx.write_edgelist(G, "test.edgelist", data=False)
-    >>> nx.write_edgelist(G, "test.edgelist", data=["color"])
-    >>> nx.write_edgelist(G, "test.edgelist", data=["color", "weight"])
+    >>> nx.write_edgelist(G, "test.edgelist_bigger_nodata", data=False)
+    >>> nx.write_edgelist(G, "test.edgelist_color", data=["color"])
+    >>> nx.write_edgelist(G, "test.edgelist_color_weight", data=["color", "weight"])
 
     See Also
     --------
@@ -146,6 +147,7 @@ def generate_edgelist(G, delimiter=" ", data=True):
                 yield delimiter.join(map(str, edge))
 
 
+@nx._dispatchable(name="bipartite_parse_edgelist", graphs=None, returns_graph=True)
 def parse_edgelist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None, data=True
 ):
@@ -218,7 +220,7 @@ def parse_edgelist(
         if not len(line):
             continue
         # split line, should have 2 or more
-        s = line.strip().split(delimiter)
+        s = line.rstrip("\n").split(delimiter)
         if len(s) < 2:
             continue
         u = s.pop(0)
@@ -230,7 +232,7 @@ def parse_edgelist(
                 v = nodetype(v)
             except BaseException as err:
                 raise TypeError(
-                    f"Failed to convert nodes {u},{v} " f"to type {nodetype}."
+                    f"Failed to convert nodes {u},{v} to type {nodetype}."
                 ) from err
 
         if len(d) == 0 or data is False:
@@ -242,7 +244,7 @@ def parse_edgelist(
                 edgedata = dict(literal_eval(" ".join(d)))
             except BaseException as err:
                 raise TypeError(
-                    f"Failed to convert edge data ({d})" f"to dictionary."
+                    f"Failed to convert edge data ({d}) to dictionary."
                 ) from err
         else:
             # convert edge data to dictionary with specified keys and type
@@ -267,6 +269,7 @@ def parse_edgelist(
 
 
 @open_file(0, mode="rb")
+@nx._dispatchable(name="bipartite_read_edgelist", graphs=None, returns_graph=True)
 def read_edgelist(
     path,
     comments="#",
@@ -284,7 +287,7 @@ def read_edgelist(
     path : file or string
        File or filename to read. If a file is provided, it must be
        opened in 'rb' mode.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filenames ending in .gz or .bz2 will be decompressed.
     comments : string, optional
        The character used to indicate the start of a comment.
     delimiter : string, optional

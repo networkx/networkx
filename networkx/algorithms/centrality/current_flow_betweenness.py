@@ -1,4 +1,5 @@
 """Current-flow betweenness centrality measures."""
+
 import networkx as nx
 from networkx.algorithms.centrality.flow_matrix import (
     CGInverseLaplacian,
@@ -19,8 +20,9 @@ __all__ = [
 ]
 
 
-@py_random_state(7)
 @not_implemented_for("directed")
+@py_random_state("seed")
+@nx._dispatchable(edge_attrs="weight")
 def approximate_current_flow_betweenness_centrality(
     G,
     normalized=True,
@@ -30,6 +32,8 @@ def approximate_current_flow_betweenness_centrality(
     epsilon=0.5,
     kmax=10000,
     seed=None,
+    *,
+    sample_weight=1,
 ):
     r"""Compute the approximate current-flow betweenness centrality for nodes.
 
@@ -62,10 +66,17 @@ def approximate_current_flow_betweenness_centrality(
        "cg" (uses least memory).
 
     epsilon: float
-        Absolute error tolerance.
+        Absolute error tolerance. Note that smaller values of `epsilon` lead to
+        higher numbers of sample pairs (``k``) and thus more computation time. The number
+        of sample pairs is approximately ``(c/epsilon)^2 * log(n)`` where ``n`` is the
+        number of nodes.
 
     kmax: int
        Maximum number of sample node pairs to use for approximation.
+
+    sample_weight : float (default=1)
+       Multiplicative factor for the number of sample node pairs used in approximation.
+       Higher values may improve accuracy at the expense of increased computation time.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -100,12 +111,32 @@ def approximate_current_flow_betweenness_centrality(
 
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
+
+    n = G.number_of_nodes()
+
+    # For small graphs (n < 3), betweenness centrality is always 0 for all nodes
+    # since no node can be "between" any pair of other nodes
+    if n < 3:
+        return dict.fromkeys(G, 0.0)
+
+    if epsilon <= 0:
+        raise nx.NetworkXError(f"Epsilon must be positive. Got {epsilon=}.")
+
+    if sample_weight <= 0:
+        raise nx.NetworkXError(f"Sample weight must be positive. Got {sample_weight=}.")
+
+    nb = (n - 1.0) * (n - 2.0)  # normalization factor
+    cstar = n * (n - 1) / nb
+    k = int(sample_weight * np.ceil((cstar / epsilon) ** 2 * np.log(n)))
+    if k > kmax:
+        msg = f"Number random pairs k>kmax ({k}>{kmax}) "
+        raise nx.NetworkXError(msg, "Increase kmax or epsilon")
+
     solvername = {
         "full": FullInverseLaplacian,
         "lu": SuperLUInverseLaplacian,
         "cg": CGInverseLaplacian,
     }
-    n = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
@@ -114,13 +145,6 @@ def approximate_current_flow_betweenness_centrality(
     L = L.astype(dtype)
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     betweenness = dict.fromkeys(H, 0.0)
-    nb = (n - 1.0) * (n - 2.0)  # normalization factor
-    cstar = n * (n - 1) / nb
-    l = 1  # parameter in approximation, adjustable
-    k = l * int(np.ceil((cstar / epsilon) ** 2 * np.log(n)))
-    if k > kmax:
-        msg = f"Number random pairs k>kmax ({k}>{kmax}) "
-        raise nx.NetworkXError(msg, "Increase kmax or epsilon")
     cstar2k = cstar / (2 * k)
     for _ in range(k):
         s, t = pair = seed.sample(range(n), 2)
@@ -133,7 +157,7 @@ def approximate_current_flow_betweenness_centrality(
                 continue
             for nbr in H[v]:
                 w = H[v][nbr].get(weight, 1.0)
-                betweenness[v] += w * np.abs(p[v] - p[nbr]) * cstar2k
+                betweenness[v] += float(w * np.abs(p[v] - p[nbr]) * cstar2k)
     if normalized:
         factor = 1.0
     else:
@@ -143,6 +167,7 @@ def approximate_current_flow_betweenness_centrality(
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight")
 def current_flow_betweenness_centrality(
     G, normalized=True, weight=None, dtype=float, solver="full"
 ):
@@ -218,27 +243,26 @@ def current_flow_betweenness_centrality(
     """
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
-    n = G.number_of_nodes()
+    N = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
-    H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
-    betweenness = dict.fromkeys(H, 0.0)  # b[v]=0 for v in H
+    H = nx.relabel_nodes(G, dict(zip(ordering, range(N))))
+    betweenness = dict.fromkeys(H, 0.0)  # b[n]=0 for n in H
     for row, (s, t) in flow_matrix_row(H, weight=weight, dtype=dtype, solver=solver):
-        pos = dict(zip(row.argsort()[::-1], range(n)))
-        for i in range(n):
-            betweenness[s] += (i - pos[i]) * row[i]
-            betweenness[t] += (n - i - 1 - pos[i]) * row[i]
+        pos = dict(zip(row.argsort()[::-1], range(N)))
+        for i in range(N):
+            betweenness[s] += (i - pos[i]) * row.item(i)
+            betweenness[t] += (N - i - 1 - pos[i]) * row.item(i)
     if normalized:
-        nb = (n - 1.0) * (n - 2.0)  # normalization factor
+        nb = (N - 1.0) * (N - 2.0)  # normalization factor
     else:
         nb = 2.0
-    for v in H:
-        betweenness[v] = float((betweenness[v] - v) * 2.0 / nb)
-    return {ordering[k]: v for k, v in betweenness.items()}
+    return {ordering[n]: (b - n) * 2.0 / nb for n, b in betweenness.items()}
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight")
 def edge_current_flow_betweenness_centrality(
     G, normalized=True, weight=None, dtype=float, solver="full"
 ):
@@ -320,21 +344,21 @@ def edge_current_flow_betweenness_centrality(
     """
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
-    n = G.number_of_nodes()
+    N = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
-    H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
+    H = nx.relabel_nodes(G, dict(zip(ordering, range(N))))
     edges = (tuple(sorted((u, v))) for u, v in H.edges())
     betweenness = dict.fromkeys(edges, 0.0)
     if normalized:
-        nb = (n - 1.0) * (n - 2.0)  # normalization factor
+        nb = (N - 1.0) * (N - 2.0)  # normalization factor
     else:
         nb = 2.0
     for row, (e) in flow_matrix_row(H, weight=weight, dtype=dtype, solver=solver):
-        pos = dict(zip(row.argsort()[::-1], range(1, n + 1)))
-        for i in range(n):
-            betweenness[e] += (i + 1 - pos[i]) * row[i]
-            betweenness[e] += (n - i - pos[i]) * row[i]
+        pos = dict(zip(row.argsort()[::-1], range(1, N + 1)))
+        for i in range(N):
+            betweenness[e] += (i + 1 - pos[i]) * row.item(i)
+            betweenness[e] += (N - i - pos[i]) * row.item(i)
         betweenness[e] /= nb
-    return {(ordering[s], ordering[t]): v for (s, t), v in betweenness.items()}
+    return {(ordering[s], ordering[t]): b for (s, t), b in betweenness.items()}

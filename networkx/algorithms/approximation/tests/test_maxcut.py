@@ -1,7 +1,19 @@
 import random
 
+import pytest
+
 import networkx as nx
 from networkx.algorithms.approximation import maxcut
+
+
+@pytest.mark.parametrize(
+    "f", (nx.approximation.randomized_partitioning, nx.approximation.one_exchange)
+)
+@pytest.mark.parametrize("graph_constructor", (nx.DiGraph, nx.MultiGraph))
+def test_raises_on_directed_and_multigraphs(f, graph_constructor):
+    G = graph_constructor([(0, 1), (1, 2)])
+    with pytest.raises(nx.NetworkXNotImplemented):
+        f(G)
 
 
 def _is_valid_cut(G, set1, set2):
@@ -36,7 +48,7 @@ def test_random_partitioning_all_to_one():
 def test_one_exchange_basic():
     G = nx.complete_graph(5)
     random.seed(5)
-    for (u, v, w) in G.edges(data=True):
+    for u, v, w in G.edges(data=True):
         w["weight"] = random.randrange(-100, 100, 1) / 10
 
     initial_cut = set(random.sample(sorted(G.nodes()), k=5))
@@ -68,7 +80,7 @@ def test_one_exchange_optimal():
 def test_negative_weights():
     G = nx.complete_graph(5)
     random.seed(5)
-    for (u, v, w) in G.edges(data=True):
+    for u, v, w in G.edges(data=True):
         w["weight"] = -1 * random.random()
 
     initial_cut = set(random.sample(sorted(G.nodes()), k=5))

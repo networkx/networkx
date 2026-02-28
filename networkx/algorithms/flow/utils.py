@@ -42,6 +42,11 @@ class CurrentEdge:
         self._it = iter(self._edges.items())
         self._curr = next(self._it)
 
+    def __eq__(self, other):
+        return (getattr(self, "_curr", None), self._edges) == (
+            (getattr(other, "_curr", None), other._edges)
+        )
+
 
 class Level:
     """Active and inactive nodes in a level."""
@@ -72,6 +77,9 @@ class GlobalRelabelThreshold:
         self._work = 0
 
 
+@nx._dispatchable(
+    edge_attrs={"capacity": float("inf")}, returns_graph=True, preserve_edge_attrs=True
+)
 def build_residual_network(G, capacity):
     """Build a residual network and initialize a zero flow.
 
@@ -101,15 +109,17 @@ def build_residual_network(G, capacity):
         raise nx.NetworkXError("MultiGraph and MultiDiGraph not supported (yet).")
 
     R = nx.DiGraph()
+    R.__networkx_cache__ = None  # Disable caching
     R.add_nodes_from(G)
 
-    inf = float("inf")
+    capacity = _capacity_function(G, capacity)
     # Extract edges with positive capacities. Self loops excluded.
     edge_list = [
-        (u, v, attr)
+        (u, v, cap)
         for u, v, attr in G.edges(data=True)
-        if u != v and attr.get(capacity, inf) > 0
+        if u != v and (cap := capacity(u, v, attr)) is not None and cap > 0
     ]
+
     # Simulate infinity with three times the sum of the finite edge capacities
     # or any positive value if the sum is zero. This allows the
     # infinite-capacity edges to be distinguished for unboundedness detection
@@ -120,18 +130,11 @@ def build_residual_network(G, capacity):
     # finite-capacity edge is at most 1/3 of inf, if an operation moves more
     # than 1/3 of inf units of flow to t, there must be an infinite-capacity
     # s-t path in G.
-    inf = (
-        3
-        * sum(
-            attr[capacity]
-            for u, v, attr in edge_list
-            if capacity in attr and attr[capacity] != inf
-        )
-        or 1
-    )
+    inf = float("inf")
+    inf = 3 * sum(cap for u, v, cap in edge_list if cap != inf) or 1
     if G.is_directed():
-        for u, v, attr in edge_list:
-            r = min(attr.get(capacity, inf), inf)
+        for u, v, cap in edge_list:
+            r = min(cap, inf)
             if not R.has_edge(u, v):
                 # Both (u, v) and (v, u) must be present in the residual
                 # network.
@@ -141,9 +144,9 @@ def build_residual_network(G, capacity):
                 # The edge (u, v) was added when (v, u) was visited.
                 R[u][v]["capacity"] = r
     else:
-        for u, v, attr in edge_list:
+        for u, v, cap in edge_list:
             # Add a pair of edges with equal residual capacities.
-            r = min(attr.get(capacity, inf), inf)
+            r = min(cap, inf)
             R.add_edge(u, v, capacity=r)
             R.add_edge(v, u, capacity=r)
 
@@ -153,6 +156,11 @@ def build_residual_network(G, capacity):
     return R
 
 
+@nx._dispatchable(
+    graphs="R",
+    preserve_edge_attrs={"R": {"capacity": float("inf")}},
+    preserve_graph_attrs=True,
+)
 def detect_unboundedness(R, s, t):
     """Detect an infinite-capacity s-t path in R."""
     q = deque([s])
@@ -170,6 +178,7 @@ def detect_unboundedness(R, s, t):
                 q.append(v)
 
 
+@nx._dispatchable(graphs={"G": 0, "R": 1}, preserve_edge_attrs={"R": {"flow": None}})
 def build_flow_dict(G, R):
     """Build a flow dictionary from a residual network."""
     flow_dict = {}
@@ -179,3 +188,44 @@ def build_flow_dict(G, R):
             (v, attr["flow"]) for v, attr in R[u].items() if attr["flow"] > 0
         )
     return flow_dict
+
+
+def _capacity_function(G, capacity):
+    """Returns a callable that returns the capacity of an edge.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        MultiGraph and MultiDiGraph are not supported.
+
+    capacity : string or callable
+        If callable, the callable is returned unchanged. For it to work
+        it must accept exactly three positional arguments
+        ``(u, v, edge_attrs)``, where `u` and `v` are the endpoints of
+        an edge and ``edge_attrs`` is the corresponding edge attribute
+        dictionary. The callable must return either None (to hide an edge)
+        or a number representing the capacity.
+
+        If string, it is interpreted as the key of an edge attribute storing
+        the capacity. In this case, a new callable is returned that accepts
+        ``(u, v, edge_attrs)`` and returns ``edge_attrs[capacity]``.
+
+    Returns
+    -------
+    callable
+        A callable with signature ``(u, v, edge_attrs)`` that returns the
+        capacity of the edge joining nodes `u` and `v`.
+
+    Notes
+    -----
+    If `capacity` is a string and the specified attribute is not present on
+    an edge, that edge is assumed to have infinite capacity.
+    """
+
+    inf = float("inf")
+    if callable(capacity):
+        return capacity
+    # If the capacity keyword argument is not callable, we assume it is a
+    # string representing the edge attribute containing the capacity of
+    # the edge.
+    return lambda u, v, data: data.get(capacity, inf)

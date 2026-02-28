@@ -11,23 +11,24 @@ of nodes to produce a summary graph.  The summary graph can then be used to
 infer how nodes with different attributes values relate to other nodes in the
 graph.
 """
+
 import networkx as nx
 import matplotlib.pyplot as plt
 
 
 nodes = {
-    "A": dict(color="Red"),
-    "B": dict(color="Red"),
-    "C": dict(color="Red"),
-    "D": dict(color="Red"),
-    "E": dict(color="Blue"),
-    "F": dict(color="Blue"),
-    "G": dict(color="Blue"),
-    "H": dict(color="Blue"),
-    "I": dict(color="Yellow"),
-    "J": dict(color="Yellow"),
-    "K": dict(color="Yellow"),
-    "L": dict(color="Yellow"),
+    "A": {"color": "Red"},
+    "B": {"color": "Red"},
+    "C": {"color": "Red"},
+    "D": {"color": "Red"},
+    "E": {"color": "Blue"},
+    "F": {"color": "Blue"},
+    "G": {"color": "Blue"},
+    "H": {"color": "Blue"},
+    "I": {"color": "Yellow"},
+    "J": {"color": "Yellow"},
+    "K": {"color": "Yellow"},
+    "L": {"color": "Yellow"},
 }
 edges = [
     ("A", "B", "Strong"),
@@ -50,12 +51,11 @@ original_graph.add_edges_from((u, v, {"type": label}) for u, v, label in edges)
 
 plt.suptitle("SNAP Summarization")
 
-base_options = dict(with_labels=True, edgecolors="black", node_size=500)
+base_options = {"with_labels": True, "edgecolors": "black", "node_size": 500}
 
 ax1 = plt.subplot(1, 2, 1)
 plt.title(
-    "Original (%s nodes, %s edges)"
-    % (original_graph.number_of_nodes(), original_graph.number_of_edges())
+    f"Original ({original_graph.number_of_nodes()} nodes, {original_graph.number_of_edges()} edges)"
 )
 pos = nx.spring_layout(original_graph, seed=7482934)
 node_colors = [d["color"] for _, d in original_graph.nodes(data=True)]
@@ -79,8 +79,7 @@ summary_graph = nx.snap_aggregation(
 plt.subplot(1, 2, 2)
 
 plt.title(
-    "SNAP Aggregation (%s nodes, %s edges)"
-    % (summary_graph.number_of_nodes(), summary_graph.number_of_edges())
+    f"SNAP Aggregation ({summary_graph.number_of_nodes()} nodes, {summary_graph.number_of_edges()} edges)"
 )
 summary_pos = nx.spring_layout(summary_graph, seed=8375428)
 node_colors = []
@@ -101,7 +100,7 @@ nx.draw_networkx(
     pos=summary_pos,
     node_color=node_colors,
     width=edge_weights,
-    **base_options
+    **base_options,
 )
 
 plt.tight_layout()

@@ -1,8 +1,6 @@
 """
 Pajek tests
 """
-import os
-import tempfile
 
 import networkx as nx
 from networkx.utils import edges_equal, nodes_equal
@@ -27,13 +25,6 @@ class TestPajek:
         )
 
         cls.G.graph["name"] = "Tralala"
-        (fd, cls.fname) = tempfile.mkstemp()
-        with os.fdopen(fd, "wb") as fh:
-            fh.write(cls.data.encode("UTF-8"))
-
-    @classmethod
-    def teardown_class(cls):
-        os.unlink(cls.fname)
 
     def test_parse_pajek_simple(self):
         # Example without node positions or shape
@@ -56,23 +47,30 @@ class TestPajek:
                 ("C", "D2"),
                 ("D2", "Bb"),
             ],
+            directed=True,
         )
 
-    def test_parse_pajet_mat(self):
+    def test_parse_pajek_mat(self):
         data = """*Vertices 3\n1 "one"\n2 "two"\n3 "three"\n*Matrix\n1 1 0\n0 1 0\n0 1 0\n"""
         G = nx.parse_pajek(data)
         assert set(G.nodes()) == {"one", "two", "three"}
         assert G.nodes["two"] == {"id": "2"}
         assert edges_equal(
-            set(G.edges()),
-            {("one", "one"), ("two", "one"), ("two", "two"), ("two", "three")},
+            G.edges(),
+            [("one", "one"), ("one", "two"), ("two", "two"), ("three", "two")],
+            directed=True,
         )
 
-    def test_read_pajek(self):
+    def test_read_pajek(self, tmp_path):
         G = nx.parse_pajek(self.data)
-        Gin = nx.read_pajek(self.fname)
+        # Read data from file
+        fname = tmp_path / "test.pjk"
+        with open(fname, "wb") as fh:
+            fh.write(self.data.encode("UTF-8"))
+
+        Gin = nx.read_pajek(fname)
         assert sorted(G.nodes()) == sorted(Gin.nodes())
-        assert edges_equal(G.edges(), Gin.edges())
+        assert edges_equal(G.edges(), Gin.edges(), directed=True)
         assert self.G.graph == Gin.graph
         for n in G:
             assert G.nodes[n] == Gin.nodes[n]
@@ -86,7 +84,7 @@ class TestPajek:
         fh.seek(0)
         H = nx.read_pajek(fh)
         assert nodes_equal(list(G), list(H))
-        assert edges_equal(list(G.edges()), list(H.edges()))
+        assert edges_equal(G.edges(), H.edges(), directed=True)
         # Graph name is left out for now, therefore it is not tested.
         # assert_equal(G.graph, H.graph)
 

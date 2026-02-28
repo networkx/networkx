@@ -17,7 +17,13 @@ class TestBFS:
         assert dict(nx.bfs_successors(self.G, source=0)) == {0: [1], 1: [2, 3], 2: [4]}
 
     def test_predecessor(self):
-        assert dict(nx.bfs_predecessors(self.G, source=0)) == {1: 0, 2: 1, 3: 1, 4: 2}
+        with pytest.deprecated_call():
+            assert dict(nx.bfs_predecessors(self.G, source=0)) == {
+                1: 0,
+                2: 1,
+                3: 1,
+                4: 2,
+            }
 
     def test_bfs_tree(self):
         T = nx.bfs_tree(self.G, source=0)
@@ -58,8 +64,8 @@ class TestBFS:
             2: [2, 3],
             3: [4],
         }
-        assert dict(enumerate(nx.bfs_layers(self.G, sources=[0]))) == expected
-        assert dict(enumerate(nx.bfs_layers(self.G, sources=0))) == expected
+        for sources in [0, [0], (i for i in [0]), [0, 0]]:
+            assert dict(enumerate(nx.bfs_layers(self.G, sources))) == expected
 
     def test_bfs_layers_missing_source(self):
         with pytest.raises(nx.NetworkXError):
@@ -74,6 +80,56 @@ class TestBFS:
     def test_descendants_at_distance_missing_source(self):
         with pytest.raises(nx.NetworkXError):
             nx.descendants_at_distance(self.G, "abc", 0)
+
+    def test_bfs_labeled_edges_directed(self):
+        D = nx.cycle_graph(5, create_using=nx.DiGraph)
+        expected = [
+            (0, 1, "tree"),
+            (1, 2, "tree"),
+            (2, 3, "tree"),
+            (3, 4, "tree"),
+            (4, 0, "reverse"),
+        ]
+        answer = list(nx.bfs_labeled_edges(D, 0))
+        assert expected == answer
+
+        D.add_edge(4, 4)
+        expected.append((4, 4, "level"))
+        answer = list(nx.bfs_labeled_edges(D, 0))
+        assert expected == answer
+
+        D.add_edge(0, 2)
+        D.add_edge(1, 5)
+        D.add_edge(2, 5)
+        D.remove_edge(4, 4)
+        expected = [
+            (0, 1, "tree"),
+            (0, 2, "tree"),
+            (1, 2, "level"),
+            (1, 5, "tree"),
+            (2, 3, "tree"),
+            (2, 5, "forward"),
+            (3, 4, "tree"),
+            (4, 0, "reverse"),
+        ]
+        answer = list(nx.bfs_labeled_edges(D, 0))
+        assert expected == answer
+
+        G = D.to_undirected()
+        G.add_edge(4, 4)
+        expected = [
+            (0, 1, "tree"),
+            (0, 2, "tree"),
+            (0, 4, "tree"),
+            (1, 2, "level"),
+            (1, 5, "tree"),
+            (2, 3, "tree"),
+            (2, 5, "forward"),
+            (4, 3, "forward"),
+            (4, 4, "level"),
+        ]
+        answer = list(nx.bfs_labeled_edges(G, 0))
+        assert expected == answer
 
 
 class TestBreadthLimitedSearch:
@@ -103,20 +159,22 @@ class TestBreadthLimitedSearch:
         assert result == {8: [9], 2: [3], 7: [2, 8]}
 
     def test_limited_bfs_predecessor(self):
-        assert dict(nx.bfs_predecessors(self.G, source=1, depth_limit=3)) == {
-            0: 1,
-            2: 1,
-            3: 2,
-            4: 3,
-            7: 2,
-            8: 7,
-        }
-        assert dict(nx.bfs_predecessors(self.D, source=7, depth_limit=2)) == {
-            2: 7,
-            3: 2,
-            8: 7,
-            9: 8,
-        }
+        with pytest.deprecated_call():
+            assert dict(nx.bfs_predecessors(self.G, source=1, depth_limit=3)) == {
+                0: 1,
+                2: 1,
+                3: 2,
+                4: 3,
+                7: 2,
+                8: 7,
+            }
+        with pytest.deprecated_call():
+            assert dict(nx.bfs_predecessors(self.D, source=7, depth_limit=2)) == {
+                2: 7,
+                3: 2,
+                8: 7,
+                9: 8,
+            }
 
     def test_limited_bfs_tree(self):
         T = nx.bfs_tree(self.G, source=3, depth_limit=1)
