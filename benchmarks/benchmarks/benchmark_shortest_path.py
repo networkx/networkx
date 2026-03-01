@@ -47,3 +47,23 @@ class UndirectedGraphAtlasSevenNodesConnected:
     def time_multi_source_dijkstra_over_atlas_with_target(self, edge_weights):
         for G in self.graphs:
             _ = nx.multi_source_dijkstra(G, sources=[0, 1], target=6)
+
+
+class AllShortestPathsGrid:
+    """
+    This tests the performance of _build_paths_from_predecessors
+    on graphs with a large number of paths (high recursion depth).
+    """
+
+    params = [8, 10, 12]
+    param_names = ["N"]
+    timeout = 300
+
+    def setup(self, N):
+        self.G = nx.grid_2d_graph(N, N)
+        self.source = (0, 0)
+        self.target = (N - 1, N - 1)
+
+    def time_all_shortest_paths(self, N):
+        for _ in nx.all_shortest_paths(self.G, self.source, self.target):
+            pass
