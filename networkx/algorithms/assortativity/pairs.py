@@ -45,24 +45,13 @@ def node_attribute_xy(G, attribute, nodes=None):
     representation (u, v) and (v, u), with the exception of self-loop edges
     which only appear once.
     """
-    if nodes is None:
-        nodes = set(G)
-    else:
-        nodes = set(nodes)
-    Gnodes = G.nodes
-    for u, nbrsdict in G.adjacency():
-        if u not in nodes:
-            continue
-        uattr = Gnodes[u].get(attribute, None)
-        if G.is_multigraph():
-            for v, keys in nbrsdict.items():
-                vattr = Gnodes[v].get(attribute, None)
-                for _ in keys:
-                    yield (uattr, vattr)
-        else:
-            for v in nbrsdict:
-                vattr = Gnodes[v].get(attribute, None)
-                yield (uattr, vattr)
+    nodes = set(G) if nodes is None else set(nodes)
+    n_attrs = G.nodes(data=attribute, default=None)
+
+    # Use `to_directed()` to ensure that attribute pairs for both (u, v) and
+    # (v, u) are reported (self-loops reported only once)
+    for u, v in G.to_directed().edges(nbunch=nodes):
+        yield (n_attrs[u], n_attrs[v])
 
 
 @nx._dispatchable(edge_attrs="weight")
