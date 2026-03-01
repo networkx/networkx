@@ -13,13 +13,14 @@ __all__ = ["maximal_independent_set"]
 @py_random_state(2)
 @nx._dispatchable
 def maximal_independent_set(G, nodes=None, seed=None):
-    """Returns a random maximal independent set guaranteed to contain
+    r"""Returns a random maximal independent set guaranteed to contain
     a given set of nodes.
 
     An independent set is a set of nodes such that the subgraph
     of G induced by these nodes contains no edges. A maximal
     independent set is an independent set such that it is not possible
-    to add a new node and still get an independent set.
+    to add a new node and still get an independent set, not necessarily
+    a maximum independent set.
 
     Parameters
     ----------
@@ -55,9 +56,32 @@ def maximal_independent_set(G, nodes=None, seed=None):
     >>> nx.maximal_independent_set(G, [1])  # doctest: +SKIP
     [1, 3]
 
+    To find a maximum independent set, find the maximum clique of the
+    complement graph:
+
+    >>> G = nx.path_graph(3)
+    >>> nx.maximal_independent_set(G, seed=0)
+    [1]
+    >>> nx.maximal_independent_set(G, seed=1)
+    [0, 2]
+    >>> G_comp = nx.complement(G)
+    >>> nx.clique.max_weight_clique(G_comp, weight=None)
+    ([2, 0], 2)
+
     Notes
     -----
     This algorithm does not solve the maximum independent set problem.
+
+    Finding an independent set in a graph $G$ is equivalent to
+    finding a clique in the complement graph $\bar{G}$.
+    Many problems related to independent sets, such as
+    finding the maximum independent set, can be solved by applying
+    clique algorithms to the complement graph.
+
+    See Also
+    --------
+    networkx.algorithms.clique.find_cliques
+    networkx.algorithms.clique.max_weight_clique
 
     """
     if not nodes:
