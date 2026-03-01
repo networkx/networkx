@@ -70,6 +70,22 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     edge_betweenness_centrality_subset
     load_centrality
 
+    Examples
+    --------
+    Undirected graph:
+
+    >>> G = nx.path_graph(5)
+    >>> nx.betweenness_centrality(G, normalized=False)
+    {0: 0.0, 1: 3.0, 2: 4.0, 3: 3.0, 4: 0.0}
+    >>> nx.betweenness_centrality_subset(G, sources=[0], targets=[4], normalized=False)
+    {0: 0.0, 1: 0.5, 2: 0.5, 3: 0.5, 4: 0.0}
+
+    Directed graph:
+
+    >>> G = nx.path_graph(4, create_using=nx.DiGraph)
+    >>> nx.betweenness_centrality_subset(G, sources=[0], targets=[3])
+    {0: 0.0, 1: 1.0, 2: 1.0, 3: 0.0}
+
     Notes
     -----
     The basic algorithm is from [1]_.
@@ -165,6 +181,22 @@ def edge_betweenness_centrality_subset(
     betweenness_centrality_subset
     edge_betweenness_centrality
     edge_load
+
+    Examples
+    --------
+    Undirected graph:
+
+    >>> G = nx.path_graph(5)
+    >>> nx.edge_betweenness_centrality(G, normalized=False)
+    {(0, 1): 4.0, (1, 2): 6.0, (2, 3): 6.0, (3, 4): 4.0}
+    >>> nx.edge_betweenness_centrality_subset(G, sources=[0], targets=[4])
+    {(0, 1): 0.5, (1, 2): 0.5, (2, 3): 0.5, (3, 4): 0.5}
+
+    Directed graph:
+
+    >>> G = nx.path_graph(4, create_using=nx.DiGraph)
+    >>> nx.edge_betweenness_centrality_subset(G, sources=[0], targets=[3])
+    {(0, 1): 1.0, (1, 2): 1.0, (2, 3): 1.0}
 
     Notes
     -----
