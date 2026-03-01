@@ -657,9 +657,9 @@ class OutDegreeView(DiDegreeView):
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self._succ[n]
-        if self._weight is None:
+        if weight is None:
             return len(nbrs)
-        return sum(dd.get(self._weight, 1) for dd in nbrs.values())
+        return sum(dd.get(weight, 1) for dd in nbrs.values())
 
     def __iter__(self):
         weight = self._weight
@@ -1165,6 +1165,7 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
         return set(it)
 
     dataview = OutEdgeDataView
+    method_name = "edges"
 
     def __init__(self, G):
         self._graph = G
@@ -1182,9 +1183,9 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
 
     def __contains__(self, e):
         try:
-            u, v = e
-            return v in self._adjdict[u]
-        except KeyError:
+            self[e]
+            return True
+        except (KeyError, ValueError):
             return False
 
     # Mapping Methods
@@ -1192,13 +1193,22 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
         if isinstance(e, slice):
             raise nx.NetworkXError(
                 f"{type(self).__name__} does not support slicing, "
-                f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
+                f"try list(G.{self.method_name})[{e.start}:{e.stop}:{e.step}]"
             )
-        u, v = e
-        try:
-            return self._adjdict[u][v]
-        except KeyError as ex:  # Customize msg to indicate exception origin
-            raise KeyError(f"The edge {e} is not in the graph.")
+        ret = self._adjdict
+        for elem in self._edge_as_tuple(e):
+            try:
+                ret = ret[elem]
+            except KeyError:
+                raise KeyError(f"The edge {e} is not in the graph.")
+        return ret
+
+    def _edge_as_tuple(self, e):
+        match e:
+            case (u, v):
+                return (u, v)
+            case _:
+                raise ValueError("Edge must have length 2")
 
     # EdgeDataView methods
     def __call__(self, nbunch=None, data=False, *, default=None):
@@ -1382,13 +1392,6 @@ class EdgeView(OutEdgeView):
             seen[n] = 1
         del seen
 
-    def __contains__(self, e):
-        try:
-            u, v = e[:2]
-            return v in self._adjdict[u] or u in self._adjdict[v]
-        except (KeyError, ValueError):
-            return False
-
 
 class InEdgeView(OutEdgeView):
     """A EdgeView class for inward edges of a DiGraph"""
@@ -1401,6 +1404,7 @@ class InEdgeView(OutEdgeView):
         self._nodes_nbrs = self._adjdict.items
 
     dataview = InEdgeDataView
+    method_name = "in_edges"
 
     def __init__(self, G):
         self._graph = G
@@ -1412,21 +1416,9 @@ class InEdgeView(OutEdgeView):
             for nbr in nbrs:
                 yield (nbr, n)
 
-    def __contains__(self, e):
-        try:
-            u, v = e
-            return u in self._adjdict[v]
-        except KeyError:
-            return False
-
-    def __getitem__(self, e):
-        if isinstance(e, slice):
-            raise nx.NetworkXError(
-                f"{type(self).__name__} does not support slicing, "
-                f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
-            )
-        u, v = e
-        return self._adjdict[v][u]
+    def _edge_as_tuple(self, e):
+        u, v = super()._edge_as_tuple(e)
+        return v, u
 
 
 class OutMultiEdgeView(OutEdgeView):
@@ -1447,33 +1439,19 @@ class OutMultiEdgeView(OutEdgeView):
                 for key in kdict:
                     yield (n, nbr, key)
 
-    def __contains__(self, e):
-        N = len(e)
-        if N == 3:
-            u, v, k = e
-        elif N == 2:
-            u, v = e
-            k = 0
-        else:
-            raise ValueError("MultiEdge must have length 2 or 3")
-        try:
-            return k in self._adjdict[u][v]
-        except KeyError:
-            return False
-
-    def __getitem__(self, e):
-        if isinstance(e, slice):
-            raise nx.NetworkXError(
-                f"{type(self).__name__} does not support slicing, "
-                f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
-            )
-        u, v, k = e
-        return self._adjdict[u][v][k]
-
     def __call__(self, nbunch=None, data=False, *, default=None, keys=False):
         if nbunch is None and data is False and keys is True:
             return self
         return self.dataview(self, nbunch, data, default=default, keys=keys)
+
+    def _edge_as_tuple(self, e):
+        match e:
+            case (u, v):
+                return u, v, 0
+            case (u, v, k):
+                return u, v, k
+            case _:
+                raise ValueError("MultiEdge must have length 2 or 3")
 
     def data(self, data=True, default=None, nbunch=None, keys=False):
         if nbunch is None and data is False and keys is True:
@@ -1513,6 +1491,7 @@ class InMultiEdgeView(OutMultiEdgeView):
         self._nodes_nbrs = self._adjdict.items
 
     dataview = InMultiEdgeDataView
+    method_name = "in_edges"
 
     def __init__(self, G):
         self._graph = G
@@ -1525,25 +1504,6 @@ class InMultiEdgeView(OutMultiEdgeView):
                 for key in kdict:
                     yield (nbr, n, key)
 
-    def __contains__(self, e):
-        N = len(e)
-        if N == 3:
-            u, v, k = e
-        elif N == 2:
-            u, v = e
-            k = 0
-        else:
-            raise ValueError("MultiEdge must have length 2 or 3")
-        try:
-            return k in self._adjdict[v][u]
-        except KeyError:
-            return False
-
-    def __getitem__(self, e):
-        if isinstance(e, slice):
-            raise nx.NetworkXError(
-                f"{type(self).__name__} does not support slicing, "
-                f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
-            )
-        u, v, k = e
-        return self._adjdict[v][u][k]
+    def _edge_as_tuple(self, e):
+        u, v, k = super()._edge_as_tuple(e)
+        return (v, u, k)
