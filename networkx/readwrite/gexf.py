@@ -86,6 +86,10 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
     If you want to specify an id use set it as node data, e.g.
     node['a']['id']=1 to set the id of node 'a' to 1.
 
+    For attributes with mixed types, the type will be promoted to the lowest common
+    supertype, e.g. if an attribute has both integer and string values,
+    the type will be promoted to string in GEXF.
+
     References
     ----------
     .. [1] GEXF File Format, http://gexf.net/
