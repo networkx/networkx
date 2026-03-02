@@ -1,5 +1,7 @@
 import io
 import time
+import types
+from networkx.readwrite.gexf import GEXFWriter
 
 import pytest
 
@@ -610,3 +612,86 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(sorted(e) for e in G.edges()) == sorted(
             sorted(e) for e in H.edges()
         )
+
+    def test_type_promotion_integer_to_long(self):
+        G = nx.Graph()
+        G.add_node(1, foo=1)
+        G.add_node(2, foo=1234567890123456789)  # long int
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        xml = fh.read().decode()
+        assert 'type="long"' in xml
+
+    def test_type_promotion_integer_to_string(self):
+        G = nx.Graph()
+        G.add_node(1, bar=1)
+        G.add_node(2, bar="stringval")
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        xml = fh.read().decode()
+        assert 'type="string"' in xml
+
+    def test_type_promotion_float_to_double(self):
+        G = nx.Graph()
+        G.add_node(1, baz=1.0)
+        G.add_node(2, baz=1.123456789012345678)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        xml = fh.read().decode()
+        assert 'type="double"' in xml
+
+    def test_type_promotion_boolean_to_string(self):
+        G = nx.Graph()
+        G.add_node(1, qux=True)
+        G.add_node(2, qux="stringval")
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        xml = fh.read().decode()
+        assert 'type="string"' in xml
+
+    def test_type_promotion_boolean_to_string_with_integer(self):
+        G = nx.Graph()
+        G.add_node(1, quux=True)
+        G.add_node(2, quux=1)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        xml = fh.read().decode()
+        assert 'type="string"' in xml
+
+    def test_type_promotion_integer_to_integer(self):
+        G = nx.Graph()
+        G.add_node(1, foo=int(1))
+        G.add_node(2, foo=int(2))
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        xml = fh.read().decode()
+        # It should be long basaed on existing logic
+        assert 'type="long"' in xml
+    
+    def test_type_promotion_float_to_float(self):
+        G = nx.Graph()
+        G.add_node(1, baz=float(1.0))
+        G.add_node(2, baz=float(2.0))
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        xml = fh.read().decode()
+        # It should be double basaed on existing logic
+        assert 'type="double"' in xml
+    
+    def test_type_promotion_boolean_to_boolean(self):
+        G = nx.Graph()
+        G.add_node(1, qux=True)
+        G.add_node(2, qux=False)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        xml = fh.read().decode()
+        assert 'type="boolean"' in xml
+    
