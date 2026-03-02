@@ -543,11 +543,27 @@ class GEXFWriter(GEXF):
     def get_attr_id(self, title, attr_type, edge_or_node, default, mode):
         # find the id of the attribute or generate a new id
         try:
-            return self.attr[edge_or_node][mode][title]
+            existing_id = self.attr[edge_or_node][mode][title]["id"]
+
+            # Check if the type matches
+            try:
+                existing_attr = self.attr[edge_or_node][mode][title]["element"]
+                if existing_attr is not None:
+                    existing_type = existing_attr.get("type")
+                    if existing_type != attr_type:
+                        # Promote to higher type
+                        promoted_type = self.promote_types(existing_type, attr_type)
+                        existing_attr.set("type", promoted_type)
+            except Exception:
+                # If there is an error promoting types, just ignore it and keep the existing type
+                pass
+            
+            return existing_id
         except KeyError:
             # generate new id
             new_id = str(next(self.attr_id))
-            self.attr[edge_or_node][mode][title] = new_id
+            self.attr[edge_or_node][mode][title] = {}
+            self.attr[edge_or_node][mode][title]["id"] = new_id
             attr_kwargs = {"id": new_id, "title": title, "type": attr_type}
             attribute = Element("attribute", **attr_kwargs)
             # add subelement for data default value if present
@@ -570,7 +586,32 @@ class GEXFWriter(GEXF):
                 attributes_element = Element("attributes", **attr_kwargs)
                 self.graph_element.insert(0, attributes_element)
             attributes_element.append(attribute)
+            self.attr[edge_or_node][mode][title]["element"] = attribute
         return new_id
+
+    # Helper function to promote two types to the higher type
+    def promote_types(self, type1, type2):
+        # string is the highest
+        if "string" in (type1, type2):
+            return "string"
+        # liststring and anyURI are higher than int/float/bool
+        if type1 == "liststring" or type2 == "liststring":
+            return "liststring"
+        if type1 == "anyURI" or type2 == "anyURI":
+            return "anyURI"
+        # float/double is higher than int/long
+        if (type1 == "double" or type2 == "double"):
+            return "double"
+        if (type1 == "float" or type2 == "float"):
+            return "float"
+        # long is higher than int
+        if type1 == "long" or type2 == "long":
+            return "long"
+        if type1 in ("integer", "int") or type2 in ("integer", "int"):
+            return "integer"
+        
+        # fallback to string
+        return "string"
 
     def add_viz(self, element, node_data):
         viz = node_data.pop("viz", False)
