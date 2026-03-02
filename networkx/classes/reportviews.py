@@ -1168,8 +1168,9 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
 
     def __init__(self, G):
         self._graph = G
-        G_attr = "succ" if self.out_edges else "pred"
-        self._adjdict = getattr(G, G_attr, G._adj)
+        self._adjdict = (
+            (G.succ if self.out_edges else G.pred) if G.is_directed() else G._adj
+        )
         self._nodes_nbrs = self._adjdict.items
 
     # Set methods
