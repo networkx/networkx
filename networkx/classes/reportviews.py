@@ -1164,11 +1164,11 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
     def _from_iterable(cls, it):
         return set(it)
 
-    in_edges = False
+    out_edges = True
 
     def __init__(self, G):
         self._graph = G
-        G_attr = "pred" if self.in_edges else "succ"
+        G_attr = "succ" if self.out_edges else "pred"
         self._adjdict = getattr(G, G_attr, G._adj)
         self._nodes_nbrs = self._adjdict.items
 
@@ -1206,7 +1206,7 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
     def __iter__(self):
         directed = self._graph.is_directed()
         multigraph = self._graph.is_multigraph()
-        in_edges = self.in_edges
+        out_edges = self.out_edges
         seen = set()
         for n, nbrs in self._nodes_nbrs():
             if not directed and n in seen:
@@ -1216,12 +1216,12 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
                     if nbr in seen:
                         continue
                     for key in kdict:
-                        yield (nbr, n, key) if in_edges else (n, nbr, key)
+                        yield (n, nbr, key) if out_edges else (nbr, n, key)
             else:
                 for nbr in list(nbrs):
                     if nbr in seen:
                         continue
-                    yield (nbr, n) if in_edges else (n, nbr)
+                    yield (n, nbr) if out_edges else (nbr, n)
             if not directed:
                 seen.add(n)
 
@@ -1237,14 +1237,14 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
         if isinstance(e, slice):
             raise nx.NetworkXError(
                 f"{type(self).__name__} does not support slicing, "
-                f"try list(G.{'in_edges' if self.in_edges else 'edges'})[{e.start}:{e.stop}:{e.step}]"
+                f"try list(G.{'edges' if self.out_edges else 'in_edges'})[{e.start}:{e.stop}:{e.step}]"
             )
         if not isinstance(e, tuple):
             raise ValueError("The edge must be a tuple.")
         multigraph = self._graph.is_multigraph()
         if len(e) != 2 and not (multigraph and len(e) == 3):
             raise ValueError(f"The edge {e} has an invalid length {len(e)}.")
-        u, v = (e[1], e[0]) if self.in_edges else (e[0], e[1])
+        u, v = (e[0], e[1]) if self.out_edges else (e[1], e[0])
         try:
             if multigraph:
                 k = 0 if len(e) == 2 else e[2]
@@ -1369,12 +1369,12 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
     def _dataview(self, multigraph, directed):
         if multigraph:
             if directed:
-                return InMultiEdgeDataView if self.in_edges else OutMultiEdgeDataView
+                return OutMultiEdgeDataView if self.out_edges else InMultiEdgeDataView
             else:
                 return MultiEdgeDataView
         else:
             if directed:
-                return InEdgeDataView if self.in_edges else OutEdgeDataView
+                return OutEdgeDataView if self.out_edges else InEdgeDataView
             else:
                 return EdgeDataView
 
@@ -1465,7 +1465,7 @@ class InEdgeView(OutEdgeView):
 
     __slots__ = ()
 
-    in_edges = True
+    out_edges = False
 
 
 class OutMultiEdgeView(OutEdgeView):
@@ -1485,4 +1485,4 @@ class InMultiEdgeView(OutMultiEdgeView):
 
     __slots__ = ()
 
-    in_edges = True
+    out_edges = False
