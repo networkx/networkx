@@ -15,15 +15,20 @@ def undirected_G():
 
 
 class TestClosenessCentrality:
-    def test_wf_improved(self):
+    @pytest.mark.parametrize(
+        ("wf_improved", "expected"),
+        [
+            (False, {0: 0.5, 1: 0.75, 2: 0.75, 3: 0.5, 4: 0.667, 5: 1.0, 6: 0.667}),
+            (
+                True,
+                {0: 0.25, 1: 0.375, 2: 0.375, 3: 0.25, 4: 0.222, 5: 0.333, 6: 0.222},
+            ),
+        ],
+    )
+    def test_wf_improved(self, wf_improved, expected):
         G = nx.union(nx.path_graph(4), nx.path_graph([4, 5, 6]))
-        c = nx.closeness_centrality(G)
-        cwf = nx.closeness_centrality(G, wf_improved=False)
-        res = {0: 0.25, 1: 0.375, 2: 0.375, 3: 0.25, 4: 0.222, 5: 0.333, 6: 0.222}
-        wf_res = {0: 0.5, 1: 0.75, 2: 0.75, 3: 0.5, 4: 0.667, 5: 1.0, 6: 0.667}
-        for n in G:
-            assert c[n] == pytest.approx(res[n], abs=1e-3)
-            assert cwf[n] == pytest.approx(wf_res[n], abs=1e-3)
+        c = nx.closeness_centrality(G, wf_improved=wf_improved)
+        assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
     def test_digraph(self):
         G = nx.path_graph(3, create_using=nx.DiGraph)
