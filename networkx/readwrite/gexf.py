@@ -591,26 +591,26 @@ class GEXFWriter(GEXF):
 
     # Helper function to promote two types to the higher type
     def promote_types(self, type1, type2):
-        # string is the highest
+        if type1 == type2:
+            return type1
+        
+        # Priority 1: String is always the ultimate sink
         if "string" in (type1, type2):
             return "string"
-        # liststring and anyURI are higher than int/float/bool
-        if type1 == "liststring" or type2 == "liststring":
-            return "liststring"
-        if type1 == "anyURI" or type2 == "anyURI":
-            return "anyURI"
-        # float/double is higher than int/long
-        if (type1 == "double" or type2 == "double"):
-            return "double"
-        if (type1 == "float" or type2 == "float"):
-            return "float"
-        # long is higher than int
-        if type1 == "long" or type2 == "long":
-            return "long"
-        if type1 in ("integer", "int") or type2 in ("integer", "int"):
-            return "integer"
+
+        # Priority 2: Define families
+        numerics = {"integer", "long", "float", "double", "int"}
         
-        # fallback to string
+        # If they are both numeric, promote within the family
+        if type1 in numerics and type2 in numerics:
+            if "double" in (type1, type2): return "double"
+            if "float" in (type1, type2): return "float"
+            if "long" in (type1, type2): return "long"
+            # if we get here, they must both be integer
+            return "integer"
+
+        # Priority 3: Cross-family conflict
+        # If we are mixing a Numeric with a URI or a List, we must go to string
         return "string"
 
     def add_viz(self, element, node_data):
