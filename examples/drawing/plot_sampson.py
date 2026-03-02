@@ -25,22 +25,25 @@ with zipfile.ZipFile("sampson_data.zip") as zf:
         )
         for n in (1, 2, 3)
     ]
-pos = nx.spring_layout(G3, iterations=100, seed=173)
-plt.clf()
 
-plt.subplot(221)
-plt.title("samplike1")
-nx.draw(G1, pos, node_size=50, with_labels=False)
-plt.subplot(222)
-plt.title("samplike2")
-nx.draw(G2, pos, node_size=50, with_labels=False)
-plt.subplot(223)
-plt.title("samplike3")
-nx.draw(G3, pos, node_size=50, with_labels=False)
-plt.subplot(224)
-plt.title("samplike1,2,3")
-nx.draw(G3, pos, edgelist=list(G3.edges()), node_size=50, with_labels=False)
-nx.draw_networkx_edges(G1, pos, alpha=0.25)
-nx.draw_networkx_edges(G2, pos, alpha=0.25)
+# Use the same layout for all 3 examples
+pos = nx.spring_layout(G3, iterations=100, seed=173)
+
+fig, axes = plt.subplots(2, 2)
+plot_opts = {"node_size": 50, "with_labels": False}
+
+# Plot each graph individually
+for num, (G, ax) in enumerate(zip((G1, G2, G3), axes.ravel()), start=1):
+    nx.draw(G, pos, ax=ax, **plot_opts)
+    ax.set_title(f"samplike{num}")
+
+# In the last frame, plot all 3 graphs together
+ax = axes[1, 1]
+nx.draw_networkx_nodes(G3, pos, ax=ax, node_size=50)
+for G, edge_clr in zip((G1, G2, G3), "rgb"):
+    nx.draw_networkx_edges(G, pos, ax=ax, edge_color=edge_clr)
+
+ax.set_title("samplike1,2,3")
+ax.set_axis_off()
 plt.tight_layout()
 plt.show()
