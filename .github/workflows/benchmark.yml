@@ -109,7 +109,7 @@ jobs:
         run: ccache -s
         if: always()
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: asv-benchmark-results-${{ runner.os }}
