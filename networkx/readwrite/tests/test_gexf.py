@@ -633,6 +633,20 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         xml = fh.read().decode()
         assert 'type="string"' in xml
 
+    def test_type_promotion_double_to_string(self):
+        G = nx.Graph()
+        G.add_node(1, bar=1.234)
+        G.add_node(2, bar="stringval")
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        xml = fh.read().decode()
+        assert 'type="string"' in xml
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert H.nodes[1]["bar"] == "1.234"
+        assert H.nodes[2]["bar"] == "stringval"
+
     def test_type_promotion_float_to_double(self):
         G = nx.Graph()
         G.add_node(1, baz=1.0)
