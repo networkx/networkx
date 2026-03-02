@@ -13,19 +13,18 @@ The data file can be found at:
 """
 
 import zipfile
-from io import BytesIO as StringIO
 
 import matplotlib.pyplot as plt
 import networkx as nx
 
+# Extract the edge data for the 3 sampson-like graphs from the archive
 with zipfile.ZipFile("sampson_data.zip") as zf:
-    e1 = StringIO(zf.read("samplike1.txt"))
-    e2 = StringIO(zf.read("samplike2.txt"))
-    e3 = StringIO(zf.read("samplike3.txt"))
-
-G1 = nx.read_edgelist(e1, delimiter="\t")
-G2 = nx.read_edgelist(e2, delimiter="\t")
-G3 = nx.read_edgelist(e3, delimiter="\t")
+    G1, G2, G3 = [
+        nx.parse_edgelist(
+            zf.read(f"samplike{n}.txt").decode().split("\n"), delimiter="\t"
+        )
+        for n in (1, 2, 3)
+    ]
 pos = nx.spring_layout(G3, iterations=100, seed=173)
 plt.clf()
 
