@@ -1,6 +1,5 @@
 import io
 import time
-import types
 
 import pytest
 
