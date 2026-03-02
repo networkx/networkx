@@ -1164,22 +1164,66 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
     def _from_iterable(cls, it):
         return set(it)
 
-    dataview = OutEdgeDataView
-    method_name = "edges"
+    in_edges = False
 
     def __init__(self, G):
         self._graph = G
-        self._adjdict = G._succ if hasattr(G, "succ") else G._adj
+        G_attr = "pred" if self.in_edges else "succ"
+        self._adjdict = getattr(G, G_attr, G._adj)
         self._nodes_nbrs = self._adjdict.items
 
     # Set methods
     def __len__(self):
-        return sum(len(nbrs) for n, nbrs in self._nodes_nbrs())
+        directed = self._graph.is_directed()
+        multigraph = self._graph.is_multigraph()
+
+        if directed:
+            if multigraph:
+                return sum(
+                    len(kdict)
+                    for _, nbrs in self._nodes_nbrs()
+                    for kdict in nbrs.values()
+                )
+            else:
+                return sum(len(nbrs) for _, nbrs in self._nodes_nbrs())
+        else:
+            seen = set()
+            count = 0
+            for n, nbrs in self._nodes_nbrs():
+                if multigraph:
+                    for nbr, kdict in nbrs.items():
+                        if nbr in seen:
+                            continue
+                        count += len(kdict)
+                else:
+                    for nbr in nbrs:
+                        if nbr in seen:
+                            continue
+                        count += 1
+                seen.add(n)
+            return count
 
     def __iter__(self):
+        directed = self._graph.is_directed()
+        multigraph = self._graph.is_multigraph()
+        in_edges = self.in_edges
+        seen = set()
         for n, nbrs in self._nodes_nbrs():
-            for nbr in nbrs:
-                yield (n, nbr)
+            if not directed and n in seen:
+                continue
+            if multigraph:
+                for nbr, kdict in list(nbrs.items()):
+                    if nbr in seen:
+                        continue
+                    for key in kdict:
+                        yield (nbr, n, key) if in_edges else (n, nbr, key)
+            else:
+                for nbr in list(nbrs):
+                    if nbr in seen:
+                        continue
+                    yield (nbr, n) if in_edges else (n, nbr)
+            if not directed:
+                seen.add(n)
 
     def __contains__(self, e):
         try:
@@ -1193,30 +1237,39 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
         if isinstance(e, slice):
             raise nx.NetworkXError(
                 f"{type(self).__name__} does not support slicing, "
-                f"try list(G.{self.method_name})[{e.start}:{e.stop}:{e.step}]"
+                f"try list(G.{'in_edges' if self.in_edges else 'edges'})[{e.start}:{e.stop}:{e.step}]"
             )
-        ret = self._adjdict
-        for elem in self._edge_as_tuple(e):
-            try:
-                ret = ret[elem]
-            except KeyError:
-                raise KeyError(f"The edge {e} is not in the graph.")
-        return ret
-
-    def _edge_as_tuple(self, e):
-        match e:
-            case (u, v):
-                return (u, v)
-            case _:
-                raise ValueError("Edge must have length 2")
+        if not isinstance(e, tuple):
+            raise ValueError("The edge must be a tuple.")
+        multigraph = self._graph.is_multigraph()
+        if len(e) != 2 and not (multigraph and len(e) == 3):
+            raise ValueError(f"The edge {e} has an invalid length {len(e)}.")
+        u, v = (e[1], e[0]) if self.in_edges else (e[0], e[1])
+        try:
+            if multigraph:
+                k = 0 if len(e) == 2 else e[2]
+                return self._adjdict[u][v][k]
+            else:
+                return self._adjdict[u][v]
+        except KeyError:
+            raise KeyError(f"The edge {e} is not in the graph.")
 
     # EdgeDataView methods
-    def __call__(self, nbunch=None, data=False, *, default=None):
-        if nbunch is None and data is False:
-            return self
-        return self.dataview(self, nbunch, data, default=default)
+    def __call__(self, nbunch=None, data=False, *, default=None, keys=False):
+        multigraph = self._graph.is_multigraph()
 
-    def data(self, data=True, default=None, nbunch=None):
+        if not multigraph and keys:
+            raise TypeError("keys is not supported for simple graphs")
+
+        if nbunch is None and data is False and (not multigraph or keys):
+            return self
+        dataview = self._dataview(multigraph, self._graph.is_directed())
+        if multigraph:
+            return dataview(self, nbunch, data, default=default, keys=keys)
+        else:
+            return dataview(self, nbunch, data, default=default)
+
+    def data(self, data=True, default=None, nbunch=None, keys=False):
         """
         Return a read-only view of edge data.
 
@@ -1233,6 +1286,10 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
         nbunch : container of nodes, optional (default=None)
             Allows restriction to edges only involving certain nodes. All edges
             are considered by default.
+        keys : bool, optional (default=False)
+            Only relevant for MultiGraphs/MultiDiGraphs.
+            If True, the view includes the edge keys as part of each edge tuple.
+            Not allowed for simple graphs (raises TypeError if set).
 
         Returns
         -------
@@ -1292,9 +1349,34 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
         >>> G.edges.data("speed")
         EdgeDataView([(0, 1, None), (0, 2, None), (1, 2, None)])
         """
-        if nbunch is None and data is False:
+        multigraph = self._graph.is_multigraph()
+
+        # Reject keys if not a multigraph
+        if not multigraph and keys:
+            raise TypeError("keys is not supported for simple graphs")
+
+        # Return self in the same cases as the old method
+        if nbunch is None and data is False and (not multigraph or keys):
             return self
-        return self.dataview(self, nbunch, data, default=default)
+
+        # Call dataview with appropriate arguments
+        dataview = self._dataview(multigraph, self._graph.is_directed())
+        if multigraph:
+            return dataview(self, nbunch, data, default=default, keys=keys)
+        else:
+            return dataview(self, nbunch, data, default=default)
+
+    def _dataview(self, multigraph, directed):
+        if multigraph:
+            if directed:
+                return InMultiEdgeDataView if self.in_edges else OutMultiEdgeDataView
+            else:
+                return MultiEdgeDataView
+        else:
+            if directed:
+                return InEdgeDataView if self.in_edges else OutEdgeDataView
+            else:
+                return EdgeDataView
 
     # String Methods
     def __str__(self):
@@ -1377,48 +1459,13 @@ class EdgeView(OutEdgeView):
 
     __slots__ = ()
 
-    dataview = EdgeDataView
-
-    def __len__(self):
-        num_nbrs = (len(nbrs) + (n in nbrs) for n, nbrs in self._nodes_nbrs())
-        return sum(num_nbrs) // 2
-
-    def __iter__(self):
-        seen = {}
-        for n, nbrs in self._nodes_nbrs():
-            for nbr in list(nbrs):
-                if nbr not in seen:
-                    yield (n, nbr)
-            seen[n] = 1
-        del seen
-
 
 class InEdgeView(OutEdgeView):
     """A EdgeView class for inward edges of a DiGraph"""
 
     __slots__ = ()
 
-    def __setstate__(self, state):
-        self._graph = state["_graph"]
-        self._adjdict = state["_adjdict"]
-        self._nodes_nbrs = self._adjdict.items
-
-    dataview = InEdgeDataView
-    method_name = "in_edges"
-
-    def __init__(self, G):
-        self._graph = G
-        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
-        self._nodes_nbrs = self._adjdict.items
-
-    def __iter__(self):
-        for n, nbrs in self._nodes_nbrs():
-            for nbr in nbrs:
-                yield (nbr, n)
-
-    def _edge_as_tuple(self, e):
-        u, v = super()._edge_as_tuple(e)
-        return v, u
+    in_edges = True
 
 
 class OutMultiEdgeView(OutEdgeView):
@@ -1426,58 +1473,11 @@ class OutMultiEdgeView(OutEdgeView):
 
     __slots__ = ()
 
-    dataview = OutMultiEdgeDataView
-
-    def __len__(self):
-        return sum(
-            len(kdict) for n, nbrs in self._nodes_nbrs() for nbr, kdict in nbrs.items()
-        )
-
-    def __iter__(self):
-        for n, nbrs in self._nodes_nbrs():
-            for nbr, kdict in nbrs.items():
-                for key in kdict:
-                    yield (n, nbr, key)
-
-    def __call__(self, nbunch=None, data=False, *, default=None, keys=False):
-        if nbunch is None and data is False and keys is True:
-            return self
-        return self.dataview(self, nbunch, data, default=default, keys=keys)
-
-    def _edge_as_tuple(self, e):
-        match e:
-            case (u, v):
-                return u, v, 0
-            case (u, v, k):
-                return u, v, k
-            case _:
-                raise ValueError("MultiEdge must have length 2 or 3")
-
-    def data(self, data=True, default=None, nbunch=None, keys=False):
-        if nbunch is None and data is False and keys is True:
-            return self
-        return self.dataview(self, nbunch, data, default=default, keys=keys)
-
 
 class MultiEdgeView(OutMultiEdgeView):
     """A EdgeView class for edges of a MultiGraph"""
 
     __slots__ = ()
-
-    dataview = MultiEdgeDataView
-
-    def __len__(self):
-        return sum(1 for e in self)
-
-    def __iter__(self):
-        seen = {}
-        for n, nbrs in self._nodes_nbrs():
-            for nbr, kd in nbrs.items():
-                if nbr not in seen:
-                    for k, dd in kd.items():
-                        yield (n, nbr, k)
-            seen[n] = 1
-        del seen
 
 
 class InMultiEdgeView(OutMultiEdgeView):
@@ -1485,25 +1485,4 @@ class InMultiEdgeView(OutMultiEdgeView):
 
     __slots__ = ()
 
-    def __setstate__(self, state):
-        self._graph = state["_graph"]
-        self._adjdict = state["_adjdict"]
-        self._nodes_nbrs = self._adjdict.items
-
-    dataview = InMultiEdgeDataView
-    method_name = "in_edges"
-
-    def __init__(self, G):
-        self._graph = G
-        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
-        self._nodes_nbrs = self._adjdict.items
-
-    def __iter__(self):
-        for n, nbrs in self._nodes_nbrs():
-            for nbr, kdict in nbrs.items():
-                for key in kdict:
-                    yield (nbr, n, key)
-
-    def _edge_as_tuple(self, e):
-        u, v, k = super()._edge_as_tuple(e)
-        return (v, u, k)
+    in_edges = True

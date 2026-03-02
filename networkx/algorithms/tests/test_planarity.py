@@ -350,7 +350,7 @@ def check_embedding(G, embedding):
         if edge[0] != edge[1]:
             g_edges.add((edge[0], edge[1]))
             g_edges.add((edge[1], edge[0]))
-    assert g_edges == set(embedding.edges), (
+    assert g_edges == {edge for u, v in embedding.edges for edge in [(u, v), (v, u)]}, (
         "Bad embedding. Edges don't match the original graph."
     )
 
