@@ -557,7 +557,7 @@ class GEXFWriter(GEXF):
             except Exception:
                 # If there is an error promoting types, just ignore it and keep the existing type
                 pass
-            
+
             return existing_id
         except KeyError:
             # generate new id
@@ -593,19 +593,22 @@ class GEXFWriter(GEXF):
     def promote_types(self, type1, type2):
         if type1 == type2:
             return type1
-        
+
         # Priority 1: String is always the ultimate sink
         if "string" in (type1, type2):
             return "string"
 
         # Priority 2: Define families
         numerics = {"integer", "long", "float", "double", "int"}
-        
+
         # If they are both numeric, promote within the family
         if type1 in numerics and type2 in numerics:
-            if "double" in (type1, type2): return "double"
-            if "float" in (type1, type2): return "float"
-            if "long" in (type1, type2): return "long"
+            if "double" in (type1, type2):
+                return "double"
+            if "float" in (type1, type2):
+                return "float"
+            if "long" in (type1, type2):
+                return "long"
             # if we get here, they must both be integer
             return "integer"
 
