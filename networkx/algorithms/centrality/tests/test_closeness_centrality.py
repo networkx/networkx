@@ -25,20 +25,28 @@ class TestClosenessCentrality:
             ),
         ],
     )
-    def test_wf_improved(self, wf_improved, expected):
+    @pytest.mark.parametrize("precompute_sp", (True, False))
+    def test_wf_improved(self, wf_improved, expected, precompute_sp):
         G = nx.union(nx.path_graph(4), nx.path_graph([4, 5, 6]))
-        c = nx.closeness_centrality(G, wf_improved=wf_improved)
+        sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
+        c = nx.closeness_centrality(G, wf_improved=wf_improved, sp=sp)
         assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
-    def test_digraph(self):
+    @pytest.mark.parametrize(
+        ("reverse", "expected"),
+        [
+            (False, {0: 0.0, 1: 0.500, 2: 0.667}),
+            (True, {0: 0.667, 1: 0.500, 2: 0.0}),
+        ],
+    )
+    @pytest.mark.parametrize("precompute_sp", (True, False))
+    def test_digraph(self, reverse, expected, precompute_sp):
         G = nx.path_graph(3, create_using=nx.DiGraph)
+        if reverse:
+            G = G.reverse()
+        sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
         c = nx.closeness_centrality(G)
-        cr = nx.closeness_centrality(G.reverse())
-        d = {0: 0.0, 1: 0.500, 2: 0.667}
-        dr = {0: 0.667, 1: 0.500, 2: 0.0}
-        for n in G:
-            assert c[n] == pytest.approx(d[n], abs=1e-3)
-            assert cr[n] == pytest.approx(dr[n], abs=1e-3)
+        assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
     def test_k5_closeness(self):
         G = nx.complete_graph(5)
@@ -201,31 +209,6 @@ class TestClosenessCentrality:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     # ----------- Tests closeness centrality using pre-calculated shortest path lengths ------------------- #
-    def test_wf_improved_sp(self):
-        G = nx.union(nx.path_graph(4), nx.path_graph([4, 5, 6]))
-        sp = dict(nx.all_pairs_shortest_path_length(G))
-        c = nx.closeness_centrality(G, sp=sp)
-        cwf = nx.closeness_centrality(G, wf_improved=False, sp=sp)
-        res = {0: 0.25, 1: 0.375, 2: 0.375, 3: 0.25, 4: 0.222, 5: 0.333, 6: 0.222}
-        wf_res = {0: 0.5, 1: 0.75, 2: 0.75, 3: 0.5, 4: 0.667, 5: 1.0, 6: 0.667}
-        for n in G:
-            assert c[n] == pytest.approx(res[n], abs=1e-3)
-            assert cwf[n] == pytest.approx(wf_res[n], abs=1e-3)
-
-    def test_digraph_sp(self):
-        G = nx.path_graph(3, create_using=nx.DiGraph)
-        sp = dict(nx.all_pairs_shortest_path_length(G))
-        c = nx.closeness_centrality(G, sp=sp)
-
-        G_rev = G.reverse()
-        sp_rev = dict(nx.all_pairs_shortest_path_length(G_rev))
-        cr = nx.closeness_centrality(G_rev, sp=sp_rev)
-        d = {0: 0.0, 1: 0.500, 2: 0.667}
-        dr = {0: 0.667, 1: 0.500, 2: 0.0}
-        for n in G:
-            assert c[n] == pytest.approx(d[n], abs=1e-3)
-            assert cr[n] == pytest.approx(dr[n], abs=1e-3)
-
     def test_k5_closeness_sp(self):
         G = nx.complete_graph(5)
         sp = dict(nx.all_pairs_shortest_path_length(G))
