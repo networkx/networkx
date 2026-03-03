@@ -77,10 +77,7 @@ def voronoi_communities(G, mode="strength", eps=1e-8):
 
     # DATA HAS TO BE NORMALIZED, if >1 i need to normalize
     if mode == "strength":
-        transformed = {
-            node: float(strengths[node]) * float(weighted_densities[node])
-            for node in nodes
-        }
+        transformed = {node: float(weighted_densities[node]) for node in nodes}
     elif mode == "flow":
         transformed = {
             node: math.log(float(strengths[node]) + eps)
