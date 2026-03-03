@@ -14,6 +14,7 @@ def undirected_G():
     return G, cc
 
 
+@pytest.mark.parametrize("precompute_sp", (True, False))
 class TestClosenessCentrality:
     @pytest.mark.parametrize(
         ("wf_improved", "expected"),
@@ -25,7 +26,6 @@ class TestClosenessCentrality:
             ),
         ],
     )
-    @pytest.mark.parametrize("precompute_sp", (True, False))
     def test_wf_improved(self, wf_improved, expected, precompute_sp):
         G = nx.union(nx.path_graph(4), nx.path_graph([4, 5, 6]))
         sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
@@ -39,7 +39,6 @@ class TestClosenessCentrality:
             (True, {0: 0.667, 1: 0.500, 2: 0.0}),
         ],
     )
-    @pytest.mark.parametrize("precompute_sp", (True, False))
     def test_digraph(self, reverse, expected, precompute_sp):
         G = nx.path_graph(3, create_using=nx.DiGraph)
         if reverse:
@@ -48,14 +47,12 @@ class TestClosenessCentrality:
         c = nx.closeness_centrality(G, sp=sp)
         assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
-    @pytest.mark.parametrize("precompute_sp", (True, False))
     def test_k5_closeness(self, precompute_sp):
         G = nx.complete_graph(5)
         sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
         c = nx.closeness_centrality(G, sp=sp)
         assert all(v == pytest.approx(1, abs=1e-3) for v in c.values())
 
-    @pytest.mark.parametrize("precompute_sp", (True, False))
     def test_p3_closeness(self, precompute_sp):
         G = nx.path_graph(3)
         sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
@@ -63,7 +60,6 @@ class TestClosenessCentrality:
         expected = {0: 0.667, 1: 1.000, 2: 0.667}
         assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
-    @pytest.mark.parametrize("precompute_sp", (True, False))
     def test_krackhardt_closeness(self, precompute_sp):
         G = nx.krackhardt_kite_graph()
         sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
@@ -82,7 +78,6 @@ class TestClosenessCentrality:
         }
         assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
-    @pytest.mark.parametrize("precompute_sp", (True, False))
     def test_florentine_families_closeness(self, precompute_sp):
         G = nx.florentine_families_graph()
         sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
@@ -106,7 +101,6 @@ class TestClosenessCentrality:
         }
         assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
-    @pytest.mark.parametrize("precompute_sp", (True, False))
     def test_les_miserables_closeness(self, precompute_sp):
         G = nx.les_miserables_graph()
         sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
@@ -192,7 +186,6 @@ class TestClosenessCentrality:
         }
         assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
-    @pytest.mark.parametrize("precompute_sp", (True, False))
     def test_weighted_closeness(self, precompute_sp):
         edges = [
             ("s", "u", 10),
@@ -218,7 +211,6 @@ class TestClosenessCentrality:
         assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
     @pytest.mark.parametrize("reverse", (True, False))
-    @pytest.mark.parametrize("precompute_sp", (True, False))
     def test_directed_cycle(self, reverse, precompute_sp):
         G = nx.cycle_graph(5, create_using=nx.DiGraph)
         if reverse:
