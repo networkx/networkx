@@ -7,7 +7,6 @@ import numpy as np
 
 import networkx as nx
 from networkx.algorithms.community.quality import modularity
-from networkx.algorithms.components import strongly_connected_components
 from networkx.utils import not_implemented_for
 
 __all__ = ["voronoi_communities", "voronoi_partitions"]
@@ -59,6 +58,9 @@ def voronoi_communities(G, mode="strength", eps=1e-8):
     :any:`voronoi_communities`
     """
 
+    if G.number_of_edges() == 0:
+        return [{n} for n in G]
+
     G_dist = _transform_weights_to_distances(G)
 
     all_pairs_distances = dict(
@@ -104,31 +106,36 @@ def voronoi_communities(G, mode="strength", eps=1e-8):
     # component and take the maximum eccentricity of these. */
 
     max_r = 0
-    for component in strongly_connected_components(G_dist):
+    if G_dist.is_directed():
+        components = nx.strongly_connected_components(G_dist)
+    else:
+        components = nx.connected_components(G_dist)
+
+    for component in components:
         subgraph = G_dist.subgraph(component)
         ecc_dict = nx.eccentricity(subgraph)
         max_r = max(max_r, max(ecc_dict.values()))
     max_r *= 2
 
     max_modularity = -float("inf")
-    best_community = None
-    best_generators = None
+    best_community = {}
 
     step_count = 1
     for r in np.arange(
         min_r, max_r, 0.25
     ):  # normal python range does not allow float steps
-        # print("step", step_count)
+        print("step", step_count)
         step_count += 1
 
         generator_points = _choose_generator_points(
             G_dist, r, transformed, all_pairs_distances
         )
-        # print("currently the generator_points:", generator_points)
-        # print("current cluster count:", len(generator_points))
-        # print("currently r:", r)
+        print("currently the generator_points:", generator_points)
+        print("current cluster count:", len(generator_points))
+        print("currently r:", r)
+        mode_to_use = "out" if G.is_directed() else "undirected"
         voronoi_community = voronoi_partitions(
-            G_dist, generator_points, all_pairs_distances
+            G_dist, generator_points, all_pairs_distances, mode_to_use
         )
 
         groups = {}
@@ -140,19 +147,26 @@ def voronoi_communities(G, mode="strength", eps=1e-8):
         current_modularity = modularity(G, list(groups.values()))
 
         if current_modularity > max_modularity:
-            # print("new best modularity found:")
+            print("new best modularity found:")
             max_modularity = current_modularity
             best_community = voronoi_community
-            best_generators = generator_points
 
-        # print("current_modularity:", current_modularity)
+        print("current_modularity:", current_modularity)
 
-    # print("best_generators", best_generators)
-    # print("communities", best_community)
-    # print("modularity", max_modularity)
+    print("communities", best_community)
+    print("modularity", max_modularity)
 
-    # RETURN FINAL PARTITIONS HERE
-    return best_community, best_generators
+    # CREATE FINAL PARTITIONS HERE
+    community_mapping = {}
+    for node, community_id in best_community.items():
+        if community_id not in community_mapping:
+            community_mapping[community_id] = set()
+        community_mapping[community_id].add(node)
+
+    # Convert to a list of sets
+    final_partition = list(community_mapping.values())
+
+    return final_partition
 
 
 def _transform_weights_to_distances(G):
@@ -160,7 +174,12 @@ def _transform_weights_to_distances(G):
 
     Gu = G.to_undirected()
     neighbors = {u: set(Gu[u]) for u in Gu.nodes()}
-    D = nx.DiGraph()
+
+    if G.is_directed():
+        D = nx.DiGraph()
+    else:
+        D = nx.Graph()
+
     D.add_nodes_from(G.nodes())
 
     for edge_count, (u, v, data) in enumerate(G.edges(data=True), 1):
@@ -188,8 +207,15 @@ def _weighted_local_density(G):
     dens = {}
 
     # adjacency sets for speed (directed)
-    out_adj = {u: set(G.successors(u)) for u in G.nodes()}
-    in_adj = {u: set(G.predecessors(u)) for u in G.nodes()}
+    # Check if the graph is directed to use successors/predecessors
+    # If undirected, neighbors() covers both.
+    if G.is_directed():
+        out_adj = {u: set(G.successors(u)) for u in G.nodes()}
+        in_adj = {u: set(G.predecessors(u)) for u in G.nodes()}
+    else:
+        # For undirected, successors and predecessors are just neighbors
+        out_adj = {u: set(G.neighbors(u)) for u in G.nodes()}
+        in_adj = out_adj
 
     for node in G.nodes():
         # first-order neighborhood: incoming + outgoing neighbors
@@ -392,4 +418,5 @@ def voronoi_partitions(G, generator_points, all_pairs_distances=None, mode="out"
 
             membership[node] = closest_generators[0]
 
+    # TODO: YIELD!!!
     return membership
