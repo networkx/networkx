@@ -217,24 +217,15 @@ class TestClosenessCentrality:
         expected = {"y": 0.200, "x": 0.286, "s": 0.138, "u": 0.235, "v": 0.200}
         assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
-    def test_directed_cyclic_sp(self):
-        edges = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 0)]
-        G = nx.DiGraph()
-        G.add_edges_from(edges)
-        sp = dict(nx.all_pairs_shortest_path_length(G))
+    @pytest.mark.parametrize("reverse", (True, False))
+    @pytest.mark.parametrize("precompute_sp", (True, False))
+    def test_directed_cycle(self, reverse, precompute_sp):
+        G = nx.cycle_graph(5, create_using=nx.DiGraph)
+        if reverse:
+            G = G.reverse()
+        sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
         c = nx.closeness_centrality(G, sp=sp)
-
-        G_rev = G.reverse()
-        sp_rev = dict(nx.all_pairs_shortest_path_length(G_rev))
-        cr = nx.closeness_centrality(G_rev, sp=sp_rev)
-        d = {0: 0.4, 1: 0.4, 2: 0.4, 3: 0.4, 4: 0.4}
-        dr = {0: 0.4, 1: 0.4, 2: 0.4, 3: 0.4, 4: 0.4}
-        for n in G:
-            assert c[n] == pytest.approx(d[n], abs=1e-3)
-            assert cr[n] == pytest.approx(dr[n], abs=1e-3)
-
-
-# --------------------------------------------------------------#
+        assert all(c[n] == pytest.approx(0.4, abs=1e-3) for n in G)
 
 
 class TestIncrementalClosenessCentrality:
