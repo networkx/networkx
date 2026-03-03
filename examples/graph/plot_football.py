@@ -4,28 +4,31 @@ Football
 ========
 
 Load football network in GML format and compute some network statistics.
+Data provided by authors of [1]_
 
-Shows how to download GML graph in a zipped file, unpack it, and load
-into a NetworkX graph.
+Shows how to unpack a zipped GML file and load it into a NetworkX graph.
+This example uses the pathlib library for filename manipulation.
 
-Requires Internet connection to download the URL
-http://www-personal.umich.edu/~mejn/netdata/football.zip
+The data file can be found at:
+
+- https://public.websites.umich.edu/~mejn/netdata/football.zip
+
+.. [1] M. Girvan and M. E. J. Newman,
+       Community structure in social and biological networks,
+       Proc. Natl. Acad. Sci. USA 99, 7821-7826 (2002).
+       https://arxiv.org/abs/cond-mat/0112110
 """
 
-import urllib.request
-import io
+import pathlib
 import zipfile
 
 import matplotlib.pyplot as plt
 import networkx as nx
 
-url = "https://public.websites.umich.edu/~mejn/netdata/football.zip"
+doc_current = pathlib.Path.cwd()
+football_zip = doc_current / "football.zip"
 
-sock = urllib.request.urlopen(url)  # open URL
-s = io.BytesIO(sock.read())  # read into BytesIO "file"
-sock.close()
-
-zf = zipfile.ZipFile(s)  # zipfile object
+zf = zipfile.ZipFile(football_zip)  # zipfile object
 txt = zf.read("football.txt").decode()  # read info file
 gml = zf.read("football.gml").decode()  # read gml data
 # throw away bogus first line with # from mejn files
