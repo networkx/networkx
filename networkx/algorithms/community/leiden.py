@@ -18,151 +18,6 @@ from networkx.utils import not_implemented_for, py_random_state
 __all__ = ["leiden_communities", "leiden_partitions"]
 
 
-def _get_quality_delta_partial_eval_remove(quality_function):
-    """
-    Returns a function quality_delta_partial_eval_remove which is used within
-    the _move_nodes_fast and _refine_partiton stages in conjunction
-    with a similarly defined quality_delta_partial_eval_add function which together
-    are used to efficiently compute quality_deltas when moving
-    nodes between communities.
-
-    Optimising these functions has a significant impact on
-    overall performance.
-
-    Parameters
-    ----------
-    quality_function : function
-        The algorithm optimises for a measure of quality of a partition.
-        Requires a functions accepts the same parameters as contant_potts_model
-
-    Returns
-    -------
-    function
-
-        Returns a function quality_delta_partial_eval_remove which has the
-        following behaviour: for a node u and community A
-
-            quality_delta_partial_eval_remove(G, u, A, quality_function, resolution)
-
-        returns the overall change in quality (as defined
-        by the quality_function) that occurs when the node u
-        is removed from the community A.
-    """
-
-    # This method allows us to invoke optimised versions of these
-    # delta functions, i.e we could have something like
-    #
-    if quality_function == constant_potts_model:
-        return _cpm_delta_partial_eval_remove
-    #
-    # if qualty_function == modularity:
-    #  return modularity_remove_cost
-    #
-    # etc...
-
-    # if no optimised version exists then a version is
-    # created using a simpler wrapper around quality_function
-    # this gives flexibility to adding new functions, while
-    # still allowing the use of more efficient methods where
-    # they exist.
-
-    def quality_delta_partial_eval_remove(
-        G, node, community, resolution, weight="weight", node_weight="node_weight"
-    ):
-
-        q_before = quality_function(
-            G,
-            [community],
-            resolution=resolution,
-            weight=weight,
-            node_weight="node_weight",
-        )
-
-        q_after = quality_function(
-            G,
-            [community - {node}],
-            resolution=resolution,
-            weight=weight,
-            node_weight="node_weight",
-        )
-
-        return q_after - q_before
-
-    return quality_delta_partial_eval_remove
-
-
-def _get_quality_delta_partial_eval_add(quality_function):
-    """
-    Returns a function quality_delta_partial_eval_add which is used within
-    the _move_nodes_fast and _refine_partiton stages in conjunction
-    with a similarly defined quality_delta_partial_eval_remove function which together
-    are used to efficiently compute quality_deltas when moving
-    nodes between communities.
-
-    Optimising these functions has a significant impact on
-    overall performance.
-
-    Parameters
-    ----------
-    quality_function : function
-        The algorithm optimises for a measure of quality of a partition.
-        Requires a functions accepts the same parameters as contant_potts_model
-
-    Returns
-    -------
-    function
-
-        Returns a function quality_delta_partial_eval_remove which has the
-        following behaviour: for a node u and community B
-
-            quality_delta_partial_eval_add(G, u, A, quality_function, resolution)
-
-        returns the overall change in quality (as defined
-        by the quality_function) that occurs when the node u
-        is added to the community B.
-    """
-
-    # This method allows us to invoke optimised versions of these
-    # delta functions, i.e we could have something like
-    #
-    if quality_function == constant_potts_model:
-        return _cpm_delta_partial_eval_add
-    #
-    # if qualty_function == modularity:
-    #  return modularity_add_cost
-    #
-    # etc...
-
-    # if no optimised version exists then a version is
-    # created using a simpler wrapper around quality_function
-    # this gives flexibility to adding new functions, while
-    # still allowing the use of more efficient methods where
-    # they exist.
-
-    def quality_delta_partial_eval_add(
-        G, node, community, resolution, weight="weight", node_weight="node_weight"
-    ):
-        q_before = quality_function(
-            G,
-            [community],
-            resolution=resolution,
-            weight=weight,
-            node_weight="node_weight",
-        )
-
-        q_after = quality_function(
-            G,
-            [community.union({node})],
-            resolution=resolution,
-            weight=weight,
-            node_weight="node_weight",
-        )
-
-        return q_after - q_before
-
-    return quality_delta_partial_eval_add
-
-
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
 def leiden_communities(
@@ -181,6 +36,37 @@ def leiden_communities(
     r"""Find the best partition of a graph using the Leiden Community Detection
     Algorithm [1]_.
 
+    Leiden Community Detection is an algorithm to extract the community structure
+    of a network based on modularity optimization. It is an improvement upon the
+    Louvain Community Detection algorithm. See :any:`louvain_communities`.
+
+    Unlike the Louvain algorithm, it guarantees that communities are well connected in addition
+    to being faster and uncovering better partitions. [1]_
+
+    The algorithm works in 3 phases. On the first phase, it adds the nodes to a queue randomly
+    and assigns every node to be in its own community. For each node it tries to find the
+    maximum positive modularity gain by moving each node to all of its neighbor communities.
+    If a node is moved from its community, it adds to the rear of the queue all neighbors of
+    the node that do not belong to the node’s new community and that are not in the queue.
+
+    The first phase continues until the queue is empty.
+
+    The second phase consists in refining the partition $P$ obtained from the first phase. It starts
+    with a singleton partition $P_{refined}$. Then it merges nodes locally in $P_{refined}$ within
+    each community of the partition $P$. Nodes are merged with a community in $P_{refined}$ only if
+    both are sufficiently well connected to their community in $P$. This means that after the
+    refinement phase is concluded, communities in $P$ sometimes will have been split into multiple
+    communities.
+
+    The third phase consists of aggregating the network by building a new network whose nodes are
+    now the communities found in the second phase. However, the non-refined partition is used to create
+    an initial partition for the aggregate network.
+
+    Once this phase is complete it is possible to reapply the first and second phases creating bigger
+    communities with increased modularity.
+
+    The above three phases are executed until no modularity gain is achieved or `max_level` number
+    of iterations have been performed.
     Parameters
     ----------
     G : NetworkX graph
@@ -271,8 +157,50 @@ def leiden_partitions(
     quality_delta_partial_eval_add=None,
     theta=0.01,
 ):
-    """
-    TODO - doc string
+    """Yield partitions for each level of Leiden Community Detection (backend required)
+
+    Leiden Community Detection is an algorithm to extract the community
+    structure of a network based on modularity optimization.
+
+    The partitions across levels (steps of the algorithm) form a dendrogram
+    of communities. A dendrogram is a diagram representing a tree and each
+    level represents a partition of the G graph. The top level contains the
+    smallest communities and as you traverse to the bottom of the tree the
+    communities get bigger and the overall modularity increases making
+    the partition better.
+
+    Each level is generated by executing the three phases of the Leiden Community
+    Detection algorithm. See :any:`leiden_communities`.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+    weight : string or None, optional (default="weight")
+        The name of an edge attribute that holds the numerical value
+        used as a weight. If None then each edge has weight 1.
+    resolution : float, optional (default=1)
+        If resolution is less than 1, the algorithm favors larger communities.
+        Greater than 1 favors smaller communities.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    Yields
+    ------
+    list
+        A list of disjoint sets (partition of `G`). Each set represents one community.
+        All communities together contain all the nodes in `G`. The yielded partitions
+        increase modularity with each iteration.
+
+    References
+    ----------
+    .. [1] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
+       well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
+
+    See Also
+    --------
+    leiden_communities
+    :any:`louvain_partitions`
     """
 
     # as well as providing a custom quality function for the algorithm
@@ -539,14 +467,16 @@ def _merge_node_subset(
     seed,
     theta,
 ):
-    S_size = _size_of_node_set(G, S, "node_weight")
+    S_size = sum(wt for u, wt in G.nodes(data="node_weight") if u in S)
 
     # first, the sufficiently well-connected nodes within S
     # are identified and added to the set R.
     R = set()
     for u in S:
-        u_size = _get_node_size(G, u, "node_weight")
-        community_factor = _community_edge_size(G, {u}, S - {u}, "weight")
+        u_size = G.nodes[u].get("node_weight", 1)
+        community_factor = sum(
+            wt for u, v, wt in G.edges({u}, data="weight") if v in S - {u}
+        )
         factor_comparison = resolution * u_size * (S_size - u_size)
         if community_factor > factor_comparison:
             R.add(u)
@@ -594,9 +524,8 @@ def _merge_node_subset(
                     # is within S. This is what is means for the resulting
                     # partition to be a refinement of S.
 
-                    E = _community_edge_size(G, C, S - C, "weight")
-                    C_size = _size_of_node_set(G, C, "node_weight")
-
+                    E = sum(wt for u, v, wt in G.edges(C, data="weight") if v in S - C)
+                    C_size = sum(wt for u, wt in G.nodes(data="node_weight") if u in C)
                     comm_comparison = resolution * C_size * (S_size - C_size)
 
                     if E > comm_comparison:
@@ -630,7 +559,6 @@ def _merge_node_subset(
                                 val = math.exp(quality_delta / theta)
                             except OverflowError:
                                 val = float("inf")
-
                             candidate_comm_prob.append(val)
 
             # if there are candidate communities identified i.e.
@@ -665,7 +593,8 @@ def _merge_node_subset(
                     in cumsum_vals that is greater than this random_val.
                     """
 
-                    cumsum_vals = _cumulative_sum(vals)
+                    cum = 0
+                    cumsum_vals = [(cum := cum + val) for val in vals]
                     max_val = cumsum_vals[-1]
                     random_val = seed.uniform(0, max_val)
 
@@ -700,19 +629,149 @@ def _merge_node_subset(
     return partition, node2com
 
 
-def _cumulative_sum(val_list):
+def _get_quality_delta_partial_eval_remove(quality_function):
     """
-    returns the cumulative sum of a list of numerical values
-    same as the np.cumsum(val_array)
+    Returns a function quality_delta_partial_eval_remove which is used within
+    the _move_nodes_fast and _refine_partiton stages in conjunction
+    with a similarly defined quality_delta_partial_eval_add function which together
+    are used to efficiently compute quality_deltas when moving
+    nodes between communities.
+
+    Optimising these functions has a significant impact on
+    overall performance.
+
+    Parameters
+    ----------
+    quality_function : function
+        The algorithm optimises for a measure of quality of a partition.
+        Requires a functions accepts the same parameters as contant_potts_model
+
+    Returns
+    -------
+    function
+
+        Returns a function quality_delta_partial_eval_remove which has the
+        following behaviour: for a node u and community A
+
+            quality_delta_partial_eval_remove(G, u, A, quality_function, resolution)
+
+        returns the overall change in quality (as defined
+        by the quality_function) that occurs when the node u
+        is removed from the community A.
     """
-    cumsum_vals = []
 
-    running_total = 0
-    for val in val_list:
-        running_total += val
-        cumsum_vals.append(running_total)
+    # This method allows us to invoke optimised versions of these
+    # delta functions, i.e we could have something like
+    #
+    if quality_function == constant_potts_model:
+        return _cpm_delta_partial_eval_remove
+    #
+    # if qualty_function == modularity:
+    #  return modularity_remove_cost
+    #
+    # etc...
 
-    return cumsum_vals
+    # if no optimised version exists then a version is
+    # created using a simpler wrapper around quality_function
+    # this gives flexibility to adding new functions, while
+    # still allowing the use of more efficient methods where
+    # they exist.
+
+    def quality_delta_partial_eval_remove(
+        G, node, community, resolution, weight="weight", node_weight="node_weight"
+    ):
+
+        q_before = quality_function(
+            G,
+            [community],
+            resolution=resolution,
+            weight=weight,
+            node_weight="node_weight",
+        )
+
+        q_after = quality_function(
+            G,
+            [community - {node}],
+            resolution=resolution,
+            weight=weight,
+            node_weight="node_weight",
+        )
+
+        return q_after - q_before
+
+    return quality_delta_partial_eval_remove
+
+
+def _get_quality_delta_partial_eval_add(quality_function):
+    """
+    Returns a function quality_delta_partial_eval_add which is used within
+    the _move_nodes_fast and _refine_partiton stages in conjunction
+    with a similarly defined quality_delta_partial_eval_remove function which together
+    are used to efficiently compute quality_deltas when moving
+    nodes between communities.
+
+    Optimising these functions has a significant impact on
+    overall performance.
+
+    Parameters
+    ----------
+    quality_function : function
+        The algorithm optimises for a measure of quality of a partition.
+        Requires a functions accepts the same parameters as contant_potts_model
+
+    Returns
+    -------
+    function
+
+        Returns a function quality_delta_partial_eval_remove which has the
+        following behaviour: for a node u and community B
+
+            quality_delta_partial_eval_add(G, u, A, quality_function, resolution)
+
+        returns the overall change in quality (as defined
+        by the quality_function) that occurs when the node u
+        is added to the community B.
+    """
+
+    # This method allows us to invoke optimised versions of these
+    # delta functions, i.e we could have something like
+    #
+    if quality_function == constant_potts_model:
+        return _cpm_delta_partial_eval_add
+    #
+    # if qualty_function == modularity:
+    #  return modularity_add_cost
+    #
+    # etc...
+
+    # if no optimised version exists then a version is
+    # created using a simpler wrapper around quality_function
+    # this gives flexibility to adding new functions, while
+    # still allowing the use of more efficient methods where
+    # they exist.
+
+    def quality_delta_partial_eval_add(
+        G, node, community, resolution, weight="weight", node_weight="node_weight"
+    ):
+        q_before = quality_function(
+            G,
+            [community],
+            resolution=resolution,
+            weight=weight,
+            node_weight="node_weight",
+        )
+
+        q_after = quality_function(
+            G,
+            [community.union({node})],
+            resolution=resolution,
+            weight=weight,
+            node_weight="node_weight",
+        )
+
+        return q_after - q_before
+
+    return quality_delta_partial_eval_add
 
 
 def _gen_graph(G, partition):
@@ -734,7 +793,7 @@ def _gen_graph(G, partition):
         nodes = set()
 
         for node in part:
-            new_size += _get_node_size(G, node, "node_weight")
+            new_size += G.nodes[node].get("node_weight", 1)
             node2com[node] = i
             nodes.update(G.nodes[node].get("nodes", {node}))
 
@@ -751,34 +810,6 @@ def _gen_graph(G, partition):
                 H.add_edge(com_u, com_v, weight=uv_weight)
 
     return H
-
-
-def _get_node_size(G, node, node_weight):
-    """
-    The leiden algorithm uses a size value for nodes, where
-    in the aggregated graphs, the size of a node is defined
-    as the sum of the sizes of its member nodes.
-
-    By default nodes are initialised with size 1, but the
-    algorithm can accept arbitrary float node weights
-    """
-    return G.nodes[node].get(node_weight, 1)
-
-
-def _size_of_node_set(G, C, node_weight):
-    """
-    Returns sum of the node weights of a set of nodes.
-    i.e. the quantity n_C from the leiden docs.
-    """
-    return sum(wt for u, wt in G.nodes(data=node_weight) if u in C)
-
-
-def _community_edge_size(G, C1, C2, weight):
-    """
-    Returns the sum of all edge weight for edges between communites C1 and
-    C2 i.e. the quantity E(C1, C2) from the leiden docs.
-    """
-    return sum(wt for u, v, wt in G.edges(C1, data=weight) if u in C1 and v in C2)
 
 
 def _convert_multigraph(G, weight, is_directed):
