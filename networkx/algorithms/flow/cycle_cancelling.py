@@ -57,7 +57,7 @@ def cycle_cancelling(
             raise ValueError(f"Edge ({u},{v}) has negative weight ({data[weight]}).")
 
     if negative_cycle_func is None:
-        negative_cycle_func = nx.karp
+        negative_cycle_func = nx.minimum_weight_mean_cycle
 
     if not callable(negative_cycle_func):
         raise nx.NetworkXError("finding negative cycle func has to be callable.")
