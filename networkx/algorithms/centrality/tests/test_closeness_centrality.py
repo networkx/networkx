@@ -55,17 +55,20 @@ class TestClosenessCentrality:
         c = nx.closeness_centrality(G, sp=sp)
         assert all(v == pytest.approx(1, abs=1e-3) for v in c.values())
 
-    def test_p3_closeness(self):
+    @pytest.mark.parametrize("precompute_sp", (True, False))
+    def test_p3_closeness(self, precompute_sp):
         G = nx.path_graph(3)
-        c = nx.closeness_centrality(G)
-        d = {0: 0.667, 1: 1.000, 2: 0.667}
-        for n in G:
-            assert c[n] == pytest.approx(d[n], abs=1e-3)
+        sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
+        c = nx.closeness_centrality(G, sp=sp)
+        expected = {0: 0.667, 1: 1.000, 2: 0.667}
+        assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
-    def test_krackhardt_closeness(self):
+    @pytest.mark.parametrize("precompute_sp", (True, False))
+    def test_krackhardt_closeness(self, precompute_sp):
         G = nx.krackhardt_kite_graph()
-        c = nx.closeness_centrality(G)
-        d = {
+        sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
+        c = nx.closeness_centrality(G, sp=sp)
+        expected = {
             0: 0.529,
             1: 0.529,
             2: 0.500,
@@ -77,8 +80,7 @@ class TestClosenessCentrality:
             8: 0.429,
             9: 0.310,
         }
-        for n in G:
-            assert c[n] == pytest.approx(d[n], abs=1e-3)
+        assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
     def test_florentine_families_closeness(self):
         G = nx.florentine_families_graph()
@@ -209,33 +211,6 @@ class TestClosenessCentrality:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     # ----------- Tests closeness centrality using pre-calculated shortest path lengths ------------------- #
-    def test_p3_closeness_sp(self):
-        G = nx.path_graph(3)
-        sp = dict(nx.all_pairs_shortest_path_length(G))
-        c = nx.closeness_centrality(G, sp=sp)
-        d = {0: 0.667, 1: 1.000, 2: 0.667}
-        for n in G:
-            assert c[n] == pytest.approx(d[n], abs=1e-3)
-
-    def test_krackhardt_closeness_sp(self):
-        G = nx.krackhardt_kite_graph()
-        sp = dict(nx.all_pairs_shortest_path_length(G))
-        c = nx.closeness_centrality(G, sp=sp)
-        d = {
-            0: 0.529,
-            1: 0.529,
-            2: 0.500,
-            3: 0.600,
-            4: 0.500,
-            5: 0.643,
-            6: 0.643,
-            7: 0.600,
-            8: 0.429,
-            9: 0.310,
-        }
-        for n in G:
-            assert c[n] == pytest.approx(d[n], abs=1e-3)
-
     def test_florentine_families_closeness_sp(self):
         G = nx.florentine_families_graph()
         sp = dict(nx.all_pairs_shortest_path_length(G))
