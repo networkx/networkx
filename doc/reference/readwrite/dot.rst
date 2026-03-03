@@ -9,9 +9,22 @@ implemented in `~networkx.drawing.nx_agraph`.
 If ``pygraphviz`` is installed, `~networkx.drawing.nx_agraph` can be used to
 read and write files in DOT format.
 
+NetworkX also provides an interface to Graphviz via `pydot <https://github.com/pydot/pydot>`__,
+implemented in `~networkx.drawing.nx_pydot`.
+If ``pydot`` is installed, `~networkx.drawing.nx_pydot` can be used to
+read and write files in DOT format.
+
 pygraphviz
 ----------
 .. currentmodule:: networkx.drawing.nx_agraph
+.. autosummary::
+
+   read_dot
+   write_dot
+
+nx_pydot
+--------
+.. currentmodule:: networkx.drawing.nx_pydot
 .. autosummary::
 
    read_dot

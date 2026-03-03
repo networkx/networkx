@@ -1,7 +1,12 @@
-networkx 3.6rc0
-===============
+networkx 3.6
+============
 
-We're happy to announce the release of networkx 3.6rc0!
+We're happy to announce the release of networkx 3.6!
+
+New Features
+------------
+
+- ENH: add normalize option for ``subgraph_centrality`` and its ``_exp`` version (`#8340 <https://github.com/networkx/networkx/pull/8340>`_).
 
 API Changes
 -----------
@@ -45,6 +50,9 @@ Enhancements
 - Dispatch classes such as ``nx.Graph(backend=...)`` (`#7760 <https://github.com/networkx/networkx/pull/7760>`_).
 - ENH: Add is_perfect_graph using SPGT (follow-up to #8111) (`#8318 <https://github.com/networkx/networkx/pull/8318>`_).
 - Add benchmark suite for shortest path algorithms on weighted graphs (`#8059 <https://github.com/networkx/networkx/pull/8059>`_).
+- Adding Generalized Petersen Graph (`#8147 <https://github.com/networkx/networkx/pull/8147>`_).
+- ENH: add normalize option for ``subgraph_centrality`` and its ``_exp`` version (`#8340 <https://github.com/networkx/networkx/pull/8340>`_).
+- FEAT: Add a describe method for some basic info about graphs (`#8338 <https://github.com/networkx/networkx/pull/8338>`_).
 
 Bug Fixes
 ---------
@@ -63,6 +71,7 @@ Bug Fixes
 - Fix node attributes on lattice graphs (`#8311 <https://github.com/networkx/networkx/pull/8311>`_).
 - BUG: allow graphs with nonstandard node labels in FISTA (`#8332 <https://github.com/networkx/networkx/pull/8332>`_).
 - Make dominance functions consistent with definitions (`#8061 <https://github.com/networkx/networkx/pull/8061>`_).
+- Pin last value to 1.0 in ``cumulative_distribution`` to address floating-point errors (`#8342 <https://github.com/networkx/networkx/pull/8342>`_).
 
 Documentation
 -------------
@@ -106,6 +115,10 @@ Documentation
 - Minor documentation build improvements (`#8329 <https://github.com/networkx/networkx/pull/8329>`_).
 - Clarify the meaning of the cutoff parameter in some path-finding functions (`#7487 <https://github.com/networkx/networkx/pull/7487>`_).
 - Switch to the NumFOCUS Code of Conduct (`#8320 <https://github.com/networkx/networkx/pull/8320>`_).
+- Fix formatting for release docs (`#8336 <https://github.com/networkx/networkx/pull/8336>`_).
+- DOC: Add warning about special GEXF reserved keywords (`#8343 <https://github.com/networkx/networkx/pull/8343>`_).
+- Adding @amcandio as contributor (`#8345 <https://github.com/networkx/networkx/pull/8345>`_).
+- Fix sphinx warnings 3.6rc (`#8352 <https://github.com/networkx/networkx/pull/8352>`_).
 
 Maintenance
 -----------
@@ -159,6 +172,7 @@ Maintenance
 - Add autoflake and pyupgrade as manual pre-commit hooks (`#7870 <https://github.com/networkx/networkx/pull/7870>`_).
 - ignore autoflake and pyupgrade changes (`#8333 <https://github.com/networkx/networkx/pull/8333>`_).
 - Revert "ignore autoflake and pyupgrade changes" (`#8334 <https://github.com/networkx/networkx/pull/8334>`_).
+- Bump actions/upload-artifact from 4 to 5 in the actions group (`#8335 <https://github.com/networkx/networkx/pull/8335>`_).
 
 Other
 -----
@@ -174,17 +188,19 @@ Other
 - TST: add ``random_k_out_graph`` to tests to hit ``try except`` path (`#8231 <https://github.com/networkx/networkx/pull/8231>`_).
 - TST: add coverage for some branches in ``internet_as_graphs.py`` (`#8225 <https://github.com/networkx/networkx/pull/8225>`_).
 - TST: test ``topo_sort`` skips visited nodes in ``goldberg_radzik`` (`#8279 <https://github.com/networkx/networkx/pull/8279>`_).
+- CI: Use tag protection rulesets to control releases (`#8337 <https://github.com/networkx/networkx/pull/8337>`_).
 
 Contributors
 ------------
 
-38 authors added to this release (alphabetically):
+40 authors added to this release (alphabetically):
 
 - `@Aka2210 <https://github.com/Aka2210>`_
 - `@dean985 <https://github.com/dean985>`_
 - `@georako <https://github.com/georako>`_
 - `@georakom <https://github.com/georakom>`_
 - `@ishrathtahaseen-9 <https://github.com/ishrathtahaseen-9>`_
+- `@rudyarthur <https://github.com/rudyarthur>`_
 - `@sourabh-sudesh-paradeshi <https://github.com/sourabh-sudesh-paradeshi>`_
 - Aditi Juneja (`@Schefflera-Arboricola <https://github.com/Schefflera-Arboricola>`_)
 - Adriano Meligrana (`@Tortar <https://github.com/Tortar>`_)
@@ -216,6 +232,7 @@ Contributors
 - Ross Barnowski (`@rossbar <https://github.com/rossbar>`_)
 - Stefano Vallodoro (`@ilvallod <https://github.com/ilvallod>`_)
 - Supreeth Mysore Venkatesh (`@supreethmv <https://github.com/supreethmv>`_)
+- Till Hoffmann (`@tillahoffmann <https://github.com/tillahoffmann>`_)
 - Yasser El Haddar (`@Yasserelhaddar <https://github.com/Yasserelhaddar>`_)
 - Yasser El Haddar (`@YasserElHaddar16 <https://github.com/YasserElHaddar16>`_)
 

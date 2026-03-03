@@ -33,7 +33,6 @@ from networkx.classes.coreviews import (
     UnionMultiAdjacency,
 )
 from networkx.classes.filters import no_filter
-from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
 
 __all__ = ["generic_graph_view", "subgraph_view", "reverse_view"]
@@ -106,7 +105,7 @@ def generic_graph_view(G, create_using=None):
     else:
         newG = nx.empty_graph(0, create_using)
     if G.is_multigraph() != newG.is_multigraph():
-        raise NetworkXError("Multigraph for G must agree with create_using")
+        raise nx.NetworkXError("Multigraph for G must agree with create_using")
     newG = nx.freeze(newG)
 
     # create view by assigning attributes from G

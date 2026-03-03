@@ -215,7 +215,7 @@ def graph_atlas_g():
 
     - graphs 55 and 56 with degree sequences 001111 and 000112,
     - graphs 1007 and 1008 with degree sequences 3333444 and 3333336,
-    - graphs 1012 and 1213 with degree sequences 1244555 and 1244456.
+    - graphs 1012 and 1013 with degree sequences 1244555 and 1244456.
 
     References
     ----------

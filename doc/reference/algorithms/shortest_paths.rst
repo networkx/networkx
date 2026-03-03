@@ -59,7 +59,7 @@ and their typical time complexities. Here, :math:`V` is the number of nodes and
 | Breadth–First Search | Unweighted  | Single-source,     | :math:`O(V + E)`          | Fastest choice for unweighted      |
 | (BFS)                | Only        | Single-pair        |                           | graphs; shortest path in hops      |
 +----------------------+-------------+--------------------+---------------------------+------------------------------------+
-| :doc:`dijkstra`      | Yes, both   | Single-source,     | :math:`O((V + E) \log V)` | General-purpose choice for         |
+| |dijkstra|           | Yes, both   | Single-source,     | :math:`O((V + E) \log V)` | General-purpose choice for         |
 |                      |             | Single-pair        |                           | non-negative weights               |
 +----------------------+-------------+--------------------+---------------------------+------------------------------------+
 | Bellman–Ford         | Yes, both   | Single-source,     | :math:`O(VE)`             | Graphs with negative edge weights  |
@@ -75,7 +75,7 @@ and their typical time complexities. Here, :math:`V` is the number of nodes and
 The **query type** determines whether the algorithm computes shortest paths
 from one node to all others (single-source), between two specified nodes
 (single-pair), or between all pairs of nodes (all-pairs). For example, BFS,
-:doc:`dijkstra`, and Bellman–Ford are commonly used for single-source
+|dijkstra|, and Bellman–Ford are commonly used for single-source
 or single-pair queries, while Floyd–Warshall and Johnson are designed for
 all-pairs shortest paths.
 
@@ -88,7 +88,7 @@ number of sources (:math:`V`).
 When the query is restricted to a single pair of nodes, bidirectional variants
 of some algorithms can be applied to improve efficiency. In NetworkX, both
 bidirectional breadth–first search and bidirectional
-:doc:`dijkstra` are available.
+|dijkstra| are available.
 
 A less common query type is the single-target shortest path, where the goal is
 to find paths from all nodes to a given target. This can be computed by
@@ -125,15 +125,15 @@ represents the all pairs shortest path query.
 +------------------+------------------+---------------------------------------------+
 
 By default, the simplified interface uses Breadth–First Search for unweighted
-graphs and :doc:`dijkstra` for weighted graphs (``weight`` parameter is not ``None``).
+graphs and |dijkstra| for weighted graphs (``weight`` parameter is not ``None``).
 
 The default algorithm can be overridden to select Bellman-Ford by specifying
 the ``method`` parameter to be "bellman-ford". Algorithms other than
-:doc:`dijkstra`, Bellman-Ford and Breadth–First Search are not
+|dijkstra|, Bellman-Ford and Breadth–First Search are not
 supported in the simplified interface.
 
 For the case of single-pair queries (both ``source`` and ``target`` specified),
-bidirectional variants of :doc:`dijkstra` and BFS are used when
+bidirectional variants of |dijkstra| and BFS are used when
 those methods are selected.
 
 
@@ -212,6 +212,7 @@ Dense Graphs
    floyd_warshall
    floyd_warshall_predecessor_and_distance
    floyd_warshall_numpy
+   floyd_warshall_tree
    reconstruct_path
 
 
@@ -335,4 +336,4 @@ See Also
 .. toctree::
    :maxdepth: 1
 
-   dijkstra
+   shortest_paths/dijkstra

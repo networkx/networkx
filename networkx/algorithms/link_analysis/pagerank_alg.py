@@ -77,7 +77,7 @@ def pagerank(
     and has no guarantee of convergence.  The iteration will stop after
     an error tolerance of ``len(G) * tol`` has been reached. If the
     number of iterations exceed `max_iter`, a
-    :exc:`networkx.exception.PowerIterationFailedConvergence` exception
+    :exc:`~networkx.exception.PowerIterationFailedConvergence` exception
     is raised.
 
     The PageRank algorithm was designed for directed graphs but this

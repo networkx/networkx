@@ -4,7 +4,6 @@ from itertools import chain, combinations, permutations, product
 
 import networkx as nx
 from networkx import density
-from networkx.exception import NetworkXException
 from networkx.utils import arbitrary_element
 
 __all__ = [
@@ -331,7 +330,9 @@ def quotient_graph(
         G = G.subgraph(partition_nodes)
     # Each node in the graph/subgraph must be in exactly one block.
     if not nx.community.is_partition(G, partition):
-        raise NetworkXException("each node must be in exactly one part of `partition`")
+        raise nx.NetworkXException(
+            "each node must be in exactly one part of `partition`"
+        )
     return _quotient_graph(
         G,
         partition,

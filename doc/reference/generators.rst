@@ -86,6 +86,7 @@ Small
    diamond_graph
    dodecahedral_graph
    frucht_graph
+   generalized_petersen_graph
    heawood_graph
    hoffman_singleton_graph
    house_graph
@@ -124,11 +125,11 @@ Random Graphs
    extended_barabasi_albert_graph
    powerlaw_cluster_graph
    random_kernel_graph
-   random_lobster
+   random_k_lift
+   random_lobster_graph
    random_shell_graph
    random_powerlaw_tree
    random_powerlaw_tree_sequence
-   random_kernel_graph
 
 
 Duplication Divergence

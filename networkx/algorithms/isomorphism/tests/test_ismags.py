@@ -20,7 +20,7 @@ def _matches_to_sets(matches):
     return {frozenset(m.items()) for m in matches}
 
 
-data = [
+graph_examples = [
     # node_data, edge_data, [id used in name for the test]
     pytest.param([0, 1, 2, 3], [(0, 0)], id="isolated-nodes-and-selfloops"),
     pytest.param([], nx.star_graph(3).edges, id="3-star"),
@@ -100,6 +100,9 @@ data = [
         set(nx.cycle_graph(4).edges) | set(nx.cycle_graph(range(4, 7)).edges),
         id="katebi-paper-fig2",
     ),
+    pytest.param(
+        [], [(0, 1), (1, 2), (2, 3), (3, 6), (2, 4), (4, 5)], id="len-2-rays-tri-star"
+    ),
     # Example of refining permutations with two different length parts at the same time.
     # Underlying shape is a 4-cycle and 2-path. Multiedges make all nodes degree-3
     # Full simple graph is then obtained by extending each edge as a path thru 1 node.
@@ -149,12 +152,37 @@ data = [
         [(0, 1), (0, 1), (1, 2), (2, 3), (2, 3), (3, 0), (4, 5), (4, 5), (4, 5)],
         id="basic-structure-for-refining-parts-test",
     ),
+    # Example of a symmetry that impacts 2 or more steps away
+    #        3---4
+    #       /|  /|\
+    #      / | 9 | 7
+    #     1  | | | |
+    #      \ | 8 | 6
+    #       \|  \|/
+    #        2---5
+    pytest.param(
+        [],
+        [
+            (1, 2),
+            (1, 3),
+            (2, 3),
+            (3, 4),
+            (4, 5),
+            (4, 7),
+            (4, 9),
+            (5, 8),
+            (8, 9),
+            (5, 6),
+            (6, 7),
+        ],
+        id="test-impact-of-symmetry",
+    ),
 ]
 
 
 @pytest.mark.parametrize("graph_constructor", graph_classes)
 class TestSelfIsomorphism:
-    @pytest.mark.parametrize(["node_data", "edge_data"], data)
+    @pytest.mark.parametrize(["node_data", "edge_data"], graph_examples)
     def test_self_isomorphism(self, graph_constructor, node_data, edge_data):
         """
         For some small, symmetric graphs, make sure that 1) they are isomorphic
@@ -170,63 +198,23 @@ class TestSelfIsomorphism:
         assert ismags.is_isomorphic()
         assert ismags.is_isomorphic(symmetry=True)
         assert ismags.subgraph_is_isomorphic()
-        assert list(ismags.subgraph_isomorphisms_iter(symmetry=True)) == [
-            {n: n for n in graph.nodes}
-        ]
-
-    def test_edgecase_self_isomorphism(self, graph_constructor):
-        """
-        This edgecase is one of the cases in which it is hard to find all
-        symmetry elements.
-        """
-        graph = graph_constructor()
-        nx.add_path(graph, range(5))
-        graph.add_edges_from([(2, 5), (5, 6)])
-
-        ismags = iso.ISMAGS(graph, graph)
-        ismags_answer = list(ismags.find_isomorphisms(symmetry=True))
-        assert ismags_answer == [{n: n for n in graph.nodes}]
-
-        graph = nx.relabel_nodes(graph, {0: 0, 1: 1, 2: 2, 3: 3, 4: 6, 5: 4, 6: 5})
-        ismags = iso.ISMAGS(graph, graph)
-        ismags_answer = list(ismags.find_isomorphisms(symmetry=True))
-        assert ismags_answer == [{n: n for n in graph.nodes}]
-
-    def test_double_star_self_isomorphism(self, graph_constructor):
-        """
-        Another edgecase in which is hard to find all symmetry elements.
-        """
-        graph = graph_constructor()
-        nx.add_path(graph, range(3))
-        nx.add_path(graph, [4, 3, 2])
-        nx.add_path(graph, [6, 5, 2])
-
-        ismags = iso.ISMAGS(graph, graph)
-        ismags_answer = list(ismags.find_isomorphisms(symmetry=True))
-        assert ismags_answer == [{n: n for n in graph.nodes}]
-
-        graph = nx.relabel_nodes(graph, {0: 0, 1: 1, 2: 2, 3: 3, 4: 6, 5: 4, 6: 5})
-        ismags = iso.ISMAGS(graph, graph)
-        ismags_answer = list(ismags.find_isomorphisms(symmetry=True))
+        ismags_answer = list(ismags.subgraph_isomorphisms_iter(symmetry=True))
         assert ismags_answer == [{n: n for n in graph.nodes}]
 
 
 class TestSubgraphIsomorphism:
-    def test_isomorphism(self):
-        g1 = nx.Graph()
-        nx.add_cycle(g1, range(4))
-
-        g2 = nx.Graph()
-        nx.add_cycle(g2, range(4))
+    def test_isomorphism_4_sun(self):
+        g1 = nx.cycle_graph(4)
+        g2 = nx.cycle_graph(4)
         g2.add_edges_from(list(zip(g2, range(4, 8))))
         ismags = iso.ISMAGS(g2, g1)
         assert list(ismags.subgraph_isomorphisms_iter(symmetry=True)) == [
             {n: n for n in g1.nodes}
         ]
+        assert sum(1 for _ in ismags.subgraph_isomorphisms_iter(symmetry=False)) == 8
 
-    def test_isomorphism2(self):
-        g1 = nx.Graph()
-        nx.add_path(g1, range(3))
+    def test_isomorphism_path_in_tristar(self):
+        g1 = nx.path_graph(3)
 
         g2 = g1.copy()
         g2.add_edge(1, 3)
@@ -251,8 +239,7 @@ class TestSubgraphIsomorphism:
         )
 
     def test_labeled_nodes(self):
-        g1 = nx.Graph()
-        nx.add_cycle(g1, range(3))
+        g1 = nx.cycle_graph(3)
         g1.nodes[1]["attr"] = True
 
         g2 = g1.copy()
@@ -330,7 +317,6 @@ def test_noncomparable_nodes():
     G = nx.path_graph([node1, node2, node3])
     gm = iso.ISMAGS(G, G)
     assert gm.is_isomorphic()
-    # Just testing some cases
     assert gm.subgraph_is_isomorphic()
 
     # DiGraph
@@ -339,7 +325,6 @@ def test_noncomparable_nodes():
     dgm = iso.ISMAGS(G, H)
     assert dgm.is_isomorphic()
     assert dgm.is_isomorphic(symmetry=True)
-    # Just testing some cases
     assert dgm.subgraph_is_isomorphic()
 
 
@@ -362,7 +347,7 @@ class TestWikipediaExample:
     # example in wikipedia is g1a and g2b
     # 1 have letter nodes, 2 have number nodes
     # b have some edges reversed vs a (undirected still isomorphic)
-    # reversed edges marked with blank comment `#`
+    # reversed edges marked with comment `#`
     # isomorphism = {'a': 1, 'g': 2, 'b': 3, 'c': 6, 'h': 4, 'i': 5, 'j': 7, 'd': 8}
 
     # Nodes 'a', 'b', 'c' and 'd' form a column.
@@ -439,6 +424,9 @@ class TestWikipediaExample:
         assert iso.ISMAGS(g1a, g2a).is_isomorphic()
         assert iso.ISMAGS(g1a, g2b).is_isomorphic()
 
+        assert iso.ISMAGS(g1a, nx.path_graph(range(5))).subgraph_is_isomorphic()
+        assert not iso.ISMAGS(g1a, nx.path_graph(range(6))).subgraph_is_isomorphic()
+
     @pytest.mark.parametrize("graph_constructor", [nx.DiGraph, nx.MultiDiGraph])
     def test_digraph(self, graph_constructor):
         g1a = graph_constructor(self.g1a_edges)
@@ -451,6 +439,11 @@ class TestWikipediaExample:
         assert not iso.ISMAGS(g2a, g2b).is_isomorphic()
         assert not iso.ISMAGS(g1a, g2a).is_isomorphic()
         assert not iso.ISMAGS(g1b, g2b).is_isomorphic()
+
+        P2 = nx.path_graph(range(2), create_using=graph_constructor)
+        assert iso.ISMAGS(g1a, P2).subgraph_is_isomorphic()
+        P3 = nx.path_graph(range(3), create_using=graph_constructor)
+        assert not iso.ISMAGS(g1a, P3).subgraph_is_isomorphic()
 
 
 class TestLargestCommonSubgraph:
@@ -589,13 +582,13 @@ class TestDiGraphISO:
     def test_non_isomorphic_same_degree_sequence(self):
         r"""
                 G1                           G2
-        x--------------x              x--------------x
-        | \            |              | \            |
-        |  x-------x   |              |  x-------x   |
-        |  |       |   |              |  |       |   |
-        |  x-------x   |              |  x-------x   |
-        | /            |              |            \ |
-        x--------------x              x--------------x
+        1-------------2              1-------------2
+        | \           |              | \           |
+        |  5-------6  |              |  5-------6  |
+        |  |       |  |              |  |       |  |
+        |  8-------7  |              |  8-------7  |
+        | /           |              |           \ |
+        4-------------3              4-------------3
         """
         edges1 = [
             (1, 5),
@@ -603,23 +596,23 @@ class TestDiGraphISO:
             (4, 1),
             (3, 2),
             (3, 4),
-            (4, 8),
             (5, 8),
             (6, 5),
             (6, 7),
             (7, 8),
+            (4, 8),
         ]
         edges2 = [
             (1, 5),
             (1, 2),
             (4, 1),
             (3, 2),
-            (4, 3),
+            (3, 4),
             (5, 8),
             (6, 5),
             (6, 7),
-            (3, 7),
             (8, 7),
+            (3, 7),
         ]
 
         G1 = nx.DiGraph(edges1)

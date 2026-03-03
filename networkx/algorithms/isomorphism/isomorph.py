@@ -6,7 +6,6 @@ import itertools
 from collections import Counter
 
 import networkx as nx
-from networkx.exception import NetworkXError
 
 __all__ = [
     "could_be_isomorphic",
@@ -26,7 +25,7 @@ def could_be_isomorphic(G1, G2, *, properties="dtc"):
     G1, G2 : graphs
        The two graphs `G1` and `G2` must be the same type.
 
-    properties : str, default="dct"
+    properties : str, default="dtc"
        Determines which properties of the graph are checked. Each character
        indicates a particular property as follows:
 
@@ -103,23 +102,6 @@ def could_be_isomorphic(G1, G2, *, properties="dtc"):
     return True
 
 
-def graph_could_be_isomorphic(G1, G2):
-    """
-    .. deprecated:: 3.5
-
-       `graph_could_be_isomorphic` is a deprecated alias for `could_be_isomorphic`.
-       Use `could_be_isomorphic` instead.
-    """
-    import warnings
-
-    warnings.warn(
-        "graph_could_be_isomorphic is deprecated, use `could_be_isomorphic` instead.",
-        category=DeprecationWarning,
-        stacklevel=2,
-    )
-    return could_be_isomorphic(G1, G2)
-
-
 @nx._dispatchable(graphs={"G1": 0, "G2": 1})
 def fast_could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
@@ -136,43 +118,7 @@ def fast_could_be_isomorphic(G1, G2):
     Checks for matching degree and triangle sequences. The triangle
     sequence contains the number of triangles each node is part of.
     """
-    # Check global properties
-    if G1.order() != G2.order():
-        return False
-
-    # Check local properties
-    d1 = G1.degree()
-    t1 = nx.triangles(G1)
-    props1 = [[d, t1[v]] for v, d in d1]
-    props1.sort()
-
-    d2 = G2.degree()
-    t2 = nx.triangles(G2)
-    props2 = [[d, t2[v]] for v, d in d2]
-    props2.sort()
-
-    if props1 != props2:
-        return False
-
-    # OK...
-    return True
-
-
-def fast_graph_could_be_isomorphic(G1, G2):
-    """
-    .. deprecated:: 3.5
-
-       `fast_graph_could_be_isomorphic` is a deprecated alias for
-       `fast_could_be_isomorphic`. Use `fast_could_be_isomorphic` instead.
-    """
-    import warnings
-
-    warnings.warn(
-        "fast_graph_could_be_isomorphic is deprecated, use fast_could_be_isomorphic instead",
-        category=DeprecationWarning,
-        stacklevel=2,
-    )
-    return fast_could_be_isomorphic(G1, G2)
+    return could_be_isomorphic(G1, G2, properties="dt")
 
 
 @nx._dispatchable(graphs={"G1": 0, "G2": 1})
@@ -190,36 +136,7 @@ def faster_could_be_isomorphic(G1, G2):
     -----
     Checks for matching degree sequences.
     """
-    # Check global properties
-    if G1.order() != G2.order():
-        return False
-
-    # Check local properties
-    d1 = sorted(d for n, d in G1.degree())
-    d2 = sorted(d for n, d in G2.degree())
-
-    if d1 != d2:
-        return False
-
-    # OK...
-    return True
-
-
-def faster_graph_could_be_isomorphic(G1, G2):
-    """
-    .. deprecated:: 3.5
-
-       `faster_graph_could_be_isomorphic` is a deprecated alias for
-       `faster_could_be_isomorphic`. Use `faster_could_be_isomorphic` instead.
-    """
-    import warnings
-
-    warnings.warn(
-        "faster_graph_could_be_isomorphic is deprecated, use faster_could_be_isomorphic instead",
-        category=DeprecationWarning,
-        stacklevel=2,
-    )
-    return faster_could_be_isomorphic(G1, G2)
+    return could_be_isomorphic(G1, G2, properties="d")
 
 
 @nx._dispatchable(
@@ -329,7 +246,7 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     elif (not G1.is_directed()) and (not G2.is_directed()):
         GM = nx.algorithms.isomorphism.GraphMatcher
     else:
-        raise NetworkXError("Graphs G1 and G2 are not of the same type.")
+        raise nx.NetworkXError("Graphs G1 and G2 are not of the same type.")
 
     gm = GM(G1, G2, node_match=node_match, edge_match=edge_match)
 

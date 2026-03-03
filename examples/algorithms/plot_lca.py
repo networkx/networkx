@@ -10,6 +10,10 @@ ancestors are computed for certain node pairs. These node
 pairs and their LCA are then visualized with a chosen
 color scheme.
 
+.. seealso::
+
+    :external+nx-guides:doc:`content/algorithms/lca/LCA`
+        A more in-depth guide on lowest common ancestor algorithms in NetworkX.
 """
 
 import networkx as nx

@@ -17,6 +17,7 @@ class TestWikipediaExample:
 
     # Nodes 'a', 'b', 'c' and 'd' form a column.
     # Nodes 'g', 'h', 'i' and 'j' form a column.
+    # isomorphism: {'a': 1, 'g': 2, 'b': 3, 'c': 6, 'h': 4, 'i': 5, 'j': 7, 'd': 8}
     g1edges = [
         ["a", "g"],
         ["a", "h"],
@@ -36,53 +37,63 @@ class TestWikipediaExample:
     # Nodes 5,6,7,8 form the clockwise corners of a small square
     g2edges = [
         [1, 2],
-        [2, 3],
+        [3, 2],
         [3, 4],
-        [4, 1],
-        [5, 6],
+        [1, 4],
+        [6, 5],
         [6, 7],
-        [7, 8],
+        [8, 7],
         [8, 5],
         [1, 5],
-        [2, 6],
+        [6, 2],
         [3, 7],
-        [4, 8],
+        [8, 4],
     ]
 
-    def test_graph(self):
-        g1 = nx.Graph()
-        g2 = nx.Graph()
-        g1.add_edges_from(self.g1edges)
-        g2.add_edges_from(self.g2edges)
-        gm = iso.GraphMatcher(g1, g2)
+    @pytest.mark.parametrize(
+        ["graph_class", "numb_maps"], [(nx.Graph, 48), (nx.DiGraph, 24)]
+    )
+    def test_morphic_and_number_of_mappings(self, graph_class, numb_maps):
+        g1 = graph_class(self.g1edges)
+        g2 = graph_class(self.g2edges)
+        Matcher = iso.DiGraphMatcher if g1.is_directed() else iso.GraphMatcher
+        gm = Matcher(g1, g2)
         assert gm.is_isomorphic()
-        # Just testing some cases
         assert gm.subgraph_is_monomorphic()
-
-        mapping = sorted(gm.mapping.items())
-
-    # this mapping is only one of the possibilities
-    # so this test needs to be reconsidered
-    #        isomap = [('a', 1), ('b', 6), ('c', 3), ('d', 8),
-    #                  ('g', 2), ('h', 5), ('i', 4), ('j', 7)]
-    #        assert_equal(mapping, isomap)
-
-    def test_subgraph(self):
-        g1 = nx.Graph()
-        g2 = nx.Graph()
-        g1.add_edges_from(self.g1edges)
-        g2.add_edges_from(self.g2edges)
-        g3 = g2.subgraph([1, 2, 3, 4])
-        gm = iso.GraphMatcher(g1, g3)
         assert gm.subgraph_is_isomorphic()
 
-    def test_subgraph_mono(self):
-        g1 = nx.Graph()
-        g2 = nx.Graph()
-        g1.add_edges_from(self.g1edges)
-        g2.add_edges_from([[1, 2], [2, 3], [3, 4]])
-        gm = iso.GraphMatcher(g1, g2)
+        mapping = list(gm.mapping.items())
+        # this mapping is only one of the 48 possibilities
+        all_mappings = list(gm.isomorphisms_iter())
+        assert len(all_mappings) == numb_maps
+        assert dict(mapping) in all_mappings
+
+    @pytest.mark.parametrize("graph_class", [nx.Graph, nx.DiGraph])
+    def test_subgraph(self, graph_class):
+        g1 = graph_class(self.g1edges)
+        g2 = graph_class(self.g2edges)
+        g3 = g2.subgraph([1, 2, 3, 4])
+        Matcher = iso.DiGraphMatcher if g1.is_directed() else iso.GraphMatcher
+        gm = Matcher(g1, g3)
+        assert not gm.is_isomorphic()
+        assert gm.subgraph_is_isomorphic()
         assert gm.subgraph_is_monomorphic()
+
+    @pytest.mark.parametrize("graph_class", [nx.Graph, nx.DiGraph])
+    def test_subgraph_mono(self, graph_class):
+        g1 = graph_class(self.g1edges)
+        g2 = graph_class(["ag", "cg", "ci", "di", "bg"])
+        Matcher = iso.DiGraphMatcher if g1.is_directed() else iso.GraphMatcher
+        gm = Matcher(g1, g2)
+        assert not gm.is_isomorphic()
+        assert not gm.subgraph_is_isomorphic()
+        assert gm.subgraph_is_monomorphic()
+
+        # note: this fails when we dont recreate the matcher for each graph change
+        # Also checking not monomorphic
+        g2.add_edge("c", "a")
+        gm = Matcher(g1, g2)
+        assert not gm.subgraph_is_monomorphic()
 
 
 class TestVF2GraphDB:
@@ -133,12 +144,25 @@ class TestVF2GraphDB:
         subgraph = self.create_graph(head / "si2_b06_m200.A99")
         graph = self.create_graph(head / "si2_b06_m200.B99")
         gm = iso.GraphMatcher(graph, subgraph)
+        assert not gm.is_isomorphic()
         assert gm.subgraph_is_isomorphic()
-        # Just testing some cases
         assert gm.subgraph_is_monomorphic()
 
-    # There isn't a similar test implemented for subgraph monomorphism,
-    # feel free to create one.
+    def test_subgraph_monomorphic(self):
+        # A is the subgraph
+        # B is the full graph
+        head = importlib.resources.files("networkx.algorithms.isomorphism.tests")
+        subgraph = self.create_graph(head / "si2_b06_m200.A99")
+        graph = self.create_graph(head / "si2_b06_m200.B99")
+        subgraph.remove_edge(29, 28)
+        gm = iso.GraphMatcher(graph, subgraph)
+        assert not gm.is_isomorphic()
+        assert not gm.subgraph_is_isomorphic()
+        assert gm.subgraph_is_monomorphic()
+
+        # now add new edge to make sg no longer monomorphic
+        subgraph.add_edge(29, 2)
+        assert not gm.subgraph_is_monomorphic()
 
 
 class TestAtlas:
@@ -318,13 +342,9 @@ def test_selfloop_mono():
 def test_isomorphism_iter1():
     # As described in:
     # http://groups.google.com/group/networkx-discuss/browse_thread/thread/2ff65c67f5e3b99f/d674544ebea359bb?fwc=1
-    g1 = nx.DiGraph()
-    g2 = nx.DiGraph()
-    g3 = nx.DiGraph()
-    g1.add_edge("A", "B")
-    g1.add_edge("B", "C")
-    g2.add_edge("Y", "Z")
-    g3.add_edge("Z", "Y")
+    g1 = nx.DiGraph(["AB", "BC"])
+    g2 = nx.DiGraph(["YZ"])
+    g3 = nx.DiGraph(["ZY"])
     gm12 = iso.DiGraphMatcher(g1, g2)
     gm13 = iso.DiGraphMatcher(g1, g3)
     x = list(gm12.subgraph_isomorphisms_iter())
@@ -338,13 +358,8 @@ def test_isomorphism_iter1():
 
 
 def test_monomorphism_iter1():
-    g1 = nx.DiGraph()
-    g2 = nx.DiGraph()
-    g1.add_edge("A", "B")
-    g1.add_edge("B", "C")
-    g1.add_edge("C", "A")
-    g2.add_edge("X", "Y")
-    g2.add_edge("Y", "Z")
+    g1 = nx.DiGraph(["AB", "BC", "CA"])
+    g2 = nx.DiGraph(["XY", "YZ"])
     gm12 = iso.DiGraphMatcher(g1, g2)
     x = list(gm12.subgraph_monomorphisms_iter())
     assert {"A": "X", "B": "Y", "C": "Z"} in x
@@ -385,6 +400,7 @@ def test_multiple():
             gmA = iso.DiGraphMatcher(g1, g2)
             gmB = iso.DiGraphMatcher(g1, g3)
         assert gmA.is_isomorphic()
+
         g2.remove_node("C")
         if not g1.is_directed():
             gmA = iso.GraphMatcher(g1, g2)
@@ -396,12 +412,6 @@ def test_multiple():
         assert gmB.subgraph_is_monomorphic()
 
 
-#        for m in [gmB.mapping, gmB.mapping]:
-#            assert_true(m['A'] == 'A')
-#            assert_true(m['B'] == 'B')
-#            assert_true('C' not in m)
-
-
 def test_noncomparable_nodes():
     node1 = object()
     node2 = object()
@@ -411,7 +421,6 @@ def test_noncomparable_nodes():
     G = nx.path_graph([node1, node2, node3])
     gm = iso.GraphMatcher(G, G)
     assert gm.is_isomorphic()
-    # Just testing some cases
     assert gm.subgraph_is_monomorphic()
 
     # DiGraph
@@ -419,7 +428,6 @@ def test_noncomparable_nodes():
     H = nx.path_graph([node3, node2, node1], create_using=nx.DiGraph)
     dgm = iso.DiGraphMatcher(G, H)
     assert dgm.is_isomorphic()
-    # Just testing some cases
     assert dgm.subgraph_is_monomorphic()
 
 
@@ -438,12 +446,8 @@ def test_monomorphism_edge_match():
 
     gm = iso.DiGraphMatcher(G, SG, edge_match=iso.categorical_edge_match("label", None))
     assert gm.subgraph_is_monomorphic()
-
-
-def test_isomorphvf2pp_multidigraphs():
-    g = nx.MultiDiGraph({0: [1, 1, 2, 2, 3], 1: [2, 3, 3], 2: [3]})
-    h = nx.MultiDiGraph({0: [1, 1, 2, 2, 3], 1: [2, 3, 3], 3: [2]})
-    assert not (nx.vf2pp_is_isomorphic(g, h))
+    G.edges[1, 2]["label"] = None
+    assert not gm.subgraph_is_monomorphic()
 
 
 @pytest.mark.parametrize(
@@ -478,7 +482,7 @@ def test_isomorphvf2pp_multidigraphs():
     ],
 )
 def test_three_node(e1, e2, isomorphic, subgraph_is_isomorphic):
-    """Test some edge cases distilled from random search of the input space."""
+    """Test some edge cases distilled from arbitrary search of the input space."""
     G1 = nx.DiGraph(e1)
     G2 = nx.DiGraph(e2)
     gm = iso.DiGraphMatcher(G1, G2)

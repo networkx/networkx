@@ -44,6 +44,14 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
     schemas used for parameters which are not user defined,
     e.g. visualization 'viz' [2]_. See example for usage.
 
+    .. warning::
+
+       The `GEXF specification <https://gexf.net/schema.html>`_ reserves some
+       keywords (e.g. ``id``, ``pid``, ``label``, etc.) for specifying node/edge
+       metadata in the file format. Ensure NetworkX node/edge attribute names
+       do not use these special keywords to guarantee all attributes are preserved
+       as expected when roundtripping to/from GEXF format.
+
     Parameters
     ----------
     G : graph

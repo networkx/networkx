@@ -9,7 +9,7 @@ is widely used in routing, network optimization, and pathfinding problems.
 Because Dijkstra's algorithm works only with non-negative edge weights,
 alternative algorithms such as Bellman-Ford or Johnson's algorithm are used
 for graphs with negative weights. For a general overview of the shortest path
-problem see :doc:`index`.
+problem see :doc:`/reference/algorithms/shortest_paths`.
 
 Problem Definition
 ------------------
@@ -113,7 +113,6 @@ Available Functions
 .. automodule:: networkx.algorithms.shortest_paths.weighted
    :no-index:
 .. autosummary::
-   :toctree: generated/
 
    dijkstra_predecessor_and_distance
    dijkstra_path

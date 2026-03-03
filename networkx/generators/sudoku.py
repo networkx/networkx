@@ -42,7 +42,6 @@ References
 """
 
 import networkx as nx
-from networkx.exception import NetworkXError
 
 __all__ = ["sudoku_graph"]
 
@@ -92,7 +91,7 @@ def sudoku_graph(n=3):
     """
 
     if n < 0:
-        raise NetworkXError("The order must be greater than or equal to zero.")
+        raise nx.NetworkXError("The order must be greater than or equal to zero.")
 
     n2 = n * n
     n3 = n2 * n

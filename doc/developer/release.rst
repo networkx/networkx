@@ -30,8 +30,14 @@ Release Process
       changelist ${ORG}/${REPO} networkx-${PREVIOUS} main --version ${VERSION} --out ${NOTES} --format rst
       changelist ${ORG}/${REPO} networkx-${PREVIOUS} main --version ${VERSION} --out ${VERSION}.md
 
+  .. note::
+     The release notes are generated twice here - the reST version is included in
+     the documentation, while the markdown version is included with releases
+     on GitHub.
+
 - Edit ``doc/_static/version_switcher.json`` in order to add the release, move the
-  key value pair `"preferred": true` to the most recent stable version, and commit.
+  key value pair ``"preferred": true`` to the most recent stable version, and commit.
+  For an ``rc``, skip this step.
 
 - Update ``doc/release/index.rst``.
 
@@ -62,6 +68,9 @@ Release Process
 
 - Update documentation on the web:
 
+  .. note::
+     This step does not apply to rc releases.
+
   The documentation is kept in a separate repo:
   https://github.com/networkx/documentation
 
@@ -82,7 +91,14 @@ Release Process
         git commit -m "Add ${VERSION} docs"
         git push  # force push---be careful!
 
+
 - Update ``__version__`` in ``networkx/__init__.py``.
+  The new version should increment either the patch number or the rc number
+  depending on whether or not the release is an rc.
+  For example, if you are releasing version ``X.Y``, the ``__version__`` should
+  be updated to ``X.Y.1rc0.dev0``.
+  If instead the release is an rc, then increment the rc number --- for example,
+  if releasing ``X.Yrc0``, the ``__version__`` should be updated to ``X.Yrc1.dev0``.
 
   - Commit and push changes:
 
@@ -93,6 +109,9 @@ Release Process
         git push origin main
 
 - Update the web frontpage:
+
+  .. note::
+     This step does not apply to rc releases.
 
   The webpage is kept in a separate repo: https://github.com/networkx/website
 

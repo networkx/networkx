@@ -17,7 +17,7 @@ dedicated and fully-featured graph visualization tools are
 `Graphviz <http://www.graphviz.org/>`_,
 `iplotx <https://iplotx.readthedocs.io/>`_ and, for
 `LaTeX <http://www.latex-project.org/>`_ typesetting,
-`PGF/TikZ <https://sourceforge.net/projects/pgf/>`_.
+`PGF/TikZ <https://github.com/pgf-tikz/pgf/>`_.
 To use these and other such tools, you should export your NetworkX graph into
 a format that can be read by those tools. For example, Cytoscape can read the
 GraphML format, and so, ``networkx.write_graphml(G, path)`` might be an appropriate

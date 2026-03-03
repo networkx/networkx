@@ -54,6 +54,11 @@ sphinx_gallery_conf = {
     "plot_gallery": "True",
     "reference_url": {"sphinx_gallery": None},
 }
+
+rst_epilog = """
+.. |dijkstra| replace:: :doc:`/reference/algorithms/shortest_paths/dijkstra`
+"""
+
 # Add pygraphviz png scraper, if available
 try:
     from pygraphviz.scraper import PNGScraper

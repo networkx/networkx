@@ -1,7 +1,6 @@
 import pytest
 
 import networkx as nx
-from networkx.exception import NetworkXError
 
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
@@ -40,7 +39,7 @@ def test_incidence_matrix_simple():
     # fmt: on
     np.testing.assert_equal(I, expected)
 
-    with pytest.raises(NetworkXError):
+    with pytest.raises(nx.NetworkXError):
         nx.incidence_matrix(G, nodelist=[0, 1])
 
 

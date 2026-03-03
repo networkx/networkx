@@ -131,10 +131,11 @@ def cumulative_distribution(distribution):
     """Returns normalized cumulative distribution from discrete distribution."""
 
     cdf = [0.0]
-    psum = sum(distribution)
-    for i in range(len(distribution)):
-        cdf.append(cdf[i] + distribution[i] / psum)
-    return cdf
+    cumulative = 0.0
+    for element in distribution:
+        cumulative += element
+        cdf.append(cumulative)
+    return [element / cumulative for element in cdf]
 
 
 @py_random_state(3)

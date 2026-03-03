@@ -261,7 +261,7 @@ class TestGeneratorThreshold:
         cs = "ddiiddid"
         G = nxt.threshold_graph(cs)
         pytest.raises(
-            nx.exception.NetworkXError,
+            nx.NetworkXError,
             nxt.threshold_graph,
             cs,
             create_using=nx.DiGraph(),

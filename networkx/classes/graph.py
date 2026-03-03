@@ -15,7 +15,6 @@ import networkx as nx
 from networkx import convert
 from networkx.classes.coreviews import AdjacencyView
 from networkx.classes.reportviews import DegreeView, EdgeView, NodeView
-from networkx.exception import NetworkXError
 
 __all__ = ["Graph"]
 
@@ -343,7 +342,7 @@ class Graph:
     # in order to provide a backend that allows class instantiation, this method
     # can be overridden to return your own backend graph class.
     @nx._dispatchable(name="graph__new__", graphs=None, returns_graph=True)
-    def __new__(cls, incoming_graph_data=None, **attr):
+    def __new__(cls, *args, **kwargs):
         return object.__new__(cls)
 
     def __init__(self, incoming_graph_data=None, **attr):
@@ -694,7 +693,7 @@ class Graph:
             nbrs = list(adj[n])  # list handles self-loops (allows mutation)
             del self._node[n]
         except KeyError as err:  # NetworkXError if n not in self
-            raise NetworkXError(f"The node {n} is not in the graph.") from err
+            raise nx.NetworkXError(f"The node {n} is not in the graph.") from err
         for u in nbrs:
             del adj[u][n]  # remove all edges n-u in graph
         del adj[n]  # now remove node
@@ -1046,7 +1045,7 @@ class Graph:
                 u, v = e
                 dd = {}  # doesn't need edge_attr_dict_factory
             else:
-                raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
+                raise nx.NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
             if u not in self._node:
                 if u is None:
                     raise ValueError("None cannot be a node")
@@ -1146,7 +1145,7 @@ class Graph:
             if u != v:  # self-loop needs only one entry removed
                 del self._adj[v][u]
         except KeyError as err:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph") from err
+            raise nx.NetworkXError(f"The edge {u}-{v} is not in the graph") from err
         nx._clear_cache(self)
 
     def remove_edges_from(self, ebunch):
@@ -1298,7 +1297,7 @@ class Graph:
         elif nodes is not None:
             self.add_nodes_from(nodes)
         else:
-            raise NetworkXError("update needs nodes or edges input")
+            raise nx.NetworkXError("update needs nodes or edges input")
 
     def has_edge(self, u, v):
         """Returns True if the edge (u, v) is in the graph.
@@ -1382,7 +1381,7 @@ class Graph:
         try:
             return iter(self._adj[n])
         except KeyError as err:
-            raise NetworkXError(f"The node {n} is not in the graph.") from err
+            raise nx.NetworkXError(f"The node {n} is not in the graph.") from err
 
     @cached_property
     def edges(self):
@@ -1540,8 +1539,8 @@ class Graph:
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.degree[0]  # node 0 has degree 1
         1
-        >>> list(G.degree([0, 1, 2]))
-        [(0, 1), (1, 2), (2, 2)]
+        >>> dict(G.degree([0, 1, 2]))
+        {0: 1, 1: 2, 2: 2}
         """
         return DegreeView(self)
 
@@ -2065,15 +2064,15 @@ class Graph:
                     exc, message = err, err.args[0]
                     # capture error for non-sequence/iterator nbunch.
                     if "iter" in message:
-                        exc = NetworkXError(
+                        exc = nx.NetworkXError(
                             "nbunch is not a node or a sequence of nodes."
                         )
                     # capture single nodes that are not in the graph.
                     if "object is not iterable" in message:
-                        exc = NetworkXError(f"Node {nbunch} is not in the graph.")
+                        exc = nx.NetworkXError(f"Node {nbunch} is not in the graph.")
                     # capture error for unhashable node.
                     if "hashable" in message:
-                        exc = NetworkXError(
+                        exc = nx.NetworkXError(
                             f"Node {n} in sequence nbunch is not a valid node."
                         )
                     raise exc
