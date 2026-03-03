@@ -45,15 +45,15 @@ class TestClosenessCentrality:
         if reverse:
             G = G.reverse()
         sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
-        c = nx.closeness_centrality(G)
+        c = nx.closeness_centrality(G, sp=sp)
         assert all(c[n] == pytest.approx(expected[n], abs=1e-3) for n in G)
 
-    def test_k5_closeness(self):
+    @pytest.mark.parametrize("precompute_sp", (True, False))
+    def test_k5_closeness(self, precompute_sp):
         G = nx.complete_graph(5)
-        c = nx.closeness_centrality(G)
-        d = {0: 1.000, 1: 1.000, 2: 1.000, 3: 1.000, 4: 1.000}
-        for n in G:
-            assert c[n] == pytest.approx(d[n], abs=1e-3)
+        sp = dict(nx.all_pairs_shortest_path_length(G)) if precompute_sp else None
+        c = nx.closeness_centrality(G, sp=sp)
+        assert all(v == pytest.approx(1, abs=1e-3) for v in c.values())
 
     def test_p3_closeness(self):
         G = nx.path_graph(3)
@@ -209,14 +209,6 @@ class TestClosenessCentrality:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     # ----------- Tests closeness centrality using pre-calculated shortest path lengths ------------------- #
-    def test_k5_closeness_sp(self):
-        G = nx.complete_graph(5)
-        sp = dict(nx.all_pairs_shortest_path_length(G))
-        c = nx.closeness_centrality(G, sp=sp)
-        d = {0: 1.000, 1: 1.000, 2: 1.000, 3: 1.000, 4: 1.000}
-        for n in G:
-            assert c[n] == pytest.approx(d[n], abs=1e-3)
-
     def test_p3_closeness_sp(self):
         G = nx.path_graph(3)
         sp = dict(nx.all_pairs_shortest_path_length(G))
