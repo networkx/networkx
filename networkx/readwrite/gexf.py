@@ -28,6 +28,7 @@ from xml.etree.ElementTree import (
 )
 
 import networkx as nx
+from networkx.exception import InvalidGexfAttributeType
 from networkx.utils import open_file
 
 __all__ = ["write_gexf", "read_gexf", "relabel_gexf_graph", "generate_gexf"]
@@ -65,6 +66,11 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
        If True use line breaks and indenting in output XML.
     version: string (optional, default: '1.2draft')
        The version of GEXF to be used for nodes attributes checking
+
+    Raises
+    ------
+    InvalidGexfAttributeType
+        If an attribute has mixed typed values across nodes or edges.
 
     Examples
     --------
@@ -113,6 +119,11 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     version : string (default: 1.2draft)
     Version of GEFX File Format (see http://gexf.net/schema.html)
     Supported values: "1.1draft", "1.2draft"
+
+    Raises
+    ------
+    InvalidGexfAttributeType
+        If an attribute has mixed typed values across nodes or edges.
 
 
     Examples
@@ -543,11 +554,23 @@ class GEXFWriter(GEXF):
     def get_attr_id(self, title, attr_type, edge_or_node, default, mode):
         # find the id of the attribute or generate a new id
         try:
-            return self.attr[edge_or_node][mode][title]
+            existing_id = self.attr[edge_or_node][mode][title]["id"]
+
+            # Check if the type matches
+            existing_attr = self.attr[edge_or_node][mode][title]["element"]
+            if existing_attr is not None:
+                existing_type = existing_attr.get("type")
+                if existing_type != attr_type:
+                    raise InvalidGexfAttributeType(
+                        f"Attribute {title} has type {existing_type} but value {attr_type} was given."
+                    )
+
+            return existing_id
         except KeyError:
             # generate new id
             new_id = str(next(self.attr_id))
-            self.attr[edge_or_node][mode][title] = new_id
+            self.attr[edge_or_node][mode][title] = {}
+            self.attr[edge_or_node][mode][title]["id"] = new_id
             attr_kwargs = {"id": new_id, "title": title, "type": attr_type}
             attribute = Element("attribute", **attr_kwargs)
             # add subelement for data default value if present
@@ -570,6 +593,7 @@ class GEXFWriter(GEXF):
                 attributes_element = Element("attributes", **attr_kwargs)
                 self.graph_element.insert(0, attributes_element)
             attributes_element.append(attribute)
+            self.attr[edge_or_node][mode][title]["element"] = attribute
         return new_id
 
     def add_viz(self, element, node_data):
