@@ -19,18 +19,16 @@ The data file can be found at:
        https://arxiv.org/abs/cond-mat/0112110
 """
 
-import pathlib
+from pathlib import Path
 import zipfile
 
 import matplotlib.pyplot as plt
 import networkx as nx
 
-doc_current = pathlib.Path.cwd()
-football_zip = doc_current / "football.zip"
+with zipfile.ZipFile(Path.cwd() / "football.zip") as zf:  # zipfile object
+    txt = zf.read("football.txt").decode()  # read info file
+    gml = zf.read("football.gml").decode()  # read gml data
 
-zf = zipfile.ZipFile(football_zip)  # zipfile object
-txt = zf.read("football.txt").decode()  # read info file
-gml = zf.read("football.gml").decode()  # read gml data
 # throw away bogus first line with # from mejn files
 gml = gml.split("\n")[1:]
 G = nx.parse_gml(gml)  # parse gml data
