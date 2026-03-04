@@ -273,7 +273,7 @@ def test_cpm_increase():
     )
 
 
-def test_partition_iterator():
+def test_partition_iterator_cpm():
     G = nx.karate_club_graph()
     parts_iter = nx.community.leiden_partitions(G, seed=42, resolution=0.5)
     first_part = next(parts_iter)
@@ -285,7 +285,7 @@ def test_partition_iterator():
     assert first_copy[0] == first_part[0]
 
 
-def test_quality():
+def test_quality_cpm():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
