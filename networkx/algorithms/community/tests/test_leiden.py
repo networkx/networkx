@@ -114,6 +114,7 @@ def test_directed_not_implemented():
         nx.community.leiden_communities(G)
 
 
+@pytest.mark.xfail(reason="test_max_level isn't passing yet")
 def test_max_level():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
@@ -333,27 +334,3 @@ def test_resolution_modularity():
 
     assert len(partition1) <= len(partition2)
     assert len(partition2) <= len(partition3)
-
-
-@pytest.mark.xfail(reason="test_max_level isn't passing yet")
-def test_max_level():
-    G = nx.LFR_benchmark_graph(
-        250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
-    )
-    r = 1
-    parts_iter = nx.community.leiden_partitions(G, resolution=r, seed=42)
-    for max_level, expected in enumerate(parts_iter, 1):
-        partition = nx.community.leiden_communities(
-            G, resolution=r, max_level=max_level, seed=42
-        )
-        assert partition == expected
-    assert max_level > 1  # Ensure we are actually testing max_level
-    # max_level is an upper limit; it's okay if we stop before it's hit.
-    partition = nx.community.leiden_communities(
-        G, resolution=r, max_level=max_level + 1, seed=42
-    )
-    assert partition == expected
-    with pytest.raises(
-        ValueError, match="max_level argument must be a positive integer"
-    ):
-        nx.community.leiden_communities(G, resolution=r, max_level=0)
