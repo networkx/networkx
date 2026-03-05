@@ -221,17 +221,23 @@ def betweenness_centrality(
         nodes = G
     else:
         nodes = seed.sample(list(G.nodes()), k)
-    for s in nodes:
-        # single source shortest paths
-        if weight is None:  # use BFS
-            S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
-        else:  # use Dijkstra's algorithm
-            S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
-        # accumulation
-        if endpoints:
-            betweenness, _ = _accumulate_endpoints(betweenness, S, P, sigma, s)
-        else:
-            betweenness, _ = _accumulate_basic(betweenness, S, P, sigma, s)
+
+    # FAST PATH: Unweighted, no endpoints
+    if weight is None and not endpoints:
+        betweenness = _fast_unweighted_betweenness(G, nodes)
+    else:
+        # FALLBACK: Standard dictionary-based execution for weights/endpoints
+        for s in nodes:
+            # single source shortest paths
+            if weight is None:  # use BFS
+                S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
+            else:  # use Dijkstra's algorithm
+                S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
+            # accumulation
+            if endpoints:
+                betweenness, _ = _accumulate_endpoints(betweenness, S, P, sigma, s)
+            else:
+                betweenness, _ = _accumulate_basic(betweenness, S, P, sigma, s)
     # rescaling
     betweenness = _rescale(
         betweenness,
@@ -423,6 +429,61 @@ def _single_source_shortest_path_basic(G, s):
                 P[w].append(v)  # predecessors
     return S, P, sigma, D
 
+def _fast_unweighted_betweenness(G, nodes):
+    """
+    Optimized array-based betweenness centrality for unweighted graphs.
+    Bypasses dictionary hashing by compiling the graph to an integer adjacency list.
+    """
+    from collections import deque
+
+    V = list(G.nodes())
+    n = len(V)
+    node_to_idx = {node: i for i, node in enumerate(V)}
+    
+    # Compile step: Build array-based adjacency list
+    adj = [[] for _ in range(n)]
+    for u, v in G.edges():
+        ui, vi = node_to_idx[u], node_to_idx[v]
+        adj[ui].append(vi)
+        if not G.is_directed():
+            adj[vi].append(ui)
+
+    sources = [node_to_idx[n] for n in nodes]
+
+    cb = [0.0] * n
+    
+    # Execution step: Brandes' algorithm via fast array indexing
+    for s in sources:
+        S = []
+        P = [[] for _ in range(n)]
+        sigma = [0] * n
+        sigma[s] = 1
+        D = [-1] * n
+        D[s] = 0
+        Q = deque([s])
+        
+        while Q:
+            v = Q.popleft()
+            S.append(v)
+            for w in adj[v]:
+                if D[w] < 0:
+                    Q.append(w)
+                    D[w] = D[v] + 1
+                if D[w] == D[v] + 1:
+                    sigma[w] += sigma[v]
+                    P[w].append(v)
+        
+        delta = [0.0] * n
+        while S:
+            w = S.pop()
+            for v in P[w]:
+                delta[v] += (sigma[v] / sigma[w]) * (1.0 + delta[w])
+            if w != s:
+                cb[w] += delta[w]
+
+    # Translation step: Map results back to original node IDs
+    betweenness = {V[i]: cb[i] for i in range(n)}
+    return betweenness
 
 def _single_source_dijkstra_path_basic(G, s, weight):
     weight = _weight_function(G, weight)
