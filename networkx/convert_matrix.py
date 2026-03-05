@@ -151,7 +151,7 @@ def to_pandas_adjacency(
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
-def from_pandas_adjacency(df, create_using=None):
+def from_pandas_adjacency(df, create_using=None, *, nonedge=0.0):
     r"""Returns a graph from Pandas DataFrame.
 
     The Pandas DataFrame is interpreted as an adjacency matrix for the graph.
@@ -163,6 +163,10 @@ def from_pandas_adjacency(df, create_using=None):
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
+
+    nonedge : array_like (default = 0.0)
+        The value used to represent non-edges in the adjacency matrix.
+        See :func:`from_numpy_array` for details.
 
     Notes
     -----
@@ -211,7 +215,9 @@ def from_pandas_adjacency(df, create_using=None):
         raise nx.NetworkXError("Columns must match Indices.", msg) from err
 
     A = df.values
-    G = from_numpy_array(A, create_using=create_using, nodelist=df.columns)
+    G = from_numpy_array(
+        A, create_using=create_using, nodelist=df.columns, nonedge=nonedge
+    )
 
     return G
 
@@ -1119,7 +1125,13 @@ def to_numpy_array(
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def from_numpy_array(
-    A, parallel_edges=False, create_using=None, edge_attr="weight", *, nodelist=None
+    A,
+    parallel_edges=False,
+    create_using=None,
+    edge_attr="weight",
+    *,
+    nodelist=None,
+    nonedge=0.0,
 ):
     """Returns a graph from a 2D NumPy array.
 
@@ -1148,6 +1160,13 @@ def from_numpy_array(
         A sequence of objects to use as the nodes in the graph. If provided, the
         list of nodes must be the same length as the dimensions of `A`. The
         default is `None`, in which case the nodes are drawn from ``range(n)``.
+
+    nonedge : array_like (default = 0.0)
+        The value used to represent non-edges in the adjacency matrix. Entries
+        in `A` equal to this value will not be added as edges. If the array has
+        a numeric dtype, the default non-edge value is ``0.0``, which means
+        entries with value ``0`` are not treated as edges. To create edges with
+        weight ``0``, use a different sentinel (e.g. ``nan``).
 
     Notes
     -----
@@ -1208,6 +1227,13 @@ def from_numpy_array(
     >>> G[1][1]
     AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
 
+    Using ``nan`` as the nonedge sentinel allows zero-weight edges:
+
+    >>> A = np.array([[np.nan, 0.0], [0.0, np.nan]])
+    >>> G = nx.from_numpy_array(A, nonedge=np.nan)
+    >>> sorted(G.edges(data=True))
+    [(0, 1, {'weight': 0.0})]
+
     User defined compound data type on edges:
 
     >>> dt = [("weight", float), ("cost", int)]
@@ -1250,10 +1276,15 @@ def from_numpy_array(
 
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(nodelist)
-    # Get a list of all the entries in the array with nonzero entries. These
-    # coordinates become edges in the graph. (convert to int from np.int64)
-    edges = ((int(e[0]), int(e[1])) for e in zip(*A.nonzero()))
-    # handle numpy constructed data type
+    # Get a list of all the entries in the array with nonzero entries which are not equal
+    # to the nonedge sentinel. These coordinates become edges in the graph. (convert to int from np.int64)
+    if python_type == "void":
+        edges = ((int(e[0]), int(e[1])) for e in zip(*A.nonzero()))
+    elif nonedge != nonedge:  # to check if nonedge is nan
+        edges = ((int(e[0]), int(e[1])) for e in zip(*(A == A).nonzero()))
+    else:
+        edges = ((int(e[0]), int(e[1])) for e in zip(*(A != nonedge).nonzero()))
+    # Handle numpy constructed data type
     if python_type == "void":
         # Sort the fields by their offset, then by dtype, then by name.
         fields = sorted(
