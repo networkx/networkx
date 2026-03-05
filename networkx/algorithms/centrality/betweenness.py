@@ -429,6 +429,7 @@ def _single_source_shortest_path_basic(G, s):
                 P[w].append(v)  # predecessors
     return S, P, sigma, D
 
+
 def _fast_unweighted_betweenness(G, nodes):
     """
     Optimized array-based betweenness centrality for unweighted graphs.
@@ -439,7 +440,7 @@ def _fast_unweighted_betweenness(G, nodes):
     V = list(G.nodes())
     n = len(V)
     node_to_idx = {node: i for i, node in enumerate(V)}
-    
+
     # Compile step: Build array-based adjacency list
     adj = [[] for _ in range(n)]
     for u, v in G.edges():
@@ -451,7 +452,7 @@ def _fast_unweighted_betweenness(G, nodes):
     sources = [node_to_idx[n] for n in nodes]
 
     cb = [0.0] * n
-    
+
     # Execution step: Brandes' algorithm via fast array indexing
     for s in sources:
         S = []
@@ -461,7 +462,7 @@ def _fast_unweighted_betweenness(G, nodes):
         D = [-1] * n
         D[s] = 0
         Q = deque([s])
-        
+
         while Q:
             v = Q.popleft()
             S.append(v)
@@ -472,7 +473,7 @@ def _fast_unweighted_betweenness(G, nodes):
                 if D[w] == D[v] + 1:
                     sigma[w] += sigma[v]
                     P[w].append(v)
-        
+
         delta = [0.0] * n
         while S:
             w = S.pop()
@@ -484,6 +485,7 @@ def _fast_unweighted_betweenness(G, nodes):
     # Translation step: Map results back to original node IDs
     betweenness = {V[i]: cb[i] for i in range(n)}
     return betweenness
+
 
 def _single_source_dijkstra_path_basic(G, s, weight):
     weight = _weight_function(G, weight)
