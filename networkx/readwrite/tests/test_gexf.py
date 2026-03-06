@@ -610,3 +610,65 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(sorted(e) for e in G.edges()) == sorted(
             sorted(e) for e in H.edges()
         )
+
+    def test_round_trip_mixed_type_float_to_string(self):
+        G = nx.Graph()
+        G.add_node(1, bar=1.234)
+        G.add_node(2, bar="stringval")
+        fh = io.BytesIO()
+        # Assert write_gexf throws error when trying to write a graph with mixed types for the same attribute
+        with pytest.raises(
+            ValueError,
+            match="Attribute bar has type double but value string was given.",
+        ):
+            nx.write_gexf(G, fh)
+
+    def test_round_trip_mixed_type_int_to_string(self):
+        G = nx.Graph()
+        G.add_node(1, bar=1)
+        G.add_node(2, bar="stringval")
+        fh = io.BytesIO()
+        # Assert write_gexf throws error when trying to write a graph with mixed types for the same attribute
+        with pytest.raises(
+            ValueError,
+            match="Attribute bar has type long but value string was given.",
+        ):
+            nx.write_gexf(G, fh)
+
+    def test_type_promotion_integer_to_integer(self):
+        G = nx.Graph()
+        G.add_node(1, foo=1)
+        G.add_node(2, foo=2)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        xml = fh.read().decode()
+        # It should be long basaed on existing logic
+        assert 'type="long"' in xml
+
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert isinstance(H.nodes[1].get("foo"), int)
+        assert G.nodes[1].get("foo") == H.nodes[1].get("foo")
+        assert isinstance(H.nodes[2].get("foo"), int)
+        assert G.nodes[2].get("foo") == H.nodes[2].get("foo")
+
+    def test_type_promotion_float_to_float(self):
+        G = nx.Graph()
+        G.add_node(1, baz=1.1)
+        G.add_node(2, baz=2.3)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+        fh.seek(0)
+        xml = fh.read().decode()
+        # It should be double basaed on existing logic
+        assert 'type="double"' in xml
+
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert isinstance(H.nodes[1].get("baz"), float)
+        assert G.nodes[1].get("baz") == H.nodes[1].get("baz")
+        assert isinstance(H.nodes[2].get("baz"), float)
+        assert G.nodes[2].get("baz") == H.nodes[2].get("baz")
