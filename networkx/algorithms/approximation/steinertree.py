@@ -1,9 +1,10 @@
+from collections import deque
 from itertools import chain
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
 
-__all__ = ["metric_closure", "steiner_tree"]
+__all__ = ["metric_closure", "steiner_tree", "directed_steiner_tree"]
 
 
 @not_implemented_for("directed")
@@ -263,3 +264,303 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
         )
     T = G.edge_subgraph(edges)
     return T
+
+
+@nx.utils.not_implemented_for("undirected")
+def directed_steiner_tree(
+    G, root, terminals, *, min_terminals=None, levels=None, weight="weight"
+):
+    r"""
+    Approximate solution to the Directed Steiner Tree problem.
+
+    This implementation follows the greedy density-based approach of
+    Charikar et al. (1999). The algorithm repeatedly grows partial trees
+    starting at `root` until all required terminals are spanned.
+    While the result is not guaranteed to be optimal, it provides a
+    polylogarithmic approximation in polynomial time and is effective
+    on medium-sized directed graphs.
+
+    Parameters
+    ----------
+    G : DiGraph
+        The directed graph on which the algorithm operates.
+    root : node
+        The root node where the algorithm starts growing partial trees.
+    terminals : iterable of nodes
+        An iterable of terminal nodes. This will be converted to a set.
+    min_terminals : int, optional (default: None)
+        Minimum number of terminals to connect.
+        If None, this is set to the total number of terminals.
+        Setting this equal to the number of terminals gives the standard
+        Directed Steiner Tree problem (Charikar et al. 1999).
+        Smaller values allow a partial version where only a subset of
+        terminals is required.
+    levels : int, optional (default=2)
+        Maximum recursion depth of the algorithm, corresponding to the
+        parameter `i` in Charikar et al. (1999). Larger values improve
+        the approximation guarantee but increase running time rapidly.
+    weight : string, optional (default="weight")
+        Edge attribute to use as weight.
+        If the edge does not have this attribute, the edge weight is assumed to be 1.
+
+    Returns
+    -------
+    DST : DiGraph
+        A directed Steiner tree (arborescence) subgraph of `G` spanning all
+        required terminals, rooted at `root`. The returned graph is a new
+        DiGraph containing the relevant nodes and edges (with attributes)
+        from `G`.
+
+    Raises
+    ------
+    NetworkXError
+        If levels is not greater than one or None, if ``min_terminals``
+        is not a positive integer, if ``min_terminals`` exceeds the
+        number of given terminals, if ``min_terminals`` is not
+        a positive integer or if any terminals are not in ``G``.
+    NetworkXUnfeasible
+        If no terminals are given, if no terminals are reachable from
+        the root within the levels, or if the resulting tree fails
+        to cover at least ``min_terminals`` terminals.
+
+    Notes
+    -----
+    - MultiDiGraph inputs are reduced to DiGraph by keeping the minimum-weight
+    edge between each node pair. The returned Steiner tree is a DiGraph.
+
+    - This implementation is recursive. If ``levels`` is larger than ~1000,
+    Python's default recursion limit may be exceeded, leading to
+    ``RecursionError``. Consider increasing the recursion limit with
+    ``sys.setrecursionlimit``.
+
+    - The parameter ``levels`` (denoted ``i`` in Charikar et al. (1999))
+    controls a trade-off between approximation ratio and runtime:
+
+    * For any fixed ``levels = i > 1`` the algorithm runs in polynomial time
+        :math:`O(n^i k^{2i})` and achieves an approximation ratio of
+        :math:`(i/(i-1)) \cdot k^{1/i}`.
+    * Setting ``levels = 2`` yields an :math:`O(\sqrt{k})` approximation
+        in polynomial time, which is the most common practical choice.
+    * Setting ``levels = \log k`` achieves the theoretical best
+        :math:`O(\log k)` approximation, but the runtime grows to
+        quasi-polynomial time :math:`n^{O(\log k)}`, which is typically
+        impractical except for very small graphs.
+
+    - The parameter ``min_terminals`` generalizes the problem:
+
+    * If ``min_terminals`` equals the total number of terminals, the function
+        solves the standard Directed Steiner Tree problem as in
+        Charikar et al. (1999), which requires spanning all terminals.
+    * If ``min_terminals`` is smaller, the algorithm still runs and produces a
+        tree covering at least that many terminals. This partial version is
+        convenient in practice, but the approximation guarantees in the paper
+        apply only to the full-terminal case.
+
+    References
+    ----------
+    .. [1] Charikar, M., Chekuri, C., Cheung, T-Y., Dai, Z., Goel, A.,
+           Guha, S., & Li, M. (1999). Approximation algorithms for
+           directed Steiner problems. *Journal of Algorithms*, 33(1), 73–91.
+           https://doi.org/10.1006/jagm.1999.1042
+    """
+    if root not in G:
+        raise nx.NetworkXError(f"Root {root} not in G")
+
+    terminals = set(terminals)
+    if not terminals:
+        raise nx.NetworkXUnfeasible("No terminals given")
+
+    if levels is None:
+        levels = 2
+    elif levels <= 1:
+        raise nx.NetworkXError("levels must greater than one or None")
+
+    if min_terminals is None:
+        min_terminals = len(terminals)
+    elif min_terminals <= 0:
+        raise nx.NetworkXError("min_terminals must be a positive integer or None")
+    elif min_terminals > len(terminals):
+        raise nx.NetworkXError(
+            "min_terminals must be less than or equal to the number of terminals"
+        )
+
+    missing = terminals - set(G.nodes)
+    if missing:
+        raise nx.NetworkXError(f"Terminals {missing} not in G")
+
+    if G.is_multigraph():
+        G = _collapse_multigraph_to_digraph(G, weight)
+
+    reachable_nodes = nx.single_source_shortest_path_length(G, root).keys()
+    reachable_terminals = terminals & reachable_nodes
+    if len(reachable_terminals) < min_terminals:
+        raise nx.NetworkXUnfeasible(
+            f"Only {len(reachable_terminals)} terminals are reachable from root {root}, "
+            f"which is fewer than required min_terminals={min_terminals}."
+        )
+
+    G_closure = _directed_metric_closure(G, weight=weight)
+    G_closure_tree = _directed_steiner_tree(
+        G_closure, root, reachable_terminals, min_terminals, levels, weight
+    )
+    covered = set(G_closure_tree.nodes) & set(reachable_terminals)
+    if len(covered) < min_terminals:
+        raise nx.NetworkXUnfeasible(
+            "Directed Steiner tree could not cover at least "
+            f"{min_terminals}.\nReachable terminals: {list(reachable_terminals)}"
+        )
+    G_expanded = _expand_full_closure(G, G_closure_tree)
+    pred, dist = nx.dijkstra_predecessor_and_distance(G_expanded, root, weight=weight)
+
+    DST = _build_strict_steiner_tree(
+        G_expanded=G_expanded,
+        root=root,
+        covered=covered,
+        pred=pred,
+        terminals=terminals,
+    )
+    return DST
+
+
+def _directed_metric_closure(G, weight="weight"):
+    """Return the directed metric closure of a DiGraph."""
+    G_closure = nx.DiGraph()
+    for u in G:
+        costs, paths = nx.single_source_dijkstra(G, u, weight=weight)
+        for v, d in costs.items():
+            if u == v:
+                continue
+            G_closure.add_edge(u, v, **{weight: d}, path=paths[v])
+    return G_closure
+
+
+def _expand_full_closure(G, G_closure):
+    G_expanded = nx.DiGraph()
+    for u, v, data in G_closure.edges(data=True):
+        path_nodes = data["path"]
+        for a, b in zip(path_nodes[:-1], path_nodes[1:]):
+            if G.has_edge(a, b):
+                G_expanded.add_edge(a, b, **G[a][b])
+            else:
+                G_expanded.add_edge(a, b)
+    return G_expanded
+
+
+def _build_strict_steiner_tree(G_expanded, root, covered, pred, terminals):
+    DST = nx.DiGraph()
+    DST.add_node(root, **G_expanded.nodes[root])
+    for t in covered:
+        if t == root:
+            continue
+        if t not in pred:
+            continue
+
+        v = t
+        while v != root:
+            # pred[v] may contain multiple predecessors (ties in shortest paths).
+            # Use min() to ensure deterministic output instead of relying on list order.
+            u = min(pred[v])
+
+            if u not in DST:
+                DST.add_node(u, **G_expanded.nodes[u])
+            if v not in DST:
+                DST.add_node(v, **G_expanded.nodes[v])
+
+            DST.add_edge(u, v, **G_expanded[u][v])
+            v = u
+
+    # remove non-terminal leaves
+    leaves = {node for node in DST if DST.out_degree(node) == 0 and node not in covered}
+
+    while leaves:
+        parents = set()
+        for u in leaves:
+            parents.update(DST.predecessors(u))
+        DST.remove_nodes_from(leaves)
+
+        leaves = {p for p in parents if DST.out_degree(p) == 0 and p not in terminals}
+
+    return DST
+
+
+def _collapse_multigraph_to_digraph(G, weight="weight"):
+    """Return a DiGraph with parallel edges collapsed to minimum weight edges."""
+    H = nx.DiGraph()
+    for u, v, data in G.edges(data=True):
+        w = data.get(weight, 1)
+        if not H.has_edge(u, v) or w < H[u][v].get(weight, float("inf")):
+            attrs = dict(data)
+            H.add_edge(u, v, **attrs)
+    return H
+
+
+def _directed_steiner_tree_density(G, terminals, weight):
+    """Compute density = total cost / #covered terminals."""
+    sub_terminals = set()
+    total = 0
+    for u, v, d in G.edges(data=True):
+        if u in terminals:
+            sub_terminals.add(u)
+        if v in terminals:
+            sub_terminals.add(v)
+        total += d.get(weight, 1)
+
+    return total / len(sub_terminals) if sub_terminals else float("inf")
+
+
+def _directed_steiner_tree(G, root, terminals, min_terminals, levels, weight):
+    """Recursive helper for directed_steiner_tree."""
+    reachable_nodes = nx.single_source_shortest_path_length(G, root).keys()
+    reachable_terminals = terminals & reachable_nodes
+
+    H = nx.DiGraph()
+    if levels == 0 or len(reachable_terminals) < min_terminals:
+        return H
+
+    if levels == 1:
+        H.add_node(root, **G.nodes[root])
+        edges_filtered = [
+            (u, v, d)
+            for u, v, d in G.edges(data=True)
+            if u == root and v != root and v in terminals
+        ]
+
+        edges_sorted = sorted(edges_filtered, key=lambda x: x[2].get(weight, 1))
+
+        for u, v, d in edges_sorted[:min_terminals]:
+            H.add_node(v, **G.nodes[v])
+            H.add_edge(u, v, **d)
+
+        return H
+
+    terminals = terminals.copy()
+    reached_terminals = set()
+    while len(reached_terminals) < min_terminals:
+        min_sub_tree = nx.DiGraph()
+        min_density = float("inf")
+
+        for v in G.successors(root):
+            for n in range(1, len(terminals) + 1):
+                sub_tree = _directed_steiner_tree(
+                    G, v, terminals, n, levels - 1, weight
+                )
+                sub_tree.add_node(root, **G.nodes[root])
+                sub_tree.add_node(v, **G.nodes[v])
+                sub_tree.add_edge(root, v, **G[root][v])
+
+                sub_density = _directed_steiner_tree_density(
+                    sub_tree, terminals, weight
+                )
+                if sub_density < min_density:
+                    min_sub_tree = sub_tree
+                    min_density = sub_density
+        covered_terminals = {node for node in min_sub_tree if node in terminals}
+        if not covered_terminals:
+            return H
+        reached_terminals |= covered_terminals
+        terminals -= covered_terminals
+
+        H.add_nodes_from(min_sub_tree.nodes(data=True))
+        H.add_edges_from(min_sub_tree.edges(data=True))
+
+    return H
