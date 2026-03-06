@@ -49,16 +49,47 @@ def maximal_independent_set(G, nodes=None, seed=None):
 
     Examples
     --------
-    >>> G = nx.path_graph(5)
-    >>> nx.maximal_independent_set(G)  # doctest: +SKIP
-    [4, 0, 2]
-    >>> nx.maximal_independent_set(G, [1])  # doctest: +SKIP
+    >>> G = nx.path_graph(4)
+    >>> sorted(nx.maximal_independent_set(G, seed=1))
     [1, 3]
+
+    Note that a graph may have many maximal independent sets; for example, the
+    path graph with 4 nodes has 3 maximal independent sets: ``{0, 2}``,
+    ``{0, 3}`` and ``{1, 3}``.
+
+    >>> sorted(nx.maximal_independent_set(G, seed=2))
+    [0, 2]
+
+    This function returns a single maximal independent set. Enumerating *all*
+    of the maximal independent sets in a graph can be achieved by enumerating the
+    cliques in the complement graph:
+
+    >>> sorted(
+    ...     sorted(c)
+    ...     for c in nx.enumerate_all_cliques(nx.complement(G))
+    ...     if len(c) > 1  # Ignore cliques comprising a single node
+    ... )
+    [[0, 2], [0, 3], [1, 3]]
+
+    Note however that enumerating all cliques is exponential in the number of
+    nodes in the worst case (e.g. the complete graph).
+
+    The `nodes` keyword argument can be used to produce a maximal independent
+    set that contains the given node(s):
+
+    >>> sorted(nx.maximal_independent_set(G, nodes={1}))
+    [1, 3]
+
+    An exception is raised if `nodes` are not independent
+
+    >>> nx.maximal_independent_set(G, nodes={1, 2})
+    Traceback (most recent call last):
+       ...
+    networkx.exception.NetworkXUnfeasible: {1, 2} is not an independent set of G
 
     Notes
     -----
     This algorithm does not solve the maximum independent set problem.
-
     """
     if not nodes:
         nodes = {seed.choice(list(G))}
