@@ -28,7 +28,6 @@ from xml.etree.ElementTree import (
 )
 
 import networkx as nx
-from networkx.exception import InvalidGexfAttributeType
 from networkx.utils import open_file
 
 __all__ = ["write_gexf", "read_gexf", "relabel_gexf_graph", "generate_gexf"]
@@ -69,7 +68,7 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
 
     Raises
     ------
-    InvalidGexfAttributeType
+    ValueError
         If an attribute has mixed typed values across nodes or edges.
 
     Examples
@@ -122,7 +121,7 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
 
     Raises
     ------
-    InvalidGexfAttributeType
+    ValueError
         If an attribute has mixed typed values across nodes or edges.
 
 
@@ -561,7 +560,7 @@ class GEXFWriter(GEXF):
             if existing_attr is not None:
                 existing_type = existing_attr.get("type")
                 if existing_type != attr_type:
-                    raise InvalidGexfAttributeType(
+                    raise ValueError(
                         f"Attribute {title} has type {existing_type} but value {attr_type} was given."
                     )
 

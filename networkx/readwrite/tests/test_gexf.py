@@ -4,7 +4,6 @@ import time
 import pytest
 
 import networkx as nx
-from networkx.exception import InvalidGexfAttributeType
 
 
 def test_gexf_v1_3(tmp_path):
@@ -619,7 +618,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         fh = io.BytesIO()
         # Assert write_gexf throws error when trying to write a graph with mixed types for the same attribute
         with pytest.raises(
-            InvalidGexfAttributeType,
+            ValueError,
             match="Attribute bar has type double but value string was given.",
         ):
             nx.write_gexf(G, fh)
@@ -631,7 +630,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         fh = io.BytesIO()
         # Assert write_gexf throws error when trying to write a graph with mixed types for the same attribute
         with pytest.raises(
-            InvalidGexfAttributeType,
+            ValueError,
             match="Attribute bar has type long but value string was given.",
         ):
             nx.write_gexf(G, fh)

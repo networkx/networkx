@@ -129,9 +129,3 @@ class PowerIterationFailedConvergence(ExceededMaxIterations):
         exception_message = msg
         superinit = super().__init__
         superinit(self, exception_message, *args, **kw)
-
-
-class InvalidGexfAttributeType(NetworkXException):
-    """Raised when an attribute value cannot be converted to a type that can be
-    serialized in GEXF format.
-    """
