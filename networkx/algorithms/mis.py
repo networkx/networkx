@@ -90,6 +90,12 @@ def maximal_independent_set(G, nodes=None, seed=None):
     Notes
     -----
     This algorithm does not solve the maximum independent set problem.
+
+    See Also
+    --------
+    :func:`~networkx.algorithms.approximation.clique.maximum_independent_set` :
+        Algorithm for approximating the maximum independent set, i.e. a
+        maximal independent set of maximum cardinality.
     """
     if not nodes:
         nodes = {seed.choice(list(G))}
