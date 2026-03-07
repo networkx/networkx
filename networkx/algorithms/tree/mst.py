@@ -1319,6 +1319,16 @@ def optimal_spanning_trees(G, weight="weight", minimum=True, ignore_nan=False):
         If `minimum=True` the trees have minimum total weight;
         if `minimum=False` they have maximum total weight.
 
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2, weight=1)
+    >>> G.add_edge(1, 3, weight=1)
+    >>> G.add_edge(2, 3, weight=1)
+    >>> optimal_trees = list(nx.optimal_spanning_trees(G))
+    >>> len(optimal_trees)
+    3
+
     """
 
     iterator = SpanningTreeIterator(
