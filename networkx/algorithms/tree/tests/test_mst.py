@@ -932,3 +932,84 @@ class TestNumberSpanningTrees:
         assert np.isclose(Nst, 0)
         Nst = nx.number_of_spanning_trees(G, root=3, weight="weight")
         assert np.isclose(Nst, 0)
+
+
+class TestOptimalSpanningTrees:
+    @classmethod
+    def setup_class(cls):
+        global np
+        np = pytest.importorskip("numpy")
+
+    def test_all_minimum_spanning_trees(self):
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=2)
+        G.add_edge(0, 2, weight=2)
+        G.add_edge(1, 2, weight=2)
+
+        optimal_trees = list(nx.optimal_spanning_trees(G))
+        assert len(optimal_trees) == 3
+        for T in optimal_trees:
+            assert nx.is_tree(T)
+            assert nx.is_connected(T)
+            assert np.isclose(T.size(weight="weight"), 4)
+
+    def test_single_minimum_spanning_tree(self):
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=1)
+        G.add_edge(0, 2, weight=2)
+        G.add_edge(1, 2, weight=3)
+
+        optimal_trees = list(nx.optimal_spanning_trees(G))
+        assert len(optimal_trees) == 1
+        T = optimal_trees[0]
+        assert nx.is_tree(T)
+        assert nx.is_connected(T)
+        assert np.isclose(T.size(weight="weight"), 3)
+
+    def test_all_maximum_spanning_trees(self):
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=2)
+        G.add_edge(0, 2, weight=2)
+        G.add_edge(1, 2, weight=2)
+
+        optimal_trees = list(nx.optimal_spanning_trees(G, minimum=False))
+        assert len(optimal_trees) == 3
+        for T in optimal_trees:
+            assert nx.is_tree(T)
+            assert nx.is_connected(T)
+            assert np.isclose(T.size(weight="weight"), 4)
+
+    def test_single_maximum_spanning_tree(self):
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=1)
+        G.add_edge(0, 2, weight=2)
+        G.add_edge(1, 2, weight=3)
+
+        optimal_trees = list(nx.optimal_spanning_trees(G, minimum=False))
+        assert len(optimal_trees) == 1
+        T = optimal_trees[0]
+        assert nx.is_tree(T)
+        assert nx.is_connected(T)
+        assert np.isclose(T.size(weight="weight"), 5)
+
+    def test_optimal_spanning_trees_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edge(0, 1, weight=1)
+        G.add_edge(0, 1, weight=2)
+        G.add_edge(0, 2, weight=2)
+        G.add_edge(1, 2, weight=3)
+
+        optimal_trees = list(nx.optimal_spanning_trees(G))
+        assert len(optimal_trees) == 1
+        for T in optimal_trees:
+            assert nx.is_tree(T)
+            assert nx.is_connected(T)
+            assert np.isclose(T.size(weight="weight"), 3)
+
+    def test_optimal_spanning_trees_directed_raises(self):
+        DG = nx.DiGraph()
+        DG.add_edge(0, 1, weight=1)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            list(nx.optimal_spanning_trees(DG))
+        with pytest.raises(nx.NetworkXNotImplemented):
+            list(nx.optimal_spanning_trees(DG, minimum=False))

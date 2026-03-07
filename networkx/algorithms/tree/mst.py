@@ -24,6 +24,7 @@ __all__ = [
     "partition_spanning_tree",
     "EdgePartition",
     "SpanningTreeIterator",
+    "optimal_spanning_trees",
 ]
 
 
@@ -1288,3 +1289,58 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
 
     # Compute number of spanning trees
     return float(np.linalg.det(G_laplacian[1:, 1:]))
+
+
+@nx._dispatchable(preserve_all_attrs=True)
+def optimal_spanning_trees(G, weight="weight", minimum=True, ignore_nan=False):
+    """
+    Find all optimal spanning trees of graph `G` using `SpanningTreeIterator`.
+
+    Parameters
+    ----------
+    G : nx.Graph
+        An undirected graph for which spanning trees are generated.
+
+    weight : String, default = "weight"
+        The edge attribute used to store the weight of the edge
+
+    minimum : bool, default = True
+        If True, yield all minimum spanning trees.
+        If False, yield all maximum spanning trees.
+
+    ignore_nan : bool, default = False
+        If a NaN is found as an edge weight normally an exception is raised.
+        If `ignore_nan is True` then that edge is ignored instead.
+
+    Returns
+    -------
+    generator of nx.Graph
+        Generator yielding all optimal spanning trees of `G`.
+        If `minimum=True` the trees have minimum total weight;
+        if `minimum=False` they have maximum total weight.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2, weight=1)
+    >>> G.add_edge(1, 3, weight=1)
+    >>> G.add_edge(2, 3, weight=1)
+    >>> optimal_trees = list(nx.optimal_spanning_trees(G))
+    >>> len(optimal_trees)
+    3
+
+    """
+
+    iterator = SpanningTreeIterator(
+        G, weight=weight, minimum=minimum, ignore_nan=ignore_nan
+    )
+    optimal_cost = None
+    for tree in iterator:
+        tree_cost = tree.size(weight=weight)
+        if optimal_cost is None:
+            optimal_cost = tree_cost
+        elif (minimum and tree_cost > optimal_cost) or (
+            not minimum and tree_cost < optimal_cost
+        ):
+            break
+        yield tree
