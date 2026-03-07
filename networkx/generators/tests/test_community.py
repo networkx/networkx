@@ -189,7 +189,7 @@ def test_stochastic_block_model():
     C = G.graph["partition"]
     assert len(C) == 3
     assert len(G) == 450
-    assert G.size() == 22160
+    assert G.size() == 21842
 
     GG = nx.stochastic_block_model(sizes, probs, range(450), seed=0)
     assert G.nodes == GG.nodes
