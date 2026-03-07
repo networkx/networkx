@@ -1293,6 +1293,34 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
 
 @nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def optimal_spanning_trees(G, weight="weight", minimum=True, ignore_nan=False):
+    """
+    Find all optimal spanning trees of graph `G` using `SpanningTreeIterator`.
+
+    Parameters
+    ----------
+    G : nx.Graph
+        An undirected graph for which spanning trees are generated.
+
+    weight : String, default = "weight"
+        The edge attribute used to store the weight of the edge
+
+    minimum : bool, default = True
+        If True, yield all minimum spanning trees.
+        If False, yield all maximum spanning trees.
+
+    ignore_nan : bool, default = False
+        If a NaN is found as an edge weight normally an exception is raised.
+        If `ignore_nan is True` then that edge is ignored instead.
+
+    Returns
+    -------
+    generator of nx.Graph
+        Generator yielding all optimal spanning trees of `G`.
+        If `minimum=True` the trees have minimum total weight;
+        if `minimum=False` they have maximum total weight.
+
+    """
+
     iterator = SpanningTreeIterator(
         G, weight=weight, minimum=minimum, ignore_nan=ignore_nan
     )
