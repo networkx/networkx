@@ -24,6 +24,7 @@ __all__ = [
     "partition_spanning_tree",
     "EdgePartition",
     "SpanningTreeIterator",
+    "find_all_optimal_spanning_trees",
 ]
 
 
@@ -1288,3 +1289,20 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
 
     # Compute number of spanning trees
     return float(np.linalg.det(G_laplacian[1:, 1:]))
+
+
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
+def find_all_optimal_spanning_trees(G, weight="weight", minimum=True, ignore_nan=False):
+    iterator = SpanningTreeIterator(
+        G, weight=weight, minimum=minimum, ignore_nan=ignore_nan
+    )
+    optimal_cost = None
+    for tree in iterator:
+        tree_cost = tree.size(weight=weight)
+        if optimal_cost is None:
+            optimal_cost = tree_cost
+        elif (minimum and tree_cost > optimal_cost) or (
+            not minimum and tree_cost < optimal_cost
+        ):
+            break
+        yield tree
