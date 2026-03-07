@@ -1291,7 +1291,7 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
     return float(np.linalg.det(G_laplacian[1:, 1:]))
 
 
-@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
+@nx._dispatchable(preserve_all_attrs=True)
 def optimal_spanning_trees(G, weight="weight", minimum=True, ignore_nan=False):
     """
     Find all optimal spanning trees of graph `G` using `SpanningTreeIterator`.
