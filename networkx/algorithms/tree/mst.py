@@ -24,7 +24,7 @@ __all__ = [
     "partition_spanning_tree",
     "EdgePartition",
     "SpanningTreeIterator",
-    "find_all_optimal_spanning_trees",
+    "optimal_spanning_trees",
 ]
 
 
@@ -1292,7 +1292,7 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
 
 
 @nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
-def find_all_optimal_spanning_trees(G, weight="weight", minimum=True, ignore_nan=False):
+def optimal_spanning_trees(G, weight="weight", minimum=True, ignore_nan=False):
     iterator = SpanningTreeIterator(
         G, weight=weight, minimum=minimum, ignore_nan=ignore_nan
     )
