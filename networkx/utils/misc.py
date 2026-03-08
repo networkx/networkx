@@ -359,6 +359,9 @@ class PythonRandomViaNumpyBits(random.Random):
 class PythonRandomInterface:
     """PythonRandomInterface is included for backward compatibility
     New code should use PythonRandomViaNumpyBits instead.
+
+    Unsupported Python `random` API methods will raise an informative
+    AttributeError suggesting the use of `numpy.random.Generator`.
     """
 
     def __init__(self, rng=None):
