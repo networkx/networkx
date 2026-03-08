@@ -434,6 +434,16 @@ class PythonRandomInterface:
     def paretovariate(self, shape):
         return self._rng.pareto(shape)
 
+    def __getattr__(self, name):
+        if hasattr(random.Random, name):
+            raise AttributeError(
+                f"random.{name} is not supported when using numpy.random.RandomState. "
+                "Please use numpy.random.Generator instead."
+            )
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'"
+        )
+
 
 #    weibull as weibullvariate multiplied by beta,
 #    def weibullvariate(self, alpha, beta):
