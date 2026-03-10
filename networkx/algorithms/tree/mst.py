@@ -990,6 +990,31 @@ class SpanningTreeIterator:
     to generate minimum spanning trees which respect the partition of edges.
     For spanning trees with the same weight, ties are broken arbitrarily.
 
+    Examples
+    ---------
+    We can use `SpanningTreeIterator` to find all minimum or maximum spanning
+    trees of a graph. For example, consider the following graph:
+
+    >>> import networkx as nx
+    >>> from networkx.algorithms.tree import SpanningTreeIterator
+    >>> G = nx.Graph()
+    >>> G.add_edge("A", "B", weight=1)
+    >>> G.add_edge("A", "C", weight=1)
+    >>> G.add_edge("B", "C", weight=1)
+    >>> iterator = SpanningTreeIterator(G)
+    >>> min_cost = None
+    >>> min_spanning_trees = []
+    >>> for tree in iterator:
+    >>>     tree_cost = tree.size(weight="weight")
+    >>>     if min_cost is None:
+    >>>         min_cost = tree_cost
+    >>>     elif tree_cost > min_cost:
+    >>>         break
+    >>>     min_spanning_trees.append(tree)
+    >>> len(min_spanning_trees)
+    3
+
+
     References
     ----------
     .. [1] G.K. Janssens, K. Sörensen, An algorithm to generate all spanning
