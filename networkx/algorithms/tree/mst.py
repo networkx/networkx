@@ -1005,12 +1005,12 @@ class SpanningTreeIterator:
     >>> min_cost = None
     >>> min_spanning_trees = []
     >>> for tree in iterator:
-    >>>     tree_cost = tree.size(weight="weight")
-    >>>     if min_cost is None:
-    >>>         min_cost = tree_cost
-    >>>     elif tree_cost > min_cost:
-    >>>         break
-    >>>     min_spanning_trees.append(tree)
+    ...     tree_cost = tree.size(weight="weight")
+    ...     if min_cost is None:
+    ...         min_cost = tree_cost
+    ...     elif tree_cost > min_cost:
+    ...         break
+    ...     min_spanning_trees.append(tree)
     >>> len(min_spanning_trees)
     3
 
