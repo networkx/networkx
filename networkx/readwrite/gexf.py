@@ -554,15 +554,13 @@ class GEXFWriter(GEXF):
         # find the id of the attribute or generate a new id
         try:
             existing_id = self.attr[edge_or_node][mode][title]["id"]
+            existing_type = self.attr[edge_or_node][mode][title]["attr_type"]
 
-            # Check if the type matches
-            existing_attr = self.attr[edge_or_node][mode][title]["element"]
-            if existing_attr is not None:
-                existing_type = existing_attr.get("type")
-                if existing_type != attr_type:
-                    raise ValueError(
-                        f"Attribute {title} has type {existing_type} but value {attr_type} was given."
-                    )
+            # Check if the type of the attribute value is consistent with the type of the attribute
+            if existing_type != attr_type:
+                raise ValueError(
+                    f"Attribute {title} has type {existing_type} but value {attr_type} was given."
+                )
 
             return existing_id
         except KeyError:
@@ -570,6 +568,7 @@ class GEXFWriter(GEXF):
             new_id = str(next(self.attr_id))
             self.attr[edge_or_node][mode][title] = {}
             self.attr[edge_or_node][mode][title]["id"] = new_id
+            self.attr[edge_or_node][mode][title]["attr_type"] = attr_type
             attr_kwargs = {"id": new_id, "title": title, "type": attr_type}
             attribute = Element("attribute", **attr_kwargs)
             # add subelement for data default value if present
@@ -592,7 +591,6 @@ class GEXFWriter(GEXF):
                 attributes_element = Element("attributes", **attr_kwargs)
                 self.graph_element.insert(0, attributes_element)
             attributes_element.append(attribute)
-            self.attr[edge_or_node][mode][title]["element"] = attribute
         return new_id
 
     def add_viz(self, element, node_data):
