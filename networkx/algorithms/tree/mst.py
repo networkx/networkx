@@ -1014,7 +1014,6 @@ class SpanningTreeIterator:
     >>> len(min_spanning_trees)
     3
 
-
     References
     ----------
     .. [1] G.K. Janssens, K. Sörensen, An algorithm to generate all spanning
