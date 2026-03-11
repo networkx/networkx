@@ -21,8 +21,17 @@ nx.write_edgelist(G, path=fh, delimiter=":")
 print(fh.getvalue().decode())
 # read edgelist from file
 fh.seek(0)
-H = nx.read_edgelist(path=fh, delimiter=":")
 
-pos = nx.spring_layout(H, seed=200)
-nx.draw(H, pos)
+# %%
+# Note that the original graph `G` had tuples as nodes. In order to recover
+# the original node type, the data read from file must be properly interpreted
+# using the `nodetype` kwarg
+H = nx.read_edgelist(
+    path=fh,
+    # Convert from a string back to a tuple-of-int
+    nodetype=lambda s: tuple(int(v) for v in s[1:-1].split(",")),
+    delimiter=":",
+)
+
+nx.draw(H, pos={n: n for n in H})
 plt.show()
