@@ -6,6 +6,8 @@ Properties
 Compute some network properties for the lollipop graph.
 """
 
+from collections import Counter
+import itertools
 import matplotlib.pyplot as plt
 import networkx as nx
 from pprint import pprint
@@ -19,19 +21,16 @@ pprint(path_lengths)
 
 print(f"\naverage shortest path length {nx.average_shortest_path_length(G)}")
 
-# histogram of path lengths
-dist = {}
-for p in pathlengths:
-    if p in dist:
-        dist[p] += 1
-    else:
-        dist[p] = 1
+# %%
+# Histogram of path lengths - note that this counts each path twice: from
+# src -> tgt and tgt -> src.
+path_length_distribution = Counter(
+    itertools.chain.from_iterable(t.values() for t in path_lengths.values())
+)
+pprint({pl: num // 2 for pl, num in path_length_distribution.items()})
 
-print()
-print("length #paths")
-verts = dist.keys()
-for d in sorted(verts):
-    print(f"{d} {dist[d]}")
+# %%
+# Basic distance measures
 
 print(f"radius: {nx.radius(G)}")
 print(f"diameter: {nx.diameter(G)}")
