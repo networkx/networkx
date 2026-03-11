@@ -6,6 +6,7 @@ Degree Sequence
 Random graph from given degree sequence.
 """
 
+from pprint import pprint
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -20,17 +21,12 @@ degree_sequence = [d for _, d in G.degree()]
 
 # The degree sequence for the random graph computed using configuration_model
 # should match the degree sequence used to generate it
-print(f"Degree sequence {degree_sequence} identical to z: {degree_sequence == z}")
-print("Degree histogram")
-hist = {}
-for d in degree_sequence:
-    if d in hist:
-        hist[d] += 1
-    else:
-        hist[d] = 1
-print("degree #nodes")
-for d in hist:
-    print(f"{d:4} {hist[d]:6}")
+print(f"Degree sequence of G identical to z: {degree_sequence == z}")
+
+print("\nDegree histogram")
+deg_hist = dict(enumerate(nx.degree_histogram(G)))
+print("degree: #nodes")
+pprint(deg_hist, width=10)
 
 pos = nx.spring_layout(G, seed=seed)  # Seed layout for reproducibility
 nx.draw(G, pos=pos)
