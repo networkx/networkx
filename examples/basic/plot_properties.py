@@ -17,6 +17,7 @@ G = nx.lollipop_graph(4, 6)
 # %%
 # A quick summary of basic properties is available via `nx.describe`
 nx.describe(G)
+print(f"density: {nx.density(G)}")
 
 print("\nShortest path length between all node pairs:")
 print("  {source node: {target node: path length}")
@@ -35,14 +36,16 @@ path_length_distribution = Counter(
 pprint({pl: num // 2 for pl, num in path_length_distribution.items()})
 
 # %%
-# Basic distance measures
+# Basic distance measures. In some cases it is possible to pass in pre-computed
+# eccesntricity values to speed up subsequent computations.
+# Re-using computed values may significantly improve computation times for
+# larger graphs
 
-print(f"\nradius: {nx.radius(G)}")
-print(f"diameter: {nx.diameter(G)}")
-print(f"eccentricity: {nx.eccentricity(G)}")
-print(f"center: {nx.center(G)}")
-print(f"periphery: {nx.periphery(G)}")
-print(f"density: {nx.density(G)}")
+print(f"\neccentricity: {(eccentricity := nx.eccentricity(G))}")
+print(f"radius: {nx.radius(G, e=eccentricity)}")
+print(f"diameter: {nx.diameter(G, e=eccentricity)}")
+print(f"center: {nx.center(G, e=eccentricity)}")
+print(f"periphery: {nx.periphery(G, e=eccentricity)}")
 
 pos = nx.spring_layout(G, seed=3068)  # Seed layout for reproducibility
 nx.draw(G, pos=pos, with_labels=True)
