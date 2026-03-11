@@ -31,7 +31,7 @@ layers = dict(enumerate(nx.topological_generations(G)))
 pos = nx.multipartite_layout(G, subset_key=layers)
 
 fig, ax = plt.subplots()
-nx.draw_networkx(G, pos=pos, ax=ax)
+nx.draw(G, pos=pos, ax=ax, with_labels=True)
 ax.set_title("DAG layout in topological order")
 fig.tight_layout()
 plt.show()
