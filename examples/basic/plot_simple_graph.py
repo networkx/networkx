@@ -22,13 +22,7 @@ options = {
     "linewidths": 5,
     "width": 5,
 }
-nx.draw_networkx(G, pos, **options)
-
-# Set margins for the axes so that nodes aren't clipped
-ax = plt.gca()
-ax.margins(0.20)
-plt.axis("off")
-plt.show()
+nx.draw(G, pos, with_labels=True, **options)
 
 # %%
 # A directed graph
