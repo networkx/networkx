@@ -13,7 +13,7 @@ import networkx as nx
 seed = 668273
 
 z = [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
-print(nx.is_graphical(z))
+print(f"Sequence {z} is a valid degree sequence: {nx.is_graphical(z)}")
 
 print("Configuration model")
 G = nx.configuration_model(
