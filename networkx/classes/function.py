@@ -1503,6 +1503,7 @@ def describe(G, describe_hook=None):
     Bipartite                      : True
     Average degree (min, max)      : 1.60 (1, 2)
     Number of connected components : 1
+    Density                        : 0.4
 
     >>> def augment_description(G):
     ...     return {"Average Shortest Path Length": nx.average_shortest_path_length(G)}
@@ -1515,6 +1516,7 @@ def describe(G, describe_hook=None):
     Bipartite                      : True
     Average degree (min, max)      : 1.60 (1, 2)
     Number of connected components : 1
+    Density                        : 0.4
     Average Shortest Path Length   : 2.0
 
     >>> G.name = "Path Graph of 5 nodes"
@@ -1528,6 +1530,7 @@ def describe(G, describe_hook=None):
     Bipartite                      : True
     Average degree (min, max)      : 1.60 (1, 2)
     Number of connected components : 1
+    Density                        : 0.4
 
     """
     info_dict = _create_describe_info_dict(G)
@@ -1572,4 +1575,6 @@ def _create_describe_info_dict(G):
         )
     else:
         info["Number of connected components"] = nx.number_connected_components(G)
+    # Add density after number of components
+    info["Density"] = nx.density(G)
     return info
