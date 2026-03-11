@@ -17,7 +17,7 @@ print("{source node: {target node: path length}")
 path_lengths = dict(nx.all_pairs_shortest_path_length(G))
 pprint(path_lengths)
 
-print(f"average shortest path length {sum(pathlengths) / len(pathlengths)}")
+print(f"\naverage shortest path length {nx.average_shortest_path_length(G)}")
 
 # histogram of path lengths
 dist = {}
