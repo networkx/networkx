@@ -14,8 +14,12 @@ from pprint import pprint
 
 G = nx.lollipop_graph(4, 6)
 
-print("Shortest path length between all node pairs:")
-print("{source node: {target node: path length}")
+# %%
+# A quick summary of basic properties is available via `nx.describe`
+nx.describe(G)
+
+print("\nShortest path length between all node pairs:")
+print("  {source node: {target node: path length}")
 path_lengths = dict(nx.all_pairs_shortest_path_length(G))
 pprint(path_lengths)
 
@@ -24,6 +28,7 @@ print(f"\naverage shortest path length {nx.average_shortest_path_length(G)}")
 # %%
 # Histogram of path lengths - note that this counts each path twice: from
 # src -> tgt and tgt -> src.
+print("\nDistribution of shortest path lengths")
 path_length_distribution = Counter(
     itertools.chain.from_iterable(t.values() for t in path_lengths.values())
 )
@@ -32,7 +37,7 @@ pprint({pl: num // 2 for pl, num in path_length_distribution.items()})
 # %%
 # Basic distance measures
 
-print(f"radius: {nx.radius(G)}")
+print(f"\nradius: {nx.radius(G)}")
 print(f"diameter: {nx.diameter(G)}")
 print(f"eccentricity: {nx.eccentricity(G)}")
 print(f"center: {nx.center(G)}")
