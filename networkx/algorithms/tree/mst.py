@@ -999,10 +999,9 @@ class SpanningTreeIterator:
     >>> G.add_edge("A", "B", weight=1)
     >>> G.add_edge("A", "C", weight=1)
     >>> G.add_edge("B", "C", weight=1)
-    >>> iterator = nx.SpanningTreeIterator(G)
     >>> min_cost = None
     >>> min_spanning_trees = []
-    >>> for tree in iterator:
+    >>> for tree in nx.SpanningTreeIterator(G):
     ...     tree_cost = tree.size(weight="weight")
     ...     if min_cost is None:
     ...         min_cost = tree_cost
