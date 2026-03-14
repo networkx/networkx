@@ -470,6 +470,18 @@ class TestSpanningTreeIterator:
             assert edges_equal(actual, self.spanning_trees[tree_index])
             tree_index -= 1
 
+    def test_next_without_iter(self):
+        """
+        Calling next() directly on SpanningTreeIterator without first calling
+        iter() should return the first spanning tree. Regression test for
+        gh-8563.
+        """
+        G = nx.cycle_graph(3)
+        spanning_trees = nx.SpanningTreeIterator(G)
+        tree = next(spanning_trees)
+        assert nx.is_tree(tree)
+        assert tree.number_of_nodes() == G.number_of_nodes()
+
 
 class TestSpanningTreeMultiGraphIterator:
     """
