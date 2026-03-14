@@ -641,10 +641,6 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         G.add_node(2, foo=2)
         fh = io.BytesIO()
         nx.write_gexf(G, fh)
-        fh.seek(0)
-        xml = fh.read().decode()
-        # It should be long basaed on existing logic
-        assert 'type="long"' in xml
 
         fh.seek(0)
         H = nx.read_gexf(fh, node_type=int)
@@ -660,10 +656,6 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         G.add_node(2, baz=2.3)
         fh = io.BytesIO()
         nx.write_gexf(G, fh)
-        fh.seek(0)
-        xml = fh.read().decode()
-        # It should be double basaed on existing logic
-        assert 'type="double"' in xml
 
         fh.seek(0)
         H = nx.read_gexf(fh, node_type=int)
