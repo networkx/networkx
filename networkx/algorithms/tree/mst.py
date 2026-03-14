@@ -1005,7 +1005,8 @@ class SpanningTreeIterator:
     ...     elif tree_cost > min_cost:
     ...         break
     ...     min_spanning_trees.append(tree)
-    >>> len(min_spanning_trees)
+    >>> sorted(t.edges for t in min_spanning_trees)
+    [EdgeView([(0, 1), (0, 2)]), EdgeView([(0, 2), (1, 2)]), EdgeView([(0, 1), (1, 2)])]
     3
 
     References
