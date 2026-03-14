@@ -23,7 +23,6 @@ __all__ = ["leiden_communities", "leiden_partitions"]
 def leiden_communities(
     G,
     weight="weight",
-    node_weight=None,
     resolution=1.0,
     threshold=0.0000001,
     max_level=None,
@@ -125,7 +124,6 @@ def leiden_communities(
     partitions = leiden_partitions(
         G,
         weight=weight,
-        node_weight=node_weight,
         resolution=resolution,
         threshold=threshold,
         seed=seed,
@@ -148,7 +146,6 @@ def leiden_communities(
 def leiden_partitions(
     G,
     weight="weight",
-    node_weight=None,
     resolution=1.0,
     threshold=0.0000001,
     seed=None,
@@ -252,23 +249,7 @@ def leiden_partitions(
             graph.add_edges_from(G.edges())
             nx.set_edge_attributes(graph, 1, name="weight")
 
-    # if a node_weight value is set, then the values with this name are
-    # set as the 'node_weight' attribute. For nodes that do not have the
-    # node_weight attribute, the 'node_weight' is set to 1
-
-    # I don't know if this is the right way to handle this, and instead
-    # raise an exception. Is it better to make the user set missing
-    # node_weight attributes explicitly before calling the function?
-
-    # if node_weight is not set then all nodes are initialised with the
-    # value 1.
-
-    if node_weight:
-        nx.set_node_attributes(
-            graph, {u: G.nodes[u].get(node_weight, 1) for u in G}, name="node_weight"
-        )
-    else:
-        nx.set_node_attributes(graph, 1, name="node_weight")
+    nx.set_node_attributes(graph, 1, name="node_weight")
 
     quality = quality_function(
         graph,
