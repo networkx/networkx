@@ -35,8 +35,8 @@ def maximal_independent_set(G, nodes=None, seed=None):
 
     Returns
     -------
-    indep_nodes : list
-       List of nodes that are part of a maximal independent set.
+    indep_nodes : set
+       Set of nodes that are part of a maximal independent set.
 
     Raises
     ------
@@ -106,10 +106,10 @@ def maximal_independent_set(G, nodes=None, seed=None):
     neighbors = set.union(*[set(G.adj[v]) for v in nodes])
     if set.intersection(neighbors, nodes):
         raise nx.NetworkXUnfeasible(f"{nodes} is not an independent set of G")
-    indep_nodes = list(nodes)
+    indep_nodes = set(nodes)
     available_nodes = set(G.nodes()).difference(neighbors.union(nodes))
     while available_nodes:
         node = seed.choice(list(available_nodes))
-        indep_nodes.append(node)
+        indep_nodes.add(node)
         available_nodes.difference_update(list(G.adj[node]) + [node])
     return indep_nodes
