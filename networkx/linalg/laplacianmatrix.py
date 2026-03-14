@@ -17,6 +17,7 @@ __all__ = [
     "directed_laplacian_matrix",
     "directed_combinatorial_laplacian_matrix",
     "magnetic_laplacian_matrix",
+    "normalized_magnetic_laplacian_matrix",
 ]
 
 
@@ -367,6 +368,132 @@ def magnetic_laplacian_matrix(G, nodelist=None, k=0.25, weight="weight", dtype=N
     ).tocsr()
 
     return D - H
+
+
+@not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
+def normalized_magnetic_laplacian_matrix(G, nodelist=None, k=0.25, weight="weight"):
+    r"""Returns the normalized magnetic Laplacian matrix of G.
+
+    The normalized magnetic Laplacian is the matrix
+
+    .. math::
+
+        N = D^{-1/2} L^{(q)} D^{-1/2}
+
+    where :math:`L^{(q)}` is the magnetic Laplacian and :math:`D` is the
+    diagonal matrix of node degrees.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph (DiGraph recommended; undirected graphs give the standard normalized Laplacian)
+
+    nodelist : list, optional
+       The rows and columns are ordered according to the nodes in nodelist.
+       If nodelist is None, then the ordering is produced by G.nodes().
+
+    k : float, optional (default=0.25)
+       The phase of the magnetic potential. The charge parameter q ∈ [0, 0.5].
+       At k=0 returns the standard normalized Laplacian.
+
+    weight : string or None, optional (default='weight')
+       The edge data key used to compute each value in the matrix.
+       If None, then each edge has weight 1.
+
+    Returns
+    -------
+    N : SciPy sparse array (complex dtype)
+      The normalized magnetic Laplacian matrix of G.
+
+    Notes
+    -----
+    For undirected graphs, this returns the standard normalized Laplacian matrix.
+
+    See Also
+    --------
+    magnetic_laplacian_matrix
+    normalized_laplacian_matrix
+
+    References
+    ----------
+    .. [1] Fanuel, M., Alaíz, C. M., Fernández, Á., & Suykens, J. A. (2018).
+       Magnetic eigenmaps for the visualization of directed graphs.
+       Applied and Computational Harmonic Analysis, 44(1), 189–199.
+    """
+    from collections import defaultdict
+
+    import numpy as np
+    import scipy as sp
+
+    if nodelist is None:
+        nodelist = list(G)
+
+    is_directed = G.is_directed()
+
+    if not is_directed:
+        return normalized_laplacian_matrix(G, nodelist=nodelist, weight=weight)
+
+    # Build Hermitian adjacency H (same logic as magnetic_laplacian_matrix)
+    n = len(nodelist)
+    node_index = {v: i for i, v in enumerate(nodelist)}
+    phase = 2 * np.pi * k
+
+    delta_phase_edge = defaultdict(int)
+    matrix_weights = defaultdict(float)
+    for u, v, w in G.edges(data=weight, default=1):
+        if u not in node_index or v not in node_index:
+            continue
+
+        ui, vi = node_index[u], node_index[v]
+        delta_phase_edge[(ui, vi)] += 1
+        delta_phase_edge[(vi, ui)] -= 1
+        matrix_weights[(ui, vi)] += 0.5 * w
+        matrix_weights[(vi, ui)] += 0.5 * w
+
+    rows, cols, data = [], [], []
+    for u, v, w in G.edges(data=weight, default=1):
+        if u not in node_index or v not in node_index:
+            continue
+
+        ui, vi = node_index[u], node_index[v]
+        if ui != vi:
+            if delta_phase_edge[(ui, vi)] == 0:
+                rows.append(ui)
+                cols.append(vi)
+                data.append(
+                    matrix_weights[(ui, vi)]
+                    * np.exp(delta_phase_edge[(ui, vi)] * 1j * phase)
+                )
+            else:
+                rows.append(ui)
+                cols.append(vi)
+                data.append(
+                    matrix_weights[(ui, vi)]
+                    * np.exp(delta_phase_edge[(ui, vi)] * 1j * phase)
+                )
+                rows.append(vi)
+                cols.append(ui)
+                data.append(
+                    matrix_weights[(vi, ui)]
+                    * np.exp(delta_phase_edge[(vi, ui)] * 1j * phase)
+                )
+
+    H = sp.sparse.csr_array((data, (rows, cols)), shape=(n, n), dtype=complex)
+
+    # Build degree matrix D
+    diags = np.abs(H).sum(axis=1).flatten()
+    D = sp.sparse.dia_array((diags, 0), shape=(n, n)).tocsr()
+
+    # Magnetic Laplacian L = D - H
+    L = D - H
+
+    # Normalization: N = D^{-1/2} L D^{-1/2}
+    with np.errstate(divide="ignore"):
+        diags_sqrt = 1.0 / np.sqrt(diags)
+    diags_sqrt[np.isinf(diags_sqrt)] = 0
+    DH = sp.sparse.dia_array((diags_sqrt, 0), shape=(n, n)).tocsr()
+    return DH @ (L @ DH)
 
 
 ###############################################################################

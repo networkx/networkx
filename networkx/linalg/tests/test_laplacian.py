@@ -259,6 +259,51 @@ class TestMagneticLaplacian:
             decimal=3,
         )
 
+    def test_norm_mag_laplacian(self):
+        NDL = np.array(
+            [
+                [1.0, -1.0 / np.sqrt(1.5), 0.0, 0.0],
+                [-1.0 / np.sqrt(1.5), 1.0, -0.5j / np.sqrt(1.5), 0.0],
+                [0.0, 0.5j / np.sqrt(1.5), 1.0, 0.5j / np.sqrt(0.5)],
+                [0.0, 0.0, -0.5j / np.sqrt(0.5), 1.0],
+            ]
+        )
+
+        NWDL = np.array(
+            [
+                [1.0, -2.5 / np.sqrt(2.5 * 3.5), 0.0, 0.0],
+                [-2.5 / np.sqrt(2.5 * 3.5), 1.0, -1.0j / np.sqrt(3.5 * 2), 0.0],
+                [0.0, 1.0j / np.sqrt(3.5 * 2), 1.0, 1.0j / np.sqrt(2)],
+                [0.0, 0.0, -1.0j / np.sqrt(2), 1.0],
+            ]
+        )
+
+        NGL = np.array(
+            [
+                [1, -1 / np.sqrt(2), 0, 0],
+                [-1 / np.sqrt(2), 1, -1 / 2, 0],
+                [0, -1 / 2, 1, -1 / np.sqrt(2)],
+                [0, 0, -1 / np.sqrt(2), 1],
+            ]
+        )
+
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian_matrix(self.DiG).todense(),
+            NDL,
+            decimal=3,
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian_matrix(self.DiGW).todense(),
+            NWDL,
+            decimal=3,
+        )
+
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian_matrix(self.G).todense(),
+            NGL,
+            decimal=3,
+        )
+
 
 def test_directed_laplacian():
     "Directed Laplacian"
