@@ -106,7 +106,7 @@ def incidence_matrix(
 
 
 @nx._dispatchable(edge_attrs="weight")
-def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight", format="csr"):
+def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight", *, format="csr"):
     """Returns adjacency matrix of `G`.
 
     Parameters
