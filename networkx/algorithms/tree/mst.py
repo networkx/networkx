@@ -1008,7 +1008,7 @@ class SpanningTreeIterator:
     >>> sorted(t.edges for t in min_spanning_trees)
     [EdgeView([(0, 1), (0, 2)]), EdgeView([(0, 2), (1, 2)]), EdgeView([(0, 1), (1, 2)])]
 
-    Another example with only possible maximum spanning tree:
+    Another example with only one possible maximum spanning tree:
 
     >>> G = nx.Graph()
     >>> G.add_edge("A", "B", weight=3)
