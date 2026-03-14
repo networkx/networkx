@@ -128,8 +128,8 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight", *, format="c
        If None, then each edge has weight 1.
 
     format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok', 'dense'}
-       The type of the matrix to be returned (default 'csr'). For 'dense',
-       a numpy ndarray is returned instead of a SciPy sparse array.
+       The type of the array to be returned (default 'csr'). For 'dense',
+       a `numpy.ndarray` is returned instead of a SciPy sparse array.
 
     Returns
     -------
