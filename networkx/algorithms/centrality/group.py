@@ -124,6 +124,19 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     if set_v - G.nodes:  # element(s) of C not in G
         raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are in C but not in G.")
 
+    # The Puzis et al. matrix-update algorithm requires that the graph be strongly
+    # connected for directed graphs (paths must exist in both directions between any
+    # two nodes for the update step to be correct).  Fall back to a direct O(V*E)
+    # computation when that condition is not met.
+    if G.is_directed() and not nx.is_strongly_connected(G):
+        for group in C:
+            GBC.append(
+                _group_betweenness_direct(G, set(group), normalized, weight, endpoints)
+            )
+        if list_of_groups:
+            return GBC
+        return GBC[0]
+
     # pre-processing
     PB, sigma, D = _group_preprocessing(G, set_v, weight)
 
@@ -196,6 +209,80 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     if list_of_groups:
         return GBC
     return GBC[0]
+
+
+def _group_betweenness_direct(G, C, normalized, weight, endpoints):
+    """Compute group betweenness centrality by direct path counting.
+
+    This is a correct O(V * E) implementation used as a fallback for
+    directed graphs that are not strongly connected, where the fast
+    matrix-update algorithm (Puzis et al.) does not apply.
+    """
+    n = len(G)
+    c = len(C)
+
+    # BFS/Dijkstra from every node in G using the full graph.
+    sigma_full = {}
+    D_full = {}
+    for s in G:
+        if weight is None:
+            _, _, sigma_full[s], D_full[s] = _single_source_shortest_path_basic(G, s)
+        else:
+            _, _, sigma_full[s], D_full[s] = _single_source_dijkstra_path_basic(
+                G, s, weight
+            )
+
+    # BFS/Dijkstra on G with all group nodes removed.  Paths in this subgraph
+    # are exactly the shortest paths in G that avoid every node in C.
+    H = G.copy()
+    for node in C:
+        H.remove_node(node)
+
+    sigma_excl = {}
+    for s in H:
+        if weight is None:
+            _, _, sigma_excl[s], _ = _single_source_shortest_path_basic(H, s)
+        else:
+            _, _, sigma_excl[s], _ = _single_source_dijkstra_path_basic(H, s, weight)
+
+    non_group = set(G) - C
+    gbc = 0.0
+
+    # Count (s, t) pairs outside the group where at least one shortest path
+    # passes through a node in C.
+    for s in non_group:
+        for t in non_group:
+            if s == t:
+                continue
+            total = sigma_full[s].get(t, 0.0)
+            if total == 0:
+                continue
+            avoiding = sigma_excl.get(s, {}).get(t, 0.0)
+            gbc += (total - avoiding) / total
+
+    if endpoints:
+        # Include pairs where one endpoint is a group member.
+        for g in C:
+            for t in non_group:
+                # path from g to t (g is the source endpoint)
+                if sigma_full[g].get(t, 0.0) != 0:
+                    gbc += 1.0
+                # path from t to g (g is the target endpoint)
+                if sigma_full[t].get(g, 0.0) != 0:
+                    gbc += 1.0
+        # Include pairs where both endpoints are group members.
+        for g1 in C:
+            for g2 in C:
+                if g1 != g2 and sigma_full[g1].get(g2, 0.0) != 0:
+                    gbc += 1.0
+
+    if normalized:
+        scale = 1 / ((n - c) * (n - c - 1))
+        gbc *= scale
+    elif not G.is_directed():
+        gbc /= 2
+
+    return gbc
 
 
 def _group_preprocessing(G, set_v, weight):

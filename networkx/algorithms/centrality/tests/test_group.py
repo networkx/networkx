@@ -100,6 +100,53 @@ class TestGroupBetweennessCentrality:
         b_answer = 5.0
         assert b == b_answer
 
+    def test_group_betweenness_directed_not_strongly_connected_singleton(self):
+        """
+        Single-node group betweenness on a directed graph that is not strongly connected.
+        For a single-node group, group betweenness must equal per-node betweenness.
+        """
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        per_node = nx.betweenness_centrality(G, normalized=False, endpoints=False)
+        for v in G.nodes():
+            gbc = nx.group_betweenness_centrality(
+                G, {v}, normalized=False, endpoints=False
+            )
+            assert gbc == pytest.approx(per_node[v])
+
+    def test_group_betweenness_directed_not_strongly_connected_multinode(self):
+        """
+        Multi-node group betweenness on a directed graph that is not strongly connected.
+        Previously raised a KeyError and gave wrong results.
+        """
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        # Only pair of non-group nodes with a path between them is (1, 3),
+        # which routes through node 2 (in group).
+        b = nx.group_betweenness_centrality(
+            G, {0, 2}, normalized=False, endpoints=False
+        )
+        assert b == pytest.approx(1.0)
+
+    def test_group_betweenness_directed_not_strongly_connected_endpoints(self):
+        """
+        Endpoints flag on a directed graph that is not strongly connected.
+        """
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        b = nx.group_betweenness_centrality(
+            G, {0, 2}, normalized=False, endpoints=True
+        )
+        assert b == pytest.approx(6.0)
+
+    def test_group_betweenness_directed_not_strongly_connected_normalized(self):
+        """
+        Normalized group betweenness on a directed graph that is not strongly connected.
+        """
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        b = nx.group_betweenness_centrality(
+            G, {0, 2}, normalized=True, endpoints=False
+        )
+        # (n - c) = 4 - 2 = 2, (n - c - 1) = 1, so scale = 1/2
+        assert b == pytest.approx(1.0 / ((4 - 2) * (4 - 2 - 1)))
+
 
 class TestProminentGroup:
     np = pytest.importorskip("numpy")
