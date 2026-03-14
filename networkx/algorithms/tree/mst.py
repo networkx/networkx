@@ -995,10 +995,7 @@ class SpanningTreeIterator:
     We can use `SpanningTreeIterator` to find all minimum or maximum spanning
     trees of a graph. For example, consider the following graph:
 
-    >>> G = nx.Graph()
-    >>> G.add_edge("A", "B", weight=1)
-    >>> G.add_edge("A", "C", weight=1)
-    >>> G.add_edge("B", "C", weight=1)
+    >>> G = nx.cycle_graph(3)
     >>> min_cost = None
     >>> min_spanning_trees = []
     >>> for tree in nx.SpanningTreeIterator(G):
