@@ -190,6 +190,7 @@ collect_ignore = []
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
     "algorithms/centrality/current_flow_closeness.py",
+    "algorithms/centrality/domirank.py",
     "algorithms/centrality/laplacian.py",
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
@@ -212,6 +213,7 @@ needs_scipy = [
     "algorithms/bipartite/link_analysis.py",
     "algorithms/centrality/current_flow_betweenness.py",
     "algorithms/centrality/current_flow_betweenness_subset.py",
+    "algorithms/centrality/domirank.py",
     "algorithms/centrality/eigenvector.py",
     "algorithms/centrality/katz.py",
     "algorithms/centrality/laplacian.py",
