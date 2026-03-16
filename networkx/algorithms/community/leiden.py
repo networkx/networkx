@@ -498,7 +498,7 @@ def _merge_node_subset(
                 if comm == i:
                     # we only want to consider moving u to a different
                     # community, not its current community.
-                    pass
+                    continue
 
                 elif C.issubset(S):
                     # We only consider merging u into a community that
