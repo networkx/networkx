@@ -399,7 +399,7 @@ def _move_nodes_fast(
                 if v not in node_queue:
                     node_queue.appendleft(v)
 
-    inner_partition = list(filter(len, inner_partition))
+    inner_partition = list(filter(None, inner_partition))
 
     return inner_partition
 
@@ -432,7 +432,7 @@ def _refine_partition(
             theta,
         )
 
-    inner_partition_refined = list(filter(len, inner_partition_refined))
+    inner_partition_refined = list(filter(None, inner_partition_refined))
     return inner_partition_refined
 
 
