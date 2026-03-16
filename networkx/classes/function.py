@@ -181,7 +181,7 @@ def degree_histogram(G):
     >>> Counter(d for _, d in G.degree)
     Counter({1: 5, 5: 1})
     """
-    counts = Counter(d for _, d in G.degree())
+    counts = Counter(d for _, d in G.degree)
     return [counts.get(i, 0) for i in range(max(counts) + 1 if counts else 0)]
 
 
