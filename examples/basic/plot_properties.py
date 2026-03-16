@@ -37,11 +37,13 @@ pprint({pl: num // 2 for pl, num in path_length_distribution.items()})
 
 # %%
 # Basic distance measures. In some cases it is possible to pass in pre-computed
-# eccesntricity values to speed up subsequent computations.
+# eccentricity values to speed up subsequent computations.
 # Re-using computed values may significantly improve computation times for
 # larger graphs
 
-print(f"\neccentricity: {(eccentricity := nx.eccentricity(G))}")
+
+eccentricity = nx.eccentricity(G)
+print(f"\neccentricity: {eccentricity}")
 print(f"radius: {nx.radius(G, e=eccentricity)}")
 print(f"diameter: {nx.diameter(G, e=eccentricity)}")
 print(f"center: {nx.center(G, e=eccentricity)}")
