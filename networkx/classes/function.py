@@ -173,8 +173,9 @@ def degree_histogram(G):
     >>> dict(enumerate(nx.degree_histogram(G)))
     {0: 0, 1: 5, 2: 0, 3: 0, 4: 0, 5: 1}
 
-    For a "sparse" degree histogram that omits the 0's and directly maps degree
-    value: number of occurrences, use `collections.Counter`:
+    For a "sparse" representation of the degree frequency distribution that
+    directly maps degree value: number of occurrences (omitting the 0's), use
+    `collections.Counter` instead:
 
     >>> from collections import Counter
     >>> Counter(d for _, d in G.degree)
