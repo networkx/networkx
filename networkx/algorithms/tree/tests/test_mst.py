@@ -218,6 +218,14 @@ class MinimumSpanningTreeTestBase:
         assert nodes_equal(sorted(T), list(range(4)))
         assert edges_equal(sorted(T.edges()), [(0, 1), (0, 2)])
 
+    def test_minimum_spanning_edges_directed_raises(self):
+        DG = nx.DiGraph()
+        DG.add_edge(0, 1, weight=1)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            list(nx.minimum_spanning_edges(DG, algorithm=self.algo))
+        with pytest.raises(nx.NetworkXNotImplemented):
+            list(nx.maximum_spanning_edges(DG, algorithm=self.algo))
+
 
 class TestBoruvka(MinimumSpanningTreeTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
@@ -235,6 +243,14 @@ class TestBoruvka(MinimumSpanningTreeTestBase):
         # orientation, so we need to sort each edge individually.
         actual = sorted((min(u, v), max(u, v), d) for u, v, d in edges)
         assert edges_equal(actual, self.minimum_spanning_edgelist)
+
+    def test_minimum_spanning_edges_multigraph_raises(self):
+        MG = nx.MultiGraph()
+        MG.add_edge(0, 1, weight=1)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            list(nx.minimum_spanning_edges(MG, algorithm=self.algo))
+        with pytest.raises(nx.NetworkXNotImplemented):
+            list(nx.maximum_spanning_edges(MG, algorithm=self.algo))
 
 
 class MultigraphMSTTestBase(MinimumSpanningTreeTestBase):

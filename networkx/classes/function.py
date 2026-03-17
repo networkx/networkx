@@ -46,6 +46,7 @@ __all__ = [
     "number_of_selfloops",
     "path_weight",
     "is_path",
+    "describe",
 ]
 
 
@@ -447,6 +448,32 @@ def edge_subgraph(G, edges):
     [0, 1, 3, 4]
     >>> list(H.edges)
     [(0, 1), (3, 4)]
+
+    For multi graphs, `edges` must include the edge keys:
+
+    >>> G = nx.MultiGraph(G)
+    >>> H = nx.edge_subgraph(G, [(0, 1, 0), (3, 4, 0)])
+    >>> list(H.edges)
+    [(0, 1, 0), (3, 4, 0)]
+
+    Edge attributes can be used to filter multiedges:
+
+    >>> G.add_edge(0, 1, color="blue")
+    1
+    >>> G.add_edge(0, 1, color="green", weight=10)
+    2
+    >>> H = nx.edge_subgraph(
+    ...     G,
+    ...     (
+    ...         (u, v, k)
+    ...         for u, v, k, clr in G.edges(keys=True, data="color")
+    ...         if clr == "green"
+    ...     ),
+    ... )
+    >>> H.edges(keys=True, data=True)
+    MultiEdgeDataView([(0, 1, 2, {'color': 'green', 'weight': 10})])
+
+
     """
     nxf = nx.filters
     edges = set(edges)
@@ -1444,3 +1471,105 @@ def path_weight(G, path, weight):
         else:
             cost += G._adj[node][nbr][weight]
     return cost
+
+
+def describe(G, describe_hook=None):
+    """Prints a description of the graph G.
+
+    By default, the description includes some basic properties of the graph.
+    You can also provide additional functions to compute and include
+    more properties in the description.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph.
+
+    describe_hook: callable, optional (default=None)
+        A function that takes a graph as input and returns a
+        dictionary of additional properties to include in the description.
+        The keys of the dictionary are the property names, and the values
+        are the corresponding property values.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> nx.describe(G)
+    Number of nodes                : 5
+    Number of edges                : 4
+    Directed                       : False
+    Multigraph                     : False
+    Tree                           : True
+    Bipartite                      : True
+    Average degree (min, max)      : 1.60 (1, 2)
+    Number of connected components : 1
+
+    >>> def augment_description(G):
+    ...     return {"Average Shortest Path Length": nx.average_shortest_path_length(G)}
+    >>> nx.describe(G, describe_hook=augment_description)
+    Number of nodes                : 5
+    Number of edges                : 4
+    Directed                       : False
+    Multigraph                     : False
+    Tree                           : True
+    Bipartite                      : True
+    Average degree (min, max)      : 1.60 (1, 2)
+    Number of connected components : 1
+    Average Shortest Path Length   : 2.0
+
+    >>> G.name = "Path Graph of 5 nodes"
+    >>> nx.describe(G)
+    Name of Graph                  : Path Graph of 5 nodes
+    Number of nodes                : 5
+    Number of edges                : 4
+    Directed                       : False
+    Multigraph                     : False
+    Tree                           : True
+    Bipartite                      : True
+    Average degree (min, max)      : 1.60 (1, 2)
+    Number of connected components : 1
+
+    """
+    info_dict = _create_describe_info_dict(G)
+
+    if describe_hook is not None:
+        additional_info = describe_hook(G)
+        info_dict.update(additional_info)
+
+    max_key_len = max(len(k) for k in info_dict)
+    for key, val in info_dict.items():
+        print(f"{key:<{max_key_len}} : {val}")
+
+
+def _create_describe_info_dict(G):
+    info = {}
+    if G.name != "":
+        info["Name of Graph"] = G.name
+    info.update(
+        {
+            "Number of nodes": len(G),
+            "Number of edges": G.number_of_edges(),
+            "Directed": G.is_directed(),
+            "Multigraph": G.is_multigraph(),
+            "Tree": nx.is_tree(G),
+            "Bipartite": nx.is_bipartite(G),
+        }
+    )
+    if len(G) == 0:
+        return info
+
+    degree_values = dict(nx.degree(G)).values()
+    avg_degree = sum(degree_values) / len(G)
+    max_degree, min_degree = max(degree_values), min(degree_values)
+    info["Average degree (min, max)"] = f"{avg_degree:.2f} ({min_degree}, {max_degree})"
+
+    if G.is_directed():
+        info["Number of strongly connected components"] = (
+            nx.number_strongly_connected_components(G)
+        )
+        info["Number of weakly connected components"] = (
+            nx.number_weakly_connected_components(G)
+        )
+    else:
+        info["Number of connected components"] = nx.number_connected_components(G)
+    return info

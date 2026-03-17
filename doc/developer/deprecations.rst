@@ -69,14 +69,11 @@ Todo
 
 Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 
-Version 3.7
-~~~~~~~~~~~
-* Remove ``graph_could_be_isomorphic``, ``fast_graph_could_be_isomorphic``, and
-  ``faster_graph_could_be_isomorphic``, from
-  ``networkx.algorithms.isomorphism.isomorph``.
-* Remove ``random_lobster`` from ``networkx.generators.random_graphs``.
-
 Version 3.8
 ~~~~~~~~~~~
 * Remove ``maybe_regular_expander`` from ``networkx.generators.expanders``.
 * In ``algorithms/approximation/steinertree.py`` remove ``metric_closure`` and related tests.
+
+Version 3.9
+~~~~~~~~~~~
+* Remove ``bfs_predecessors`` from ``networkx.algorithms.traversal.breadth_first_searcph``.

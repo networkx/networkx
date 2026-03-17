@@ -327,5 +327,5 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b).squeeze()
 
     # Normalize: rely on truediv to cast to float, then tolist to make Python numbers
-    norm = np.sign(sum(centrality)) * np.linalg.norm(centrality) if normalized else 1
+    norm = np.sign(np.sum(centrality)) * np.linalg.norm(centrality) if normalized else 1
     return dict(zip(nodelist, (centrality / norm).tolist()))

@@ -359,6 +359,9 @@ class PythonRandomViaNumpyBits(random.Random):
 class PythonRandomInterface:
     """PythonRandomInterface is included for backward compatibility
     New code should use PythonRandomViaNumpyBits instead.
+
+    Unsupported Python `random` API methods will raise an informative
+    AttributeError suggesting the use of `numpy.random.Generator`.
     """
 
     def __init__(self, rng=None):
@@ -433,6 +436,16 @@ class PythonRandomInterface:
     #    pareto as paretovariate with argument,
     def paretovariate(self, shape):
         return self._rng.pareto(shape)
+
+    def __getattr__(self, name):
+        if hasattr(random.Random, name):
+            raise AttributeError(
+                f"random.{name} is not supported when using numpy.random.RandomState. "
+                "Please use numpy.random.Generator instead."
+            )
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'"
+        )
 
 
 #    weibull as weibullvariate multiplied by beta,

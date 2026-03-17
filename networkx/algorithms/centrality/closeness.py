@@ -3,16 +3,16 @@ Closeness centrality measures.
 """
 
 import functools
+from collections import defaultdict
 
 import networkx as nx
-from networkx.exception import NetworkXError
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["closeness_centrality", "incremental_closeness_centrality"]
 
 
 @nx._dispatchable(edge_attrs="distance")
-def closeness_centrality(G, u=None, distance=None, wf_improved=True):
+def closeness_centrality(G, u=None, distance=None, wf_improved=True, *, sp=None):
     r"""Compute closeness centrality for nodes.
 
     Closeness centrality [1]_ of a node `u` is the reciprocal of the
@@ -60,6 +60,16 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
       Wasserman and Faust improved formula. For single component graphs
       it is the same as the original formula.
 
+    sp : dict of dicts, optional
+      All pairs shortest path lengths as a dictionary of dictionaries
+      sp[i][j] gives the shortest path length from source i to target j.
+      This allows you to provide precomputed shortest-path info to speed
+      up the calculation. If you have already computed shortest paths,
+      or if you will need to later, you can avoid computing it inside
+      this function. This function assumes `sp` is a proper dict-of-dict
+      for all pairs shortest paths as produced by the networkx functions
+      for that. If `sp` is set, the `distance` argument will be ignored.
+
     Returns
     -------
     nodes : dictionary
@@ -74,7 +84,8 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     See Also
     --------
     betweenness_centrality, load_centrality, eigenvector_centrality,
-    degree_centrality, incremental_closeness_centrality
+    degree_centrality, incremental_closeness_centrality,
+    all_pairs_shortest_path_length, all_pairs_dijkstra_path_length
 
     Notes
     -----
@@ -107,6 +118,14 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     if G.is_directed():
         G = G.reverse()  # create a reversed graph view
 
+        if sp is not None:
+            # reverse the sp
+            rev_sp = defaultdict(dict)  # handles missing keys by defaulting to {}
+            for key1, dict1 in sp.items():
+                for key2, value in dict1.items():
+                    rev_sp[key2][key1] = value
+            sp = rev_sp
+
     if distance is not None:
         # use Dijkstra's algorithm with specified attribute as edge weight
         path_length = functools.partial(
@@ -121,15 +140,20 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
         nodes = [u]
     closeness_dict = {}
     for n in nodes:
-        sp = path_length(G, n)
-        totsp = sum(sp.values())
+        sp_node = None
+        if sp is None:
+            sp_node = path_length(G, n)
+        else:
+            sp_node = sp[n]
+
+        totsp = sum(sp_node.values())
         len_G = len(G)
         _closeness_centrality = 0.0
         if totsp > 0.0 and len_G > 1:
-            _closeness_centrality = (len(sp) - 1.0) / totsp
+            _closeness_centrality = (len(sp_node) - 1.0) / totsp
             # normalize to number of nodes-1 in connected part
             if wf_improved:
-                s = (len(sp) - 1.0) / (len_G - 1)
+                s = (len(sp_node) - 1.0) / (len_G - 1)
                 _closeness_centrality *= s
         closeness_dict[n] = _closeness_centrality
     if u is not None:
@@ -233,7 +257,7 @@ def incremental_closeness_centrality(
        http://sariyuce.com/papers/bigdata13.pdf
     """
     if prev_cc is not None and set(prev_cc.keys()) != set(G.nodes()):
-        raise NetworkXError("prev_cc and G do not have the same nodes")
+        raise nx.NetworkXError("prev_cc and G do not have the same nodes")
 
     # Unpack edge
     (u, v) = edge

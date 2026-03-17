@@ -136,22 +136,22 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
 
     Examples
     --------
-    To get the edges in a breadth-first search::
+    To get the edges in a breadth-first search:
 
-        >>> G = nx.path_graph(3)
-        >>> list(nx.bfs_edges(G, 0))
-        [(0, 1), (1, 2)]
-        >>> list(nx.bfs_edges(G, source=0, depth_limit=1))
-        [(0, 1)]
+    >>> G = nx.path_graph(3)
+    >>> list(nx.bfs_edges(G, 0))
+    [(0, 1), (1, 2)]
+    >>> list(nx.bfs_edges(G, source=0, depth_limit=1))
+    [(0, 1)]
 
-    To get the nodes in a breadth-first search order::
+    To get the nodes in a breadth-first search order:
 
-        >>> G = nx.path_graph(3)
-        >>> root = 2
-        >>> edges = nx.bfs_edges(G, root)
-        >>> nodes = [root] + [v for u, v in edges]
-        >>> nodes
-        [2, 1, 0]
+    >>> G = nx.path_graph(3)
+    >>> root = 2
+    >>> edges = nx.bfs_edges(G, root)
+    >>> nodes = [root] + [v for u, v in edges]
+    >>> nodes
+    [2, 1, 0]
 
     Notes
     -----
@@ -266,6 +266,19 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
 def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of predecessors in breadth-first-search from source.
 
+    .. deprecated:: 3.7
+
+       bfs_predecessors is deprecated and will be removed in NetworkX 3.9.
+       Use ``(t, s) for (s, t) in nx.bfs_edges(G, source, depth_limit, sort_neighbors)``
+       instead.
+
+    Each yielded ``(node, predecessor)`` tuple describes a node and
+    the node from which it is discovered in the breadth-first-search.
+
+    The term "predecessor" here is not the directed graph term "predecessor".
+    We are not doing BFS in reverse direction. We are just reporting the
+    preceding node for each node in a BFS.
+
     Parameters
     ----------
     G : NetworkX graph
@@ -322,6 +335,17 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     bfs_edges
     edge_bfs
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\nbfs_predecessors is deprecated and will be removed in NetworkX 3.9\n"
+            "Use ``(t, s) for (s, t) in bfs_edges`` instead"
+        ),
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+
     for s, t in bfs_edges(
         G, source, depth_limit=depth_limit, sort_neighbors=sort_neighbors
     ):

@@ -1,7 +1,6 @@
 """One-mode (unipartite) projections of bipartite graphs."""
 
 import networkx as nx
-from networkx.exception import NetworkXAlgorithmError
 from networkx.utils import not_implemented_for
 
 __all__ = [
@@ -201,7 +200,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
     n_top = len(B) - len(nodes)
 
     if n_top < 1:
-        raise NetworkXAlgorithmError(
+        raise nx.NetworkXAlgorithmError(
             f"the size of the nodes to project onto ({len(nodes)}) is >= the graph size ({len(B)}).\n"
             "They are either not a valid bipartite partition or contain duplicates"
         )

@@ -55,6 +55,9 @@ class UndirectedAlgorithmBenchmarks:
     def time_average_clustering(self, graph):
         _ = nx.average_clustering(self.graphs_dict[graph])
 
+    def time_minimum_spanning_tree_kruskal(self, graph):
+        _ = nx.minimum_spanning_tree(self.graphs_dict[graph], algorithm="kruskal")
+
 
 class DirectedAlgorithmBenchmarks:
     timeout = 120

@@ -801,6 +801,11 @@ def from_scipy_sparse_array(
 
     Notes
     -----
+    The edges are generated from the explicitly stored entries of the sparse
+    array, including explicitly stored zero entries. If the sparse array
+    contains explicit zeros that should not be treated as edges, call
+    ``A.eliminate_zeros()`` before passing the array to this function.
+
     For directed graphs, explicitly mention create_using=nx.DiGraph,
     and entry i,j of A corresponds to an edge from i to j.
 

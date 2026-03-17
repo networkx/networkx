@@ -36,7 +36,7 @@ def connected_components(G):
        An undirected graph
 
     Yields
-    -------
+    ------
     comp : set
        A set of nodes in one connected component of the graph.
 

@@ -17,7 +17,9 @@ default_flow_func = preflow_push
 __all__ = ["maximum_flow", "maximum_flow_value", "minimum_cut", "minimum_cut_value"]
 
 
-@nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
+@nx._dispatchable(
+    graphs="flowG", edge_attrs={"capacity": float("inf")}, preserve_edge_attrs=True
+)
 def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Find a maximum single-commodity flow.
 
@@ -34,11 +36,18 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     _t : node
         Sink node for the flow.
 
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
+    capacity : string or function (default= 'capacity')
+        If this is a string, then edge capacity will be accessed via the
+        edge attribute with this key (that is, the capacity of the edge
+        joining `u` to `v` will be ``G.edges[u, v][capacity]``). If no
+        such edge attribute exists, the capacity of the edge is assumed to
+        be infinite.
+
+        If this is a function, the capacity of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes
@@ -168,7 +177,9 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     return (R.graph["flow_value"], flow_dict)
 
 
-@nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
+@nx._dispatchable(
+    graphs="flowG", edge_attrs={"capacity": float("inf")}, preserve_edge_attrs=True
+)
 def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Find the value of maximum single-commodity flow.
 
@@ -185,11 +196,18 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     _t : node
         Sink node for the flow.
 
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
+    capacity : string or function (default= 'capacity')
+        If this is a string, then edge capacity will be accessed via the
+        edge attribute with this key (that is, the capacity of the edge
+        joining `u` to `v` will be ``G.edges[u, v][capacity]``). If no
+        such edge attribute exists, the capacity of the edge is assumed to
+        be infinite.
+
+        If this is a function, the capacity of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes
@@ -292,23 +310,13 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     True
 
     """
-    if flow_func is None:
-        if kwargs:
-            raise nx.NetworkXError(
-                "You have to explicitly set a flow_func if"
-                " you need to pass parameters via kwargs."
-            )
-        flow_func = default_flow_func
-
-    if not callable(flow_func):
-        raise nx.NetworkXError("flow_func has to be callable.")
-
-    R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
-
-    return R.graph["flow_value"]
+    flow_value, _ = maximum_flow(flowG, _s, _t, capacity, flow_func, **kwargs)
+    return flow_value
 
 
-@nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
+@nx._dispatchable(
+    graphs="flowG", edge_attrs={"capacity": float("inf")}, preserve_edge_attrs=True
+)
 def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Compute the value and the node partition of a minimum (s, t)-cut.
 
@@ -328,11 +336,18 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     _t : node
         Sink node for the flow.
 
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
+    capacity : string or function (default= 'capacity')
+        If this is a string, then edge capacity will be accessed via the
+        edge attribute with this key (that is, the capacity of the edge
+        joining `u` to `v` will be ``G.edges[u, v][capacity]``). If no
+        such edge attribute exists, the capacity of the edge is assumed to
+        be infinite.
+
+        If this is a function, the capacity of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes
@@ -471,7 +486,9 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     return (R.graph["flow_value"], partition)
 
 
-@nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
+@nx._dispatchable(
+    graphs="flowG", edge_attrs={"capacity": float("inf")}, preserve_edge_attrs=True
+)
 def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Compute the value of a minimum (s, t)-cut.
 
@@ -491,11 +508,18 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     _t : node
         Sink node for the flow.
 
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
+    capacity : string or function (default= 'capacity')
+        If this is a string, then edge capacity will be accessed via the
+        edge attribute with this key (that is, the capacity of the edge
+        joining `u` to `v` will be ``G.edges[u, v][capacity]``). If no
+        such edge attribute exists, the capacity of the edge is assumed to
+        be infinite.
+
+        If this is a function, the capacity of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes
@@ -592,20 +616,5 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     True
 
     """
-    if flow_func is None:
-        if kwargs:
-            raise nx.NetworkXError(
-                "You have to explicitly set a flow_func if"
-                " you need to pass parameters via kwargs."
-            )
-        flow_func = default_flow_func
-
-    if not callable(flow_func):
-        raise nx.NetworkXError("flow_func has to be callable.")
-
-    if kwargs.get("cutoff") is not None and flow_func is preflow_push:
-        raise nx.NetworkXError("cutoff should not be specified.")
-
-    R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
-
-    return R.graph["flow_value"]
+    value, _ = minimum_cut(flowG, _s, _t, capacity, flow_func, **kwargs)
+    return value

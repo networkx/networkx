@@ -15,9 +15,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
         with:
@@ -34,8 +34,7 @@ jobs:
           # Development version of GraphBLAS backend
           pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
           # Development version of nx-parallel backend
-          # Comment this out for now, nx-parallel doesn't support 3.11
-          # pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
+          pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
           # Development version of Neptune Analytics backend
           pip install git+https://github.com/awslabs/nx-neptune.git@main --no-deps
           python -m pip list

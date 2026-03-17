@@ -13,7 +13,6 @@ For more information, see the `sparse6`_ homepage.
 """
 
 import networkx as nx
-from networkx.exception import NetworkXError
 from networkx.readwrite.graph6 import data_to_n, n_to_data
 from networkx.utils import not_implemented_for, open_file
 
@@ -139,7 +138,7 @@ def from_sparse6_bytes(string):
     if string.startswith(b">>sparse6<<"):
         string = string[11:]
     if not string.startswith(b":"):
-        raise NetworkXError("Expected leading colon in sparse6")
+        raise nx.NetworkXError("Expected leading colon in sparse6")
 
     chars = [c - 63 for c in string[1:]]
     n, data = data_to_n(chars)

@@ -54,6 +54,11 @@ sphinx_gallery_conf = {
     "plot_gallery": "True",
     "reference_url": {"sphinx_gallery": None},
 }
+
+rst_epilog = """
+.. |dijkstra| replace:: :doc:`/reference/algorithms/shortest_paths/dijkstra`
+"""
+
 # Add pygraphviz png scraper, if available
 try:
     from pygraphviz.scraper import PNGScraper
@@ -247,6 +252,9 @@ intersphinx_mapping = get_intersphinx_mapping(
         "nx-guides",
     }
 )
+# NOTE: generally not relevant, but prevents very long build times when other
+# projects' docs sites are not responding
+intersphinx_timeout = 0.5
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.

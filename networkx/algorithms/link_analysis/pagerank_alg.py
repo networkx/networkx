@@ -77,7 +77,7 @@ def pagerank(
     and has no guarantee of convergence.  The iteration will stop after
     an error tolerance of ``len(G) * tol`` has been reached. If the
     number of iterations exceed `max_iter`, a
-    :exc:`networkx.exception.PowerIterationFailedConvergence` exception
+    :exc:`~networkx.exception.PowerIterationFailedConvergence` exception
     is raised.
 
     The PageRank algorithm was designed for directed graphs but this
@@ -490,7 +490,10 @@ def _pagerank_scipy(
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
         xlast = x
-        x = alpha * (x @ A + sum(x[is_dangling]) * dangling_weights) + (1 - alpha) * p
+        x = (
+            alpha * (x @ A + np.sum(x[is_dangling]) * dangling_weights)
+            + (1 - alpha) * p
+        )
         # check convergence, l1 norm
         err = np.absolute(x - xlast).sum()
         if err < N * tol:

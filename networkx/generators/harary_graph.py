@@ -16,7 +16,6 @@ References
 """
 
 import networkx as nx
-from networkx.exception import NetworkXError
 
 __all__ = ["hnm_harary_graph", "hkn_harary_graph"]
 
@@ -66,11 +65,11 @@ def hnm_harary_graph(n, m, create_using=None):
     """
 
     if n < 1:
-        raise NetworkXError("The number of nodes must be >= 1!")
+        raise nx.NetworkXError("The number of nodes must be >= 1!")
     if m < n - 1:
-        raise NetworkXError("The number of edges must be >= n - 1 !")
+        raise nx.NetworkXError("The number of edges must be >= n - 1 !")
     if m > n * (n - 1) // 2:
-        raise NetworkXError("The number of edges must be <= n(n-1)/2")
+        raise nx.NetworkXError("The number of edges must be <= n(n-1)/2")
 
     # Get the floor of average node degree.
     d = 2 * m // n
@@ -139,9 +138,9 @@ def hkn_harary_graph(k, n, create_using=None):
     """
 
     if k < 1:
-        raise NetworkXError("The node connectivity must be >= 1!")
+        raise nx.NetworkXError("The node connectivity must be >= 1!")
     if n < k + 1:
-        raise NetworkXError("The number of nodes must be >= k+1 !")
+        raise nx.NetworkXError("The number of nodes must be >= k+1 !")
 
     # In case of connectivity 1, simply return the path graph.
     if k == 1:

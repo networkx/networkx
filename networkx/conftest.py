@@ -121,6 +121,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="metric_closure is deprecated"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nbfs_predecessors"
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -216,6 +219,7 @@ needs_scipy = [
     "algorithms/centrality/subgraph_alg.py",
     "algorithms/communicability_alg.py",
     "algorithms/community/divisive.py",
+    "algorithms/community/bipartitions.py",
     "algorithms/distance_measures.py",
     "algorithms/link_analysis/hits_alg.py",
     "algorithms/link_analysis/pagerank_alg.py",
