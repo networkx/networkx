@@ -156,8 +156,32 @@ def degree_histogram(G):
     -----
     Note: the bins are width one, hence len(list) can be large
     (Order(number_of_edges))
+
+    Examples
+    --------
+    >>> G = nx.star_graph(5)
+
+    `degree_histogram` returns the "dense" frequency distribution, including
+    0's for all degree values that do not occur in the graph:
+
+    >>> nx.degree_histogram(G)
+    [0, 5, 0, 0, 0, 1]
+
+    The degree values can be made explicit with `enumerate`:
+
+    >>> # A mapping of {degree: number of nodes in `G` of that degree}
+    >>> dict(enumerate(nx.degree_histogram(G)))
+    {0: 0, 1: 5, 2: 0, 3: 0, 4: 0, 5: 1}
+
+    For a "sparse" representation of the degree frequency distribution that
+    directly maps degree value: number of occurrences (omitting the 0's), use
+    `collections.Counter` instead:
+
+    >>> from collections import Counter
+    >>> Counter(d for _, d in G.degree)
+    Counter({1: 5, 5: 1})
     """
-    counts = Counter(d for n, d in G.degree())
+    counts = Counter(d for _, d in G.degree)
     return [counts.get(i, 0) for i in range(max(counts) + 1 if counts else 0)]
 
 
