@@ -486,7 +486,7 @@ def _merge_node_subset(
             # if u is not in a singleton partition then we move on to the
             # next node.
             candidate_comm = []
-            candidate_comm_prob = []
+            candidate_comm_q_delta = []
 
             # this is the change in quality that occurs from removing node
             # u from its current community
@@ -528,80 +528,30 @@ def _merge_node_subset(
                             # (at index i) we will add it to the list of
                             # candidate communities
                             candidate_comm.append(i)
+                            candidate_comm_q_delta.append(quality_delta)
 
-                            # we also need to keep track of the probability
-                            # that u will be added to C, as opposed to another
-                            # candidate in the list. The relative probability
-                            # is calcualted at as e^(quality_delta/theta)
+            # if there are candidate communities identified then
+            # one is selected at random, and u is added to that
+            # community
+            if candidate_comm:
 
-                            # it is quite easy to get overflow in this math.exp(...)
-                            # numpy handles this more elegantly.
-                            try:
-                                val = math.exp(quality_delta / theta)
-                            except OverflowError:
-                                val = float("inf")
-                            candidate_comm_prob.append(val)
+                # the probability distribution that the new community it drawn
+                # from is defined in terms of the quality delta associated
+                # with the move to each community.
 
-            # if there are candidate communities identified i.e.
-            # if candidate_comm is not empty, then the next stage
-            # selects the community to move u into.
+                # If moving u to community C results in a quality delta QC,
+                # the relative frequency withi which C will be chosen is
+                # proportional to
+                #
+                #       math.exp(QC/theta)
+                #
+                # Since computing large exponentials can cause overflow
+                # errors, we use an equivalent form that computes normalised
+                # values with the same ratios
+                max_delta = max(candidate_comm_q_delta)
+                candidate_comm_prob = [math.exp((x - max_delta)/theta) for x in candidate_comm_q_delta]
 
-            if len(candidate_comm) > 0:
-                # This function is an inverse transform sampling of the list
-                # of relative probability values.
-
-                # the reason this function is defined inline is to make the
-                # randomness determined by the same seed value making the
-                # entire algorithm deterministic for set seed values. There
-                # may be a more elegant way to get this same behaviour.
-
-                def _inverse_transform_sample(vals):
-                    """
-                    This function takes a list of values representing
-                    relative probabilities and randomly returns an index:
-
-                    e.g. for vals = [1, 2, 2], the function should return
-                    0 half as often as 1. It should return 1 and 2 with the
-                    same relative frequency.
-
-                    The function first calculates the cumulative sum of
-                    values, e.g.
-
-                    cumsum_vals = [1, 3, 5].
-
-                    Then random_val uniformly sampled from the range (0,5).
-                    The function  then returns the index from the first value
-                    in cumsum_vals that is greater than this random_val.
-                    """
-
-                    cum = 0
-                    cumsum_vals = [(cum := cum + val) for val in vals]
-                    max_val = cumsum_vals[-1]
-                    random_val = seed.uniform(0, max_val)
-
-                    # if there is overflow math.exp(...) such that
-                    # candidate_comm_prob contains an float('inf') value,
-                    # then we will have:
-                    #
-                    #     max_val = float('inf')
-                    #     random_val = float('inf')
-                    #
-                    # and the function will always return
-                    #
-                    #    i = <index of the first float('inf') in vals>
-
-                    # I do not know if this is desirable behaviour
-
-                    for i, v in enumerate(cumsum_vals):
-                        if random_val <= v:
-                            # by construction random_val <= cumsum_vals[-1],
-                            # thereore this function will always return a
-                            # valid index value
-                            return i
-
-                # The community to move u into is chosen at random
-                random_index = _inverse_transform_sample(candidate_comm_prob)
-                new_comm = candidate_comm[random_index]
+                new_comm = seed.choices(candidate_comm, weights=candidate_comm_prob)[0]
 
                 partition[comm].remove(u)
                 partition[new_comm].add(u)
