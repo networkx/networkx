@@ -143,15 +143,36 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                     dxvy = 0
                     dxyv = 0
                     dvxy = 0
-                    if not (
-                        sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[v][y] == 0
-                    ):
-                        if D[x][v] == D[x][y] + D[y][v]:
-                            dxyv = sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
-                        if D[x][y] == D[x][v] + D[v][y]:
-                            dxvy = sigma_m[x][v] * sigma_m[v][y] / sigma_m[x][y]
-                        if D[v][y] == D[v][x] + D[x][y]:
-                            dvxy = sigma_m[v][x] * sigma[x][y] / sigma[v][y]
+                    sigma_xy = sigma_m[x].get(y, 0)
+                    sigma_xv = sigma_m[x].get(v, 0)
+                    sigma_vy = sigma_m[v].get(y, 0)
+                    if not (sigma_xy == 0 or sigma_xv == 0 or sigma_vy == 0):
+                        dist_xv = D[x].get(v)
+                        dist_xy = D[x].get(y)
+                        dist_yv = D[y].get(v)
+                        dist_vy = D[v].get(y)
+                        dist_vx = D[v].get(x)
+                        if (
+                            dist_xv is not None
+                            and dist_xy is not None
+                            and dist_yv is not None
+                            and dist_xv == dist_xy + dist_yv
+                        ):
+                            dxyv = sigma_xy * sigma_m[y].get(v, 0) / sigma_xv
+                        if (
+                            dist_xy is not None
+                            and dist_xv is not None
+                            and dist_vy is not None
+                            and dist_xy == dist_xv + dist_vy
+                        ):
+                            dxvy = sigma_xv * sigma_vy / sigma_xy
+                        if (
+                            dist_vy is not None
+                            and dist_vx is not None
+                            and dist_xy is not None
+                            and dist_vy == dist_vx + dist_xy
+                        ):
+                            dvxy = sigma_m[v].get(x, 0) * sigma[x].get(y, 0) / sigma[v].get(y, 0)
                     sigma_m_v[x][y] = sigma_m[x][y] * (1 - dxvy)
                     PB_m_v[x][y] = PB_m[x][y] - PB_m[x][y] * dxvy
                     if y != v:
@@ -174,13 +195,10 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
             elif nx.is_connected(G):
                 scale = c * (2 * v - c - 1)
             if scale == 0:
-                for group_node1 in group:
-                    for node in D[group_node1]:
-                        if node != group_node1:
-                            if node in group:
-                                scale += 1
-                            else:
-                                scale += 2
+                for source in G:
+                    for target in D[source]:
+                        if source != target and (source in group or target in group):
+                            scale += 1
             GBC_group -= scale
 
         # normalized

@@ -101,6 +101,31 @@ class TestGroupBetweennessCentrality:
         assert b == b_answer
 
 
+    def test_group_betweenness_single_node_directed_not_strongly_connected(self):
+        """
+        Single-node group betweenness matches node betweenness in a directed
+        graph that is not strongly connected.
+        """
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        node_betweenness = nx.betweenness_centrality(G, normalized=False)
+        for v in G:
+            assert (
+                nx.group_betweenness_centrality(
+                    G, {v}, weight=None, normalized=False, endpoints=False
+                )
+                == node_betweenness[v]
+            )
+
+    def test_group_betweenness_directed_not_strongly_connected_no_keyerror(self):
+        """
+        Group betweenness does not raise on a directed graph that is not
+        strongly connected.
+        """
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        b = nx.group_betweenness_centrality(G, {0, 2}, weight=None, normalized=False)
+        assert b == 3.0
+
+
 class TestProminentGroup:
     np = pytest.importorskip("numpy")
     pd = pytest.importorskip("pandas")
