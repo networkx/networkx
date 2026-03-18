@@ -534,7 +534,6 @@ def _merge_node_subset(
             # one is selected at random, and u is added to that
             # community
             if candidate_comm:
-
                 # the probability distribution that the new community it drawn
                 # from is defined in terms of the quality delta associated
                 # with the move to each community.
@@ -549,7 +548,9 @@ def _merge_node_subset(
                 # errors, we use an equivalent form that computes normalised
                 # values with the same ratios
                 max_delta = max(candidate_comm_q_delta)
-                candidate_comm_prob = [math.exp((x - max_delta)/theta) for x in candidate_comm_q_delta]
+                candidate_comm_prob = [
+                    math.exp((x - max_delta) / theta) for x in candidate_comm_q_delta
+                ]
 
                 new_comm = seed.choices(candidate_comm, weights=candidate_comm_prob)[0]
 
