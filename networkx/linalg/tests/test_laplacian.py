@@ -183,6 +183,128 @@ class TestLaplacian:
         )
 
 
+class TestMagneticLaplacian:
+    @classmethod
+    def setup_class(cls):
+        r"""
+        We define test for the magnetic laplacian matrix, to check if it correctly
+        returns the matrices for an undirected graph and for a directed graph. In the directed
+        graph we add edges between nodes in both directions to check that we have a real entry.
+        """
+
+        cls.G = nx.Graph()
+        cls.G.add_edges_from(
+            (
+                (1, 2),
+                (2, 3),
+                (3, 4),
+            )
+        )
+
+        cls.DiG = nx.DiGraph()
+        cls.DiG.add_edges_from(
+            (
+                (1, 2),
+                (2, 1),
+                (2, 3),
+                (4, 3),
+            )
+        )
+
+        cls.DiGW = nx.DiGraph()
+        cls.DiGW.add_edges_from(
+            (
+                (1, 2, {"weight": 2}),
+                (2, 1, {"weight": 3}),
+                (2, 3, {"weight": 2}),
+                (4, 3, {"weight": 2}),
+            )
+        )
+
+    def test_mag_laplacian(self):
+        DL = np.array(
+            [
+                [1.0, -1.0, 0.0, 0.0],
+                [-1.0, 1.5, -0.5j, 0.0],
+                [0.0, 0.5j, 1.0, 0.5j],
+                [0.0, 0.0, -0.5j, 0.5],
+            ]
+        )
+
+        DLW = np.array(
+            [
+                [2.5, -2.5, 0.0, 0.0],
+                [-2.5, 3.5, -1.0j, 0.0],
+                [0.0, 1.0j, 2.0, 1.0j],
+                [0.0, 0.0, -1.0j, 1.0],
+            ]
+        )
+
+        GL = np.array([[1, -1, 0, 0], [-1, 2, -1, 0], [0, -1, 2, -1], [0, 0, -1, 1]])
+
+        np.testing.assert_almost_equal(
+            nx.magnetic_laplacian_matrix(self.DiG).todense(),
+            DL,
+            decimal=3,
+        )
+        np.testing.assert_almost_equal(
+            nx.magnetic_laplacian_matrix(self.DiGW).todense(),
+            DLW,
+            decimal=3,
+        )
+
+        np.testing.assert_almost_equal(
+            nx.magnetic_laplacian_matrix(self.G).todense(),
+            GL,
+            decimal=3,
+        )
+
+    def test_norm_mag_laplacian(self):
+        NDL = np.array(
+            [
+                [1.0, -1.0 / np.sqrt(1.5), 0.0, 0.0],
+                [-1.0 / np.sqrt(1.5), 1.0, -0.5j / np.sqrt(1.5), 0.0],
+                [0.0, 0.5j / np.sqrt(1.5), 1.0, 0.5j / np.sqrt(0.5)],
+                [0.0, 0.0, -0.5j / np.sqrt(0.5), 1.0],
+            ]
+        )
+
+        NWDL = np.array(
+            [
+                [1.0, -2.5 / np.sqrt(2.5 * 3.5), 0.0, 0.0],
+                [-2.5 / np.sqrt(2.5 * 3.5), 1.0, -1.0j / np.sqrt(3.5 * 2), 0.0],
+                [0.0, 1.0j / np.sqrt(3.5 * 2), 1.0, 1.0j / np.sqrt(2)],
+                [0.0, 0.0, -1.0j / np.sqrt(2), 1.0],
+            ]
+        )
+
+        NGL = np.array(
+            [
+                [1, -1 / np.sqrt(2), 0, 0],
+                [-1 / np.sqrt(2), 1, -1 / 2, 0],
+                [0, -1 / 2, 1, -1 / np.sqrt(2)],
+                [0, 0, -1 / np.sqrt(2), 1],
+            ]
+        )
+
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian_matrix(self.DiG).todense(),
+            NDL,
+            decimal=3,
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian_matrix(self.DiGW).todense(),
+            NWDL,
+            decimal=3,
+        )
+
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian_matrix(self.G).todense(),
+            NGL,
+            decimal=3,
+        )
+
+
 def test_directed_laplacian():
     "Directed Laplacian"
     # Graph used as an example in Sec. 4.1 of Langville and Meyer,

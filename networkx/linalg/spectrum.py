@@ -10,6 +10,8 @@ __all__ = [
     "modularity_spectrum",
     "normalized_laplacian_spectrum",
     "bethe_hessian_spectrum",
+    "magnetic_spectrum",
+    "normalized_magnetic_spectrum",
 ]
 
 
@@ -121,6 +123,75 @@ def adjacency_spectrum(G, weight="weight"):
     import scipy as sp
 
     return sp.linalg.eigvals(nx.adjacency_matrix(G, weight=weight).todense())
+
+
+@nx._dispatchable(edge_attrs="weight")
+def magnetic_spectrum(G, k=0.25, weight="weight"):
+    """
+    Returns eigenvalues of the magnetic laplacian with phase, k.
+
+    Parameters
+    ----------
+    G: Graph
+      NetworkX graph (DiGraph or Graph)
+
+    k: phase of the magnetic laplacian
+      Float in [0,0.5]
+
+    Returns
+    -------
+    evals: NumPy array with real values
+      Eigenvalues
+
+    Notes
+    -----
+    For MultiGraph/MuldiDiGraph the magnetic_laplacian_matrix is not implemented.
+
+    See Also
+    --------
+    magnetic_laplacian_matrix
+    """
+    import scipy as sp
+
+    return sp.linalg.eigvalsh(
+        nx.magnetic_laplacian_matrix(G, k=k, weight="weight").todense()
+    ).real
+
+
+@nx._dispatchable(edge_attrs="weight")
+def normalized_magnetic_spectrum(G, k=0.25, weight="weight"):
+    """Returns eigenvalues of the normalized magnetic Laplacian of G.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph
+       DiGraph recommended; undirected graphs give the standard normalized Laplacian spectrum
+
+    k : float, optional (default=0.25)
+       The phase of the magnetic potential. The charge parameter q ∈ [0, 0.5].
+       At k=0 returns the standard normalized Laplacian spectrum.
+
+    weight : string or None, optional (default='weight')
+       The edge data key used to compute each value in the matrix.
+       If None, then each edge has weight 1.
+
+    Returns
+    -------
+    evals : NumPy array
+      Eigenvalues
+
+    See Also
+    --------
+    normalized_magnetic_laplacian_matrix
+    magnetic_spectrum
+    normalized_laplacian_spectrum
+    """
+    import scipy as sp
+
+    return sp.linalg.eigvalsh(
+        nx.normalized_magnetic_laplacian_matrix(G, k=k, weight=weight).todense()
+    ).real
 
 
 @nx._dispatchable
