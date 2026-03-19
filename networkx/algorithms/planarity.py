@@ -1,5 +1,4 @@
 from collections import defaultdict
-from collections.abc import Hashable
 from copy import deepcopy
 
 import networkx as nx
@@ -8,7 +7,6 @@ __all__ = [
     "check_planarity",
     "is_planar",
     "PlanarEmbedding",
-    "faces_from_planar_embedding",
 ]
 
 
@@ -1386,6 +1384,31 @@ class PlanarEmbedding(nx.DiGraph):
 
         return face_nodes
 
+    def faces(self):
+        """Generate facial boundary walks from this planar embedding.
+
+        Yields
+        ------
+        face : list
+            A facial boundary walk as a node sequence in cyclic order.
+            Walks are not guaranteed to be simple cycles: vertices can repeat,
+            for example around bridges or articulation points.
+
+        Notes
+        -----
+        This method traverses each directed half-edge exactly once.
+        For disconnected embeddings, a unique global outer face is not
+        distinguished by the combinatorial embedding.
+        When the embedding is obtained from :func:`check_planarity`,
+        self-loops are not represented and parallel edges are merged
+        before the embedding is constructed.
+        """
+        visited_half_edges = set()
+        for v in self:
+            for w in self.neighbors_cw_order(v):
+                if (v, w) not in visited_half_edges:
+                    yield self.traverse_face(v, w, mark_half_edges=visited_half_edges)
+
     def is_directed(self):
         """A valid PlanarEmbedding is undirected.
 
@@ -1467,46 +1490,3 @@ class PlanarEmbedding(nx.DiGraph):
             for v, d in nbrs.items()
         )
         return G
-
-
-def faces_from_planar_embedding(embedding: PlanarEmbedding):
-    """Return facial boundary walks from a planar embedding.
-
-    Parameters
-    ----------
-    embedding : networkx.algorithms.planarity.PlanarEmbedding
-        A valid planar embedding.
-
-    Returns
-    -------
-    faces : list of lists
-        Facial boundary walks as node sequences in cyclic order.
-        Walks are not guaranteed to be simple cycles: vertices can repeat,
-        for example around bridges or articulation points.
-
-    Notes
-    -----
-    This function traverses each directed half-edge exactly once.
-    For disconnected embeddings, a unique global outer face is not
-    distinguished by the combinatorial embedding.
-    """
-    if not isinstance(embedding, PlanarEmbedding):
-        raise TypeError(
-            "embedding must be a networkx.algorithms.planarity.PlanarEmbedding"
-        )
-
-    visited_half_edges: set[tuple[Hashable, Hashable]] = set()
-    faces = []
-
-    for u in embedding:
-        for v in embedding.neighbors_cw_order(u):
-            if (u, v) in visited_half_edges:
-                continue
-            face = embedding.traverse_face(
-                u,
-                v,
-                mark_half_edges=visited_half_edges,
-            )
-            faces.append(face)
-
-    return faces
