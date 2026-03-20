@@ -438,7 +438,7 @@ def _expand_full_closure(G, G_closure):
     G_expanded = nx.DiGraph()
     for u, v, data in G_closure.edges(data=True):
         path_nodes = data["path"]
-        for a, b in zip(path_nodes[:-1], path_nodes[1:]):
+        for a, b in nx.utils.pairwise(path_nodes):
             if G.has_edge(a, b):
                 G_expanded.add_edge(a, b, **G[a][b])
             else:
