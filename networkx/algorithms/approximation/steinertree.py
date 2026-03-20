@@ -273,12 +273,11 @@ def directed_steiner_tree(
     r"""
     Approximate solution to the Directed Steiner Tree problem.
 
-    This implementation follows the greedy density-based approach of
-    Charikar et al. (1999). The algorithm repeatedly grows partial trees
-    starting at `root` until all required terminals are spanned.
-    While the result is not guaranteed to be optimal, it provides a
-    polylogarithmic approximation in polynomial time and is effective
-    on medium-sized directed graphs.
+    This implementation follows the greedy density-based approach in [1]_.
+    The algorithm repeatedly grows partial trees starting at `root` until
+    all required terminals are spanned. While the result is not guaranteed
+    to be optimal, it provides a polylogarithmic approximation in
+    polynomial time and is effective on medium-sized directed graphs.
 
     Parameters
     ----------
@@ -292,13 +291,13 @@ def directed_steiner_tree(
         Minimum number of terminals to connect.
         If None, this is set to the total number of terminals.
         Setting this equal to the number of terminals gives the standard
-        Directed Steiner Tree problem (Charikar et al. 1999).
+        Directed Steiner Tree problem in [1]_.
         Smaller values allow a partial version where only a subset of
         terminals is required.
     levels : int, optional (default=2)
         Maximum recursion depth of the algorithm, corresponding to the
-        parameter `i` in Charikar et al. (1999). Larger values improve
-        the approximation guarantee but increase running time rapidly.
+        parameter ``i`` in [1]_. Larger values improve the approximation
+        guarantee but increase running time rapidly.
     weight : string, optional (default="weight")
         Edge attribute to use as weight.
         If the edge does not have this attribute, the edge weight is assumed to be 1.
@@ -316,8 +315,7 @@ def directed_steiner_tree(
     NetworkXError
         If levels is not greater than one or None, if ``min_terminals``
         is not a positive integer, if ``min_terminals`` exceeds the
-        number of given terminals, if ``min_terminals`` is not
-        a positive integer or if any terminals are not in ``G``.
+        number of given terminals, or if any terminals are not in ``G``.
     NetworkXUnfeasible
         If no terminals are given, if no terminals are reachable from
         the root within the levels, or if the resulting tree fails
@@ -333,8 +331,8 @@ def directed_steiner_tree(
     ``RecursionError``. Consider increasing the recursion limit with
     ``sys.setrecursionlimit``.
 
-    - The parameter ``levels`` (denoted ``i`` in Charikar et al. (1999))
-    controls a trade-off between approximation ratio and runtime:
+    - The parameter ``levels`` (denoted ``i`` in [1]_) controls a trade-off
+    between approximation ratio and runtime:
 
     * For any fixed ``levels = i > 1`` the algorithm runs in polynomial time
         :math:`O(n^i k^{2i})` and achieves an approximation ratio of
@@ -349,19 +347,18 @@ def directed_steiner_tree(
     - The parameter ``min_terminals`` generalizes the problem:
 
     * If ``min_terminals`` equals the total number of terminals, the function
-        solves the standard Directed Steiner Tree problem as in
-        Charikar et al. (1999), which requires spanning all terminals.
+        solves the standard Directed Steiner Tree problem in [1]_.
     * If ``min_terminals`` is smaller, the algorithm still runs and produces a
         tree covering at least that many terminals. This partial version is
-        convenient in practice, but the approximation guarantees in the paper
-        apply only to the full-terminal case.
+        convenient in practice, but the approximation guarantees in [1]_ apply
+        only to the full-terminal case.
 
     References
     ----------
     .. [1] Charikar, M., Chekuri, C., Cheung, T-Y., Dai, Z., Goel, A.,
-           Guha, S., & Li, M. (1999). Approximation algorithms for
-           directed Steiner problems. *Journal of Algorithms*, 33(1), 73–91.
-           https://doi.org/10.1006/jagm.1999.1042
+        Guha, S., & Li, M. (1999). Approximation algorithms for
+        directed Steiner problems. *Journal of Algorithms*, 33(1), 73–91.
+        https://doi.org/10.1006/jagm.1999.1042
     """
     if root not in G:
         raise nx.NetworkXError(f"Root {root} not in G")
