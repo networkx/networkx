@@ -444,6 +444,8 @@ def _expand_full_closure(G, G_closure):
 
 
 def _build_strict_steiner_tree(G_expanded, root, covered, pred, terminals):
+    order = {n: i for i, n in enumerate(G_expanded)}
+
     DST = nx.DiGraph()
     DST.add_node(root, **G_expanded.nodes[root])
     for t in covered:
@@ -456,7 +458,11 @@ def _build_strict_steiner_tree(G_expanded, root, covered, pred, terminals):
         while v != root:
             # pred[v] may contain multiple predecessors (ties in shortest paths).
             # Use min() to ensure deterministic output instead of relying on list order.
-            u = min(pred[v])
+            vpreds = pred[v]
+            if len(vpreds) == 1:
+                u = vpreds[0]
+            else:
+                u = min(vpreds, key=order.get)
 
             if u not in DST:
                 DST.add_node(u, **G_expanded.nodes[u])

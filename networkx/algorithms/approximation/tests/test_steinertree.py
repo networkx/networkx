@@ -2,6 +2,7 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms.approximation.steinertree import (
+    _build_strict_steiner_tree,
     _remove_nonterminal_leaves,
     directed_steiner_tree,
     metric_closure,
@@ -395,3 +396,27 @@ class TestDirectedSteinerTree:
         directed_steiner_tree(
             self.G3, 1, {2, 3}, min_terminals=2, levels=2, weight="weight"
         )
+
+    def test_predecessor_tie_mixed_types(self):
+        G_expanded = nx.DiGraph()
+        G_expanded.add_edge(0, "a", weight=1)
+        G_expanded.add_edge(0, 1, weight=1)
+        G_expanded.add_edge("a", 3, weight=1)
+        G_expanded.add_edge(1, 3, weight=1)
+
+        pred = {
+            "a": [0],
+            1: [0],
+            3: ["a", 1],
+        }
+
+        H = _build_strict_steiner_tree(
+            G_expanded=G_expanded,
+            root=0,
+            covered={3},
+            pred=pred,
+            terminals={3},
+        )
+
+        assert set(H.nodes) == {0, "a", 3}
+        assert set(H.edges) == {(0, "a"), ("a", 3)}
