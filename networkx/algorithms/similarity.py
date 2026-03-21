@@ -1842,7 +1842,10 @@ def panther_vector_similarity(
     Returns
     -------
     similarity : dict
-        Dict of nodes to similarity scores (as floats).
+        Dict of nodes to similarity scores (as floats). Scores are the
+        reciprocal Euclidean distance between feature vectors, i.e.,
+        ``1 / ||θ(source) - θ(node)||``. Higher values indicate greater
+        similarity.
         Note: the self-similarity (i.e., `node`) is not included in the dict.
 
     Examples
@@ -1853,19 +1856,18 @@ def panther_vector_similarity(
 
     >>> from pprint import pprint
     >>> pprint(nx.panther_vector_similarity(G, source=0, seed=42))
-    {35: 0.10402634656233918,
-     61: 0.10434063328712018,
-     65: 0.10401247833456054,
-     85: 0.10506718868571752,
-     88: 0.10402634656233918}
+    {49: 8.42043346114428,
+     65: 8.386282583120506,
+     75: 8.312589948005998,
+     85: 8.511216155444034,
+     88: 8.319209131495183}
 
-    But "spoke" nodes are similar to one another
+    "Spoke" nodes are structurally similar to one another, so their
+    similarity scores are high
 
     >>> result = nx.panther_vector_similarity(G, source=1, seed=42)
     >>> len(result)
     5
-    >>> all(similarity == 1.0 for similarity in result.values())
-    True
 
     Notes
     -----
@@ -1900,10 +1902,10 @@ def panther_vector_similarity(
     num_nodes = G.number_of_nodes()
     node_list = list(G.nodes)
 
-    # Ensure D doesn't exceed the number of nodes
-    if num_nodes < D:
+    # Ensure D doesn't exceed the number of non-self nodes
+    if num_nodes - 1 < D:
         raise nx.NetworkXUnfeasible(
-            f"The number of requested similarity scores {D} is greater than the number of nodes {num_nodes}."
+            f"The number of requested similarity scores {D} is greater than the number of non-self nodes {num_nodes - 1}."
         )
 
     similarities = np.zeros((num_nodes, num_nodes))
@@ -1920,6 +1922,10 @@ def panther_vector_similarity(
             similarities[vi_idx, inv_node_map[node]] = (
                 common_path_count * inv_sample_size
             )
+
+        # Exclude self-similarity per paper: "similarity between v_i
+        # and all the other vertices"
+        similarities[vi_idx, vi_idx] = 0
 
         # Build up the feature vector using the largest D similarity scores
         theta[vi_idx] = np.sort(np.partition(similarities[vi_idx], -D)[-D:])[::-1]
@@ -1942,16 +1948,11 @@ def panther_vector_similarity(
 
     # The paper defines the similarity S(v_i, v_j) as
     # 1 / || Theta(v_i) - Theta(v_j) ||
-    # Calculate reciprocals and normalize to [0, 1] range
 
     # Handle the case where distances are very small or zero (common in small graphs)
     # Clamp zero distances to machine epsilon to avoid division by zero
     neighbor_distances = np.maximum(neighbor_distances, np.finfo(float).eps)
     similarities = 1 / neighbor_distances
-
-    # Always normalize to ensure values are between 0 and 1
-    if len(similarities) > 0 and (max_sim := np.max(similarities)) > 0:
-        similarities /= max_sim
 
     # Add back the similarity scores (i.e., distances)
     # Convert numpy scalars to native Python types for dispatch compatibility
@@ -2006,7 +2007,8 @@ def generate_random_paths(
         See :ref:`Randomness<randomness>`.
     source : node, optional
         Node to use as the starting point for all generated paths.
-        If None then starting nodes are selected at random with uniform probability.
+        If None then starting nodes are selected uniformly at random
+        from non-isolated nodes.
 
     Returns
     -------

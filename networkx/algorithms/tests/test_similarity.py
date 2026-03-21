@@ -1031,7 +1031,7 @@ class TestSimilarity:
         assert len(sim) > 0
         assert 0 not in sim  # Source node should not be included
         assert all(node in [1, 2, 3, 4] for node in sim)  # Only valid nodes
-        assert all(0 <= score <= 1 for score in sim.values())  # Valid scores
+        assert all(score > 0 for score in sim.values())  # Positive scores
 
     def test_panther_vector_similarity_unweighted(self):
         """Test panther_vector_similarity with unweighted graph."""
@@ -1047,7 +1047,7 @@ class TestSimilarity:
         assert len(sim) == 4
         assert 0 not in sim
         assert all(node in sim for node in [1, 2, 3, 4])
-        assert all(0 <= score <= 1 for score in sim.values())
+        assert all(score > 0 for score in sim.values())
 
     def test_panther_vector_similarity_weighted(self):
         """Test panther_vector_similarity with weighted graph."""
@@ -1064,7 +1064,7 @@ class TestSimilarity:
 
         assert len(sim) == 4
         assert "v1" not in sim
-        assert all(0 <= score <= 1 for score in sim.values())
+        assert all(score > 0 for score in sim.values())
         assert all(node in sim for node in ["v2", "v3", "v4"])
 
     def test_panther_vector_similarity_source_not_found(self):
@@ -1085,11 +1085,14 @@ class TestSimilarity:
             nx.panther_vector_similarity(G, source=2)
 
     def test_panther_vector_similarity_too_large_D(self):
-        """Test raises when D > number of nodes."""
-        G = nx.star_graph(3)
+        """Test raises when D > number of non-self nodes."""
+        G = nx.star_graph(3)  # 4 nodes
 
         with pytest.raises(nx.NetworkXUnfeasible):
             nx.panther_vector_similarity(G, 0, D=5, k=3)
+        # D == num_nodes is also too large (self excluded from feature vector)
+        with pytest.raises(nx.NetworkXUnfeasible):
+            nx.panther_vector_similarity(G, 0, D=4, k=3)
 
     def test_panther_vector_similarity_too_large_k(self):
         """Test raises when k > number of nodes."""
@@ -1115,7 +1118,7 @@ class TestSimilarity:
         G = nx.Graph()
         G.add_edge(0, 1)
 
-        sim = nx.panther_vector_similarity(G, 0, D=2, k=2, seed=42)
+        sim = nx.panther_vector_similarity(G, 0, D=1, k=2, seed=42)
 
         assert len(sim) == 1
         assert 1 in sim
