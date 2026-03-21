@@ -1085,14 +1085,11 @@ class TestSimilarity:
             nx.panther_vector_similarity(G, source=2)
 
     def test_panther_vector_similarity_too_large_D(self):
-        """Test raises when D > number of non-self nodes."""
-        G = nx.star_graph(3)  # 4 nodes
+        """Test raises when D > number of nodes."""
+        G = nx.star_graph(3)
 
         with pytest.raises(nx.NetworkXUnfeasible):
             nx.panther_vector_similarity(G, 0, D=5, k=3)
-        # D == num_nodes is also too large (self excluded from feature vector)
-        with pytest.raises(nx.NetworkXUnfeasible):
-            nx.panther_vector_similarity(G, 0, D=4, k=3)
 
     def test_panther_vector_similarity_too_large_k(self):
         """Test raises when k > number of nodes."""
@@ -1118,7 +1115,7 @@ class TestSimilarity:
         G = nx.Graph()
         G.add_edge(0, 1)
 
-        sim = nx.panther_vector_similarity(G, 0, D=1, k=2, seed=42)
+        sim = nx.panther_vector_similarity(G, 0, D=2, k=2, seed=42)
 
         assert len(sim) == 1
         assert 1 in sim

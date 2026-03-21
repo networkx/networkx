@@ -1902,10 +1902,10 @@ def panther_vector_similarity(
     num_nodes = G.number_of_nodes()
     node_list = list(G.nodes)
 
-    # Ensure D doesn't exceed the number of non-self nodes
-    if num_nodes - 1 < D:
+    # Ensure D doesn't exceed the number of nodes
+    if num_nodes < D:
         raise nx.NetworkXUnfeasible(
-            f"The number of requested similarity scores {D} is greater than the number of non-self nodes {num_nodes - 1}."
+            f"The number of requested similarity scores {D} is greater than the number of nodes {num_nodes}."
         )
 
     similarities = np.zeros((num_nodes, num_nodes))
@@ -1922,10 +1922,6 @@ def panther_vector_similarity(
             similarities[vi_idx, inv_node_map[node]] = (
                 common_path_count * inv_sample_size
             )
-
-        # Exclude self-similarity per paper: "similarity between v_i
-        # and all the other vertices"
-        similarities[vi_idx, vi_idx] = 0
 
         # Build up the feature vector using the largest D similarity scores
         theta[vi_idx] = np.sort(np.partition(similarities[vi_idx], -D)[-D:])[::-1]
