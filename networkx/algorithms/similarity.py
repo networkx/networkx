@@ -1530,7 +1530,7 @@ def _prepare_panther_paths(
     source : node
         Source node for similarity calculation
     path_length : int
-        How long the randomly generated paths should be
+        The number of steps (edges) in each randomly generated path.
     c : float
         A universal constant that controls the number of random paths to generate
     delta : float
@@ -1656,7 +1656,8 @@ def panther_similarity(
     k : int (default = 5)
         The number of most similar nodes to return.
     path_length : int (default = 5)
-        How long the randomly generated paths should be (``T`` in [1]_)
+        The number of steps (edges) in each randomly generated path,
+        i.e., ``T`` in [1]_.
     c : float (default = 0.5)
         A universal constant that controls the number of random paths to generate.
         Higher values increase the number of sample paths and potentially improve
@@ -1820,7 +1821,8 @@ def panther_vector_similarity(
     k : int
         The number of most similar nodes to return
     path_length : int
-        How long the randomly generated paths should be (``T`` in [1]_)
+        The number of steps (edges) in each randomly generated path,
+        i.e., ``T`` in [1]_.
     c : float
         A universal constant that controls the number of random paths to generate.
         Higher values increase the number of sample paths and potentially improve
@@ -1990,7 +1992,7 @@ def generate_random_paths(
     sample_size : integer
         The number of paths to generate. This is ``R`` in [1]_.
     path_length : integer (default = 5)
-        The maximum size of the path to randomly generate.
+        The number of steps (edges) in each randomly generated path.
         This is ``T`` in [1]_. According to the paper, ``T >= 5`` is
         recommended.
     index_map : dictionary, optional
