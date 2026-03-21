@@ -349,8 +349,8 @@ class TestDirectedSteinerTree:
         "levels, should_raise",
         [
             (None, False),
-            (float("inf"), False),
-            (999999, False),
+            (float("inf"), True),
+            (999999, True),
             (0, True),
             (-5, True),
         ],

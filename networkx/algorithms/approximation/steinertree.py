@@ -1,5 +1,6 @@
 from collections import deque
 from itertools import chain
+import sys
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
@@ -327,9 +328,9 @@ def directed_steiner_tree(
     - MultiDiGraph inputs are reduced to DiGraph by keeping the minimum-weight
     edge between each node pair. The returned Steiner tree is a DiGraph.
 
-    - This implementation is recursive. If ``levels`` is larger than ~1000,
-    Python's default recursion limit may be exceeded, leading to
-    ``RecursionError``. Consider increasing the recursion limit with
+    - This implementation is recursive. If ``levels`` is too large relative
+    to Python's recursion limit, a ``NetworkXError`` is raised. Consider
+    reducing ``levels`` or increasing the recursion limit with
     ``sys.setrecursionlimit``.
 
     - The parameter ``levels`` (denoted ``i`` in [1]_) controls a trade-off
@@ -372,6 +373,11 @@ def directed_steiner_tree(
         levels = 2
     elif levels <= 1:
         raise nx.NetworkXError("levels must greater than one or None")
+    elif levels >= sys.getrecursionlimit():
+        raise nx.NetworkXError(
+            "levels is too large for Python's recursion limit; "
+            "consider reducing levels or increasing sys.setrecursionlimit()"
+        )
 
     if min_terminals is None:
         min_terminals = len(terminals)
