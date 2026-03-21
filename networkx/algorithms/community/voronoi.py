@@ -11,10 +11,16 @@ from networkx.utils import not_implemented_for
 
 __all__ = ["voronoi_communities", "voronoi_partitions"]
 
+# function dictionary, if there is a 3rd word that doesnt match the first 2 then wait for user defined
+# give function by param
+
+# optional param, how many clusters do you want?
+# optional param, we can also maximize other functions not just modularity
+
 
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
-def voronoi_communities(G, mode="strength", eps=1e-8):
+def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
     r"""Find the best partition of a graph using the Voronoi Community Detection
     Algorithm.
 
@@ -22,17 +28,20 @@ def voronoi_communities(G, mode="strength", eps=1e-8):
     structure of a network. This is a deterministic method based on modularity optimization. [1]_
 
     TODO: WRITE HERE ABOUT HOW THE ALGORITHM WORKS, also the big formula for the modularity maxing
+    The transformation ensures that tightly-knit
+    nodes within the same community are mathematically "closer", while edges acting as
+    bridges between communities are "longer".
 
     Parameters
     ----------
     G : NetworkX graph
+    weight : string, optional (default: "weight")
     mode : {"strength", "flow"}, optional (default: "strength)
         The strategy to transform weights into distances
         - "strength": $1 / (w * d)$ if weights have a strength-like meaning
         - "flow": $log(w) / d$ if weights have an (information) flow-like meaning
     eps : float, optional (default: 1e-8)
-        Small offset value added to denominators and logarithms to
-        ensure numerical stability and avoid division by zero.
+        Offset value to ensure numerical stability and avoid division by zero.
 
     Returns
     -------
@@ -61,19 +70,17 @@ def voronoi_communities(G, mode="strength", eps=1e-8):
     if G.number_of_edges() == 0:
         return [{n} for n in G]
 
-    G_dist = _transform_weights_to_distances(G)
+    G_dist = _transform_weights_to_distances(G, weight=weight, eps=eps)
 
-    all_pairs_distances = dict(
-        nx.all_pairs_dijkstra_path_length(G_dist, weight="weight")
-    )
+    all_pairs_distances = dict(nx.all_pairs_dijkstra_path_length(G_dist, weight=weight))
 
     # check if any weight is 0, return with exception
 
-    weighted_densities = _weighted_local_density(G)
+    weighted_densities = _weighted_local_density(G, weight=weight)
 
     nodes = list(G.nodes())
     # does this G.degree weight exist if it is unweighted
-    strengths = dict(G.degree(weight="weight"))
+    strengths = dict(G.degree(weight=weight))
 
     # DATA HAS TO BE NORMALIZED, if >1 i need to normalize
     if mode == "strength":
@@ -124,15 +131,13 @@ def voronoi_communities(G, mode="strength", eps=1e-8):
         print("step", step_count)
         step_count += 1
 
-        generator_points = _choose_generator_points(
-            G_dist, r, transformed, all_pairs_distances
-        )
+        generator_points = _choose_generator_points(r, transformed, all_pairs_distances)
         print("currently the generator_points:", generator_points)
         print("current cluster count:", len(generator_points))
         print("currently r:", r)
-        mode_to_use = "out" if G.is_directed() else "undirected"
+        mode_to_use = "in" if G.is_directed() else "undirected"
         voronoi_community = voronoi_partitions(
-            G_dist, generator_points, all_pairs_distances, mode_to_use
+            G_dist, generator_points, weight, all_pairs_distances, mode_to_use
         )
 
         groups = {}
@@ -166,161 +171,187 @@ def voronoi_communities(G, mode="strength", eps=1e-8):
     return final_partition
 
 
-def _transform_weights_to_distances(G):
-    EPS = 1e-8
+def _transform_weights_to_distances(G, weight="weight", eps=1e-8):
+    r"""Transform graph edge weights into topological distances based on edge clustering.
 
-    Gu = G.to_undirected()
-    neighbors = {u: set(Gu[u]) for u in Gu.nodes()}
+    This internal helper function creates a new graph where edge weights represent
+    distances, inversely proportional to the original edge weight and the
+    edge's local clustering coefficient.
 
-    if G.is_directed():
-        D = nx.DiGraph()
-    else:
-        D = nx.Graph()
+    TODO: formula?
 
-    D.add_nodes_from(G.nodes())
+    Parameters
+    ----------
+    G : NetworkX graph
+    weight : string, optional (default: "weight")
+    eps : float, optional (default: 1e-8)
+        Offset value to ensure numerical stability and avoid division by zero.
 
-    for edge_count, (u, v, data) in enumerate(G.edges(data=True), 1):
-        # triangle count for this edge
-        t = len(neighbors[u] & neighbors[v])
+    Returns
+    -------
+    D : NetworkX graph
+        A new graph with the `weight` attribute representing topological distance.
+    """
 
-        deg_u = len(neighbors[u])
-        deg_v = len(neighbors[v])
-        min_deg = min(deg_u - 1, deg_v - 1)
+    Gu = G.to_undirected(as_view=True)
+    undirected_neighbors = {u: set(Gu[u]) for u in Gu.nodes()}
 
-        if min_deg <= 0:
-            ecc = (t + 1) / EPS
-        else:
-            ecc = (t + 1) / min_deg
+    D = nx.create_empty_copy(G)
 
-        w = float(data.get("weight", 1.0))
-        dist = 1.0 / ((w if w > 0 else EPS) * ecc)
-        D.add_edge(u, v, weight=dist)
+    for u, v, data in G.edges(data=True):
+        triangles = len(undirected_neighbors[u] & undirected_neighbors[v])
+        degree_u = len(undirected_neighbors[u])
+        degree_v = len(undirected_neighbors[v])
+
+        min_degree = min(degree_u - 1, degree_v - 1)
+        denominator = min_degree if min_degree > 0 else eps
+        ecc = (triangles + 1) / denominator
+
+        w = float(data.get(weight, 1.0))
+        w_safe = w if w > 0 else eps
+        distance = 1.0 / (w_safe * ecc)
+
+        edge_attrs = data.copy()
+        edge_attrs[weight] = distance
+
+        D.add_edge(u, v, **edge_attrs)
 
     return D
 
 
-def _weighted_local_density(G):
-    strengths = dict(G.degree(weight="weight"))
-    dens = {}
+def _weighted_local_density(G, weight="weight"):
+    """Calculate the weighted local density for each node in the graph.
 
-    # adjacency sets for speed (directed)
-    # Check if the graph is directed to use successors/predecessors
-    # If undirected, neighbors() covers both.
+    The local density is a metric used to identify the centers of communities
+    (generator points). It is calculated based on the node's strength and the
+    ratio of internal edges within its neighborhood to the total edges connected
+    to its neighborhood.
+
+    TODO: formula?
+
+    Parameters
+    ----------
+    G : NetworkX graph
+    weight : string, optional (default: "weight")
+
+    Returns
+    -------
+    densities : dict
+        A dictionary mapping each node to its weighted local density.
+    """
+
+    strengths = dict(G.degree(weight=weight))
+    densities = {}
+
     if G.is_directed():
         out_adj = {u: set(G.successors(u)) for u in G.nodes()}
         in_adj = {u: set(G.predecessors(u)) for u in G.nodes()}
     else:
-        # For undirected, successors and predecessors are just neighbors
         out_adj = {u: set(G.neighbors(u)) for u in G.nodes()}
         in_adj = out_adj
 
     for node in G.nodes():
-        # first-order neighborhood: incoming + outgoing neighbors
-        neigh = out_adj[node] | in_adj[node]
+        if G.is_directed():
+            neighbors = out_adj[node] | in_adj[node]
+        else:
+            neighbors = out_adj[node]
 
-        # -------------------------
-        # 1. INTERNAL m (directed)
-        # -------------------------
-        m = 0
+        # Internal edges among neighbors
+        m = sum(1 for v in neighbors if v in out_adj[node])  # node -> v
+        m += sum(1 for v in neighbors if v in in_adj[node])  # v -> node
+        m += sum(1 for u in neighbors for v in neighbors if u != v and v in out_adj[u])
 
-        # edges between node ↔ neighbors
-        for v in neigh:
-            if v in out_adj[node]:
-                m += 1  # node → v
-            if v in in_adj[node]:
-                m += 1  # v → node
+        # External edges leaving the neighborhood
+        if G.is_directed():
+            k = sum(
+                1
+                for u in neighbors
+                for v in out_adj[u]
+                if v not in neighbors and v != node
+            )
+            k += sum(
+                1
+                for u in neighbors
+                for v in in_adj[u]
+                if v not in neighbors and v != node
+            )
+        else:
+            k = sum(
+                1
+                for u in neighbors
+                for v in out_adj[u]
+                if v not in neighbors and v != node
+            )
 
-        # edges among neighbors (directed)
-        neigh_list = list(neigh)
-        for u in neigh_list:
-            for v in neigh_list:
-                if u == v:
-                    continue
-                if v in out_adj[u]:  # u → v
-                    m += 1
-
-        # -------------------------
-        # 2. EXTERNAL k (directed)
-        # -------------------------
-        k = 0
-        for u in neigh:
-            # outgoing from u to outside
-            for v in out_adj[u]:
-                if v not in neigh and v != node:
-                    k += 1
-
-            # incoming to u from outside
-            for v in in_adj[u]:
-                if v not in neigh and v != node:
-                    k += 1
-
-        # -------------------------
-        # 3. Compute density
-        # -------------------------
         s = strengths[node]
-        density = s * m / (m + k) if (m + k) > 0 else 0
-        dens[node] = density
+        densities[node] = s * m / (m + k) if (m + k) > 0 else 0
 
-    return dens
-
-
-def _edge_clustering_coefficient(G, u, v):
-    EPS = 1e-8
-
-    Gu = G.to_undirected()
-
-    Nu = set(Gu.neighbors(u))
-    Nv = set(Gu.neighbors(v))
-
-    # common neighbors = triangles
-    triangles = len(Nu & Nv)
-
-    degree_u = len(Nu)
-    degree_v = len(Nv)
-
-    min_degree = min(degree_u - 1, degree_v - 1)
-
-    if min_degree <= 0:
-        return (triangles + 1) / (min_degree + EPS)
-
-    return (triangles + 1) / min_degree
+    return densities
 
 
-# Choose the generator points for the Voronoi partitioning. Each generator has the highest local density
-# within a region of radius r. Distance calculations are done in a directed manner.
-def _choose_generator_points(G, r, weighted_densities, all_pairs_distances):
-    sorted_nodes = sorted(weighted_densities, key=weighted_densities.get, reverse=True)
+def _choose_generator_points(r, weighted_densities, all_pairs_distances):
+    """Identify the generator points (community centers) for the Voronoi partitioning.
+
+    A node is selected as a generator point if it is a local maximum. This means that
+    it has the highest weighted local density within a local neighborhood of radius
+    `r`. Distance calculations are based on the precomputed all-pairs shortest paths.
+    Ties in density are broken deterministically by node ID.
+
+    Parameters
+    ----------
+    r : float
+        The radius defining the local neighborhood around a node.
+    weighted_densities : dict
+        A dictionary mapping each node to its weighted local density.
+    all_pairs_distances : dict of dicts
+        Precomputed shortest path distances between all nodes.
+
+    Returns
+    -------
+    generator_points : list
+        A list of node IDs selected as generator points.
+    """
+
+    # Sort by descending density, breaking ties by ascending node ID for determinism
+    sorted_nodes = sorted(
+        weighted_densities.keys(), key=lambda n: (-weighted_densities[n], n)
+    )
 
     generator_points = []
+    generator_set = set()
 
     for node_i in sorted_nodes:
         is_largest = True
-        lengths_i = all_pairs_distances[node_i]
+        distances_from_node = all_pairs_distances[node_i]
 
-        for node_j, distance in lengths_i.items():
-            if node_j == node_i:
+        for node_j, distance in distances_from_node.items():
+            if node_j == node_i or distance > r:
                 continue
 
-            if distance <= r:
-                # Check if node_j has higher density or is already a generator
-                # I was debugging this > to < for long
-                if (
-                    weighted_densities[node_i] < weighted_densities[node_j]
-                    or node_j in generator_points
-                ):
-                    is_largest = False
-                    break
+            if (
+                weighted_densities[node_i] < weighted_densities[node_j]
+                or node_j in generator_set
+            ):
+                is_largest = False
+                break
 
         if is_largest:
             generator_points.append(node_i)
+            generator_set.add(node_i)
 
     return generator_points
 
 
+# add param: how many communities we want to have,
+# clarify
+
+
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
-def voronoi_partitions(G, generator_points, all_pairs_distances=None, mode="out"):
-    r"""Yield partitions for each circle with diameter r of the Voronoi Community Detection
+def voronoi_partitions(
+    G, generator_points, weight="weight", all_pairs_distances=None, mode="out"
+):
+    r"""Yield partitions for each circle with diameter `r` of the Voronoi Community Detection
     Algorithm.
 
     TODO: WRITE DOWN HOW THE ALGORITHM WORKS
@@ -329,6 +360,7 @@ def voronoi_partitions(G, generator_points, all_pairs_distances=None, mode="out"
     ----------
     G : NetworkX graph
     generator_points : list
+    weight : string, optional (default: "weight")
     all_pairs_distances : optional, if not given then it gets calculated by the algorithm, but it is high cost
     mode : {"out", "in", "undirected"}
 
@@ -356,17 +388,21 @@ def voronoi_partitions(G, generator_points, all_pairs_distances=None, mode="out"
     if not all(g in G.nodes for g in generator_points):
         raise ValueError("Invalid vertex ID given as Voronoi generator.")
 
-    # check type of G, if undirected dont go in here
-    if mode == "in":
-        G_use = G.reverse()
-    elif mode == "out":
-        G_use = G
+    if G.is_directed():
+        if mode == "in":
+            G_use = G.reverse()
+        elif mode == "out":
+            G_use = G
+        else:
+            G_use = G.to_undirected()
     else:
-        G_use = G.to_undirected()
+        G_use = G
 
     membership = {node: -1 for node in G_use.nodes()}
 
     # If precomputed distances provided, use them
+    # In the precomputed branch, the lookup all_pairs_distances[node][generator]
+    # already encodes dist(node -> generator); mode is not applied here.
     if all_pairs_distances is not None:
         for node in G_use.nodes():
             min_distance = float("inf")
@@ -375,10 +411,10 @@ def voronoi_partitions(G, generator_points, all_pairs_distances=None, mode="out"
             for generator_idx, generator in enumerate(generator_points):
                 # Look up precomputed distance
                 if (
-                    generator in all_pairs_distances
-                    and node in all_pairs_distances[generator]
+                    node in all_pairs_distances
+                    and generator in all_pairs_distances[node]
                 ):
-                    distance = all_pairs_distances[generator][node]
+                    distance = all_pairs_distances[node][generator]
 
                     if distance < min_distance:
                         min_distance = distance
@@ -393,7 +429,7 @@ def voronoi_partitions(G, generator_points, all_pairs_distances=None, mode="out"
         for generator_index, generator in enumerate(generator_points):
             if nx.is_weighted(G_use):
                 lengths = nx.single_source_dijkstra_path_length(
-                    G_use, generator, weight="weight"
+                    G_use, generator, weight=weight
                 )
             else:
                 lengths = nx.single_source_shortest_path_length(G_use, generator)
