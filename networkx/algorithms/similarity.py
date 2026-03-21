@@ -1603,7 +1603,9 @@ def _prepare_panther_paths(
     # Note that we use ``path_length + 1`` here,
     # because we are generating the number of nodes.
     t_choose_2 = math.comb(path_length + 1, 2)
-    sample_size = math.ceil((c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
+    sample_size = math.ceil(
+        (c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta))
+    )
     index_map = {}
 
     # Generate the random paths and populate the index_map

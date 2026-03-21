@@ -846,7 +846,12 @@ class TestSimilarity:
         G.add_edge(0, 3)
         G.add_edge(1, 2)
         G.add_edge(2, 4)
-        expected = {2: 0.5384615384615385, 3: 0.46153846153846156, 1: 0.38461538461538464, 4: 0.15384615384615385}
+        expected = {
+            2: 0.5384615384615385,
+            3: 0.46153846153846156,
+            1: 0.38461538461538464,
+            4: 0.15384615384615385,
+        }
         sim = nx.panther_similarity(G, 0, path_length=2, seed=42)
         assert sim == expected
 
@@ -857,7 +862,12 @@ class TestSimilarity:
         G.add_edge("v1", "v4", w=2)
         G.add_edge("v2", "v3", w=0.1)
         G.add_edge("v3", "v5", w=1)
-        expected = {"v3": 0.6153846153846154, "v4": 0.5384615384615385, "v2": 0.46153846153846156, "v5": 0.23076923076923078}
+        expected = {
+            "v3": 0.6153846153846154,
+            "v4": 0.5384615384615385,
+            "v2": 0.46153846153846156,
+            "v5": 0.23076923076923078,
+        }
         sim = nx.panther_similarity(G, "v1", path_length=2, weight="w", seed=42)
         assert sim == expected
 
