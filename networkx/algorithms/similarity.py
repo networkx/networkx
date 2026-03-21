@@ -1736,7 +1736,7 @@ def panther_similarity(
         )
 
     S = np.zeros(num_nodes)
-    source_paths = set(index_map[source])
+    source_paths = set(index_map.get(source, set()))
 
     # Calculate the path similarities
     # between ``source`` (v) and ``node`` (v_j)
@@ -1908,7 +1908,7 @@ def panther_vector_similarity(
 
     # Calculate the path similarities for each node
     for vi_idx, vi in enumerate(G.nodes):
-        vi_paths = index_map_sets[vi]
+        vi_paths = index_map_sets.get(vi, set())
 
         for node, node_paths in index_map_sets.items():
             # Calculate similarity score
