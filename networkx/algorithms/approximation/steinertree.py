@@ -281,8 +281,9 @@ def directed_steiner_tree(
 
     Parameters
     ----------
-    G : DiGraph
-        The directed graph on which the algorithm operates.
+    G : DiGraph or MultiDiGraph
+        The directed graph on which the algorithm operates. If a MultiDiGraph
+        is provided, parallel edges are reduced to a single edge with minimum weight.
     root : node
         The root node where the algorithm starts growing partial trees.
     terminals : iterable of nodes
