@@ -1,6 +1,6 @@
+import sys
 from collections import deque
 from itertools import chain
-import sys
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
