@@ -1560,6 +1560,14 @@ def _prepare_panther_paths(
     """
     import numpy as np
 
+    if path_length < 2:
+        raise nx.NetworkXError("path_length must be >= 2")
+    if not (0 < delta < 1):
+        raise nx.NetworkXError("delta must be in (0, 1)")
+    if eps is not None and eps <= 0:
+        raise nx.NetworkXError("eps must be positive")
+    if c <= 0:
+        raise nx.NetworkXError("c must be positive")
     if source not in G:
         raise nx.NodeNotFound(f"Source node {source} not in G")
 
