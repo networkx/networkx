@@ -1590,8 +1590,11 @@ def _prepare_panther_paths(
     inv_node_map = {name: index for index, name in enumerate(G)}
 
     # Calculate the sample size ``R`` for how many paths
-    # to randomly generate
-    t_choose_2 = math.comb(path_length, 2)
+    # to randomly generate.
+    #
+    # Note that we use ``path_length + 1`` here,
+    # because we are generating the number of nodes.
+    t_choose_2 = math.comb(path_length + 1, 2)
     sample_size = int((c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
     index_map = {}
 
