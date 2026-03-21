@@ -2058,18 +2058,29 @@ def generate_random_paths(
     # every pair of vertices according to Eq. (3)
     adj_mat = nx.to_numpy_array(G, weight=weight)
 
-    # Handle isolated nodes by checking for zero row sums
+    # Handle isolated nodes by checking for zero row sums.
+    # Use np.errstate to suppress warnings for isolated nodes (0 row sum)
+    # whose rows will never be accessed during random walks.
     row_sums = adj_mat.sum(axis=1).reshape(-1, 1)
-    inv_row_sums = np.reciprocal(row_sums)
-    transition_probabilities = adj_mat * inv_row_sums
+    with np.errstate(divide="ignore", invalid="ignore"):
+        inv_row_sums = np.reciprocal(row_sums)
+        transition_probabilities = adj_mat * inv_row_sums
 
     node_map = list(G)
     num_nodes = G.number_of_nodes()
 
+    # Identify non-isolated nodes (row_sums > 0) so we never start a walk
+    # from a node with NaN transition probabilities.
+    non_isolated_indices = np.flatnonzero(row_sums.ravel() > 0)
+
     for path_index in range(sample_size):
         if source is None:
             # Sample current vertex v = v_i uniformly at random
-            node_index = randint_fn(num_nodes)
+            # from non-isolated nodes only.
+            if len(non_isolated_indices) == 0:
+                yield []
+                continue
+            node_index = seed.choice(non_isolated_indices)
             node = node_map[node_index]
         else:
             if source not in node_map:
