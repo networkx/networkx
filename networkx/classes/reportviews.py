@@ -657,9 +657,9 @@ class OutDegreeView(DiDegreeView):
     def __getitem__(self, n):
         weight = self._weight
         nbrs = self._succ[n]
-        if self._weight is None:
+        if weight is None:
             return len(nbrs)
-        return sum(dd.get(self._weight, 1) for dd in nbrs.values())
+        return sum(dd.get(weight, 1) for dd in nbrs.values())
 
     def __iter__(self):
         weight = self._weight
@@ -1164,27 +1164,73 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
     def _from_iterable(cls, it):
         return set(it)
 
-    dataview = OutEdgeDataView
+    out_edges = True
 
     def __init__(self, G):
         self._graph = G
-        self._adjdict = G._succ if hasattr(G, "succ") else G._adj
+        self._adjdict = (
+            (G.succ if self.out_edges else G.pred) if G.is_directed() else G._adj
+        )
         self._nodes_nbrs = self._adjdict.items
 
     # Set methods
     def __len__(self):
-        return sum(len(nbrs) for n, nbrs in self._nodes_nbrs())
+        directed = self._graph.is_directed()
+        multigraph = self._graph.is_multigraph()
+
+        if directed:
+            if multigraph:
+                return sum(
+                    len(kdict)
+                    for _, nbrs in self._nodes_nbrs()
+                    for kdict in nbrs.values()
+                )
+            else:
+                return sum(len(nbrs) for _, nbrs in self._nodes_nbrs())
+        else:
+            seen = set()
+            count = 0
+            for n, nbrs in self._nodes_nbrs():
+                if multigraph:
+                    for nbr, kdict in nbrs.items():
+                        if nbr in seen:
+                            continue
+                        count += len(kdict)
+                else:
+                    for nbr in nbrs:
+                        if nbr in seen:
+                            continue
+                        count += 1
+                seen.add(n)
+            return count
 
     def __iter__(self):
+        directed = self._graph.is_directed()
+        multigraph = self._graph.is_multigraph()
+        out_edges = self.out_edges
+        seen = set()
         for n, nbrs in self._nodes_nbrs():
-            for nbr in nbrs:
-                yield (n, nbr)
+            if not directed and n in seen:
+                continue
+            if multigraph:
+                for nbr, kdict in list(nbrs.items()):
+                    if nbr in seen:
+                        continue
+                    for key in kdict:
+                        yield (n, nbr, key) if out_edges else (nbr, n, key)
+            else:
+                for nbr in list(nbrs):
+                    if nbr in seen:
+                        continue
+                    yield (n, nbr) if out_edges else (nbr, n)
+            if not directed:
+                seen.add(n)
 
     def __contains__(self, e):
         try:
-            u, v = e
-            return v in self._adjdict[u]
-        except KeyError:
+            self[e]
+            return True
+        except (KeyError, ValueError):
             return False
 
     # Mapping Methods
@@ -1192,21 +1238,39 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
         if isinstance(e, slice):
             raise nx.NetworkXError(
                 f"{type(self).__name__} does not support slicing, "
-                f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
+                f"try list(G.{'edges' if self.out_edges else 'in_edges'})[{e.start}:{e.stop}:{e.step}]"
             )
-        u, v = e
+        if not isinstance(e, tuple):
+            raise ValueError("The edge must be a tuple.")
+        multigraph = self._graph.is_multigraph()
+        if len(e) != 2 and not (multigraph and len(e) == 3):
+            raise ValueError(f"The edge {e} has an invalid length {len(e)}.")
+        u, v = (e[0], e[1]) if self.out_edges else (e[1], e[0])
         try:
-            return self._adjdict[u][v]
-        except KeyError as ex:  # Customize msg to indicate exception origin
+            if multigraph:
+                k = 0 if len(e) == 2 else e[2]
+                return self._adjdict[u][v][k]
+            else:
+                return self._adjdict[u][v]
+        except KeyError:
             raise KeyError(f"The edge {e} is not in the graph.")
 
     # EdgeDataView methods
-    def __call__(self, nbunch=None, data=False, *, default=None):
-        if nbunch is None and data is False:
-            return self
-        return self.dataview(self, nbunch, data, default=default)
+    def __call__(self, nbunch=None, data=False, *, default=None, keys=False):
+        multigraph = self._graph.is_multigraph()
 
-    def data(self, data=True, default=None, nbunch=None):
+        if not multigraph and keys:
+            raise TypeError("keys is not supported for simple graphs")
+
+        if nbunch is None and data is False and (not multigraph or keys):
+            return self
+        dataview = self._dataview(multigraph, self._graph.is_directed())
+        if multigraph:
+            return dataview(self, nbunch, data, default=default, keys=keys)
+        else:
+            return dataview(self, nbunch, data, default=default)
+
+    def data(self, data=True, default=None, nbunch=None, keys=False):
         """
         Return a read-only view of edge data.
 
@@ -1223,6 +1287,10 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
         nbunch : container of nodes, optional (default=None)
             Allows restriction to edges only involving certain nodes. All edges
             are considered by default.
+        keys : bool, optional (default=False)
+            Only relevant for MultiGraphs/MultiDiGraphs.
+            If True, the view includes the edge keys as part of each edge tuple.
+            Not allowed for simple graphs (raises TypeError if set).
 
         Returns
         -------
@@ -1282,9 +1350,34 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
         >>> G.edges.data("speed")
         EdgeDataView([(0, 1, None), (0, 2, None), (1, 2, None)])
         """
-        if nbunch is None and data is False:
+        multigraph = self._graph.is_multigraph()
+
+        # Reject keys if not a multigraph
+        if not multigraph and keys:
+            raise TypeError("keys is not supported for simple graphs")
+
+        # Return self in the same cases as the old method
+        if nbunch is None and data is False and (not multigraph or keys):
             return self
-        return self.dataview(self, nbunch, data, default=default)
+
+        # Call dataview with appropriate arguments
+        dataview = self._dataview(multigraph, self._graph.is_directed())
+        if multigraph:
+            return dataview(self, nbunch, data, default=default, keys=keys)
+        else:
+            return dataview(self, nbunch, data, default=default)
+
+    def _dataview(self, multigraph, directed):
+        if multigraph:
+            if directed:
+                return OutMultiEdgeDataView if self.out_edges else InMultiEdgeDataView
+            else:
+                return MultiEdgeDataView
+        else:
+            if directed:
+                return OutEdgeDataView if self.out_edges else InEdgeDataView
+            else:
+                return EdgeDataView
 
     # String Methods
     def __str__(self):
@@ -1367,66 +1460,13 @@ class EdgeView(OutEdgeView):
 
     __slots__ = ()
 
-    dataview = EdgeDataView
-
-    def __len__(self):
-        num_nbrs = (len(nbrs) + (n in nbrs) for n, nbrs in self._nodes_nbrs())
-        return sum(num_nbrs) // 2
-
-    def __iter__(self):
-        seen = {}
-        for n, nbrs in self._nodes_nbrs():
-            for nbr in list(nbrs):
-                if nbr not in seen:
-                    yield (n, nbr)
-            seen[n] = 1
-        del seen
-
-    def __contains__(self, e):
-        try:
-            u, v = e[:2]
-            return v in self._adjdict[u] or u in self._adjdict[v]
-        except (KeyError, ValueError):
-            return False
-
 
 class InEdgeView(OutEdgeView):
     """A EdgeView class for inward edges of a DiGraph"""
 
     __slots__ = ()
 
-    def __setstate__(self, state):
-        self._graph = state["_graph"]
-        self._adjdict = state["_adjdict"]
-        self._nodes_nbrs = self._adjdict.items
-
-    dataview = InEdgeDataView
-
-    def __init__(self, G):
-        self._graph = G
-        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
-        self._nodes_nbrs = self._adjdict.items
-
-    def __iter__(self):
-        for n, nbrs in self._nodes_nbrs():
-            for nbr in nbrs:
-                yield (nbr, n)
-
-    def __contains__(self, e):
-        try:
-            u, v = e
-            return u in self._adjdict[v]
-        except KeyError:
-            return False
-
-    def __getitem__(self, e):
-        if isinstance(e, slice):
-            raise nx.NetworkXError(
-                f"{type(self).__name__} does not support slicing, "
-                f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
-            )
-        u, v = e
-        return self._adjdict[v][u]
+    out_edges = False
 
 
 class OutMultiEdgeView(OutEdgeView):
@@ -1434,72 +1474,11 @@ class OutMultiEdgeView(OutEdgeView):
 
     __slots__ = ()
 
-    dataview = OutMultiEdgeDataView
-
-    def __len__(self):
-        return sum(
-            len(kdict) for n, nbrs in self._nodes_nbrs() for nbr, kdict in nbrs.items()
-        )
-
-    def __iter__(self):
-        for n, nbrs in self._nodes_nbrs():
-            for nbr, kdict in nbrs.items():
-                for key in kdict:
-                    yield (n, nbr, key)
-
-    def __contains__(self, e):
-        N = len(e)
-        if N == 3:
-            u, v, k = e
-        elif N == 2:
-            u, v = e
-            k = 0
-        else:
-            raise ValueError("MultiEdge must have length 2 or 3")
-        try:
-            return k in self._adjdict[u][v]
-        except KeyError:
-            return False
-
-    def __getitem__(self, e):
-        if isinstance(e, slice):
-            raise nx.NetworkXError(
-                f"{type(self).__name__} does not support slicing, "
-                f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
-            )
-        u, v, k = e
-        return self._adjdict[u][v][k]
-
-    def __call__(self, nbunch=None, data=False, *, default=None, keys=False):
-        if nbunch is None and data is False and keys is True:
-            return self
-        return self.dataview(self, nbunch, data, default=default, keys=keys)
-
-    def data(self, data=True, default=None, nbunch=None, keys=False):
-        if nbunch is None and data is False and keys is True:
-            return self
-        return self.dataview(self, nbunch, data, default=default, keys=keys)
-
 
 class MultiEdgeView(OutMultiEdgeView):
     """A EdgeView class for edges of a MultiGraph"""
 
     __slots__ = ()
-
-    dataview = MultiEdgeDataView
-
-    def __len__(self):
-        return sum(1 for e in self)
-
-    def __iter__(self):
-        seen = {}
-        for n, nbrs in self._nodes_nbrs():
-            for nbr, kd in nbrs.items():
-                if nbr not in seen:
-                    for k, dd in kd.items():
-                        yield (n, nbr, k)
-            seen[n] = 1
-        del seen
 
 
 class InMultiEdgeView(OutMultiEdgeView):
@@ -1507,43 +1486,4 @@ class InMultiEdgeView(OutMultiEdgeView):
 
     __slots__ = ()
 
-    def __setstate__(self, state):
-        self._graph = state["_graph"]
-        self._adjdict = state["_adjdict"]
-        self._nodes_nbrs = self._adjdict.items
-
-    dataview = InMultiEdgeDataView
-
-    def __init__(self, G):
-        self._graph = G
-        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
-        self._nodes_nbrs = self._adjdict.items
-
-    def __iter__(self):
-        for n, nbrs in self._nodes_nbrs():
-            for nbr, kdict in nbrs.items():
-                for key in kdict:
-                    yield (nbr, n, key)
-
-    def __contains__(self, e):
-        N = len(e)
-        if N == 3:
-            u, v, k = e
-        elif N == 2:
-            u, v = e
-            k = 0
-        else:
-            raise ValueError("MultiEdge must have length 2 or 3")
-        try:
-            return k in self._adjdict[v][u]
-        except KeyError:
-            return False
-
-    def __getitem__(self, e):
-        if isinstance(e, slice):
-            raise nx.NetworkXError(
-                f"{type(self).__name__} does not support slicing, "
-                f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
-            )
-        u, v, k = e
-        return self._adjdict[v][u][k]
+    out_edges = False
