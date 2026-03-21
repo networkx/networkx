@@ -1606,15 +1606,6 @@ def _prepare_panther_paths(
     sample_size = math.ceil((c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
     index_map = {}
 
-    # Check for isolated nodes before generating random paths
-    # If there are still isolated nodes in the graph after filtering,
-    # they will cause issues with path generation
-    remaining_isolates = set(nx.isolates(G))
-    if remaining_isolates:
-        raise nx.NetworkXUnfeasible(
-            f"Cannot generate random paths with isolated nodes present: {remaining_isolates}"
-        )
-
     # Generate the random paths and populate the index_map
     for _ in generate_random_paths(
         G,
