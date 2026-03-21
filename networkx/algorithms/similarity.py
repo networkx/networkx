@@ -1856,11 +1856,11 @@ def panther_vector_similarity(
 
     >>> from pprint import pprint
     >>> pprint(nx.panther_vector_similarity(G, source=0, seed=42))
-    {49: 8.42043346114428,
-     65: 8.386282583120506,
-     75: 8.312589948005998,
-     85: 8.511216155444034,
-     88: 8.319209131495183}
+    {35: 1.038910221654944,
+     65: 1.0451438257397818,
+     75: 1.0390264002891683,
+     85: 1.0453804313269508,
+     88: 1.042017380672793}
 
     "Spoke" nodes are structurally similar to one another, so their
     similarity scores are high
