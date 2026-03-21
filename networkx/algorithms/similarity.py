@@ -1941,8 +1941,8 @@ def panther_vector_similarity(
     # Calculate reciprocals and normalize to [0, 1] range
 
     # Handle the case where distances are very small or zero (common in small graphs)
-    # Use the passed in eps parameter instead of defining a new epsilon
-    neighbor_distances = np.maximum(neighbor_distances, eps)
+    # Clamp zero distances to machine epsilon to avoid division by zero
+    neighbor_distances = np.maximum(neighbor_distances, np.finfo(float).eps)
     similarities = 1 / neighbor_distances
 
     # Always normalize to ensure values are between 0 and 1
