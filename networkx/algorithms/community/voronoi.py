@@ -13,7 +13,6 @@ __all__ = ["voronoi_communities", "voronoi_partitions"]
 
 # function dictionary, if there is a 3rd word that doesnt match the first 2 then wait for user defined
 # give function by param
-
 # optional param, how many clusters do you want?
 # optional param, we can also maximize other functions not just modularity
 
@@ -64,32 +63,32 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
     See Also
     --------
     voronoi_partitions
-    :any:`voronoi_communities`
     """
 
     if G.number_of_edges() == 0:
         return [{n} for n in G]
 
+    if any(d.get(weight, 1.0) <= 0 for _, _, d in G.edges(data=True)):
+        raise ValueError(
+            "All edge weights must be positive for Voronoi community detection."
+        )
+
     G_dist = _transform_weights_to_distances(G, weight=weight, eps=eps)
 
     all_pairs_distances = dict(nx.all_pairs_dijkstra_path_length(G_dist, weight=weight))
 
-    # check if any weight is 0, return with exception
-
     weighted_densities = _weighted_local_density(G, weight=weight)
 
-    nodes = list(G.nodes())
-    # does this G.degree weight exist if it is unweighted
     strengths = dict(G.degree(weight=weight))
 
     # DATA HAS TO BE NORMALIZED, if >1 i need to normalize
     if mode == "strength":
-        transformed = {node: float(weighted_densities[node]) for node in nodes}
+        transformed = {node: float(weighted_densities[node]) for node in G.nodes()}
     elif mode == "flow":
         transformed = {
             node: math.log(float(strengths[node]) + eps)
             / (float(weighted_densities[node]) + eps)
-            for node in nodes
+            for node in G.nodes()
         }
     else:
         raise ValueError("Invalid mode")
@@ -122,7 +121,7 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
     max_r *= 2
 
     max_modularity = -float("inf")
-    best_community = {}
+    best_community = []
 
     step_count = 1
     for r in np.arange(
@@ -136,39 +135,26 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
         print("current cluster count:", len(generator_points))
         print("currently r:", r)
         mode_to_use = "in" if G.is_directed() else "undirected"
-        voronoi_community = voronoi_partitions(
+
+        communities = voronoi_partitions(
             G_dist, generator_points, weight, all_pairs_distances, mode_to_use
         )
 
-        groups = {}
-        for node, community_id in voronoi_community.items():
-            if community_id not in groups:
-                groups[community_id] = set()
-            groups[community_id].add(node)
-
-        current_modularity = modularity(G, list(groups.values()))
+        current_modularity = modularity(G, communities)
 
         if current_modularity > max_modularity:
             print("new best modularity found:")
             max_modularity = current_modularity
-            best_community = voronoi_community
+            best_community = communities
 
         print("current_modularity:", current_modularity)
 
     print("communities", best_community)
     print("modularity", max_modularity)
 
-    # CREATE FINAL PARTITIONS HERE
-    community_mapping = {}
-    for node, community_id in best_community.items():
-        if community_id not in community_mapping:
-            community_mapping[community_id] = set()
-        community_mapping[community_id].add(node)
+    best_community = sorted(best_community, key=lambda c: min(c))
 
-    # Convert to a list of sets
-    final_partition = list(community_mapping.values())
-
-    return final_partition
+    return best_community
 
 
 def _transform_weights_to_distances(G, weight="weight", eps=1e-8):
@@ -342,16 +328,77 @@ def _choose_generator_points(r, weighted_densities, all_pairs_distances):
     return generator_points
 
 
-# add param: how many communities we want to have,
-# clarify
+def _voronoi_cells_from_distances(G, generator_points, all_pairs_distances, direction):
+    """Helper function to build Voronoi cells using precomputed distances.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+    generator_points : list
+    all_pairs_distances : dict
+    direction : {"out", "in", "undirected"}
+        TODO: explain direction
+
+    Returns
+    -------
+    list of sets
+        A list of disjoint sets representing the partitioned communities.
+    """
+
+    cell_dict = {g: set() for g in generator_points}
+    unreachable = set()
+
+    if direction == "in":
+        for node in G:
+            node_distances = all_pairs_distances.get(node, {})
+            best_generator = None
+            best_distance = float("inf")
+
+            for g in generator_points:
+                d = node_distances.get(g, float("inf"))
+                if d < best_distance:
+                    best_distance = d
+                    best_generator = g
+
+            if best_generator is not None:
+                cell_dict[best_generator].add(node)
+            else:
+                unreachable.add(node)
+
+    else:
+        gen_dists = {g: all_pairs_distances.get(g, {}) for g in generator_points}
+        for node in G:
+            best_generator = None
+            best_distance = float("inf")
+
+            for g in generator_points:
+                d = gen_dists[g].get(node, float("inf"))
+                if d < best_distance:
+                    best_distance = d
+                    best_generator = g
+
+            if best_generator is not None:
+                cell_dict[best_generator].add(node)
+            else:
+                unreachable.add(node)
+
+    cells = [group for group in cell_dict.values() if group]
+
+    if unreachable:
+        cells.append(unreachable)
+
+    return cells
+
+
+# add param: how many communities we want to have and clarify this in the docstring
 
 
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 def voronoi_partitions(
-    G, generator_points, weight="weight", all_pairs_distances=None, mode="out"
+    G, generator_points, weight="weight", all_pairs_distances=None, direction="out"
 ):
-    r"""Yield partitions for each circle with diameter `r` of the Voronoi Community Detection
+    r"""Return partitions for each circle with diameter `r` of the Voronoi Community Detection
     Algorithm.
 
     TODO: WRITE DOWN HOW THE ALGORITHM WORKS
@@ -362,94 +409,48 @@ def voronoi_partitions(
     generator_points : list
     weight : string, optional (default: "weight")
     all_pairs_distances : optional, if not given then it gets calculated by the algorithm, but it is high cost
-    mode : {"out", "in", "undirected"}
+    direction : {"out", "in", "undirected"}
+        TODO: explain direction
 
-    Yields
-    ------
+    Returns
+    -------
     list
         A list of disjoint sets (partition of `G`). Each set represents one community.
         All communities together contain all the nodes in `G`.
 
-    References
-    ----------
+    Examples
+    -------
+
+    Notes
+    -----
 
     See Also
     --------
     voronoi_communities
-    :any:`voronoi_partitions`
+    networkx.algorithms.voronoi.voronoi_cells
     """
 
-    # if directed, we need to know if we are measuring distance from generators outward
-    # or to generators inward or ignoring the direction
-    if mode not in ("in", "out", "undirected"):
-        raise ValueError("mode must be 'in', 'out', or 'undirected'")
+    if direction not in ("in", "out", "undirected"):
+        raise ValueError("direction must be 'in', 'out', or 'undirected'")
 
-    # validating that all generators exist in the graph
-    if not all(g in G.nodes for g in generator_points):
+    generator_points_set = set(generator_points)
+    if not generator_points_set.issubset(G):
         raise ValueError("Invalid vertex ID given as Voronoi generator.")
 
-    if G.is_directed():
-        if mode == "in":
-            G_use = G.reverse()
-        elif mode == "out":
-            G_use = G
-        else:
-            G_use = G.to_undirected()
-    else:
-        G_use = G
-
-    membership = {node: -1 for node in G_use.nodes()}
-
-    # If precomputed distances provided, use them
-    # In the precomputed branch, the lookup all_pairs_distances[node][generator]
-    # already encodes dist(node -> generator); mode is not applied here.
     if all_pairs_distances is not None:
-        for node in G_use.nodes():
-            min_distance = float("inf")
-            closest_generator_idx = -1
+        return _voronoi_cells_from_distances(
+            G, generator_points, all_pairs_distances, direction
+        )
 
-            for generator_idx, generator in enumerate(generator_points):
-                # Look up precomputed distance
-                if (
-                    node in all_pairs_distances
-                    and generator in all_pairs_distances[node]
-                ):
-                    distance = all_pairs_distances[node][generator]
-
-                    if distance < min_distance:
-                        min_distance = distance
-                        closest_generator_idx = generator_idx
-
-            membership[node] = closest_generator_idx
-
+    if G.is_directed():
+        if direction == "in":
+            H = nx.reverse_view(G)
+        elif direction == "out":
+            H = G
+        else:
+            H = G.to_undirected(as_view=True)
     else:
-        # Original implementation: compute on-demand
-        reachable_from = {node: [] for node in G_use.nodes()}
+        H = G
 
-        for generator_index, generator in enumerate(generator_points):
-            if nx.is_weighted(G_use):
-                lengths = nx.single_source_dijkstra_path_length(
-                    G_use, generator, weight=weight
-                )
-            else:
-                lengths = nx.single_source_shortest_path_length(G_use, generator)
-
-            for node, distance in lengths.items():
-                reachable_from[node].append((generator_index, distance))
-
-        for node in G_use.nodes():
-            if not reachable_from[node]:
-                continue
-
-            minimum_distance = min(distance for _, distance in reachable_from[node])
-
-            closest_generators = [
-                generator_index
-                for generator_index, distance in reachable_from[node]
-                if distance == minimum_distance
-            ]
-
-            membership[node] = closest_generators[0]
-
-    # TODO: YIELD!!!
-    return membership
+    cells = nx.voronoi_cells(H, generator_points_set, weight=weight)
+    return list(cells.values())
