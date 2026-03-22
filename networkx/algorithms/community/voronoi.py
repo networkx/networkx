@@ -366,13 +366,15 @@ def _voronoi_cells_from_distances(G, generator_points, all_pairs_distances, dire
                 unreachable.add(node)
 
     else:
-        gen_dists = {g: all_pairs_distances.get(g, {}) for g in generator_points}
+        generator_distances = {
+            g: all_pairs_distances.get(g, {}) for g in generator_points
+        }
         for node in G:
             best_generator = None
             best_distance = float("inf")
 
             for g in generator_points:
-                d = gen_dists[g].get(node, float("inf"))
+                d = generator_distances[g].get(node, float("inf"))
                 if d < best_distance:
                     best_distance = d
                     best_generator = g
