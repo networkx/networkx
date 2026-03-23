@@ -11,10 +11,12 @@ from networkx.utils import not_implemented_for
 
 __all__ = ["voronoi_communities", "voronoi_partitions"]
 
-# function dictionary, if there is a 3rd word that doesnt match the first 2 then wait for user defined
-# give function by param
-# optional param, how many clusters do you want?
-# optional param, we can also maximize other functions not just modularity
+# TODO: function dictionary, if there is a 3rd word that doesnt match the first 2 then wait for user defined
+# TODO: give function by param
+# TODO: optional param, how many clusters do you want?
+# TODO: optional param, we can also maximize other functions not just modularity
+
+# TODO: refactor voronoi_communities
 
 
 @not_implemented_for("multigraph")
@@ -30,6 +32,14 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
     The transformation ensures that tightly-knit
     nodes within the same community are mathematically "closer", while edges acting as
     bridges between communities are "longer".
+
+    As for the minimum distance, we use the shortest edge length. This may be shorter than the shortest
+    incident edge of a generator point, but underestimating the minimum distance does not affect
+    the radius optimization negatively.
+
+    As a maximum distance, we use the eccentricity of the first generator. If the graph is not
+    strongly connected, we consider a _potential_ first generator from each strongly connected
+    component and take the maximum eccentricity of these.
 
     Parameters
     ----------
@@ -56,7 +66,7 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
 
     References
     ----------
-    .. [1] Molnár, Botond, Ildikó-Beáta Márton, Szabolcs Horvát, and Mária Ercsey-Ravasz.
+    ..[1] Molnár, Botond, Ildikó-Beáta Márton, Szabolcs Horvát, and Mária Ercsey-Ravasz.
     "Community detection in directed weighted networks using Voronoi partitioning."_Scientific reports_14,
     no. 1 (2024): 8124. https://doi.org/10.1038/s41598-024-58624-4
 
@@ -81,7 +91,7 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
 
     strengths = dict(G.degree(weight=weight))
 
-    # DATA HAS TO BE NORMALIZED, if >1 i need to normalize
+    # TODO: DATA HAS TO BE NORMALIZED, if >1 i need to normalize
     if mode == "strength":
         transformed = {node: float(weighted_densities[node]) for node in G.nodes()}
     elif mode == "flow":
@@ -93,36 +103,27 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
     else:
         raise ValueError("Invalid mode")
 
-    # As for the minimum distance, we use the shortest edge length. This may be shorter than the shortest
-    # incident edge of a generator point, but underestimating the minimum distance does not affect
-    # the radius optimization negatively.
-
-    # min_r -> shortest dijkstra path length
     min_r = float("inf")
+    max_r = 0
+
     for source_distances in all_pairs_distances.values():
         for dist in source_distances.values():
-            if dist > 0:  # Exclude distance to self (which is 0)
+            if dist > 0 and dist != float("inf"):
                 min_r = min(min_r, dist)
+                max_r = max(max_r, dist)
 
-    # As a maximum distance, we use the eccentricity of the first generator. If the graph is not
-    # strongly connected, we consider a _potential_ first generator from each strongly connected
-    # component and take the maximum eccentricity of these. */
-
-    max_r = 0
-    if G_dist.is_directed():
-        components = nx.strongly_connected_components(G_dist)
-    else:
-        components = nx.connected_components(G_dist)
-
-    for component in components:
-        subgraph = G_dist.subgraph(component)
-        ecc_dict = nx.eccentricity(subgraph)
-        max_r = max(max_r, max(ecc_dict.values()))
     max_r *= 2
+
+    if min_r == float("inf"):
+        min_r = 0.0
+    if max_r <= min_r:
+        max_r = min_r + 0.25  # Ensure the np.arange loop runs at least once
 
     max_modularity = -float("inf")
     best_community = []
 
+    # TODO: remove prints
+    # TODO: come up with a better way to do this than going in a range, Brandt Optimization
     step_count = 1
     for r in np.arange(
         min_r, max_r, 0.25
@@ -152,6 +153,7 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
     print("communities", best_community)
     print("modularity", max_modularity)
 
+    # TODO: I am not sure if this is supposed to sort here or the tests need to be different
     best_community = sorted(best_community, key=lambda c: min(c))
 
     return best_community
@@ -392,7 +394,7 @@ def _voronoi_cells_from_distances(G, generator_points, all_pairs_distances, dire
     return cells
 
 
-# add param: how many communities we want to have and clarify this in the docstring
+# TODO: add param: how many communities we want to have and clarify this in the docstring
 
 
 @not_implemented_for("multigraph")
