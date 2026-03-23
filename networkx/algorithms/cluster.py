@@ -167,24 +167,33 @@ def _directed_triangles_and_degree_iter(G, nodes=None):
     directed triangles so does not count triangles twice.
 
     """
-    nodes_nbrs = ((n, G._pred[n], G._succ[n]) for n in G.nbunch_iter(nodes))
+    # Pre-compute pred/succ sets for all relevant nodes to avoid
+    # rebuilding them every time a high-degree hub is visited as a neighbor.
+    target_nodes = list(G.nbunch_iter(nodes))
+    relevant = set(target_nodes)
+    for n in target_nodes:
+        relevant.update(G._pred[n])
+        relevant.update(G._succ[n])
 
-    for i, preds, succs in nodes_nbrs:
-        ipreds = set(preds) - {i}
-        isuccs = set(succs) - {i}
+    pred_sets = {}
+    succ_sets = {}
+    for n in relevant:
+        pred_sets[n] = set(G._pred[n]) - {n}
+        succ_sets[n] = set(G._succ[n]) - {n}
+
+    for i in target_nodes:
+        ipreds = pred_sets[i]
+        isuccs = succ_sets[i]
 
         directed_triangles = 0
         for j in chain(ipreds, isuccs):
-            jpreds = set(G._pred[j]) - {j}
-            jsuccs = set(G._succ[j]) - {j}
-            directed_triangles += sum(
-                1
-                for k in chain(
-                    (ipreds & jpreds),
-                    (ipreds & jsuccs),
-                    (isuccs & jpreds),
-                    (isuccs & jsuccs),
-                )
+            jpreds = pred_sets[j]
+            jsuccs = succ_sets[j]
+            directed_triangles += (
+                len(ipreds & jpreds)
+                + len(ipreds & jsuccs)
+                + len(isuccs & jpreds)
+                + len(isuccs & jsuccs)
             )
         dtotal = len(ipreds) + len(isuccs)
         dbidirectional = len(ipreds & isuccs)
