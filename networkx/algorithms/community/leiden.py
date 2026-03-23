@@ -24,7 +24,6 @@ def leiden_communities(
     G,
     weight="weight",
     resolution=1.0,
-    threshold=0.0000001,
     max_level=None,
     seed=None,
     quality_function=constant_potts_model,
@@ -80,10 +79,6 @@ def leiden_communities(
     resolution : float, optional (default=1)
         If resolution is less than 1, the algorithm favors larger communities.
         Greater than 1 favors smaller communities
-    threshold : float, optional (default=0.0000001)
-        Modularity gain threshold for each level. If the gain of modularity
-        between 2 levels of the algorithm is less than the given threshold
-        then the algorithm stops and returns the resulting communities.
     max_level : int or None, optional (default=None)
         The maximum number of levels (steps of the algorithm) to compute.
         Must be a positive integer or None. If None, then there is no max
@@ -125,7 +120,6 @@ def leiden_communities(
         G,
         weight=weight,
         resolution=resolution,
-        threshold=threshold,
         seed=seed,
         quality_function=quality_function,
         quality_delta_partial_eval_remove=None,
@@ -147,7 +141,6 @@ def leiden_partitions(
     G,
     weight="weight",
     resolution=1.0,
-    threshold=0.0000001,
     seed=None,
     quality_function=constant_potts_model,
     quality_delta_partial_eval_remove=None,
@@ -199,6 +192,8 @@ def leiden_partitions(
     leiden_communities
     :any:`louvain_partitions`
     """
+
+    threshold = 0.0000001
 
     # as well as providing a custom quality function for the algorithm
     # the user can define a pair of functions that partially evaluate
@@ -316,7 +311,7 @@ def leiden_partitions(
 
         # We stop once the overall change in quality between iterations is
         # close to zero.
-        improvement_made = (new_quality - quality) > threshold
+        improvement_made = (new_quality - quality) > 0.0000001
         quality = new_quality
 
     return
