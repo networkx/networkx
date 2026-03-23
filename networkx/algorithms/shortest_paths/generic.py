@@ -58,14 +58,19 @@ def has_path(G, source, target):
     forward_frontier = {source}
     backward_frontier = {target}
 
-    neighbors = G.neighbors if not G.is_directed() else None
+    if G.is_directed():
+        forward_neighbors = G.successors
+        backward_neighbors = G.predecessors
+    else:
+        forward_neighbors = G.neighbors
+        backward_neighbors = G.neighbors
 
     while forward_frontier and backward_frontier:
         # Always expand the smaller frontier.
         if len(forward_frontier) <= len(backward_frontier):
             new_frontier = set()
             for node in forward_frontier:
-                for nbr in (G.neighbors(node) if neighbors else G.successors(node)):
+                for nbr in forward_neighbors(node):
                     if nbr in backward_visited:
                         return True
                     if nbr not in forward_visited:
@@ -75,7 +80,7 @@ def has_path(G, source, target):
         else:
             new_frontier = set()
             for node in backward_frontier:
-                for nbr in (G.neighbors(node) if neighbors else G.predecessors(node)):
+                for nbr in backward_neighbors(node):
                     if nbr in forward_visited:
                         return True
                     if nbr not in backward_visited:
