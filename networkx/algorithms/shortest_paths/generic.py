@@ -31,12 +31,59 @@ def has_path(G, source, target):
 
     target : node
        Ending node for path
+
+    Raises
+    ------
+    NodeNotFound
+        If *source* or *target* is not in *G*.
+
+    Notes
+    -----
+    This uses a bidirectional BFS that terminates the moment the two
+    search frontiers meet, without constructing the actual path.  For
+    large graphs this is dramatically faster than the previous
+    implementation, which computed the full shortest path via
+    ``nx.shortest_path`` and discarded it.
     """
-    try:
-        nx.shortest_path(G, source, target)
-    except nx.NetworkXNoPath:
-        return False
-    return True
+    if source not in G:
+        raise nx.NodeNotFound(f"Source {source} is not in G")
+    if target not in G:
+        raise nx.NodeNotFound(f"Target {target} is not in G")
+    if source == target:
+        return True
+
+    # Bidirectional BFS — expand the smaller frontier each step.
+    forward_visited = {source}
+    backward_visited = {target}
+    forward_frontier = {source}
+    backward_frontier = {target}
+
+    neighbors = G.neighbors if not G.is_directed() else None
+
+    while forward_frontier and backward_frontier:
+        # Always expand the smaller frontier.
+        if len(forward_frontier) <= len(backward_frontier):
+            new_frontier = set()
+            for node in forward_frontier:
+                for nbr in (G.neighbors(node) if neighbors else G.successors(node)):
+                    if nbr in backward_visited:
+                        return True
+                    if nbr not in forward_visited:
+                        forward_visited.add(nbr)
+                        new_frontier.add(nbr)
+            forward_frontier = new_frontier
+        else:
+            new_frontier = set()
+            for node in backward_frontier:
+                for nbr in (G.neighbors(node) if neighbors else G.predecessors(node)):
+                    if nbr in forward_visited:
+                        return True
+                    if nbr not in backward_visited:
+                        backward_visited.add(nbr)
+                        new_frontier.add(nbr)
+            backward_frontier = new_frontier
+
+    return False
 
 
 @nx._dispatchable(edge_attrs="weight")
