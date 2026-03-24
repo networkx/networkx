@@ -408,22 +408,13 @@ def check_counterexample(G, sub_graph):
         raise nx.NetworkXException("Bad counter example.")
 
 
-def _directed_half_edges_from_embedding(embedding):
-    return [(u, v) for u in embedding for v in embedding.neighbors_cw_order(u)]
-
-
-def _directed_half_edges_from_faces(faces):
-    return [
-        (u, face[i % len(face)])
-        for face in faces
-        if face
-        for i, u in enumerate(face, 1)
-    ]
-
-
 def _assert_half_edge_partition(embedding, faces):
-    face_half_edges = _directed_half_edges_from_faces(faces)
-    embedding_half_edges = _directed_half_edges_from_embedding(embedding)
+    face_half_edges = (
+        (u, v) for u in embedding for v in embedding.neighbors_cw_order(u)
+    )
+    embedding_half_edges = (
+        (u, f[i % len(f)]) for f in faces if f for i, u in enumerate(f, 1)
+    )
     assert Counter(face_half_edges) == Counter(embedding_half_edges)
     assert all(count == 1 for count in Counter(face_half_edges).values())
 
