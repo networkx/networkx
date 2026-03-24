@@ -319,13 +319,13 @@ class TestDirectedSteinerTree:
 
         G2 = nx.DiGraph()
         G2.add_edge(0, 2, weight=1)
-        G2.add_edge(2, 1, w=1)
+        G2.add_edge(2, 1, weight=1)
 
         G3 = nx.MultiDiGraph()
         G3.add_edge(1, 2, w=1)
         G3.add_edge(2, 3, w=3)
-        G3.add_edge(1, 2, weight=7)
-        G3.add_edge(1, 2, weight=2)
+        G3.add_edge(1, 2, w=7)
+        G3.add_edge(1, 2, w=2)
 
         cls.G1 = G1
         cls.G2 = G2
@@ -403,9 +403,22 @@ class TestDirectedSteinerTree:
             directed_steiner_tree(self.G2, 0, {1, 2, 3, 4}, min_terminals=4)
 
     def test_multidigraph_missing_weight(self):
-        directed_steiner_tree(
+        H = directed_steiner_tree(
             self.G3, 1, {2, 3}, min_terminals=2, levels=2, weight="weight"
         )
+        assert set(H.nodes) == {1, 2, 3}
+        assert nx.utils.edges_equal(H.edges, [(1, 2), (2, 3)])
+        assert len(H.edges) == 2
+        assert nx.is_arborescence(H)
+
+    def test_multidigraph_custom_weight_key(self):
+        H = directed_steiner_tree(
+            self.G3, 1, {2, 3}, min_terminals=2, levels=2, weight="w"
+        )
+        assert set(H.nodes) == {1, 2, 3}
+        assert nx.utils.edges_equal(H.edges, [(1, 2), (2, 3)])
+        assert len(H.edges) == 2
+        assert nx.is_arborescence(H)
 
     def test_predecessor_tie_mixed_types(self):
         G_expanded = nx.DiGraph()
