@@ -528,7 +528,7 @@ def _directed_steiner_tree(G, root, terminals, min_terminals, levels, weight):
         return H
 
     if levels == 1:
-        H.add_node(root, **G.nodes[root])
+        H.add_node(root)
         edges_filtered = [
             (u, v, d)
             for u, v, d in G.edges(data=True)
@@ -538,8 +538,8 @@ def _directed_steiner_tree(G, root, terminals, min_terminals, levels, weight):
         edges_sorted = sorted(edges_filtered, key=lambda x: x[2].get(weight, 1))
 
         for u, v, d in edges_sorted[:min_terminals]:
-            H.add_node(v, **G.nodes[v])
-            H.add_edge(u, v, **d)
+            H.add_node(v)
+            H.add_edge(u, v, **{weight: d.get(weight, 1), "path": d["path"]})
 
         return H
 
@@ -554,9 +554,13 @@ def _directed_steiner_tree(G, root, terminals, min_terminals, levels, weight):
                 sub_tree = _directed_steiner_tree(
                     G, v, terminals, n, levels - 1, weight
                 )
-                sub_tree.add_node(root, **G.nodes[root])
-                sub_tree.add_node(v, **G.nodes[v])
-                sub_tree.add_edge(root, v, **G[root][v])
+                sub_tree.add_node(root)
+                sub_tree.add_node(v)
+                sub_tree.add_edge(
+                    root,
+                    v,
+                    **{weight: G[root][v].get(weight, 1), "path": G[root][v]["path"]},
+                )
 
                 sub_density = _directed_steiner_tree_density(
                     sub_tree, terminals, weight
@@ -570,7 +574,7 @@ def _directed_steiner_tree(G, root, terminals, min_terminals, levels, weight):
         reached_terminals |= covered_terminals
         terminals -= covered_terminals
 
-        H.add_nodes_from(min_sub_tree.nodes(data=True))
+        H.add_nodes_from(min_sub_tree.nodes())
         H.add_edges_from(min_sub_tree.edges(data=True))
 
     return H
