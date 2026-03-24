@@ -550,9 +550,9 @@ def _directed_steiner_tree(G, root, terminals, min_terminals, levels, weight):
         min_density = float("inf")
 
         for v in G.successors(root):
-            for n in range(1, len(terminals) + 1):
+            for subtree_min_terminals in range(1, len(terminals) + 1):
                 sub_tree = _directed_steiner_tree(
-                    G, v, terminals, n, levels - 1, weight
+                    G, v, terminals, subtree_min_terminals, levels - 1, weight
                 )
                 sub_tree.add_node(root)
                 sub_tree.add_node(v)
