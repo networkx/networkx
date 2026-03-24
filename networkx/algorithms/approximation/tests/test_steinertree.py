@@ -361,7 +361,10 @@ class TestDirectedSteinerTree:
                 directed_steiner_tree(self.G2, 0, {1}, levels=levels)
         else:
             H = directed_steiner_tree(self.G2, 0, {1}, levels=levels)
-            assert (0, 2) and (2, 1) in H.edges
+            assert set(H.nodes) == {0, 2, 1}
+            assert nx.utils.edges_equal(H.edges, [(0, 2), (2, 1)])
+            assert len(H.edges) == 2
+            assert nx.is_arborescence(H)
 
     @pytest.mark.parametrize(
         "min_terminals, should_raise", [(-1, True), (0, True), (2, True), (1, False)]
@@ -372,7 +375,10 @@ class TestDirectedSteinerTree:
                 directed_steiner_tree(self.G2, 0, {1}, min_terminals=min_terminals)
         else:
             H = directed_steiner_tree(self.G2, 0, {1}, min_terminals=min_terminals)
-            assert 1 in H.nodes
+            assert set(H.nodes) == {0, 2, 1}
+            assert nx.utils.edges_equal(H.edges, [(0, 2), (2, 1)])
+            assert len(H.edges) == 2
+            assert nx.is_arborescence(H)
 
     def test_no_reachable_nodes(self):
         with pytest.raises(nx.NetworkXUnfeasible):
@@ -381,12 +387,16 @@ class TestDirectedSteinerTree:
     def test_basic_single_terminal(self):
         H = directed_steiner_tree(self.G1, 0, {1})
         assert set(H.nodes) == {0, 1}
-        assert (0, 1) in H.edges
+        assert nx.utils.edges_equal(H.edges, [(0, 1)])
+        assert len(H.edges) == 1
+        assert nx.is_arborescence(H)
 
     def test_multiple_terminals(self):
         H = directed_steiner_tree(self.G1, 0, {1, 2})
         assert set(H.nodes) == {0, 1, 2}
-        assert (0, 1) and (0, 2) in H.edges
+        assert nx.utils.edges_equal(H.edges, [(0, 1), (0, 2)])
+        assert len(H.edges) == 2
+        assert nx.is_arborescence(H)
 
     def test_cannot_cover_min_terminals_raises(self):
         with pytest.raises(nx.NetworkXError):
@@ -419,4 +429,6 @@ class TestDirectedSteinerTree:
         )
 
         assert set(H.nodes) == {0, "a", 3}
-        assert set(H.edges) == {(0, "a"), ("a", 3)}
+        assert nx.utils.edges_equal(H.edges, [(0, "a"), ("a", 3)])
+        assert len(H.edges) == 2
+        assert nx.is_arborescence(H)
