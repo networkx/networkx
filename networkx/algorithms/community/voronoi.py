@@ -11,17 +11,10 @@ from networkx.utils import not_implemented_for
 
 __all__ = ["voronoi_communities", "voronoi_partitions"]
 
-# TODO: function dictionary, if there is a 3rd word that doesnt match the first 2 then wait for user defined
-# TODO: give function by param
-# TODO: optional param, how many clusters do you want?
-# TODO: optional param, we can also maximize other functions not just modularity
-
-# TODO: refactor voronoi_communities
-
 
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
-def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
+def voronoi_communities(G, weight="weight", mode="strength", resolution=1, eps=1e-8):
     r"""Find the best partition of a graph using the Voronoi Community Detection
     Algorithm.
 
@@ -49,6 +42,11 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
         The strategy to transform weights into distances
         - "strength": $1 / (w * d)$ if weights have a strength-like meaning
         - "flow": $log(w) / d$ if weights have an (information) flow-like meaning
+    resolution : float, optional (default: 1)
+        If resolution is less than 1, modularity favors larger communities.
+        Greater than 1 favors smaller communities. This corresponds to the
+        resolution parameter :math:`\gamma` in the generalized modularity
+        formula. See :func:`~networkx.algorithms.community.quality.modularity`.
     eps : float, optional (default: 1e-8)
         Offset value to ensure numerical stability and avoid division by zero.
 
@@ -83,7 +81,16 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
             "All edge weights must be positive for Voronoi community detection."
         )
 
-    G_dist = _transform_weights_to_distances(G, weight=weight, eps=eps)
+    w_max = max(d.get(weight, 1.0) for _, _, d in G.edges(data=True))
+
+    if w_max > 1:
+        G_normalized = G.copy()
+        for u, v, data in G_normalized.edges(data=True):
+            data[weight] = data.get(weight, 1.0) / w_max
+    else:
+        G_normalized = G
+
+    G_dist = _transform_weights_to_distances(G_normalized, weight=weight, eps=eps)
 
     all_pairs_distances = dict(nx.all_pairs_dijkstra_path_length(G_dist, weight=weight))
 
@@ -91,7 +98,6 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
 
     strengths = dict(G.degree(weight=weight))
 
-    # TODO: DATA HAS TO BE NORMALIZED, if >1 i need to normalize
     if mode == "strength":
         transformed = {node: float(weighted_densities[node]) for node in G.nodes()}
     elif mode == "flow":
@@ -112,8 +118,6 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
                 min_r = min(min_r, dist)
                 max_r = max(max_r, dist)
 
-    max_r *= 2
-
     if min_r == float("inf"):
         min_r = 0.0
     if max_r <= min_r:
@@ -122,16 +126,18 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
     max_modularity = -float("inf")
     best_community = []
 
-    # TODO: remove prints
-    # TODO: come up with a better way to do this than going in a range, Brandt Optimization
+    last_generators = None
+
     step_count = 1
-    for r in np.arange(
-        min_r, max_r, 0.25
-    ):  # normal python range does not allow float steps
+    for r in np.arange(min_r, max_r, 0.25):
+        generator_points = _choose_generator_points(r, transformed, all_pairs_distances)
+
+        if generator_points == last_generators:
+            continue
+
         print("step", step_count)
         step_count += 1
 
-        generator_points = _choose_generator_points(r, transformed, all_pairs_distances)
         print("currently the generator_points:", generator_points)
         print("current cluster count:", len(generator_points))
         print("currently r:", r)
@@ -141,7 +147,11 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
             G_dist, generator_points, weight, all_pairs_distances, mode_to_use
         )
 
-        current_modularity = modularity(G, communities)
+        current_modularity = modularity(
+            G, communities, weight=weight, resolution=resolution
+        )
+
+        last_generators = generator_points
 
         if current_modularity > max_modularity:
             print("new best modularity found:")
@@ -153,7 +163,6 @@ def voronoi_communities(G, weight="weight", mode="strength", eps=1e-8):
     print("communities", best_community)
     print("modularity", max_modularity)
 
-    # TODO: I am not sure if this is supposed to sort here or the tests need to be different
     best_community = sorted(best_community, key=lambda c: min(c))
 
     return best_community
@@ -165,8 +174,6 @@ def _transform_weights_to_distances(G, weight="weight", eps=1e-8):
     This internal helper function creates a new graph where edge weights represent
     distances, inversely proportional to the original edge weight and the
     edge's local clustering coefficient.
-
-    TODO: formula?
 
     Parameters
     ----------
@@ -214,8 +221,6 @@ def _weighted_local_density(G, weight="weight"):
     (generator points). It is calculated based on the node's strength and the
     ratio of internal edges within its neighborhood to the total edges connected
     to its neighborhood.
-
-    TODO: formula?
 
     Parameters
     ----------
@@ -392,9 +397,6 @@ def _voronoi_cells_from_distances(G, generator_points, all_pairs_distances, dire
         cells.append(unreachable)
 
     return cells
-
-
-# TODO: add param: how many communities we want to have and clarify this in the docstring
 
 
 @not_implemented_for("multigraph")
