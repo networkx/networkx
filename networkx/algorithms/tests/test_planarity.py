@@ -419,12 +419,6 @@ def _assert_half_edge_partition(embedding, faces):
     assert all(count == 1 for count in Counter(face_half_edges).values())
 
 
-def _embedding_for_graph(graph):
-    is_planar, embedding = nx.check_planarity(graph)
-    assert is_planar
-    return embedding
-
-
 class TestPlanarEmbeddingClass:
     def test_add_half_edge(self):
         embedding = nx.PlanarEmbedding()
@@ -555,7 +549,7 @@ class TestPlanarEmbeddingClass:
 
     def test_faces_cycle_graph_and_half_edge_partition(self):
         graph = nx.cycle_graph(4)
-        embedding = _embedding_for_graph(graph)
+        _, embedding = nx.check_planarity(graph)
 
         faces = list(embedding.faces())
 
@@ -564,7 +558,7 @@ class TestPlanarEmbeddingClass:
 
     def test_faces_tree_has_single_face_walk_with_repeated_vertices(self):
         graph = nx.path_graph(4)
-        embedding = _embedding_for_graph(graph)
+        _, embedding = nx.check_planarity(graph)
 
         faces = list(embedding.faces())
 
@@ -575,7 +569,7 @@ class TestPlanarEmbeddingClass:
 
     def test_faces_k4_match_euler_formula(self):
         graph = nx.complete_graph(4)
-        embedding = _embedding_for_graph(graph)
+        _, embedding = nx.check_planarity(graph)
 
         faces = list(embedding.faces())
 
@@ -587,7 +581,7 @@ class TestPlanarEmbeddingClass:
         self,
     ):
         graph = nx.disjoint_union(nx.cycle_graph(3), nx.cycle_graph(3))
-        embedding = _embedding_for_graph(graph)
+        _, embedding = nx.check_planarity(graph)
 
         faces = list(embedding.faces())
 
@@ -596,7 +590,7 @@ class TestPlanarEmbeddingClass:
 
     def test_faces_isolated_nodes_have_no_faces(self):
         graph = nx.empty_graph(5)
-        embedding = _embedding_for_graph(graph)
+        _, embedding = nx.check_planarity(graph)
 
         faces = list(embedding.faces())
 
