@@ -11,7 +11,10 @@ import networkx as nx
 from networkx.algorithms.community.quality import (
     _cpm_delta_partial_eval_add,
     _cpm_delta_partial_eval_remove,
+    _modularity_delta_partial_eval_add,
+    _modularity_delta_partial_eval_remove,
     constant_potts_model,
+    modularity,
 )
 from networkx.utils import not_implemented_for, py_random_state
 
@@ -26,9 +29,7 @@ def leiden_communities(
     resolution=1.0,
     max_level=None,
     seed=None,
-    quality_function=constant_potts_model,
-    quality_delta_partial_eval_remove=None,
-    quality_delta_partial_eval_add=None,
+    quality_function="cpm",
     theta=0.01,
 ):
     r"""Find the best partition of a graph using the Leiden Community Detection
@@ -86,7 +87,7 @@ def leiden_communities(
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-    quality_function : function (default="constant_potts_model")
+    quality_function : str (default="cpm")
         The algorithm optimises for a measure of quality. By default
         the constant_potts_model is used, but this can be changed (e.g.
         modularity)
@@ -122,8 +123,6 @@ def leiden_communities(
         resolution=resolution,
         seed=seed,
         quality_function=quality_function,
-        quality_delta_partial_eval_remove=None,
-        quality_delta_partial_eval_add=None,
         theta=theta,
     )
 
@@ -142,9 +141,7 @@ def leiden_partitions(
     weight="weight",
     resolution=1.0,
     seed=None,
-    quality_function=constant_potts_model,
-    quality_delta_partial_eval_remove=None,
-    quality_delta_partial_eval_add=None,
+    quality_function="cpm",
     theta=0.01,
 ):
     """Yield partitions for each level of Leiden Community Detection (backend required)
@@ -193,31 +190,6 @@ def leiden_partitions(
     :any:`louvain_partitions`
     """
 
-    threshold = 0.0000001
-
-    # as well as providing a custom quality function for the algorithm
-    # the user can define a pair of functions that partially evaluate
-    # the quality delta associated with moving a node from one
-    # community to another.
-
-    # note that the partial_eval functions are not necessary at all
-    # for the algorithm to run correctly, they are purely for
-    # making the computations more efficient. We could include an
-    # assertion that checks the relationship between quality_function
-    # and the pair of partial evaluation functions on a simple
-    # graph in order to provide the user with an error/warning if these
-    # are not behaving as expected.
-
-    if quality_delta_partial_eval_add is None:
-        quality_delta_partial_eval_add = _get_quality_delta_partial_eval_add(
-            quality_function
-        )
-
-    if quality_delta_partial_eval_remove is None:
-        quality_delta_partial_eval_remove = _get_quality_delta_partial_eval_remove(
-            quality_function
-        )
-
     partition = [{u} for u in G]
     inner_partition = None
 
@@ -244,7 +216,29 @@ def leiden_partitions(
             graph.add_edges_from(G.edges())
             nx.set_edge_attributes(graph, 1, name="weight")
 
-    nx.set_node_attributes(graph, 1, name="node_weight")
+    if quality_function == "cpm":
+        quality_function = constant_potts_model
+        quality_delta_partial_eval_add = _cpm_delta_partial_eval_add
+        quality_delta_partial_eval_remove = _cpm_delta_partial_eval_remove
+        nx.set_node_attributes(graph, 1, name="node_weight")
+
+    elif quality_function == "modularity":
+        # NOTE the only required change to the modualrity function
+        # is the additon of **kwargs in the API. Otherwise the function
+        # cannot accept the node_weight parameter
+        quality_function = modularity
+        # TODO currently the partial delta functions for modularity are
+        # duplicates of cpm for the purposes of testing the API. The
+        # optimised functions to compute change in modualrity need to be
+        # implemented and corresponding tests written
+        quality_delta_partial_eval_add = _modularity_delta_partial_eval_add
+        quality_delta_partial_eval_remove = _modularity_delta_partial_eval_remove
+        # TODO set the weight to degree/2m
+        nx.set_node_attributes(graph, 1, name="node_weight")
+
+    else:
+        # currently only cpm and modularity are implemented
+        raise QualityFunctionNotImplemented(quality_function)
 
     quality = quality_function(
         graph,
@@ -556,151 +550,6 @@ def _merge_node_subset(
     return partition, node2com
 
 
-def _get_quality_delta_partial_eval_remove(quality_function):
-    """
-    Returns a function quality_delta_partial_eval_remove which is used within
-    the _move_nodes_fast and _refine_partiton stages in conjunction
-    with a similarly defined quality_delta_partial_eval_add function which together
-    are used to efficiently compute quality_deltas when moving
-    nodes between communities.
-
-    Optimising these functions has a significant impact on
-    overall performance.
-
-    Parameters
-    ----------
-    quality_function : function
-        The algorithm optimises for a measure of quality of a partition.
-        Requires a functions accepts the same parameters as contant_potts_model
-
-    Returns
-    -------
-    function
-
-        Returns a function quality_delta_partial_eval_remove which has the
-        following behaviour: for a node u and community A
-
-            quality_delta_partial_eval_remove(G, u, A, quality_function, resolution)
-
-        returns the overall change in quality (as defined
-        by the quality_function) that occurs when the node u
-        is removed from the community A.
-    """
-
-    # This method allows us to invoke optimised versions of these
-    # delta functions, i.e we could have something like
-    #
-    if quality_function == constant_potts_model:
-        return _cpm_delta_partial_eval_remove
-    #
-    # if qualty_function == modularity:
-    #  return modularity_remove_cost
-    #
-    # etc...
-
-    # if no optimised version exists then a version is
-    # created using a simpler wrapper around quality_function
-    # this gives flexibility to adding new functions, while
-    # still allowing the use of more efficient methods where
-    # they exist.
-
-    def quality_delta_partial_eval_remove(
-        G, node, community, resolution, weight="weight", node_weight="node_weight"
-    ):
-
-        q_before = quality_function(
-            G,
-            [community],
-            resolution=resolution,
-            weight=weight,
-            node_weight="node_weight",
-        )
-
-        q_after = quality_function(
-            G,
-            [community - {node}],
-            resolution=resolution,
-            weight=weight,
-            node_weight="node_weight",
-        )
-
-        return q_after - q_before
-
-    return quality_delta_partial_eval_remove
-
-
-def _get_quality_delta_partial_eval_add(quality_function):
-    """
-    Returns a function quality_delta_partial_eval_add which is used within
-    the _move_nodes_fast and _refine_partiton stages in conjunction
-    with a similarly defined quality_delta_partial_eval_remove function which together
-    are used to efficiently compute quality_deltas when moving
-    nodes between communities.
-
-    Optimising these functions has a significant impact on
-    overall performance.
-
-    Parameters
-    ----------
-    quality_function : function
-        The algorithm optimises for a measure of quality of a partition.
-        Requires a functions accepts the same parameters as contant_potts_model
-
-    Returns
-    -------
-    function
-
-        Returns a function quality_delta_partial_eval_remove which has the
-        following behaviour: for a node u and community B
-
-            quality_delta_partial_eval_add(G, u, A, quality_function, resolution)
-
-        returns the overall change in quality (as defined
-        by the quality_function) that occurs when the node u
-        is added to the community B.
-    """
-
-    # This method allows us to invoke optimised versions of these
-    # delta functions, i.e we could have something like
-    #
-    if quality_function == constant_potts_model:
-        return _cpm_delta_partial_eval_add
-    #
-    # if qualty_function == modularity:
-    #  return modularity_add_cost
-    #
-    # etc...
-
-    # if no optimised version exists then a version is
-    # created using a simpler wrapper around quality_function
-    # this gives flexibility to adding new functions, while
-    # still allowing the use of more efficient methods where
-    # they exist.
-
-    def quality_delta_partial_eval_add(
-        G, node, community, resolution, weight="weight", node_weight="node_weight"
-    ):
-        q_before = quality_function(
-            G,
-            [community],
-            resolution=resolution,
-            weight=weight,
-            node_weight="node_weight",
-        )
-
-        q_after = quality_function(
-            G,
-            [community.union({node})],
-            resolution=resolution,
-            weight=weight,
-            node_weight="node_weight",
-        )
-
-        return q_after - q_before
-
-    return quality_delta_partial_eval_add
-
-
 def _gen_graph(G, partition):
     """
     Generate a new graph based on the partitions of a given graph
@@ -768,3 +617,11 @@ def _is_valid_refinement(p, ref_p):
         else:
             val = False
     return val
+
+
+class QualityFunctionNotImplemented(nx.NetworkXError):
+    """Raised if quality function is not implemented for leiden"""
+
+    def __init__(self, quality_function):
+        msg = f"leiden not implemented for {quality_function}. Only 'cpm' or 'modularity' are currently implemented"
+        super().__init__(msg)

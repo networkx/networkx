@@ -2,6 +2,7 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms.community import leiden_communities, leiden_partitions
+from networkx.algorithms.community.leiden import QualityFunctionNotImplemented
 from networkx.algorithms.community.quality import constant_potts_model, modularity
 
 no_backends_for_leiden_communities = (
@@ -162,6 +163,15 @@ def test_connected_communities_LFR():
         assert check_connected_community(G, C)
 
 
+def test_quality_function_not_implemented():
+    G = nx.karate_club_graph()
+
+    with pytest.raises(QualityFunctionNotImplemented):
+        leiden_communities(
+            G, quality_function="bad_quality_function", resolution=0.2, seed=1
+        )
+
+
 def test_expected():
     G = nx.karate_club_graph()
 
@@ -219,14 +229,13 @@ def test_connected_communities():
             assert check_connected_community(G, C)
 
 
-@pytest.mark.xfail(reason="modularity has not yet been implemented for leiden")
 def test_connected_communities_modularity():
     for i in range(10):
         G = nx.karate_club_graph()
         n = i * 4 + 59
         r = 0.5 - 0.005 * i
         part = leiden_communities(
-            G, weight=None, quality_function=modularity, resolution=r, seed=n
+            G, weight=None, quality_function="modularity", resolution=r, seed=n
         )
         for C in part:
             assert check_connected_community(G, C)
@@ -242,7 +251,6 @@ def test_connected_communities_no_weights():
             assert check_connected_community(G, C)
 
 
-@pytest.mark.xfail(reason="modularity has not yet been implemented for leiden")
 def test_modularity_increase_qf_parameter():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
@@ -250,7 +258,7 @@ def test_modularity_increase_qf_parameter():
     partition = [{u} for u in G.nodes()]
     mod = nx.community.modularity(G, partition)
     partition = nx.community.leiden_communities(
-        G, resolution=0.1, quality_function=modularity, seed=10
+        G, resolution=0.1, quality_function="modularity", seed=10
     )
 
     assert nx.community.modularity(G, partition) > mod
@@ -265,9 +273,7 @@ def test_cpm_increase():
     cpm = constant_potts_model(
         G, partition, weight=None, node_weight=None, resolution=r
     )
-    partition = nx.community.leiden_communities(
-        G, quality_function=constant_potts_model, resolution=r, seed=10
-    )
+    partition = nx.community.leiden_communities(G, resolution=r, seed=10)
 
     assert (
         constant_potts_model(G, partition, weight=None, node_weight=None, resolution=r)
@@ -318,20 +324,19 @@ def test_resolution_cpm():
     assert len(partition2) <= len(partition3)
 
 
-@pytest.mark.xfail(reason="modularity has not yet been implemented for leiden")
 def test_resolution_modularity():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
 
     partition1 = nx.community.leiden_communities(
-        G, quality_function=modularity, resolution=0.5, seed=12
+        G, quality_function="modularity", resolution=0.5, seed=12
     )
     partition2 = nx.community.leiden_communities(
-        G, quality_function=modularity, seed=12
+        G, quality_function="modularity", seed=12
     )
     partition3 = nx.community.leiden_communities(
-        G, quality_function=modularity, resolution=2, seed=12
+        G, quality_function="modularity", resolution=2, seed=12
     )
 
     assert len(partition1) <= len(partition2)
