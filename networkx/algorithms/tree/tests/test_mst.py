@@ -469,7 +469,7 @@ class TestSpanningTreeIterator:
             actual = sorted(tree.edges(data=True))
             assert edges_equal(actual, self.spanning_trees[tree_index])
             tree_index -= 1
-    
+
     def test_next_without_iter(self):
         """Tests that call next() directly on a SpanningTreeIterator without first
         iterating over it should not raise an AttributeError.
