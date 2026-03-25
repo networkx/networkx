@@ -109,16 +109,17 @@ def ancestors(G, source):
 @nx._dispatchable
 def has_cycle(G):
     """Decides whether the directed graph has a cycle.
+
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (2, 3)])
     >>> nx.has_cycle(G)
     False
-    >>> G.add_edge(3, 1)  # Adding an edge to create a cycle (1->2->3->1)
+    >>> G.add_edge(3, 1)
     >>> nx.has_cycle(G)
     True
 
-    See also
+    See Also
     --------
     is_directed_acyclic_graph"""
     try:
