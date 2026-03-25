@@ -108,7 +108,19 @@ def ancestors(G, source):
 
 @nx._dispatchable
 def has_cycle(G):
-    """Decides whether the directed graph has a cycle."""
+    """Decides whether the directed graph has a cycle.
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (2, 3)])
+    >>> nx.has_cycle(G)
+    False
+    >>> G.add_edge(3, 1)  # Adding an edge to create a cycle (1->2->3->1)
+    >>> nx.has_cycle(G)
+    True
+
+    See also
+    --------
+    is_directed_acyclic_graph"""
     try:
         # Feed the entire iterator into a zero-length deque.
         deque(topological_sort(G), maxlen=0)
@@ -1385,3 +1397,4 @@ def colliders(G):
     for node in G.nodes:
         for p1, p2 in combinations(G.predecessors(node), 2):
             yield (p1, node, p2)
+"""Doc: added Examples to has_cycle"""
