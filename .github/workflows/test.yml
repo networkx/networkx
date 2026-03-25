@@ -12,198 +12,95 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        python-version: ["3.13", "3.14", "3.14t"]
+        environment: [test-base-py313, test-base-py314, test-base-py314t]
     steps:
       - uses: actions/checkout@v6
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install packages
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install .[test]
-          python -m pip list
-
+          environments: ${{ matrix.environment }}
       - name: Test NetworkX
-        run: |
-          pytest -n auto --durations=10 --pyargs networkx
+        run: pixi run -e ${{ matrix.environment }} test-base
 
   default:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        python-version: ["3.12", "3.13", "3.14"]
+        environment:
+          [test-default-py312, test-default-py313, test-default-py314]
     steps:
       - uses: actions/checkout@v6
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install packages
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install .[default,test]
-          python -m pip list
-
+          environments: ${{ matrix.environment }}
       - name: Test for warnings at import time
-        run: python -Werror -c "import networkx"
-
+        run: pixi run -e ${{ matrix.environment }} check-import
       - name: Test NetworkX
-        run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        run: pixi run -e ${{ matrix.environment }} test-default
 
   default-without-scipy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: "3.12"
-
-      - name: Install packages
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install .[default,test]
-          python -m pip uninstall -y scipy  # All default dependencies except scipy
-          python -m pip list
-
+          environments: test-default-no-scipy-py312
       - name: Test for warnings at import time
-        run: python -Werror -c "import networkx"
-
+        run: pixi run -e test-default-no-scipy-py312 check-import
       - name: Test NetworkX
-        run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        run: pixi run -e test-default-no-scipy-py312 test-default
 
   dispatch:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.14"]
     steps:
       - uses: actions/checkout@v6
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install packages
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install .[default,test]
-          python -m pip list
-
+          environments: test-default-py314
       - name: Test Dispatching
-        run: |
-          NETWORKX_TEST_BACKEND=nx_loopback pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        run: pixi run -e test-default-py314 test-dispatch
 
   extra:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.12", "3.13"]
+        os: [ubuntu, macos, windows]
+        environment: [test-extra-py312, test-extra-py313]
     steps:
       - uses: actions/checkout@v6
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Before install (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install graphviz graphviz-dev
-
-      - name: Before install (macOS)
-        if: runner.os == 'macOS'
-        run: brew install graphviz
-
-      - name: Before install (Windows)
-        if: runner.os == 'Windows'
-        run: choco install graphviz
-
-      - name: Install packages (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          pip install --upgrade pip
-          pip install .[default,test,extra]
-          pip list
-      - name: Install packages (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          pip install --upgrade pip
-          pip install --no-cache-dir \
-                      --config-settings="--global-option=build_ext" \
-                      --config-settings="--global-option=-I$(brew --prefix graphviz)/include/" \
-                      --config-settings="--global-option=-L$(brew --prefix graphviz)/lib/" \
-                      pygraphviz
-          pip install .[default,test,extra]
-          pip list
-      - name: Install Pygraphviz packages  (windows)
-        if: runner.os == 'Windows'
-        run: |
-          echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          python -m pip install --upgrade pip
-          python -m pip install --config-settings="--global-option=build_ext" `
-              --config-settings="--global-option=-IC:\Program Files\Graphviz\include" `
-              --config-settings="--global-option=-LC:\Program Files\Graphviz\lib" `
-              pygraphviz
-      - name: Install packages (windows)
-        if: runner.os == 'Windows'
-        run: |
-          echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          python -m pip install .[default,test,extra]
-          python -m pip list
-
+          environments: ${{ matrix.environment }}
+      - name: Register graphviz plugins
+        run: pixi run -e ${{ matrix.environment }} dot -c
       - name: Test NetworkX
-        run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        run: pixi run -e ${{ matrix.environment }} test-default
 
   prerelease:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
         os: [ubuntu, macos]
-        python-version: ["3.12", "3.13", "3.14"]
+        environment: [prerelease-py312, prerelease-py313, prerelease-py314]
     steps:
       - uses: actions/checkout@v6
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install packages
-        run: |
-          pip install --upgrade pip
-          pip install --pre .[default,test]
-          pip list
-
+          environments: ${{ matrix.environment }}
+      - name: Install pre-release packages
+        run: pixi run -e ${{ matrix.environment }} install-prerelease
       - name: Test NetworkX
-        run: |
-          pytest -n auto --doctest-modules --durations=10 --pyargs networkx
+        run: pixi run -e ${{ matrix.environment }} test-prerelease
 
   slow-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          python-version: "3.13"
-
-      - name: Install packages
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install .[default,test]
-          python -m pip list
-
+          environments: test-default-py313
       - name: Run slow tests
         # NOTE: --runslow adds slow tests to the collection while -m slow
         # filters out tests that are *not* marked slow, leaving only the
         # slow tests
-        run: |
-          pytest -n auto --durations=20 --runslow -m slow --pyargs networkx
+        run: pixi run -e test-default-py313 test-slow

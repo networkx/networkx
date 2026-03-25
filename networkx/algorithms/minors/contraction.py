@@ -203,7 +203,7 @@ def quotient_graph(
     are equivalent if they are not adjacent but have the same neighbor set.
 
     >>> G = nx.complete_bipartite_graph(2, 3)
-    >>> same_neighbors = lambda u, v: (u not in G[v] and v not in G[u] and G[u] == G[v])
+    >>> same_neighbors = lambda u, v: u not in G[v] and v not in G[u] and G[u] == G[v]
     >>> Q = nx.quotient_graph(G, same_neighbors)
     >>> K2 = nx.complete_graph(2)
     >>> nx.is_isomorphic(Q, K2)
