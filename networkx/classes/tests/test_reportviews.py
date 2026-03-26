@@ -780,8 +780,12 @@ class TestMultiEdgeView(TestEdgeView):
     def test_getitem(self):
         G = self.G.copy()
         ev = G.edges
-        G.edges[0, 1, 0]["foo"] = "bar"
+        G.edges[0, 1]["foo"] = "bar"
+        assert ev[0, 1] == {"foo": "bar"}
         assert ev[0, 1, 0] == {"foo": "bar"}
+        G.edges[0, 1, 0]["foo"] = "bar_0"
+        assert ev[0, 1] == {"foo": "bar_0"}
+        assert ev[0, 1, 0] == {"foo": "bar_0"}
 
         # slicing
         with pytest.raises(nx.NetworkXError):
