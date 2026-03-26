@@ -1,25 +1,39 @@
 """Functions for detecting communities based on Leiden Community Detection
 algorithm.
-
-These functions do not have NetworkX implementations.
-They may only be run with an installable :doc:`backend </backends>`
-that supports them.
 """
 
 import itertools
+import math
+import random
 from collections import deque
 
 import networkx as nx
+from networkx.algorithms.community.quality import (
+    _cpm_delta_partial_eval_add,
+    _cpm_delta_partial_eval_remove,
+    _modularity_delta_partial_eval_add,
+    _modularity_delta_partial_eval_remove,
+    constant_potts_model,
+    modularity,
+)
 from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = ["leiden_communities", "leiden_partitions"]
 
 
-@not_implemented_for("directed")
 @py_random_state("seed")
-@nx._dispatchable(edge_attrs="weight", implemented_by_nx=False)
-def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=None):
-    r"""Find a best partition of `G` using Leiden Community Detection (backend required)
+@nx._dispatchable(edge_attrs="weight")
+def leiden_communities(
+    G,
+    weight="weight",
+    resolution=1.0,
+    max_level=None,
+    seed=None,
+    quality_function="cpm",
+    theta=0.01,
+):
+    r"""Find the best partition of a graph using the Leiden Community Detection
+    Algorithm [1]_.
 
     Leiden Community Detection is an algorithm to extract the community structure
     of a network based on modularity optimization. It is an improvement upon the
@@ -52,41 +66,46 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
 
     The above three phases are executed until no modularity gain is achieved or `max_level` number
     of iterations have been performed.
-
     Parameters
     ----------
     G : NetworkX graph
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
+    node_weight : string or None, optional (default=None)
+        The name of a node attribute that holds the numerical value
+        used as a weight for nodes. If None then each node has weight 1.
+        Through each iteration of the algorithm, the weight of a node
+        is calculated as the sum of the constituent nodes, see [1]_.
     resolution : float, optional (default=1)
         If resolution is less than 1, the algorithm favors larger communities.
-        Greater than 1 favors smaller communities.
+        Greater than 1 favors smaller communities
     max_level : int or None, optional (default=None)
         The maximum number of levels (steps of the algorithm) to compute.
         Must be a positive integer or None. If None, then there is no max
-        level and the algorithm will run until converged.
+        level and the threshold parameter determines the stopping condition.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    quality_function : str (default="cpm")
+        The algorithm optimises for a measure of quality. By default
+        the constant_potts_model is used, but this can be changed (e.g.
+        modularity)
+    theta : float (default=0.01)
+        Parameter that determines the degree of randomness in the
+        _refine_partition step of the algorithm,
 
     Returns
     -------
     list
-        A list of disjoint sets (partition of `G`). Each set represents one community.
-        All communities together contain all the nodes in `G`.
+        A list of sets (partition of `G`). Each set represents one community and contains
+        all the nodes that constitute it.
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> G = nx.petersen_graph()
-    >>> nx.community.leiden_communities(G, backend="example_backend")  # doctest: +SKIP
-    [{2, 3, 5, 7, 8}, {0, 1, 4, 6, 9}]
 
     Notes
     -----
-    The order in which the nodes are considered can affect the final output. In the algorithm
-    the ordering happens using a random shuffle.
 
     References
     ----------
@@ -96,9 +115,17 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
     See Also
     --------
     leiden_partitions
-    :any:`louvain_communities`
     """
-    partitions = leiden_partitions(G, weight, resolution, seed)
+
+    partitions = leiden_partitions(
+        G,
+        weight=weight,
+        resolution=resolution,
+        seed=seed,
+        quality_function=quality_function,
+        theta=theta,
+    )
+
     if max_level is not None:
         if max_level <= 0:
             raise ValueError("max_level argument must be a positive integer or None")
@@ -107,10 +134,16 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
     return final_partition.pop()
 
 
-@not_implemented_for("directed")
 @py_random_state("seed")
-@nx._dispatchable(edge_attrs="weight", implemented_by_nx=False)
-def leiden_partitions(G, weight="weight", resolution=1, seed=None):
+@nx._dispatchable(edge_attrs="weight")
+def leiden_partitions(
+    G,
+    weight="weight",
+    resolution=1.0,
+    seed=None,
+    quality_function="cpm",
+    theta=0.01,
+):
     """Yield partitions for each level of Leiden Community Detection (backend required)
 
     Leiden Community Detection is an algorithm to extract the community
@@ -156,7 +189,439 @@ def leiden_partitions(G, weight="weight", resolution=1, seed=None):
     leiden_communities
     :any:`louvain_partitions`
     """
-    raise NotImplementedError(
-        "'leiden_partitions' is not implemented by networkx. "
-        "Please try a different backend."
+
+    partition = [{u} for u in G]
+    inner_partition = None
+
+    if nx.is_empty(G):
+        yield partition
+        return
+
+    is_directed = G.is_directed()
+    if G.is_multigraph():
+        # this is the same as how louvain handles multigraph inputs
+        graph = _convert_multigraph(G, weight, is_directed)
+    else:
+        # if the weight parameter is defined then we use this value for
+        # edge weights within the algorithm, defaulting to 1 where the
+        # attribute does not exist
+        # else if weight is None then all edges are given a weight of 1
+        if weight:
+            graph = G.__class__()
+            graph.add_nodes_from(G)
+            graph.add_weighted_edges_from(G.edges(data=weight, default=1))
+        else:
+            graph = G.__class__()
+            graph.add_nodes_from(G)
+            graph.add_edges_from(G.edges())
+            nx.set_edge_attributes(graph, 1, name="weight")
+
+    if quality_function == "cpm":
+        quality_function = constant_potts_model
+        quality_delta_partial_eval_add = _cpm_delta_partial_eval_add
+        quality_delta_partial_eval_remove = _cpm_delta_partial_eval_remove
+        nx.set_node_attributes(graph, 1, name="node_weight")
+
+    elif quality_function == "modularity":
+        # NOTE the only required change to the modualrity function
+        # is the additon of **kwargs in the API. Otherwise the function
+        # cannot accept the node_weight parameter
+        quality_function = modularity
+        # TODO currently the partial delta functions for modularity are
+        # duplicates of cpm for the purposes of testing the API. The
+        # optimised functions to compute change in modualrity need to be
+        # implemented and corresponding tests written
+        quality_delta_partial_eval_add = _modularity_delta_partial_eval_add
+        quality_delta_partial_eval_remove = _modularity_delta_partial_eval_remove
+        # TODO set the weight to degree/2m
+        nx.set_node_attributes(graph, 1, name="node_weight")
+
+    else:
+        # currently only cpm and modularity are implemented
+        raise QualityFunctionNotImplemented(quality_function)
+
+    quality = quality_function(
+        graph,
+        partition,
+        resolution=resolution,
+        weight="weight",
+        node_weight="node_weight",
     )
+
+    improvement_made = True
+
+    while improvement_made:
+        # _move_nodes_fast plays the same role as _one_level in the
+        # networkx implementation of the louvain algorithm
+        inner_partition = _move_nodes_fast(
+            graph,
+            inner_partition,
+            quality_function,
+            quality_delta_partial_eval_remove,
+            quality_delta_partial_eval_add,
+            resolution,
+            seed=seed,
+        )
+
+        inner_partition_refined = _refine_partition(
+            graph,
+            inner_partition,
+            resolution,
+            quality_function,
+            quality_delta_partial_eval_remove,
+            quality_delta_partial_eval_add,
+            seed,
+            theta,
+        )
+
+        new_quality = quality_function(
+            graph,
+            inner_partition_refined,
+            resolution=resolution,
+            weight="weight",
+            node_weight="node_weight",
+        )
+
+        graph = _gen_graph(graph, inner_partition_refined)
+
+        # the partition of the original underlying graph is read from
+        # the node attribute 'nodes', which is set during _gen_graph(...)
+        # Each node in graph represents a community in the original graph
+        # and the node holds this information in the attribute 'nodes'.
+
+        # This is different to how louvain keeps track of the global
+        # partition, which is tracked through the individual moves in
+        # _one_level(...). For leiden, these changes would have to be
+        # tracked through both _move_nodes_fast and _refine_partition
+        # but _refine_partition resets to a singleton partition anyway
+        # so it wasn't clear to me: 1) how to do this; and, 2) whether
+        # it's worth doing this.
+
+        partition = [set() for _ in graph]
+        for i, u in enumerate(graph):
+            partition[i].update(graph.nodes[u]["nodes"])
+
+        yield [s.copy() for s in partition]
+
+        # We stop once the overall change in quality between iterations is
+        # close to zero.
+        improvement_made = (new_quality - quality) > 0.0000001
+        quality = new_quality
+
+    return
+
+
+def _move_nodes_fast(
+    G,
+    seed_partition,
+    quality_function,
+    quality_delta_partial_eval_remove,
+    quality_delta_partial_eval_add,
+    resolution,
+    seed=None,
+):
+    inner_partition = [{u} for u in G]
+    node2com = {u: i for i, u in enumerate(G)}
+
+    # Unlike louvain, instead of beginning each iteration with the singleton
+    # partition, each iteration uses the (unrefined) partition from the previous
+    # step as the starting communities when moving nodes.
+    # This section of code initilises nodes into those communities.
+    # if no partition is passed from the previous step (i.e. during the
+    # first iteration) then this is skipped and the singleton partition is used.
+    if seed_partition:
+        for i, u in enumerate(G):
+            for j, C in enumerate(seed_partition):
+                if u in C:
+                    old_com = i
+                    best_com = j
+                    node2com[u] = best_com
+                    inner_partition[old_com].remove(u)
+                    inner_partition[best_com].add(u)
+
+    rand_nodes = list(G.nodes)
+    seed.shuffle(rand_nodes)
+    node_queue = deque(rand_nodes)
+
+    while node_queue:
+        u = node_queue.pop()
+
+        best_delta = 0
+        old_com = node2com[u]
+        best_com = old_com
+
+        # this value is the overall change in quality that occurs
+        # when node u is removed from its current community
+        q_A = quality_delta_partial_eval_remove(
+            G, node=u, community=inner_partition[old_com], resolution=resolution
+        )
+
+        # for each node in the queue, we measure the change in quality
+        # from moving that node to each other community, keeping track of
+        # the community that gives the greatest improvement best_com
+        for new_com in set(node2com.values()):
+            if new_com != old_com:
+                # this quantity is the overall change in quality that
+                # occurs wen the node u is added the the new community
+                q_B = quality_delta_partial_eval_add(
+                    G, node=u, community=inner_partition[new_com], resolution=resolution
+                )
+
+                # the overall change in quality therefore from moving
+                # node u from old_com to new_com is as follows
+                quality_delta = q_A + q_B
+
+                if quality_delta > best_delta:
+                    best_delta = quality_delta
+                    best_com = new_com
+
+        if best_delta > 0:
+            node2com[u] = best_com
+
+            inner_partition[old_com].remove(u)
+            inner_partition[best_com].add(u)
+
+            neighbours = set(G.adj[u])
+            nodes_to_visit = neighbours - inner_partition[best_com]
+
+            for v in nodes_to_visit:
+                if v not in node_queue:
+                    node_queue.appendleft(v)
+
+    inner_partition = list(filter(None, inner_partition))
+
+    return inner_partition
+
+
+def _refine_partition(
+    G,
+    partition,
+    resolution,
+    quality_function,
+    quality_delta_partial_eval_remove,
+    quality_delta_partial_eval_add,
+    seed,
+    theta,
+):
+
+    node2com = {u: i for i, u in enumerate(G)}
+    inner_partition_refined = [{u} for u in G]
+
+    for C in partition:
+        inner_partition_refined, node2com = _merge_node_subset(
+            G,
+            inner_partition_refined,
+            node2com,
+            C,
+            resolution,
+            quality_function,
+            quality_delta_partial_eval_remove,
+            quality_delta_partial_eval_add,
+            seed,
+            theta,
+        )
+
+    inner_partition_refined = list(filter(None, inner_partition_refined))
+    return inner_partition_refined
+
+
+def _merge_node_subset(
+    G,
+    partition,
+    node2com,
+    S,
+    resolution,
+    quality_function,
+    quality_delta_partial_eval_remove,
+    quality_delta_partial_eval_add,
+    seed,
+    theta,
+):
+    S_size = sum(wt for u, wt in G.nodes(data="node_weight") if u in S)
+
+    # first, the sufficiently well-connected nodes within S
+    # are identified and added to the set R.
+    R = set()
+    for u in S:
+        u_size = G.nodes[u].get("node_weight", 1)
+        community_factor = sum(
+            wt for u, v, wt in G.edges({u}, data="weight") if v in S - {u}
+        )
+        factor_comparison = resolution * u_size * (S_size - u_size)
+        if community_factor > factor_comparison:
+            R.add(u)
+
+    # TODO this section of the code has many nested if statements which
+    # makes me think there's probably a more elegant solution. However,
+    # this approach does closely follow the pseudocode in the paper [1]
+    for u in R:
+        comm = node2com[u]
+        if partition[comm] == {u}:
+            # if the community that u belongs to is the singleton {u}, then
+            # we will proceed to merge it probabilistically with another
+            # community within S.
+
+            # first we identify candidate communities to merge u into
+            # and then the final community is randomly selected from these
+            # according to a probability distribution which is partly
+            # defined by the relative quality_delta (bigger increase in
+            # quality makes choosing that community more likely, but
+            # the algorithm does not greedily choose the greatest increase)
+
+            # we therefore track both the communities and their respective
+            # probabilities in order to define the probabilty distribution
+            # to select the community that u will be moved into
+
+            # if u is not in a singleton partition then we move on to the
+            # next node.
+            candidate_comm = []
+            candidate_comm_q_delta = []
+
+            # this is the change in quality that occurs from removing node
+            # u from its current community
+            q_A = quality_delta_partial_eval_remove(
+                G, node=u, community=partition[comm], resolution=resolution
+            )
+
+            for i, C in enumerate(partition):
+                if comm == i:
+                    # we only want to consider moving u to a different
+                    # community, not its current community.
+                    continue
+
+                elif C.issubset(S):
+                    # We only consider merging u into a community that
+                    # is within S. This is what is means for the resulting
+                    # partition to be a refinement of S.
+
+                    E = sum(wt for u, v, wt in G.edges(C, data="weight") if v in S - C)
+                    C_size = sum(wt for u, wt in G.nodes(data="node_weight") if u in C)
+                    comm_comparison = resolution * C_size * (S_size - C_size)
+
+                    if E > comm_comparison:
+                        # the change in quality the occurs from moving node u
+                        # into the new community
+                        q_B = quality_delta_partial_eval_add(
+                            G, node=u, community=partition[i], resolution=resolution
+                        )
+
+                        # the overall quality delta is therefore the sum
+                        # of the change in quality from removing u from its
+                        # starting community, and the change of quality
+                        # from adding it to the new community
+
+                        quality_delta = q_A + q_B
+
+                        if quality_delta > 0:
+                            # since moving u to the candidate community C
+                            # (at index i) we will add it to the list of
+                            # candidate communities
+                            candidate_comm.append(i)
+                            candidate_comm_q_delta.append(quality_delta)
+
+            # if there are candidate communities identified then
+            # one is selected at random, and u is added to that
+            # community
+            if candidate_comm:
+                # the probability distribution that the new community it drawn
+                # from is defined in terms of the quality delta associated
+                # with the move to each community.
+
+                # If moving u to community C results in a quality delta QC,
+                # the relative frequency withi which C will be chosen is
+                # proportional to
+                #
+                #       math.exp(QC/theta)
+                #
+                # Since computing large exponentials can cause overflow
+                # errors, we use an equivalent form that computes normalised
+                # values with the same ratios
+                max_delta = max(candidate_comm_q_delta)
+                candidate_comm_prob = [
+                    math.exp((x - max_delta) / theta) for x in candidate_comm_q_delta
+                ]
+
+                new_comm = seed.choices(candidate_comm, weights=candidate_comm_prob)[0]
+
+                partition[comm].remove(u)
+                partition[new_comm].add(u)
+                node2com[u] = new_comm
+
+    return partition, node2com
+
+
+def _gen_graph(G, partition):
+    """
+    Generate a new graph based on the partitions of a given graph
+
+    New node weight is the sum of existing node weights.
+
+    Edge weight between new nodes is the sum of edge weights
+    over the edges connecting pairs of communities.
+    """
+
+    H = G.__class__()
+    node2com = {}
+
+    for i, part in enumerate(partition):
+        new_size = 0
+
+        nodes = set()
+
+        for node in part:
+            new_size += G.nodes[node].get("node_weight", 1)
+            node2com[node] = i
+            nodes.update(G.nodes[node].get("nodes", {node}))
+
+        H.add_node(i, nodes=nodes, node_weight=new_size)
+
+    for u, v, d in G.edges(data=True):
+        uv_weight = d["weight"]
+        com_u = node2com[u]
+        com_v = node2com[v]
+        if com_u != com_v:
+            if H.has_edge(com_u, com_v):
+                H.edges[(com_u, com_v)]["weight"] += uv_weight
+            else:
+                H.add_edge(com_u, com_v, weight=uv_weight)
+
+    return H
+
+
+def _convert_multigraph(G, weight, is_directed):
+    """Convert a Multigraph to normal Graph"""
+    if is_directed:
+        H = nx.DiGraph()
+    else:
+        H = nx.Graph()
+
+    H.add_nodes_from(G)
+    for u, v, wt in G.edges(data=weight, default=1):
+        if H.has_edge(u, v):
+            H[u][v]["weight"] += wt
+        else:
+            H.add_edge(u, v, weight=wt)
+    return H
+
+
+def _is_valid_refinement(p, ref_p):
+    """
+    helper function useful during debugging, checking whether
+    a refined partition ref_p is a true refinement of a partition p
+    """
+    val = True
+    for c1 in ref_p:
+        for c2 in p:
+            if c1.issubset(c2):
+                break
+        else:
+            val = False
+    return val
+
+
+class QualityFunctionNotImplemented(nx.NetworkXError):
+    """Raised if quality function is not implemented for leiden"""
+
+    def __init__(self, quality_function):
+        msg = f"leiden not implemented for {quality_function}. Only 'cpm' or 'modularity' are currently implemented"
+        super().__init__(msg)
