@@ -2,7 +2,6 @@
 Kanevsky all minimum node k cutsets algorithm.
 """
 
-import copy
 from collections import defaultdict
 from operator import itemgetter
 
@@ -93,7 +92,6 @@ def all_node_cuts(G, k=None, flow_func=None):
 
     # Address some corner cases first.
     # For complete Graphs
-
     if nx.density(G) == 1:
         yield from ()
         return
@@ -106,9 +104,15 @@ def all_node_cuts(G, k=None, flow_func=None):
     H = build_auxiliary_node_connectivity(G)
     H_nodes = H.nodes  # for speed
     mapping = H.graph["mapping"]
-    # Keep a copy of original predecessors, H will be modified later.
-    # Shallow copy is enough.
-    original_H_pred = copy.copy(H._pred)
+    # The Even-Tarjan reduction requires infinite capacity on external
+    # edges (edges between different original nodes) and capacity 1 on
+    # internal edges (vA -> vB). build_auxiliary_node_connectivity sets
+    # capacity=1 on all edges, which is sufficient for computing the
+    # node connectivity value but not for Kanevsky's algorithm, which
+    # depends on the residual graph structure.
+    for u, w, d in H.edges(data=True):
+        if H_nodes[u]["id"] != H_nodes[w]["id"]:
+            d["capacity"] = float("inf")
     R = build_residual_network(H, "capacity")
     kwargs = {"capacity": "capacity", "residual": R}
     # Define default flow function
@@ -135,25 +139,29 @@ def all_node_cuts(G, k=None, flow_func=None):
         for v in non_adjacent:
             # step 4: compute maximum flow in an Even-Tarjan reduction H of G
             # and step 5: build the associated residual network R
-            R = flow_func(H, f"{mapping[x]}B", f"{mapping[v]}A", **kwargs)
+            # After adding edges in previous iterations, there may be
+            # infinite-capacity paths between x and v, which means no
+            # finite min-cut exists for this pair. Skip in that case.
+            try:
+                R = flow_func(H, f"{mapping[x]}B", f"{mapping[v]}A", **kwargs)
+            except nx.NetworkXUnbounded:
+                continue
             flow_value = R.graph["flow_value"]
 
             if flow_value == k:
-                # Find the nodes incident to the flow.
-                E1 = flowed_edges = [
-                    (u, w) for (u, w, d) in R.edges(data=True) if d["flow"] != 0
-                ]
-                VE1 = incident_nodes = {n for edge in E1 for n in edge}
-                # Remove saturated edges form the residual network.
-                # Note that reversed edges are introduced with capacity 0
-                # in the residual graph and they need to be removed too.
+                # Remove edges with zero residual capacity from R.
+                # Residual capacity = capacity - flow.
+                # For saturated forward edges: cap == flow > 0 -> removed.
+                # For inactive reverse edges: cap == flow == 0 -> removed.
+                # For active reverse edges: cap=0, flow < 0 -> cap != flow
+                #   -> kept (these have positive residual capacity and
+                #   represent cancellable flow in the residual graph).
                 saturated_edges = [
                     (u, w, d)
                     for (u, w, d) in R.edges(data=True)
-                    if d["capacity"] == d["flow"] or d["capacity"] == 0
+                    if d["capacity"] == d["flow"]
                 ]
                 R.remove_edges_from(saturated_edges)
-                R_closure = nx.transitive_closure(R)
                 # step 6: shrink the strongly connected components of
                 # residual flow network R and call it L.
                 L = nx.condensation(R)
@@ -161,62 +169,61 @@ def all_node_cuts(G, k=None, flow_func=None):
                 inv_cmap = defaultdict(list)
                 for n, scc in cmap.items():
                     inv_cmap[scc].append(n)
-                # Find the incident nodes in the condensed graph.
-                VE1 = {cmap[n] for n in VE1}
+                # Compute the transitive closure of L for successor lookups.
+                # Per Picard-Queyranne, each antichain of L corresponds to
+                # a successor-closed set (the antichain plus all successors),
+                # which defines the source side of a minimum s-t cut.
+                L_closure = nx.transitive_closure(L)
                 # step 7: Compute all antichains of L;
                 # they map to closed sets in H.
-                # Any edge in H that links a closed set is part of a cutset.
                 for antichain in nx.antichains(L):
-                    # Only antichains that are subsets of incident nodes counts.
-                    # Lemma 8 in reference.
-                    if not set(antichain).issubset(VE1):
+                    if not antichain:
                         continue
-                    # Nodes in an antichain of the condensation graph of
-                    # the residual network map to a closed set of nodes that
-                    # define a node partition of the auxiliary digraph H
-                    # through taking all of antichain's predecessors in the
-                    # transitive closure.
+                    # Build the successor-closed set in L from the antichain.
+                    S_L = set(antichain)
+                    for scc_node in antichain:
+                        S_L.update(L_closure[scc_node])
+                    # Expand SCC nodes back to R/H nodes.
                     S = set()
-                    for scc in antichain:
-                        S.update(inv_cmap[scc])
-                    S_ancestors = set()
-                    for n in S:
-                        S_ancestors.update(R_closure._pred[n])
-                    S.update(S_ancestors)
+                    for scc_node in S_L:
+                        S.update(inv_cmap[scc_node])
+                    # S must contain the source and not the sink.
                     if f"{mapping[x]}B" not in S or f"{mapping[v]}A" in S:
                         continue
-                    # Find the cutset that links the node partition (S,~S) in H
+                    # Find the cutset: edges from S to ~S in H.
                     cutset = set()
                     for u in S:
-                        cutset.update((u, w) for w in original_H_pred[u] if w not in S)
-                    # The edges in H that form the cutset are internal edges
-                    # (ie edges that represent a node of the original graph G)
-                    if any(H_nodes[u]["id"] != H_nodes[w]["id"] for u, w in cutset):
+                        cutset.update((u, w) for w in H[u] if w not in S)
+                    if not cutset:
                         continue
                     node_cut = {H_nodes[u]["id"] for u, _ in cutset}
 
-                    if len(node_cut) == k:
-                        # The cut is invalid if it includes internal edges of
-                        # end nodes. The other half of Lemma 8 in ref.
-                        if x in node_cut or v in node_cut:
-                            continue
-                        if node_cut not in seen:
-                            yield node_cut
-                            seen.append(node_cut)
+                    if node_cut not in seen:
+                        yield node_cut
+                        seen.append(node_cut)
 
                 # Add an edge (x, v) to make sure that we do not
                 # find this cutset again. This is equivalent
                 # of adding the edge in the input graph
                 # G.add_edge(x, v) and then regenerate H and R:
                 # Add edges to the auxiliary digraph.
+                # External edges get infinite capacity.
+                H.add_edge(
+                    f"{mapping[x]}B", f"{mapping[v]}A", capacity=float("inf")
+                )
+                H.add_edge(
+                    f"{mapping[v]}B", f"{mapping[x]}A", capacity=float("inf")
+                )
+                # Add edges to the residual network.
                 # See build_residual_network for convention we used
                 # in residual graphs.
-                H.add_edge(f"{mapping[x]}B", f"{mapping[v]}A", capacity=1)
-                H.add_edge(f"{mapping[v]}B", f"{mapping[x]}A", capacity=1)
-                # Add edges to the residual network.
-                R.add_edge(f"{mapping[x]}B", f"{mapping[v]}A", capacity=1)
+                R.add_edge(
+                    f"{mapping[x]}B", f"{mapping[v]}A", capacity=R.graph["inf"]
+                )
                 R.add_edge(f"{mapping[v]}A", f"{mapping[x]}B", capacity=0)
-                R.add_edge(f"{mapping[v]}B", f"{mapping[x]}A", capacity=1)
+                R.add_edge(
+                    f"{mapping[v]}B", f"{mapping[x]}A", capacity=R.graph["inf"]
+                )
                 R.add_edge(f"{mapping[x]}A", f"{mapping[v]}B", capacity=0)
 
                 # Add again the saturated edges to reuse the residual network
