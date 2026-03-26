@@ -208,22 +208,14 @@ def all_node_cuts(G, k=None, flow_func=None):
                 # G.add_edge(x, v) and then regenerate H and R:
                 # Add edges to the auxiliary digraph.
                 # External edges get infinite capacity.
-                H.add_edge(
-                    f"{mapping[x]}B", f"{mapping[v]}A", capacity=float("inf")
-                )
-                H.add_edge(
-                    f"{mapping[v]}B", f"{mapping[x]}A", capacity=float("inf")
-                )
+                H.add_edge(f"{mapping[x]}B", f"{mapping[v]}A", capacity=float("inf"))
+                H.add_edge(f"{mapping[v]}B", f"{mapping[x]}A", capacity=float("inf"))
                 # Add edges to the residual network.
                 # See build_residual_network for convention we used
                 # in residual graphs.
-                R.add_edge(
-                    f"{mapping[x]}B", f"{mapping[v]}A", capacity=R.graph["inf"]
-                )
+                R.add_edge(f"{mapping[x]}B", f"{mapping[v]}A", capacity=R.graph["inf"])
                 R.add_edge(f"{mapping[v]}A", f"{mapping[x]}B", capacity=0)
-                R.add_edge(
-                    f"{mapping[v]}B", f"{mapping[x]}A", capacity=R.graph["inf"]
-                )
+                R.add_edge(f"{mapping[v]}B", f"{mapping[x]}A", capacity=R.graph["inf"])
                 R.add_edge(f"{mapping[x]}A", f"{mapping[v]}B", capacity=0)
 
                 # Add again the saturated edges to reuse the residual network
