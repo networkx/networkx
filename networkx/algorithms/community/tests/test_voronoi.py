@@ -2,10 +2,8 @@ import pytest
 
 import networkx as nx
 
-# TODO: look at comments, no redundancy
 
-
-def test_communities_empty():
+def test_communities_no_nodes():
     G = nx.Graph()
     partition = nx.community.voronoi_communities(G)
 
@@ -41,32 +39,40 @@ def test_communities_raises_multigraph():
         nx.community.voronoi_communities(G)
 
 
-def test_communities_raises_negative_or_zero_weight():
+@pytest.mark.parametrize("invalid_weight", [0.0, -2.5])
+def test_communities_raises_invalid_weight(invalid_weight):
     G = nx.Graph()
-    G.add_edge(0, 1, weight=0.0)
-
-    with pytest.raises(ValueError, match="All edge weights must be positive"):
-        nx.community.voronoi_communities(G)
-
-    G.add_edge(0, 1, weight=-2.5)
-
-    with pytest.raises(ValueError, match="All edge weights must be positive"):
+    G.add_edge(0, 1, weight=invalid_weight)
+    with pytest.raises(nx.NetworkXError, match="All edge weights must be positive"):
         nx.community.voronoi_communities(G)
 
 
-def test_communities_modes():
+def test_communities_weight_transform():
     G = nx.karate_club_graph()
 
-    p_flow = nx.community.voronoi_communities(G, mode="flow")
+    p_flow = nx.community.voronoi_communities(G, weight_transform="flow")
     assert isinstance(p_flow, list)
     assert nx.community.is_partition(G, p_flow)
 
-    p_strength = nx.community.voronoi_communities(G, mode="strength")
+    p_strength = nx.community.voronoi_communities(G, weight_transform="strength")
     assert isinstance(p_strength, list)
     assert nx.community.is_partition(G, p_strength)
 
-    with pytest.raises(ValueError, match="Invalid mode"):
-        nx.community.voronoi_communities(G, mode="invalid_string")
+    def my_custom_transform(G, node, strengths, densities, eps):
+        # A simple custom logic: just double the density
+        return float(densities[node]) * 2.0
+
+    p_custom = nx.community.voronoi_communities(G, weight_transform=my_custom_transform)
+    assert isinstance(p_custom, list)
+    assert nx.community.is_partition(G, p_custom)
+
+    with pytest.raises(ValueError, match="Expected 'strength', 'flow', or a callable"):
+        nx.community.voronoi_communities(G, weight_transform="invalid_string")
+
+    with pytest.raises(
+        TypeError, match="weight_transform must be a string or a callable"
+    ):
+        nx.community.voronoi_communities(G, weight_transform=12345)
 
 
 def test_communities_karate_club():
@@ -78,7 +84,10 @@ def test_communities_karate_club():
 
     partition = nx.community.voronoi_communities(G)
 
-    assert part == partition
+    expected = {frozenset(c) for c in part}
+    result = {frozenset(c) for c in partition}
+
+    assert result == expected
 
 
 @pytest.mark.parametrize(
@@ -152,8 +161,6 @@ def test_communities_quality():
 
     quality_G = nx.community.partition_quality(G, partition_G)[0]
 
-    # TODO: mutual information test here
-
     modularity_G = nx.community.modularity(G, partition_G)
 
     assert quality_G >= 0.99
@@ -161,16 +168,29 @@ def test_communities_quality():
     assert modularity_G >= 0.45
 
 
-# TODO: another test_quality lfr and i give out the weights,
-# merge generateWeightedNetworks and assert mutual information, quality, modularity
-# TODO: predefined number of communities test
-# TODO: voronoi_partitions tests
+@pytest.mark.parametrize(
+    "edges, expected_min_len",
+    [
+        # Single edge. Forces max_r <= min_r
+        ([(0, 1, {"weight": 1.0})], 1),
+        # Only self-loops. Forces min_r == float("inf")
+        ([(0, 0, {"weight": 1.0}), (1, 1, {"weight": 1.0})], 1),
+    ],
+)
+def test_communities_radius_edge_cases(edges, expected_min_len):
+    G = nx.Graph()
+    G.add_edges_from(edges)
+
+    partition = nx.community.voronoi_communities(G)
+
+    assert isinstance(partition, list)
+    assert len(partition) >= expected_min_len
+
+
 def test_partitions_raises_invalid_direction():
     G = nx.Graph([(0, 1)])
 
-    with pytest.raises(
-        ValueError, match="direction must be 'in', 'out', or 'undirected'"
-    ):
+    with pytest.raises(ValueError, match="direction must be 'in' or 'out'"):
         nx.community.voronoi_partitions(G, generator_points=[0], direction="invalid")
 
 
@@ -179,6 +199,87 @@ def test_partitions_raises_invalid_generators():
 
     # Node 3 is not in the graph
     with pytest.raises(
-        ValueError, match="Invalid vertex ID given as Voronoi generator."
+        nx.NodeNotFound, match="Invalid node ID given as Voronoi generator"
     ):
         nx.community.voronoi_partitions(G, generator_points=[0, 3])
+
+
+def test_partitions_undirected_fallback():
+    # Exercises the fallback to nx.voronoi_cells when all_pairs_distances is None.
+    G = nx.Graph()
+    G.add_edges_from([(0, 1), (1, 2), (2, 3)])
+
+    partition = nx.community.voronoi_partitions(G, generator_points=[0, 3])
+
+    sorted_partition = sorted([sorted(p) for p in partition])
+    assert sorted_partition == [[0, 1], [2, 3]]
+
+
+def test_partitions_directed_in():
+    G = nx.DiGraph()
+    # 0 -> 1 -> 2
+    G.add_edges_from([(0, 1), (1, 2)])
+
+    partition = nx.community.voronoi_partitions(
+        G, generator_points=[0, 2], direction="in"
+    )
+
+    sorted_partition = sorted([sorted(p) for p in partition])
+    assert sorted_partition == [[0], [1, 2]]
+
+
+def test_partitions_precomputed_distances():
+    G = nx.Graph()
+    G.add_nodes_from([0, 1, 2, 3])
+
+    all_pairs_distances = {
+        0: {0: 0.0, 1: 1.0, 2: 5.0, 3: 10.0},
+        3: {0: 10.0, 1: 5.0, 2: 1.0, 3: 0.0},
+    }
+
+    partition = nx.community.voronoi_partitions(
+        G,
+        generator_points=[0, 3],
+        all_pairs_distances=all_pairs_distances,
+        direction="out",
+    )
+
+    sorted_partition = sorted([sorted(p) for p in partition])
+    assert sorted_partition == [[0, 1], [2, 3]]
+
+
+def test_partitions_unreachable_nodes():
+    G = nx.Graph()
+    G.add_nodes_from([0, 1, 2])
+
+    # Node 2 is disconnected/unreachable
+    all_pairs_distances = {0: {0: 0.0, 1: 1.0}}
+
+    partition = nx.community.voronoi_partitions(
+        G,
+        generator_points=[0],
+        all_pairs_distances=all_pairs_distances,
+        direction="out",
+    )
+
+    # The unreachable logic should group node 2 into its own set
+    sorted_partition = sorted([sorted(p) for p in partition])
+    assert sorted_partition == [[0, 1], [2]]
+
+
+def test_partitions_directed_in_precomputed():
+    # Covers direction="in" branch of _voronoi_cells_from_distances,
+    # including a node that cannot reach any generator (unreachable).
+    G = nx.DiGraph()
+    G.add_nodes_from([0, 1, 2, 3])
+    all_pairs_distances = {
+        0: {0: 0.0},
+        1: {0: 1.0},
+        2: {0: 5.0},
+        # node 3 absent - unreachable
+    }
+    partition = nx.community.voronoi_partitions(
+        G, generator_points=[0], all_pairs_distances=all_pairs_distances, direction="in"
+    )
+    assert {0, 1, 2} in partition
+    assert {3} in partition

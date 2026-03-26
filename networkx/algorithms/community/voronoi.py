@@ -18,37 +18,59 @@ def voronoi_communities(
     r"""Find the best partition of a graph using the Voronoi Community Detection
     Algorithm.
 
-    Voronoi Community Detection Algorithm is a deterministic method to extract the community
-    structure of a network. This is a deterministic method based on modularity optimization. [1]_
+    Voronoi Community Detection Algorithm is a deterministic method to extract the
+    community structure of a network. This is a deterministic method based on modularity
+    optimization. [1]_
 
-    The transformation ensures that tightly-knit
-    nodes within the same community are mathematically "closer", while edges acting as
-    bridges between communities are "longer".
+    The algorithm works in four steps. The first step is to transform the original edge
+    weights into topological distances. To ensure tightly-knit nodes within the same
+    community are mathematically "closer", while edges acting as bridges between
+    communities are "longer", the distance between nodes $u$ and $v$ is calculated
+    inversely proportional to their normalized weight $w_{u,v}$ and their edge
+    clustering coefficient $C_{u,v}$:
 
-    As for the minimum distance, we use the shortest edge length. This may be shorter than the shortest
-    incident edge of a generator point, but underestimating the minimum distance does not affect
-    the radius optimization negatively.
+    .. math ::
+        l_{u,v} = \frac{1}{w_{u,v} \cdot C_{u,v}}
 
-    As a maximum distance, we use the eccentricity of the first generator. If the graph is not
-    strongly connected, we consider a _potential_ first generator from each strongly connected
-    component and take the maximum eccentricity of these.
+    Secondly, it calculates a weighted local density $\rho_i$ for every node $i$:
+
+    .. math ::
+        \rho_i = s_i \frac{m_i}{m_i + k_i}
+
+    where $s_i$ is the node's strength (weighted degree), $m_i$ is the number of
+    internal edges among the neighbors of $i$, and $k_i$ is the number of external edges
+    leaving the neighborhood of $i$. This density is then modified according to the
+    `weight_transform` strategy to determine the final metric used for selecting
+    generator points.
+
+    On the third step, for a given neighborhood radius $r$, the algorithm identifies
+    community centers, called "generator points". A node is selected as a generator
+    if its transformed density is a strict local maximum within the topological
+    distance $r$. Once generators are selected, the graph is partitioned into Voronoi
+    cells by assigning every other node to its topologically closest generator point.
+
+    Finally, the algorithm determines a minimum and maximum radius $r$ based on the
+    shortest and longest path distances in the graph. It then deterministically scans
+    through this range by incrementing $r$ by a fixed step size (0.01). It computes
+    the Voronoi partition for each $r$ step and calculates its modularity. The partition
+    that maximizes modularity is returned.
 
     Parameters
     ----------
     G : NetworkX graph
     weight : string, optional (default: "weight")
-    weight_transform : {"strength", "flow"}, optional (default: "strength")
+    weight_transform : {"strength", "flow"} or callable, optional (default: "strength")
         The strategy to transform weights into distances.
         If a string, it must be one of the following:
-        - "strength": uses the weighted local density of each node; if weights have a strength-like meaning
-        - "flow": uses log(strength(node)) / density(node); if weights have an (information) flow-like meaning
-        If a function, it must have the signature `func(G, node, strengths, weighted_densities, eps)`
+        - "strength": uses the weighted local density of each node; if weights have a
+        strength-like meaning
+        - "flow": uses log(strength(node)) / density(node); if weights have an
+        (information) flow-like meaning
+        If a function, it must have the signature `function(G, node, strengths, node_densities, eps)`
         and return a float representing the transformed local density of the node.
-    resolution : float, optional (default: 1)
-        If resolution is less than 1, modularity favors larger communities.
-        Greater than 1 favors smaller communities. This corresponds to the
-        resolution parameter :math:`\gamma` in the generalized modularity
-        formula. See :func:`~networkx.algorithms.community.quality.modularity`.
+    resolution : float, optional (default=1)
+        If resolution is less than 1, the algorithm favors larger communities.
+        Greater than 1 favors smaller communities.
     eps : float, optional (default: 1e-8)
         Offset value to ensure numerical stability and avoid division by zero.
 
@@ -59,10 +81,25 @@ def voronoi_communities(
         All communities together contain all the nodes in `G`.
 
     Examples
-    -------
+    --------
+    >>> G = nx.karate_club_graph()
+    >>> communities = nx.community.voronoi_communities(G)
+    >>> len(communities)
+    2
+    >>> sorted(len(c) for c in communities)
+    [16, 18]
 
     Notes
     -----
+    Unlike stochastic community detection methods (such as the Louvain and Leiden
+    algorithms), this method is fully deterministic. The community structure will
+    remain exactly the same across multiple executions on the same graph.
+
+    In the event of ties, the algorithm behaves as follows:
+        - If multiple nodes have the exact same weighted local density when selecting
+        generator points, the tie is broken deterministically by node ID.
+        - If a node is at an equal shortest-path distance from multiple generator
+        points, it is assigned to the generator with the highest local density.
 
     References
     ----------
@@ -78,43 +115,37 @@ def voronoi_communities(
     if G.number_of_edges() == 0:
         return [{n} for n in G]
 
-    if any(d.get(weight, 1.0) <= 0 for _, _, d in G.edges(data=True)):
-        raise nx.NetworkXError(
-            "All edge weights must be positive for Voronoi community detection."
-        )
+    if any(w <= 0 for _, _, w in G.edges(data=weight, default=1.0)):
+        raise nx.NetworkXError("All edge weights must be positive")
 
-    w_max = max(d.get(weight, 1.0) for _, _, d in G.edges(data=True))
+    w_max = max(w for _, _, w in G.edges(data=weight, default=1.0))
+    weight_key = weight or "weight"
 
-    if w_max > 1:
-        G_normalized = G.copy()
-        for u, v, data in G_normalized.edges(data=True):
-            data[weight] = data.get(weight, 1.0) / w_max
-    else:
-        G_normalized = G
+    G_dist = _transform_weights_to_distances(G, weight=weight_key, eps=eps, w_max=w_max)
+    all_pairs_distances = dict(
+        nx.all_pairs_dijkstra_path_length(G_dist, weight=weight_key)
+    )
 
-    G_dist = _transform_weights_to_distances(G_normalized, weight=weight, eps=eps)
-    all_pairs_distances = dict(nx.all_pairs_dijkstra_path_length(G_dist, weight=weight))
-
-    weighted_densities = _weighted_local_density(G, weight=weight)
     strengths = dict(G.degree(weight=weight))
+    node_densities = _weighted_local_density(G, strengths)
 
     if callable(weight_transform):
-        transform_func = weight_transform
+        transform_function = weight_transform
     elif isinstance(weight_transform, str):
         if weight_transform == "strength":
-            transform_func = _strength_transform
+            transform_function = _strength_transform
         elif weight_transform == "flow":
-            transform_func = _flow_transform
+            transform_function = _flow_transform
         else:
             raise ValueError(
-                f"Invalid weight_transform '{weight_transform}'. "
-                "Expected 'strength', 'flow', or a callable."
+                f"Invalid weight_transform '{weight_transform}' "
+                "Expected 'strength', 'flow', or a callable"
             )
     else:
-        raise TypeError("weight_transform must be a string or a callable function")
+        raise TypeError("weight_transform must be a string or a callable")
 
     transformed_densities = {
-        node: transform_func(G, node, strengths, weighted_densities, eps) for node in G
+        node: transform_function(G, node, strengths, node_densities, eps) for node in G
     }
 
     min_r = float("inf")
@@ -136,7 +167,9 @@ def voronoi_communities(
 
     last_generators = None
 
-    step = max((max_r - min_r) / 50, 0.01)
+    direction = "in" if G.is_directed() else "out"
+
+    step = 0.01
     r = min_r
     while r < max_r:
         generator_points = _choose_generator_points(
@@ -147,10 +180,12 @@ def voronoi_communities(
             r += step
             continue
 
-        direction = "in" if G.is_directed() else "out"
-
         communities = voronoi_partitions(
-            G_dist, generator_points, weight, all_pairs_distances, direction
+            G_dist,
+            generator_points,
+            weight=weight,
+            all_pairs_distances=all_pairs_distances,
+            direction=direction,
         )
 
         current_modularity = modularity(
@@ -164,8 +199,6 @@ def voronoi_communities(
             max_modularity = current_modularity
             best_community = communities
 
-    best_community = sorted(best_community, key=lambda c: min(c))
-
     return best_community
 
 
@@ -174,18 +207,27 @@ def voronoi_communities(
 def voronoi_partitions(
     G, generator_points, weight="weight", all_pairs_distances=None, direction="out"
 ):
-    r"""Return partitions for each circle with diameter `r` of the Voronoi Community Detection
-    Algorithm.
+    r"""Partition the graph into Voronoi cells around a given set of generator points.
+
+    This function assigns every node in the graph to its closest generator point based
+    on shortest-path distance, effectively creating a Voronoi diagram on the network.
+    Ties are broken deterministically.
+
+    It is used internally by the Voronoi Community Detection Algorithm to evaluate
+    different sets of community centers. See :any:`voronoi_communities`.
 
     Parameters
     ----------
     G : NetworkX graph
     generator_points : list
+        A list of node IDs acting as the centers of the Voronoi cells.
     weight : string, optional (default: "weight")
-    all_pairs_distances : optional
+    all_pairs_distances : dict of dicts, optional
+        Precomputed shortest path distances between all nodes. If None, distances
+        will be calculated internally.
     direction : {"out", "in"}
-        Determines the direction of the shortest paths used to assign nodes to generators
-        in directed graphs.
+        Determines the direction of the shortest paths used to assign nodes to
+        generators in directed graphs.
         - "out": Node assignment is based on the shortest path from the generator to the node.
         - "in": Node assignment is based on the shortest path from the node to the generator.
         Ignored for undirected graphs.
@@ -197,7 +239,14 @@ def voronoi_partitions(
         All communities together contain all the nodes in `G`.
 
     Examples
-    -------
+    --------
+    On a path graph, each node is assigned to its nearest generator:
+
+    >>> import networkx as nx
+    >>> G = nx.path_graph(6)
+    >>> cells = nx.community.voronoi_partitions(G, generator_points=[0, 5])
+    >>> sorted(sorted(c) for c in cells)
+    [[0, 1, 2], [3, 4, 5]]
 
     Notes
     -----
@@ -213,7 +262,7 @@ def voronoi_partitions(
 
     generator_points_set = set(generator_points)
     if not generator_points_set.issubset(G):
-        raise nx.NodeNotFound("Invalid vertex ID given as Voronoi generator.")
+        raise nx.NodeNotFound("Invalid node ID given as Voronoi generator")
 
     if all_pairs_distances is not None:
         return _voronoi_cells_from_distances(
@@ -229,19 +278,17 @@ def voronoi_partitions(
     return list(cells.values())
 
 
-def _strength_transform(G, node, strengths, weighted_densities, eps):
+def _strength_transform(G, node, strengths, node_densities, eps):
     """Default built-in transformation for strength-based edge weights."""
-    return float(weighted_densities[node])
+    return float(node_densities[node])
 
 
-def _flow_transform(G, node, strengths, weighted_densities, eps):
+def _flow_transform(G, node, strengths, node_densities, eps):
     """Default built-in transformation for flow-based edge weights."""
-    return math.log(float(strengths[node]) + eps) / (
-        float(weighted_densities[node]) + eps
-    )
+    return math.log(float(strengths[node]) + eps) / (float(node_densities[node]) + eps)
 
 
-def _transform_weights_to_distances(G, weight="weight", eps=1e-8):
+def _transform_weights_to_distances(G, weight="weight", eps=1e-8, w_max=1.0):
     r"""Transform graph edge weights into topological distances based on edge clustering.
 
     This internal helper function creates a new graph where edge weights represent
@@ -254,6 +301,8 @@ def _transform_weights_to_distances(G, weight="weight", eps=1e-8):
     weight : string, optional (default: "weight")
     eps : float, optional (default: 1e-8)
         Offset value to ensure numerical stability and avoid division by zero.
+    w_max : float, optional (default: 1.0)
+        Maximum edge weight in the graph, used to normalize weights to (0, 1].
 
     Returns
     -------
@@ -276,7 +325,9 @@ def _transform_weights_to_distances(G, weight="weight", eps=1e-8):
         ecc = (triangles + 1) / denominator
 
         w = float(data.get(weight, 1.0))
-        w_safe = w if w > 0 else eps
+        w_norm = w / w_max
+
+        w_safe = w_norm if w_norm > 0 else eps
         distance = 1.0 / (w_safe * ecc)
 
         edge_attrs = data.copy()
@@ -287,7 +338,7 @@ def _transform_weights_to_distances(G, weight="weight", eps=1e-8):
     return G_dist
 
 
-def _weighted_local_density(G, weight="weight"):
+def _weighted_local_density(G, strengths):
     """Calculate the weighted local density for each node in the graph.
 
     The local density is a metric used to identify the centers of communities
@@ -298,7 +349,8 @@ def _weighted_local_density(G, weight="weight"):
     Parameters
     ----------
     G : NetworkX graph
-    weight : string, optional (default: "weight")
+    strengths : dict
+        A dictionary mapping each node to its strength (weighted degree).
 
     Returns
     -------
@@ -306,7 +358,6 @@ def _weighted_local_density(G, weight="weight"):
         A dictionary mapping each node to its weighted local density.
     """
 
-    strengths = dict(G.degree(weight=weight))
     densities = {}
 
     if G.is_directed():
@@ -417,8 +468,8 @@ def _voronoi_cells_from_distances(G, generator_points, all_pairs_distances, dire
     generator_points : list
     all_pairs_distances : dict
     direction : {"out", "in"}
-        Determines the direction of the shortest paths used to assign nodes to generators
-        in directed graphs.
+        Determines the direction of the shortest paths used to assign nodes to
+        generators in directed graphs.
         - "out": Node assignment is based on the shortest path from the generator to the node.
         - "in": Node assignment is based on the shortest path from the node to the generator.
         Ignored for undirected graphs.
