@@ -471,9 +471,7 @@ class TestSpanningTreeIterator:
             tree_index -= 1
 
     def test_next_without_iter(self):
-        """Tests that call next() directly on a SpanningTreeIterator without first
-        iterating over it should not raise an AttributeError.
-        """
+        """Iteration error. See gh-8563"""
         G = nx.cycle_graph(3)
         spanning_trees = nx.SpanningTreeIterator(G)
         tree = next(spanning_trees)  # must not raise AttributeError
