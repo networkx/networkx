@@ -1074,24 +1074,16 @@ class SpanningTreeIterator:
         self.partition_key = (
             "SpanningTreeIterators super secret partition attribute name"
         )
-
-    def __iter__(self):
-        """
-        Returns
-        -------
-        SpanningTreeIterator
-            The iterator object for this graph
-        """
         self.partition_queue = PriorityQueue()
         self._clear_partition(self.G)
         mst_weight = partition_spanning_tree(
             self.G, self.minimum, self.weight, self.partition_key, self.ignore_nan
         ).size(weight=self.weight)
-
         self.partition_queue.put(
             self.Partition(mst_weight if self.minimum else -mst_weight, {})
         )
 
+    def __iter__(self):
         return self
 
     def __next__(self):
