@@ -991,11 +991,12 @@ class TestMinimumFeedbackEdgeSet:
                     [
                         (2, 1, {"weight": 4}),
                         (1, 5, {"weight": 5}),
-                        (4, 5, {"weight": 7}),
                         (5, 2, {"weight": 6}),
                         (2, 4, {"weight": 5}),
+                        (4, 5, {"weight": 7}),
                         (4, 3, {"weight": 2}),
                         (3, 2, {"weight": 6}),
+                        # three triangles: 2-1-5, 2-4-5, 2-4-3
                     ]
                 ),
                 {(4, 3), (5, 2)},
