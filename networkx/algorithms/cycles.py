@@ -1265,18 +1265,23 @@ def minimum_feedback_edge_set(G, weight=None):
     """
 
     H = G.copy()
+    F = set()
+
     weights = {e: G.edges[e].get(weight, 1) for e in G.edges}
-    while not nx.is_directed_acyclic_graph(H):
-        C = tuple(H.subgraph(next(nx.simple_cycles(H))).edges)
-        min_weight = min([weights[e] for e in C])
-        for e in C:
+    for C_nodes in nx.simple_cycles(H):
+        C_edges = tuple(H.subgraph(C_nodes).edges)
+        min_weight = min([weights[e] for e in C_edges])
+        for e in C_edges:
             weights[e] -= min_weight
             if weights[e] == 0:
                 H.remove_edge(*e)
+                F.add(e)
 
-    for e in G.edges - H.edges:
+    for e in F.copy():
         H.add_edge(*e)
-        if not nx.is_directed_acyclic_graph(H):
+        if nx.is_directed_acyclic_graph(H):
+            F.remove(e)
+        else:
             H.remove_edge(*e)
 
-    return set(G.edges - H.edges)
+    return F
