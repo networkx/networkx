@@ -141,7 +141,7 @@ def inter_community_non_edges(G, partition):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def modularity(G, communities, weight="weight", resolution=1, **kwargs):
+def modularity(G, communities, weight="weight", resolution=1):
     r"""Returns the modularity of the given partition of the graph.
 
     Modularity is defined in [1]_ as

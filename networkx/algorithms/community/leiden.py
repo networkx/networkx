@@ -2,6 +2,7 @@
 algorithm.
 """
 
+import functools
 import itertools
 import math
 import random
@@ -216,37 +217,65 @@ def leiden_partitions(
             graph.add_edges_from(G.edges())
             nx.set_edge_attributes(graph, 1, name="weight")
 
+    # In this next stage the setup is different depending on whether the
+    # chosen quality function is cpm or modularity.
+
     if quality_function == "cpm":
-        quality_function = constant_potts_model
+        quality_function = functools.partial(
+            constant_potts_model, node_weight="node_weight"
+        )
         quality_delta_partial_eval_add = _cpm_delta_partial_eval_add
         quality_delta_partial_eval_remove = _cpm_delta_partial_eval_remove
-        nx.set_node_attributes(graph, 1, name="node_weight")
 
     elif quality_function == "modularity":
-        # NOTE the only required change to the modualrity function
-        # is the additon of **kwargs in the API. Otherwise the function
-        # cannot accept the node_weight parameter
         quality_function = modularity
-        # TODO currently the partial delta functions for modularity are
-        # duplicates of cpm for the purposes of testing the API. The
-        # optimised functions to compute change in modualrity need to be
-        # implemented and corresponding tests written
+        # may end up having separate definitions for directed and non-directed cases
         quality_delta_partial_eval_add = _modularity_delta_partial_eval_add
         quality_delta_partial_eval_remove = _modularity_delta_partial_eval_remove
-        # TODO set the weight to degree/2m
-        nx.set_node_attributes(graph, 1, name="node_weight")
 
     else:
         # currently only cpm and modularity are implemented
         raise QualityFunctionNotImplemented(quality_function)
 
-    quality = quality_function(
-        graph,
-        partition,
-        resolution=resolution,
-        weight="weight",
-        node_weight="node_weight",
-    )
+    # these attributes are used for various quality functions, depending on
+    # whether the graph is directed or not. Each of these are aggregated by summing for
+    # nodes in a community during _gen_graph stage
+    # NOTE it may be better to create a dict to hold these values during critical
+    # stages of the algorithm for performance i.e. during _move_nodes_fast
+
+    # node_weight                used with cpm directed and non-directed
+    # cumulative_degree          used by modularity, non-directed only (identical algorithm to cpm)
+    # cumulative_in_degree       used by modularity, directed only (different algorithm)
+    # cumulative_out_degree      used by modularity, directed only (different algorithm)
+
+    if is_directed:
+        in_degree = dict(G.in_degree(weight=weight))
+        out_degree = dict(G.out_degree(weight=weight))
+        m = sum(out_degree.values())
+
+        K_in = {u: in_degree[u] / (2 * m) for u in graph}
+        nx.set_node_attributes(graph, K_in, name="cumulative_in_degree")
+
+        K_out = {u: out_degree[u] / (2 * m) for u in graph}
+        nx.set_node_attributes(graph, K_out, name="cumulative_out_degree")
+
+        nx.set_node_attributes(graph, 0, name="cumulative_degree")
+
+    else:
+        nx.set_node_attributes(graph, 0, name="cumulative_in_degree")
+        nx.set_node_attributes(graph, 0, name="cumulative_out_degree")
+
+        degree = dict(G.degree(weight=weight))
+        m = sum(degree.values())
+
+        K = {u: degree[u] / (2 * m) for u in graph}
+        nx.set_node_attributes(graph, K, name="cumulative_degree")
+
+    nx.set_node_attributes(graph, 1, name="node_weight")
+
+    # The setup phase has ended, the main algorithm now begins.
+
+    quality = quality_function(graph, partition, resolution=resolution, weight="weight")
 
     improvement_made = True
 
@@ -275,11 +304,7 @@ def leiden_partitions(
         )
 
         new_quality = quality_function(
-            graph,
-            inner_partition_refined,
-            resolution=resolution,
-            weight="weight",
-            node_weight="node_weight",
+            graph, inner_partition_refined, resolution=resolution, weight="weight"
         )
 
         graph = _gen_graph(graph, inner_partition_refined)
@@ -443,7 +468,9 @@ def _merge_node_subset(
     # are identified and added to the set R.
     R = set()
     for u in S:
-        u_size = G.nodes[u].get("node_weight", 1)
+        # NOTE may need a more general size method here, particularly for
+        # directed graphs when modualrity is used
+        u_size = G.nodes[u].get("node_weight")
         community_factor = sum(
             wt for u, v, wt in G.edges({u}, data="weight") if v in S - {u}
         )
@@ -565,15 +592,29 @@ def _gen_graph(G, partition):
 
     for i, part in enumerate(partition):
         new_size = 0
+        new_cum_in_degree = 0
+        new_cum_out_degree = 0
+        new_cum_degree = 0
 
         nodes = set()
 
         for node in part:
-            new_size += G.nodes[node].get("node_weight", 1)
+            new_size += G.nodes[node].get("node_weight")
+            new_cum_in_degree += G.nodes[node].get("cumulative_in_degree")
+            new_cum_out_degree += G.nodes[node].get("cumulative_out_degree")
+            new_cum_degree += G.nodes[node].get("cumulative_degree")
+
             node2com[node] = i
             nodes.update(G.nodes[node].get("nodes", {node}))
 
-        H.add_node(i, nodes=nodes, node_weight=new_size)
+        H.add_node(
+            i,
+            nodes=nodes,
+            node_weight=new_size,
+            cumulative_in_degree=new_cum_in_degree,
+            cumulative_out_degree=new_cum_out_degree,
+            cumulative_degree=new_cum_degree,
+        )
 
     for u, v, d in G.edges(data=True):
         uv_weight = d["weight"]
