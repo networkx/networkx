@@ -14,6 +14,8 @@ from networkx.algorithms.community.quality import (
     _cpm_delta_partial_eval_remove,
     _modularity_delta_partial_eval_add,
     _modularity_delta_partial_eval_remove,
+    _directed_modularity_delta_partial_eval_add,
+    _directed_modularity_delta_partial_eval_remove,
     constant_potts_model,
     modularity,
 )
@@ -228,11 +230,17 @@ def leiden_partitions(
         quality_delta_partial_eval_remove = _cpm_delta_partial_eval_remove
 
     elif quality_function == "modularity":
+        
         quality_function = modularity
-        # may end up having separate definitions for directed and non-directed cases
-        quality_delta_partial_eval_add = _modularity_delta_partial_eval_add
-        quality_delta_partial_eval_remove = _modularity_delta_partial_eval_remove
-
+        
+        if is_directed:
+            # different quality delta functions are required for directed and
+            # non-directed modularity
+            quality_delta_partial_eval_add = _directed_modularity_delta_partial_eval_add
+            quality_delta_partial_eval_remove = _directed_modularity_delta_partial_eval_remove
+        else:
+            quality_delta_partial_eval_add = _modularity_delta_partial_eval_add
+            quality_delta_partial_eval_remove = _modularity_delta_partial_eval_remove
     else:
         # currently only cpm and modularity are implemented
         raise QualityFunctionNotImplemented(quality_function)
@@ -249,15 +257,36 @@ def leiden_partitions(
     # cumulative_out_degree      used by modularity, directed only (different algorithm)
 
     if is_directed:
+        # the weight attributes created here are only used if the
+        # quality function is set to modularity
+
         in_degree = dict(G.in_degree(weight=weight))
         out_degree = dict(G.out_degree(weight=weight))
         m = sum(out_degree.values())
 
-        K_in = {u: in_degree[u] / (2 * m) for u in graph}
-        nx.set_node_attributes(graph, K_in, name="cumulative_in_degree")
+        # this scale factor is required to ensure that the partial delta computations
+        # work correctly.
+        # NOTE we could further include resolution*2 in this, see note below
+        # on node_weight.
+        scale_factor = math.pow(2*m, 1/4)
 
-        K_out = {u: out_degree[u] / (2 * m) for u in graph}
-        nx.set_node_attributes(graph, K_out, name="cumulative_out_degree")
+        # the purpose of this scale factor is as follows. The "size" of a community
+        # C is defined:
+        #
+        #       (K_C_in * K_C_out)**2 / (2*m)
+        # 
+        # so scaling each degree value by S = (2*m)**(1/4) and letting SK_C_in = K_C_in/S
+        #
+        #       (SK_C_in * SK_C_out)**2 = (K_C_in/S) **2 * (K_C_out/S)**2
+        #                               = (K_C_in * K_C_out)**2 * (1/S**4)
+        #                                 (K_C_in * K_C_out)**2 / (2*m)
+
+
+        SK_in = {u: in_degree[u] / scale_factor for u in graph}
+        nx.set_node_attributes(graph, SK_in, name="cumulative_in_degree")
+
+        SK_out = {u: out_degree[u] / scale_factor for u in graph}
+        nx.set_node_attributes(graph, SK_out, name="cumulative_out_degree")
 
         nx.set_node_attributes(graph, 0, name="cumulative_degree")
 
@@ -267,11 +296,19 @@ def leiden_partitions(
 
         degree = dict(G.degree(weight=weight))
         m = sum(degree.values())
+        # similar rationale behind scale factor as for directed case except
+        # now the notion of "size" is K_C**2
+        scale_factor = math.sqrt(2*m)
 
-        K = {u: degree[u] / (2 * m) for u in graph}
-        nx.set_node_attributes(graph, K, name="cumulative_degree")
+        SK = {u: degree[u] / scale_factor for u in graph}
+        nx.set_node_attributes(graph, SK, name="cumulative_degree")
 
-    nx.set_node_attributes(graph, 1, name="node_weight")
+    # NOTE for cpm we do not use degree, so there is no need for a scale
+    # factor, however, we could scale by math.sqrt(resolution*2) which would save
+    # repeatedly multiplying this through each partial delta computation?
+    # these terms could also be incorporated into the scale factors for 
+    scale_factor = 1
+    nx.set_node_attributes(graph, 1/scale_factor, name="node_weight")
 
     # The setup phase has ended, the main algorithm now begins.
 

@@ -251,6 +251,33 @@ def test_connected_communities_no_weights():
             assert check_connected_community(G, C)
 
 
+def test_directed_graphs_modularity():
+    # TODO currently this test exists to check that
+    # the leiden algorithm doesn't fail when input graph is
+    # directed. We are not currently checking the correctness
+    # or expected output
+    for i in range(10):
+        n = i * 4 + 59
+        G = nx.gn_graph(n=100, seed=n)
+        assert nx.is_directed(G)
+        comms = leiden_communities(G, quality_function='modularity', weight=None, resolution=1, seed=n)
+        
+
+@pytest.mark.xfail(reason="Currently failing. Is it reasonable to expect this to pass? Different output may be due to randomness.")
+def test_directed_graphs_cpm():
+    for i in range(10):
+        n = i * 4 + 59
+        r = 0.1
+        G = nx.gn_graph(n=100, seed=n)
+
+        # for cpm there should be no difference for directed and non-directed
+        # graph
+        comms = leiden_communities(G, quality_function='cpm', weight=None, resolution=r, seed=n)
+        H = G.to_undirected()
+        
+        comms2 = leiden_communities(H, quality_function='cpm', weight=None, resolution=r, seed=n)
+        assert _equivalent_partitions(comms, comms2)
+
 def test_modularity_increase_qf_parameter():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
