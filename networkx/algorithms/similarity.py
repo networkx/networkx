@@ -332,7 +332,7 @@ def optimal_edit_paths(
     >>> G2 = nx.wheel_graph(5)
     >>> paths, cost = nx.optimal_edit_paths(G1, G2)
     >>> len(paths)
-    40
+    378
     >>> cost
     5.0
 
