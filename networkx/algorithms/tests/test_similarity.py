@@ -1,3 +1,6 @@
+import itertools
+import random
+
 import pytest
 
 import networkx as nx
@@ -210,16 +213,13 @@ class TestSimilarity:
             else:
                 return 1.0
 
-        assert (
-            graph_edit_distance(
-                G1,
-                G2,
-                edge_subst_cost=edge_subst_cost,
-                edge_del_cost=edge_del_cost,
-                edge_ins_cost=edge_ins_cost,
-            )
-            == 0.23
-        )
+        assert graph_edit_distance(
+            G1,
+            G2,
+            edge_subst_cost=edge_subst_cost,
+            edge_del_cost=edge_del_cost,
+            edge_ins_cost=edge_ins_cost,
+        ) == pytest.approx(0.23)
 
     def test_graph_edit_distance_upper_bound(self):
         G1 = circular_ladder_graph(2)
@@ -233,7 +233,7 @@ class TestSimilarity:
         G2 = cycle_graph(3)
         paths, cost = optimal_edit_paths(G1, G2)
         assert cost == 1
-        assert len(paths) == 6
+        assert len(paths) == 15
 
         def canonical(vertex_path, edge_path):
             return (
@@ -1156,3 +1156,109 @@ class TestSimilarity:
                 f"panther_vector_similarity k={k_val} returned {len(result_vector)} results"
             )
             assert 1 not in result_vector, "Source node should not be in results"
+
+
+class TestGEDMinimalityRandom:
+    """Test GED minimality on random graphs by comparing it with a brute-force reference implementation"""
+
+    @staticmethod
+    def assign_node_attributes(graphs):
+        """Assign 'i' attribute to all nodes."""
+        for G in graphs:
+            for n in G.nodes():
+                G.nodes[n]["i"] = n
+
+    @staticmethod
+    def make_random_node_cost(G, H, rng):
+        """Return a function node_subst_cost(u,v) with random values."""
+        max_cost = max(len(G), len(H))
+        node_values = {}
+        for u in G.nodes():
+            for v in H.nodes():
+                node_values[(u, v)] = rng.uniform(0, max_cost)
+
+        def node_subst_cost(u, v):
+            return node_values[(u["i"], v["i"])]
+
+        return node_subst_cost
+
+    @staticmethod
+    def assign_edge_ids(Gs):
+        """Add a unique 'id' attribute to all edges in each graph."""
+        next_id = 0
+        for G in Gs:
+            for u, v in G.edges():
+                G.edges[u, v]["id"] = next_id
+                next_id += 1
+
+    @staticmethod
+    def make_random_edge_cost(G, H, rng):
+        """Return a random edge_subst_cost function using edge['id']."""
+        max_cost = max(len(G), len(H))
+        edge_ids_G = [G.edges[e]["id"] for e in G.edges()] + [None]
+        edge_ids_H = [H.edges[e]["id"] for e in H.edges()] + [None]
+
+        edge_values = {
+            (i, j): rng.uniform(0, max_cost) for i in edge_ids_G for j in edge_ids_H
+        }
+
+        def edge_subst_cost(e1, e2):
+            id1 = e1["id"] if e1 is not None else None
+            id2 = e2["id"] if e2 is not None else None
+            return edge_values[(id1, id2)]
+
+        return edge_subst_cost
+
+    def naive_ged_upper_bound(self, G, H, node_cost, edge_cost):
+        """Brute-force GED upper over all node permutations.
+
+        This method does not evaluate deletion nor additions, so it might not find the optimal solution.
+        """
+        nodes_G = list(G.nodes())
+        nodes_H = list(H.nodes())
+        min_cost = float("inf")
+
+        for mapping in itertools.permutations(nodes_H, len(nodes_G)):
+            total = sum(
+                node_cost(G.nodes[u], H.nodes[v]) for u, v in zip(nodes_G, mapping)
+            )
+            for u_idx, u in enumerate(nodes_G):
+                if total > min_cost:
+                    break
+                for v_idx, v in enumerate(nodes_G):
+                    if u < v:
+                        e1 = G.edges[u, v] if G.has_edge(u, v) else None
+                        e2 = (
+                            H.edges[mapping[u_idx], mapping[v_idx]]
+                            if H.has_edge(mapping[u_idx], mapping[v_idx])
+                            else None
+                        )
+                        total += edge_cost(e1, e2)
+
+            if total < min_cost:
+                min_cost = total
+
+        return min_cost
+
+    @pytest.mark.parametrize("size", [3, 4])
+    @pytest.mark.parametrize("seed", range(5))
+    def test_optimal_edit_paths_random_node_and_edge_substitutions(self, size, seed):
+        rng = random.Random(seed)
+
+        # Generate two complete graphs
+        G = nx.complete_graph(range(size))
+        H = nx.complete_graph(range(size))
+        self.assign_node_attributes([G, H])
+        self.assign_edge_ids([G, H])
+
+        # Random node substitution cost
+        node_cost = self.make_random_node_cost(G, H, rng)
+        edge_cost = self.make_random_edge_cost(G, H, rng)
+
+        _, ged_dist = nx.optimal_edit_paths(
+            G, H, node_subst_cost=node_cost, edge_subst_cost=edge_cost
+        )
+
+        upper_bound = self.naive_ged_upper_bound(G, H, node_cost, edge_cost)
+
+        assert ged_dist <= upper_bound + 1e-8

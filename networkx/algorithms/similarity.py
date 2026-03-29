@@ -866,30 +866,37 @@ def optimize_edit_paths(
         # assert Cv.C.shape == (m + n, m + n)
 
         # 1) a vertex mapping from optimal linear sum assignment
-        i, j = min(
-            (k, l) for k, l in zip(Cv.lsa_row_ind, Cv.lsa_col_ind) if k < m or l < n
+        lsa_assignments = (
+            (i, j) for i, j in zip(Cv.lsa_row_ind, Cv.lsa_col_ind) if i < m or j < n
         )
-        xy, localCe = match_edges(
-            pending_u[i] if i < m else None,
-            pending_v[j] if j < n else None,
-            pending_g,
-            pending_h,
-            Ce,
-            matched_uv,
-        )
-        Ce_xy = reduce_Ce(Ce, xy, len(pending_g), len(pending_h))
-        # assert Ce.ls <= localCe.ls + Ce_xy.ls
-        if prune(matched_cost + Cv.ls + localCe.ls + Ce_xy.ls):
-            pass
-        else:
-            # get reduced Cv efficiently
+
+        # Evaluate each assignment with its edge costs
+        first_candidates = []
+        for i, j in lsa_assignments:
+            xy, localCe = match_edges(
+                pending_u[i] if i < m else None,
+                pending_v[j] if j < n else None,
+                pending_g,
+                pending_h,
+                Ce,
+                matched_uv,
+            )
+            Ce_xy = reduce_Ce(Ce, xy, len(pending_g), len(pending_h))
+
+            if prune(matched_cost + Cv.ls + localCe.ls + Ce_xy.ls):
+                continue
+
+            # Use efficient Cv reduction
             Cv_ij = CostMatrix(
                 reduce_C(Cv.C, (i,), (j,), m, n),
                 reduce_ind(Cv.lsa_row_ind, (i, m + j)),
                 reduce_ind(Cv.lsa_col_ind, (j, n + i)),
                 Cv.ls - Cv.C[i, j],
             )
-            yield (i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls
+            first_candidates.append(((i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls))
+
+        # Sort by total cost estimate and yield most promising first
+        yield from sorted(first_candidates, key=lambda t: t[4] + t[1].ls + t[3].ls)
 
         # 2) other candidates, sorted by lower-bound cost estimate
         other = []
