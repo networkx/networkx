@@ -301,7 +301,10 @@ class NodeView(Mapping, Set):
                 f"{type(self).__name__} does not support slicing, "
                 f"try list(G.nodes)[{n.start}:{n.stop}:{n.step}]"
             )
-        return self._nodes[n]
+        try:
+            return self._nodes[n]
+        except KeyError:
+            raise KeyError(f"The node {n} is not in the graph")
 
     # Set methods
     def __contains__(self, n):
@@ -469,7 +472,10 @@ class NodeDataView(Set):
                 f"{type(self).__name__} does not support slicing, "
                 f"try list(G.nodes.data())[{n.start}:{n.stop}:{n.step}]"
             )
-        ddict = self._nodes[n]
+        try:
+            ddict = self._nodes[n]
+        except KeyError:
+            raise KeyError(f"The node {n} is not in the graph")
         data = self._data
         if data is False or data is True:
             return ddict
@@ -549,8 +555,11 @@ class DiDegreeView:
 
     def __getitem__(self, n):
         weight = self._weight
-        succs = self._succ[n]
-        preds = self._pred[n]
+        try:
+            succs = self._succ[n]
+            preds = self._pred[n]
+        except KeyError:
+            raise KeyError(f"The node {n} is not in the graph")
         if weight is None:
             return len(succs) + len(preds)
         return sum(dd.get(weight, 1) for dd in succs.values()) + sum(
@@ -629,7 +638,10 @@ class DegreeView(DiDegreeView):
 
     def __getitem__(self, n):
         weight = self._weight
-        nbrs = self._succ[n]
+        try:
+            nbrs = self._succ[n]
+        except KeyError:
+            raise KeyError(f"The node {n} is not in the graph")
         if weight is None:
             return len(nbrs) + (n in nbrs)
         return sum(dd.get(weight, 1) for dd in nbrs.values()) + (
@@ -655,8 +667,10 @@ class OutDegreeView(DiDegreeView):
     """A DegreeView class to report out_degree for a DiGraph; See DegreeView"""
 
     def __getitem__(self, n):
-        weight = self._weight
-        nbrs = self._succ[n]
+        try:
+            nbrs = self._succ[n]
+        except KeyError:
+            raise KeyError(f"The node {n} is not in the graph")
         if self._weight is None:
             return len(nbrs)
         return sum(dd.get(self._weight, 1) for dd in nbrs.values())
@@ -679,7 +693,10 @@ class InDegreeView(DiDegreeView):
 
     def __getitem__(self, n):
         weight = self._weight
-        nbrs = self._pred[n]
+        try:
+            nbrs = self._pred[n]
+        except KeyError:
+            raise KeyError(f"The node {n} is not in the graph")
         if weight is None:
             return len(nbrs)
         return sum(dd.get(weight, 1) for dd in nbrs.values())
@@ -702,7 +719,10 @@ class MultiDegreeView(DiDegreeView):
 
     def __getitem__(self, n):
         weight = self._weight
-        nbrs = self._succ[n]
+        try:
+            nbrs = self._succ[n]
+        except KeyError:
+            raise KeyError(f"The node {n} is not in the graph")
         if weight is None:
             return sum(len(keys) for keys in nbrs.values()) + (
                 n in nbrs and len(nbrs[n])
@@ -742,8 +762,11 @@ class DiMultiDegreeView(DiDegreeView):
 
     def __getitem__(self, n):
         weight = self._weight
-        succs = self._succ[n]
-        preds = self._pred[n]
+        try:
+            succs = self._succ[n]
+            preds = self._pred[n]
+        except KeyError:
+            raise KeyError(f"The node {n} is not in the graph")
         if weight is None:
             return sum(len(keys) for keys in succs.values()) + sum(
                 len(keys) for keys in preds.values()
@@ -787,7 +810,10 @@ class InMultiDegreeView(DiDegreeView):
 
     def __getitem__(self, n):
         weight = self._weight
-        nbrs = self._pred[n]
+        try:
+            nbrs = self._pred[n]
+        except KeyError:
+            raise KeyError(f"The node {n} is not in the graph")
         if weight is None:
             return sum(len(data) for data in nbrs.values())
         # edge weighted graph - degree is sum of nbr edge weights
@@ -818,7 +844,10 @@ class OutMultiDegreeView(DiDegreeView):
 
     def __getitem__(self, n):
         weight = self._weight
-        nbrs = self._succ[n]
+        try:
+            nbrs = self._succ[n]
+        except KeyError:
+            raise KeyError(f"The node {n} is not in the graph")
         if weight is None:
             return sum(len(data) for data in nbrs.values())
         # edge weighted graph - degree is sum of nbr edge weights
@@ -1194,11 +1223,13 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
                 f"{type(self).__name__} does not support slicing, "
                 f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
             )
+        if len(e) != 2:
+            raise ValueError("Edge must have length 2")
         u, v = e
         try:
             return self._adjdict[u][v]
-        except KeyError as ex:  # Customize msg to indicate exception origin
-            raise KeyError(f"The edge {e} is not in the graph.")
+        except KeyError:
+            raise KeyError(f"The edge {e} is not in the graph")
 
     # EdgeDataView methods
     def __call__(self, nbunch=None, data=False, *, default=None):
@@ -1425,8 +1456,13 @@ class InEdgeView(OutEdgeView):
                 f"{type(self).__name__} does not support slicing, "
                 f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
             )
+        if len(e) != 2:
+            raise ValueError("Edge must have length 2")
         u, v = e
-        return self._adjdict[v][u]
+        try:
+            return self._adjdict[v][u]
+        except KeyError:
+            raise KeyError(f"The edge {e} is not in the graph")
 
 
 class OutMultiEdgeView(OutEdgeView):
@@ -1467,8 +1503,13 @@ class OutMultiEdgeView(OutEdgeView):
                 f"{type(self).__name__} does not support slicing, "
                 f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
             )
+        if len(e) != 3:
+            raise ValueError("MultiEdge must have length 3")
         u, v, k = e
-        return self._adjdict[u][v][k]
+        try:
+            return self._adjdict[u][v][k]
+        except KeyError:
+            raise KeyError(f"The edge {e} is not in the graph")
 
     def __call__(self, nbunch=None, data=False, *, default=None, keys=False):
         if nbunch is None and data is False and keys is True:
@@ -1545,5 +1586,10 @@ class InMultiEdgeView(OutMultiEdgeView):
                 f"{type(self).__name__} does not support slicing, "
                 f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
             )
+        if len(e) != 3:
+            raise ValueError("MultiEdge must have length 3")
         u, v, k = e
-        return self._adjdict[v][u][k]
+        try:
+            return self._adjdict[v][u][k]
+        except KeyError:
+            raise KeyError(f"The edge {e} is not in the graph")
