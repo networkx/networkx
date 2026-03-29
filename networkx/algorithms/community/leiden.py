@@ -12,10 +12,10 @@ import networkx as nx
 from networkx.algorithms.community.quality import (
     _cpm_delta_partial_eval_add,
     _cpm_delta_partial_eval_remove,
-    _modularity_delta_partial_eval_add,
-    _modularity_delta_partial_eval_remove,
     _directed_modularity_delta_partial_eval_add,
     _directed_modularity_delta_partial_eval_remove,
+    _modularity_delta_partial_eval_add,
+    _modularity_delta_partial_eval_remove,
     constant_potts_model,
     modularity,
 )
@@ -230,14 +230,15 @@ def leiden_partitions(
         quality_delta_partial_eval_remove = _cpm_delta_partial_eval_remove
 
     elif quality_function == "modularity":
-        
         quality_function = modularity
-        
+
         if is_directed:
             # different quality delta functions are required for directed and
             # non-directed modularity
             quality_delta_partial_eval_add = _directed_modularity_delta_partial_eval_add
-            quality_delta_partial_eval_remove = _directed_modularity_delta_partial_eval_remove
+            quality_delta_partial_eval_remove = (
+                _directed_modularity_delta_partial_eval_remove
+            )
         else:
             quality_delta_partial_eval_add = _modularity_delta_partial_eval_add
             quality_delta_partial_eval_remove = _modularity_delta_partial_eval_remove
@@ -268,19 +269,18 @@ def leiden_partitions(
         # work correctly.
         # NOTE we could further include resolution*2 in this, see note below
         # on node_weight.
-        scale_factor = math.pow(2*m, 1/4)
+        scale_factor = math.pow(2 * m, 1 / 4)
 
         # the purpose of this scale factor is as follows. The "size" of a community
         # C is defined:
         #
         #       (K_C_in * K_C_out)**2 / (2*m)
-        # 
+        #
         # so scaling each degree value by S = (2*m)**(1/4) and letting SK_C_in = K_C_in/S
         #
         #       (SK_C_in * SK_C_out)**2 = (K_C_in/S) **2 * (K_C_out/S)**2
         #                               = (K_C_in * K_C_out)**2 * (1/S**4)
         #                                 (K_C_in * K_C_out)**2 / (2*m)
-
 
         SK_in = {u: in_degree[u] / scale_factor for u in graph}
         nx.set_node_attributes(graph, SK_in, name="cumulative_in_degree")
@@ -298,7 +298,7 @@ def leiden_partitions(
         m = sum(degree.values())
         # similar rationale behind scale factor as for directed case except
         # now the notion of "size" is K_C**2
-        scale_factor = math.sqrt(2*m)
+        scale_factor = math.sqrt(2 * m)
 
         SK = {u: degree[u] / scale_factor for u in graph}
         nx.set_node_attributes(graph, SK, name="cumulative_degree")
@@ -306,9 +306,9 @@ def leiden_partitions(
     # NOTE for cpm we do not use degree, so there is no need for a scale
     # factor, however, we could scale by math.sqrt(resolution*2) which would save
     # repeatedly multiplying this through each partial delta computation?
-    # these terms could also be incorporated into the scale factors for 
+    # these terms could also be incorporated into the scale factors for
     scale_factor = 1
-    nx.set_node_attributes(graph, 1/scale_factor, name="node_weight")
+    nx.set_node_attributes(graph, 1 / scale_factor, name="node_weight")
 
     # The setup phase has ended, the main algorithm now begins.
 

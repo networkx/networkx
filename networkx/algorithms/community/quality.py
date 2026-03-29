@@ -335,8 +335,12 @@ def _directed_modularity_delta_partial_eval_remove(
     """
     A_prime = community - {node}
 
-    n_A_prime_in = sum(wt for u, wt in G.nodes(data='cumulative_in_degree') if u in A_prime)
-    n_A_prime_out = sum(wt for u, wt in G.nodes(data='cumulative_out_degree') if u in A_prime)
+    n_A_prime_in = sum(
+        wt for u, wt in G.nodes(data="cumulative_in_degree") if u in A_prime
+    )
+    n_A_prime_out = sum(
+        wt for u, wt in G.nodes(data="cumulative_out_degree") if u in A_prime
+    )
 
     u_wt = G.nodes[node][node_weight]
 
@@ -355,9 +359,10 @@ def _directed_modularity_delta_partial_eval_add(
 
     for more details.
     """
-    n_B_in = sum(wt for u, wt in G.nodes(data='cumulative_in_degree') if u in community)
-    n_B_out = sum(wt for u, wt in G.nodes(data='cumulative_out_degree') if u in community)
-
+    n_B_in = sum(wt for u, wt in G.nodes(data="cumulative_in_degree") if u in community)
+    n_B_out = sum(
+        wt for u, wt in G.nodes(data="cumulative_out_degree") if u in community
+    )
 
     u_wt = G.nodes[node][node_weight]
 
