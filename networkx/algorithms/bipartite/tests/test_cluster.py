@@ -88,6 +88,7 @@ def test_ra_clustering_zero():
 # Tests for butterflies()
 # ---------------------------------------------------------------------------
 
+
 class TestButterflies:
     """Tests for bipartite.butterflies()."""
 
@@ -142,7 +143,8 @@ class TestButterflies:
 
     def test_three_shared_neighbours(self):
         G = self.make(
-            [0, 1, 2], [3, 4],
+            [0, 1, 2],
+            [3, 4],
             [(0, 3), (0, 4), (1, 3), (1, 4), (2, 3), (2, 4)],
         )
         assert sum(bipartite.butterflies(G).values()) // 4 == 3
@@ -186,6 +188,7 @@ class TestButterflies:
         bt_sub = bipartite.butterflies(G, nodes=[0, 1])
         assert bt_sub[0] == bt_full[0]
         assert bt_sub[1] == bt_full[1]
+
     # -- error handling -----------------------------------------------------
 
     def test_not_bipartite_raises(self):
@@ -198,5 +201,5 @@ class TestButterflies:
         G.add_nodes_from([2, 3, 6, 7], bipartite=1)
         G.add_edges_from([(0, 2), (0, 3), (1, 2), (1, 3)])
         G.add_edges_from([(4, 6), (4, 7), (5, 6), (5, 7)])
-        bt = bipartite.butterflies(G)   # must not raise AmbiguousSolution
+        bt = bipartite.butterflies(G)  # must not raise AmbiguousSolution
         assert sum(bt.values()) // 4 == 2

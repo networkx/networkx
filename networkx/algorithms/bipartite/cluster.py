@@ -260,8 +260,6 @@ def robins_alexander_clustering(G):
     return (4.0 * C_4) / L_3
 
 
-
-
 @nx._dispatchable
 def butterflies(G, nodes=None):
     r"""Count the number of butterflies for each node in a bipartite graph.
@@ -390,7 +388,7 @@ def butterflies(G, nodes=None):
         # Use bipartite node attribute when present; fall back to BFS
         attr = nx.get_node_attributes(G, "bipartite")
         if attr:
-            left  = {n for n, v in attr.items() if v == 0}
+            left = {n for n, v in attr.items() if v == 0}
             right = {n for n, v in attr.items() if v == 1}
             pivot = left if len(left) <= len(right) else right
         else:
@@ -408,7 +406,7 @@ def butterflies(G, nodes=None):
                         if nbr not in color:
                             color[nbr] = 1 - color[v]
                             queue.append(nbr)
-            left  = {n for n, c in color.items() if c == 0}
+            left = {n for n, c in color.items() if c == 0}
             right = {n for n, c in color.items() if c == 1}
             pivot = left if len(left) <= len(right) else right
     else:
@@ -450,16 +448,17 @@ def butterflies(G, nodes=None):
     for (u1, u2), k in wedge_counts.items():
         if k < 2:
             continue
-        bf = k * (k - 1) // 2          # C(k, 2) butterflies for this pair
+        bf = k * (k - 1) // 2  # C(k, 2) butterflies for this pair
         _bt[u1] += bf
         _bt[u2] += bf
         for v in wedge_pivots[(u1, u2)]:
-            _bt[v] += k - 1             # each pivot pairs with k-1 others
+            _bt[v] += k - 1  # each pivot pairs with k-1 others
 
     # Match nx.triangles convention: return only requested nodes
     if nodes is None:
         return _bt
     return {v: _bt[v] for v in nodes}
+
 
 def _four_cycles(G):
     # Also see `square_clustering` which counts squares in a similar way
