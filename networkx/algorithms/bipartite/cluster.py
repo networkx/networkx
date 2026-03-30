@@ -9,6 +9,7 @@ __all__ = [
     "average_clustering",
     "latapy_clustering",
     "robins_alexander_clustering",
+    "butterflies",
 ]
 
 
@@ -258,6 +259,207 @@ def robins_alexander_clustering(G):
     C_4 = _four_cycles(G)
     return (4.0 * C_4) / L_3
 
+
+
+
+@nx._dispatchable
+def butterflies(G, nodes=None):
+    r"""Count the number of butterflies for each node in a bipartite graph.
+
+    A *butterfly* is a complete bipartite subgraph on four nodes — two from
+    each partition — with all four possible edges present.  It is the
+    bipartite analogue of a triangle in unipartite graphs.
+
+    .. math::
+
+        \text{Left} \quad \text{Right}  \\
+        u_1 - v_1                       \\
+        |  \quad \quad  |               \\
+        u_2 - v_2
+
+    where :math:`u_1, u_2` are in one partition and :math:`v_1, v_2` in the
+    other, and all four edges :math:`(u_1,v_1), (u_1,v_2), (u_2,v_1),
+    (u_2,v_2)` are present.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        An undirected bipartite graph.
+    nodes : container of nodes, optional
+        Compute butterflies only for the specified nodes. The default
+        (``None``) computes for all nodes in *G*.
+
+    Returns
+    -------
+    butterflies : dict
+        A dictionary keyed by node to the number of butterflies that node
+        participates in.  Each butterfly is counted once per node it contains,
+        so the sum of all values equals ``4 * total_butterfly_count``.
+
+    Raises
+    ------
+    NetworkXError
+        If *G* is not bipartite.
+
+    Examples
+    --------
+    A single :math:`K_{2,2}` contains exactly one butterfly, and each of its
+    four nodes participates in that butterfly:
+
+    >>> from networkx.algorithms import bipartite
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([1, 2], bipartite=0)
+    >>> G.add_nodes_from([3, 4], bipartite=1)
+    >>> G.add_edges_from([(1, 3), (1, 4), (2, 3), (2, 4)])
+    >>> bipartite.butterflies(G)
+    {1: 1, 2: 1, 3: 1, 4: 1}
+
+    The total number of butterflies in *G* is the sum of per-node counts
+    divided by 4 (each butterfly has four nodes):
+
+    >>> bt = bipartite.butterflies(G)
+    >>> sum(bt.values()) // 4
+    1
+
+    :math:`K_{3,3}` contains nine butterflies; every node participates in
+    six of them:
+
+    >>> G2 = nx.complete_bipartite_graph(3, 3)
+    >>> bt2 = bipartite.butterflies(G2)
+    >>> sum(bt2.values()) // 4
+    9
+
+    For nodes not in any butterfly the count is zero:
+
+    >>> G3 = nx.Graph()
+    >>> G3.add_nodes_from([0, 1], bipartite=0)
+    >>> G3.add_nodes_from([2, 3], bipartite=1)
+    >>> G3.add_edges_from([(0, 2), (0, 3)])   # node 1 has no edges
+    >>> bipartite.butterflies(G3)[1]
+    0
+
+    Notes
+    -----
+    The algorithm uses wedge-based counting [1]_:
+
+    1. Rank nodes by ascending degree.  Processing low-degree nodes first
+       keeps the wedge map compact and mirrors the PARBUTTERFLY strategy [2]_.
+    2. For each *pivot* node ``v`` in the chosen partition, enumerate all
+       pairs of neighbours ``(u1, u2)`` in the opposite partition — each pair
+       is a *wedge* centred at ``v``.
+    3. Count how many times each ``(u1, u2)`` pair appears.  If pair
+       ``(u1, u2)`` appears ``k`` times, it contributes
+       :math:`\binom{k}{2} = k(k-1)/2` butterflies to the total, and each
+       of the ``k`` pivot nodes contributes ``k - 1`` butterflies.
+
+    When ``nodes`` is ``None`` the pivot partition is chosen automatically
+    as the smaller bipartite set.
+
+    **Time complexity:** :math:`O\!\left(\sum_v d(v)^2\right)` where the
+    sum is over nodes in the pivot partition.
+    **Space complexity:** :math:`O(E)` for the wedge map.
+
+    The function is equivalent to, but more efficient than, calling
+    :func:`~networkx.algorithms.bipartite.cluster.robins_alexander_clustering`
+    and recovering per-node counts.
+
+    See Also
+    --------
+    robins_alexander_clustering : uses :math:`4 \times` butterfly count
+        as the numerator of the bipartite clustering coefficient.
+    latapy_clustering
+
+    References
+    ----------
+    .. [1] Sanei-Mehri, S. V., Sariyuce, A. E., & Tirthapura, S. (2018).
+       Butterfly counting in bipartite networks.
+       *Proceedings of the 24th ACM SIGKDD*, 2150–2159.
+       https://doi.org/10.1145/3219819.3220097
+
+    .. [2] Shi, B., Dhulipala, L., & Shun, J. (2020).
+       Parallel algorithms for butterfly computations.
+       *SIAM Symposium on Algorithmic Principles of Computer Systems*, 16–30.
+    """
+    if not nx.is_bipartite(G):
+        raise nx.NetworkXError("Graph is not bipartite")
+
+    # ------------------------------------------------------------------ #
+    # Determine pivot partition
+    # ------------------------------------------------------------------ #
+    if nodes is None:
+        # Use bipartite node attribute when present; fall back to BFS
+        attr = nx.get_node_attributes(G, "bipartite")
+        if attr:
+            left  = {n for n, v in attr.items() if v == 0}
+            right = {n for n, v in attr.items() if v == 1}
+            pivot = left if len(left) <= len(right) else right
+        else:
+            # BFS 2-colouring — handles disconnected graphs without
+            # raising AmbiguousSolution (unlike nx.bipartite.sets)
+            color = {}
+            for start in G.nodes():
+                if start in color:
+                    continue
+                color[start] = 0
+                queue = [start]
+                while queue:
+                    v = queue.pop()
+                    for nbr in G.neighbors(v):
+                        if nbr not in color:
+                            color[nbr] = 1 - color[v]
+                            queue.append(nbr)
+            left  = {n for n, c in color.items() if c == 0}
+            right = {n for n, c in color.items() if c == 1}
+            pivot = left if len(left) <= len(right) else right
+    else:
+        pivot = set(nodes)
+
+    # ------------------------------------------------------------------ #
+    # Wedge enumeration with degree ranking
+    # ------------------------------------------------------------------ #
+    # Sort pivot nodes by ascending degree so that high-degree nodes are
+    # processed last — this keeps wedge-map entries concentrated and
+    # matches the PARBUTTERFLY vertex-ranking strategy.
+    ranked = sorted(pivot, key=lambda v: (G.degree(v), v))
+
+    # wedge_counts[(u1, u2)] = number of pivot nodes connected to both
+    wedge_counts = {}
+    # wedge_pivots[(u1, u2)] = list of pivot nodes that produced this wedge
+    wedge_pivots = {}
+
+    for v in ranked:
+        nbrs = list(G.neighbors(v))
+        for i in range(len(nbrs)):
+            for j in range(i + 1, len(nbrs)):
+                u1, u2 = nbrs[i], nbrs[j]
+                # Canonical key — smaller id first
+                key = (u1, u2) if u1 < u2 else (u2, u1)
+                if key in wedge_counts:
+                    wedge_counts[key] += 1
+                    wedge_pivots[key].append(v)
+                else:
+                    wedge_counts[key] = 1
+                    wedge_pivots[key] = [v]
+
+    # ------------------------------------------------------------------ #
+    # Accumulate per-node butterfly counts
+    # ------------------------------------------------------------------ #
+    # Accumulate over all nodes first, then filter
+    _bt = dict.fromkeys(G.nodes(), 0)
+
+    for (u1, u2), k in wedge_counts.items():
+        if k < 2:
+            continue
+        bf = k * (k - 1) // 2          # C(k, 2) butterflies for this pair
+        _bt[u1] += bf
+        _bt[u2] += bf
+        for v in wedge_pivots[(u1, u2)]:
+            _bt[v] += k - 1             # each pivot pairs with k-1 others
+
+    # Match nx.triangles convention: return only requested nodes
+    if nodes is None:
+        return _bt
+    return {v: _bt[v] for v in nodes}
 
 def _four_cycles(G):
     # Also see `square_clustering` which counts squares in a similar way
