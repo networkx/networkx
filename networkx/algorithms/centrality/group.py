@@ -180,10 +180,10 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                 for group_node1 in group:
                     for node in D[group_node1]:
                         if node != group_node1:
-                            if node in group:
-                                scale += 1
-                            else:
-                                scale += 2
+                            scale += 1
+                    for node in G:
+                        if node != group_node1 and group_node1 in D[node]:
+                            scale += 1
             GBC_group -= scale
 
         # normalized
@@ -398,10 +398,10 @@ def prominent_group(
             for group_node1 in max_group:
                 for node in D[group_node1]:
                     if node != group_node1:
-                        if node in max_group:
-                            scale += 1
-                        else:
-                            scale += 2
+                        scale += 1
+                for node in G:
+                    if node != group_node1 and group_node1 in D[node]:
+                        scale += 1
         max_GBC -= scale
 
     # normalized
