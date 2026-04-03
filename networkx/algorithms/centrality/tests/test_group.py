@@ -114,13 +114,12 @@ class TestGroupBetweennessCentrality:
             )
 
     def test_group_betweenness_directed_not_strongly_connected_multi_node(self):
-        """Multi-node group must not crash or go negative on a DAG."""
+        """Multi-node group on a non-strongly-connected digraph is not supported."""
         G = nx.path_graph(4, create_using=nx.DiGraph)  # 0->1->2->3
-        group_val = nx.group_betweenness_centrality(
-            G, [0, 2], normalized=False, endpoints=False
-        )
-        assert group_val >= 0
-        assert group_val == pytest.approx(1.0)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.group_betweenness_centrality(
+                G, [0, 2], normalized=False, endpoints=False
+            )
 
     def test_group_betweenness_directed_not_strongly_connected_normalized(self):
         """Normalized group betweenness must match on a DAG."""
