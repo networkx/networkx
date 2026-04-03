@@ -124,6 +124,17 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     if set_v - G.nodes:  # element(s) of C not in G
         raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are in C but not in G.")
 
+    if (
+        nx.is_directed(G)
+        and not nx.is_strongly_connected(G)
+        and any(len(group) > 1 for group in C)
+    ):
+        raise nx.NetworkXNotImplemented(
+            "group_betweenness_centrality is not implemented for "
+            "multi-node groups on directed graphs that are not "
+            "strongly connected."
+        )
+
     # pre-processing
     PB, sigma, D = _group_preprocessing(G, set_v, weight)
 
