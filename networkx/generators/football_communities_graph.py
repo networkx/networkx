@@ -1,6 +1,8 @@
 import networkx as nx
 from networkx.utils import py_random_state
 
+__all__ = ["football_communities_graph"]
+
 
 def create_edges_between_communities(G, c1, c2, p, rng):
     """
