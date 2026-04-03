@@ -100,6 +100,24 @@ class TestGroupBetweennessCentrality:
         b_answer = 5.0
         assert b == b_answer
 
+    def test_group_betweenness_directed_not_strongly_connected_single_node(self):
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        per_node = nx.betweenness_centrality(G, normalized=False, endpoints=False)
+
+        for node in G:
+            group_betweenness = nx.group_betweenness_centrality(
+                G, [node], normalized=False, endpoints=False
+            )
+            assert group_betweenness == per_node[node]
+
+    def test_group_betweenness_directed_not_strongly_connected_multi_node(self):
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        group_betweenness = nx.group_betweenness_centrality(
+            G, [0, 2], normalized=False, endpoints=False
+        )
+
+        assert group_betweenness == 1.0
+
 
 class TestProminentGroup:
     np = pytest.importorskip("numpy")
