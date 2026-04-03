@@ -232,9 +232,7 @@ class TestProminentGroup:
     def test_prominent_group_directed_not_strongly_connected_greedy(self):
         """prominent_group greedy must not crash on a DAG."""
         G = nx.path_graph(4, create_using=nx.DiGraph)
-        b, g = nx.prominent_group(
-            G, 1, normalized=False, endpoints=False, greedy=True
-        )
+        b, g = nx.prominent_group(G, 1, normalized=False, endpoints=False, greedy=True)
         assert b >= 0
         assert len(g) == 1
 

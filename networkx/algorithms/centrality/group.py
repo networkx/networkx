@@ -157,8 +157,11 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                     if not (
                         sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[v][y] == 0
                     ) and (
-                        y in D[x] and v in D[x] and v in D[y]
-                        and x in D[v] and y in D[v]
+                        y in D[x]
+                        and v in D[x]
+                        and v in D[y]
+                        and x in D[v]
+                        and y in D[v]
                     ):
                         if D[x][v] == D[x][y] + D[y][v]:
                             dxyv = sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
@@ -495,8 +498,11 @@ def _heuristic(k, root, DF_tree, D, nodes, greedy):
                 or root_node["sigma"][x][added_node] == 0
                 or root_node["sigma"][added_node][y] == 0
             ) and (
-                y in D[x] and added_node in D[x] and added_node in D[y]
-                and x in D[added_node] and y in D[added_node]
+                y in D[x]
+                and added_node in D[x]
+                and added_node in D[y]
+                and x in D[added_node]
+                and y in D[added_node]
             ):
                 if D[x][added_node] == D[x][y] + D[y][added_node]:
                     dxyv = (
