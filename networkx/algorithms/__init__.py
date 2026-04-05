@@ -56,6 +56,7 @@ from networkx.algorithms.swap import *
 from networkx.algorithms.time_dependent import *
 from networkx.algorithms.traversal import *
 from networkx.algorithms.triads import *
+from networkx.algorithms.vertex_cover import *
 from networkx.algorithms.vitality import *
 from networkx.algorithms.voronoi import *
 from networkx.algorithms.walks import *
@@ -84,6 +85,7 @@ from networkx.algorithms import shortest_paths
 from networkx.algorithms import tournament
 from networkx.algorithms import traversal
 from networkx.algorithms import tree
+from networkx.algorithms import vertex_covering
 
 # Make certain functions from some of the previous subpackages available
 # to the user as direct imports from the `networkx` namespace.
