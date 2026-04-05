@@ -470,6 +470,14 @@ class TestSpanningTreeIterator:
             assert edges_equal(actual, self.spanning_trees[tree_index])
             tree_index -= 1
 
+    def test_next_without_iter(self):
+        """Iteration error. See gh-8563"""
+        G = nx.cycle_graph(3)
+        spanning_trees = nx.SpanningTreeIterator(G)
+        tree = next(spanning_trees)  # must not raise AttributeError
+        assert isinstance(tree, nx.Graph)
+        assert nx.is_tree(tree)
+
 
 class TestSpanningTreeMultiGraphIterator:
     """
@@ -932,3 +940,4 @@ class TestNumberSpanningTrees:
         assert np.isclose(Nst, 0)
         Nst = nx.number_of_spanning_trees(G, root=3, weight="weight")
         assert np.isclose(Nst, 0)
+        

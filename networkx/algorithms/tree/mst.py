@@ -991,7 +991,7 @@ class SpanningTreeIterator:
     For spanning trees with the same weight, ties are broken arbitrarily.
 
     Examples
-    --------
+    ---------
     `SpanningTreeIterator` can be used to find all minimum or maximum spanning
     trees of a graph:
 
@@ -1074,24 +1074,9 @@ class SpanningTreeIterator:
         self.partition_key = (
             "SpanningTreeIterators super secret partition attribute name"
         )
+        self.partition_queue = None
 
     def __iter__(self):
-        """
-        Returns
-        -------
-        SpanningTreeIterator
-            The iterator object for this graph
-        """
-        self.partition_queue = PriorityQueue()
-        self._clear_partition(self.G)
-        mst_weight = partition_spanning_tree(
-            self.G, self.minimum, self.weight, self.partition_key, self.ignore_nan
-        ).size(weight=self.weight)
-
-        self.partition_queue.put(
-            self.Partition(mst_weight if self.minimum else -mst_weight, {})
-        )
-
         return self
 
     def __next__(self):
@@ -1102,6 +1087,15 @@ class SpanningTreeIterator:
             The spanning tree of next greatest weight, which ties broken
             arbitrarily.
         """
+        if self.partition_queue is None:
+            self.partition_queue = PriorityQueue()
+            self._clear_partition(self.G)
+            mst_weight = partition_spanning_tree(
+                self.G, self.minimum, self.weight, self.partition_key, self.ignore_nan
+            ).size(weight=self.weight)
+            self.partition_queue.put(
+                self.Partition(mst_weight if self.minimum else -mst_weight, {})
+            )
         if self.partition_queue.empty():
             del self.G, self.partition_queue
             raise StopIteration
