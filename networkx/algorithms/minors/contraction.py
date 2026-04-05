@@ -199,7 +199,7 @@ def quotient_graph(
     Examples
     --------
     The quotient graph of the complete bipartite graph under the "same
-    neighbors" equivalence relation is `K_2`. Under this relation, two nodes
+    neighbors" equivalence relation is ``K_2``. Under this relation, two nodes
     are equivalent if they are not adjacent but have the same neighbor set.
 
     >>> G = nx.complete_bipartite_graph(2, 3)
@@ -211,8 +211,8 @@ def quotient_graph(
 
     The quotient graph of a directed graph under the "same strongly connected
     component" equivalence relation is the condensation of the graph (see
-    :func:`condensation`). This example comes from the Wikipedia article
-    *`Strongly connected component`_*.
+    :func:`~networkx.algorithms.components.condensation`).
+    This example comes from the Wikipedia article `Strongly connected component`_.
 
     >>> G = nx.DiGraph()
     >>> edges = [
