@@ -229,6 +229,13 @@ def leiden_partitions(
         quality_delta_partial_eval_add = _cpm_delta_partial_eval_add
         quality_delta_partial_eval_remove = _cpm_delta_partial_eval_remove
 
+        # community_size is required during the _merge_node_subset stage
+        # and needs to be defined in a way that is consistent with
+        # the quality function (cpm or modualrity) and whether the graph
+        # is directed or not directed
+        def community_size(C):
+            return sum(wt for u, wt in graph.nodes(data="node_weight") if u in C)
+
     elif quality_function == "modularity":
         quality_function = modularity
 
@@ -239,9 +246,32 @@ def leiden_partitions(
             quality_delta_partial_eval_remove = (
                 _directed_modularity_delta_partial_eval_remove
             )
+
+            # community_size is required during the _merge_node_subset stage
+            # and needs to be defined in a way that is consistent with
+            # the quality function (cpm or modualrity) and whether the graph
+            # is directed or not directed
+            def community_size(C):
+                in_sum = sum(
+                    wt for u, wt in graph.nodes(data="cumulative_in_degree") if u in C
+                )
+                out_sum = sum(
+                    wt for u, wt in graph.nodes(data="cumulative_in_degree") if u in C
+                )
+                return in_sum * out_sum
+
         else:
             quality_delta_partial_eval_add = _modularity_delta_partial_eval_add
             quality_delta_partial_eval_remove = _modularity_delta_partial_eval_remove
+
+            # community_size is required during the _merge_node_subset stage
+            # and needs to be defined in a way that is consistent with
+            # the quality function (cpm or modualrity) and whether the graph
+            # is directed or not directed
+            def community_size(C):
+                return sum(
+                    wt for u, wt in graph.nodes(data="cumulative_degree") if u in C
+                )
     else:
         # currently only cpm and modularity are implemented
         raise QualityFunctionNotImplemented(quality_function)
@@ -336,6 +366,7 @@ def leiden_partitions(
             quality_function,
             quality_delta_partial_eval_remove,
             quality_delta_partial_eval_add,
+            community_size,
             seed,
             theta,
         )
@@ -462,6 +493,7 @@ def _refine_partition(
     quality_function,
     quality_delta_partial_eval_remove,
     quality_delta_partial_eval_add,
+    community_size,
     seed,
     theta,
 ):
@@ -479,6 +511,7 @@ def _refine_partition(
             quality_function,
             quality_delta_partial_eval_remove,
             quality_delta_partial_eval_add,
+            community_size,
             seed,
             theta,
         )
@@ -496,10 +529,14 @@ def _merge_node_subset(
     quality_function,
     quality_delta_partial_eval_remove,
     quality_delta_partial_eval_add,
+    community_size,
     seed,
     theta,
 ):
-    S_size = sum(wt for u, wt in G.nodes(data="node_weight") if u in S)
+
+    # the definition of community_size depends on the quality function
+    # and whether the underlying graph is directed.
+    S_size = community_size(S)
 
     # first, the sufficiently well-connected nodes within S
     # are identified and added to the set R.
@@ -507,7 +544,7 @@ def _merge_node_subset(
     for u in S:
         # NOTE may need a more general size method here, particularly for
         # directed graphs when modualrity is used
-        u_size = G.nodes[u].get("node_weight")
+        u_size = community_size({u})
         community_factor = sum(
             wt for u, v, wt in G.edges({u}, data="weight") if v in S - {u}
         )
@@ -559,7 +596,7 @@ def _merge_node_subset(
                     # partition to be a refinement of S.
 
                     E = sum(wt for u, v, wt in G.edges(C, data="weight") if v in S - C)
-                    C_size = sum(wt for u, wt in G.nodes(data="node_weight") if u in C)
+                    C_size = community_size(C)
                     comm_comparison = resolution * C_size * (S_size - C_size)
 
                     if E > comm_comparison:
