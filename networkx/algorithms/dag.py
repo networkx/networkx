@@ -112,11 +112,11 @@ def has_cycle(G):
 
     Examples
     --------
-    >>> G = nx.DiGraph([(1, 2), (2, 3)])
-    >>> nx.has_cycle(G)
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
+    >>> nx.dag.has_cycle(G)
     False
-    >>> G.add_edge(3, 1)
-    >>> nx.has_cycle(G)
+    >>> G.add_edge(2, 0)
+    >>> nx.dag.has_cycle(G)
     True
 
     See Also
@@ -1398,4 +1398,3 @@ def colliders(G):
     for node in G.nodes:
         for p1, p2 in combinations(G.predecessors(node), 2):
             yield (p1, node, p2)
-"""Doc: added Examples to has_cycle"""
