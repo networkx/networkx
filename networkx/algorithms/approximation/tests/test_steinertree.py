@@ -346,18 +346,18 @@ class TestDirectedSteinerTree:
             directed_steiner_tree(self.G1, 0, {})
 
     @pytest.mark.parametrize(
-        "levels, should_raise",
+        "levels, expected_exception",
         [
-            (None, False),
-            (float("inf"), True),
-            (999999, True),
-            (0, True),
-            (-5, True),
+            (None, None),
+            (float("inf"), TypeError),
+            (999999, nx.NetworkXError),
+            (0, nx.NetworkXError),
+            (-5, nx.NetworkXError),
         ],
     )
-    def test_levels_values(self, levels, should_raise):
-        if should_raise:
-            with pytest.raises(nx.NetworkXError):
+    def test_levels_values(self, levels, expected_exception):
+        if expected_exception is not None:
+            with pytest.raises(expected_exception):
                 directed_steiner_tree(self.G2, 0, {1}, levels=levels)
         else:
             H = directed_steiner_tree(self.G2, 0, {1}, levels=levels)

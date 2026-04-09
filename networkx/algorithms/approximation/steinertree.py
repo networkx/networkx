@@ -324,6 +324,8 @@ def directed_steiner_tree(
         If no terminals are given, if no terminals are reachable from
         the root within the levels, or if the resulting tree fails
         to cover at least ``min_terminals`` terminals.
+    TypeError
+        If `levels` is not an integer.
 
     Notes
     -----
@@ -378,6 +380,8 @@ def directed_steiner_tree(
 
     if levels is None:
         levels = 2
+    elif not isinstance(levels, int):
+        raise TypeError("levels must be an integer")
     elif levels <= 1:
         raise nx.NetworkXError("levels must greater than one or None")
     elif levels >= sys.getrecursionlimit():
