@@ -406,7 +406,7 @@ def directed_steiner_tree(
     if G.is_multigraph():
         G = _collapse_multigraph_to_digraph(G, weight)
 
-    reachable_nodes = nx.single_source_shortest_path_length(G, root).keys()
+    reachable_nodes = set(nx.single_source_shortest_path_length(G, root))
     reachable_terminals = terminals & reachable_nodes
     if len(reachable_terminals) < min_terminals:
         raise nx.NetworkXUnfeasible(
@@ -414,7 +414,8 @@ def directed_steiner_tree(
             f"which is fewer than required min_terminals={min_terminals}."
         )
 
-    G_closure = _directed_metric_closure(G, weight=weight)
+    G_reduced = _relevant_directed_subgraph(G, reachable_nodes, reachable_terminals)
+    G_closure = _directed_metric_closure(G_reduced, weight=weight)
     G_closure_tree = _directed_steiner_tree(
         G_closure, root, reachable_terminals, min_terminals, levels, weight
     )
@@ -435,6 +436,24 @@ def directed_steiner_tree(
         terminals=terminals,
     )
     return DST
+
+
+def _relevant_directed_subgraph(G, reachable_nodes, terminals):
+    """Return the subgraph induced by nodes reachable from the root that can reach a terminal."""
+    reverse_G = G.reverse(copy=False)
+
+    can_reach_terminal = set(terminals)
+    queue = deque(terminals)
+
+    while queue:
+        v = queue.popleft()
+        for u in reverse_G.neighbors(v):
+            if u not in can_reach_terminal:
+                can_reach_terminal.add(u)
+                queue.append(u)
+
+    relevant_nodes = reachable_nodes & can_reach_terminal
+    return G.subgraph(relevant_nodes).copy()
 
 
 def _directed_metric_closure(G, weight="weight"):
@@ -528,7 +547,7 @@ def _directed_steiner_tree_density(G, terminals, weight):
 
 def _directed_steiner_tree(G, root, terminals, min_terminals, levels, weight):
     """Recursive helper for directed_steiner_tree."""
-    reachable_nodes = nx.single_source_shortest_path_length(G, root).keys()
+    reachable_nodes = set(nx.single_source_shortest_path_length(G, root))
     reachable_terminals = terminals & reachable_nodes
 
     H = nx.DiGraph()
