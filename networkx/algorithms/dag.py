@@ -192,6 +192,13 @@ def topological_generations(G):
     RuntimeError
         If `G` is changed while the returned iterator is being processed.
 
+    Notes
+    -----
+    This function returns a generator. Therefore, exceptions such as
+    NetworkXUnfeasible for cyclic graphs may not be raised immediately
+    when the function is called, but rather during iteration over the
+    returned generator.
+    
     Examples
     --------
     >>> DG = nx.DiGraph([(2, 1), (3, 1)])
@@ -269,6 +276,13 @@ def topological_sort(G):
 
     RuntimeError
         If `G` is changed while the returned iterator is being processed.
+
+    Notes
+    -----
+    This function returns a generator. Therefore, exceptions such as
+    NetworkXUnfeasible for cyclic graphs may not be raised immediately
+    when the function is called, but rather during iteration over the
+    returned generator.
 
     Examples
     --------
