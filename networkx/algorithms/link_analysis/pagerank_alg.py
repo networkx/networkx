@@ -459,8 +459,9 @@ def _pagerank_scipy(
     nodelist = list(G)
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
     S = A.sum(axis=1)
-    S[S != 0] = 1.0 / S[S != 0]
-    Q = sp.sparse.dia_array((S.T, 0), shape=A.shape).tocsr()
+    dangling_nodes = S == 0
+    S[~dangling_nodes] = 1.0 / S[~dangling_nodes]
+    Q = sp.sparse.dia_array((S, 0), shape=A.shape).tocsr()
     A = Q @ A
 
     # initial vector
@@ -485,13 +486,12 @@ def _pagerank_scipy(
         # Convert the dangling dictionary into an array in nodelist order
         dangling_weights = np.array([dangling.get(n, 0) for n in nodelist], dtype=float)
         dangling_weights /= dangling_weights.sum()
-    is_dangling = np.where(S == 0)[0]
 
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
         xlast = x
         x = (
-            alpha * (x @ A + np.sum(x[is_dangling]) * dangling_weights)
+            alpha * (x @ A + np.sum(x[dangling_nodes]) * dangling_weights)
             + (1 - alpha) * p
         )
         # check convergence, l1 norm
