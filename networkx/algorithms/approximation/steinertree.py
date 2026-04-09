@@ -454,10 +454,7 @@ def _expand_full_closure(G, G_closure):
     for u, v, data in G_closure.edges(data=True):
         path_nodes = data["path"]
         for a, b in nx.utils.pairwise(path_nodes):
-            if G.has_edge(a, b):
-                G_expanded.add_edge(a, b, **G[a][b])
-            else:
-                G_expanded.add_edge(a, b)
+            G_expanded.add_edge(a, b, **G[a][b])
     return G_expanded
 
 
