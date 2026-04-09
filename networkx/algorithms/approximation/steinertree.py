@@ -289,6 +289,7 @@ def directed_steiner_tree(
         The root node where the algorithm starts growing partial trees.
     terminals : iterable of nodes
         An iterable of terminal nodes. This will be converted to a set.
+        The root node must not be included in `terminals`.
     min_terminals : int, optional (default: None)
         Minimum number of terminals to connect.
         If None, this is set to the total number of terminals.
@@ -317,7 +318,8 @@ def directed_steiner_tree(
     NetworkXError
         If levels is not greater than one or None, if ``min_terminals``
         is not a positive integer, if ``min_terminals`` exceeds the
-        number of given terminals, or if any terminals are not in ``G``.
+        number of given terminals, if `root` is included in ``terminals``,
+        or if any terminals are not in ``G``.
     NetworkXUnfeasible
         If no terminals are given, if no terminals are reachable from
         the root within the levels, or if the resulting tree fails
@@ -355,6 +357,9 @@ def directed_steiner_tree(
         convenient in practice, but the approximation guarantees in [1]_ apply
         only to the full-terminal case.
 
+    - - `root` must not be included in ``terminals``. This avoids ambiguity in
+    the interpretation of ``min_terminals`` for the partial case.
+
     References
     ----------
     .. [1] Charikar, M., Chekuri, C., Cheung, T-Y., Dai, Z., Goel, A.,
@@ -366,6 +371,8 @@ def directed_steiner_tree(
         raise nx.NetworkXError(f"Root {root} not in G")
 
     terminals = set(terminals)
+    if root in terminals:
+        raise nx.NetworkXError("root must not be included in terminals")
     if not terminals:
         raise nx.NetworkXUnfeasible("No terminals given")
 

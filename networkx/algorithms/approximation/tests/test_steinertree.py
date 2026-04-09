@@ -445,3 +445,18 @@ class TestDirectedSteinerTree:
         assert nx.utils.edges_equal(H.edges, [(0, "a"), ("a", 3)])
         assert len(H.edges) == 2
         assert nx.is_arborescence(H)
+
+    def test_root_in_terminals_raises(self):
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(
+            [
+                (0, 1, 1),
+                (0, 2, 1),
+                (1, 3, 1),
+                (2, 4, 1),
+            ]
+        )
+
+        msg = "root must not be included in terminals"
+        with pytest.raises(nx.NetworkXError, match=msg):
+            directed_steiner_tree(G, root=0, terminals={0, 3, 4})
