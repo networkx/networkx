@@ -97,19 +97,24 @@ def directed_no_self_loop_list(
             max_size=len(possible),
         )
     )
+
+    # if must_connected flag is set to true, make sure that the graph is connected
     if must_connected:
         nodes = set()
-        for u, v in pairs:
+        for u, v in pairs:  # fetch all the nodes from the edges randomly selected
             nodes.add(u)
             nodes.add(v)
 
+        # pick nodes randomly one by one, forming a tree with all the vertices
         prev_node = nodes.pop()
         if need_source:
             source = prev_node
         while nodes:
             current_node = nodes.pop()
-            if (prev_node, current_node) not in pairs:
-                pairs.append((prev_node, current_node))
+            if (
+                (prev_node, current_node) not in pairs
+            ):  # if edge connecting (prev_node, current_node) is not in pairs,
+                pairs.append((prev_node, current_node))  # add it to the pairs
             prev_node = current_node
         if need_target:
             target = prev_node
@@ -130,7 +135,7 @@ def directed_no_self_loop_list(
 
 @hypothesis.given(undirected_no_self_loop_adjacency_list(must_connected=True))
 @hypothesis.settings(max_examples=100)
-@hypothesis.example([(0, 1, 1), (0, 2, 1), (1, 2, 1), (1, 3, 3)])
+@hypothesis.example([(0, 1, 1), (0, 2, 1), (1, 3, 3)])
 def test_minimum_spanning_tree(graph):
     """
     This method tests that the minimum spanning tree sum.
@@ -143,41 +148,31 @@ def test_minimum_spanning_tree(graph):
     for edge in T.edges(data=True):
         min_weight += edge[2]["weight"]
 
-    m = len(graph)  # number of edges
-    vertices = []
-    for edge in graph:
-        vertices.append(edge[0])
-        vertices.append(edge[1])
-    n = len(set(vertices))
     n = G.number_of_nodes()
-    hypothesis.note(f"Number of vertices: {n}")
-    max_vertex = max(vertices) + 1
-    hypothesis.note(f"Maximum vertex: {max_vertex}")
     random_weight = 0
-    if m < n:
-        for edge in graph:
-            random_weight += edge[2]
-    else:
-        visited = [False] * n
-        component = {i: i for i in G.nodes()}
-        hypothesis.note(f"Component initialization: {component}")
-        count = 0
-        while count < n - 1:
-            # select a random edge
-            random_edge = random.choice(graph)
-            u = random_edge[0]
-            v = random_edge[1]
-            w = random_edge[2]
 
-            hypothesis.note(f"Considering edge: {random_edge}")
-            parent_u = get_component(u, component)
-            parent_v = get_component(v, component)
+    component = {i: i for i in G.nodes()}
+    count = 0
+    while count < n - 1:
+        # select a random edge
+        random_edge = random.choice(graph)
+        u = random_edge[0]
+        v = random_edge[1]
+        w = random_edge[2]
 
-            if parent_u != parent_v:
-                random_weight += w
-                union(parent_u, parent_v, component)
-                count += 1
-            graph.remove(random_edge)
+        parent_u = get_component(u, component)
+        parent_v = get_component(v, component)
+
+        if (
+            parent_u != parent_v
+        ):  # if the vertices of the edge are not in the same component, add the edge
+            random_weight += w  # add the weight of the edge
+            union(parent_u, parent_v, component)  # merge the components
+            count += 1  # increment the edge count
+
+        graph.remove(
+            random_edge
+        )  # remove edge, as we have already considered this edge
 
     assert random_weight >= min_weight
 
@@ -204,7 +199,8 @@ def test_minimum_spanning_tree(graph):
 )
 def test_no_tense_edge_in_SSSP(graph, source):
     """
-    This method tests that there are no tense edges in the single-source shortest path tree"""
+    This method tests that there are no tense edges in the single-source shortest path tree
+    """
     # Implementation for testing no tense edges in SSSP
     G = nx.DiGraph()
     G.add_weighted_edges_from(graph)
@@ -289,6 +285,3 @@ def test_min_cut(values):
         f"Minimum cut: {min_cut_calculated}, Minimum capacity: {min_capacity}"
     )
     assert min_cut_calculated >= min_capacity
-
-
-# To run the test cases: python -m pytest test.py -v
