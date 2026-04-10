@@ -980,3 +980,28 @@ class TestGirth:
     )
     def test_girth(self, G, expected):
         assert nx.girth(G) == expected
+
+
+class TestMinimumFeedbackEdgeSet:
+    @pytest.mark.parametrize(
+        ("G", "expected"),
+        (
+            (
+                nx.DiGraph(
+                    [
+                        (2, 1, {"weight": 4}),
+                        (1, 5, {"weight": 5}),
+                        (5, 2, {"weight": 6}),
+                        (2, 4, {"weight": 5}),
+                        (4, 5, {"weight": 7}),
+                        (4, 3, {"weight": 2}),
+                        (3, 2, {"weight": 6}),
+                        # three triangles: 2-1-5, 2-4-5, 2-4-3
+                    ]
+                ),
+                {(4, 3), (5, 2)},
+            ),
+        ),
+    )
+    def test_minimum_feedback_edge_set(self, G, expected):
+        assert nx.minimum_feedback_edge_set(G, weight="weight") == expected
