@@ -1530,7 +1530,7 @@ def _prepare_panther_paths(
     source : node
         Source node for similarity calculation
     path_length : int
-        How long the randomly generated paths should be
+        The number of steps (edges) in each randomly generated path.
     c : float
         A universal constant that controls the number of random paths to generate
     delta : float
@@ -1560,6 +1560,14 @@ def _prepare_panther_paths(
     """
     import numpy as np
 
+    if path_length < 2:
+        raise nx.NetworkXError("path_length must be >= 2")
+    if not (0 < delta < 1):
+        raise nx.NetworkXError("delta must be in (0, 1)")
+    if eps is not None and eps <= 0:
+        raise nx.NetworkXError("eps must be positive")
+    if c <= 0:
+        raise nx.NetworkXError("c must be positive")
     if source not in G:
         raise nx.NodeNotFound(f"Source node {source} not in G")
 
@@ -1590,19 +1598,15 @@ def _prepare_panther_paths(
     inv_node_map = {name: index for index, name in enumerate(G)}
 
     # Calculate the sample size ``R`` for how many paths
-    # to randomly generate
-    t_choose_2 = math.comb(path_length, 2)
-    sample_size = int((c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
+    # to randomly generate.
+    #
+    # Note that we use ``path_length + 1`` here,
+    # because we are generating the number of nodes.
+    t_choose_2 = math.comb(path_length + 1, 2)
+    sample_size = math.ceil(
+        (c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta))
+    )
     index_map = {}
-
-    # Check for isolated nodes before generating random paths
-    # If there are still isolated nodes in the graph after filtering,
-    # they will cause issues with path generation
-    remaining_isolates = set(nx.isolates(G))
-    if remaining_isolates:
-        raise nx.NetworkXUnfeasible(
-            f"Cannot generate random paths with isolated nodes present: {remaining_isolates}"
-        )
 
     # Generate the random paths and populate the index_map
     for _ in generate_random_paths(
@@ -1652,7 +1656,8 @@ def panther_similarity(
     k : int (default = 5)
         The number of most similar nodes to return.
     path_length : int (default = 5)
-        How long the randomly generated paths should be (``T`` in [1]_)
+        The number of steps (edges) in each randomly generated path,
+        i.e., ``T`` in [1]_.
     c : float (default = 0.5)
         A universal constant that controls the number of random paths to generate.
         Higher values increase the number of sample paths and potentially improve
@@ -1680,8 +1685,7 @@ def panther_similarity(
     similarity : dictionary
         Dictionary of nodes to similarity scores (as floats). Note:
         the self-similarity (i.e., ``v``) will not be included in
-        the returned dictionary. So, for ``k = 5``, a dictionary of
-        top 4 nodes and their similarity scores will be returned.
+        the returned dictionary.
 
     Raises
     ------
@@ -1733,7 +1737,7 @@ def panther_similarity(
         )
 
     S = np.zeros(num_nodes)
-    source_paths = set(index_map[source])
+    source_paths = set(index_map.get(source, set()))
 
     # Calculate the path similarities
     # between ``source`` (v) and ``node`` (v_j)
@@ -1760,6 +1764,12 @@ def panther_similarity(
 
     # Remove the self-similarity
     top_k_with_val.pop(source, None)
+
+    # Guard against argpartition tie-breaking excluding source
+    if len(top_k_with_val) > k:
+        sorted_items = sorted(top_k_with_val.items(), key=lambda x: x[1], reverse=True)
+        top_k_with_val = dict(sorted_items[:k])
+
     return top_k_with_val
 
 
@@ -1811,7 +1821,8 @@ def panther_vector_similarity(
     k : int
         The number of most similar nodes to return
     path_length : int
-        How long the randomly generated paths should be (``T`` in [1]_)
+        The number of steps (edges) in each randomly generated path,
+        i.e., ``T`` in [1]_.
     c : float
         A universal constant that controls the number of random paths to generate.
         Higher values increase the number of sample paths and potentially improve
@@ -1835,7 +1846,10 @@ def panther_vector_similarity(
     Returns
     -------
     similarity : dict
-        Dict of nodes to similarity scores (as floats).
+        Dict of nodes to similarity scores (as floats). Scores are the
+        reciprocal Euclidean distance between feature vectors, i.e.,
+        ``1 / ||θ(source) - θ(node)||``. Higher values indicate greater
+        similarity.
         Note: the self-similarity (i.e., `node`) is not included in the dict.
 
     Examples
@@ -1846,19 +1860,18 @@ def panther_vector_similarity(
 
     >>> from pprint import pprint
     >>> pprint(nx.panther_vector_similarity(G, source=0, seed=42))
-    {35: 0.10402634656233918,
-     61: 0.10434063328712018,
-     65: 0.10401247833456054,
-     85: 0.10506718868571752,
-     88: 0.10402634656233918}
+    {35: 1.038910221654944,
+     65: 1.0451438257397818,
+     75: 1.0390264002891683,
+     85: 1.0453804313269508,
+     88: 1.042017380672793}
 
-    But "spoke" nodes are similar to one another
+    "Spoke" nodes are structurally similar to one another, so their
+    similarity scores are high
 
     >>> result = nx.panther_vector_similarity(G, source=1, seed=42)
     >>> len(result)
     5
-    >>> all(similarity == 1.0 for similarity in result.values())
-    True
 
     Notes
     -----
@@ -1905,7 +1918,7 @@ def panther_vector_similarity(
 
     # Calculate the path similarities for each node
     for vi_idx, vi in enumerate(G.nodes):
-        vi_paths = index_map_sets[vi]
+        vi_paths = index_map_sets.get(vi, set())
 
         for node, node_paths in index_map_sets.items():
             # Calculate similarity score
@@ -1935,16 +1948,11 @@ def panther_vector_similarity(
 
     # The paper defines the similarity S(v_i, v_j) as
     # 1 / || Theta(v_i) - Theta(v_j) ||
-    # Calculate reciprocals and normalize to [0, 1] range
 
     # Handle the case where distances are very small or zero (common in small graphs)
-    # Use the passed in eps parameter instead of defining a new epsilon
-    neighbor_distances = np.maximum(neighbor_distances, eps)
+    # Clamp zero distances to machine epsilon to avoid division by zero
+    neighbor_distances = np.maximum(neighbor_distances, np.finfo(float).eps)
     similarities = 1 / neighbor_distances
-
-    # Always normalize to ensure values are between 0 and 1
-    if len(similarities) > 0 and (max_sim := np.max(similarities)) > 0:
-        similarities /= max_sim
 
     # Add back the similarity scores (i.e., distances)
     # Convert numpy scalars to native Python types for dispatch compatibility
@@ -1984,7 +1992,7 @@ def generate_random_paths(
     sample_size : integer
         The number of paths to generate. This is ``R`` in [1]_.
     path_length : integer (default = 5)
-        The maximum size of the path to randomly generate.
+        The number of steps (edges) in each randomly generated path.
         This is ``T`` in [1]_. According to the paper, ``T >= 5`` is
         recommended.
     index_map : dictionary, optional
@@ -1999,7 +2007,8 @@ def generate_random_paths(
         See :ref:`Randomness<randomness>`.
     source : node, optional
         Node to use as the starting point for all generated paths.
-        If None then starting nodes are selected at random with uniform probability.
+        If None then starting nodes are selected uniformly at random
+        from non-isolated nodes.
 
     Returns
     -------
@@ -2051,18 +2060,29 @@ def generate_random_paths(
     # every pair of vertices according to Eq. (3)
     adj_mat = nx.to_numpy_array(G, weight=weight)
 
-    # Handle isolated nodes by checking for zero row sums
+    # Handle isolated nodes by checking for zero row sums.
+    # Use np.errstate to suppress warnings for isolated nodes (0 row sum)
+    # whose rows will never be accessed during random walks.
     row_sums = adj_mat.sum(axis=1).reshape(-1, 1)
-    inv_row_sums = np.reciprocal(row_sums)
-    transition_probabilities = adj_mat * inv_row_sums
+    with np.errstate(divide="ignore", invalid="ignore"):
+        inv_row_sums = np.reciprocal(row_sums)
+        transition_probabilities = adj_mat * inv_row_sums
 
     node_map = list(G)
     num_nodes = G.number_of_nodes()
 
+    # Identify non-isolated nodes (row_sums > 0) so we never start a walk
+    # from a node with NaN transition probabilities.
+    non_isolated_indices = np.flatnonzero(row_sums.ravel() > 0)
+
     for path_index in range(sample_size):
         if source is None:
             # Sample current vertex v = v_i uniformly at random
-            node_index = randint_fn(num_nodes)
+            # from non-isolated nodes only.
+            if len(non_isolated_indices) == 0:
+                yield []
+                continue
+            node_index = seed.choice(non_isolated_indices)
             node = node_map[node_index]
         else:
             if source not in node_map:
