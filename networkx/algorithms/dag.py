@@ -211,18 +211,16 @@ def topological_generations(G):
     NetworkXUnfeasible for cyclic graphs may not be raised immediately
     when the function is called, but rather during iteration over the
     returned generator.
- 
+
+    The generation in which a node resides can also be determined by taking the
+    max-path-distance from the node to the farthest leaf node. That value can
+    be obtained with this function using `enumerate(topological_generations(G))`.
+
     Examples
     --------
     >>> DG = nx.DiGraph([(2, 1), (3, 1)])
     >>> [sorted(generation) for generation in nx.topological_generations(DG)]
     [[2, 3], [1]]
-
-    Notes
-    -----
-    The generation in which a node resides can also be determined by taking the
-    max-path-distance from the node to the farthest leaf node. That value can
-    be obtained with this function using `enumerate(topological_generations(G))`.
 
     See also
     --------
