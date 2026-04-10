@@ -1848,15 +1848,26 @@ class Graph:
                 )
             SG.graph.update(G.graph)
 
-        Subgraphs are not guaranteed to preserve the order of nodes or edges
-        as they appear in the original graph. For example:
+        Subgraphs preserve the order of nodes as they appear in the
+        original graph at time of subgraph creation. For example:
 
         >>> G = nx.Graph()
         >>> G.add_nodes_from(reversed(range(10)))
         >>> list(G)
         [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
-        >>> list(G.subgraph([1, 3, 2]))
-        [1, 2, 3]
+        >>> SG = G.subgraph([1, 3, 2])
+        >>> list(SG)
+        [3, 2, 1]
+
+        Changing the order in the original graph does not affect order
+        in the subgraph.
+
+        >>> G.remove_node(3)
+        >>> G.add_node(3)  # make 3 the last node in G
+        >>> list(SG)
+        [3, 2, 1]
+        >>> list(G.subgraph([1, 3, 2]))  # update the subgraph order
+        [2, 1, 3]
 
         Examples
         --------
@@ -1865,7 +1876,9 @@ class Graph:
         >>> list(H.edges)
         [(0, 1), (1, 2)]
         """
-        induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nodes))
+        induced_nodes = set(self.nbunch_iter(nodes))
+        # order nodes according to G.nodes at time of subgraph creation
+        induced_nodes = nx.filters.show_nodes(n for n in self if n in induced_nodes)
         # if already a subgraph, don't make a chain
         subgraph = nx.subgraph_view
         if hasattr(self, "_NODE_OK"):
