@@ -285,3 +285,181 @@ def test_min_cut(values):
         f"Minimum cut: {min_cut_calculated}, Minimum capacity: {min_capacity}"
     )
     assert min_cut_calculated >= min_capacity
+
+
+@hypothesis.given(directed_no_self_loop_list())
+@hypothesis.settings(
+    max_examples=100, deadline=None
+)  # deadline=None because first run can be slow (import warmup)
+@hypothesis.example(
+    [(0, 1, 1), (1, 2, 1), (2, 0, 1)]
+)  # also test this specific small cycle
+def test_pagerank_dangling_node_validity(graph):
+    """PageRank must produce a valid probability distribution even when
+    dangling nodes (sinks with no outgoing edges) exist.
+    Property: sum of all ranks == 1 and every rank >= 0."""
+
+    # Build a directed graph from the random edge list
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(graph)
+
+    # Skip empty graphs (nothing to test)
+    if len(G) == 0:
+        return
+
+    # Just for logging: find which nodes have no outgoing edges (dangling/sink nodes)
+    dangling_nodes = [n for n in G.nodes() if G.out_degree(n) == 0]
+
+    # Run PageRank with default damping factor alpha=0.85
+    pr = nx.pagerank(G, alpha=0.85)
+
+    # Log some info (only printed when Hypothesis finds a failing example)
+    hypothesis.note(f"Nodes: {len(G)}, Dangling nodes: {len(dangling_nodes)}")
+
+    # CHECK 1: Every node's PageRank must be non-negative
+    for n in G.nodes():
+        assert pr[n] >= 0, f"Node {n} has negative PageRank {pr[n]}"
+
+    # CHECK 2: All PageRank values must sum to 1.0 (it's a probability distribution)
+    assert abs(sum(pr.values()) - 1.0) < 1e-6, f"PageRank sum {sum(pr.values())} != 1.0"
+
+
+@hypothesis.given(
+    hypothesis.strategies.integers(min_value=3, max_value=50)
+)  # n = number of nodes, random between 3 and 50
+@hypothesis.settings(max_examples=100, deadline=None)
+@hypothesis.example(4)  # also test with exactly 4 nodes
+def test_pagerank_symmetric_graph_equal_ranks(n):
+    """In a complete directed graph every node is structurally identical,
+    so all nodes must receive exactly the same PageRank = 1/n.
+    Property: PR(v) == 1/n for all v in a complete digraph, for any alpha."""
+
+    # Create a complete directed graph with n nodes
+    # (every node has an edge to every other node)
+    G = nx.complete_graph(n, create_using=nx.DiGraph)
+
+    # Test with multiple alpha values to make sure symmetry holds across the board
+    for alpha in [0.1, 0.5, 0.85, 0.99]:
+        pr = nx.pagerank(G, alpha=alpha)
+
+        # Every node should get exactly 1/n of the total rank
+        expected = 1.0 / n
+        for node, rank in pr.items():
+            assert abs(rank - expected) < 1e-6, (
+                f"Node {node}: rank {rank} != {expected} on complete graph with alpha={alpha}"
+            )
+
+
+@hypothesis.given(hypothesis.strategies.integers(min_value=3, max_value=50))
+@hypothesis.settings(max_examples=100, deadline=None)
+@hypothesis.example(5)
+def test_pagerank_alpha_zero_gives_uniform(n):
+    """When alpha=0 the random surfer never follows links, only teleports.
+    Property: every node gets PageRank exactly 1/n regardless of graph structure."""
+
+    # Even though we build a complete graph here, ANY graph structure would work
+    # because alpha=0 means links are totally ignored
+    G = nx.complete_graph(n, create_using=nx.DiGraph)
+    pr = nx.pagerank(G, alpha=0)
+
+    # Every node should have rank = 1/n since teleportation is uniform
+    expected = 1.0 / n
+    for node, rank in pr.items():
+        assert abs(rank - expected) < 1e-6, (
+            f"Node {node}: rank {rank} != expected {expected} at alpha=0"
+        )
+
+
+@hypothesis.given(
+    directed_no_self_loop_list(),
+    hypothesis.strategies.integers(min_value=0, max_value=99),
+)
+@hypothesis.settings(max_examples=100, deadline=None)
+@hypothesis.example(
+    [(0, 1, 1), (1, 2, 1), (2, 0, 1), (0, 2, 1)], 0
+)  # small cycle with extra edge, target=node 0
+def test_pagerank_adding_edges_increases_rank(graph, target_pick):
+    """Adding more incoming edges to a node should not decrease its PageRank.
+    Property: PR(v) in augmented graph >= PR(v) in original graph."""
+
+    # Build the directed graph
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(graph)
+
+    # Need at least 3 nodes for a meaningful test
+    if len(G) < 3:
+        return
+
+    # Pick a target node using modular arithmetic so target_pick maps to a valid node
+    nodes = sorted(G.nodes())
+    target = nodes[target_pick % len(nodes)]
+
+    # Compute PageRank BEFORE adding new edges
+    pr_before = nx.pagerank(G, alpha=0.85)
+
+    # Find all nodes that DON'T currently have an edge pointing to our target
+    non_predecessors = [n for n in nodes if n != target and not G.has_edge(n, target)]
+
+    # If every node already points to target, nothing to add, skip
+    if not non_predecessors:
+        return
+
+    # Make a copy and add edges from ALL non-predecessors to the target
+    G2 = G.copy()
+    for src in non_predecessors:
+        G2.add_edge(src, target, weight=1)
+
+    # Compute PageRank AFTER adding the new edges
+    pr_after = nx.pagerank(G2, alpha=0.85)
+
+    # Log for debugging (only shown on failure)
+    hypothesis.note(
+        f"Target={target}, rank before={pr_before[target]:.6f}, after={pr_after[target]:.6f}"
+    )
+
+    # The target's rank should NOT have decreased (with tiny tolerance for float precision)
+    assert pr_after[target] >= pr_before[target] - 1e-6, (
+        f"Adding incoming edges to {target} decreased its rank"
+    )
+
+
+@hypothesis.given(directed_no_self_loop_list())
+@hypothesis.settings(max_examples=100, deadline=None)
+@hypothesis.example([(0, 1, 1), (1, 2, 1), (2, 0, 1)])  # simple 3-node cycle
+def test_pagerank_personalization_boosts_target(graph):
+    """When we heavily personalize towards one node, that node's PageRank
+    should increase compared to uniform personalization.
+    Property: PR_personalized(v) > PR_uniform(v) for the personalized node."""
+
+    # Build the graph
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(graph)
+
+    # Need at least 3 nodes
+    if len(G) < 3:
+        return
+
+    # We'll personalize towards the first node (node 0 usually)
+    nodes = sorted(G.nodes())
+    target = nodes[0]
+
+    # Step 1: Compute PageRank with DEFAULT (uniform) personalization
+    # This is normal PageRank where teleportation goes to every node equally
+    pr_uniform = nx.pagerank(G, alpha=0.85)
+
+    # Step 2: Create a personalization vector that heavily favors the target.
+    # Every node gets weight 1, but the target gets weight = 10 * number_of_nodes.
+    # This means when the surfer teleports, it lands on target ~10x more often.
+    personalization = {n: 1 for n in nodes}
+    personalization[target] = len(nodes) * 10
+    pr_personalized = nx.pagerank(G, alpha=0.85, personalization=personalization)
+
+    # Log for debugging
+    hypothesis.note(
+        f"Target={target}, uniform={pr_uniform[target]:.6f}, personalized={pr_personalized[target]:.6f}"
+    )
+
+    # The target's rank with personalization should be >= its rank without
+    assert pr_personalized[target] >= pr_uniform[target] - 1e-6, (
+        f"Heavy personalization towards {target} did not boost its rank"
+    )
