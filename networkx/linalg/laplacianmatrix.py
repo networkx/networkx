@@ -380,7 +380,7 @@ def normalized_magnetic_laplacian_matrix(G, nodelist=None, q=0.25, weight="weigh
     version
 
     .. math::
-        L^{(q)} := D - H^{(q)}
+        L^{(q)}_{N} := D^{-0.5} L^{(q)} D^{-0.5}
 
     where :math:`L^{(q)}` is the magnetic Laplacian and :math:`D^{-0.5}` the diagonal matrix
     with the degree of nodes powered to :math:`-0.5`, assuming :math:`0^{-0.5} = 0`.
