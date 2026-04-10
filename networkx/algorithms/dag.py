@@ -198,7 +198,7 @@ def topological_generations(G):
     NetworkXUnfeasible for cyclic graphs may not be raised immediately
     when the function is called, but rather during iteration over the
     returned generator.
-    
+ 
     Examples
     --------
     >>> DG = nx.DiGraph([(2, 1), (3, 1)])
