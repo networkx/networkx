@@ -1173,8 +1173,7 @@ class TestGEDMinimalityRandom:
         for perm in itertools.permutations(nodes_H, len(nodes_G)):
             mapping = dict(zip(nodes_G, perm))
             total = sum(
-                node_cost(G.nodes[u_G], H.nodes[mapping[u_G]])
-                for u_G in nodes_G
+                node_cost(G.nodes[u_G], H.nodes[mapping[u_G]]) for u_G in nodes_G
             )
             for u_G, v_G in itertools.combinations(nodes_G, 2):
                 u_H = mapping[u_G]
@@ -1208,9 +1207,7 @@ class TestGEDMinimalityRandom:
                 graph.edges[e]["self"] = e
 
         _, ged_dist = nx.optimal_edit_paths(
-            G, H,
-            node_subst_cost=data_cost,
-            edge_subst_cost=data_cost
+            G, H, node_subst_cost=data_cost, edge_subst_cost=data_cost
         )
 
         upper_bound = self.naive_ged_upper_bound(G, H, data_cost, data_cost)
