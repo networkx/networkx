@@ -655,7 +655,6 @@ class OutDegreeView(DiDegreeView):
     """A DegreeView class to report out_degree for a DiGraph; See DegreeView"""
 
     def __getitem__(self, n):
-        weight = self._weight
         nbrs = self._succ[n]
         if self._weight is None:
             return len(nbrs)
@@ -1197,8 +1196,9 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
         u, v = e
         try:
             return self._adjdict[u][v]
-        except KeyError as ex:  # Customize msg to indicate exception origin
-            raise KeyError(f"The edge {e} is not in the graph.")
+        except KeyError as err:
+            err.add_note(f"The edge {e} is not in the graph")
+            raise err
 
     # EdgeDataView methods
     def __call__(self, nbunch=None, data=False, *, default=None):
@@ -1426,7 +1426,11 @@ class InEdgeView(OutEdgeView):
                 f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
             )
         u, v = e
-        return self._adjdict[v][u]
+        try:
+            return self._adjdict[v][u]
+        except KeyError as err:
+            err.add_note(f"The edge {e} is not in the graph")
+            raise
 
 
 class OutMultiEdgeView(OutEdgeView):
@@ -1468,7 +1472,11 @@ class OutMultiEdgeView(OutEdgeView):
                 f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
             )
         u, v, k = e
-        return self._adjdict[u][v][k]
+        try:
+            return self._adjdict[u][v][k]
+        except KeyError as err:
+            err.add_note(f"The edge {e} is not in the graph")
+            raise err
 
     def __call__(self, nbunch=None, data=False, *, default=None, keys=False):
         if nbunch is None and data is False and keys is True:
@@ -1546,4 +1554,8 @@ class InMultiEdgeView(OutMultiEdgeView):
                 f"try list(G.in_edges)[{e.start}:{e.stop}:{e.step}]"
             )
         u, v, k = e
-        return self._adjdict[v][u][k]
+        try:
+            return self._adjdict[v][u][k]
+        except KeyError as err:
+            err.add_note(f"The edge {e} is not in the graph")
+            raise err
