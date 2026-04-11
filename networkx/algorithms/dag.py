@@ -205,6 +205,12 @@ def topological_generations(G):
     RuntimeError
         If `G` is changed while the returned iterator is being processed.
 
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(2, 1), (3, 1)])
+    >>> [sorted(generation) for generation in nx.topological_generations(DG)]
+    [[2, 3], [1]]
+
     Notes
     -----
     This function returns a generator. Therefore, exceptions such as
@@ -215,12 +221,6 @@ def topological_generations(G):
     The generation in which a node resides can also be determined by taking the
     max-path-distance from the node to the farthest leaf node. That value can
     be obtained with this function using `enumerate(topological_generations(G))`.
-
-    Examples
-    --------
-    >>> DG = nx.DiGraph([(2, 1), (3, 1)])
-    >>> [sorted(generation) for generation in nx.topological_generations(DG)]
-    [[2, 3], [1]]
 
     See also
     --------
@@ -288,13 +288,6 @@ def topological_sort(G):
     RuntimeError
         If `G` is changed while the returned iterator is being processed.
 
-    Notes
-    -----
-    This function returns a generator. Therefore, exceptions such as
-    NetworkXUnfeasible for cyclic graphs may not be raised immediately
-    when the function is called, but rather during iteration over the
-    returned generator.
-
     Examples
     --------
     To get the reverse order of the topological sort:
@@ -315,6 +308,11 @@ def topological_sort(G):
 
     Notes
     -----
+    This function returns a generator. Therefore, exceptions such as
+    NetworkXUnfeasible for cyclic graphs may not be raised immediately
+    when the function is called, but rather during iteration over the
+    returned generator.
+
     This algorithm is based on a description and proof in
     "Introduction to Algorithms: A Creative Approach" [1]_ .
 
