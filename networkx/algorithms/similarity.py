@@ -207,7 +207,9 @@ def graph_edit_distance(
     return bestcost
 
 
-@nx._dispatchable(graphs={"G1": 0, "G2": 1})
+@nx._dispatchable(
+    graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
+)
 def optimal_edit_paths(
     G1,
     G2,
@@ -383,7 +385,9 @@ def optimal_edit_paths(
     return paths, bestcost
 
 
-@nx._dispatchable(graphs={"G1": 0, "G2": 1})
+@nx._dispatchable(
+    graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
+)
 def optimize_graph_edit_distance(
     G1,
     G2,
