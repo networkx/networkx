@@ -1461,8 +1461,9 @@ class InEdgeView(OutEdgeView):
         u, v = e
         try:
             return self._adjdict[v][u]
-        except KeyError:
-            raise KeyError(f"The edge {e} is not in the graph")
+        except KeyError as err:
+            err.add_note(f"The edge {e} is not in the graph")
+            raise
 
 
 class OutMultiEdgeView(OutEdgeView):
