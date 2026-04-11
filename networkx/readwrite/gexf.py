@@ -66,6 +66,11 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
     version: string (optional, default: '1.2draft')
        The version of GEXF to be used for nodes attributes checking
 
+    Raises
+    ------
+    ValueError
+        If an attribute has mixed typed values across nodes or edges.
+
     Examples
     --------
     >>> G = nx.path_graph(4)
@@ -113,6 +118,11 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     version : string (default: 1.2draft)
     Version of GEFX File Format (see http://gexf.net/schema.html)
     Supported values: "1.1draft", "1.2draft"
+
+    Raises
+    ------
+    ValueError
+        If an attribute has mixed typed values across nodes or edges.
 
 
     Examples
@@ -543,11 +553,22 @@ class GEXFWriter(GEXF):
     def get_attr_id(self, title, attr_type, edge_or_node, default, mode):
         # find the id of the attribute or generate a new id
         try:
-            return self.attr[edge_or_node][mode][title]
+            existing_id = self.attr[edge_or_node][mode][title]["id"]
+            existing_type = self.attr[edge_or_node][mode][title]["attr_type"]
+
+            # Check if the type of the attribute value is consistent with the type of the attribute
+            if existing_type != attr_type:
+                raise ValueError(
+                    f"Attribute {title} has type {existing_type} but value {attr_type} was given."
+                )
+
+            return existing_id
         except KeyError:
             # generate new id
             new_id = str(next(self.attr_id))
-            self.attr[edge_or_node][mode][title] = new_id
+            self.attr[edge_or_node][mode][title] = {}
+            self.attr[edge_or_node][mode][title]["id"] = new_id
+            self.attr[edge_or_node][mode][title]["attr_type"] = attr_type
             attr_kwargs = {"id": new_id, "title": title, "type": attr_type}
             attribute = Element("attribute", **attr_kwargs)
             # add subelement for data default value if present
