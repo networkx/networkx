@@ -77,3 +77,4 @@ Version 3.8
 Version 3.9
 ~~~~~~~~~~~
 * Remove ``bfs_predecessors`` from ``networkx.algorithms.traversal.breadth_first_searcph``.
+* Remove the ``networkx.readwrite.p2g`` module (``write_p2g``, ``read_p2g``, ``parse_p2g``) and its tests.

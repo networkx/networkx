@@ -2,6 +2,12 @@
 This module provides the following: read and write of p2g format
 used in metabolic pathway studies.
 
+.. deprecated:: 3.7
+   The ``p2g`` module is deprecated and will be removed in NetworkX 3.9.
+   The upstream KEGG pathway database and the Purdue page describing the
+   format are no longer online, so the format is effectively dead. See
+   :gh:`8195` for context.
+
 See:
 <https://web.archive.org/web/20080626113807/http://www.cs.purdue.edu/homes/koyuturk/pathway/>
 for a description.
@@ -34,6 +40,8 @@ itself. Indeed, self-loops are allowed. Node index starts from 0.
 
 """
 
+import warnings
+
 import networkx as nx
 from networkx.utils import open_file
 
@@ -46,7 +54,20 @@ def write_p2g(G, path, encoding="utf-8"):
     -----
     This format is meant to be used with directed graphs with
     possible self loops.
+
+    .. deprecated:: 3.7
+       ``write_p2g`` is deprecated and will be removed in NetworkX 3.9.
+       See :gh:`8195`.
     """
+    warnings.warn(
+        (
+            "\n\nwrite_p2g is deprecated and will be removed in NetworkX 3.9.\n"
+            "The p2g format is no longer documented or supported upstream; "
+            "see https://github.com/networkx/networkx/issues/8195."
+        ),
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
     path.write((f"{G.name}\n").encode(encoding))
     path.write((f"{G.order()} {G.size()}\n").encode(encoding))
     nodes = list(G)
@@ -78,9 +99,23 @@ def read_p2g(path, encoding="utf-8"):
     -----
     If you want a DiGraph (with no self loops allowed and no edge data)
     use D=nx.DiGraph(read_p2g(path))
+
+    .. deprecated:: 3.7
+       ``read_p2g`` is deprecated and will be removed in NetworkX 3.9.
+       See :gh:`8195`.
     """
+    warnings.warn(
+        (
+            "\n\nread_p2g is deprecated and will be removed in NetworkX 3.9.\n"
+            "The p2g format is no longer documented or supported upstream; "
+            "see https://github.com/networkx/networkx/issues/8195."
+        ),
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
     lines = (line.decode(encoding) for line in path)
-    G = parse_p2g(lines)
+    # Call the undecorated parse logic so we don't emit a second warning.
+    G = _parse_p2g(lines)
     return G
 
 
@@ -91,6 +126,29 @@ def parse_p2g(lines):
     Returns
     -------
     MultiDiGraph
+
+    Notes
+    -----
+    .. deprecated:: 3.7
+       ``parse_p2g`` is deprecated and will be removed in NetworkX 3.9.
+       See :gh:`8195`.
+    """
+    warnings.warn(
+        (
+            "\n\nparse_p2g is deprecated and will be removed in NetworkX 3.9.\n"
+            "The p2g format is no longer documented or supported upstream; "
+            "see https://github.com/networkx/networkx/issues/8195."
+        ),
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+    return _parse_p2g(lines)
+
+
+def _parse_p2g(lines):
+    """Parse p2g format without emitting a deprecation warning.
+
+    Internal helper shared by :func:`read_p2g` and :func:`parse_p2g`.
     """
     description = next(lines).strip()
     # are multiedges (parallel edges) allowed?

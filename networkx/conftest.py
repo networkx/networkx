@@ -124,6 +124,15 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nbfs_predecessors"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nwrite_p2g"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nread_p2g"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nparse_p2g"
+    )
 
 
 @pytest.fixture(autouse=True)
