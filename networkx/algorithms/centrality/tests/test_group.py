@@ -100,6 +100,48 @@ class TestGroupBetweennessCentrality:
         b_answer = 5.0
         assert b == b_answer
 
+    def test_group_betweenness_directed_not_strongly_connected_single_node(self):
+        """group_betweenness({v}) must equal betweenness(v) on a DAG."""
+        G = nx.path_graph(4, create_using=nx.DiGraph)  # 0->1->2->3
+        per_node = nx.betweenness_centrality(G, normalized=False, endpoints=False)
+
+        for node in G:
+            group_val = nx.group_betweenness_centrality(
+                G, [node], normalized=False, endpoints=False
+            )
+            assert group_val == pytest.approx(per_node[node]), (
+                f"node {node}: group={group_val}, per_node={per_node[node]}"
+            )
+
+    def test_group_betweenness_directed_not_strongly_connected_multi_node(self):
+        """Multi-node group on a non-strongly-connected digraph is not supported."""
+        G = nx.path_graph(4, create_using=nx.DiGraph)  # 0->1->2->3
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.group_betweenness_centrality(
+                G, [0, 2], normalized=False, endpoints=False
+            )
+
+    def test_group_betweenness_directed_not_strongly_connected_normalized(self):
+        """Normalized group betweenness must match on a DAG."""
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        per_node = nx.betweenness_centrality(G, normalized=True, endpoints=False)
+        for node in G:
+            group_val = nx.group_betweenness_centrality(
+                G, [node], normalized=True, endpoints=False
+            )
+            assert group_val == pytest.approx(per_node[node]), (
+                f"node {node}: group={group_val}, per_node={per_node[node]}"
+            )
+
+    def test_group_betweenness_nonnegative_on_dag(self):
+        """Group betweenness must never be negative."""
+        G = nx.path_graph(6, create_using=nx.DiGraph)
+        for v in G:
+            gv = nx.group_betweenness_centrality(
+                G, [v], normalized=False, endpoints=False
+            )
+            assert gv >= 0, f"Negative group betweenness for node {v}: {gv}"
+
 
 class TestProminentGroup:
     np = pytest.importorskip("numpy")
@@ -179,6 +221,20 @@ class TestProminentGroup:
         b, g = nx.prominent_group(G, k, normalized=True, endpoints=True, greedy=True)
         b_answer, g_answer = 1.7, [6, 3]
         assert b == b_answer and g == g_answer
+
+    def test_prominent_group_directed_not_strongly_connected(self):
+        """prominent_group must not crash on a DAG."""
+        G = nx.path_graph(4, create_using=nx.DiGraph)  # 0->1->2->3
+        b, g = nx.prominent_group(G, 1, normalized=False, endpoints=False)
+        assert b >= 0
+        assert len(g) == 1
+
+    def test_prominent_group_directed_not_strongly_connected_greedy(self):
+        """prominent_group greedy must not crash on a DAG."""
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        b, g = nx.prominent_group(G, 1, normalized=False, endpoints=False, greedy=True)
+        assert b >= 0
+        assert len(g) == 1
 
 
 class TestGroupClosenessCentrality:
