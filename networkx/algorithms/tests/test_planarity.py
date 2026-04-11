@@ -5,6 +5,7 @@ import pytest
 import networkx as nx
 from networkx.algorithms.planarity import (
     check_planarity_recursive,
+    faces_from_orientable_embedding,
     get_counterexample,
     get_counterexample_recursive,
 )
@@ -419,6 +420,17 @@ def _assert_half_edge_partition(embedding, faces):
     assert all(count == 1 for count in Counter(face_half_edges).values())
 
 
+def _assert_half_edge_partition_from_orientable_embedding(rotation_system, faces):
+    face_half_edges = (
+        (u, f[i % len(f)]) for f in faces if f for i, u in enumerate(f, 1)
+    )
+    rotation_system_half_edges = (
+        (u, v) for u in rotation_system for v in rotation_system[u]
+    )
+    assert Counter(face_half_edges) == Counter(rotation_system_half_edges)
+    assert all(count == 1 for count in Counter(face_half_edges).values())
+
+
 class TestPlanarEmbeddingClass:
     def test_add_half_edge(self):
         embedding = nx.PlanarEmbedding()
@@ -616,3 +628,91 @@ class TestPlanarEmbeddingClass:
             ref = i
             embedding.add_half_edge(i, 0)
         return embedding
+
+
+class TestFacesFromOrientableEmbedding:
+    def test_empty_rotation_system_has_no_faces(self):
+        faces = list(faces_from_orientable_embedding({}))
+        assert faces == []
+
+    def test_cycle_graph_faces_and_half_edge_partition(self):
+        graph = nx.cycle_graph(4)
+        _, embedding = nx.check_planarity(graph)
+        rotation_system = embedding.get_data()
+
+        faces = list(faces_from_orientable_embedding(rotation_system))
+
+        assert len(faces) == 2
+        assert faces == list(embedding.faces())
+        _assert_half_edge_partition_from_orientable_embedding(rotation_system, faces)
+
+    def test_tree_has_single_face_walk_with_repeated_vertices(self):
+        graph = nx.path_graph(4)
+        _, embedding = nx.check_planarity(graph)
+        rotation_system = embedding.get_data()
+
+        faces = list(faces_from_orientable_embedding(rotation_system))
+
+        assert len(faces) == 1
+        assert faces == list(embedding.faces())
+        assert len(faces[0]) == 2 * graph.number_of_edges()
+        assert len(set(faces[0])) < len(faces[0])
+        _assert_half_edge_partition_from_orientable_embedding(rotation_system, faces)
+
+    def test_k4_faces_match_euler_formula(self):
+        graph = nx.complete_graph(4)
+        _, embedding = nx.check_planarity(graph)
+        rotation_system = embedding.get_data()
+
+        faces = list(faces_from_orientable_embedding(rotation_system))
+
+        assert len(faces) == graph.number_of_edges() - graph.number_of_nodes() + 2
+        assert faces == list(embedding.faces())
+        assert sorted(len(face) for face in faces) == [3, 3, 3, 3]
+        _assert_half_edge_partition_from_orientable_embedding(rotation_system, faces)
+
+    def test_disconnected_components_return_component_local_boundary_walks(self):
+        graph = nx.disjoint_union(nx.cycle_graph(3), nx.cycle_graph(3))
+        _, embedding = nx.check_planarity(graph)
+        rotation_system = embedding.get_data()
+
+        faces = list(faces_from_orientable_embedding(rotation_system))
+
+        assert len(faces) == 4
+        assert faces == list(embedding.faces())
+        _assert_half_edge_partition_from_orientable_embedding(rotation_system, faces)
+
+    def test_k33_torus_rotation_system_has_three_hexagonal_faces(self):
+        rotation_system = {
+            "a0": ["b0", "b1", "b2"],
+            "a1": ["b0", "b1", "b2"],
+            "a2": ["b0", "b1", "b2"],
+            "b0": ["a0", "a1", "a2"],
+            "b1": ["a0", "a1", "a2"],
+            "b2": ["a0", "a1", "a2"],
+        }
+
+        faces = list(faces_from_orientable_embedding(rotation_system))
+
+        assert len(faces) == 3
+        assert sorted(len(face) for face in faces) == [6, 6, 6]
+        num_edges = sum(len(nbrs) for nbrs in rotation_system.values()) // 2
+        assert len(rotation_system) - num_edges + len(faces) == 0
+        _assert_half_edge_partition_from_orientable_embedding(rotation_system, faces)
+
+    def test_isolated_nodes_have_no_faces(self):
+        rotation_system = {0: [], 1: [], 2: []}
+        faces = list(faces_from_orientable_embedding(rotation_system))
+        assert faces == []
+
+    def test_duplicate_neighbors_raise_networkx_error(self):
+        rotation_system = {0: [1, 1], 1: [0, 0]}
+        with pytest.raises(nx.NetworkXError, match="must contain distinct neighbors"):
+            list(faces_from_orientable_embedding(rotation_system))
+
+    def test_missing_reverse_half_edge_raises_networkx_error(self):
+        rotation_system = {0: [1], 1: []}
+        with pytest.raises(
+            nx.NetworkXError, match="must include each edge in both directions"
+        ):
+            list(faces_from_orientable_embedding(rotation_system))
