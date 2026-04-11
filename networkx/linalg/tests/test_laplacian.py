@@ -280,43 +280,43 @@ class TestMagneticLaplacian:
         GL = np.array([[1, -1, 0, 0], [-1, 2, -1, 0], [0, -1, 2, -1], [0, 0, -1, 1]])
 
         np.testing.assert_almost_equal(
-            nx.magnetic_laplacian_matrix(self.DiG, q=0.5).todense(),
+            nx.magnetic_laplacian(self.DiG, q=0.5).todense(),
             DL_50,
             decimal=3,
         )
 
         np.testing.assert_almost_equal(
-            nx.magnetic_laplacian_matrix(self.DiG, q=0.25).todense(),
+            nx.magnetic_laplacian(self.DiG, q=0.25).todense(),
             DL_25,
             decimal=3,
         )
 
         np.testing.assert_almost_equal(
-            nx.magnetic_laplacian_matrix(self.DiG, q=0).todense(),
+            nx.magnetic_laplacian(self.DiG, q=0).todense(),
             DL_0,
             decimal=3,
         )
 
         np.testing.assert_almost_equal(
-            nx.magnetic_laplacian_matrix(self.DiGW, q=0.5).todense(),
+            nx.magnetic_laplacian(self.DiGW, q=0.5).todense(),
             DLW_50,
             decimal=3,
         )
 
         np.testing.assert_almost_equal(
-            nx.magnetic_laplacian_matrix(self.DiGW, q=0.25).todense(),
+            nx.magnetic_laplacian(self.DiGW, q=0.25).todense(),
             DLW_25,
             decimal=3,
         )
 
         np.testing.assert_almost_equal(
-            nx.magnetic_laplacian_matrix(self.DiGW, q=0).todense(),
+            nx.magnetic_laplacian(self.DiGW, q=0).todense(),
             DLW_0,
             decimal=3,
         )
 
         np.testing.assert_almost_equal(
-            nx.magnetic_laplacian_matrix(self.G).todense(),
+            nx.magnetic_laplacian(self.G).todense(),
             GL,
             decimal=3,
         )
@@ -386,38 +386,38 @@ class TestMagneticLaplacian:
         )
 
         np.testing.assert_almost_equal(
-            nx.normalized_magnetic_laplacian_matrix(self.DiG, q=0.5).todense(),
+            nx.normalized_magnetic_laplacian(self.DiG, q=0.5).todense(),
             NDL_50,
             decimal=3,
         )
         np.testing.assert_almost_equal(
-            nx.normalized_magnetic_laplacian_matrix(self.DiG, q=0.25).todense(),
+            nx.normalized_magnetic_laplacian(self.DiG, q=0.25).todense(),
             NDL_25,
             decimal=3,
         )
         np.testing.assert_almost_equal(
-            nx.normalized_magnetic_laplacian_matrix(self.DiG, q=0).todense(),
+            nx.normalized_magnetic_laplacian(self.DiG, q=0).todense(),
             NDL_0,
             decimal=3,
         )
         np.testing.assert_almost_equal(
-            nx.normalized_magnetic_laplacian_matrix(self.DiGW, q=0.5).todense(),
+            nx.normalized_magnetic_laplacian(self.DiGW, q=0.5).todense(),
             NWDL_50,
             decimal=3,
         )
         np.testing.assert_almost_equal(
-            nx.normalized_magnetic_laplacian_matrix(self.DiGW, q=0.25).todense(),
+            nx.normalized_magnetic_laplacian(self.DiGW, q=0.25).todense(),
             NWDL_25,
             decimal=3,
         )
         np.testing.assert_almost_equal(
-            nx.normalized_magnetic_laplacian_matrix(self.DiGW, q=0).todense(),
+            nx.normalized_magnetic_laplacian(self.DiGW, q=0).todense(),
             NWDL_0,
             decimal=3,
         )
 
         np.testing.assert_almost_equal(
-            nx.normalized_magnetic_laplacian_matrix(self.G).todense(),
+            nx.normalized_magnetic_laplacian(self.G).todense(),
             NGL,
             decimal=3,
         )

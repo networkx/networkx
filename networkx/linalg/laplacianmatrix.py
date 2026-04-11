@@ -16,8 +16,8 @@ __all__ = [
     "normalized_laplacian_matrix",
     "directed_laplacian_matrix",
     "directed_combinatorial_laplacian_matrix",
-    "magnetic_laplacian_matrix",
-    "normalized_magnetic_laplacian_matrix",
+    "magnetic_laplacian",
+    "normalized_magnetic_laplacian",
 ]
 
 
@@ -247,7 +247,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
-def magnetic_laplacian_matrix(G, nodelist=None, q=0.25, weight="weight"):
+def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
     r"""Returns the magnetic Laplacian matrix of G
 
     The magnetic Laplacian (also called the q-magnetic Laplacian) is a
@@ -372,7 +372,7 @@ def magnetic_laplacian_matrix(G, nodelist=None, q=0.25, weight="weight"):
 
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
-def normalized_magnetic_laplacian_matrix(G, nodelist=None, q=0.25, weight="weight"):
+def normalized_magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
     r"""Returns the normalized magnetic Laplacian matrix of G
 
     The normalized magnetic Laplacian is a Hermitian matrix for directed graphs
