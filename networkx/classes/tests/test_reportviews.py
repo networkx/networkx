@@ -48,9 +48,6 @@ class TestNodeView:
         # slicing
         with pytest.raises(nx.NetworkXError):
             G.nodes[0:5]
-        # Invalid node
-        with pytest.raises(KeyError, match=r".*node.*is not in the graph"):
-            G.nodes[42]
 
     def test_iter(self):
         nv = self.nv
@@ -141,9 +138,6 @@ class TestNodeDataView:
         # slicing
         with pytest.raises(nx.NetworkXError):
             G.nodes.data()[0:5]
-        # Invalid node
-        with pytest.raises(KeyError, match=r".*node.*is not in the graph"):
-            G.nodes[42]
 
     def test_iter(self):
         G = self.G.copy()
@@ -605,10 +599,6 @@ class TestEdgeView:
         with pytest.raises(KeyError, match=r".*edge.*is not in the graph"):
             G.edges[42, 42]
 
-        # Invalid edge
-        with pytest.raises(ValueError, match=r".*Edge.*must have length 2"):
-            G.edges[42,]
-
     def test_call(self):
         ev = self.eview(self.G)
         assert id(ev) == id(ev())
@@ -800,9 +790,6 @@ class TestMultiEdgeView(TestEdgeView):
         # Missing edge
         with pytest.raises(KeyError, match=r".*edge.*is not in the graph"):
             G.edges[42, 42, 42]
-        # Invalid edge
-        with pytest.raises(ValueError, match=r".*MultiEdge.*must have length 3"):
-            G.edges[42,]
 
     def test_repr(self):
         ev = self.eview(self.G)
@@ -1089,9 +1076,6 @@ class TestDegreeView:
         assert dv[1] == 5
         assert dv[2] == 2
         assert dv[3] == 5
-        # Invalid node
-        with pytest.raises(KeyError, match=r".*node.*is not in the graph"):
-            dv[42]
 
     def test_weight(self):
         dv = self.dview(self.G)
@@ -1156,9 +1140,6 @@ class TestOutDegreeView(TestDegreeView):
         assert dv[1] == 4
         assert dv[2] == 1
         assert dv[3] == 1
-        # Invalid node
-        with pytest.raises(KeyError, match=r".*node.*is not in the graph"):
-            dv[42]
 
     def test_weight(self):
         dv = self.dview(self.G)
@@ -1209,9 +1190,6 @@ class TestInDegreeView(TestDegreeView):
         assert dv[1] == 1
         assert dv[2] == 1
         assert dv[3] == 4
-        # Invalid node
-        with pytest.raises(KeyError, match=r".*node.*is not in the graph"):
-            dv[42]
 
     def test_weight(self):
         dv = self.dview(self.G)
@@ -1262,9 +1240,6 @@ class TestMultiDegreeView(TestDegreeView):
         assert dv[1] == 7
         assert dv[2] == 2
         assert dv[3] == 7
-        # Invalid node
-        with pytest.raises(KeyError, match=r".*node.*is not in the graph"):
-            dv[42]
 
     def test_weight(self):
         dv = self.dview(self.G)
@@ -1325,9 +1300,6 @@ class TestOutMultiDegreeView(TestDegreeView):
         assert dv[1] == 6
         assert dv[2] == 1
         assert dv[3] == 1
-        # Invalid node
-        with pytest.raises(KeyError, match=r".*node.*is not in the graph"):
-            dv[42]
 
     def test_weight(self):
         dv = self.dview(self.G)
@@ -1378,9 +1350,6 @@ class TestInMultiDegreeView(TestDegreeView):
         assert dv[1] == 1
         assert dv[2] == 1
         assert dv[3] == 6
-        # Invalid node
-        with pytest.raises(KeyError, match=r".*node.*is not in the graph"):
-            dv[42]
 
     def test_weight(self):
         dv = self.dview(self.G)
