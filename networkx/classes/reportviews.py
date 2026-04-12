@@ -1198,7 +1198,7 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
             return self._adjdict[u][v]
         except KeyError as err:
             err.add_note(f"The edge {e} is not in the graph")
-            raise err
+            raise
 
     # EdgeDataView methods
     def __call__(self, nbunch=None, data=False, *, default=None):
@@ -1476,7 +1476,7 @@ class OutMultiEdgeView(OutEdgeView):
             return self._adjdict[u][v][k]
         except KeyError as err:
             err.add_note(f"The edge {e} is not in the graph")
-            raise err
+            raise
 
     def __call__(self, nbunch=None, data=False, *, default=None, keys=False):
         if nbunch is None and data is False and keys is True:
@@ -1558,4 +1558,4 @@ class InMultiEdgeView(OutMultiEdgeView):
             return self._adjdict[v][u][k]
         except KeyError as err:
             err.add_note(f"The edge {e} is not in the graph")
-            raise err
+            raise
