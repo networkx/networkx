@@ -9,16 +9,7 @@ import random
 from collections import deque
 
 import networkx as nx
-from networkx.algorithms.community.quality import (
-    _cpm_delta_partial_eval_add,
-    _cpm_delta_partial_eval_remove,
-    _directed_modularity_delta_partial_eval_add,
-    _directed_modularity_delta_partial_eval_remove,
-    _modularity_delta_partial_eval_add,
-    _modularity_delta_partial_eval_remove,
-    constant_potts_model,
-    modularity,
-)
+from networkx.algorithms.community.quality import constant_potts_model
 from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = ["leiden_communities", "leiden_partitions"]
@@ -219,129 +210,43 @@ def leiden_partitions(
             graph.add_edges_from(G.edges())
             nx.set_edge_attributes(graph, 1, name="weight")
 
-    # In this next stage the setup is different depending on whether the
-    # chosen quality function is cpm or modularity.
-
     if quality_function == "cpm":
-        quality_function = functools.partial(
-            constant_potts_model, node_weight="node_weight"
-        )
-        quality_delta_partial_eval_add = _cpm_delta_partial_eval_add
-        quality_delta_partial_eval_remove = _cpm_delta_partial_eval_remove
 
-        # community_size is required during the _merge_node_subset stage
+        quality_function = functools.partial(
+            constant_potts_model, node_weight="node_weight", weight="weight"
+        )
+
+        # node_senode_set_size is required during the _merge_node_subset stage
         # and needs to be defined in a way that is consistent with
-        # the quality function (cpm or modualrity) and whether the graph
+        # the quality function and whether the graph
         # is directed or not directed
-        def community_size(C):
+
+        # Corresponds with ||C|| in notation from paper
+        def node_set_size(C):
             return sum(wt for u, wt in graph.nodes(data="node_weight") if u in C)
 
-    elif quality_function == "modularity":
-        quality_function = modularity
+        # Corresponds with E(C,D) in notation from paper
+        def edge_weight_sum(C, D):
+            return sum(wt for u, v, wt in graph.edges(C, data="weight") if v in D)
 
-        if is_directed:
-            # different quality delta functions are required for directed and
-            # non-directed modularity
-            quality_delta_partial_eval_add = _directed_modularity_delta_partial_eval_add
-            quality_delta_partial_eval_remove = (
-                _directed_modularity_delta_partial_eval_remove
-            )
+        # computes the partial quality delta contributed by adding nodes_to_add
+        # to community. Corresponding value from removing U from C is computed by taking
+        # the negative -1* quality_delta(U, C-U)
+        # to compute the overall quality delta from moving node u from A to B we have
+        # q_delta = quality_delta({u}, B) - quality_delta({u}, A-{u})
+        def quality_delta(nodes_to_add, community, resolution):
+            n_C = node_set_size(community)
+            U_wt = node_set_size(nodes_to_add)
+            E_D = edge_weight_sum(nodes_to_add, community)
+            return E_D - resolution * 2 * n_C * U_wt
 
-            # community_size is required during the _merge_node_subset stage
-            # and needs to be defined in a way that is consistent with
-            # the quality function (cpm or modualrity) and whether the graph
-            # is directed or not directed
-            def community_size(C):
-                in_sum = sum(
-                    wt for u, wt in graph.nodes(data="cumulative_in_degree") if u in C
-                )
-                out_sum = sum(
-                    wt for u, wt in graph.nodes(data="cumulative_in_degree") if u in C
-                )
-                return in_sum * out_sum
-
-        else:
-            quality_delta_partial_eval_add = _modularity_delta_partial_eval_add
-            quality_delta_partial_eval_remove = _modularity_delta_partial_eval_remove
-
-            # community_size is required during the _merge_node_subset stage
-            # and needs to be defined in a way that is consistent with
-            # the quality function (cpm or modualrity) and whether the graph
-            # is directed or not directed
-            def community_size(C):
-                return sum(
-                    wt for u, wt in graph.nodes(data="cumulative_degree") if u in C
-                )
     else:
-        # currently only cpm and modularity are implemented
+        # currently only cpm is implemented
         raise QualityFunctionNotImplemented(quality_function)
 
-    # these attributes are used for various quality functions, depending on
-    # whether the graph is directed or not. Each of these are aggregated by summing for
-    # nodes in a community during _gen_graph stage
-    # NOTE it may be better to create a dict to hold these values during critical
-    # stages of the algorithm for performance i.e. during _move_nodes_fast
-
-    # node_weight                used with cpm directed and non-directed
-    # cumulative_degree          used by modularity, non-directed only (identical algorithm to cpm)
-    # cumulative_in_degree       used by modularity, directed only (different algorithm)
-    # cumulative_out_degree      used by modularity, directed only (different algorithm)
-
-    if is_directed:
-        # the weight attributes created here are only used if the
-        # quality function is set to modularity
-
-        in_degree = dict(G.in_degree(weight=weight))
-        out_degree = dict(G.out_degree(weight=weight))
-        m = sum(out_degree.values())
-
-        # this scale factor is required to ensure that the partial delta computations
-        # work correctly.
-        # NOTE we could further include resolution*2 in this, see note below
-        # on node_weight.
-        scale_factor = math.pow(2 * m, 1 / 4)
-
-        # the purpose of this scale factor is as follows. The "size" of a community
-        # C is defined:
-        #
-        #       (K_C_in * K_C_out)**2 / (2*m)
-        #
-        # so scaling each degree value by S = (2*m)**(1/4) and letting SK_C_in = K_C_in/S
-        #
-        #       (SK_C_in * SK_C_out)**2 = (K_C_in/S) **2 * (K_C_out/S)**2
-        #                               = (K_C_in * K_C_out)**2 * (1/S**4)
-        #                                 (K_C_in * K_C_out)**2 / (2*m)
-
-        SK_in = {u: in_degree[u] / scale_factor for u in graph}
-        nx.set_node_attributes(graph, SK_in, name="cumulative_in_degree")
-
-        SK_out = {u: out_degree[u] / scale_factor for u in graph}
-        nx.set_node_attributes(graph, SK_out, name="cumulative_out_degree")
-
-        nx.set_node_attributes(graph, 0, name="cumulative_degree")
-
-    else:
-        nx.set_node_attributes(graph, 0, name="cumulative_in_degree")
-        nx.set_node_attributes(graph, 0, name="cumulative_out_degree")
-
-        degree = dict(G.degree(weight=weight))
-        m = sum(degree.values())
-        # similar rationale behind scale factor as for directed case except
-        # now the notion of "size" is K_C**2
-        scale_factor = math.sqrt(2 * m)
-
-        SK = {u: degree[u] / scale_factor for u in graph}
-        nx.set_node_attributes(graph, SK, name="cumulative_degree")
-
-    # NOTE for cpm we do not use degree, so there is no need for a scale
-    # factor, however, we could scale by math.sqrt(resolution*2) which would save
-    # repeatedly multiplying this through each partial delta computation?
-    # these terms could also be incorporated into the scale factors for
-    scale_factor = 1
-    nx.set_node_attributes(graph, 1 / scale_factor, name="node_weight")
+    nx.set_node_attributes(graph, 1, name="node_weight")
 
     # The setup phase has ended, the main algorithm now begins.
-
     quality = quality_function(graph, partition, resolution=resolution, weight="weight")
 
     improvement_made = True
@@ -352,9 +257,7 @@ def leiden_partitions(
         inner_partition = _move_nodes_fast(
             graph,
             inner_partition,
-            quality_function,
-            quality_delta_partial_eval_remove,
-            quality_delta_partial_eval_add,
+            quality_delta,
             resolution,
             seed=seed,
         )
@@ -363,10 +266,9 @@ def leiden_partitions(
             graph,
             inner_partition,
             resolution,
-            quality_function,
-            quality_delta_partial_eval_remove,
-            quality_delta_partial_eval_add,
-            community_size,
+            quality_delta,
+            node_set_size,
+            edge_weight_sum,
             seed,
             theta,
         )
@@ -407,9 +309,7 @@ def leiden_partitions(
 def _move_nodes_fast(
     G,
     seed_partition,
-    quality_function,
-    quality_delta_partial_eval_remove,
-    quality_delta_partial_eval_add,
+    quality_delta_func,
     resolution,
     seed=None,
 ):
@@ -445,9 +345,7 @@ def _move_nodes_fast(
 
         # this value is the overall change in quality that occurs
         # when node u is removed from its current community
-        q_A = quality_delta_partial_eval_remove(
-            G, node=u, community=inner_partition[old_com], resolution=resolution
-        )
+        q_A = quality_delta_func({u}, inner_partition[old_com] - {u}, resolution)
 
         # for each node in the queue, we measure the change in quality
         # from moving that node to each other community, keeping track of
@@ -456,13 +354,11 @@ def _move_nodes_fast(
             if new_com != old_com:
                 # this quantity is the overall change in quality that
                 # occurs wen the node u is added the the new community
-                q_B = quality_delta_partial_eval_add(
-                    G, node=u, community=inner_partition[new_com], resolution=resolution
-                )
+                q_B = quality_delta_func({u}, inner_partition[new_com], resolution)
 
                 # the overall change in quality therefore from moving
                 # node u from old_com to new_com is as follows
-                quality_delta = q_A + q_B
+                quality_delta = q_B - q_A
 
                 if quality_delta > best_delta:
                     best_delta = quality_delta
@@ -490,10 +386,9 @@ def _refine_partition(
     G,
     partition,
     resolution,
-    quality_function,
-    quality_delta_partial_eval_remove,
-    quality_delta_partial_eval_add,
-    community_size,
+    quality_delta_func,
+    node_set_size,
+    edge_weight_sum,
     seed,
     theta,
 ):
@@ -508,10 +403,9 @@ def _refine_partition(
             node2com,
             C,
             resolution,
-            quality_function,
-            quality_delta_partial_eval_remove,
-            quality_delta_partial_eval_add,
-            community_size,
+            quality_delta_func,
+            node_set_size,
+            edge_weight_sum,
             seed,
             theta,
         )
@@ -526,17 +420,16 @@ def _merge_node_subset(
     node2com,
     S,
     resolution,
-    quality_function,
-    quality_delta_partial_eval_remove,
-    quality_delta_partial_eval_add,
-    community_size,
+    quality_delta_func,
+    node_set_size,
+    edge_weight_sum,
     seed,
     theta,
 ):
 
     # the definition of community_size depends on the quality function
     # and whether the underlying graph is directed.
-    S_size = community_size(S)
+    S_size = node_set_size(S)
 
     # first, the sufficiently well-connected nodes within S
     # are identified and added to the set R.
@@ -544,10 +437,12 @@ def _merge_node_subset(
     for u in S:
         # NOTE may need a more general size method here, particularly for
         # directed graphs when modualrity is used
-        u_size = community_size({u})
-        community_factor = sum(
+        u_size = node_set_size({u})
+        community_factor = edge_weight_sum({u}, S - {u})
+        community_factor2 = sum(
             wt for u, v, wt in G.edges({u}, data="weight") if v in S - {u}
         )
+        assert community_factor == community_factor2
         factor_comparison = resolution * u_size * (S_size - u_size)
         if community_factor > factor_comparison:
             R.add(u)
@@ -580,10 +475,7 @@ def _merge_node_subset(
 
             # this is the change in quality that occurs from removing node
             # u from its current community
-            q_A = quality_delta_partial_eval_remove(
-                G, node=u, community=partition[comm], resolution=resolution
-            )
-
+            q_A = quality_delta_func({u}, partition[comm] - {u}, resolution)
             for i, C in enumerate(partition):
                 if comm == i:
                     # we only want to consider moving u to a different
@@ -594,24 +486,21 @@ def _merge_node_subset(
                     # We only consider merging u into a community that
                     # is within S. This is what is means for the resulting
                     # partition to be a refinement of S.
-
-                    E = sum(wt for u, v, wt in G.edges(C, data="weight") if v in S - C)
-                    C_size = community_size(C)
+                    E = edge_weight_sum(C, S - C)
+                    C_size = node_set_size(C)
                     comm_comparison = resolution * C_size * (S_size - C_size)
 
                     if E > comm_comparison:
                         # the change in quality the occurs from moving node u
                         # into the new community
-                        q_B = quality_delta_partial_eval_add(
-                            G, node=u, community=partition[i], resolution=resolution
-                        )
+                        q_B = quality_delta_func({u}, partition[i], resolution)
 
                         # the overall quality delta is therefore the sum
                         # of the change in quality from removing u from its
                         # starting community, and the change of quality
                         # from adding it to the new community
 
-                        quality_delta = q_A + q_B
+                        quality_delta = q_B - q_A
 
                         if quality_delta > 0:
                             # since moving u to the candidate community C
@@ -674,21 +563,11 @@ def _gen_graph(G, partition):
 
         for node in part:
             new_size += G.nodes[node].get("node_weight")
-            new_cum_in_degree += G.nodes[node].get("cumulative_in_degree")
-            new_cum_out_degree += G.nodes[node].get("cumulative_out_degree")
-            new_cum_degree += G.nodes[node].get("cumulative_degree")
 
             node2com[node] = i
             nodes.update(G.nodes[node].get("nodes", {node}))
 
-        H.add_node(
-            i,
-            nodes=nodes,
-            node_weight=new_size,
-            cumulative_in_degree=new_cum_in_degree,
-            cumulative_out_degree=new_cum_out_degree,
-            cumulative_degree=new_cum_degree,
-        )
+        H.add_node(i, nodes=nodes, node_weight=new_size)
 
     for u, v, d in G.edges(data=True):
         uv_weight = d["weight"]
@@ -738,5 +617,5 @@ class QualityFunctionNotImplemented(nx.NetworkXError):
     """Raised if quality function is not implemented for leiden"""
 
     def __init__(self, quality_function):
-        msg = f"leiden not implemented for {quality_function}. Only 'cpm' or 'modularity' are currently implemented"
+        msg = f"leiden not implemented for {quality_function}. Only 'cpm' is currently implemented"
         super().__init__(msg)

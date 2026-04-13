@@ -229,6 +229,7 @@ def test_connected_communities():
             assert check_connected_community(G, C)
 
 
+@pytest.mark.xfail(reason="modularity has not yet been implemented for leiden")
 def test_connected_communities_modularity():
     for i in range(10):
         G = nx.karate_club_graph()
@@ -251,6 +252,7 @@ def test_connected_communities_no_weights():
             assert check_connected_community(G, C)
 
 
+@pytest.mark.xfail(reason="modularity has not yet been implemented for leiden")
 def test_directed_graphs_modularity():
     # TODO currently this test exists to check that
     # the leiden algorithm doesn't fail when input graph is
@@ -287,6 +289,7 @@ def test_directed_graphs_cpm():
         assert _equivalent_partitions(comms, comms2)
 
 
+@pytest.mark.xfail(reason="modularity has not yet been implemented for leiden")
 def test_modularity_increase_qf_parameter():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
@@ -360,6 +363,7 @@ def test_resolution_cpm():
     assert len(partition2) <= len(partition3)
 
 
+@pytest.mark.xfail(reason="modularity has not yet been implemented for leiden")
 def test_resolution_modularity():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
