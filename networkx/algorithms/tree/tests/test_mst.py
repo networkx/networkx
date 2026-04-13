@@ -940,4 +940,3 @@ class TestNumberSpanningTrees:
         assert np.isclose(Nst, 0)
         Nst = nx.number_of_spanning_trees(G, root=3, weight="weight")
         assert np.isclose(Nst, 0)
-        
