@@ -36,6 +36,11 @@ def node_link_data(
     """Returns data in node-link format that is suitable for JSON serialization
     and use in JavaScript documents.
 
+    .. versionchanged:: 3.4
+        The default value of ``edges`` changed from ``"links"`` to ``"edges"``.
+        To read data produced by older versions of NetworkX or D3.js, pass
+        ``edges="links"`` to :func:`node_link_graph`.
+
     Parameters
     ----------
     G : NetworkX graph
@@ -156,6 +161,11 @@ def node_link_graph(
     """Returns graph from node-link data format.
 
     Useful for de-serialization from JSON.
+
+    .. versionchanged:: 3.4
+        The default value of ``edges`` changed from ``"links"`` to ``"edges"``.
+        Pass ``edges="links"`` when loading data produced by NetworkX < 3.4
+        or by D3.js tools, otherwise edges will be silently missing from the graph.
 
     Parameters
     ----------
