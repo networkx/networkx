@@ -481,16 +481,16 @@ def _merge_node_subset(
                     # community, not its current community.
                     continue
 
-       # def quality_delta(nodes_to_add, community, resolution):
-       #     n_C = node_set_size(community)
-       #     U_wt = node_set_size(nodes_to_add)
-       #     E_D = edge_weight_sum(nodes_to_add, community)
-       #     return E_D - resolution * 2 * n_C * U_wt
+                # def quality_delta(nodes_to_add, community, resolution):
+                #     n_C = node_set_size(community)
+                #     U_wt = node_set_size(nodes_to_add)
+                #     E_D = edge_weight_sum(nodes_to_add, community)
+                #     return E_D - resolution * 2 * n_C * U_wt
                 elif C.issubset(S):
                     # We only consider merging u into a community that
                     # is within S. This is what is means for the resulting
                     # partition to be a refinement of S.
-                    
+
                     # this application of quality_delta_func relates to the
                     # definition of T in line :37 from pseudocode in paper
                     if quality_delta_func(C, S - C, resolution) > 0:
