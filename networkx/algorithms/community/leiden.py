@@ -211,7 +211,6 @@ def leiden_partitions(
             nx.set_edge_attributes(graph, 1, name="weight")
 
     if quality_function == "cpm":
-
         quality_function = functools.partial(
             constant_potts_model, node_weight="node_weight", weight="weight"
         )
