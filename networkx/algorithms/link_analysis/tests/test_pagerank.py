@@ -211,3 +211,141 @@ class TestPageRankScipy(TestPageRank):
     def test_empty_scipy(self):
         G = nx.Graph()
         assert _pagerank_scipy(G) == {}
+
+
+
+class TestPageRankProperties:
+    """Property-based tests that verify mathematical invariants of PageRank."""
+
+    # --- Test 1: Valid probability distribution with dangling nodes ---
+
+    @pytest.mark.parametrize(
+        "edges",
+        [
+            # Simple cycle — no dangling nodes
+            [(0, 1), (1, 2), (2, 0)],
+            # Node 3 is a dangling node (no outgoing edges)
+            [(0, 1), (1, 2), (2, 0), (0, 3)],
+            # Multiple dangling nodes: 4 and 5 are sinks
+            [(0, 1), (1, 2), (2, 0), (1, 3), (3, 4), (2, 5)],
+            # Star graph: node 0 fans out, nodes 1-5 are all dangling
+            [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)],
+            # Two disconnected components, one has a dangling node
+            [(0, 1), (1, 0), (2, 3), (3, 4)],
+            # Chain graph: only the last node is dangling
+            [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5)],
+        ],
+    )
+    def test_pagerank_valid_distribution_with_dangling(self, edges):
+        """PageRank must always produce a valid probability distribution:
+        all values non-negative and summing to 1.0, even when dangling
+        nodes (sinks with no outgoing edges) are present."""
+        G = nx.DiGraph(edges)
+        pr = nx.pagerank(G, alpha=0.85)
+
+        # Every rank must be non-negative
+        for node, rank in pr.items():
+            assert rank >= 0, f"Node {node} has negative PageRank {rank}"
+
+        # All ranks must sum to 1.0
+        assert abs(sum(pr.values()) - 1.0) < 1e-6
+
+    # --- Test 2: Symmetric graphs yield uniform PageRank ---
+
+    @pytest.mark.parametrize("n", [3, 5, 10, 20, 50])
+    @pytest.mark.parametrize("alpha", [0.1, 0.5, 0.85, 0.99])
+    def test_pagerank_symmetric_graph_equal_ranks(self, n, alpha):
+        """In a complete directed graph all nodes are structurally identical,
+        so every node must receive exactly PR = 1/n for any alpha value."""
+        G = nx.complete_graph(n, create_using=nx.DiGraph)
+        pr = nx.pagerank(G, alpha=alpha)
+
+        expected = 1.0 / n
+        for node, rank in pr.items():
+            assert rank == pytest.approx(expected, abs=1e-6)
+
+    # --- Test 3: Alpha=0 gives uniform distribution ---
+
+    @pytest.mark.parametrize(
+        "graph_func",
+        [
+            # Complete graph
+            lambda: nx.complete_graph(10, create_using=nx.DiGraph),
+            # Star graph (directed)
+            lambda: nx.star_graph(9).to_directed(),
+            # Path graph (directed)
+            lambda: nx.path_graph(10, create_using=nx.DiGraph),
+            # Cycle graph (directed)
+            lambda: nx.cycle_graph(10, create_using=nx.DiGraph),
+        ],
+    )
+    def test_pagerank_alpha_zero_gives_uniform(self, graph_func):
+        """When alpha=0, the random surfer never follows links — only teleports.
+        So every node must get PR = 1/n regardless of graph structure."""
+        G = graph_func()
+        n = len(G)
+        pr = nx.pagerank(G, alpha=0)
+
+        expected = 1.0 / n
+        for node, rank in pr.items():
+            assert rank == pytest.approx(expected, abs=1e-6)
+
+    # --- Test 4: Adding incoming edges increases rank (monotonicity) ---
+
+    @pytest.mark.parametrize(
+        "edges, target",
+        [
+            # Simple cycle, add edges pointing to node 0
+            ([(0, 1), (1, 2), (2, 0)], 0),
+            # Chain, add edges pointing to node 2
+            ([(0, 1), (1, 2), (2, 3), (3, 4)], 2),
+            # Fan-out from 0, add edges pointing to node 1
+            ([(0, 1), (0, 2), (0, 3), (1, 2)], 1),
+        ],
+    )
+    def test_pagerank_adding_edges_increases_rank(self, edges, target):
+        """Adding incoming edges to a node should never decrease its PageRank.
+        This is the core intuition: more endorsements = higher importance."""
+        G = nx.DiGraph(edges)
+        pr_before = nx.pagerank(G, alpha=0.85)
+
+        # Find all nodes that don't already point to target
+        non_predecessors = [
+            n for n in G.nodes() if n != target and not G.has_edge(n, target)
+        ]
+        assert len(non_predecessors) > 0, "All nodes already point to target"
+
+        # Add edges from every non-predecessor to the target
+        G2 = G.copy()
+        for src in non_predecessors:
+            G2.add_edge(src, target)
+
+        pr_after = nx.pagerank(G2, alpha=0.85)
+
+        assert pr_after[target] >= pr_before[target] - 1e-6
+
+    # --- Test 5: Personalization boosts the target node ---
+
+    @pytest.mark.parametrize(
+        "edges, target",
+        [
+            ([(0, 1), (1, 2), (2, 0)], 0),
+            ([(0, 1), (1, 2), (2, 3), (3, 0)], 2),
+            ([(0, 1), (0, 2), (0, 3), (1, 2), (2, 3), (3, 1)], 3),
+        ],
+    )
+    def test_pagerank_personalization_boosts_target(self, edges, target):
+        """Heavily biasing the personalization vector towards one node should
+        increase that node's PageRank compared to the default uniform case."""
+        G = nx.DiGraph(edges)
+        nodes = list(G.nodes())
+
+        # Default (uniform) PageRank
+        pr_uniform = nx.pagerank(G, alpha=0.85)
+
+        # Personalized: target gets 10x the weight of every other node
+        personalization = {n: 1 for n in nodes}
+        personalization[target] = len(nodes) * 10
+        pr_personalized = nx.pagerank(G, alpha=0.85, personalization=personalization)
+
+        assert pr_personalized[target] >= pr_uniform[target] - 1e-6
