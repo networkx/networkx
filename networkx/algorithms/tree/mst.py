@@ -991,7 +991,7 @@ class SpanningTreeIterator:
     For spanning trees with the same weight, ties are broken arbitrarily.
 
     Examples
-    ---------
+    --------
     `SpanningTreeIterator` can be used to find all minimum or maximum spanning
     trees of a graph:
 
