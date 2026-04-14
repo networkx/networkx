@@ -277,7 +277,7 @@ def color_degree_by_node(G, n_colors, e_colors):
                 for u, nbrs in G.adjacency()
             }
         return {
-            u: (n_colors[u], Counter((e_colors[u, v], n_colors[v]) for v in nbrs))
+            u: (n_colors[u], Counter((e_colors[u, v], 1, n_colors[v]) for v in nbrs))
             for u, nbrs in G.adjacency()
         }
     # directed colored out and in degree
@@ -296,8 +296,8 @@ def color_degree_by_node(G, n_colors, e_colors):
     return {
         u: (
             n_colors[u],
-            Counter((e_colors[u, v], n_colors[v]) for v in nbrs),
-            Counter((e_colors[v, u], n_colors[v]) for v in G._pred[u]),
+            Counter((e_colors[u, v], 1, n_colors[v]) for v in nbrs),
+            Counter((e_colors[v, u], 1, n_colors[v]) for v in G._pred[u]),
         )
         for u, nbrs in G.adjacency()
     }
