@@ -493,7 +493,7 @@ def _merge_node_subset(
 
                     # this application of quality_delta_func relates to the
                     # definition of T in line :37 from pseudocode in paper
-                    if quality_delta_func(C, S - C, 0.5*resolution) > 0:
+                    if quality_delta_func(C, S - C, 0.5 * resolution) > 0:
                         # the change in quality the occurs from moving node u
                         # into the new community
                         q_B = quality_delta_func({u}, partition[i], resolution)
