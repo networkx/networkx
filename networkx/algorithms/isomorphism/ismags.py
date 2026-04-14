@@ -268,11 +268,31 @@ def color_degree_by_node(G, n_colors, e_colors):
                     e_colors[n, v] = None
     # undirected colored degree
     if not G.is_directed():
+        if G.is_multigraph():
+            return {
+                u: (
+                    n_colors[u],
+                    Counter((e_colors[u, v], len(G[u][v]), n_colors[v]) for v in nbrs),
+                )
+                for u, nbrs in G.adjacency()
+            }
         return {
             u: (n_colors[u], Counter((e_colors[u, v], n_colors[v]) for v in nbrs))
             for u, nbrs in G.adjacency()
         }
     # directed colored out and in degree
+    if G.is_multigraph():
+        return {
+            u: (
+                n_colors[u],
+                Counter((e_colors[u, v], len(G[u][v]), n_colors[v]) for v in nbrs),
+                Counter(
+                    (e_colors[v, u], len(kd), n_colors[v])
+                    for v, kd in G._pred[u].items()
+                ),
+            )
+            for u, nbrs in G.adjacency()
+        }
     return {
         u: (
             n_colors[u],
@@ -957,16 +977,21 @@ class ISMAGS:
                     sgn_nbrs = subgraph_adj[sgn]
                     not_gn_nbrs = graph_adj.keys() - graph_adj[gn].keys()
                     for sgn2 in left_to_map:
-                        # edge color must match when sgn2 connected to sgn
                         if sgn2 not in sgn_nbrs:
                             gn2_cands = not_gn_nbrs
                         else:
+                            # edge color must match when sgn2 connected to sgn
                             g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
-                            gn2_cands = {n for e in g_edges if gn in e for n in e}
-                        # Node color compatibility should be taken care of by the
-                        # initial candidate lists made by find_subgraphs
-
-                        # Add gn2_cands to the right collection.
+                            # check if (gn, gn2) has same number of edges as (sgn, sgn2)
+                            sgn_multi_cnt = subgraph.number_of_edges(sgn, sgn2)
+                            gn2_cands = {
+                                n
+                                for e in g_edges
+                                if gn in e
+                                for n in e
+                                if n != gn
+                                if graph.number_of_edges(gn, n) == sgn_multi_cnt
+                            }
                         # Do not change the original set. So do not use |= operator
                         cand_sets[sgn2] = cand_sets[sgn2] | {frozenset(gn2_cands)}
                 else:  # directed
@@ -981,18 +1006,42 @@ class ISMAGS:
                             if sgn2 not in sgn_preds:
                                 gn2_cands = not_gn_nbrs
                             else:  # sgn2 in sgn_preds
+                                sgn_multi_in = subgraph.number_of_edges(sgn2, sgn)
                                 g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
-                                gn2_cands = {e[0] for e in g_edges if gn == e[1]}
+                                gn2_cands = {
+                                    u
+                                    for u, v in g_edges
+                                    if gn == v
+                                    if graph.number_of_edges(u, gn) == sgn_multi_in
+                                }
                         else:
                             if sgn2 not in sgn_preds:
+                                sgn_multi_out = subgraph.number_of_edges(sgn, sgn2)
                                 g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
-                                gn2_cands = {e[1] for e in g_edges if gn == e[0]}
+                                gn2_cands = {
+                                    v
+                                    for u, v in g_edges
+                                    if gn == u
+                                    if graph.number_of_edges(gn, v) == sgn_multi_out
+                                }
                             else:
+                                sgn_multi_out = subgraph.number_of_edges(sgn, sgn2)
+                                sgn_multi_in = subgraph.number_of_edges(sgn2, sgn)
                                 # gn2 must have correct color in both directions
                                 g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
-                                gn2_cands = {e[1] for e in g_edges if gn == e[0]}
+                                gn2_cands = {
+                                    v
+                                    for u, v in g_edges
+                                    if gn == u
+                                    if graph.number_of_edges(gn, v) == sgn_multi_out
+                                }
                                 g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
-                                gn2_cands &= {e[0] for e in g_edges if gn == e[1]}
+                                gn2_cands &= {
+                                    u
+                                    for u, v in g_edges
+                                    if gn == v
+                                    if graph.number_of_edges(u, gn) == sgn_multi_in
+                                }
                         # Do not change the original set. So do not use |= operator
                         cand_sets[sgn2] = cand_sets[sgn2] | {frozenset(gn2_cands)}
 
