@@ -811,7 +811,7 @@ def _feasible_look_ahead(u, v, graph_info, state_info):
                 # use sorted edge counts. cut if len_G < len(SG) for any count-pair
                 ucnts = sorted((SG.number_of_edges(u, x) for x in unbrs), reverse=True)
                 vcnts = sorted((FG.number_of_edges(v, x) for x in vnbrs), reverse=True)
-                if any(not MONO_fits(uc, vc) for uc, vc in zip(ucnts, vcnts)):
+                if any(not SG_fits(uc, vc) for uc, vc in zip(ucnts, vcnts)):
                     return False
             if not SG_fits(len(T1 & unbrs), len(T2 & vnbrs)):
                 return False
@@ -831,8 +831,7 @@ def _feasible_look_ahead(u, v, graph_info, state_info):
             if multigraph:
                 ucnts = sorted((SG.number_of_edges(u, x) for x in upred), reverse=True)
                 vcnts = sorted((FG.number_of_edges(v, x) for x in vpred), reverse=True)
-                mess = [(uc, vc) for uc, vc in zip(ucnts, vcnts)]
-                if any(not MONO_fits(uc, vc) for uc, vc in zip(ucnts, vcnts)):
+                if any(not SG_fits(uc, vc) for uc, vc in zip(ucnts, vcnts)):
                     return False
             if not SG_fits(len(T1 & upred), len(T2 & vpred)):
                 return False
