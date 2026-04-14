@@ -151,7 +151,7 @@ def to_pandas_adjacency(
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
-def from_pandas_adjacency(df, create_using=None, *, nonedge=0.0):
+def from_pandas_adjacency(df, create_using=None, *, nonedge=0):
     r"""Returns a graph from Pandas DataFrame.
 
     The Pandas DataFrame is interpreted as an adjacency matrix for the graph.
@@ -164,7 +164,7 @@ def from_pandas_adjacency(df, create_using=None, *, nonedge=0.0):
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
-    nonedge : array_like (default = 0.0)
+    nonedge : array_like (default = 0)
         The value used to represent non-edges in the adjacency matrix.
         See :func:`from_numpy_array` for details.
 
@@ -1131,7 +1131,7 @@ def from_numpy_array(
     edge_attr="weight",
     *,
     nodelist=None,
-    nonedge=0.0,
+    nonedge=0,
 ):
     """Returns a graph from a 2D NumPy array.
 
@@ -1161,10 +1161,10 @@ def from_numpy_array(
         list of nodes must be the same length as the dimensions of `A`. The
         default is `None`, in which case the nodes are drawn from ``range(n)``.
 
-    nonedge : array_like (default = 0.0)
+    nonedge : array_like (default = 0)
         The value used to represent non-edges in the adjacency matrix. Entries
         in `A` equal to this value will not be added as edges. If the array has
-        a numeric dtype, the default non-edge value is ``0.0``, which means
+        a numeric dtype, the default non-edge value is ``0``, which means
         entries with value ``0`` are not treated as edges. To create edges with
         weight ``0``, use a different sentinel (e.g. ``nan``).
 
