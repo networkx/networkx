@@ -224,34 +224,6 @@ def leiden_partitions(
             _constant_potts_model, node_weight="node_weight", weight="weight"
         )
 
-        # node_set_size is required during the _merge_node_subset stage
-        # and needs to be defined in a way that is consistent with
-        # the quality function and whether the graph
-        # is directed or not directed
-
-        # Corresponds with ||C|| in notation from paper
-        def node_set_size(C):
-            return sum(wt for u, wt in graph.nodes(data="node_weight") if u in C)
-
-        # Corresponds with E(C,D) in notation from paper
-        if is_directed:
-
-            def edge_weight_sum(C, D):
-                out_sum = sum(
-                    wt for u, v, wt in graph.edges(C, data="weight") if v in D
-                )
-                in_sum = sum(wt for u, v, wt in graph.edges(D, data="weight") if v in C)
-                dup_sum = sum(
-                    wt
-                    for u, v, wt in graph.edges(C.intersection(D), data="weight")
-                    if v in D.intersection(C)
-                )
-                return in_sum + out_sum - dup_sum
-        else:
-
-            def edge_weight_sum(C, D):
-                return sum(wt for u, v, wt in graph.edges(D, data="weight") if v in C)
-
         # computes the partial quality delta contributed by adding nodes_to_add
         # to community. Corresponding value from removing U from C is computed by taking
         # the negative -1* quality_delta(U, C-U)
@@ -260,16 +232,37 @@ def leiden_partitions(
         if is_directed:
 
             def quality_delta(nodes_to_add, community, resolution):
-                n_C = node_set_size(community)
-                U_wt = node_set_size(nodes_to_add)
-                E_D = edge_weight_sum(nodes_to_add, community)
-                return E_D - resolution * 2 * n_C * U_wt
+                n_C = sum(
+                    wt for u, wt in graph.nodes(data="node_weight") if u in community
+                )
+                U_wt = sum(
+                    wt for u, wt in graph.nodes(data="node_weight") if u in nodes_to_add
+                )
+                E_D_in = sum(
+                    wt
+                    for u, v, wt in graph.edges(nodes_to_add, data="weight")
+                    if v in community
+                )
+                E_D_out = sum(
+                    wt
+                    for u, v, wt in graph.edges(community, data="weight")
+                    if v in nodes_to_add
+                )
+                return E_D_in + E_D_out - resolution * 2 * n_C * U_wt
         else:
 
             def quality_delta(nodes_to_add, community, resolution):
-                n_C = node_set_size(community)
-                U_wt = node_set_size(nodes_to_add)
-                E_D = edge_weight_sum(nodes_to_add, community)
+                n_C = sum(
+                    wt for u, wt in graph.nodes(data="node_weight") if u in community
+                )
+                U_wt = sum(
+                    wt for u, wt in graph.nodes(data="node_weight") if u in nodes_to_add
+                )
+                E_D = sum(
+                    wt
+                    for u, v, wt in graph.edges(nodes_to_add, data="weight")
+                    if v in community
+                )
                 return E_D - resolution * n_C * U_wt
 
     elif quality_function == "modularity":
@@ -308,8 +301,6 @@ def leiden_partitions(
             inner_partition,
             resolution,
             quality_delta,
-            node_set_size,
-            edge_weight_sum,
             seed,
             theta,
         )
@@ -428,8 +419,6 @@ def _refine_partition(
     partition,
     resolution,
     quality_delta_func,
-    node_set_size,
-    edge_weight_sum,
     seed,
     theta,
 ):
@@ -445,8 +434,6 @@ def _refine_partition(
             C,
             resolution,
             quality_delta_func,
-            node_set_size,
-            edge_weight_sum,
             seed,
             theta,
         )
@@ -462,26 +449,15 @@ def _merge_node_subset(
     S,
     resolution,
     quality_delta_func,
-    node_set_size,
-    edge_weight_sum,
     seed,
     theta,
 ):
-
-    # the definition of community_size depends on the quality function
-    # and whether the underlying graph is directed.
-    S_size = node_set_size(S)
 
     # first, the sufficiently well-connected nodes within S
     # are identified and added to the set R.
     R = set()
     for u in S:
-        # NOTE may need a more general size method here, particularly for
-        # directed graphs when modualrity is used
-        u_size = node_set_size({u})
-        community_factor = edge_weight_sum({u}, S - {u})
-        factor_comparison = resolution * u_size * (S_size - u_size)
-        if community_factor > factor_comparison:
+        if quality_delta_func({u}, S - {u}, resolution) > 0:
             R.add(u)
 
     # TODO this section of the code has many nested if statements which
@@ -519,11 +495,6 @@ def _merge_node_subset(
                     # community, not its current community.
                     continue
 
-                # def quality_delta(nodes_to_add, community, resolution):
-                #     n_C = node_set_size(community)
-                #     U_wt = node_set_size(nodes_to_add)
-                #     E_D = edge_weight_sum(nodes_to_add, community)
-                #     return E_D - resolution * 2 * n_C * U_wt
                 elif C.issubset(S):
                     # We only consider merging u into a community that
                     # is within S. This is what is means for the resulting
