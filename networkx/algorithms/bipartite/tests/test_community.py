@@ -5,8 +5,7 @@ import pytest
 import networkx as nx
 from networkx.algorithms import bipartite
 from networkx.algorithms.bipartite.community import (
-    _bipartite_modularity_delta_partial_eval_add,
-    _bipartite_modularity_delta_partial_eval_remove,
+    _bipartite_modularity_merge_delta,
 )
 from networkx.algorithms.community.quality import NotAPartition
 
@@ -146,10 +145,31 @@ class TestBipartiteModularity:
         assert bipartite.modularity(G, communities, [0, 1]) == pytest.approx(0.0)
 
 
-def _q_delta_via_full_eval(G, u, A, B, rest, red, resolution=1, weight="weight"):
-    """Reference delta: compute Q_B on the before/after partitions."""
-    before = [A, B] + rest
-    after = [A - {u}, B | {u}] + rest
+def _compute_m(G, red, weight="weight"):
+    """Compute total edge weight the same way bipartite.modularity does."""
+    return sum(G.degree(v, weight=weight) for v in red)
+
+
+def _set_bipartite_degree_attrs(G, red, weight="weight"):
+    """Set red_degree / blue_degree attributes on a leaf bipartite graph.
+
+    Red nodes get red_degree = deg(v), blue_degree = 0.
+    Blue nodes get red_degree = 0, blue_degree = deg(v).
+    """
+    for v in G:
+        deg = G.degree(v, weight=weight)
+        if v in red:
+            G.nodes[v]["red_degree"] = deg
+            G.nodes[v]["blue_degree"] = 0
+        else:
+            G.nodes[v]["red_degree"] = 0
+            G.nodes[v]["blue_degree"] = deg
+
+
+def _q_merge_delta_via_full_eval(G, C_a, C_b, rest, red, resolution=1, weight="weight"):
+    """Reference merge delta: compute Q_B before/after merging C_a and C_b."""
+    before = [C_a, C_b] + rest
+    after = [C_a | C_b] + rest
     q_before = bipartite.modularity(
         G, before, red, weight=weight, resolution=resolution
     )
@@ -157,130 +177,147 @@ def _q_delta_via_full_eval(G, u, A, B, rest, red, resolution=1, weight="weight")
     return q_after - q_before
 
 
-def _compute_m(G, red, weight="weight"):
-    """Compute total edge weight the same way bipartite.modularity does."""
-    return sum(G.degree(v, weight=weight) for v in red)
-
-
-class TestBipartiteModularityDelta:
-    def test_red_node_move_unweighted(self):
-        # Two disjoint K_{2,2} components. Move red node 0 from its
-        # community to the other.
+class TestBipartiteModularityMergeDelta:
+    def test_singleton_move_red(self):
+        # Moving red node 0 from A to B on two disjoint K_{2,2}.
         G = nx.Graph()
         G.add_edges_from([(0, 2), (0, 3), (1, 2), (1, 3)])
         G.add_edges_from([(4, 6), (4, 7), (5, 6), (5, 7)])
         red = {0, 1, 4, 5}
-        A = {0, 1, 2, 3}
-        B = {4, 5, 6, 7}
-        u = 0  # red node
+        _set_bipartite_degree_attrs(G, red)
         m = _compute_m(G, red)
+        u = 0
+        B = {4, 5, 6, 7}
+        q_merge = _bipartite_modularity_merge_delta(G, {u}, B, 1, m=m)
+        q_delta = _q_merge_delta_via_full_eval(G, {u}, B, [{1, 2, 3}], red)
+        assert q_merge == pytest.approx(q_delta)
 
-        q_rem = _bipartite_modularity_delta_partial_eval_remove(
-            G, u, A, 1, nodes=red, m=m
-        )
-        q_add = _bipartite_modularity_delta_partial_eval_add(G, u, B, 1, nodes=red, m=m)
-        q_delta = _q_delta_via_full_eval(G, u, A, B, [], red)
-        assert q_rem + q_add == pytest.approx(q_delta)
-
-    def test_blue_node_move_unweighted(self):
-        # Same graph, move blue node 2.
+    def test_singleton_move_blue(self):
         G = nx.Graph()
         G.add_edges_from([(0, 2), (0, 3), (1, 2), (1, 3)])
         G.add_edges_from([(4, 6), (4, 7), (5, 6), (5, 7)])
         red = {0, 1, 4, 5}
+        _set_bipartite_degree_attrs(G, red)
+        m = _compute_m(G, red)
+        u = 2  # blue
+        B = {4, 5, 6, 7}
+        q_merge = _bipartite_modularity_merge_delta(G, {u}, B, 1, m=m)
+        q_delta = _q_merge_delta_via_full_eval(G, {u}, B, [{0, 1, 3}], red)
+        assert q_merge == pytest.approx(q_delta)
+
+    def test_two_k22_merge(self):
+        # Two disjoint K_{2,2}. Merging the two components drops Q_B from
+        # 0.5 to 0 (merged partition is a single community covering the
+        # whole graph).
+        G = nx.Graph()
+        G.add_edges_from([(0, 2), (0, 3), (1, 2), (1, 3)])
+        G.add_edges_from([(4, 6), (4, 7), (5, 6), (5, 7)])
+        red = {0, 1, 4, 5}
+        _set_bipartite_degree_attrs(G, red)
+        m = _compute_m(G, red)
         A = {0, 1, 2, 3}
         B = {4, 5, 6, 7}
-        u = 2  # blue node
-        m = _compute_m(G, red)
 
-        q_rem = _bipartite_modularity_delta_partial_eval_remove(
-            G, u, A, 1, nodes=red, m=m
-        )
-        q_add = _bipartite_modularity_delta_partial_eval_add(G, u, B, 1, nodes=red, m=m)
-        q_delta = _q_delta_via_full_eval(G, u, A, B, [], red)
-        assert q_rem + q_add == pytest.approx(q_delta)
+        q_merge = _bipartite_modularity_merge_delta(G, A, B, 1, m=m)
+        q_delta = _q_merge_delta_via_full_eval(G, A, B, [], red)
+        assert q_merge == pytest.approx(q_delta)
+        assert q_merge == pytest.approx(-0.5)
 
-    def test_weighted_edges(self):
+    def test_weighted_merge(self):
         G = nx.Graph()
         G.add_edge(0, 2, weight=3)
         G.add_edge(0, 3, weight=1)
         G.add_edge(1, 2, weight=2)
         G.add_edge(1, 3, weight=5)
         red = {0, 1}
+        _set_bipartite_degree_attrs(G, red)
+        m = _compute_m(G, red)
         A = {0, 2}
         B = {1, 3}
-        u = 0
-        m = _compute_m(G, red)
 
-        q_rem = _bipartite_modularity_delta_partial_eval_remove(
-            G, u, A, 1, nodes=red, m=m
-        )
-        q_add = _bipartite_modularity_delta_partial_eval_add(G, u, B, 1, nodes=red, m=m)
-        q_delta = _q_delta_via_full_eval(G, u, A, B, [], red)
-        assert q_rem + q_add == pytest.approx(q_delta)
+        q_merge = _bipartite_modularity_merge_delta(G, A, B, 1, m=m)
+        q_delta = _q_merge_delta_via_full_eval(G, A, B, [], red)
+        assert q_merge == pytest.approx(q_delta)
 
     def test_resolution_parameter(self):
         G = nx.Graph()
         G.add_edges_from([(0, 2), (0, 3), (1, 2), (1, 3)])
         G.add_edges_from([(4, 6), (4, 7), (5, 6), (5, 7)])
         red = {0, 1, 4, 5}
+        _set_bipartite_degree_attrs(G, red)
+        m = _compute_m(G, red)
         A = {0, 1, 2, 3}
         B = {4, 5, 6, 7}
-        u = 0
-        m = _compute_m(G, red)
 
         for gamma in (0.5, 1.0, 2.0):
-            q_rem = _bipartite_modularity_delta_partial_eval_remove(
-                G, u, A, gamma, nodes=red, m=m
-            )
-            q_add = _bipartite_modularity_delta_partial_eval_add(
-                G, u, B, gamma, nodes=red, m=m
-            )
-            q_delta = _q_delta_via_full_eval(G, u, A, B, [], red, resolution=gamma)
-            assert q_rem + q_add == pytest.approx(q_delta)
+            q_merge = _bipartite_modularity_merge_delta(G, A, B, gamma, m=m)
+            q_delta = _q_merge_delta_via_full_eval(G, A, B, [], red, resolution=gamma)
+            assert q_merge == pytest.approx(q_delta)
 
-    def test_composition_property(self):
-        # Verify that remove(u, A) == -add(u, A\{u}), i.e. the remove/add
-        # pair composes into the single quality_delta pattern used by #8509.
+    def test_random_graph_all_pairs(self):
+        # Fuzz test: every ordered pair of three communities on a random
+        # bipartite graph, verified against the full quality function.
+        G = nx.bipartite.random_graph(6, 8, 0.5, seed=42)
+        red = {n for n, d in G.nodes(data=True) if d["bipartite"] == 0}
+        _set_bipartite_degree_attrs(G, red)
+        m = _compute_m(G, red)
+
+        all_nodes = sorted(G)
+        third = len(all_nodes) // 3
+        C1 = set(all_nodes[:third])
+        C2 = set(all_nodes[third : 2 * third])
+        C3 = set(all_nodes[2 * third :])
+
+        pairs = [(C1, C2, [C3]), (C1, C3, [C2]), (C2, C3, [C1])]
+        for A, B, rest in pairs:
+            q_merge = _bipartite_modularity_merge_delta(G, A, B, 1, m=m)
+            q_delta = _q_merge_delta_via_full_eval(G, A, B, rest, red)
+            assert q_merge == pytest.approx(q_delta)
+
+    def test_aggregated_supernode_graph(self):
+        # Construct an aggregated graph where each super-node carries the
+        # red/blue degree sums of its constituent community, and self-loops
+        # encode intra-community edge weights. Verify merge_delta on the
+        # aggregate equals merge_delta on the original for the same merge
+        # operation.
+        #
+        # Original: two disjoint K_{2,2} on nodes {0,1,2,3} and {4,5,6,7},
+        # with one extra cross-edge (1, 6) to give the merge a nonzero
+        # E(A, B).
         G = nx.Graph()
         G.add_edges_from([(0, 2), (0, 3), (1, 2), (1, 3)])
         G.add_edges_from([(4, 6), (4, 7), (5, 6), (5, 7)])
+        G.add_edge(1, 6)  # cross edge so E(A, B) != 0
         red = {0, 1, 4, 5}
+        _set_bipartite_degree_attrs(G, red)
+        m = _compute_m(G, red)
+
         A = {0, 1, 2, 3}
-        u = 0
-        m = _compute_m(G, red)
+        B = {4, 5, 6, 7}
+        q_merge_leaf = _bipartite_modularity_merge_delta(G, A, B, 1, m=m)
 
-        q_rem = _bipartite_modularity_delta_partial_eval_remove(
-            G, u, A, 1, nodes=red, m=m
+        # Aggregated graph: community A -> super-node "a", B -> "b".
+        # k_a = sum of red degrees in A, etc. Self-loop weight on "a" is
+        # the intra-A edge weight total (L_A); likewise for "b". Edge
+        # ("a", "b") has weight E(A, B).
+        k_A = sum(G.nodes[v]["red_degree"] for v in A)
+        d_A = sum(G.nodes[v]["blue_degree"] for v in A)
+        k_B = sum(G.nodes[v]["red_degree"] for v in B)
+        d_B = sum(G.nodes[v]["blue_degree"] for v in B)
+        L_A = sum(1 for u, v in G.edges() if u in A and v in A)
+        L_B = sum(1 for u, v in G.edges() if u in B and v in B)
+        E_AB = sum(
+            1 for u, v in G.edges() if (u in A and v in B) or (u in B and v in A)
         )
-        q_add_neg = _bipartite_modularity_delta_partial_eval_add(
-            G, u, A - {u}, 1, nodes=red, m=m
-        )
-        assert q_rem == pytest.approx(-q_add_neg)
 
-    def test_random_graph_all_moves(self):
-        # Fuzz test: for every possible single-node move on a random
-        # bipartite graph, verify the delta invariant.
-        G = nx.bipartite.random_graph(6, 8, 0.5, seed=42)
-        red = {n for n, d in G.nodes(data=True) if d["bipartite"] == 0}
-        m = _compute_m(G, red)
+        H = nx.Graph()
+        H.add_node("a", red_degree=k_A, blue_degree=d_A)
+        H.add_node("b", red_degree=k_B, blue_degree=d_B)
+        H.add_edge("a", "a", weight=L_A)
+        H.add_edge("b", "b", weight=L_B)
+        H.add_edge("a", "b", weight=E_AB)
 
-        # Start with a two-community partition.
-        comm_a = {n for n in G if n < 7}
-        comm_b = set(G) - comm_a
-        partition = [comm_a, comm_b]
+        # m is preserved across aggregation.
+        q_merge_agg = _bipartite_modularity_merge_delta(H, {"a"}, {"b"}, 1, m=m)
 
-        for u in G:
-            if u in comm_a:
-                A, B, rest = comm_a, comm_b, []
-            else:
-                A, B, rest = comm_b, comm_a, []
-
-            q_rem = _bipartite_modularity_delta_partial_eval_remove(
-                G, u, A, 1, nodes=red, m=m
-            )
-            q_add = _bipartite_modularity_delta_partial_eval_add(
-                G, u, B, 1, nodes=red, m=m
-            )
-            q_delta = _q_delta_via_full_eval(G, u, A, B, rest, red)
-            assert q_rem + q_add == pytest.approx(q_delta)
+        assert q_merge_leaf == pytest.approx(q_merge_agg)

@@ -162,142 +162,88 @@ def modularity(G, communities, nodes, weight="weight", resolution=1):
     return sum(community_contribution(c) for c in communities)
 
 
-def _bipartite_modularity_delta_partial_eval_remove(
-    G, node, community, resolution, weight="weight", *, nodes, m
+def _bipartite_modularity_merge_delta(
+    G,
+    community_a,
+    community_b,
+    resolution,
+    weight="weight",
+    *,
+    red_degree_attr="red_degree",
+    blue_degree_attr="blue_degree",
+    m,
 ):
-    r"""Change in bipartite modularity from removing *node* from *community*.
+    r"""Change in bipartite modularity from merging two disjoint communities.
 
-    One of a pair of partial-evaluation helpers following the pattern
-    established in PR #8507 for CPM (``_cpm_delta_partial_eval_remove``).
+    Computes ``Q_B(P') - Q_B(P)`` where P contains *community_a* and
+    *community_b* as separate communities and P' is obtained by replacing
+    them with their union ``community_a U community_b``.
 
-    Let P = [A, B, C, ...] be a partition with *node* in A, and let
-    P' = [A\{node}, B U {node}, C, ...] be the partition after moving
-    *node* from A into B. The overall quality change is:
+    For bipartite modularity ``Q_B = sum_c [L_c/m - gamma k_c d_c / m^2]``,
+    the merge delta has the closed form
 
-        q_delta = bipartite.modularity(G, P', nodes)
-                - bipartite.modularity(G, P, nodes)
+        merge_delta = E(A, B) / m
+                    - gamma * (k_A d_B + k_B d_A) / m^2
 
-    and can be decomposed as q_delta = q_rem + q_add where:
+    where ``E(A, B)`` is the sum of edge weights between A and B,
+    ``k_C`` is the sum of the "red" degrees of nodes in C, and ``d_C``
+    is the sum of the "blue" degrees of nodes in C.
 
-        q_rem = _bipartite_modularity_delta_partial_eval_remove(
-            G, node, A, resolution, weight, nodes=nodes, m=m)
-        q_add = _bipartite_modularity_delta_partial_eval_add(
-            G, node, B, resolution, weight, nodes=nodes, m=m)
+    **Attribute-based interface.** Rather than identifying each node
+    with a single bipartite side (which breaks once Louvain/Leiden has
+    aggregated communities into super-nodes that mix both colors), this
+    helper reads per-node ``red_degree_attr`` and ``blue_degree_attr``
+    attributes. On the original bipartite graph a red node has
+    ``red_degree = G.degree(v)`` and ``blue_degree = 0`` (and vice
+    versa). On an aggregated graph each super-node carries the sums
+    of both attributes over its constituent nodes; both may be
+    nonzero. This is the same pattern used for directed modularity
+    (in-degree / out-degree tracked as separate attributes).
 
-    This avoids recomputing Q_B over the whole partition on every candidate
-    move in a Louvain/Leiden-style optimization loop.
-
-    The composition property also holds:
-        q_rem == -q_add(G, node, A\{node}, ...)
-
-    Unlike the CPM helpers (which return unnormalized values since CPM has
-    no 1/m factor), these helpers return m-normalized values matching the
-    bipartite modularity definition Q_B = sum_c [L_c/m - gamma k_c d_c/m^2].
+    *community_a* and *community_b* must be disjoint and non-empty.
+    Self-loops are tolerated: on the original graph they are absent by
+    the bipartite convention, and on aggregated graphs they represent
+    intra-community edges which are not part of ``E(A, B)`` and are
+    correctly excluded by the ``v in community_b`` filter below.
 
     Parameters
     ----------
     G : NetworkX Graph
-    node : node
-        The node being removed from *community*.
-    community : set
-        The community that *node* currently belongs to (including *node*).
+        A graph whose nodes carry the red/blue degree attributes. May
+        be an original bipartite graph or an aggregated graph produced
+        by a multilevel optimizer.
+    community_a, community_b : set
+        Two disjoint communities to merge.
     resolution : float
         Resolution parameter gamma.
     weight : str or None
         Edge weight attribute.
-    nodes : set
-        Keyword-only. One bipartite node set ("red" nodes). Must be a set
-        or frozenset for efficient membership testing.
+    red_degree_attr : str
+        Keyword-only. Name of the node attribute holding the
+        "red-side" contribution to the node's degree.
+    blue_degree_attr : str
+        Keyword-only. Name of the node attribute holding the
+        "blue-side" contribution to the node's degree.
     m : float
-        Keyword-only. Total (weighted) edge count, computed as
-        ``sum(G.degree(v, weight=weight) for v in nodes)``.
+        Keyword-only. Total (weighted) edge count, a graph-level
+        invariant preserved across aggregation.
     """
-    node_is_red = node in nodes
+    red_nodes = G.nodes(data=red_degree_attr, default=0)
+    blue_nodes = G.nodes(data=blue_degree_attr, default=0)
 
-    # Opposite-side degree sum of the community. Since *node* contributes
-    # to its own side only, opp_deg_sum is the same whether we include or
-    # exclude *node* from the community.
-    if node_is_red:
-        opp_deg_sum = sum(
-            G.degree(v, weight=weight) for v in community if v not in nodes
-        )
-    else:
-        opp_deg_sum = sum(G.degree(v, weight=weight) for v in community if v in nodes)
+    k_a = sum(rd for v, rd in red_nodes if v in community_a)
+    d_a = sum(bd for v, bd in blue_nodes if v in community_a)
+    k_b = sum(rd for v, rd in red_nodes if v in community_b)
+    d_b = sum(bd for v, bd in blue_nodes if v in community_b)
 
-    deg_u = G.degree(node, weight=weight)
-
-    E_A = sum(
+    # E(A, B): edges with one endpoint in A and the other in B. Iterate
+    # edges incident to community_a and keep those landing in community_b.
+    # Self-loops (intra-community edges on aggregated super-nodes) are
+    # filtered out because they have both endpoints in community_a.
+    E_cross = sum(
         wt
-        for _, v, wt in G.edges(node, data=weight, default=1)
-        if v in community and v != node
+        for _, v, wt in G.edges(community_a, data=weight, default=1)
+        if v in community_b
     )
 
-    return resolution * deg_u * opp_deg_sum / m**2 - E_A / m
-
-
-def _bipartite_modularity_delta_partial_eval_add(
-    G, node, community, resolution, weight="weight", *, nodes, m
-):
-    r"""Change in bipartite modularity from inserting *node* into *community*.
-
-    One of a pair of partial-evaluation helpers following the pattern
-    established in PR #8507 for CPM (``_cpm_delta_partial_eval_add``).
-
-    Let P = [A, B, C, ...] be a partition with *node* in A, and let
-    P' = [A\{node}, B U {node}, C, ...] be the partition after moving
-    *node* from A into B. The overall quality change is:
-
-        q_delta = bipartite.modularity(G, P', nodes)
-                - bipartite.modularity(G, P, nodes)
-
-    and can be decomposed as q_delta = q_rem + q_add where:
-
-        q_rem = _bipartite_modularity_delta_partial_eval_remove(
-            G, node, A, resolution, weight, nodes=nodes, m=m)
-        q_add = _bipartite_modularity_delta_partial_eval_add(
-            G, node, B, resolution, weight, nodes=nodes, m=m)
-
-    This avoids recomputing Q_B over the whole partition on every candidate
-    move in a Louvain/Leiden-style optimization loop.
-
-    The composition property also holds:
-        q_rem == -q_add(G, node, A\{node}, ...)
-
-    Unlike the CPM helpers (which return unnormalized values since CPM has
-    no 1/m factor), these helpers return m-normalized values matching the
-    bipartite modularity definition Q_B = sum_c [L_c/m - gamma k_c d_c/m^2].
-
-    Parameters
-    ----------
-    G : NetworkX Graph
-    node : node
-        The node being inserted into *community*.
-    community : set
-        The target community (*node* is not yet a member).
-    resolution : float
-        Resolution parameter gamma.
-    weight : str or None
-        Edge weight attribute.
-    nodes : set
-        Keyword-only. One bipartite node set ("red" nodes). Must be a set
-        or frozenset for efficient membership testing.
-    m : float
-        Keyword-only. Total (weighted) edge count, computed as
-        ``sum(G.degree(v, weight=weight) for v in nodes)``.
-    """
-    node_is_red = node in nodes
-
-    if node_is_red:
-        opp_deg_sum = sum(
-            G.degree(v, weight=weight) for v in community if v not in nodes
-        )
-    else:
-        opp_deg_sum = sum(G.degree(v, weight=weight) for v in community if v in nodes)
-
-    deg_u = G.degree(node, weight=weight)
-
-    E_B = sum(
-        wt for _, v, wt in G.edges(node, data=weight, default=1) if v in community
-    )
-
-    return E_B / m - resolution * deg_u * opp_deg_sum / m**2
+    return E_cross / m - resolution * (k_a * d_b + k_b * d_a) / m**2
