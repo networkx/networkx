@@ -147,20 +147,15 @@ def modularity(G, communities, nodes, weight="weight", resolution=1):
 
     def community_contribution(community):
         comm = set(community)
-        comm_red = comm & red
-        comm_blue = comm & blue
 
-        # L_c: (weighted) internal edges. Iterate over red side only so
-        # each bipartite edge is visited exactly once.
-        L_c = sum(
-            wt
-            for u in comm_red
-            for _, v, wt in G.edges(u, data=weight, default=1)
-            if v in comm_blue
-        )
+        # L_c: (weighted) internal edges. In a bipartite graph edges only
+        # exist between the two node sets, so iterating over all edges
+        # with both endpoints in comm counts each bipartite edge exactly
+        # once.
+        L_c = sum(wt for _, v, wt in G.edges(comm, data=weight, default=1) if v in comm)
 
-        k_c = sum(degree[u] for u in comm_red)
-        d_c = sum(degree[u] for u in comm_blue)
+        k_c = sum(degree[u] for u in comm & red)
+        d_c = sum(degree[u] for u in comm & blue)
 
         return L_c / m - resolution * k_c * d_c * norm
 
