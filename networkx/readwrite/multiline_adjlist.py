@@ -43,7 +43,7 @@ def generate_multiline_adjlist(G, delimiter=" "):
     ----------
     G : NetworkX graph
 
-    delimiter : str, default=" "
+    delimiter : str, optional (default=" ")
        Separator for node labels.
 
     Yields

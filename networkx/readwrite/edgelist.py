@@ -47,7 +47,7 @@ def generate_edgelist(G, delimiter=" ", data=True):
     ----------
     G : NetworkX graph
 
-    delimiter : str, default=" "
+    delimiter : str, optional (default=" ")
        Separator for node labels.
 
     data : bool or list of keys
