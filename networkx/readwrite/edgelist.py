@@ -41,14 +41,14 @@ from networkx.utils import open_file
 
 
 def generate_edgelist(G, delimiter=" ", data=True):
-    """Generate lines representing edges in edge list format.
+    """Generate lines representing edges of `G` in edge list format.
 
     Parameters
     ----------
     G : NetworkX graph
 
     delimiter : str, default=" "
-        Separator for node labels.
+       Separator for node labels.
 
     data : bool or list of keys
        If False generate no edge data.  If True use a dictionary

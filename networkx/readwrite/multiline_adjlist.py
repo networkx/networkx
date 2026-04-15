@@ -37,14 +37,14 @@ from networkx.utils import open_file
 
 
 def generate_multiline_adjlist(G, delimiter=" "):
-    """Generate lines representing a graph in multiline adjacency list format.
+    """Generate lines representing the graph `G` in multiline adjacency list format.
 
     Parameters
     ----------
     G : NetworkX graph
 
     delimiter : str, default=" "
-        Separator for node labels.
+       Separator for node labels.
 
     Yields
     ------
