@@ -212,9 +212,8 @@ def leiden_partitions(
             nx.set_edge_attributes(graph, 1, name="weight")
 
     if quality_function == "cpm":
-
         nx.set_node_attributes(graph, 1, name="node_weight")
-        
+
         # TODO constant_potts_model needs to be adapated to
         # use a different formula depending on whether the graph
         # is directed or not. Here we're using a temp placeholder function
@@ -224,7 +223,7 @@ def leiden_partitions(
         quality_function = functools.partial(
             _constant_potts_model, node_weight="node_weight", weight="weight"
         )
- 
+
         # node_set_size is required during the _merge_node_subset stage
         # and needs to be defined in a way that is consistent with
         # the quality function and whether the graph
@@ -236,48 +235,57 @@ def leiden_partitions(
 
         # Corresponds with E(C,D) in notation from paper
         if is_directed:
+
             def edge_weight_sum(C, D):
-                out_sum = sum(wt for u, v, wt in graph.edges(C, data="weight") if v in D)
+                out_sum = sum(
+                    wt for u, v, wt in graph.edges(C, data="weight") if v in D
+                )
                 in_sum = sum(wt for u, v, wt in graph.edges(D, data="weight") if v in C)
-                dup_sum = sum(wt for u, v, wt in graph.edges(C.intersection(D), data="weight") if v in D.intersection(C))
+                dup_sum = sum(
+                    wt
+                    for u, v, wt in graph.edges(C.intersection(D), data="weight")
+                    if v in D.intersection(C)
+                )
                 return in_sum + out_sum - dup_sum
         else:
+
             def edge_weight_sum(C, D):
                 return sum(wt for u, v, wt in graph.edges(D, data="weight") if v in C)
-        
+
         # computes the partial quality delta contributed by adding nodes_to_add
         # to community. Corresponding value from removing U from C is computed by taking
         # the negative -1* quality_delta(U, C-U)
         # to compute the overall quality delta from moving node u from A to B we have
         # q_delta = quality_delta({u}, B) - quality_delta({u}, A-{u})
         if is_directed:
+
             def quality_delta(nodes_to_add, community, resolution):
                 n_C = node_set_size(community)
                 U_wt = node_set_size(nodes_to_add)
                 E_D = edge_weight_sum(nodes_to_add, community)
                 return E_D - resolution * 2 * n_C * U_wt
         else:
+
             def quality_delta(nodes_to_add, community, resolution):
                 n_C = node_set_size(community)
                 U_wt = node_set_size(nodes_to_add)
                 E_D = edge_weight_sum(nodes_to_add, community)
                 return E_D - resolution * n_C * U_wt
-    
-    elif quality_function=='modularity':
+
+    elif quality_function == "modularity":
         if is_directed:
             # not implemented yet
             raise QualityFunctionNotImplemented(quality_function)
         else:
             raise QualityFunctionNotImplemented(quality_function)
-    
-    elif quality_function=='barber_modularity':
+
+    elif quality_function == "barber_modularity":
         if not nx.is_bipartite(G):
-            raise nx.NetworkXError('not a bipartite graph')
+            raise nx.NetworkXError("not a bipartite graph")
         raise QualityFunctionNotImplemented(quality_function)
-    
+
     else:
         raise QualityFunctionNotImplemented(quality_function)
-    
 
     # The setup phase has ended, the main algorithm now begins.
     quality = quality_function(graph, partition, resolution=resolution, weight="weight")
@@ -661,24 +669,29 @@ def _constant_potts_model(
     node_weight,
     resolution,
 ):
-    
+
     is_directed = G.is_directed()
     if is_directed:
+
         def community_contribution(community):
             comm = set(community)
-            E_c = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm)
+            E_c = sum(
+                wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm
+            )
 
             n_c = sum(G.nodes[node].get(node_weight, 1) for node in community)
 
             return E_c - resolution * (n_c**2)
     else:
+
         def community_contribution(community):
             comm = set(community)
-            E_c = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm)
+            E_c = sum(
+                wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm
+            )
 
             n_c = sum(G.nodes[node].get(node_weight, 1) for node in community)
 
-            return E_c - resolution * (n_c**2)/2
+            return E_c - resolution * (n_c**2) / 2
 
     return sum(community_contribution(c) for c in communities)
-
