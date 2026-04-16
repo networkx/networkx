@@ -228,13 +228,12 @@ def _bipartite_modularity_merge_delta(
         Keyword-only. Total (weighted) edge count, a graph-level
         invariant preserved across aggregation.
     """
-    red_nodes = G.nodes(data=red_degree_attr, default=0)
-    blue_nodes = G.nodes(data=blue_degree_attr, default=0)
-
-    k_a = sum(rd for v, rd in red_nodes if v in community_a)
-    d_a = sum(bd for v, bd in blue_nodes if v in community_a)
-    k_b = sum(rd for v, rd in red_nodes if v in community_b)
-    d_b = sum(bd for v, bd in blue_nodes if v in community_b)
+    # Iterate over community members rather than all of G.nodes
+    nodes = G.nodes
+    k_a = sum(nodes[v].get(red_degree_attr, 0) for v in community_a)
+    d_a = sum(nodes[v].get(blue_degree_attr, 0) for v in community_a)
+    k_b = sum(nodes[v].get(red_degree_attr, 0) for v in community_b)
+    d_b = sum(nodes[v].get(blue_degree_attr, 0) for v in community_b)
 
     # E(A, B): edges with one endpoint in A and the other in B. Iterate
     # edges incident to community_a and keep those landing in community_b.
