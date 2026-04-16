@@ -59,7 +59,7 @@ def strongly_connected_components(G):
     Notes
     -----
     Iterative version of Tarjan's algorithm using the improvements
-    described by Tarjan and Zwick in their recent survey [1]_, plus a trick
+    described by Tarjan and Zwick in their survey [1]_, plus a trick
     borrowed from the Rust implementation of the WebGraph framework [2]_.
 
     References
