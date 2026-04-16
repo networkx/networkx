@@ -212,6 +212,7 @@ def leiden_partitions(
             nx.set_edge_attributes(graph, 1, name="weight")
 
     if quality_function == "cpm":
+        node_attributes = ["node_weight"]
         nx.set_node_attributes(graph, 1, name="node_weight")
 
         # TODO constant_potts_model needs to be adapated to
@@ -224,11 +225,15 @@ def leiden_partitions(
             _constant_potts_model, node_weight="node_weight", weight="weight"
         )
 
-        # computes the partial quality delta contributed by adding nodes_to_add
-        # to community. Corresponding value from removing U from C is computed by taking
+        # the quality_delta function computes the partial quality delta contributed by
+        # adding nodes_to_add to community.
+        # Corresponding value from removing U from C is computed by taking
         # the negative -1* quality_delta(U, C-U)
         # to compute the overall quality delta from moving node u from A to B we have
         # q_delta = quality_delta({u}, B) - quality_delta({u}, A-{u})
+
+        # NOTE the quality_delta depends on the choice of quality_function, and different
+        # quality requires keeping track of different node attributes.
         if is_directed:
 
             def quality_delta(nodes_to_add, community, resolution):
@@ -267,14 +272,34 @@ def leiden_partitions(
 
     elif quality_function == "modularity":
         if is_directed:
-            # not implemented yet
+            node_attributes = ["in_degree", "out_degree"]
+            # use nx.set_node_attribute(...) here
+
+            def quality_delta(nodes_to_add, community, resolution):
+                # computed using in_degree and out_degree
+                return
+
             raise QualityFunctionNotImplemented(quality_function)
         else:
+            node_attributes = ["degree"]
+
+            # use nx.set_node_attribute(...) here
+            def quality_function(nodes_to_add, community, resolution):
+                # computed using degree
+                return
+
             raise QualityFunctionNotImplemented(quality_function)
 
     elif quality_function == "barber_modularity":
+        node_attributes = ["red_degree", "blue_degree"]
+        # use nx.set_node_attribute(...) here
         if not nx.is_bipartite(G):
             raise nx.NetworkXError("not a bipartite graph")
+
+        def quality_function(nodes_to_add, community, resolution):
+            # computed using red_degree and blue_degree
+            return
+
         raise QualityFunctionNotImplemented(quality_function)
 
     else:
@@ -309,7 +334,7 @@ def leiden_partitions(
             graph, inner_partition_refined, resolution=resolution, weight="weight"
         )
 
-        graph = _gen_graph(graph, inner_partition_refined)
+        graph = _gen_graph(graph, inner_partition_refined, node_attributes)
 
         # the partition of the original underlying graph is read from
         # the node attribute 'nodes', which is set during _gen_graph(...)
@@ -552,34 +577,32 @@ def _merge_node_subset(
     return partition, node2com
 
 
-def _gen_graph(G, partition):
+def _gen_graph(G, partition, node_attributes):
     """
     Generate a new graph based on the partitions of a given graph
 
-    New node weight is the sum of existing node weights.
-
-    Edge weight between new nodes is the sum of edge weights
-    over the edges connecting pairs of communities.
+    node_attributes is a list of attributes that are required for the
+    given choice of quality function. When aggregating a community (set
+    of nodes) into a new node of the aggregated graph, the value for
+    each attribute is the sum of the constituent nodes.
     """
 
     H = G.__class__()
     node2com = {}
 
     for i, part in enumerate(partition):
-        new_size = 0
-        new_cum_in_degree = 0
-        new_cum_out_degree = 0
-        new_cum_degree = 0
+        agg_attribute_vals = {attribute: 0 for attribute in node_attributes}
 
         nodes = set()
 
         for node in part:
-            new_size += G.nodes[node].get("node_weight")
+            for node_attribute in node_attributes:
+                agg_attribute_vals[node_attribute] += G.nodes[node][node_attribute]
 
             node2com[node] = i
             nodes.update(G.nodes[node].get("nodes", {node}))
 
-        H.add_node(i, nodes=nodes, node_weight=new_size)
+        H.add_node(i, nodes=nodes, **agg_attribute_vals)
 
     for u, v, d in G.edges(data=True):
         uv_weight = d["weight"]
