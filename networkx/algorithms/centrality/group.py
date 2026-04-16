@@ -124,6 +124,17 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     if set_v - G.nodes:  # element(s) of C not in G
         raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are in C but not in G.")
 
+    if (
+        nx.is_directed(G)
+        and not nx.is_strongly_connected(G)
+        and any(len(group) > 1 for group in C)
+    ):
+        raise nx.NetworkXNotImplemented(
+            "group_betweenness_centrality is not implemented for "
+            "multi-node groups on directed graphs that are not "
+            "strongly connected."
+        )
+
     # pre-processing
     PB, sigma, D = _group_preprocessing(G, set_v, weight)
 
@@ -145,6 +156,12 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                     dvxy = 0
                     if not (
                         sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[v][y] == 0
+                    ) and (
+                        y in D[x]
+                        and v in D[x]
+                        and v in D[y]
+                        and x in D[v]
+                        and y in D[v]
                     ):
                         if D[x][v] == D[x][y] + D[y][v]:
                             dxyv = sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
@@ -177,10 +194,10 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                 for group_node1 in group:
                     for node in D[group_node1]:
                         if node != group_node1:
-                            if node in group:
-                                scale += 1
-                            else:
-                                scale += 2
+                            scale += 1
+                    for node in G:
+                        if node != group_node1 and group_node1 in D[node]:
+                            scale += 1
             GBC_group -= scale
 
         # normalized
@@ -395,10 +412,10 @@ def prominent_group(
             for group_node1 in max_group:
                 for node in D[group_node1]:
                     if node != group_node1:
-                        if node in max_group:
-                            scale += 1
-                        else:
-                            scale += 2
+                        scale += 1
+                for node in G:
+                    if node != group_node1 and group_node1 in D[node]:
+                        scale += 1
         max_GBC -= scale
 
     # normalized
@@ -480,6 +497,12 @@ def _heuristic(k, root, DF_tree, D, nodes, greedy):
                 root_node["sigma"][x][y] == 0
                 or root_node["sigma"][x][added_node] == 0
                 or root_node["sigma"][added_node][y] == 0
+            ) and (
+                y in D[x]
+                and added_node in D[x]
+                and added_node in D[y]
+                and x in D[added_node]
+                and y in D[added_node]
             ):
                 if D[x][added_node] == D[x][y] + D[y][added_node]:
                     dxyv = (
