@@ -9,7 +9,7 @@ import random
 from collections import deque
 
 import networkx as nx
-from networkx.algorithms.community.quality import constant_potts_model
+from networkx.algorithms.community.quality import constant_potts_model, modularity
 from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = ["leiden_communities", "leiden_partitions"]
@@ -192,7 +192,6 @@ def leiden_partitions(
         return
 
     is_directed = G.is_directed()
-
     if G.is_multigraph():
         # this is the same as how louvain handles multigraph inputs
         graph = _convert_multigraph(G, weight, is_directed)
@@ -235,7 +234,7 @@ def leiden_partitions(
         # NOTE the quality_delta depends on the choice of quality_function, and different
         # quality requires keeping track of different node attributes.
         if is_directed:
-
+            # Setup for directed constant potts model
             def quality_delta(nodes_to_add, community, resolution):
                 n_C = sum(
                     wt for u, wt in graph.nodes(data="node_weight") if u in community
@@ -255,7 +254,7 @@ def leiden_partitions(
                 )
                 return E_D_in + E_D_out - resolution * 2 * n_C * U_wt
         else:
-
+            # setup for undirected constant potts model
             def quality_delta(nodes_to_add, community, resolution):
                 n_C = sum(
                     wt for u, wt in graph.nodes(data="node_weight") if u in community
@@ -271,35 +270,119 @@ def leiden_partitions(
                 return E_D - resolution * n_C * U_wt
 
     elif quality_function == "modularity":
+        quality_function = modularity
         if is_directed:
+            # Setup for directed modularity
             node_attributes = ["in_degree", "out_degree"]
-            # use nx.set_node_attribute(...) here
+            in_degrees = graph.in_degree(weight="weight")
+            out_degrees = graph.out_degree(weight="weight")
+            m = sum(wt for u, wt in in_degrees) + sum(wt for u, wt in out_degrees)
+            nx.set_node_attributes(graph, dict(in_degrees), "in_degree")
+            nx.set_node_attributes(graph, dict(out_degrees), "out_degree")
 
             def quality_delta(nodes_to_add, community, resolution):
-                # computed using in_degree and out_degree
-                return
 
-            raise QualityFunctionNotImplemented(quality_function)
+                n_in = sum(
+                    wt for u, wt in graph.nodes(data="in_degree") if u in nodes_to_add
+                )
+                n_out = sum(
+                    wt for u, wt in graph.nodes(data="out_degree") if u in nodes_to_add
+                )
+                K_in = sum(
+                    wt for u, wt in graph.nodes(data="in_degree") if u in community
+                )
+                K_out = sum(
+                    wt for u, wt in graph.nodes(data="out_degree") if u in community
+                )
+                E_D_to = sum(
+                    wt
+                    for u, v, wt in graph.edges(nodes_to_add, data="weight")
+                    if v in community
+                )
+                E_D_from = sum(
+                    wt
+                    for u, v, wt in graph.edges(community, data="weight")
+                    if v in nodes_to_add
+                )
+                return (E_D_to + E_D_from) / m - 2 * (resolution / m**2) * (
+                    n_in * K_out + n_out * K_in
+                )
+
         else:
+            # Setup for undirected modularity
             node_attributes = ["degree"]
+            degrees = graph.degree(weight="weight")
+            m = sum(deg for u, deg in degrees)
+            # scaling all weights and weighted degree values by 1/m
+            # will mean we can eliminate the m terms from quality
+            # delta
+            nx.set_node_attributes(graph, dict(degrees), "degree")
 
-            # use nx.set_node_attribute(...) here
-            def quality_function(nodes_to_add, community, resolution):
-                # computed using degree
-                return
-
-            raise QualityFunctionNotImplemented(quality_function)
+            def quality_delta(nodes_to_add, community, resolution):
+                n_c = sum(
+                    wt for u, wt in graph.nodes(data="degree") if u in nodes_to_add
+                )
+                K_c = sum(wt for u, wt in graph.nodes(data="degree") if u in community)
+                E_D = sum(
+                    wt
+                    for u, v, wt in graph.edges(nodes_to_add, data="weight")
+                    if v in community
+                )
+                return E_D / m - 2 * (resolution / m**2) * n_c * K_c
 
     elif quality_function == "barber_modularity":
-        node_attributes = ["red_degree", "blue_degree"]
-        # use nx.set_node_attribute(...) here
-        if not nx.is_bipartite(G):
+        is_bipartite = nx.is_bipartite(G)
+        if not is_bipartite:
             raise nx.NetworkXError("not a bipartite graph")
+        if is_directed:
+            raise QualityFunctionNotImplemented(
+                "barber_modularity not implemented for DiGraph"
+            )
 
-        def quality_function(nodes_to_add, community, resolution):
-            # computed using red_degree and blue_degree
-            return
+        # Setup for undirected bipartite barber modularity (not yet fully implemented)
+        node_attributes = ["red_degree", "blue_degree"]
 
+        # expect the bipartite graph G to follow the NetworkX convention to have node
+        # a node attribe bipartite taking value 0 or 1
+        red_nodes = {u for u, c in G.nodes(data="bipartite") if c == 0}
+        blue_nodes = {u for u, c in G.nodes(data="bipartite") if c == 1}
+        if len(red_nodes.union(blue_nodes)) < len(G):
+            raise nx.NetworkXError(
+                "expecting node attribute 'bipartite', with values 0 or 1"
+            )
+
+        red_degree = {u: G.degree(u, weight="weight") for u in red_nodes}
+        for u in blue_nodes:
+            red_degree[u] = 0
+
+        blue_degree = {u: G.degree(u, weight="weight") for u in blue_nodes}
+        for u in red_nodes:
+            blue_degree[u] = 0
+
+        nx.set_node_attributes(graph, red_degree, "red_degree")
+        nx.set_node_attributes(graph, blue_degree, "blue_degree")
+
+        def quality_delta(nodes_to_add, community, resolution):
+            n_red = sum(
+                wt for u, wt in graph.nodes(data="red_degree") if u in nodes_to_add
+            )
+            n_blue = sum(
+                wt for u, wt in graph.nodes(data="blue_degree") if u in nodes_to_add
+            )
+            K_red = sum(
+                wt for u, wt in graph.nodes(data="red_degree") if u in community
+            )
+            K_blue = sum(
+                wt for u, wt in graph.nodes(data="blue_degree") if u in community
+            )
+            E_D = sum(
+                wt
+                for u, v, wt in graph.edges(nodes_to_add, data="weight")
+                if v in community
+            )
+            return E_D / m - (resolution / m**2) * (n_red * K_blue + n_blue * K_red)
+
+        # quality_function = barber_modularity # not implemented yet
         raise QualityFunctionNotImplemented(quality_function)
 
     else:
@@ -340,14 +423,6 @@ def leiden_partitions(
         # the node attribute 'nodes', which is set during _gen_graph(...)
         # Each node in graph represents a community in the original graph
         # and the node holds this information in the attribute 'nodes'.
-
-        # This is different to how louvain keeps track of the global
-        # partition, which is tracked through the individual moves in
-        # _one_level(...). For leiden, these changes would have to be
-        # tracked through both _move_nodes_fast and _refine_partition
-        # but _refine_partition resets to a singleton partition anyway
-        # so it wasn't clear to me: 1) how to do this; and, 2) whether
-        # it's worth doing this.
 
         partition = [set() for _ in graph]
         for i, u in enumerate(graph):
@@ -540,9 +615,6 @@ def _merge_node_subset(
                         quality_delta = q_B - q_A
 
                         if quality_delta > 0:
-                            # since moving u to the candidate community C
-                            # (at index i) we will add it to the list of
-                            # candidate communities
                             candidate_comm.append(i)
                             candidate_comm_q_delta.append(quality_delta)
 
