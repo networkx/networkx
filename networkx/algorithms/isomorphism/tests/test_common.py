@@ -882,17 +882,80 @@ def test_multiedge_colors_like_multiple_graphs(SG_ic, symmetry, Gclass):
     assert SG_ic(FG, SG, node_label=nm, edge_label=em, symmetry=symmetry) == mono_morph
 
 
+# test multidigraph without multiedges
+wikipedia_graph = nx.MultiDiGraph(
+    ["ag", "ah", "ai", "gb", "bh", "bj", "cg", "ci", "cj", "hd", "di", "dj"]
+)
+wikipedia_graph.name = "wikipedia_graph"
+
+
+@pytest.mark.parametrize("MDG", [cycle6_plus_3_2paths(), wikipedia_graph])
 @pytest.mark.parametrize("symmetry", [True, False])
 @pytest.mark.parametrize("SG_ic", is_SG_funcs + is_mono_funcs + is_iso_funcs)
-def test_match_multiedge_to_simple_graph(SG_ic, symmetry):
-    MDG = cycle6_plus_3_2paths()
+def test_match_multiedge_to_simple_graph(MDG, SG_ic, symmetry):
     DG = nx.DiGraph(MDG)
     MG = nx.MultiGraph(MDG)
     G = nx.Graph(MDG)
 
+    wiki_graph = "wikipedia_graph" == MDG.name
     mono_morph = "mono" in SG_ic.__name__
+    SG_morph = "SG" in SG_ic.__name__
 
-    assert SG_ic(MDG, DG, symmetry=symmetry) == mono_morph
-    assert SG_ic(MG, G, symmetry=symmetry) == mono_morph
-    assert not SG_ic(DG, MDG, symmetry=symmetry)  # should be "not SG_ic..."
-    assert not SG_ic(G, MG, symmetry=symmetry)  # should be "not SG_ic..."
+    # morphing between multi/simple graph types
+    assert SG_ic(MG, G, symmetry=symmetry) == (wiki_graph or mono_morph)
+    assert SG_ic(G, MG, symmetry=symmetry) == wiki_graph
+    assert SG_ic(MDG, DG, symmetry=symmetry) == (wiki_graph or mono_morph)
+    assert SG_ic(DG, MDG, symmetry=symmetry) == wiki_graph
+
+    # morphing between multi/simple graph types w/o multiedges
+    SMG = nx.MultiGraph(G)
+    assert SG_ic(SMG, G, symmetry=symmetry)
+    SMDG = nx.MultiDiGraph(DG)
+    assert SG_ic(SMDG, DG, symmetry=symmetry)
+
+
+@pytest.mark.parametrize("MDG", [cycle6_plus_3_2paths(), wikipedia_graph])
+@pytest.mark.parametrize("Gclass", graph_classes)
+@pytest.mark.parametrize("SG_ic", is_SG_funcs + is_mono_funcs + is_iso_funcs)
+@pytest.mark.parametrize("symmetry", [True, False])
+def test_subgraph_multiedge_to_simple_graph(Gclass, MDG, SG_ic, symmetry):
+    G = Gclass(MDG.edges())
+
+    wiki_graph = "wikipedia_graph" == MDG.name
+    mono_morph = "mono" in SG_ic.__name__
+    SG_or_mono_morph = mono_morph or ("SG" in SG_ic.__name__)
+    not_multi = not G.is_multigraph()
+
+    # create some simple graph types to compare with:
+    # - simpleG has single edge for each multiedge in G
+    # - pg is path graph (which appears inside both MDG graphs)
+    if not G.is_directed():
+        pg = nx.path_graph(5)
+        simpleG = nx.Graph(MDG.edges())
+    else:
+        pg = nx.path_graph(5, create_using=nx.DiGraph)
+        simpleG = nx.DiGraph(MDG.edges())
+    # PG is path graph with same graph type as G
+    PG = Gclass(pg.edges())
+
+    # test G vs simpleG
+    if wiki_graph:
+        assert SG_ic(G, simpleG, symmetry=symmetry)
+        assert SG_ic(simpleG, G, symmetry=symmetry)
+    else:
+        assert SG_ic(G, simpleG, symmetry=symmetry) == (not_multi or mono_morph)
+        assert SG_ic(simpleG, G, symmetry=symmetry) == not_multi
+
+    # find simple paths within G or simpleG
+    find_path = SG_or_mono_morph if wiki_graph else mono_morph
+    assert SG_ic(G, pg, symmetry=symmetry) == find_path
+    assert SG_ic(G, PG, symmetry=symmetry) == find_path
+
+    assert SG_ic(simpleG, pg, symmetry=symmetry) == find_path
+    assert SG_ic(simpleG, PG, symmetry=symmetry) == find_path
+
+    # Double all edges to ensure multiedges present for Multigraphs
+    PG.add_edges_from(pg.edges())
+    G.add_edges_from(MDG.edges())
+    assert SG_ic(G, PG, symmetry=symmetry) == find_path
+    assert SG_ic(simpleG, PG, symmetry=symmetry) == (find_path and not_multi)
