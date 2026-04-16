@@ -210,7 +210,7 @@ def leiden_partitions(
             graph.add_edges_from(G.edges())
             nx.set_edge_attributes(graph, 1, name="weight")
 
-    # The following setup stage depends on the choice of quality 
+    # The following setup stage depends on the choice of quality
     # function. In particular, this stage must set three things:
     # 1) set the function quality_function
     # 2) set the corresponding quality_delta function
@@ -223,7 +223,7 @@ def leiden_partitions(
     # the negative  -1 * quality_delta(U, C-U)
     # to compute the overall quality delta from moving node u from A to B we have
     # q_delta = quality_delta({u}, B) - quality_delta({u}, A-{u})
-    
+
     if quality_function == "cpm":
         # Setup for constant potts model
         node_attributes = ["node_weight"]
@@ -330,23 +330,23 @@ def leiden_partitions(
 
     elif quality_function == "barber_modularity":
         # Setup for undirected bipartite barber modularity (not yet fully implemented)
-        
+
         is_bipartite = nx.is_bipartite(G)
         if not is_bipartite:
             raise nx.NetworkXError("not a bipartite graph")
-        
+
         if is_directed:
             raise QualityFunctionNotImplemented(
                 "barber_modularity not implemented for DiGraph"
             )
 
         # quality_function = nx.bipartite.modularity # not implemented yet
-        
+
         node_attributes = ["red_degree", "blue_degree"]
 
         red_nodes = {u for u, c in G.nodes(data="bipartite") if c == 0}
         blue_nodes = {u for u, c in G.nodes(data="bipartite") if c == 1}
-        
+
         # expect the bipartite graph G to follow the NetworkX convention to have node
         # a node attribe bipartite taking value 0 or 1, so should check this using
         # something like the following:
@@ -730,4 +730,3 @@ class QualityFunctionNotImplemented(nx.NetworkXError):
     def __init__(self, quality_function):
         msg = f"leiden not implemented for {quality_function}"
         super().__init__(msg)
-
