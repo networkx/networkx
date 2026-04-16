@@ -210,29 +210,29 @@ def leiden_partitions(
             graph.add_edges_from(G.edges())
             nx.set_edge_attributes(graph, 1, name="weight")
 
+    # The following setup stage depends on the choice of quality 
+    # function. In particular, this stage must set three things:
+    # 1) set the function quality_function
+    # 2) set the corresponding quality_delta function
+    # 3) set the specific attributes required to compute the
+    #    quality_function and quality_delta
+
+    # the quality_delta function computes the partial quality delta contributed by
+    # adding nodes_to_add to community.
+    # Corresponding value from removing U from C is computed by taking
+    # the negative  -1 * quality_delta(U, C-U)
+    # to compute the overall quality delta from moving node u from A to B we have
+    # q_delta = quality_delta({u}, B) - quality_delta({u}, A-{u})
+    
     if quality_function == "cpm":
+        # Setup for constant potts model
         node_attributes = ["node_weight"]
         nx.set_node_attributes(graph, 1, name="node_weight")
 
-        # TODO constant_potts_model needs to be adapated to
-        # use a different formula depending on whether the graph
-        # is directed or not. Here we're using a temp placeholder function
-        # defined below _constant_potts_model which handles this.
-        # the code in quality.py needs to be changed, but this will
-        # break tests, so the function is defined locally in this file
         quality_function = functools.partial(
-            _constant_potts_model, node_weight="node_weight", weight="weight"
+            constant_potts_model, node_weight="node_weight", weight="weight"
         )
 
-        # the quality_delta function computes the partial quality delta contributed by
-        # adding nodes_to_add to community.
-        # Corresponding value from removing U from C is computed by taking
-        # the negative -1* quality_delta(U, C-U)
-        # to compute the overall quality delta from moving node u from A to B we have
-        # q_delta = quality_delta({u}, B) - quality_delta({u}, A-{u})
-
-        # NOTE the quality_delta depends on the choice of quality_function, and different
-        # quality requires keeping track of different node attributes.
         if is_directed:
             # Setup for directed constant potts model
             def quality_delta(nodes_to_add, community, resolution):
@@ -254,7 +254,7 @@ def leiden_partitions(
                 )
                 return E_D_in + E_D_out - resolution * 2 * n_C * U_wt
         else:
-            # setup for undirected constant potts model
+            # Setup for undirected constant potts model
             def quality_delta(nodes_to_add, community, resolution):
                 n_C = sum(
                     wt for u, wt in graph.nodes(data="node_weight") if u in community
@@ -270,6 +270,7 @@ def leiden_partitions(
                 return E_D - resolution * n_C * U_wt
 
     elif quality_function == "modularity":
+        # Setup for (unipartite) modularity
         quality_function = modularity
         if is_directed:
             # Setup for directed modularity
@@ -313,9 +314,6 @@ def leiden_partitions(
             node_attributes = ["degree"]
             degrees = graph.degree(weight="weight")
             m = sum(deg for u, deg in degrees)
-            # scaling all weights and weighted degree values by 1/m
-            # will mean we can eliminate the m terms from quality
-            # delta
             nx.set_node_attributes(graph, dict(degrees), "degree")
 
             def quality_delta(nodes_to_add, community, resolution):
@@ -331,25 +329,32 @@ def leiden_partitions(
                 return E_D / m - 2 * (resolution / m**2) * n_c * K_c
 
     elif quality_function == "barber_modularity":
+        # Setup for undirected bipartite barber modularity (not yet fully implemented)
+        
         is_bipartite = nx.is_bipartite(G)
         if not is_bipartite:
             raise nx.NetworkXError("not a bipartite graph")
+        
         if is_directed:
             raise QualityFunctionNotImplemented(
                 "barber_modularity not implemented for DiGraph"
             )
 
-        # Setup for undirected bipartite barber modularity (not yet fully implemented)
+        # quality_function = nx.bipartite.modularity # not implemented yet
+        
         node_attributes = ["red_degree", "blue_degree"]
 
-        # expect the bipartite graph G to follow the NetworkX convention to have node
-        # a node attribe bipartite taking value 0 or 1
         red_nodes = {u for u, c in G.nodes(data="bipartite") if c == 0}
         blue_nodes = {u for u, c in G.nodes(data="bipartite") if c == 1}
-        if len(red_nodes.union(blue_nodes)) < len(G):
-            raise nx.NetworkXError(
-                "expecting node attribute 'bipartite', with values 0 or 1"
-            )
+        
+        # expect the bipartite graph G to follow the NetworkX convention to have node
+        # a node attribe bipartite taking value 0 or 1, so should check this using
+        # something like the following:
+        #
+        # if len(red_nodes.union(blue_nodes)) < len(G):
+        #    raise nx.NetworkXError(
+        #         "expecting node attribute 'bipartite', with values 0 or 1"
+        #     )
 
         red_degree = {u: G.degree(u, weight="weight") for u in red_nodes}
         for u in blue_nodes:
@@ -382,7 +387,6 @@ def leiden_partitions(
             )
             return E_D / m - (resolution / m**2) * (n_red * K_blue + n_blue * K_red)
 
-        # quality_function = barber_modularity # not implemented yet
         raise QualityFunctionNotImplemented(quality_function)
 
     else:
@@ -727,37 +731,3 @@ class QualityFunctionNotImplemented(nx.NetworkXError):
         msg = f"leiden not implemented for {quality_function}"
         super().__init__(msg)
 
-
-def _constant_potts_model(
-    G,
-    communities,
-    weight,
-    node_weight,
-    resolution,
-):
-
-    is_directed = G.is_directed()
-    if is_directed:
-
-        def community_contribution(community):
-            comm = set(community)
-            E_c = sum(
-                wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm
-            )
-
-            n_c = sum(G.nodes[node].get(node_weight, 1) for node in community)
-
-            return E_c - resolution * (n_c**2)
-    else:
-
-        def community_contribution(community):
-            comm = set(community)
-            E_c = sum(
-                wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm
-            )
-
-            n_c = sum(G.nodes[node].get(node_weight, 1) for node in community)
-
-            return E_c - resolution * (n_c**2) / 2
-
-    return sum(community_contribution(c) for c in communities)
