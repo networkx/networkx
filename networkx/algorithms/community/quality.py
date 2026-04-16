@@ -282,6 +282,7 @@ def _cpm_delta_partial_eval_remove(
 
     if G.is_directed():
         dir_factor = 2
+
     else:
         dir_factor = 1
 
@@ -292,6 +293,9 @@ def _cpm_delta_partial_eval_remove(
     u_wt = G.nodes[node][node_weight]
 
     E_diff = sum(wt for _, v, wt in G.edges({node}, data=weight) if v in A_prime)
+
+    if G.is_directed():
+        E_diff += sum(wt for _, v, wt in G.edges(A_prime, data=weight) if v in {node})
 
     return resolution * dir_factor * n_A_prime * u_wt - E_diff
 
@@ -308,8 +312,10 @@ def _cpm_delta_partial_eval_add(
     """
     if G.is_directed():
         dir_factor = 2
+
     else:
         dir_factor = 1
+
     n_B = sum(wt for u, wt in G.nodes(data=node_weight) if u in community)
 
     # could optimise by passing u_wt directly as a parameter rather than
@@ -317,6 +323,9 @@ def _cpm_delta_partial_eval_add(
     u_wt = G.nodes[node][node_weight]
 
     E_D = sum(wt for _, v, wt in G.edges({node}, data=weight) if v in community)
+    if G.is_directed():
+        E_D += sum(wt for _, v, wt in G.edges(community, data=weight) if v in {node})
+
     return E_D - resolution * dir_factor * n_B * u_wt
 
 

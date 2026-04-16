@@ -202,6 +202,35 @@ def test_cpm_add_remove_total_cost():
     assert qA + qB == q_delta
 
 
+def test_cpm_add_remove_total_cost_directed():
+    G = nx.barbell_graph(3, 0)
+    G = nx.to_directed(G)
+
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    nx.set_node_attributes(G, 1, "node_weight")
+    nx.set_edge_attributes(G, 1, "weight")
+    r = 0.5
+
+    u = 0
+    A = partition[0]
+    B = partition[1]
+    qA = _cpm_delta_partial_eval_remove(G, node=u, community=A, resolution=r)
+    qB = _cpm_delta_partial_eval_add(G, node=u, community=B, resolution=r)
+
+    q_after = constant_potts_model(
+        G,
+        [A - {u}, B.union({u})],
+        weight="weight",
+        node_weight="node_weight",
+        resolution=r,
+    )
+    q_before = constant_potts_model(
+        G, [A, B], weight="weight", node_weight="node_weight", resolution=r
+    )
+    q_delta = q_after - q_before
+    assert qA + qB == q_delta
+
+
 def test_cpm_add_remove_total_cost_weights():
     G = nx.barbell_graph(3, 0)
     partition = [{0, 1, 2}, {3, 4, 5}]
