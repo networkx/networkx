@@ -639,9 +639,9 @@ def generate_gml(G, stringizer=None):
         strings. If it cannot convert a value into a string, it should raise a
         `ValueError` to indicate that. Default value: None.
 
-    Returns
-    -------
-    lines: generator of strings
+    Yields
+    ------
+    str
         Lines of GML data. Newlines are not appended.
 
     Raises
