@@ -12,7 +12,7 @@ __all__ = [
     "radius",
     "periphery",
     "center",
-    "centroid"
+    "centroid",
     "barycenter",
     "resistance_distance",
     "kemeny_constant",
