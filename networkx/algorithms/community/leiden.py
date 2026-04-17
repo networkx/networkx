@@ -230,12 +230,15 @@ def leiden_partitions(
         nx.set_node_attributes(graph, 1, name="node_weight")
 
         quality_function = functools.partial(
-            constant_potts_model, node_weight="node_weight", weight="weight"
+            constant_potts_model,
+            resolution=resolution,
+            node_weight="node_weight",
+            weight="weight",
         )
 
         if is_directed:
             # Setup for directed constant potts model
-            def quality_delta(nodes_to_add, community, resolution):
+            def quality_delta(nodes_to_add, community):
                 n_C = sum(
                     wt for u, wt in graph.nodes(data="node_weight") if u in community
                 )
@@ -255,7 +258,7 @@ def leiden_partitions(
                 return E_D_in + E_D_out - resolution * 2 * n_C * U_wt
         else:
             # Setup for undirected constant potts model
-            def quality_delta(nodes_to_add, community, resolution):
+            def quality_delta(nodes_to_add, community):
                 n_C = sum(
                     wt for u, wt in graph.nodes(data="node_weight") if u in community
                 )
@@ -271,7 +274,7 @@ def leiden_partitions(
 
     elif quality_function == "modularity":
         # Setup for (unipartite) modularity
-        quality_function = modularity
+        quality_function = functools.partial(modularity, resolution=resolution)
         if is_directed:
             # Setup for directed modularity
             node_attributes = ["in_degree", "out_degree"]
@@ -281,7 +284,7 @@ def leiden_partitions(
             nx.set_node_attributes(graph, dict(in_degrees), "in_degree")
             nx.set_node_attributes(graph, dict(out_degrees), "out_degree")
 
-            def quality_delta(nodes_to_add, community, resolution):
+            def quality_delta(nodes_to_add, community):
 
                 n_in = sum(
                     wt for u, wt in graph.nodes(data="in_degree") if u in nodes_to_add
@@ -316,7 +319,7 @@ def leiden_partitions(
             m = sum(deg for u, deg in degrees)
             nx.set_node_attributes(graph, dict(degrees), "degree")
 
-            def quality_delta(nodes_to_add, community, resolution):
+            def quality_delta(nodes_to_add, community):
                 n_c = sum(
                     wt for u, wt in graph.nodes(data="degree") if u in nodes_to_add
                 )
@@ -367,7 +370,7 @@ def leiden_partitions(
         nx.set_node_attributes(graph, red_degree, "red_degree")
         nx.set_node_attributes(graph, blue_degree, "blue_degree")
 
-        def quality_delta(nodes_to_add, community, resolution):
+        def quality_delta(nodes_to_add, community):
             n_red = sum(
                 wt for u, wt in graph.nodes(data="red_degree") if u in nodes_to_add
             )
@@ -393,7 +396,7 @@ def leiden_partitions(
         raise QualityFunctionNotImplemented(quality_function)
 
     # The setup phase has ended, the main algorithm now begins.
-    quality = quality_function(graph, partition, resolution=resolution, weight="weight")
+    quality = quality_function(graph, partition)
 
     improvement_made = True
 
@@ -404,22 +407,14 @@ def leiden_partitions(
             graph,
             inner_partition,
             quality_delta,
-            resolution,
             seed=seed,
         )
 
         inner_partition_refined = _refine_partition(
-            graph,
-            inner_partition,
-            resolution,
-            quality_delta,
-            seed,
-            theta,
+            graph, inner_partition, quality_delta, seed=seed, theta=theta
         )
 
-        new_quality = quality_function(
-            graph, inner_partition_refined, resolution=resolution, weight="weight"
-        )
+        new_quality = quality_function(graph, inner_partition_refined)
 
         graph = _gen_graph(graph, inner_partition_refined, node_attributes)
 
@@ -446,7 +441,6 @@ def _move_nodes_fast(
     G,
     seed_partition,
     quality_delta_func,
-    resolution,
     seed=None,
 ):
     inner_partition = [{u} for u in G]
@@ -481,7 +475,7 @@ def _move_nodes_fast(
 
         # this value is the overall change in quality that occurs
         # when node u is removed from its current community
-        q_A = quality_delta_func({u}, inner_partition[old_com] - {u}, resolution)
+        q_A = quality_delta_func({u}, inner_partition[old_com] - {u})
 
         # for each node in the queue, we measure the change in quality
         # from moving that node to each other community, keeping track of
@@ -490,7 +484,7 @@ def _move_nodes_fast(
             if new_com != old_com:
                 # this quantity is the overall change in quality that
                 # occurs wen the node u is added the the new community
-                q_B = quality_delta_func({u}, inner_partition[new_com], resolution)
+                q_B = quality_delta_func({u}, inner_partition[new_com])
 
                 # the overall change in quality therefore from moving
                 # node u from old_com to new_com is as follows
@@ -521,7 +515,6 @@ def _move_nodes_fast(
 def _refine_partition(
     G,
     partition,
-    resolution,
     quality_delta_func,
     seed,
     theta,
@@ -531,12 +524,11 @@ def _refine_partition(
     inner_partition_refined = [{u} for u in G]
 
     for C in partition:
-        inner_partition_refined, node2com = _merge_node_subset(
+        inner_partition_refined = _merge_node_subset(
             G,
             inner_partition_refined,
             node2com,
             C,
-            resolution,
             quality_delta_func,
             seed,
             theta,
@@ -551,7 +543,6 @@ def _merge_node_subset(
     partition,
     node2com,
     S,
-    resolution,
     quality_delta_func,
     seed,
     theta,
@@ -561,7 +552,7 @@ def _merge_node_subset(
     # are identified and added to the set R.
     R = set()
     for u in S:
-        if quality_delta_func({u}, S - {u}, resolution) > 0:
+        if quality_delta_func({u}, S - {u}) > 0:
             R.add(u)
 
     # TODO this section of the code has many nested if statements which
@@ -592,7 +583,7 @@ def _merge_node_subset(
 
             # this is the change in quality that occurs from removing node
             # u from its current community
-            q_A = quality_delta_func({u}, partition[comm] - {u}, resolution)
+            q_A = quality_delta_func({u}, partition[comm] - {u})
             for i, C in enumerate(partition):
                 if comm == i:
                     # we only want to consider moving u to a different
@@ -606,10 +597,10 @@ def _merge_node_subset(
 
                     # this application of quality_delta_func relates to the
                     # definition of T in line :37 from pseudocode in paper
-                    if quality_delta_func(C, S - C, resolution) > 0:
+                    if quality_delta_func(C, S - C) > 0:
                         # the change in quality the occurs from moving node u
                         # into the new community
-                        q_B = quality_delta_func({u}, partition[i], resolution)
+                        q_B = quality_delta_func({u}, partition[i])
 
                         # the overall quality delta is therefore the sum
                         # of the change in quality from removing u from its
@@ -650,7 +641,7 @@ def _merge_node_subset(
                 partition[new_comm].add(u)
                 node2com[u] = new_comm
 
-    return partition, node2com
+    return partition  # , node2com
 
 
 def _gen_graph(G, partition, node_attributes):
