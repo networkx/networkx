@@ -425,9 +425,6 @@ def leiden_partitions(
             graph, inner_partition, quality_delta, seed=seed, theta=theta
         )
 
-        assert _is_valid_refinement(inner_partition, inner_partition_refined), (
-            f"{inner_partition}, {inner_partition_refined}"
-        )
         new_quality = quality_function(graph, inner_partition_refined)
 
         graph, node2part = _gen_graph(graph, inner_partition_refined, node_attributes)
@@ -456,7 +453,7 @@ def _move_nodes_fast(
     seed_partition,
     node2part,
     quality_delta_func,
-    seed=None,
+    seed,
 ):
 
     # Unlike louvain, instead of beginning each iteration with the singleton
@@ -541,12 +538,12 @@ def _refine_partition(
 ):
 
     node2com = {u: i for i, u in enumerate(G)}
-    inner_partition_refined = [{u} for u in G]
+    P_refined = [{u} for u in G]
 
     for C in partition:
-        inner_partition_refined = _merge_node_subset(
+        P_refined = _merge_node_subset(
             G,
-            inner_partition_refined,
+            P_refined,
             node2com,
             C,
             quality_delta_func,
@@ -554,13 +551,12 @@ def _refine_partition(
             theta,
         )
 
-    inner_partition_refined = list(filter(None, inner_partition_refined))
-    return inner_partition_refined
+    return list(filter(None, P_refined))
 
 
 def _merge_node_subset(
     G,
-    partition,
+    P_refined,
     node2com,
     S,
     quality_delta_func,
@@ -570,98 +566,96 @@ def _merge_node_subset(
 
     # first, the sufficiently well-connected nodes within S
     # are identified and added to the set R.
-    R = set()
-    for u in S:
-        if quality_delta_func({u}, S - {u}) > 0:
-            R.add(u)
+    R = {u for u in S if quality_delta_func({u}, S - {u}) > 0}
 
     # TODO this section of the code has many nested if statements which
     # makes me think there's probably a more elegant solution. However,
     # this approach does closely follow the pseudocode in the paper [1]
     for u in R:
         comm = node2com[u]
-        if partition[comm] == {u}:
-            # if the community that u belongs to is the singleton {u}, then
-            # we will proceed to merge it probabilistically with another
-            # community within S.
+        if P_refined[comm] != {u}:
+            continue
+        # if the community that u belongs to is the singleton {u}, then
+        # we will proceed to merge it probabilistically with another
+        # community within S.
 
-            # first we identify candidate communities to merge u into
-            # and then the final community is randomly selected from these
-            # according to a probability distribution which is partly
-            # defined by the relative quality_delta (bigger increase in
-            # quality makes choosing that community more likely, but
-            # the algorithm does not greedily choose the greatest increase)
+        # first we identify candidate communities to merge u into
+        # and then the final community is randomly selected from these
+        # according to a probability distribution which is partly
+        # defined by the relative quality_delta (bigger increase in
+        # quality makes choosing that community more likely, but
+        # the algorithm does not greedily choose the greatest increase)
 
-            # we therefore track both the communities and their respective
-            # probabilities in order to define the probabilty distribution
-            # to select the community that u will be moved into
+        # we therefore track both the communities and their respective
+        # probabilities in order to define the probabilty distribution
+        # to select the community that u will be moved into
 
-            # if u is not in a singleton partition then we move on to the
-            # next node.
-            candidate_comm = []
-            candidate_comm_q_delta = []
+        # if u is not in a singleton partition then we move on to the
+        # next node.
+        candidate_comm = []
+        candidate_comm_q_delta = []
 
-            # this is the change in quality that occurs from removing node
-            # u from its current community
-            q_A = quality_delta_func({u}, partition[comm] - {u})
-            for i, C in enumerate(partition):
-                if comm == i:
-                    # we only want to consider moving u to a different
-                    # community, not its current community.
-                    continue
+        # this is the change in quality that occurs from removing node
+        # u from its current community
+        q_A = quality_delta_func({u}, P_refined[comm] - {u})
+        for i, C in enumerate(P_refined):
+            if comm == i:
+                # we only want to consider moving u to a different
+                # community, not its current community.
+                continue
 
-                elif C.issubset(S):
-                    # We only consider merging u into a community that
-                    # is within S. This is what is means for the resulting
-                    # partition to be a refinement of S.
+            elif C.issubset(S):
+                # We only consider merging u into a community that
+                # is within S. This is what is means for the resulting
+                # partition to be a refinement of S.
 
-                    # this application of quality_delta_func relates to the
-                    # definition of T in line :37 from pseudocode in paper
-                    if quality_delta_func(C, S - C) > 0:
-                        # the change in quality the occurs from moving node u
-                        # into the new community
-                        q_B = quality_delta_func({u}, partition[i])
+                # this application of quality_delta_func relates to the
+                # definition of T in line :37 from pseudocode in paper
+                if quality_delta_func(C, S - C) > 0:
+                    # the change in quality the occurs from moving node u
+                    # into the new community
+                    q_B = quality_delta_func({u}, P_refined[i])
 
-                        # the overall quality delta is therefore the sum
-                        # of the change in quality from removing u from its
-                        # starting community, and the change of quality
-                        # from adding it to the new community
+                    # the overall quality delta is therefore the sum
+                    # of the change in quality from removing u from its
+                    # starting community, and the change of quality
+                    # from adding it to the new community
 
-                        quality_delta = q_B - q_A
+                    quality_delta = q_B - q_A
 
-                        if quality_delta > 0:
-                            candidate_comm.append(i)
-                            candidate_comm_q_delta.append(quality_delta)
+                    if quality_delta > 0:
+                        candidate_comm.append(i)
+                        candidate_comm_q_delta.append(quality_delta)
 
-            # if there are candidate communities identified then
-            # one is selected at random, and u is added to that
-            # community
-            if candidate_comm:
-                # the probability distribution that the new community it drawn
-                # from is defined in terms of the quality delta associated
-                # with the move to each community.
+        # if there are candidate communities identified then
+        # one is selected at random, and u is added to that
+        # community
+        if candidate_comm:
+            # the probability distribution that the new community it drawn
+            # from is defined in terms of the quality delta associated
+            # with the move to each community.
 
-                # If moving u to community C results in a quality delta QC,
-                # the relative frequency withi which C will be chosen is
-                # proportional to
-                #
-                #       math.exp(QC/theta)
-                #
-                # Since computing large exponentials can cause overflow
-                # errors, we use an equivalent form that computes normalised
-                # values with the same ratios
-                max_delta = max(candidate_comm_q_delta)
-                candidate_comm_prob = [
-                    math.exp((x - max_delta) / theta) for x in candidate_comm_q_delta
-                ]
+            # If moving u to community C results in a quality delta QC,
+            # the relative frequency withi which C will be chosen is
+            # proportional to
+            #
+            #       math.exp(QC/theta)
+            #
+            # Since computing large exponentials can cause overflow
+            # errors, we use an equivalent form that computes normalised
+            # values with the same ratios
+            max_delta = max(candidate_comm_q_delta)
+            candidate_comm_prob = [
+                math.exp((x - max_delta) / theta) for x in candidate_comm_q_delta
+            ]
 
-                new_comm = seed.choices(candidate_comm, weights=candidate_comm_prob)[0]
+            new_comm = seed.choices(candidate_comm, weights=candidate_comm_prob)[0]
 
-                partition[comm].remove(u)
-                partition[new_comm].add(u)
-                node2com[u] = new_comm
+            P_refined[comm].remove(u)
+            P_refined[new_comm].add(u)
+            node2com[u] = new_comm
 
-    return partition
+    return P_refined
 
 
 def _gen_graph(G, partition, node_attributes):
