@@ -287,6 +287,8 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         if hasattr(self.NODE_OK, "length"):
             return self.NODE_OK.length
         if hasattr(self.NODE_OK, "nodes"):
+            if hasattr(self.NODE_OK.nodes, "keys"):
+                return len(self.NODE_OK.nodes.keys() & self._atlas.keys())
             return len(self.NODE_OK.nodes & self._atlas.keys())
         return sum(1 for n in self._atlas if self.NODE_OK(n))
 
@@ -336,6 +338,8 @@ class FilterAdjacency(Mapping):  # edgedict
         if hasattr(self.NODE_OK, "length"):
             return self.NODE_OK.length
         if hasattr(self.NODE_OK, "nodes"):
+            if hasattr(self.NODE_OK.nodes, "keys"):
+                return len(self.NODE_OK.nodes.keys() & self._atlas.keys())
             return len(self.NODE_OK.nodes & self._atlas.keys())
         return sum(1 for n in self._atlas if self.NODE_OK(n))
 
