@@ -185,8 +185,7 @@ def leiden_partitions(
     """
 
     partition = [{u} for u in G]
-    inner_partition = None
-    node2part = None
+    refinement_mapping = None
 
     if nx.is_empty(G):
         yield partition
@@ -415,19 +414,18 @@ def leiden_partitions(
         # networkx implementation of the louvain algorithm
         inner_partition = _move_nodes_fast(
             graph,
-            inner_partition,
-            node2part,
+            refinement_mapping,
             quality_delta,
             seed=seed,
         )
 
-        inner_partition_refined = _refine_partition(
+        P_refined = _refine_partition(
             graph, inner_partition, quality_delta, seed=seed, theta=theta
         )
 
-        new_quality = quality_function(graph, inner_partition_refined)
-
-        graph, node2part = _gen_graph(graph, inner_partition_refined, node_attributes)
+        P_refined_flat = [comm for P_ref in P_refined for comm in P_ref]
+        new_quality = quality_function(graph, P_refined_flat)
+        graph, refinement_mapping = _gen_graph(graph, P_refined, node_attributes)
 
         # the partition of the original underlying graph is read from
         # the node attribute 'nodes', which is set during _gen_graph(...)
@@ -450,8 +448,7 @@ def leiden_partitions(
 
 def _move_nodes_fast(
     G,
-    seed_partition,
-    node2part,
+    refinement_mapping,
     quality_delta_func,
     seed,
 ):
@@ -462,19 +459,12 @@ def _move_nodes_fast(
     # This section of code initilises nodes into those communities.
     # if no partition is passed from the previous step (i.e. during the
     # first iteration) then this is skipped and the singleton partition is used.
-    if node2part:
-        inner_partition = [set() for _ in seed_partition]
+    if refinement_mapping:
+        inner_partition = [set() for _ in range(len(refinement_mapping.values()))]
         node2com = {}
-        for u in G:
-            prev_part = node2part[u]
-            for i, C in enumerate(seed_partition):
-                if prev_part.issubset(C):
-                    node2com[u] = i
-                    inner_partition[i].add(u)
-                    break
-            else:
-                assert False
-
+        for i, u in enumerate(G):
+            inner_partition[refinement_mapping[i]].add(u)
+            node2com[u] = refinement_mapping[i]
     else:
         inner_partition = [{u} for u in G]
         node2com = {u: i for i, u in enumerate(G)}
@@ -537,10 +527,12 @@ def _refine_partition(
     theta,
 ):
 
-    node2com = {u: i for i, u in enumerate(G)}
-    P_refined = [{u} for u in G]
+    refined_communities = []
 
     for C in partition:
+        node2com = {u: i for i, u in enumerate(C)}
+        P_refined = [{u} for u in C]
+
         P_refined = _merge_node_subset(
             G,
             P_refined,
@@ -550,8 +542,10 @@ def _refine_partition(
             seed,
             theta,
         )
+        P_refined = list(filter(None, P_refined))
+        refined_communities.append(P_refined)
 
-    return list(filter(None, P_refined))
+    return refined_communities
 
 
 def _merge_node_subset(
@@ -604,28 +598,27 @@ def _merge_node_subset(
                 # community, not its current community.
                 continue
 
-            elif C.issubset(S):
-                # We only consider merging u into a community that
-                # is within S. This is what is means for the resulting
-                # partition to be a refinement of S.
+            # We only consider merging u into a community that
+            # is within S. This is what is means for the resulting
+            # partition to be a refinement of S.
 
-                # this application of quality_delta_func relates to the
-                # definition of T in line :37 from pseudocode in paper
-                if quality_delta_func(C, S - C) > 0:
-                    # the change in quality the occurs from moving node u
-                    # into the new community
-                    q_B = quality_delta_func({u}, P_refined[i])
+            # this application of quality_delta_func relates to the
+            # definition of T in line :37 from pseudocode in paper
+            if quality_delta_func(C, S - C) > 0:
+                # the change in quality the occurs from moving node u
+                # into the new community
+                q_B = quality_delta_func({u}, P_refined[i])
 
-                    # the overall quality delta is therefore the sum
-                    # of the change in quality from removing u from its
-                    # starting community, and the change of quality
-                    # from adding it to the new community
+                # the overall quality delta is therefore the sum
+                # of the change in quality from removing u from its
+                # starting community, and the change of quality
+                # from adding it to the new community
 
-                    quality_delta = q_B - q_A
+                quality_delta = q_B - q_A
 
-                    if quality_delta > 0:
-                        candidate_comm.append(i)
-                        candidate_comm_q_delta.append(quality_delta)
+                if quality_delta > 0:
+                    candidate_comm.append(i)
+                    candidate_comm_q_delta.append(quality_delta)
 
         # if there are candidate communities identified then
         # one is selected at random, and u is added to that
@@ -658,7 +651,7 @@ def _merge_node_subset(
     return P_refined
 
 
-def _gen_graph(G, partition, node_attributes):
+def _gen_graph(G, partition_list, node_attributes):
     """
     Generate a new graph based on the partitions of a given graph
 
@@ -671,21 +664,26 @@ def _gen_graph(G, partition, node_attributes):
     H = G.__class__()
     node2com = {}
 
-    node2part = {}
-    for i, part in enumerate(partition):
-        node2part[i] = part
-        agg_attribute_vals = {attribute: 0 for attribute in node_attributes}
+    refinement_mapping = {}
+    community_index = 0
+    for j, part in enumerate(partition_list):
+        for refined_part in part:
+            refinement_mapping[community_index] = j
 
-        nodes = set()
+            agg_attribute_vals = {attribute: 0 for attribute in node_attributes}
 
-        for node in part:
-            for node_attribute in node_attributes:
-                agg_attribute_vals[node_attribute] += G.nodes[node][node_attribute]
+            nodes = set()
 
-            node2com[node] = i
-            nodes.update(G.nodes[node].get("nodes", {node}))
+            for node in refined_part:
+                for node_attribute in node_attributes:
+                    agg_attribute_vals[node_attribute] += G.nodes[node][node_attribute]
 
-        H.add_node(i, nodes=nodes, **agg_attribute_vals)
+                node2com[node] = community_index
+                nodes.update(G.nodes[node].get("nodes", {node}))
+
+                H.add_node(community_index, nodes=nodes, **agg_attribute_vals)
+
+            community_index += 1
 
     for u, v, d in G.edges(data=True):
         uv_weight = d["weight"]
@@ -697,7 +695,7 @@ def _gen_graph(G, partition, node_attributes):
             else:
                 H.add_edge(com_u, com_v, weight=uv_weight)
 
-    return H, node2part
+    return H, refinement_mapping
 
 
 def _convert_multigraph(G, weight, is_directed):
