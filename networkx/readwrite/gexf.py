@@ -119,11 +119,15 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     Version of GEFX File Format (see http://gexf.net/schema.html)
     Supported values: "1.1draft", "1.2draft"
 
+    Yields
+    ------
+    str
+        Lines representing the graph in GEXF format
+
     Raises
     ------
     ValueError
         If an attribute has mixed typed values across nodes or edges.
-
 
     Examples
     --------
