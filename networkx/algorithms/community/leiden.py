@@ -562,9 +562,6 @@ def _merge_node_subset(
     # are identified and added to the set R.
     R = {u for u in S if quality_delta_func({u}, S - {u}) > 0}
 
-    # TODO this section of the code has many nested if statements which
-    # makes me think there's probably a more elegant solution. However,
-    # this approach does closely follow the pseudocode in the paper [1]
     for u in R:
         comm = node2com[u]
         if P_refined[comm] != {u}:
