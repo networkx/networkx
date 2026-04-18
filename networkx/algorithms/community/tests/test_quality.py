@@ -84,7 +84,7 @@ def test_cpm():
     )
     # compare cpm against the value computed by hand using the
     # formula stated in the definition of constant_potts_model
-    assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
+    assert 3 - (gamma * 3**2) / 2 + 3 - (gamma * 3**2) / 2 == cpm
 
     partition = [{0, 1, 2}, {3, 4, 5}]
     gamma = 1
@@ -93,7 +93,7 @@ def test_cpm():
     )
     # compare cpm against the value computed by hand using the
     # formula stated in the definition of constant_potts_model
-    assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
+    assert 3 - (gamma * 3**2) / 2 + 3 - (gamma * 3**2) / 2 == cpm
 
     partition = [{i} for i in G]
     gamma = 1
@@ -102,7 +102,7 @@ def test_cpm():
     )
     # compare cpm against the value computed by hand using the
     # formula stated in the definition of constant_potts_model
-    assert -6 * gamma == cpm
+    assert -6 * gamma / 2 == cpm
 
     G = nx.barbell_graph(3, 0)
     partition = [{0, 1, 2}, {3, 4, 5}]
@@ -127,13 +127,13 @@ def test_cpm():
     )
     # compare cpm against the value computed by hand using the
     # formula stated in the definition of constant_potts_model
-    assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
+    assert 3 - (gamma * 3**2) / 2 + 3 - (gamma * 3**2) / 2 == cpm
     cpm = constant_potts_model(
         G, partition, weight="bar", node_weight="foo", resolution=gamma
     )
     # compare cpm against the value computed by hand using the
     # formula stated in the definition of constant_potts_model
-    assert (6 - gamma * 9**2) + (6 - gamma * 20**2) == cpm
+    assert 6 - (gamma * 9**2) / 2 + 6 - (gamma * 20**2) / 2 == cpm
 
     gamma = 0.2
     cpm = constant_potts_model(
@@ -141,14 +141,14 @@ def test_cpm():
     )
     # compare cpm against the value computed by hand using the
     # formula stated in the definition of constant_potts_model
-    assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
+    assert 3 - (gamma * 3**2) / 2 + 3 - (gamma * 3**2) / 2 - cpm < 0.000000000001
 
     cpm = constant_potts_model(
         G, partition, weight="bar", node_weight="foo", resolution=gamma
     )
     # compare cpm against the value computed by hand using the
     # formula stated in the definition of constant_potts_model
-    assert (6 - gamma * 9**2) + (6 - gamma * 20**2) == cpm
+    assert 6 - (gamma * 9**2) / 2 + 6 - (gamma * 20**2) / 2 == cpm
 
     G = nx.barbell_graph(3, 0)
     partition = [{0, 1, 2}, {3, 4, 5}]
@@ -172,11 +172,40 @@ def test_cpm():
     )
     # compare cpm against the value computed by hand using the
     # formula stated in the definition of constant_potts_model
-    assert (6 - gamma * 9**2) + (6 - gamma * 20**2) == cpm
+    assert 6 - (gamma * 9**2) / 2 + 6 - (gamma * 20**2) / 2 == cpm
 
 
 def test_cpm_add_remove_total_cost():
     G = nx.barbell_graph(3, 0)
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    nx.set_node_attributes(G, 1, "node_weight")
+    nx.set_edge_attributes(G, 1, "weight")
+    r = 0.5
+
+    u = 0
+    A = partition[0]
+    B = partition[1]
+    qA = _cpm_delta_partial_eval_remove(G, node=u, community=A, resolution=r)
+    qB = _cpm_delta_partial_eval_add(G, node=u, community=B, resolution=r)
+
+    q_after = constant_potts_model(
+        G,
+        [A - {u}, B.union({u})],
+        weight="weight",
+        node_weight="node_weight",
+        resolution=r,
+    )
+    q_before = constant_potts_model(
+        G, [A, B], weight="weight", node_weight="node_weight", resolution=r
+    )
+    q_delta = q_after - q_before
+    assert qA + qB == q_delta
+
+
+def test_cpm_add_remove_total_cost_directed():
+    G = nx.barbell_graph(3, 0)
+    G = nx.to_directed(G)
+
     partition = [{0, 1, 2}, {3, 4, 5}]
     nx.set_node_attributes(G, 1, "node_weight")
     nx.set_edge_attributes(G, 1, "weight")
