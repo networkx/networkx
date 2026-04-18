@@ -371,7 +371,7 @@ def leiden_partitions(
         #     )
 
         degrees = graph.degree(weight="weight")
-        m = sum(deg for u, deg in degrees)/2
+        m = sum(deg for u, deg in degrees) / 2
 
         red_degree = {u: G.degree(u, weight="weight") / m for u in red_nodes}
         for u in blue_nodes:
@@ -405,30 +405,37 @@ def leiden_partitions(
         raise QualityFunctionNotImplemented(quality_function)
 
     # The setup phase has ended, the main algorithm now begins.
-    quality = quality_function(graph, partition)
+    Q = quality_function(graph, partition)
 
     improvement_made = True
 
     while improvement_made:
         # _move_nodes_fast plays the same role as _one_level in the
         # networkx implementation of the louvain algorithm
-        inner_partition = _move_nodes_fast(
+        # when moving nodes to find the greatest increase in quality,
+
+        # leiden initialises nodes into communities based on the
+        # unrefined partition of the previous stage. The dict
+        # refinement_mapping specifies how these initial communities
+        # are to be set
+        P = _move_nodes_fast(
             graph,
             refinement_mapping,
             quality_delta,
             seed=seed,
         )
 
-        P_refined = _refine_partition(
-            graph, inner_partition, quality_delta, seed=seed, theta=theta
-        )
+        P_refined = _refine_partition(graph, P, quality_delta, seed=seed, theta=theta)
 
         P_refined_flat = [comm for P_ref in P_refined for comm in P_ref]
-        new_quality = quality_function(graph, P_refined_flat)
-        graph, refinement_mapping = _gen_graph(graph, P_refined, node_attributes)
+        Q_new = quality_function(graph, P_refined_flat)
+
+        graph, refinement_mapping = _create_aggregate_graph(
+            graph, P_refined, node_attributes
+        )
 
         # the partition of the original underlying graph is read from
-        # the node attribute 'nodes', which is set during _gen_graph(...)
+        # the node attribute 'nodes', which is set during _create_aggregate_graph(...)
         # Each node in graph represents a community in the original graph
         # and the node holds this information in the attribute 'nodes'.
 
@@ -440,8 +447,8 @@ def leiden_partitions(
 
         # We stop once the overall change in quality between iterations is
         # close to zero.
-        improvement_made = (new_quality - quality) > 0.0000001
-        quality = new_quality
+        improvement_made = (Q_new - Q) > 0.0000001
+        Q = Q_new
 
     return
 
@@ -460,13 +467,13 @@ def _move_nodes_fast(
     # if no partition is passed from the previous step (i.e. during the
     # first iteration) then this is skipped and the singleton partition is used.
     if refinement_mapping:
-        inner_partition = [set() for _ in range(len(refinement_mapping.values()))]
+        P = [set() for _ in range(len(refinement_mapping.values()))]
         node2com = {}
         for i, u in enumerate(G):
-            inner_partition[refinement_mapping[i]].add(u)
+            P[refinement_mapping[i]].add(u)
             node2com[u] = refinement_mapping[i]
     else:
-        inner_partition = [{u} for u in G]
+        P = [{u} for u in G]
         node2com = {u: i for i, u in enumerate(G)}
 
     rand_nodes = list(G.nodes)
@@ -482,7 +489,7 @@ def _move_nodes_fast(
 
         # this value is the overall change in quality that occurs
         # when node u is removed from its current community
-        q_A = quality_delta_func({u}, inner_partition[old_com] - {u})
+        q_rem = quality_delta_func({u}, P[old_com] - {u})
 
         # for each node in the queue, we measure the change in quality
         # from moving that node to each other community, keeping track of
@@ -491,84 +498,83 @@ def _move_nodes_fast(
             if new_com != old_com:
                 # this quantity is the overall change in quality that
                 # occurs wen the node u is added the the new community
-                q_B = quality_delta_func({u}, inner_partition[new_com])
+                q_add = quality_delta_func({u}, P[new_com])
 
                 # the overall change in quality therefore from moving
                 # node u from old_com to new_com is as follows
-                quality_delta = q_B - q_A
+                Q_delta = q_add - q_rem
 
-                if quality_delta > best_delta:
-                    best_delta = quality_delta
+                if Q_delta > best_delta:
+                    best_delta = Q_delta
                     best_com = new_com
 
         if best_delta > 0:
             node2com[u] = best_com
 
-            inner_partition[old_com].remove(u)
-            inner_partition[best_com].add(u)
+            P[old_com].remove(u)
+            P[best_com].add(u)
 
             neighbours = set(G.adj[u])
-            nodes_to_visit = neighbours - inner_partition[best_com]
+            nodes_to_visit = neighbours - P[best_com]
 
             for v in nodes_to_visit:
                 if v not in node_queue:
                     node_queue.appendleft(v)
 
-    inner_partition = list(filter(None, inner_partition))
+    P = list(filter(None, P))
 
-    return inner_partition
+    return P
 
 
 def _refine_partition(
     G,
-    partition,
+    P,
     quality_delta_func,
     seed,
     theta,
 ):
 
-    refined_communities = []
+    P_refined = []
 
-    for C in partition:
-        node2com = {u: i for i, u in enumerate(C)}
-        P_refined = [{u} for u in C]
+    for C in P:
+        # each community C in the partition P
+        # is split into a set of smaller communities
+        # resulting in a refined partition
 
-        P_refined = _merge_node_subset(
+        C_refined = _merge_node_subset(
             G,
-            P_refined,
-            node2com,
             C,
             quality_delta_func,
             seed,
             theta,
         )
-        P_refined = list(filter(None, P_refined))
-        refined_communities.append(P_refined)
+        C_refined = list(filter(None, C_refined))
+        P_refined.append(C_refined)
 
-    return refined_communities
+    return P_refined
 
 
 def _merge_node_subset(
     G,
-    P_refined,
-    node2com,
-    S,
+    C,
     quality_delta_func,
     seed,
     theta,
 ):
 
+    node2com = {u: i for i, u in enumerate(C)}
+    C_refined = [{u} for u in C]
     # first, the sufficiently well-connected nodes within S
     # are identified and added to the set R.
-    R = {u for u in S if quality_delta_func({u}, S - {u}) > 0}
+    R = {u for u in C if quality_delta_func({u}, C - {u}) > 0}
 
     for u in R:
         comm = node2com[u]
-        if P_refined[comm] != {u}:
+        if C_refined[comm] != {u}:
             continue
         # if the community that u belongs to is the singleton {u}, then
         # we will proceed to merge it probabilistically with another
-        # community within S.
+        # community within C.
 
         # first we identify candidate communities to merge u into
         # and then the final community is randomly selected from these
@@ -588,8 +594,8 @@ def _merge_node_subset(
 
         # this is the change in quality that occurs from removing node
         # u from its current community
-        q_A = quality_delta_func({u}, P_refined[comm] - {u})
-        for i, C in enumerate(P_refined):
+        q_rem = quality_delta_func({u}, C_refined[comm] - {u})
+        for i, new_comm in enumerate(C_refined):
             if comm == i:
                 # we only want to consider moving u to a different
                 # community, not its current community.
@@ -601,21 +607,21 @@ def _merge_node_subset(
 
             # this application of quality_delta_func relates to the
             # definition of T in line :37 from pseudocode in paper
-            if quality_delta_func(C, S - C) > 0:
+            if quality_delta_func(new_comm, C - new_comm) > 0:
                 # the change in quality the occurs from moving node u
                 # into the new community
-                q_B = quality_delta_func({u}, P_refined[i])
+                q_add = quality_delta_func({u}, C_refined[i])
 
                 # the overall quality delta is therefore the sum
                 # of the change in quality from removing u from its
                 # starting community, and the change of quality
                 # from adding it to the new community
 
-                quality_delta = q_B - q_A
+                Q_delta = q_add - q_rem
 
-                if quality_delta > 0:
+                if Q_delta > 0:
                     candidate_comm.append(i)
-                    candidate_comm_q_delta.append(quality_delta)
+                    candidate_comm_q_delta.append(Q_delta)
 
         # if there are candidate communities identified then
         # one is selected at random, and u is added to that
@@ -641,14 +647,14 @@ def _merge_node_subset(
 
             new_comm = seed.choices(candidate_comm, weights=candidate_comm_prob)[0]
 
-            P_refined[comm].remove(u)
-            P_refined[new_comm].add(u)
+            C_refined[comm].remove(u)
+            C_refined[new_comm].add(u)
             node2com[u] = new_comm
 
-    return P_refined
+    return C_refined
 
 
-def _gen_graph(G, partition_list, node_attributes):
+def _create_aggregate_graph(G, refined_partitions_list, node_attributes):
     """
     Generate a new graph based on the partitions of a given graph
 
@@ -663,15 +669,18 @@ def _gen_graph(G, partition_list, node_attributes):
 
     refinement_mapping = {}
     community_index = 0
-    for j, part in enumerate(partition_list):
-        for refined_part in part:
+    for j, refined_partition in enumerate(refined_partitions_list):
+        for refined_community in refined_partition:
+            # each refined_community from the refined_partiton defines
+            # a node in the new aggregated graph
+
             refinement_mapping[community_index] = j
 
             agg_attribute_vals = {attribute: 0 for attribute in node_attributes}
 
             nodes = set()
 
-            for node in refined_part:
+            for node in refined_community:
                 for node_attribute in node_attributes:
                     agg_attribute_vals[node_attribute] += G.nodes[node][node_attribute]
 
