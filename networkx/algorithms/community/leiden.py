@@ -371,7 +371,7 @@ def leiden_partitions(
         #     )
 
         degrees = graph.degree(weight="weight")
-        m = sum(deg for u, deg in degrees)
+        m = sum(deg for u, deg in degrees)/2
 
         red_degree = {u: G.degree(u, weight="weight") / m for u in red_nodes}
         for u in blue_nodes:
