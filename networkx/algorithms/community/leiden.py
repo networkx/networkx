@@ -326,7 +326,7 @@ def leiden_partitions(
             node_attributes = ["degree"]
             degrees = graph.degree(weight="weight")
 
-            m = sum(deg for u, deg in degrees)
+            m = sum(deg for u, deg in degrees)/2
             for u, v, data in graph.edges(data=True):
                 data["weight"] *= 1 / m
             nx.set_node_attributes(graph, {u: deg / m for u, deg in degrees}, "degree")
