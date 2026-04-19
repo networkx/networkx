@@ -400,11 +400,14 @@ def butterflies(G, nodes=None):
             return result
         return {v: result[v] for v in G.nbunch_iter(nodes)}
 
-    priority = {n: (deg, i) for i, (n, deg) in enumerate(G.degree())}
+    node_rank = {n: i for i, n in enumerate(G.nodes())}
+    priority = {n: (G.degree(n), node_rank[n]) for n in G.nodes()}
 
-    sorted_nbrs = {v: sorted(G.neighbors(v), key=priority.__getitem__) for v in G}
+    sorted_nbrs = {
+        v: sorted(G.neighbors(v), key=lambda x: priority[x]) for v in G.nodes()
+    }
 
-    _bt = dict.fromkeys(G, 0)
+    _bt = dict.fromkeys(G.nodes(), 0)
 
     for u in G:
         pu = priority[u]
