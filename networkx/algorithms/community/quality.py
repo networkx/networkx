@@ -329,12 +329,35 @@ def _cpm_delta_partial_eval_add(
     return E_D - resolution * dir_factor * n_B * u_wt
 
 
+def _quality_delta_cpm_directed(
+    G, nodes_to_add, community, resolution, weight="weight", node_weight="node_weight"
+):
+    n_size = sum(G.nodes[u][node_weight] for u in nodes_to_add)
+    comm_size = sum(G.nodes[u][node_weight] for u in community)
+    E_D_out = sum(
+        wt for _, v, wt in G.edges(nodes_to_add, data=weight) if v in community
+    )
+    E_D_in = sum(
+        wt for _, v, wt in G.edges(community, data=weight) if v in nodes_to_add
+    )
+    return E_D_out + E_D_in - resolution * 2 * n_size * comm_size
+
+
+def _quality_delta_cpm_undirected(
+    G, nodes_to_add, community, resolution, weight="weight", node_weight="node_weight"
+):
+    n_size = sum(G.nodes[u][node_weight] for u in nodes_to_add)
+    comm_size = sum(G.nodes[u][node_weight] for u in community)
+    E_D = sum(wt for _, v, wt in G.edges(nodes_to_add, data=weight) if v in community)
+    return E_D - resolution * n_size * comm_size
+
+
 def constant_potts_model(
     G,
     communities,
-    weight,
-    node_weight,
-    resolution,
+    weight="weight",
+    node_weight="node_weight",
+    resolution=1,
 ):
     r"""
     Computes the Constant Potts Model, which is a measure of quality of a

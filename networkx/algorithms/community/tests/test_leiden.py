@@ -172,9 +172,6 @@ def test_quality_function_not_implemented():
         )
 
 
-@pytest.mark.xfail(
-    reason="tweaking algorithm causes this to change, will resume once stable"
-)
 def test_expected():
     G = nx.karate_club_graph()
 
@@ -196,14 +193,13 @@ def test_expected():
     )
 
     part_expected = [
-        {16, 4, 5, 6, 10},
+        {0, 1, 2, 3, 7, 12, 13, 17, 19, 21},
+        {8, 30},
         {9},
         {11},
+        {16, 4, 5, 6, 10},
         {14},
-        {0, 1, 2, 3, 7, 12, 13, 17, 19, 21},
-        {32, 33, 18, 20, 22, 26, 15},
-        {27, 29, 23},
-        {8, 30},
+        {32, 33, 15, 18, 20, 22, 23, 26, 27, 29},
         {24, 25, 28, 31},
     ]
 

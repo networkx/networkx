@@ -13,8 +13,8 @@ from networkx.algorithms.community import (
     partition_quality,
 )
 from networkx.algorithms.community.quality import (
-    _cpm_delta_partial_eval_add,
-    _cpm_delta_partial_eval_remove,
+    _quality_delta_cpm_directed,
+    _quality_delta_cpm_undirected,
     inter_community_edges,
 )
 
@@ -75,7 +75,147 @@ def test_modularity():
     assert 2 / 9 == pytest.approx(modularity(G, C), abs=1e-7)
 
 
-def test_cpm():
+def _validate_quality_delta(G, u, A, B, quality_func, delta_func, resolution):
+    all_nodes = set(G.nodes)
+    C = all_nodes - (A.union(B))
+    if C:
+        P = [A, B, C]
+    else:
+        P = [A, B]
+
+    A_prime = A - {u}
+    B_prime = B.union({u})
+
+    if C:
+        P_prime = [A_prime, B_prime, C]
+    else:
+        P_prime = [A_prime, B_prime]
+
+    Q_before = quality_func(G, P, resolution)
+    Q_after = quality_func(G, P_prime, resolution)
+    Q_delta = Q_after - Q_before
+
+    Q_fast_delta_rem = delta_func(G, {u}, A, resolution)
+    Q_fast_delta_add = delta_func(G, {u}, B, resolution)
+    Q_fast_delta = Q_fast_delta_add - Q_fast_delta_rem
+
+    return (Q_delta - Q_fast_delta) < 0.000000001
+
+
+def test_cpm_delta_undirected():
+    G = nx.barbell_graph(3, 0)
+    partition = [{0, 1, 2}, {3, 4}, {5}]
+    nx.set_node_attributes(G, 1, "node_weight")
+    nx.set_edge_attributes(G, 1, "weight")
+    r = 0.5
+
+    u = 0
+    A = partition[0]
+    B = partition[1]
+
+    assert _validate_quality_delta(
+        G, u, A, B, constant_potts_model, _quality_delta_cpm_undirected, r
+    )
+
+
+def test_cpm_delta_directed():
+    G = nx.barbell_graph(3, 0)
+    G = nx.to_directed(G)
+
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    nx.set_node_attributes(G, 1, "node_weight")
+    nx.set_edge_attributes(G, 1, "weight")
+    r = 0.5
+
+    u = 0
+    A = partition[0]
+    B = partition[1]
+    r = 0.5
+
+    assert _validate_quality_delta(
+        G, u, A, B, constant_potts_model, _quality_delta_cpm_directed, r
+    )
+
+
+def test_cpm_delta_undirected_weights():
+    G = nx.barbell_graph(3, 0)
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    G.nodes[0]["node_weight"] = 1
+    G.nodes[1]["node_weight"] = 2
+    G.nodes[2]["node_weight"] = 3
+    G.nodes[3]["node_weight"] = 4
+    G.nodes[4]["node_weight"] = 5
+    G.nodes[5]["node_weight"] = 6
+
+    # the add and remove functions should cancel terms which come from
+    # self-loops and hence we add some weighted self-loops
+    for i in range(6):
+        G.add_edge(i, i)
+        G.edges[(i, i)]["weight"] = i + 2
+
+    G.edges[(0, 1)]["weight"] = 1
+    G.edges[(0, 2)]["weight"] = 2
+    G.edges[(1, 2)]["weight"] = 3
+    G.edges[(2, 3)]["weight"] = 4
+    G.edges[(3, 4)]["weight"] = 5
+    G.edges[(3, 5)]["weight"] = 6
+    G.edges[(4, 5)]["weight"] = 7
+
+    u = 0
+    A = partition[0]
+    B = partition[1]
+    r = 0.5
+
+    assert _validate_quality_delta(
+        G, u, A, B, constant_potts_model, _quality_delta_cpm_undirected, r
+    )
+
+
+def test_cpm_delta_directed_weights():
+    G = nx.barbell_graph(3, 0)
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    G.nodes[0]["node_weight"] = 1
+    G.nodes[1]["node_weight"] = 2
+    G.nodes[2]["node_weight"] = 3
+    G.nodes[3]["node_weight"] = 4
+    G.nodes[4]["node_weight"] = 5
+    G.nodes[5]["node_weight"] = 6
+
+    # the add and remove functions should cancel terms which come from
+    # self-loops and hence we add some weighted self-loops
+    for i in range(6):
+        G.add_edge(i, i)
+        G.edges[(i, i)]["weight"] = i + 2
+
+    G = nx.to_directed(G)
+
+    G.edges[(0, 1)]["weight"] = 1
+    G.edges[(0, 2)]["weight"] = 2
+    G.edges[(1, 2)]["weight"] = 3
+    G.edges[(2, 3)]["weight"] = 4
+    G.edges[(3, 4)]["weight"] = 5
+    G.edges[(3, 5)]["weight"] = 6
+    G.edges[(4, 5)]["weight"] = 7
+
+    G.edges[(1, 0)]["weight"] = 1
+    G.edges[(2, 0)]["weight"] = 2
+    G.edges[(2, 1)]["weight"] = 3
+    G.edges[(3, 2)]["weight"] = 4
+    G.edges[(4, 3)]["weight"] = 5
+    G.edges[(5, 3)]["weight"] = 6
+    G.edges[(5, 4)]["weight"] = 7
+
+    u = 0
+    A = partition[0]
+    B = partition[1]
+    r = 0.5
+
+    assert _validate_quality_delta(
+        G, u, A, B, constant_potts_model, _quality_delta_cpm_directed, r
+    )
+
+
+def test_cpm_undirected():
     G = nx.barbell_graph(3, 0)
     partition = [{0, 1, 2}, {3, 4, 5}]
     gamma = 0.1
@@ -173,108 +313,6 @@ def test_cpm():
     # compare cpm against the value computed by hand using the
     # formula stated in the definition of constant_potts_model
     assert 6 - (gamma * 9**2) / 2 + 6 - (gamma * 20**2) / 2 == cpm
-
-
-def test_cpm_add_remove_total_cost():
-    G = nx.barbell_graph(3, 0)
-    partition = [{0, 1, 2}, {3, 4, 5}]
-    nx.set_node_attributes(G, 1, "node_weight")
-    nx.set_edge_attributes(G, 1, "weight")
-    r = 0.5
-
-    u = 0
-    A = partition[0]
-    B = partition[1]
-    qA = _cpm_delta_partial_eval_remove(G, node=u, community=A, resolution=r)
-    qB = _cpm_delta_partial_eval_add(G, node=u, community=B, resolution=r)
-
-    q_after = constant_potts_model(
-        G,
-        [A - {u}, B.union({u})],
-        weight="weight",
-        node_weight="node_weight",
-        resolution=r,
-    )
-    q_before = constant_potts_model(
-        G, [A, B], weight="weight", node_weight="node_weight", resolution=r
-    )
-    q_delta = q_after - q_before
-    assert qA + qB == q_delta
-
-
-def test_cpm_add_remove_total_cost_directed():
-    G = nx.barbell_graph(3, 0)
-    G = nx.to_directed(G)
-
-    partition = [{0, 1, 2}, {3, 4, 5}]
-    nx.set_node_attributes(G, 1, "node_weight")
-    nx.set_edge_attributes(G, 1, "weight")
-    r = 0.5
-
-    u = 0
-    A = partition[0]
-    B = partition[1]
-    qA = _cpm_delta_partial_eval_remove(G, node=u, community=A, resolution=r)
-    qB = _cpm_delta_partial_eval_add(G, node=u, community=B, resolution=r)
-
-    q_after = constant_potts_model(
-        G,
-        [A - {u}, B.union({u})],
-        weight="weight",
-        node_weight="node_weight",
-        resolution=r,
-    )
-    q_before = constant_potts_model(
-        G, [A, B], weight="weight", node_weight="node_weight", resolution=r
-    )
-    q_delta = q_after - q_before
-    assert qA + qB == q_delta
-
-
-def test_cpm_add_remove_total_cost_weights():
-    G = nx.barbell_graph(3, 0)
-    partition = [{0, 1, 2}, {3, 4, 5}]
-    G.nodes[0]["node_weight"] = 1
-    G.nodes[1]["node_weight"] = 2
-    G.nodes[2]["node_weight"] = 3
-    G.nodes[3]["node_weight"] = 4
-    G.nodes[4]["node_weight"] = 5
-    G.nodes[5]["node_weight"] = 6
-
-    # the add and remove functions should cancel terms which come from
-    # self-loops and hence we add some weighted self-loops
-    for i in range(6):
-        G.add_edge(i, i)
-        G.edges[(i, i)]["weight"] = i + 2
-
-    G.edges[(0, 1)]["weight"] = 1
-    G.edges[(0, 2)]["weight"] = 2
-    G.edges[(1, 2)]["weight"] = 3
-    G.edges[(2, 3)]["weight"] = 4
-    G.edges[(3, 4)]["weight"] = 5
-    G.edges[(3, 5)]["weight"] = 6
-    G.edges[(4, 5)]["weight"] = 7
-
-    r = 0.5
-
-    u = 0
-    A = partition[0]
-    B = partition[1]
-    qA = _cpm_delta_partial_eval_remove(G, node=u, community=A, resolution=r)
-    qB = _cpm_delta_partial_eval_add(G, node=u, community=B, resolution=r)
-
-    q_after = constant_potts_model(
-        G,
-        [A - {u}, B.union({u})],
-        weight="weight",
-        node_weight="node_weight",
-        resolution=r,
-    )
-    q_before = constant_potts_model(
-        G, [A, B], weight="weight", node_weight="node_weight", resolution=r
-    )
-    q_delta = q_after - q_before
-    assert qA + qB == q_delta
 
 
 def test_modularity_resolution():

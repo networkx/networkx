@@ -428,7 +428,12 @@ def leiden_partitions(
         P_refined = _refine_partition(graph, P, quality_delta, seed=seed, theta=theta)
 
         P_refined_flat = [comm for P_ref in P_refined for comm in P_ref]
+
+        # We stop once the overall change in quality between iterations is
+        # close to zero.
         Q_new = quality_function(graph, P_refined_flat)
+        improvement_made = (Q_new - Q) > 0.0000001
+        Q = Q_new
 
         graph, refinement_mapping = _create_aggregate_graph(
             graph, P_refined, node_attributes
@@ -444,11 +449,6 @@ def leiden_partitions(
             partition[i].update(graph.nodes[u]["nodes"])
 
         yield [s.copy() for s in partition]
-
-        # We stop once the overall change in quality between iterations is
-        # close to zero.
-        improvement_made = (Q_new - Q) > 0.0000001
-        Q = Q_new
 
     return
 
