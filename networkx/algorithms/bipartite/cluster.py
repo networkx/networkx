@@ -222,7 +222,8 @@ def robins_alexander_clustering(G):
 
        CC_4 = \frac{4 * C_4}{L_3}
 
-    The four cycles counted here are *butterflies* — complete bipartite
+    The four cycles counted here are *butterflies* (also called *squares*
+    or *four-cycles* in other contexts)  — complete bipartite
     subgraphs K_{2,2} where alternating nodes belong to different
     partitions.  See :func:`butterflies` for per-node butterfly counts.
 
@@ -291,7 +292,7 @@ def butterflies(G, nodes=None):
     ----------
     G : NetworkX graph
         An undirected bipartite graph.
-    nodes : container of nodes, optional
+    nodes : container of nodes, optional (default: all nodes)
         Return butterfly counts only for these nodes.  The computation
         always uses the full graph; ``nodes`` only filters the returned
         dictionary (same convention as :func:`~networkx.triangles`).
@@ -395,22 +396,17 @@ def butterflies(G, nodes=None):
 
     if G.number_of_edges() == 0:
         result = dict.fromkeys(G.nodes(), 0)
-        return (
-            {v: result[v] for v in G.nbunch_iter(nodes)}
-            if nodes is not None
-            else result
-        )
+        if nodes is None:
+            return result
+        return {v: result[v] for v in G.nbunch_iter(nodes)}
 
-    node_rank = {n: i for i, n in enumerate(G.nodes())}
-    priority = {n: (G.degree(n), node_rank[n]) for n in G.nodes()}
+    priority = {n: (deg, i) for i, (n, deg) in enumerate(G.degree())}
 
-    sorted_nbrs = {
-        v: sorted(G.neighbors(v), key=lambda x: priority[x]) for v in G.nodes()
-    }
+    sorted_nbrs = {v: sorted(G.neighbors(v), key=priority.__getitem__) for v in G}
 
-    _bt = dict.fromkeys(G.nodes(), 0)
+    _bt = dict.fromkeys(G, 0)
 
-    for u in G.nodes():
+    for u in G:
         pu = priority[u]
         wedge_count = {}
         wedge_mid = {}
@@ -431,12 +427,13 @@ def butterflies(G, nodes=None):
         for w, k in wedge_count.items():
             if k < 2:
                 continue
-            bf = k * (k - 1) // 2  # C(k, 2) butterflies for pair (u, w)
+            # C(k, 2) butterflies for pair (u, w)
+            bf = k * (k - 1) // 2
             _bt[u] += bf
             _bt[w] += bf
             for v in wedge_mid[w]:
-                _bt[v] += k - 1  # each middle node pairs with k-1 others
-
+                # each middle node pairs with k-1 others
+                _bt[v] += k - 1
     if nodes is None:
         return _bt
     return {v: _bt[v] for v in G.nbunch_iter(nodes)}
