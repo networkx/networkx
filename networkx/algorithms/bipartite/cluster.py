@@ -1,6 +1,6 @@
 """Functions for computing clustering of pairs"""
 
-import itertools
+from collections import defaultdict
 
 import networkx as nx
 
@@ -400,19 +400,16 @@ def butterflies(G, nodes=None):
             return result
         return {v: result[v] for v in G.nbunch_iter(nodes)}
 
-    node_rank = {n: i for i, n in enumerate(G.nodes())}
-    priority = {n: (G.degree(n), node_rank[n]) for n in G.nodes()}
+    priority = {n: (deg, i) for i, (n, deg) in enumerate(G.degree())}
 
-    sorted_nbrs = {
-        v: sorted(G.neighbors(v), key=lambda x: priority[x]) for v in G.nodes()
-    }
+    sorted_nbrs = {v: sorted(G.neighbors(v), key=priority.__getitem__) for v in G}
 
-    _bt = dict.fromkeys(G.nodes(), 0)
+    _bt = dict.fromkeys(G, 0)
 
     for u in G:
         pu = priority[u]
-        wedge_count = {}
-        wedge_mid = {}
+        wedge_count = defaultdict(int)
+        wedge_mid = defaultdict(list)
 
         for v in sorted_nbrs[u]:
             if priority[v] >= pu:
@@ -420,12 +417,8 @@ def butterflies(G, nodes=None):
             for w in sorted_nbrs[v]:
                 if priority[w] >= pu:
                     break
-                if w in wedge_count:
-                    wedge_count[w] += 1
-                    wedge_mid[w].append(v)
-                else:
-                    wedge_count[w] = 1
-                    wedge_mid[w] = [v]
+                wedge_count[w] += 1
+                wedge_mid[w].append(v)
 
         for w, k in wedge_count.items():
             if k < 2:
