@@ -47,6 +47,14 @@ def test_communities_raises_invalid_weight(invalid_weight):
         nx.community.voronoi_communities(G)
 
 
+@pytest.mark.parametrize("invalid_n_steps", [0, -1])
+def test_communities_raises_invalid_n_steps(invalid_n_steps):
+    G = nx.Graph()
+    G.add_edge(0, 1)
+    with pytest.raises(ValueError, match="n_steps must be a positive integer"):
+        nx.community.voronoi_communities(G, n_steps=invalid_n_steps)
+
+
 def test_communities_weight_transform():
     G = nx.karate_club_graph()
 

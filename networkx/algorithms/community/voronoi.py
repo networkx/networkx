@@ -13,7 +13,12 @@ __all__ = ["voronoi_communities", "voronoi_partitions"]
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 def voronoi_communities(
-    G, weight="weight", weight_transform="strength", resolution=1, eps=1e-8
+    G,
+    weight="weight",
+    weight_transform="strength",
+    resolution=1,
+    eps=1e-8,
+    n_steps=100,
 ):
     r"""Find the best partition of a graph using the Voronoi Community Detection
     Algorithm.
@@ -32,6 +37,8 @@ def voronoi_communities(
     .. math ::
         l_{u,v} = \frac{1}{w_{u,v} \cdot C_{u,v}}
 
+    where $C_{u,v}$ is the edge clustering coefficient.
+
     Secondly, it calculates a weighted local density $\rho_i$ for every node $i$:
 
     .. math ::
@@ -40,8 +47,8 @@ def voronoi_communities(
     where $s_i$ is the node's strength (weighted degree), $m_i$ is the number of
     internal edges among the neighbors of $i$, and $k_i$ is the number of external edges
     leaving the neighborhood of $i$. This density is then modified according to the
-    `weight_transform` strategy to determine the final metric used for selecting
-    generator points.
+    `weight_transform` parameter (e.g., "strength" or "flow") to determine the final
+    metric used for selecting generator points.
 
     On the third step, for a given neighborhood radius $r$, the algorithm identifies
     community centers, called "generator points". A node is selected as a generator
@@ -51,7 +58,7 @@ def voronoi_communities(
 
     Finally, the algorithm determines a minimum and maximum radius $r$ based on the
     shortest and longest path distances in the graph. It then deterministically scans
-    through this range by incrementing $r$ by a fixed step size (0.01). It computes
+    through this range by dividing it into `n_steps` equal increments. It computes
     the Voronoi partition for each $r$ step and calculates its modularity. The partition
     that maximizes modularity is returned.
 
@@ -73,6 +80,10 @@ def voronoi_communities(
         Greater than 1 favors smaller communities.
     eps : float, optional (default: 1e-8)
         Offset value to ensure numerical stability and avoid division by zero.
+    n_steps : int, optional (default: 1000)
+        The number of steps to divide the search range into when scanning for the
+        optimal neighborhood radius $r$. A higher number provides a more fine-grained
+        search but takes longer to compute.
 
     Returns
     -------
@@ -91,6 +102,13 @@ def voronoi_communities(
 
     Notes
     -----
+    The distance calculation and the local density transformation are separated in this
+    implementation. While the original paper presents a unified formula
+    :math:`l_{u,v} = \frac{f(w_{u,v})}{C_{n_u,n_v}}`, this code mirrors the authors'
+    original C implementation, which computes distance strictly based on weights and
+    clustering, and applies the transform function subsequently during the local density
+    calculation.
+
     Unlike stochastic community detection methods (such as the Louvain and Leiden
     algorithms), this method is fully deterministic. The community structure will
     remain exactly the same across multiple executions on the same graph.
@@ -118,16 +136,25 @@ def voronoi_communities(
     if any(w <= 0 for _, _, w in G.edges(data=weight, default=1.0)):
         raise nx.NetworkXError("All edge weights must be positive")
 
+    if n_steps <= 0:
+        raise ValueError("n_steps must be a positive integer")
+
     w_max = max(w for _, _, w in G.edges(data=weight, default=1.0))
     weight_key = weight or "weight"
 
-    G_dist = _transform_weights_to_distances(G, weight=weight_key, eps=eps, w_max=w_max)
+    G_ref = G.copy()
+    if w_max > 1:
+        for u, v, d in G_ref.edges(data=True):
+            d[weight_key] = d.get(weight_key, 1.0) / w_max
+
+    G_dist = _transform_weights_to_distances(G_ref, weight=weight_key, eps=eps)
+
     all_pairs_distances = dict(
         nx.all_pairs_dijkstra_path_length(G_dist, weight=weight_key)
     )
 
-    strengths = dict(G.degree(weight=weight))
-    node_densities = _weighted_local_density(G, strengths)
+    strengths = dict(G_ref.degree(weight=weight))
+    node_densities = _weighted_local_density(G_ref, strengths)
 
     if callable(weight_transform):
         transform_function = weight_transform
@@ -145,7 +172,8 @@ def voronoi_communities(
         raise TypeError("weight_transform must be a string or a callable")
 
     transformed_densities = {
-        node: transform_function(G, node, strengths, node_densities, eps) for node in G
+        node: transform_function(G_ref, node, strengths, node_densities, eps)
+        for node in G
     }
 
     min_r = float("inf")
@@ -159,8 +187,6 @@ def voronoi_communities(
 
     if min_r == float("inf"):
         min_r = 0.0
-    if max_r <= min_r:
-        max_r = min_r + 0.25
 
     max_modularity = -float("inf")
     best_community = []
@@ -169,9 +195,9 @@ def voronoi_communities(
 
     direction = "in" if G.is_directed() else "out"
 
-    step = 0.01
+    step = (max_r - min_r) / n_steps if max_r > min_r else 0.01
     r = min_r
-    while r < max_r:
+    while r <= max_r + eps:
         generator_points = _choose_generator_points(
             r, transformed_densities, all_pairs_distances
         )
@@ -189,7 +215,7 @@ def voronoi_communities(
         )
 
         current_modularity = modularity(
-            G, communities, weight=weight, resolution=resolution
+            G_ref, communities, weight=weight, resolution=resolution
         )
 
         last_generators = generator_points
@@ -288,7 +314,7 @@ def _flow_transform(G, node, strengths, node_densities, eps):
     return math.log(float(strengths[node]) + eps) / (float(node_densities[node]) + eps)
 
 
-def _transform_weights_to_distances(G, weight="weight", eps=1e-8, w_max=1.0):
+def _transform_weights_to_distances(G, weight="weight", eps=1e-8):
     r"""Transform graph edge weights into topological distances based on edge clustering.
 
     This internal helper function creates a new graph where edge weights represent
@@ -301,8 +327,6 @@ def _transform_weights_to_distances(G, weight="weight", eps=1e-8, w_max=1.0):
     weight : string, optional (default: "weight")
     eps : float, optional (default: 1e-8)
         Offset value to ensure numerical stability and avoid division by zero.
-    w_max : float, optional (default: 1.0)
-        Maximum edge weight in the graph, used to normalize weights to (0, 1].
 
     Returns
     -------
@@ -325,9 +349,8 @@ def _transform_weights_to_distances(G, weight="weight", eps=1e-8, w_max=1.0):
         ecc = (triangles + 1) / denominator
 
         w = float(data.get(weight, 1.0))
-        w_norm = w / w_max
 
-        w_safe = w_norm if w_norm > 0 else eps
+        w_safe = w if w > 0 else eps
         distance = 1.0 / (w_safe * ecc)
 
         edge_attrs = data.copy()
