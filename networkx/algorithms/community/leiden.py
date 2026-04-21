@@ -340,7 +340,16 @@ def leiden_partitions(
         if is_directed:
             raise nx.NetworkXError("barber_modularity not implemented for DiGraph")
 
-        # quality_function = nx.bipartite.modularity # not implemented yet
+        # quality_function should be defined inline rather than
+        # importing nx.bipartite.community.modularity as the
+        # function within this algorithm needs to accept the 
+        # aggregated graphs which are not bipartite and therefore
+        # requires a variation of the algorithm
+
+        def barber_modularity():
+            return
+
+        quality_function = barber_modularity
 
         node_attributes = ["red_degree", "blue_degree"]
 
