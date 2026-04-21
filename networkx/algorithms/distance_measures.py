@@ -718,11 +718,11 @@ def center(G, e=None, usebounds=False, weight=None):
     return p
 
 
-@nx._dispatchable(name="graph_centroid", edge_attrs="weight", mutates_input={"attr": 2})
+@nx._dispatchable(edge_attrs="weight", mutates_input={"attr": 2})
 def centroid(G, weight=None, attr=None, sp=None):
     r"""Calculate centroid of a connected graph, optionally with edge weights.
 
-    The :dfn:`centroid` a
+    The :dfn:`centroid` of a
     :func:`connected <networkx.algorithms.components.is_connected>` graph
     :math:`G` is the subgraph induced by the set of its nodes :math:`v`
     minimizing the objective function
@@ -733,7 +733,8 @@ def centroid(G, weight=None, attr=None, sp=None):
 
     where :math:`d_G` is the (possibly weighted) :func:`path length
     <networkx.algorithms.shortest_paths.generic.shortest_path_length>`.
-    This quantity is also known as the :dfn:`barycenter` :dfn:`median`. See [West01]_, p. 78.
+    This quantity is also known as the :dfn:`barycenter` or :dfn:`median`. 
+    See [West01]_, p. 78.
 
     Parameters
     ----------
@@ -806,14 +807,7 @@ def centroid(G, weight=None, attr=None, sp=None):
 
 
 def barycenter(G, weight=None, attr=None, sp=None):
-    """Alias for :func:`centroid`.
-
-    The term *barycenter* is a common alternative name for the centroid of
-    a graph. This function is preserved for backward compatibility.
-
-    See Also
-    --------
-    centroid
+    """Alias for `centroid` - see `centroid` docstring for details.
     """
     return centroid(G, weight=weight, attr=attr, sp=sp)
 

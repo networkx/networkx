@@ -133,7 +133,7 @@ def _subtree_sizes(G, root):
 
 
 @nx.utils.not_implemented_for("directed")
-@nx._dispatchable(name="tree_centroid")
+@nx._dispatchable
 def centroid(G):
     """Return the centroid of an unweighted tree.
 
