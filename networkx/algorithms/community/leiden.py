@@ -654,7 +654,7 @@ def _merge_node_subset(
     return C_refined
 
 
-def _create_aggregate_graph(G, refined_partitions_list, node_attributes):
+def _create_aggregate_graph(G, refined_communities_list, node_attributes):
     """
     Generate a new graph based on the partitions of a given graph
 
@@ -665,41 +665,45 @@ def _create_aggregate_graph(G, refined_partitions_list, node_attributes):
     """
 
     H = G.__class__()
-    node2com = {}
+    old2new = {}
 
     refinement_mapping = {}
-    community_index = 0
-    for j, refined_partition in enumerate(refined_partitions_list):
-        for refined_community in refined_partition:
+    new_node_id = 0
+    for partition_index, community in enumerate(refined_communities_list):
+        for refined_community in community:
             # each refined_community from the refined_partiton defines
             # a node in the new aggregated graph
 
-            refinement_mapping[community_index] = j
+            refinement_mapping[new_node_id] = partition_index
 
-            agg_attribute_vals = {attribute: 0 for attribute in node_attributes}
+            agg_vals = {attribute: 0 for attribute in node_attributes}
 
-            nodes = set()
+            # will contain the nodes defining a community
+            # in the original graph
+            original_nodes = set()
 
-            for node in refined_community:
+            # old_node is node from the previous iteration
+            # i.e. aggregated graph from the previous
+            # stage, not the original graph
+            for old_node in refined_community:
                 for node_attribute in node_attributes:
-                    agg_attribute_vals[node_attribute] += G.nodes[node][node_attribute]
+                    agg_vals[node_attribute] += G.nodes[old_node][node_attribute]
 
-                node2com[node] = community_index
-                nodes.update(G.nodes[node].get("nodes", {node}))
+                old2new[old_node] = new_node_id
+                original_nodes.update(G.nodes[old_node].get("nodes", {old_node}))
 
-            H.add_node(community_index, nodes=nodes, **agg_attribute_vals)
+            H.add_node(new_node_id, nodes=original_nodes, **agg_vals)
 
-            community_index += 1
+            new_node_id += 1
 
-    for u, v, d in G.edges(data=True):
-        uv_weight = d["weight"]
-        com_u = node2com[u]
-        com_v = node2com[v]
-        if com_u != com_v:
-            if H.has_edge(com_u, com_v):
-                H.edges[(com_u, com_v)]["weight"] += uv_weight
+    for u, v, uv_weight in G.edges(data="weight"):
+        new_u = old2new[u]
+        new_v = old2new[v]
+        if new_u != new_v:
+            if H.has_edge(new_u, new_v):
+                H.edges[(new_u, new_v)]["weight"] += uv_weight
             else:
-                H.add_edge(com_u, com_v, weight=uv_weight)
+                H.add_edge(new_u, new_v, weight=uv_weight)
 
     return H, refinement_mapping
 
