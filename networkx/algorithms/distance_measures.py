@@ -808,7 +808,7 @@ def centroid(G, weight=None, attr=None, sp=None):
 
 def barycenter(G, weight=None, attr=None, sp=None):
     """Alias for `centroid` - see `centroid` docstring for details."""
-    return centroid(G, weight=weight, attr=attr, sp=sp)
+    return centroid(G, weight, attr, sp)
 
 
 @not_implemented_for("directed")
