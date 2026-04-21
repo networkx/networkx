@@ -26,8 +26,8 @@ def leiden_communities(
     quality_function="cpm",
     theta=0.01,
 ):
-    r"""Find the best partition of a graph using the Leiden Community Detection
-    Algorithm [1]_.
+    r"""Return the best set of communities of `G` using Leiden Community Detection
+    algorithm [1]_.
 
     Leiden Community Detection is an algorithm to extract the community structure
     of a network based on modularity optimization. It is an improvement upon the
@@ -60,17 +60,13 @@ def leiden_communities(
 
     The above three phases are executed until no modularity gain is achieved or `max_level` number
     of iterations have been performed.
+    
     Parameters
     ----------
     G : NetworkX graph
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
-    node_weight : string or None, optional (default=None)
-        The name of a node attribute that holds the numerical value
-        used as a weight for nodes. If None then each node has weight 1.
-        Through each iteration of the algorithm, the weight of a node
-        is calculated as the sum of the constituent nodes, see [1]_.
     resolution : float, optional (default=1)
         If resolution is less than 1, the algorithm favors larger communities.
         Greater than 1 favors smaller communities
@@ -92,15 +88,16 @@ def leiden_communities(
     Returns
     -------
     list
-        A list of sets (partition of `G`). Each set represents one community and contains
-        all the nodes that constitute it.
+        A list of disjoint sets (partition of `G`). Each set represents one community.
 
     Examples
     --------
 
     Notes
     -----
-
+    The order in which the nodes are considered can affect the final output.
+    In the algorithm the ordering happens using a random shuffle.
+    
     References
     ----------
     .. [1] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
@@ -109,6 +106,7 @@ def leiden_communities(
     See Also
     --------
     leiden_partitions
+    :any:`louvain_communities`
     """
 
     partitions = leiden_partitions(G, weight, resolution, seed, quality_function, theta)
@@ -408,19 +406,13 @@ def leiden_partitions(
         # unrefined partition of the previous stage. The dict
         # refinement_mapping specifies how these initial communities
         # are to be set
-        P = _move_nodes_fast(
-            graph,
-            refinement_mapping,
-            quality_delta,
-            seed=seed,
-        )
+        P = _move_nodes_fast(graph, refinement_mapping, quality_delta, seed=seed)
 
         P_refined = _refine_partition(graph, P, quality_delta, seed=seed, theta=theta)
 
         P_refined_flat = [comm for P_ref in P_refined for comm in P_ref]
-
-        # We stop once the overall change in quality between iterations is
-        # close to zero.
+        
+        # Stop when overall change in quality is close to zero.
         Q_new = quality_function(graph, P_refined_flat)
         improvement_made = (Q_new - Q) > 0.0000001
         Q = Q_new
