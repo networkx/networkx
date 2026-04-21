@@ -60,7 +60,7 @@ def leiden_communities(
 
     The above three phases are executed until no modularity gain is achieved or `max_level` number
     of iterations have been performed.
-    
+
     Parameters
     ----------
     G : NetworkX graph
@@ -97,7 +97,7 @@ def leiden_communities(
     -----
     The order in which the nodes are considered can affect the final output.
     In the algorithm the ordering happens using a random shuffle.
-    
+
     References
     ----------
     .. [1] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
@@ -411,7 +411,7 @@ def leiden_partitions(
         P_refined = _refine_partition(graph, P, quality_delta, seed=seed, theta=theta)
 
         P_refined_flat = [comm for P_ref in P_refined for comm in P_ref]
-        
+
         # Stop when overall change in quality is close to zero.
         Q_new = quality_function(graph, P_refined_flat)
         improvement_made = (Q_new - Q) > 0.0000001
