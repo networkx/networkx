@@ -687,7 +687,7 @@ def _create_aggregate_graph(G, refined_partitions_list, node_attributes):
                 node2com[node] = community_index
                 nodes.update(G.nodes[node].get("nodes", {node}))
 
-                H.add_node(community_index, nodes=nodes, **agg_attribute_vals)
+            H.add_node(community_index, nodes=nodes, **agg_attribute_vals)
 
             community_index += 1
 
