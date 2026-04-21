@@ -2,7 +2,6 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms.community import leiden_communities, leiden_partitions
-from networkx.algorithms.community.leiden import QualityFunctionNotImplemented
 from networkx.algorithms.community.quality import constant_potts_model, modularity
 
 no_backends_for_leiden_communities = (
@@ -166,7 +165,7 @@ def test_connected_communities_LFR():
 def test_quality_function_not_implemented():
     G = nx.karate_club_graph()
 
-    with pytest.raises(QualityFunctionNotImplemented):
+    with pytest.raises(nx.NetworkXError):
         leiden_communities(
             G, quality_function="bad_quality_function", resolution=0.2, seed=1
         )
@@ -258,7 +257,7 @@ def test_directed_graphs_cpm():
 
 def test_bipartite_graphs_modularity():
     G = nx.bipartite.random_graph(10, 20, 0.2, seed=11)
-    with pytest.raises(QualityFunctionNotImplemented):
+    with pytest.raises(nx.NetworkXError):
         leiden_communities(
             G, quality_function="barber_modularity", resolution=0.2, seed=1
         )
@@ -266,7 +265,7 @@ def test_bipartite_graphs_modularity():
 
 def test_bipartite_graphs_modularity_directed():
     G = nx.bipartite.random_graph(10, 20, 0.2, directed=True, seed=11)
-    with pytest.raises(QualityFunctionNotImplemented):
+    with pytest.raises(nx.NetworkXError):
         leiden_communities(
             G, quality_function="barber_modularity", resolution=0.2, seed=1
         )

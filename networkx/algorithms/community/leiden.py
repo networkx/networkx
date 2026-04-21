@@ -111,14 +111,7 @@ def leiden_communities(
     leiden_partitions
     """
 
-    partitions = leiden_partitions(
-        G,
-        weight=weight,
-        resolution=resolution,
-        seed=seed,
-        quality_function=quality_function,
-        theta=theta,
-    )
+    partitions = leiden_partitions(G, weight, resolution, seed, quality_function, theta)
 
     if max_level is not None:
         if max_level <= 0:
@@ -350,9 +343,7 @@ def leiden_partitions(
             raise nx.NetworkXError("not a bipartite graph")
 
         if is_directed:
-            raise QualityFunctionNotImplemented(
-                "barber_modularity not implemented for DiGraph"
-            )
+            raise nx.NetworkXError("barber_modularity not implemented for DiGraph")
 
         # quality_function = nx.bipartite.modularity # not implemented yet
 
@@ -399,10 +390,9 @@ def leiden_partitions(
             )
             return E - resolution * (nodes_red * comm_blue + nodes_blue * comm_red)
 
-        raise QualityFunctionNotImplemented(quality_function)
-
+        raise nx.NetworkXError("barber_modularity not implemented for leiden")
     else:
-        raise QualityFunctionNotImplemented(quality_function)
+        raise nx.NetworkXError(f"{quality_function} not implemented for DiGraph")
 
     # The setup phase has ended, the main algorithm now begins.
     Q = quality_function(graph, partition)
@@ -737,11 +727,3 @@ def _is_valid_refinement(p, ref_p):
         else:
             val = False
     return val
-
-
-class QualityFunctionNotImplemented(nx.NetworkXError):
-    """Raised if quality function is not implemented for leiden"""
-
-    def __init__(self, quality_function):
-        msg = f"leiden not implemented for {quality_function}"
-        super().__init__(msg)
