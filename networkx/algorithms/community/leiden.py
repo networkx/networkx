@@ -342,7 +342,7 @@ def leiden_partitions(
 
         # quality_function should be defined inline rather than
         # importing nx.bipartite.community.modularity as the
-        # function within this algorithm needs to accept the 
+        # function within this algorithm needs to accept the
         # aggregated graphs which are not bipartite and therefore
         # requires a variation of the algorithm
 
