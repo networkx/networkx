@@ -26,7 +26,7 @@ def modularity(G, communities, nodes, weight="weight", resolution=1):
               \delta(c_v, c_w)
 
     where $m$ is the (weighted) number of edges, $\tilde{A}$ is the
-    bipartite incidence matrix, $k_v$ is the (weighted) degree of red
+    bipartite adjacency matrix, $k_v$ is the (weighted) degree of red
     node $v$, $d_w$ is the (weighted) degree of blue node $w$, $\gamma$
     is the resolution parameter, and $\delta(c_v, c_w)$ is 1 if $v$ and
     $w$ are in the same community, else 0.
@@ -76,11 +76,12 @@ def modularity(G, communities, nodes, weight="weight", resolution=1):
         that edge is treated as having weight 1.
 
     resolution : float (default=1)
-        Resolution parameter $\gamma$. Values smaller than 1 favor
-        larger communities; values greater than 1 favor smaller
-        communities. Not part of Barber's original definition, but a
-        standard extension consistent with
-        :func:`networkx.community.modularity`.
+        Resolution parameter $\gamma$. With the default ``resolution=1``,
+        $Q_B$ reduces to Barber's original definition. Values smaller
+        than 1 favor larger communities; values greater than 1 favor
+        smaller communities. The resolution parameter is not part of
+        Barber's original definition, but a standard extension
+        consistent with :func:`networkx.community.modularity`.
 
     Returns
     -------
@@ -116,7 +117,7 @@ def modularity(G, communities, nodes, weight="weight", resolution=1):
 
     See Also
     --------
-    networkx.algorithms.community.quality.modularity
+    modularity
 
     References
     ----------
@@ -175,15 +176,14 @@ def _bipartite_modularity_merge_delta(
 ):
     r"""Change in bipartite modularity from merging two disjoint communities.
 
-    Computes ``Q_B(P') - Q_B(P)`` where P contains *community_a* and
-    *community_b* as separate communities and P' is obtained by replacing
+    Computes ``Q_B(P') - Q_B(P)`` where P contains `community_a` and
+    `community_b` as separate communities and P' is obtained by replacing
     them with their union ``community_a U community_b``.
 
     For bipartite modularity ``Q_B = sum_c [L_c/m - gamma k_c d_c / m^2]``,
     the merge delta has the closed form
 
-        merge_delta = E(A, B) / m
-                    - gamma * (k_A d_B + k_B d_A) / m^2
+        merge_delta = E(A, B) / m - gamma * (k_A d_B + k_B d_A) / m^2
 
     where ``E(A, B)`` is the sum of edge weights between A and B,
     ``k_C`` is the sum of the "red" degrees of nodes in C, and ``d_C``
@@ -200,7 +200,7 @@ def _bipartite_modularity_merge_delta(
     nonzero. This is the same pattern used for directed modularity
     (in-degree / out-degree tracked as separate attributes).
 
-    *community_a* and *community_b* must be disjoint and non-empty.
+    `community_a` and `community_b` must be disjoint and non-empty.
     Self-loops are tolerated: on the original graph they are absent by
     the bipartite convention, and on aggregated graphs they represent
     intra-community edges which are not part of ``E(A, B)`` and are
