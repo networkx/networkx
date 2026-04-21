@@ -433,22 +433,12 @@ def leiden_partitions(
         # the node attribute 'nodes', which is set during _create_aggregate_graph(...)
         # Each node in graph represents a community in the original graph
         # and the node holds this information in the attribute 'nodes'.
-
-        partition = [set() for _ in graph]
-        for i, u in enumerate(graph):
-            partition[i].update(graph.nodes[u]["nodes"])
-
-        yield [s.copy() for s in partition]
+        yield [set(graph.nodes[u]["nodes"]).copy() for u in graph]
 
     return
 
 
-def _move_nodes_fast(
-    G,
-    refinement_mapping,
-    quality_delta_func,
-    seed,
-):
+def _move_nodes_fast(G, refinement_mapping, quality_delta_func, seed):
 
     # Unlike louvain, instead of beginning each iteration with the singleton
     # partition, each iteration uses the (unrefined) partition from the previous
