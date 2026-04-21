@@ -12,6 +12,7 @@ __all__ = [
     "radius",
     "periphery",
     "center",
+    "centroid",
     "barycenter",
     "resistance_distance",
     "kemeny_constant",
@@ -718,10 +719,10 @@ def center(G, e=None, usebounds=False, weight=None):
 
 
 @nx._dispatchable(edge_attrs="weight", mutates_input={"attr": 2})
-def barycenter(G, weight=None, attr=None, sp=None):
-    r"""Calculate barycenter of a connected graph, optionally with edge weights.
+def centroid(G, weight=None, attr=None, sp=None):
+    r"""Calculate centroid of a connected graph, optionally with edge weights.
 
-    The :dfn:`barycenter` a
+    The :dfn:`centroid` of a
     :func:`connected <networkx.algorithms.components.is_connected>` graph
     :math:`G` is the subgraph induced by the set of its nodes :math:`v`
     minimizing the objective function
@@ -732,7 +733,8 @@ def barycenter(G, weight=None, attr=None, sp=None):
 
     where :math:`d_G` is the (possibly weighted) :func:`path length
     <networkx.algorithms.shortest_paths.generic.shortest_path_length>`.
-    The barycenter is also called the :dfn:`median`. See [West01]_, p. 78.
+    This quantity is also known as the :dfn:`barycenter` or :dfn:`median`.
+    See [West01]_, p. 78.
 
     Parameters
     ----------
@@ -750,13 +752,13 @@ def barycenter(G, weight=None, attr=None, sp=None):
     Returns
     -------
     list
-        Nodes of `G` that induce the barycenter of `G`.
+        Nodes of `G` that induce the centroid of `G`.
 
     Raises
     ------
     NetworkXNoPath
         If `G` is disconnected. `G` may appear disconnected to
-        :func:`barycenter` if `sp` is given but is missing shortest path
+        :func:`centroid` if `sp` is given but is missing shortest path
         lengths for any pairs.
     ValueError
         If `sp` and `weight` are both given.
@@ -764,13 +766,14 @@ def barycenter(G, weight=None, attr=None, sp=None):
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
-    >>> nx.barycenter(G)
+    >>> nx.centroid(G)
     [1, 3, 4]
 
     See Also
     --------
     center
     periphery
+    barycenter
     :func:`~networkx.algorithms.tree.distance_measures.centroid` : tree centroid
     """
     if weight is None and attr is None and sp is None:
@@ -783,7 +786,7 @@ def barycenter(G, weight=None, attr=None, sp=None):
         sp = sp.items()
         if weight is not None:
             raise ValueError("Cannot use both sp, weight arguments together")
-    smallest, barycenter_vertices, n = float("inf"), [], len(G)
+    smallest, centroid_vertices, n = float("inf"), [], len(G)
     for v, dists in sp:
         if len(dists) < n:
             raise nx.NetworkXNoPath(
@@ -795,12 +798,17 @@ def barycenter(G, weight=None, attr=None, sp=None):
             G.nodes[v][attr] = barycentricity
         if barycentricity < smallest:
             smallest = barycentricity
-            barycenter_vertices = [v]
+            centroid_vertices = [v]
         elif barycentricity == smallest:
-            barycenter_vertices.append(v)
+            centroid_vertices.append(v)
     if attr is not None:
         nx._clear_cache(G)
-    return barycenter_vertices
+    return centroid_vertices
+
+
+def barycenter(G, weight=None, attr=None, sp=None):
+    """Alias for `centroid` - see `centroid` docstring for details."""
+    return centroid(G, weight, attr, sp)
 
 
 @not_implemented_for("directed")
