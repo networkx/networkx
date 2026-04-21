@@ -144,6 +144,20 @@ class TestBipartiteModularity:
         communities = [{0, 2}, {1, 3}]
         assert bipartite.modularity(G, communities, [0, 1]) == pytest.approx(0.0)
 
+    def test_multigraph(self):
+        # MultiGraph with parallel edges: each parallel edge is counted
+        # separately in both the degree sums and L_c. Two parallel (0, 2)
+        # edges plus one (1, 3). Degrees: deg(0)=2, deg(1)=1, deg(2)=2,
+        # deg(3)=1. m = 3.
+        #   {0, 2}: L=2, k=2, d=2 -> 2/3 - 4/9 = 2/9
+        #   {1, 3}: L=1, k=1, d=1 -> 1/3 - 1/9 = 2/9
+        # Total Q = 4/9.
+        G = nx.MultiGraph()
+        G.add_edges_from([(0, 2), (0, 2), (1, 3)])
+        red = {0, 1}
+        communities = [{0, 2}, {1, 3}]
+        assert bipartite.modularity(G, communities, red) == pytest.approx(4 / 9)
+
 
 def _compute_m(G, red, weight="weight"):
     """Compute total edge weight the same way bipartite.modularity does."""
@@ -273,6 +287,27 @@ class TestBipartiteModularityMergeDelta:
             q_merge = _bipartite_modularity_merge_delta(G, A, B, 1, m=m)
             q_delta = _q_merge_delta_via_full_eval(G, A, B, rest, red)
             assert q_merge == pytest.approx(q_delta)
+
+    def test_multigraph(self):
+        # Parallel edges must be reflected in both the red/blue degree
+        # attributes and in E(A, B). Edges: (0, 2) x 2, (1, 2), (1, 3).
+        # Degrees: deg(0)=2, deg(1)=2, deg(2)=3, deg(3)=1. m = 4.
+        # Merging A={0, 3} with B={1, 2}:
+        #   k_A = 2, d_A = 1, k_B = 2, d_B = 3
+        #   E(A, B) = 2 (parallel 0-2) + 1 (1-3) = 3
+        # merge_delta = 3/4 - (2*3 + 2*1)/16 = 3/4 - 1/2 = 1/4.
+        G = nx.MultiGraph()
+        G.add_edges_from([(0, 2), (0, 2), (1, 2), (1, 3)])
+        red = {0, 1}
+        _set_bipartite_degree_attrs(G, red)
+        m = _compute_m(G, red)
+
+        A = {0, 3}
+        B = {1, 2}
+        q_merge = _bipartite_modularity_merge_delta(G, A, B, 1, m=m)
+        q_delta = _q_merge_delta_via_full_eval(G, A, B, [], red)
+        assert q_merge == pytest.approx(q_delta)
+        assert q_merge == pytest.approx(0.25)
 
     def test_aggregated_supernode_graph(self):
         # Construct an aggregated graph where each super-node carries the
