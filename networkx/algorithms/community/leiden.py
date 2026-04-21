@@ -268,11 +268,11 @@ def leiden_partitions(
         # we just need to retun a value that ensure the algorithm
         # stops
         def guarded_modularity(G, P):
-            
+
             try:
                 return modularity(G, P, resolution=resolution)
             except ZeroDivisionError:
-                return float('inf')
+                return float("inf")
 
         quality_function = guarded_modularity
         if is_directed:
@@ -456,7 +456,7 @@ def _move_nodes_fast(G, refinement_mapping, quality_delta_func, seed):
     while node_queue:
         u = node_queue.pop()
         neighbor_coms = {node2com[v] for v in nx.all_neighbors(G, u)}
-        
+
         best_delta = 0
         old_com = node2com[u]
         best_com = old_com

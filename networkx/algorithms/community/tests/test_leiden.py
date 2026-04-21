@@ -190,7 +190,7 @@ def test_expected():
     part = nx.algorithms.community.leiden.leiden_communities(
         G, weight=None, resolution=0.2, seed=1
     )
-    
+
     part_expected = [
         {11},
         {12},
@@ -203,9 +203,9 @@ def test_expected():
         {21},
         {24, 25, 28, 31},
         {26},
-        {32, 33, 14, 15, 18, 20, 22, 23, 27, 29}
+        {32, 33, 14, 15, 18, 20, 22, 23, 27, 29},
     ]
-    
+
     assert _equivalent_partitions(part, part_expected)
 
 
