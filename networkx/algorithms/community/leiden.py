@@ -337,10 +337,6 @@ def leiden_partitions(
     elif quality_function == "barber_modularity":
         # Setup for undirected bipartite barber modularity (not yet fully implemented)
 
-        is_bipartite = nx.is_bipartite(G)
-        if not is_bipartite:
-            raise nx.NetworkXError("not a bipartite graph")
-
         if is_directed:
             raise nx.NetworkXError("barber_modularity not implemented for DiGraph")
 
