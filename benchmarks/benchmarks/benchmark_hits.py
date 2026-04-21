@@ -1,17 +1,17 @@
 """Benchmarks for a certain set of algorithms"""
 
-import random
-
 import networkx as nx
+
+seed = 0xDEADC0DE
 
 
 class HitsAlgorithm:
     timeout = 120
     _graphs = [
-        nx.barabasi_albert_graph(1000, m=3),
-        nx.barabasi_albert_graph(10_000, m=3),
-        nx.gnp_random_graph(5000, 0.001),
-        nx.scale_free_graph(10_000),
+        nx.barabasi_albert_graph(1000, m=3, seed=seed),
+        nx.barabasi_albert_graph(10_000, m=3, seed=seed),
+        nx.gnp_random_graph(5000, 0.001, seed=seed),
+        nx.scale_free_graph(10_000, seed=seed),
         nx.grid_2d_graph(30, 30),
     ]
     params = [
