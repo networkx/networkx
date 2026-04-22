@@ -62,7 +62,7 @@ def weakly_connected_components(G):
     n = len(G)  # must be outside the loop to avoid performance hit with graph views
     for v in G:
         if v not in seen:
-            c = set(_plain_bfs(G, n - len(seen), v))
+            c = _plain_bfs(G, n - len(seen), v)
             seen.update(c)
             yield c
 
@@ -104,7 +104,7 @@ def number_weakly_connected_components(G):
     For directed graphs only.
 
     """
-    return sum(1 for wcc in weakly_connected_components(G))
+    return sum(1 for _ in weakly_connected_components(G))
 
 
 @not_implemented_for("undirected")
@@ -157,12 +157,13 @@ def is_weakly_connected(G):
     For directed graphs only.
 
     """
-    if len(G) == 0:
+    n = len(G)
+    if n == 0:
         raise nx.NetworkXPointlessConcept(
             """Connectivity is undefined for the null graph."""
         )
 
-    return len(next(weakly_connected_components(G))) == len(G)
+    return len(next(weakly_connected_components(G))) == n
 
 
 def _plain_bfs(G, n, source):
@@ -178,7 +179,6 @@ def _plain_bfs(G, n, source):
     seen = {source}
     nextlevel = [source]
 
-    yield source
     while nextlevel:
         thislevel = nextlevel
         nextlevel = []
@@ -187,11 +187,10 @@ def _plain_bfs(G, n, source):
                 if w not in seen:
                     seen.add(w)
                     nextlevel.append(w)
-                    yield w
             for w in Gpred[v]:
                 if w not in seen:
                     seen.add(w)
                     nextlevel.append(w)
-                    yield w
             if len(seen) == n:
-                return
+                return seen
+    return seen

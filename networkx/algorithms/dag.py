@@ -7,8 +7,7 @@ to the user to check for that.
 
 import heapq
 from collections import deque
-from functools import partial
-from itertools import chain, combinations, product, starmap
+from itertools import combinations, product
 from math import gcd
 
 import networkx as nx
@@ -30,10 +29,7 @@ __all__ = [
     "dag_longest_path",
     "dag_longest_path_length",
     "dag_to_branching",
-    "compute_v_structures",
 ]
-
-chaini = chain.from_iterable
 
 
 @nx._dispatchable
@@ -112,7 +108,20 @@ def ancestors(G, source):
 
 @nx._dispatchable
 def has_cycle(G):
-    """Decides whether the directed graph has a cycle."""
+    """Decides whether the directed graph has a cycle.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
+    >>> nx.dag.has_cycle(G)
+    False
+    >>> G.add_edge(2, 0)
+    >>> nx.dag.has_cycle(G)
+    True
+
+    See Also
+    --------
+    is_directed_acyclic_graph"""
     try:
         # Feed the entire iterator into a zero-length deque.
         deque(topological_sort(G), maxlen=0)
@@ -204,6 +213,11 @@ def topological_generations(G):
 
     Notes
     -----
+    This function returns a generator. Therefore, exceptions such as
+    NetworkXUnfeasible for cyclic graphs may not be raised immediately
+    when the function is called, but rather during iteration over the
+    returned generator.
+
     The generation in which a node resides can also be determined by taking the
     max-path-distance from the node to the farthest leaf node. That value can
     be obtained with this function using `enumerate(topological_generations(G))`.
@@ -294,6 +308,11 @@ def topological_sort(G):
 
     Notes
     -----
+    This function returns a generator. Therefore, exceptions such as
+    NetworkXUnfeasible for cyclic graphs may not be raised immediately
+    when the function is called, but rather during iteration over the
+    returned generator.
+
     This algorithm is based on a description and proof in
     "Introduction to Algorithms: A Creative Approach" [1]_ .
 
@@ -572,9 +591,10 @@ def all_topological_sorts(G):
             break
 
 
+@not_implemented_for("undirected")
 @nx._dispatchable
 def is_aperiodic(G):
-    """Returns True if `G` is aperiodic.
+    """Determine whether a directed graph is aperiodic.
 
     A strongly connected directed graph is aperiodic if there is no integer ``k > 1``
     that divides the length of every cycle in the graph.
@@ -589,22 +609,22 @@ def is_aperiodic(G):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph
+    G : NetworkX graph
+        A directed graph.
 
     Returns
     -------
     bool
-        True if the graph is aperiodic False otherwise
+        Whether the graph is aperiodic.
 
     Raises
     ------
+    NetworkXNotImplemented
+        If `G` is not directed.
     NetworkXError
-        If `G` is not directed
-    NetworkXError
-        If `G` is not strongly connected
+        If `G` is not strongly connected.
     NetworkXPointlessConcept
-        If `G` has no nodes
+        If `G` has no nodes.
 
     Examples
     --------
@@ -690,29 +710,26 @@ def is_aperiodic(G):
        in Shier, D. R.; Wallenius, K. T., Applied Mathematical Modeling:
        A Multidisciplinary Approach, CRC Press.
     """
-    if not G.is_directed():
-        raise nx.NetworkXError("is_aperiodic not defined for undirected graphs")
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("Graph has no nodes.")
     if not nx.is_strongly_connected(G):
         raise nx.NetworkXError("Graph is not strongly connected.")
-    s = arbitrary_element(G)
+
+    s = nx.utils.arbitrary_element(G)
     levels = {s: 0}
-    this_level = [s]
     g = 0
-    lev = 1
-    while this_level:
-        next_level = []
-        for u in this_level:
-            for v in G[u]:
-                if v in levels:  # Non-Tree Edge
-                    g = gcd(g, levels[u] - levels[v] + 1)
-                else:  # Tree Edge
-                    next_level.append(v)
-                    levels[v] = lev
-        this_level = next_level
-        lev += 1
-    return g == 1
+    # There are 3 relevant possible edge types in `dfs_labeled_edges`:
+    # "forward", "reverse", and "nontree".
+    for u, v, d in nx.dfs_labeled_edges(G, s):
+        if d == "forward":
+            # "forward" edges indicate a new node.
+            levels[v] = levels[u] + 1
+        elif d == "nontree" and (g := gcd(g, levels[u] - levels[v] + 1)) == 1:
+            # "nontree" edges indicate a previously explored node.
+            # Check whether this affects the common factor of cycle lengths.
+            return True
+        # "reverse" edges indicate backtracking in DFS and can be ignored.
+    return False
 
 
 @nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
@@ -1171,9 +1188,9 @@ def root_to_leaf_paths(G):
     """
     roots = (v for v, d in G.in_degree() if d == 0)
     leaves = (v for v, d in G.out_degree() if d == 0)
-    all_paths = partial(nx.all_simple_paths, G)
-    # TODO In Python 3, this would be better as `yield from ...`.
-    return chaini(starmap(all_paths, product(roots, leaves)))
+
+    for root, leaf in product(roots, leaves):
+        yield from nx.all_simple_paths(G, root, leaf)
 
 
 @not_implemented_for("multigraph")
@@ -1273,81 +1290,6 @@ def dag_to_branching(G):
     B.remove_node(0)
     B.remove_node(-1)
     return B
-
-
-@not_implemented_for("undirected")
-@nx._dispatchable
-def compute_v_structures(G):
-    """Yields 3-node tuples that represent the v-structures in `G`.
-
-    .. deprecated:: 3.4
-
-       `compute_v_structures` actually yields colliders. It will be removed in
-       version 3.6. Use `nx.dag.v_structures` or `nx.dag.colliders` instead.
-
-    Colliders are triples in the directed acyclic graph (DAG) where two parent nodes
-    point to the same child node. V-structures are colliders where the two parent
-    nodes are not adjacent. In a causal graph setting, the parents do not directly
-    depend on each other, but conditioning on the child node provides an association.
-
-    Parameters
-    ----------
-    G : graph
-        A networkx `~networkx.DiGraph`.
-
-    Yields
-    ------
-    A 3-tuple representation of a v-structure
-        Each v-structure is a 3-tuple with the parent, collider, and other parent.
-
-    Raises
-    ------
-    NetworkXNotImplemented
-        If `G` is an undirected graph.
-
-    Examples
-    --------
-    >>> G = nx.DiGraph([(1, 2), (0, 4), (3, 1), (2, 4), (0, 5), (4, 5), (1, 5)])
-    >>> nx.is_directed_acyclic_graph(G)
-    True
-    >>> list(nx.compute_v_structures(G))
-    [(0, 4, 2), (0, 5, 4), (0, 5, 1), (4, 5, 1)]
-
-    See Also
-    --------
-    v_structures
-    colliders
-
-    Notes
-    -----
-    This function was written to be used on DAGs, however it works on cyclic graphs
-    too. Since colliders are referred to in the cyclic causal graph literature
-    [2]_ we allow cyclic graphs in this function. It is suggested that you test if
-    your input graph is acyclic as in the example if you want that property.
-
-    References
-    ----------
-    .. [1]  `Pearl's PRIMER <https://bayes.cs.ucla.edu/PRIMER/primer-ch2.pdf>`_
-            Ch-2 page 50: v-structures def.
-    .. [2] A Hyttinen, P.O. Hoyer, F. Eberhardt, M J ̈arvisalo, (2013)
-           "Discovering cyclic causal models with latent variables:
-           a general SAT-based procedure", UAI'13: Proceedings of the Twenty-Ninth
-           Conference on Uncertainty in Artificial Intelligence, pg 301–310,
-           `doi:10.5555/3023638.3023669 <https://dl.acm.org/doi/10.5555/3023638.3023669>`_
-    """
-    import warnings
-
-    warnings.warn(
-        (
-            "\n\n`compute_v_structures` actually yields colliders. It will be\n"
-            "removed in version 3.6. Use `nx.dag.v_structures` or `nx.dag.colliders`\n"
-            "instead.\n"
-        ),
-        category=DeprecationWarning,
-        stacklevel=5,
-    )
-
-    return colliders(G)
 
 
 @not_implemented_for("undirected")

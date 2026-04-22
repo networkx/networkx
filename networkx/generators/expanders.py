@@ -96,7 +96,10 @@ def chordal_cycle_graph(p, create_using=None):
 
     The returned graph is a cycle graph on `p` nodes with chords joining each
     vertex `x` to its inverse modulo `p`. This graph is a (mildly explicit)
-    3-regular expander [1]_.
+    3-regular expander [1]_ when viewed as a simple graph. The default return
+    type is a MultiGraph, which has 6-regular nodes due to the symmetric nature
+    of the edge additions. Use ``nx.Graph(nx.chordal_cycle_graph(p))`` to obtain
+    the 3-regular simple graph.
 
     `p` *must* be a prime number.
 

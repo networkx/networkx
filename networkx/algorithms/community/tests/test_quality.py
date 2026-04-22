@@ -7,8 +7,16 @@ import pytest
 
 import networkx as nx
 from networkx import barbell_graph
-from networkx.algorithms.community import modularity, partition_quality
-from networkx.algorithms.community.quality import inter_community_edges
+from networkx.algorithms.community import (
+    constant_potts_model,
+    modularity,
+    partition_quality,
+)
+from networkx.algorithms.community.quality import (
+    _cpm_delta_partial_eval_add,
+    _cpm_delta_partial_eval_remove,
+    inter_community_edges,
+)
 
 
 class TestPerformance:
@@ -65,6 +73,179 @@ def test_modularity():
     G.add_edges_from([(2, 1), (2, 3), (3, 4)])
     C = [{1, 2}, {3, 4}]
     assert 2 / 9 == pytest.approx(modularity(G, C), abs=1e-7)
+
+
+def test_cpm():
+    G = nx.barbell_graph(3, 0)
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    gamma = 0.1
+    cpm = constant_potts_model(
+        G, partition, weight="weight", node_weight="node_weight", resolution=gamma
+    )
+    # compare cpm against the value computed by hand using the
+    # formula stated in the definition of constant_potts_model
+    assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
+
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    gamma = 1
+    cpm = constant_potts_model(
+        G, partition, weight="weight", node_weight="node_weight", resolution=gamma
+    )
+    # compare cpm against the value computed by hand using the
+    # formula stated in the definition of constant_potts_model
+    assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
+
+    partition = [{i} for i in G]
+    gamma = 1
+    cpm = constant_potts_model(
+        G, partition, weight="weight", node_weight="node_weight", resolution=gamma
+    )
+    # compare cpm against the value computed by hand using the
+    # formula stated in the definition of constant_potts_model
+    assert -6 * gamma == cpm
+
+    G = nx.barbell_graph(3, 0)
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    G.nodes[0]["foo"] = 2
+    G.nodes[1]["foo"] = 3
+    G.nodes[2]["foo"] = 4
+    G.nodes[3]["foo"] = 2
+    G.nodes[4]["foo"] = 8
+    G.nodes[5]["foo"] = 10
+
+    G.edges[(0, 1)]["bar"] = 1
+    G.edges[(0, 2)]["bar"] = 2
+    G.edges[(1, 2)]["bar"] = 3
+    G.edges[(2, 3)]["bar"] = 4
+    G.edges[(3, 4)]["bar"] = 3
+    G.edges[(3, 5)]["bar"] = 2
+    G.edges[(4, 5)]["bar"] = 1
+
+    gamma = 1
+    cpm = constant_potts_model(
+        G, partition, weight="weight", node_weight="node_weight", resolution=gamma
+    )
+    # compare cpm against the value computed by hand using the
+    # formula stated in the definition of constant_potts_model
+    assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
+    cpm = constant_potts_model(
+        G, partition, weight="bar", node_weight="foo", resolution=gamma
+    )
+    # compare cpm against the value computed by hand using the
+    # formula stated in the definition of constant_potts_model
+    assert (6 - gamma * 9**2) + (6 - gamma * 20**2) == cpm
+
+    gamma = 0.2
+    cpm = constant_potts_model(
+        G, partition, weight="weight", node_weight="node_weight", resolution=gamma
+    )
+    # compare cpm against the value computed by hand using the
+    # formula stated in the definition of constant_potts_model
+    assert (3 - gamma * 3**2) + (3 - gamma * 3**2) == cpm
+
+    cpm = constant_potts_model(
+        G, partition, weight="bar", node_weight="foo", resolution=gamma
+    )
+    # compare cpm against the value computed by hand using the
+    # formula stated in the definition of constant_potts_model
+    assert (6 - gamma * 9**2) + (6 - gamma * 20**2) == cpm
+
+    G = nx.barbell_graph(3, 0)
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    G.nodes[0]["node_weight"] = 2
+    G.nodes[1]["node_weight"] = 3
+    G.nodes[2]["node_weight"] = 4
+    G.nodes[3]["node_weight"] = 2
+    G.nodes[4]["node_weight"] = 8
+    G.nodes[5]["node_weight"] = 10
+
+    G.edges[(0, 1)]["weight"] = 1
+    G.edges[(0, 2)]["weight"] = 2
+    G.edges[(1, 2)]["weight"] = 3
+    G.edges[(2, 3)]["weight"] = 4
+    G.edges[(3, 4)]["weight"] = 3
+    G.edges[(3, 5)]["weight"] = 2
+    G.edges[(4, 5)]["weight"] = 1
+
+    cpm = constant_potts_model(
+        G, partition, weight="weight", node_weight="node_weight", resolution=gamma
+    )
+    # compare cpm against the value computed by hand using the
+    # formula stated in the definition of constant_potts_model
+    assert (6 - gamma * 9**2) + (6 - gamma * 20**2) == cpm
+
+
+def test_cpm_add_remove_total_cost():
+    G = nx.barbell_graph(3, 0)
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    nx.set_node_attributes(G, 1, "node_weight")
+    nx.set_edge_attributes(G, 1, "weight")
+    r = 0.5
+
+    u = 0
+    A = partition[0]
+    B = partition[1]
+    qA = _cpm_delta_partial_eval_remove(G, node=u, community=A, resolution=r)
+    qB = _cpm_delta_partial_eval_add(G, node=u, community=B, resolution=r)
+
+    q_after = constant_potts_model(
+        G,
+        [A - {u}, B.union({u})],
+        weight="weight",
+        node_weight="node_weight",
+        resolution=r,
+    )
+    q_before = constant_potts_model(
+        G, [A, B], weight="weight", node_weight="node_weight", resolution=r
+    )
+    q_delta = q_after - q_before
+    assert qA + qB == q_delta
+
+
+def test_cpm_add_remove_total_cost_weights():
+    G = nx.barbell_graph(3, 0)
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    G.nodes[0]["node_weight"] = 1
+    G.nodes[1]["node_weight"] = 2
+    G.nodes[2]["node_weight"] = 3
+    G.nodes[3]["node_weight"] = 4
+    G.nodes[4]["node_weight"] = 5
+    G.nodes[5]["node_weight"] = 6
+
+    # the add and remove functions should cancel terms which come from
+    # self-loops and hence we add some weighted self-loops
+    for i in range(6):
+        G.add_edge(i, i)
+        G.edges[(i, i)]["weight"] = i + 2
+
+    G.edges[(0, 1)]["weight"] = 1
+    G.edges[(0, 2)]["weight"] = 2
+    G.edges[(1, 2)]["weight"] = 3
+    G.edges[(2, 3)]["weight"] = 4
+    G.edges[(3, 4)]["weight"] = 5
+    G.edges[(3, 5)]["weight"] = 6
+    G.edges[(4, 5)]["weight"] = 7
+
+    r = 0.5
+
+    u = 0
+    A = partition[0]
+    B = partition[1]
+    qA = _cpm_delta_partial_eval_remove(G, node=u, community=A, resolution=r)
+    qB = _cpm_delta_partial_eval_add(G, node=u, community=B, resolution=r)
+
+    q_after = constant_potts_model(
+        G,
+        [A - {u}, B.union({u})],
+        weight="weight",
+        node_weight="node_weight",
+        resolution=r,
+    )
+    q_before = constant_potts_model(
+        G, [A, B], weight="weight", node_weight="node_weight", resolution=r
+    )
+    q_delta = q_after - q_before
+    assert qA + qB == q_delta
 
 
 def test_modularity_resolution():

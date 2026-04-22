@@ -24,6 +24,30 @@ def test_generate_random_paths_source_not_in_G(source):
         next(path_gen)
 
 
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_generate_random_paths_with_isolated_nodes():
+    pytest.importorskip("numpy")
+    G = nx.Graph()
+    G.add_nodes_from([0, 1, 2])
+    G.add_edge(0, 1)
+
+    # Connected source node
+    paths = list(nx.generate_random_paths(G, 2, path_length=2, source=0, seed=42))
+    assert len(paths) == 2
+    assert all(len(path) == 3 for path in paths)
+    assert all(path[0] == 0 for path in paths)
+
+    # Isolated source node
+    path_gen = nx.generate_random_paths(G, 2, path_length=2, source=2, seed=42)
+    with pytest.raises(ValueError, match="probabilities contain NaN"):
+        list(path_gen)
+
+    # Random source that might pick isolated node
+    path_gen = nx.generate_random_paths(G, 2, path_length=2, seed=42)
+    with pytest.raises(ValueError, match="probabilities contain NaN"):
+        list(path_gen)
+
+
 def nmatch(n1, n2):
     return n1 == n2
 
@@ -814,8 +838,6 @@ class TestSimilarity:
         np.testing.assert_allclose(expected, actual, atol=1e-7)
 
     def test_panther_similarity_unweighted(self):
-        np.random.seed(42)
-
         G = nx.Graph()
         G.add_edge(0, 1)
         G.add_edge(0, 2)
@@ -823,12 +845,10 @@ class TestSimilarity:
         G.add_edge(1, 2)
         G.add_edge(2, 4)
         expected = {3: 0.5, 2: 0.5, 1: 0.5, 4: 0.125}
-        sim = nx.panther_similarity(G, 0, path_length=2)
+        sim = nx.panther_similarity(G, 0, path_length=2, seed=42)
         assert sim == expected
 
     def test_panther_similarity_weighted(self):
-        np.random.seed(42)
-
         G = nx.Graph()
         G.add_edge("v1", "v2", w=5)
         G.add_edge("v1", "v3", w=1)
@@ -836,7 +856,7 @@ class TestSimilarity:
         G.add_edge("v2", "v3", w=0.1)
         G.add_edge("v3", "v5", w=1)
         expected = {"v3": 0.75, "v4": 0.5, "v2": 0.5, "v5": 0.25}
-        sim = nx.panther_similarity(G, "v1", path_length=2, weight="w")
+        sim = nx.panther_similarity(G, "v1", path_length=2, weight="w", seed=42)
         assert sim == expected
 
     def test_panther_similarity_source_not_found(self):
@@ -914,8 +934,6 @@ class TestSimilarity:
         assert expected_map == index_map
 
     def test_generate_random_paths_weighted(self):
-        np.random.seed(42)
-
         index_map = {}
         num_paths = 10
         path_length = 6
@@ -927,7 +945,7 @@ class TestSimilarity:
         G.add_edge("c", "f", weight=0.9)
         G.add_edge("a", "d", weight=0.3)
         paths = nx.generate_random_paths(
-            G, num_paths, path_length=path_length, index_map=index_map
+            G, num_paths, path_length=path_length, index_map=index_map, seed=42
         )
 
         expected_paths = [
@@ -953,6 +971,20 @@ class TestSimilarity:
 
         assert expected_paths == list(paths)
         assert expected_map == index_map
+
+    def test_one_node_one_loop_and_empty_graph(self):
+        G1 = nx.DiGraph([(0, 0)])
+        G2 = nx.DiGraph()
+        assert nx.graph_edit_distance(G1, G2) == 2
+
+    def test_one_node_two_loops_and_empty_graph(self):
+        G1 = nx.MultiDiGraph([(0, 0), (0, 0)])
+        assert nx.graph_edit_distance(G1, nx.DiGraph()) == 3
+        assert nx.graph_edit_distance(G1, nx.MultiDiGraph()) == 3
+
+    def test_two_directed_loops(self):
+        G = nx.DiGraph([(0, 0), (1, 1)])
+        assert nx.graph_edit_distance(G, nx.DiGraph()) == 4
 
     def test_symmetry_with_custom_matching(self):
         """G2 has edge (a,b) and G3 has edge (a,a) but node order for G2 is (a,b)
@@ -982,3 +1014,145 @@ class TestSimilarity:
             nx.graph_edit_distance(G3, G2, node_match=user_match, edge_match=user_match)
             == 1
         )
+
+    def test_panther_vector_similarity_basic(self):
+        """Basic test for panther_vector_similarity function."""
+        G = nx.Graph()
+        G.add_edge(0, 1)
+        G.add_edge(0, 2)
+        G.add_edge(0, 3)
+        G.add_edge(1, 2)
+        G.add_edge(2, 4)
+
+        sim = nx.panther_vector_similarity(G, 0, D=3, k=4, path_length=2, seed=42)
+
+        assert len(sim) > 0
+        assert 0 not in sim  # Source node should not be included
+        assert all(node in [1, 2, 3, 4] for node in sim)  # Only valid nodes
+        assert all(0 <= score <= 1 for score in sim.values())  # Valid scores
+
+    def test_panther_vector_similarity_unweighted(self):
+        """Test panther_vector_similarity with unweighted graph."""
+        G = nx.Graph()
+        G.add_edge(0, 1)
+        G.add_edge(0, 2)
+        G.add_edge(0, 3)
+        G.add_edge(1, 2)
+        G.add_edge(2, 4)
+
+        sim = nx.panther_vector_similarity(G, 0, D=3, k=4, path_length=2, seed=42)
+
+        assert len(sim) == 4
+        assert 0 not in sim
+        assert all(node in sim for node in [1, 2, 3, 4])
+        assert all(0 <= score <= 1 for score in sim.values())
+
+    def test_panther_vector_similarity_weighted(self):
+        """Test panther_vector_similarity with weighted graph."""
+        G = nx.Graph()
+        G.add_edge("v1", "v2", weight=5)
+        G.add_edge("v1", "v3", weight=1)
+        G.add_edge("v1", "v4", weight=2)
+        G.add_edge("v2", "v3", weight=0.1)
+        G.add_edge("v3", "v5", weight=1)
+
+        sim = nx.panther_vector_similarity(
+            G, "v1", D=3, k=4, path_length=2, weight="weight", seed=42
+        )
+
+        assert len(sim) == 4
+        assert "v1" not in sim
+        assert all(0 <= score <= 1 for score in sim.values())
+        assert all(node in sim for node in ["v2", "v3", "v4"])
+
+    def test_panther_vector_similarity_source_not_found(self):
+        """Test panther_vector_similarity with non-existent source node."""
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 2), (2, 4)])
+
+        with pytest.raises(nx.NodeNotFound):
+            nx.panther_vector_similarity(G, source=10)
+
+    def test_panther_vector_similarity_isolated(self):
+        """Test panther_vector_similarity with isolated source node."""
+        G = nx.Graph()
+        G.add_nodes_from(range(5))
+        G.add_edge(0, 1)
+
+        with pytest.raises(nx.NetworkXUnfeasible):
+            nx.panther_vector_similarity(G, source=2)
+
+    def test_panther_vector_similarity_too_large_D(self):
+        """Test raises when D > number of nodes."""
+        G = nx.star_graph(3)
+
+        with pytest.raises(nx.NetworkXUnfeasible):
+            nx.panther_vector_similarity(G, 0, D=5, k=3)
+
+    def test_panther_vector_similarity_too_large_k(self):
+        """Test raises when k > number of nodes."""
+        G = nx.star_graph(3)
+
+        with pytest.raises(nx.NetworkXUnfeasible):
+            nx.panther_vector_similarity(G, 0, k=5)
+
+    def test_panther_vector_similarity_small_graph(self):
+        """Test panther_vector_similarity with a very small graph."""
+        G = nx.Graph()
+        G.add_edge(0, 1)
+
+        sim = nx.panther_vector_similarity(G, 0, D=2, k=2, seed=42)
+
+        assert len(sim) == 1
+        assert 1 in sim
+        assert sim[1] > 0
+
+    def test_panther_vector_similarity_deterministic(self):
+        """Test that results are deterministic with fixed seed."""
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 2), (2, 4)])
+
+        sim1 = nx.panther_vector_similarity(G, 0, D=3, path_length=2, seed=42)
+
+        sim2 = nx.panther_vector_similarity(G, 0, D=3, path_length=2, seed=42)
+
+        assert sim1 == sim2
+
+    def test_panther_similarity_string_nodes(self):
+        """Test panther_similarity with string node names."""
+        pytest.importorskip("numpy")
+        G = nx.Graph()
+        G.add_edges_from([("A", "B"), ("A", "C"), ("A", "D"), ("B", "C")])
+
+        sim = nx.panther_similarity(G, "A", k=2, path_length=2, seed=42)
+
+        assert "A" not in sim  # Source node should not be included
+        assert all(isinstance(node, str) for node in sim)  # Nodes should remain strings
+
+    def test_panther_vector_similarity_string_nodes(self):
+        """Test panther_vector_similarity with string node names."""
+        pytest.importorskip("numpy")
+        G = nx.Graph()
+        G.add_edges_from([("A", "B"), ("A", "C"), ("A", "D"), ("B", "C")])
+
+        sim = nx.panther_vector_similarity(G, "A", D=3, k=2, path_length=2, seed=42)
+
+        assert "A" not in sim  # Source node should not be included
+        assert all(isinstance(node, str) for node in sim)  # Nodes should remain strings
+
+    def test_panther_similarity_k_parameter_returns_k_results(self):
+        pytest.importorskip("numpy")
+        G = nx.star_graph(100)
+
+        for k_val in [1, 2, 3, 4, 5, 10]:
+            result_panther = nx.panther_similarity(G, source=1, k=k_val, seed=42)
+            assert len(result_panther) == k_val, (
+                f"panther_similarity k={k_val} returned {len(result_panther)} results"
+            )
+            assert 1 not in result_panther, "Source node should not be in results"
+
+            result_vector = nx.panther_vector_similarity(G, source=1, k=k_val, seed=42)
+            assert len(result_vector) == k_val, (
+                f"panther_vector_similarity k={k_val} returned {len(result_vector)} results"
+            )
+            assert 1 not in result_vector, "Source node should not be in results"

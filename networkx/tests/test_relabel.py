@@ -151,7 +151,9 @@ class TestRelabel:
         mapping = {"a": "aardvark", "b": "bear"}
         G = nx.relabel_nodes(G, mapping, copy=False)
         assert nodes_equal(G.nodes(), ["aardvark", "bear"])
-        assert edges_equal(G.edges(), [("aardvark", "bear"), ("aardvark", "bear")])
+        assert edges_equal(
+            G.edges(), [("aardvark", "bear"), ("aardvark", "bear")], directed=True
+        )
 
     def test_relabel_isolated_nodes_to_same(self):
         G = nx.Graph()
@@ -345,3 +347,12 @@ class TestRelabel:
         H = nx.relabel_nodes(G, mapping, copy=False)
         new_order = list(H)
         assert [mapping.get(i, i) for i in original_order] != new_order
+
+    def test_relabel_copy_false_undirected(self):
+        G = nx.Graph([(0, 2), (0, 3), (1, 3)])
+        nx.relabel_nodes(G, {0: "a", 1: "b"}, copy=False)
+        # Use sets to allow both edges and source/target nodes within edges to be arbitrarily
+        # ordered for undirected Graphs
+        actual = {frozenset(e) for e in G.edges}
+        expected = {frozenset(e) for e in [("a", 2), ("a", 3), ("b", 3)]}
+        assert actual == expected

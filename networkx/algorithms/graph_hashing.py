@@ -24,7 +24,7 @@ def _init_node_labels(G, edge_attr, node_attr):
         return {u: "" for u in G}
     else:
         warnings.warn(
-            "The hashes produced for graphs without node or edge attributes"
+            "The hashes produced for graphs without node or edge attributes "
             "changed in v3.5 due to a bugfix (see documentation).",
             UserWarning,
             stacklevel=2,

@@ -511,19 +511,19 @@ def chordless_cycles(G, length_bound=None):
     We use an algorithm strongly inspired by that of Dias et al [1]_.  It has
     been modified in the following ways:
 
-        1. Recursion is avoided, per Python's limitations
+        1. Recursion is avoided, per Python's limitations.
 
         2. The labeling function is not necessary, because the starting paths
-            are chosen (and deleted from the host graph) to prevent multiple
-            occurrences of the same path
+           are chosen (and deleted from the host graph) to prevent multiple
+           occurrences of the same path.
 
-        3. The search is optionally bounded at a specified length
+        3. The search is optionally bounded at a specified length.
 
         4. Support for directed graphs is provided by extending cycles along
-            forward edges, and blocking nodes along forward and reverse edges
+           forward edges, and blocking nodes along forward and reverse edges.
 
         5. Support for multigraphs is provided by omitting digons from the set
-            of forward edges
+           of forward edges.
 
     Parameters
     ----------
@@ -1024,7 +1024,7 @@ def find_cycle(G, source=None, orientation=None):
 
     else:
         assert len(cycle) == 0
-        raise nx.exception.NetworkXNoCycle("No cycle found.")
+        raise nx.NetworkXNoCycle("No cycle found.")
 
     # We now have a list of edges which ends on a cycle.
     # So we need to remove from the beginning edges that are not relevant.

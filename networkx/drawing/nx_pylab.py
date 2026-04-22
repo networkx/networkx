@@ -1490,6 +1490,8 @@ def draw_networkx_nodes(
 
     if not isinstance(node_shape, np.ndarray) and not isinstance(node_shape, list):
         node_shape = np.array([node_shape for _ in range(len(nodelist))])
+    elif isinstance(node_shape, list):
+        node_shape = np.asarray(node_shape)
 
     for shape in np.unique(node_shape):
         node_collection = ax.scatter(
@@ -1845,7 +1847,9 @@ def draw_networkx_edges(
         radius rad. For example, connectionstyle='arc3,rad=0.2'.
         See `matplotlib.patches.ConnectionStyle` and
         `matplotlib.patches.FancyArrowPatch` for more info.
-        If Iterable, index indicates i'th edge key of MultiGraph
+        If Iterable, index indicates i'th edge key of MultiGraph.
+        Has no effect if edges are represented as a LineCollection - see
+        `arrows` parameter for details.
 
     node_size : scalar or array (default=300)
         Size of nodes. Though the nodes are not drawn with this function, the

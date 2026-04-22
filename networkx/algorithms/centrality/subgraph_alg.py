@@ -16,7 +16,7 @@ __all__ = [
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatchable
-def subgraph_centrality_exp(G):
+def subgraph_centrality_exp(G, *, normalized=False):
     r"""Returns the subgraph centrality for each node of G.
 
     Subgraph centrality  of a node `n` is the sum of weighted closed
@@ -27,6 +27,9 @@ def subgraph_centrality_exp(G):
     Parameters
     ----------
     G: graph
+    normalized : bool
+        If True, normalize the centrality values using the largest eigenvalue of the
+        adjacency matrix so that the centrality values are generally between 0 and 1.
 
     Returns
     -------
@@ -54,13 +57,6 @@ def subgraph_centrality_exp(G):
 
         SC(u)=(e^A)_{uu} .
 
-    References
-    ----------
-    .. [1] Ernesto Estrada, Juan A. Rodriguez-Velazquez,
-       "Subgraph centrality in complex networks",
-       Physical Review E 71, 056103 (2005).
-       https://arxiv.org/abs/cond-mat/0504730
-
     Examples
     --------
     (Example from [1]_)
@@ -84,6 +80,17 @@ def subgraph_centrality_exp(G):
     >>> sc = nx.subgraph_centrality_exp(G)
     >>> print([f"{node} {sc[node]:0.2f}" for node in sorted(sc)])
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
+    >>> sc = nx.subgraph_centrality(G, normalized=True)
+    >>> print([f"{node} {sc[node]:0.3f}" for node in sorted(sc)])
+    ['1 0.194', '2 0.194', '3 0.181', '4 0.184', '5 0.181', '6 0.184', '7 0.181', '8 0.194']
+
+    References
+    ----------
+    .. [1] Ernesto Estrada, Juan A. Rodriguez-Velazquez,
+       "Subgraph centrality in complex networks",
+       Physical Review E 71, 056103 (2005).
+       https://arxiv.org/abs/cond-mat/0504730
+
     """
     # alternative implementation that calculates the matrix exponential
     import scipy as sp
@@ -93,15 +100,18 @@ def subgraph_centrality_exp(G):
     # convert to 0-1 matrix
     A[A != 0.0] = 1
     expA = sp.linalg.expm(A)
+    values = map(float, expA.diagonal())
+    if normalized:
+        values = values / values.max()
     # convert diagonal to dictionary keyed by node
-    sc = dict(zip(nodelist, map(float, expA.diagonal())))
+    sc = dict(zip(nodelist, values))
     return sc
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatchable
-def subgraph_centrality(G):
+def subgraph_centrality(G, *, normalized=False):
     r"""Returns subgraph centrality for each node in G.
 
     Subgraph centrality  of a node `n` is the sum of weighted closed
@@ -111,7 +121,10 @@ def subgraph_centrality(G):
 
     Parameters
     ----------
-    G: graph
+    G: Graph
+    normalized : bool
+        If True, normalize the centrality values using the largest eigenvalue of the
+        adjacency matrix so that the centrality values are generally between 0 and 1.
 
     Returns
     -------
@@ -166,6 +179,9 @@ def subgraph_centrality(G):
     >>> sc = nx.subgraph_centrality(G)
     >>> print([f"{node} {sc[node]:0.2f}" for node in sorted(sc)])
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
+    >>> sc = nx.subgraph_centrality(G, normalized=True)
+    >>> print([f"{node} {sc[node]:0.3f}" for node in sorted(sc)])
+    ['1 0.194', '2 0.194', '3 0.181', '4 0.184', '5 0.181', '6 0.184', '7 0.181', '8 0.194']
 
     References
     ----------
@@ -183,7 +199,10 @@ def subgraph_centrality(G):
     A[np.nonzero(A)] = 1
     w, v = np.linalg.eigh(A)
     vsquare = np.array(v) ** 2
-    expw = np.exp(w)
+    if normalized:
+        expw = np.exp(w - w.max())
+    else:
+        expw = np.exp(w)
     xg = vsquare @ expw
     # convert vector dictionary keyed by node
     sc = dict(zip(nodelist, map(float, xg)))

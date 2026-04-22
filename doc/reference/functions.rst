@@ -46,7 +46,6 @@ Edges
 
    edges
    number_of_edges
-   density
    non_edges
 
 Self loops

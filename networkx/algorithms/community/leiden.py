@@ -90,7 +90,7 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
 
     References
     ----------
-    .. [1] Traag, V.A., Waltman, L. & van Eck, N.J. From Leiden to Leiden: guaranteeing
+    .. [1] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
        well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
 
     See Also
@@ -148,7 +148,7 @@ def leiden_partitions(G, weight="weight", resolution=1, seed=None):
 
     References
     ----------
-    .. [1] Traag, V.A., Waltman, L. & van Eck, N.J. From Leiden to Leiden: guaranteeing
+    .. [1] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
        well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
 
     See Also

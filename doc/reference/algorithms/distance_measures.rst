@@ -8,6 +8,7 @@ Distance Measures
 
    barycenter
    center
+   centroid
    diameter
    harmonic_diameter
    eccentricity

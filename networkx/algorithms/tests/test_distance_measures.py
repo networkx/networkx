@@ -74,10 +74,9 @@ class TestDistance:
         assert e == 0
         pytest.raises(nx.NetworkXError, nx.eccentricity, G, 1)
 
-        # test against empty graph
-        G = nx.empty_graph()
-        e = nx.eccentricity(G)
-        assert e == {}
+        # test against null graph
+        G = nx.Graph()
+        pytest.raises(nx.NetworkXPointlessConcept, nx.eccentricity, G)
 
     def test_diameter(self):
         assert nx.diameter(self.G) == 6
@@ -170,6 +169,13 @@ class TestDistance:
         with pytest.raises(nx.NetworkXError):
             DG = nx.DiGraph([(1, 2), (1, 3)])
             nx.eccentricity(DG)
+
+    def test_diameter_radius_empty_graph(self):
+        G = nx.Graph()
+        with pytest.raises(nx.NetworkXPointlessConcept, match="null graph"):
+            nx.diameter(G)
+        with pytest.raises(nx.NetworkXPointlessConcept, match="null graph"):
+            nx.radius(G)
 
 
 class TestWeightedDistance:
@@ -585,43 +591,43 @@ class TestEffectiveGraphResistance:
         assert np.isclose(RG, (N - 1) * N * (N + 1) // 6)
 
 
-class TestBarycenter:
-    """Test :func:`networkx.algorithms.distance_measures.barycenter`."""
+class TestCentroid:
+    """Test :func:`networkx.algorithms.distance_measures.centroid`."""
 
-    def barycenter_as_subgraph(self, g, **kwargs):
+    def centroid_as_subgraph(self, g, **kwargs):
         """Return the subgraph induced on the barycenter of g"""
-        b = nx.barycenter(g, **kwargs)
+        b = nx.centroid(g, **kwargs)
         assert isinstance(b, list)
         assert set(b) <= set(g)
         return g.subgraph(b)
 
     def test_must_be_connected(self):
-        pytest.raises(nx.NetworkXNoPath, nx.barycenter, nx.empty_graph(5))
+        pytest.raises(nx.NetworkXNoPath, nx.centroid, nx.empty_graph(5))
 
     def test_sp_kwarg(self):
         # Complete graph K_5. Normally it works...
         K_5 = nx.complete_graph(5)
         sp = dict(nx.shortest_path_length(K_5))
-        assert nx.barycenter(K_5, sp=sp) == list(K_5)
+        assert nx.centroid(K_5, sp=sp) == list(K_5)
 
         # ...but not with the weight argument
         for u, v, data in K_5.edges.data():
             data["weight"] = 1
-        pytest.raises(ValueError, nx.barycenter, K_5, sp=sp, weight="weight")
+        pytest.raises(ValueError, nx.centroid, K_5, sp=sp, weight="weight")
 
         # ...and a corrupted sp can make it seem like K_5 is disconnected
         del sp[0][1]
-        pytest.raises(nx.NetworkXNoPath, nx.barycenter, K_5, sp=sp)
+        pytest.raises(nx.NetworkXNoPath, nx.centroid, K_5, sp=sp)
 
     def test_trees(self):
-        """The barycenter of a tree is a single vertex or an edge.
+        """The centroid of a tree is a single vertex or an edge.
 
         See [West01]_, p. 78.
         """
         prng = Random(0xDEADBEEF)
         for i in range(50):
             RT = nx.random_labeled_tree(prng.randint(1, 75), seed=prng)
-            b = self.barycenter_as_subgraph(RT)
+            b = self.centroid_as_subgraph(RT)
             if len(b) == 2:
                 assert b.size() == 1
             else:
@@ -644,7 +650,7 @@ class TestBarycenter:
                 4: ["z"],
             }
         )
-        b = self.barycenter_as_subgraph(g, attr="barycentricity")
+        b = self.centroid_as_subgraph(g, attr="barycentricity")
         assert list(b) == ["z"]
         assert not b.edges
         expected_barycentricity = {
@@ -665,7 +671,7 @@ class TestBarycenter:
         # Doubling weights should do nothing but double the barycentricities
         for edge in g.edges:
             g.edges[edge]["weight"] = 2
-        b = self.barycenter_as_subgraph(g, weight="weight", attr="barycentricity2")
+        b = self.centroid_as_subgraph(g, weight="weight", attr="barycentricity2")
         assert list(b) == ["z"]
         assert not b.edges
         for node, barycentricity in expected_barycentricity.items():

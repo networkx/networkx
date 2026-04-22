@@ -726,6 +726,26 @@ class TestEdgeBetweennessCentrality:
         for n in sorted(G.edges()):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
+    def test_edge_betweenness_k(self):
+        """Ensure setting `k` properly limits the number of source nodes."""
+        G = nx.path_graph(3)
+        # This choice of `k` and `seed` selects nodes 0 and 2.
+        # There is only one shortest path between any two pairs of nodes.
+        # With source nodes 0 and 2, this means that both edges are part of
+        # three shortest paths:
+        # For (0, 1): sp(0, 1), sp(0, 2), sp(2, 0).
+        # For (1, 2): sp(0, 2), sp(2, 0), sp(2, 1).
+        # We normalize by 2 because the graph is undirected, and by
+        # `k / n = 2 / 3` because we are only considering a subset of source
+        # nodes.
+        # This means the final eb centralities should be 3 / 2 / (2 / 3) = 9 / 4.
+        eb = nx.edge_betweenness_centrality(G, k=2, seed=42, normalized=False)
+        assert eb == {(0, 1): 9 / 4, (1, 2): 9 / 4}
+        # When normalization is `True`, we instead divide by the number of total
+        # `(s, t)` pairs, i.e. `k * (n - 1) = 4`, meaning we get an eb of `3 / 4`.
+        eb = nx.edge_betweenness_centrality(G, k=2, seed=42, normalized=True)
+        assert eb == {(0, 1): 3 / 4, (1, 2): 3 / 4}
+
 
 class TestWeightedEdgeBetweennessCentrality:
     def test_K5(self):

@@ -645,26 +645,50 @@ def directed_havel_hakimi_graph(in_deg_sequence, out_deg_sequence, create_using=
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def degree_sequence_tree(deg_sequence, create_using=None):
-    """Make a tree for the given degree sequence.
+    """Return a tree with the given degree sequence.
 
-    A tree has #nodes-#edges=1 so
-    the degree sequence must have
-    len(deg_sequence)-sum(deg_sequence)/2=1
+    Two conditions must be met for a degree sequence to be valid for a tree:
+
+    1. The number of nodes must be one more than the number of edges.
+    2. The degree sequence must be trivial or have only strictly positive
+       node degrees.
+
+    Parameters
+    ----------
+    degree_sequence : iterable
+        Iterable of node degrees.
+
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    networkx.Graph
+        A tree with the given degree sequence.
+
+    Raises
+    ------
+    NetworkXError
+        If the degree sequence is not valid for a tree.
+
+        If `create_using` is directed.
+
+    See Also
+    --------
+    random_degree_sequence_graph
     """
-    # The sum of the degree sequence must be even (for any undirected graph).
-    degree_sum = sum(deg_sequence)
-    if degree_sum % 2 != 0:
-        msg = "Invalid degree sequence: sum of degrees must be even, not odd"
-        raise nx.NetworkXError(msg)
-    if len(deg_sequence) - degree_sum // 2 != 1:
-        msg = (
-            "Invalid degree sequence: tree must have number of nodes equal"
-            " to one less than the number of edges"
-        )
-        raise nx.NetworkXError(msg)
+    deg_sequence = list(deg_sequence)
+    valid, reason = nx.utils.is_valid_tree_degree_sequence(deg_sequence)
+    if not valid:
+        raise nx.NetworkXError(reason)
+
     G = nx.empty_graph(0, create_using)
     if G.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
+
+    if deg_sequence == [0]:
+        G.add_node(0)
+        return G
 
     # Sort all degrees greater than 1 in decreasing order.
     #
@@ -679,13 +703,8 @@ def degree_sequence_tree(deg_sequence, create_using=None):
     # add the leaves
     for source in range(1, n - 1):
         nedges = deg.pop() - 2
-        for target in range(last, last + nedges):
-            G.add_edge(source, target)
+        G.add_edges_from((source, target) for target in range(last, last + nedges))
         last += nedges
-
-    # in case we added one too many
-    if len(G) > len(deg_sequence):
-        G.remove_node(0)
     return G
 
 

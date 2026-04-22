@@ -12,82 +12,12 @@ __all__ = [
     "radius",
     "periphery",
     "center",
+    "centroid",
     "barycenter",
     "resistance_distance",
     "kemeny_constant",
     "effective_graph_resistance",
 ]
-
-
-@not_implemented_for("directed")
-def _tree_center(G):
-    """Returns the center of an undirected tree graph.
-
-    The center of a tree consists of nodes that minimize the maximum eccentricity.
-    That is, these nodes minimize the maximum distance to all other nodes.
-    This implementation currently only works for unweighted edges.
-
-    If the input graph is not a tree, results are not guaranteed to be correct and while
-    some non-trees will raise a ``NetworkXError`` not all non-trees will be discovered.
-    Thus, this function should not be used if caller is unsure whether the input graph
-    is a tree. Use ``networkx.is_tree(G)`` to check.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        A tree graph (undirected, acyclic graph).
-
-    Returns
-    -------
-    center : list
-        A list of nodes in the center of the tree. This could be one or two nodes.
-
-    Raises
-    ------
-    NetworkXError
-        If algorithm detects input graph is not a tree. There is no guarantee
-        this error will always raise if a non-tree is passed.
-
-    Notes
-    -----
-    This algorithm iteratively removes leaves (nodes with degree 1) from the tree until
-    there are only 1 or 2 nodes left. The remaining nodes form the center of the tree.
-
-    This algorithm's time complexity is O(N) where N is the number of nodes in the tree.
-
-    Examples
-    --------
-    >>> G = nx.Graph([(1, 2), (1, 3), (2, 4), (2, 5)])
-    >>> _tree_center(G)
-    [1, 2]
-
-    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 5)])
-    >>> _tree_center(G)
-    [3]
-    """
-    center_candidates_degree = dict(G.degree)
-    leaves = {node for node, degree in center_candidates_degree.items() if degree == 1}
-
-    # It's better to fail than an infinite loop, so check leaves to ensure progress
-    while len(center_candidates_degree) > 2 and leaves:
-        new_leaves = set()
-        for leaf in leaves:
-            del center_candidates_degree[leaf]
-            for neighbor in G.neighbors(leaf):
-                if neighbor not in center_candidates_degree:
-                    continue
-                center_candidates_degree[neighbor] -= 1
-                if center_candidates_degree[neighbor] == 1:
-                    new_leaves.add(neighbor)
-        leaves = new_leaves
-
-    if not leaves and len(center_candidates_degree) >= 2:
-        # We detected graph is not a tree. This check does not cover all cases.
-        # For example, it does not cover the case where we have two islands (A-B) and (B-C)
-        # where we might eliminate (B-C) leaves and return [A, B] as centers.
-        raise nx.NetworkXError("Input graph is not a tree")
-
-    return list(center_candidates_degree)
 
 
 def _extrema_bounding(G, compute="diameter", weight=None):
@@ -357,6 +287,11 @@ def eccentricity(G, v=None, sp=None, weight=None):
     ecc : dictionary
        A dictionary of eccentricity values keyed by node.
 
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If G is a null graph.
+
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
@@ -375,6 +310,12 @@ def eccentricity(G, v=None, sp=None, weight=None):
     #        nodes=[v]
     #    else:                      # assume v is a container of nodes
     #        nodes=v
+
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept(
+            "Cannot compute eccentricity of a null graph."
+        )
+
     order = G.order()
     e = {}
     for n in G.nbunch_iter(v):
@@ -449,6 +390,13 @@ def diameter(G, e=None, usebounds=False, weight=None):
     -------
     d : integer
        Diameter of graph
+
+    Raises
+    ------
+    NetworkXError
+        If G has multiple components.
+    NetworkXPointlessConcept
+        If G is a null graph.
 
     Notes
     -----
@@ -666,6 +614,13 @@ def radius(G, e=None, usebounds=False, weight=None):
     r : integer
        Radius of graph
 
+    Raises
+    ------
+    NetworkXError
+        If G has multiple components.
+    NetworkXPointlessConcept
+        If G is a null graph.
+
     Notes
     -----
     When ``usebounds=True``, the computation makes use of smart lower
@@ -747,13 +702,15 @@ def center(G, e=None, usebounds=False, weight=None):
 
     See Also
     --------
+    :func:`~networkx.algorithms.tree.distance_measures.center` : tree center
     barycenter
     periphery
+    :func:`~networkx.algorithms.tree.distance_measures.centroid` : tree centroid
     """
     if usebounds is True and e is None and not G.is_directed():
         return _extrema_bounding(G, compute="center", weight=weight)
     if e is None and weight is None and not G.is_directed() and nx.is_tree(G):
-        return _tree_center(G)
+        return nx.tree.center(G)
     if e is None:
         e = eccentricity(G, weight=weight)
     radius = min(e.values())
@@ -762,10 +719,10 @@ def center(G, e=None, usebounds=False, weight=None):
 
 
 @nx._dispatchable(edge_attrs="weight", mutates_input={"attr": 2})
-def barycenter(G, weight=None, attr=None, sp=None):
-    r"""Calculate barycenter of a connected graph, optionally with edge weights.
+def centroid(G, weight=None, attr=None, sp=None):
+    r"""Calculate centroid of a connected graph, optionally with edge weights.
 
-    The :dfn:`barycenter` a
+    The :dfn:`centroid` of a
     :func:`connected <networkx.algorithms.components.is_connected>` graph
     :math:`G` is the subgraph induced by the set of its nodes :math:`v`
     minimizing the objective function
@@ -776,7 +733,8 @@ def barycenter(G, weight=None, attr=None, sp=None):
 
     where :math:`d_G` is the (possibly weighted) :func:`path length
     <networkx.algorithms.shortest_paths.generic.shortest_path_length>`.
-    The barycenter is also called the :dfn:`median`. See [West01]_, p. 78.
+    This quantity is also known as the :dfn:`barycenter` or :dfn:`median`.
+    See [West01]_, p. 78.
 
     Parameters
     ----------
@@ -794,13 +752,13 @@ def barycenter(G, weight=None, attr=None, sp=None):
     Returns
     -------
     list
-        Nodes of `G` that induce the barycenter of `G`.
+        Nodes of `G` that induce the centroid of `G`.
 
     Raises
     ------
     NetworkXNoPath
         If `G` is disconnected. `G` may appear disconnected to
-        :func:`barycenter` if `sp` is given but is missing shortest path
+        :func:`centroid` if `sp` is given but is missing shortest path
         lengths for any pairs.
     ValueError
         If `sp` and `weight` are both given.
@@ -808,21 +766,27 @@ def barycenter(G, weight=None, attr=None, sp=None):
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
-    >>> nx.barycenter(G)
+    >>> nx.centroid(G)
     [1, 3, 4]
 
     See Also
     --------
     center
     periphery
+    barycenter
+    :func:`~networkx.algorithms.tree.distance_measures.centroid` : tree centroid
     """
+    if weight is None and attr is None and sp is None:
+        if not G.is_directed() and nx.is_tree(G):
+            return nx.tree.centroid(G)
+
     if sp is None:
         sp = nx.shortest_path_length(G, weight=weight)
     else:
         sp = sp.items()
         if weight is not None:
             raise ValueError("Cannot use both sp, weight arguments together")
-    smallest, barycenter_vertices, n = float("inf"), [], len(G)
+    smallest, centroid_vertices, n = float("inf"), [], len(G)
     for v, dists in sp:
         if len(dists) < n:
             raise nx.NetworkXNoPath(
@@ -834,12 +798,17 @@ def barycenter(G, weight=None, attr=None, sp=None):
             G.nodes[v][attr] = barycentricity
         if barycentricity < smallest:
             smallest = barycentricity
-            barycenter_vertices = [v]
+            centroid_vertices = [v]
         elif barycentricity == smallest:
-            barycenter_vertices.append(v)
+            centroid_vertices.append(v)
     if attr is not None:
         nx._clear_cache(G)
-    return barycenter_vertices
+    return centroid_vertices
+
+
+def barycenter(G, weight=None, attr=None, sp=None):
+    """Alias for `centroid` - see `centroid` docstring for details."""
+    return centroid(G, weight, attr, sp)
 
 
 @not_implemented_for("directed")

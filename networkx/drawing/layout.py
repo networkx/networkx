@@ -564,10 +564,11 @@ def spring_layout(
     >>> # suppress the returned dict and store on the graph directly
     >>> _ = nx.spring_layout(G, seed=123, store_pos_as="pos")
     >>> pprint(nx.get_node_attributes(G, "pos"))
-    {0: array([-0.61520994, -1.        ]),
-     1: array([-0.21840965, -0.35501755]),
-     2: array([0.21841264, 0.35502078]),
-     3: array([0.61520696, 0.99999677])}
+    {0: array([-0.61495802, -1.        ]),
+     1: array([-0.21789544, -0.35432583]),
+     2: array([0.21847843, 0.35527369]),
+     3: array([0.61437502, 0.99905215])}
+
 
     # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
@@ -599,7 +600,9 @@ def spring_layout(
             if node not in pos:
                 raise ValueError("nodes are fixed without positions given")
         nfixed = {node: i for i, node in enumerate(G)}
-        fixed = np.asarray([nfixed[node] for node in fixed if node in nfixed])
+        fixed = np.asarray(
+            [nfixed[node] for node in fixed if node in nfixed], dtype=int
+        )
 
     if pos is not None:
         # Determine size of existing domain to adjust initial positions
@@ -704,7 +707,9 @@ def _fruchterman_reingold(
         )
         # update positions
         length = np.linalg.norm(displacement, axis=-1)
-        length = np.where(length < 0.01, 0.1, length)
+        # Threshold the minimum length prior to position scaling
+        # See gh-8113 for detailed discussion of the threshold
+        length = np.clip(length, a_min=0.01, a_max=None)
         delta_pos = np.einsum("ij,i->ij", displacement, t / length)
         if fixed is not None:
             # don't change positions of fixed nodes
@@ -787,7 +792,7 @@ def _sparse_fruchterman_reingold(
             # distance between points
             distance = np.sqrt((delta**2).sum(axis=0))
             # enforce minimum distance of 0.01
-            distance = np.where(distance < 0.01, 0.01, distance)
+            distance = np.clip(distance, a_min=0.01, a_max=None)
             # the adjacency matrix row
             Ai = A.getrowview(i).toarray()  # TODO: revisit w/ sparse 1D container
             # displacement "force"
@@ -796,7 +801,9 @@ def _sparse_fruchterman_reingold(
             ).sum(axis=1)
         # update positions
         length = np.sqrt((displacement**2).sum(axis=0))
-        length = np.where(length < 0.01, 0.1, length)
+        # Threshold the minimum length prior to position scaling
+        # See gh-8113 for detailed discussion of the threshold
+        length = np.clip(length, a_min=0.01, a_max=None)
         delta_pos = (displacement * t / length).T
         pos += delta_pos
         # cool temperature
@@ -816,6 +823,10 @@ def _energy_fruchterman_reingold(
 
     if gravity <= 0:
         raise ValueError(f"the gravity must be positive.")
+
+    # Zero iterations, return initial positions
+    if iterations == 0:
+        return pos.copy()
 
     # make sure we have a Compressed Sparse Row format
     try:
@@ -1569,7 +1580,7 @@ def arf_layout(
     # looping variables
     error = etol + 1
     n_iter = 0
-    while error > etol:
+    while error > etol and n_iter < max_iter:
         diff = p[:, np.newaxis] - p[np.newaxis]
         A = np.linalg.norm(diff, axis=-1)[..., np.newaxis]
         # attraction_force - repulsions force
@@ -1582,8 +1593,6 @@ def arf_layout(
         p += change * dt
 
         error = np.linalg.norm(change, axis=-1).sum()
-        if n_iter > max_iter:
-            break
         n_iter += 1
 
     pos = dict(zip(G.nodes(), p))
@@ -1609,7 +1618,6 @@ def forceatlas2_layout(
     node_mass=None,
     node_size=None,
     weight=None,
-    dissuade_hubs=False,
     linlog=False,
     seed=None,
     dim=2,
@@ -1649,8 +1657,6 @@ def forceatlas2_layout(
     weight : string or None, optional (default: None)
         The edge attribute that holds the numerical value used for
         the edge weight. If None, then all edge weights are 1.
-    dissuade_hubs : bool (default: False)
-        Prevents the clustering of hub nodes.
     linlog : bool (default: False)
         Uses logarithmic attraction instead of linear.
     seed : int, RandomState instance or None  optional (default=None)
@@ -1694,7 +1700,7 @@ def forceatlas2_layout(
         pos = nx.random_layout(G, dim=dim, seed=seed)
         pos_arr = np.array(list(pos.values()))
     elif len(pos) == len(G):
-        pos_arr = np.array([pos[node].copy() for node in G])
+        pos_arr = np.array([pos[node] for node in G])
     else:
         # set random node pos within the initial pos values
         pos_init = np.array(list(pos.values()))

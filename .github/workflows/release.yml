@@ -7,7 +7,7 @@ on:
 jobs:
   pypi-publish:
     name: upload release to PyPI
-    if: github.repository_owner == 'networkx' && startsWith(github.ref, 'refs/tags/networkx-') && github.actor == 'jarrodmillman' && always()
+    if: github.repository_owner == 'networkx' && startsWith(github.ref, 'refs/tags/networkx-') && always()
     runs-on: ubuntu-latest
     # Specifying a GitHub environment is optional, but strongly encouraged
     environment: release
@@ -17,26 +17,20 @@ jobs:
       attestations: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-
-      - uses: actions/setup-python@v5
-        name: Install Python
+      - uses: prefix-dev/setup-pixi@v0.9.5
         with:
-          python-version: "3.11"
-
+          environments: build-release
       - name: Build wheels
         run: |
           git clean -fxd
-          pip install -U build twine wheel
-          python -m build --sdist --wheel
-
+          pixi run -e build-release build-dist
       - name: Verify the distribution
-        run: twine check --strict dist/*
-
+        run: pixi run -e build-release verify-dist
       - name: Generate artifact attestation for sdist and wheel
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
         with:
           subject-path: "dist/networkx-*"
 
