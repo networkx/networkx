@@ -328,11 +328,11 @@ class GEXFWriter(GEXF):
 
         # Make meta element a non-graph element
         # Also add lastmodifieddate as attribute, not tag
-        meta_element = Element("meta")
+        self.meta_element = Element("meta")
         subelement_text = f"NetworkX {nx.__version__}"
-        SubElement(meta_element, "creator").text = subelement_text
-        meta_element.set("lastmodifieddate", time.strftime("%Y-%m-%d"))
-        self.xml.append(meta_element)
+        SubElement(self.meta_element, "creator").text = subelement_text
+        self.meta_element.set("lastmodifieddate", time.strftime("%Y-%m-%d"))
+        self.xml.append(self.meta_element)
 
         register_namespace("viz", self.NS_VIZ)
 
@@ -369,6 +369,14 @@ class GEXFWriter(GEXF):
             mode = "dynamic"
         else:
             mode = "static"
+        # set graph description in meta element
+        description = G.graph.get("description")
+        if description is not None:
+            SubElement(self.meta_element, "description").text = str(description)
+        # set graph keywords in meta element
+        keywords = G.graph.get("keywords")
+        if keywords is not None:
+            SubElement(self.meta_element, "keywords").text = str(keywords)
         # Add a graph element to the XML
         if G.is_directed():
             default = "directed"
@@ -741,24 +749,35 @@ class GEXFReader(GEXF):
 
     def __call__(self, stream):
         self.xml = ElementTree(file=stream)
+        meta = self.xml.find(f"{{{self.NS_GEXF}}}meta")
         g = self.xml.find(f"{{{self.NS_GEXF}}}graph")
         if g is not None:
-            return self.make_graph(g)
+            return self.make_graph(g, meta_xml=meta)
         # try all the versions
         for version in self.versions:
             self.set_version(version)
+            meta = self.xml.find(f"{{{self.NS_GEXF}}}meta")
             g = self.xml.find(f"{{{self.NS_GEXF}}}graph")
             if g is not None:
-                return self.make_graph(g)
+                return self.make_graph(g, meta_xml=meta)
         raise nx.NetworkXError("No <graph> element in GEXF file.")
 
-    def make_graph(self, graph_xml):
+    def make_graph(self, graph_xml, meta_xml=None):
         # start with empty DiGraph or MultiDiGraph
         edgedefault = graph_xml.get("defaultedgetype", None)
         if edgedefault == "directed":
             G = nx.MultiDiGraph()
         else:
             G = nx.MultiGraph()
+
+        # add description and keywords from meta element
+        if meta_xml is not None:
+            description = meta_xml.find(f"{{{self.NS_GEXF}}}description")
+            if description is not None:
+                G.graph["description"] = description.text
+            keywords = meta_xml.find(f"{{{self.NS_GEXF}}}keywords")
+            if keywords is not None:
+                G.graph["keywords"] = keywords.text
 
         # graph attributes
         graph_name = graph_xml.get("name", "")
