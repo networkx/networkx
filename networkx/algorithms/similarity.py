@@ -1612,7 +1612,7 @@ def panther_similarity(
     .. [1] Zhang, J., Tang, J., Ma, C., Tong, H., Jing, Y., & Li, J.
            Panther: Fast top-k similarity search on large networks.
            In Proceedings of the ACM SIGKDD International Conference
-           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445鈥?454).
+           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).
            Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
     import numpy as np
@@ -1741,7 +1741,7 @@ def generate_random_paths(
     .. [1] Zhang, J., Tang, J., Ma, C., Tong, H., Jing, Y., & Li, J.
            Panther: Fast top-k similarity search on large networks.
            In Proceedings of the ACM SIGKDD International Conference
-           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445鈥?454).
+           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).
            Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
     import numpy as np
