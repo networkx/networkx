@@ -87,6 +87,9 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
     This implementation does not support mixed graphs (directed and undirected
     edges together).
 
+    This implementation supports writing a single graph per GEXF file.
+    GEXF documents containing multiple graphs are not supported.
+
     The node id attribute is set to be the string of the node label.
     If you want to specify an id use set it as node data, e.g.
     node['a']['id']=1 to set the id of node 'a' to 1.
@@ -142,6 +145,9 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     This implementation does not support mixed graphs (directed and undirected
     edges together).
 
+    This implementation supports writing a single graph per GEXF file.
+    GEXF documents containing multiple graphs are not supported.
+
     The node id attribute is set to be the string of the node label.
     If you want to specify an id use set it as node data, e.g.
     node['a']['id']=1 to set the id of node 'a' to 1.
@@ -187,6 +193,9 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     -----
     This implementation does not support mixed graphs (directed and undirected
     edges together).
+
+    This implementation supports reading a single graph per GEXF file.
+    GEXF documents containing multiple graphs are not supported.
 
     References
     ----------
