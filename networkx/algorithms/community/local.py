@@ -3,7 +3,7 @@ Local Community Detection Algorithms
 
 Local Community Detection (LCD) aims to detected one or a few communities
 starting from certain source nodes in the network. This differs from Global
-Communty Detection (GCD), which aims to partition an entire network into
+Community Detection (GCD), which aims to partition an entire network into
 communities.
 
 LCD is often useful when only a portion of the graph is known or the
@@ -143,7 +143,7 @@ def greedy_source_expansion(G, *, source, cutoff=None, method="clauset"):
     Find the local community around a source node using Greedy Source
     Expansion. Greedy Source Expansion generally identifies a local community
     starting from the source node and expands it based on the criteria of the
-    choosen algorithm.
+    chosen algorithm.
 
     The algorithm is specified with the `method` keyword argument.
 
@@ -182,7 +182,8 @@ def greedy_source_expansion(G, *, source, cutoff=None, method="clauset"):
         expands until no further modularity gain can be made.
 
     method : string, optional (default='clauset')
-        The alogirhtm to use to carry out greedy source expansion. Supported options: 'clauset'. Other inputs produce a ValueError
+        The algorithm to use to carry out greedy source expansion.
+        Supported options: 'clauset'. Other inputs produce a ValueError
 
     Returns
     -------

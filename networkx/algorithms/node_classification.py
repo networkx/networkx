@@ -91,8 +91,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     # Build propagation matrix
     degrees = X.sum(axis=0)
     degrees[degrees == 0] = 1  # Avoid division by 0
-    # TODO: csr_array
-    D = sp.sparse.csr_array(sp.sparse.diags((1.0 / degrees), offsets=0))
+    D = sp.sparse.dia_array((1.0 / degrees, 0), shape=(n_samples, n_samples)).tocsr()
     P = (D @ X).tolil()
     P[labels[:, 0]] = 0  # labels[:, 0] indicates IDs of labeled nodes
     # Build base matrix
@@ -170,8 +169,9 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     # Build propagation matrix
     degrees = X.sum(axis=0)
     degrees[degrees == 0] = 1  # Avoid division by 0
-    # TODO: csr_array
-    D2 = np.sqrt(sp.sparse.csr_array(sp.sparse.diags((1.0 / degrees), offsets=0)))
+    D2 = sp.sparse.dia_array(
+        (1.0 / np.sqrt(degrees), 0), shape=(n_samples, n_samples)
+    ).tocsr()
     P = alpha * ((D2 @ X) @ D2)
     # Build base matrix
     B = np.zeros((n_samples, n_classes))

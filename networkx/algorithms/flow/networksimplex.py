@@ -562,13 +562,9 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     faux_inf = (
         3
         * max(
-            chain(
-                [
-                    sum(c for c in DEAF.edge_capacities if c < inf),
-                    sum(abs(w) for w in DEAF.edge_weights),
-                ],
-                (abs(d) for d in DEAF.node_demands),
-            )
+            sum(c for c in DEAF.edge_capacities if c < inf),
+            sum(abs(w) for w in DEAF.edge_weights),
+            sum(abs(d) for d in DEAF.node_demands),
         )
         or 1
     )

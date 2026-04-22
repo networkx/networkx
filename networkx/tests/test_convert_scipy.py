@@ -1,17 +1,16 @@
 import pytest
 
+import networkx as nx
+from networkx.utils import graphs_equal
+
 np = pytest.importorskip("numpy")
 sp = pytest.importorskip("scipy")
-
-import networkx as nx
-from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
-from networkx.utils import graphs_equal
 
 
 class TestConvertScipy:
     def setup_method(self):
-        self.G1 = barbell_graph(10, 3)
-        self.G2 = cycle_graph(10, create_using=nx.DiGraph)
+        self.G1 = nx.barbell_graph(10, 3)
+        self.G2 = nx.cycle_graph(10, create_using=nx.DiGraph)
 
         self.G3 = self.create_weighted(nx.Graph())
         self.G4 = self.create_weighted(nx.DiGraph())
@@ -23,7 +22,7 @@ class TestConvertScipy:
         pytest.raises(nx.NetworkXError, nx.to_networkx_graph, G)
 
     def create_weighted(self, G):
-        g = cycle_graph(4)
+        g = nx.cycle_graph(4)
         e = list(g.edges())
         source = [u for u, v in e]
         dest = [v for u, v in e]
@@ -89,8 +88,8 @@ class TestConvertScipy:
 
     def test_nodelist(self):
         """Conversion from graph to sparse matrix to graph with nodelist."""
-        P4 = path_graph(4)
-        P3 = path_graph(3)
+        P4 = nx.path_graph(4)
+        P3 = nx.path_graph(3)
         nodelist = list(P3.nodes())
         A = nx.to_scipy_sparse_array(P4, nodelist=nodelist)
         GA = nx.Graph(A)
@@ -108,7 +107,7 @@ class TestConvertScipy:
     def test_weight_keyword(self):
         WP4 = nx.Graph()
         WP4.add_edges_from((n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3))
-        P4 = path_graph(4)
+        P4 = nx.path_graph(4)
         A = nx.to_scipy_sparse_array(P4)
         np.testing.assert_equal(
             A.todense(), nx.to_scipy_sparse_array(WP4, weight=None).todense()
@@ -123,7 +122,7 @@ class TestConvertScipy:
     def test_format_keyword(self):
         WP4 = nx.Graph()
         WP4.add_edges_from((n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3))
-        P4 = path_graph(4)
+        P4 = nx.path_graph(4)
         A = nx.to_scipy_sparse_array(P4, format="csr")
         np.testing.assert_equal(
             A.todense(), nx.to_scipy_sparse_array(WP4, weight=None).todense()
@@ -165,7 +164,7 @@ class TestConvertScipy:
             WP4.add_edges_from(
                 (n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3)
             )
-            P4 = path_graph(4)
+            P4 = nx.path_graph(4)
             nx.to_scipy_sparse_array(P4, format="any_other")
 
     def test_null_raise(self):

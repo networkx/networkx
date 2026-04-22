@@ -118,7 +118,7 @@ class TestWeightedPath(WeightedTestBase):
         validate_path(
             self.XG, "s", "v", 9, nx.single_source_dijkstra_path(self.XG, "s")["v"]
         )
-        assert dict(nx.single_source_dijkstra_path_length(self.XG, "s"))["v"] == 9
+        assert nx.single_source_dijkstra_path_length(self.XG, "s")["v"] == 9
 
         validate_path(
             self.XG, "s", "v", 9, nx.single_source_dijkstra(self.XG, "s")[1]["v"]
@@ -888,6 +888,17 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         nx.dijkstra_path(D, 1, 3)
         nx.bidirectional_dijkstra(D, 1, 3)
         # FIXME nx.goldberg_radzik(D, 1)
+
+    def test_skip_visited_unweighted(self):
+        """Check that `goldberg_radzik` correctly skips visited nodes in `topo_sort`.
+
+        This doesn't reliably get tested by other tests because iterating over
+        the `relabeled` set is not deterministic.
+        """
+        G = nx.Graph([(0, 4), (0, 5), (1, 3), (1, 4), (2, 3), (2, 5), (3, 5), (3, 6)])
+
+        _, dist = nx.goldberg_radzik(G, 4)
+        assert dist == {0: 1, 1: 1, 2: 3, 3: 2, 4: 0, 5: 2, 6: 3}
 
 
 class TestJohnsonAlgorithm(WeightedTestBase):

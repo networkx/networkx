@@ -177,6 +177,21 @@ NetworkX development is guided by the following core team:
      <div class="team-member-handle">@stefanv</div>
    </div>
 
+.. raw:: html
+
+   <div class="team-member">
+     <a href="https://github.com/amcandio" class="team-member-name">
+        <div class="team-member-photo">
+           <img
+             src="https://avatars.githubusercontent.com/u/13503925?v=4&s=40"
+             loading="lazy"
+             alt="Avatar picture of @amcandio"
+           />
+        </div>
+        Alejandro Candioti
+     </a>
+     <div class="team-member-handle">@amcandio</div>
+   </div>
 
 
 Emeritus Developers

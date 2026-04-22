@@ -43,12 +43,23 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
 
     Examples
     --------
+    >>> from pprint import pprint
+
     The default behavior is to yield the lowest common ancestor for all
     possible combinations of nodes in `G`, including self-pairings:
 
     >>> G = nx.DiGraph([(0, 1), (0, 3), (1, 2)])
-    >>> dict(nx.all_pairs_lowest_common_ancestor(G))
-    {(0, 0): 0, (0, 1): 0, (0, 3): 0, (0, 2): 0, (1, 1): 1, (1, 3): 0, (1, 2): 1, (3, 3): 3, (3, 2): 0, (2, 2): 2}
+    >>> pprint(dict(nx.all_pairs_lowest_common_ancestor(G)))
+    {(0, 0): 0,
+     (0, 1): 0,
+     (0, 2): 0,
+     (0, 3): 0,
+     (1, 1): 1,
+     (1, 2): 1,
+     (1, 3): 0,
+     (2, 2): 2,
+     (3, 2): 0,
+     (3, 3): 3}
 
     The pairs argument can be used to limit the output to only the
     specified node pairings:

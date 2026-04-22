@@ -173,8 +173,8 @@ See the following examples that use PySAL:
 `momepy <http://docs.momepy.org/en/stable/>`__ builds on top of
 GeoPandas and PySAL to provide a suite of algorithms focused on urban
 morphology. From a network analysis context, momepy enables you to
-convert your line geometry to `networkx.MultiGraph` and back to 
-`geopandas.GeoDataFrame` and apply a range of analytical functions aiming at 
+convert your line geometry to `networkx.MultiGraph` and back to
+`geopandas.GeoDataFrame` and apply a range of analytical functions aiming at
 morphological description of (street) network configurations.
 
 See the following examples that use momepy:
@@ -243,7 +243,7 @@ These include relationships such as ``Queen``, ``Rook``, ...
 ``momepy`` allows representation of street networks as both primal
 and dual graphs (in a street network analysis sense). The primal approach
 turns intersections into Graph nodes and street segments into edges,
-a format which is used for a majority of morphological studies. The dual 
+a format which is used for a majority of morphological studies. The dual
 approach uses street segments as nodes and intersection topology
 as edges, which allows encoding of angular information (i.e an analysis
 can be weighted by angles between street segments instead of their length).

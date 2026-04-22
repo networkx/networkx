@@ -563,7 +563,7 @@ def held_karp_ascent(G, weight="weight"):
            pp.1138-1162
     """
     import numpy as np
-    from scipy import optimize
+    import scipy as sp
 
     def k_pi():
         """
@@ -707,7 +707,7 @@ def held_karp_ascent(G, weight="weight"):
                     a_eq[n_count][arb_count] = deg - 2
                     n_count -= 1
                 a_eq[len(G)][arb_count] = 1
-            program_result = optimize.linprog(
+            program_result = sp.optimize.linprog(
                 c, A_eq=a_eq, b_eq=b_eq, method="highs-ipm"
             )
             # If the constants exist, then the direction of ascent doesn't
@@ -885,9 +885,9 @@ def spanning_tree_distribution(G, z):
         # Create the laplacian matrices
         for u, v, d in G.edges(data=True):
             d[lambda_key] = exp(gamma[(u, v)])
-        G_Kirchhoff = nx.total_spanning_tree_weight(G, lambda_key)
+        G_Kirchhoff = nx.number_of_spanning_trees(G, weight=lambda_key)
         G_e = nx.contracted_edge(G, e, self_loops=False)
-        G_e_Kirchhoff = nx.total_spanning_tree_weight(G_e, lambda_key)
+        G_e_Kirchhoff = nx.number_of_spanning_trees(G_e, weight=lambda_key)
 
         # Multiply by the weight of the contracted edge since it is not included
         # in the total weight of the contracted graph.

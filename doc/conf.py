@@ -16,11 +16,8 @@ filterwarnings(
 extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.autodoc",
-    "sphinx.ext.coverage",
-    "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
-    "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
     "texext",
@@ -57,6 +54,11 @@ sphinx_gallery_conf = {
     "plot_gallery": "True",
     "reference_url": {"sphinx_gallery": None},
 }
+
+rst_epilog = """
+.. |dijkstra| replace:: :doc:`/reference/algorithms/shortest_paths/dijkstra`
+"""
+
 # Add pygraphviz png scraper, if available
 try:
     from pygraphviz.scraper import PNGScraper
@@ -71,6 +73,8 @@ autosummary_generate = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
+# Ignore spurious warnings related to bad interactions between the texmath
+# and myst extensions
 suppress_warnings = ["ref.citation", "ref.footnote"]
 
 # The suffix of source filenames.
@@ -90,15 +94,15 @@ copyright = f"2004-{date.today().year}, NetworkX Developers"
 # Used in networkx.utils.backends for cleaner rendering of functions.
 # We need to set this before we import networkx.
 os.environ["_NETWORKX_BUILDING_DOCS_"] = "True"
-import networkx
+import networkx as nx
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = networkx.__version__
+version = nx.__version__
 # The full version, including dev info
-release = networkx.__version__.replace("_", "")
+release = nx.__version__.replace("_", "")
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -125,8 +129,6 @@ pygments_style = "sphinx"
 # A list of prefixes that are ignored when creating the module index. (new in Sphinx 0.6)
 modindex_common_prefix = ["networkx."]
 
-doctest_global_setup = "import networkx as nx"
-
 # Options for HTML output
 # -----------------------
 
@@ -147,7 +149,7 @@ html_theme_options = {
     "external_links": [{"name": "Guides", "url": "https://networkx.org/nx-guides/"}],
     "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
     "secondary_sidebar_items": ["page-toc", "edit-this-page"],
-    "header_links_before_dropdown": 7,
+    "header_links_before_dropdown": 8,
     "switcher": {
         "json_url": (
             "https://networkx.org/documentation/latest/_static/version_switcher.json"
@@ -250,6 +252,9 @@ intersphinx_mapping = get_intersphinx_mapping(
         "nx-guides",
     }
 )
+# NOTE: generally not relevant, but prevents very long build times when other
+# projects' docs sites are not responding
+intersphinx_timeout = 0.5
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -291,7 +296,7 @@ def new_setitem(self, key, val):
         if line and not line.startswith(" "):
             # This line must identify a backend; let's try to add a link
             backend, *rest = line.split(" ")
-            url = networkx.utils.backends.backend_info.get(backend, {}).get("url")
+            url = nx.utils.backends.backend_info.get(backend, {}).get("url")
             if url:
                 line = f"`{backend} <{url}>`_ " + " ".join(rest)
         newval.append(f"   {line}")

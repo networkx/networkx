@@ -23,7 +23,22 @@ def metric_closure(G, weight="weight"):
     NetworkX graph
         Metric closure of the graph `G`.
 
+    Notes
+    -----
+    .. deprecated:: 3.6
+       `metric_closure` is deprecated and will be removed in NetworkX 3.8.
+       Use :func:`networkx.all_pairs_shortest_path_length` instead.
+
     """
+    import warnings
+
+    warnings.warn(
+        "metric_closure is deprecated and will be removed in NetworkX 3.8.\n"
+        "Use nx.all_pairs_shortest_path_length instead.",
+        category=DeprecationWarning,
+        stacklevel=5,
+    )
+
     M = nx.Graph()
 
     Gnodes = set(G)
@@ -31,7 +46,7 @@ def metric_closure(G, weight="weight"):
     # check for connected graph while processing first node
     all_paths_iter = nx.all_pairs_dijkstra(G, weight=weight)
     u, (distance, path) = next(all_paths_iter)
-    if Gnodes - set(distance):
+    if len(G) != len(distance):
         msg = "G is not a connected graph. metric_closure is not defined."
         raise nx.NetworkXError(msg)
     Gnodes.remove(u)
@@ -48,37 +63,39 @@ def metric_closure(G, weight="weight"):
 
 
 def _mehlhorn_steiner_tree(G, terminal_nodes, weight):
-    paths = nx.multi_source_dijkstra_path(G, terminal_nodes)
+    distances, paths = nx.multi_source_dijkstra(G, terminal_nodes, weight=weight)
 
     d_1 = {}
     s = {}
     for v in G.nodes():
         s[v] = paths[v][0]
-        d_1[(v, s[v])] = len(paths[v]) - 1
+        d_1[(v, s[v])] = distances[v]
 
     # G1-G4 names match those from the Mehlhorn 1988 paper.
     G_1_prime = nx.Graph()
+    # iterate over all edges to complete d1
     for u, v, data in G.edges(data=True):
         su, sv = s[u], s[v]
         weight_here = d_1[(u, su)] + data.get(weight, 1) + d_1[(v, sv)]
         if not G_1_prime.has_edge(su, sv):
-            G_1_prime.add_edge(su, sv, weight=weight_here)
+            G_1_prime.add_edge(su, sv, weight_d1=weight_here)
         else:
-            new_weight = min(weight_here, G_1_prime[su][sv]["weight"])
-            G_1_prime.add_edge(su, sv, weight=new_weight)
+            new_weight = min(weight_here, G_1_prime[su][sv]["weight_d1"])
+            G_1_prime.add_edge(su, sv, weight_d1=new_weight)
 
-    G_2 = nx.minimum_spanning_edges(G_1_prime, data=True)
+    G_2 = nx.minimum_spanning_edges(G_1_prime, data=True, weight="weight_d1")
 
     G_3 = nx.Graph()
-    for u, v, d in G_2:
-        path = nx.shortest_path(G, u, v, weight)
+    for u, v, _ in G_2:
+        path = nx.shortest_path(G, u, v, weight=weight)
         for n1, n2 in pairwise(path):
-            G_3.add_edge(n1, n2)
+            G_3.add_edge(n1, n2, weight=G[n1][n2].get(weight, 1))
 
-    G_3_mst = list(nx.minimum_spanning_edges(G_3, data=False))
+    G_3_mst = list(nx.minimum_spanning_edges(G_3, data=False, weight=weight))
     if G.is_multigraph():
         G_3_mst = (
-            (u, v, min(G[u][v], key=lambda k: G[u][v][k][weight])) for u, v in G_3_mst
+            (u, v, min(G[u][v], key=lambda k: G[u][v][k].get(weight, 1)))
+            for u, v in G_3_mst
         )
     G_4 = G.edge_subgraph(G_3_mst).copy()
     _remove_nonterminal_leaves(G_4, terminal_nodes)
@@ -86,18 +103,35 @@ def _mehlhorn_steiner_tree(G, terminal_nodes, weight):
 
 
 def _kou_steiner_tree(G, terminal_nodes, weight):
-    # H is the subgraph induced by terminal_nodes in the metric closure M of G.
-    M = metric_closure(G, weight=weight)
-    H = M.subgraph(terminal_nodes)
+    # Compute the metric closure only for terminal nodes
+    # Create a complete graph H from the metric edges
+    H = nx.Graph()
+    unvisited_terminals = set(terminal_nodes)
 
-    # Use the 'distance' attribute of each edge provided by M.
+    # check for connected graph while processing first node
+    u = unvisited_terminals.pop()
+    distances, paths = nx.single_source_dijkstra(G, source=u, weight=weight)
+    if len(G) != len(distances):
+        msg = "G is not a connected graph."
+        raise nx.NetworkXError(msg)
+    for v in unvisited_terminals:
+        H.add_edge(u, v, distance=distances[v], path=paths[v])
+
+    # first node done -- now process the rest
+    for u in unvisited_terminals.copy():
+        distances, paths = nx.single_source_dijkstra(G, source=u, weight=weight)
+        unvisited_terminals.remove(u)
+        for v in unvisited_terminals:
+            H.add_edge(u, v, distance=distances[v], path=paths[v])
+
+    # Use the 'distance' attribute of each edge provided by H.
     mst_edges = nx.minimum_spanning_edges(H, weight="distance", data=True)
 
     # Create an iterator over each edge in each shortest path; repeats are okay
     mst_all_edges = chain.from_iterable(pairwise(d["path"]) for u, v, d in mst_edges)
     if G.is_multigraph():
         mst_all_edges = (
-            (u, v, min(G[u][v], key=lambda k: G[u][v][k][weight]))
+            (u, v, min(G[u][v], key=lambda k: G[u][v][k].get(weight, 1)))
             for u, v in mst_all_edges
         )
 

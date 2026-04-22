@@ -6,6 +6,61 @@ import pytest
 import networkx as nx
 
 
+def test_gexf_v1_3(tmp_path):
+    """'Basic graph' example from https://gexf.net/schema.html"""
+    # GEXF file from published example
+    data = """<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://gexf.net/1.3" version="1.3">
+    <graph mode="static" defaultedgetype="directed">
+        <nodes>
+            <node id="0" label="Hello" />
+            <node id="1" label="Word" />
+        </nodes>
+        <edges>
+            <edge source="0" target="1" />
+        </edges>
+    </graph>
+</gexf>
+"""
+    with open(fname := (tmp_path / "basic.gexf"), "w") as fh:
+        fh.write(data)
+
+    # Expected output based on xml input
+    expected = nx.DiGraph([("0", "1")])
+    nx.set_node_attributes(expected, {"0": "Hello", "1": "Word"}, name="label")
+    expected.graph = {"mode": "static", "edge_default": {}}
+
+    # Load example with version explicitly set
+    G = nx.read_gexf(fname, version="1.3")
+    assert nx.utils.graphs_equal(G, expected)
+
+    # And with the "default" version
+    G = nx.read_gexf(fname)
+    assert nx.utils.graphs_equal(G, expected)
+
+
+@pytest.mark.parametrize("time_attr", ("start", "end"))
+@pytest.mark.parametrize("dyn_attr", ("static", "dynamic"))
+def test_dynamic_graph_has_timeformat(time_attr, dyn_attr, tmp_path):
+    """Ensure that graphs which have a 'start' or 'stop' attribute get a
+    'timeformat' attribute upon parsing. See gh-7914."""
+    G = nx.MultiGraph(mode=dyn_attr)
+    G.add_node(0)
+    G.nodes[0][time_attr] = 1
+    # Write out
+    fname = tmp_path / "foo.gexf"
+    nx.write_gexf(G, fname)
+    # Check that timeformat is added to saved data
+    with open(fname) as fh:
+        assert 'timeformat="long"' in fh.read()
+    # Round-trip
+    H = nx.read_gexf(fname)
+    # If any node has a "start" or "end" attr, it is considered dynamic
+    # regardless of the graph "mode" attr
+    assert H.graph["mode"] == "dynamic"
+    assert nx.utils.nodes_equal(G.edges, H.edges)
+
+
 class TestGEXF:
     @classmethod
     def setup_class(cls):
@@ -289,7 +344,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=\
 "http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd" version="1.2">
-  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+  <meta lastmodifieddate="{time.strftime("%Y-%m-%d")}">
     <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
@@ -316,7 +371,7 @@ gexf.xsd" version="1.2">
         expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.\
 gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
-  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+  <meta lastmodifieddate="{time.strftime("%Y-%m-%d")}">
     <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
@@ -347,7 +402,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation\
 ="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd"\
  version="1.2">
-  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
+  <meta lastmodifieddate="{time.strftime("%Y-%m-%d")}">
     <creator>NetworkX {nx.__version__}</creator>
   </meta>
   <graph defaultedgetype="undirected" mode="static" name="">
@@ -555,3 +610,57 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(sorted(e) for e in G.edges()) == sorted(
             sorted(e) for e in H.edges()
         )
+
+    def test_round_trip_mixed_type_float_to_string(self):
+        G = nx.Graph()
+        G.add_node(1, bar=1.234)
+        G.add_node(2, bar="stringval")
+        fh = io.BytesIO()
+        # Assert write_gexf throws error when trying to write a graph with mixed types for the same attribute
+        with pytest.raises(
+            ValueError,
+            match="Attribute bar has type double but value string was given.",
+        ):
+            nx.write_gexf(G, fh)
+
+    def test_round_trip_mixed_type_int_to_string(self):
+        G = nx.Graph()
+        G.add_node(1, bar=1)
+        G.add_node(2, bar="stringval")
+        fh = io.BytesIO()
+        # Assert write_gexf throws error when trying to write a graph with mixed types for the same attribute
+        with pytest.raises(
+            ValueError,
+            match="Attribute bar has type long but value string was given.",
+        ):
+            nx.write_gexf(G, fh)
+
+    def test_type_promotion_integer_to_integer(self):
+        G = nx.Graph()
+        G.add_node(1, foo=1)
+        G.add_node(2, foo=2)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert isinstance(H.nodes[1].get("foo"), int)
+        assert G.nodes[1].get("foo") == H.nodes[1].get("foo")
+        assert isinstance(H.nodes[2].get("foo"), int)
+        assert G.nodes[2].get("foo") == H.nodes[2].get("foo")
+
+    def test_type_promotion_float_to_float(self):
+        G = nx.Graph()
+        G.add_node(1, baz=1.1)
+        G.add_node(2, baz=2.3)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert isinstance(H.nodes[1].get("baz"), float)
+        assert G.nodes[1].get("baz") == H.nodes[1].get("baz")
+        assert isinstance(H.nodes[2].get("baz"), float)
+        assert G.nodes[2].get("baz") == H.nodes[2].get("baz")

@@ -7,7 +7,7 @@ __all__ = ["spectral_graph_forge"]
 
 
 @np_random_state(3)
-@nx._dispatchable(returns_graph=True)
+@nx._dispatchable(preserve_edge_attrs={"G": {"weight": 1}}, returns_graph=True)
 def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     """Returns a random simple graph with spectrum resembling that of `G`
 

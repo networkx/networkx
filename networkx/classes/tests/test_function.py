@@ -23,6 +23,17 @@ class TestFunction:
         self.DGnodes = list(range(5))
         self.DGedges = [(0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2)]
 
+    def test_describe_info_dict(self):
+        info_dict = nx.classes.function._create_describe_info_dict(self.G)
+        assert info_dict["Name of Graph"] == "Test"
+        assert not info_dict["Directed"]
+        assert not info_dict["Multigraph"]
+        assert info_dict["Number of nodes"] == 5
+        assert info_dict["Number of edges"] == 5
+        assert info_dict["Average degree (min, max)"] == "2.00 (0, 4)"
+        assert info_dict["Number of connected components"] == 2
+        assert info_dict["Density"] == 0.5
+
     def test_nodes(self):
         assert nodes_equal(self.G.nodes(), list(nx.nodes(self.G)))
         assert nodes_equal(self.DG.nodes(), list(nx.nodes(self.DG)))
@@ -270,13 +281,13 @@ class TestFunction:
         G = nx.freeze(nx.path_graph(3))
         node = G.nodes[0]
         node["node_attribute"] = True
-        assert node["node_attribute"] == True
+        assert node["node_attribute"] is True
 
     def test_edge_attributes_are_still_mutable_on_frozen_graph(self):
         G = nx.freeze(nx.path_graph(3))
         edge = G.edges[(0, 1)]
         edge["edge_attribute"] = True
-        assert edge["edge_attribute"] == True
+        assert edge["edge_attribute"] is True
 
     def test_neighbors_complete_graph(self):
         graph = nx.complete_graph(100)

@@ -106,7 +106,7 @@ def _scatter_plot(ax, X, array_of_markers, axis_plot=True):
             alpha=0.8,
             color=tuple(X[i] / 255),
         )
-    if axis_plot == True:
+    if axis_plot:
         ax.set_xlabel("Red")
         ax.set_ylabel("Green")
         ax.set_zlabel("Blue")

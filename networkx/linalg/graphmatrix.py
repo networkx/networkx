@@ -106,7 +106,7 @@ def incidence_matrix(
 
 
 @nx._dispatchable(edge_attrs="weight")
-def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
+def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight", *, format="csr"):
     """Returns adjacency matrix of `G`.
 
     Parameters
@@ -127,9 +127,13 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
        The edge data key used to provide each value in the matrix.
        If None, then each edge has weight 1.
 
+    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok', 'dense'}
+       The type of the array to be returned (default 'csr'). For 'dense',
+       a `numpy.ndarray` is returned instead of a SciPy sparse array.
+
     Returns
     -------
-    A : SciPy sparse array
+    A : SciPy sparse array or numpy ndarray
       Adjacency matrix representation of G.
 
     Notes
@@ -165,4 +169,6 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     to_dict_of_dicts
     adjacency_spectrum
     """
-    return nx.to_scipy_sparse_array(G, nodelist=nodelist, dtype=dtype, weight=weight)
+    return nx.to_scipy_sparse_array(
+        G, nodelist=nodelist, dtype=dtype, weight=weight, format=format
+    )

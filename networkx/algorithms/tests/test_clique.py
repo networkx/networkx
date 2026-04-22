@@ -67,6 +67,15 @@ class TestCliques:
         with pytest.raises(ValueError):
             list(nx.find_cliques_recursive(self.G, [2, 6, 4, 1]))
 
+    def test_find_cliques_directed(self):
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        msg = "not implemented for directed"
+        with pytest.raises(nx.NetworkXNotImplemented, match=msg):
+            list(nx.find_cliques(G))
+
+        with pytest.raises(nx.NetworkXNotImplemented, match=msg):
+            list(nx.find_cliques_recursive(G))
+
     def test_number_of_cliques(self):
         G = self.G
         assert nx.number_of_cliques(G, 1) == 1

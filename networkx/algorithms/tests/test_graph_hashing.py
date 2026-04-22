@@ -1,7 +1,35 @@
+import copy
+
 import pytest
 
 import networkx as nx
-from networkx.generators import directed
+
+# Unit tests relevant for both functions in this module.
+
+
+def test_positive_iters():
+    G1 = nx.empty_graph()
+    with pytest.raises(
+        ValueError,
+        match="The WL algorithm requires that `iterations` be positive",
+    ):
+        nx.weisfeiler_lehman_graph_hash(G1, iterations=-3)
+    with pytest.raises(
+        ValueError,
+        match="The WL algorithm requires that `iterations` be positive",
+    ):
+        nx.weisfeiler_lehman_subgraph_hashes(G1, iterations=-3)
+    with pytest.raises(
+        ValueError,
+        match="The WL algorithm requires that `iterations` be positive",
+    ):
+        nx.weisfeiler_lehman_graph_hash(G1, iterations=0)
+    with pytest.raises(
+        ValueError,
+        match="The WL algorithm requires that `iterations` be positive",
+    ):
+        nx.weisfeiler_lehman_subgraph_hashes(G1, iterations=0)
+
 
 # Unit tests for the :func:`~networkx.weisfeiler_lehman_graph_hash` function
 
@@ -48,8 +76,8 @@ def test_directed():
 def test_reversed():
     """
     A directed graph with no bi-directional edges should yield different a graph hash
-    to the same graph taken with edge directions reversed if there are no hash collisions.
-    Here we test a cycle graph which is the minimal counterexample
+    to the same graph taken with edge directions reversed if there are no hash
+    collisions. Here we test a cycle graph which is the minimal counterexample
     """
     G = nx.cycle_graph(5, create_using=nx.DiGraph)
     nx.set_node_attributes(G, {n: str(n) for n in G.nodes()}, name="label")
@@ -250,7 +278,161 @@ def test_digest_size():
         assert len(h32) == 32 * 2
 
 
-# Unit tests for the :func:`~networkx.weisfeiler_lehman_hash_subgraphs` function
+def test_directed_bugs():
+    """
+    These were bugs for directed graphs as discussed in issue #7806
+    """
+    Ga = nx.DiGraph()
+    Gb = nx.DiGraph()
+    Ga.add_nodes_from([1, 2, 3, 4])
+    Gb.add_nodes_from([1, 2, 3, 4])
+    Ga.add_edges_from([(1, 2), (3, 2)])
+    Gb.add_edges_from([(1, 2), (3, 4)])
+    Ga_hash = nx.weisfeiler_lehman_graph_hash(Ga)
+    Gb_hash = nx.weisfeiler_lehman_graph_hash(Gb)
+    assert Ga_hash != Gb_hash
+
+    Tree1 = nx.DiGraph()
+    Tree1.add_edges_from([(0, 4), (1, 5), (2, 6), (3, 7)])
+    Tree1.add_edges_from([(4, 8), (5, 8), (6, 9), (7, 9)])
+    Tree1.add_edges_from([(8, 10), (9, 10)])
+    nx.set_node_attributes(
+        Tree1, {10: "s", 8: "a", 9: "a", 4: "b", 5: "b", 6: "b", 7: "b"}, "weight"
+    )
+    Tree2 = copy.deepcopy(Tree1)
+    nx.set_node_attributes(Tree1, {0: "d", 1: "c", 2: "d", 3: "c"}, "weight")
+    nx.set_node_attributes(Tree2, {0: "d", 1: "d", 2: "c", 3: "c"}, "weight")
+    Tree1_hash_short = nx.weisfeiler_lehman_graph_hash(
+        Tree1, iterations=1, node_attr="weight"
+    )
+    Tree2_hash_short = nx.weisfeiler_lehman_graph_hash(
+        Tree2, iterations=1, node_attr="weight"
+    )
+    assert Tree1_hash_short == Tree2_hash_short
+    Tree1_hash = nx.weisfeiler_lehman_graph_hash(
+        Tree1, node_attr="weight"
+    )  # Default is 3 iterations
+    Tree2_hash = nx.weisfeiler_lehman_graph_hash(Tree2, node_attr="weight")
+    assert Tree1_hash != Tree2_hash
+
+
+def test_trivial_labels_isomorphism():
+    """
+    Trivial labelling of the graph should not change isomorphism verdicts.
+    """
+    n, r = 100, 10
+    p = 1.0 / r
+    for i in range(1, r + 1):
+        G1 = nx.erdos_renyi_graph(n, p * i, seed=500 + i)
+        G2 = nx.erdos_renyi_graph(n, p * i, seed=42 + i)
+        G1_hash = nx.weisfeiler_lehman_graph_hash(G1)
+        G2_hash = nx.weisfeiler_lehman_graph_hash(G2)
+        equal = G1_hash == G2_hash
+
+        nx.set_node_attributes(G1, values=1, name="weight")
+        nx.set_node_attributes(G2, values=1, name="weight")
+        G1_hash_node = nx.weisfeiler_lehman_graph_hash(G1, node_attr="weight")
+        G2_hash_node = nx.weisfeiler_lehman_graph_hash(G2, node_attr="weight")
+        equal_node = G1_hash_node == G2_hash_node
+
+        nx.set_edge_attributes(G1, values="a", name="e_weight")
+        nx.set_edge_attributes(G2, values="a", name="e_weight")
+        G1_hash_edge = nx.weisfeiler_lehman_graph_hash(G1, edge_attr="e_weight")
+        G2_hash_edge = nx.weisfeiler_lehman_graph_hash(G2, edge_attr="e_weight")
+        equal_edge = G1_hash_edge == G2_hash_edge
+
+        G1_hash_both = nx.weisfeiler_lehman_graph_hash(
+            G1, edge_attr="e_weight", node_attr="weight"
+        )
+        G2_hash_both = nx.weisfeiler_lehman_graph_hash(
+            G2, edge_attr="e_weight", node_attr="weight"
+        )
+        equal_both = G1_hash_both == G2_hash_both
+
+        assert equal == equal_node
+        assert equal_node == equal_edge
+        assert equal_edge == equal_both
+
+
+def test_trivial_labels_isomorphism_directed():
+    """
+    Trivial labelling of the graph should not change isomorphism verdicts on digraphs.
+    """
+    n, r = 100, 10
+    p = 1.0 / r
+    for i in range(1, r + 1):
+        G1 = nx.erdos_renyi_graph(n, p * i, directed=True, seed=500 + i)
+        G2 = nx.erdos_renyi_graph(n, p * i, directed=True, seed=42 + i)
+        G1_hash = nx.weisfeiler_lehman_graph_hash(G1)
+        G2_hash = nx.weisfeiler_lehman_graph_hash(G2)
+        equal = G1_hash == G2_hash
+
+        nx.set_node_attributes(G1, values=1, name="weight")
+        nx.set_node_attributes(G2, values=1, name="weight")
+        G1_hash_node = nx.weisfeiler_lehman_graph_hash(G1, node_attr="weight")
+        G2_hash_node = nx.weisfeiler_lehman_graph_hash(G2, node_attr="weight")
+        equal_node = G1_hash_node == G2_hash_node
+
+        nx.set_edge_attributes(G1, values="a", name="e_weight")
+        nx.set_edge_attributes(G2, values="a", name="e_weight")
+        G1_hash_edge = nx.weisfeiler_lehman_graph_hash(G1, edge_attr="e_weight")
+        G2_hash_edge = nx.weisfeiler_lehman_graph_hash(G2, edge_attr="e_weight")
+        equal_edge = G1_hash_edge == G2_hash_edge
+
+        G1_hash_both = nx.weisfeiler_lehman_graph_hash(
+            G1, edge_attr="e_weight", node_attr="weight"
+        )
+        G2_hash_both = nx.weisfeiler_lehman_graph_hash(
+            G2, edge_attr="e_weight", node_attr="weight"
+        )
+        equal_both = G1_hash_both == G2_hash_both
+
+        assert equal == equal_node
+        assert equal_node == equal_edge
+        assert equal_edge == equal_both
+
+    # Specific case that was found to be a bug in issue #7806
+    # Without weights worked
+    Ga = nx.DiGraph()
+    Ga.add_nodes_from([1, 2, 3, 4])
+    Gb = copy.deepcopy(Ga)
+    Ga.add_edges_from([(1, 2), (3, 2)])
+    Gb.add_edges_from([(1, 2), (3, 4)])
+    Ga_hash = nx.weisfeiler_lehman_graph_hash(Ga)
+    Gb_hash = nx.weisfeiler_lehman_graph_hash(Gb)
+    assert Ga_hash != Gb_hash
+
+    # Now with trivial weights
+    nx.set_node_attributes(Ga, values=1, name="weight")
+    nx.set_node_attributes(Gb, values=1, name="weight")
+    Ga_hash = nx.weisfeiler_lehman_graph_hash(Ga, node_attr="weight")
+    Gb_hash = nx.weisfeiler_lehman_graph_hash(Gb, node_attr="weight")
+    assert Ga_hash != Gb_hash
+
+
+def test_trivial_labels_hashes():
+    """
+    Test that 'empty' labelling of nodes or edges shouldn't have a different impact
+    on the calculated hash. Note that we cannot assume that trivial weights have no
+    impact at all. Without (trivial) weights, a node will start with hashing its
+    degree. This step is omitted when there are weights.
+    """
+    n, r = 100, 10
+    p = 1.0 / r
+    for i in range(1, r + 1):
+        G1 = nx.erdos_renyi_graph(n, p * i, seed=500 + i)
+        nx.set_node_attributes(G1, values="", name="weight")
+        first = nx.weisfeiler_lehman_graph_hash(G1, node_attr="weight")
+        nx.set_edge_attributes(G1, values="", name="e_weight")
+        second = nx.weisfeiler_lehman_graph_hash(G1, edge_attr="e_weight")
+        assert first == second
+        third = nx.weisfeiler_lehman_graph_hash(
+            G1, edge_attr="e_weight", node_attr="weight"
+        )
+        assert second == third
+
+
+# Unit tests for the :func:`~networkx.weisfeiler_lehman_subgraph_hashes` function
 
 
 def is_subiteration(a, b):
@@ -263,12 +445,16 @@ def is_subiteration(a, b):
 
 def hexdigest_sizes_correct(a, digest_size):
     """
-    returns True if all hex digest sizes are the expected length in a node:subgraph-hashes
-    dictionary. Hex digest string length == 2 * bytes digest length since each pair of hex
-    digits encodes 1 byte (https://docs.python.org/3/library/hashlib.html)
+    returns True if all hex digest sizes are the expected length in a
+    node:subgraph-hashes dictionary. Hex digest string length == 2 * bytes digest
+    length since each pair of hex digits encodes 1 byte
+    (https://docs.python.org/3/library/hashlib.html)
     """
     hexdigest_size = digest_size * 2
-    list_digest_sizes_correct = lambda l: all(len(x) == hexdigest_size for x in l)
+
+    def list_digest_sizes_correct(l):
+        return all(len(x) == hexdigest_size for x in l)
+
     return all(list_digest_sizes_correct(hashes) for hashes in a.values())
 
 
@@ -293,8 +479,8 @@ def test_empty_graph_subgraph_hash():
 
 def test_directed_subgraph_hash():
     """
-    A directed graph with no bi-directional edges should yield different subgraph hashes
-    to the same graph taken as undirected, if all hashes don't collide.
+    A directed graph with no bi-directional edges should yield different subgraph
+    hashes to the same graph taken as undirected, if all hashes don't collide.
     """
     r = 10
     for i in range(r):
@@ -309,9 +495,9 @@ def test_directed_subgraph_hash():
 
 def test_reversed_subgraph_hash():
     """
-    A directed graph with no bi-directional edges should yield different subgraph hashes
-    to the same graph taken with edge directions reversed if there are no hash collisions.
-    Here we test a cycle graph which is the minimal counterexample
+    A directed graph with no bi-directional edges should yield different subgraph
+    hashes to the same graph taken with edge directions reversed if there are no
+    hash collisions. Here we test a cycle graph which is the minimal counterexample
     """
     G = nx.cycle_graph(5, create_using=nx.DiGraph)
     nx.set_node_attributes(G, {n: str(n) for n in G.nodes()}, name="label")
@@ -326,8 +512,8 @@ def test_reversed_subgraph_hash():
 
 def test_isomorphic_subgraph_hash():
     """
-    the subgraph hashes should be invariant to node-relabeling when the output is reindexed
-    by the same mapping and all hashes don't collide.
+    the subgraph hashes should be invariant to node-relabeling when the output is
+    reindexed by the same mapping and all hashes don't collide.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -513,7 +699,7 @@ def test_isomorphic_edge_attr_and_node_attr_subgraph_hash():
 def test_iteration_depth():
     """
     All nodes should have the correct number of subgraph hashes in the output when
-    using degree as initial node labels
+    using degree as initial node labels.
     Subsequent iteration depths for the same graph should be additive for each node
     """
     n, r = 100, 10

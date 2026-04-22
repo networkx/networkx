@@ -26,8 +26,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-from scipy.cluster import hierarchy
-from scipy.spatial import distance
+import scipy as sp
 
 
 def create_hc(G):
@@ -38,10 +37,10 @@ def create_hc(G):
         for v, d in p.items():
             distances[u][v] = d
     # Create hierarchical cluster
-    Y = distance.squareform(distances)
-    Z = hierarchy.complete(Y)  # Creates HC using farthest point linkage
+    Y = sp.spatial.distance.squareform(distances)
+    Z = sp.cluster.hierarchy.complete(Y)  # Creates HC using farthest point linkage
     # This partition selection is arbitrary, for illustrative purposes
-    membership = list(hierarchy.fcluster(Z, t=1.15))
+    membership = list(sp.cluster.hierarchy.fcluster(Z, t=1.15))
     # Create collection of lists for blockmodel
     partition = defaultdict(list)
     for n, p in zip(list(range(len(G))), membership):

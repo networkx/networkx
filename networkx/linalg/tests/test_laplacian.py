@@ -1,18 +1,16 @@
 import pytest
 
+import networkx as nx
+
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
-
-import networkx as nx
-from networkx.generators.degree_seq import havel_hakimi_graph
-from networkx.generators.expanders import margulis_gabber_galil_graph
 
 
 class TestLaplacian:
     @classmethod
     def setup_class(cls):
         deg = [3, 2, 2, 1, 0]
-        cls.G = havel_hakimi_graph(deg)
+        cls.G = nx.havel_hakimi_graph(deg)
         cls.WG = nx.Graph(
             (u, v, {"weight": 0.5, "other": 0.3}) for (u, v) in cls.G.edges()
         )
@@ -237,7 +235,7 @@ def test_directed_laplacian():
                    [-0.2357, -0.0722,  0.5   ,  0.    , -0.0456,  0.    ],
                    [ 0.    ,  0.    ,  0.    ,  0.5   , -0.25  , -0.25  ],
                    [ 0.    , -0.1581, -0.0456, -0.25  ,  0.5   , -0.125 ],
-                   [-0.1614,  0.    ,  0.    , -0.25  , -0.125 ,  0.5   ]])  
+                   [-0.1614,  0.    ,  0.    , -0.25  , -0.125 ,  0.5   ]])
     # fmt: on
     L = nx.directed_laplacian_matrix(G, alpha=0.9, nodelist=sorted(G), walk_type="lazy")
     np.testing.assert_almost_equal(L, GL, decimal=3)
@@ -318,7 +316,7 @@ def test_directed_combinatorial_laplacian():
     )
     np.testing.assert_almost_equal(L, GL, decimal=3)
 
-    E = nx.DiGraph(margulis_gabber_galil_graph(2))
+    E = nx.DiGraph(nx.margulis_gabber_galil_graph(2))
     L = nx.directed_combinatorial_laplacian_matrix(E)
     # fmt: off
     expected = np.array(

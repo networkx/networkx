@@ -22,7 +22,7 @@ This release is the result of 7 months of work with over 166 pull requests by
 33 contributors. Highlights include:
 
 .. warning::
-   Hash values observed in outputs of 
+   Hash values observed in outputs of
    `~networkx.algorithms.graph_hashing.weisfeiler_lehman_graph_hash`
    have changed in version 2.7 due to bug fixes. See gh-4946_ for details.
    This means that comparing hashes of the same graph computed with different

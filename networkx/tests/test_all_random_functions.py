@@ -1,11 +1,12 @@
-import pytest
-
-np = pytest.importorskip("numpy")
 import random
+
+import pytest
 
 import networkx as nx
 from networkx.algorithms import approximation as approx
 from networkx.algorithms import threshold
+
+np = pytest.importorskip("numpy")
 
 progress = 0
 
@@ -106,8 +107,6 @@ def run_all_random_functions(seed):
     )
     t(nx.algorithms.coloring.strategy_random_sequential, G, colors, seed=seed)
 
-    cs = ["d", "i", "i", "d", "d", "i"]
-    t(threshold.swap_d, cs, seed=seed)
     t(nx.configuration_model, deg_sequence, seed=seed)
     t(
         nx.directed_configuration_model,
@@ -137,7 +136,6 @@ def run_all_random_functions(seed):
     t(nx.random_clustered_graph, joint_degree_sequence, seed=seed)
     constructor = [(3, 3, 0.5), (10, 10, 0.7)]
     t(nx.random_shell_graph, constructor, seed=seed)
-    t(nx.random_triad, G.to_directed(), seed=seed)
     mapping = {1: 0.4, 2: 0.3, 3: 0.3}
     t(nx.utils.random_weighted_sample, mapping, k, seed=seed)
     t(nx.utils.weighted_choice, mapping, seed=seed)
@@ -190,9 +188,9 @@ def run_all_random_functions(seed):
     t(nx.barabasi_albert_graph, n, m, seed=seed)
     t(nx.extended_barabasi_albert_graph, n, m, p, q, seed=seed)
     t(nx.powerlaw_cluster_graph, n, m, p, seed=seed)
-    t(nx.random_lobster, n, p1, p2, seed=seed)
-    t(nx.random_powerlaw_tree, n, seed=seed, tries=5000)
-    t(nx.random_powerlaw_tree_sequence, 10, seed=seed, tries=5000)
+    t(nx.random_lobster_graph, n, p1, p2, seed=seed)
+    t(nx.random_powerlaw_tree, 5, seed=seed, tries=5000)
+    t(nx.random_powerlaw_tree_sequence, 5, seed=seed, tries=5000)
     t(nx.random_labeled_tree, n, seed=seed)
     t(nx.utils.powerlaw_sequence, n, seed=seed)
     t(nx.utils.zipf_rv, 2.3, seed=seed)

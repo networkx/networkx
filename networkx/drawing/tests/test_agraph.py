@@ -4,11 +4,10 @@ import warnings
 
 import pytest
 
-pygraphviz = pytest.importorskip("pygraphviz")
-
-
 import networkx as nx
 from networkx.utils import edges_equal, graphs_equal, nodes_equal
+
+pygraphviz = pytest.importorskip("pygraphviz")
 
 
 class TestAGraph:
@@ -21,7 +20,7 @@ class TestAGraph:
 
     def assert_equal(self, G1, G2):
         assert nodes_equal(G1.nodes(), G2.nodes())
-        assert edges_equal(G1.edges(), G2.edges())
+        assert edges_equal(G1.edges(), G2.edges(), directed=G1.is_directed())
         assert G1.graph["metal"] == G2.graph["metal"]
 
     @pytest.mark.parametrize(
@@ -175,13 +174,10 @@ class TestAGraph:
         G = nx.Graph()
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
-        # assert graphs_equal(G, H)
+        assert graphs_equal(G, H)
         AA = nx.nx_agraph.to_agraph(H)
         HH = nx.nx_agraph.from_agraph(AA)
         assert graphs_equal(H, HH)
-        G.graph["graph"] = {}
-        G.graph["node"] = {}
-        G.graph["edge"] = {}
         assert graphs_equal(G, HH)
 
     @pytest.mark.xfail(reason="integer->string node conversion in round trip")
@@ -239,3 +235,27 @@ class TestAGraph:
         with warnings.catch_warnings(record=True) as record:
             A.layout()
         assert len(record) == 0
+
+    def test_to_agraph_preserves_string_positions(self):
+        # see gh-8203
+        AG = pygraphviz.AGraph(directed=True)
+        AG.add_node("1", label="1", pos="0.0,0.0!")
+        AG.add_node("2", label="2", pos="100.0,0.0!")
+        AG.add_edge("1", "2")
+
+        G = nx.nx_agraph.from_agraph(AG)
+        A = nx.nx_agraph.to_agraph(G)
+
+        assert A.get_node("1").attr["pos"] == "0.0,0.0!"
+        assert A.get_node("2").attr["pos"] == "100.0,0.0!"
+
+    def test_to_agraph_converts_tuple_positions(self):
+        G = nx.DiGraph()
+        G.add_node("1", pos=(0.0, 0.0))
+        G.add_node("2", pos=(100.0, 50.0))
+        G.add_edge("1", "2")
+
+        A = nx.nx_agraph.to_agraph(G)
+
+        assert A.get_node("1").attr["pos"] == "0.0,0.0!"
+        assert A.get_node("2").attr["pos"] == "100.0,50.0!"

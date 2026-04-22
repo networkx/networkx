@@ -139,6 +139,68 @@ class TestApproximateFlowBetweennessCentrality:
         with pytest.raises(nx.NetworkXError, match="Increase kmax or epsilon"):
             nx.approximate_current_flow_betweenness_centrality(G, kmax=4)
 
+    def test_sample_weight_positive_effect(self):
+        G = nx.complete_graph(4)
+        b1 = approximate_cfbc(G, epsilon=0.1, seed=42)
+        b2 = approximate_cfbc(G, epsilon=0.1, sample_weight=2.0, seed=42)
+        assert len(b1) == len(b2) == 4
+        for node in G.nodes():
+            assert node in b1 and node in b2
+            assert isinstance(b1[node], float) and isinstance(b2[node], float)
+
+    def test_sample_weight_validation(self):
+        G = nx.complete_graph(4)
+
+        with pytest.raises(
+            nx.NetworkXError,
+            match="Sample weight must be positive. Got sample_weight=-1.0",
+        ):
+            approximate_cfbc(G, sample_weight=-1.0)
+
+        with pytest.raises(
+            nx.NetworkXError,
+            match="Sample weight must be positive. Got sample_weight=0.0",
+        ):
+            approximate_cfbc(G, sample_weight=0.0)
+
+        result = approximate_cfbc(G, sample_weight=0.1, seed=42)
+        assert len(result) == 4
+
+    def test_epsilon_validation(self):
+        G = nx.complete_graph(4)
+
+        with pytest.raises(
+            nx.NetworkXError, match="Epsilon must be positive. Got epsilon=-0.1"
+        ):
+            approximate_cfbc(G, epsilon=-0.1)
+
+        with pytest.raises(
+            nx.NetworkXError, match="Epsilon must be positive. Got epsilon=0.0"
+        ):
+            approximate_cfbc(G, epsilon=0.0)
+
+    def test_normalization_edge_case_small_graph(self):
+        G = nx.path_graph(2)
+
+        result_norm = approximate_cfbc(G, normalized=True, seed=42)
+        result_unnorm = approximate_cfbc(G, normalized=False, seed=42)
+
+        assert len(result_norm) == 2
+        assert len(result_unnorm) == 2
+        assert all(v == 0.0 for v in result_norm.values())
+        assert all(v == 0.0 for v in result_unnorm.values())
+
+        G1 = nx.Graph()
+        G1.add_node(0)
+        result1 = approximate_cfbc(G1, normalized=True, seed=42)
+        assert result1 == {0: 0.0}
+
+    def test_sample_weight_interaction_with_kmax(self):
+        G = nx.complete_graph(4)
+
+        with pytest.raises(nx.NetworkXError, match="Number random pairs k>kmax"):
+            approximate_cfbc(G, sample_weight=10.0, epsilon=0.01, kmax=10)
+
 
 class TestWeightedFlowBetweennessCentrality:
     pass

@@ -10,6 +10,7 @@ the path.
 """
 
 import networkx as nx
+import string
 
 # Unicode characters to represent the dots/dashes (or dits/dahs) of Morse code
 dot = "•"
@@ -90,7 +91,6 @@ def morse_encode(letter):
 
 
 # Verify that the trie encoding is correct
-import string
 
 for letter in string.ascii_lowercase:
     assert morse_encode(letter) == morse_direct_mapping[letter]

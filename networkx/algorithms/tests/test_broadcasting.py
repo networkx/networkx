@@ -2,6 +2,8 @@
 
 import math
 
+import pytest
+
 import networkx as nx
 
 
@@ -42,18 +44,18 @@ def test_example_tree_broadcast():
     assert nx.tree_broadcast_time(G) == 10
 
 
-def test_path_broadcast():
-    for i in range(2, 12):
-        G = nx.path_graph(i)
-        b_T, b_C = nx.tree_broadcast_center(G)
-        assert b_T == math.ceil(i / 2)
-        assert b_C == {
-            math.ceil(i / 2),
-            math.floor(i / 2),
-            math.ceil(i / 2 - 1),
-            math.floor(i / 2 - 1),
-        }
-        assert nx.tree_broadcast_time(G) == i - 1
+@pytest.mark.parametrize("n", range(2, 12))
+def test_path_broadcast(n):
+    G = nx.path_graph(n)
+    b_T, b_C = nx.tree_broadcast_center(G)
+    assert b_T == math.ceil(n / 2)
+    assert b_C == {
+        math.ceil(n / 2),
+        n // 2,
+        math.ceil(n / 2 - 1),
+        n // 2 - 1,
+    }
+    assert nx.tree_broadcast_time(G) == n - 1
 
 
 def test_empty_graph_broadcast():
@@ -64,19 +66,44 @@ def test_empty_graph_broadcast():
     assert nx.tree_broadcast_time(H) == 0
 
 
-def test_star_broadcast():
-    for i in range(4, 12):
-        G = nx.star_graph(i)
-        b_T, b_C = nx.tree_broadcast_center(G)
-        assert b_T == i
-        assert b_C == set(G.nodes())
-        assert nx.tree_broadcast_time(G) == b_T
+@pytest.mark.parametrize("n", range(4, 12))
+def test_star_broadcast(n):
+    G = nx.star_graph(n)
+    b_T, b_C = nx.tree_broadcast_center(G)
+    assert b_T == n
+    assert b_C == set(G.nodes())
+    assert nx.tree_broadcast_time(G) == b_T
 
 
-def test_binomial_tree_broadcast():
-    for i in range(2, 8):
-        G = nx.binomial_tree(i)
-        b_T, b_C = nx.tree_broadcast_center(G)
-        assert b_T == i
-        assert b_C == {0, 2 ** (i - 1)}
-        assert nx.tree_broadcast_time(G) == 2 * i - 1
+@pytest.mark.parametrize("n", range(2, 8))
+def test_binomial_tree_broadcast(n):
+    G = nx.binomial_tree(n)
+    b_T, b_C = nx.tree_broadcast_center(G)
+    assert b_T == n
+    assert b_C == {0, 2 ** (n - 1)}
+    assert nx.tree_broadcast_time(G) == 2 * n - 1
+
+
+@pytest.mark.parametrize("fn", [nx.tree_broadcast_center, nx.tree_broadcast_time])
+@pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+def test_raises_graph_type(fn, graph_type):
+    """Check that broadcast functions properly raise for directed and multigraph types."""
+    G = nx.path_graph(5, create_using=graph_type)
+    with pytest.raises(nx.NetworkXNotImplemented, match=r"not implemented for"):
+        fn(G)
+
+
+@pytest.mark.parametrize("fn", [nx.tree_broadcast_center, nx.tree_broadcast_time])
+@pytest.mark.parametrize("gen", [nx.empty_graph, nx.cycle_graph])
+def test_raises_not_tree(fn, gen):
+    """Check that broadcast functions properly raise for nontree graphs."""
+    G = gen(5)
+    with pytest.raises(nx.NotATree, match=r"not a tree"):
+        fn(G)
+
+
+def test_raises_node_not_in_G():
+    """Check that `tree_broadcast_time` properly raises for invalid nodes."""
+    G = nx.path_graph(5)
+    with pytest.raises(nx.NodeNotFound, match=r"node.*not in G"):
+        nx.tree_broadcast_time(G, node=10)

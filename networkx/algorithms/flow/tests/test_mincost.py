@@ -1,6 +1,5 @@
 import bz2
 import importlib.resources
-import os
 import pickle
 
 import pytest

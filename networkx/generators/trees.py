@@ -28,7 +28,6 @@ with a designated root node. A rooted forest is a disjoint union
 of rooted trees.
 """
 
-import warnings
 from collections import Counter, defaultdict
 from math import comb, factorial
 

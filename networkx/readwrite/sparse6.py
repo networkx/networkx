@@ -13,7 +13,6 @@ For more information, see the `sparse6`_ homepage.
 """
 
 import networkx as nx
-from networkx.exception import NetworkXError
 from networkx.readwrite.graph6 import data_to_n, n_to_data
 from networkx.utils import not_implemented_for, open_file
 
@@ -139,7 +138,7 @@ def from_sparse6_bytes(string):
     if string.startswith(b">>sparse6<<"):
         string = string[11:]
     if not string.startswith(b":"):
-        raise NetworkXError("Expected leading colon in sparse6")
+        raise nx.NetworkXError("Expected leading colon in sparse6")
 
     chars = [c - 63 for c in string[1:]]
     n, data = data_to_n(chars)
@@ -258,7 +257,8 @@ def read_sparse6(path):
     Parameters
     ----------
     path : file or string
-       File or filename to write.
+       Filename or file handle to read.
+       Filenames ending in .gz or .bz2 will be decompressed.
 
     Returns
     -------
@@ -324,7 +324,8 @@ def write_sparse6(G, path, nodes=None, header=True):
     G : Graph (undirected)
 
     path : file or string
-       File or filename to write
+       File or filename to write.
+       Filenames ending in .gz or .bz2 will be compressed.
 
     nodes: list or iterable
        Nodes are labeled 0...n-1 in the order provided.  If None the ordering

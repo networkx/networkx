@@ -5,8 +5,6 @@ These algorithms work with undirected and directed graphs.
 
 """
 
-import warnings
-
 import networkx as nx
 
 __all__ = [
@@ -101,6 +99,9 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
 
     ValueError
         If `method` is not among the supported options.
+
+    NetworkXNoPath
+       If `source` and `target` are specified but no path exists between them.
 
     Examples
     --------
@@ -403,8 +404,7 @@ def average_shortest_path_length(G, weight=None, method=None):
     # there are no paths in the null graph.
     if n == 0:
         msg = (
-            "the null graph has no paths, thus there is no average "
-            "shortest path length"
+            "the null graph has no paths, thus there is no average shortest path length"
         )
         raise nx.NetworkXPointlessConcept(msg)
     # For the special case of the trivial graph, return zero immediately.
@@ -559,7 +559,7 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     >>> G = nx.Graph()
     >>> nx.add_path(G, [0, 1, 2, 3, 0])
     >>> dict(nx.single_source_all_shortest_paths(G, source=0))
-    {0: [[0]], 1: [[0, 1]], 2: [[0, 1, 2], [0, 3, 2]], 3: [[0, 3]]}
+    {0: [[0]], 1: [[0, 1]], 3: [[0, 3]], 2: [[0, 1, 2], [0, 3, 2]]}
 
     Notes
     -----
@@ -585,11 +585,8 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
         pred, dist = nx.bellman_ford_predecessor_and_distance(G, source, weight=weight)
     else:
         raise ValueError(f"method not supported: {method}")
-    for n in G:
-        try:
-            yield n, list(_build_paths_from_predecessors({source}, n, pred))
-        except nx.NetworkXNoPath:
-            pass
+    for n in pred:
+        yield n, list(_build_paths_from_predecessors({source}, n, pred))
 
 
 @nx._dispatchable(edge_attrs="weight")
@@ -695,25 +692,23 @@ def _build_paths_from_predecessors(sources, target, pred):
     if target not in pred:
         raise nx.NetworkXNoPath(f"Target {target} cannot be reached from given sources")
 
+    stack = [[target, iter(pred[target])]]
+    path = [target]
     seen = {target}
-    stack = [[target, 0]]
-    top = 0
-    while top >= 0:
-        node, i = stack[top]
+
+    while stack:
+        node, preds = stack[-1]
         if node in sources:
-            yield [p for p, n in reversed(stack[: top + 1])]
-        if len(pred[node]) > i:
-            stack[top][1] = i + 1
-            next = pred[node][i]
-            if next in seen:
+            yield path[::-1]
+
+        for predecessor in preds:
+            if predecessor in seen:
                 continue
-            else:
-                seen.add(next)
-            top += 1
-            if top == len(stack):
-                stack.append([next, 0])
-            else:
-                stack[top][:] = [next, 0]
-        else:
-            seen.discard(node)
-            top -= 1
+            seen.add(predecessor)
+            path.append(predecessor)
+            stack.append([predecessor, iter(pred[predecessor])])
+            break
+        else:  # no preds left!
+            stack.pop()
+            path.pop()
+            seen.remove(node)

@@ -8,6 +8,11 @@ sp = pytest.importorskip("scipy")
 pytest.importorskip("numpy")
 
 
+@nx._dispatchable(implemented_by_nx=False)
+def _stub_func(G):
+    raise NotImplementedError("_stub_func is a stub")
+
+
 def test_dispatch_kwds_vs_args():
     G = nx.path_graph(4)
     nx.pagerank(G)
@@ -162,9 +167,59 @@ def test_bad_backend_name():
         nx.null_graph(backend="this_backend_does_not_exist")
 
 
-def test_fallback_to_nx():
-    with pytest.warns(DeprecationWarning, match="_fallback_to_nx"):
-        # Check as class property
-        assert nx._dispatchable._fallback_to_nx == nx.config.fallback_to_nx
-        # Check as instance property
-        assert nx.pagerank.__wrapped__._fallback_to_nx == nx.config.fallback_to_nx
+def test_not_implemented_by_nx():
+    assert "networkx" in nx.pagerank.backends
+    assert "networkx" not in _stub_func.backends
+
+    if "nx_loopback" in nx.config.backends:
+        from networkx.classes.tests.dispatch_interface import LoopbackBackendInterface
+
+        def stub_func_implementation(G):
+            return True
+
+        LoopbackBackendInterface._stub_func = staticmethod(stub_func_implementation)
+        try:
+            assert _stub_func(nx.Graph()) is True
+        finally:
+            del LoopbackBackendInterface._stub_func
+
+    with pytest.raises(NotImplementedError):
+        _stub_func(nx.Graph())
+
+
+@pytest.mark.skipif(
+    "not nx.config.backend_priority.algos "
+    "or nx.config.backend_priority.algos[0] != 'nx_loopback'"
+)
+def test_dispatch_graph_new():
+    from networkx.classes.tests.dispatch_interface import LoopbackGraph
+
+    G = nx.Graph()
+    assert not isinstance(G, LoopbackGraph)
+
+    # `backend=` argument that gets passed to __init__ is ignored.
+    # Best practice is that it should not be in the `.graph` dict.
+    G = nx.Graph(backend="networkx")
+    assert type(G) is nx.Graph
+    assert "backend" not in G.graph
+
+    G = nx.Graph(backend="nx_loopback")
+    assert isinstance(G, LoopbackGraph)
+    assert "backend" not in G.graph
+
+    # Args are passed
+    G1 = nx.Graph([(0, 1), (1, 2)])
+    assert not isinstance(G1, LoopbackGraph)
+    G2 = nx.Graph([(0, 1), (1, 2)], backend="nx_loopback")
+    assert isinstance(G2, LoopbackGraph)
+    assert nx.utils.misc.graphs_equal(G1, G2)
+
+    # Test config for automatic usage
+    with nx.config.backend_priority(classes=["nx_loopback"]):
+        G = nx.Graph()
+        assert isinstance(G, LoopbackGraph)
+        # LoopbackDiGraph __new__ is not implemented
+        G = nx.DiGraph()
+        assert not isinstance(G, LoopbackGraph)
+    G = nx.Graph()
+    assert not isinstance(G, LoopbackGraph)

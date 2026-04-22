@@ -338,11 +338,3 @@ def test__reachable(large_collider_graph):
     ancestors = {"A", "B", "C", "D", "F"}
     assert reachable(g, x, ancestors, {"B"}) == {"B", "F", "D"}
     assert reachable(g, x, ancestors, set()) == ancestors
-
-
-def test_deprecations():
-    G = nx.DiGraph([(0, 1), (1, 2)])
-    with pytest.deprecated_call():
-        nx.d_separated(G, 0, 2, {1})
-    with pytest.deprecated_call():
-        z = nx.minimal_d_separator(G, 0, 2)

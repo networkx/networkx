@@ -92,8 +92,8 @@ class DelayedImportErrorModule(types.ModuleType):
             raise ModuleNotFoundError(
                 f"No module named '{fd['spec']}'\n\n"
                 "This error is lazily reported, having originally occurred in\n"
-                f'  File {fd["filename"]}, line {fd["lineno"]}, in {fd["function"]}\n\n'
-                f'----> {"".join(fd["code_context"] or "").strip()}'
+                f"  File {fd['filename']}, line {fd['lineno']}, in {fd['function']}\n\n"
+                f"----> {''.join(fd['code_context'] or '').strip()}"
             )
 
 

@@ -2,10 +2,10 @@
 
 import pytest
 
+import networkx as nx
+
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
-
-import networkx as nx
 
 
 def test_trophic_levels():

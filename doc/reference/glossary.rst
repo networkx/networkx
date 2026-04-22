@@ -38,7 +38,7 @@ Glossary
          >>> G.add_edges_from([("b", "c"), ("a", "ab"), ("ab", "c")])
          >>> G.edges("ab")
          OutEdgeDataView([('ab', 'c')])
-      
+
       Since "ab" is a node in G, it is treated as a single node::
 
          >>> G.edges("bc")
@@ -57,7 +57,7 @@ Glossary
          >>> G.edges("de")
          OutEdgeDataView([])
 
-      When nbunch is an iterator that is not itself a node and none of 
+      When nbunch is an iterator that is not itself a node and none of
       its elements are nodes, then the edge view suite of methods return
       an empty edge view.
 

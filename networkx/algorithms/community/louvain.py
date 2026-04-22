@@ -1,4 +1,4 @@
-"""Function for detecting communities based on Louvain Community Detection
+"""Functions for detecting communities based on Louvain Community Detection
 Algorithm"""
 
 import itertools
@@ -118,6 +118,7 @@ def louvain_communities(
     See Also
     --------
     louvain_partitions
+    :any:`leiden_communities`
     """
 
     partitions = louvain_partitions(G, weight, resolution, threshold, seed)
@@ -134,7 +135,7 @@ def louvain_communities(
 def louvain_partitions(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
-    """Yields partitions for each level of the Louvain Community Detection Algorithm
+    """Yield partitions for each level of the Louvain Community Detection Algorithm
 
     Louvain Community Detection Algorithm is a simple method to extract the community
     structure of a network. This is a heuristic method based on modularity optimization. [1]_
@@ -187,6 +188,7 @@ def louvain_partitions(
     See Also
     --------
     louvain_communities
+    :any:`leiden_partitions`
     """
 
     partition = [{u} for u in G.nodes()]

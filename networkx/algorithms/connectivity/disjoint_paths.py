@@ -1,5 +1,7 @@
 """Flow based node and edge disjoint paths."""
 
+from itertools import filterfalse as _filterfalse
+
 import networkx as nx
 
 # Define the default maximum flow function to use for the underlying
@@ -9,15 +11,12 @@ from networkx.algorithms.flow import (
     preflow_push,
     shortest_augmenting_path,
 )
-from networkx.exception import NetworkXNoPath
-
-default_flow_func = edmonds_karp
-from itertools import filterfalse as _filterfalse
 
 # Functions to build auxiliary data structures.
 from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_connectivity
 
 __all__ = ["edge_disjoint_paths", "node_disjoint_paths"]
+default_flow_func = edmonds_karp
 
 
 @nx._dispatchable(
@@ -169,7 +168,7 @@ def edge_disjoint_paths(
     # Maximum possible edge disjoint paths
     possible = min(H.out_degree(s), H.in_degree(t))
     if not possible:
-        raise NetworkXNoPath
+        raise nx.NetworkXNoPath
 
     if cutoff is None:
         cutoff = possible
@@ -191,7 +190,7 @@ def edge_disjoint_paths(
     R = flow_func(H, s, t, **kwargs)
 
     if R.graph["flow_value"] == 0:
-        raise NetworkXNoPath
+        raise nx.NetworkXNoPath
 
     # Saturated edges in the residual network form the edge disjoint paths
     # between source and target
@@ -375,7 +374,7 @@ def node_disjoint_paths(
     # Maximum possible edge disjoint paths
     possible = min(H.out_degree(f"{mapping[s]}B"), H.in_degree(f"{mapping[t]}A"))
     if not possible:
-        raise NetworkXNoPath
+        raise nx.NetworkXNoPath
 
     if cutoff is None:
         cutoff = possible

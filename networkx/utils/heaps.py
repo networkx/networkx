@@ -292,14 +292,13 @@ class BinaryHeap(MinHeap):
         if not dict:
             raise nx.NetworkXError("heap is empty")
         heap = self._heap
-        pop = heappop
         # Repeatedly remove stale key-value pairs until a up-to-date one is
         # met.
         while True:
             value, _, key = heap[0]
             if key in dict and value == dict[key]:
                 break
-            pop(heap)
+            heappop(heap)
         return (key, value)
 
     def pop(self):
@@ -307,12 +306,11 @@ class BinaryHeap(MinHeap):
         if not dict:
             raise nx.NetworkXError("heap is empty")
         heap = self._heap
-        pop = heappop
         # Repeatedly remove stale key-value pairs until a up-to-date one is
         # met.
         while True:
             value, _, key = heap[0]
-            pop(heap)
+            heappop(heap)
             if key in dict and value == dict[key]:
                 break
         del dict[key]

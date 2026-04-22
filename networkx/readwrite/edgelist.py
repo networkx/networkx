@@ -41,24 +41,24 @@ from networkx.utils import open_file
 
 
 def generate_edgelist(G, delimiter=" ", data=True):
-    """Generate a single line of the graph G in edge list format.
+    """Generate lines representing edges of `G` in edge list format.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    delimiter : string, optional
-       Separator for node labels
+    delimiter : str, optional (default=" ")
+       Separator for node labels.
 
     data : bool or list of keys
        If False generate no edge data.  If True use a dictionary
        representation of edge data.  If a list of keys use a list of data
        values corresponding to the keys.
 
-    Returns
-    -------
-    lines : string
-        Lines of data in adjlist format.
+    Yields
+    ------
+    str
+        A line of data in edge list format for an edge in `G`.
 
     Examples
     --------
@@ -103,7 +103,7 @@ def generate_edgelist(G, delimiter=" ", data=True):
 
     See Also
     --------
-    write_adjlist, read_adjlist
+    write_edgelist, read_edgelist
     """
     if data is True:
         for u, v, d in G.edges(data=True):
@@ -154,13 +154,13 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
     >>> fh = open("test.edgelist", "wb")
     >>> nx.write_edgelist(G, fh)
     >>> nx.write_edgelist(G, "test.edgelist.gz")
-    >>> nx.write_edgelist(G, "test.edgelist.gz", data=False)
+    >>> nx.write_edgelist(G, "test.edgelist_nodata.gz", data=False)
 
     >>> G = nx.Graph()
     >>> G.add_edge(1, 2, weight=7, color="red")
-    >>> nx.write_edgelist(G, "test.edgelist", data=False)
-    >>> nx.write_edgelist(G, "test.edgelist", data=["color"])
-    >>> nx.write_edgelist(G, "test.edgelist", data=["color", "weight"])
+    >>> nx.write_edgelist(G, "test.edgelist_bigger_nodata", data=False)
+    >>> nx.write_edgelist(G, "test.edgelist_color", data=["color"])
+    >>> nx.write_edgelist(G, "test.edgelist_color_weight", data=["color", "weight"])
 
     See Also
     --------
@@ -316,7 +316,7 @@ def read_edgelist(
     path : file or string
        File or filename to read. If a file is provided, it must be
        opened in 'rb' mode.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filenames ending in .gz or .bz2 will be decompressed.
     comments : string, optional
        The character used to indicate the start of a comment. To specify that
        no character should be treated as a comment, use ``comments=None``.
@@ -340,23 +340,23 @@ def read_edgelist(
 
     Examples
     --------
-    >>> nx.write_edgelist(nx.path_graph(4), "test.edgelist")
-    >>> G = nx.read_edgelist("test.edgelist")
+    >>> nx.write_edgelist(nx.path_graph(4), "test.edgelist_P4")
+    >>> G = nx.read_edgelist("test.edgelist_P4")
 
-    >>> fh = open("test.edgelist", "rb")
+    >>> fh = open("test.edgelist_P4", "rb")
     >>> G = nx.read_edgelist(fh)
     >>> fh.close()
 
-    >>> G = nx.read_edgelist("test.edgelist", nodetype=int)
-    >>> G = nx.read_edgelist("test.edgelist", create_using=nx.DiGraph)
+    >>> G = nx.read_edgelist("test.edgelist_P4", nodetype=int)
+    >>> G = nx.read_edgelist("test.edgelist_P4", create_using=nx.DiGraph)
 
     Edgelist with data in a list:
 
     >>> textline = "1 2 3"
-    >>> fh = open("test.edgelist", "w")
+    >>> fh = open("test.textline", "w")
     >>> d = fh.write(textline)
     >>> fh.close()
-    >>> G = nx.read_edgelist("test.edgelist", nodetype=int, data=(("weight", float),))
+    >>> G = nx.read_edgelist("test.textline", nodetype=int, data=(("weight", float),))
     >>> list(G)
     [1, 2]
     >>> list(G.edges(data=True))
@@ -441,7 +441,7 @@ def read_weighted_edgelist(
     path : file or string
        File or filename to read. If a file is provided, it must be
        opened in 'rb' mode.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filenames ending in .gz or .bz2 will be decompressed.
     comments : string, optional
        The character used to indicate the start of a comment.
     delimiter : string, optional

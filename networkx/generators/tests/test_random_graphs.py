@@ -157,15 +157,15 @@ class TestGeneratorsRandom:
             non_leafs = [n for n in g if g.degree(n) > 1]
             return is_caterpillar(g.subgraph(non_leafs))
 
-        G = nx.random_lobster(10, 0.1, 0.5, seed)
+        G = nx.random_lobster_graph(10, 0.1, 0.5, seed)
         assert max(G.degree(n) for n in G.nodes()) > 3
         assert is_lobster(G)
-        pytest.raises(nx.NetworkXError, nx.random_lobster, 10, 0.1, 1, seed)
-        pytest.raises(nx.NetworkXError, nx.random_lobster, 10, 1, 1, seed)
-        pytest.raises(nx.NetworkXError, nx.random_lobster, 10, 1, 0.5, seed)
+        pytest.raises(nx.NetworkXError, nx.random_lobster_graph, 10, 0.1, 1, seed)
+        pytest.raises(nx.NetworkXError, nx.random_lobster_graph, 10, 1, 1, seed)
+        pytest.raises(nx.NetworkXError, nx.random_lobster_graph, 10, 1, 0.5, seed)
 
         # docstring says this should be a caterpillar
-        G = nx.random_lobster(10, 0.1, 0.0, seed)
+        G = nx.random_lobster_graph(10, 0.1, 0.0, seed)
         assert is_caterpillar(G)
 
         # difficult to find seed that requires few tries
@@ -308,8 +308,19 @@ class TestGeneratorsRandom:
             return r / c + w
 
         c = 1
-        graph = nx.random_kernel_graph(1000, integral, root)
         graph = nx.random_kernel_graph(1000, integral, root, seed=42)
+        assert len(graph) == 1000
+
+    def test_random_kernel_graph_default_root(self):
+        """When `kernel_root` is not provided, `sp.optimize.brentq` is used to
+        construct the default kernel.
+        """
+        pytest.importorskip("scipy")
+
+        def integral(u, w, z):
+            return z - w
+
+        graph = nx.random_kernel_graph(1000, integral, seed=42)
         assert len(graph) == 1000
 
 
@@ -349,6 +360,12 @@ def test_connected_watts_strogatz_zero_tries():
         nx.connected_watts_strogatz_graph(10, 2, 0.1, tries=0)
 
 
+def test_connected_watts_strogatz_graph_disconnected():
+    """Test that `connected_watts_strogatz_graph` properly loops when disconnected."""
+    with pytest.raises(nx.NetworkXError, match="Maximum number of tries exceeded"):
+        nx.connected_watts_strogatz_graph(10, 0, 0.0)
+
+
 @pytest.mark.parametrize(
     "generator, kwargs",
     [
@@ -367,7 +384,7 @@ def test_connected_watts_strogatz_zero_tries():
         (nx.dual_barabasi_albert_graph, {"n": 40, "m1": 3, "m2": 2, "p": 0.1}),
         (nx.extended_barabasi_albert_graph, {"n": 40, "m": 3, "p": 0.1, "q": 0.2}),
         (nx.powerlaw_cluster_graph, {"n": 40, "m": 3, "p": 0.1}),
-        (nx.random_lobster, {"n": 40, "p1": 0.1, "p2": 0.2}),
+        (nx.random_lobster_graph, {"n": 40, "p1": 0.1, "p2": 0.2}),
         (nx.random_shell_graph, {"constructor": [(10, 20, 0.8), (20, 40, 0.8)]}),
         (nx.random_powerlaw_tree, {"n": 10, "seed": 14, "tries": 1}),
         (
@@ -455,7 +472,7 @@ def test_powerlaw_cluster_disallow_directed_and_multigraph(graphtype):
 @pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
 def test_random_lobster_disallow_directed_and_multigraph(graphtype):
     with pytest.raises(nx.NetworkXError, match="must not be"):
-        nx.random_lobster(10, 0.1, 0.1, create_using=graphtype)
+        nx.random_lobster_graph(10, 0.1, 0.1, create_using=graphtype)
 
 
 @pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
@@ -476,3 +493,64 @@ def test_random_kernel_disallow_directed_and_multigraph(graphtype):
         nx.random_kernel_graph(
             10, lambda y, a, b: a + b, lambda u, w, r: r + w, create_using=graphtype
         )
+
+
+"""Test structure and connectivity for multiple (d, n, k) combinations
+for simple undirected graphs"""
+
+
+@pytest.mark.parametrize(
+    "d, n, k",
+    [
+        (4, 8, 4),  # Balanced
+        (1, 2, 1),  # Tiny graph
+        (6, 20, 3),  # Higher n with moderate d
+        (3, 40, 8),  # Sparse case
+        (40, 60, 6),  # Large-scale performance & correctness
+    ],
+)
+def test_random_k_lift_size_and_structure(d, n, k):
+    G = nx.random_regular_graph(d, n, seed=42)
+    H = nx.random_k_lift(G, k, seed=42)
+    assert nx.is_k_regular(H, d)
+    assert H.number_of_nodes() == n * k
+    assert nx.is_connected(H)
+
+
+# Test structure and connectivity for simple DiGraph case
+def test_random_k_lift__digraph():
+    # directed 3-cycle, strongly connected
+    G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+    k = 3
+    H = nx.random_k_lift(G, k, seed=40)
+    assert isinstance(H, nx.DiGraph)
+    assert H.number_of_nodes() == len(G) * k
+    assert all(H.in_degree(n) == 1 for n in H)
+    assert all(H.out_degree(n) == 1 for n in H)
+
+
+# Test structure and connectivity for simple MultiGraph case
+def test_random_k_lift_multigraph():
+    # small 3 node multigraph with parallel edges
+    G = nx.MultiGraph([(0, 1), (0, 1), (1, 2), (1, 2), (2, 0), (2, 0)])
+    k = 2
+    H = nx.random_k_lift(G, k, seed=41)
+    assert isinstance(H, nx.MultiGraph)
+    assert H.number_of_nodes() == len(G) * k
+    assert all(deg == 4 for _, deg in H.degree)
+    assert nx.is_connected(H)
+
+
+# Test structure and connectivity for simple non regular case
+def test_random_k_lift_non_regular():
+    # G is a non degree regular graph with 4 nodes
+    G = nx.Graph([(0, 1), (1, 2), (1, 3), (2, 3), (0, 3)])
+    k = 3
+    H = nx.random_k_lift(G, k, seed=43)
+    assert H.number_of_nodes() == len(G) * k
+    assert nx.is_connected(H)
+    # degree distribution check
+    for v, original_degree in G.degree:
+        for i in range(k):
+            lifted_node = (v, i)
+            assert H.degree[lifted_node] == original_degree

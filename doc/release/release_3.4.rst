@@ -23,7 +23,7 @@ API Changes
 - Expire deprecated ``sort_neighbors`` param in ``generic_bfs_edges`` (`#7417 <https://github.com/networkx/networkx/pull/7417>`_).
 - Rm deprecated normalized param from s_metric (`#7418 <https://github.com/networkx/networkx/pull/7418>`_).
 - Expire deprecated nx.join in favor of join_trees (`#7419 <https://github.com/networkx/networkx/pull/7419>`_).
-- Remove depercated Edmonds class for 3.4 (`#7447 <https://github.com/networkx/networkx/pull/7447>`_).
+- Remove deprecated Edmonds class for 3.4 (`#7447 <https://github.com/networkx/networkx/pull/7447>`_).
 - Remove deprecated MultiDiGraph_EdgeKey for 3.4 (`#7448 <https://github.com/networkx/networkx/pull/7448>`_).
 - Add ``edges`` keyword/deprecate ``link`` keyword arguments in ``JSON`` input-output (`#7565 <https://github.com/networkx/networkx/pull/7565>`_).
 - Revert breaking change to ``node_link_*`` link defaults (`#7652 <https://github.com/networkx/networkx/pull/7652>`_).

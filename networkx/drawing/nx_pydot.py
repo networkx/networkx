@@ -39,7 +39,13 @@ __all__ = [
 def write_dot(G, path):
     """Write NetworkX graph G to Graphviz dot format on path.
 
-    Path can be a string or a file handle.
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    path : string or file
+       Filename or file handle for data output.
+       Filenames ending in .gz or .bz2 will be compressed.
     """
     P = to_pydot(G)
     path.write(P.to_string())
@@ -58,7 +64,8 @@ def read_dot(path):
     Parameters
     ----------
     path : str or file
-        Filename or file handle.
+        Filename or file handle to read.
+        Filenames ending in .gz or .bz2 will be decompressed.
 
     Returns
     -------
@@ -105,11 +112,13 @@ def from_pydot(P):
     >>> G = nx.Graph(nx.nx_pydot.from_pydot(A))
 
     """
-
-    if P.get_strict(None):  # pydot bug: get_strict() shouldn't take argument
-        multiedges = False
-    else:
-        multiedges = True
+    # NOTE: Pydot v3 expects a dummy argument whereas Pydot v4 doesn't
+    # Remove the try-except when Pydot v4 becomes the minimum supported version
+    try:
+        strict = P.get_strict()
+    except TypeError:
+        strict = P.get_strict(None)  # pydot bug: get_strict() shouldn't take argument
+    multiedges = not strict
 
     if P.get_type() == "graph":  # undirected
         if multiedges:

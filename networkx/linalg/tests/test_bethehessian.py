@@ -1,17 +1,16 @@
 import pytest
 
+import networkx as nx
+
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
-
-import networkx as nx
-from networkx.generators.degree_seq import havel_hakimi_graph
 
 
 class TestBetheHessian:
     @classmethod
     def setup_class(cls):
         deg = [3, 2, 2, 1, 0]
-        cls.G = havel_hakimi_graph(deg)
+        cls.G = nx.havel_hakimi_graph(deg)
         cls.P = nx.path_graph(3)
 
     def test_bethe_hessian(self):

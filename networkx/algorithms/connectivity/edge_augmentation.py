@@ -6,11 +6,6 @@ that the graph is k-edge-connected; i.e. the graph cannot be disconnected
 unless k or more edges are removed.  Typically, the goal is to find the
 augmentation with minimum weight.  In general, it is not guaranteed that a
 k-edge-augmentation exists.
-
-See Also
---------
-:mod:`edge_kcomponents` : algorithms for finding k-edge-connected components
-:mod:`connectivity` : algorithms for determining edge connectivity.
 """
 
 import itertools as it
@@ -1090,9 +1085,9 @@ def collapse(G, grouped_nodes):
     remaining = set(G.nodes())
     for i, group in enumerate(grouped_nodes):
         group = set(group)
-        assert remaining.issuperset(
-            group
-        ), "grouped nodes must exist in G and be disjoint"
+        assert remaining.issuperset(group), (
+            "grouped nodes must exist in G and be disjoint"
+        )
         remaining.difference_update(group)
         members[i] = group
         mapping.update((n, i) for n in group)

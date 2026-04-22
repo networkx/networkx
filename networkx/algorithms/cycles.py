@@ -4,7 +4,7 @@ Cycle finding algorithms
 ========================
 """
 
-from collections import Counter, defaultdict
+from collections import defaultdict
 from itertools import combinations, product
 from math import inf
 
@@ -511,19 +511,19 @@ def chordless_cycles(G, length_bound=None):
     We use an algorithm strongly inspired by that of Dias et al [1]_.  It has
     been modified in the following ways:
 
-        1. Recursion is avoided, per Python's limitations
+        1. Recursion is avoided, per Python's limitations.
 
         2. The labeling function is not necessary, because the starting paths
-            are chosen (and deleted from the host graph) to prevent multiple
-            occurrences of the same path
+           are chosen (and deleted from the host graph) to prevent multiple
+           occurrences of the same path.
 
-        3. The search is optionally bounded at a specified length
+        3. The search is optionally bounded at a specified length.
 
         4. Support for directed graphs is provided by extending cycles along
-            forward edges, and blocking nodes along forward and reverse edges
+           forward edges, and blocking nodes along forward and reverse edges.
 
         5. Support for multigraphs is provided by omitting digons from the set
-            of forward edges
+           of forward edges.
 
     Parameters
     ----------
@@ -585,11 +585,13 @@ def chordless_cycles(G, length_bound=None):
     # Nodes with loops cannot belong to longer cycles.  Let's delete them here.
     # also, we implicitly reduce the multiplicity of edges down to 1 in the case
     # of multiedges.
+    loops = set(nx.nodes_with_selfloops(G))
+    edges = ((u, v) for u in G if u not in loops for v in G._adj[u] if v not in loops)
     if directed:
-        F = nx.DiGraph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
+        F = nx.DiGraph(edges)
         B = F.to_undirected(as_view=False)
     else:
-        F = nx.Graph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
+        F = nx.Graph(edges)
         B = None
 
     # If we're given a multigraph, we have a few cases to consider with parallel
@@ -614,6 +616,8 @@ def chordless_cycles(G, length_bound=None):
             B = F.copy()
             visited = set()
         for u, Gu in G.adj.items():
+            if u in loops:
+                continue
             if directed:
                 multiplicity = ((v, len(Guv)) for v, Guv in Gu.items())
                 for v, m in multiplicity:
@@ -1020,7 +1024,7 @@ def find_cycle(G, source=None, orientation=None):
 
     else:
         assert len(cycle) == 0
-        raise nx.exception.NetworkXNoCycle("No cycle found.")
+        raise nx.NetworkXNoCycle("No cycle found.")
 
     # We now have a list of edges which ends on a cycle.
     # So we need to remove from the beginning edges that are not relevant.

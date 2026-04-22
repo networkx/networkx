@@ -329,8 +329,7 @@ def threshold_graph(creation_sequence, create_using=None):
         cs = uncompact(creation_sequence)
         ci = list(enumerate(cs))
     else:
-        print("not a valid creation sequence type")
-        return None
+        raise ValueError("not a valid creation sequence")
 
     G = nx.empty_graph(0, create_using)
     if G.is_directed():
@@ -546,9 +545,6 @@ def degree_correlation(creation_sequence):
     ds = degree_sequence(cs)
     for i, sym in enumerate(cs):
         if sym == "d":
-            if i != rdi[0]:
-                print("Logic error in degree_correlation", i, rdi)
-                raise ValueError
             rdi.pop(0)
         degi = ds[i]
         for dj in rdi:
@@ -863,15 +859,36 @@ def random_threshold_sequence(n, p, seed=None):
 # and a keyword parameter?
 def right_d_threshold_sequence(n, m):
     """
-    Create a skewed threshold graph with a given number
-    of vertices (n) and a given number of edges (m).
+    Returns a "right-dominated" threshold sequence with `n` vertices and `m` edges.
 
-    The routine returns an unlabeled creation sequence
-    for the threshold graph.
+    Each vertex in the sequence is either dominant or isolated.
+    In the "right-dominated" version, once the basic sequence is formed,
+    isolated vertices may be flipped to dominant from the right in order
+    to reach the target number of edges.
 
-    FIXME: describe algorithm
+    Parameters
+    ----------
+    n : int
+        Number of vertices.
+    m : int
+        Number of edges.
 
+    Returns
+    -------
+    A list of 'd' (dominant) and 'i' (isolated) forming a right-dominated threshold sequence.
+
+    Raises
+    ------
+    ValueError
+        If `m` exceeds the maximum number of edges.
+
+    Examples
+    --------
+    >>> from networkx.algorithms.threshold import right_d_threshold_sequence
+    >>> right_d_threshold_sequence(5, 3)
+    ['d', 'i', 'i', 'd', 'i']
     """
+
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
 
     #  m <n : not enough edges, make disconnected
@@ -897,15 +914,49 @@ def right_d_threshold_sequence(n, m):
 
 def left_d_threshold_sequence(n, m):
     """
-    Create a skewed threshold graph with a given number
-    of vertices (n) and a given number of edges (m).
+    Returns a "left-dominated" threshold sequence with `n` vertices and `m` edges.
 
-    The routine returns an unlabeled creation sequence
-    for the threshold graph.
+    Each vertex in the sequence is either dominant or isolated.
+    In the "left-dominated" version, once the basic sequence is formed,
+    isolated vertices may be flipped to dominant from the left in order
+    to reach the target number of edges.
 
-    FIXME: describe algorithm
+    Parameters
+    ----------
+    n : int
+        Number of vertices.
+    m : int
+        Number of edges.
 
+    Returns
+    -------
+    A list of 'd' (dominant) and 'i' (isolated) forming a left-dominated threshold sequence.
+
+    Raises
+    ------
+    ValueError
+        If `m` exceeds the maximum number of edges.
+
+    Examples
+    --------
+    For certain small cases, both left and right dominated versions produce
+    the same sequence. However, for larger values of `m`, the difference in
+    flipping order becomes evident. For instance, compare the sequences for
+    ``n=6, m=8``:
+
+    >>> from networkx.algorithms.threshold import left_d_threshold_sequence
+    >>> seq = left_d_threshold_sequence(6, 8)
+    >>> seq
+    ['d', 'd', 'd', 'i', 'i', 'd']
+
+    In contrast, the right-dominated version yields:
+
+    >>> from networkx.algorithms.threshold import right_d_threshold_sequence
+    >>> right_seq = right_d_threshold_sequence(6, 8)
+    >>> right_seq
+    ['d', 'i', 'i', 'd', 'i', 'd']
     """
+
     cs = ["d"] + ["i"] * (n - 1)  # create sequence with n insolated nodes
 
     #  m <n : not enough edges, make disconnected
@@ -927,54 +978,4 @@ def left_d_threshold_sequence(n, m):
         ind += 1
     if sum > m:  # be sure not to change the first vertex
         cs[sum - m] = "i"
-    return cs
-
-
-@py_random_state(3)
-def swap_d(cs, p_split=1.0, p_combine=1.0, seed=None):
-    """
-    Perform a "swap" operation on a threshold sequence.
-
-    The swap preserves the number of nodes and edges
-    in the graph for the given sequence.
-    The resulting sequence is still a threshold sequence.
-
-    Perform one split and one combine operation on the
-    'd's of a creation sequence for a threshold graph.
-    This operation maintains the number of nodes and edges
-    in the graph, but shifts the edges from node to node
-    maintaining the threshold quality of the graph.
-
-    seed : integer, random_state, or None (default)
-        Indicator of random number generation state.
-        See :ref:`Randomness<randomness>`.
-    """
-    # preprocess the creation sequence
-    dlist = [i for (i, node_type) in enumerate(cs[1:-1]) if node_type == "d"]
-    # split
-    if seed.random() < p_split:
-        choice = seed.choice(dlist)
-        split_to = seed.choice(range(choice))
-        flip_side = choice - split_to
-        if split_to != flip_side and cs[split_to] == "i" and cs[flip_side] == "i":
-            cs[choice] = "i"
-            cs[split_to] = "d"
-            cs[flip_side] = "d"
-            dlist.remove(choice)
-            # don't add or combine may reverse this action
-            # dlist.extend([split_to,flip_side])
-    #            print >>sys.stderr,"split at %s to %s and %s"%(choice,split_to,flip_side)
-    # combine
-    if seed.random() < p_combine and dlist:
-        first_choice = seed.choice(dlist)
-        second_choice = seed.choice(dlist)
-        target = first_choice + second_choice
-        if target >= len(cs) or cs[target] == "d" or first_choice == second_choice:
-            return cs
-        # OK to combine
-        cs[first_choice] = "i"
-        cs[second_choice] = "i"
-        cs[target] = "d"
-    #        print >>sys.stderr,"combine %s and %s to make %s."%(first_choice,second_choice,target)
-
     return cs

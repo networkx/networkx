@@ -50,10 +50,10 @@ class TestSparseGraph6:
     def test_from_bytes_multigraph_graph(self):
         graph_data = b":An"
         G = nx.from_sparse6_bytes(graph_data)
-        assert type(G) == nx.Graph
+        assert isinstance(G, nx.Graph)
         multigraph_data = b":Ab"
         M = nx.from_sparse6_bytes(multigraph_data)
-        assert type(M) == nx.MultiGraph
+        assert isinstance(M, nx.MultiGraph)
 
     def test_read_sparse6(self):
         data = b":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"
@@ -65,7 +65,7 @@ class TestSparseGraph6:
 
     def test_read_many_graph6(self):
         # Read many graphs into list
-        data = b":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n" b":Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM"
+        data = b":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n:Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM"
         fh = BytesIO(data)
         glist = nx.read_sparse6(fh)
         assert len(glist) == 2

@@ -11,8 +11,8 @@ the contribution of those nodes to the betweenness centrality of the whole
 network. Here we divide the network in chunks of nodes and we compute their
 contribution to the betweenness centrality of the whole network.
 
-Note: The example output below shows that the non-parallel implementation is
-faster. This is a limitation of our CI/CD pipeline running on a single core.
+Note: The example output below may show that the non-parallel implementation is
+faster. This is a limitation of our CI/CD pipeline.
 
 Depending on your setup, you will likely observe a speedup.
 """
@@ -60,24 +60,19 @@ def betweenness_centrality_parallel(G, processes=None):
     return bt_c
 
 
-G_ba = nx.barabasi_albert_graph(1000, 3)
-G_er = nx.gnp_random_graph(1000, 0.01)
-G_ws = nx.connected_watts_strogatz_graph(1000, 4, 0.1)
-for G in [G_ba, G_er, G_ws]:
-    print("")
-    print("Computing betweenness centrality for:")
-    print(G)
-    print("\tParallel version")
-    start = time.time()
-    bt = betweenness_centrality_parallel(G)
-    print(f"\t\tTime: {(time.time() - start):.4F} seconds")
-    print(f"\t\tBetweenness centrality for node 0: {bt[0]:.5f}")
-    print("\tNon-Parallel version")
-    start = time.time()
-    bt = nx.betweenness_centrality(G)
-    print(f"\t\tTime: {(time.time() - start):.4F} seconds")
-    print(f"\t\tBetweenness centrality for node 0: {bt[0]:.5f}")
-print("")
+G = nx.barabasi_albert_graph(1000, 3)
+print("Computing betweenness centrality for:")
+print(G)
+print("\tParallel version")
+start = time.time()
+bt = betweenness_centrality_parallel(G, processes=2)
+print(f"\t\tTime: {(time.time() - start):.4F} seconds")
+print(f"\t\tBetweenness centrality for node 0: {bt[0]:.5f}")
+print("\tNon-Parallel version")
+start = time.time()
+bt = nx.betweenness_centrality(G)
+print(f"\t\tTime: {(time.time() - start):.4F} seconds")
+print(f"\t\tBetweenness centrality for node 0: {bt[0]:.5f}")
 
-nx.draw(G_ba, node_size=100)
+nx.draw(G, node_size=100)
 plt.show()

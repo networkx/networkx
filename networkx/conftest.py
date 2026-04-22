@@ -13,13 +13,12 @@ General guidelines for writing good tests:
 """
 
 import os
-import sys
 import warnings
 from importlib.metadata import entry_points
 
 import pytest
 
-import networkx
+import networkx as nx
 
 
 def pytest_addoption(parser):
@@ -61,16 +60,19 @@ def pytest_configure(config):
     if backend:
         # We will update `networkx.config.backend_priority` below in `*_modify_items`
         # to allow tests to get set up with normal networkx graphs.
-        networkx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
-        networkx.utils.backends.backend_info["nx_loopback"] = {}
-        networkx.config.backends = networkx.utils.Config(
-            nx_loopback=networkx.utils.Config(),
-            **networkx.config.backends,
+        nx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
+        nx.utils.backends.backend_info["nx_loopback"] = {}
+        nx.config.backends = nx.utils.Config(
+            nx_loopback=nx.utils.Config(),
+            **nx.config.backends,
         )
         fallback_to_nx = config.getoption("--fallback-to-nx")
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
-        networkx.config.fallback_to_nx = bool(fallback_to_nx)
+        nx.config.fallback_to_nx = bool(fallback_to_nx)
+        nx.utils.backends._dispatchable.__call__ = (
+            nx.utils.backends._dispatchable._call_if_any_backends_installed
+        )
 
 
 def pytest_collection_modifyitems(config, items):
@@ -81,10 +83,10 @@ def pytest_collection_modifyitems(config, items):
         # when running in auto-conversion test mode
         backend_name = config.backend
         if backend_name != "networkx":
-            networkx.utils.backends._dispatchable._is_testing = True
-            networkx.config.backend_priority.algos = [backend_name]
-            networkx.config.backend_priority.generators = [backend_name]
-            backend = networkx.utils.backends.backends[backend_name].load()
+            nx.utils.backends._dispatchable._is_testing = True
+            nx.config.backend_priority.algos = [backend_name]
+            nx.config.backend_priority.generators = [backend_name]
+            backend = nx.utils.backends.backends[backend_name].load()
             if hasattr(backend, "on_start_tests"):
                 getattr(backend, "on_start_tests")(items)
 
@@ -101,74 +103,59 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
+        "ignore",
+        category=UserWarning,
+        message=r"Exited (at iteration \d+|postprocessing) with accuracies.*",
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=UserWarning,
+        message=r"The hashes produced for ",
+    )
+    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nall_triplets"
+        "ignore", category=DeprecationWarning, message="maybe_regular_expander"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
+        "ignore", category=DeprecationWarning, message="metric_closure is deprecated"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="minimal_d_separator"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="d_separated"
-    )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="\n\nk_core")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nk_shell"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nk_crust"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nk_corona"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\n`compute_v_structures"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="Keyword argument 'link'"
+        "ignore", category=DeprecationWarning, message="\n\nbfs_predecessors"
     )
 
 
 @pytest.fixture(autouse=True)
 def add_nx(doctest_namespace):
-    doctest_namespace["nx"] = networkx
+    doctest_namespace["nx"] = nx
 
 
 # What dependencies are installed?
 
 try:
-    import numpy
+    import numpy as np
 
     has_numpy = True
 except ImportError:
     has_numpy = False
 
 try:
-    import scipy
+    import scipy as sp
 
     has_scipy = True
 except ImportError:
     has_scipy = False
 
 try:
-    import matplotlib
+    import matplotlib as mpl
 
     has_matplotlib = True
 except ImportError:
     has_matplotlib = False
 
 try:
-    import pandas
+    import pandas as pd
 
     has_pandas = True
 except ImportError:
@@ -222,6 +209,7 @@ needs_scipy = [
     "algorithms/assortativity/pairs.py",
     "algorithms/bipartite/matrix.py",
     "algorithms/bipartite/spectral.py",
+    "algorithms/bipartite/link_analysis.py",
     "algorithms/centrality/current_flow_betweenness.py",
     "algorithms/centrality/current_flow_betweenness_subset.py",
     "algorithms/centrality/eigenvector.py",
@@ -231,6 +219,7 @@ needs_scipy = [
     "algorithms/centrality/subgraph_alg.py",
     "algorithms/communicability_alg.py",
     "algorithms/community/divisive.py",
+    "algorithms/community/bipartitions.py",
     "algorithms/distance_measures.py",
     "algorithms/link_analysis/hits_alg.py",
     "algorithms/link_analysis/pagerank_alg.py",

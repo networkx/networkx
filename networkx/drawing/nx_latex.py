@@ -127,9 +127,6 @@ TikZ:          https://tikz.dev/
 TikZ options details:   https://tikz.dev/tikz-actions
 """
 
-import numbers
-import os
-
 import networkx as nx
 
 __all__ = [
@@ -496,8 +493,9 @@ def write_latex(Gbunch, path, **options):
         If Gbunch is a graph, it is drawn in a figure environment.
         If Gbunch is an iterable of graphs, each is drawn in a subfigure
         environment within a single figure environment.
-    path : filename
-        Filename or file handle to write to
+    path : string or file
+        Filename or file handle to write to.
+        Filenames ending in .gz or .bz2 will be compressed.
     options : dict
         By default, TikZ is used with options: (others are ignored)::
 

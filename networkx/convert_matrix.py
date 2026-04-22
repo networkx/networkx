@@ -29,7 +29,6 @@ import itertools
 from collections import defaultdict
 
 import networkx as nx
-from networkx.utils import not_implemented_for
 
 __all__ = [
     "from_pandas_adjacency",
@@ -152,7 +151,7 @@ def to_pandas_adjacency(
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
-def from_pandas_adjacency(df, create_using=None):
+def from_pandas_adjacency(df, create_using=None, *, nonedge=0):
     r"""Returns a graph from Pandas DataFrame.
 
     The Pandas DataFrame is interpreted as an adjacency matrix for the graph.
@@ -165,6 +164,10 @@ def from_pandas_adjacency(df, create_using=None):
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
+    nonedge : array_like (default = 0)
+        The value used to represent non-edges in the adjacency matrix.
+        See :func:`from_numpy_array` for details.
+
     Notes
     -----
     For directed graphs, explicitly mention create_using=nx.DiGraph,
@@ -174,12 +177,10 @@ def from_pandas_adjacency(df, create_using=None):
     appropriate Python data type.
 
     If you have node attributes stored in a separate dataframe `df_nodes`,
-    you can load those attributes to the graph `G` using the following code:
+    you can load those attributes to the graph `G` using the following code::
 
-    ```
-    df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
-    G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
-    ```
+        df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
+        G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
 
     If `df` has a user-specified compound data type the names
     of the data fields will be used as attribute keys in the resulting
@@ -214,7 +215,9 @@ def from_pandas_adjacency(df, create_using=None):
         raise nx.NetworkXError("Columns must match Indices.", msg) from err
 
     A = df.values
-    G = from_numpy_array(A, create_using=create_using, nodelist=df.columns)
+    G = from_numpy_array(
+        A, create_using=create_using, nodelist=df.columns, nonedge=nonedge
+    )
 
     return G
 
@@ -359,13 +362,13 @@ def from_pandas_edgelist(
         this column are used for the edge keys when adding edges if create_using
         is a multigraph.
 
+    Notes
+    -----
     If you have node attributes stored in a separate dataframe `df_nodes`,
-    you can load those attributes to the graph `G` using the following code:
+    you can load those attributes to the graph `G` using the following code::
 
-    ```
-    df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
-    G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
-    ```
+        df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
+        G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
 
     See Also
     --------
@@ -567,7 +570,7 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
            [0, 0, 1, 0]])
 
     .. note:: The `toarray` method is used in these examples to better visualize
-       the adjacancy matrix. For a dense representation of the adjaceny matrix,
+       the adjacency matrix. For a dense representation of the adjaceny matrix,
        use `to_numpy_array` instead.
 
     Directed graphs:
@@ -804,6 +807,11 @@ def from_scipy_sparse_array(
 
     Notes
     -----
+    The edges are generated from the explicitly stored entries of the sparse
+    array, including explicitly stored zero entries. If the sparse array
+    contains explicit zeros that should not be treated as edges, call
+    ``A.eliminate_zeros()`` before passing the array to this function.
+
     For directed graphs, explicitly mention create_using=nx.DiGraph,
     and entry i,j of A corresponds to an edge from i to j.
 
@@ -1122,7 +1130,13 @@ def to_numpy_array(
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def from_numpy_array(
-    A, parallel_edges=False, create_using=None, edge_attr="weight", *, nodelist=None
+    A,
+    parallel_edges=False,
+    create_using=None,
+    edge_attr="weight",
+    *,
+    nodelist=None,
+    nonedge=0,
 ):
     """Returns a graph from a 2D NumPy array.
 
@@ -1151,6 +1165,13 @@ def from_numpy_array(
         A sequence of objects to use as the nodes in the graph. If provided, the
         list of nodes must be the same length as the dimensions of `A`. The
         default is `None`, in which case the nodes are drawn from ``range(n)``.
+
+    nonedge : array_like (default = 0)
+        The value used to represent non-edges in the adjacency matrix. Entries
+        in `A` equal to this value will not be added as edges. If the array has
+        a numeric dtype, the default non-edge value is ``0``, which means
+        entries with value ``0`` are not treated as edges. To create edges with
+        weight ``0``, use a different sentinel (e.g. ``nan``).
 
     Notes
     -----
@@ -1211,6 +1232,13 @@ def from_numpy_array(
     >>> G[1][1]
     AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
 
+    Using ``nan`` as the nonedge sentinel allows zero-weight edges:
+
+    >>> A = np.array([[np.nan, 0.0], [0.0, np.nan]])
+    >>> G = nx.from_numpy_array(A, nonedge=np.nan)
+    >>> sorted(G.edges(data=True))
+    [(0, 1, {'weight': 0.0})]
+
     User defined compound data type on edges:
 
     >>> dt = [("weight", float), ("cost", int)]
@@ -1253,10 +1281,15 @@ def from_numpy_array(
 
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(nodelist)
-    # Get a list of all the entries in the array with nonzero entries. These
-    # coordinates become edges in the graph. (convert to int from np.int64)
-    edges = ((int(e[0]), int(e[1])) for e in zip(*A.nonzero()))
-    # handle numpy constructed data type
+    # Get a list of all the entries in the array with nonzero entries which are not equal
+    # to the nonedge sentinel. These coordinates become edges in the graph. (convert to int from np.int64)
+    if python_type == "void":
+        edges = ((int(e[0]), int(e[1])) for e in zip(*A.nonzero()))
+    elif nonedge != nonedge:  # to check if nonedge is nan
+        edges = ((int(e[0]), int(e[1])) for e in zip(*(A == A).nonzero()))
+    else:
+        edges = ((int(e[0]), int(e[1])) for e in zip(*(A != nonedge).nonzero()))
+    # Handle numpy constructed data type
     if python_type == "void":
         # Sort the fields by their offset, then by dtype, then by name.
         fields = sorted(
