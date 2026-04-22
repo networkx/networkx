@@ -17,6 +17,7 @@ import math
 import time
 import warnings
 from dataclasses import dataclass
+from functools import cache
 from itertools import product
 
 import networkx as nx
@@ -726,9 +727,14 @@ def optimize_edit_paths(
 
     def reduce_C(C, i, j, m, n):
         # assert(C.shape == (m + n, m + n))
+        col_ind, row_ind = cached_ind(i, j, m, n)
+        return C[row_ind, :][:, col_ind]
+
+    @cache
+    def cached_ind(i, j, m, n):
         row_ind = [k not in i and k - m not in j for k in range(m + n)]
         col_ind = [k not in j and k - n not in i for k in range(m + n)]
-        return C[row_ind, :][:, col_ind]
+        return col_ind, row_ind
 
     def reduce_ind(ind, i):
         # assert set(ind) == set(range(len(ind)))
@@ -756,31 +762,36 @@ def optimize_edit_paths(
         """
         M = len(pending_g)
         N = len(pending_h)
+        at_least_one_node_match = matched_uv is None or len(matched_uv) == 0
+        matched_uv = [] if matched_uv is None else matched_uv
+        substitution_possible = M and N
+        matched_set_p_p = {(p, p) for p, q in matched_uv}
+        matched_set_q_q = {(q, q) for p, q in matched_uv}
+        matched_set_p_u = {(p, u) for p, q in matched_uv}
+        matched_set_u_p = {(u, p) for p, q in matched_uv}
+        matched_set_q_v = {(q, v) for p, q in matched_uv}
+        matched_set_v_q = {(v, q) for p, q in matched_uv}
+        matched_set_u_u = {(u, u)}
+        matched_set_v_v = {(v, v)}
+        matched_set_p_u_q_v = {(p, u, q, v) for p, q in matched_uv}
         # assert Ce.C.shape == (M + N, M + N)
 
         # only attempt to match edges after one node match has been made
         # this will stop self-edges on the first node being automatically deleted
         # even when a substitution is the better option
-        if matched_uv is None or len(matched_uv) == 0:
+        if at_least_one_node_match and substitution_possible:
             g_ind = []
             h_ind = []
         else:
-            g_ind = [
-                i
-                for i in range(M)
-                if pending_g[i][:2] == (u, u)
-                or any(
-                    pending_g[i][:2] in ((p, u), (u, p), (p, p)) for p, q in matched_uv
-                )
-            ]
-            h_ind = [
-                j
-                for j in range(N)
-                if pending_h[j][:2] == (v, v)
-                or any(
-                    pending_h[j][:2] in ((q, v), (v, q), (q, q)) for p, q in matched_uv
-                )
-            ]
+            matched_set_g = (
+                matched_set_p_u | matched_set_u_p | matched_set_p_p | matched_set_u_u
+            )
+            matched_set_h = (
+                matched_set_q_v | matched_set_v_q | matched_set_q_q | matched_set_v_v
+            )
+
+            g_ind = [i for i in range(M) if pending_g[i][:2] in matched_set_g]
+            h_ind = [j for j in range(N) if pending_h[j][:2] in matched_set_h]
 
         m = len(g_ind)
         n = len(h_ind)
@@ -802,14 +813,23 @@ def optimize_edit_paths(
                         ):
                             continue
                     else:
-                        if any(
-                            g in ((p, u), (u, p)) and h in ((q, v), (v, q))
-                            for p, q in matched_uv
-                        ):
+                        g1, g2 = g
+                        h1, h2 = h
+                        any11 = (g1, g2, h1, h2) in matched_set_p_u_q_v
+                        any12 = (g1, g2, h2, h1) in matched_set_p_u_q_v
+                        any13 = (g2, g1, h1, h2) in matched_set_p_u_q_v
+                        any14 = (g2, g1, h2, h1) in matched_set_p_u_q_v
+
+                        any1 = any11 or any12 or any13 or any14
+                        if any1:
                             continue
-                    if g == (u, u) or any(g == (p, p) for p, q in matched_uv):
+
+                    any1 = g in matched_set_u_u | matched_set_p_p
+                    if any1:
                         continue
-                    if h == (v, v) or any(h == (q, q) for p, q in matched_uv):
+
+                    any1 = h in matched_set_v_v | matched_set_q_q
+                    if any1:
                         continue
                     C[k, l] = inf
 
@@ -1592,7 +1612,7 @@ def panther_similarity(
     .. [1] Zhang, J., Tang, J., Ma, C., Tong, H., Jing, Y., & Li, J.
            Panther: Fast top-k similarity search on large networks.
            In Proceedings of the ACM SIGKDD International Conference
-           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).
+           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445鈥?454).
            Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
     import numpy as np
@@ -1721,7 +1741,7 @@ def generate_random_paths(
     .. [1] Zhang, J., Tang, J., Ma, C., Tong, H., Jing, Y., & Li, J.
            Panther: Fast top-k similarity search on large networks.
            In Proceedings of the ACM SIGKDD International Conference
-           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445–1454).
+           on Knowledge Discovery and Data Mining (Vol. 2015-August, pp. 1445鈥?454).
            Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
     import numpy as np

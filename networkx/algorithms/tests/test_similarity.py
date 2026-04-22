@@ -278,6 +278,20 @@ class TestSimilarity:
 
         assert graph_edit_distance(G3, G3) == 0
 
+    def test_one_node_one_loop_and_empty_graph(self):
+        G1 = nx.DiGraph([(0, 0)])
+        G2 = nx.DiGraph()
+        assert nx.graph_edit_distance(G1, G2) == 2
+
+    def test_one_node_two_loops_and_empty_graph(self):
+        G1 = nx.MultiDiGraph([(0, 0), (0, 0)])
+        assert nx.graph_edit_distance(G1, nx.DiGraph()) == 3
+        assert nx.graph_edit_distance(G1, nx.MultiDiGraph()) == 3
+
+    def test_two_directed_loops(self):
+        G = nx.DiGraph([(0, 0), (1, 1)])
+        assert nx.graph_edit_distance(G, nx.DiGraph()) == 4
+
     def test_digraph(self):
         G0 = nx.DiGraph()
         G1 = nx.DiGraph()
