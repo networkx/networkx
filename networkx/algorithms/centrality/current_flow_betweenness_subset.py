@@ -91,8 +91,6 @@ def current_flow_betweenness_centrality_subset(
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
-    import numpy as np
-
     from networkx.utils import reverse_cuthill_mckee_ordering
 
     if not nx.is_connected(G):
@@ -201,8 +199,6 @@ def edge_current_flow_betweenness_centrality_subset(
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
-    import numpy as np
-
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     N = G.number_of_nodes()

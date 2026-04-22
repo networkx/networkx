@@ -1,7 +1,5 @@
 """Functions for computing clustering of pairs"""
 
-import itertools
-
 import networkx as nx
 
 __all__ = [

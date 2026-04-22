@@ -124,7 +124,6 @@ __all__ = ["ISMAGS"]
 
 import itertools
 from collections import Counter, defaultdict
-from functools import reduce, wraps
 
 import networkx as nx
 
