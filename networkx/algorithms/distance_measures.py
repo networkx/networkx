@@ -557,7 +557,6 @@ def periphery(G, e=None, usebounds=False, weight=None):
 
     See Also
     --------
-    barycenter
     centroid
     center
     """
@@ -704,10 +703,8 @@ def center(G, e=None, usebounds=False, weight=None):
     See Also
     --------
     :func:`~networkx.algorithms.tree.distance_measures.center` : tree center
-    barycenter
     centroid
     periphery
-    :func:`~networkx.algorithms.tree.distance_measures.barycenter` : tree barycenter
     :func:`~networkx.algorithms.tree.distance_measures.centroid` : tree centroid
     """
     if usebounds is True and e is None and not G.is_directed():
