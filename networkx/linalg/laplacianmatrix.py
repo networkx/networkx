@@ -325,18 +325,18 @@ def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
 
     phases = {1: np.exp(1j * phase), -1: np.exp(-1j * phase), 0: 1}
 
-    for u, v, w in DG.edges(data=weight, default=1):
+    for u, v, wt in DG.edges(data=weight, default=1):
         if u not in node_index or v not in node_index:
             continue
 
         ui, vi = node_index[u], node_index[v]
         delta_phase_edge[(ui, vi)] += 1
         delta_phase_edge[(vi, ui)] -= 1
-        matrix_weights[(ui, vi)] += 0.5 * w
-        matrix_weights[(vi, ui)] += 0.5 * w
+        matrix_weights[(ui, vi)] += 0.5 * wt
+        matrix_weights[(vi, ui)] += 0.5 * wt
 
     rows, cols, data = [], [], []
-    for u, v, w in DG.edges(data=weight, default=1):
+    for u, v, wt in DG.edges(data=weight, default=1):
         if u not in node_index or v not in node_index:
             continue
 
@@ -444,18 +444,18 @@ def normalized_magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
 
     phases = {1: np.exp(1j * phase), -1: np.exp(-1j * phase), 0: 1}
 
-    for u, v, w in DG.edges(data=weight, default=1):
+    for u, v, wt in DG.edges(data=weight, default=1):
         if u not in node_index or v not in node_index:
             continue
 
         ui, vi = node_index[u], node_index[v]
         delta_phase_edge[(ui, vi)] += 1
         delta_phase_edge[(vi, ui)] -= 1
-        matrix_weights[(ui, vi)] += 0.5 * w
-        matrix_weights[(vi, ui)] += 0.5 * w
+        matrix_weights[(ui, vi)] += 0.5 * wt
+        matrix_weights[(vi, ui)] += 0.5 * wt
 
     rows, cols, data = [], [], []
-    for u, v, w in DG.edges(data=weight, default=1):
+    for u, v, wt in DG.edges(data=weight, default=1):
         if u not in node_index or v not in node_index:
             continue
 
