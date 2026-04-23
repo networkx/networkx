@@ -336,7 +336,7 @@ def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
         matrix_weights[(vi, ui)] += 0.5 * wt
 
     rows, cols, data = [], [], []
-    for u, v, wt in DG.edges(data=weight, default=1):
+    for u, v in DG.edges():
         if u not in node_index or v not in node_index:
             continue
 
@@ -455,7 +455,7 @@ def normalized_magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
         matrix_weights[(vi, ui)] += 0.5 * wt
 
     rows, cols, data = [], [], []
-    for u, v, wt in DG.edges(data=weight, default=1):
+    for u, v in DG.edges():
         if u not in node_index or v not in node_index:
             continue
 
