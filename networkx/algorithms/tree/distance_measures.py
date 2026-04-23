@@ -198,6 +198,7 @@ def centroid(G):
     barycenter : tree barycenter
     centroid : tree centroid
     :func:`~networkx.algorithms.distance_measures.barycenter`
+    :func:`~networkx.algorithms.distance_measures.centroid`
     :func:`~networkx.algorithms.distance_measures.center`
     center : tree center
     """
