@@ -733,7 +733,7 @@ def centroid(G, weight=None, attr=None, sp=None):
 
     where :math:`d_G` is the (possibly weighted) :func:`path length
     <networkx.algorithms.shortest_paths.generic.shortest_path_length>`.
-    This quantity is also known as the :dfn:`barycenter` or :dfn:`median`.
+    This quantity is also known as the :dfn:`median`.
     See [West01]_, p. 78.
 
     Parameters
@@ -771,11 +771,9 @@ def centroid(G, weight=None, attr=None, sp=None):
 
     See Also
     --------
-    barycenter
     centroid
     center
     periphery
-    :func:`~networkx.algorithms.tree.distance_measures.barycenter` : tree barycenter
     :func:`~networkx.algorithms.tree.distance_measures.centroid` : tree centroid
     """
     if weight is None and attr is None and sp is None:

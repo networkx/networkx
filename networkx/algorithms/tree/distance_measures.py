@@ -169,9 +169,9 @@ def centroid(G):
     This algorithm's time complexity is ``O(N)`` where ``N`` is the
     number of nodes in the tree.
 
-    In unweighted trees the centroid coincides with the barycenter,
-    the node or nodes that minimize the sum of distances to all other
-    nodes. However, this concept is different from that of the graph
+    In unweighted trees the centroid coincides with the node or nodes
+    that minimize the sum of distances to all other nodes. However, this
+    concept is different from that of the graph
     center, which is the set of nodes minimizing the maximum distance
     to all other nodes.
 
@@ -195,9 +195,7 @@ def centroid(G):
 
     See Also
     --------
-    barycenter : tree barycenter
     centroid : tree centroid
-    :func:`~networkx.algorithms.distance_measures.barycenter`
     :func:`~networkx.algorithms.distance_measures.centroid`
     :func:`~networkx.algorithms.distance_measures.center`
     center : tree center
