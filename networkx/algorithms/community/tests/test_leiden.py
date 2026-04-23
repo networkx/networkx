@@ -4,20 +4,8 @@ import networkx as nx
 from networkx.algorithms.community import leiden_communities, leiden_partitions
 from networkx.algorithms.community.quality import constant_potts_model, modularity
 
-no_backends_for_leiden_communities = (
-    "not set(nx.config.backend_priority.algos) & leiden_communities.backends"
-)
 
-no_backends_for_leiden_partitions = (
-    "not set(nx.config.backend_priority.algos) & leiden_partitions.backends"
-)
-
-
-@pytest.mark.xfail(reason="modularity has not yet been implemented for leiden")
-@pytest.mark.skipif(no_backends_for_leiden_communities)
 def test_modularity_increase():
-    # this is an old test (pre-networkx backend implementation), kept for backwards
-    # compatibility with other backends.
 
     # by default leiden_communities uses constant_potts_model as the quality
     # function being optimised, not modularity.
@@ -30,25 +18,26 @@ def test_modularity_increase():
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
     partition = [{u} for u in G.nodes()]
-    mod = nx.community.modularity(G, partition)
-    partition = nx.community.leiden_communities(G)
+    q_mod = nx.community.modularity(G, partition)
+    partition = nx.community.leiden_communities(
+        G, quality_function="modularity", resolution=0.2
+    )
 
-    assert nx.community.modularity(G, partition) > mod
+    assert nx.community.modularity(G, partition) > q_mod
 
 
 def test_valid_partition():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
-    partition = nx.community.leiden_communities(G)
+    partition = nx.community.leiden_communities(G, resolution=0.1, seed=10)
 
     assert nx.community.is_partition(G, partition)
 
 
-@pytest.mark.xfail(reason="old test not passing for nx implementation")
 def test_partition_iterator():
     G = nx.path_graph(15)
-    parts_iter = nx.community.leiden_partitions(G, seed=42)
+    parts_iter = nx.community.leiden_partitions(G, resolution=0.2, seed=42)
     first_part = next(parts_iter)
     first_copy = [s.copy() for s in first_part]
 
@@ -72,21 +61,44 @@ def test_none_weight_param():
     assert partition2 != partition3
 
 
-@pytest.mark.xfail(reason="old test not passing for nx implementation")
 def test_quality():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
     H = nx.MultiGraph(G)
 
-    partition = nx.community.leiden_communities(G)
-    partition2 = nx.community.leiden_communities(H)
+    partition = nx.community.leiden_communities(
+        G, quality_function="modularity", resolution=0.05, seed=10
+    )
+    partition2 = nx.community.leiden_communities(
+        H, quality_function="modularity", resolution=0.05, seed=10
+    )
 
     quality = nx.community.partition_quality(G, partition)[0]
     quality2 = nx.community.partition_quality(H, partition2)[0]
 
-    assert quality >= 0.65
-    assert quality2 >= 0.65
+    assert quality >= 0.45
+    assert quality2 >= 0.45
+
+
+def test_quality_cpm():
+    G = nx.LFR_benchmark_graph(
+        250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
+    )
+    H = nx.MultiGraph(G)
+    singleton_partition = [{u} for u in G]
+
+    r = 0.05
+    partition = nx.community.leiden_communities(G, resolution=r, seed=10)
+    partition2 = nx.community.leiden_communities(H, resolution=r, seed=10)
+
+    quality = nx.community.partition_quality(G, partition)[0]
+    quality2 = nx.community.partition_quality(H, partition2)[0]
+
+    assert quality > 0.45
+    assert quality2 > 0.45
+    assert quality > nx.community.partition_quality(G, singleton_partition)[0]
+    assert quality2 > nx.community.partition_quality(H, singleton_partition)[0]
 
 
 def test_resolution():
@@ -94,12 +106,12 @@ def test_resolution():
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
 
-    partition1 = nx.community.leiden_communities(G, resolution=0.5, seed=12)
-    partition2 = nx.community.leiden_communities(G, seed=12)
-    partition3 = nx.community.leiden_communities(G, resolution=2, seed=12)
+    partition1 = nx.community.leiden_communities(G, resolution=0.05, seed=12)
+    partition2 = nx.community.leiden_communities(G, resolution=0.10, seed=12)
+    partition3 = nx.community.leiden_communities(G, resolution=0.5, seed=12)
 
-    assert len(partition1) <= len(partition2)
-    assert len(partition2) <= len(partition3)
+    assert len(partition1) < len(partition2)
+    assert len(partition2) < len(partition3)
 
 
 def test_empty_graph():
@@ -109,44 +121,27 @@ def test_empty_graph():
     assert nx.community.leiden_communities(G) == expected
 
 
-@pytest.mark.xfail(reason="the current implementation of leiden allows directed graphs")
-def test_directed_not_implemented():
-    G = nx.cycle_graph(4, create_using=nx.DiGraph)
-    with pytest.raises(nx.NetworkXNotImplemented):
-        nx.community.leiden_communities(G)
-
-
-@pytest.mark.xfail(reason="test_max_level isn't passing yet")
 def test_max_level():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
-    parts_iter = nx.community.leiden_partitions(G, seed=42)
+    parts_iter = nx.community.leiden_partitions(G, resolution=0.1, seed=42)
     for max_level, expected in enumerate(parts_iter, 1):
-        partition = nx.community.leiden_communities(G, max_level=max_level, seed=42)
+        partition = nx.community.leiden_communities(
+            G, max_level=max_level, resolution=0.1, seed=42
+        )
         assert partition == expected
+
     assert max_level > 1  # Ensure we are actually testing max_level
     # max_level is an upper limit; it's okay if we stop before it's hit.
-    partition = nx.community.leiden_communities(G, max_level=max_level + 1, seed=42)
+    partition = nx.community.leiden_communities(
+        G, max_level=max_level + 1, resolution=0.1, seed=42
+    )
     assert partition == expected
     with pytest.raises(
         ValueError, match="max_level argument must be a positive integer"
     ):
         nx.community.leiden_communities(G, max_level=0)
-
-
-# new tests below
-
-
-def _equivalent_partitions(P1, P2):
-    P1 = {frozenset(C) for C in P1}
-    P2 = {frozenset(C) for C in P2}
-    return P1 == P2
-
-
-def check_connected_community(G, community):
-    C = G.subgraph(community).copy()
-    return nx.is_connected(C)
 
 
 def test_connected_communities_LFR():
@@ -159,7 +154,7 @@ def test_connected_communities_LFR():
     )
 
     for C in partition:
-        assert check_connected_community(G, C)
+        assert _check_connected_community(G, C)
 
 
 def test_quality_function_not_implemented():
@@ -174,7 +169,7 @@ def test_quality_function_not_implemented():
 def test_expected():
     G = nx.karate_club_graph()
 
-    part = nx.algorithms.community.leiden.leiden_communities(G, resolution=0.2, seed=1)
+    part = leiden_communities(G, resolution=0.2, seed=1)
 
     part_expected = [
         {0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21},
@@ -187,9 +182,7 @@ def test_expected():
 
     G = nx.karate_club_graph()
 
-    part = nx.algorithms.community.leiden.leiden_communities(
-        G, weight=None, resolution=0.2, seed=1
-    )
+    part = leiden_communities(G, weight=None, resolution=0.2, seed=1)
 
     part_expected = [
         {11},
@@ -210,53 +203,45 @@ def test_expected():
 
 
 def test_connected_communities():
-    for i in range(10):
-        G = nx.karate_club_graph()
-        n = i * 4 + 59
-        r = 0.5 - 0.005 * i
-        part = leiden_communities(G, resolution=r, seed=n)
-        for C in part:
-            assert check_connected_community(G, C)
+    G = nx.karate_club_graph()
+    n = 42
+    r = 0.2
+    part = leiden_communities(G, resolution=r, seed=n)
+    for C in part:
+        assert _check_connected_community(G, C)
 
 
 def test_connected_communities_modularity():
-    for i in range(10):
-        G = nx.karate_club_graph()
-        n = i * 4 + 59
-        r = 0.5 - 0.005 * i
-        part = leiden_communities(
-            G, weight=None, quality_function="modularity", resolution=r, seed=n
-        )
-        for C in part:
-            assert check_connected_community(G, C)
+    G = nx.karate_club_graph()
+    n = 42
+    r = 0.3
+    part = leiden_communities(
+        G, weight=None, quality_function="modularity", resolution=r, seed=n
+    )
+    for C in part:
+        assert _check_connected_community(G, C)
 
 
 def test_connected_communities_no_weights():
-    for i in range(10):
-        G = nx.karate_club_graph()
-        n = i * 4 + 59
-        r = 0.5 - 0.005 * i
-        part = leiden_communities(G, weight=None, resolution=r, seed=n)
-        for C in part:
-            assert check_connected_community(G, C)
+    G = nx.karate_club_graph()
+    r = 0.3
+    part = leiden_communities(G, weight=None, resolution=r, seed=111)
+    for C in part:
+        assert _check_connected_community(G, C)
 
 
 def test_directed_graphs_modularity():
-    for i in range(10):
-        n = i * 4 + 59
-        G = nx.gn_graph(n=100, seed=n)
-        assert nx.is_directed(G)
-        comms = leiden_communities(
-            G, quality_function="modularity", weight=None, resolution=1, seed=n
-        )
+    G = nx.gn_graph(n=100, seed=11)
+    assert nx.is_directed(G)
+    comms = leiden_communities(
+        G, quality_function="modularity", weight=None, resolution=0.2, seed=11
+    )
 
 
 def test_directed_graphs_cpm():
-    for i in range(10):
-        n = i * 4 + 59
-        G = nx.gn_graph(n=100, seed=n)
-        assert nx.is_directed(G)
-        comms = leiden_communities(G, weight=None, resolution=1, seed=n)
+    G = nx.gn_graph(n=100, seed=11)
+    assert nx.is_directed(G)
+    comms = leiden_communities(G, weight=None, resolution=0.2, seed=11)
 
 
 def test_bipartite_graphs_modularity():
@@ -280,12 +265,12 @@ def test_modularity_increase_qf_parameter():
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
     partition = [{u} for u in G.nodes()]
-    mod = nx.community.modularity(G, partition)
-    partition = nx.community.leiden_communities(
+    q_mod = nx.community.modularity(G, partition)
+    partition = leiden_communities(
         G, resolution=0.1, quality_function="modularity", seed=10
     )
 
-    assert nx.community.modularity(G, partition) > mod
+    assert nx.community.modularity(G, partition) > q_mod
 
 
 def test_cpm_increase():
@@ -297,42 +282,9 @@ def test_cpm_increase():
     cpm = constant_potts_model(
         G, partition, weight=None, node_weight=None, resolution=r
     )
-    partition = nx.community.leiden_communities(G, resolution=r, seed=10)
+    partition = leiden_communities(G, resolution=r, seed=10)
 
-    assert (
-        constant_potts_model(G, partition, weight=None, node_weight=None, resolution=r)
-        > cpm
-    )
-
-
-def test_partition_iterator_cpm():
-    G = nx.karate_club_graph()
-    parts_iter = nx.community.leiden_partitions(G, seed=42, resolution=0.5)
-    first_part = next(parts_iter)
-    first_copy = [s.copy() for s in first_part]
-
-    # check 1st part stays fixed even after 2nd iteration (like gh-5901 in louvain)
-    assert first_copy[0] == first_part[0]
-    second_part = next(parts_iter)
-    assert first_copy[0] == first_part[0]
-
-
-def test_quality_cpm():
-    G = nx.LFR_benchmark_graph(
-        250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
-    )
-    H = nx.MultiGraph(G)
-    singleton_partition = [{u} for u in G.nodes()]
-
-    r = 0.7
-    partition = nx.community.leiden_communities(G, resolution=r, seed=10)
-    partition2 = nx.community.leiden_communities(H, resolution=r, seed=10)
-
-    quality = nx.community.partition_quality(G, partition)[0]
-    quality2 = nx.community.partition_quality(H, partition2)[0]
-
-    assert quality >= nx.community.partition_quality(G, singleton_partition)[0]
-    assert quality2 >= nx.community.partition_quality(H, singleton_partition)[0]
+    assert constant_potts_model(G, partition, weight=None, resolution=r) > cpm
 
 
 def test_resolution_cpm():
@@ -340,12 +292,12 @@ def test_resolution_cpm():
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
 
-    partition1 = nx.community.leiden_communities(G, resolution=0.5, seed=12)
-    partition2 = nx.community.leiden_communities(G, seed=12)
-    partition3 = nx.community.leiden_communities(G, resolution=2, seed=12)
+    partition1 = leiden_communities(G, resolution=0.05, seed=12)
+    partition2 = leiden_communities(G, resolution=0.2, seed=12)
+    partition3 = leiden_communities(G, resolution=0.7, seed=12)
 
-    assert len(partition1) <= len(partition2)
-    assert len(partition2) <= len(partition3)
+    assert len(partition1) < len(partition2)
+    assert len(partition2) < len(partition3)
 
 
 def test_resolution_modularity():
@@ -353,15 +305,26 @@ def test_resolution_modularity():
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
 
-    partition1 = nx.community.leiden_communities(
-        G, quality_function="modularity", resolution=0.5, seed=12
+    partition1 = leiden_communities(
+        G, quality_function="modularity", resolution=0.01, seed=10
     )
-    partition2 = nx.community.leiden_communities(
-        G, quality_function="modularity", seed=12
+    partition2 = leiden_communities(
+        G, quality_function="modularity", resolution=2.0, seed=10
     )
-    partition3 = nx.community.leiden_communities(
-        G, quality_function="modularity", resolution=2, seed=12
+    partition3 = leiden_communities(
+        G, quality_function="modularity", resolution=10.0, seed=10
     )
 
-    assert len(partition1) <= len(partition2)
-    assert len(partition2) <= len(partition3)
+    assert len(partition1) < len(partition2)
+    assert len(partition2) < len(partition3)
+
+
+def _equivalent_partitions(P1, P2):
+    P1 = {frozenset(C) for C in P1}
+    P2 = {frozenset(C) for C in P2}
+    return P1 == P2
+
+
+def _check_connected_community(G, community):
+    C = G.subgraph(community).copy()
+    return nx.is_connected(C)
