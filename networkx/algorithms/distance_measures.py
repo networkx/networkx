@@ -775,7 +775,6 @@ def centroid(G, weight=None, attr=None, sp=None):
     centroid
     center
     periphery
-    :func:`~networkx.algorithms.tree.distance_measures.barycenter` : tree barycenter
     :func:`~networkx.algorithms.tree.distance_measures.centroid` : tree centroid
     """
     if weight is None and attr is None and sp is None:

@@ -59,9 +59,6 @@ class TestCenter:
 
 
 class TestDistance:
-    def test_tree_barycenter_alias(self):
-        assert nx.tree.barycenter is nx.tree.centroid
-
     @pytest.mark.parametrize("n", [1, 2, 99, 100])
     def test_tree_centroid_path_graphs(self, n):
         G = nx.path_graph(n)

@@ -5,7 +5,6 @@ Algorithms for computing distance measures on trees.
 import networkx as nx
 
 __all__ = [
-    "barycenter",
     "center",
     "centroid",
 ]
@@ -195,7 +194,6 @@ def centroid(G):
 
     See Also
     --------
-    barycenter : tree barycenter
     centroid : tree centroid
     :func:`~networkx.algorithms.distance_measures.barycenter`
     :func:`~networkx.algorithms.distance_measures.centroid`
@@ -221,6 +219,3 @@ def centroid(G):
     return [root] + [
         x for x in G.neighbors(root) if x != prev and sizes[x] == total_size / 2
     ]
-
-
-barycenter = centroid
