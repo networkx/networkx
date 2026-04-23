@@ -595,7 +595,7 @@ class TestCentroid:
     """Test :func:`networkx.algorithms.distance_measures.centroid`."""
 
     def centroid_as_subgraph(self, g, **kwargs):
-        """Return the subgraph induced on the barycenter of g"""
+        """Return the subgraph induced on the centroid of g"""
         b = nx.centroid(g, **kwargs)
         assert isinstance(b, list)
         assert set(b) <= set(g)
