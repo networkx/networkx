@@ -319,9 +319,8 @@ def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
     phase = 2 * np.pi * q
 
     # Find "phase" matrix
-    delta_phase_edge = defaultdict(
-        int
-    )  # Dict to encode where have been added symetries
+    # Dict to encode where have been added symetries
+    delta_phase_edge = defaultdict(int)
     matrix_weights = defaultdict(float)
 
     phases = {1: np.exp(1j * phase), -1: np.exp(-1j * phase), 0: 1}
