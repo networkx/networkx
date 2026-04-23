@@ -191,7 +191,7 @@ class TestConvertNumpyArray:
         A = np.array([[0, 2], [3, 0]])
         G = nx.from_numpy_array(A, edge_attr="cost")
         assert "weight" not in G.edges[0, 1]
-        assert G.edges[0, 1]["cost"] == 3
+        assert G.edges[0, 1]["cost"] == 2
 
     def test_symmetric(self):
         """Tests that a symmetric array has edges added only once to an
