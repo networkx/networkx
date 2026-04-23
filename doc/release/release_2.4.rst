@@ -28,7 +28,7 @@ This release is the result of 6 months of work with over 200 commits by
 
 New Functions:
 
-- centroid functions
+- barycenter functions
 - Bethe Hessian matrix function
 - Eulerian Path methods
 - group centrality measures
@@ -134,7 +134,7 @@ A total of 205 changes have been committed.
 - typo: swap source and target (#3413)
 - Fix spring_layout bug with fixed nodes (#3415)
 - Move LFR_benchmark to generators (#3411)
-- Add centroid algorithm (#2939)
+- Add barycenter algorithm (#2939)
 - Add bethe hessian matrix (#3401)
 - Binomial trees generator (#3409)
 - Fix edge_color inconsistency with node_color and description. (#3395)
