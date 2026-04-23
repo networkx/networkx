@@ -1,8 +1,7 @@
 import random
 
-import pandas as pd
-
 import networkx as nx
+import pandas as pd
 
 
 def benchmark_name_from_func_call(func, *args, **kwargs) -> str:
