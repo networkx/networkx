@@ -37,6 +37,7 @@ Distance Measures
 .. autosummary::
    :toctree: generated/
 
+   barycenter
    center
    centroid
 
