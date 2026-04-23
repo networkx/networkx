@@ -80,7 +80,7 @@ def voronoi_communities(
         Greater than 1 favors smaller communities.
     eps : float, optional (default: 1e-8)
         Offset value to ensure numerical stability and avoid division by zero.
-    n_steps : int, optional (default: 1000)
+    n_steps : int, optional (default: 100)
         The number of steps to divide the search range into when scanning for the
         optimal neighborhood radius $r$. A higher number provides a more fine-grained
         search but takes longer to compute.
