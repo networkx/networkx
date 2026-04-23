@@ -5,7 +5,7 @@
 """Functions for analyzing triads of a graph."""
 
 from collections import defaultdict
-from itertools import combinations, permutations
+from itertools import combinations
 
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
@@ -455,46 +455,4 @@ def triad_type(G):
     """
     if not is_triad(G):
         raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
-    num_edges = len(G.edges())
-    if num_edges == 0:
-        return "003"
-    elif num_edges == 1:
-        return "012"
-    elif num_edges == 2:
-        e1, e2 = G.edges()
-        if set(e1) == set(e2):
-            return "102"
-        elif e1[0] == e2[0]:
-            return "021D"
-        elif e1[1] == e2[1]:
-            return "021U"
-        elif e1[1] == e2[0] or e2[1] == e1[0]:
-            return "021C"
-    elif num_edges == 3:
-        for e1, e2, e3 in permutations(G.edges(), 3):
-            if set(e1) == set(e2):
-                if e3[0] in e1:
-                    return "111U"
-                # e3[1] in e1:
-                return "111D"
-            elif set(e1).symmetric_difference(set(e2)) == set(e3):
-                if {e1[0], e2[0], e3[0]} == {e1[0], e2[0], e3[0]} == set(G.nodes()):
-                    return "030C"
-                # e3 == (e1[0], e2[1]) and e2 == (e1[1], e3[1]):
-                return "030T"
-    elif num_edges == 4:
-        for e1, e2, e3, e4 in permutations(G.edges(), 4):
-            if set(e1) == set(e2):
-                # identify pair of symmetric edges (which necessarily exists)
-                if set(e3) == set(e4):
-                    return "201"
-                if {e3[0]} == {e4[0]} == set(e3).intersection(set(e4)):
-                    return "120D"
-                if {e3[1]} == {e4[1]} == set(e3).intersection(set(e4)):
-                    return "120U"
-                if e3[1] == e4[0]:
-                    return "120C"
-    elif num_edges == 5:
-        return "210"
-    elif num_edges == 6:
-        return "300"
+    return TRICODE_TO_NAME[_tricode(G, *G)]
