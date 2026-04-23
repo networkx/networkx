@@ -771,9 +771,10 @@ def centroid(G, weight=None, attr=None, sp=None):
 
     See Also
     --------
+    barycenter
+    centroid
     center
     periphery
-    barycenter
     :func:`~networkx.algorithms.tree.distance_measures.centroid` : tree centroid
     """
     if weight is None and attr is None and sp is None:
@@ -806,9 +807,7 @@ def centroid(G, weight=None, attr=None, sp=None):
     return centroid_vertices
 
 
-def barycenter(G, weight=None, attr=None, sp=None):
-    """Alias for `centroid` - see `centroid` docstring for details."""
-    return centroid(G, weight, attr, sp)
+barycenter = centroid
 
 
 @not_implemented_for("directed")

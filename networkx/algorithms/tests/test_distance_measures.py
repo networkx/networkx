@@ -604,6 +604,9 @@ class TestCentroid:
     def test_must_be_connected(self):
         pytest.raises(nx.NetworkXNoPath, nx.centroid, nx.empty_graph(5))
 
+    def test_barycenter_alias(self):
+        assert nx.barycenter is nx.centroid
+
     def test_sp_kwarg(self):
         # Complete graph K_5. Normally it works...
         K_5 = nx.complete_graph(5)
