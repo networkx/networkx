@@ -465,9 +465,7 @@ def normalized_magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
             if delta_phase_edge[(ui, vi)] == 0:
                 rows.append(ui)
                 cols.append(vi)
-                data.append(
-                    matrix_weights[(ui, vi)] * phases[delta_phase_edge[(ui, vi)]]
-                )
+                data.append(matrix_weights[(ui, vi)])
             else:
                 rows.append(ui)
                 cols.append(vi)
