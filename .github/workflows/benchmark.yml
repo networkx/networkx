@@ -39,6 +39,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -82,7 +84,7 @@ jobs:
           ASV_FACTOR: 1.5
           ASV_SKIP_SLOW: 1
         run: |
-          set -x
+          set -euxo pipefail
           python -m pip install .[benchmarking]
           cd benchmarks/
 
@@ -113,4 +115,4 @@ jobs:
         if: always()
         with:
           name: asv-benchmark-results-${{ runner.os }}
-          path: benchmarks.log
+          path: benchmarks/benchmarks.log
