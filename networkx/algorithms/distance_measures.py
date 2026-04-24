@@ -775,7 +775,6 @@ def centroid(G, weight=None, attr=None, sp=None):
 
     See Also
     --------
-    centroid
     center
     periphery
     :func:`~networkx.algorithms.tree.distance_measures.centroid` : tree centroid
