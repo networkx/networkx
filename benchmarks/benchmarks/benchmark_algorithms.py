@@ -2,6 +2,8 @@
 
 import random
 
+from asv_runner.benchmarks.mark import skip_for_params
+
 import networkx as nx
 from benchmarks.utils import (
     benchmark_name_from_func_call,
@@ -152,7 +154,7 @@ def _make_tournament_benchmark_graphs(seed):
     return graphs
 
 
-class ReachabilityBenchmark:
+class TournamentBenchmark:
     timeout = 120
     _seed = 42
     param_names = ["graph"]
@@ -165,6 +167,10 @@ class ReachabilityBenchmark:
         self.nodes = sorted(self.G)
         rng = random.Random(self._seed)
         self.source, self.target = rng.sample(self.nodes, 2)
+
+    @skip_for_params([("Tournament (1000, seed=42)",)])
+    def time_hamiltonian_path(self, graph):
+        _ = nx.tournament.hamiltonian_path(self.G)
 
     def time_is_reachable(self, graph):
         _ = nx.tournament.is_reachable(self.G, self.source, self.target)
