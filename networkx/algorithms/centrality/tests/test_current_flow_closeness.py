@@ -38,6 +38,19 @@ class TestFlowClosenessCentrality:
         with pytest.raises(nx.NetworkXError):
             nx.current_flow_closeness_centrality(G)
 
+    @pytest.mark.parametrize(
+        ("G", "answer"),
+        [
+            (nx.Graph(), {}),
+            (nx.empty_graph(1), {0: 1.0}),
+            (nx.Graph([(0, 0)]), {0: 1.0}),
+            (nx.path_graph(2), {0: 1.0, 1: 1.0}),
+        ],
+    )
+    def test_current_flow_closeness_centrality_small_graphs(self, G, answer):
+        b = nx.current_flow_closeness_centrality(G)
+        assert b == pytest.approx(answer, abs=1e-7)
+
 
 class TestWeightedFlowClosenessCentrality:
     pass

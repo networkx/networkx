@@ -108,7 +108,20 @@ def ancestors(G, source):
 
 @nx._dispatchable
 def has_cycle(G):
-    """Decides whether the directed graph has a cycle."""
+    """Decides whether the directed graph has a cycle.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
+    >>> nx.dag.has_cycle(G)
+    False
+    >>> G.add_edge(2, 0)
+    >>> nx.dag.has_cycle(G)
+    True
+
+    See Also
+    --------
+    is_directed_acyclic_graph"""
     try:
         # Feed the entire iterator into a zero-length deque.
         deque(topological_sort(G), maxlen=0)
@@ -200,6 +213,11 @@ def topological_generations(G):
 
     Notes
     -----
+    This function returns a generator. Therefore, exceptions such as
+    NetworkXUnfeasible for cyclic graphs may not be raised immediately
+    when the function is called, but rather during iteration over the
+    returned generator.
+
     The generation in which a node resides can also be determined by taking the
     max-path-distance from the node to the farthest leaf node. That value can
     be obtained with this function using `enumerate(topological_generations(G))`.
@@ -290,6 +308,11 @@ def topological_sort(G):
 
     Notes
     -----
+    This function returns a generator. Therefore, exceptions such as
+    NetworkXUnfeasible for cyclic graphs may not be raised immediately
+    when the function is called, but rather during iteration over the
+    returned generator.
+
     This algorithm is based on a description and proof in
     "Introduction to Algorithms: A Creative Approach" [1]_ .
 

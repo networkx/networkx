@@ -424,8 +424,14 @@ class TestWikipediaExample:
         assert iso.ISMAGS(g1a, g2a).is_isomorphic()
         assert iso.ISMAGS(g1a, g2b).is_isomorphic()
 
-        assert iso.ISMAGS(g1a, nx.path_graph(range(5))).subgraph_is_isomorphic()
-        assert not iso.ISMAGS(g1a, nx.path_graph(range(6))).subgraph_is_isomorphic()
+        G = nx.path_graph(5, create_using=graph_constructor)
+        assert iso.ISMAGS(g1a, G).subgraph_is_isomorphic()
+        G.add_edge(4, 5)
+        assert not iso.ISMAGS(g1a, G).subgraph_is_isomorphic()
+
+        # now test the same graphs, but one multigraph and other graph
+        assert iso.ISMAGS(g1a, nx.path_graph(5)).subgraph_is_isomorphic()
+        assert not iso.ISMAGS(g1a, nx.path_graph(6)).subgraph_is_isomorphic()
 
     @pytest.mark.parametrize("graph_constructor", [nx.DiGraph, nx.MultiDiGraph])
     def test_digraph(self, graph_constructor):
@@ -440,9 +446,9 @@ class TestWikipediaExample:
         assert not iso.ISMAGS(g1a, g2a).is_isomorphic()
         assert not iso.ISMAGS(g1b, g2b).is_isomorphic()
 
-        P2 = nx.path_graph(range(2), create_using=graph_constructor)
+        P2 = nx.path_graph(2, create_using=graph_constructor)
         assert iso.ISMAGS(g1a, P2).subgraph_is_isomorphic()
-        P3 = nx.path_graph(range(3), create_using=graph_constructor)
+        P3 = nx.path_graph(3, create_using=graph_constructor)
         assert not iso.ISMAGS(g1a, P3).subgraph_is_isomorphic()
 
 

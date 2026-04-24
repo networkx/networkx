@@ -8,7 +8,7 @@ import networkx as nx
 from networkx.algorithms import flow
 from networkx.algorithms.connectivity.kcutsets import _is_separating_set
 
-MAX_CUTSETS_TO_TEST = 4  # originally 100. cut to decrease testing time
+MAX_CUTSETS_TO_TEST = 100
 
 flow_funcs = [
     flow.boykov_kolmogorov,
@@ -133,7 +133,6 @@ def _check_separating_sets(G):
             assert not nx.is_connected(nx.restricted_view(G, cut, []))
 
 
-@pytest.mark.slow
 def test_torrents_and_ferraro_graph():
     G = torrents_and_ferraro_graph()
     _check_separating_sets(G)
@@ -207,7 +206,6 @@ def test_disconnected_graph():
     pytest.raises(nx.NetworkXError, next, cuts)
 
 
-@pytest.mark.slow
 @pytest.mark.parametrize("G", [nx.grid_2d_graph(4, 4), nx.cycle_graph(5)])
 @pytest.mark.parametrize("flow_func", flow_funcs)
 def test_alternative_flow_functions(G, flow_func):
