@@ -775,7 +775,6 @@ def centroid(G, weight=None, attr=None, sp=None):
 
     See Also
     --------
-    barycenter
     centroid
     center
     periphery
