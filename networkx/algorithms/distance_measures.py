@@ -736,6 +736,10 @@ def centroid(G, weight=None, attr=None, sp=None):
     This quantity is also known as the :dfn:`barycenter` or :dfn:`median`.
     See [West01]_, p. 78.
 
+    .. versionchanged:: 3.7
+       ``centroid()`` is created by a renaming of ``barycenter()``.
+       The old name still works to call this function.
+
     Parameters
     ----------
     G : :class:`networkx.Graph`
