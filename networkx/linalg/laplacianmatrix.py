@@ -285,7 +285,7 @@ def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
         Node ordering for row/columns.
 
     q: float, optional (default=0.25)
-        The fase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
+        The phase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
         returns the standard Laplacian.
 
     weight: string or None, optional (default='weight')
@@ -401,7 +401,7 @@ def normalized_magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
         Node ordering for row/columns.
 
     q: float, optional (default=0.25)
-        The fase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
+        The phase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
         returns the standard Laplacian.
 
     weight: string or None, optional (default='weight')
