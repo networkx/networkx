@@ -3,13 +3,12 @@
 import random
 
 import networkx as nx
-from networkx.algorithms import community
-
 from benchmarks.utils import (
     benchmark_name_from_func_call,
     fetch_drug_interaction_network,
     weighted_graph,
 )
+from networkx.algorithms import community
 
 
 class UndirectedAlgorithmBenchmarks:
