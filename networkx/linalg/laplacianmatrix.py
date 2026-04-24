@@ -254,19 +254,27 @@ def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
     Hermitian matrix for directed graphs that encodes edge directionality via complex
     phases [1]_.
 
+    Given a weighted directed graph, :math:`G = (V, E, W)`, with :math:`W`
+    the weighted adjacency matrix, the symmetrized weighted adjacency
+    matrix is defined as :math:`W' = 0.5 (W + W^{T})`. A skew-symmetric term
+    :math:`\delta` is introduced to encode directionality, where
+
+    ..math::
+        \delta_{jk} = \begin{cases}
+            +1 & \text{if} j \to k \text{ is an edge and } k \to j \text{ is not}, \\
+            -1 & \text{if} k \to j \text{ is an edge and } j \to k \text{ is not}, \\
+            0 & \text{if both or neither edge is present.}
+            \end{cases}
+
+    Then, the magnetic Laplacian is defined as:
+
     .. math::
         L^{(q)} := D - H^{(q)}
 
     where :math:`H^{(q)}` is the Hermitian adjacency matrix with entries
-    :math:`H^{(q)}_{jk} = 0.5 w_{jk} e^{2\pi i q}` for each directed edge
-    :math:`j \to k` (:math:`e^{-2\pi i q} for the reverse, and 1 for bidirected
-    edges), and `D` is the degree matrix. :math:`w_{jk}` is the weight average
-    of the weights of the edges :math:`j \to k` and :math:`k \to j`
-    (which is zero if it doesn't exist)
+    :math:`H^{(q)}_{jk} = W'_{jk} e^{2\pi i q \delta_{jk}}`, and :math:`D` is the degree
+    matrix associated with the symmetrized weight adjacency matrix :math:`W'`.
 
-    If the graph has an edge :math:`(j,k)` which is undirected or appears in
-    both directions, we can treat this case canceling the phases. Then,
-    the entry of the Hermitian adjacency matrix is :math:`H^{(q)}_{jk} =  w_{jk}`.
 
     Parameters
     ----------
@@ -374,13 +382,14 @@ def normalized_magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
 
     The normalized magnetic Laplacian is a Hermitian matrix for directed graphs
     that encodes edge directionality via complex phases [1]_. It's the normalized
-    version
+    version of the magnetic Laplacian.
 
     .. math::
         L^{(q)}_{N} := D^{-0.5} L^{(q)} D^{-0.5}
 
-    where :math:`L^{(q)}` is the magnetic Laplacian and :math:`D^{-0.5}` the diagonal matrix
-    with the degree of nodes powered to :math:`-0.5`, assuming :math:`0^{-0.5} = 0`.
+    where :math:`L^{(q)}` is the magnetic Laplacian and :math:`D^{-0.5}` is the degree
+    matrix associated with the symmetrized weight adjacency matrix powered to :math:`-0.5`,
+    assuming :math:`0^{-0.5} = 0`.
 
 
     Parameters
