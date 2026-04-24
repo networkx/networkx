@@ -154,7 +154,9 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     """
     import scipy as sp
 
-    xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
+    xy = list(node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight))
+    if len(xy) == 0:
+        return float("nan")
     x, y = zip(*xy)
     return float(sp.stats.pearsonr(x, y)[0])
 
