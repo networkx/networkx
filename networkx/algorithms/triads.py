@@ -453,6 +453,9 @@ def triad_type(G):
         Oxford.
         https://web.archive.org/web/20170830032057/http://www.stats.ox.ac.uk/~snijders/Trans_Triads_ha.pdf
     """
+    if len(G) != 3:
+        raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
+
     match list(G.edges):
         case []:  # No edges
             return "003"
@@ -468,10 +471,10 @@ def triad_type(G):
         case e1, e2:  # Remaining 2-edge case: one incoming and one outgoing edge
             return "021C"
         ### Triads with 3 edges - NOTE: Logic depends on case order!
-        # Triad 030T has no cycles
+        # Triad 030T has no "mutual ties" and no larger cycles
         case e1, e2, e3 if list(nx.simple_cycles(G)) == []:
             return "030T"
-        # Whereas Triad 030C has a 3-cycle (and only a 3-cycle)
+        # Whereas Triad 030C has no mutual ties but has the 3-cycle
         case e1, e2, e3 if len(next(nx.simple_cycles(G))) == 3:
             return "030C"
         # Of the remaining 3-edge triads, 111U has one edge incident on each node
