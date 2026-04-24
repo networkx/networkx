@@ -281,10 +281,10 @@ def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
     G: graph
         A NetworkX graph (DiGraph recomended; undirected graphs give the standard Laplacaian L)
 
-    nodelist: list, optional
-        Node ordering for row/columns. Defaults G.nodes()
+    nodelist: list, optional (default=list(G))
+        Node ordering for row/columns.
 
-    q: float (optional default=0.25)
+    q: float, optional (default=0.25)
         The fase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
         returns the standard Laplacian.
 
@@ -397,10 +397,10 @@ def normalized_magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
     G: graph
         A NetworkX graph (DiGraph recomended; undirected graphs give the standard Laplacaian L)
 
-    nodelist: list, optional
-        Node ordering for row/columns. Defaults G.nodes()
+    nodelist: list, optional (default=list(G))
+        Node ordering for row/columns.
 
-    q: float (optional default=0.25)
+    q: float, optional (default=0.25)
         The fase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
         returns the standard Laplacian.
 
