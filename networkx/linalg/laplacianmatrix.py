@@ -262,7 +262,7 @@ def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
     :math:`j \to k` (:math:`e^{-2\pi i q} for the reverse, and 1 for bidirected
     edges), and `D` is the degree matrix. :math:`w_{jk}` is the weight average
     of the weights of the edges :math:`j \to k` and :math:`k \to j`
-    (which is zero if it doesn't exists)
+    (which is zero if it doesn't exist)
 
     If the graph has an edge :math:`(j,k)` which is undirected or appears in
     both directions, we can treat this case canceling the phases. Then,
