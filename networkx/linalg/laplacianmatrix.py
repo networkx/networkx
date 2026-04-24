@@ -251,8 +251,8 @@ def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
     r"""Returns the magnetic Laplacian matrix of G
 
     The magnetic Laplacian (also called the q-magnetic Laplacian) is a
-    Hermitian matrix for directed graphs that encodes edge directionality via complex
-    phases [1]_.
+    Hermitian matrix for directed graphs that encodes edge directionality
+    via complex phases [1]_.
 
     Given a weighted directed graph, :math:`G = (V, E, W)`, with :math:`W`
     the weighted adjacency matrix, the symmetrized weighted adjacency
