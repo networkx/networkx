@@ -459,36 +459,40 @@ def triad_type(G):
         case [single_edge]:  # One edge
             return "012"
         # Triads with 2 edges
-        case e1, e2 if set(e1) == set(e2):
+        case e1, e2 if set(e1) == set(e2):  # Contains 1 "mutual tie" (a bi-edge)
             return "102"
-        case e1, e2 if e1[0] == e2[0]:
+        case e1, e2 if e1[0] == e2[0]:  # Two outgoing edges from one node
             return "021D"
-        case e1, e2 if e1[1] == e2[1]:
+        case e1, e2 if e1[1] == e2[1]:  # Two edges incident on a single node
             return "021U"
-        case e1, e2:  # Remaining 2-edge case
+        case e1, e2:  # Remaining 2-edge case: one incoming and one outgoing edge
             return "021C"
-        # Triads with 3 edges
-        case e1, e2, e3:
-            for e1, e2, e3 in permutations([e1, e2, e3]):
-                if set(e1) == set(e2):
-                    return "111U" if e3[0] in e1 else "111D"
-                elif set(e1) ^ set(e2) == set(e3):
-                    if {e1[0], e2[0], e3[0]} == set(G):
-                        return "030C"
-                    return "030T"
-        # Triads with 4 edges
-        case e1, e2, e3, e4:
-            for e1, e2, e3, e4 in permutations([e1, e2, e3, e4]):
-                # Identify pair of symmetric edges (which necessarily exists)
-                if set(e1) == set(e2):
-                    if set(e3) == set(e4):
-                        return "201"
-                    if {e3[0]} == {e4[0]} == set(e3) & set(e4):
-                        return "120D"
-                    if {e3[1]} == {e4[1]} == set(e3) & set(e4):
-                        return "120U"
-                    if e3[1] == e4[0]:
-                        return "120C"
+        ### Triads with 3 edges - NOTE: Logic depends on case order!
+        # Triad 030T has no cycles
+        case e1, e2, e3 if list(nx.simple_cycles(G)) == []:
+            return "030T"
+        # Whereas Triad 030C has a 3-cycle (and only a 3-cycle)
+        case e1, e2, e3 if len(next(nx.simple_cycles(G))) == 3:
+            return "030C"
+        # Of the remaining 3-edge triads, 111U has one edge incident on each node
+        case e1, e2, e3 if [d for _, d in G.in_degree] == [1, 1, 1]:
+            return "111U"
+        # While 111D has nodes with 0, 1, and 2 in-edges respectively
+        case e1, e2, e3 if 2 in [d for _, d in G.in_degree]:
+            return "111D"
+        ### Triads with 4 edges - NOTE: Logic depends on case order!
+        # Triad 201 has two bi-edges, thus unique degree among 4-edge triads
+        case e1, e2, e3, e4 if sorted(d for _, d in G.degree) == [2, 2, 4]:
+            return "201"
+        # Triad 120C is the only 4-edge triad with a 3-cycle
+        case e1, e2, e3, e4 if [c for c in nx.simple_cycles(G) if len(c) > 2]:
+            return "120C"
+        # Triad 120D has an incoming edge at each of the nodes comprising the bi-edge
+        case e1, e2, e3, e4 if sorted(d for _, d in G.in_degree) == [0, 2, 2]:
+            return "120D"
+        # ... and Triad 120U has two outgoing edges from these nodes
+        case e1, e2, e3, e4 if sorted(d for _, d in G.out_degree) == [0, 2, 2]:
+            return "120U"
         case e1, e2, e3, e4, e5:  # 5 edges
             return "210"
         case e1, e2, e3, e4, e5, e6:  # All 6 edges
