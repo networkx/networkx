@@ -16,6 +16,8 @@ __all__ = [
     "normalized_laplacian_matrix",
     "directed_laplacian_matrix",
     "directed_combinatorial_laplacian_matrix",
+    "magnetic_laplacian",
+    "normalized_magnetic_laplacian",
 ]
 
 
@@ -240,6 +242,262 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
     DH = sp.sparse.dia_array((diags_sqrt, 0), shape=(n, n)).tocsr()
+    return DH @ (L @ DH)
+
+
+@not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
+def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
+    r"""Returns the magnetic Laplacian matrix of G
+
+    The magnetic Laplacian (also called the q-magnetic Laplacian) is a
+    Hermitian matrix for directed graphs that encodes edge directionality
+    via complex phases [1]_.
+
+    Given a weighted directed graph, :math:`G = (V, E, W)`, with :math:`W`
+    the weighted adjacency matrix, the symmetrized weighted adjacency
+    matrix is defined as :math:`W' = 0.5 (W + W^{T})`. A skew-symmetric term
+    :math:`\delta` is introduced to encode directionality, where
+
+    ..math::
+        \delta_{jk} = \begin{cases}
+            +1 & \text{if} j \to k \text{ is an edge and } k \to j \text{ is not}, \\
+            -1 & \text{if} k \to j \text{ is an edge and } j \to k \text{ is not}, \\
+            0 & \text{if both or neither edge is present.}
+            \end{cases}
+
+    Then, the magnetic Laplacian is defined as:
+
+    .. math::
+        L^{(q)} := D - H^{(q)}
+
+    where :math:`H^{(q)}` is the Hermitian adjacency matrix with entries
+    :math:`H^{(q)}_{jk} = W'_{jk} e^{2\pi i q \delta_{jk}}`, and :math:`D` is the degree
+    matrix associated with the symmetrized weight adjacency matrix :math:`W'`.
+
+
+    Parameters
+    ----------
+    G: graph
+        A NetworkX graph (DiGraph recomended; undirected graphs give the standard Laplacaian L)
+
+    nodelist: list, optional (default=list(G))
+        Node ordering for row/columns.
+
+    q: float, optional (default=0.25)
+        The phase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
+        returns the standard Laplacian.
+
+    weight: string or None, optional (default='weight')
+        Edge attribute key for weights. If None, all edges have weight 1.
+
+    Returns
+    -------
+    L : SciPy sparse array (complex dtype)
+        The magnetic Laplacian matrix of G
+
+    Raises
+    ------
+    NetworkXError
+        If q is not between 0 and 0.5
+
+    References
+    ----------
+    .. [1] Fanuel, M., Alaíz, C. M., Fernández, Á., & Suykens, J. A. (2018).
+       Magnetic eigenmaps for the visualization of directed graphs.
+       Applied and Computational Harmonic Analysis, 44(1), 189–199.
+    """
+    from collections import defaultdict
+
+    import numpy as np
+    import scipy as sp
+
+    if nodelist is None:
+        nodelist = list(G)
+
+    DG = G if G.is_directed() else G.to_directed()
+
+    # Build Hermitian adjacency H
+    n = len(nodelist)
+    node_index = {v: i for i, v in enumerate(nodelist)}
+
+    if not (0 <= q <= 0.5):
+        raise nx.NetworkXError("Parameter q must be a value between 0 and 0.5")
+
+    phase = 2 * np.pi * q
+
+    # Find "phase" matrix
+    # Dict to encode where have been added symetries
+    delta_phase_edge = defaultdict(int)
+    matrix_weights = defaultdict(float)
+
+    phases = {1: np.exp(1j * phase), -1: np.exp(-1j * phase), 0: 1}
+
+    for u, v, wt in DG.edges(data=weight, default=1):
+        if u not in node_index or v not in node_index:
+            continue
+
+        ui, vi = node_index[u], node_index[v]
+        delta_phase_edge[(ui, vi)] += 1
+        delta_phase_edge[(vi, ui)] -= 1
+        matrix_weights[(ui, vi)] += 0.5 * wt
+        matrix_weights[(vi, ui)] += 0.5 * wt
+
+    rows, cols, data = [], [], []
+    for u, v in DG.edges():
+        if u not in node_index or v not in node_index:
+            continue
+
+        ui, vi = node_index[u], node_index[v]
+        if ui != vi:
+            if delta_phase_edge[(ui, vi)] == 0:
+                rows.append(ui)
+                cols.append(vi)
+                data.append(matrix_weights[(ui, vi)])
+            else:
+                rows.append(ui)
+                cols.append(vi)
+                data.append(
+                    matrix_weights[(ui, vi)] * phases[delta_phase_edge[(ui, vi)]]
+                )
+                rows.append(vi)
+                cols.append(ui)
+                data.append(
+                    matrix_weights[(vi, ui)] * phases[delta_phase_edge[(vi, ui)]]
+                )
+
+    H = sp.sparse.csr_array((data, (rows, cols)), shape=(n, n), dtype=complex)
+
+    # Build degree matrix D
+    diags = np.abs(H).sum(axis=1).flatten()
+    D = sp.sparse.dia_array((diags, 0), shape=(n, n)).tocsr()
+
+    return D - H
+
+
+@not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
+def normalized_magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
+    r"""Returns the normalized magnetic Laplacian matrix of G
+
+    The normalized magnetic Laplacian is a Hermitian matrix for directed graphs
+    that encodes edge directionality via complex phases [1]_. It's the normalized
+    version of the magnetic Laplacian.
+
+    .. math::
+        L^{(q)}_{N} := D^{-0.5} L^{(q)} D^{-0.5}
+
+    where :math:`L^{(q)}` is the magnetic Laplacian and :math:`D^{-0.5}` is the degree
+    matrix associated with the symmetrized weight adjacency matrix powered to :math:`-0.5`,
+    assuming :math:`0^{-0.5} = 0`.
+
+
+    Parameters
+    ----------
+    G: graph
+        A NetworkX graph (DiGraph recomended; undirected graphs give the standard Laplacaian L)
+
+    nodelist: list, optional (default=list(G))
+        Node ordering for row/columns.
+
+    q: float, optional (default=0.25)
+        The phase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
+        returns the standard Laplacian.
+
+    weight: string or None, optional (default='weight')
+        Edge attribute key for weights. If None, all edges have weight 1.
+
+    Returns
+    -------
+    L : SciPy sparse array (complex dtype)
+        The magnetic Laplacian matrix of G
+
+    Raises
+    ------
+    NetworkXError
+        If q is not between 0 and 0.5
+
+    See also
+    --------
+    magnetic_laplacian_matrix
+
+    References
+    ----------
+    .. [1] Fanuel, M., Alaíz, C. M., Fernández, Á., & Suykens, J. A. (2018).
+       Magnetic eigenmaps for the visualization of directed graphs.
+       Applied and Computational Harmonic Analysis, 44(1), 189–199.
+    """
+    from collections import defaultdict
+
+    import numpy as np
+    import scipy as sp
+
+    if nodelist is None:
+        nodelist = list(G)
+
+    DG = G if G.is_directed() else G.to_directed()
+
+    # Build Hermitian adjacency H
+    n = len(nodelist)
+    node_index = {v: i for i, v in enumerate(nodelist)}
+
+    if not (0 <= q <= 0.5):
+        raise nx.NetworkXError("Parameter q must be a value between 0 and 0.5")
+
+    phase = 2 * np.pi * q
+
+    # Find "phase" matrix
+    # Dict to encode where have been added symetries
+    delta_phase_edge = defaultdict(int)
+    matrix_weights = defaultdict(float)
+
+    phases = {1: np.exp(1j * phase), -1: np.exp(-1j * phase), 0: 1}
+
+    for u, v, wt in DG.edges(data=weight, default=1):
+        if u not in node_index or v not in node_index:
+            continue
+
+        ui, vi = node_index[u], node_index[v]
+        delta_phase_edge[(ui, vi)] += 1
+        delta_phase_edge[(vi, ui)] -= 1
+        matrix_weights[(ui, vi)] += 0.5 * wt
+        matrix_weights[(vi, ui)] += 0.5 * wt
+
+    rows, cols, data = [], [], []
+    for u, v in DG.edges():
+        if u not in node_index or v not in node_index:
+            continue
+
+        ui, vi = node_index[u], node_index[v]
+        if ui != vi:
+            if delta_phase_edge[(ui, vi)] == 0:
+                rows.append(ui)
+                cols.append(vi)
+                data.append(matrix_weights[(ui, vi)])
+            else:
+                rows.append(ui)
+                cols.append(vi)
+                data.append(
+                    matrix_weights[(ui, vi)] * phases[delta_phase_edge[(ui, vi)]]
+                )
+                rows.append(vi)
+                cols.append(ui)
+                data.append(
+                    matrix_weights[(vi, ui)] * phases[delta_phase_edge[(vi, ui)]]
+                )
+
+    H = sp.sparse.csr_array((data, (rows, cols)), shape=(n, n), dtype=complex)
+
+    # Build degree matrix D
+    diags = np.abs(H).sum(axis=1).flatten()
+    D = sp.sparse.dia_array((diags, 0), shape=(n, n)).tocsr()
+
+    L = D - H
+    with np.errstate(divide="ignore"):
+        diags_sqrt = 1.0 / np.sqrt(diags)
+    diags_sqrt[np.isinf(diags_sqrt)] = 0
+    DH = sp.sparse.dia_array((diags_sqrt, 0), shape=(n, n)).tocsr()
+
     return DH @ (L @ DH)
 
 

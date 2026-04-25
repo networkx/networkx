@@ -183,6 +183,246 @@ class TestLaplacian:
         )
 
 
+class TestMagneticLaplacian:
+    @classmethod
+    def setup_class(cls):
+        r"""
+        We define test for the magnetic laplacian matrix, to check if it correctly
+        returns the matrices for an undirected graph and for a directed graph. In the directed
+        graph we add edges between nodes in both directions to check that we have a real entry.
+        """
+
+        cls.G = nx.Graph()
+        cls.G.add_edges_from(
+            (
+                (1, 2),
+                (2, 3),
+                (3, 4),
+            )
+        )
+
+        cls.DiG = nx.DiGraph()
+        cls.DiG.add_edges_from(
+            (
+                (1, 2),
+                (2, 1),
+                (2, 3),
+                (4, 3),
+            )
+        )
+
+        cls.DiGW = nx.DiGraph()
+        cls.DiGW.add_edges_from(
+            (
+                (1, 2, {"weight": 2}),
+                (2, 1, {"weight": 3}),
+                (2, 3, {"weight": 2}),
+                (4, 3, {"weight": 2}),
+            )
+        )
+
+    def test_mag_laplacian(self):
+
+        DL_50 = np.array(
+            [
+                [1.0, -1.0, 0.0, 0.0],
+                [-1.0, 1.5, 0.5, 0.0],
+                [0.0, 0.5, 1.0, 0.5],
+                [0.0, 0.0, 0.5, 0.5],
+            ]
+        )
+
+        DL_25 = np.array(
+            [
+                [1.0, -1.0, 0.0, 0.0],
+                [-1.0, 1.5, -0.5j, 0.0],
+                [0.0, 0.5j, 1.0, 0.5j],
+                [0.0, 0.0, -0.5j, 0.5],
+            ]
+        )
+
+        DL_0 = np.array(
+            [
+                [1.0, -1.0, 0.0, 0.0],
+                [-1.0, 1.5, -0.5, 0.0],
+                [0.0, -0.5, 1.0, -0.5],
+                [0.0, 0.0, -0.5, 0.5],
+            ]
+        )
+
+        DLW_50 = np.array(
+            [
+                [2.5, -2.5, 0.0, 0.0],
+                [-2.5, 3.5, 1.0, 0.0],
+                [0.0, 1.0, 2.0, 1.0],
+                [0.0, 0.0, 1.0, 1.0],
+            ]
+        )
+
+        DLW_25 = np.array(
+            [
+                [2.5, -2.5, 0.0, 0.0],
+                [-2.5, 3.5, -1.0j, 0.0],
+                [0.0, 1.0j, 2.0, 1.0j],
+                [0.0, 0.0, -1.0j, 1.0],
+            ]
+        )
+
+        DLW_0 = np.array(
+            [
+                [2.5, -2.5, 0.0, 0.0],
+                [-2.5, 3.5, -1.0, 0.0],
+                [0.0, -1.0, 2.0, -1.0],
+                [0.0, 0.0, -1.0, 1.0],
+            ]
+        )
+
+        GL = np.array([[1, -1, 0, 0], [-1, 2, -1, 0], [0, -1, 2, -1], [0, 0, -1, 1]])
+
+        np.testing.assert_almost_equal(
+            nx.magnetic_laplacian(self.DiG, q=0.5).todense(),
+            DL_50,
+            decimal=3,
+        )
+
+        np.testing.assert_almost_equal(
+            nx.magnetic_laplacian(self.DiG, q=0.25).todense(),
+            DL_25,
+            decimal=3,
+        )
+
+        np.testing.assert_almost_equal(
+            nx.magnetic_laplacian(self.DiG, q=0).todense(),
+            DL_0,
+            decimal=3,
+        )
+
+        np.testing.assert_almost_equal(
+            nx.magnetic_laplacian(self.DiGW, q=0.5).todense(),
+            DLW_50,
+            decimal=3,
+        )
+
+        np.testing.assert_almost_equal(
+            nx.magnetic_laplacian(self.DiGW, q=0.25).todense(),
+            DLW_25,
+            decimal=3,
+        )
+
+        np.testing.assert_almost_equal(
+            nx.magnetic_laplacian(self.DiGW, q=0).todense(),
+            DLW_0,
+            decimal=3,
+        )
+
+        np.testing.assert_almost_equal(
+            nx.magnetic_laplacian(self.G).todense(),
+            GL,
+            decimal=3,
+        )
+
+    def test_norm_mag_laplacian(self):
+        NDL_50 = np.array(
+            [
+                [1.0, -1.0 / np.sqrt(1.5), 0.0, 0.0],
+                [-1.0 / np.sqrt(1.5), 1.0, 0.5 / np.sqrt(1.5), 0.0],
+                [0.0, 0.5 / np.sqrt(1.5), 1.0, 0.5 / np.sqrt(0.5)],
+                [0.0, 0.0, 0.5 / np.sqrt(0.5), 1.0],
+            ]
+        )
+
+        NDL_25 = np.array(
+            [
+                [1.0, -1.0 / np.sqrt(1.5), 0.0, 0.0],
+                [-1.0 / np.sqrt(1.5), 1.0, -0.5j / np.sqrt(1.5), 0.0],
+                [0.0, 0.5j / np.sqrt(1.5), 1.0, 0.5j / np.sqrt(0.5)],
+                [0.0, 0.0, -0.5j / np.sqrt(0.5), 1.0],
+            ]
+        )
+
+        NDL_0 = np.array(
+            [
+                [1.0, -1.0 / np.sqrt(1.5), 0.0, 0.0],
+                [-1.0 / np.sqrt(1.5), 1.0, -0.5 / np.sqrt(1.5), 0.0],
+                [0.0, -0.5 / np.sqrt(1.5), 1.0, -0.5 / np.sqrt(0.5)],
+                [0.0, 0.0, -0.5 / np.sqrt(0.5), 1.0],
+            ]
+        )
+
+        NWDL_50 = np.array(
+            [
+                [1.0, -2.5 / np.sqrt(2.5 * 3.5), 0.0, 0.0],
+                [-2.5 / np.sqrt(2.5 * 3.5), 1.0, 1.0 / np.sqrt(3.5 * 2), 0.0],
+                [0.0, 1.0 / np.sqrt(3.5 * 2), 1.0, 1.0 / np.sqrt(2)],
+                [0.0, 0.0, 1.0 / np.sqrt(2), 1.0],
+            ]
+        )
+
+        NWDL_25 = np.array(
+            [
+                [1.0, -2.5 / np.sqrt(2.5 * 3.5), 0.0, 0.0],
+                [-2.5 / np.sqrt(2.5 * 3.5), 1.0, -1.0j / np.sqrt(3.5 * 2), 0.0],
+                [0.0, 1.0j / np.sqrt(3.5 * 2), 1.0, 1.0j / np.sqrt(2)],
+                [0.0, 0.0, -1.0j / np.sqrt(2), 1.0],
+            ]
+        )
+
+        NWDL_0 = np.array(
+            [
+                [1.0, -2.5 / np.sqrt(2.5 * 3.5), 0.0, 0.0],
+                [-2.5 / np.sqrt(2.5 * 3.5), 1.0, -1.0 / np.sqrt(3.5 * 2), 0.0],
+                [0.0, -1.0 / np.sqrt(3.5 * 2), 1.0, -1.0 / np.sqrt(2)],
+                [0.0, 0.0, -1.0 / np.sqrt(2), 1.0],
+            ]
+        )
+
+        NGL = np.array(
+            [
+                [1, -1 / np.sqrt(2), 0, 0],
+                [-1 / np.sqrt(2), 1, -1 / 2, 0],
+                [0, -1 / 2, 1, -1 / np.sqrt(2)],
+                [0, 0, -1 / np.sqrt(2), 1],
+            ]
+        )
+
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian(self.DiG, q=0.5).todense(),
+            NDL_50,
+            decimal=3,
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian(self.DiG, q=0.25).todense(),
+            NDL_25,
+            decimal=3,
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian(self.DiG, q=0).todense(),
+            NDL_0,
+            decimal=3,
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian(self.DiGW, q=0.5).todense(),
+            NWDL_50,
+            decimal=3,
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian(self.DiGW, q=0.25).todense(),
+            NWDL_25,
+            decimal=3,
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian(self.DiGW, q=0).todense(),
+            NWDL_0,
+            decimal=3,
+        )
+
+        np.testing.assert_almost_equal(
+            nx.normalized_magnetic_laplacian(self.G).todense(),
+            NGL,
+            decimal=3,
+        )
+
+
 def test_directed_laplacian():
     "Directed Laplacian"
     # Graph used as an example in Sec. 4.1 of Langville and Meyer,
