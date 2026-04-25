@@ -2,7 +2,6 @@
 
 import random
 from copy import deepcopy
-from itertools import count
 
 import networkx as nx
 

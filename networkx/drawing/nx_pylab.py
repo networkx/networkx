@@ -1611,7 +1611,6 @@ class FancyArrowFactory:
     ):
         import matplotlib as mpl
         import matplotlib.patches  # call as mpl.patches
-        import matplotlib.pyplot as plt
         import numpy as np
 
         if isinstance(connectionstyle, str):
