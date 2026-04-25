@@ -6,7 +6,6 @@ Distance Measures
 .. autosummary::
    :toctree: generated/
 
-   barycenter
    center
    centroid
    diameter
@@ -17,5 +16,4 @@ Distance Measures
    periphery
    radius
    resistance_distance
-
 
