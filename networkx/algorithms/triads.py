@@ -453,48 +453,52 @@ def triad_type(G):
         Oxford.
         https://web.archive.org/web/20170830032057/http://www.stats.ox.ac.uk/~snijders/Trans_Triads_ha.pdf
     """
-    if not is_triad(G):
+    if len(G) != 3:
         raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
-    num_edges = len(G.edges())
-    if num_edges == 0:
-        return "003"
-    elif num_edges == 1:
-        return "012"
-    elif num_edges == 2:
-        e1, e2 = G.edges()
-        if set(e1) == set(e2):
+
+    match list(G.edges):
+        case []:  # No edges
+            return "003"
+        case [single_edge]:  # One edge
+            return "012"
+        # Triads with 2 edges
+        case e1, e2 if set(e1) == set(e2):  # Contains 1 "mutual tie" (a bi-edge)
             return "102"
-        elif e1[0] == e2[0]:
+        case e1, e2 if e1[0] == e2[0]:  # Two outgoing edges from one node
             return "021D"
-        elif e1[1] == e2[1]:
+        case e1, e2 if e1[1] == e2[1]:  # Two edges incident on a single node
             return "021U"
-        elif e1[1] == e2[0] or e2[1] == e1[0]:
+        case e1, e2:  # Remaining 2-edge case: one incoming and one outgoing edge
             return "021C"
-    elif num_edges == 3:
-        for e1, e2, e3 in permutations(G.edges(), 3):
-            if set(e1) == set(e2):
-                if e3[0] in e1:
-                    return "111U"
-                # e3[1] in e1:
-                return "111D"
-            elif set(e1).symmetric_difference(set(e2)) == set(e3):
-                if {e1[0], e2[0], e3[0]} == {e1[0], e2[0], e3[0]} == set(G.nodes()):
-                    return "030C"
-                # e3 == (e1[0], e2[1]) and e2 == (e1[1], e3[1]):
-                return "030T"
-    elif num_edges == 4:
-        for e1, e2, e3, e4 in permutations(G.edges(), 4):
-            if set(e1) == set(e2):
-                # identify pair of symmetric edges (which necessarily exists)
-                if set(e3) == set(e4):
-                    return "201"
-                if {e3[0]} == {e4[0]} == set(e3).intersection(set(e4)):
-                    return "120D"
-                if {e3[1]} == {e4[1]} == set(e3).intersection(set(e4)):
-                    return "120U"
-                if e3[1] == e4[0]:
-                    return "120C"
-    elif num_edges == 5:
-        return "210"
-    elif num_edges == 6:
-        return "300"
+        ### Triads with 3 edges - NOTE: Logic depends on case order!
+        # Triad 030T has no "mutual ties" and no larger cycles
+        case e1, e2, e3 if list(nx.simple_cycles(G)) == []:
+            return "030T"
+        # Whereas Triad 030C has no mutual ties but has the 3-cycle
+        case e1, e2, e3 if len(next(nx.simple_cycles(G))) == 3:
+            return "030C"
+        # Of the remaining 3-edge triads, 111U has one edge incident on each node
+        case e1, e2, e3 if [d for _, d in G.in_degree] == [1, 1, 1]:
+            return "111U"
+        # While 111D has nodes with 0, 1, and 2 in-edges respectively
+        case e1, e2, e3 if 2 in [d for _, d in G.in_degree]:
+            return "111D"
+        ### Triads with 4 edges - NOTE: Logic depends on case order!
+        # Triad 201 has two bi-edges, thus unique degree among 4-edge triads
+        case e1, e2, e3, e4 if sorted(d for _, d in G.degree) == [2, 2, 4]:
+            return "201"
+        # Triad 120C is the only 4-edge triad with a 3-cycle
+        case e1, e2, e3, e4 if [c for c in nx.simple_cycles(G) if len(c) > 2]:
+            return "120C"
+        # Triad 120D has an incoming edge at each of the nodes comprising the bi-edge
+        case e1, e2, e3, e4 if sorted(d for _, d in G.in_degree) == [0, 2, 2]:
+            return "120D"
+        # ... and Triad 120U has two outgoing edges from these nodes
+        case e1, e2, e3, e4 if sorted(d for _, d in G.out_degree) == [0, 2, 2]:
+            return "120U"
+        case e1, e2, e3, e4, e5:  # 5 edges
+            return "210"
+        case e1, e2, e3, e4, e5, e6:  # All 6 edges
+            return "300"
+        case _:
+            raise nx.NetworkXAlgorithmError("G is not a triad (order-3 DiGraph)")
