@@ -279,6 +279,13 @@ def _cpm_delta_partial_eval_remove(
     q_add = _cpm_delta_partial_eval_add(G, u, B)
 
     """
+
+    if G.is_directed():
+        dir_factor = 2
+
+    else:
+        dir_factor = 1
+
     A_prime = community - {node}
 
     n_A_prime = sum(wt for u, wt in G.nodes(data=node_weight) if u in A_prime)
@@ -287,7 +294,10 @@ def _cpm_delta_partial_eval_remove(
 
     E_diff = sum(wt for _, v, wt in G.edges({node}, data=weight) if v in A_prime)
 
-    return resolution * 2 * n_A_prime * u_wt - E_diff
+    if G.is_directed():
+        E_diff += sum(wt for _, v, wt in G.edges(A_prime, data=weight) if v in {node})
+
+    return resolution * dir_factor * n_A_prime * u_wt - E_diff
 
 
 def _cpm_delta_partial_eval_add(
@@ -300,6 +310,12 @@ def _cpm_delta_partial_eval_add(
 
     for more details.
     """
+    if G.is_directed():
+        dir_factor = 2
+
+    else:
+        dir_factor = 1
+
     n_B = sum(wt for u, wt in G.nodes(data=node_weight) if u in community)
 
     # could optimise by passing u_wt directly as a parameter rather than
@@ -307,15 +323,41 @@ def _cpm_delta_partial_eval_add(
     u_wt = G.nodes[node][node_weight]
 
     E_D = sum(wt for _, v, wt in G.edges({node}, data=weight) if v in community)
-    return E_D - resolution * 2 * n_B * u_wt
+    if G.is_directed():
+        E_D += sum(wt for _, v, wt in G.edges(community, data=weight) if v in {node})
+
+    return E_D - resolution * dir_factor * n_B * u_wt
+
+
+def _quality_delta_cpm_directed(
+    G, nodes_to_add, community, resolution, weight="weight", node_weight="node_weight"
+):
+    n_size = sum(G.nodes[u][node_weight] for u in nodes_to_add)
+    comm_size = sum(G.nodes[u][node_weight] for u in community)
+    E_D_out = sum(
+        wt for _, v, wt in G.edges(nodes_to_add, data=weight) if v in community
+    )
+    E_D_in = sum(
+        wt for _, v, wt in G.edges(community, data=weight) if v in nodes_to_add
+    )
+    return E_D_out + E_D_in - resolution * 2 * n_size * comm_size
+
+
+def _quality_delta_cpm_undirected(
+    G, nodes_to_add, community, resolution, weight="weight", node_weight="node_weight"
+):
+    n_size = sum(G.nodes[u][node_weight] for u in nodes_to_add)
+    comm_size = sum(G.nodes[u][node_weight] for u in community)
+    E_D = sum(wt for _, v, wt in G.edges(nodes_to_add, data=weight) if v in community)
+    return E_D - resolution * n_size * comm_size
 
 
 def constant_potts_model(
     G,
     communities,
-    weight,
-    node_weight,
-    resolution,
+    weight="weight",
+    node_weight="node_weight",
+    resolution=1,
 ):
     r"""
     Computes the Constant Potts Model, which is a measure of quality of a
@@ -397,14 +439,29 @@ def constant_potts_model(
        resolution-limit-free community detection"
        <https://arxiv.org/abs/1104.3083>
     """
+    is_directed = G.is_directed()
+    if is_directed:
 
-    def community_contribution(community):
-        comm = set(community)
-        E_c = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm)
+        def community_contribution(community):
+            comm = set(community)
+            E_c = sum(
+                wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm
+            )
 
-        n_c = sum(G.nodes[node].get(node_weight, 1) for node in community)
+            n_c = sum(G.nodes[node].get(node_weight, 1) for node in community)
 
-        return E_c - resolution * (n_c**2)
+            return E_c - resolution * (n_c**2)
+    else:
+
+        def community_contribution(community):
+            comm = set(community)
+            E_c = sum(
+                wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm
+            )
+
+            n_c = sum(G.nodes[node].get(node_weight, 1) for node in community)
+
+            return E_c - resolution * (n_c**2) / 2
 
     return sum(community_contribution(c) for c in communities)
 
