@@ -440,7 +440,7 @@ def _single_source_dijkstra_path_basic(G, s, weight):
     Q = []  # use Q as heap with (distance,node id) tuples
     heappush(Q, (0, next(c), s, s))
     while Q:
-        (dist, _, pred, v) = heappop(Q)
+        dist, _, pred, v = heappop(Q)
         if v in D:
             continue  # already searched this node.
         sigma[v] += sigma[pred]  # count paths
