@@ -414,8 +414,9 @@ def _single_source_shortest_path_basic(G, s):
         S.append(v)
         Dv = D[v]
         sigmav = sigma[v]
-        for w in G[v]:
-            if w not in D:
+        neighbors = G[v]
+        for w in neighbors:
+            if D.get(w) is None:
                 Q.append(w)
                 D[w] = Dv + 1
             if D[w] == Dv + 1:  # this is a shortest path, count paths
