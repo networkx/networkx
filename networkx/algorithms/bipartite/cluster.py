@@ -3,6 +3,7 @@
 from collections import defaultdict
 
 import networkx as nx
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
     "clustering",
@@ -265,6 +266,7 @@ def robins_alexander_clustering(G):
     return sum(butterflies(G).values()) / L_3
 
 
+@not_implemented_for("directed")
 @nx._dispatchable
 def butterflies(G, nodes=None):
     r"""Count the number of butterflies for each node in a bipartite graph.
@@ -307,11 +309,6 @@ def butterflies(G, nodes=None):
         participating node, so::
 
             sum(butterflies(G).values()) == 4 * total_butterfly_count
-
-    Raises
-    ------
-    NetworkXError
-        If *G* is not bipartite.
 
     Examples
     --------
@@ -391,9 +388,6 @@ def butterflies(G, nodes=None):
        bipartite graphs.  *Computational & Mathematical Organization
        Theory* 10(1), 69–94.
     """
-    if not nx.is_bipartite(G):
-        raise nx.NetworkXError("Graph is not bipartite")
-
     if G.number_of_edges() == 0:
         result = dict.fromkeys(G.nodes(), 0)
         if nodes is None:

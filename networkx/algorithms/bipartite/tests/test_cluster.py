@@ -199,9 +199,9 @@ class TestButterflies:
 
     # -- error handling -----------------------------------------------------
 
-    def test_not_bipartite_raises(self):
-        with pytest.raises(nx.NetworkXError):
-            bipartite.butterflies(nx.complete_graph(4))
+    def test_directed_raises(self):
+        with pytest.raises(nx.NetworkXNotImplemented):
+            bipartite.butterflies(nx.DiGraph([(0, 1), (1, 2)]))
 
     def test_disconnected_no_raise(self):
         G = nx.Graph()
