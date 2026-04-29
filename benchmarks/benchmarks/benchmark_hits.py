@@ -1,11 +1,11 @@
-"""Benchmarks for a certain set of algorithms"""
+"""Benchmarks for HITS link analysis."""
 
 import networkx as nx
 
 seed = 0xDEADC0DE
 
 
-class HitsAlgorithm:
+class HitsAlgorithmBenchmarks:
     timeout = 120
     _graphs = [
         nx.barabasi_albert_graph(1000, m=3, seed=seed),
