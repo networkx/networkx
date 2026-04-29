@@ -1,4 +1,3 @@
-import warnings
 from itertools import count
 
 import networkx as nx

@@ -11,7 +11,7 @@ from itertools import combinations, product
 from math import gcd
 
 import networkx as nx
-from networkx.utils import arbitrary_element, not_implemented_for, pairwise
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
     "descendants",

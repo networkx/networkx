@@ -2,7 +2,6 @@ import bz2
 import collections
 import gzip
 import inspect
-import itertools
 import re
 from collections import defaultdict
 from os.path import splitext
