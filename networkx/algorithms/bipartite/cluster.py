@@ -382,11 +382,12 @@ def butterflies(G, nodes=None):
     .. [3] Lind, P. G., Gonzalez, M. C., & Herrmann, H. J. (2005).
        Cycles and clustering in bipartite networks.
        *Physical Review E*, 72, 056127.
+       https://doi.org/10.1103/PhysRevE.72.056127
 
     .. [4] Robins, G. and M. Alexander (2004). Small worlds among
-       interlocking directors: Network structure and distance in
-       bipartite graphs.  *Computational & Mathematical Organization
-       Theory* 10(1), 69–94.
+       interlocking directors: Network structure and distance in bipartite graphs.  
+       *Computational & Mathematical Organization Theory* 10(1), 69–94.
+       https://doi.org/10.1023/B:CMOT.0000032580.12184.c0
     """
     if G.number_of_edges() == 0:
         result = dict.fromkeys(G.nodes(), 0)
