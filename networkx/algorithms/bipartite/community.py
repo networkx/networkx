@@ -10,7 +10,7 @@ __all__ = ["modularity"]
 
 @not_implemented_for("directed")
 @nx._dispatchable(name="bipartite_modularity", edge_attrs="weight")
-def modularity(G, communities, nodes, weight="weight", resolution=1):
+def modularity(G, communities, nodes, *, weight="weight", resolution=1):
     r"""Returns Barber's bipartite modularity of the given partition.
 
     Bipartite modularity [1]_ adapts Newman's modularity to bipartite
@@ -102,10 +102,9 @@ def modularity(G, communities, nodes, weight="weight", resolution=1):
     Two disconnected :math:`K_{2,2}` components form a strong bipartite
     community structure:
 
-    >>> from networkx.algorithms import bipartite
     >>> G = nx.Graph([(0, 2), (1, 3)])
     >>> red = {0, 1}
-    >>> bipartite.modularity(G, [{0, 2}, {1, 3}], red)
+    >>> nx.bipartite.modularity(G, [{0, 2}, {1, 3}], red)
     0.5
 
     Notes
