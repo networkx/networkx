@@ -6,8 +6,8 @@ Distance Measures
 .. autosummary::
    :toctree: generated/
 
-   barycenter
    center
+   centroid
    diameter
    harmonic_diameter
    eccentricity
@@ -16,5 +16,4 @@ Distance Measures
    periphery
    radius
    resistance_distance
-
 

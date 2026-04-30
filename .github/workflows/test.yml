@@ -15,7 +15,7 @@ jobs:
         environment: [test-base-py313, test-base-py314, test-base-py314t]
     steps:
       - uses: actions/checkout@v6
-      - uses: prefix-dev/setup-pixi@v0.9.4
+      - uses: prefix-dev/setup-pixi@v0.9.5
         with:
           environments: ${{ matrix.environment }}
       - name: Test NetworkX
@@ -30,7 +30,7 @@ jobs:
           [test-default-py312, test-default-py313, test-default-py314]
     steps:
       - uses: actions/checkout@v6
-      - uses: prefix-dev/setup-pixi@v0.9.4
+      - uses: prefix-dev/setup-pixi@v0.9.5
         with:
           environments: ${{ matrix.environment }}
       - name: Test for warnings at import time
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: prefix-dev/setup-pixi@v0.9.4
+      - uses: prefix-dev/setup-pixi@v0.9.5
         with:
           environments: test-default-no-scipy-py312
       - name: Test for warnings at import time
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: prefix-dev/setup-pixi@v0.9.4
+      - uses: prefix-dev/setup-pixi@v0.9.5
         with:
           environments: test-default-py314
       - name: Test Dispatching
@@ -68,7 +68,7 @@ jobs:
         environment: [test-extra-py312, test-extra-py313]
     steps:
       - uses: actions/checkout@v6
-      - uses: prefix-dev/setup-pixi@v0.9.4
+      - uses: prefix-dev/setup-pixi@v0.9.5
         with:
           environments: ${{ matrix.environment }}
       - name: Register graphviz plugins
@@ -84,7 +84,7 @@ jobs:
         environment: [prerelease-py312, prerelease-py313, prerelease-py314]
     steps:
       - uses: actions/checkout@v6
-      - uses: prefix-dev/setup-pixi@v0.9.4
+      - uses: prefix-dev/setup-pixi@v0.9.5
         with:
           environments: ${{ matrix.environment }}
       - name: Install pre-release packages
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: prefix-dev/setup-pixi@v0.9.4
+      - uses: prefix-dev/setup-pixi@v0.9.5
         with:
           environments: test-default-py313
       - name: Run slow tests

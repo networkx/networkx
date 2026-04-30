@@ -1,7 +1,7 @@
 """Algorithms to characterize the number of triangles in a graph."""
 
 from collections import Counter
-from itertools import chain, combinations
+from itertools import chain
 
 import networkx as nx
 from networkx.utils import not_implemented_for

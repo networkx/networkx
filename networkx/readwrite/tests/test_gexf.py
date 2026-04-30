@@ -142,6 +142,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 """
         cls.attribute_graph = nx.DiGraph()
         cls.attribute_graph.graph["node_default"] = {"frog": True}
+        cls.attribute_graph.graph["description"] = "A Web network"
         cls.attribute_graph.add_node(
             "0", label="Gephi", url="https://gephi.org", indegree=1, frog=False
         )
@@ -219,6 +220,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         G = self.attribute_graph
         H = nx.read_gexf(self.attribute_fh)
         assert sorted(G.nodes(True)) == sorted(H.nodes(data=True))
+        assert H.graph.get("description") == "A Web network"
         ge = sorted(G.edges(data=True))
         he = sorted(H.edges(data=True))
         for a, b in zip(ge, he):
@@ -610,3 +612,73 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(sorted(e) for e in G.edges()) == sorted(
             sorted(e) for e in H.edges()
         )
+
+    def test_round_trip_mixed_type_float_to_string(self):
+        G = nx.Graph()
+        G.add_node(1, bar=1.234)
+        G.add_node(2, bar="stringval")
+        fh = io.BytesIO()
+        # Assert write_gexf throws error when trying to write a graph with mixed types for the same attribute
+        with pytest.raises(
+            ValueError,
+            match="Attribute bar has type double but value string was given.",
+        ):
+            nx.write_gexf(G, fh)
+
+    def test_round_trip_mixed_type_int_to_string(self):
+        G = nx.Graph()
+        G.add_node(1, bar=1)
+        G.add_node(2, bar="stringval")
+        fh = io.BytesIO()
+        # Assert write_gexf throws error when trying to write a graph with mixed types for the same attribute
+        with pytest.raises(
+            ValueError,
+            match="Attribute bar has type long but value string was given.",
+        ):
+            nx.write_gexf(G, fh)
+
+    def test_type_promotion_integer_to_integer(self):
+        G = nx.Graph()
+        G.add_node(1, foo=1)
+        G.add_node(2, foo=2)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert isinstance(H.nodes[1].get("foo"), int)
+        assert G.nodes[1].get("foo") == H.nodes[1].get("foo")
+        assert isinstance(H.nodes[2].get("foo"), int)
+        assert G.nodes[2].get("foo") == H.nodes[2].get("foo")
+
+    def test_type_promotion_float_to_float(self):
+        G = nx.Graph()
+        G.add_node(1, baz=1.1)
+        G.add_node(2, baz=2.3)
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert isinstance(H.nodes[1].get("baz"), float)
+        assert G.nodes[1].get("baz") == H.nodes[1].get("baz")
+        assert isinstance(H.nodes[2].get("baz"), float)
+        assert G.nodes[2].get("baz") == H.nodes[2].get("baz")
+
+    def test_meta_description_keywords_round_trip(self):
+        G = nx.DiGraph()
+        G.add_node(0, label="Node0")
+        G.add_edge(0, 1)
+        G.graph["description"] = "Test description"
+        G.graph["keywords"] = "test, network, graph"
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert H.graph.get("description") == "Test description"
+        assert H.graph.get("keywords") == "test, network, graph"
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert sorted(G.edges()) == sorted(H.edges())

@@ -68,6 +68,9 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
        Social Networks 11(1):1-37, 1989.
        https://doi.org/10.1016/0378-8733(89)90016-6
     """
+    N = len(G)
+    if N <= 1:
+        return {n: 1.0 for n in G}
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     solvername = {
@@ -75,13 +78,11 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
         "lu": SuperLUInverseLaplacian,
         "cg": CGInverseLaplacian,
     }
-    N = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
     H = nx.relabel_nodes(G, dict(zip(ordering, range(N))))
     betweenness = dict.fromkeys(H, 0.0)  # b[n]=0 for n in H
-    N = H.number_of_nodes()
     L = nx.laplacian_matrix(H, nodelist=range(N), weight=weight).asformat("csc")
     L = L.astype(dtype)
     C2 = solvername[solver](L, width=1, dtype=dtype)  # initialize solver

@@ -150,3 +150,10 @@ Link Analysis
 
    birank
 
+Communities
+-----------
+.. automodule:: networkx.algorithms.bipartite.community
+.. autosummary::
+   :toctree: generated/
+
+   modularity

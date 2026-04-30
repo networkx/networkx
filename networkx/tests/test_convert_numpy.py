@@ -529,3 +529,24 @@ def test_from_numpy_array_nodelist_rountrip(graph, nodes):
     expected = nx.relabel_nodes(G, mapping=dict(zip(G.nodes, nodes)), copy=True)
     H = nx.from_numpy_array(A, edge_attr=None, nodelist=nodes)
     assert graphs_equal(H, expected)
+
+
+@pytest.mark.parametrize("sentinel", (float("nan"), np.nan, -99))
+def test_from_numpy_array_nonedge(sentinel):
+    """nonedge sentinel allows zero-weight edges to be preserved."""
+    A = np.array([[sentinel, 0.0], [0.0, sentinel]])
+    G = nx.from_numpy_array(A, nonedge=sentinel)
+    assert sorted(G.edges(data=True)) == [(0, 1, {"weight": 0.0})]
+
+
+@pytest.mark.parametrize("sentinel", (float("nan"), np.nan, -99))
+def test_from_numpy_array_nonedge_roundtrip(sentinel):
+    """Round-trip with to_numpy_array using nan nonedge preserves zero-weight edges."""
+    G = nx.Graph()
+    G.add_edge(0, 1, weight=0)
+    G.add_edge(1, 2, weight=5)
+    G.add_node(3)
+    A = nx.to_numpy_array(G, nonedge=sentinel)
+    H = nx.from_numpy_array(A, nonedge=sentinel)
+    assert sorted(H.edges(data=True)) == sorted(G.edges(data=True))
+    assert set(H.nodes()) == set(G.nodes())
