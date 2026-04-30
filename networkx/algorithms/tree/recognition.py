@@ -208,11 +208,11 @@ def is_forest(G):
         raise nx.NetworkXPointlessConcept("G has no nodes.")
 
     if G.is_directed():
-        components = (G.subgraph(c) for c in nx.weakly_connected_components(G))
+        components = nx.weakly_connected_components(G)
     else:
-        components = (G.subgraph(c) for c in nx.connected_components(G))
+        components = nx.connected_components(G)
 
-    return all(len(c) - 1 == c.number_of_edges() for c in components)
+    return all(len(c) - 1 == sum(1 for _ in G.edges(c)) for c in components)
 
 
 @nx._dispatchable
