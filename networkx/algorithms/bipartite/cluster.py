@@ -387,6 +387,8 @@ def butterflies(G, nodes=None):
     .. [4] Robins, G. and M. Alexander (2004). Small worlds among
        interlocking directors: Network structure and distance in bipartite graphs.  
        *Computational & Mathematical Organization Theory* 10(1), 69–94.
+       interlocking directors: Network structure and distance in bipartite graphs.
+       *Computational & Mathematical Organization Theory* 10(1), 69–94.
        https://doi.org/10.1023/B:CMOT.0000032580.12184.c0
     """
     if G.number_of_edges() == 0:
