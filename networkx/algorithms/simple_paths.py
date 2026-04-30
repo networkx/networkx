@@ -385,11 +385,7 @@ def _all_simple_edge_paths(G, source, targets, cutoff):
     # We bootstrap the search by adding a dummy iterator to the stack that only yields
     # a dummy edge to source (so that the trivial path has a chance of being included).
 
-    get_edges = (
-        (lambda node: G.edges(node, keys=True))
-        if G.is_multigraph()
-        else (lambda node: G.edges(node))
-    )
+    get_edges = (lambda n: G.edges(n, keys=True)) if G.is_multigraph() else G.edges
 
     # The current_path is a dictionary that maps nodes in the path to the edge that was
     # used to enter that node (instead of a list of edges) because we want both a fast

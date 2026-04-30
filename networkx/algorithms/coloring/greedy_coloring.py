@@ -490,7 +490,7 @@ def _greedy_coloring_with_interchange(G, nodes):
         neighbors = graph[node].iter_neighbors()
         col_used = {graph[adj_node.node_id].color for adj_node in neighbors}
         col_used.discard(-1)
-        k1 = next(itertools.dropwhile(lambda x: x in col_used, itertools.count()))
+        k1 = next(itertools.dropwhile(col_used.__contains__, itertools.count()))
 
         # k1 is now the lowest available color
         if k1 > k:

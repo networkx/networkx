@@ -7,6 +7,7 @@ For now, only Weisfeiler-Lehman hashing is implemented.
 import warnings
 from collections import Counter, defaultdict
 from hashlib import blake2b
+from operator import itemgetter
 
 import networkx as nx
 
@@ -220,7 +221,7 @@ def weisfeiler_lehman_graph_hash(
         node_labels = weisfeiler_lehman_step(G, node_labels, edge_attr=edge_attr)
         counter = Counter(node_labels.values())
         # sort the counter, extend total counts
-        subgraph_hash_counts.extend(sorted(counter.items(), key=lambda x: x[0]))
+        subgraph_hash_counts.extend(sorted(counter.items(), key=itemgetter(0)))
 
     # hash the final counter
     return _hash_label(str(tuple(subgraph_hash_counts)), digest_size)

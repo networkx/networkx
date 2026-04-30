@@ -60,7 +60,7 @@ def treewidth_min_degree(G):
           2-tuple with treewidth and the corresponding decomposed tree.
     """
     deg_heuristic = MinDegreeHeuristic(G)
-    return treewidth_decomp(G, lambda graph: deg_heuristic.best_node(graph))
+    return treewidth_decomp(G, deg_heuristic.best_node)
 
 
 @not_implemented_for("directed")

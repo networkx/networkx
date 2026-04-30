@@ -17,6 +17,7 @@ import math
 import time
 from dataclasses import dataclass
 from itertools import product
+from operator import itemgetter
 
 import networkx as nx
 from networkx.utils import np_random_state
@@ -1957,7 +1958,7 @@ def panther_vector_similarity(
 
     # Ensure we return exactly k results (sorted by similarity)
     if len(top_k_with_val) > k:
-        sorted_items = sorted(top_k_with_val.items(), key=lambda x: x[1], reverse=True)
+        sorted_items = sorted(top_k_with_val.items(), key=itemgetter(1), reverse=True)
         top_k_with_val = dict(sorted_items[:k])
 
     return top_k_with_val

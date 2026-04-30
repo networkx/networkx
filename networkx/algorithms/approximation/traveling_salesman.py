@@ -35,6 +35,7 @@ http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
 
 import math
+from operator import itemgetter
 
 import networkx as nx
 from networkx.algorithms.tree.mst import random_spanning_tree
@@ -627,7 +628,7 @@ def held_karp_ascent(G, weight="weight"):
             # Delete the edge (N, v) so that we cannot pick it.
             edge_data = G[N][n]
             G.remove_edge(N, n)
-            min_weight = min(G.in_edges(n, data=weight), key=lambda x: x[2])[2]
+            min_weight = min(G.in_edges(n, data=weight), key=itemgetter(2))[2]
             min_edges = [
                 (u, v, d) for u, v, d in G.in_edges(n, data=weight) if d == min_weight
             ]

@@ -23,6 +23,8 @@ Semi-supervised learning using gaussian fields and harmonic functions.
 In ICML (Vol. 3, pp. 912-919).
 """
 
+from operator import itemgetter
+
 import networkx as nx
 
 __all__ = ["harmonic_function", "local_and_global_consistency"]
@@ -214,6 +216,6 @@ def _get_label_info(G, label_name):
             labels.append([i, label_to_id[label]])
     labels = np.array(labels)
     label_dict = np.array(
-        [label for label, _ in sorted(label_to_id.items(), key=lambda x: x[1])]
+        [label for label, _ in sorted(label_to_id.items(), key=itemgetter(1))]
     )
     return (labels, label_dict)

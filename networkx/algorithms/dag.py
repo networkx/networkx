@@ -9,6 +9,7 @@ import heapq
 from collections import deque
 from itertools import combinations, product
 from math import gcd
+from operator import itemgetter
 
 import networkx as nx
 from networkx.utils import arbitrary_element, not_implemented_for, pairwise
@@ -1104,7 +1105,7 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
 
         # Use the best predecessor if there is one and its distance is
         # non-negative, otherwise terminate.
-        maxu = max(us, key=lambda x: x[0]) if us else (0, v)
+        maxu = max(us, key=itemgetter(0)) if us else (0, v)
         dist[v] = maxu if maxu[0] >= 0 else (0, v)
 
     u = None

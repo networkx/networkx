@@ -2,6 +2,7 @@
 
 from heapq import heappop, heappush
 from itertools import chain, count
+from operator import itemgetter
 
 import networkx as nx
 
@@ -202,7 +203,7 @@ def connected_dominating_set(G):
     unseen_degree = dict(G.degree)
 
     # Find node with highest degree and update its neighbors
-    (max_deg_node, max_deg) = max(unseen_degree.items(), key=lambda x: x[1])
+    (max_deg_node, max_deg) = max(unseen_degree.items(), key=itemgetter(1))
     for nbr in G_succ[max_deg_node]:
         unseen_degree[nbr] -= 1
 
