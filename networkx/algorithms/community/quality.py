@@ -6,10 +6,15 @@ communities).
 from itertools import combinations
 
 import networkx as nx
-from networkx.algorithms.community.community_utils import is_partition
-from networkx.utils.decorators import argmap
+from networkx.algorithms.community.community_utils import is_cover, is_partition
+from networkx.utils.decorators import argmap, not_implemented_for
 
-__all__ = ["constant_potts_model", "modularity", "partition_quality"]
+__all__ = [
+    "constant_potts_model",
+    "modularity",
+    "overlapping_modularity",
+    "partition_quality",
+]
 
 
 class NotAPartition(nx.NetworkXError):
@@ -252,6 +257,154 @@ def modularity(G, communities, weight="weight", resolution=1):
         return L_c / m - resolution * out_degree_sum * in_degree_sum * norm
 
     return sum(map(community_contribution, communities))
+
+
+@not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight")
+def overlapping_modularity(G, communities, weight="weight", resolution=1):
+    r"""Returns Shen et al.'s extended modularity for an overlapping cover.
+
+    Standard modularity assumes each node belongs to exactly one
+    community. Shen et al. [1]_ extend modularity to overlapping
+    communities by discounting each node's contribution by the number of
+    communities it belongs to:
+
+    .. math::
+        EQ = \frac{1}{2m} \sum_{i} \sum_{v \in C_i, w \in C_i}
+             \frac{1}{O_v O_w}\!\left[ A_{vw} - \gamma\,\frac{k_v k_w}{2m}\right]
+
+    where the outer sum runs over communities $C_i$ in the cover, $A_{vw}$
+    is the (weighted) adjacency, $k_v$ is the (weighted) degree of $v$,
+    $O_v$ is the number of communities to which $v$ belongs, $m$ is the
+    total (weighted) edge count, and $\gamma$ is the resolution parameter.
+
+    The factor $1 / (O_v O_w)$ discounts contributions from nodes that
+    belong to many communities: a node in 3 communities contributes 1/3
+    of its modularity share to each.
+
+    The resolution parameter $\gamma$ is not part of the original Shen
+    definition; it is added for consistency with
+    :func:`~networkx.algorithms.community.quality.modularity`. Setting
+    $\gamma = 1$ recovers Shen's EQ exactly.
+
+    Implementation uses the equivalent community-sum form
+
+    .. math::
+        EQ = \sum_{i}\!\left[\frac{\tilde{L}_{C_i}}{m}
+             - \gamma\!\left(\frac{\tilde{k}_{C_i}}{2m}\right)^{\!2}\right]
+
+    where $\tilde{L}_{C_i} = \sum_{(v,w) \in L_{C_i}} 1/(O_v O_w)$ is the
+    overlap-discounted intra-community edge count and
+    $\tilde{k}_{C_i} = \sum_{v \in C_i} k_v / O_v$ is the
+    overlap-discounted degree sum. When the cover is actually a partition
+    ($O_v = 1$ for all $v$), $EQ$ reduces to the standard modularity $Q$.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        An undirected graph.
+
+    communities : iterable of sets of nodes
+        A cover of `G`'s nodes: every node must appear in at least one
+        set, but sets may overlap. Accepts the output of
+        :func:`~networkx.algorithms.community.kclique.k_clique_communities`
+        directly.
+
+    weight : string or None, optional (default="weight")
+        Edge attribute holding the numerical edge weight. If None, or if
+        an edge does not have the attribute, that edge has weight 1.
+
+    resolution : float, optional (default=1)
+        Resolution parameter $\gamma$. Values smaller than 1 favor larger
+        communities; values greater than 1 favor smaller communities.
+
+    Returns
+    -------
+    EQ : float
+        The extended modularity of the cover.
+
+    Raises
+    ------
+    NetworkXError
+        If `communities` is not a valid cover of the nodes of `G` (some
+        node in `G` does not belong to any community).
+
+    NetworkXNotImplemented
+        If `G` is directed. Shen's formulation is for undirected graphs.
+
+    Examples
+    --------
+    On a partition, EQ equals standard modularity (up to floating-point
+    summation order):
+
+    >>> G = nx.barbell_graph(3, 0)
+    >>> partition = [{0, 1, 2}, {3, 4, 5}]
+    >>> Q = nx.community.modularity(G, partition)
+    >>> EQ = nx.community.overlapping_modularity(G, partition)
+    >>> abs(Q - EQ) < 1e-12
+    True
+
+    Evaluate an overlapping cover produced by ``k_clique_communities``.
+    Two K_5 cliques sharing nodes 3 and 4 yield a 2-community cover:
+
+    >>> G = nx.complete_graph(5)
+    >>> G.add_edges_from(nx.complete_graph(range(3, 8)).edges())
+    >>> cover = list(nx.community.k_clique_communities(G, 4))
+    >>> round(nx.community.overlapping_modularity(G, cover), 3)
+    0.158
+
+    See Also
+    --------
+    modularity
+    is_cover
+
+    References
+    ----------
+    .. [1] Shen, H., Cheng, X., Cai, K., & Hu, M. B. (2009). "Detect
+       overlapping and hierarchical community structure in networks."
+       Physica A, 388(8), 1706-1712.
+       https://doi.org/10.1016/j.physa.2008.12.021
+    .. [2] Lancichinetti, A., Fortunato, S., & Kertesz, J. (2009).
+       "Detecting the overlapping and hierarchical community structure
+       in complex networks." New J. Phys. 11, 033015. (Cover definition.)
+    """
+    if not isinstance(communities, list):
+        communities = list(communities)
+    if not is_cover(G, communities):
+        raise nx.NetworkXError("`communities` is not a valid cover of the nodes of G")
+
+    # Membership count O_v for each node
+    membership = {}
+    for community in communities:
+        for node in community:
+            if node in G:
+                membership[node] = membership.get(node, 0) + 1
+
+    degree = dict(G.degree(weight=weight))
+    deg_sum = sum(degree.values())  # equals 2m for undirected
+
+    if deg_sum == 0:
+        return 0.0
+
+    def community_contribution(community):
+        comm = set(community)
+
+        # Tilde-L: overlap-discounted intra-community edge weight.
+        # Each edge (u, v) with both endpoints in comm contributes
+        # w_uv / (O_u * O_v) exactly once.
+        L_c_tilde = sum(
+            wt / (membership[u] * membership[v])
+            for u, v, wt in G.edges(comm, data=weight, default=1)
+            if v in comm
+        )
+
+        # Tilde-k: overlap-discounted degree sum.
+        k_c_tilde = sum(degree[u] / membership[u] for u in comm)
+
+        # Per-community contribution: 2*L_tilde/(2m) - gamma*(k_tilde/(2m))^2.
+        return 2 * L_c_tilde / deg_sum - resolution * (k_c_tilde / deg_sum) ** 2
+
+    return sum(community_contribution(c) for c in communities)
 
 
 def _cpm_delta_partial_eval_remove(

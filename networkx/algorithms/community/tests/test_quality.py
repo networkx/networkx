@@ -10,6 +10,7 @@ from networkx import barbell_graph
 from networkx.algorithms.community import (
     constant_potts_model,
     modularity,
+    overlapping_modularity,
     partition_quality,
 )
 from networkx.algorithms.community.quality import (
@@ -304,6 +305,142 @@ def test_modularity_resolution():
     result = modularity(G, C, resolution=gamma)
     # This C is maximal for gamma=0.3:  modularity = 0.805990
     assert result == pytest.approx((23 / 24) - gamma * (1170 / (48**2)))
+
+
+class TestOverlappingModularity:
+    """Tests for :func:`overlapping_modularity` (Shen et al.'s EQ)."""
+
+    def test_equivalence_with_modularity_on_partition(self):
+        # When the cover is actually a partition, EQ must equal Q.
+        G = nx.barbell_graph(3, 0)
+        partition = [{0, 1, 2}, {3, 4, 5}]
+        assert overlapping_modularity(G, partition) == pytest.approx(
+            modularity(G, partition)
+        )
+
+    def test_equivalence_on_karate_club(self):
+        G = nx.karate_club_graph()
+        partition = list(nx.community.label_propagation_communities(G))
+        assert overlapping_modularity(G, partition) == pytest.approx(
+            modularity(G, partition)
+        )
+
+    def test_triangle_two_overlapping_communities(self):
+        # Triangle (0,1,2), cover [{0,1}, {1,2}]. Hand-calculated EQ = -1/6.
+        G = nx.cycle_graph(3)
+        cover = [{0, 1}, {1, 2}]
+        assert overlapping_modularity(G, cover) == pytest.approx(-1 / 6)
+
+    def test_triangle_all_pairs_cover(self):
+        # Triangle, cover [{0,1}, {1,2}, {0,2}]. Hand-calculated EQ = -1/12.
+        G = nx.cycle_graph(3)
+        cover = [{0, 1}, {1, 2}, {0, 2}]
+        assert overlapping_modularity(G, cover) == pytest.approx(-1 / 12)
+
+    def test_single_community_is_zero(self):
+        # Shen page 4: EQ = 0 when all nodes are in a single community.
+        G = nx.karate_club_graph()
+        assert overlapping_modularity(G, [set(G)]) == pytest.approx(0.0)
+
+    def test_resolution_monotonicity(self):
+        # For a fixed cover, higher resolution -> lower EQ
+        # (the null-model term grows with gamma).
+        G = nx.barbell_graph(3, 0)
+        cover = [{0, 1, 2}, {3, 4, 5}]
+        eq_low = overlapping_modularity(G, cover, resolution=0.5)
+        eq_one = overlapping_modularity(G, cover, resolution=1)
+        eq_high = overlapping_modularity(G, cover, resolution=2)
+        assert eq_low > eq_one > eq_high
+
+    def test_kclique_communities_integration(self):
+        # Output of k_clique_communities should feed directly to
+        # overlapping_modularity without raising.
+        G = nx.complete_graph(5)
+        H = nx.relabel_nodes(nx.complete_graph(5), {i: i + 3 for i in range(5)})
+        G.add_edges_from(H.edges())
+        cover = list(nx.community.k_clique_communities(G, 4))
+        # All nodes should be covered (each appears in some maximal clique
+        # community), so this should not raise.
+        eq = overlapping_modularity(G, cover)
+        assert isinstance(eq, float)
+
+    def test_invalid_cover_raises(self):
+        G = nx.path_graph(4)
+        with pytest.raises(nx.NetworkXError):
+            overlapping_modularity(G, [{0, 1}])  # nodes 2, 3 uncovered
+
+    def test_directed_not_implemented(self):
+        G = nx.DiGraph([(0, 1), (1, 2)])
+        with pytest.raises(nx.NetworkXNotImplemented):
+            overlapping_modularity(G, [{0, 1, 2}])
+
+    def test_empty_graph(self):
+        assert overlapping_modularity(nx.Graph(), []) == 0.0
+
+    def test_weighted_reduces_to_unweighted_when_uniform(self):
+        # When all edge weights are 1, the weighted result matches the
+        # unweighted-default result.
+        G = nx.cycle_graph(4)
+        for u, v in G.edges():
+            G[u][v]["weight"] = 1.0
+        cover = [{0, 1, 2}, {2, 3, 0}]
+        assert overlapping_modularity(G, cover) == pytest.approx(
+            overlapping_modularity(G, cover, weight=None)
+        )
+
+    def test_weight_none_ignores_edge_weights(self):
+        # weight=None must treat the graph as unweighted regardless of
+        # actual edge weights.
+        G = nx.cycle_graph(4)
+        for u, v in G.edges():
+            G[u][v]["weight"] = 99.0
+        Gp = nx.cycle_graph(4)  # no weights
+        cover = [{0, 1, 2}, {2, 3, 0}]
+        assert overlapping_modularity(G, cover, weight=None) == pytest.approx(
+            overlapping_modularity(Gp, cover, weight=None)
+        )
+
+    def test_resolution_partition_matches_modularity(self):
+        # On a partition input, EQ(gamma) must equal Q(gamma) for any gamma.
+        G = nx.barbell_graph(3, 0)
+        partition = [{0, 1, 2}, {3, 4, 5}]
+        for gamma in (0.3, 1.0, 2.5):
+            assert overlapping_modularity(
+                G, partition, resolution=gamma
+            ) == pytest.approx(modularity(G, partition, resolution=gamma))
+
+    def test_weighted_triangle_hand_calc(self):
+        # Triangle with non-uniform edge weights:
+        #   (0,1)=2, (1,2)=3, (0,2)=1
+        # Weighted degrees: k_0=3, k_1=5, k_2=4; 2m=12.
+        # Cover [{0,1}, {1,2}]; O_0=1, O_1=2, O_2=1.
+        # Community {0,1}: L_tilde=2/(1*2)=1, k_tilde=3+5/2=5.5
+        #   contribution = 2*1/12 - (5.5/12)**2 = -25/576
+        # Community {1,2}: L_tilde=3/(2*1)=1.5, k_tilde=5/2+4=6.5
+        #   contribution = 2*1.5/12 - (6.5/12)**2 = -25/576
+        # EQ = -50/576 = -25/288.
+        G = nx.Graph()
+        G.add_weighted_edges_from([(0, 1, 2), (1, 2, 3), (0, 2, 1)])
+        cover = [{0, 1}, {1, 2}]
+        assert overlapping_modularity(G, cover) == pytest.approx(-25 / 288)
+
+    def test_multigraph(self):
+        # Round-tripping a simple graph through MultiGraph gives the same
+        # EQ; adding a parallel edge then changes the value, confirming
+        # parallel edges contribute to both the null-model and the
+        # overlap-discounted edge sums.
+        G = nx.barbell_graph(3, 0)
+        H = nx.MultiGraph(G)
+        cover = [{0, 1, 2, 3}, {2, 3, 4, 5}]  # bridge nodes 2, 3 overlap
+
+        assert overlapping_modularity(H, cover) == pytest.approx(
+            overlapping_modularity(G, cover)
+        )
+
+        H.add_edge(0, 1)  # parallel edge in H, no equivalent in G
+        assert overlapping_modularity(H, cover) != pytest.approx(
+            overlapping_modularity(G, cover)
+        )
 
 
 def test_inter_community_edges_with_digraphs():
