@@ -141,3 +141,29 @@ def test_rich_club_leq_3_nodes_normalized():
 #    T = nx.balanced_tree(2,10)
 #    rcNorm = nx.richclub.rich_club_coefficient(T,Q=2)
 #    assert_true(rcNorm[0] ==1.0 and rcNorm[1] < 0.9 and rcNorm[2] < 0.9)
+
+
+def test_rich_club_normalized_zero_division():
+    """Test that normalized rich club returns NaN when randomized graph has
+    zero rich club coefficient for a given degree k.
+
+    See GitHub issue #8485.
+    """
+    import math
+
+    # A complete bipartite graph K_{2,3} - this graph structure can produce
+    # rcran[k]==0 for certain random seeds when the randomized graph has
+    # no edges among nodes with degree > k
+    G = nx.Graph()
+    G.add_edges_from([(0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4)])
+
+    # Seed 2 and 7 produce rcran[2]==0 which would cause ZeroDivisionError
+    rc = nx.rich_club_coefficient(G, normalized=True, Q=20, seed=2)
+    assert 0 in rc
+    assert 1 in rc
+    assert 2 in rc
+    # When rcran[2]==0, result should be NaN
+    assert math.isnan(rc[2])
+
+    rc = nx.rich_club_coefficient(G, normalized=True, Q=20, seed=7)
+    assert math.isnan(rc[2])
