@@ -78,3 +78,5 @@ Spectrum
    bethe_hessian_spectrum
    normalized_laplacian_spectrum
    modularity_spectrum
+   magnetic_spectrum
+   normalized_magnetic_spectrum
