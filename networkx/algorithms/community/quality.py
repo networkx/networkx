@@ -280,11 +280,7 @@ def _cpm_delta_partial_eval_remove(
 
     """
 
-    if G.is_directed():
-        dir_factor = 2
-
-    else:
-        dir_factor = 1
+    dir_factor = 2 if G.is_directed() else 1
 
     A_prime = community - {node}
 
@@ -310,11 +306,7 @@ def _cpm_delta_partial_eval_add(
 
     for more details.
     """
-    if G.is_directed():
-        dir_factor = 2
-
-    else:
-        dir_factor = 1
+    dir_factor = 2 if G.is_directed() else 1
 
     n_B = sum(wt for u, wt in G.nodes(data=node_weight) if u in community)
 
