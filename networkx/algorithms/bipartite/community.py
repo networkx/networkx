@@ -385,8 +385,16 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
 
     # Start with every node in its own community.
     labels = {v: i for i, v in enumerate(G)}
+    # Dense strength tables: every active community label has an entry
+    # in both ``label_strength_red`` and ``label_strength_blue``, with 0
+    # on the side that has no members. The invariant
+    # ``members.keys() == label_strength_red.keys() == label_strength_blue.keys()``
+    # is maintained jointly through stage 1 label moves and stage 2
+    # merges, so every read can use direct subscript access.
     label_strength_red = {labels[v]: strength[v] for v in red}
+    label_strength_red.update({labels[v]: 0 for v in blue})
     label_strength_blue = {labels[v]: strength[v] for v in blue}
+    label_strength_blue.update({labels[v]: 0 for v in red})
     # Reverse index: nodes carrying each label. Avoids O(N) scans of
     # ``labels`` when stage 2 needs to find every member of a community
     # being merged, and lets stage 1 incrementally maintain the picture.
@@ -415,7 +423,7 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
 
         current = labels[x]
         current_score = neighbor_weight.get(current, 0) - (
-            y_x * opposite_strength.get(current, 0) / M
+            y_x * opposite_strength[current] / M
         )
 
         # Find the best non-current label, breaking ties uniformly at
@@ -427,7 +435,7 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
         for g, n_xg in neighbor_weight.items():
             if g == current:
                 continue
-            score = n_xg - y_x * opposite_strength.get(g, 0) / M
+            score = n_xg - y_x * opposite_strength[g] / M
             if score > best_score:
                 best_score = score
                 best = g
@@ -470,13 +478,15 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
         """
         node_strength = strength[x]
         self_table[old] -= node_strength
-        if self_table[old] <= 0:
-            del self_table[old]
-        self_table[new] = self_table.get(new, 0) + node_strength
+        self_table[new] += node_strength
         labels[x] = new
         members[old].remove(x)
         if not members[old]:
+            # Community died: drop it from every bookkeeping table to
+            # preserve the dense-key invariant.
             del members[old]
+            del label_strength_red[old]
+            del label_strength_blue[old]
         members[new].add(x)
 
         for v, edge_data in G[x].items():
@@ -516,9 +526,7 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
 
     def _merge_strength(table, dst, src):
         """Move ``src``'s strength into ``dst``, dropping ``src``."""
-        val = table.pop(src, 0)
-        if val:
-            table[dst] = table.get(dst, 0) + val
+        table[dst] += table.pop(src)
 
     def _stage2():
         """Perform one mutual-best merge with positive ΔQ. Return True if merged.
@@ -534,9 +542,10 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
 
         best_partner = {}
         for (a, b), e in inter.items():
-            cross = label_strength_red.get(a, 0) * label_strength_blue.get(
-                b, 0
-            ) + label_strength_red.get(b, 0) * label_strength_blue.get(a, 0)
+            cross = (
+                label_strength_red[a] * label_strength_blue[b]
+                + label_strength_red[b] * label_strength_blue[a]
+            )
             delta = e / M - cross / (M * M)
             if a not in best_partner or delta > best_partner[a][0]:
                 best_partner[a] = (delta, b)
