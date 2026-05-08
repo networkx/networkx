@@ -383,28 +383,31 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
     if M == 0:
         return [{n} for n in G]
 
+    # Bookkeeping objects, all mutated in place during stages 1 and 2:
+    #
+    #   labels[node]                  : integer community label of `node`.
+    #   members[label]                : set of nodes carrying `label`.
+    #   label_strength_red[label]     : sum of red strengths in community.
+    #   label_strength_blue[label]    : sum of blue strengths in community.
+    #   inter[(label_a, label_b)]     : total edge weight between two communities.
+    #
+    # ``members``, ``label_strength_red``, and ``label_strength_blue`` share
+    # their key set: a community label is added to or removed from all three
+    # together. ``inter`` stays sparse: a key exists only when the two
+    # communities currently share at least one cross edge, so stage 2
+    # enumerates O(|inter|) candidate pairs instead of O(M^2).
+
     # Start with every node in its own community.
     labels = {v: i for i, v in enumerate(G)}
-    # Dense strength tables: every active community label has an entry
-    # in both ``label_strength_red`` and ``label_strength_blue``, with 0
-    # on the side that has no members. The invariant
-    # ``members.keys() == label_strength_red.keys() == label_strength_blue.keys()``
-    # is maintained jointly through stage 1 label moves and stage 2
-    # merges, so every read can use direct subscript access.
     label_strength_red = {labels[v]: strength[v] for v in red}
     label_strength_red.update({labels[v]: 0 for v in blue})
     label_strength_blue = {labels[v]: strength[v] for v in blue}
     label_strength_blue.update({labels[v]: 0 for v in red})
-    # Reverse index: nodes carrying each label. Avoids O(N) scans of
-    # ``labels`` when stage 2 needs to find every member of a community
-    # being merged, and lets stage 1 incrementally maintain the picture.
     members = {labels[v]: {v} for v in G}
 
-    # ``inter[(a, b)]`` (with ``a < b``) is the total weight of edges
-    # whose endpoints carry different labels ``a`` and ``b``. Rebuilding
-    # this from scratch in stage 2 dominates wall time on large graphs,
-    # so we keep it incrementally up to date through stage 1 label
-    # changes and stage 2 merges.
+    # ``inter`` is rebuilt from scratch only here; while the algorithm is
+    # running it is updated incrementally by ``_apply_label_change`` (stage 1)
+    # and the merge step of ``_stage2``.
     inter = defaultdict(float)
     for u, v, wt in G.edges(data=weight, default=1):
         label_u, label_v = labels[u], labels[v]
@@ -412,9 +415,11 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
             inter[(label_u, label_v) if label_u < label_v else (label_v, label_u)] += wt
 
     def _best_label(x, opposite_strength):
-        """Return the label maximizing x's Eq. 2.5 score.
+        """Return the community label maximizing x's Eq. 2.5 score.
 
-        Ties including x's current label keep the current label.
+        ``x`` is a node; ``current``, ``best``, and ``g`` are all
+        community labels (using the paper's notation). Ties including
+        x's current label keep the current label.
         """
         y_x = strength[x]
         neighbor_weight = defaultdict(float)
@@ -470,42 +475,42 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
         (label_strength_red, label_strength_blue, dirty_red, dirty_blue),
     )
 
-    def _apply_label_change(x, old, new, self_table, other_dirty):
-        """Bookkeeping for a single ``labels[x]: old -> new`` transition.
+    def _apply_label_change(x, old_label, new_label, self_table, other_dirty):
+        """Bookkeeping for a single ``labels[x]: old_label -> new_label`` transition.
 
-        Walks ``x``'s edges exactly once to update ``inter`` and mark
-        the affected opposite-side neighbors dirty.
+        ``x`` is a node; ``old_label`` and ``new_label`` are community
+        labels. Walks ``x``'s edges exactly once to update ``inter`` and
+        mark the affected opposite-side neighbors dirty.
         """
         node_strength = strength[x]
-        self_table[old] -= node_strength
-        self_table[new] += node_strength
-        labels[x] = new
-        members[old].remove(x)
-        if not members[old]:
-            # Community died: drop it from every bookkeeping table to
-            # preserve the dense-key invariant.
-            del members[old]
-            del label_strength_red[old]
-            del label_strength_blue[old]
-        members[new].add(x)
+        self_table[old_label] -= node_strength
+        self_table[new_label] += node_strength
+        labels[x] = new_label
+        members[old_label].remove(x)
+        if not members[old_label]:
+            # Community empty: drop it from every bookkeeping dict
+            del members[old_label]
+            del label_strength_red[old_label]
+            del label_strength_blue[old_label]
+        members[new_label].add(x)
 
         for v, edge_data in G[x].items():
             wt = edge_data.get(weight, 1)
             neighbor_label = labels[v]
-            if old != neighbor_label:
+            if old_label != neighbor_label:
                 key = (
-                    (old, neighbor_label)
-                    if old < neighbor_label
-                    else (neighbor_label, old)
+                    (old_label, neighbor_label)
+                    if old_label < neighbor_label
+                    else (neighbor_label, old_label)
                 )
                 inter[key] -= wt
                 if inter[key] <= 0:
                     del inter[key]
-            if new != neighbor_label:
+            if new_label != neighbor_label:
                 key = (
-                    (new, neighbor_label)
-                    if new < neighbor_label
-                    else (neighbor_label, new)
+                    (new_label, neighbor_label)
+                    if new_label < neighbor_label
+                    else (neighbor_label, new_label)
                 )
                 inter[key] += wt
             other_dirty.add(v)
@@ -519,14 +524,20 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
                 self_dirty.clear()
                 seed.shuffle(todo)
                 for x in todo:
-                    old = labels[x]
-                    new = _best_label(x, opposite_strength)
-                    if new != old:
-                        _apply_label_change(x, old, new, self_table, other_dirty)
+                    old_label = labels[x]
+                    new_label = _best_label(x, opposite_strength)
+                    if new_label != old_label:
+                        _apply_label_change(
+                            x, old_label, new_label, self_table, other_dirty
+                        )
 
-    def _merge_strength(table, dst, src):
-        """Move ``src``'s strength into ``dst``, dropping ``src``."""
-        table[dst] += table.pop(src)
+    def _merge_strength(table, keep_label, drop_label):
+        """Move ``drop_label``'s strength into ``keep_label`` and drop it.
+
+        Both arguments are community labels; ``table`` is one of the two
+        ``label_strength_*`` dicts.
+        """
+        table[keep_label] += table.pop(drop_label)
 
     def _stage2():
         """Perform one mutual-best merge with positive ΔQ. Return True if merged.
@@ -534,54 +545,67 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
         Modules with no inter-module edge cannot have a beneficial merge:
         ΔQ_B = e_AB/M - (k_A·d_B + k_B·d_A)/M², and the cross term is
         always non-negative, so e_AB == 0 forces ΔQ_B ≤ 0. We therefore
-        enumerate only the (a, b) pairs in ``inter`` -- at most O(E) and
-        typically far less than O(M²).
+        enumerate only the (label_a, label_b) pairs in ``inter`` -- at
+        most O(E) and typically far less than O(M²).
         """
         if not inter:
             return False
 
+        # For each community label, record its best merge partner (the
+        # label whose merger gives the largest ΔQ_B) by scanning every
+        # cross-edge pair once.
         best_partner = {}
-        for (a, b), e in inter.items():
+        for (label_a, label_b), e in inter.items():
             cross = (
-                label_strength_red[a] * label_strength_blue[b]
-                + label_strength_red[b] * label_strength_blue[a]
+                label_strength_red[label_a] * label_strength_blue[label_b]
+                + label_strength_red[label_b] * label_strength_blue[label_a]
             )
             delta = e / M - cross / (M * M)
-            if a not in best_partner or delta > best_partner[a][0]:
-                best_partner[a] = (delta, b)
-            if b not in best_partner or delta > best_partner[b][0]:
-                best_partner[b] = (delta, a)
+            if label_a not in best_partner or delta > best_partner[label_a][0]:
+                best_partner[label_a] = (delta, label_b)
+            if label_b not in best_partner or delta > best_partner[label_b][0]:
+                best_partner[label_b] = (delta, label_a)
 
-        for a in sorted(best_partner):
-            best_delta, partner = best_partner[a]
+        # Find a mutually-best pair with positive ΔQ_B. The first such
+        # pair (in sorted-label order, for determinism) is merged:
+        # ``drop_label`` is absorbed into ``keep_label``.
+        for keep_label in sorted(best_partner):
+            best_delta, drop_label = best_partner[keep_label]
             if best_delta <= 0:
                 continue
-            _, back_partner = best_partner[partner]
-            if back_partner == a:
-                # Merge ``partner`` into ``a``. Use the reverse index to
-                # enumerate the community in O(|community|) instead of
-                # scanning all labels.
-                for node in members[partner]:
-                    labels[node] = a
+            if best_partner[drop_label][1] == keep_label:
+                # Use the reverse index to relabel the absorbed
+                # community in O(|community|) instead of scanning all
+                # labels.
+                for node in members[drop_label]:
+                    labels[node] = keep_label
                     if node in red:
                         dirty_red.add(node)
                         dirty_blue.update(G[node])
                     else:
                         dirty_blue.add(node)
                         dirty_red.update(G[node])
-                members[a].update(members.pop(partner))
-                _merge_strength(label_strength_red, a, partner)
-                _merge_strength(label_strength_blue, a, partner)
+                members[keep_label].update(members.pop(drop_label))
+                _merge_strength(label_strength_red, keep_label, drop_label)
+                _merge_strength(label_strength_blue, keep_label, drop_label)
 
-                # Patch ``inter``: edges between ``a`` and ``partner`` are
-                # now intra-module; every other ``partner`` cross-edge
-                # becomes an ``a`` cross-edge.
-                inter.pop((a, partner) if a < partner else (partner, a), None)
-                partner_edges = [k for k in inter if partner in k]
-                for key in partner_edges:
-                    other = key[1] if key[0] == partner else key[0]
+                # Patch ``inter``: the (keep_label, drop_label) edges
+                # are now intra-community; every other drop_label
+                # cross-edge becomes a keep_label cross-edge.
+                del inter[
+                    (keep_label, drop_label)
+                    if keep_label < drop_label
+                    else (drop_label, keep_label)
+                ]
+                drop_edges = [k for k in inter if drop_label in k]
+                for key in drop_edges:
+                    other_label = key[1] if key[0] == drop_label else key[0]
                     cross_weight = inter.pop(key)
-                    new_key = (a, other) if a < other else (other, a)
+                    new_key = (
+                        (keep_label, other_label)
+                        if keep_label < other_label
+                        else (other_label, keep_label)
+                    )
                     inter[new_key] += cross_weight
                 return True
         return False
