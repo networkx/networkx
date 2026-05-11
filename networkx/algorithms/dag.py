@@ -215,9 +215,7 @@ def dag_antichain_width(G):
     B.add_nodes_from(left, bipartite=0)
     B.add_nodes_from(right, bipartite=1)
 
-    B.add_edges_from(
-        (("L", u), ("R", v)) for u, v in transitive_closure.edges()
-    )
+    B.add_edges_from((("L", u), ("R", v)) for u, v in transitive_closure.edges())
 
     matching = nx.bipartite.maximum_matching(B, top_nodes=left)
     return len(nodes) - len(matching) // 2
