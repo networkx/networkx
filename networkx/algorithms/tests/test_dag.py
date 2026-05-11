@@ -470,6 +470,34 @@ class TestDAG:
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         pytest.raises(nx.NetworkXNotImplemented, transitive_reduction, G)
 
+    def test_dag_antichain_width(self):
+        dag_antichain_width = nx.algorithms.dag.dag_antichain_width
+
+        G = nx.DiGraph()
+        assert dag_antichain_width(G) == 0
+
+        G.add_nodes_from([0, 1, 2])
+        assert dag_antichain_width(G) == 3
+
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        assert dag_antichain_width(G) == 1
+
+        G = nx.DiGraph([(1, 2), (1, 3), (2, 4), (3, 4)])
+        assert dag_antichain_width(G) == 2
+        assert nx.dag_antichain_width(G) == 2
+
+        G = nx.DiGraph([(1, 3), (2, 3), (3, 4), (3, 5)])
+        assert dag_antichain_width(G) == 2
+
+    def test_dag_antichain_width_exceptions(self):
+        dag_antichain_width = nx.algorithms.dag.dag_antichain_width
+
+        G = nx.Graph([(1, 2), (2, 3)])
+        pytest.raises(nx.NetworkXNotImplemented, dag_antichain_width, G)
+
+        G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
+        pytest.raises(nx.NetworkXUnfeasible, dag_antichain_width, G)
+
     def _check_antichains(self, solution, result):
         sol = [frozenset(a) for a in solution]
         res = [frozenset(a) for a in result]
