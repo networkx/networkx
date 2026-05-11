@@ -33,12 +33,21 @@ with zipfile.ZipFile(Path.cwd() / "football.zip") as zf:  # zipfile object
 gml = gml.split("\n")[1:]
 G = nx.parse_gml(gml)  # parse gml data
 
+# Extract the conference to color the nodes
+conf = [c for _, c in G.nodes(data="value")]
+
 print(txt)
 # print degree for each team - number of games
 for n, d in G.degree():
     print(f"{n:20} {d:2}")
 
-options = {"node_color": "black", "node_size": 50, "linewidths": 0, "width": 0.1}
+options = {
+    "node_color": conf,
+    "node_size": 50,
+    "linewidths": 0,
+    "width": 0.1,
+    "cmap": plt.cm.tab20,  # Categorical colormap with 20 categories
+}
 
 pos = nx.spring_layout(G, seed=1969)  # Seed for reproducible layout
 nx.draw(G, pos, **options)
