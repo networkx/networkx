@@ -33,22 +33,43 @@ with zipfile.ZipFile(Path.cwd() / "football.zip") as zf:  # zipfile object
 gml = gml.split("\n")[1:]
 G = nx.parse_gml(gml)  # parse gml data
 
-# Extract the conference to color the nodes
-conf = [c for _, c in G.nodes(data="value")]
-
 print(txt)
 # print degree for each team - number of games
 for n, d in G.degree():
     print(f"{n:20} {d:2}")
 
-options = {
-    "node_color": conf,
-    "node_size": 50,
-    "linewidths": 0,
-    "width": 0.1,
-    "cmap": plt.cm.tab20,  # Categorical colormap with 20 categories
-}
+# Extract conference data from the text
+conf_data = txt.split("\n\n")[1].split("\n")
+
+# Color nodes by primary color of conference champions (from Wikipedia)
+# fmt: off
+champ_clrs = [
+    "#782F40", "#F47321", "#00274C", "#841617", "#FDB913", "#AE9142", "#00B140",
+    "#1E4D2B", "#4b2e83", "#0021A5", "#343636", "#B1B3B3"
+]
+# fmt: on
+conf_mapping = {}
+for line, clr in zip(conf_data, champ_clrs):
+    conf_key, conf_name = line.split("=")
+    conf_mapping[int(conf_key)] = {"name": conf_name.strip(), "color": clr}
 
 pos = nx.spring_layout(G, seed=1969)  # Seed for reproducible layout
-nx.draw(G, pos, **options)
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Draw nodes for each conference separately to populate handles for a legend
+opts = {"node_size": 50, "linewidths": 0}
+for conf, data in conf_mapping.items():
+    nodes = [n for n, c in G.nodes(data="value") if c == conf]
+    label = data["name"]
+    color = data["color"]
+    nx.draw_networkx_nodes(
+        G, pos=pos, ax=ax, nodelist=nodes, label=label, node_color=color, **opts
+    )
+ax.legend(loc=8, ncols=6, bbox_to_anchor=(0.5, -0.15))
+
+# Draw edges
+nx.draw_networkx_edges(G, pos=pos, ax=ax, width=0.1)
+
+ax.set_axis_off()
+fig.tight_layout()
 plt.show()
