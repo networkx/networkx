@@ -156,3 +156,4 @@ Communities
    :toctree: generated/
 
    modularity
+   lpawb_plus_communities
