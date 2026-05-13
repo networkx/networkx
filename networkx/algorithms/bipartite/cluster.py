@@ -325,14 +325,14 @@ def butterflies(G, nodes=None):
 
     The total number of butterflies is the sum divided by 4:
 
-    >>> bt = bipartite.butterflies(G)
+    >>> bt = nx.bipartite.butterflies(G)
     >>> sum(bt.values()) // 4
     1
 
     K_{3,3} contains nine butterflies; every node participates in six:
 
     >>> G2 = nx.complete_bipartite_graph(3, 3)
-    >>> bt2 = bipartite.butterflies(G2)
+    >>> bt2 = nx.bipartite.butterflies(G2)
     >>> sum(bt2.values()) // 4
     9
 
@@ -385,7 +385,7 @@ def butterflies(G, nodes=None):
        https://doi.org/10.1103/PhysRevE.72.056127
 
     .. [4] Robins, G. and M. Alexander (2004). Small worlds among
-       interlocking directors: Network structure and distance in bipartite graphs.  
+       interlocking directors: Network structure and distance in bipartite graphs.
        *Computational & Mathematical Organization Theory* 10(1), 69–94.
        interlocking directors: Network structure and distance in bipartite graphs.
        *Computational & Mathematical Organization Theory* 10(1), 69–94.
