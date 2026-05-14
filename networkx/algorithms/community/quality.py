@@ -3,6 +3,7 @@ communities).
 
 """
 
+from collections import defaultdict
 from itertools import combinations
 
 import networkx as nx
@@ -261,7 +262,7 @@ def modularity(G, communities, weight="weight", resolution=1):
 
 @not_implemented_for("directed")
 @nx._dispatchable(edge_attrs="weight")
-def overlapping_modularity(G, communities, weight="weight", resolution=1):
+def overlapping_modularity(G, communities, *, weight="weight", resolution=1):
     r"""Returns Shen et al.'s extended modularity for an overlapping cover.
 
     Standard modularity assumes each node belongs to exactly one
@@ -306,17 +307,20 @@ def overlapping_modularity(G, communities, weight="weight", resolution=1):
 
     communities : iterable of sets of nodes
         A cover of `G`'s nodes: every node must appear in at least one
-        set, but sets may overlap. Accepts the output of
-        :func:`~networkx.algorithms.community.kclique.k_clique_communities`
-        directly.
+        set, but sets may overlap. Accepts the output of any NetworkX
+        overlapping community-detection algorithm such as
+        :func:`~networkx.algorithms.community.kclique.k_clique_communities`.
 
     weight : string or None, optional (default="weight")
         Edge attribute holding the numerical edge weight. If None, or if
         an edge does not have the attribute, that edge has weight 1.
 
     resolution : float, optional (default=1)
-        Resolution parameter $\gamma$. Values smaller than 1 favor larger
-        communities; values greater than 1 favor smaller communities.
+        Resolution parameter $\gamma$. As in standard modularity, values
+        smaller than 1 favor larger communities and values greater than
+        1 favor smaller communities. The degree of overlap in the cover
+        is independent of $\gamma$, since $\gamma$ rescales only the
+        null-model term.
 
     Returns
     -------
@@ -374,11 +378,11 @@ def overlapping_modularity(G, communities, weight="weight", resolution=1):
         raise nx.NetworkXError("`communities` is not a valid cover of the nodes of G")
 
     # Membership count O_v for each node
-    membership = {}
+    membership = defaultdict(int)
     for community in communities:
         for node in community:
             if node in G:
-                membership[node] = membership.get(node, 0) + 1
+                membership[node] += 1
 
     degree = dict(G.degree(weight=weight))
     deg_sum = sum(degree.values())  # equals 2m for undirected
