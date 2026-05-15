@@ -22,7 +22,7 @@ jobs:
       - name: List contents of wheel
         run: pixi run -e build-release python -m zipfile --list dist/networkx-*.whl
       - name: Upload nightly wheel
-        uses: scientific-python/upload-nightly-action@5748273c71e2d8d3a61f3a11a16421c8954f9ecf # 0.6.3
+        uses: scientific-python/upload-nightly-action@e76cfec8a4611fd02808a801b0ff5a7d7c1b2d99 # 0.6.4
         with:
           anaconda_nightly_upload_token: ${{ secrets.ANACONDA_NIGHTLY }}
           artifacts_path: dist/

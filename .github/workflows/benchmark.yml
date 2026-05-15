@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/github-script@v8
+      - uses: actions/github-script@v9
         name: Check for benchmark label and new commit
         id: check
         with:
