@@ -1,10 +1,10 @@
 import pytest
 
 import networkx as nx
-
-comm = nx.community
 from networkx.algorithms.community import leiden_communities, leiden_partitions
 from networkx.algorithms.community.quality import constant_potts_model, modularity
+
+comm = nx.community
 
 
 def _equivalent_partitions(P1, P2):
@@ -20,12 +20,15 @@ def G(request):
     G.add_edges_from(LFR_graph.edges())  # duplicate edges if multigraph
     return G
 
+
 @pytest.fixture
 def singletons(G):
     return [{node} for node in G]
 
+
 def _metrics():
     yield from ["cpm", "modularity"]
+
 
 def _quality():
     def cpm(G, P):
@@ -65,9 +68,7 @@ def test_empty_graph():
 @pytest.mark.parametrize("metric, Q_func, gamma", _quality())
 def test_overall_increase(G, singletons, metric, Q_func, gamma):
     Q = Q_func(G, singletons)
-    new_P = comm.leiden_communities(
-        G, metric=metric, resolution=gamma, seed=42
-    )
+    new_P = comm.leiden_communities(G, metric=metric, resolution=gamma, seed=42)
     new_Q = Q_func(G, new_P)
     assert new_Q > Q
 
@@ -77,9 +78,7 @@ def test_coverage_up_with_leiden_metrics(G, singletons, metric):
     # check that `partition_quality` coverage increases for all metrics
     # even though they not optimizing coverage. Also that coverage > 45%
     for H in [G, nx.MultiGraph(G)]:
-        partition = comm.leiden_communities(
-            H, metric=metric, resolution=0.05, seed=10
-        )
+        partition = comm.leiden_communities(H, metric=metric, resolution=0.05, seed=10)
         coverage = comm.partition_quality(H, partition)[0]  # 0th return is coverage
         assert coverage >= 0.45
         assert coverage > comm.partition_quality(H, singletons)[0]
@@ -128,15 +127,12 @@ def test_LFR_communities_across_algos():
     # That works for all except the Leiden modularity variant.
     C = nx.get_node_attributes(G, "community").values()
     LFR_comm = {frozenset(c) for c in C}  # remove duplicate entries
-    print(f"{set([len(c) for c in LFR_comm])=}")
 
     C = comm.louvain_communities(G, resolution=0.5, seed=10)
     louvain_comm = {frozenset(c) for c in C}
-    print(f"{set([len(c) for c in louvain_comm])=}")
 
     C = comm.leiden_communities(G, metric="cpm", resolution=0.0001, seed=10)
     cpm_comm = {frozenset(c) for c in C}
-    print(f"{set([len(c) for c in cpm_comm])=}")
 
     C = comm.leiden_communities(G, metric="modularity", resolution=0.01, seed=3)
     mod_comm = {frozenset(c) for c in C}
@@ -219,11 +215,11 @@ def test_expected_stable_across_code_changes_cpm():
     ]
     assert _equivalent_partitions(P, P_expected)
 
+
 def test_expected_stable_across_code_changes_qmod():
     qmod = "modularity"
     G = nx.karate_club_graph()
     P = leiden_communities(G, resolution=2, seed=10, metric=qmod)
-    print(f"{P}=")
     P_expected = [
         {0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21},
         {16, 4, 5, 6, 10},
@@ -233,10 +229,7 @@ def test_expected_stable_across_code_changes_qmod():
     assert _equivalent_partitions(P, P_expected)
 
     G = nx.karate_club_graph()
-    P = leiden_communities(
-        G, weight=None, resolution=2, seed=10, metric=qmod
-    )
-    print(f"{P}=")
+    P = leiden_communities(G, weight=None, resolution=2, seed=10, metric=qmod)
     P_expected = [
         {0, 1, 2, 3, 7, 9, 11, 12, 13, 17, 19, 21},
         {16, 4, 5, 6, 10},
@@ -270,22 +263,16 @@ def test_connected_communities_no_weights():
 def test_directed_graphs_modularity(metric):
     G = nx.gn_graph(n=100, seed=11)
     assert nx.is_directed(G)
-    comms = leiden_communities(
-        G, metric=metric, weight=None, resolution=0.2, seed=11
-    )
+    comms = leiden_communities(G, metric=metric, weight=None, resolution=0.2, seed=11)
 
 
 def test_bipartite_graphs_modularity():
     G = nx.bipartite.random_graph(10, 20, 0.2, seed=11)
     with pytest.raises(nx.NetworkXError):
-        leiden_communities(
-            G, metric="barber_modularity", resolution=0.2, seed=1
-        )
+        leiden_communities(G, metric="barber_modularity", resolution=0.2, seed=1)
 
 
 def test_bipartite_graphs_modularity_directed():
     G = nx.bipartite.random_graph(10, 20, 0.2, directed=True, seed=11)
     with pytest.raises(nx.NetworkXError):
-        leiden_communities(
-            G, metric="barber_modularity", resolution=0.2, seed=1
-        )
+        leiden_communities(G, metric="barber_modularity", resolution=0.2, seed=1)
