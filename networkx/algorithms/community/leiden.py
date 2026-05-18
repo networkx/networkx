@@ -130,7 +130,9 @@ def leiden_communities(
     :any:`louvain_communities`
     """
 
-    partitions = leiden_partitions(G, weight, resolution, seed, metric, theta)
+    partitions = leiden_partitions(
+        G, weight=weight, resolution=resolution, seed=seed, metric=metric, theta=theta
+    )
 
     if max_level is not None:
         if max_level <= 0:
