@@ -78,7 +78,8 @@ def leiden_communities(
         used as a weight. If None then each edge has weight 1.
     metric : str (default="cpm")
         The name of the partition quality metric that the algorithm optimises.
-        Allowed names are "cpm" and "modularity".
+        Allowed names are "cpm" and "modularity" for constant potts model and
+        modularity respectively.
     resolution : float, optional (default=1)
         Resolution should be a positive number indicating the coarseness of
         the communities produced. With a lower resolution, larger communities
