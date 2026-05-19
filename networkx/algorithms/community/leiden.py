@@ -104,11 +104,19 @@ def leiden_communities(
     --------
 
     >>> G = nx.barbell_graph(3, 4)
-    >>> cpm_comm = nx.community.leiden_communities(G, resolution=0.5, seed=62537129)
+    >>> cpm_comm = nx.community.leiden_communities(G, resolution=0.2, seed=62537129)
     >>> len(cpm_comm)
     3
-    >>> sorted(sorted(c) for c in cpm_comm, key=len)
-    [{0, 1, 2}, {3, 4, 5, 6}, {7, 8, 9}]
+    >>> sorted(sorted(c) for c in cpm_comm)
+    [[0, 1, 2], [3, 4, 5, 6], [7, 8, 9]]
+
+    Higher resolution produces smaller sub-communities:
+
+    >>> cpm_comm = nx.community.leiden_communities(G, resolution=0.4, seed=62537129)
+    >>> len(cpm_comm)
+    4
+    >>> sorted(sorted(c) for c in cpm_comm)
+    [[0, 1, 2], [3, 4], [5, 6], [7, 8, 9]]
 
     Notes
     -----
