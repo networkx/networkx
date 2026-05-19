@@ -33,6 +33,8 @@ def leiden_communities(
     the community structure based on metric optimization. The metric can be
     modularity or Constant Potts Model (CPM). Leiden ensures that the communities
     are well connected whereas Louvain does not. See :any:`louvain_communities`.
+    The functions which comppute those two metrics are :any:`modularity` and
+    :any:`constant_potts_model`
 
     The algorithm works in 3 phases. On the first phase, starting with a partition
     of all singleton nodes, and a randomly shuffled queue of all nodes, each node
@@ -79,7 +81,8 @@ def leiden_communities(
     metric : str (default="cpm")
         The name of the partition quality metric that the algorithm optimises.
         Allowed names are "cpm" and "modularity" for constant potts model and
-        modularity respectively.
+        modularity respectively. See functions :any:`modularity` and
+        :any:`constant_potts_model` for more info.
     resolution : float, optional (default=1)
         Resolution should be a positive number indicating the coarseness of
         the communities produced. With a lower resolution, larger communities
@@ -137,6 +140,8 @@ def leiden_communities(
     --------
     leiden_partitions
     :any:`louvain_communities`
+    :any:`modularity`
+    :any:`constant_potts_model`
     """
 
     partitions = leiden_partitions(
