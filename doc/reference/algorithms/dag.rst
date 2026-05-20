@@ -13,7 +13,7 @@ Directed Acyclic Graphs
    all_topological_sorts
    lexicographical_topological_sort
    is_directed_acyclic_graph
-   dag_antichain_width
+   antichain_width
    is_aperiodic
    transitive_closure
    transitive_closure_dag
