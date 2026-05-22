@@ -33,7 +33,7 @@ def leiden_communities(
     the community structure based on metric optimization. The metric can be
     modularity or Constant Potts Model (CPM). Leiden ensures that the communities
     are well connected whereas Louvain does not. See :any:`louvain_communities`.
-    The functions which comppute those two metrics are :any:`modularity` and
+    The functions which compute those two metrics are :any:`modularity` and
     :any:`constant_potts_model`
 
     The algorithm works in 3 phases. On the first phase, starting with a partition
@@ -69,8 +69,8 @@ def leiden_communities(
     a new partition of the original network. We can reapply the 3 phases
     to create bigger aggregations with increased metric value. At each level
     the network is smaller with fewer nodes and edges, so convergence is guaranteed.
-    The three phases are repeatedly applied until no modularity
-    gain is achieved or `max_level` applications have been performed.
+    The three phases are repeatedly applied until no gain is achieved or
+    `max_level` applications have been performed.
 
     Parameters
     ----------
@@ -442,7 +442,9 @@ def leiden_partitions(
 
         raise nx.NetworkXError("barber_modularity not implemented for leiden")
     else:
-        raise nx.NetworkXError(f"{metric} not implemented for DiGraph")
+        raise nx.NetworkXError(
+            f'leiden only supports metrics "cpm" and "modularity". Got: {metric}'
+        )
 
     # The setup phase has ended, the main algorithm now begins.
     Q = metric(graph, partition)
