@@ -248,6 +248,7 @@ def robins_alexander_clustering(G):
     See Also
     --------
     butterflies : per-node butterfly (four-cycle) counts
+    latapy_clustering
     networkx.algorithms.cluster.square_clustering
 
     References
@@ -294,7 +295,7 @@ def butterflies(G, nodes=None):
     ----------
     G : NetworkX graph
         An undirected bipartite graph.
-    nodes : container of nodes, optional (default: all nodes)
+    nodes : iterable of nodes, optional (default: all nodes)
         Return butterfly counts only for these nodes.  The computation
         always uses the full graph; ``nodes`` only filters the returned
         dictionary (same convention as :func:`~networkx.triangles`).
@@ -315,13 +316,9 @@ def butterflies(G, nodes=None):
     A single K_{2,2} contains exactly one butterfly, and each of its
     four nodes participates in that butterfly:
 
-    >>> from networkx.algorithms import bipartite
-    >>> G = nx.Graph()
-    >>> G.add_nodes_from([1, 2], bipartite=0)
-    >>> G.add_nodes_from([3, 4], bipartite=1)
-    >>> G.add_edges_from([(1, 3), (1, 4), (2, 3), (2, 4)])
-    >>> bipartite.butterflies(G)
-    {1: 1, 2: 1, 3: 1, 4: 1}
+    >>> G = nx.complete_bipartite_graph(2, 2)
+    >>> nx.bipartite.butterflies(G)
+    {0: 1, 1: 1, 2: 1, 3: 1}
 
     The total number of butterflies is the sum divided by 4:
 
@@ -338,22 +335,22 @@ def butterflies(G, nodes=None):
 
     Nodes not in any butterfly receive count zero:
 
-    >>> G3 = nx.Graph()
-    >>> G3.add_nodes_from([0, 1], bipartite=0)
-    >>> G3.add_nodes_from([2, 3], bipartite=1)
-    >>> G3.add_edges_from([(0, 2), (0, 3)])  # node 1 has no edges
-    >>> bipartite.butterflies(G3)[1]
-    0
+    >>> G = nx.complete_bipartite_graph(2, 2)
+    >>> G.add_edge(0, 5)
+    >>> nx.bipartite.butterflies(G)
+    {0: 1, 1: 1, 2: 1, 3: 1, 5: 0}
 
     Notes
     -----
-    The wedge enumeration follows the vertex-priority approach of BFC-VP
-    (Wang et al. [2]_): nodes are ranked by degree, neighbor lists are
+    This algorithm uses wedge enumerate to count butterflies.
+    The wedge enumeration method uses the vertex-priority of BFC-VP [2]_ :
+    nodes are ranked by degree, neighbor lists are
     pre-sorted by ascending rank, and for each start node ``u`` only
     neighbors with lower rank are processed as middle and end nodes,
     with early termination on the sorted lists.  This gives time
     complexity :math:`O\!\bigl(\sum_{(u,v)\in E} \min(d(u), d(v))\bigr)
-    = O(\alpha m)` where :math:`\alpha` is the arboricity and :math:`m`
+    = O(\alpha m)` where :math:`\alpha` is the arboricity, i.e. the minimum
+    number of forests into which $E$ can be partitioned, and :math:`m`
     the number of edges.
 
     The per-node attribution (distributing butterfly credits to start,
@@ -385,8 +382,6 @@ def butterflies(G, nodes=None):
        https://doi.org/10.1103/PhysRevE.72.056127
 
     .. [4] Robins, G. and M. Alexander (2004). Small worlds among
-       interlocking directors: Network structure and distance in bipartite graphs.
-       *Computational & Mathematical Organization Theory* 10(1), 69–94.
        interlocking directors: Network structure and distance in bipartite graphs.
        *Computational & Mathematical Organization Theory* 10(1), 69–94.
        https://doi.org/10.1023/B:CMOT.0000032580.12184.c0
