@@ -659,7 +659,7 @@ def partition_quality(G, partition):
     ----------
     .. [1] Santo Fortunato.
            "Community Detection in Graphs".
-           *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
+           *Physics Reports*, Volume 486, Feb 2010, Issue 3--5 pp. 75--174
            <https://arxiv.org/abs/0906.0612>
     """
 

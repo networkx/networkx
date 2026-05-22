@@ -19,47 +19,58 @@ __all__ = ["leiden_communities", "leiden_partitions"]
 @nx._dispatchable(edge_attrs="weight")
 def leiden_communities(
     G,
+    *,
     weight="weight",
     resolution=1.0,
     max_level=None,
     seed=None,
-    quality_function="cpm",
+    metric="cpm",
     theta=0.01,
 ):
-    r"""Return the best set of communities of `G` using Leiden Community Detection
-    algorithm [1]_.
+    r"""Return best node communities of `G`.
 
-    Leiden Community Detection is an algorithm to extract the community structure
-    of a network based on modularity optimization. It is an improvement upon the
-    Louvain Community Detection algorithm. See :any:`louvain_communities`.
+    This function uses the Leiden Community Detection algorithm [1]_ to estimate
+    the community structure based on metric optimization. The metric can be
+    modularity or Constant Potts Model (CPM). Leiden ensures that the communities
+    are well connected whereas Louvain does not. See :any:`louvain_communities`.
+    The functions which compute those two metrics are :any:`modularity` and
+    :any:`constant_potts_model`
 
-    Unlike the Louvain algorithm, it guarantees that communities are well connected in addition
-    to being faster and uncovering better partitions. [1]_
+    The algorithm works in 3 phases. On the first phase, starting with a partition
+    of all singleton nodes, and a randomly shuffled queue of all nodes, each node
+    in the queue is considered in order and moved to the current community which
+    most increases the metric value. The node can stay in its current community.
+    If it moves, all neighbors of the moved node which are not currently in the
+    queue are added to the end of the queue to be considered for moving in turn.
+    The first phase continues until the queue is empty, resulting in a node
+    partition $P$.
 
-    The algorithm works in 3 phases. On the first phase, it adds the nodes to a queue randomly
-    and assigns every node to be in its own community. For each node it tries to find the
-    maximum positive modularity gain by moving each node to all of its neighbor communities.
-    If a node is moved from its community, it adds to the rear of the queue all neighbors of
-    the node that do not belong to the node’s new community and that are not in the queue.
+    The second phase refines $P$ to obtain $P_{refined}$. Each community in $P$
+    is considered on its own and split into subcommunities using a method closely
+    resembling the first phase. Starting from a subpartition of singleton nodes,
+    and a randomly ordered queue, subcommunities are merged only if both are
+    sufficiently well connected. This is determined randomly using a distribution
+    based on edge weights and controlled by the parameter `theta`. The merging
+    results in a splitting or refinement of the communities in $P$ such that
+    each set in $P_{refined}$ is a subset of one community in $P$. Thus each
+    community in $P$ also represents a community of subcommunities from $P_{refined}$.
 
-    The first phase continues until the queue is empty.
+    The third phase involves creating an aggregate network of community connections.
+    The communities in $P_{refined}$ act as nodes in the new network. Edges exist
+    between communities that have underlying nodes connected to nodes in the other
+    community. The weight of each such edge is the sum of the original graph edge
+    weights for edges between nodes in the two partitions. An initial partition of
+    the new network is provided via $P$ by joining the subcommunities of each
+    community in $P$ into an aggregated community of the new network. Each
+    subcommunity from $P_{refined}$ is a subset of one community in $P$ and thus
+    belongs to one community in the new network.
 
-    The second phase consists in refining the partition $P$ obtained from the first phase. It starts
-    with a singleton partition $P_{refined}$. Then it merges nodes locally in $P_{refined}$ within
-    each community of the partition $P$. Nodes are merged with a community in $P_{refined}$ only if
-    both are sufficiently well connected to their community in $P$. This means that after the
-    refinement phase is concluded, communities in $P$ sometimes will have been split into multiple
-    communities.
-
-    The third phase consists of aggregating the network by building a new network whose nodes are
-    now the communities found in the second phase. However, the non-refined partition is used to create
-    an initial partition for the aggregate network.
-
-    Once this phase is complete it is possible to reapply the first and second phases creating bigger
-    communities with increased modularity.
-
-    The above three phases are executed until no modularity gain is achieved or `max_level` number
-    of iterations have been performed.
+    The result of the 3 phases is a new network (level of aggregation) which encodes
+    a new partition of the original network. We can reapply the 3 phases
+    to create bigger aggregations with increased metric value. At each level
+    the network is smaller with fewer nodes and edges, so convergence is guaranteed.
+    The three phases are repeatedly applied until no gain is achieved or
+    `max_level` applications have been performed.
 
     Parameters
     ----------
@@ -67,49 +78,75 @@ def leiden_communities(
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
+    metric : str (default="cpm")
+        The name of the partition quality metric that the algorithm optimises.
+        Allowed names are "cpm" and "modularity" for constant potts model and
+        modularity respectively. See functions :any:`modularity` and
+        :any:`constant_potts_model` for more info.
     resolution : float, optional (default=1)
-        If resolution is less than 1, the algorithm favors larger communities.
-        Greater than 1 favors smaller communities
+        Resolution should be a positive number indicating the coarseness of
+        the communities produced. With a lower resolution, larger communities
+        are produced. To see the smaller sub-communities, use a higher resolution.
     max_level : int or None, optional (default=None)
         The maximum number of levels (steps of the algorithm) to compute.
-        Must be a positive integer or None. If None, then there is no max
-        level and the threshold parameter determines the stopping condition.
+        Must be a positive integer or None indicating the process is reapplied
+        until no increase in metric is obtained.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-    quality_function : str (default="cpm")
-        The algorithm optimises for a measure of quality. By default
-        the constant_potts_model is used, but this can be changed (e.g.
-        modularity)
     theta : float (default=0.01)
-        Parameter that determines the degree of randomness in the
+        Parameter that determines the degree of randomness in the second phase
         _refine_partition step of the algorithm,
 
     Returns
     -------
     list
-        A list of disjoint sets (partition of `G`). Each set represents one community.
+        A partition of `G` as a list of disjoint sets of nodes. Each set represents
+        one community of nodes and each node of `G` appears in exactly one set.
 
     Examples
     --------
 
+    >>> G = nx.barbell_graph(3, 4)
+    >>> cpm_comm = nx.community.leiden_communities(G, resolution=0.2, seed=62537129)
+    >>> len(cpm_comm)
+    3
+    >>> sorted(sorted(c) for c in cpm_comm)
+    [[0, 1, 2], [3, 4, 5, 6], [7, 8, 9]]
+
+    Higher resolution produces smaller sub-communities:
+
+    >>> cpm_comm = nx.community.leiden_communities(G, resolution=0.4, seed=62537129)
+    >>> len(cpm_comm)
+    4
+    >>> sorted(sorted(c) for c in cpm_comm)
+    [[0, 1, 2], [3, 4], [5, 6], [7, 8, 9]]
+
     Notes
     -----
     The order in which the nodes are considered can affect the final output.
-    In the algorithm the ordering happens using a random shuffle.
+    In the algorithm the ordering happens using a random shuffle controlled by
+    `seed` which also controls the randomness involved in selecting communities
+    to merge during the refining (2nd) stage.
 
     References
     ----------
-    .. [1] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
-       well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
+    .. [1] Traag, V.A., Waltman, L. & van Eck, N.J.
+       From Louvain to Leiden: guaranteeing well-connected communities.
+       Sci Rep 9, 5233 (2019).
+       https://doi.org/10.1038/s41598-019-41695-z
 
     See Also
     --------
     leiden_partitions
     :any:`louvain_communities`
+    :any:`modularity`
+    :any:`constant_potts_model`
     """
 
-    partitions = leiden_partitions(G, weight, resolution, seed, quality_function, theta)
+    partitions = leiden_partitions(
+        G, weight=weight, resolution=resolution, seed=seed, metric=metric, theta=theta
+    )
 
     if max_level is not None:
         if max_level <= 0:
@@ -123,13 +160,14 @@ def leiden_communities(
 @nx._dispatchable(edge_attrs="weight")
 def leiden_partitions(
     G,
+    *,
     weight="weight",
+    metric="cpm",
     resolution=1.0,
     seed=None,
-    quality_function="cpm",
     theta=0.01,
 ):
-    """Yield partitions for each level of Leiden Community Detection (backend required)
+    """Yield partitions at each level of Leiden Community Detection
 
     Leiden Community Detection is an algorithm to extract the community
     structure of a network based on modularity optimization.
@@ -137,9 +175,8 @@ def leiden_partitions(
     The partitions across levels (steps of the algorithm) form a dendrogram
     of communities. A dendrogram is a diagram representing a tree and each
     level represents a partition of the G graph. The top level contains the
-    smallest communities and as you traverse to the bottom of the tree the
-    communities get bigger and the overall modularity increases making
-    the partition better.
+    smallest communities and as you traverse the tree the communities get
+    bigger and the overall partition quality metric increases.
 
     Each level is generated by executing the three phases of the Leiden Community
     Detection algorithm. See :any:`leiden_communities`.
@@ -150,24 +187,33 @@ def leiden_partitions(
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
+    metric : str (default="cpm")
+        The name of the partition quality metric that the algorithm optimises.
+        Allowed names are "cpm" and "modularity".
     resolution : float, optional (default=1)
-        If resolution is less than 1, the algorithm favors larger communities.
-        Greater than 1 favors smaller communities.
+        Resolution should be a positive number indicating the coarseness of
+        the communities produced. With a lower resolution, larger communities
+        are produced. To see the smaller sub-communities, use a higher resolution.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    theta : float (default=0.01)
+        Parameter that determines the degree of randomness in the second phase
+        _refine_partition step of the algorithm,
 
     Yields
     ------
-    list
-        A list of disjoint sets (partition of `G`). Each set represents one community.
-        All communities together contain all the nodes in `G`. The yielded partitions
-        increase modularity with each iteration.
+    list of sets of nodes
+        A partition of `G` as a list of disjoint sets of nodes. Each set represents
+        one community of nodes and each node of `G` appears in exactly one set.
+        The quality metric of the yielded partitions increases with each iteration.
 
     References
     ----------
-    .. [1] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
-       well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
+    .. [1] Traag, V.A., Waltman, L. & van Eck, N.J.
+       From Louvain to Leiden: guaranteeing well-connected communities.
+       Sci Rep 9, 5233 (2019).
+       https://doi.org/10.1038/s41598-019-41695-z
 
     See Also
     --------
@@ -203,10 +249,10 @@ def leiden_partitions(
 
     # The following setup stage depends on the choice of quality
     # function. In particular, this stage must set three things:
-    # 1) set the function quality_function
+    # 1) set the function metric
     # 2) set the corresponding quality_delta function
     # 3) set the specific attributes required to compute the
-    #    quality_function and quality_delta
+    #    metric and quality_delta
 
     # the quality_delta function computes the partial quality delta contributed by
     # adding nodes_to_add to community.
@@ -215,12 +261,12 @@ def leiden_partitions(
     # to compute the overall quality delta from moving node u from A to B we have
     # q_delta = quality_delta({u}, B) - quality_delta({u}, A-{u})
 
-    if quality_function == "cpm":
+    if metric == "cpm":
         # Setup for constant potts model
         node_attributes = ["node_weight"]
         nx.set_node_attributes(graph, 1, name="node_weight")
 
-        quality_function = functools.partial(
+        metric = functools.partial(
             constant_potts_model,
             resolution=resolution,
             node_weight="node_weight",
@@ -259,7 +305,7 @@ def leiden_partitions(
                 )
                 return E - gamma * comm_size * nodes_size
 
-    elif quality_function == "modularity":
+    elif metric == "modularity":
         # Setup for (unipartite) modularity
 
         # the modualrity function throws an zero division error
@@ -274,7 +320,7 @@ def leiden_partitions(
             except ZeroDivisionError:
                 return float("inf")
 
-        quality_function = guarded_modularity
+        metric = guarded_modularity
         if is_directed:
             # Setup for directed modularity
             node_attributes = ["in_degree", "out_degree"]
@@ -334,13 +380,13 @@ def leiden_partitions(
                 )
                 return E_D - gamma * nodes_size * comm_size
 
-    elif quality_function == "barber_modularity":
+    elif metric == "barber_modularity":
         # Setup for undirected bipartite barber modularity (not yet fully implemented)
 
         if is_directed:
             raise nx.NetworkXError("barber_modularity not implemented for DiGraph")
 
-        # quality_function should be defined inline rather than
+        # metric should be defined inline rather than
         # importing nx.bipartite.community.modularity as the
         # function within this algorithm needs to accept the
         # aggregated graphs which are not bipartite and therefore
@@ -349,7 +395,7 @@ def leiden_partitions(
         def barber_modularity():
             return
 
-        quality_function = barber_modularity
+        metric = barber_modularity
 
         node_attributes = ["red_degree", "blue_degree"]
 
@@ -396,10 +442,12 @@ def leiden_partitions(
 
         raise nx.NetworkXError("barber_modularity not implemented for leiden")
     else:
-        raise nx.NetworkXError(f"{quality_function} not implemented for DiGraph")
+        raise nx.NetworkXError(
+            f'leiden only supports metrics "cpm" and "modularity". Got: {metric}'
+        )
 
     # The setup phase has ended, the main algorithm now begins.
-    Q = quality_function(graph, partition)
+    Q = metric(graph, partition)
 
     improvement_made = True
 
@@ -419,7 +467,7 @@ def leiden_partitions(
         P_refined_flat = [comm for P_ref in P_refined for comm in P_ref]
 
         # Stop when overall change in quality is close to zero.
-        Q_new = quality_function(graph, P_refined_flat)
+        Q_new = metric(graph, P_refined_flat)
         improvement_made = (Q_new - Q) > 0.0000001
         Q = Q_new
 
@@ -606,12 +654,12 @@ def _merge_node_subset(
         # one is selected at random, and u is added to that
         # community
         if candidate_comm:
-            # the probability distribution that the new community it drawn
+            # the probability distribution that the new community is drawn
             # from is defined in terms of the quality delta associated
             # with the move to each community.
 
             # If moving u to community C results in a quality delta QC,
-            # the relative frequency withi which C will be chosen is
+            # the relative frequency with which C will be chosen is
             # proportional to
             #
             #       math.exp(QC/theta)
@@ -638,7 +686,7 @@ def _create_aggregate_graph(G, refined_communities_list, node_attributes):
     Generate a new graph based on the partitions of a given graph
 
     node_attributes is a list of attributes that are required for the
-    given choice of quality function. When aggregating a community (set
+    given choice of quality metric. When aggregating a community (set
     of nodes) into a new node of the aggregated graph, the value for
     each attribute is the sum of the constituent nodes.
     """
@@ -701,18 +749,3 @@ def _convert_multigraph(G, weight, is_directed):
         else:
             H.add_edge(u, v, weight=wt)
     return H
-
-
-def _is_valid_refinement(p, ref_p):
-    """
-    helper function useful during debugging, checking whether
-    a refined partition ref_p is a true refinement of a partition p
-    """
-    val = True
-    for c1 in ref_p:
-        for c2 in p:
-            if c1.issubset(c2):
-                break
-        else:
-            val = False
-    return val
