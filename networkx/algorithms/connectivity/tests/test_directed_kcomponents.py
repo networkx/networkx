@@ -18,6 +18,7 @@ References
 """
 
 import pytest
+
 import networkx as nx
 
 # ============================================================
@@ -38,7 +39,7 @@ def _check_weak_connectivity(G, k_comps):
             C = G_undirected.subgraph(component)
             K = nx.node_connectivity(C)
             assert K >= k, (
-                f"Component {component} has connectivity " f"{K} but expected >= {k}"
+                f"Component {component} has connectivity {K} but expected >= {k}"
             )
 
 
@@ -54,7 +55,7 @@ def _check_strong_connectivity(G, k_comps):
             C = G.subgraph(component)
             K = nx.node_connectivity(C)
             assert K >= k, (
-                f"Component {component} has connectivity " f"{K} but expected >= {k}"
+                f"Component {component} has connectivity {K} but expected >= {k}"
             )
 
 
@@ -370,7 +371,7 @@ def test_one_way_edge_breaks_strong_not_weak():
             has_a = any(n in {0, 1, 2} for n in comp)
             has_b = any(n in {3, 4, 5} for n in comp)
             assert not (has_a and has_b), (
-                "Strong components should not merge " "one-way connected groups"
+                "Strong components should not merge one-way connected groups"
             )
 
 
@@ -396,7 +397,7 @@ def test_directed_complete_graph_high_connectivity():
             if all_nodes.issubset(comp):
                 found_all_nodes = True
     assert found_all_nodes, (
-        "All nodes should appear in some k-component " "for complete directed graph"
+        "All nodes should appear in some k-component for complete directed graph"
     )
 
 
@@ -449,7 +450,7 @@ def test_weak_k_components_nodes_subset_of_graph():
     for k, components in result.items():
         for comp in components:
             assert comp.issubset(graph_nodes), (
-                f"Component contains nodes not in graph: " f"{comp - graph_nodes}"
+                f"Component contains nodes not in graph: {comp - graph_nodes}"
             )
 
 
@@ -474,7 +475,7 @@ def test_weak_k_components_keys_are_positive():
     G = strongly_connected_directed_graph()
     result = nx.weak_k_components(G)
 
-    for k in result.keys():
+    for k in result:
         assert k >= 1, f"Found invalid connectivity level k={k}"
 
 
