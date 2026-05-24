@@ -21,10 +21,10 @@ To access the functions in this module, you must access them through the
 
 """
 
-from itertools import combinations
+from itertools import batched, combinations
 
 import networkx as nx
-from networkx.utils import arbitrary_element, not_implemented_for, py_random_state
+from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = [
     "hamiltonian_path",
@@ -37,31 +37,22 @@ __all__ = [
 ]
 
 
-def index_satisfying(iterable, condition):
-    """Returns the index of the first element in `iterable` that
-    satisfies the given condition.
-
-    If no such element is found (that is, when the iterable is
-    exhausted), this returns the length of the iterable (that is, one
-    greater than the last index of the iterable).
-
-    `iterable` must not be empty. If `iterable` is empty, this
-    function raises :exc:`ValueError`.
-
-    """
-    # Pre-condition: iterable must not be empty.
-    for i, x in enumerate(iterable):
-        if condition(x):
-            return i
-    # If we reach the end of the iterable without finding an element
-    # that satisfies the condition, return the length of the iterable,
-    # which is one greater than the index of its last element. If the
-    # iterable was empty, `i` will not be defined, so we raise an
-    # exception.
-    try:
-        return i + 1
-    except NameError as err:
-        raise ValueError("iterable must be non-empty") from err
+def _merge_paths(adj, left, right):
+    """Merge two Hamiltonian paths into one Hamiltonian path."""
+    path = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        u = left[i]
+        v = right[j]
+        if v in adj[u]:
+            path.append(u)
+            i += 1
+        else:
+            path.append(v)
+            j += 1
+    path.extend(left[i:])
+    path.extend(right[j:])
+    return path
 
 
 @not_implemented_for("undirected")
@@ -133,22 +124,19 @@ def hamiltonian_path(G):
 
     Notes
     -----
-    This is a recursive implementation with an asymptotic running time
-    of $O(n^2)$, ignoring multiplicative polylogarithmic factors, where
-    $n$ is the number of nodes in the graph.
+    This implementation is based on mergesort and runs in $O(n \\log n)$ time,
+    where $n$ is the number of nodes in the graph.
+    It repeatedly merges Hamiltonian paths of subtournaments.
 
     """
-    if len(G) == 0:
-        return []
-    if len(G) == 1:
-        return [arbitrary_element(G)]
-    v = arbitrary_element(G)
-    hampath = hamiltonian_path(G.subgraph(set(G) - {v}))
-    # Get the index of the first node in the path that does *not* have
-    # an edge to `v`, then insert `v` before that node.
-    index = index_satisfying(hampath, lambda u: v not in G[u])
-    hampath.insert(index, v)
-    return hampath
+    adj = G._adj
+    paths = [[v] for v in G]
+    while len(paths) > 1:
+        paths = [
+            _merge_paths(adj, *group) if len(group) == 2 else group[0]
+            for group in batched(paths, 2)
+        ]
+    return paths[0] if paths else []
 
 
 @py_random_state(1)
