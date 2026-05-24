@@ -524,7 +524,7 @@ def _move_nodes_fast(G, refinement_mapping, quality_delta_func, seed):
         for new_com in neighbor_coms:
             if new_com != old_com:
                 # this quantity is the overall change in quality that
-                # occurs wen the node u is added the the new community
+                # occurs when the node u is added to the new community
                 q_add = quality_delta_func({u}, P[new_com])
 
                 # the overall change in quality therefore from moving
