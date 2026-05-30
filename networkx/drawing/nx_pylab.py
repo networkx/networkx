@@ -582,15 +582,15 @@ def display(
             raise nx.NetworkXError(
                 f"Unrecognized visualization keyword argument: {kwarg}"
             )
-        if "node" in kwarg and not isinstance(kwarg_value, dict):
+        if kwarg.startswith("node_") and not isinstance(kwarg_value, dict):
             if any(kwarg_value in node_data for (_, node_data) in G.nodes(data=True)):
                 known_node_attr[kwarg_value] = True
-            elif kwarg_value == kwarg.split("_")[-1]:
+            elif kwarg_value == kwarg.split("_", 1)[1]:
                 kwargs[kwarg] = defaults[kwarg]
-        elif "edge" in kwarg and not isinstance(kwarg_value, dict):
+        elif kwarg.startswith("edge_") and not isinstance(kwarg_value, dict):
             if any(kwarg_value in edge_data for (*_, edge_data) in G.edges(data=True)):
                 known_edge_attr[kwarg_value] = True
-            elif kwarg_value == kwarg.split("_")[-1]:
+            elif kwarg_value == kwarg.split("_", 1)[1]:
                 kwargs[kwarg] = defaults[kwarg]
 
     if canvas is None:
