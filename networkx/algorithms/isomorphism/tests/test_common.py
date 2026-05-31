@@ -602,7 +602,7 @@ def test_single_graph_node_and_edge_labels(G, Gclass, iso_ic, symmetry):
                 e2 = next(e_iter)
             edge2_d = edges[e2]
             edge2_d["foo"], edge1_d["foo"] = edge1_d["foo"], edge2_d["foo"]
-    # dont select first two to ensure not multiedges with same nodes
+    # don't select first two to ensure not multiedges with same nodes
     edge1_d, edge2_d = (edges[e] for e in it.islice(edges, 0, 3, 2))
 
     assert iso_ic(G1, G2, node_label=None, edge_label=None, symmetry=symmetry)
