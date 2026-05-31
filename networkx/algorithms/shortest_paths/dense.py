@@ -217,7 +217,7 @@ def floyd_warshall_tree(G, weight="weight"):
     inf = float("inf")
     pred, dist = _init_pred_dist(G, weight)
 
-    # dont check for those w, `from` which `no` path exists
+    # don't check for those w, `from` which `no` path exists
     for w, pred_w in pred.items():
         # out_w will store the adjacency list of the OUT_W tree of the paper,
         # it is a tree, parent --> list of children
