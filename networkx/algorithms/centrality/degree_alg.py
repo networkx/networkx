@@ -29,8 +29,16 @@ def degree_centrality(G):
     >>> nx.degree_centrality(G)
     {0: 1.0, 1: 1.0, 2: 0.6666666666666666, 3: 0.6666666666666666}
 
+    On a directed graph this sums the in- and out-degree, so the values
+    can exceed ``1``:
+
+    >>> D = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1)])
+    >>> nx.degree_centrality(D)
+    {1: 1.5, 2: 1.0, 3: 1.5}
+
     See Also
     --------
+    in_degree_centrality, out_degree_centrality
     betweenness_centrality, load_centrality, eigenvector_centrality
 
     Notes
@@ -41,6 +49,11 @@ def degree_centrality(G):
     For multigraphs or graphs with self loops the maximum degree might
     be higher than n-1 and values of degree centrality greater than 1
     are possible.
+
+    For a directed graph, ``G.degree()`` returns the sum of in- and
+    out-degree, so the values can lie in ``[0, 2]`` rather than ``[0, 1]``.
+    Use :func:`in_degree_centrality` or :func:`out_degree_centrality` if
+    you want the directed components on their own.
     """
     if len(G) <= 1:
         return {n: 1 for n in G}
