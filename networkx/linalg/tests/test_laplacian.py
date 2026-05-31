@@ -192,14 +192,8 @@ class TestMagneticLaplacian:
         graph we add edges between nodes in both directions to check that we have a real entry.
         """
 
-        cls.G = nx.Graph()
-        cls.G.add_edges_from(
-            (
-                (1, 2),
-                (2, 3),
-                (3, 4),
-            )
-        )
+        cls.G = nx.DiGraph()
+        cls.G.add_edges_from(((1, 2), (2, 1), (2, 3), (3, 2), (3, 4), (4, 3)))
 
         cls.DiG = nx.DiGraph()
         cls.DiG.add_edges_from(

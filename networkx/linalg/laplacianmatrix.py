@@ -246,6 +246,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
 
 @not_implemented_for("multigraph")
+@not_implemented_for("undirected")
 @nx._dispatchable(edge_attrs="weight")
 def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
     r"""Returns the magnetic Laplacian matrix of G
@@ -275,11 +276,15 @@ def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
     :math:`H^{(q)}_{jk} = W'_{jk} e^{2\pi i q \delta_{jk}}`, and :math:`D` is the degree
     matrix associated with the symmetrized weight adjacency matrix :math:`W'`.
 
+    The magnetic Laplacian is only implemented for directed graphs. Since for undirected
+    graphs the magnetic Laplacian is the standard Laplacian, we suggest using laplacian_matrix
+    for computational reasons.
+
 
     Parameters
     ----------
-    G: graph
-        A NetworkX graph (DiGraph recomended; undirected graphs give the standard Laplacaian L)
+    G: DiGraph
+        A NetworkX graph
 
     nodelist: list, optional (default=list(G))
         Node ordering for row/columns.
@@ -376,6 +381,7 @@ def magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
 
 
 @not_implemented_for("multigraph")
+@not_implemented_for("undirected")
 @nx._dispatchable(edge_attrs="weight")
 def normalized_magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
     r"""Returns the normalized magnetic Laplacian matrix of G
@@ -394,8 +400,8 @@ def normalized_magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
 
     Parameters
     ----------
-    G: graph
-        A NetworkX graph (DiGraph recomended; undirected graphs give the standard Laplacaian L)
+    G: DiGraph
+        A NetworkX graph
 
     nodelist: list, optional (default=list(G))
         Node ordering for row/columns.
@@ -419,7 +425,7 @@ def normalized_magnetic_laplacian(G, nodelist=None, q=0.25, weight="weight"):
 
     See also
     --------
-    magnetic_laplacian_matrix
+    magnetic_laplacian
 
     References
     ----------

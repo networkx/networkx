@@ -132,8 +132,8 @@ def magnetic_spectrum(G, q=0.25, weight="weight"):
 
     Parameters
     ----------
-    G: Graph
-      NetworkX graph (DiGraph or Graph)
+    G: DiGraph
+      NetworkX graph
 
     q: float (default=0.25)
       Phase of the magnetic laplacian Float in [0,0.5]
@@ -149,11 +149,11 @@ def magnetic_spectrum(G, q=0.25, weight="weight"):
 
     Notes
     -----
-    For MultiGraph/MuldiDiGraph the magnetic_laplacian_matrix is not implemented.
+    For Graph, MultiGraph/MuldiDiGraph the magnetic_laplacian is not implemented.
 
     See Also
     --------
-    magnetic_laplacian_matrix
+    magnetic_laplacian
     """
     import scipy as sp
 
@@ -170,8 +170,8 @@ def normalized_magnetic_spectrum(G, q=0.25, weight="weight"):
 
     Parameters
     ----------
-    G: Graph
-      NetworkX graph (DiGraph or Graph)
+    G: DiGraph
+      NetworkX graph
 
     q: float (default=0.25)
       Phase of the magnetic laplacian Float in [0,0.5]
@@ -187,11 +187,11 @@ def normalized_magnetic_spectrum(G, q=0.25, weight="weight"):
 
     Notes
     -----
-    For MultiGraph/MuldiDiGraph the magnetic_laplacian_matrix is not implemented.
+    For Graph, MultiGraph/MuldiDiGraph the normalized_magnetic_laplacian is not implemented.
 
     See Also
     --------
-    normalized_magnetic_laplacian_matrix
+    normalized_magnetic_laplacian
     """
     import scipy as sp
 
