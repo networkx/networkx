@@ -7,13 +7,13 @@ Directed Acyclic Graphs
    :toctree: generated/
 
    ancestors
+   antichain_width
    descendants
    topological_sort
    topological_generations
    all_topological_sorts
    lexicographical_topological_sort
    is_directed_acyclic_graph
-   antichain_width
    is_aperiodic
    transitive_closure
    transitive_closure_dag
