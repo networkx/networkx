@@ -513,7 +513,7 @@ finally:
         # Regression test for gh-8658.
         import threading
 
-        n = 64
+        n = 1024
         wrappers = [argmap(lambda x: x, 0)(lambda x, s=s: s) for s in range(n)]
         barrier = threading.Barrier(n)
         errors = []
