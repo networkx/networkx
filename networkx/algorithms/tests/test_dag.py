@@ -471,23 +471,20 @@ class TestDAG:
         pytest.raises(nx.NetworkXNotImplemented, transitive_reduction, G)
 
     def test_antichain_width(self):
-        antichain_width = nx.algorithms.dag.antichain_width
-
         G = nx.DiGraph()
-        assert antichain_width(G) == 0
+        assert nx.dag.antichain_width(G) == 0
 
         G.add_nodes_from([0, 1, 2])
-        assert antichain_width(G) == 3
+        assert nx.dag.antichain_width(G) == 3
 
         G = nx.path_graph(4, create_using=nx.DiGraph)
-        assert antichain_width(G) == 1
+        assert nx.dag.antichain_width(G) == 1
 
         G = nx.DiGraph([(1, 2), (1, 3), (2, 4), (3, 4)])
-        assert antichain_width(G) == 2
         assert nx.dag.antichain_width(G) == 2
 
         G = nx.DiGraph([(1, 3), (2, 3), (3, 4), (3, 5)])
-        assert antichain_width(G) == 2
+        assert nx.dag.antichain_width(G) == 2
 
     def test_antichain_width_multidigraph(self):
         G = nx.MultiDiGraph([(1, 2), (1, 2), (1, 3), (2, 4), (3, 4)])
