@@ -31,6 +31,32 @@ def has_path(G, source, target):
 
     target : node
        Ending node for path
+
+    Returns
+    -------
+    bool
+        True if a path exists between `source` and `target`, False otherwise.
+
+    Raises
+    ------
+    NodeNotFound
+        If `source` or `target` is not in `G`.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> nx.has_path(G, 0, 3)
+    True
+
+    There is no path to an isolated node:
+
+    >>> G.add_node(4)
+    >>> nx.has_path(G, 0, 4)
+    False
+
+    See Also
+    --------
+    shortest_path
     """
     try:
         nx.shortest_path(G, source, target)
