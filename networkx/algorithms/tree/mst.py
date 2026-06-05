@@ -597,6 +597,25 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     >>> sorted(T.edges(data=True))
     [(0, 1, {}), (1, 2, {}), (2, 3, {})]
 
+    Edge weights are compared as exact floating point numbers, so two weights
+    that look equal may differ by a tiny rounding error and change which edge
+    is dropped from a cycle. Here the edge ``(0, 1)`` is removed even though its
+    weight ``0.1 + 0.2`` is mathematically equal to ``0.3``, because in floating
+    point ``0.1 + 0.2`` is slightly larger than ``0.3``:
+
+    >>> 0.1 + 0.2 > 0.3
+    True
+    >>> G = nx.cycle_graph(3)
+    >>> G.add_edge(0, 1, weight=0.1 + 0.2)
+    >>> G.add_edge(1, 2, weight=0.3)
+    >>> G.add_edge(0, 2, weight=0.3)
+    >>> T = nx.minimum_spanning_tree(G)
+    >>> sorted(T.edges())
+    [(0, 2), (1, 2)]
+
+    To avoid such surprises, scale the weights to integers (for example by
+    multiplying by a power of ten) before building the tree. See the
+    :doc:`tutorial </tutorial>` for more on floating point considerations.
 
     Notes
     -----
