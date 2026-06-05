@@ -484,14 +484,14 @@ class TestDAG:
 
         G = nx.DiGraph([(1, 2), (1, 3), (2, 4), (3, 4)])
         assert antichain_width(G) == 2
-        assert nx.antichain_width(G) == 2
+        assert nx.dag.antichain_width(G) == 2
 
         G = nx.DiGraph([(1, 3), (2, 3), (3, 4), (3, 5)])
         assert antichain_width(G) == 2
 
     def test_antichain_width_multidigraph(self):
         G = nx.MultiDiGraph([(1, 2), (1, 2), (1, 3), (2, 4), (3, 4)])
-        assert nx.antichain_width(G) == 2
+        assert nx.dag.antichain_width(G) == 2
 
     def test_antichain_width_exceptions(self):
         antichain_width = nx.algorithms.dag.antichain_width

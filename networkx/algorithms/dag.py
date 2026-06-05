@@ -21,7 +21,6 @@ __all__ = [
     "all_topological_sorts",
     "topological_generations",
     "is_directed_acyclic_graph",
-    "antichain_width",
     "is_aperiodic",
     "transitive_closure",
     "transitive_closure_dag",
@@ -203,7 +202,7 @@ def antichain_width(G):
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 4), (3, 4)])
-    >>> nx.antichain_width(G)
+    >>> nx.dag.antichain_width(G)
     2
 
     References
