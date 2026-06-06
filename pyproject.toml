@@ -284,7 +284,7 @@ ignore_errors = true
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 
-[tool.pixi.pypi-dependencies]
+[tool.pixi.feature.nx.pypi-dependencies]
 networkx = { path = ".", editable = true }
 
 # --- Python version features ---
@@ -362,29 +362,29 @@ test-prerelease = "pytest -n auto --doctest-modules --durations=10 --pyargs netw
 build-dist = "python -m build --sdist --wheel"
 verify-dist = "twine check --strict dist/*"
 
-# --- Environment definitions ---
-
 [tool.pixi.environments]
+# Local dev default: networkx + default deps on a current Python.
+default = { features = ["nx", "test", "default", "py313"], solve-group = "py313", no-default-feature = true }
 # Base test (no default deps)
-test-base-py313 = { features = ["test", "py313"], solve-group = "py313" }
-test-base-py314 = { features = ["test", "py314"], solve-group = "py314" }
-test-base-py314t = { features = ["test", "py314t"], solve-group = "py314t" }
+test-base-py313 = { features = ["nx", "test", "py313"], solve-group = "py313", no-default-feature = true }
+test-base-py314 = { features = ["nx", "test", "py314"], solve-group = "py314", no-default-feature = true }
+test-base-py314t = { features = ["nx", "test", "py314t"], solve-group = "py314t", no-default-feature = true }
 # Default test (with numpy/scipy/matplotlib/pandas)
-test-default-py312 = { features = ["test", "default", "py312"], solve-group = "py312" }
-test-default-py313 = { features = ["test", "default", "py313"], solve-group = "py313" }
-test-default-py314 = { features = ["test", "default", "py314"], solve-group = "py314" }
+test-default-py312 = { features = ["nx", "test", "default", "py312"], solve-group = "py312", no-default-feature = true }
+test-default-py313 = { features = ["nx", "test", "default", "py313"], solve-group = "py313", no-default-feature = true }
+test-default-py314 = { features = ["nx", "test", "default", "py314"], solve-group = "py314", no-default-feature = true }
 # Default without scipy
-test-default-no-scipy-py312 = { features = ["test", "default-no-scipy", "py312"], solve-group = "py312" }
+test-default-no-scipy-py312 = { features = ["nx", "test", "default-no-scipy", "py312"], solve-group = "py312", no-default-feature = true }
 # Extra test (with graphviz from conda)
-test-extra-py312 = { features = ["test", "default", "extra", "py312"], solve-group = "py312" }
-test-extra-py313 = { features = ["test", "default", "extra", "py313"], solve-group = "py313" }
+test-extra-py312 = { features = ["nx", "test", "default", "extra", "py312"], solve-group = "py312", no-default-feature = true }
+test-extra-py313 = { features = ["nx", "test", "default", "extra", "py313"], solve-group = "py313", no-default-feature = true }
 # Single-purpose environments
-lint = { features = ["developer", "py313"], solve-group = "py313" }
-type-check = { features = ["developer", "py312"], solve-group = "py312" }
-docs = { features = ["test", "default", "extra", "doc", "example", "py312"], solve-group = "py312" }
-build-release = { features = ["release", "py312"], solve-group = "py312" }
+lint = { features = ["nx", "developer", "py313"], solve-group = "py313", no-default-feature = true }
+type-check = { features = ["nx", "developer", "py312"], solve-group = "py312", no-default-feature = true }
+docs = { features = ["nx", "test", "default", "extra", "doc", "example", "py312"], solve-group = "py312", no-default-feature = true }
+build-release = { features = ["nx", "release", "py312"], solve-group = "py312", no-default-feature = true }
 # Prerelease (pixi manages Python, pip install --pre handles deps)
-prerelease-py312 = { features = ["prerelease", "py312"], solve-group = "py312" }
-prerelease-py313 = { features = ["prerelease", "py313"], solve-group = "py313" }
-prerelease-py314 = { features = ["prerelease", "py314"], solve-group = "py314" }
-test-randomly = { features = ["test", "default", "test-extras", "py313"], solve-group = "py313" }
+prerelease-py312 = { features = ["nx", "prerelease", "py312"], solve-group = "py312", no-default-feature = true }
+prerelease-py313 = { features = ["nx", "prerelease", "py313"], solve-group = "py313", no-default-feature = true }
+prerelease-py314 = { features = ["nx", "prerelease", "py314"], solve-group = "py314", no-default-feature = true }
+test-randomly = { features = ["nx", "test", "default", "test-extras", "py313"], solve-group = "py313", no-default-feature = true }
