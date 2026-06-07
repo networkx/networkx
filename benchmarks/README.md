@@ -36,14 +36,18 @@ configuration are:
 3. `matrix` which dictates what dependencies (and their versions) will be
    tested against.
 
-`environment_type` is set to `"conda"` by default - the `"virtualenv"` option
-is recommended for simpler building/setup.
-
 ```{note}
 When using `environment_type: "virtualenv"`, it is recommended to limit the
 `pythons` field to only those versions of Python that are installed on the
 system.
 ```
+
+By default, `asv.conf.json` uses the `"rattler"` environment type with
+`"pythons": ["3.12", "3.13", "3.14"]`. asv provisions each interpreter (and the
+soft dependencies) from conda-forge using
+[`py-rattler`](https://github.com/conda/rattler) — the same solver pixi is built
+on — so all three versions are benchmarked from a single environment, with no
+conda binary required.
 
 The `matrix` field dictates which optional dependencies will be installed in the
 benchmarking environment.
@@ -56,11 +60,9 @@ Some benchmarks themselves depend on `numpy`, `scipy` and/or `pandas`; so removi
 dependencies may cause some benchmarks to be skipped.
 ```
 
-### Example configuration options
-
-The default configuration builds benchmarking environments for 3 different
-versions of Python, all with the latest stable version of default dependencies,
-using `conda` for managing the build environment and Python versions.
+The benchmark configuration lives in `asv.conf.json` (`rattler` backend, Python
+3.12/3.13/3.14, with the default soft dependencies `numpy`/`scipy`/`pandas`
+installed into each environment).
 
 To switch to built-in environment management:
 
@@ -74,7 +76,24 @@ To limit the benchmarking run to a single version of Python:
 "pythons": ["3.13"]
 ```
 
+### Running with pixi
+
+`pyproject.toml` defines a single `benchmark` environment (the rattler harness;
+asv provisions 3.12/3.13/3.14 itself):
+
+```
+# Python 3.12/3.13/3.14 with the default soft deps (one command, three versions)
+pixi run -e benchmark benchmark-run
+```
+
+In CI, `.github/workflows/benchmark.yml` runs this on pull requests labeled
+`run:benchmark`.
+
 ## Running the benchmark suite
+
+The commands below call `asv` directly; run them inside the benchmarking
+environment (e.g. `pixi run -e benchmark asv ...`) or use the pixi tasks shown
+above (`benchmark-run`, `benchmark-continuous`).
 
 To run the benchmark on the current HEAD commit:
 
