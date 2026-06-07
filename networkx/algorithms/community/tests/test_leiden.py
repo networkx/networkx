@@ -133,6 +133,10 @@ def test_resolution_kwarg_mod(G):
         P1 = comm.leiden_communities(G, metric=qmod, resolution=0.0, seed=12)
         P2 = comm.leiden_communities(G, metric=qmod, resolution=1.0, seed=12)
         P3 = comm.leiden_communities(G, metric=qmod, resolution=7.0, seed=12)
+<<<<<<< HEAD
+=======
+        print(f"{len(P1)=} {len(P2)=} {len(P3)=}")
+>>>>>>> d909e0c6f (first set of adjustments of leiden)
         assert len(P1) < len(P2) < len(P3)
 
 

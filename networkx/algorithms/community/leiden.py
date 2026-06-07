@@ -1,6 +1,4 @@
-"""Functions for detecting communities based on Leiden Community Detection
-algorithm.
-"""
+"""Detecting communities based on the Leiden Community Detection algorithm"""
 
 import functools
 import itertools
@@ -229,38 +227,43 @@ def leiden_partitions(
         yield partition
         return
 
+    # Initialization steps while copying G to graph
+    # - edge weights set as "weight" in graph, summed if G.is_multigraph()
+    # - node attributes initialized based on metric impact on node_weights aggregated
+    # - define the metric function based on metric
+    # - define the corresponding delta function
+    # - set node_attributes to names of node attrs summed when merging based on metric
+
+    # delta function gives change in metric when merging two communities.
+    # The change due to splitting a set U from C is negating e.g. -delta(U, C-U)
+    # For one node, the change from moving node u from A to B is:
+    # q_delta = delta({u}, B) - delta({u}, A-{u})
+
     is_directed = G.is_directed()
     if G.is_multigraph():
-        # this is the same as how louvain handles multigraph inputs
-        graph = _convert_multigraph(G, weight, is_directed)
-    else:
-        # if the weight parameter is defined then we use this value for
-        # edge weights within the algorithm, defaulting to 1 where the
-        # attribute does not exist
-        # else if weight is None then all edges are given a weight of 1
-        if weight:
-            graph = G.__class__()
-            graph.add_nodes_from(G)
-            graph.add_weighted_edges_from(G.edges(data=weight, default=1))
+        # Convert Multi(Di)Graph to (Di)Graph by summing edges
+        graph = nx.DiGraph() if is_directed else nx.Graph()
+        graph.add_nodes_from(G)
+        if weight is None:
+            graph.add_weighted_edges_from(
+                (u, v, len(kd)) for u, nbrs in G._adj.items() for v, kd in nbrs.items()
+            )
         else:
-            graph = G.__class__()
-            graph.add_nodes_from(G)
+            graph.add_weighted_edges_from(
+                (u, v, sum(dd.get(weight, 1) for dd in kd.values()))
+                for u, nbrs in G._adj.items()
+                for v, kd in nbrs.items()
+            )
+    else:
+        # same nodes & class as G
+        graph = nx.empty_graph(G, create_using=G.__class__)
+        if weight is None:
             graph.add_edges_from(G.edges())
-            nx.set_edge_attributes(graph, 1, name="weight")
-
-    # The following setup stage depends on the choice of quality
-    # function. In particular, this stage must set three things:
-    # 1) set the function metric
-    # 2) set the corresponding quality_delta function
-    # 3) set the specific attributes required to compute the
-    #    metric and quality_delta
-
-    # the quality_delta function computes the partial quality delta contributed by
-    # adding nodes_to_add to community.
-    # Corresponding value from removing U from C is computed by taking
-    # the negative  -1 * quality_delta(U, C-U)
-    # to compute the overall quality delta from moving node u from A to B we have
-    # q_delta = quality_delta({u}, B) - quality_delta({u}, A-{u})
+        else:
+            graph.add_weighted_edges_from(G.edges(data=weight, default=1))
+    # node attr "nodes" holds the original nodes represented by this current node
+    # initialize to point to itself
+    nx.set_node_attributes(graph, {n: {n} for n in G}, "nodes")
 
     if metric == "cpm":
         # Setup for constant potts model
@@ -278,50 +281,44 @@ def leiden_partitions(
             # Setup for directed constant potts model
             gamma = 2 * resolution
 
-            def quality_delta(nodes_to_add, community):
+            def delta(nodes_to_add, community):
                 comm_size = sum(graph.nodes[u]["node_weight"] for u in community)
                 nodes_size = sum(graph.nodes[u]["node_weight"] for u in nodes_to_add)
-                E_in = sum(
-                    wt
-                    for _, v, wt in graph.edges(nodes_to_add, data="weight")
-                    if v in community
-                )
-                E_out = sum(
-                    wt
-                    for _, v, wt in graph.edges(community, data="weight")
-                    if v in nodes_to_add
-                )
+                if len(nodes_to_add) < len(community):
+                    a, c = nodes_to_add, community
+                else:
+                    a, c = community, nodes_to_add
+                edges = graph.in_edges(a, data="weight", default=1)
+                E_in = sum(wt for _, v, wt in edges if v in c)
+                edges = graph.out_edges(a, data="weight", default=1)
+                E_out = sum(wt for _, v, wt in edges if v in c)
+
                 return E_in + E_out - gamma * comm_size * nodes_size
+
         else:
             # Setup for undirected constant potts model
             gamma = resolution
 
-            def quality_delta(nodes_to_add, community):
+            def delta(nodes_to_add, community):
                 comm_size = sum(graph.nodes[u]["node_weight"] for u in community)
                 nodes_size = sum(graph.nodes[u]["node_weight"] for u in nodes_to_add)
-                E = sum(
-                    wt
-                    for _, v, wt in graph.edges(nodes_to_add, data="weight")
-                    if v in community
-                )
+
+                if len(nodes_to_add) < len(community):
+                    a, c = nodes_to_add, community
+                else:
+                    a, c = community, nodes_to_add
+                edges = graph.edges(a, data="weight", default=1)
+                E = sum(wt for _, v, wt in edges if v in c)
+
                 return E - gamma * comm_size * nodes_size
 
     elif metric == "modularity":
         # Setup for (unipartite) modularity
-
-        # the modualrity function throws an zero division error
-        # if the graph consists of only a single node.
-        # if leiden aggregates the graph to a single node then
-        # we just need to retun a value that ensure the algorithm
-        # stops
-        def guarded_modularity(G, P):
-
-            try:
-                return modularity(G, P, resolution=resolution)
-            except ZeroDivisionError:
-                return float("inf")
-
-        metric = guarded_modularity
+        metric = functools.partial(
+            modularity,
+            resolution=resolution,
+            weight="weight",
+        )
         if is_directed:
             # Setup for directed modularity
             node_attributes = ["in_degree", "out_degree"]
@@ -330,35 +327,30 @@ def leiden_partitions(
 
             m = sum(wt for u, wt in in_degrees) + sum(wt for u, wt in out_degrees)
             for u, v, data in graph.edges(data=True):
-                data["weight"] *= 1 / m
+                data["weight"] = data.get("weight", 1) / m
 
-            nx.set_node_attributes(
-                graph, {u: in_deg / m for u, in_deg in in_degrees}, "in_degree"
-            )
-            nx.set_node_attributes(
-                graph, {u: out_deg / m for u, out_deg in out_degrees}, "out_degree"
-            )
+            nx.set_node_attributes(graph, dict(in_degrees), "in_degree")
+            nx.set_node_attributes(graph, dict(out_degrees), "out_degree")
 
             gamma = 2 * resolution
 
-            def quality_delta(nodes_to_add, community):
-                nodes_in = sum(graph.nodes[u]["in_degree"] for u in nodes_to_add)
-                nodes_out = sum(graph.nodes[u]["out_degree"] for u in nodes_to_add)
-                comm_in = sum(graph.nodes[u]["in_degree"] for u in community)
-                comm_out = sum(graph.nodes[u]["out_degree"] for u in community)
-                E_to = sum(
-                    wt
-                    for _, v, wt in graph.edges(nodes_to_add, data="weight")
-                    if v in community
-                )
-                E_from = sum(
-                    wt
-                    for _, v, wt in graph.edges(community, data="weight")
-                    if v in nodes_to_add
-                )
-                return (E_to + E_from) - gamma * (
-                    nodes_in * comm_out + nodes_out * comm_in
-                )
+            def delta(nodes_to_add, community):
+                if len(nodes_to_add) < len(community):
+                    a, c = nodes_to_add, community
+                else:
+                    a, c = community, nodes_to_add
+
+                a_in = sum(in_degrees[u] for u in a)
+                a_out = sum(out_degrees[u] for u in a)
+                c_in = sum(in_degrees[u] for u in c)
+                c_out = sum(out_degrees[u] for u in c)
+
+                edges = graph.in_edges(a, data="weight", default=1)
+                E_to = sum(wt for _, v, wt in edges if v in c)
+                edges = graph.out_edges(a, data="weight", default=1)
+                E_from = sum(wt for _, v, wt in edges if v in c)
+
+                return E_to + E_from - gamma * (a_in * c_out + a_out * c_in)
 
         else:
             # Setup for undirected modularity
@@ -367,16 +359,16 @@ def leiden_partitions(
 
             m = sum(deg for u, deg in degrees) / 2
             for u, v, data in graph.edges(data=True):
-                data["weight"] *= 1 / m
+                data["weight"] = data.get(weight, 1) / m
             nx.set_node_attributes(graph, {u: deg / m for u, deg in degrees}, "degree")
             gamma = 2 * resolution
 
-            def quality_delta(nodes_to_add, community):
+            def delta(nodes_to_add, community):
                 nodes_size = sum(graph.nodes[u]["degree"] for u in nodes_to_add)
                 comm_size = sum(graph.nodes[u]["degree"] for u in community)
                 E_D = sum(
                     wt
-                    for u, v, wt in graph.edges(nodes_to_add, data="weight")
+                    for u, v, wt in graph.edges(nodes_to_add, data="weight", default=1)
                     if v in community
                 )
                 return E_D - gamma * nodes_size * comm_size
@@ -429,14 +421,14 @@ def leiden_partitions(
         for u, v, data in graph.edges(data=True):
             data["weight"] *= 1 / m
 
-        def quality_delta(nodes_to_add, community):
+        def delta(nodes_to_add, community):
             nodes_red = sum(graph.nodes[u]["red_degree"] for u in nodes_to_add)
             nodes_blue = sum(graph.nodes[u]["blue_degree"] for u in nodes_to_add)
             comm_red = sum(graph.nodes[u]["red_degree"] for u in community)
             comm_blue = sum(graph.nodes[u]["blue_degree"] for u in community)
             E = sum(
                 wt
-                for _, v, wt in graph.edges(nodes_to_add, data="weight")
+                for _, v, wt in graph.edges(nodes_to_add, data="weight", default=1)
                 if v in community
             )
             return E - resolution * (nodes_red * comm_blue + nodes_blue * comm_red)
@@ -460,14 +452,14 @@ def leiden_partitions(
         # leiden initialises nodes into communities based on the
         # unrefined partition of the previous stage. The dict
         # refinement_mapping specifies how these initial communities
-        # are to be set
-        P = _move_nodes_fast(graph, refinement_mapping, quality_delta, seed=seed)
+        # are to be set. If None, use singleton communities.
+        P = _move_nodes_fast(graph, refinement_mapping, delta, seed=seed)
 
-        P_refined = _refine_partition(graph, P, quality_delta, seed=seed, theta=theta)
+        P_refined = _refine_partition(graph, P, delta, seed=seed, theta=theta)
 
         P_refined_flat = [comm for P_ref in P_refined for comm in P_ref]
 
-        # Stop when overall change in quality is close to zero.
+        # Stop when overall change is close to zero.
         Q_new = metric(graph, P_refined_flat)
         improvement_made = (Q_new - Q) > 0.0000001
         Q = Q_new
@@ -480,36 +472,31 @@ def leiden_partitions(
         # the node attribute 'nodes', which is set during _create_aggregate_graph(...)
         # Each node in graph represents a community in the original graph
         # and the node holds this information in the attribute 'nodes'.
+        # We yield a copy to protect the graph data structure for later iterations.
         yield [set(graph.nodes[u]["nodes"]).copy() for u in graph]
 
     return
 
 
-def _move_nodes_fast(G, refinement_mapping, quality_delta_func, seed):
-
-    # Unlike louvain, instead of beginning each iteration with the singleton
-    # partition, each iteration uses the (unrefined) partition from the previous
-    # step as the starting communities when moving nodes.
-    # This section of code initilises nodes into those communities.
-    # if no partition is passed from the previous step (i.e. during the
-    # first iteration) then this is skipped and the singleton partition is used.
-    if refinement_mapping:
-        P = [set() for _ in range(len(refinement_mapping.values()))]
-        node2com = {}
-        for i, u in enumerate(G):
-            P[refinement_mapping[i]].add(u)
-            node2com[u] = refinement_mapping[i]
+def _move_nodes_fast(graph, partition, delta_func, seed):
+    # use refinement_mapping as beginning partition. If None, use singletons
+    if partition is None:
+        P = [{u} for u in graph]
+        node2com = {u: i for i, u in enumerate(graph)}
     else:
-        P = [{u} for u in G]
-        node2com = {u: i for i, u in enumerate(G)}
+        P = [set() for _ in partition]
+        node2com = {}
+        for i, u in enumerate(graph):
+            P[partition[i]].add(u)
+            node2com[u] = partition[i]
 
-    rand_nodes = list(G.nodes)
+    rand_nodes = list(graph.nodes)
     seed.shuffle(rand_nodes)
     node_queue = deque(rand_nodes)
 
     while node_queue:
         u = node_queue.pop()
-        neighbor_coms = {node2com[v] for v in nx.all_neighbors(G, u)}
+        neighbor_coms = {node2com[v] for v in nx.all_neighbors(graph, u)}
 
         best_delta = 0
         old_com = node2com[u]
@@ -517,7 +504,7 @@ def _move_nodes_fast(G, refinement_mapping, quality_delta_func, seed):
 
         # this value is the overall change in quality that occurs
         # when node u is removed from its current community
-        q_rem = quality_delta_func({u}, P[old_com] - {u})
+        q_rem = delta_func({u}, P[old_com] - {u})
 
         # for each node in the queue, we measure the change in quality
         # from moving that node to each other community, keeping track of
@@ -526,7 +513,7 @@ def _move_nodes_fast(G, refinement_mapping, quality_delta_func, seed):
             if new_com != old_com:
                 # this quantity is the overall change in quality that
                 # occurs when the node u is added to the new community
-                q_add = quality_delta_func({u}, P[new_com])
+                q_add = delta_func({u}, P[new_com])
 
                 # the overall change in quality therefore from moving
                 # node u from old_com to new_com is as follows
@@ -542,7 +529,7 @@ def _move_nodes_fast(G, refinement_mapping, quality_delta_func, seed):
             P[old_com].remove(u)
             P[best_com].add(u)
 
-            neighbours = set(G.adj[u])
+            neighbours = set(graph._adj[u])
             nodes_to_visit = neighbours - P[best_com]
 
             for v in nodes_to_visit:
@@ -557,7 +544,7 @@ def _move_nodes_fast(G, refinement_mapping, quality_delta_func, seed):
 def _refine_partition(
     G,
     P,
-    quality_delta_func,
+    delta_func,
     seed,
     theta,
 ):
@@ -572,7 +559,7 @@ def _refine_partition(
         C_refined = _merge_node_subset(
             G,
             C,
-            quality_delta_func,
+            delta_func,
             seed,
             theta,
         )
@@ -585,7 +572,7 @@ def _refine_partition(
 def _merge_node_subset(
     G,
     C,
-    quality_delta_func,
+    delta_func,
     seed,
     theta,
 ):
@@ -594,7 +581,7 @@ def _merge_node_subset(
     C_refined = [{u} for u in C]
     # first, the sufficiently well-connected nodes within S
     # are identified and added to the set R.
-    R = {u for u in C if quality_delta_func({u}, C - {u}) > 0}
+    R = {u for u in C if delta_func({u}, C - {u}) > 0}
 
     for u in R:
         comm = node2com[u]
@@ -607,7 +594,7 @@ def _merge_node_subset(
         # first we identify candidate communities to merge u into
         # and then the final community is randomly selected from these
         # according to a probability distribution which is partly
-        # defined by the relative quality_delta (bigger increase in
+        # defined by the relative delta (bigger increase in
         # quality makes choosing that community more likely, but
         # the algorithm does not greedily choose the greatest increase)
 
@@ -622,7 +609,7 @@ def _merge_node_subset(
 
         # this is the change in quality that occurs from removing node
         # u from its current community
-        q_rem = quality_delta_func({u}, C_refined[comm] - {u})
+        q_rem = delta_func({u}, C_refined[comm] - {u})
         for i, new_comm in enumerate(C_refined):
             if comm == i:
                 # we only want to consider moving u to a different
@@ -633,12 +620,12 @@ def _merge_node_subset(
             # is within S. This is what is means for the resulting
             # partition to be a refinement of S.
 
-            # this application of quality_delta_func relates to the
+            # this application of delta_func relates to the
             # definition of T in line :37 from pseudocode in paper
-            if quality_delta_func(new_comm, C - new_comm) > 0:
+            if delta_func(new_comm, C - new_comm) > 0:
                 # the change in quality the occurs from moving node u
                 # into the new community
-                q_add = quality_delta_func({u}, C_refined[i])
+                q_add = delta_func({u}, C_refined[i])
 
                 # the overall quality delta is therefore the sum
                 # of the change in quality from removing u from its
@@ -682,68 +669,68 @@ def _merge_node_subset(
     return C_refined
 
 
-def _create_aggregate_graph(G, refined_communities_list, node_attributes):
-    """
-    Generate a new graph based on the partitions of a given graph
+def _create_aggregate_graph(G, P_refined, node_attributes):
+    """Return a new graph based on P_refined. Each community becomes a node.
 
-    node_attributes is a list of attributes that are required for the
-    given choice of quality metric. When aggregating a community (set
-    of nodes) into a new node of the aggregated graph, the value for
-    each attribute is the sum of the constituent nodes.
-    """
+    node_attributes is a list of attribute names required for this metric.
+    Sum each node attribute when aggregating a community into a new node.
 
+    P_refined is a list of lists of community sets. The outer list indicates
+    communities in the new graph which comes from P. Each inner list holds
+    the refined sets of nodes each of which becomes a new node. So P_refined
+    contains P as the outer list and its refinement as the inner lists which
+    holds the refined community sets that make up the new graph's nodes.
+    """
     H = G.__class__()
     old2new = {}
-
-    refinement_mapping = {}
+    new_node2com = {}
     new_node_id = 0
-    for partition_index, community in enumerate(refined_communities_list):
-        for refined_community in community:
-            # each refined_community from the refined_partiton defines
-            # a node in the new aggregated graph
-
-            refinement_mapping[new_node_id] = partition_index
-
+    for new_comm, refined_sets in enumerate(P_refined):
+        for refined_comm in refined_sets:
+            # each set from the refined_sets defines
+            # a node in the new aggregated graph. Name it new_node_id.
+            new_node2com[new_node_id] = new_comm
             agg_vals = {attribute: 0 for attribute in node_attributes}
 
-            # will contain the nodes defining a community
-            # in the original graph
+            # contains the original graph nodes defining this new community
             original_nodes = set()
 
-            # old_node is node from the previous iteration
-            # i.e. aggregated graph from the previous
-            # stage, not the original graph
-            for old_node in refined_community:
+            # old_node is node from previous stage, not original graph
+            for old_node in refined_comm:
+                old2new[old_node] = new_node_id
+
+                # aggregate node attributes
+                original_nodes.update(G.nodes[old_node]["nodes"])
                 for node_attribute in node_attributes:
                     agg_vals[node_attribute] += G.nodes[old_node][node_attribute]
 
-                old2new[old_node] = new_node_id
-                original_nodes.update(G.nodes[old_node].get("nodes", {old_node}))
-
             H.add_node(new_node_id, nodes=original_nodes, **agg_vals)
-
             new_node_id += 1
 
-    for u, v, uv_weight in G.edges(data="weight"):
+    H_adj = H._adj
+    for u, v, uv_weight in G.edges(data="weight", default=1):
         new_u = old2new[u]
         new_v = old2new[v]
         if new_u != new_v:
-            if H.has_edge(new_u, new_v):
-                H.edges[(new_u, new_v)]["weight"] += uv_weight
+            new_unbrs = H_adj[new_u]
+            if new_v in new_unbrs:
+                new_unbrs[new_v]["weight"] += uv_weight
             else:
                 H.add_edge(new_u, new_v, weight=uv_weight)
 
-    return H, refinement_mapping
+    return H, new_node2com
 
 
 def _convert_multigraph(G, weight, is_directed):
     """Convert a Multigraph to normal Graph"""
+    H.empty_graph(G, create_using=(nx.DiGraph if is_directed else nx.Graph))
+    H.add_weighted_edges_from(G.edges(data=weight, default=1))
+    return H
     if is_directed:
         H = nx.DiGraph()
     else:
         H = nx.Graph()
 
-    H.add_nodes_from(G)
     for u, v, wt in G.edges(data=weight, default=1):
         if H.has_edge(u, v):
             H[u][v]["weight"] += wt
