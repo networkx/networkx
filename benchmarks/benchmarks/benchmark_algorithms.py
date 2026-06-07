@@ -14,11 +14,13 @@ from networkx.algorithms import community
 class UndirectedAlgorithmBenchmarks:
     timeout = 120
     nodes = 100
+    # The Erdos-Renyi graphs are cheap and deterministic, so they are built at
+    # import time. The drug interaction network is fetched lazily in setup() so
+    # that benchmark discovery never requires network access.
     _graphs = [
         nx.erdos_renyi_graph(nodes, 0.1),
         nx.erdos_renyi_graph(nodes, 0.5),
         nx.erdos_renyi_graph(nodes, 0.9),
-        fetch_drug_interaction_network(),
     ]
     params = [
         "Erdos Renyi (100, 0.1)",
@@ -31,6 +33,10 @@ class UndirectedAlgorithmBenchmarks:
 
     def setup(self, graph):
         self.graphs_dict = dict(zip(self.params, self._graphs))
+        # Only download the drug network when its parameter is being run; a
+        # failed download raises NotImplementedError so asv skips just this one.
+        if graph == "Drug Interaction network":
+            self.graphs_dict[graph] = fetch_drug_interaction_network()
 
     def time_betweenness_centrality(self, graph):
         # timing this should also give us information about

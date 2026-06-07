@@ -56,8 +56,15 @@ nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
 benchmarking = [
-    'asv',
-    'virtualenv',
+    # asv >=0.6.5 ships the libmambapy fix and the `python -m build` default
+    # build command relied on by benchmarks/asv.conf.json (which no longer
+    # overrides build_command). See gh-7638 and gh-8638.
+    'asv>=0.6.5',
+    # py-rattler backs the "rattler" environment_type: asv provisions the
+    # 3.12/3.13/3.14 interpreters + soft deps from conda-forge in-process.
+    # Pinned <0.22: asv 0.6.5's rattler plugin still calls the pre-0.22
+    # solve(channels=...) API (py-rattler 0.22 renamed it to sources=).
+    'py-rattler>=0.21,<0.22',
 ]
 default = [
     'numpy>=2',
@@ -362,6 +369,15 @@ test-prerelease = "pytest -n auto --doctest-modules --durations=10 --pyargs netw
 build-dist = "python -m build --sdist --wheel"
 verify-dist = "twine check --strict dist/*"
 
+[tool.pixi.feature.benchmarking.tasks]
+asv-machine = { cmd = "asv machine --yes --conf asv.conf.json", cwd = "benchmarks" }
+benchmark-continuous = { cmd = "asv continuous --split --show-stderr --factor 1.5 --conf asv.conf.json", cwd = "benchmarks", depends-on = [
+    "asv-machine",
+] }
+benchmark-run = { cmd = "asv run --conf asv.conf.json", cwd = "benchmarks", depends-on = [
+    "asv-machine",
+] }
+
 [tool.pixi.environments]
 # Local dev default: networkx + default deps on a current Python.
 default = { features = ["nx", "test", "default", "py313"], solve-group = "py313", no-default-feature = true }
@@ -383,6 +399,10 @@ lint = { features = ["nx", "developer", "py313"], solve-group = "py313", no-defa
 type-check = { features = ["nx", "developer", "py312"], solve-group = "py312", no-default-feature = true }
 docs = { features = ["nx", "test", "default", "extra", "doc", "example", "py312"], solve-group = "py312", no-default-feature = true }
 build-release = { features = ["nx", "release", "py312"], solve-group = "py312", no-default-feature = true }
+# Benchmarking. asv provisions the 3.12/3.13/3.14 interpreters + soft deps via
+# the rattler backend (py-rattler/conda-forge) from this single harness env;
+# see benchmarks/asv.conf.json.
+benchmark = { features = ["benchmarking", "py313"], solve-group = "py313", no-default-feature = true }
 # Prerelease (pixi manages Python, pip install --pre handles deps)
 prerelease-py312 = { features = ["nx", "prerelease", "py312"], solve-group = "py312", no-default-feature = true }
 prerelease-py313 = { features = ["nx", "prerelease", "py313"], solve-group = "py313", no-default-feature = true }
