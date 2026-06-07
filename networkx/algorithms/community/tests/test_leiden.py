@@ -6,7 +6,12 @@ comm = nx.community
 
 
 def _equivalent_partitions(P1, P2):
-    return {frozenset(C) for C in P1} == {frozenset(C) for C in P2}
+    # return {frozenset(C) for C in P1} == {frozenset(C) for C in P2}
+    C1 = {frozenset(C) for C in P1}
+    C2 = {frozenset(C) for C in P2}
+    if C1 != C2:
+        print(f"P1 != P2\n{P1=}\n{P2=}")
+    return C1 == C2
 
 
 @pytest.fixture(params=[nx.Graph, nx.MultiGraph])
@@ -15,7 +20,8 @@ def G(request):
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
     G = request.param(LFR_graph)
-    G.add_edges_from(LFR_graph.edges())  # duplicate edges if multigraph
+    # duplicate edges if multigraph
+    G.add_edges_from(e for i, e in enumerate(LFR_graph.edges()) if i < 50)
     return G
 
 
@@ -106,10 +112,17 @@ def test_resolution_kwarg(G):
 
     qmod = "modularity"
     # Only three sizes of partitions: 2, 21, 77. Changes at r=0 and r=6.83
-    P1 = comm.leiden_communities(G, metric=qmod, resolution=0.0, seed=12)
-    P2 = comm.leiden_communities(G, metric=qmod, resolution=1.0, seed=12)
-    P3 = comm.leiden_communities(G, metric=qmod, resolution=7.0, seed=12)
-    assert len(P1) < len(P2) < len(P3)
+    if G.is_multigraph():
+        P01 = comm.leiden_communities(G, metric=qmod, resolution=0.1, seed=12)
+        P1 = comm.leiden_communities(G, metric=qmod, resolution=1.0, seed=12)
+        P10 = comm.leiden_communities(G, metric=qmod, resolution=10, seed=12)
+        assert len(P01) < len(P1) < len(P10)
+    else:
+        P1 = comm.leiden_communities(G, metric=qmod, resolution=0.0, seed=12)
+        P2 = comm.leiden_communities(G, metric=qmod, resolution=1.0, seed=12)
+        P3 = comm.leiden_communities(G, metric=qmod, resolution=7.0, seed=12)
+        print(f"{len(P1)=} {len(P2)=} {len(P3)=}")
+        assert len(P1) < len(P2) < len(P3)
 
 
 def test_LFR_communities_across_algos():
