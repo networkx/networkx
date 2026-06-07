@@ -36,7 +36,13 @@ configuration are:
 3. `matrix` which dictates what dependencies (and their versions) will be
    tested against.
 
-`asv.conf.json` uses the `"rattler"` environment type with
+```{note}
+When using `environment_type: "virtualenv"`, it is recommended to limit the
+`pythons` field to only those versions of Python that are installed on the
+system.
+```
+
+By default, `asv.conf.json` uses the `"rattler"` environment type with
 `"pythons": ["3.12", "3.13", "3.14"]`. asv provisions each interpreter (and the
 soft dependencies) from conda-forge using
 [`py-rattler`](https://github.com/conda/rattler) — the same solver pixi is built
@@ -57,6 +63,18 @@ dependencies may cause some benchmarks to be skipped.
 The benchmark configuration lives in `asv.conf.json` (`rattler` backend, Python
 3.12/3.13/3.14, with the default soft dependencies `numpy`/`scipy`/`pandas`
 installed into each environment).
+
+To switch to built-in environment management:
+
+```yaml
+"environment_type": "virtualenv"
+```
+
+To limit the benchmarking run to a single version of Python:
+
+```yaml
+"pythons": ["3.13"]
+```
 
 ### Running with pixi
 

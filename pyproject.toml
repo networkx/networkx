@@ -65,6 +65,7 @@ benchmarking = [
     # Pinned <0.22: asv 0.6.5's rattler plugin still calls the pre-0.22
     # solve(channels=...) API (py-rattler 0.22 renamed it to sources=).
     'py-rattler>=0.21,<0.22',
+    'virtualenv',
 ]
 default = [
     'numpy>=2',
