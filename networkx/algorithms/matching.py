@@ -353,6 +353,26 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     >>> sorted(nx.max_weight_matching(G))
     [(2, 4), (5, 3)]
 
+    The weight of a matching is the *sum* of its edge weights, which are
+    compared as exact floating point numbers. Two weights that look equal may
+    differ by a tiny rounding error and change which matching is selected. Here
+    the edge ``(0, 1)`` is matched even though its weight ``0.1 + 0.2`` is
+    mathematically equal to the ``0.3`` weights of the other two edges, because
+    in floating point ``0.1 + 0.2`` is slightly larger than ``0.3``:
+
+    >>> 0.1 + 0.2 > 0.3
+    True
+    >>> G = nx.Graph()
+    >>> G.add_edge(0, 1, weight=0.1 + 0.2)
+    >>> G.add_edge(1, 2, weight=0.3)
+    >>> G.add_edge(0, 2, weight=0.3)
+    >>> sorted(nx.max_weight_matching(G))
+    [(1, 0)]
+
+    To avoid such surprises, scale the weights to integers (for example by
+    multiplying by a power of ten) before computing the matching. See the
+    :doc:`tutorial </tutorial>` for more on floating point considerations.
+
     Notes
     -----
     If G has edges with weight attributes the edge data are used as
