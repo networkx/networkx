@@ -40,10 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          # For `pull_request` events the checked-out merge ref's two parents are
-          # the PR base and head, so depth 2 is enough for
-          # `asv continuous <base> <head>` to build both commits.
-          fetch-depth: 2
+          fetch-depth: 0
 
       - uses: prefix-dev/setup-pixi@v0.9.6
         with:
