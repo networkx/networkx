@@ -117,9 +117,10 @@ def test_resolution_kwarg(G):
     P5 = comm.leiden_communities(G, resolution=1.5, seed=12)
     assert len(P1) < len(P2) < len(P3) < len(P4) < len(P5)
 
-    return
+@pytest.mark.slow
+def test_resolution_kwarg(G):
     # these work -- but kinda slow & modularity doesn't change smoothly
-    # maybe turn them back on after optimizing leiden modularity
+    # TODO check the speed again after optimizing leiden modularity
     qmod = "modularity"
     # Only three sizes of partitions: 2, 21, 77. Changes at r=0 and r=6.83
     if G.is_multigraph():
@@ -131,7 +132,6 @@ def test_resolution_kwarg(G):
         P1 = comm.leiden_communities(G, metric=qmod, resolution=0.0, seed=12)
         P2 = comm.leiden_communities(G, metric=qmod, resolution=1.0, seed=12)
         P3 = comm.leiden_communities(G, metric=qmod, resolution=7.0, seed=12)
-        print(f"{len(P1)=} {len(P2)=} {len(P3)=}")
         assert len(P1) < len(P2) < len(P3)
 
 
