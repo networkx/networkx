@@ -24,7 +24,8 @@ Pre-Merge Requirements
 All pull requests should meet the following criteria before merging into ``main``:
 
 1. Have at least two approvals from reviewers on the maintainers or triage team.
-2. Have one of the ``type:`` labels applied prior to merge.
+2. Have one of the `type: <https://github.com/networkx/networkx/labels?q=type>`_
+   labels applied prior to merge.
 
 The two approvals requirement applies to PRs originating from external contributors.
 If the PR submitter is a maintainer, then careful review from another maintainer
