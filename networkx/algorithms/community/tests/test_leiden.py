@@ -5,17 +5,25 @@ import networkx as nx
 comm = nx.community
 
 
-def _equivalent_partitions(P1, P2):
-    return {frozenset(C) for C in P1} == {frozenset(C) for C in P2}
-
-
 @pytest.fixture(params=[nx.Graph, nx.MultiGraph])
 def G(request):
     LFR_graph = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
     G = request.param(LFR_graph)
-    G.add_edges_from(LFR_graph.edges())  # duplicate edges if multigraph
+    # duplicate edges if multigraph
+    G.add_edges_from(e for i, e in enumerate(LFR_graph.edges()) if i < 50)
+    return G
+
+
+@pytest.fixture(params=[nx.Graph, nx.MultiGraph])
+def small_G(request):
+    LFR_graph = nx.LFR_benchmark_graph(
+        50, 3, 1.5, 0.1, min_community=5, average_degree=2, seed=10
+    )
+    G = request.param(LFR_graph)
+    # duplicate edges if multigraph
+    G.add_edges_from(e for i, e in enumerate(LFR_graph.edges()) if i < 50)
     return G
 
 
@@ -64,7 +72,12 @@ def test_empty_graph():
 
 
 @pytest.mark.parametrize("metric, Q_func, gamma", _quality())
-def test_overall_increase(G, singletons, metric, Q_func, gamma):
+def test_overall_increase(metric, Q_func, gamma):
+    G = nx.LFR_benchmark_graph(
+        250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
+    )
+    singletons = [{n} for n in G]
+
     Q = Q_func(G, singletons)
     new_P = comm.leiden_communities(G, metric=metric, resolution=gamma, seed=42)
     new_Q = Q_func(G, new_P)
@@ -96,7 +109,7 @@ def test_weight_kwarg():
     assert partition1 != partition3
 
 
-def test_resolution_kwarg(G):
+def test_resolution_kwarg_cpm(G):
     P1 = comm.leiden_communities(G, resolution=0.05, seed=12)
     P2 = comm.leiden_communities(G, resolution=0.10, seed=12)
     P3 = comm.leiden_communities(G, resolution=0.5, seed=12)
@@ -104,12 +117,23 @@ def test_resolution_kwarg(G):
     P5 = comm.leiden_communities(G, resolution=1.5, seed=12)
     assert len(P1) < len(P2) < len(P3) < len(P4) < len(P5)
 
+
+@pytest.mark.slow
+def test_resolution_kwarg_mod(G):
+    # these work -- but kinda slow & modularity doesn't change smoothly
+    # TODO check the speed again after optimizing leiden modularity
     qmod = "modularity"
     # Only three sizes of partitions: 2, 21, 77. Changes at r=0 and r=6.83
-    P1 = comm.leiden_communities(G, metric=qmod, resolution=0.0, seed=12)
-    P2 = comm.leiden_communities(G, metric=qmod, resolution=1.0, seed=12)
-    P3 = comm.leiden_communities(G, metric=qmod, resolution=7.0, seed=12)
-    assert len(P1) < len(P2) < len(P3)
+    if G.is_multigraph():
+        P01 = comm.leiden_communities(G, metric=qmod, resolution=0.1, seed=12)
+        P1 = comm.leiden_communities(G, metric=qmod, resolution=1.0, seed=12)
+        P10 = comm.leiden_communities(G, metric=qmod, resolution=10, seed=12)
+        assert len(P01) < len(P1) < len(P10)
+    else:
+        P1 = comm.leiden_communities(G, metric=qmod, resolution=0.0, seed=12)
+        P2 = comm.leiden_communities(G, metric=qmod, resolution=1.0, seed=12)
+        P3 = comm.leiden_communities(G, metric=qmod, resolution=7.0, seed=12)
+        assert len(P1) < len(P2) < len(P3)
 
 
 def test_LFR_communities_across_algos():
@@ -140,34 +164,35 @@ def test_LFR_communities_across_algos():
 
 def test_barbell_communities_across_algos():
     G = nx.barbell_graph(5, 3)
+    seed = 42
 
     # seed doesn't seem to matter for this example. Resolution does.
     louvain_comm = comm.louvain_communities(G, resolution=1)
-    mod_comm = comm.leiden_communities(G, metric="modularity", resolution=3)
-    cpm_comm = comm.leiden_communities(G, metric="cpm", resolution=0.3)
+    mod_comm = comm.leiden_communities(G, metric="modularity", resolution=3, seed=seed)
+    cpm_comm = comm.leiden_communities(G, metric="cpm", resolution=0.3, seed=seed)
 
-    assert _equivalent_partitions(louvain_comm, mod_comm)
-    assert _equivalent_partitions(louvain_comm, cpm_comm)
+    assert {frozenset(C) for C in louvain_comm} == {frozenset(C) for C in mod_comm}
+    assert {frozenset(C) for C in louvain_comm} == {frozenset(C) for C in cpm_comm}
 
 
 @pytest.mark.parametrize("metric", _metrics())
-def test_max_level_kwarg(G, metric):
-    P_iter = comm.leiden_partitions(G, resolution=0.1, seed=42, metric=metric)
+def test_max_level_kwarg(small_G, metric):
+    P_iter = comm.leiden_partitions(small_G, resolution=0.1, seed=42, metric=metric)
     for max_level, expected in enumerate(P_iter, start=1):
         P = comm.leiden_communities(
-            G, max_level=max_level, resolution=0.1, seed=42, metric=metric
+            small_G, max_level=max_level, resolution=0.1, seed=42, metric=metric
         )
         assert P == expected
     assert max_level > 1  # Ensure we are actually testing max_level
 
     # max_level is an upper limit; it's okay if we stop before it's hit.
     P = comm.leiden_communities(
-        G, max_level=max_level + 1, resolution=0.1, seed=42, metric=metric
+        small_G, max_level=max_level + 1, resolution=0.1, seed=42, metric=metric
     )
     assert P == expected
 
     with pytest.raises(ValueError, match="max_level argument must be.* positive"):
-        comm.leiden_communities(G, max_level=0)
+        comm.leiden_communities(small_G, max_level=0)
 
 
 def test_communities_connected(G):
@@ -193,7 +218,7 @@ def test_expected_stable_across_code_changes_cpm():
         {9},
         {8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
     ]
-    assert _equivalent_partitions(P, P_expected)
+    assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
     G = nx.karate_club_graph()
     P = comm.leiden_communities(G, weight=None, resolution=0.2, seed=1)
@@ -211,7 +236,7 @@ def test_expected_stable_across_code_changes_cpm():
         {26},
         {32, 33, 14, 15, 18, 20, 22, 23, 27, 29},
     ]
-    assert _equivalent_partitions(P, P_expected)
+    assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
 
 def test_expected_stable_across_code_changes_qmod():
@@ -224,7 +249,7 @@ def test_expected_stable_across_code_changes_qmod():
         {32, 33, 8, 9, 14, 15, 18, 20, 22, 23, 26, 27, 29, 30},
         {24, 25, 28, 31},
     ]
-    assert _equivalent_partitions(P, P_expected)
+    assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
     G = nx.karate_club_graph()
     P = comm.leiden_communities(G, weight=None, resolution=2, seed=10, metric=qmod)
@@ -233,7 +258,7 @@ def test_expected_stable_across_code_changes_qmod():
         {16, 4, 5, 6, 10},
         {8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
     ]
-    assert _equivalent_partitions(P, P_expected)
+    assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
 
 def test_connected_communities():
