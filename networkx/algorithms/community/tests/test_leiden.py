@@ -5,15 +5,6 @@ import networkx as nx
 comm = nx.community
 
 
-def _equivalent_partitions(P1, P2):
-    # return {frozenset(C) for C in P1} == {frozenset(C) for C in P2}
-    C1 = {frozenset(C) for C in P1}
-    C2 = {frozenset(C) for C in P2}
-    if C1 != C2:
-        print(f"P1 != P2\n{P1=}\n{P2=}")
-    return C1 == C2
-
-
 @pytest.fixture(params=[nx.Graph, nx.MultiGraph])
 def G(request):
     LFR_graph = nx.LFR_benchmark_graph(
@@ -179,8 +170,8 @@ def test_barbell_communities_across_algos():
     mod_comm = comm.leiden_communities(G, metric="modularity", resolution=3, seed=seed)
     cpm_comm = comm.leiden_communities(G, metric="cpm", resolution=0.3, seed=seed)
 
-    assert _equivalent_partitions(louvain_comm, mod_comm)
-    assert _equivalent_partitions(louvain_comm, cpm_comm)
+    assert {frozenset(C) for C in louvain_comm} == {frozenset(C) for C in mod_comm}
+    assert {frozenset(C) for C in louvain_comm} == {frozenset(C) for C in cpm_comm}
 
 
 @pytest.mark.parametrize("metric", _metrics())
@@ -226,7 +217,7 @@ def test_expected_stable_across_code_changes_cpm():
         {9},
         {8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
     ]
-    assert _equivalent_partitions(P, P_expected)
+    assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
     G = nx.karate_club_graph()
     P = comm.leiden_communities(G, weight=None, resolution=0.2, seed=1)
@@ -244,7 +235,7 @@ def test_expected_stable_across_code_changes_cpm():
         {26},
         {32, 33, 14, 15, 18, 20, 22, 23, 27, 29},
     ]
-    assert _equivalent_partitions(P, P_expected)
+    assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
 
 def test_expected_stable_across_code_changes_qmod():
@@ -257,7 +248,7 @@ def test_expected_stable_across_code_changes_qmod():
         {32, 33, 8, 9, 14, 15, 18, 20, 22, 23, 26, 27, 29, 30},
         {24, 25, 28, 31},
     ]
-    assert _equivalent_partitions(P, P_expected)
+    assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
     G = nx.karate_club_graph()
     P = comm.leiden_communities(G, weight=None, resolution=2, seed=10, metric=qmod)
@@ -266,7 +257,7 @@ def test_expected_stable_across_code_changes_qmod():
         {16, 4, 5, 6, 10},
         {8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
     ]
-    assert _equivalent_partitions(P, P_expected)
+    assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
 
 def test_connected_communities():
