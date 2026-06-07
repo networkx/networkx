@@ -113,5 +113,5 @@ Visualization
 Visualization is not a primary focus on NetworkX, but it is a major feature for
 many users. We need to enhance the drawing tools for NetworkX. We intend to
 evolve to a new ``display`` function that enhances both api and performance relative
-to the drwa functions. We should also enhance docs to make connections with
+to the draw functions. We should also enhance docs to make connections with
 iplotx and GraphViz.
