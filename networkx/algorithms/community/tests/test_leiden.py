@@ -109,7 +109,7 @@ def test_weight_kwarg():
     assert partition1 != partition3
 
 
-def test_resolution_kwarg(G):
+def test_resolution_kwarg_cpm(G):
     P1 = comm.leiden_communities(G, resolution=0.05, seed=12)
     P2 = comm.leiden_communities(G, resolution=0.10, seed=12)
     P3 = comm.leiden_communities(G, resolution=0.5, seed=12)
@@ -117,8 +117,9 @@ def test_resolution_kwarg(G):
     P5 = comm.leiden_communities(G, resolution=1.5, seed=12)
     assert len(P1) < len(P2) < len(P3) < len(P4) < len(P5)
 
+
 @pytest.mark.slow
-def test_resolution_kwarg(G):
+def test_resolution_kwarg_mod(G):
     # these work -- but kinda slow & modularity doesn't change smoothly
     # TODO check the speed again after optimizing leiden modularity
     qmod = "modularity"
