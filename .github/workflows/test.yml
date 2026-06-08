@@ -40,7 +40,6 @@ jobs:
       - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
         with:
           environments: ${{ matrix.environment }}
-          persist-credentials: false
       - name: Test for warnings at import time
         run: pixi run -e ${{ matrix.environment }} check-import
       - name: Test NetworkX
@@ -55,7 +54,6 @@ jobs:
       - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
         with:
           environments: test-default-no-scipy-py312
-          persist-credentials: false
       - name: Test for warnings at import time
         run: pixi run -e test-default-no-scipy-py312 check-import
       - name: Test NetworkX
@@ -70,7 +68,6 @@ jobs:
       - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
         with:
           environments: test-default-py314
-          persist-credentials: false
       - name: Test Dispatching
         run: pixi run -e test-default-py314 test-dispatch
 
@@ -87,7 +84,6 @@ jobs:
       - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
         with:
           environments: ${{ matrix.environment }}
-          persist-credentials: false
       - name: Register graphviz plugins
         run: pixi run -e ${{ matrix.environment }} dot -c
       - name: Test NetworkX
@@ -106,7 +102,6 @@ jobs:
       - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
         with:
           environments: ${{ matrix.environment }}
-          persist-credentials: false
       - name: Install pre-release packages
         run: pixi run -e ${{ matrix.environment }} install-prerelease
       - name: Test NetworkX
@@ -121,7 +116,6 @@ jobs:
       - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
         with:
           environments: test-default-py313
-          persist-credentials: false
       - name: Run slow tests
         # NOTE: --runslow adds slow tests to the collection while -m slow
         # filters out tests that are *not* marked slow, leaving only the

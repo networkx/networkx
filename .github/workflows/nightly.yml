@@ -3,14 +3,20 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"
+
+permissions:
+  contents: read
+
 jobs:
   cron:
     # Do not attempt to upload nightly through forks
     if: github.repository_owner == 'networkx'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: prefix-dev/setup-pixi@v0.9.6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
         with:
           environments: build-release
       - name: Build a wheel and a sdist

@@ -5,6 +5,9 @@ on:
   pull_request:
     types: [labeled, synchronize]
 
+permissions:
+  contents: read
+
 jobs:
   ## This code below is to make sure a new commit on a PR with the label
   ## retriggers the benchmark, otherwise the label needs to be removed and
@@ -14,9 +17,11 @@ jobs:
     outputs:
       result: ${{ steps.check.outputs.result }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
 
-      - uses: actions/github-script@v9
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         name: Check for benchmark label and new commit
         id: check
         with:
@@ -38,21 +43,24 @@ jobs:
     # if: contains(github.event.pull_request.labels.*.name, 'run:benchmark') || ${{ github.event.label.name == 'run:benchmark' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           fetch-depth: 0
 
-      - uses: prefix-dev/setup-pixi@v0.9.6
+      - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
         with:
           environments: benchmark
 
       - name: Run benchmarks
         id: benchmark
+        env:
+          PULL_REQUEST_BASE_LABEL: ${{ github.event.pull_request.base.label }}
+          PULL_REQUEST_HEAD_LABEL: ${{ github.event.pull_request.head.label }}
         run: |
           set -euxo pipefail
 
-          echo "Baseline:  ${{ github.event.pull_request.base.sha }} (${{ github.event.pull_request.base.label }})"
-          echo "Contender: ${GITHUB_SHA} (${{ github.event.pull_request.head.label }})"
+          echo "Baseline:  ${{ github.event.pull_request.base.sha }} (${PULL_REQUEST_BASE_LABEL})"
+          echo "Contender: ${GITHUB_SHA} (${PULL_REQUEST_HEAD_LABEL})"
 
           pixi run -e benchmark benchmark-continuous \
               ${{ github.event.pull_request.base.sha }} ${GITHUB_SHA} \
@@ -63,7 +71,7 @@ jobs:
              exit 1
           fi
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         if: always()
         with:
           name: asv-benchmark-results-${{ runner.os }}

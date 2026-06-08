@@ -1,5 +1,8 @@
 name: circleci
 
+permissions:
+  contents: read
+
 on: [status]
 jobs:
   image:
