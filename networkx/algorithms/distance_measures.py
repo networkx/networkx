@@ -142,8 +142,8 @@ def _extrema_bounding(G, compute="diameter", weight=None):
         for i in candidates:
             # update eccentricity bounds
             d = dist[i]
-            ecc_lower[i] = low = max(ecc_lower[i], max(d, (current_ecc - d)))
-            ecc_upper[i] = upp = min(ecc_upper[i], current_ecc + d)
+            ecc_lower[i] = max(ecc_lower[i], max(d, (current_ecc - d)))
+            ecc_upper[i] = min(ecc_upper[i], current_ecc + d)
 
             # update min/max values of lower and upper bounds
             minlower = min(ecc_lower[i], minlower)
