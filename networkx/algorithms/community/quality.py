@@ -63,6 +63,14 @@ def _require_partition(G, partition):
 require_partition = argmap(_require_partition, (0, 1))
 
 
+def _node_community_map(partition):
+    return {
+        node: community_id
+        for community_id, community in enumerate(partition)
+        for node in community
+    }
+
+
 @nx._dispatchable
 def intra_community_edges(G, partition):
     """Returns the number of intra-community edges for a partition of `G`.
@@ -78,7 +86,8 @@ def intra_community_edges(G, partition):
     in the same block of the partition.
 
     """
-    return sum(G.subgraph(block).size() for block in partition)
+    node_community = _node_community_map(partition)
+    return sum(1 for u, v in G.edges() if node_community[u] == node_community[v])
 
 
 @nx._dispatchable
@@ -97,20 +106,16 @@ def inter_community_edges(G, partition):
     The *inter-community edges* are those edges joining a pair of nodes
     in different blocks of the partition.
 
-    Implementation note: this function creates an intermediate graph
-    that may require the same amount of memory as that of `G`.
-
     """
-    # Alternate implementation that does not require constructing a new
-    # graph object (but does require constructing an affiliation
-    # dictionary):
-    #
-    #     aff = dict(chain.from_iterable(((v, block) for v in block)
-    #                                    for block in partition))
-    #     return sum(1 for u, v in G.edges() if aff[u] != aff[v])
-    #
-    MG = nx.MultiDiGraph if G.is_directed() else nx.MultiGraph
-    return nx.quotient_graph(G, partition, create_using=MG).size()
+    node_community = _node_community_map(partition)
+    inter_edges = (
+        (u, v) for u, v in G.edges() if node_community[u] != node_community[v]
+    )
+    if G.is_multigraph():
+        if G.is_directed():
+            return len(set(inter_edges))
+        return len({frozenset(edge) for edge in inter_edges})
+    return sum(1 for _ in inter_edges)
 
 
 @nx._dispatchable
@@ -130,19 +135,7 @@ def inter_community_non_edges(G, partition):
     those non-edges on a pair of nodes in different blocks of the
     partition.
 
-    Implementation note: this function creates two intermediate graphs,
-    which may require up to twice the amount of memory as required to
-    store `G`.
-
     """
-    # Alternate implementation that does not require constructing two
-    # new graph objects (but does require constructing an affiliation
-    # dictionary):
-    #
-    #     aff = dict(chain.from_iterable(((v, block) for v in block)
-    #                                    for block in partition))
-    #     return sum(1 for u, v in nx.non_edges(G) if aff[u] != aff[v])
-    #
     return inter_community_edges(nx.complement(G), partition)
 
 
