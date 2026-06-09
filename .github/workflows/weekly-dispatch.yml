@@ -5,6 +5,9 @@ on:
     - cron: "0 0 * * 0" # Every Sunday at midnight UTC
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -17,9 +20,11 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6
         with:
           python-version: ${{ matrix.python-version }}
 
