@@ -126,3 +126,23 @@ class TestPajek:
         assert nodes_equal(list(G), list(H))
         assert edges_equal(list(G.edges()), list(H.edges()))
         assert G.graph == H.graph
+
+    def test_quotes_and_backslashes_roundtrip(self):
+        # Labels/attributes with double quotes or backslashes must survive a
+        # write/read round-trip instead of breaking tokenization or injecting
+        # extra attributes.  See make_qstr.
+        import io
+
+        G = nx.Graph()
+        G.add_node('ev il"x 7')  # embedded quote with whitespace
+        G.add_node(r"back\slash")  # backslash, no whitespace
+        G.add_node("n0", role='a" pwn "admin')  # value crafted to inject
+        G.add_edge('ev il"x 7', "n0", lbl=r"c:\path with space")
+        fh = io.BytesIO()
+        nx.write_pajek(G, fh)
+        fh.seek(0)
+        H = nx.read_pajek(fh)
+        assert nodes_equal(list(G), list(H))
+        assert H.nodes["n0"]["role"] == 'a" pwn "admin'
+        assert "pwn" not in H.nodes["n0"]
+        assert H["ev il\"x 7"]["n0"][0]["lbl"] == r"c:\path with space"
