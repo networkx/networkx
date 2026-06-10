@@ -141,6 +141,8 @@ def from_sparse6_bytes(string):
         raise nx.NetworkXError("Expected leading colon in sparse6")
 
     chars = [c - 63 for c in string[1:]]
+    if any(c < 0 or c > 63 for c in chars):
+        raise ValueError("each input character must be in range(63, 127)")
     n, data = data_to_n(chars)
     k = 1
     while 1 << k < n:
