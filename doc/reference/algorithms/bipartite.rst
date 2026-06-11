@@ -18,6 +18,14 @@ Basic functions
    density
    degrees
 
+Edge Coloring
+-------------
+.. automodule:: networkx.algorithms.bipartite.edge_coloring
+.. autosummary::
+   :toctree: generated/
+
+   edge_coloring
+
 Edgelist
 --------
 .. automodule:: networkx.algorithms.bipartite.edgelist
