@@ -449,6 +449,7 @@ def lexicographical_topological_sort(G, key=None):
 
         if node not in G:
             raise RuntimeError("Graph changed during iteration")
+        # G.edges() is used here instead of neighbors to handle MultiDiGraphs
         for _, child in G.edges(node):
             try:
                 indegree_map[child] -= 1
