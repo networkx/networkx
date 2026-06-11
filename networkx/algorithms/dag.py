@@ -460,8 +460,8 @@ def lexicographical_topological_sort(G, key=None):
                     heapq.heappush(zero_indegree, create_tuple(child))
                 except TypeError as err:
                     raise TypeError(
-                        f"{err}\nConsider using `key=` parameter to resolve ambiguities in the sort order."
-                    )
+                        "Consider using `key=` parameter to resolve ambiguities in the sort order."
+                    ) from err
                 del indegree_map[child]
 
         yield node
