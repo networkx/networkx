@@ -345,13 +345,12 @@ def lexicographical_topological_sort(G, key=None):
     topological sort and to determine a single, unique ordering.  This can be useful in comparing
     sort results.
 
-    The lexicographical order can be customized by providing a function to the `key=` parameter.
-    The definition of the key function is the same as used in python's built-in `sort()`.
+    The lexicographical order can be customized by providing a function to the `key` parameter.
+    The definition of the key function is the same as used in Python's built-in `sorted`.
     The function takes a single argument and returns a key to use for sorting purposes.
 
     Lexicographical sorting can fail if the node names are un-sortable. See the example below.
     The solution is to provide a function to the `key=` argument that returns sortable keys.
-
 
     Parameters
     ----------
@@ -365,7 +364,7 @@ def lexicographical_topological_sort(G, key=None):
     Yields
     ------
     nodes
-        Yields the nodes of G in lexicographical topological sort order.
+        Yields the nodes of `G` in lexicographical topological sort order.
 
     Raises
     ------
