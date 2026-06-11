@@ -1148,8 +1148,8 @@ class TestWriteGraphML(BaseGraphML):
         fh.seek(0)
 
         assert nodes_equal(G.nodes(), H.nodes())
-        assert edges_equal(G.edges(), H.edges())
-        assert edges_equal(G.edges(data=True), H.edges(data=True))
+        assert edges_equal(G.edges(), H.edges(), directed=True)
+        assert edges_equal(G.edges(data=True), H.edges(data=True), directed=True)
         self.attribute_named_key_ids_fh.seek(0)
 
         xml = parse(fh)
@@ -1193,8 +1193,8 @@ class TestWriteGraphML(BaseGraphML):
         fh.seek(0)
 
         assert nodes_equal(G.nodes(), H.nodes())
-        assert edges_equal(G.edges(), H.edges())
-        assert edges_equal(G.edges(data=True), H.edges(data=True))
+        assert edges_equal(G.edges(), H.edges(), directed=True)
+        assert edges_equal(G.edges(data=True), H.edges(data=True), directed=True)
         self.attribute_numeric_type_fh.seek(0)
 
         xml = parse(fh)

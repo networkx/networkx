@@ -189,6 +189,10 @@ class TestGeneratorClassic:
         mG = nx.circular_ladder_graph(5, create_using=nx.MultiGraph)
         assert edges_equal(mG.edges(), G.edges())
 
+        for n in (0, 1):
+            with pytest.raises(ValueError, match="n must be at least 2"):
+                nx.circular_ladder_graph(n)
+
     def test_circulant_graph(self):
         # Ci_n(1) is the cycle graph for all n
         Ci6_1 = nx.circulant_graph(6, [1])
@@ -451,8 +455,6 @@ class TestGeneratorClassic:
         s = nx.star_graph(10)
         assert sorted(d for n, d in s.degree()) == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10]
 
-        pytest.raises(nx.NetworkXError, nx.star_graph, 10, create_using=nx.DiGraph)
-
         ms = nx.star_graph(10, create_using=nx.MultiGraph)
         assert edges_equal(ms.edges(), s.edges())
 
@@ -470,6 +472,11 @@ class TestGeneratorClassic:
         G = nx.star_graph("abcdefg")
         assert len(G) == 7
         assert G.size() == 6
+
+    @pytest.mark.parametrize("graph_type", (nx.DiGraph, nx.MultiDiGraph))
+    def test_star_graph_directed(self, graph_type):
+        dg = nx.star_graph(3, create_using=graph_type)
+        assert sorted([(u, v) for u, v, *d in dg.edges]) == [(0, 1), (0, 2), (0, 3)]
 
     def test_non_int_integers_for_star_graph(self):
         np = pytest.importorskip("numpy")

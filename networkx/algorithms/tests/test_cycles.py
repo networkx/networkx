@@ -730,7 +730,7 @@ class TestFindCycle:
 
     def test_graph_nocycle(self):
         G = nx.Graph(self.edges)
-        pytest.raises(nx.exception.NetworkXNoCycle, nx.find_cycle, G, self.nodes)
+        pytest.raises(nx.NetworkXNoCycle, nx.find_cycle, G, self.nodes)
 
     def test_graph_cycle(self):
         G = nx.Graph(self.edges)
@@ -820,7 +820,7 @@ class TestFindCycle:
         # is not visited from 2, and hence, we respect the edge orientation).
         G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 3), (4, 2)])
         pytest.raises(
-            nx.exception.NetworkXNoCycle,
+            nx.NetworkXNoCycle,
             nx.find_cycle,
             G,
             [0, 1, 2, 3, 4],
@@ -829,9 +829,7 @@ class TestFindCycle:
 
     def test_dag(self):
         G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
-        pytest.raises(
-            nx.exception.NetworkXNoCycle, nx.find_cycle, G, orientation="original"
-        )
+        pytest.raises(nx.NetworkXNoCycle, nx.find_cycle, G, orientation="original")
         x = list(nx.find_cycle(G, orientation="ignore"))
         assert x == [(0, 1, FORWARD), (1, 2, FORWARD), (0, 2, REVERSE)]
 

@@ -889,6 +889,17 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         nx.bidirectional_dijkstra(D, 1, 3)
         # FIXME nx.goldberg_radzik(D, 1)
 
+    def test_skip_visited_unweighted(self):
+        """Check that `goldberg_radzik` correctly skips visited nodes in `topo_sort`.
+
+        This doesn't reliably get tested by other tests because iterating over
+        the `relabeled` set is not deterministic.
+        """
+        G = nx.Graph([(0, 4), (0, 5), (1, 3), (1, 4), (2, 3), (2, 5), (3, 5), (3, 6)])
+
+        _, dist = nx.goldberg_radzik(G, 4)
+        assert dist == {0: 1, 1: 1, 2: 3, 3: 2, 4: 0, 5: 2, 6: 3}
+
 
 class TestJohnsonAlgorithm(WeightedTestBase):
     def test_single_node_graph(self):

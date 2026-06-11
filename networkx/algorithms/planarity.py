@@ -858,11 +858,11 @@ class PlanarEmbedding(nx.DiGraph):
 
     def __init__(self, incoming_graph_data=None, **attr):
         super().__init__(incoming_graph_data=incoming_graph_data, **attr)
-        self.add_edge = self.__forbidden
-        self.add_edges_from = self.__forbidden
-        self.add_weighted_edges_from = self.__forbidden
+        self.add_edge = self._forbidden
+        self.add_edges_from = self._forbidden
+        self.add_weighted_edges_from = self._forbidden
 
-    def __forbidden(self, *args, **kwargs):
+    def _forbidden(self, *args, **kwargs):
         """Forbidden operation
 
         Any edge additions to a PlanarEmbedding should be done using
@@ -1379,6 +1379,31 @@ class PlanarEmbedding(nx.DiGraph):
             mark_half_edges.add((prev_node, cur_node))
 
         return face_nodes
+
+    def faces(self):
+        """Generate facial boundary walks from this planar embedding.
+
+        Yields
+        ------
+        face : list
+            A facial boundary walk as a node sequence in cyclic order.
+            Walks are not guaranteed to be simple cycles: vertices can repeat,
+            for example around bridges or articulation points.
+
+        Notes
+        -----
+        This method traverses each directed half-edge exactly once.
+        For disconnected embeddings, a unique global outer face is not
+        distinguished by the combinatorial embedding.
+        When the embedding is obtained from :func:`check_planarity`,
+        self-loops are not represented and parallel edges are merged
+        before the embedding is constructed.
+        """
+        visited_half_edges = set()
+        for v in self:
+            for w in self.neighbors_cw_order(v):
+                if (v, w) not in visited_half_edges:
+                    yield self.traverse_face(v, w, mark_half_edges=visited_half_edges)
 
     def is_directed(self):
         """A valid PlanarEmbedding is undirected.

@@ -1,10 +1,31 @@
 import pytest
 
 import networkx as nx
-from networkx.exception import NetworkXError
 
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
+
+
+@pytest.mark.parametrize(
+    "ary_format", ("bsr", "csr", "csc", "coo", "lil", "dia", "dok", "dense")
+)
+def test_adjacency_matrix_format(ary_format):
+    G = nx.havel_hakimi_graph([3, 2, 2, 1, 0])
+    # fmt: off
+    expected_array = np.array(
+        [[0, 1, 1, 1, 0],
+         [1, 0, 1, 0, 0],
+         [1, 1, 0, 0, 0],
+         [1, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0]]
+    )
+    # fmt: on
+    A = nx.adjacency_matrix(G, format=ary_format)
+    if ary_format != "dense":  # The sparse formats
+        assert np.array_equal(A.todense(), expected_array)
+        assert A.format == ary_format
+    else:
+        assert np.array_equal(A, expected_array)
 
 
 def test_incidence_matrix_simple():
@@ -40,7 +61,7 @@ def test_incidence_matrix_simple():
     # fmt: on
     np.testing.assert_equal(I, expected)
 
-    with pytest.raises(NetworkXError):
+    with pytest.raises(nx.NetworkXError):
         nx.incidence_matrix(G, nodelist=[0, 1])
 
 

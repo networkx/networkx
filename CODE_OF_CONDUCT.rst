@@ -21,56 +21,88 @@ understanding of a collaborative, shared environment and goals. Please try to
 follow this code in spirit as much as in letter, to create a friendly and
 productive environment that enriches the surrounding community.
 
+We have adopted the NumFOCUS Code of Conduct to allow people with some separation
+and some training to further the Code of Conduct goals.
 
-Specific Guidelines
--------------------
+NetworkX uses the NumFOCUS Code of Conduct
+------------------------------------------
 
-We strive to:
+You can find the whole document at
+`the NumFOCUS Code of Conduct website <https://numfocus.org/code-of-conduct>`_
 
-1. Be open. We invite anyone to participate in our community. We prefer to use
-   public methods of communication for project-related messages, unless
-   discussing something sensitive. This applies to messages for help or
-   project-related support, too; not only is a public support request much more
-   likely to result in an answer to a question, it also ensures that any
-   inadvertent mistakes in answering are more easily detected and corrected.
+The Short Version
+-----------------
 
-2. Be empathetic, welcoming, friendly, and patient. We work together to resolve
-   conflict, and assume good intentions. We may all experience some frustration
-   from time to time, but we do not allow frustration to turn into a personal
-   attack. A community where people feel uncomfortable or threatened is not a
-   productive one.
+Be kind to others. Do not insult or put down others. Behave professionally.
+Remember that harassment and sexist, racist, or exclusionary jokes are not
+appropriate for NumFOCUS. NetworkX uses the NumfOCUS Code of Conduct and this
+short version is language provided by their Code of Conduct Working Group.
 
-3. Be collaborative. Our work will be used by other people, and in turn we will
-   depend on the work of others. When we make something for the benefit of the
-   project, we are willing to explain to others how it works, so that they can
-   build on the work to make it even better. Any decision we make will affect
-   users and colleagues, and we take those consequences seriously when making
-   decisions.
+All communication should be appropriate for a professional audience including
+people of many different backgrounds. Sexual language and imagery is not
+appropriate.
 
-4. Be inquisitive. Nobody knows everything! Asking questions early avoids many
-   problems later, so we encourage questions, although we may direct them to
-   the appropriate forum. We will try hard to be responsive and helpful.
+NumFOCUS is dedicated to providing a harassment-free community for everyone,
+regardless of gender, sexual orientation, gender identity and expression,
+disability, physical appearance, body size, race, or religion. We do not
+tolerate harassment of community members in any form.
 
-5. Be careful in the words that we choose.  We are careful and respectful in
-   our communication and we take responsibility for our own speech. Be kind to
-   others. Do not insult or put down other participants.  We will not accept
-   harassment or other exclusionary behaviour, such as:
+Thank you for helping make this a welcoming, friendly community for all.
 
-    - Violent threats or language directed against another person.
-    - Sexist, racist, or otherwise discriminatory jokes and language.
-    - Posting sexually explicit or violent material.
-    - Posting (or threatening to post) other people's personally identifying information ("doxing").
-    - Sharing private content, such as emails sent privately or non-publicly,
-      or unlogged forums such as IRC channel history, without the sender's consent.
-    - Personal insults, especially those using racist or sexist terms.
-    - Unwelcome sexual attention.
-    - Excessive profanity. Please avoid swearwords; people differ greatly in their sensitivity to swearing.
-    - Repeated harassment of others. In general, if someone asks you to stop, then stop.
-    - Advocating for, or encouraging, any of the above behaviour.
+Long Version
+------------
 
+You can find the long version of the Code of Conduct on
+`the NumFOCUS Code of Conduct website <https://numfocus.org/code-of-conduct>`_
+
+How To Report
+-------------
+
+If you notice any behavior, incident, or situation that seems inappropriate
+or violates our Code of Conduct, we encourage you to report it via the
+`NumFOCUS Code of Conduct Reporting Form
+<https://numfocus.typeform.com/to/ynjGdT?typeform-source=numfocus.org>`_ .
+That report can be submitted anonymously if that feels more comfortable for you.
+
+Please note that the NumFOCUS Code of Conduct is not an exhaustive document
+and continues to evolve. Even if the incident you wish to report is not
+explicitly mentioned in the Code of Conduct, we still encourage you to report it.
+
+Who Will Receive Your Report
+----------------------------
+
+Your report will be received and handled by NumFOCUS Code of Conduct Working
+Group; trained, and experienced contributors with diverse backgrounds. The
+group is making decisions independently from the project, PyData, NumFOCUS or
+any other organization.
+The CoC Working Group will investigate and make recommendations to the
+NetworkX Community about appropriate responses. The NetworkX Community
+has the final decision about actions taken.
+
+You can learn more about the reporting procedure as well as the current group
+members at
+`the NumFOCUS Code of Conduct website <https://numfocus.org/code-of-conduct>`_
+(e.g. search that page for "current list of voting members")
+
+What Happens Next
+-----------------
+
+The CoC Working Group will investigate each report and make recommendations to the
+NetworkX Community about appropriate responses. The NetworkX Community, through
+the NetworkX Steering Council, makes final decisions about actions taken.
+Enforcement is enacted via transparent decision by the NetworkX Steering Council.
+
+In case of severe and obvious breaches, e.g., personal threat or violent, sexist
+or racist language, we will immediately disconnect the originator from NetworkX
+communication channels.
 
 Diversity Statement
 -------------------
+
+NumFOCUS and NetworkX are dedicated to providing a harassment-free community
+for everyone, regardless of gender, sexual orientation, gender identity and
+expression, disability, physical appearance, body size, race, or religion.
+We do not tolerate harassment of community members in any form.
 
 The NetworkX project welcomes and encourages participation by everyone. We are
 committed to being a community that everyone enjoys being part of. Although
@@ -90,63 +122,3 @@ conducted in English.
 Standards for behaviour in the NetworkX community are detailed in the Code of
 Conduct above. Participants in our community should uphold these standards
 in all their interactions and help others to do so as well (see next section).
-
-
-Reporting Guidelines
---------------------
-
-We know that it is painfully common for internet communication to start at or
-devolve into obvious and flagrant abuse.  We also recognize that sometimes
-people may have a bad day, or be unaware of some of the guidelines in this Code
-of Conduct. Please keep this in mind when deciding on how to respond to a
-breach of this Code.
-
-For clearly intentional breaches, report those to the NetworkX Steering Council
-(see below). For possibly unintentional breaches, you may reply to the person
-and point out this code of conduct (either in public or in private, whatever is
-most appropriate). If you would prefer not to do that, please feel free to
-report to the NetworkX Steering Council directly, or ask the Council for
-advice, in confidence.
-
-You can report issues to the
-`NetworkX Steering Council <https://github.com/orgs/networkx/teams/steering-council/members>`__,
-at networkx-conduct@groups.io.
-
-If your report involves any members of the Council, or if they feel they have
-a conflict of interest in handling it, then they will recuse themselves from
-considering your report. Alternatively, if for any reason you feel
-uncomfortable making a report to the Council, then you can also contact:
-
-- Senior `NumFOCUS staff <https://numfocus.org/code-of-conduct#persons-responsible>`__: conduct@numfocus.org.
-
-
-Incident reporting resolution & Code of Conduct enforcement
------------------------------------------------------------
-
-We will investigate and respond to all complaints. The NetworkX Steering Council
-will protect the identity of the reporter, and treat the content of
-complaints as confidential (unless the reporter agrees otherwise).
-
-In case of severe and obvious breaches, e.g., personal threat or violent, sexist
-or racist language, we will immediately disconnect the originator from NetworkX
-communication channels.
-
-In cases not involving clear severe and obvious breaches of this code of
-conduct, the process for acting on any received code of conduct violation
-report will be:
-
-1. acknowledge report is received
-2. reasonable discussion/feedback
-3. mediation (if feedback didn't help, and only if both reporter and reportee agree to this)
-4. enforcement via transparent decision by the NetworkX Steering Council
-
-The Council will respond to any report as soon as possible, and at most
-within 72 hours.
-
-
-Endnotes
---------
-
-This document is adapted from:
-
-- `SciPy Code of Conduct <http://scipy.github.io/devdocs/dev/conduct/code_of_conduct.html>`_

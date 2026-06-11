@@ -60,7 +60,9 @@ class TestGeneratorLine:
     def test_multidigraph1(self):
         G = nx.MultiDiGraph([(1, 2), (2, 1)])
         L = nx.line_graph(G)
-        assert edges_equal(L.edges(), [((1, 2, 0), (2, 1, 0)), ((2, 1, 0), (1, 2, 0))])
+        assert edges_equal(
+            L.edges(), [((1, 2, 0), (2, 1, 0)), ((2, 1, 0), (1, 2, 0))], directed=True
+        )
 
     def test_multidigraph2(self):
         G = nx.MultiDiGraph([(0, 1), (0, 1), (0, 1), (1, 2)])
@@ -68,12 +70,15 @@ class TestGeneratorLine:
         assert edges_equal(
             L.edges(),
             [((0, 1, 0), (1, 2, 0)), ((0, 1, 1), (1, 2, 0)), ((0, 1, 2), (1, 2, 0))],
+            directed=True,
         )
 
     def test_digraph2(self):
         G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
         L = nx.line_graph(G)
-        assert edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
+        assert edges_equal(
+            L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))], directed=True
+        )
 
     def test_create1(self):
         G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
@@ -83,7 +88,9 @@ class TestGeneratorLine:
     def test_create2(self):
         G = nx.Graph([(0, 1), (1, 2), (2, 3)])
         L = nx.line_graph(G, create_using=nx.DiGraph())
-        assert edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
+        assert edges_equal(
+            L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))], directed=True
+        )
 
 
 class TestGeneratorInverseLine:

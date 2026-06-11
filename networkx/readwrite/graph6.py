@@ -14,7 +14,6 @@ For more information, see the `graph6`_ homepage.
 from itertools import islice
 
 import networkx as nx
-from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for, open_file
 
 __all__ = ["from_graph6_bytes", "read_graph6", "to_graph6_bytes", "write_graph6"]
@@ -119,13 +118,13 @@ def from_graph6_bytes(bytes_in):
         bytes_in = bytes_in[10:]
 
     data = [c - 63 for c in bytes_in]
-    if any(c > 63 for c in data):
+    if any(c < 0 or c > 63 for c in data):
         raise ValueError("each input character must be in range(63, 127)")
 
     n, data = data_to_n(data)
     nd = (n * (n - 1) // 2 + 5) // 6
     if len(data) != nd:
-        raise NetworkXError(
+        raise nx.NetworkXError(
             f"Expected {n * (n - 1) // 2} bits but got {len(data) * 6} in graph6"
         )
 

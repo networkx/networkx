@@ -162,7 +162,7 @@ def test_union_all_and_compose_all():
 
     G = nx.union_all([G1, G2])
     H = nx.compose_all([G1, G2])
-    assert edges_equal(G.edges(), H.edges())
+    assert edges_equal(G.edges(), H.edges(), directed=True)
     assert not G.has_edge("A", "1")
     pytest.raises(nx.NetworkXError, nx.union, K3, P3)
     H1 = nx.union_all([H, G1], rename=("H", "G1"))
@@ -200,7 +200,7 @@ def test_union_all_and_compose_all():
     assert not H1.has_edge("NB", "NA")
 
     G = nx.compose_all([G, G])
-    assert edges_equal(G.edges(), H.edges())
+    assert edges_equal(G.edges(), H.edges(), directed=True)
 
     G2 = nx.union_all([G2, G2], rename=("", "copy"))
     assert sorted(G2.nodes()) == [

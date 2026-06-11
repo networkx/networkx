@@ -64,14 +64,6 @@ def random_string(L=15, seed=None):
     return "".join([seed.choice(string.ascii_letters) for n in range(L)])
 
 
-def _min_weight(weight):
-    return -weight
-
-
-def _max_weight(weight):
-    return weight
-
-
 @nx._dispatchable(edge_attrs={"attr": "default"})
 def branching_weight(G, attr="weight", default=1):
     """
@@ -736,7 +728,7 @@ def maximum_spanning_arborescence(
     nx._clear_cache(B)
 
     if not is_arborescence(B):
-        raise nx.exception.NetworkXException("No maximum spanning arborescence in G.")
+        raise nx.NetworkXException("No maximum spanning arborescence in G.")
 
     return B
 
@@ -754,7 +746,7 @@ def minimum_spanning_arborescence(
     )
 
     if not is_arborescence(B):
-        raise nx.exception.NetworkXException("No minimum spanning arborescence in G.")
+        raise nx.NetworkXException("No minimum spanning arborescence in G.")
 
     return B
 

@@ -139,11 +139,11 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
     h = max(L)
 
     # each node has a label, initially set to 0
-    label = dict.fromkeys(dT, 0)
+    label = {v: 0 for v in dT}
     # and also ordered_labels and ordered_children
     # which will store ordered tuples
-    ordered_labels = dict.fromkeys(dT, ())
-    ordered_children = dict.fromkeys(dT, ())
+    ordered_labels = {v: () for v in dT}
+    ordered_children = {v: () for v in dT}
 
     # nothing to do on last level so start on h-1
     # also nothing to do for our fake level 0, so skip that

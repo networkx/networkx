@@ -7,3 +7,4 @@ Walks
    :toctree: generated/
 
    number_of_walks
+   random_walk

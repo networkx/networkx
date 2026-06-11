@@ -1,6 +1,5 @@
 """Functions for computing dominating sets in a graph."""
 
-import math
 from heapq import heappop, heappush
 from itertools import chain, count
 

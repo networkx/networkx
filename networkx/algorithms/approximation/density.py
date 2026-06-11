@@ -15,7 +15,7 @@ def _greedy_plus_plus(G, iterations):
             f"The number of iterations must be an integer >= 1. Provided: {iterations}"
         )
 
-    loads = dict.fromkeys(G.nodes, 0)  # Load vector for Greedy++.
+    loads = {node: 0 for node in G.nodes}  # Load vector for Greedy++.
     best_density = 0.0  # Highest density encountered.
     best_subgraph = set()  # Nodes of the best subgraph found.
 
@@ -92,8 +92,8 @@ def _fractional_peeling(G, b, x, node_to_idx, edge_to_idx):
     remaining_nodes = set(G.nodes)
 
     # Initialize heap with b values
-    for idx in remaining_nodes:
-        heap.insert(idx, b[idx])
+    for idx, node in enumerate(G):
+        heap.insert(node, b[idx])
 
     num_edges = G.number_of_edges()
 

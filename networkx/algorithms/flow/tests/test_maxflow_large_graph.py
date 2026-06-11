@@ -65,7 +65,7 @@ def validate_flows(G, s, t, soln_value, R, flow_func):
     assert set(G) == set(flow_dict), errmsg
     for u in G:
         assert set(G[u]) == set(flow_dict[u]), errmsg
-    excess = dict.fromkeys(flow_dict, 0)
+    excess = {u: 0 for u in flow_dict}
     for u in flow_dict:
         for v, flow in flow_dict[u].items():
             assert flow <= G[u][v].get("capacity", float("inf")), errmsg

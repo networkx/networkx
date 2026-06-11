@@ -4,7 +4,6 @@ from collections import defaultdict
 
 import networkx as nx
 from networkx.algorithms.community.quality import modularity
-from networkx.utils import not_implemented_for
 from networkx.utils.mapped_queue import MappedQueue
 
 __all__ = [
@@ -354,8 +353,8 @@ def greedy_modularity_communities(
     return sorted(communities, key=len, reverse=True)
 
 
-@not_implemented_for("directed")
-@not_implemented_for("multigraph")
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 def naive_greedy_modularity_communities(G, resolution=1, weight=None):
     r"""Find communities in G using greedy modularity maximization.

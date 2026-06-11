@@ -8,11 +8,13 @@ Communities
 
 Bipartitions
 ------------
-.. automodule:: networkx.algorithms.community.kernighan_lin
+.. automodule:: networkx.algorithms.community.bipartitions
 .. autosummary::
    :toctree: generated/
 
    kernighan_lin_bisection
+   spectral_modularity_bipartition
+   greedy_node_swap_bipartition
 
 Divisive Communities
 --------------------
@@ -99,6 +101,8 @@ Measuring partitions
    :toctree: generated/
 
    modularity
+   overlapping_modularity
+   constant_potts_model
    partition_quality
 
 Partitions via centrality measures
@@ -116,3 +120,4 @@ Validating partitions
    :toctree: generated/
 
    is_partition
+   is_cover

@@ -27,7 +27,7 @@ def node_redundancy(G, nodes=None):
         \: \exists v' \neq  v,\: (v',u) \in E\:
         \mathrm{and}\: (v',w) \in E\}|}{ \frac{|N(v)|(|N(v)|-1)}{2}},
 
-    where `N(v)` is the set of neighbors of `v` in `G`.
+    where `N(v)` is the set of neighbors of `v` in `G` [1]_.
 
     Parameters
     ----------
@@ -44,30 +44,30 @@ def node_redundancy(G, nodes=None):
 
     Examples
     --------
-    Compute the redundancy coefficient of each node in a graph::
+    Compute the redundancy coefficient of each node in a graph:
 
-        >>> from networkx.algorithms import bipartite
-        >>> G = nx.cycle_graph(4)
-        >>> rc = bipartite.node_redundancy(G)
-        >>> rc[0]
-        1.0
+    >>> from networkx.algorithms import bipartite
+    >>> G = nx.cycle_graph(4)
+    >>> rc = bipartite.node_redundancy(G)
+    >>> rc[0]
+    1.0
 
-    Compute the average redundancy for the graph::
+    Compute the average redundancy for the graph:
 
-        >>> from networkx.algorithms import bipartite
-        >>> G = nx.cycle_graph(4)
-        >>> rc = bipartite.node_redundancy(G)
-        >>> sum(rc.values()) / len(G)
-        1.0
+    >>> from networkx.algorithms import bipartite
+    >>> G = nx.cycle_graph(4)
+    >>> rc = bipartite.node_redundancy(G)
+    >>> sum(rc.values()) / len(G)
+    1.0
 
-    Compute the average redundancy for a set of nodes::
+    Compute the average redundancy for a set of nodes:
 
-        >>> from networkx.algorithms import bipartite
-        >>> G = nx.cycle_graph(4)
-        >>> rc = bipartite.node_redundancy(G)
-        >>> nodes = [0, 2]
-        >>> sum(rc[n] for n in nodes) / len(nodes)
-        1.0
+    >>> from networkx.algorithms import bipartite
+    >>> G = nx.cycle_graph(4)
+    >>> rc = bipartite.node_redundancy(G)
+    >>> nodes = [0, 2]
+    >>> sum(rc[n] for n in nodes) / len(nodes)
+    1.0
 
     Raises
     ------

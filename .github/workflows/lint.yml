@@ -2,6 +2,9 @@ name: style
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -9,23 +12,12 @@ concurrency:
 jobs:
   format:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.13"]
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install packages
-        run: |
-          pip install --upgrade pip
-          pip install .[developer]
-          pip list
-
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
+        with:
+          environments: lint
       - name: Lint
-        run: pre-commit run --all-files --show-diff-on-failure --color always
+        run: pixi run -e lint lint

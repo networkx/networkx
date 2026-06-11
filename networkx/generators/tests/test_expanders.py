@@ -62,23 +62,34 @@ def test_paley_graph(p):
 
 
 @pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
-def test_maybe_regular_expander(d, n):
+def test_maybe_regular_expander_graph(d, n):
     pytest.importorskip("numpy")
-    G = nx.maybe_regular_expander(n, d, seed=1729)
+    G = nx.maybe_regular_expander_graph(n, d, seed=1729)
 
     assert len(G) == n, "Should have n nodes"
     assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
     assert nx.is_k_regular(G, d), "Should be d-regular"
 
 
-def test_maybe_regular_expander_max_tries():
+def test_maybe_regular_expander_graph_max_tries():
     pytest.importorskip("numpy")
     d, n = 4, 10
-    msg = "Too many iterations in maybe_regular_expander"
+    msg = "Too many iterations in maybe_regular_expander_graph"
     with pytest.raises(nx.NetworkXError, match=msg):
-        nx.maybe_regular_expander(n, d, max_tries=100, seed=6818)  # See gh-8048
+        nx.maybe_regular_expander_graph(n, d, max_tries=100, seed=6818)  # See gh-8048
 
-    nx.maybe_regular_expander(n, d, max_tries=130, seed=6818)
+    nx.maybe_regular_expander_graph(n, d, max_tries=130, seed=6818)
+
+
+def test_maybe_regular_expander_deprecated():
+    pytest.importorskip("numpy")
+    d, n = 2, 7
+    with pytest.deprecated_call():
+        G = nx.maybe_regular_expander(n, d, seed=1729)
+
+    assert len(G) == n, "Should have n nodes"
+    assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
+    assert nx.is_k_regular(G, d), "Should be d-regular"
 
 
 @pytest.mark.parametrize("n", (3, 5, 6, 10))
@@ -133,17 +144,17 @@ def test_paley_graph_badinput():
         nx.paley_graph(3, create_using=nx.MultiGraph)
 
 
-def test_maybe_regular_expander_badinput():
+def test_maybe_regular_expander_graph_badinput():
     pytest.importorskip("numpy")
 
     with pytest.raises(nx.NetworkXError, match="n must be a positive integer"):
-        nx.maybe_regular_expander(n=-1, d=2)
+        nx.maybe_regular_expander_graph(n=-1, d=2)
 
     with pytest.raises(nx.NetworkXError, match="d must be greater than or equal to 2"):
-        nx.maybe_regular_expander(n=10, d=0)
+        nx.maybe_regular_expander_graph(n=10, d=0)
 
     with pytest.raises(nx.NetworkXError, match="Need n-1>= d to have room"):
-        nx.maybe_regular_expander(n=5, d=6)
+        nx.maybe_regular_expander_graph(n=5, d=6)
 
 
 def test_is_regular_expander_badinput():

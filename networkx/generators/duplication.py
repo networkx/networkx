@@ -7,7 +7,6 @@ generally inspired by biological networks.
 """
 
 import networkx as nx
-from networkx.exception import NetworkXError
 from networkx.utils import py_random_state
 from networkx.utils.misc import check_create_using
 
@@ -70,9 +69,9 @@ def partial_duplication_graph(N, n, p, q, seed=None, *, create_using=None):
     create_using = check_create_using(create_using, directed=False, multigraph=False)
     if p < 0 or p > 1 or q < 0 or q > 1:
         msg = "partial duplication graph must have 0 <= p, q <= 1."
-        raise NetworkXError(msg)
+        raise nx.NetworkXError(msg)
     if n > N:
-        raise NetworkXError("partial duplication graph must have n <= N.")
+        raise nx.NetworkXError("partial duplication graph must have n <= N.")
 
     G = nx.complete_graph(n, create_using)
     for new_node in range(n, N):

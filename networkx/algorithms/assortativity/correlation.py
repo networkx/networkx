@@ -145,6 +145,10 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     -----
     This calls scipy.stats.pearsonr.
 
+    Returns ``nan`` if the graph has fewer than two ``(degree, degree)``
+    pairs, since the Pearson correlation coefficient is undefined in
+    that case.
+
     References
     ----------
     .. [1] M. E. J. Newman, Mixing patterns in networks
@@ -154,7 +158,9 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     """
     import scipy as sp
 
-    xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
+    xy = list(node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight))
+    if len(xy) < 2:
+        return float("nan")
     x, y = zip(*xy)
     return float(sp.stats.pearsonr(x, y)[0])
 

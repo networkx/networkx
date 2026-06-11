@@ -552,14 +552,14 @@ def stochastic_block_model(
     >>> H = nx.quotient_graph(g, g.graph["partition"], relabel=True)
     >>> for v in H.nodes(data=True):
     ...     print(round(v[1]["density"], 3))
-    0.245
-    0.348
-    0.405
+    0.244
+    0.354
+    0.398
     >>> for v in H.edges(data=True):
     ...     print(round(1.0 * v[2]["weight"] / (sizes[v[0]] * sizes[v[1]]), 3))
-    0.051
-    0.022
-    0.07
+    0.047
+    0.02
+    0.071
 
     See Also
     --------
@@ -635,9 +635,6 @@ def stochastic_block_model(
                 edges = itertools.combinations(parts[i], 2)
                 if selfloops:
                     edges = itertools.chain(edges, zip(parts[i], parts[i]))
-            for e in edges:
-                if seed.random() < p[i][j]:
-                    g.add_edge(*e)
         else:
             edges = itertools.product(parts[i], parts[j])
         if sparse:

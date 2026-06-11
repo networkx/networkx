@@ -38,6 +38,7 @@ Random Sequence Generators
    :toctree: generated/
 
    powerlaw_sequence
+   is_valid_tree_degree_sequence
    cumulative_distribution
    discrete_sequence
    zipf_rv

@@ -55,7 +55,9 @@ class AntiGraph(Graph):
            The adjacency dictionary for nodes connected to n.
 
         """
-        return dict.fromkeys(set(self.adj) - set(self.adj[n]) - {n}, self.all_edge_dict)
+        return {
+            node: self.all_edge_dict for node in set(self.adj) - set(self.adj[n]) - {n}
+        }
 
     def neighbors(self, n):
         """Return an iterator over all neighbors of node n in the
@@ -105,9 +107,10 @@ class AntiGraph(Graph):
             nodes_nbrs = (
                 (
                     n,
-                    dict.fromkeys(
-                        set(self.adj) - set(self.adj[n]) - {n}, self.all_edge_dict
-                    ),
+                    {
+                        v: self.all_edge_dict
+                        for v in set(self.adj) - set(self.adj[n]) - {n}
+                    },
                 )
                 for n in self.nodes()
             )
@@ -118,9 +121,10 @@ class AntiGraph(Graph):
             nodes_nbrs = (
                 (
                     n,
-                    dict.fromkeys(
-                        set(self.nodes()) - set(self.adj[n]) - {n}, self.all_edge_dict
-                    ),
+                    {
+                        v: self.all_edge_dict
+                        for v in set(self.nodes()) - set(self.adj[n]) - {n}
+                    },
                 )
                 for n in self.nbunch_iter(nbunch)
             )

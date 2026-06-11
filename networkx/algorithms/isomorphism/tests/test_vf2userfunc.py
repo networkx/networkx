@@ -72,7 +72,7 @@ def test_weightkey():
     assert nx.is_isomorphic(g1, g2, edge_match=em)
 
 
-class TestNodeMatch_Graph:
+class TestMatch_Graph:
     def setup_method(self):
         self.g1 = nx.Graph()
         self.g2 = nx.Graph()
@@ -106,23 +106,33 @@ class TestNodeMatch_Graph:
         assert not nx.is_isomorphic(self.g1, self.g2, edge_match=self.em)
 
     def test_colorsandweights1(self):
-        iso = nx.is_isomorphic(self.g1, self.g2, node_match=self.nm, edge_match=self.em)
-        assert not iso
+        assert not nx.is_isomorphic(
+            self.g1, self.g2, node_match=self.nm, edge_match=self.em
+        )
 
     def test_colorsandweights2(self):
         self.g1.nodes["A"]["color"] = "blue"
-        iso = nx.is_isomorphic(self.g1, self.g2, node_match=self.nm, edge_match=self.em)
-        assert iso
+        assert nx.is_isomorphic(
+            self.g1, self.g2, node_match=self.nm, edge_match=self.em
+        )
 
     def test_colorsandweights3(self):
-        # make the weights disagree
+        # make the colors agree and the weights disagree
+        self.g1.nodes["A"]["color"] = "blue"
         self.g1.add_edge("A", "B", weight=2)
         assert not nx.is_isomorphic(
             self.g1, self.g2, node_match=self.nm, edge_match=self.em
         )
 
 
-class TestEdgeMatch_MultiGraph:
+class TestMatch_DiGraph(TestMatch_Graph):
+    def setup_method(self):
+        self.g1 = nx.DiGraph()
+        self.g2 = nx.DiGraph()
+        self.build()
+
+
+class TestMatch_MultiGraph:
     def setup_method(self):
         self.g1 = nx.MultiGraph()
         self.g2 = nx.MultiGraph()
@@ -152,16 +162,6 @@ class TestEdgeMatch_MultiGraph:
                 ["red", 1, 0.5],
                 [eq, eq, math.isclose],
             )
-        else:
-            self.em = iso.numerical_edge_match("weight", 1)
-            self.emc = iso.categorical_edge_match("color", "")
-            self.emcm = iso.categorical_edge_match(["color", "weight"], ["", 1])
-            self.emg1 = iso.generic_multiedge_match("color", "red", eq)
-            self.emg2 = iso.generic_edge_match(
-                ["color", "weight", "size"],
-                ["red", 1, 0.5],
-                [eq, eq, math.isclose],
-            )
 
     def test_weights_only(self):
         assert nx.is_isomorphic(self.g1, self.g2, edge_match=self.em)
@@ -174,26 +174,22 @@ class TestEdgeMatch_MultiGraph:
         gm = self.GM(self.g1, self.g2, edge_match=self.emcm)
         assert not gm.is_isomorphic()
 
-    def test_generic1(self):
+    def test_generic_color_only(self):
         gm = self.GM(self.g1, self.g2, edge_match=self.emg1)
         assert gm.is_isomorphic()
 
-    def test_generic2(self):
+    def test_generic_all_3_attr(self):
         gm = self.GM(self.g1, self.g2, edge_match=self.emg2)
         assert not gm.is_isomorphic()
 
+        self.g2.edges["C", "D", 0]["weight"] = 0
+        self.g2.edges["C", "D", 1]["weight"] = 1
+        self.g2.edges["C", "D", 1]["size"] = 0.35
+        assert gm.is_isomorphic()
 
-class TestEdgeMatch_DiGraph(TestNodeMatch_Graph):
+
+class TestMatch_MultiDiGraph(TestMatch_MultiGraph):
     def setup_method(self):
-        TestNodeMatch_Graph.setup_method(self)
-        self.g1 = nx.DiGraph()
-        self.g2 = nx.DiGraph()
-        self.build()
-
-
-class TestEdgeMatch_MultiDiGraph(TestEdgeMatch_MultiGraph):
-    def setup_method(self):
-        TestEdgeMatch_MultiGraph.setup_method(self)
         self.g1 = nx.MultiDiGraph()
         self.g2 = nx.MultiDiGraph()
         self.GM = iso.MultiDiGraphMatcher

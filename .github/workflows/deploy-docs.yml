@@ -4,40 +4,25 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   documentation:
     # Do not attempt to deploy documentation on forks
     if: github.repository_owner == 'networkx'
-
     runs-on: ubuntu-22.04
-
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
-          python-version: "3.12"
-
-      - name: Before install
-        run: |
-          sudo apt-get update
-          sudo apt-get install graphviz graphviz-dev
-          sudo apt-get install libspatialindex-dev
-
-      - name: Install packages
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements/example.txt
-          pip install --upgrade .[default,test,extra,doc]
-          # Install trusted backends, but not their dependencies.
-          # We only need to use the "networkx.backend_info" entry-point.
-          # This is the nightly wheel for nx-cugraph.
-          pip install nx-cugraph-cu11 --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple --no-deps --pre
-          # Development version of GraphBLAS backend
-          pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
-          # Development version of nx-parallel backend
-          pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
-          pip list
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
+        with:
+          environments: docs
+      - name: Register graphviz plugins
+        run: pixi run -e docs dot -c
+      - name: Install backend stubs
+        run: pixi run -e docs install-backend-stubs
 
       # To set up a cross-repository deploy key:
       # 1. Create a key pair:
@@ -50,19 +35,17 @@ jobs:
       #   - Make sure the name is the same as below: CI_DEPLOY_KEY
       - name: Install SSH agent
         if: github.ref == 'refs/heads/main'
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
         with:
           ssh-private-key: ${{ secrets.CI_DEPLOY_KEY }}
 
       - name: Build docs
         if: github.ref == 'refs/heads/main'
-        run: |
-          export DISPLAY=:99
-          make -C doc/ html
+        run: pixi run -e docs docs-build
 
       - name: Deploy docs
         if: github.ref == 'refs/heads/main'
-        uses: JamesIves/github-pages-deploy-action@releases/v4
+        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # releases/v4
         with:
           git-config-name: nx-doc-deploy-bot
           git-config-email: nx-doc-deploy-bot@nomail

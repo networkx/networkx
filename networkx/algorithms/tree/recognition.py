@@ -205,7 +205,7 @@ def is_forest(G):
 
     """
     if len(G) == 0:
-        raise nx.exception.NetworkXPointlessConcept("G has no nodes.")
+        raise nx.NetworkXPointlessConcept("G has no nodes.")
 
     if G.is_directed():
         components = (G.subgraph(c) for c in nx.weakly_connected_components(G))
@@ -262,7 +262,7 @@ def is_tree(G):
 
     """
     if len(G) == 0:
-        raise nx.exception.NetworkXPointlessConcept("G has no nodes.")
+        raise nx.NetworkXPointlessConcept("G has no nodes.")
 
     if G.is_directed():
         is_connected = nx.is_weakly_connected

@@ -46,6 +46,7 @@ __all__ = [
     "number_of_selfloops",
     "path_weight",
     "is_path",
+    "describe",
 ]
 
 
@@ -155,8 +156,32 @@ def degree_histogram(G):
     -----
     Note: the bins are width one, hence len(list) can be large
     (Order(number_of_edges))
+
+    Examples
+    --------
+    >>> G = nx.star_graph(5)
+
+    `degree_histogram` returns the "dense" frequency distribution, including
+    0's for all degree values that do not occur in the graph:
+
+    >>> nx.degree_histogram(G)
+    [0, 5, 0, 0, 0, 1]
+
+    The degree values can be made explicit with `enumerate`:
+
+    >>> # A mapping of {degree: number of nodes in `G` of that degree}
+    >>> dict(enumerate(nx.degree_histogram(G)))
+    {0: 0, 1: 5, 2: 0, 3: 0, 4: 0, 5: 1}
+
+    For a "sparse" representation of the degree frequency distribution that
+    directly maps degree value: number of occurrences (omitting the 0's), use
+    `collections.Counter` instead:
+
+    >>> from collections import Counter
+    >>> Counter(d for _, d in G.degree)
+    Counter({1: 5, 5: 1})
     """
-    counts = Counter(d for n, d in G.degree())
+    counts = Counter(d for _, d in G.degree)
     return [counts.get(i, 0) for i in range(max(counts) + 1 if counts else 0)]
 
 
@@ -447,6 +472,32 @@ def edge_subgraph(G, edges):
     [0, 1, 3, 4]
     >>> list(H.edges)
     [(0, 1), (3, 4)]
+
+    For multi graphs, `edges` must include the edge keys:
+
+    >>> G = nx.MultiGraph(G)
+    >>> H = nx.edge_subgraph(G, [(0, 1, 0), (3, 4, 0)])
+    >>> list(H.edges)
+    [(0, 1, 0), (3, 4, 0)]
+
+    Edge attributes can be used to filter multiedges:
+
+    >>> G.add_edge(0, 1, color="blue")
+    1
+    >>> G.add_edge(0, 1, color="green", weight=10)
+    2
+    >>> H = nx.edge_subgraph(
+    ...     G,
+    ...     (
+    ...         (u, v, k)
+    ...         for u, v, k, clr in G.edges(keys=True, data="color")
+    ...         if clr == "green"
+    ...     ),
+    ... )
+    >>> H.edges(keys=True, data=True)
+    MultiEdgeDataView([(0, 1, 2, {'color': 'green', 'weight': 10})])
+
+
     """
     nxf = nx.filters
     edges = set(edges)
@@ -969,7 +1020,6 @@ def all_neighbors(graph, node):
     ----------
     graph : NetworkX graph
         Graph to find neighbors.
-
     node : node
         The node whose neighbors will be returned.
 
@@ -977,6 +1027,37 @@ def all_neighbors(graph, node):
     -------
     neighbors : iterator
         Iterator of neighbors
+
+    Raises
+    ------
+    NetworkXError
+        If `node` is not in the graph.
+
+    Examples
+    --------
+    For undirected graphs, this function is equivalent to ``G.neighbors(node)``.
+
+    >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+    >>> list(nx.all_neighbors(G, 1))
+    [0, 2]
+
+    For directed graphs, this function returns both predecessors and successors,
+    which may include duplicates if a node is both a predecessor and successor
+    (e.g., in bidirectional edges or self-loops).
+
+    >>> DG = nx.DiGraph([(0, 1), (1, 2), (2, 1)])
+    >>> list(nx.all_neighbors(DG, 1))
+    [0, 2, 2]
+
+    Notes
+    -----
+    This function iterates over all neighbors (both predecessors and successors).
+
+    See Also
+    --------
+    Graph.neighbors : Returns successors for both Graph and DiGraph
+    DiGraph.predecessors : Returns predecessors for directed graphs only
+    DiGraph.successors : Returns successors for directed graphs only
     """
     if graph.is_directed():
         values = chain(graph.predecessors(node), graph.successors(node))
@@ -1414,3 +1495,110 @@ def path_weight(G, path, weight):
         else:
             cost += G._adj[node][nbr][weight]
     return cost
+
+
+def describe(G, describe_hook=None):
+    """Prints a description of the graph G.
+
+    By default, the description includes some basic properties of the graph.
+    You can also provide additional functions to compute and include
+    more properties in the description.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph.
+
+    describe_hook: callable, optional (default=None)
+        A function that takes a graph as input and returns a
+        dictionary of additional properties to include in the description.
+        The keys of the dictionary are the property names, and the values
+        are the corresponding property values.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> nx.describe(G)
+    Number of nodes                : 5
+    Number of edges                : 4
+    Directed                       : False
+    Multigraph                     : False
+    Tree                           : True
+    Bipartite                      : True
+    Average degree (min, max)      : 1.60 (1, 2)
+    Number of connected components : 1
+    Density                        : 0.4
+
+    >>> def augment_description(G):
+    ...     return {"Average Shortest Path Length": nx.average_shortest_path_length(G)}
+    >>> nx.describe(G, describe_hook=augment_description)
+    Number of nodes                : 5
+    Number of edges                : 4
+    Directed                       : False
+    Multigraph                     : False
+    Tree                           : True
+    Bipartite                      : True
+    Average degree (min, max)      : 1.60 (1, 2)
+    Number of connected components : 1
+    Density                        : 0.4
+    Average Shortest Path Length   : 2.0
+
+    >>> G.name = "Path Graph of 5 nodes"
+    >>> nx.describe(G)
+    Name of Graph                  : Path Graph of 5 nodes
+    Number of nodes                : 5
+    Number of edges                : 4
+    Directed                       : False
+    Multigraph                     : False
+    Tree                           : True
+    Bipartite                      : True
+    Average degree (min, max)      : 1.60 (1, 2)
+    Number of connected components : 1
+    Density                        : 0.4
+
+    """
+    info_dict = _create_describe_info_dict(G)
+
+    if describe_hook is not None:
+        additional_info = describe_hook(G)
+        info_dict.update(additional_info)
+
+    max_key_len = max(len(k) for k in info_dict)
+    for key, val in info_dict.items():
+        print(f"{key:<{max_key_len}} : {val}")
+
+
+def _create_describe_info_dict(G):
+    info = {}
+    if G.name != "":
+        info["Name of Graph"] = G.name
+    info.update(
+        {
+            "Number of nodes": len(G),
+            "Number of edges": G.number_of_edges(),
+            "Directed": G.is_directed(),
+            "Multigraph": G.is_multigraph(),
+            "Tree": nx.is_tree(G),
+            "Bipartite": nx.is_bipartite(G),
+        }
+    )
+    if len(G) == 0:
+        return info
+
+    degree_values = dict(nx.degree(G)).values()
+    avg_degree = sum(degree_values) / len(G)
+    max_degree, min_degree = max(degree_values), min(degree_values)
+    info["Average degree (min, max)"] = f"{avg_degree:.2f} ({min_degree}, {max_degree})"
+
+    if G.is_directed():
+        info["Number of strongly connected components"] = (
+            nx.number_strongly_connected_components(G)
+        )
+        info["Number of weakly connected components"] = (
+            nx.number_weakly_connected_components(G)
+        )
+    else:
+        info["Number of connected components"] = nx.number_connected_components(G)
+    # Add density after number of components
+    info["Density"] = nx.density(G)
+    return info

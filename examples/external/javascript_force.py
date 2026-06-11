@@ -22,7 +22,7 @@ G = nx.barbell_graph(6, 3)
 for n in G:
     G.nodes[n]["name"] = n
 # write json formatted data
-d = nx.json_graph.node_link_data(G)  # node-link format to serialize
+d = nx.json_graph.node_link_data(G, edges="links")  # node-link format to serialize
 # write json
 json.dump(d, open("force/force.json", "w"))
 print("Wrote node-link JSON data to force/force.json")

@@ -13,35 +13,37 @@ The data file can be found at:
 """
 
 import zipfile
-from io import BytesIO as StringIO
 
 import matplotlib.pyplot as plt
 import networkx as nx
 
+# Extract the edge data for the 3 sampson-like graphs from the archive
 with zipfile.ZipFile("sampson_data.zip") as zf:
-    e1 = StringIO(zf.read("samplike1.txt"))
-    e2 = StringIO(zf.read("samplike2.txt"))
-    e3 = StringIO(zf.read("samplike3.txt"))
+    G1, G2, G3 = [
+        nx.parse_edgelist(
+            zf.read(f"samplike{n}.txt").decode().split("\n"), delimiter="\t"
+        )
+        for n in (1, 2, 3)
+    ]
 
-G1 = nx.read_edgelist(e1, delimiter="\t")
-G2 = nx.read_edgelist(e2, delimiter="\t")
-G3 = nx.read_edgelist(e3, delimiter="\t")
+# Use the same layout for all 3 examples
 pos = nx.spring_layout(G3, iterations=100, seed=173)
-plt.clf()
 
-plt.subplot(221)
-plt.title("samplike1")
-nx.draw(G1, pos, node_size=50, with_labels=False)
-plt.subplot(222)
-plt.title("samplike2")
-nx.draw(G2, pos, node_size=50, with_labels=False)
-plt.subplot(223)
-plt.title("samplike3")
-nx.draw(G3, pos, node_size=50, with_labels=False)
-plt.subplot(224)
-plt.title("samplike1,2,3")
-nx.draw(G3, pos, edgelist=list(G3.edges()), node_size=50, with_labels=False)
-nx.draw_networkx_edges(G1, pos, alpha=0.25)
-nx.draw_networkx_edges(G2, pos, alpha=0.25)
+fig, axes = plt.subplots(2, 2)
+plot_opts = {"node_size": 50, "with_labels": False}
+
+# Plot each graph individually
+for num, (G, ax) in enumerate(zip((G1, G2, G3), axes.ravel()), start=1):
+    nx.draw(G, pos, ax=ax, **plot_opts)
+    ax.set_title(f"samplike{num}")
+
+# In the last frame, plot all 3 graphs together
+ax = axes[1, 1]
+nx.draw_networkx_nodes(G3, pos, ax=ax, node_size=50)
+for G, edge_clr in zip((G1, G2, G3), "rgb"):
+    nx.draw_networkx_edges(G, pos, ax=ax, edge_color=edge_clr)
+
+ax.set_title("samplike1,2,3")
+ax.set_axis_off()
 plt.tight_layout()
 plt.show()

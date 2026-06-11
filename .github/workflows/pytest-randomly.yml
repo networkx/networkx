@@ -4,23 +4,19 @@ on:
     # Run this workflow once a day
     - cron: "0 0 * * *"
 
+permissions:
+  contents: read
+
 jobs:
   randomize-test-order:
     if: github.repository == 'networkx/networkx'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
-          python-version: "3.13"
-
-      - name: Install packages
-        run: |
-          pip install --upgrade pip
-          pip install .[default,test]
-          pip install pytest-randomly
-          pip list
-
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
+        with:
+          environments: test-randomly
       - name: Run tests
-        run: pytest --doctest-modules --durations=10 --pyargs networkx
+        run: pixi run -e test-randomly test-default

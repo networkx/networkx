@@ -189,7 +189,7 @@ def test_stochastic_block_model():
     C = G.graph["partition"]
     assert len(C) == 3
     assert len(G) == 450
-    assert G.size() == 22160
+    assert G.size() == 21842
 
     GG = nx.stochastic_block_model(sizes, probs, range(450), seed=0)
     assert G.nodes == GG.nodes
@@ -218,6 +218,21 @@ def test_stochastic_block_model():
     assert G.nodes == GG.nodes
     GG = nx.stochastic_block_model(sizes, probs, seed=0, sparse=False)
     assert G.nodes == GG.nodes
+
+
+def test_sbm_sparse_applies_to_diagonal_blocks():
+    # see gh-8557 sparse heuristic applies to diagonal blocks
+    # Single block = only a diagonal block (i==j)
+    sizes = [50]
+    probs = [[0.5]]
+
+    G_sparse = nx.stochastic_block_model(sizes, probs, seed=42, sparse=True)
+    G_dense = nx.stochastic_block_model(sizes, probs, seed=42, sparse=False)
+
+    # These would be equal before the fix because diagonal blocks
+    # always took the dense path. Now they differ because they use
+    # different RNG consumption patterns.
+    assert G_sparse.edges() != G_dense.edges()
 
 
 def test_generator():

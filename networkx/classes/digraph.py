@@ -14,7 +14,6 @@ from networkx.classes.reportviews import (
     OutDegreeView,
     OutEdgeView,
 )
-from networkx.exception import NetworkXError
 
 __all__ = ["DiGraph"]
 
@@ -331,6 +330,16 @@ class DiGraph(Graph):
     _succ = _adj  # type: ignore[has-type]
     _pred = _CachedPropertyResetterPred()
 
+    # This __new__ method just does what Python itself does automatically.
+    # We include it here as part of the dispatchable/backend interface.
+    # If your goal is to understand how the graph classes work, you can ignore
+    # this method, even when subclassing the base classes. If you are subclassing
+    # in order to provide a backend that allows class instantiation, this method
+    # can be overridden to return your own backend graph class.
+    @nx._dispatchable(name="digraph__new__", graphs=None, returns_graph=True)
+    def __new__(cls, *args, **kwargs):
+        return object.__new__(cls)
+
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
@@ -378,6 +387,7 @@ class DiGraph(Graph):
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
         # load graph attributes (must be after convert)
+        attr.pop("backend", None)  # Ignore explicit `backend="networkx"`
         self.graph.update(attr)
 
     @cached_property
@@ -599,7 +609,7 @@ class DiGraph(Graph):
             nbrs = self._succ[n]
             del self._node[n]
         except KeyError as err:  # NetworkXError if n not in self
-            raise NetworkXError(f"The node {n} is not in the digraph.") from err
+            raise nx.NetworkXError(f"The node {n} is not in the digraph.") from err
         for u in nbrs:
             del self._pred[u][n]  # remove all edges n-u in digraph
         del self._succ[n]  # remove node from succ
@@ -797,7 +807,7 @@ class DiGraph(Graph):
                 u, v = e
                 dd = {}
             else:
-                raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
+                raise nx.NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
             if u not in self._succ:
                 if u is None:
                     raise ValueError("None cannot be a node")
@@ -848,7 +858,7 @@ class DiGraph(Graph):
             del self._succ[u][v]
             del self._pred[v][u]
         except KeyError as err:
-            raise NetworkXError(f"The edge {u}-{v} not in graph.") from err
+            raise nx.NetworkXError(f"The edge {u}-{v} not in graph.") from err
         nx._clear_cache(self)
 
     def remove_edges_from(self, ebunch):
@@ -925,7 +935,7 @@ class DiGraph(Graph):
         try:
             return iter(self._succ[n])
         except KeyError as err:
-            raise NetworkXError(f"The node {n} is not in the digraph.") from err
+            raise nx.NetworkXError(f"The node {n} is not in the digraph.") from err
 
     # digraph definitions
     neighbors = successors
@@ -953,7 +963,7 @@ class DiGraph(Graph):
         try:
             return iter(self._pred[n])
         except KeyError as err:
-            raise NetworkXError(f"The node {n} is not in the digraph.") from err
+            raise nx.NetworkXError(f"The node {n} is not in the digraph.") from err
 
     @cached_property
     def edges(self):
@@ -1103,8 +1113,8 @@ class DiGraph(Graph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.degree(0)  # node 0 with degree 1
         1
-        >>> list(G.degree([0, 1, 2]))
-        [(0, 1), (1, 2), (2, 2)]
+        >>> dict(G.degree([0, 1, 2]))
+        {0: 1, 1: 2, 2: 2}
 
         """
         return DiDegreeView(self)
@@ -1150,8 +1160,8 @@ class DiGraph(Graph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.in_degree(0)  # node 0 with degree 0
         0
-        >>> list(G.in_degree([0, 1, 2]))
-        [(0, 0), (1, 1), (2, 1)]
+        >>> dict(G.in_degree([0, 1, 2]))
+        {0: 0, 1: 1, 2: 1}
 
         """
         return InDegreeView(self)
@@ -1197,8 +1207,8 @@ class DiGraph(Graph):
         >>> nx.add_path(G, [0, 1, 2, 3])
         >>> G.out_degree(0)  # node 0 with degree 1
         1
-        >>> list(G.out_degree([0, 1, 2]))
-        [(0, 1), (1, 1), (2, 1)]
+        >>> dict(G.out_degree([0, 1, 2]))
+        {0: 1, 1: 1, 2: 1}
 
         """
         return OutDegreeView(self)

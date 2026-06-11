@@ -1,6 +1,12 @@
-## NetworkX ASV Benchmarks
+# NetworkX ASV Benchmarks
 
-Currently we have two broad categories for benchmarks:
+NetworkX uses [`asv`](https://asv.readthedocs.io/en/latest/) to monitor for
+performance regressions and evaluate proposals for improved performance.
+Available benchmarks are available in the `benchmarks/benchmarks` subdirectory
+and are loosely organized/named to reflect either the algorithms or data structures
+that they focus on.
+
+The two most generic sets of benchmarks are:
 
 - `benchmarks_classes.py`: This covers benchmarks for performance of core
   NetworkX classes (`Graph`, `DiGraph`, `MultiGraph`, `MultiDiGraph`).
@@ -11,7 +17,83 @@ Currently we have two broad categories for benchmarks:
   different parts of our codebase. We use graphs with different density, and a
   real world dataset from SNAP datasets to run the algorithms.
 
+There are many other algorithms captured in other files/benchmarking classes
+within the suite.
+
+## Setup and configuration
+
+Benchmarking runs are controlled by the `asv.conf.json` configuration file.
+For a full listing of configuration options, see
+[the `asv` documentation](https://asv.readthedocs.io/en/latest/asv.conf.json.html#conf-reference)
+
+Typically, the most important configuration options for a successful ASV
+configuration are:
+
+1. `environment_type` which controls the environment management tool used
+   by ASV,
+2. `pythons`, specifying which version(s) of Python will be used during
+   benchmarking, and
+3. `matrix` which dictates what dependencies (and their versions) will be
+   tested against.
+
+```{note}
+When using `environment_type: "virtualenv"`, it is recommended to limit the
+`pythons` field to only those versions of Python that are installed on the
+system.
+```
+
+By default, `asv.conf.json` uses the `"rattler"` environment type with
+`"pythons": ["3.12", "3.13", "3.14"]`. asv provisions each interpreter (and the
+soft dependencies) from conda-forge using
+[`py-rattler`](https://github.com/conda/rattler) — the same solver pixi is built
+on — so all three versions are benchmarked from a single environment, with no
+conda binary required.
+
+The `matrix` field dictates which optional dependencies will be installed in the
+benchmarking environment.
+To get an accurate picture of NetworkX performance with "default" soft dependencies
+installed, be sure to include `numpy` and `scipy` in this listing.
+To evaluate pure-Python code branches, remove the dependencies from `matrix`.
+
+```{note}
+Some benchmarks themselves depend on `numpy`, `scipy` and/or `pandas`; so removing
+dependencies may cause some benchmarks to be skipped.
+```
+
+The benchmark configuration lives in `asv.conf.json` (`rattler` backend, Python
+3.12/3.13/3.14, with the default soft dependencies `numpy`/`scipy`/`pandas`
+installed into each environment).
+
+To switch to built-in environment management:
+
+```yaml
+"environment_type": "virtualenv"
+```
+
+To limit the benchmarking run to a single version of Python:
+
+```yaml
+"pythons": ["3.13"]
+```
+
+### Running with pixi
+
+`pyproject.toml` defines a single `benchmark` environment (the rattler harness;
+asv provisions 3.12/3.13/3.14 itself):
+
+```
+# Python 3.12/3.13/3.14 with the default soft deps (one command, three versions)
+pixi run -e benchmark benchmark-run
+```
+
+In CI, `.github/workflows/benchmark.yml` runs this on pull requests labeled
+`run:benchmark`.
+
 ## Running the benchmark suite
+
+The commands below call `asv` directly; run them inside the benchmarking
+environment (e.g. `pixi run -e benchmark asv ...`) or use the pixi tasks shown
+above (`benchmark-run`, `benchmark-continuous`).
 
 To run the benchmark on the current HEAD commit:
 

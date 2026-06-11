@@ -308,8 +308,19 @@ class TestGeneratorsRandom:
             return r / c + w
 
         c = 1
-        graph = nx.random_kernel_graph(1000, integral, root)
         graph = nx.random_kernel_graph(1000, integral, root, seed=42)
+        assert len(graph) == 1000
+
+    def test_random_kernel_graph_default_root(self):
+        """When `kernel_root` is not provided, `sp.optimize.brentq` is used to
+        construct the default kernel.
+        """
+        pytest.importorskip("scipy")
+
+        def integral(u, w, z):
+            return z - w
+
+        graph = nx.random_kernel_graph(1000, integral, seed=42)
         assert len(graph) == 1000
 
 
@@ -347,6 +358,12 @@ def test_connected_watts_strogatz():
 def test_connected_watts_strogatz_zero_tries():
     with pytest.raises(nx.NetworkXError, match="Maximum number of tries exceeded"):
         nx.connected_watts_strogatz_graph(10, 2, 0.1, tries=0)
+
+
+def test_connected_watts_strogatz_graph_disconnected():
+    """Test that `connected_watts_strogatz_graph` properly loops when disconnected."""
+    with pytest.raises(nx.NetworkXError, match="Maximum number of tries exceeded"):
+        nx.connected_watts_strogatz_graph(10, 0, 0.0)
 
 
 @pytest.mark.parametrize(
@@ -476,3 +493,64 @@ def test_random_kernel_disallow_directed_and_multigraph(graphtype):
         nx.random_kernel_graph(
             10, lambda y, a, b: a + b, lambda u, w, r: r + w, create_using=graphtype
         )
+
+
+"""Test structure and connectivity for multiple (d, n, k) combinations
+for simple undirected graphs"""
+
+
+@pytest.mark.parametrize(
+    "d, n, k",
+    [
+        (4, 8, 4),  # Balanced
+        (1, 2, 1),  # Tiny graph
+        (6, 20, 3),  # Higher n with moderate d
+        (3, 40, 8),  # Sparse case
+        (40, 60, 6),  # Large-scale performance & correctness
+    ],
+)
+def test_random_k_lift_size_and_structure(d, n, k):
+    G = nx.random_regular_graph(d, n, seed=42)
+    H = nx.random_k_lift(G, k, seed=42)
+    assert nx.is_k_regular(H, d)
+    assert H.number_of_nodes() == n * k
+    assert nx.is_connected(H)
+
+
+# Test structure and connectivity for simple DiGraph case
+def test_random_k_lift__digraph():
+    # directed 3-cycle, strongly connected
+    G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+    k = 3
+    H = nx.random_k_lift(G, k, seed=40)
+    assert isinstance(H, nx.DiGraph)
+    assert H.number_of_nodes() == len(G) * k
+    assert all(H.in_degree(n) == 1 for n in H)
+    assert all(H.out_degree(n) == 1 for n in H)
+
+
+# Test structure and connectivity for simple MultiGraph case
+def test_random_k_lift_multigraph():
+    # small 3 node multigraph with parallel edges
+    G = nx.MultiGraph([(0, 1), (0, 1), (1, 2), (1, 2), (2, 0), (2, 0)])
+    k = 2
+    H = nx.random_k_lift(G, k, seed=41)
+    assert isinstance(H, nx.MultiGraph)
+    assert H.number_of_nodes() == len(G) * k
+    assert all(deg == 4 for _, deg in H.degree)
+    assert nx.is_connected(H)
+
+
+# Test structure and connectivity for simple non regular case
+def test_random_k_lift_non_regular():
+    # G is a non degree regular graph with 4 nodes
+    G = nx.Graph([(0, 1), (1, 2), (1, 3), (2, 3), (0, 3)])
+    k = 3
+    H = nx.random_k_lift(G, k, seed=43)
+    assert H.number_of_nodes() == len(G) * k
+    assert nx.is_connected(H)
+    # degree distribution check
+    for v, original_degree in G.degree:
+        for i in range(k):
+            lifted_node = (v, i)
+            assert H.degree[lifted_node] == original_degree
