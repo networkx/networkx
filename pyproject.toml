@@ -322,9 +322,6 @@ pandas = ">=2.0"
 libspatialindex = "*"
 pip = "*"
 
-[tool.pixi.feature.extra.dependencies]
-pygraphviz = "==2.0rc1"
-
 [tool.pixi.feature.extra.pypi-dependencies]
 lxml = ">=4.6"
 pydot = ">=3.0.1"
