@@ -84,8 +84,6 @@ jobs:
       - uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
         with:
           environments: ${{ matrix.environment }}
-      - name: Register graphviz plugins
-        run: pixi run -e ${{ matrix.environment }} dot -c
       - name: Test NetworkX
         run: pixi run -e ${{ matrix.environment }} test-default
 
