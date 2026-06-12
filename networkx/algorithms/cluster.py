@@ -132,6 +132,51 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
         max_weight = 1
     else:
         max_weight = max(d.get(weight, 1) for u, v, d in G.edges(data=True))
+
+    # OPTIMIZATION: Use sparse matrix multiplication for whole-graph queries
+    # Only if we are checking all nodes and scipy is available.
+    use_vectorized = False
+    if nodes is None:
+        try:
+            import scipy.sparse as sp
+
+            use_vectorized = True
+        except ImportError:
+            pass
+
+    if use_vectorized:
+        # 1. Create Adjacency Matrix (adj)
+        nodelist = list(G)
+        # weights are normalized by max weight in graph, then taken to 1/3 power
+        adj = nx.to_scipy_sparse_array(
+            G, nodelist=nodelist, weight=weight, format="csr"
+        )
+
+        if max_weight > 0 and adj.nnz > 0:
+            # This modifies adj.data in place
+            adj.data = (adj.data / max_weight) ** (1 / 3)
+
+        # 2. Compute Triangles (Diagonal of adj^3)
+        # (adj^3)_ii = sum_j sum_k adj_ij adj_jk adj_ki
+        # Efficient computation for diagonal: sum rows of (adj * (adj @ adj))
+        # Note: standard matrix multiplication @ is different from element-wise *
+        adj2 = adj @ adj
+        # Element-wise multiply adj with adj2 to get adj_ij * (adj^2)_ij
+        # Summing across rows gives the diagonal element of adj^3 for that row
+        weighted_triangles = adj.multiply(adj2).sum(axis=1)
+
+        if isinstance(weighted_triangles, np.matrix):
+            weighted_triangles = np.array(weighted_triangles).flatten()
+
+        # 3. Yield results using standard degree lookup
+        degrees = dict(G.degree(nodelist))
+        for i, u in enumerate(nodelist):
+            # The diagonal of A^3 accounts for both directions (CW and CCW)
+            # naturally, so it matches the "2 * triangles" requirement.
+            yield (u, degrees[u], float(weighted_triangles[i]))
+        return
+
+    # Original Iterative Implementation
     if nodes is None:
         nodes_nbrs = G.adj.items()
     else:
