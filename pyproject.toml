@@ -363,8 +363,8 @@ install-backend-stubs = """pip install --no-deps --pre \
   git+https://github.com/awslabs/nx-neptune.git@main"""
 
 [tool.pixi.feature.prerelease.tasks]
-install-prerelease = "pip install --upgrade pip && pip install --pre '.[default,test]' && pip list"
-test-prerelease = "pytest -n auto --doctest-modules --durations=10 --pyargs networkx"
+install-prerelease = "pip install --upgrade pip && pip install --pre '.[default,test]' && pip install pytest-mpl && pip list"
+test-prerelease = "pytest -n auto --mpl --doctest-modules --durations=10 --pyargs networkx"
 
 [tool.pixi.feature.release.tasks]
 build-dist = "python -m build --sdist --wheel"
