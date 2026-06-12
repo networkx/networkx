@@ -322,10 +322,8 @@ pandas = ">=2.0"
 libspatialindex = "*"
 pip = "*"
 
-# extra: pygraphviz comes from conda (needs graphviz C library), not pypi
 [tool.pixi.feature.extra.dependencies]
-graphviz = "*"
-pygraphviz = ">=1.14"
+pygraphviz = "==2.0rc1"
 
 [tool.pixi.feature.extra.pypi-dependencies]
 lxml = ">=4.6"
