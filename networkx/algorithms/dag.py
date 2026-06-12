@@ -399,8 +399,7 @@ def lexicographical_topological_sort(G, key=None):
     >>> list(nx.lexicographical_topological_sort(DG))
     Traceback (most recent call last):
     ...
-    TypeError: '<' not supported between instances of 'str' and 'int'
-    ...
+    TypeError: Consider using `key=` parameter to resolve ambiguities in the sort order.
 
     Incomparable nodes can be resolved using a `key` function. This example function
     allows comparison of integers and strings by returning a tuple where the first
