@@ -32,8 +32,9 @@ def leiden_communities(
     This function uses the Leiden Community Detection algorithm [1]_ to estimate
     the community structure based on metric optimization. The metric can be
     modularity or Constant Potts Model (CPM). Leiden ensures that the communities
-    are well connected whereas Louvain does not. See :any:`louvain_communities`.
-    The functions which compute those two metrics are :any:`modularity` and
+    are well connected whereas Louvain does not.
+    The functions which compute those two metrics are
+    :func:`~networkx.algorithms.community.quality.modularity` and
     :any:`constant_potts_model`
 
     The algorithm works in 3 phases. On the first phase, starting with a partition
@@ -81,7 +82,8 @@ def leiden_communities(
     metric : str (default="cpm")
         The name of the partition quality metric that the algorithm optimises.
         Allowed names are "cpm" and "modularity" for constant potts model and
-        modularity respectively. See functions :any:`modularity` and
+        modularity respectively. See functions
+        :func:`~networkx.algorithms.community.quality.modularity` and
         :any:`constant_potts_model` for more info.
     resolution : float, optional (default=1)
         Resolution should be a positive number indicating the coarseness of
@@ -140,7 +142,7 @@ def leiden_communities(
     --------
     leiden_partitions
     :any:`louvain_communities`
-    :any:`modularity`
+    :func:`networkx.algorithms.community.quality.modularity`
     :any:`constant_potts_model`
     """
 
