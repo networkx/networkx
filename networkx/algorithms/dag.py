@@ -211,7 +211,7 @@ def antichain_width(G):
     ----------
     .. [1] https://en.wikipedia.org/wiki/Antichain
     """
-    nodes = list(G.nodes())
+    nodes = list(G)
     transitive_closure = nx.transitive_closure_dag(G)
 
     B = nx.Graph()
