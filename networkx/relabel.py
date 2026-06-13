@@ -178,10 +178,15 @@ def _relabel_copy(G, mapping):
     H = G.__class__()
     H.add_nodes_from(mapping.get(n, n) for n in G)
 
-    process_last = {n: G.nodes[n] for n in _relabel_order(G, mapping, strict=False) if n in G}
+    process_last = {
+        n: G.nodes[n] for n in _relabel_order(G, mapping, strict=False) if n in G
+    }
     process_first = [(n, d) for n, d in G.nodes.items() if n not in process_last]
 
-    H._node.update((mapping.get(n, n), d.copy()) for n, d in process_first + list(process_last.items()))
+    H._node.update(
+        (mapping.get(n, n), d.copy())
+        for n, d in process_first + list(process_last.items())
+    )
     if G.is_multigraph():
         new_edges = [
             (mapping.get(n1, n1), mapping.get(n2, n2), k, d.copy())
