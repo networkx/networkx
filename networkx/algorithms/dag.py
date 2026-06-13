@@ -172,6 +172,59 @@ def is_directed_acyclic_graph(G):
     return G.is_directed() and not has_cycle(G)
 
 
+@not_implemented_for("undirected")
+@nx._dispatchable
+def antichain_width(G):
+    """Returns the width of the partial order defined by the DAG `G`.
+
+    This is the largest number of nodes in `G` such that no node in the
+    set can reach another node in the set.
+
+    By Dilworth's theorem [1]_ the width is also equal to the minimum number of
+    chains needed to cover all nodes. This function reduces the problem to a
+    maximum bipartite matching on the transitive closure of `G`.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        A directed acyclic graph representing a partial order.
+
+    Returns
+    -------
+    int
+        The width of the poset (size of a maximum antichain).
+
+    Raises
+    ------
+    NetworkXUnfeasible
+        If `G` is not acyclic.
+    NetworkXNotImplemented
+        If `G` is not directed
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 4), (3, 4)])
+    >>> nx.dag.antichain_width(G)
+    2
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Antichain
+    """
+    nodes = list(G)
+    transitive_closure = nx.transitive_closure_dag(G)
+
+    B = nx.Graph()
+    left = [("L", v) for v in nodes]
+    right = [("R", v) for v in nodes]
+    B.add_nodes_from(left + right)
+
+    B.add_edges_from((("L", u), ("R", v)) for u, v in transitive_closure.edges())
+
+    matching = nx.bipartite.maximum_matching(B, top_nodes=left)
+    return len(nodes) - len(matching) // 2
+
+
 @nx._dispatchable
 def topological_generations(G):
     """Stratifies a DAG into generations.
