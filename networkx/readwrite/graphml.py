@@ -926,12 +926,21 @@ class GraphMLReader(GraphML):
 
         # raise error if we find mixed directed and undirected edges
         directed = edge_element.get("directed")
-        if G.is_directed() and directed == "false":
-            msg = "directed=false edge found in directed graph."
-            raise nx.NetworkXError(msg)
-        if (not G.is_directed()) and directed == "true":
-            msg = "directed=true edge found in undirected graph."
-            raise nx.NetworkXError(msg)
+        if directed is not None:
+            # The "directed" attribute is xsd:boolean, so "1"/"0" are valid
+            # spellings of "true"/"false" and must be treated the same way.
+            try:
+                edge_directed = self.convert_bool[directed.lower()]
+            except KeyError as err:
+                raise nx.NetworkXError(
+                    f"Unknown value {directed!r} for edge directed attribute."
+                ) from err
+            if G.is_directed() and not edge_directed:
+                msg = f"directed={directed} edge found in directed graph."
+                raise nx.NetworkXError(msg)
+            if (not G.is_directed()) and edge_directed:
+                msg = f"directed={directed} edge found in undirected graph."
+                raise nx.NetworkXError(msg)
 
         source = self.node_type(edge_element.get("source"))
         target = self.node_type(edge_element.get("target"))

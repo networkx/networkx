@@ -426,6 +426,58 @@ class TestReadGraphML(BaseGraphML):
         pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
         pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
 
+    def test_directed_edge_in_undirected_numeric_bool(self):
+        # directed="1" is xsd:boolean true, same as directed="true"
+        s = """<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph id="G">
+    <node id="n0"/>
+    <node id="n1"/>
+    <node id="n2"/>
+    <edge source="n0" target="n1"/>
+    <edge source="n1" target="n2" directed='1'/>
+  </graph>
+</graphml>"""
+        fh = io.BytesIO(s.encode("UTF-8"))
+        pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
+        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
+
+    def test_undirected_edge_in_directed_numeric_bool(self):
+        # directed="0" is xsd:boolean false, same as directed="false"
+        s = """<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph id="G" edgedefault='directed'>
+    <node id="n0"/>
+    <node id="n1"/>
+    <node id="n2"/>
+    <edge source="n0" target="n1"/>
+    <edge source="n1" target="n2" directed='0'/>
+  </graph>
+</graphml>"""
+        fh = io.BytesIO(s.encode("UTF-8"))
+        pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
+        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
+
+    def test_bad_directed_edge_attribute(self):
+        s = """<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph id="G" edgedefault='directed'>
+    <node id="n0"/>
+    <node id="n1"/>
+    <edge source="n0" target="n1" directed='maybe'/>
+  </graph>
+</graphml>"""
+        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
+
     def test_key_raise(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
