@@ -113,9 +113,17 @@ def relabel_nodes(G, mapping, copy=True):
     for edges between these two nodes. Note that this means non-numeric
     keys may be replaced by numeric keys.
 
+    When multiple nodes are mapped to the same target node, attribute
+    handling is order-dependent and may result in unexpected overwrites.
+    With ``copy=True`` and ``copy=False``, the resulting attributes of
+    the target node can differ depending on iteration order and internal
+    execution path. For predictable attribute handling when combining
+    nodes, consider using :func:`contracted_nodes`.
+
     See Also
     --------
     convert_node_labels_to_integers
+    contracted_nodes
     """
     # you can pass any callable e.g. f(old_label) -> new_label or
     # e.g. str(old_label) -> new_label, but we'll just make a dictionary here regardless
