@@ -19,6 +19,7 @@ __all__ = [
     "minimum_cycle_basis",
     "chordless_cycles",
     "girth",
+    "minimum_feedback_edge_set",
 ]
 
 
@@ -1232,3 +1233,55 @@ def girth(G):
                     depth_limit = du - delta
 
     return girth
+
+
+@not_implemented_for("undirected")
+def minimum_feedback_edge_set(G, weight=None):
+    """Returns a minimum weight feedback edge set of a directed graph.
+
+    A feedback edge set is a set of edges whose removal makes the graph
+    acyclic.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        A directed graph.
+
+    weight : string, optional (default = None)
+        If None, every edge has weight 1. If a string, use this edge
+        attribute as the edge weight. An edge without this attribute is
+        assumed to have weight 1.
+
+    Returns
+    -------
+    set
+        A set of directed edges.
+
+    References
+    ----------
+    .. [1] Demetrescu, Camil, and Irene Finocchi. "Combinatorial
+       algorithms for feedback problems in directed graphs." Information
+       Processing Letters 86, no. 3 (2003): 129-136.
+    """
+
+    H = G.copy()
+    F = set()
+
+    weights = {e: G.edges[e].get(weight, 1) for e in G.edges}
+    for C_nodes in nx.simple_cycles(H):
+        C_edges = tuple(H.subgraph(C_nodes).edges)
+        min_weight = min([weights[e] for e in C_edges])
+        for e in C_edges:
+            weights[e] -= min_weight
+            if weights[e] == 0:
+                H.remove_edge(*e)
+                F.add(e)
+
+    for e in F.copy():
+        H.add_edge(*e)
+        if nx.is_directed_acyclic_graph(H):
+            F.remove(e)
+        else:
+            H.remove_edge(*e)
+
+    return F
