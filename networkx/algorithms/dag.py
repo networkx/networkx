@@ -217,8 +217,7 @@ def antichain_width(G):
     B = nx.Graph()
     left = [("L", v) for v in nodes]
     right = [("R", v) for v in nodes]
-    B.add_nodes_from(left, bipartite=0)
-    B.add_nodes_from(right, bipartite=1)
+    B.add_nodes_from(left + right)
 
     B.add_edges_from((("L", u), ("R", v)) for u, v in transitive_closure.edges())
 
