@@ -128,26 +128,10 @@ def relabel_nodes(G, mapping, copy=True):
 
 
 def _relabel_inplace(G, mapping):
-    if len(mapping.keys() & mapping.values()) > 0:
-        # labels sets overlap
-        # can we topological sort and still do the relabeling?
-        D = nx.DiGraph(list(mapping.items()))
-        D.remove_edges_from(nx.selfloop_edges(D))
-        try:
-            nodes = reversed(list(nx.topological_sort(D)))
-        except nx.NetworkXUnfeasible as err:
-            raise nx.NetworkXUnfeasible(
-                "The node label sets are overlapping and no ordering can "
-                "resolve the mapping. Use copy=True."
-            ) from err
-    else:
-        # non-overlapping label sets, sort them in the order of G nodes
-        nodes = [n for n in G if n in mapping]
-
     multigraph = G.is_multigraph()
     directed = G.is_directed()
 
-    for old in nodes:
+    for old in _relabel_order(G, mapping, strict=True):
         # Test that old is in both mapping and G, otherwise ignore.
         try:
             new = mapping[old]
@@ -193,7 +177,11 @@ def _relabel_inplace(G, mapping):
 def _relabel_copy(G, mapping):
     H = G.__class__()
     H.add_nodes_from(mapping.get(n, n) for n in G)
-    H._node.update((mapping.get(n, n), d.copy()) for n, d in G.nodes.items())
+
+    process_last = {n: G.nodes[n] for n in _relabel_order(G, mapping, strict=False) if n in G}
+    process_first = [(n, d) for n, d in G.nodes.items() if n not in process_last]
+
+    H._node.update((mapping.get(n, n), d.copy()) for n, d in process_first + list(process_last.items()))
     if G.is_multigraph():
         new_edges = [
             (mapping.get(n1, n1), mapping.get(n2, n2), k, d.copy())
@@ -221,6 +209,25 @@ def _relabel_copy(G, mapping):
         )
     H.graph.update(G.graph)
     return H
+
+
+def _relabel_order(G, mapping, *, strict):
+    if len(mapping.keys() & mapping.values()) == 0:
+        return [n for n in G if n in mapping]
+
+    D = nx.DiGraph(mapping.items())
+    D.remove_edges_from(nx.selfloop_edges(D))
+
+    try:
+        return list(reversed(list(nx.topological_sort(D))))
+    except nx.NetworkXUnfeasible as err:
+        if strict:
+            raise nx.NetworkXUnfeasible(
+                "The node label sets are overlapping and no ordering can "
+                "resolve the mapping. Use copy=True."
+            ) from err
+
+        return [n for n in G if n in mapping]
 
 
 @nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
