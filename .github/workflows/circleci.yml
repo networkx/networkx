@@ -34,7 +34,7 @@ jobs:
 
   coverage:
     runs-on: ubuntu-latest
-    name: Run CircleCI documentation artifact redirector
+    name: Run CircleCI coverage artifact redirector
     permissions:
       statuses: write
     steps:
