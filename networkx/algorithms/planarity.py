@@ -3,7 +3,12 @@ from copy import deepcopy
 
 import networkx as nx
 
-__all__ = ["check_planarity", "is_planar", "PlanarEmbedding"]
+__all__ = [
+    "check_planarity",
+    "faces_from_orientable_embedding",
+    "is_planar",
+    "PlanarEmbedding",
+]
 
 
 @nx._dispatchable
@@ -191,6 +196,71 @@ def get_counterexample_recursive(G):
                 subgraph.add_edge(u, v)
 
     return subgraph
+
+
+def faces_from_orientable_embedding(rotation_system):
+    """Generate faces from a simple orientable embedding.
+
+    Parameters
+    ----------
+    rotation_system : mapping
+        ``rotation_system[v]`` gives the cyclic order of the distinct
+        neighbors of ``v``. This representation assumes a simple graph:
+        self-loops and parallel edges are not supported.
+
+    Yields
+    ------
+    face : list
+        A facial boundary walk as a node sequence in cyclic order.
+        Walks are not guaranteed to be simple cycles: vertices can repeat,
+        for example around bridges or articulation points.
+
+    Notes
+    -----
+    This function traverses each directed half-edge exactly once.
+    The input must encode an orientable rotation system, so each edge must
+    appear in both directions.
+    For disconnected rotation systems, a unique global outer face is not
+    distinguished by the combinatorial data.
+    """
+    position = {}
+    for v, nbrs in rotation_system.items():
+        if len(nbrs) != len(set(nbrs)):
+            raise nx.NetworkXError(
+                "rotation_system[v] must contain distinct neighbors; "
+                "self-loops and parallel edges are not supported by this "
+                "representation"
+            )
+        position[v] = {u: i for i, u in enumerate(nbrs)}
+
+    for u, nbrs in rotation_system.items():
+        for v in nbrs:
+            if v not in rotation_system or u not in position[v]:
+                raise nx.NetworkXError(
+                    "rotation system must include each edge in both directions"
+                )
+
+    visited_half_edges = set()
+    for start_u, nbrs in rotation_system.items():
+        for start_v in nbrs:
+            if (start_u, start_v) in visited_half_edges:
+                continue
+
+            face = []
+            u, v = start_u, start_v
+            while True:
+                if (u, v) in visited_half_edges:
+                    if (u, v) != (start_u, start_v):
+                        raise nx.NetworkXError("Invalid rotation system.")
+                    break
+
+                visited_half_edges.add((u, v))
+                face.append(u)
+
+                i = position[v][u]
+                u, v = v, rotation_system[v][(i - 1) % len(rotation_system[v])]
+
+            yield face
 
 
 class Interval:
