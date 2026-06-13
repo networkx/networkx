@@ -180,7 +180,7 @@ def antichain_width(G):
     This is the largest number of nodes in `G` such that no node in the
     set can reach another node in the set.
 
-    By Dilworth's theorem the width is also equal to the minimum number of
+    By Dilworth's theorem [1]_ the width is also equal to the minimum number of
     chains needed to cover all nodes. This function reduces the problem to a
     maximum bipartite matching on the transitive closure of `G`.
 
@@ -198,6 +198,8 @@ def antichain_width(G):
     ------
     NetworkXUnfeasible
         If `G` is not acyclic.
+    NetworkXNotImplemented
+        If `G` is not directed
 
     Examples
     --------
