@@ -491,13 +491,13 @@ class TestDAG:
         assert nx.dag.antichain_width(G) == 2
 
     def test_antichain_width_exceptions(self):
-        antichain_width = nx.algorithms.dag.antichain_width
-
         G = nx.Graph([(1, 2), (2, 3)])
-        pytest.raises(nx.NetworkXNotImplemented, antichain_width, G)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.dag.antichain_width(G)
 
         G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
-        pytest.raises(nx.NetworkXUnfeasible, antichain_width, G)
+        with pytest.raises(nx.NetworkXUnfeasible, match="Graph contains a cycle"):
+            nx.dag.antichain_width(G)
 
     def _check_antichains(self, solution, result):
         sol = [frozenset(a) for a in solution]
