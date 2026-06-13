@@ -21,10 +21,6 @@ jobs:
           command: sudo apt install -y ffmpeg
 
       - run:
-          name: Install Graphviz
-          command: sudo apt install -y graphviz libgraphviz-dev
-
-      - run:
           name: Install pysal dependencies
           command: sudo apt install -y libspatialindex-dev
 
@@ -60,6 +56,7 @@ jobs:
           command: |
             source venv/bin/activate
             pip install -e '.[default,test,extra,example,doc]'
+            pip uninstall pydot
             pip install -e .
             pip list
 
@@ -112,17 +109,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Before install
-          command: |
-            sudo apt-get update
-            sudo apt-get install graphviz graphviz-dev
-      - run:
           name: Install dependencies
           command: |
             python -m venv venv
             source venv/bin/activate
             pip install --upgrade pip
             pip install .[default,extra,test]
+            pip uninstall pydot
             pip list
       - run:
           name: Run tests

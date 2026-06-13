@@ -99,8 +99,7 @@ example = [
 ]
 extra = [
     'lxml>=4.6',
-    'pygraphviz>=1.14',
-    'pydot>=3.0.1',
+    'pygraphviz==2.0rc1',
     'sympy>=1.10',
 ]
 release = [
@@ -322,14 +321,8 @@ pandas = ">=2.0"
 libspatialindex = "*"
 pip = "*"
 
-# extra: pygraphviz comes from conda (needs graphviz C library), not pypi
-[tool.pixi.feature.extra.dependencies]
-graphviz = "*"
-pygraphviz = ">=1.14"
-
 [tool.pixi.feature.extra.pypi-dependencies]
 lxml = ">=4.6"
-pydot = ">=3.0.1"
 sympy = ">=1.10"
 
 [tool.pixi.feature.example.dependencies]
