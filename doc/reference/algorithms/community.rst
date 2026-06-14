@@ -86,6 +86,14 @@ Leiden Community Detection
     leiden_communities
     leiden_partitions
 
+Infomap Community Detection
+---------------------------
+.. automodule:: networkx.algorithms.community.infomap
+.. autosummary::
+    :toctree: generated/
+
+    infomap_communities
+
 Fluid Communities
 -----------------
 .. automodule:: networkx.algorithms.community.asyn_fluid
