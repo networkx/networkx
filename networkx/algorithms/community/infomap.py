@@ -17,10 +17,11 @@ def infomap_communities(G, weight="weight", seed=None, num_trials=1):
 
     Infomap detects community structure by minimizing the *map equation*, the
     expected per-step description length of a random walk on the network. Unlike
-    modularity-based methods such as :any:`louvain_communities` and
-    :any:`leiden_communities`, Infomap is a flow-based method: it groups nodes
-    among which flow persists, which makes it well suited to directed and
-    weighted networks. [1]_ [2]_
+    the modularity-based methods :any:`louvain_communities` and
+    :any:`leiden_communities`, Infomap is a *flow-based* method: it detects
+    communities by compressing the description of a random walk rather than by
+    optimizing modularity. This makes it a natural fit for networks where
+    community structure is carried by the direction and volume of flow. [1]_ [2]_
 
     This function has no NetworkX implementation; it dispatches to a backend
     such as ``infomap`` that registers an implementation.
