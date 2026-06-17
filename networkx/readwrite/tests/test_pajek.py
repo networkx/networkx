@@ -145,4 +145,4 @@ class TestPajek:
         assert nodes_equal(list(G), list(H))
         assert H.nodes["n0"]["role"] == 'a" pwn "admin'
         assert "pwn" not in H.nodes["n0"]
-        assert H["ev il\"x 7"]["n0"][0]["lbl"] == r"c:\path with space"
+        assert H['ev il"x 7']["n0"][0]["lbl"] == r"c:\path with space"
