@@ -6,6 +6,8 @@ import math
 import random
 from collections import deque
 
+import line_profiler
+
 import networkx as nx
 from networkx.algorithms.community.quality import constant_potts_model, modularity
 from networkx.utils import not_implemented_for, py_random_state
@@ -157,6 +159,7 @@ def leiden_communities(
 
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
+@line_profiler.profile
 def leiden_partitions(
     G,
     *,
@@ -221,7 +224,6 @@ def leiden_partitions(
     """
 
     partition = [{u} for u in G]
-    refinement_mapping = None
 
     if nx.is_empty(G):
         yield partition
@@ -299,6 +301,7 @@ def leiden_partitions(
             # Setup for undirected constant potts model
             gamma = resolution
 
+            @line_profiler.profile
             def delta(nodes_to_add, community):
                 comm_size = sum(graph.nodes[u]["node_weight"] for u in community)
                 nodes_size = sum(graph.nodes[u]["node_weight"] for u in nodes_to_add)
@@ -443,6 +446,7 @@ def leiden_partitions(
     Q = metric(graph, partition)
 
     improvement_made = True
+    node2com = None
 
     while improvement_made:
         # _move_nodes_fast plays the same role as _one_level in the
@@ -451,9 +455,9 @@ def leiden_partitions(
 
         # leiden initialises nodes into communities based on the
         # unrefined partition of the previous stage. The dict
-        # refinement_mapping specifies how these initial communities
+        # node2com specifies how these initial communities
         # are to be set. If None, use singleton communities.
-        P = _move_nodes_fast(graph, refinement_mapping, delta, seed=seed)
+        P = _move_nodes_fast(graph, node2com, delta, seed=seed)
 
         P_refined = _refine_partition(graph, P, delta, seed=seed, theta=theta)
 
@@ -464,9 +468,7 @@ def leiden_partitions(
         improvement_made = (Q_new - Q) > 0.0000001
         Q = Q_new
 
-        graph, refinement_mapping = _create_aggregate_graph(
-            graph, P_refined, node_attributes
-        )
+        graph, node2com = _create_aggregate_graph(graph, P_refined, node_attributes)
 
         # the partition of the original underlying graph is read from
         # the node attribute 'nodes', which is set during _create_aggregate_graph(...)
@@ -478,24 +480,27 @@ def leiden_partitions(
     return
 
 
-def _move_nodes_fast(graph, partition, delta_func, seed):
-    # use refinement_mapping as beginning partition. If None, use singletons
-    if partition is None:
-        P = [{u} for u in graph]
-        node2com = {u: i for i, u in enumerate(graph)}
+@line_profiler.profile
+def _move_nodes_fast(graph, node2com, delta_func, seed):
+    if node2com is None:
+        P = [{node} for node in graph]
+        node2com = {node: i for i, node in enumerate(graph)}
     else:
-        P = [set() for _ in partition]
-        node2com = {}
-        for i, u in enumerate(graph):
-            P[partition[i]].add(u)
-            node2com[u] = partition[i]
+        P = [set() for _ in graph]
+        for i, node in enumerate(graph):
+            P[node2com[i]].add(node)
 
-    rand_nodes = list(graph.nodes)
+    rand_nodes = list(graph)
     seed.shuffle(rand_nodes)
     node_queue = deque(rand_nodes)
+    dict_deque = dict.fromkeys(reversed(rand_nodes))
 
     while node_queue:
         u = node_queue.pop()
+
+        dict_deque.pop(dd_u := next(iter(dict_deque)))
+        assert u == dd_u
+
         neighbor_coms = {node2com[v] for v in nx.all_neighbors(graph, u)}
 
         best_delta = 0
@@ -529,18 +534,21 @@ def _move_nodes_fast(graph, partition, delta_func, seed):
             P[old_com].remove(u)
             P[best_com].add(u)
 
-            neighbours = set(graph._adj[u])
-            nodes_to_visit = neighbours - P[best_com]
+            nbrs = graph._adj[u].keys()
+            nodes_to_visit = nbrs - P[best_com]
 
             for v in nodes_to_visit:
-                if v not in node_queue:
+                assert (v not in dict_deque) == (v not in node_queue)
+                if v not in node_queue:  # this looks O(|node+queue|). maybe continue?
                     node_queue.appendleft(v)
+            dict_deque.update(dict.fromkeys(nodes_to_visit))
 
-    P = list(filter(None, P))
+    P = [p for p in P if p]
 
     return P
 
 
+@line_profiler.profile
 def _refine_partition(
     G,
     P,
@@ -569,6 +577,7 @@ def _refine_partition(
     return P_refined
 
 
+@line_profiler.profile
 def _merge_node_subset(
     G,
     C,
@@ -617,15 +626,15 @@ def _merge_node_subset(
                 continue
 
             # We only consider merging u into a community that
-            # is within S. This is what is means for the resulting
+            # is within S. This is what it means for the resulting
             # partition to be a refinement of S.
 
             # this application of delta_func relates to the
             # definition of T in line :37 from pseudocode in paper
             if delta_func(new_comm, C - new_comm) > 0:
-                # the change in quality the occurs from moving node u
+                # the change in quality that occurs from moving node u
                 # into the new community
-                q_add = delta_func({u}, C_refined[i])
+                q_add = delta_func({u}, new_comm)
 
                 # the overall quality delta is therefore the sum
                 # of the change in quality from removing u from its
@@ -679,61 +688,44 @@ def _create_aggregate_graph(G, P_refined, node_attributes):
     communities in the new graph which comes from P. Each inner list holds
     the refined sets of nodes each of which becomes a new node. So P_refined
     contains P as the outer list and its refinement as the inner lists which
-    holds the refined community sets that make up the new graph's nodes.
+    hold the refined community sets that make up the new graph's nodes.
     """
+    nodes_G2H = {}
     H = G.__class__()
-    old2new = {}
-    new_node2com = {}
-    new_node_id = 0
-    for new_comm, refined_sets in enumerate(P_refined):
+    H_node2com = {}
+    H_node_id = 0
+    for H_comm, refined_sets in enumerate(P_refined):
         for refined_comm in refined_sets:
             # each set from the refined_sets defines
             # a node in the new aggregated graph. Name it new_node_id.
-            new_node2com[new_node_id] = new_comm
+            H_node2com[H_node_id] = H_comm
             agg_vals = {attribute: 0 for attribute in node_attributes}
 
             # contains the original graph nodes defining this new community
             original_nodes = set()
 
             # old_node is node from previous stage, not original graph
-            for old_node in refined_comm:
-                old2new[old_node] = new_node_id
+            for G_node in refined_comm:
+                nodes_G2H[G_node] = H_node_id
 
                 # aggregate node attributes
-                original_nodes.update(G.nodes[old_node]["nodes"])
+                ######## store G.nodes[*]["nodes"] in a dict?
+                original_nodes.update(G.nodes[G_node]["nodes"])
                 for node_attribute in node_attributes:
-                    agg_vals[node_attribute] += G.nodes[old_node][node_attribute]
+                    agg_vals[node_attribute] += G.nodes[G_node][node_attribute]
 
-            H.add_node(new_node_id, nodes=original_nodes, **agg_vals)
-            new_node_id += 1
+            H.add_node(H_node_id, nodes=original_nodes, **agg_vals)
+            H_node_id += 1
 
     H_adj = H._adj
     for u, v, uv_weight in G.edges(data="weight", default=1):
-        new_u = old2new[u]
-        new_v = old2new[v]
-        if new_u != new_v:
-            new_unbrs = H_adj[new_u]
-            if new_v in new_unbrs:
-                new_unbrs[new_v]["weight"] += uv_weight
+        H_u = nodes_G2H[u]
+        H_v = nodes_G2H[v]
+        if H_u != H_v:
+            H_unbrs = H_adj[H_u]
+            if H_v in H_unbrs:
+                H_unbrs[H_v]["weight"] += uv_weight
             else:
-                H.add_edge(new_u, new_v, weight=uv_weight)
+                H.add_edge(H_u, H_v, weight=uv_weight)
 
-    return H, new_node2com
-
-
-def _convert_multigraph(G, weight, is_directed):
-    """Convert a Multigraph to normal Graph"""
-    H.empty_graph(G, create_using=(nx.DiGraph if is_directed else nx.Graph))
-    H.add_weighted_edges_from(G.edges(data=weight, default=1))
-    return H
-    if is_directed:
-        H = nx.DiGraph()
-    else:
-        H = nx.Graph()
-
-    for u, v, wt in G.edges(data=weight, default=1):
-        if H.has_edge(u, v):
-            H[u][v]["weight"] += wt
-        else:
-            H.add_edge(u, v, weight=wt)
-    return H
+    return H, H_node2com
