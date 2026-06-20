@@ -283,12 +283,14 @@ def leiden_partitions(
             # Setup for directed constant potts model
             gamma = 2 * resolution
 
+            @line_profiler.profile
             def delta(nodes_to_add, community):
                 comm_size = sum(graph.nodes[u]["node_weight"] for u in community)
                 if isinstance(nodes_to_add, set):
                     nodes_size = sum(
                         graph.nodes[u]["node_weight"] for u in nodes_to_add
                     )
+
                     if len(nodes_to_add) < len(community):
                         a, c = nodes_to_add, community
                     else:
@@ -299,9 +301,9 @@ def leiden_partitions(
                     E_out = sum(wt for _, v, wt in edges if v in c)
                 else:
                     nodes_size = graph.nodes[nodes_to_add]["node_weight"]
-                    nbrs = graph._adj[nodes_to_add].items()
-                    E_in = sum(d["weight"] for nbr, d in nbrs if nbr in community)
                     nbrs = graph._pred[nodes_to_add].items()
+                    E_in = sum(d["weight"] for nbr, d in nbrs if nbr in community)
+                    nbrs = graph._succ[nodes_to_add].items()
                     E_out = sum(d["weight"] for nbr, d in nbrs if nbr in community)
 
                 return E_in + E_out - gamma * comm_size * nodes_size
@@ -352,6 +354,7 @@ def leiden_partitions(
 
             gamma = 2 * resolution
 
+            @line_profiler.profile
             def delta(nodes_to_add, community):
                 if isinstance(nodes_to_add, set):
                     if len(nodes_to_add) < len(community):
@@ -374,9 +377,9 @@ def leiden_partitions(
                     c_in = sum(in_degrees[u] for u in community)
                     c_out = sum(out_degrees[u] for u in community)
 
-                    nbrs = graph._succ[nodes_to_add].items()
-                    E_in = sum(d["weight"] for nbr, d in nbrs if nbr in community)
                     nbrs = graph._pred[nodes_to_add].items()
+                    E_in = sum(d["weight"] for nbr, d in nbrs if nbr in community)
+                    nbrs = graph._succ[nodes_to_add].items()
                     E_out = sum(d["weight"] for nbr, d in nbrs if nbr in community)
 
                 return E_in + E_out - gamma * (a_in * c_out + a_out * c_in)
@@ -392,6 +395,7 @@ def leiden_partitions(
             nx.set_node_attributes(graph, {u: deg / m for u, deg in degrees}, "degree")
             gamma = 2 * resolution
 
+            @line_profiler.profile
             def delta(nodes_to_add, community):
                 comm_size = sum(graph.nodes[u]["degree"] for u in community)
                 if isinstance(nodes_to_add, set):
@@ -604,7 +608,6 @@ def _refine_partition(
             seed,
             theta,
         )
-        C_refined = list(filter(None, C_refined))
         P_refined.append(C_refined)
 
     return P_refined
@@ -618,97 +621,53 @@ def _merge_node_subset(
     seed,
     theta,
 ):
-
     node2com = {u: i for i, u in enumerate(C)}
     C_refined = [{u} for u in C]
-    # first, the sufficiently well-connected nodes within S
-    # are identified and added to the set R.
+    # R contains well-connected nodes within C
     R = {u for u in C if delta_func(u, C - {u}) > 0}
 
     for u in R:
+        # merge nodes that are in a singleton community {u}
+        # - Find candidate communities for u to merge with
+        # - Select one randomly based on relative delta for each community
+        #   Note: not choosing the best one
         comm = node2com[u]
         if len(C_refined[comm]) != 1:
             continue
-        # if the community that u belongs to is the singleton {u}, then
-        # we will proceed to merge it probabilistically with another
-        # community within C.
+        cand_comms = []
+        cand_comm_deltas = []
 
-        # first we identify candidate communities to merge u into
-        # and then the final community is randomly selected from these
-        # according to a probability distribution which is partly
-        # defined by the relative delta (bigger increase in
-        # quality makes choosing that community more likely, but
-        # the algorithm does not greedily choose the greatest increase)
-
-        # we therefore track both the communities and their respective
-        # probabilities in order to define the probabilty distribution
-        # to select the community that u will be moved into
-
-        # if u is not in a singleton partition then we move on to the
-        # next node.
-        candidate_comm = []
-        candidate_comm_q_delta = []
-
-        # this is the change in quality that occurs from removing node
-        # u from its current community
-        q_rem = delta_func(u, C_refined[comm] - {u})
+        # Note: delta for removing u from current comm is 0 (singleton comm)
         for i, new_comm in enumerate(C_refined):
             if comm == i:
-                # we only want to consider moving u to a different
-                # community, not its current community.
                 continue
-
-            # We only consider merging u into a community that
-            # is within S. This is what it means for the resulting
-            # partition to be a refinement of S.
 
             # this application of delta_func relates to the
             # definition of T in line :37 from pseudocode in paper
+            # condition is: E(C, S-C) >= gamma * |C| * (|S| - |C|)
+            # where |X| is the node_weight of the set X of nodes.
             if delta_func(new_comm, C - new_comm) > 0:
-                # the change in quality that occurs from moving node u
-                # into the new community
-                q_add = delta_func(u, new_comm)
-
-                # the overall quality delta is therefore the sum
-                # of the change in quality from removing u from its
-                # starting community, and the change of quality
-                # from adding it to the new community
-
-                Q_delta = q_add - q_rem
-
+                Q_delta = delta_func(u, new_comm)
                 if Q_delta > 0:
-                    candidate_comm.append(i)
-                    candidate_comm_q_delta.append(Q_delta)
+                    cand_comms.append(i)
+                    cand_comm_deltas.append(Q_delta)
 
-        # if there are candidate communities identified then
-        # one is selected at random, and u is added to that
-        # community
-        if candidate_comm:
-            # the probability distribution that the new community is drawn
-            # from is defined in terms of the quality delta associated
-            # with the move to each community.
-
-            # If moving u to community C results in a quality delta QC,
-            # the relative frequency with which C will be chosen is
-            # proportional to
-            #
-            #       math.exp(QC/theta)
-            #
-            # Since computing large exponentials can cause overflow
-            # errors, we use an equivalent form that computes normalised
-            # values with the same ratios
-            max_delta = max(candidate_comm_q_delta)
-            candidate_comm_prob = [
-                math.exp((x - max_delta) / theta) for x in candidate_comm_q_delta
-            ]
-
-            new_comm = seed.choices(candidate_comm, weights=candidate_comm_prob)[0]
+        # select one candidate community at random
+        if cand_comms:
+            # probability of each candidate comm determined by Q_delta
+            # Relative frequency is proportional to
+            #       math.exp(Q_delta/theta)
+            # Large exponentials can overflow so normalize to
+            #       math.exp((Q_delta - max_Q_delta)/theta)
+            max_delta = max(cand_comm_deltas)
+            cand_wts = [math.exp((x - max_delta) / theta) for x in cand_comm_deltas]
+            new_comm = seed.choices(cand_comms, weights=cand_wts)[0]
 
             C_refined[comm].remove(u)
             C_refined[new_comm].add(u)
             node2com[u] = new_comm
 
-    return C_refined
+    return [c for c in C_refined if c]
 
 
 def _create_aggregate_graph(G, P_refined, node_attributes):
