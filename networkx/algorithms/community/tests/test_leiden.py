@@ -87,8 +87,8 @@ def test_overall_increase(metric, Q_func, gamma):
 @pytest.mark.parametrize("metric", _metrics())
 def test_coverage_up_with_leiden_metrics(G, singletons, metric):
     # check that `partition_quality` coverage increases for all metrics
-    # even though they not optimizing coverage. Also that coverage > 45%
-    partition = comm.leiden_communities(G, metric=metric, resolution=0.05, seed=10)
+    # even though they are not optimizing coverage. Also that coverage > 45%
+    partition = comm.leiden_communities(G, metric=metric, resolution=0.01, seed=10)
     coverage = comm.partition_quality(G, partition)[0]  # 0th return is coverage
     assert coverage >= 0.45
     assert coverage > comm.partition_quality(G, singletons)[0]
@@ -133,11 +133,7 @@ def test_resolution_kwarg_mod(G):
         P1 = comm.leiden_communities(G, metric=qmod, resolution=0.0, seed=12)
         P2 = comm.leiden_communities(G, metric=qmod, resolution=1.0, seed=12)
         P3 = comm.leiden_communities(G, metric=qmod, resolution=7.0, seed=12)
-<<<<<<< HEAD
-=======
-        print(f"{len(P1)=} {len(P2)=} {len(P3)=}")
->>>>>>> d909e0c6f (first set of adjustments of leiden)
-        assert len(P1) < len(P2) < len(P3)
+        assert len(P1) < len(P2) < len(P3), f"{len(P1)=} {len(P2)=} {len(P3)=}"
 
 
 def test_LFR_communities_across_algos():
@@ -156,13 +152,14 @@ def test_LFR_communities_across_algos():
     C = comm.louvain_communities(G, resolution=0.5, seed=10)
     louvain_comm = {frozenset(c) for c in C}
 
-    C = comm.leiden_communities(G, metric="cpm", resolution=0.0001, seed=10)
+    C = comm.leiden_communities(G, metric="cpm", resolution=-0.02, seed=10)
     cpm_comm = {frozenset(c) for c in C}
 
-    C = comm.leiden_communities(G, metric="modularity", resolution=0.01, seed=3)
+    C = comm.leiden_communities(G, metric="modularity", resolution=-30.0, seed=3)
     mod_comm = {frozenset(c) for c in C}
 
-    assert len(louvain_comm) == len(cpm_comm) == len(mod_comm) == len(LFR_comm)
+    msg = f"{len(louvain_comm)=}, {len(cpm_comm)=}, {len(mod_comm)=}, {len(LFR_comm)=}"
+    assert len(louvain_comm) == len(cpm_comm) == len(mod_comm) == len(LFR_comm), msg
     assert louvain_comm == cpm_comm == LFR_comm  # mod_comm has 3 different comms
 
 
@@ -172,7 +169,7 @@ def test_barbell_communities_across_algos():
 
     # seed doesn't seem to matter for this example. Resolution does.
     louvain_comm = comm.louvain_communities(G, resolution=1)
-    mod_comm = comm.leiden_communities(G, metric="modularity", resolution=3, seed=seed)
+    mod_comm = comm.leiden_communities(G, metric="modularity", resolution=0.3, seed=seed)
     cpm_comm = comm.leiden_communities(G, metric="cpm", resolution=0.3, seed=seed)
 
     assert {frozenset(C) for C in louvain_comm} == {frozenset(C) for C in mod_comm}
@@ -218,9 +215,11 @@ def test_expected_stable_across_code_changes_cpm():
     P = comm.leiden_communities(G, resolution=0.2, seed=1)
     P_expected = [
         {0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21},
-        {16, 4, 5, 6, 10},
+        {4, 10},
+        {16, 5, 6},
         {9},
-        {8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
+        {18},
+        {8, 14, 15, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
     ]
     assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
@@ -229,16 +228,14 @@ def test_expected_stable_across_code_changes_cpm():
     P_expected = [
         {11},
         {12},
-        {0, 1, 2, 3, 7, 8, 13},
-        {17},
-        {19},
-        {30},
+        {8, 30},
+        {4, 10, 16, 5, 6},
+        {24, 27},
+        {25, 26, 29, 23},
         {9},
-        {16, 4, 5, 6, 10},
+        {0, 1, 2, 3, 7, 13, 17, 19},
         {21},
-        {24, 25, 28, 31},
-        {26},
-        {32, 33, 14, 15, 18, 20, 22, 23, 27, 29},
+        {28, 31, 32, 33, 14, 15, 18, 20, 22},
     ]
     assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
@@ -246,21 +243,24 @@ def test_expected_stable_across_code_changes_cpm():
 def test_expected_stable_across_code_changes_qmod():
     qmod = "modularity"
     G = nx.karate_club_graph()
-    P = comm.leiden_communities(G, resolution=2, seed=10, metric=qmod)
+    P = comm.leiden_communities(G, resolution=0.2, seed=10, metric=qmod)
     P_expected = [
         {0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21},
-        {16, 4, 5, 6, 10},
-        {32, 33, 8, 9, 14, 15, 18, 20, 22, 23, 26, 27, 29, 30},
-        {24, 25, 28, 31},
+        {16, 5, 6},
+        {4, 10},
+        {23, 24, 25, 27, 28, 31},
+        {32, 33, 8, 9, 14, 15, 18, 20, 22, 26, 29, 30},
     ]
     assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
     G = nx.karate_club_graph()
-    P = comm.leiden_communities(G, weight=None, resolution=2, seed=10, metric=qmod)
+    P = comm.leiden_communities(G, weight=None, resolution=0.2, seed=10, metric=qmod)
     P_expected = [
-        {0, 1, 2, 3, 7, 9, 11, 12, 13, 17, 19, 21},
-        {16, 4, 5, 6, 10},
-        {8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
+        {0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21},
+        {16, 5, 6},
+        {4, 10},
+        {8, 9, 14, 15, 18, 20, 22, 23, 26, 27, 29, 30, 32, 33},
+        {24, 25, 28, 31},
     ]
     assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
