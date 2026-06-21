@@ -41,11 +41,18 @@ http://graphml.graphdrawing.org/primer/graphml-primer.html
 for examples.
 """
 
+import re
 import warnings
 from collections import defaultdict
 
 import networkx as nx
 from networkx.utils import open_file
+
+# Characters outside the XML 1.0 "Char" production (e.g. most C0 controls and
+# unpaired surrogates). xml.etree writes them verbatim, so a graph carrying one
+# in a node id, label or attribute serializes to a document that cannot be
+# parsed back. Match them up front and fail loudly instead.
+_illegal_xml_chars = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f\ud800-\udfff\ufffe\uffff]")
 
 __all__ = [
     "write_graphml",
@@ -498,10 +505,23 @@ class GraphMLWriter(GraphML):
     def __str__(self):
         from xml.etree.ElementTree import tostring
 
+        self.check_xml_chars()
         if self.prettyprint:
             self.indent(self.xml)
         s = tostring(self.xml).decode(self.encoding)
         return s
+
+    def check_xml_chars(self):
+        # xml.etree emits characters illegal in XML 1.0 without complaint, so
+        # the resulting document cannot be read back. Walk the built tree and
+        # reject any node id, label, attribute name or value carrying one.
+        for elem in self.xml.iter():
+            for s in (elem.text, *elem.keys(), *elem.attrib.values()):
+                if s is not None and (m := _illegal_xml_chars.search(s)):
+                    raise nx.NetworkXError(
+                        f"{s!r} contains character {m.group()!r} which is not "
+                        "allowed in XML and cannot be written to GraphML"
+                    )
 
     def attr_type(self, name, scope, value):
         """Infer the attribute type of data named name. Currently this only
@@ -662,6 +682,7 @@ class GraphMLWriter(GraphML):
     def dump(self, stream):
         from xml.etree.ElementTree import ElementTree
 
+        self.check_xml_chars()
         if self.prettyprint:
             self.indent(self.xml)
         document = ElementTree(self.xml)

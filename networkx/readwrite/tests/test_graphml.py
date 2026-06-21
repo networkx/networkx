@@ -1495,6 +1495,23 @@ def test_exception_for_unsupported_datatype_edge_attr():
         nx.write_graphml(G, fh)
 
 
+@pytest.mark.parametrize("ch", ["\x00", "\x07", "\x08", "\x0c", "\x1f"])
+@pytest.mark.parametrize("where", ["id", "label", "attr"])
+def test_illegal_xml_chars_rejected(ch, where):
+    """Characters not allowed by XML 1.0 are written verbatim by xml.etree,
+    yielding a document that cannot be parsed back. The stdlib writer rejects
+    them at write time instead of producing a silently unreadable file."""
+    G = nx.Graph()
+    if where == "id":
+        G.add_node(f"a{ch}b")
+    elif where == "label":
+        G.add_node("n", label=f"a{ch}b")
+    else:
+        G.add_node("n", attr=f"a{ch}b")
+    pytest.raises(nx.NetworkXError, nx.write_graphml_xml, G, io.BytesIO())
+    pytest.raises(nx.NetworkXError, lambda: "\n".join(nx.generate_graphml(G)))
+
+
 def test_exception_for_unsupported_datatype_graph_attr():
     """Test that a detailed exception is raised when an attribute is of a type
     not supported by GraphML, e.g. a list"""
