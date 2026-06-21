@@ -536,11 +536,11 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
 @nx._dispatchable(graphs=None, returns_graph=True)
 def kleitman_wang_undirected_graph(deg_sequence, create_using=None, seed=None):
     """Returns a simple graph with given degree sequence constructed
-    using the Kleitman-Wang undirected randomized algorithm.
+    using the Kleitman-Wang undirected randomized algorithm [1]_.
 
     Parameters
     ----------
-    deg_sequence: list of integers
+    deg_sequence : list of integers
         Each integer corresponds to the degree of a node (need not be sorted).
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
@@ -560,8 +560,8 @@ def kleitman_wang_undirected_graph(deg_sequence, create_using=None, seed=None):
     -----
     The Kleitman-Wang undirected algorithm generalizes the Havel-Hakimi
     algorithm by proving that a graph can be successfully constructed by
-    selecting any arbitrary vertex as the source node, rather than strictly
-    the vertex of highest degree.
+    selecting any arbitrary node as the source node, rather than strictly
+    the node of highest degree.
 
     This function implements that generalization by selecting a source node
     at random at each step, and then connecting it to the nodes with
