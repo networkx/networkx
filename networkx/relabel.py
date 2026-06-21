@@ -12,6 +12,11 @@ def relabel_nodes(G, mapping, copy=True):
     The original node ordering may not be preserved if `copy` is `False` and the
     mapping includes overlap between old and new labels.
 
+    When multiple nodes are mapped to the same target node, attribute
+    handling is arbitrary. For predictable attribute handling when combining
+    nodes, consider using
+    :func:`~networkx.algorithms.minors.contraction.contracted_nodes`.
+
     Parameters
     ----------
     G : graph
@@ -112,10 +117,6 @@ def relabel_nodes(G, mapping, copy=True):
     to the lowest non-negative integer not already used as a key
     for edges between these two nodes. Note that this means non-numeric
     keys may be replaced by numeric keys.
-
-    When multiple nodes are mapped to the same target node, attribute
-    handling is arbitrary. For predictable attribute handling when combining
-    nodes, consider using :func:`contracted_nodes`.
 
     See Also
     --------
