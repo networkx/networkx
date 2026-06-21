@@ -241,36 +241,39 @@ def leiden_partitions(
     # For one node, the change from moving node u from A to B is:
     # q_delta = delta({u}, B) - delta({u}, A-{u})
 
-    is_directed = G.is_directed()
-    if G.is_multigraph():
+    orig_G = G  # make copy of original G to allow mutations
+    del G
+    is_directed = orig_G.is_directed()
+    if orig_G.is_multigraph():
         # Convert Multi(Di)Graph to (Di)Graph by summing edges
-        graph = nx.DiGraph() if is_directed else nx.Graph()
-        graph.add_nodes_from(G)
+        G = nx.DiGraph() if is_directed else nx.Graph()
+        G.add_nodes_from(orig_G)
         if weight is None:
-            graph.add_weighted_edges_from(
-                (u, v, len(kd)) for u, nbrs in G._adj.items() for v, kd in nbrs.items()
+            orig_adj = orig_G._adj.items()
+            G.add_weighted_edges_from(
+                (u, v, len(kd)) for u, nbrs in orig_adj for v, kd in nbrs.items()
             )
         else:
-            graph.add_weighted_edges_from(
+            G.add_weighted_edges_from(
                 (u, v, sum(dd.get(weight, 1) for dd in kd.values()))
-                for u, nbrs in G._adj.items()
+                for u, nbrs in orig_G._adj.items()
                 for v, kd in nbrs.items()
             )
     else:
-        # same nodes & class as G
-        graph = nx.empty_graph(G, create_using=G.__class__)
+        # same nodes & class as orig_G
+        G = nx.empty_graph(orig_G, create_using=orig_G.__class__)
         if weight is None:
-            graph.add_weighted_edges_from((*e, 1) for e in G.edges())
+            G.add_weighted_edges_from((*e, 1) for e in orig_G.edges())
         else:
-            graph.add_weighted_edges_from(G.edges(data=weight, default=1))
+            G.add_weighted_edges_from(orig_G.edges(data=weight, default=1))
     # node attr "nodes" holds the original nodes represented by this current node
     # initialize to point to itself
-    nx.set_node_attributes(graph, {n: {n} for n in G}, "nodes")
+    nx.set_node_attributes(G, {n: {n} for n in orig_G}, "nodes")
 
     if metric == "cpm":
         # Setup for constant potts model
         node_attributes = ["node_weight"]
-        nx.set_node_attributes(graph, 1, name="node_weight")
+        nx.set_node_attributes(G, 1, name="node_weight")
 
         metric = functools.partial(
             constant_potts_model,
@@ -285,25 +288,23 @@ def leiden_partitions(
 
             @line_profiler.profile
             def delta(nodes_to_add, community):
-                comm_size = sum(graph.nodes[u]["node_weight"] for u in community)
+                comm_size = sum(G.nodes[u]["node_weight"] for u in community)
                 if isinstance(nodes_to_add, set):
-                    nodes_size = sum(
-                        graph.nodes[u]["node_weight"] for u in nodes_to_add
-                    )
+                    nodes_size = sum(G.nodes[u]["node_weight"] for u in nodes_to_add)
 
                     if len(nodes_to_add) < len(community):
                         a, c = nodes_to_add, community
                     else:
                         a, c = community, nodes_to_add
-                    edges = graph.in_edges(a, data="weight", default=1)
+                    edges = G.in_edges(a, data="weight", default=1)
                     E_in = sum(wt for _, v, wt in edges if v in c)
-                    edges = graph.out_edges(a, data="weight", default=1)
+                    edges = G.out_edges(a, data="weight", default=1)
                     E_out = sum(wt for _, v, wt in edges if v in c)
                 else:
-                    nodes_size = graph.nodes[nodes_to_add]["node_weight"]
-                    nbrs = graph._pred[nodes_to_add].items()
+                    nodes_size = G.nodes[nodes_to_add]["node_weight"]
+                    nbrs = G._pred[nodes_to_add].items()
                     E_in = sum(d["weight"] for nbr, d in nbrs if nbr in community)
-                    nbrs = graph._succ[nodes_to_add].items()
+                    nbrs = G._succ[nodes_to_add].items()
                     E_out = sum(d["weight"] for nbr, d in nbrs if nbr in community)
 
                 return E_in + E_out - gamma * comm_size * nodes_size
@@ -314,20 +315,18 @@ def leiden_partitions(
 
             @line_profiler.profile
             def delta(nodes_to_add, community):
-                comm_size = sum(graph.nodes[u]["node_weight"] for u in community)
+                comm_size = sum(G.nodes[u]["node_weight"] for u in community)
                 if isinstance(nodes_to_add, set):
-                    nodes_size = sum(
-                        graph.nodes[u]["node_weight"] for u in nodes_to_add
-                    )
+                    nodes_size = sum(G.nodes[u]["node_weight"] for u in nodes_to_add)
                     if len(nodes_to_add) < len(community):
                         a, c = nodes_to_add, community
                     else:
                         a, c = community, nodes_to_add
-                    edges = graph.edges(a, data="weight", default=1)
+                    edges = G.edges(a, data="weight", default=1)
                     E = sum(wt for _, nbr, wt in edges if nbr in c)
                 else:
-                    nodes_size = graph.nodes[nodes_to_add]["node_weight"]
-                    nbrs = graph._adj[nodes_to_add].items()
+                    nodes_size = G.nodes[nodes_to_add]["node_weight"]
+                    nbrs = G._adj[nodes_to_add].items()
                     E = sum(d["weight"] for nbr, d in nbrs if nbr in community)
 
                 return E - gamma * comm_size * nodes_size
@@ -342,15 +341,15 @@ def leiden_partitions(
         if is_directed:
             # Setup for directed modularity
             node_attributes = ["in_degree", "out_degree"]
-            in_degrees = graph.in_degree(weight="weight")
-            out_degrees = graph.out_degree(weight="weight")
+            in_degrees = G.in_degree(weight="weight")
+            out_degrees = G.out_degree(weight="weight")
 
             m = sum(wt for u, wt in in_degrees) + sum(wt for u, wt in out_degrees)
-            for u, v, data in graph.edges(data=True):
+            for u, v, data in G.edges(data=True):
                 data["weight"] = data.get("weight", 1) / m
 
-            nx.set_node_attributes(graph, dict(in_degrees), "in_degree")
-            nx.set_node_attributes(graph, dict(out_degrees), "out_degree")
+            nx.set_node_attributes(G, dict(in_degrees), "in_degree")
+            nx.set_node_attributes(G, dict(out_degrees), "out_degree")
 
             gamma = 2 * resolution
 
@@ -367,9 +366,9 @@ def leiden_partitions(
                     c_in = sum(in_degrees[u] for u in c)
                     c_out = sum(out_degrees[u] for u in c)
 
-                    edges = graph.in_edges(a, data="weight", default=1)
+                    edges = G.in_edges(a, data="weight", default=1)
                     E_in = sum(wt for _, v, wt in edges if v in c)
-                    edges = graph.out_edges(a, data="weight", default=1)
+                    edges = G.out_edges(a, data="weight", default=1)
                     E_out = sum(wt for _, v, wt in edges if v in c)
                 else:
                     a_in = in_degrees[nodes_to_add]
@@ -377,9 +376,9 @@ def leiden_partitions(
                     c_in = sum(in_degrees[u] for u in community)
                     c_out = sum(out_degrees[u] for u in community)
 
-                    nbrs = graph._pred[nodes_to_add].items()
+                    nbrs = G._pred[nodes_to_add].items()
                     E_in = sum(d["weight"] for nbr, d in nbrs if nbr in community)
-                    nbrs = graph._succ[nodes_to_add].items()
+                    nbrs = G._succ[nodes_to_add].items()
                     E_out = sum(d["weight"] for nbr, d in nbrs if nbr in community)
 
                 return E_in + E_out - gamma * (a_in * c_out + a_out * c_in)
@@ -387,24 +386,24 @@ def leiden_partitions(
         else:
             # Setup for undirected modularity
             node_attributes = ["degree"]
-            degrees = graph.degree(weight="weight")
+            degrees = G.degree(weight="weight")
 
             m = sum(deg for u, deg in degrees) / 2
-            for u, v, data in graph.edges(data=True):
+            for u, v, data in G.edges(data=True):
                 data["weight"] = data.get(weight, 1) / m
-            nx.set_node_attributes(graph, {u: deg / m for u, deg in degrees}, "degree")
+            nx.set_node_attributes(G, {u: deg / m for u, deg in degrees}, "degree")
             gamma = 2 * resolution
 
             @line_profiler.profile
             def delta(nodes_to_add, community):
-                comm_size = sum(graph.nodes[u]["degree"] for u in community)
+                comm_size = sum(G.nodes[u]["degree"] for u in community)
                 if isinstance(nodes_to_add, set):
-                    nodes_size = sum(graph.nodes[u]["degree"] for u in nodes_to_add)
-                    edges = graph.edges(nodes_to_add, data="weight", default=1)
+                    nodes_size = sum(G.nodes[u]["degree"] for u in nodes_to_add)
+                    edges = G.edges(nodes_to_add, data="weight", default=1)
                     E = sum(wt for _, v, wt in edges if v in community)
                 else:
-                    nodes_size = graph.nodes[nodes_to_add]["degree"]
-                    nbrs = graph._adj[nodes_to_add].items()
+                    nodes_size = G.nodes[nodes_to_add]["degree"]
+                    nbrs = G._adj[nodes_to_add].items()
                     E = sum(d["weight"] for nbr, d in nbrs if nbr in community)
 
                 return E - gamma * nodes_size * comm_size
@@ -440,7 +439,7 @@ def leiden_partitions(
         #         "expecting node attribute 'bipartite', with values 0 or 1"
         #     )
 
-        degrees = graph.degree(weight="weight")
+        degrees = G.degree(weight="weight")
         m = sum(deg for u, deg in degrees) / 2
 
         red_degree = {u: G.degree(u, weight="weight") / m for u in red_nodes}
@@ -451,24 +450,24 @@ def leiden_partitions(
         for u in red_nodes:
             blue_degree[u] = 0
 
-        nx.set_node_attributes(graph, red_degree, "red_degree")
-        nx.set_node_attributes(graph, blue_degree, "blue_degree")
+        nx.set_node_attributes(G, red_degree, "red_degree")
+        nx.set_node_attributes(G, blue_degree, "blue_degree")
 
-        for u, v, data in graph.edges(data=True):
+        for u, v, data in G.edges(data=True):
             data["weight"] *= 1 / m
 
         def delta(nodes_to_add, community):
-            comm_red = sum(graph.nodes[u]["red_degree"] for u in community)
-            comm_blue = sum(graph.nodes[u]["blue_degree"] for u in community)
+            comm_red = sum(G.nodes[u]["red_degree"] for u in community)
+            comm_blue = sum(G.nodes[u]["blue_degree"] for u in community)
             if isinstance(nodes_to_add, set):
-                nodes_red = sum(graph.nodes[u]["red_degree"] for u in nodes_to_add)
-                nodes_blue = sum(graph.nodes[u]["blue_degree"] for u in nodes_to_add)
-                edges = graph.edges(nodes_to_add, data="weight", default=1)
+                nodes_red = sum(G.nodes[u]["red_degree"] for u in nodes_to_add)
+                nodes_blue = sum(G.nodes[u]["blue_degree"] for u in nodes_to_add)
+                edges = G.edges(nodes_to_add, data="weight", default=1)
                 E = sum(wt for _, v, wt in edges if v in community)
             else:
-                nodes_red = graph.nodes[nodes_to_add]["red_degree"]
-                nodes_blue = graph.nodes[nodes_to_add]["blue_degree"]
-                nbrs = graph._adj[nodes_to_add].items()
+                nodes_red = G.nodes[nodes_to_add]["red_degree"]
+                nodes_blue = G.nodes[nodes_to_add]["blue_degree"]
+                nbrs = G._adj[nodes_to_add].items()
                 E = sum(d["weight"] for nbr, d in nbrs if nbr in community)
 
             return E - resolution * (nodes_red * comm_blue + nodes_blue * comm_red)
@@ -480,7 +479,7 @@ def leiden_partitions(
         )
 
     # The setup phase has ended, the main algorithm now begins.
-    Q = metric(graph, partition)
+    Q = metric(G, partition)
 
     improvement_made = True
     node2com = None
@@ -494,40 +493,40 @@ def leiden_partitions(
         # unrefined partition of the previous stage. The dict
         # node2com specifies how these initial communities
         # are to be set. If None, use singleton communities.
-        P = _move_nodes_fast(graph, node2com, delta, seed=seed)
+        P = _move_nodes_fast(G, node2com, delta, seed=seed)
 
-        P_refined = _refine_partition(graph, P, delta, seed=seed, theta=theta)
+        P_refined = _refine_partition(G, P, delta, seed=seed, theta=theta)
 
         P_refined_flat = [comm for P_ref in P_refined for comm in P_ref]
 
         # Stop when overall change is close to zero.
-        Q_new = metric(graph, P_refined_flat)
+        Q_new = metric(G, P_refined_flat)
         improvement_made = (Q_new - Q) > 0.0000001
         Q = Q_new
 
-        graph, node2com = _create_aggregate_graph(graph, P_refined, node_attributes)
+        G, node2com = _create_aggregate_graph(G, P_refined, node_attributes)
 
         # the partition of the original underlying graph is read from
         # the node attribute 'nodes', which is set during _create_aggregate_graph(...)
         # Each node in graph represents a community in the original graph
         # and the node holds this information in the attribute 'nodes'.
-        # We yield a copy to protect the graph data structure for later iterations.
-        yield [set(graph.nodes[u]["nodes"]).copy() for u in graph]
+        # Yield a copy to protect the graph data structure for later iterations.
+        yield [nodes.copy() for _, nodes in G.nodes(data="nodes")]
 
     return
 
 
 @line_profiler.profile
-def _move_nodes_fast(graph, node2com, delta_func, seed):
+def _move_nodes_fast(G, node2com, delta_func, seed):
     if node2com is None:
-        P = [{node} for node in graph]
-        node2com = {node: i for i, node in enumerate(graph)}
+        P = [{node} for node in G]
+        node2com = {node: i for i, node in enumerate(G)}
     else:
-        P = [set() for _ in graph]
-        for i, node in enumerate(graph):
+        P = [set() for _ in G]
+        for i, node in enumerate(G):
             P[node2com[i]].add(node)
 
-    rand_nodes = list(graph)
+    rand_nodes = list(G)
     seed.shuffle(rand_nodes)
     node_queue = deque(rand_nodes)
     dict_deque = dict.fromkeys(reversed(rand_nodes))
@@ -538,7 +537,7 @@ def _move_nodes_fast(graph, node2com, delta_func, seed):
         dict_deque.pop(dd_u := next(iter(dict_deque)))
         assert u == dd_u
 
-        neighbor_coms = {node2com[v] for v in nx.all_neighbors(graph, u)}
+        neighbor_coms = {node2com[v] for v in nx.all_neighbors(G, u)}
 
         best_delta = 0
         old_com = node2com[u]
@@ -571,8 +570,8 @@ def _move_nodes_fast(graph, node2com, delta_func, seed):
             P[old_com].remove(u)
             P[best_com].add(u)
 
-            nbrs = graph._adj[u].keys()
-            nodes_to_visit = nbrs - P[best_com]
+            u_nbrs = G._adj[u].keys()
+            nodes_to_visit = u_nbrs - P[best_com]
 
             for v in nodes_to_visit:
                 assert (v not in dict_deque) == (v not in node_queue)
