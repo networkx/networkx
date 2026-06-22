@@ -118,10 +118,7 @@ def test_resolution_kwarg_cpm(G):
     assert len(P1) < len(P2) < len(P3) < len(P4) < len(P5)
 
 
-@pytest.mark.slow
 def test_resolution_kwarg_mod(G):
-    # these work -- but kinda slow & modularity doesn't change smoothly
-    # TODO check the speed again after optimizing leiden modularity
     qmod = "modularity"
     # Only three sizes of partitions: 2, 21, 77. Changes at r=0 and r=6.83
     if G.is_multigraph():
@@ -169,7 +166,9 @@ def test_barbell_communities_across_algos():
 
     # seed doesn't seem to matter for this example. Resolution does.
     louvain_comm = comm.louvain_communities(G, resolution=1)
-    mod_comm = comm.leiden_communities(G, metric="modularity", resolution=0.3, seed=seed)
+    mod_comm = comm.leiden_communities(
+        G, metric="modularity", resolution=0.3, seed=seed
+    )
     cpm_comm = comm.leiden_communities(G, metric="cpm", resolution=0.3, seed=seed)
 
     assert {frozenset(C) for C in louvain_comm} == {frozenset(C) for C in mod_comm}
