@@ -297,7 +297,7 @@ def leiden_partitions(
                     else:
                         a, c = community, nodes_to_add
                     edges = G.in_edges(a, data="weight", default=1)
-                    E_in = sum(wt for _, v, wt in edges if v in c)
+                    E_in = sum(wt for v, _, wt in edges if v in c)
                     edges = G.out_edges(a, data="weight", default=1)
                     E_out = sum(wt for _, v, wt in edges if v in c)
                 else:
@@ -367,7 +367,7 @@ def leiden_partitions(
                     c_out = sum(out_degrees[u] for u in c)
 
                     edges = G.in_edges(a, data="weight", default=1)
-                    E_in = sum(wt for _, v, wt in edges if v in c)
+                    E_in = sum(wt for v, _, wt in edges if v in c)
                     edges = G.out_edges(a, data="weight", default=1)
                     E_out = sum(wt for _, v, wt in edges if v in c)
                 else:
