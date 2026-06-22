@@ -275,7 +275,7 @@ def leiden_partitions(
         node_attributes = ["node_weight"]
         nx.set_node_attributes(G, 1, name="node_weight")
 
-        metric = functools.partial(
+        metric_function = functools.partial(
             constant_potts_model,
             resolution=resolution,
             node_weight="node_weight",
@@ -333,7 +333,7 @@ def leiden_partitions(
 
     elif metric == "modularity":
         # Setup for (unipartite) modularity
-        metric = functools.partial(
+        metric_function = functools.partial(
             modularity,
             resolution=resolution,
             weight="weight",
@@ -423,7 +423,7 @@ def leiden_partitions(
         def barber_modularity():
             return
 
-        metric = barber_modularity
+        metric_function = barber_modularity
 
         node_attributes = ["red_degree", "blue_degree"]
 
@@ -479,7 +479,7 @@ def leiden_partitions(
         )
 
     # The setup phase has ended, the main algorithm now begins.
-    Q = metric(G, partition)
+    Q = metric_function(G, partition)
 
     improvement_made = True
     node2com = None
@@ -500,7 +500,7 @@ def leiden_partitions(
         P_refined_flat = [comm for P_ref in P_refined for comm in P_ref]
 
         # Stop when overall change is close to zero.
-        Q_new = metric(G, P_refined_flat)
+        Q_new = metric_function(G, P_refined_flat)
         improvement_made = (Q_new - Q) > 0.0000001
         Q = Q_new
 
