@@ -28,6 +28,70 @@ def test_adjacency_matrix_format(ary_format):
         assert np.array_equal(A, expected_array)
 
 
+def test_normalized_adjacency_matrix():
+    G = nx.path_graph(4)
+    s2 = 1 / np.sqrt(2)
+    # fmt: off
+    expected = np.array(
+        [[0,  s2, 0,   0 ],
+         [s2, 0,  0.5, 0 ],
+         [0,  0.5, 0,  s2],
+         [0,  0,  s2,  0 ]]
+    )
+    # fmt: on
+    N = nx.normalized_adjacency_matrix(G)
+    np.testing.assert_allclose(N.todense(), expected)
+
+    # The matrix is symmetric for undirected graphs.
+    np.testing.assert_allclose(N.todense(), N.todense().T)
+
+    # N = I - normalized_laplacian for graphs without isolated nodes.
+    L = nx.normalized_laplacian_matrix(G).todense()
+    np.testing.assert_allclose(N.todense(), np.eye(len(G)) - L, atol=1e-12)
+
+    # The eigenvalues lie in [-1, 1].
+    evals = np.linalg.eigvalsh(N.todense())
+    assert evals.min() >= -1 - 1e-9
+    assert evals.max() <= 1 + 1e-9
+
+
+def test_normalized_adjacency_matrix_nodelist():
+    G = nx.path_graph(4)
+    N1 = nx.normalized_adjacency_matrix(G).todense()
+    # Reversing the node order permutes both rows and columns.
+    N2 = nx.normalized_adjacency_matrix(G, nodelist=[3, 2, 1, 0]).todense()
+    np.testing.assert_allclose(N1, N2[::-1, ::-1])
+
+
+def test_normalized_adjacency_matrix_isolated_node():
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_edge(1, 2)
+    N = nx.normalized_adjacency_matrix(G, nodelist=[0, 1, 2]).todense()
+    # An isolated node yields a zero row/column, not a division by zero.
+    assert np.all(np.isfinite(N))
+    np.testing.assert_allclose(N[0], 0)
+    np.testing.assert_allclose(N[:, 0], 0)
+
+
+def test_normalized_adjacency_matrix_weighted():
+    G = nx.Graph()
+    G.add_edge(0, 1, weight=4)
+    G.add_edge(1, 2, weight=4)
+    # A uniform edge weight cancels in the normalization.
+    Nw = nx.normalized_adjacency_matrix(G).todense()
+    Nu = nx.normalized_adjacency_matrix(G, weight=None).todense()
+    np.testing.assert_allclose(Nw, Nu)
+
+
+def test_normalized_adjacency_matrix_directed():
+    DiG = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+    # Every node has out-degree 1, so D^{-1/2} A D^{-1/2} == A.
+    N = nx.normalized_adjacency_matrix(DiG).todense()
+    A = nx.adjacency_matrix(DiG).todense()
+    np.testing.assert_allclose(N, A)
+
+
 def test_incidence_matrix_simple():
     deg = [3, 2, 2, 1, 0]
     G = nx.havel_hakimi_graph(deg)

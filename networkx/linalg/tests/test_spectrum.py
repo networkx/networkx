@@ -49,6 +49,16 @@ class TestSpectrum:
         e = sorted(nx.adjacency_spectrum(self.P))
         np.testing.assert_almost_equal(e, evals)
 
+    def test_normalized_adjacency_spectrum(self):
+        "Normalized adjacency eigenvalues"
+        evals = np.array([-1, 0, 1])
+        e = sorted(nx.normalized_adjacency_spectrum(self.P).real)
+        np.testing.assert_almost_equal(e, evals)
+        # A uniform edge weight does not change the normalized spectrum.
+        e0 = sorted(nx.normalized_adjacency_spectrum(self.WG, weight=None).real)
+        ew = sorted(nx.normalized_adjacency_spectrum(self.WG).real)
+        np.testing.assert_almost_equal(e0, ew)
+
     def test_modularity_spectrum(self):
         "Modularity eigenvalues"
         evals = np.array([-1.5, 0.0, 0.0])

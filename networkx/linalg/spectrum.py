@@ -7,6 +7,7 @@ import networkx as nx
 __all__ = [
     "laplacian_spectrum",
     "adjacency_spectrum",
+    "normalized_adjacency_spectrum",
     "modularity_spectrum",
     "normalized_laplacian_spectrum",
     "bethe_hessian_spectrum",
@@ -121,6 +122,42 @@ def adjacency_spectrum(G, weight="weight"):
     import scipy as sp
 
     return sp.linalg.eigvals(nx.adjacency_matrix(G, weight=weight).todense())
+
+
+@nx._dispatchable(edge_attrs="weight")
+def normalized_adjacency_spectrum(G, weight="weight"):
+    """Returns eigenvalues of the normalized adjacency matrix of G.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph
+
+    weight : string or None, optional (default='weight')
+       The edge data key used to compute each value in the matrix.
+       If None, then each edge has weight 1.
+
+    Returns
+    -------
+    evals : NumPy array
+      Eigenvalues
+
+    Notes
+    -----
+    For MultiGraph/MultiDiGraph, the edge weights are summed.
+    See to_numpy_array for other options.
+
+    For an undirected graph the normalized adjacency matrix is symmetric and
+    its eigenvalues are real and lie in the interval ``[-1, 1]``.
+
+    See Also
+    --------
+    normalized_adjacency_matrix
+    adjacency_spectrum
+    """
+    import scipy as sp
+
+    return sp.linalg.eigvals(nx.normalized_adjacency_matrix(G, weight=weight).todense())
 
 
 @nx._dispatchable
