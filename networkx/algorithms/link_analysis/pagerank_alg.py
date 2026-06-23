@@ -1,6 +1,7 @@
 """PageRank analysis of graph structure."""
 
 import networkx as nx
+import warnings
 
 __all__ = ["pagerank", "google_matrix"]
 
@@ -130,6 +131,18 @@ def _pagerank_python(
     # Create a copy in (right) stochastic form
     W = nx.stochastic_graph(D, weight=weight)
     N = W.number_of_nodes()
+    if N * tol >= 2.0:
+        warnings.warn(
+            f"pagerank convergence threshold N * tol = {N * tol:.2g} >= 2 "
+            f"(the maximum possible L1 distance between probability vectors). "
+            f"The convergence check is vacuous in this regime; the function "
+            f"will always return after the first power iteration regardless of "
+            f"actual convergence. Pass tol < 2 / N for a meaningful check "
+            f"(with N={N}, that means tol < {2 / N:.2g}).",
+        RuntimeWarning,
+        stacklevel=2,
+        )
+
 
     # Choose fixed starting vector if not given
     if nstart is None:
@@ -455,6 +468,18 @@ def _pagerank_scipy(
     N = len(G)
     if N == 0:
         return {}
+
+    if N * tol >= 2.0:
+        warnings.warn(
+            f"pagerank convergence threshold N * tol = {N * tol:.2g} >= 2 "
+            f"(the maximum possible L1 distance between probability vectors). "
+            f"The convergence check is vacuous in this regime; the function "
+            f"will always return after the first power iteration regardless of "
+            f"actual convergence. Pass tol < 2 / N for a meaningful check "
+            f"(with N={N}, that means tol < {2 / N:.2g}).",
+        RuntimeWarning,
+        stacklevel=2,
+        )
 
     nodelist = list(G)
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
