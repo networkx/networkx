@@ -10,7 +10,7 @@ Below we assume you have the default Python environment already configured on
 your computer and you intend to install ``networkx`` inside of it.  If you want
 to create and work with Python virtual environments, please follow instructions
 on `venv <https://docs.python.org/3/library/venv.html>`_ and `virtual
-environments <http://docs.python-guide.org/en/latest/dev/virtualenvs/>`_.
+environments <https://docs.python-guide.org/en/latest/dev/virtualenvs/>`_.
 
 First, make sure you have the latest version of ``pip`` (the Python package manager)
 installed. If you do not, refer to the `Pip documentation
@@ -103,10 +103,10 @@ The following extra packages provide additional functionality. See the
 files in the ``requirements/`` directory for information about specific
 version requirements.
 
-- `PyGraphviz <http://pygraphviz.github.io/>`_ and
+- `PyGraphviz <https://pygraphviz.github.io/>`_ and
   `pydot <https://github.com/erocarrera/pydot>`_ provide graph drawing
-  and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
-- `lxml <http://lxml.de/>`_ used for GraphML XML format.
+  and graph layout algorithms via `GraphViz <https://graphviz.org/>`_.
+- `lxml <https://lxml.de/>`_ used for GraphML XML format.
 
 To install ``networkx`` and extra packages, do::
 
