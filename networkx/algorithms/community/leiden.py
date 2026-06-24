@@ -752,6 +752,7 @@ def _create_aggregate_graph(G, P_refined, node_attributes):
                     if is_directed:
                         H_in_edge_wts[H_v][H_u] += uv_weight
                 else:
+                    H.add_edge(H_u, H_v)
                     H_unbrs[H_v] = uv_weight
                     if is_directed:
                         H_in_edge_wts[H_v][H_u] = uv_weight

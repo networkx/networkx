@@ -142,22 +142,20 @@ def test_LFR_communities_across_algos():
     # Resolution differs to get 3 communities.
     # The LFR example constructs G to have 3 communities.
     # So comparison is really about the nodes in the 3 communities being the same
-    # That works for all except the Leiden modularity variant.
+    # That works for all with correct choices of seed
     C = nx.get_node_attributes(G, "community").values()
     LFR_comm = {frozenset(c) for c in C}  # remove duplicate entries
 
     C = comm.louvain_communities(G, resolution=0.5, seed=10)
     louvain_comm = {frozenset(c) for c in C}
 
-    C = comm.leiden_communities(G, metric="cpm", resolution=-0.02, seed=10)
+    C = comm.leiden_communities(G, metric="cpm", resolution=-0.001, seed=20)
     cpm_comm = {frozenset(c) for c in C}
 
-    C = comm.leiden_communities(G, metric="modularity", resolution=-30.0, seed=3)
+    C = comm.leiden_communities(G, metric="modularity", resolution=0.1, seed=157)
     mod_comm = {frozenset(c) for c in C}
 
-    msg = f"{len(louvain_comm)=}, {len(cpm_comm)=}, {len(mod_comm)=}, {len(LFR_comm)=}"
-    assert len(louvain_comm) == len(cpm_comm) == len(mod_comm) == len(LFR_comm), msg
-    assert louvain_comm == cpm_comm == LFR_comm  # mod_comm has 3 different comms
+    assert louvain_comm == cpm_comm == LFR_comm == mod_comm
 
 
 def test_barbell_communities_across_algos():
@@ -211,30 +209,30 @@ def test_mispelled_metric():
 
 def test_expected_stable_across_code_changes_cpm():
     G = nx.karate_club_graph()
-    P = comm.leiden_communities(G, resolution=0.2, seed=1)
+    P = comm.leiden_communities(G, resolution=0.2, seed=3)
     P_expected = [
         {0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21},
-        {4, 10},
-        {16, 5, 6},
+        {16, 4, 5, 6, 10},
         {9},
-        {18},
-        {8, 14, 15, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
+        {8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
     ]
     assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
     G = nx.karate_club_graph()
-    P = comm.leiden_communities(G, weight=None, resolution=0.2, seed=1)
+    P = comm.leiden_communities(G, weight=None, resolution=0.2, seed=170)
     P_expected = [
         {11},
         {12},
-        {8, 30},
-        {4, 10, 16, 5, 6},
-        {24, 27},
-        {25, 26, 29, 23},
+        {0, 1, 2, 3, 7, 8, 13},
+        {17},
+        {19},
+        {30},
         {9},
-        {0, 1, 2, 3, 7, 13, 17, 19},
+        {16, 4, 5, 6, 10},
         {21},
-        {28, 31, 32, 33, 14, 15, 18, 20, 22},
+        {24, 25, 28, 31},
+        {26},
+        {32, 33, 14, 15, 18, 20, 22, 23, 27, 29},
     ]
     assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
@@ -242,24 +240,21 @@ def test_expected_stable_across_code_changes_cpm():
 def test_expected_stable_across_code_changes_qmod():
     qmod = "modularity"
     G = nx.karate_club_graph()
-    P = comm.leiden_communities(G, resolution=0.2, seed=10, metric=qmod)
+    P = comm.leiden_communities(G, resolution=0.2, seed=2, metric=qmod)
     P_expected = [
         {0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21},
-        {16, 5, 6},
-        {4, 10},
-        {23, 24, 25, 27, 28, 31},
-        {32, 33, 8, 9, 14, 15, 18, 20, 22, 26, 29, 30},
+        {16, 4, 5, 6, 10},
+        {32, 33, 8, 9, 14, 15, 18, 20, 22, 23, 26, 27, 29, 30},
+        {24, 25, 28, 31},
     ]
     assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
     G = nx.karate_club_graph()
-    P = comm.leiden_communities(G, weight=None, resolution=0.2, seed=10, metric=qmod)
+    P = comm.leiden_communities(G, weight=None, resolution=0.2, seed=8, metric=qmod)
     P_expected = [
-        {0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21},
-        {16, 5, 6},
-        {4, 10},
-        {8, 9, 14, 15, 18, 20, 22, 23, 26, 27, 29, 30, 32, 33},
-        {24, 25, 28, 31},
+        {0, 1, 2, 3, 7, 9, 11, 12, 13, 17, 19, 21},
+        {16, 4, 5, 6, 10},
+        {8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
     ]
     assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
@@ -302,3 +297,8 @@ def test_bipartite_graphs_modularity_directed():
     G = nx.bipartite.random_graph(10, 20, 0.2, directed=True, seed=11)
     with pytest.raises(nx.NetworkXError):
         comm.leiden_communities(G, metric="barber_modularity", resolution=0.2, seed=1)
+
+
+def test_neighbors_correct_after_aggregation():
+    result = list(comm.leiden_partitions(nx.path_graph(15), resolution=0.2, seed=1))
+    assert len(result[0]) != len(result[1])
