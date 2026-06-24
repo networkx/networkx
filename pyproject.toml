@@ -387,7 +387,7 @@ test-default-py313 = { features = ["nx", "test", "default", "py313"], solve-grou
 test-default-py314 = { features = ["nx", "test", "default", "py314"], solve-group = "py314", no-default-feature = true }
 # Default without scipy
 test-default-no-scipy-py312 = { features = ["nx", "test", "default-no-scipy", "py312"], solve-group = "py312", no-default-feature = true }
-# Extra test (with graphviz from conda)
+# Extra test
 test-extra-py312 = { features = ["nx", "test", "default", "extra", "py312"], solve-group = "py312", no-default-feature = true }
 test-extra-py313 = { features = ["nx", "test", "default", "extra", "py313"], solve-group = "py313", no-default-feature = true }
 # Single-purpose environments
