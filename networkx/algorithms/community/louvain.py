@@ -99,7 +99,7 @@ def louvain_communities(
     --------
     >>> import networkx as nx
     >>> G = nx.petersen_graph()
-    >>> nx.community.louvain_communities(G, seed=123)
+    >>> nx.community.louvain_communities(G, seed=6)
     [{0, 4, 5, 7, 9}, {1, 2, 3, 6, 8}]
 
     Notes
@@ -196,48 +196,52 @@ def louvain_partitions(
     louvain_communities
     :any:`leiden_partitions`
     """
-    partition = [{u} for u in G.nodes()]
+    P = [{u} for u in G]
     if nx.is_empty(G):
-        yield partition
+        yield P
         return
-    mod = modularity(G, partition, resolution=resolution, weight=weight)
-    is_directed = G.is_directed()
-    if G.is_multigraph():
-        graph = _convert_multigraph(G, weight, is_directed)
-    else:
-        graph = G.__class__()
-        graph.add_nodes_from(G)
-        graph.add_weighted_edges_from(G.edges(data=weight, default=1))
 
-    m = graph.size(weight="weight")
-    partition, inner_partition, improvement = _one_level(
-        graph, m, partition, resolution, is_directed, seed
-    )
+    mod = modularity(G, P, resolution=resolution, weight=weight)
+
+    is_directed = G.is_directed()
+    orig_G = G
+    G = nx.DiGraph() if is_directed else nx.Graph()
+    G.add_nodes_from(orig_G)
+
+    if orig_G.is_multigraph():
+        for u, v, wt in orig_G.edges(data=weight, default=1):
+            if G.has_edge(u, v):
+                G[u][v]["weight"] += wt
+            else:
+                G.add_edge(u, v, weight=wt)
+    else:
+        G.add_weighted_edges_from(orig_G.edges(data=weight, default=1))
+
+    # scale edge weights to make m == 1 which simplifies many formulas
+    m = orig_G.size(weight=weight)
+    G.add_weighted_edges_from((u, v, wt / m) for u, v, wt in G.edges(data="weight"))
+
+    P, inner_P, _ = _one_level(G, P, resolution, is_directed, seed)
     improvement = True
     while improvement:
         # use copy to protect P from manipulation of the yielded sets (see gh-5901)
-        yield [s.copy() for s in partition]
-        new_mod = modularity(
-            graph, inner_partition, resolution=resolution, weight="weight"
-        )
+        yield [C.copy() for C in P]
+        new_mod = modularity(G, inner_P, resolution=resolution, weight="weight")
         if new_mod - mod <= threshold:
             return
+
         mod = new_mod
-        graph = _gen_graph(graph, inner_partition)
-        partition, inner_partition, improvement = _one_level(
-            graph, m, partition, resolution, is_directed, seed
-        )
+        G = _aggregate_graph(G, inner_P)
+        P, inner_P, improvement = _one_level(G, P, resolution, is_directed, seed)
 
 
-def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
+def _one_level(G, partition, resolution, is_directed, seed):
     """Calculate one level of the Louvain partitions tree
 
     Parameters
     ----------
     G : NetworkX Graph/DiGraph
         The graph from which to detect communities
-    m : number
-        The size of the graph `G`.
     partition : list of sets of nodes
         A valid partition of the graph `G`
     resolution : positive number
@@ -249,9 +253,10 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
         See :ref:`Randomness<randomness>`.
 
     """
-    node2com = {u: i for i, u in enumerate(G.nodes())}
-    inner_partition = [{u} for u in G.nodes()]
+    node2com = {u: i for i, u in enumerate(G)}
+    inner_partition = [{u} for u in G]
     if is_directed:
+        gamma = resolution
         in_degrees = dict(G.in_degree(weight="weight"))
         out_degrees = dict(G.out_degree(weight="weight"))
         Stot_in = list(in_degrees.values())
@@ -267,67 +272,58 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
                 if u != n:
                     nbrs[u][n] += wt
     else:
+        gamma = resolution / 2
         degrees = dict(G.degree(weight="weight"))
         Stot = list(degrees.values())
-        nbrs = {u: {v: data["weight"] for v, data in G[u].items() if v != u} for u in G}
-    rand_nodes = list(G.nodes)
+        nbrs = {u: {v: dd["weight"] for v, dd in G[u].items() if v != u} for u in G}
+
+    rand_nodes = list(G)
     seed.shuffle(rand_nodes)
     nb_moves = 1
     improvement = False
     while nb_moves > 0:
         nb_moves = 0
         for u in rand_nodes:
-            best_mod = 0
-            best_com = node2com[u]
-            weights2com = _neighbor_weights(nbrs[u], node2com)
+            u_com = node2com[u]
+            u_deg_by_com = defaultdict(float)
+            for nbr, wt in nbrs[u].items():
+                u_deg_by_com[node2com[nbr]] += wt
+
             if is_directed:
                 in_degree = in_degrees[u]
                 out_degree = out_degrees[u]
-                Stot_in[best_com] -= in_degree
-                Stot_out[best_com] -= out_degree
-                remove_cost = (
-                    -weights2com[best_com] / m
-                    + resolution
-                    * (out_degree * Stot_in[best_com] + in_degree * Stot_out[best_com])
-                    / m**2
-                )
+                Stot_in[u_com] -= in_degree
+                Stot_out[u_com] -= out_degree
+                x = out_degree * Stot_in[u_com] + in_degree * Stot_out[u_com]
             else:
                 degree = degrees[u]
-                Stot[best_com] -= degree
-                remove_cost = -weights2com[best_com] / m + resolution * (
-                    Stot[best_com] * degree
-                ) / (2 * m**2)
-            for nbr_com, wt in weights2com.items():
+                Stot[u_com] -= degree
+                x = Stot[u_com] * degree
+            remove_cost = -u_deg_by_com[u_com] + gamma * x
+
+            best_mod = 0
+            best_com = u_com
+            for nbr_com, wt in u_deg_by_com.items():
                 if is_directed:
-                    gain = (
-                        remove_cost
-                        + wt / m
-                        - resolution
-                        * (
-                            out_degree * Stot_in[nbr_com]
-                            + in_degree * Stot_out[nbr_com]
-                        )
-                        / m**2
-                    )
+                    x = out_degree * Stot_in[nbr_com] + in_degree * Stot_out[nbr_com]
                 else:
-                    gain = (
-                        remove_cost
-                        + wt / m
-                        - resolution * (Stot[nbr_com] * degree) / (2 * m**2)
-                    )
+                    x = Stot[nbr_com] * degree
+                gain = remove_cost + wt - gamma * x
                 if gain > best_mod:
                     best_mod = gain
                     best_com = nbr_com
+
             if is_directed:
                 Stot_in[best_com] += in_degree
                 Stot_out[best_com] += out_degree
             else:
                 Stot[best_com] += degree
-            if best_com != node2com[u]:
-                com = G.nodes[u].get("nodes", {u})
-                partition[node2com[u]].difference_update(com)
-                inner_partition[node2com[u]].remove(u)
-                partition[best_com].update(com)
+
+            if best_com != u_com:
+                u_nodes = G.nodes[u].get("nodes", {u})
+                partition[u_com].difference_update(u_nodes)
+                partition[best_com].update(u_nodes)
+                inner_partition[u_com].remove(u)
                 inner_partition[best_com].add(u)
                 improvement = True
                 nb_moves += 1
@@ -337,24 +333,7 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
     return partition, inner_partition, improvement
 
 
-def _neighbor_weights(nbrs, node2com):
-    """Calculate weights between node and its neighbor communities.
-
-    Parameters
-    ----------
-    nbrs : dictionary
-           Dictionary with nodes' neighbors as keys and their edge weight as value.
-    node2com : dictionary
-           Dictionary with all graph's nodes as keys and their community index as value.
-
-    """
-    weights = defaultdict(float)
-    for nbr, wt in nbrs.items():
-        weights[node2com[nbr]] += wt
-    return weights
-
-
-def _gen_graph(G, partition):
+def _aggregate_graph(G, partition):
     """Generate a new graph based on the partitions of a given graph"""
     H = G.__class__()
     node2com = {}
@@ -365,25 +344,11 @@ def _gen_graph(G, partition):
             nodes.update(G.nodes[node].get("nodes", {node}))
         H.add_node(i, nodes=nodes)
 
-    for node1, node2, wt in G.edges(data=True):
-        wt = wt["weight"]
+    for node1, node2, wt in G.edges(data="weight"):
         com1 = node2com[node1]
         com2 = node2com[node2]
-        temp = H.get_edge_data(com1, com2, {"weight": 0})["weight"]
-        H.add_edge(com1, com2, weight=wt + temp)
-    return H
-
-
-def _convert_multigraph(G, weight, is_directed):
-    """Convert a Multigraph to normal Graph"""
-    if is_directed:
-        H = nx.DiGraph()
-    else:
-        H = nx.Graph()
-    H.add_nodes_from(G)
-    for u, v, wt in G.edges(data=weight, default=1):
-        if H.has_edge(u, v):
-            H[u][v]["weight"] += wt
+        if H.has_edge(com1, com2):
+            H.add_edge(com1, com2, weight=wt + H._adj[com1][com2]["weight"])
         else:
-            H.add_edge(u, v, weight=wt)
+            H.add_edge(com1, com2, weight=wt)
     return H
