@@ -11,7 +11,7 @@ __all__ = ["rich_club_coefficient"]
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatchable
-def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
+def rich_club_coefficient(G, normalized=True, n_samples=1, Q=100, seed=None):
     r"""Returns the rich-club coefficient of the graph `G`.
 
     For each degree *k*, the *rich-club coefficient* is the ratio of the
@@ -35,6 +35,12 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
         If `normalized` is True, perform `Q * m` double-edge
         swaps, where `m` is the number of edges in `G`, to use as a
         null-model for normalization.
+    n_samples : integer (optional, default=1)
+        If `normalized` is True, generate `n_samples` random graphs and
+        average their rich-club coefficients for normalization. Increasing
+        `n_samples` reduces the likelyhood of a ZeroDivisionError for sparse
+        graphs with few high-degree nodes.
+        in the case that the average of their rich-club coefficients are all 0.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -88,15 +94,34 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
         raise Exception(
             "rich_club_coefficient is not implemented for graphs with self loops."
         )
+    if normalized and n_samples < 1:
+        raise Exception("n_samples must be >= 1 if 'normalized' = True")
+
     rc = _compute_rc(G)
     if normalized:
         # make R a copy of G, randomize with Q*|E| double edge swaps
         # and use rich_club coefficient of R to normalize
-        R = G.copy()
-        E = R.number_of_edges()
-        nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10, seed=seed)
-        rcran = _compute_rc(R)
-        rc = {k: v / rcran[k] for k, v in rc.items()}
+        averages = {k: 0 for k in rc}
+        E = G.number_of_edges()
+        seed = nx.utils.create_py_random_state(seed)
+
+        for _ in range(n_samples):
+            R = G.copy()
+            nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10, seed=seed)
+            rcran = _compute_rc(R)
+            for deg, coef in rcran.items():
+                averages[deg] += coef / n_samples
+
+        for deg, coef in averages.items():
+            if coef == 0:
+                # Zero average means normalization is undefined at this threshold
+                raise nx.NetworkXAlgorithmError(
+                    f"Rich-club coefficient normalization failed at degree {deg}. "
+                    f"The average rich-club coefficient of {n_samples} random "
+                    f"graphs is zero. Try increasing n_samples."
+                )
+
+        rc = {deg: coef / averages[deg] for deg, coef in rc.items()}
     return rc
 
 
