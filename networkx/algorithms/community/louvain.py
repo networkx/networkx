@@ -99,7 +99,7 @@ def louvain_communities(
     --------
     >>> import networkx as nx
     >>> G = nx.petersen_graph()
-    >>> nx.community.louvain_communities(G, seed=6)
+    >>> nx.community.louvain_communities(G, seed=123)
     [{0, 4, 5, 7, 9}, {1, 2, 3, 6, 8}]
 
     Notes
@@ -217,11 +217,8 @@ def louvain_partitions(
     else:
         G.add_weighted_edges_from(orig_G.edges(data=weight, default=1))
 
-    # scale edge weights to make m == 1 which simplifies many formulas
     m = orig_G.size(weight=weight)
-    G.add_weighted_edges_from((u, v, wt / m) for u, v, wt in G.edges(data="weight"))
-
-    P, inner_P, _ = _one_level(G, P, resolution, is_directed, seed)
+    P, inner_P, _ = _one_level(G, P, m, resolution, is_directed, seed)
     improvement = True
     while improvement:
         # use copy to protect P from manipulation of the yielded sets (see gh-5901)
@@ -232,16 +229,18 @@ def louvain_partitions(
 
         mod = new_mod
         G = _aggregate_graph(G, inner_P)
-        P, inner_P, improvement = _one_level(G, P, resolution, is_directed, seed)
+        P, inner_P, improvement = _one_level(G, P, m, resolution, is_directed, seed)
 
 
-def _one_level(G, partition, resolution, is_directed, seed):
+def _one_level(G, partition, m, resolution, is_directed, seed):
     """Calculate one level of the Louvain partitions tree
 
     Parameters
     ----------
     G : NetworkX Graph/DiGraph
         The graph from which to detect communities
+    m : number
+        The size of `G`
     partition : list of sets of nodes
         A valid partition of the graph `G`
     resolution : positive number
@@ -299,7 +298,7 @@ def _one_level(G, partition, resolution, is_directed, seed):
                 degree = degrees[u]
                 Stot[u_com] -= degree
                 x = Stot[u_com] * degree
-            remove_cost = -u_deg_by_com[u_com] + gamma * x
+            remove_cost = -u_deg_by_com[u_com] / m + gamma * x / m**2
 
             best_mod = 0
             best_com = u_com
@@ -308,7 +307,7 @@ def _one_level(G, partition, resolution, is_directed, seed):
                     x = out_degree * Stot_in[nbr_com] + in_degree * Stot_out[nbr_com]
                 else:
                     x = Stot[nbr_com] * degree
-                gain = remove_cost + wt - gamma * x
+                gain = remove_cost + wt / m - gamma * x / m**2
                 if gain > best_mod:
                     best_mod = gain
                     best_com = nbr_com
@@ -328,8 +327,8 @@ def _one_level(G, partition, resolution, is_directed, seed):
                 improvement = True
                 nb_moves += 1
                 node2com[u] = best_com
-    partition = list(filter(len, partition))
-    inner_partition = list(filter(len, inner_partition))
+    partition = [p for p in partition if p]
+    inner_partition = [p for p in inner_partition if p]
     return partition, inner_partition, improvement
 
 
