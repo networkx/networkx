@@ -1,25 +1,37 @@
 Install
 =======
 
-NetworkX requires Python 3.12, 3.13, or 3.14.  If you do not already
-have a Python environment configured on your computer, please see the
-instructions for installing the full `scientific Python stack
-<https://scipy.org/install.html>`_.
+NetworkX requires Python 3.12, 3.13, or 3.14.
+NetworkX is a pure Python package with no hard dependencies; however, certain
+features (e.g. graph drawing, spectral analysis, link analysis, etc.) depend
+on the scientific Python stack.
+These soft dependencies are captured in the ``default`` optional dependency group
+and can be installed with, e.g. ``pip install networkx[default]``.
+For more detailed information, check out SciPy's instructions for installing
+the full `scientific Python stack <https://scipy.org/install.html>`_.
 
-Below we assume you have the default Python environment already configured on
-your computer and you intend to install ``networkx`` inside of it.  If you want
-to create and work with Python virtual environments, please follow instructions
-on `venv <https://docs.python.org/3/library/venv.html>`_ and `virtual
-environments <https://docs.python-guide.org/en/latest/dev/virtualenvs/>`_.
+Below we assume you have a Python environment already configured on
+your computer and you intend to install ``networkx`` inside of it.
+For further details on environment setup and management tools, from the
+built-in Python ``venv`` module to toolchains like ``uv``, ``conda/mamba`` and
+``pixi``, check out the `Scientific Python Development Guide
+<https://learn.scientific-python.org/development/tutorials/dev-environment/#development-environment>`_.
 
 First, make sure you have the latest version of ``pip`` (the Python package manager)
 installed. If you do not, refer to the `Pip documentation
-<https://pip.pypa.io/en/stable/installing/>`_ and install ``pip`` first.
+<https://pip.pypa.io/en/stable/installation/>`_ and install ``pip`` first.
 
 Install the released version
 ----------------------------
 
 Install the current release of ``networkx`` with ``pip``::
+
+    $ pip install networkx
+
+This install NetworkX without any dependencies.
+In order to make use of additional functionality in NetworkX, it is
+recommended to install the default scientific Python dependencies
+(e.g. ``numpy``, ``scipy``, ``matplotlib``)::
 
     $ pip install networkx[default]
 
@@ -27,43 +39,19 @@ To upgrade to a newer release use the ``--upgrade`` flag::
 
     $ pip install --upgrade networkx[default]
 
-If you do not have permission to install software systemwide, you can
-install into your user directory using the ``--user`` flag::
-
-    $ pip install --user networkx[default]
-
-If you do not want to install our dependencies (e.g., ``numpy``, ``scipy``, etc.),
-you can use::
-
-    $ pip install networkx
-
-This may be helpful if you are using PyPy or you are working on a project that
-only needs a limited subset of our functionality and you want to limit the
-number of dependencies.
-
-Alternatively, you can manually download ``networkx`` from
-`GitHub <https://github.com/networkx/networkx/releases>`_  or
-`PyPI <https://pypi.python.org/pypi/networkx>`_.
-To install one of these versions, unpack it and run the following from the
-top-level source directory using the Terminal::
-
-    $ pip install .[default]
-
 Install the development version
 -------------------------------
 
 If you have `Git <https://git-scm.com/>`_ installed on your system, it is also
 possible to install the development version of ``networkx``.
 
-Before installing the development version, you may need to uninstall the
-standard version of ``networkx`` using ``pip``::
-
-    $ pip uninstall networkx
-
-Then do::
+First, ``git clone`` the source code::
 
     $ git clone https://github.com/networkx/networkx.git
     $ cd networkx
+
+Then, in a new development environment::
+
     $ pip install -e .[default]
 
 The ``pip install -e .[default]`` command allows you to follow the development branch as
@@ -94,19 +82,13 @@ can be found from the individual backend project pages listed in the
 Extra packages
 --------------
 
-.. note::
-   Some optional packages may require compiling
-   C or C++ code.  If you have difficulty installing these packages
-   with `pip`, please consult the homepages of those packages.
-
 The following extra packages provide additional functionality. See the
 files in the ``requirements/`` directory for information about specific
 version requirements.
 
-- `PyGraphviz <https://pygraphviz.github.io/>`_ and
-  `pydot <https://github.com/erocarrera/pydot>`_ provide graph drawing
+- `PyGraphviz <https://pygraphviz.github.io/>`_ provides graph drawing
   and graph layout algorithms via `GraphViz <https://graphviz.org/>`_.
-- `lxml <https://lxml.de/>`_ used for GraphML XML format.
+- `lxml <https://lxml.de/>`_ for improved performance in parsing GraphML XML format.
 
 To install ``networkx`` and extra packages, do::
 
@@ -114,7 +96,7 @@ To install ``networkx`` and extra packages, do::
 
 To explicitly install all optional packages, do::
 
-    $ pip install pygraphviz pydot lxml
+    $ pip install pygraphviz lxml
 
 Or, install any optional package (e.g., ``pygraphviz``) individually::
 
