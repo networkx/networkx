@@ -1,5 +1,4 @@
-"""Functions for detecting communities based on Louvain Community Detection
-Algorithm"""
+"""Detecting communities based on the Louvain Community Detection algorithm"""
 
 import itertools
 from collections import defaultdict, deque
@@ -19,45 +18,47 @@ def louvain_communities(
     r"""Find the best partition of a graph using the Louvain Community Detection
     Algorithm.
 
-    Louvain Community Detection Algorithm is a simple method to extract the community
-    structure of a network. This is a heuristic method based on modularity optimization. [1]_
+    Louvain Community Detection seeks to extract the community structure of a
+    network. It is a heuristic algorithm based on modularity optimization. [1]_
 
-    The algorithm works in 2 steps. On the first step it assigns every node to be
-    in its own community and then for each node it tries to find the maximum positive
-    modularity gain by moving each node to all of its neighbor communities. If no positive
-    gain is achieved the node remains in its original community.
+    The algorithm starts with every node in its own community and then repeatedly
+    updates by merging communities. Each update consists of two phases.
+    First, each node is examined to find the maximum positive modularity gain
+    obtained by moving it to a different community. If no positive gain can be
+    achieved the node remains in its original community. The next node is then
+    considered. Nodes containue to be examined until no improvement in
+    modularity can be obtained by moving nodes. The second phase shifting to
+    an aggregated network where each community of the original network is a
+    node in the new network with edges connnecting then if nodes in those
+    two communities connect to each other. The edge weights and node attributes
+    of the new network are the sums of edge and node attributes from the
+    communities in the previous network. These two phases are repeated until
+    no modularity gain is achieved (or is less than a `threshold`, or until
+    `max_levels` updates have occured).
 
-    The modularity gain obtained by moving an isolated node $i$ into a community $C$ can
-    easily be calculated by the following formula (combining [1]_ [2]_ and some algebra):
+    The modularity gain obtained by moving an isolated node $i$ into a community
+    $C$ can be calculated by the following formula
+    (combining [1]_ [2]_ and some algebra):
 
     .. math::
         \Delta Q = \frac{k_{i,in}}{2m} - \gamma\frac{ \Sigma_{tot} \cdot k_i}{2m^2}
 
-    where $m$ is the size of the graph, $k_{i,in}$ is the sum of the weights of the links
-    from $i$ to nodes in $C$, $k_i$ is the sum of the weights of the links incident to node $i$,
-    $\Sigma_{tot}$ is the sum of the weights of the links incident to nodes in $C$ and $\gamma$
-    is the resolution parameter.
+    where $m$ is the size of the graph; $k_{i,in}$ is the sum of the edge weights
+    from $i$ to nodes in $C$; $k_i$ is the sum of the edge weights incident to
+    node $i$; $\Sigma_{tot}$ is the sum of the edge weights incident to nodes in $C$;
+    and $\gamma$ is the resolution parameter. Higher resolution produces smaller
+    communities. Low resolution produces larger communities.
 
-    For the directed case the modularity gain can be computed using this formula according to [3]_
+    For the directed case the modularity gain can be computed (see [3]_) using
+    the formula:
 
     .. math::
         \Delta Q = \frac{k_{i,in}}{m}
         - \gamma\frac{k_i^{out} \cdot\Sigma_{tot}^{in} + k_i^{in} \cdot \Sigma_{tot}^{out}}{m^2}
 
-    where $k_i^{out}$, $k_i^{in}$ are the outer and inner weighted degrees of node $i$ and
-    $\Sigma_{tot}^{in}$, $\Sigma_{tot}^{out}$ are the sum of in-going and out-going links incident
-    to nodes in $C$.
-
-    The first phase continues until no individual move can improve the modularity.
-
-    The second phase consists in building a new network whose nodes are now the communities
-    found in the first phase. To do so, the weights of the links between the new nodes are given by
-    the sum of the weight of the links between nodes in the corresponding two communities. Once this
-    phase is complete it is possible to reapply the first phase creating bigger communities with
-    increased modularity.
-
-    The above two phases are executed until no modularity gain is achieved (or is less than
-    the `threshold`, or until `max_levels` is reached).
+    where $k_i^{out}$, $k_i^{in}$ are the outer and inner weighted degrees of node
+    $i$; $\Sigma_{tot}^{in}$ and $\Sigma_{tot}^{out}$ are the sum of in-going and
+    out-going edge weights incident to nodes in $C$.
 
     Be careful with self-loops in the input graph. These are treated as
     previously reduced communities -- as if the process had been started
@@ -65,7 +66,7 @@ def louvain_communities(
     represent strong communities and in practice may be hard to add
     other nodes to.  If your input graph edge weights for self-loops
     do not represent already reduced communities you may want to remove
-    the self-loops before inputting that graph.
+    the self-loops before using that graph.
 
     Parameters
     ----------
@@ -91,8 +92,8 @@ def louvain_communities(
     Returns
     -------
     list
-        A list of sets (partition of `G`). Each set represents one community and contains
-        all the nodes that constitute it.
+        A list of sets (partition of `G`). Each set represents one community
+        and contains all the nodes in that community.
 
     Examples
     --------
@@ -103,17 +104,21 @@ def louvain_communities(
 
     Notes
     -----
-    The order in which the nodes are considered can affect the final output. In the algorithm
-    the ordering happens using a random shuffle.
+    The order in which the nodes are considered can affect the final output.
+    In the algorithm the ordering happens using a random shuffle.
 
     References
     ----------
-    .. [1] Blondel, V.D. et al. Fast unfolding of communities in
-       large networks. J. Stat. Mech 10008, 1-12(2008). https://doi.org/10.1088/1742-5468/2008/10/P10008
-    .. [2] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
-       well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
-    .. [3] Nicolas Dugué, Anthony Perez. Directed Louvain : maximizing modularity in directed networks.
-        [Research Report] Université d’Orléans. 2015. hal-01231784. https://hal.archives-ouvertes.fr/hal-01231784
+    .. [1] Blondel, V.D. et al. Fast unfolding of communities in large networks.
+           J. Stat. Mech 10008, 1-12(2008).
+           https://doi.org/10.1088/1742-5468/2008/10/P10008
+    .. [2] Traag, V.A., Waltman, L. & van Eck, N.J.
+           From Louvain to Leiden: guaranteeing well-connected communities.
+           Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
+    .. [3] Nicolas Dugué, Anthony Perez.
+           Directed Louvain : maximizing modularity in directed networks.
+           [Research Report] Université d’Orléans. 2015.
+           hal-01231784. https://hal.archives-ouvertes.fr/hal-01231784
 
     See Also
     --------
@@ -137,14 +142,14 @@ def louvain_partitions(
 ):
     """Yield partitions for each level of the Louvain Community Detection Algorithm
 
-    Louvain Community Detection Algorithm is a simple method to extract the community
-    structure of a network. This is a heuristic method based on modularity optimization. [1]_
+    Louvain Community Detection seeks to extract the community structure of a
+    network. It is a heuristic algorithm based on modularity optimization. [1]_
 
-    The partitions at each level (step of the algorithm) form a dendrogram of communities.
-    A dendrogram is a diagram representing a tree and each level represents
-    a partition of the G graph. The top level contains the smallest communities
-    and as you traverse to the bottom of the tree the communities get bigger
-    and the overall modularity increases making the partition better.
+    The partitions at each level (step of the algorithm) form a dendrogram of
+    communities. A dendrogram is a diagram representing a tree and each level
+    represents a partition of the G graph. The first level contains the smallest
+    communities and as you traverse to later levels the communities get bigger
+    and the overall modularity increases.
 
     Each level is generated by executing the two phases of the Louvain Community
     Detection Algorithm.
@@ -161,36 +166,36 @@ def louvain_partitions(
     ----------
     G : NetworkX graph
     weight : string or None, optional (default="weight")
-     The name of an edge attribute that holds the numerical value
-     used as a weight. If None then each edge has weight 1.
+        The name of an edge attribute that holds the numerical value
+        used as a weight. If None then each edge has weight 1.
     resolution : float, optional (default=1)
         If resolution is less than 1, the algorithm favors larger communities.
         Greater than 1 favors smaller communities
     threshold : float, optional (default=0.0000001)
-     Modularity gain threshold for each level. If the gain of modularity
-     between 2 levels of the algorithm is less than the given threshold
-     then the algorithm stops and returns the resulting communities.
+        Modularity gain threshold for each level. If the gain of modularity
+        between 2 levels of the algorithm is less than the given threshold
+        then the algorithm stops and returns the resulting communities.
     seed : integer, random_state, or None (default)
-     Indicator of random number generation state.
-     See :ref:`Randomness<randomness>`.
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Yields
     ------
     list
-        A list of sets (partition of `G`). Each set represents one community and contains
-        all the nodes that constitute it.
+        A list of sets (partition of `G`). Each set represents one community
+        and contains all the nodes in that community.
 
     References
     ----------
-    .. [1] Blondel, V.D. et al. Fast unfolding of communities in
-       large networks. J. Stat. Mech 10008, 1-12(2008)
+    .. [1] Blondel, V.D. et al. Fast unfolding of communities in large networks.
+           J. Stat. Mech 10008, 1-12(2008).
+           http://dx.doi.org/10.1088/1742-5468/2008/10/P10008
 
     See Also
     --------
     louvain_communities
     :any:`leiden_partitions`
     """
-
     partition = [{u} for u in G.nodes()]
     if nx.is_empty(G):
         yield partition
@@ -210,7 +215,7 @@ def louvain_partitions(
     )
     improvement = True
     while improvement:
-        # gh-5901 protect the sets in the yielded list from further manipulation here
+        # use copy to protect P from manipulation of the yielded sets (see gh-5901)
         yield [s.copy() for s in partition]
         new_mod = modularity(
             graph, inner_partition, resolution=resolution, weight="weight"
@@ -251,7 +256,7 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
         out_degrees = dict(G.out_degree(weight="weight"))
         Stot_in = list(in_degrees.values())
         Stot_out = list(out_degrees.values())
-        # Calculate weights for both in and out neighbors without considering self-loops
+        # Compute weights for both in and out nbrs, ignoring self-loops
         nbrs = {}
         for u in G:
             nbrs[u] = defaultdict(float)
