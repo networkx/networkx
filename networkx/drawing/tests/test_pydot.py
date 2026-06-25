@@ -156,3 +156,23 @@ def test_pydot_numerical_name():
     assert 1 in graph_layout
     assert "A" in graph_layout
     assert "B" in graph_layout
+
+
+def test_pydot_reserved_node_name():
+    # https://github.com/pydot/pydot/issues/553
+    G = nx.Graph()
+    G.add_edge("NODE", "EDGE")
+
+    with StringIO() as f:
+        nx.drawing.nx_pydot.write_dot(G, f)
+        contents = f.getvalue()
+
+    assert (
+        contents
+        == """strict graph {
+"NODE";
+"EDGE";
+"NODE" -- "EDGE";
+}
+"""
+    )

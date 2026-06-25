@@ -227,7 +227,7 @@ def to_pydot(N):
 
     for n, nodedata in N.nodes(data=True):
         str_nodedata = {str(k): str(v) for k, v in nodedata.items()}
-        n = str(n)
+        n = pydot.quote_id_if_necessary(str(n))
         p = pydot.Node(n, **str_nodedata)
         P.add_node(p)
 
