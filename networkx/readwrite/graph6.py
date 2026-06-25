@@ -388,10 +388,22 @@ def data_to_n(data):
     integer sequence.
 
     Return (value, rest of seq.)"""
+    if len(data) == 0:
+        raise nx.NetworkXError(
+            "failed to parse graph6 or sparse6 data: empty byte sequence"
+        )
     if data[0] <= 62:
         return data[0], data[1:]
+    if len(data) < 4:
+        raise nx.NetworkXError(
+            "failed to parse graph6 or sparse6 data: truncated byte sequence"
+        )
     if data[1] <= 62:
         return (data[1] << 12) + (data[2] << 6) + data[3], data[4:]
+    if len(data) < 8:
+        raise nx.NetworkXError(
+            "failed to parse graph6 or sparse6 data: truncated byte sequence"
+        )
     return (
         (data[2] << 30)
         + (data[3] << 24)

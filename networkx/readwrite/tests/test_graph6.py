@@ -51,6 +51,13 @@ class TestFromGraph6Bytes:
         with pytest.raises(ValueError):
             nx.from_graph6_bytes(b"C.")
 
+    def test_from_graph6_bytes_rejects_truncated(self):
+        # empty or truncated data must raise NetworkXError rather than an
+        # IndexError, matching the documented behavior for unparseable input
+        for data in [b"", b"~", b"~~"]:
+            with pytest.raises(nx.NetworkXError):
+                nx.from_graph6_bytes(data)
+
 
 class TestReadGraph6:
     def test_read_many_graph6(self):
