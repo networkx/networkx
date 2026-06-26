@@ -486,3 +486,11 @@ def test_compare_mean_kappas_different_gammas_S1():
     kappas2 = nx.get_node_attributes(G2, "kappa")
     mean_kappas2 = sum(kappas2.values()) / len(kappas2)
     assert math.fabs(mean_kappas1 - mean_kappas2) < 1
+
+
+def test_mean_degree_S1():
+    kappas = {i: 10 for i in range(1000)}
+    G = nx.geometric_soft_configuration_graph(beta=2.5, kappas=kappas)
+    degrees = dict(G.degree())
+    mean_degree = sum(degrees.values()) / len(degrees)
+    assert math.fabs(mean_degree - 10) < 1
