@@ -28,7 +28,7 @@ Install the current release of ``networkx`` with ``pip``::
 
     $ pip install networkx
 
-This install NetworkX without any dependencies.
+This installs NetworkX without any dependencies.
 In order to make use of additional functionality in NetworkX, it is
 recommended to install the default scientific Python dependencies
 (e.g. ``numpy``, ``scipy``, ``matplotlib``)::
