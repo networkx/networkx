@@ -26,15 +26,15 @@ def louvain_communities(
     First, each node is examined to find the maximum positive modularity gain
     obtained by moving it to a different community. If no positive gain can be
     achieved the node remains in its original community. The next node is then
-    considered. Nodes containue to be examined until no improvement in
-    modularity can be obtained by moving nodes. The second phase shifting to
+    considered. Nodes continue to be examined until no improvement in
+    modularity can be obtained by moving nodes. The second phase builds
     an aggregated network where each community of the original network is a
-    node in the new network with edges connnecting then if nodes in those
+    node in the new network with edges connecting then if nodes in those
     two communities connect to each other. The edge weights and node attributes
     of the new network are the sums of edge and node attributes from the
     communities in the previous network. These two phases are repeated until
     no modularity gain is achieved (or is less than a `threshold`, or until
-    `max_levels` updates have occured).
+    `max_levels` updates have occurred).
 
     The modularity gain obtained by moving an isolated node $i$ into a community
     $C$ can be calculated by the following formula
@@ -147,7 +147,7 @@ def louvain_partitions(
 
     The partitions at each level (step of the algorithm) form a dendrogram of
     communities. A dendrogram is a diagram representing a tree and each level
-    represents a partition of the G graph. The first level contains the smallest
+    represents a partition of the graph `G`. The first level contains the smallest
     communities and as you traverse to later levels the communities get bigger
     and the overall modularity increases.
 
