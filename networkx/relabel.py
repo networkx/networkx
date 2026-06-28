@@ -13,8 +13,8 @@ def relabel_nodes(G, mapping, copy=True):
     mapping includes overlap between old and new labels.
 
     When multiple nodes are mapped to the same target node, attribute
-    handling is arbitrary. For predictable attribute handling when combining
-    nodes, consider using :any:`contracted_nodes`.
+    handling depends on `copy` kwarg. For predictable attribute handling when
+    combining nodes, consider using :any:`contracted_nodes`.
 
     Parameters
     ----------
