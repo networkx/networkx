@@ -71,6 +71,50 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
     """
     import numpy as np
+
+    if len(G) == 0:
+        return {}, {}
+    nodelist = list(G)
+    A = nx.adjacency_matrix(G, nodelist=nodelist, dtype=float)
+
+    if nstart is None:
+        h = np.full(len(G), 1.0 / len(G))
+    else:
+        missing = G.nodes - nstart.keys()
+        if missing:
+            raise nx.NetworkXError(
+                f"nstart must have a value for every node; missing: {missing}"
+            )
+        h = np.array([nstart[node] for node in nodelist], dtype=float)
+        s = h.sum()
+        if s == 0:
+            raise nx.NetworkXError("nstart values must not sum to zero")
+        h = h / s
+
+    if max_iter <= 0:
+        raise nx.PowerIterationFailedConvergence(max_iter)
+
+    for _ in range(max_iter):
+        hlast = h
+        a = h @ A
+        h = A @ a
+        a /= a.max()
+        h /= h.max()
+        if np.abs(h - hlast).sum() < tol:
+            break
+    else:
+        raise nx.PowerIterationFailedConvergence(max_iter)
+
+    if normalized:
+        h /= h.sum()
+        a /= a.sum()
+    hubs = dict(zip(nodelist, map(float, h)))
+    authorities = dict(zip(nodelist, map(float, a)))
+    return hubs, authorities
+
+
+def _hits_svd(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
+    import numpy as np
     import scipy as sp
 
     if len(G) == 0:
