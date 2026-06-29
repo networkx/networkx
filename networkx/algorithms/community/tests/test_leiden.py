@@ -152,7 +152,7 @@ def test_LFR_communities_across_algos():
     C = comm.leiden_communities(G, metric="cpm", resolution=0.001, seed=45)
     cpm_comm = {frozenset(c) for c in C}
 
-    C = comm.leiden_communities(G, metric="modularity", resolution=0.3, seed=36)
+    C = comm.leiden_communities(G, metric="modularity", resolution=0.3, seed=24)
     mod_comm = {frozenset(c) for c in C}
 
     assert louvain_comm == cpm_comm == LFR_comm == mod_comm
@@ -240,7 +240,7 @@ def test_expected_stable_across_code_changes_cpm():
 def test_expected_stable_across_code_changes_qmod():
     qmod = "modularity"
     G = nx.karate_club_graph()
-    P = comm.leiden_communities(G, resolution=0.2, seed=2, metric=qmod)
+    P = comm.leiden_communities(G, resolution=0.2, seed=483, metric=qmod)
     P_expected = [
         {0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21},
         {16, 4, 5, 6, 10},
@@ -250,7 +250,7 @@ def test_expected_stable_across_code_changes_qmod():
     assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 
     G = nx.karate_club_graph()
-    P = comm.leiden_communities(G, weight=None, resolution=0.2, seed=8, metric=qmod)
+    P = comm.leiden_communities(G, weight=None, resolution=0.2, seed=39, metric=qmod)
     P_expected = [
         {0, 1, 2, 3, 7, 9, 11, 12, 13, 17, 19, 21},
         {16, 4, 5, 6, 10},

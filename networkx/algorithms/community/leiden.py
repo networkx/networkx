@@ -238,65 +238,49 @@ def leiden_partitions(
     # For one node, the change from moving node u from A to B is:
     # q_delta = delta_func(u, B) - delta_func(u, A-{u})
 
-    orig_G = G  # make copy of original G to allow mutations
-    is_directed = orig_G.is_directed()
-    if orig_G.is_multigraph():
+    is_directed = G.is_directed()
+    edge_wts = {u: {} for u in G}
+    if G.is_multigraph():
         # Convert Multi(Di)Graph to (Di)Graph by summing edges
-        G = nx.DiGraph() if is_directed else nx.Graph()
-        G.add_nodes_from(orig_G)
-        G.add_edges_from(orig_G.edges())
         if weight is None:
             edge_wts = {
-                u: {v: len(kd) for v, kd in nbrs.items()}
-                for u, nbrs in orig_G._adj.items()
+                u: {v: len(kd) for v, kd in nbrs.items() if u != v}
+                for u, nbrs in G._adj.items()
             }
-            if is_directed:
-                in_edge_wts = {
-                    u: {v: len(kd) for v, kd in nbrs.items()}
-                    for u, nbrs in orig_G._pred.items()
-                }
         else:
             edge_wts = {
                 u: {
                     v: sum(dd.get(weight, 1) for dd in kd.values())
                     for v, kd in nbrs.items()
+                    if u != v
                 }
-                for u, nbrs in orig_G._adj.items()
+                for u, nbrs in G._adj.items()
             }
-            if is_directed:
-                in_edge_wts = {
-                    u: {
-                        v: sum(dd.get(weight, 1) for dd in kd.values())
-                        for v, kd in nbrs.items()
-                    }
-                    for u, nbrs in orig_G._pred.items()
-                }
     else:
-        # same nodes & class as orig_G
-        G = nx.empty_graph(orig_G, create_using=orig_G.__class__)
-        G.add_edges_from(orig_G.edges)
         if weight is None:
-            edge_wts = {u: {v: 1 for v in nbrs} for u, nbrs in orig_G._adj.items()}
-            if is_directed:
-                in_edge_wts = {
-                    u: {v: 1 for v in nbrs} for u, nbrs in orig_G._pred.items()
-                }
+            edge_wts = {u: {v: 1 for v in nbrs if u != v} for u, nbrs in G._adj.items()}
         else:
             edge_wts = {
-                u: {v: dd.get(weight, 1) for v, dd in nbrs.items()}
-                for u, nbrs in orig_G._adj.items()
+                u: {v: dd.get(weight, 1) for v, dd in nbrs.items() if u != v}
+                for u, nbrs in G._adj.items()
             }
-            if is_directed:
-                in_edge_wts = {
-                    u: {v: dd.get(weight, 1) for v, dd in nbrs.items()}
-                    for u, nbrs in orig_G._pred.items()
-                }
+
+    orig_G = G  # make copy of original G to allow mutations
+    G = nx.DiGraph() if is_directed else nx.Graph()
+    G.add_nodes_from(orig_G)
+    G.add_weighted_edges_from(
+        (u, v, wt) for u, nbrs in edge_wts.items() for v, wt in nbrs.items()
+    )
     G.graph["edge_wts"] = edge_wts
+
     if is_directed:
+        in_edge_wts = {u: {} for u in G}
+        for u, nbrs in edge_wts.items():
+            for v, wt in nbrs.items():
+                in_edge_wts[v][u] = wt
         G.graph["in_edge_wts"] = in_edge_wts
 
     # node attr "nodes" holds the original nodes represented by this current node
-    # initialize to point to itself
     nx.set_node_attributes(G, {n: {n} for n in orig_G}, "nodes")
 
     if metric == "cpm":
@@ -736,11 +720,9 @@ def _create_aggregate_graph(G, P_refined, node_attributes):
     for attr_name in node_attributes:
         node_attributes[attr_name] = H_node_attributes[attr_name]
 
-    # Handle edge_wts and in_edge_wts
+    # Handle edge_wts, edges and in_edge_wts
     is_directed = H.is_directed()
     H_edge_wts = {H_node: {} for H_node in H}
-    if is_directed:
-        H_in_edge_wts = {H_node: {} for H_node in H}
     for u, nbrs in G.graph["edge_wts"].items():
         H_u = nodes_G2H[u]
         H_unbrs = H_edge_wts[H_u]
@@ -749,14 +731,18 @@ def _create_aggregate_graph(G, P_refined, node_attributes):
             if H_u != H_v:
                 if H_v in H_unbrs:
                     H_unbrs[H_v] += uv_weight
-                    if is_directed:
-                        H_in_edge_wts[H_v][H_u] += uv_weight
                 else:
-                    H.add_edge(H_u, H_v)
                     H_unbrs[H_v] = uv_weight
-                    if is_directed:
-                        H_in_edge_wts[H_v][H_u] = uv_weight
+    H.add_weighted_edges_from(
+        (u, v, wt) for u, nbrs in H_edge_wts.items() for v, wt in nbrs.items()
+    )
     H.graph["edge_wts"] = H_edge_wts
+
     if is_directed:
+        H_in_edge_wts = {u: {} for u in H}
+        for u, nbrs in H_edge_wts.items():
+            for v, wt in nbrs.items():
+                H_in_edge_wts[v][u] = wt
         H.graph["in_edge_wts"] = H_in_edge_wts
+
     return H, H_node2com
