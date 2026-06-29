@@ -644,3 +644,66 @@ class TestGeneratorClassic:
         # in general the number of edges of the kneser graph is equal to
         # (n choose k) times (n-k choose k) divided by 2
         assert nx.number_of_edges(nx.kneser_graph(8, 3)) == 280
+
+
+class TestJohnsonGraph:
+    @pytest.mark.parametrize(("n", "k"), [(5, 2), (6, 3), (7, 4), (8, 4), (10, 3)])
+    def test_johnson_graph_properties(self, n, k):
+        """Verify some general properties of Johnson graphs."""
+        import math
+
+        Jnk = nx.johnson_graph(n, k)
+        bnk = math.comb(n, k)
+        assert len(Jnk) == bnk
+        assert Jnk.number_of_edges() == k * (n - k) * bnk // 2
+        assert nx.diameter(Jnk) == min(k, n - k)
+        assert nx.is_k_regular(Jnk, k * (n - k))
+
+        # Johnson graphs are distance-regular.
+        assert nx.is_distance_regular(Jnk)
+        # Johnson graphs are isomorphic to their complements.
+        assert nx.is_isomorphic(Jnk, nx.johnson_graph(n, n - k))
+
+    def test_johnson_graph_octahedral_graph(self):
+        """Verify that ``J(4, 2)`` is isomorphic to the octahedral graph."""
+        assert nx.is_isomorphic(nx.johnson_graph(4, 2), nx.octahedral_graph())
+
+    @pytest.mark.parametrize("n", [2, 3, 5, 10])
+    def test_johnson_graph_complete_graph(self, n):
+        """Verify that ``J(n, 1)`` is isomorphic to ``K_n`` and that ``J(n, 2)``
+        is isomorphic to the line graph of ``K_n``.
+        """
+        Kn = nx.complete_graph(n)
+        assert nx.is_isomorphic(nx.johnson_graph(n, 1), Kn)
+        assert nx.is_isomorphic(nx.johnson_graph(n, 2), nx.line_graph(Kn))
+
+    @pytest.mark.parametrize("n", [range(4), "abcd"])
+    def test_johnson_graph_iterable_n(self, n):
+        """Verify iterables are accepted for `n`."""
+        assert nx.is_isomorphic(nx.johnson_graph(4, 2), nx.johnson_graph(n, 2))
+
+    @pytest.mark.parametrize("n", [0, 1, 2])
+    def test_johnson_graph_edge_case(self, n):
+        """Verify edge cases for ``J(n, 0)``."""
+        J00 = nx.johnson_graph(n, 0)
+        assert list(J00.nodes) == [()]
+        assert len(list(J00.edges)) == 0
+
+    @pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
+    def test_johnson_graph_directed(self, graph_type):
+        """Verify that ``J(n, k)`` raises for directed types."""
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="not implemented for directed"
+        ):
+            nx.johnson_graph(4, 2, create_using=graph_type)
+
+    def test_johnson_graph_negative_n(self):
+        """Verify negative values of ``n`` raise."""
+        with pytest.raises(nx.NetworkXError, match="Negative number of nodes"):
+            nx.johnson_graph(-1, 2)
+
+    @pytest.mark.parametrize(("n", "k"), [(0, -1), (3, 4)])
+    def test_johnson_graph_invalid_k(self, n, k):
+        """Verify invalid values of `k` raise."""
+        with pytest.raises(ValueError, match="`k` must be"):
+            nx.johnson_graph(n, k)
