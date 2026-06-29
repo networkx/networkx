@@ -234,7 +234,7 @@ def leiden_partitions(
     # - set node_attributes dict keyed by node attr to dict keyed by node
 
     # delta function gives change in metric when merging two communities.
-    # The change due to splitting a set U from C is negating e.g. -delta_func(U, C-U)
+    # The change due to splitting a set U from C is negated e.g. -delta_func(U, C-U)
     # For one node, the change from moving node u from A to B is:
     # q_delta = delta_func(u, B) - delta_func(u, A-{u})
 
@@ -540,7 +540,7 @@ def leiden_partitions(
 
     while improvement_made:
         # _move_nodes_fast (name from paper) is like _one_level in nx.louvain
-        # Move nodes to new community with greatest increase in quality/matric
+        # Move nodes to new community with greatest increase in quality/metric
         # Start with the unrefined partition from previous stage.
         P = _move_nodes_fast(G, node2com, delta_func, seed=seed)
 
@@ -635,7 +635,7 @@ def _merge_node_subset(C, delta_func, seed, theta):
 
     # T[i] > 0 means community i is well connected to others
     # Definition of T in line 37 of pseudocode in paper (supplemental mat.)
-    # uses condition for "cpm" matric: E(C, S-C) >= gamma * |C| * (|S| - |C|)
+    # uses condition for "cpm" metric: E(C, S-C) >= gamma * |C| * (|S| - |C|)
     # where |X| is the node_weight of the set X of nodes.
     # We generalize to any metric by using condition T(i) > 0
     T = {i: delta_func(u, C - {u}) for i, u in enumerate(C)}
