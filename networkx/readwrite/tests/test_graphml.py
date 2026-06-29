@@ -426,6 +426,26 @@ class TestReadGraphML(BaseGraphML):
         pytest.raises(nx.NetworkXError, nx.read_graphml, fh)
         pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
 
+    def test_directed_edge_in_undirected_numeric_bool(self):
+        # `directed` is xsd:boolean, so "1" is a valid spelling of "true".
+        # NetworkX only writes `edgedefault`, never a per-edge `directed`, so
+        # mark one edge directed by hand on an otherwise NX-generated document.
+        G = nx.Graph([("n0", "n1")])
+        s = "\n".join(nx.generate_graphml(G)).replace(
+            "<edge ", '<edge directed="1" ', 1
+        )
+        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
+
+    def test_undirected_edge_in_directed_numeric_bool(self):
+        # `directed` is xsd:boolean, so "0" is a valid spelling of "false".
+        # NetworkX only writes `edgedefault`, never a per-edge `directed`, so
+        # mark one edge undirected by hand on an otherwise NX-generated document.
+        G = nx.DiGraph([("n0", "n1")])
+        s = "\n".join(nx.generate_graphml(G)).replace(
+            "<edge ", '<edge directed="0" ', 1
+        )
+        pytest.raises(nx.NetworkXError, nx.parse_graphml, s)
+
     def test_key_raise(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"

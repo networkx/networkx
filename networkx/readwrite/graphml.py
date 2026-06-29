@@ -925,12 +925,14 @@ class GraphMLReader(GraphML):
             warnings.warn("GraphML port tag not supported.")
 
         # raise error if we find mixed directed and undirected edges
+        # the "directed" attribute is xsd:boolean, so "0"/"1" are valid
+        # spellings of "false"/"true" and must be treated the same way.
         directed = edge_element.get("directed")
-        if G.is_directed() and directed == "false":
-            msg = "directed=false edge found in directed graph."
+        if G.is_directed() and directed in {"false", "0"}:
+            msg = f"directed={directed} edge found in directed graph."
             raise nx.NetworkXError(msg)
-        if (not G.is_directed()) and directed == "true":
-            msg = "directed=true edge found in undirected graph."
+        if (not G.is_directed()) and directed in {"true", "1"}:
+            msg = f"directed={directed} edge found in undirected graph."
             raise nx.NetworkXError(msg)
 
         source = self.node_type(edge_element.get("source"))
