@@ -149,10 +149,10 @@ def test_LFR_communities_across_algos():
     C = comm.louvain_communities(G, resolution=0.5, seed=10)
     louvain_comm = {frozenset(c) for c in C}
 
-    C = comm.leiden_communities(G, metric="cpm", resolution=-0.001, seed=20)
+    C = comm.leiden_communities(G, metric="cpm", resolution=0.001, seed=45)
     cpm_comm = {frozenset(c) for c in C}
 
-    C = comm.leiden_communities(G, metric="modularity", resolution=0.1, seed=157)
+    C = comm.leiden_communities(G, metric="modularity", resolution=0.3, seed=36)
     mod_comm = {frozenset(c) for c in C}
 
     assert louvain_comm == cpm_comm == LFR_comm == mod_comm
@@ -283,6 +283,7 @@ def test_connected_communities_no_weights():
 @pytest.mark.parametrize("metric", _metrics())
 def test_directed_graphs_modularity(metric):
     G = nx.gn_graph(n=100, seed=11)
+    G.add_edges_from([(1, 2), (2, 1)])  # ensure one node-pair has both directions
     assert nx.is_directed(G)
     comm.leiden_communities(G, metric=metric, weight=None, resolution=0.2, seed=11)
 
@@ -299,6 +300,39 @@ def test_bipartite_graphs_modularity_directed():
         comm.leiden_communities(G, metric="barber_modularity", resolution=0.2, seed=1)
 
 
-def test_neighbors_correct_after_aggregation():
+def test_neighbors_change_after_aggregation():
     result = list(comm.leiden_partitions(nx.path_graph(15), resolution=0.2, seed=1))
     assert len(result[0]) != len(result[1])
+
+
+def test_weights_matter():
+    G = nx.path_graph(15)
+    no_weights = list(comm.leiden_partitions(G, resolution=2, seed=42637))
+
+    G.add_weighted_edges_from((u, v, (u + 1) * v) for u, v in G.edges())
+    with_weights = list(comm.leiden_partitions(G, resolution=2, seed=42637))
+    assert len(no_weights[0]) > len(with_weights[0])
+    assert len(no_weights[-1]) > len(with_weights[-1])
+
+    G.edges[(3, 4)]["weight"] = 10000
+    big_weights = list(comm.leiden_partitions(G, resolution=2, seed=42637))
+    part_with_3 = [i for i, c in enumerate(big_weights[-1]) if 3 in c][0]
+    assert 4 in big_weights[-1][part_with_3]
+
+
+def test_directed_weights_matter():
+    G = nx.path_graph(15)
+    G = nx.DiGraph(G.edges())
+    no_weights = list(comm.leiden_partitions(G, resolution=2, seed=42637))
+
+    G.add_weighted_edges_from((u, v, (u + 1) * v) for u, v in G.edges())
+    with_weights = list(comm.leiden_partitions(G, resolution=2, seed=42637))
+    assert len(no_weights[0]) > len(with_weights[0])
+    assert len(no_weights[-1]) > len(with_weights[-1])
+    part_with_3 = [i for i, c in enumerate(with_weights[-1]) if 3 in c][0]
+    assert 4 not in with_weights[-1][part_with_3]
+
+    G.edges[(3, 4)]["weight"] = 1000
+    big_weights = list(comm.leiden_partitions(G, resolution=2, seed=42637))
+    part_with_3 = [i for i, c in enumerate(big_weights[-1]) if 3 in c][0]
+    assert 4 in big_weights[-1][part_with_3]
