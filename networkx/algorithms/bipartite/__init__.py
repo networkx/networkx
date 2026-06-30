@@ -78,6 +78,7 @@ from networkx.algorithms.bipartite.centrality import *
 from networkx.algorithms.bipartite.cluster import *
 from networkx.algorithms.bipartite.community import *
 from networkx.algorithms.bipartite.covering import *
+from networkx.algorithms.bipartite.edge_colorings import *
 from networkx.algorithms.bipartite.edgelist import *
 from networkx.algorithms.bipartite.matching import *
 from networkx.algorithms.bipartite.matrix import *
