@@ -274,11 +274,13 @@ def leiden_partitions(
     G.graph["edge_wts"] = edge_wts
 
     if is_directed:
-        in_edge_wts = {u: {} for u in G}
         for u, nbrs in edge_wts.items():
             for v, wt in nbrs.items():
-                in_edge_wts[v][u] = wt
-        G.graph["in_edge_wts"] = in_edge_wts
+                v_wts = edge_wts[v]
+                if u in v_wts:
+                    v_wts[u] += wt
+                else:
+                    v_wts[u] = wt
 
     # node attr "nodes" holds the original nodes represented by this current node
     nx.set_node_attributes(G, {n: {n} for n in orig_G}, "nodes")
@@ -303,30 +305,30 @@ def leiden_partitions(
             # - gamma
             # - node_weights
             # - edge_wts
-            # - in_edge_wts
             def delta_func(nodes_to_add, community):
-                comm_size = sum(node_weights[u] for u in community)
+                if not community:
+                    return 0
                 if isinstance(nodes_to_add, set):
                     nodes_size = sum(node_weights[u] for u in nodes_to_add)
+                    comm_size = sum(node_weights[u] for u in community)
 
                     if len(nodes_to_add) <= len(community):
                         A, C = nodes_to_add, community
                     else:
                         A, C = community, nodes_to_add
-                    E_in = sum(
-                        wt for u in A for v, wt in in_edge_wts[u].items() if v in C
-                    )
-                    E_out = sum(
-                        wt for u in A for v, wt in edge_wts[u].items() if v in C
-                    )
+                    E = sum(wt for u in A for v, wt in edge_wts[u].items() if v in C)
                 else:
-                    nodes_size = node_weights[nodes_to_add]
+                    u = nodes_to_add
+                    nodes_size = node_weights[u]
+                    if len(community) == 1:
+                        v = next(iter(community))
+                        comm_size = node_weights[v]
+                        E = edge_wts[u].get(v, 0)
+                    else:
+                        comm_size = sum(node_weights[u] for u in community)
+                        E = sum(wt for v, wt in edge_wts[u].items() if v in community)
 
-                    u, C = nodes_to_add, community
-                    E_in = sum(wt for v, wt in in_edge_wts[u].items() if v in C)
-                    E_out = sum(wt for v, wt in edge_wts[u].items() if v in C)
-
-                return E_in + E_out - gamma * comm_size * nodes_size
+                return E - gamma * comm_size * nodes_size
 
         else:
             # Setup for undirected constant potts model
@@ -337,9 +339,11 @@ def leiden_partitions(
             # - node_weights
             # - edge_wts
             def delta_func(nodes_to_add, community):
-                comm_size = sum(node_weights[u] for u in community)
+                if not community:
+                    return 0
                 if isinstance(nodes_to_add, set):
                     nodes_size = sum(node_weights[u] for u in nodes_to_add)
+                    comm_size = sum(node_weights[u] for u in community)
 
                     if len(nodes_to_add) <= len(community):
                         A, C = nodes_to_add, community
@@ -347,10 +351,15 @@ def leiden_partitions(
                         A, C = community, nodes_to_add
                     E = sum(wt for u in A for v, wt in edge_wts[u].items() if v in C)
                 else:
-                    nodes_size = node_weights[nodes_to_add]
-
-                    u, C = nodes_to_add, community
-                    E = sum(wt for v, wt in edge_wts[u].items() if v in C)
+                    u = nodes_to_add
+                    nodes_size = node_weights[u]
+                    if len(community) > 1:
+                        comm_size = sum(node_weights[v] for v in community)
+                        E = sum(wt for v, wt in edge_wts[u].items() if v in community)
+                    else:
+                        v = next(iter(community))
+                        comm_size = node_weights[v]
+                        E = edge_wts[u].get(v, 0)
 
                 return E - gamma * comm_size * nodes_size
 
@@ -364,28 +373,21 @@ def leiden_partitions(
 
         if is_directed:
             # Setup for directed modularity
-            gamma = 2 * resolution
-
-            # scale edge weights by total so m == 1 and can be removed from formulas
             m = sum(wt for u, nbrs in edge_wts.items() for v, wt in nbrs.items())
-            for u, nbrs in in_edge_wts.items():
-                for v, wt in nbrs.items():
-                    in_edge_wts[u][v] /= m
-            for u, nbrs in edge_wts.items():
-                for v, wt in nbrs.items():
-                    edge_wts[u][v] /= m
+            gamma = 2 * resolution / m
 
-            in_degrees = {u: sum(nbrs.values()) for u, nbrs in in_edge_wts.items()}
-            out_degrees = {u: sum(nbrs.values()) for u, nbrs in edge_wts.items()}
+            in_degrees = dict(G.in_degree(weight="weight"))
+            out_degrees = dict(G.out_degree(weight="weight"))
             node_attributes = {"in_degree": in_degrees, "out_degree": out_degrees}
 
             # Note: delta_func uses objects in defining namespace:
             # - gamma
             # - in_degrees
             # - out_degrees
-            # - in_edge_wts
             # - edge_wts
             def delta_func(nodes_to_add, community):
+                if not community:
+                    return 0
                 if isinstance(nodes_to_add, set):
                     if len(nodes_to_add) <= len(community):
                         A, C = nodes_to_add, community
@@ -397,33 +399,27 @@ def leiden_partitions(
                     C_in = sum(in_degrees[u] for u in C)
                     C_out = sum(out_degrees[u] for u in C)
 
-                    E_in = sum(
-                        wt for u in A for v, wt in in_edge_wts[u].items() if v in C
-                    )
-                    E_out = sum(
-                        wt for u in A for v, wt in edge_wts[u].items() if v in C
-                    )
+                    E = sum(wt for u in A for v, wt in edge_wts[u].items() if v in C)
                 else:
-                    A_in = in_degrees[nodes_to_add]
-                    A_out = out_degrees[nodes_to_add]
-                    C_in = sum(in_degrees[u] for u in community)
-                    C_out = sum(out_degrees[u] for u in community)
+                    u = nodes_to_add
+                    A_in = in_degrees[u]
+                    A_out = out_degrees[u]
+                    if len(community) == 1:
+                        v = next(iter(community))
+                        C_in = in_degrees[v]
+                        C_out = out_degrees[v]
+                        E = edge_wts[u].get(v, 0)
+                    else:
+                        C_in = sum(in_degrees[u] for u in community)
+                        C_out = sum(out_degrees[u] for u in community)
+                        E = sum(wt for v, wt in edge_wts[u].items() if v in community)
 
-                    u, C = nodes_to_add, community
-                    E_in = sum(wt for v, wt in in_edge_wts[u].items() if v in C)
-                    E_out = sum(wt for v, wt in edge_wts[u].items() if v in C)
-
-                return E_in + E_out - gamma * (A_in * C_out + A_out * C_in)
+                return E - gamma * (A_in * C_out + A_out * C_in)
 
         else:
             # Setup for undirected modularity
-            gamma = 2 * resolution
-
-            # scale edge weights by total so m == 1 and can be removed from formulas
             m = sum(wt for u, nbrs in edge_wts.items() for v, wt in nbrs.items())
-            for u, nbrs in edge_wts.items():
-                for v, wt in nbrs.items():
-                    edge_wts[u][v] /= m
+            gamma = 2 * resolution / m
 
             degrees = {u: sum(nbrs.values()) for u, nbrs in edge_wts.items()}
             node_attributes = {"degree": degrees}
@@ -433,8 +429,10 @@ def leiden_partitions(
             # - degrees
             # - edge_wts
             def delta_func(nodes_to_add, community):
-                comm_size = sum(degrees[u] for u in community)
+                if not community:
+                    return 0
                 if isinstance(nodes_to_add, set):
+                    comm_size = sum(degrees[u] for u in community)
                     nodes_size = sum(degrees[u] for u in nodes_to_add)
 
                     if len(nodes_to_add) <= len(community):
@@ -443,10 +441,15 @@ def leiden_partitions(
                         A, C = community, nodes_to_add
                     E = sum(wt for u in A for v, wt in edge_wts[u].items() if v in C)
                 else:
-                    nodes_size = degrees[nodes_to_add]
-
-                    u, C = nodes_to_add, community
-                    E = sum(wt for v, wt in edge_wts[u].items() if v in C)
+                    u = nodes_to_add
+                    nodes_size = degrees[u]
+                    if len(community) == 1:
+                        v = next(iter(community))
+                        comm_size = degrees[v]
+                        E = edge_wts[u].get(v, 0)
+                    else:
+                        comm_size = sum(degrees[u] for u in community)
+                        E = sum(wt for v, wt in edge_wts[u].items() if v in community)
 
                 return E - gamma * nodes_size * comm_size
 
@@ -549,8 +552,6 @@ def leiden_partitions(
 
         # unpack node data of new G to this namespace so delta_func() can use it
         edge_wts = G.graph["edge_wts"]
-        if is_directed:
-            in_edge_wts = G.graph["in_edge_wts"]
 
         if metric == "cpm":
             node_weights = node_attributes["node_weight"]
@@ -596,9 +597,9 @@ def _move_nodes_fast(G, node2com, delta_func, seed):
 
         # decrease in metric when u is removed from its old community
         P_old_com = P[old_com]
-        u_rem = delta_func(u, P_old_com - {u})
+        without_u = P_old_com - {u}
 
-        if best_add > u_rem:
+        if best_add > (delta_func(u, without_u) if without_u else 0):
             node2com[u] = best_com
             P_old_com.remove(u)
             P[best_com].add(u)
@@ -613,17 +614,17 @@ def _move_nodes_fast(G, node2com, delta_func, seed):
 
 
 def _merge_node_subset(C, delta_func, seed, theta):
-    C_refined = [{u} for u in C]
-    # R contains well-connected nodes within C
-    R = {u: i for i, u in enumerate(C) if delta_func(u, C - {u}) > 0}
-
     # T[i] > 0 means community i is well connected to others
     # Definition of T in line 37 of pseudocode in paper (supplemental mat.)
     # uses condition for "cpm" metric: E(C, S-C) >= gamma * |C| * (|S| - |C|)
     # where |X| is the node_weight of the set X of nodes.
     # We generalize to any metric by using condition T(i) > 0
-    T = {i: delta_func(u, C - {u}) for i, u in enumerate(C)}
+    T = {i: (delta_func(u, C - {u}) if C - {u} else 0) for i, u in enumerate(C)}
 
+    # R contains well-connected nodes within C
+    R = {u: i for i, u in enumerate(C) if T[i] > 0}
+
+    C_refined = [{u} for u in C]
     for u, comm_i in R.items():
         # Only process nodes that are still in a singleton community {u}
         # - Find candidate communities for u to merge with
@@ -657,12 +658,13 @@ def _merge_node_subset(C, delta_func, seed, theta):
             new_comm_i = seed.choices(cand_comms, weights=cand_wts)[0]
 
             C_refined[comm_i].remove(u)
-            T[comm_i] = 0
+            T[comm_i] = 0  # comm_i is now empty (only looking at singleton comms)
             new_comm = C_refined[new_comm_i]
             new_comm.add(u)
             # Note: delta_func here has a set as 1st arg:
             #       returns delta when combining the two sets.
-            T[new_comm_i] = delta_func(new_comm, C - new_comm)
+            C_removed = C - new_comm
+            T[new_comm_i] = delta_func(new_comm, C_removed) if C_removed else 0
 
     return [c for c in C_refined if c]
 
@@ -720,29 +722,30 @@ def _create_aggregate_graph(G, P_refined, node_attributes):
     for attr_name in node_attributes:
         node_attributes[attr_name] = H_node_attributes[attr_name]
 
-    # Handle edge_wts, edges and in_edge_wts
+    # Handle edge_wts and edges
     is_directed = H.is_directed()
     H_edge_wts = {H_node: {} for H_node in H}
-    for u, nbrs in G.graph["edge_wts"].items():
+    for u, nbrs in G.adjacency():
         H_u = nodes_G2H[u]
         H_unbrs = H_edge_wts[H_u]
-        for v, uv_weight in nbrs.items():
+        for v, dd in nbrs.items():
             H_v = nodes_G2H[v]
             if H_u != H_v:
                 if H_v in H_unbrs:
-                    H_unbrs[H_v] += uv_weight
+                    H_unbrs[H_v] += dd["weight"]
                 else:
-                    H_unbrs[H_v] = uv_weight
+                    H_unbrs[H_v] = dd["weight"]
     H.add_weighted_edges_from(
         (u, v, wt) for u, nbrs in H_edge_wts.items() for v, wt in nbrs.items()
     )
     H.graph["edge_wts"] = H_edge_wts
 
     if is_directed:
-        H_in_edge_wts = {u: {} for u in H}
         for u, nbrs in H_edge_wts.items():
             for v, wt in nbrs.items():
-                H_in_edge_wts[v][u] = wt
-        H.graph["in_edge_wts"] = H_in_edge_wts
-
+                v_wts = H_edge_wts[v]
+                if u in v_wts:
+                    v_wts[u] += wt
+                else:
+                    v_wts[u] = wt
     return H, H_node2com
