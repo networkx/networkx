@@ -532,7 +532,7 @@ def leiden_partitions(
         P = _move_nodes_fast(G, node2com, delta_func, seed=seed)
 
         # Refine the communities using _merge_node_subset (name from paper)
-        P_refined = [_merge_node_subset(C, delta_func, seed, theta) for C in P]
+        P_refined = [_merge_node_subset(G, C, delta_func, seed, theta) for C in P]
         P_refined_flat = [comm for p in P_refined for comm in p]
 
         # Stop when overall change is close to zero.
@@ -613,7 +613,7 @@ def _move_nodes_fast(G, node2com, delta_func, seed):
     return [p for p in P if p]
 
 
-def _merge_node_subset(C, delta_func, seed, theta):
+def _merge_node_subset(G, C, delta_func, seed, theta):
     # T[i] > 0 means community i is well connected to others
     # Definition of T in line 37 of pseudocode in paper (supplemental mat.)
     # uses condition for "cpm" metric: E(C, S-C) >= gamma * |C| * (|S| - |C|)
@@ -632,13 +632,14 @@ def _merge_node_subset(C, delta_func, seed, theta):
         #   Note: not choosing the best one
         if len(C_refined[comm_i]) != 1:
             continue
+        unbrs = set(nx.all_neighbors(G, u))
 
         cand_comms = []
         cand_comm_deltas = []
         # Note: delta for removing u from current comm is 0 (singleton comm)
         for i, new_comm in enumerate(C_refined):
-            # Main condition is T[i] > 0. also not empty and not same community
-            if comm_i == i or not new_comm or T[i] <= 0:
+            # Main conditions: unbrs in new_comm and T[i] > 0. Also not old comm.
+            if not (new_comm & unbrs) or comm_i == i or T[i] <= 0:
                 continue
 
             Q_delta = delta_func(u, new_comm)
