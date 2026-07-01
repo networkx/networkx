@@ -38,7 +38,7 @@ edges included in the matching is minimal.
 """
 
 import collections
-import itertools
+import itertools as it
 
 import networkx as nx
 from networkx.algorithms.bipartite import sets as bipartite_sets
@@ -165,9 +165,8 @@ def hopcroft_karp_matching(G, top_nodes=None):
     num_matched_pairs = 0
     while breadth_first_search():
         for v in left:
-            if leftmatches[v] is None:
-                if depth_first_search(v):
-                    num_matched_pairs += 1
+            if leftmatches[v] is None and depth_first_search(v):
+                num_matched_pairs += 1
 
     # Strip the entries matched to `None`.
     leftmatches = {k: v for k, v in leftmatches.items() if v is not None}
@@ -179,7 +178,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
     #     leftmatches == {v, k for k, v in rightmatches.items()}
     #
     # Finally, we combine both the left matches and right matches.
-    return dict(itertools.chain(leftmatches.items(), rightmatches.items()))
+    return dict(it.chain(leftmatches.items(), rightmatches.items()))
 
 
 @nx._dispatchable
@@ -226,7 +225,6 @@ def eppstein_matching(G, top_nodes=None):
 
     See Also
     --------
-
     hopcroft_karp_matching
 
     """
@@ -379,7 +377,8 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targ
     # check for alternating paths starting with edges not in the
     # matching.
     return _alternating_dfs(v, along_matched=True) or _alternating_dfs(
-        v, along_matched=False
+        v,
+        along_matched=False,
     )
 
 
@@ -416,7 +415,11 @@ def _connected_by_alternating_paths(G, matching, targets):
         for v in G
         if v in targets
         or _is_connected_by_alternating_path(
-            G, v, matched_edges, unmatched_edges, targets
+            G,
+            v,
+            matched_edges,
+            unmatched_edges,
+            targets,
         )
     }
 
@@ -565,8 +568,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     .. [1] Richard Manning Karp:
        An algorithm to Solve the m x n Assignment Problem in Expected Time
        O(mn log n).
-       Networks, 10(2):143–152, 1980.
-
+       Networks, 10(2):143-152, 1980.
     """
     import numpy as np
     import scipy as sp
@@ -578,7 +580,11 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     # where edges are missing (as opposed to zeros, which is what one would
     # get by using toarray on the sparse matrix).
     weights_sparse = biadjacency_matrix(
-        G, row_order=U, column_order=V, weight=weight, format="coo"
+        G,
+        row_order=U,
+        column_order=V,
+        weight=weight,
+        format="coo",
     )
     weights = np.full(weights_sparse.shape, np.inf)
     weights[weights_sparse.row, weights_sparse.col] = weights_sparse.data
