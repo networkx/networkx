@@ -96,6 +96,7 @@ example = [
     'igraph>=0.11',
     'scikit-learn>=1.5',
     'iplotx>=0.9.0',
+    'hiveplotlib>=0.28',
 ]
 extra = [
     'lxml>=4.6',
