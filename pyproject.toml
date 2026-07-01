@@ -64,7 +64,7 @@ benchmarking = [
     # 3.12/3.13/3.14 interpreters + soft deps from conda-forge in-process.
     # Pinned <0.22: asv 0.6.5's rattler plugin still calls the pre-0.22
     # solve(channels=...) API (py-rattler 0.22 renamed it to sources=).
-    'py-rattler>=0.21,<0.22',
+    'py-rattler>=0.21,<0.26',
     'virtualenv',
 ]
 default = [
