@@ -1868,7 +1868,7 @@ class Graph:
         induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nodes))
         # if already a subgraph, don't make a chain
         subgraph = nx.subgraph_view
-        if hasattr(self, "_NODE_OK"):
+        if hasattr(self, "_EDGE_OK"):
             return subgraph(
                 self._graph, filter_node=induced_nodes, filter_edge=self._EDGE_OK
             )
