@@ -10,6 +10,7 @@ from networkx.algorithms.cluster import *
 from networkx.algorithms.clique import *
 from networkx.algorithms.communicability_alg import *
 from networkx.algorithms.components import *
+from networkx.algorithms.control import *
 from networkx.algorithms.coloring import *
 from networkx.algorithms.core import *
 from networkx.algorithms.covering import *
