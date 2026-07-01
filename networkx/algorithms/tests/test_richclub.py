@@ -25,6 +25,12 @@ def test_richclub_normalized():
     assert rcNorm == {0: 1.0, 1: 1.0}
 
 
+def test_rich_club_invalid_n_samples():
+    G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (1, 4), (4, 5)])
+    with pytest.raises(Exception):
+        nx.rich_club_coefficient(G, normalized=True, n_samples=0)
+
+
 def test_richclub2():
     T = nx.balanced_tree(2, 10)
     rc = nx.richclub.rich_club_coefficient(T, normalized=False)
@@ -135,6 +141,18 @@ def test_rich_club_leq_3_nodes_normalized():
         G.add_node(i)
         with pytest.raises(nx.NetworkXError, match="Graph has fewer than four nodes"):
             rc = nx.rich_club_coefficient(G, normalized=True)
+
+
+def test_rich_club_zero_division_error():
+    G = nx.Graph([(0, 1), (0, 2), (3, 4), (3, 5), (0, 3), (6, 7)])
+    with pytest.raises(nx.NetworkXAlgorithmError):
+        nx.rich_club_coefficient(G, normalized=True, Q=1, seed=4)
+
+
+def test_rich_club_n_samples():
+    G = nx.Graph([(0, 1), (0, 2), (3, 4), (3, 5), (0, 3), (6, 7)])
+    rc = nx.rich_club_coefficient(G, normalized=True, Q=1, n_samples=50, seed=4)
+    assert len(rc) > 0
 
 
 # def test_richclub2_normalized():
