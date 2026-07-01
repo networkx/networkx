@@ -51,6 +51,7 @@ Algorithms
    matching
    minors
    mis
+   modular
    non_randomness
    moral
    node_classification
