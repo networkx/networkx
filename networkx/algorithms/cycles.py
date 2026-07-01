@@ -1267,11 +1267,16 @@ def minimum_feedback_edge_set(G, weight=None):
     H = G.copy()
     F = set()
 
+    multigraph = G.is_multigraph()
     weights = {e: G.edges[e].get(weight, 1) for e in G.edges}
-    for C_nodes in nx.simple_cycles(H):
-        C_edges = tuple(H.subgraph(C_nodes).edges)
-        min_weight = min([weights[e] for e in C_edges])
-        for e in C_edges:
+    while not nx.is_directed_acyclic_graph(H):
+        pairs = nx.utils.pairwise(next(nx.simple_cycles(H)), cyclic=True)
+        if multigraph:
+            C = [(u, v, next(iter(H[u][v]))) for u, v in pairs]
+        else:
+            C = list(pairs)
+        min_weight = min([weights[e] for e in C])
+        for e in C:
             weights[e] -= min_weight
             if weights[e] == 0:
                 H.remove_edge(*e)
