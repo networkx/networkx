@@ -13,6 +13,7 @@ __all__ = [
     "directed_configuration_model",
     "expected_degree_graph",
     "havel_hakimi_graph",
+    "kleitman_wang_undirected_graph",
     "directed_havel_hakimi_graph",
     "degree_sequence_tree",
     "random_degree_sequence_graph",
@@ -527,6 +528,72 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
             (stubval, stubtarget) = modstubs[i]
             num_degs[stubval].append(stubtarget)
             n += 1
+
+    return G
+
+
+@py_random_state(2)
+@nx._dispatchable(graphs=None, returns_graph=True)
+def kleitman_wang_undirected_graph(deg_sequence, create_using=None, seed=None):
+    """Returns a simple graph with given degree sequence constructed
+    using the Kleitman-Wang undirected randomized algorithm [1]_.
+
+    Parameters
+    ----------
+    deg_sequence : list of integers
+        Each integer corresponds to the degree of a node (need not be sorted).
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
+        Directed graphs are not allowed.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    Raises
+    ------
+    NetworkXError
+        For a non-graphical degree sequence (i.e. one
+        not realizable by some simple graph).
+        For a directed graph input.
+
+    Notes
+    -----
+    The Kleitman-Wang undirected algorithm generalizes the Havel-Hakimi
+    algorithm by proving that a graph can be successfully constructed by
+    selecting any arbitrary node as the source node, rather than strictly
+    the node of highest degree.
+
+    This function implements that generalization by selecting a source node
+    at random at each step, and then connecting it to the nodes with
+    the highest remaining degrees.
+
+    References
+    ----------
+    .. [1] Kleitman D.J. and Wang D.L.
+       Algorithms for Constructing Graphs and Digraphs with Given Valences
+       and Factors  Discrete Mathematics, 6(1), pp. 79-88 (1973)
+    """
+    if not nx.is_graphical(deg_sequence):
+        raise nx.NetworkXError("Invalid degree sequence")
+
+    # Create a list of [degree, index] lists
+    seq = [[degree, index] for index, degree in enumerate(deg_sequence)]
+
+    G = nx.empty_graph(len(seq), create_using)
+    if G.is_directed():
+        raise nx.NetworkXError("Directed graphs are not supported")
+
+    while seq:
+        seq.sort(reverse=True)
+        # Pick random vertex as source and remove it from targets list
+        source = seed.choice(seq)
+        seq.remove(source)
+        # Connect the source to the vertices with the highest remaining degrees
+        for index in range(source[0]):
+            seq[index][0] -= 1
+            G.add_edge(source[1], seq[index][1])
+        # Reassign list, omitting 0 degree vertices
+        seq = [vertex for vertex in seq if vertex[0] > 0]
 
     return G
 
