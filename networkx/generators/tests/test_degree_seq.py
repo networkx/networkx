@@ -124,44 +124,38 @@ def test_havel_hakimi_construction():
 
     pytest.raises(nx.NetworkXError, nx.havel_hakimi_graph, z, create_using=nx.DiGraph())
 
-
-def test_kleitman_wang_undirected_graph():
-    # Empty sequence test
-    G = nx.kleitman_wang_undirected_graph([])
-    assert len(G) == 0
-    # Test invalid sequence: too large degree
-    z = [1000, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
-    pytest.raises(nx.NetworkXError, nx.kleitman_wang_undirected_graph, z)
-    # Test invalid sequence: wrong input type
-    z = ["A", 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
-    pytest.raises(nx.NetworkXError, nx.kleitman_wang_undirected_graph, z)
-    # Test directed graph error
-    z = [10, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2]
+    # Test that randomize=True rejects multigraphs
     pytest.raises(
         nx.NetworkXError,
-        nx.kleitman_wang_undirected_graph,
+        nx.havel_hakimi_graph,
         z,
-        create_using=nx.DiGraph(),
+        randomize=True,
+        create_using=nx.MultiGraph(),
     )
-    # Valid sequence: test if correct number and degrees of nodes created
-    z = [5, 4, 3, 3, 3, 2, 2, 2]
-    G = nx.kleitman_wang_undirected_graph(z)
-    assert len(G) == len(z)
-    assert sorted([d for _, d in G.degree()]) == sorted(z)
-    assert nx.number_of_selfloops(G) == 0
-    # Valid sequence: Test 0 degree vertex handling
-    z = [2, 2, 2, 2, 0, 0]
-    G = nx.kleitman_wang_undirected_graph(z)
-    assert len(G) == len(z)
-    assert sorted([d for _, d in G.degree()]) == sorted(z)
-    assert nx.number_of_selfloops(G) == 0
+
     # Valid sequence: test accepted create_using parameter
-    G = nx.kleitman_wang_undirected_graph(z, create_using=nx.Graph())
+    G = nx.havel_hakimi_graph(z, create_using=nx.Graph())
     assert len(G) == len(z)
+
+    # Valid sequence: test if correct number and degrees of nodes created
+    # when randomize=True
+    z = [5, 4, 3, 3, 3, 2, 2, 2]
+    G = nx.havel_hakimi_graph(z, randomize=True)
+    assert len(G) == len(z)
+    assert sorted([d for _, d in G.degree()]) == sorted(z)
+    assert nx.number_of_selfloops(G) == 0
+    # Valid sequence: Test 0 degree vertex handling when randomize=True
+    z = [2, 2, 2, 2, 0, 0]
+    G = nx.havel_hakimi_graph(z, randomize=True)
+    assert len(G) == len(z)
+    assert sorted([d for _, d in G.degree()]) == sorted(z)
+    assert nx.number_of_selfloops(G) == 0
+
     # Valid sequence: test if specific seed produces reproducible results
+    # when randomize=True
     z = [7, 7, 5, 5, 3, 3, 2, 2, 1, 1]
-    G1 = nx.kleitman_wang_undirected_graph(z, seed=86)
-    G2 = nx.kleitman_wang_undirected_graph(z, seed=86)
+    G1 = nx.havel_hakimi_graph(z, randomize=True, seed=86)
+    G2 = nx.havel_hakimi_graph(z, randomize=True, seed=86)
     assert sorted(G1.edges()) == sorted(G2.edges())
 
 

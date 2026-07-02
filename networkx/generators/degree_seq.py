@@ -13,7 +13,6 @@ __all__ = [
     "directed_configuration_model",
     "expected_degree_graph",
     "havel_hakimi_graph",
-    "kleitman_wang_undirected_graph",
     "directed_havel_hakimi_graph",
     "degree_sequence_tree",
     "random_degree_sequence_graph",
@@ -439,10 +438,11 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     return G
 
 
+@py_random_state("seed")
 @nx._dispatchable(graphs=None, returns_graph=True)
-def havel_hakimi_graph(deg_sequence, create_using=None):
+def havel_hakimi_graph(deg_sequence, create_using=None, *, randomize=False, seed=None):
     """Returns a simple graph with given degree sequence constructed
-    using the Havel-Hakimi algorithm.
+    using the Havel-Hakimi algorithm, or the Kleitman-Wang undirected algorithm.
 
     Parameters
     ----------
@@ -451,12 +451,19 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
         Directed graphs are not allowed.
+    randomize: bool (default=False)
+        Set to True to use the Kleitman-Wang randomized source algorithm.
+    seed: integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Raises
     ------
-    NetworkXException
+    NetworkXError
         For a non-graphical degree sequence (i.e. one
         not realizable by some simple graph).
+        For a directed graph input.
+        For a multigraph input (if randomize=True).
 
     Notes
     -----
@@ -469,6 +476,15 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
 
     The basic algorithm is from Hakimi [1]_ and was generalized by
     Kleitman and Wang [2]_.
+
+    The Kleitman-Wang undirected algorithm generalizes the Havel-Hakimi
+    algorithm by proving that a graph can be successfully constructed by
+    selecting any arbitrary node as the source node, rather than strictly
+    the node of highest degree.
+
+    The randomize mode implements that generalization by selecting a source node
+    at random at each step, and then connecting it to the nodes with the highest
+    remaining degrees.
 
     References
     ----------
@@ -486,114 +502,71 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
     G = nx.empty_graph(p, create_using)
     if G.is_directed():
         raise nx.NetworkXError("Directed graphs are not supported")
-    num_degs = [[] for i in range(p)]
-    dmax, n = 0, 0
-    for d in deg_sequence:
-        # Process only the non-zero integers
-        if d > 0:
-            num_degs[d].append(n)
-            dmax, n = max(dmax, d), n + 1
-    # Return graph if no edges
-    if n == 0:
+
+    if randomize:
+        if G.is_multigraph():
+            raise nx.NetworkXError("Multigraphs not supported in randomized mode")
+
+        # Dictionary mapping nodes to their degree, if degree > 0
+        d = {n: degree for n, degree in enumerate(deg_sequence) if degree > 0}
+
+        while d:
+            # Select a random node candidate and remove it from d
+            node = seed.choice(list(d))
+            deg = d.pop(node)
+            # Add edges to the top-k node candidates by degree
+            for _, tgt in zip(range(deg), sorted(d, key=d.get, reverse=True)):
+                G.add_edge(node, tgt)
+                d[tgt] -= 1
+                # Remove candidate from consideration if degree drops to 0
+                if d[tgt] < 1:
+                    del d[tgt]
+
         return G
 
-    modstubs = [(0, 0)] * (dmax + 1)
-    # Successively reduce degree sequence by removing the maximum degree
-    while n > 0:
-        # Retrieve the maximum degree in the sequence
-        while len(num_degs[dmax]) == 0:
-            dmax -= 1
-        # If there are not enough stubs to connect to, then the sequence is
-        # not graphical
-        if dmax > n - 1:
-            raise nx.NetworkXError("Non-graphical integer sequence")
+    else:
+        num_degs = [[] for i in range(p)]
+        dmax, n = 0, 0
+        for d in deg_sequence:
+            # Process only the non-zero integers
+            if d > 0:
+                num_degs[d].append(n)
+                dmax, n = max(dmax, d), n + 1
+        # Return graph if no edges
+        if n == 0:
+            return G
 
-        # Remove largest stub in list
-        source = num_degs[dmax].pop()
-        n -= 1
-        # Reduce the next dmax largest stubs
-        mslen = 0
-        k = dmax
-        for i in range(dmax):
-            while len(num_degs[k]) == 0:
-                k -= 1
-            target = num_degs[k].pop()
-            G.add_edge(source, target)
+        modstubs = [(0, 0)] * (dmax + 1)
+        # Successively reduce degree sequence by removing the maximum degree
+        while n > 0:
+            # Retrieve the maximum degree in the sequence
+            while len(num_degs[dmax]) == 0:
+                dmax -= 1
+            # If there are not enough stubs to connect to, then the sequence is
+            # not graphical
+            if dmax > n - 1:
+                raise nx.NetworkXError("Non-graphical integer sequence")
+
+            # Remove largest stub in list
+            source = num_degs[dmax].pop()
             n -= 1
-            if k > 1:
-                modstubs[mslen] = (k - 1, target)
-                mslen += 1
-        # Add back to the list any nonzero stubs that were removed
-        for i in range(mslen):
-            (stubval, stubtarget) = modstubs[i]
-            num_degs[stubval].append(stubtarget)
-            n += 1
-
-    return G
-
-
-@py_random_state(2)
-@nx._dispatchable(graphs=None, returns_graph=True)
-def kleitman_wang_undirected_graph(deg_sequence, create_using=None, seed=None):
-    """Returns a simple graph with given degree sequence constructed
-    using the Kleitman-Wang undirected randomized algorithm [1]_.
-
-    Parameters
-    ----------
-    deg_sequence : list of integers
-        Each integer corresponds to the degree of a node (need not be sorted).
-    create_using : NetworkX graph constructor, optional (default=nx.Graph)
-        Graph type to create. If graph instance, then cleared before populated.
-        Directed graphs are not allowed.
-    seed : integer, random_state, or None (default)
-        Indicator of random number generation state.
-        See :ref:`Randomness<randomness>`.
-
-    Raises
-    ------
-    NetworkXError
-        For a non-graphical degree sequence (i.e. one
-        not realizable by some simple graph).
-        For a directed graph input.
-
-    Notes
-    -----
-    The Kleitman-Wang undirected algorithm generalizes the Havel-Hakimi
-    algorithm by proving that a graph can be successfully constructed by
-    selecting any arbitrary node as the source node, rather than strictly
-    the node of highest degree.
-
-    This function implements that generalization by selecting a source node
-    at random at each step, and then connecting it to the nodes with
-    the highest remaining degrees.
-
-    References
-    ----------
-    .. [1] Kleitman D.J. and Wang D.L.
-       Algorithms for Constructing Graphs and Digraphs with Given Valences
-       and Factors  Discrete Mathematics, 6(1), pp. 79-88 (1973)
-    """
-    if not nx.is_graphical(deg_sequence):
-        raise nx.NetworkXError("Invalid degree sequence")
-
-    # Create a list of [degree, index] lists
-    seq = [[degree, index] for index, degree in enumerate(deg_sequence)]
-
-    G = nx.empty_graph(len(seq), create_using)
-    if G.is_directed():
-        raise nx.NetworkXError("Directed graphs are not supported")
-
-    while seq:
-        seq.sort(reverse=True)
-        # Pick random vertex as source and remove it from targets list
-        source = seed.choice(seq)
-        seq.remove(source)
-        # Connect the source to the vertices with the highest remaining degrees
-        for index in range(source[0]):
-            seq[index][0] -= 1
-            G.add_edge(source[1], seq[index][1])
-        # Reassign list, omitting 0 degree vertices
-        seq = [vertex for vertex in seq if vertex[0] > 0]
+            # Reduce the next dmax largest stubs
+            mslen = 0
+            k = dmax
+            for i in range(dmax):
+                while len(num_degs[k]) == 0:
+                    k -= 1
+                target = num_degs[k].pop()
+                G.add_edge(source, target)
+                n -= 1
+                if k > 1:
+                    modstubs[mslen] = (k - 1, target)
+                    mslen += 1
+            # Add back to the list any nonzero stubs that were removed
+            for i in range(mslen):
+                (stubval, stubtarget) = modstubs[i]
+                num_degs[stubval].append(stubtarget)
+                n += 1
 
     return G
 

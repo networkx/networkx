@@ -153,7 +153,6 @@ Degree Sequence
    directed_configuration_model
    expected_degree_graph
    havel_hakimi_graph
-   kleitman_wang_undirected_graph
    directed_havel_hakimi_graph
    degree_sequence_tree
    random_degree_sequence_graph
