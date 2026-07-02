@@ -177,7 +177,7 @@ def is_directed_acyclic_graph(G):
 def antichain_width(G):
     """Returns the width of the partial order defined by the DAG `G`.
 
-    This is the largest number of nodes in `G` such that no node in the
+    The width is the largest number of nodes in `G` such that no node in the
     set can reach another node in the set.
 
     By Dilworth's theorem [1]_ the width is also equal to the minimum number of
