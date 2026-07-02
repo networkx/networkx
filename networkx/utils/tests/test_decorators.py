@@ -508,3 +508,27 @@ finally:
         next(node_iter)
         with pytest.raises(StopIteration):
             next(node_iter)
+
+    def test_lazy_compile_thread_safety(self):
+        # Regression test for gh-8658.
+        import threading
+
+        n = 64
+        wrappers = [argmap(lambda x: x, 0)(lambda x, s=s: s) for s in range(n)]
+        barrier = threading.Barrier(n)
+        errors = []
+
+        def worker(start):
+            barrier.wait()
+            try:
+                for i in range(n):
+                    assert wrappers[(start + i) % n](None) == (start + i) % n
+            except Exception as e:
+                errors.append(repr(e))
+
+        threads = [threading.Thread(target=worker, args=(i,)) for i in range(n)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        assert not errors, errors[:3]

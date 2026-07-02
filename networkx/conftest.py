@@ -13,6 +13,7 @@ General guidelines for writing good tests:
 """
 
 import os
+import subprocess
 import warnings
 from importlib.metadata import entry_points
 
@@ -171,8 +172,11 @@ except ImportError:
 try:
     import pydot
 
+    # Pydot also requires graphviz to be installed for layouts
+    subprocess.check_output("dot -V".split())
+
     has_pydot = True
-except ImportError:
+except (ImportError, FileNotFoundError):
     has_pydot = False
 
 try:

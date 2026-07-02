@@ -575,11 +575,23 @@ def display(
     }
 
     # Check arguments
-    for kwarg in kwargs:
+    known_node_attr = {}
+    known_edge_attr = {}
+    for kwarg, kwarg_value in kwargs.items():
         if kwarg not in defaults:
             raise nx.NetworkXError(
                 f"Unrecognized visualization keyword argument: {kwarg}"
             )
+        if kwarg.startswith("node_") and not isinstance(kwarg_value, dict):
+            if any(kwarg_value in node_data for (_, node_data) in G.nodes(data=True)):
+                known_node_attr[kwarg_value] = True
+            elif kwarg_value == kwarg.split("_", 1)[1]:
+                kwargs[kwarg] = defaults[kwarg]
+        elif kwarg.startswith("edge_") and not isinstance(kwarg_value, dict):
+            if any(kwarg_value in edge_data for (*_, edge_data) in G.edges(data=True)):
+                known_edge_attr[kwarg_value] = True
+            elif kwarg_value == kwarg.split("_", 1)[1]:
+                kwargs[kwarg] = defaults[kwarg]
 
     if canvas is None:
         canvas = plt.gca()
@@ -615,7 +627,7 @@ def display(
         # attributes which are on the graph
         if (
             attr is not None
-            and nx.get_node_attributes(node_subgraph, attr) == {}
+            and not known_node_attr.get(attr, False)
             and any(attr == v for k, v in kwargs.items() if "node" in k)
         ):
             return [attr for _ in seq]
@@ -672,7 +684,7 @@ def display(
 
         if (
             attr is not None
-            and nx.get_edge_attributes(edge_subgraph, attr) == {}
+            and not known_edge_attr.get(attr, False)
             and any(attr == v for k, v in kwargs.items() if "edge" in k)
         ):
             return [attr for _ in seq]
@@ -691,7 +703,7 @@ def display(
 
         if (
             attr is not None
-            and nx.get_edge_attributes(edge_subgraph, attr) == {}
+            and not known_edge_attr.get(attr, False)
             and attr in kwargs.values()
         ):
             return attr
@@ -711,7 +723,7 @@ def display(
 
         if (
             attr is not None
-            and nx.get_node_attributes(subgraph, attr) == {}
+            and not known_node_attr.get(attr, False)
             and attr in kwargs.values()
         ):
             return attr
@@ -840,6 +852,8 @@ def display(
         )
         pos = default_display_pos_attr
         kwargs["node_pos"] = default_display_pos_attr
+
+    known_node_attr[pos] = True
 
     # Each shape requires a new scatter object since they can't have different
     # shapes.
