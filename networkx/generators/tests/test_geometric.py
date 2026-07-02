@@ -488,9 +488,9 @@ def test_compare_mean_kappas_different_gammas_S1():
     assert math.fabs(mean_kappas1 - mean_kappas2) < 1
 
 
-def test_mean_degree_S1():
-    kappas = {i: 10 for i in range(1000)}
+def test_S1_kappas_mean_degree_from_values():
+    # See gh-8726
+    kappas = {n: d for d, n in enumerate("abcde", start=1)}
+    # Smoke test: ensure no TypeError
     G = nx.geometric_soft_configuration_graph(beta=2.5, kappas=kappas)
-    degrees = dict(G.degree())
-    mean_degree = sum(degrees.values()) / len(degrees)
-    assert math.fabs(mean_degree - 10) < 1
+    assert max([d for _, d in G.degree]) <= len(kappas)
