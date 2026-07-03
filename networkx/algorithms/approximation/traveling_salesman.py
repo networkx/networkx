@@ -724,7 +724,7 @@ def held_karp_ascent(G, weight="weight"):
 
         Parameters
         ----------
-        k_xy : set
+        k : set
             The set of 1-arborescences which have the minimum rate of increase
             in the direction of ascent
 
