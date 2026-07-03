@@ -315,6 +315,54 @@ def test_comms_change_after_aggregation():
 
 
 @pytest.mark.parametrize("m", _metrics())
+def test_undirected_selfloops(m):
+    qmod = "modularity"
+    G = nx.karate_club_graph()
+    partition = comm.leiden_communities(G, metric=m, seed=1, weight=None)
+
+    G.add_weighted_edges_from([(i, i, i * 1000) for i in range(4)])
+    # large self-loop weight impacts partition
+    big_partition = comm.leiden_communities(G, metric=m, seed=1, weight="weight")
+    assert big_partition != partition
+
+    # small self-loop weights aren't enough to impact partition in this graph
+    small_partition = comm.leiden_communities(G, metric=m, seed=1, weight=None)
+    assert small_partition == partition
+
+
+def test_directed_selfloops():
+    qmod = "modularity"
+    G = nx.DiGraph()
+    G.add_nodes_from(range(11))
+    G_edges = [
+        (0, 2),
+        (0, 1),
+        (1, 0),
+        (2, 1),
+        (2, 0),
+        (3, 4),
+        (4, 3),
+        (7, 8),
+        (8, 7),
+        (9, 10),
+        (10, 9),
+    ]
+    G.add_edges_from(G_edges)
+    parts = [{0, 1, 2}, {3, 4}, {5}, {6}, {7, 8}, {9, 10}]
+    partition = comm.leiden_communities(G, metric=qmod, seed=2, weight=None)
+    assert parts == partition
+
+    G.add_weighted_edges_from([(i, i, i * 1000) for i in range(4)])
+    # large self-loop weight impacts partition
+    big_partition = comm.leiden_communities(G, metric=qmod, seed=2, weight="weight")
+    assert big_partition != partition
+
+    # small self-loop weights aren't enough to impact partition in this graph
+    small_partition = comm.leiden_communities(G, metric=qmod, seed=2, weight=None)
+    assert small_partition == partition
+
+
+@pytest.mark.parametrize("m", _metrics())
 def test_weights_matter(m):
     G = nx.path_graph(15)
     no_weights = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=42637))
@@ -357,3 +405,11 @@ def test_directed_weights_matter(m):
     big_weights = list(comm.leiden_partitions(G, metric=m, resolution=r, seed=s))
     part_with_3 = [i for i, c in enumerate(big_weights[-1]) if 3 in c][0]
     assert 4 in big_weights[-1][part_with_3]
+
+
+def test_edge_wts():
+    G = nx.DiGraph()
+    G.add_weighted_edges_from([(0, 1, 8), (1, 0, 1), (1, 2, 1)])
+
+    P = comm.leiden_communities(G, metric="modularity", resolution=2, seed=42)
+    assert {frozenset(c) for c in P} == {frozenset({0}), frozenset({1, 2})}
