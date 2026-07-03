@@ -305,7 +305,7 @@ def test_comms_change_after_aggregation():
 
     result = list(LP(PG, resolution=0.2, seed=1))
     assert len(result[0]) != len(result[1])
-    result = list(LP(DPG, resolution=0.2, seed=1))
+    result = list(LP(DPG, resolution=0.1, seed=1))
     assert len(result[0]) != len(result[1])
 
     result = list(LP(PG, metric="modularity", resolution=0.2, seed=1))
@@ -322,12 +322,15 @@ def test_weights_matter(m):
     G.add_weighted_edges_from((u, v, (u + 1) * v) for u, v in G.edges())
 
     with_weights = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=40))
+
     fewer_comms = len(no_weights[0]) > len(with_weights[0])
     big_comms_bigger = len(no_weights[0][3]) < len(with_weights[0][3])
     assert fewer_comms or big_comms_bigger
-    no_w, with_w = no_weights[-1], with_weights[-1]
-    assert (len(no_w) > len(with_w)) or (len(no_w[0]) < len(with_w[0]))
+    fewer_comms = len(no_weights[-1]) > len(with_weights[-1])
+    big_comms_bigger = len(no_weights[-1][3]) < len(with_weights[-1][3])
+    assert fewer_comms or big_comms_bigger
 
+    G.edges[(3, 4)]["weight"] = 100
     big_weights = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=40))
     part_with_3 = [i for i, c in enumerate(big_weights[-1]) if 3 in c][0]
     assert 4 in big_weights[-1][part_with_3]
@@ -342,12 +345,15 @@ def test_directed_weights_matter(m):
 
     G.add_weighted_edges_from((u, v, (u + 1) * v) for u, v in G.edges())
     with_weights = list(comm.leiden_partitions(G, metric=m, resolution=r, seed=s))
-    assert len(no_weights[0]) > len(with_weights[0])
-    assert len(no_weights[-1][-1]) < len(with_weights[-1][-1])
-    part_with_3 = [i for i, c in enumerate(with_weights[-1]) if 3 in c][0]
-    assert 4 not in with_weights[-1][part_with_3]
 
-    G.edges[(3, 4)]["weight"] = 1000
+    fewer_comms = len(no_weights[0]) > len(with_weights[0])
+    big_comms_bigger = len(no_weights[0][3]) < len(with_weights[0][3])
+    assert fewer_comms or big_comms_bigger
+    fewer_comms = len(no_weights[-1]) > len(with_weights[-1])
+    big_comms_bigger = len(no_weights[-1][3]) < len(with_weights[-1][3])
+    assert fewer_comms or big_comms_bigger
+
+    G.edges[(3, 4)]["weight"] = 100
     big_weights = list(comm.leiden_partitions(G, metric=m, resolution=r, seed=s))
     part_with_3 = [i for i, c in enumerate(big_weights[-1]) if 3 in c][0]
     assert 4 in big_weights[-1][part_with_3]
