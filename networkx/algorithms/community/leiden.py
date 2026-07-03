@@ -274,13 +274,17 @@ def leiden_partitions(
     G.graph["edge_wts"] = edge_wts
 
     if is_directed:
-        for u, nbrs in edge_wts.items():
-            for v, wt in nbrs.items():
-                v_wts = edge_wts[v]
+        # in edge wts used for E in delta_func (the wt sum between specific nodes)
+        # we store it outside the graph for speedy lookup and not for other tasks.
+        # Eg computing m = sum(G edge wts) is multiplied by 2 if you use edge_wts.
+        # Be Careful using edge_wts in directed case.
+        for v, nbrs in G._pred.items():
+            v_wts = edge_wts[v]
+            for u, dd in nbrs.items():
                 if u in v_wts:
-                    v_wts[u] += wt
+                    v_wts[u] += dd["weight"]
                 else:
-                    v_wts[u] = wt
+                    v_wts[u] = dd["weight"]
 
     # node attr "nodes" holds the original nodes represented by this current node
     nx.set_node_attributes(G, {n: {n} for n in orig_G}, "nodes")
@@ -374,6 +378,7 @@ def leiden_partitions(
         if is_directed:
             # Setup for directed modularity
             m = sum(wt for u, nbrs in edge_wts.items() for v, wt in nbrs.items())
+            # Note: m is twice the sum of all edge weights here. Hence 2/m
             gamma = 2 * resolution / m
 
             in_degrees = dict(G.in_degree(weight="weight"))
@@ -419,6 +424,7 @@ def leiden_partitions(
         else:
             # Setup for undirected modularity
             m = sum(wt for u, nbrs in edge_wts.items() for v, wt in nbrs.items())
+            # Note: m is twice the sum of all edge weights. Hence 2/m
             gamma = 2 * resolution / m
 
             degrees = {u: sum(nbrs.values()) for u, nbrs in edge_wts.items()}
@@ -469,12 +475,7 @@ def leiden_partitions(
             return
 
         metric_function = barber_modularity
-
-        # scale edge weights by total so m == 1 and can be removed from formulas
-        m = sum(wt for u, nbrs in edge_wts.items() for v, wt in nbrs.items())
-        for u, nbrs in edge_wts.items():
-            for v, wt in nbrs.items():
-                edge_wts[u][v] /= m
+        # TODO check these formulas for how m should appear. written when m=1.
 
         red_nodes = {u for u, c in G.nodes(data="bipartite") if c == 0}
         blue_nodes = {u for u, c in G.nodes(data="bipartite") if c == 1}
@@ -742,11 +743,11 @@ def _create_aggregate_graph(G, P_refined, node_attributes):
     H.graph["edge_wts"] = H_edge_wts
 
     if is_directed:
-        for u, nbrs in H_edge_wts.items():
-            for v, wt in nbrs.items():
-                v_wts = H_edge_wts[v]
+        for v, nbrs in H._pred.items():
+            v_wts = H_edge_wts[v]
+            for u, dd in nbrs.items():
                 if u in v_wts:
-                    v_wts[u] += wt
+                    v_wts[u] += dd["weight"]
                 else:
-                    v_wts[u] = wt
+                    v_wts[u] = dd["weight"]
     return H, H_node2com
