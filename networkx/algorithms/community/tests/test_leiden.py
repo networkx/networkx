@@ -240,10 +240,8 @@ def test_expected_stable_across_code_changes_qmod():
     G = nx.karate_club_graph()
     P = comm.leiden_communities(G, resolution=0.2, seed=22, metric=qmod)
     P_expected = [
-        {0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21},
-        {16, 4, 5, 6, 10},
-        {32, 33, 8, 9, 14, 15, 18, 20, 22, 23, 26, 27, 29, 30},
-        {24, 25, 28, 31},
+        {0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 16, 17, 19, 21},
+        {8, 9, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
     ]
     assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
 

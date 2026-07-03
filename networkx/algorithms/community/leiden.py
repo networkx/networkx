@@ -238,40 +238,25 @@ def leiden_partitions(
     # For one node, the change from moving node u from A to B is:
     # q_delta = delta_func(u, B) - delta_func(u, A-{u})
 
-    is_directed = G.is_directed()
-    edge_wts = {u: {} for u in G}
-    if G.is_multigraph():
-        # Convert Multi(Di)Graph to (Di)Graph by summing edges
-        if weight is None:
-            edge_wts = {
-                u: {v: len(kd) for v, kd in nbrs.items() if u != v}
-                for u, nbrs in G._adj.items()
-            }
-        else:
-            edge_wts = {
-                u: {
-                    v: sum(dd.get(weight, 1) for dd in kd.values())
-                    for v, kd in nbrs.items()
-                    if u != v
-                }
-                for u, nbrs in G._adj.items()
-            }
-    else:
-        if weight is None:
-            edge_wts = {u: {v: 1 for v in nbrs if u != v} for u, nbrs in G._adj.items()}
-        else:
-            edge_wts = {
-                u: {v: dd.get(weight, 1) for v, dd in nbrs.items() if u != v}
-                for u, nbrs in G._adj.items()
-            }
-
     orig_G = G  # make copy of original G to allow mutations
+    is_directed = orig_G.is_directed()
     G = nx.DiGraph() if is_directed else nx.Graph()
     G.add_nodes_from(orig_G)
-    G.add_weighted_edges_from(
-        (u, v, wt) for u, nbrs in edge_wts.items() for v, wt in nbrs.items()
-    )
-    G.graph["edge_wts"] = edge_wts
+    # Add edges (including selfloops)
+    if orig_G.is_multigraph():
+        for u, v, wt in orig_G.edges(data=weight, default=1):
+            if G.has_edge(u, v):
+                G[u][v]["weight"] += wt
+            else:
+                G.add_edge(u, v, weight=wt)
+    else:
+        G.add_weighted_edges_from(orig_G.edges(data=weight, default=1))
+
+    # Compute edge_wts as dict-of-dicts (ignoring selfloops)
+    edge_wts = {
+        u: {v: dd["weight"] for v, dd in nbrs.items() if u != v}
+        for u, nbrs in G._adj.items()
+    }
 
     if is_directed:
         # in edge wts used for E in delta_func (the wt sum between specific nodes)
@@ -281,10 +266,13 @@ def leiden_partitions(
         for v, nbrs in G._pred.items():
             v_wts = edge_wts[v]
             for u, dd in nbrs.items():
+                if u == v:
+                    continue
                 if u in v_wts:
                     v_wts[u] += dd["weight"]
                 else:
                     v_wts[u] = dd["weight"]
+    G.graph["edge_wts"] = edge_wts
 
     # node attr "nodes" holds the original nodes represented by this current node
     nx.set_node_attributes(G, {n: {n} for n in orig_G}, "nodes")
@@ -357,13 +345,13 @@ def leiden_partitions(
                 else:
                     u = nodes_to_add
                     nodes_size = node_weights[u]
-                    if len(community) > 1:
-                        comm_size = sum(node_weights[v] for v in community)
-                        E = sum(wt for v, wt in edge_wts[u].items() if v in community)
-                    else:
+                    if len(community) == 1:
                         v = next(iter(community))
                         comm_size = node_weights[v]
                         E = edge_wts[u].get(v, 0)
+                    else:
+                        comm_size = sum(node_weights[v] for v in community)
+                        E = sum(wt for v, wt in edge_wts[u].items() if v in community)
 
                 return E - gamma * comm_size * nodes_size
 
@@ -377,9 +365,8 @@ def leiden_partitions(
 
         if is_directed:
             # Setup for directed modularity
-            m = sum(wt for u, nbrs in edge_wts.items() for v, wt in nbrs.items())
-            # Note: m is twice the sum of all edge weights here. Hence 2/m
-            gamma = 2 * resolution / m
+            m = sum(wt for u, v, wt in G.edges(data="weight"))
+            gamma = resolution / m
 
             in_degrees = dict(G.in_degree(weight="weight"))
             out_degrees = dict(G.out_degree(weight="weight"))
@@ -423,9 +410,8 @@ def leiden_partitions(
 
         else:
             # Setup for undirected modularity
-            m = sum(wt for u, nbrs in edge_wts.items() for v, wt in nbrs.items())
-            # Note: m is twice the sum of all edge weights. Hence 2/m
-            gamma = 2 * resolution / m
+            m = sum(wt for u, v, wt in G.edges(data="weight"))
+            gamma = resolution / m
 
             degrees = {u: sum(nbrs.values()) for u, nbrs in edge_wts.items()}
             node_attributes = {"degree": degrees}
@@ -724,30 +710,29 @@ def _create_aggregate_graph(G, P_refined, node_attributes):
     for attr_name in node_attributes:
         node_attributes[attr_name] = H_node_attributes[attr_name]
 
-    # Handle edge_wts and edges
-    is_directed = H.is_directed()
-    H_edge_wts = {H_node: {} for H_node in H}
-    for u, nbrs in G.adjacency():
+    # Add edges (including selfloops)
+    for u, v, wt in G.edges(data="weight"):
         H_u = nodes_G2H[u]
-        H_unbrs = H_edge_wts[H_u]
-        for v, dd in nbrs.items():
-            H_v = nodes_G2H[v]
-            if H_u != H_v:
-                if H_v in H_unbrs:
-                    H_unbrs[H_v] += dd["weight"]
-                else:
-                    H_unbrs[H_v] = dd["weight"]
-    H.add_weighted_edges_from(
-        (u, v, wt) for u, nbrs in H_edge_wts.items() for v, wt in nbrs.items()
-    )
-    H.graph["edge_wts"] = H_edge_wts
-
-    if is_directed:
+        H_v = nodes_G2H[v]
+        if H.has_edge(H_u, H_v):
+            H[H_u][H_v]["weight"] += wt
+        else:
+            H.add_edge(H_u, H_v, weight=wt)
+    # Compute edge_wts as dict-of-dicts (ignoring selfloops)
+    H_edge_wts = {
+        u: {v: dd["weight"] for v, dd in nbrs.items() if u != v}
+        for u, nbrs in H._adj.items()
+    }
+    if H.is_directed():
         for v, nbrs in H._pred.items():
             v_wts = H_edge_wts[v]
             for u, dd in nbrs.items():
+                if u == v:
+                    continue
                 if u in v_wts:
                     v_wts[u] += dd["weight"]
                 else:
                     v_wts[u] = dd["weight"]
+    H.graph["edge_wts"] = H_edge_wts
+
     return H, H_node2com
