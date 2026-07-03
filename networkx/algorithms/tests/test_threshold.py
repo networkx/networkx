@@ -242,6 +242,23 @@ class TestGeneratorThreshold:
         assert nxt.eigenvalues("dddiii") == [0, 0, 0, 0, 3, 3]
         assert nxt.eigenvalues("dddiiid") == [0, 1, 1, 1, 4, 4, 7]
 
+    def test_triangle_cluster_sequence_leading_isolated(self):
+        # Regression: triangle_sequence()/cluster_sequence() referenced
+        # `prevsym` before assignment and raised UnboundLocalError when the
+        # creation sequence began with an isolated ("i") node, even though
+        # threshold_graph() builds a valid graph from such a sequence and the
+        # sibling routines (triangles, degree_sequence, ...) handle it fine.
+        for cs in ["idd", "iidd", "iddid", "iiddid"]:
+            G = nxt.threshold_graph(cs)
+
+            ts = nxt.triangle_sequence(cs)
+            assert ts == list(nx.triangles(G).values())
+            assert sum(ts) // 3 == nxt.triangles(cs)
+
+            c1 = nxt.cluster_sequence(cs)
+            c2 = list(nx.clustering(G).values())
+            assert sum(abs(c - d) for c, d in zip(c1, c2)) == pytest.approx(0, abs=1e-7)
+
     def test_tg_creation_routines(self):
         s = nxt.left_d_threshold_sequence(5, 7)
         s = nxt.right_d_threshold_sequence(5, 7)

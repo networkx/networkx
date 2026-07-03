@@ -468,6 +468,7 @@ def triangle_sequence(creation_sequence):
     dcur = (dr - 1) * (dr - 2) // 2  # number of triangles through a node of clique dr
     irun = 0  # number of i's in the last run
     drun = 0  # number of d's in the last run
+    prevsym = "i"  # no preceding d-run to flush before the first symbol
     for i, sym in enumerate(cs):
         if sym == "d":
             drun += 1
