@@ -248,8 +248,7 @@ def test_expected_stable_across_code_changes_qmod():
     G = nx.karate_club_graph()
     P = comm.leiden_communities(G, weight=None, resolution=0.4, seed=100, metric=qmod)
     P_expected = [
-        {0, 1, 2, 3, 7, 9, 11, 12, 13, 17, 19, 21},
-        {16, 4, 5, 6, 10},
+        {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 16, 17, 19, 21},
         {8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
     ]
     assert {frozenset(C) for C in P} == {frozenset(C) for C in P_expected}
@@ -363,23 +362,20 @@ def test_directed_selfloops():
 @pytest.mark.parametrize("m", _metrics())
 def test_weights_matter(m):
     G = nx.path_graph(15)
-    no_weights = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=42637))
+    no_wts = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=42637))
 
     G.add_weighted_edges_from((u, v, (u + 1) * v) for u, v in G.edges())
 
-    with_weights = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=40))
-
-    fewer_comms = len(no_weights[0]) > len(with_weights[0])
-    big_comms_bigger = len(no_weights[0][3]) < len(with_weights[0][3])
-    assert fewer_comms or big_comms_bigger
-    fewer_comms = len(no_weights[-1]) > len(with_weights[-1])
-    big_comms_bigger = len(no_weights[-1][3]) < len(with_weights[-1][3])
-    assert fewer_comms or big_comms_bigger
+    with_wts = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=40))
+    assert len(with_wts) > len(no_wts)
+    fewer_comms = len(no_wts[-1]) > len(with_wts[-1])
+    big_comms = max(len(C) for C in no_wts[-1]) < max(len(C) for C in with_wts[-1])
+    assert fewer_comms or big_comms
 
     G.edges[(3, 4)]["weight"] = 100
-    big_weights = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=40))
-    part_with_3 = [i for i, c in enumerate(big_weights[-1]) if 3 in c][0]
-    assert 4 in big_weights[-1][part_with_3]
+    big_wts = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=40))
+    part_with_3 = [i for i, c in enumerate(big_wts[-1]) if 3 in c][0]
+    assert 4 in big_wts[-1][part_with_3]
 
 
 @pytest.mark.parametrize("m", _metrics())
@@ -411,3 +407,54 @@ def test_edge_wts():
 
     P = comm.leiden_communities(G, metric="modularity", resolution=2, seed=42)
     assert {frozenset(c) for c in P} == {frozenset({0}), frozenset({1, 2})}
+
+
+def test_modularity_selfloops():
+    G = nx.Graph()
+    G.add_edge(0, 1, weight=1)
+    G.add_edge(0, 0, weight=2)
+
+    P = comm.leiden_communities(G, metric="modularity", resolution=2, seed=0)
+    assert {frozenset(c) for c in P} == {frozenset([0]), frozenset([1])}
+
+
+def test_modularity_twom_instead_of_m():
+    G = nx.Graph()
+    G.add_edge(0, 1, weight=1)
+
+    P = comm.leiden_communities(G, metric="modularity", resolution=1, seed=0)
+    assert P == [{0, 1}]
+
+
+def test_cpm_node_weights_on_G():
+    G = nx.Graph()
+    G.add_weighted_edges_from(
+        [
+            (0, 1, 1),
+            (1, 2, 2),
+            (2, 3, 4),
+            (3, 4, 4),
+            (4, 5, 2),
+            (5, 6, 3),
+            (6, 7, 1),
+            (7, 8, 2),
+            (8, 9, 2),
+            (0, 7, 2),
+            (0, 8, 1),
+            (1, 3, 2),
+            (1, 9, 1),
+            (2, 6, 2),
+            (2, 8, 4),
+            (3, 5, 3),
+            (4, 7, 1),
+            (4, 9, 2),
+            (6, 9, 4),
+            (7, 9, 4),
+        ]
+    )
+
+    Plist = list(comm.leiden_partitions(G, metric="cpm", resolution=0.8, seed=0))
+    P_expected = [{8, 2}, {1}, {9, 6, 7}, {3, 4, 5}, {0}]
+    assert len(Plist) == 2
+    assert {frozenset(c) for c in Plist[0]} == {frozenset(c) for c in P_expected}
+    assert {frozenset(c) for c in Plist[1]} == {frozenset(c) for c in P_expected}
