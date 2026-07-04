@@ -365,12 +365,12 @@ def leiden_partitions(
 
         if is_directed:
             # Setup for directed modularity
-            m = sum(wt for u, v, wt in G.edges(data="weight"))
-            gamma = resolution / m
-
             in_degrees = dict(G.in_degree(weight="weight"))
             out_degrees = dict(G.out_degree(weight="weight"))
             node_attributes = {"in_degree": in_degrees, "out_degree": out_degrees}
+
+            m = sum(out_degrees.values())
+            gamma = resolution / m
 
             # Note: delta_func uses objects in defining namespace:
             # - gamma
@@ -406,15 +406,19 @@ def leiden_partitions(
                         C_out = sum(out_degrees[u] for u in community)
                         E = sum(wt for v, wt in edge_wts[u].items() if v in community)
 
+                # Note: this function returns (m * modularity_delta) to avoid
+                # extra division by m. The choice of best change is not affected.
+                # Usual formula would be:
+                # E / m - (resolution/ m**2) * (A_in * C_out + A_out * C_in)
                 return E - gamma * (A_in * C_out + A_out * C_in)
 
         else:
             # Setup for undirected modularity
-            m = sum(wt for u, v, wt in G.edges(data="weight"))
-            gamma = resolution / m
-
-            degrees = {u: sum(nbrs.values()) for u, nbrs in edge_wts.items()}
+            degrees = dict(G.degree(weight="weight"))
             node_attributes = {"degree": degrees}
+
+            two_m = sum(degrees.values())
+            gamma = resolution / two_m
 
             # Note: delta_func uses objects in defining namespace:
             # - gamma
@@ -443,6 +447,10 @@ def leiden_partitions(
                         comm_size = sum(degrees[u] for u in community)
                         E = sum(wt for v, wt in edge_wts[u].items() if v in community)
 
+                # Note: this function returns (m * modularity_delta) to avoid
+                # extra division by m. The choice of best change is not affected.
+                # Usual formula would be:
+                # E / m - (resolution * 2/ (2*m)**2) * nodes_size * comm_size
                 return E - gamma * nodes_size * comm_size
 
     elif metric == "barber_modularity":
@@ -467,9 +475,10 @@ def leiden_partitions(
         blue_nodes = {u for u, c in G.nodes(data="bipartite") if c == 1}
         # TODO add check for this being a bipartite graph
 
-        red_degrees = {u: sum(edge_wts[u].values()) for u in red_nodes}
+        degrees = dict(G.degree(weight="weight"))
+        red_degrees = {u: degrees[u] for u in red_nodes}
         red_degrees.update((u, 0) for u in blue_nodes)
-        blue_degrees = {u: sum(edge_wts[u].values()) for u in blue_nodes}
+        blue_degrees = {u: degrees[u] for u in blue_nodes}
         blue_degrees.update((u, 0) for u in red_nodes)
 
         node_attributes = {"red_degree": red_degrees, "blue_degree": blue_degrees}
@@ -700,7 +709,7 @@ def _create_aggregate_graph(G, P_refined, node_attributes):
                 for attr_name, attr_dict in node_attributes.items():
                     agg_vals[attr_name] += attr_dict[G_node]
 
-            H.add_node(H_node_id, nodes=original_nodes)
+            H.add_node(H_node_id, nodes=original_nodes, **agg_vals)
             for attr_name in node_attributes:
                 H_node_attributes[attr_name][H_node_id] = agg_vals[attr_name]
             H_node_id += 1
