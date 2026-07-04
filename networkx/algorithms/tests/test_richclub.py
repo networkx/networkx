@@ -30,6 +30,7 @@ def test_rich_club_invalid_n_samples():
     G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (1, 4), (4, 5)])
     with pytest.raises(ValueError):
         nx.rich_club_coefficient(G, normalized=True, n_samples=0)
+    nx.rich_club_coefficient(G, normalized=False, n_samples=0)
 
 
 def test_richclub2():
