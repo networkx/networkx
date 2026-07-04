@@ -318,3 +318,11 @@ def test_inter_community_edges_with_digraphs():
     G = nx.cycle_graph(4, create_using=nx.DiGraph())
     partition = [{0, 1}, {2, 3}]
     assert inter_community_edges(G, partition) == 2
+
+
+def test_inter_community_edges_with_multigraphs():
+    G = nx.MultiGraph()
+    G.add_nodes_from(range(4))
+    G.add_edges_from([(0, 1), (0, 2), (0, 2), (1, 2)])
+    partition = [{0, 1}, {2, 3}]
+    assert inter_community_edges(G, partition) == 2

@@ -101,15 +101,16 @@ def inter_community_edges(G, partition):
     in different blocks of the partition.
 
     """
+    if not G.is_multigraph():
+        return G.size() - intra_community_edges(G, partition)
+
     node_community = _node_community_map(partition)
     inter_edges = (
         (u, v) for u, v in G.edges() if node_community[u] != node_community[v]
     )
-    if G.is_multigraph():
-        if G.is_directed():
-            return len(set(inter_edges))
-        return len({frozenset(edge) for edge in inter_edges})
-    return sum(1 for _ in inter_edges)
+    if G.is_directed():
+        return len(set(inter_edges))
+    return len({frozenset(edge) for edge in inter_edges})
 
 
 @nx._dispatchable
