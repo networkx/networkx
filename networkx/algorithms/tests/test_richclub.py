@@ -1,6 +1,7 @@
 import pytest
 
 import networkx as nx
+from networkx.exception import NetworkXUnfeasible
 
 
 def test_richclub():
@@ -27,7 +28,7 @@ def test_richclub_normalized():
 
 def test_rich_club_invalid_n_samples():
     G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (1, 4), (4, 5)])
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         nx.rich_club_coefficient(G, normalized=True, n_samples=0)
 
 
@@ -144,14 +145,12 @@ def test_rich_club_leq_3_nodes_normalized():
 
 
 def test_rich_club_zero_division_error():
+    # See gh-8485
     G = nx.Graph([(0, 1), (0, 2), (3, 4), (3, 5), (0, 3), (6, 7)])
     with pytest.raises(nx.NetworkXAlgorithmError):
         nx.rich_club_coefficient(G, normalized=True, Q=1, seed=4)
-
-
-def test_rich_club_n_samples():
-    G = nx.Graph([(0, 1), (0, 2), (3, 4), (3, 5), (0, 3), (6, 7)])
-    rc = nx.rich_club_coefficient(G, normalized=True, Q=1, n_samples=50, seed=4)
+    # Increasing n_samples avoids the ZeroDivisionError
+    rc = nx.rich_club_coefficient(G, normalized=True, Q=1, n_samples=2, seed=4)
     assert len(rc) > 0
 
 
