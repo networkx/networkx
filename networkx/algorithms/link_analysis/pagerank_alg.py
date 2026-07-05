@@ -1,4 +1,5 @@
 """PageRank analysis of graph structure."""
+import warnings
 
 import networkx as nx
 
@@ -153,6 +154,15 @@ def _pagerank_python(
         s = sum(dangling.values())
         dangling_weights = {k: v / s for k, v in dangling.items()}
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
+
+    if N * tol >= 2:
+        warnings.warn(
+            "PageRank convergence check is ineffective when "
+            f"len(G) * tol >= 2 (here {N} * {tol} = {N * tol}); "
+            f"use tol < 2 / {N} to ensure meaningful convergence.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
@@ -486,6 +496,15 @@ def _pagerank_scipy(
         # Convert the dangling dictionary into an array in nodelist order
         dangling_weights = np.array([dangling.get(n, 0) for n in nodelist], dtype=float)
         dangling_weights /= dangling_weights.sum()
+
+    if N * tol >= 2:
+        warnings.warn(
+            "PageRank convergence check is ineffective when "
+            f"len(G) * tol >= 2 (here {N} * {tol} = {N * tol}); "
+            f"use tol < 2 / {N} to ensure meaningful convergence.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
