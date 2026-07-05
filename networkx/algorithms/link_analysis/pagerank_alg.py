@@ -1,4 +1,5 @@
 """PageRank analysis of graph structure."""
+
 import warnings
 
 import networkx as nx

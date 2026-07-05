@@ -231,13 +231,12 @@ def test_pagerank_scipy_warns_ineffective_tolerance():
 
 def test_pagerank_no_warn_effective_tolerance():
     """pagerank with N*tol<2 should not warn."""
+    import warnings
+
     G = nx.path_graph(3, create_using=nx.DiGraph)
     tol = 1e-6  # 3 * 1e-6 << 2
-    with pytest.warns(None) as record:
+    with warnings.catch_warnings(record=True) as record:
+        warnings.simplefilter("always")
         _pagerank_python(G, tol=tol, max_iter=200)
-    runtime_warnings = [
-        w for w in record if issubclass(w.category, RuntimeWarning)
-    ]
-    assert not any(
-        "ineffective" in str(w.message) for w in runtime_warnings
-    )
+    runtime_warnings = [w for w in record if issubclass(w.category, RuntimeWarning)]
+    assert not any("ineffective" in str(w.message) for w in runtime_warnings)
