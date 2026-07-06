@@ -1,7 +1,5 @@
 """PageRank analysis of graph structure."""
 
-import warnings
-
 import networkx as nx
 
 __all__ = ["pagerank", "google_matrix"]
@@ -82,6 +80,15 @@ def pagerank(
     :exc:`~networkx.exception.PowerIterationFailedConvergence` exception
     is raised.
 
+    .. note::
+
+       For large graphs, choose the tolerance carefully. If
+       ``len(G) * tol >= 2``, the convergence check can become
+       trivially satisfied because the L1 difference between two
+       probability distributions is at most 2. In that case, the
+       power iteration may appear to converge after a single step
+       regardless of the actual accuracy.
+
     The PageRank algorithm was designed for directed graphs but this
     algorithm does not check if the input graph is directed and will
     execute on undirected graphs by converting each edge in the
@@ -155,15 +162,6 @@ def _pagerank_python(
         s = sum(dangling.values())
         dangling_weights = {k: v / s for k, v in dangling.items()}
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
-
-    if N * tol >= 2:
-        warnings.warn(
-            "PageRank convergence check is ineffective when "
-            f"len(G) * tol >= 2 (here {N} * {tol} = {N * tol}); "
-            f"use tol < 2 / {N} to ensure meaningful convergence.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
 
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
@@ -497,15 +495,6 @@ def _pagerank_scipy(
         # Convert the dangling dictionary into an array in nodelist order
         dangling_weights = np.array([dangling.get(n, 0) for n in nodelist], dtype=float)
         dangling_weights /= dangling_weights.sum()
-
-    if N * tol >= 2:
-        warnings.warn(
-            "PageRank convergence check is ineffective when "
-            f"len(G) * tol >= 2 (here {N} * {tol} = {N * tol}); "
-            f"use tol < 2 / {N} to ensure meaningful convergence.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
 
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):

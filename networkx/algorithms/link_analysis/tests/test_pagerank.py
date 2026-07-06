@@ -211,32 +211,3 @@ class TestPageRankScipy(TestPageRank):
     def test_empty_scipy(self):
         G = nx.Graph()
         assert _pagerank_scipy(G) == {}
-
-
-def test_pagerank_python_warns_ineffective_tolerance():
-    """pagerank with N*tol>=2 should warn about ineffective convergence."""
-    G = nx.path_graph(3, create_using=nx.DiGraph)
-    tol = 1.0  # 3 * 1.0 = 3 >= 2
-    with pytest.warns(RuntimeWarning, match="ineffective"):
-        _pagerank_python(G, tol=tol, max_iter=5)
-
-
-def test_pagerank_scipy_warns_ineffective_tolerance():
-    """_pagerank_scipy with N*tol>=2 warns; lower tolerance does not."""
-    G = nx.path_graph(3, create_using=nx.DiGraph)
-    tol = 1.0
-    with pytest.warns(RuntimeWarning, match="ineffective"):
-        _pagerank_scipy(G, tol=tol, max_iter=5)
-
-
-def test_pagerank_no_warn_effective_tolerance():
-    """pagerank with N*tol<2 should not warn."""
-    import warnings
-
-    G = nx.path_graph(3, create_using=nx.DiGraph)
-    tol = 1e-6  # 3 * 1e-6 << 2
-    with warnings.catch_warnings(record=True) as record:
-        warnings.simplefilter("always")
-        _pagerank_python(G, tol=tol, max_iter=200)
-    runtime_warnings = [w for w in record if issubclass(w.category, RuntimeWarning)]
-    assert not any("ineffective" in str(w.message) for w in runtime_warnings)
