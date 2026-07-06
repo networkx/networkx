@@ -45,6 +45,12 @@ def pagerank(
       Error tolerance used to check convergence in power method solver.
       The iteration will stop after a tolerance of ``len(G) * tol`` is reached.
 
+      .. note::
+
+         For large graphs, choose the tolerance carefully. If ``len(G) * tol >= 2``,
+         the power iteration may appear to converge after a single step regardless
+         of the actual accuracy.
+
     nstart : dictionary, optional
       Starting value of PageRank iteration for each node.
 
@@ -79,15 +85,6 @@ def pagerank(
     number of iterations exceed `max_iter`, a
     :exc:`~networkx.exception.PowerIterationFailedConvergence` exception
     is raised.
-
-    .. note::
-
-       For large graphs, choose the tolerance carefully. If
-       ``len(G) * tol >= 2``, the convergence check can become
-       trivially satisfied because the L1 difference between two
-       probability distributions is at most 2. In that case, the
-       power iteration may appear to converge after a single step
-       regardless of the actual accuracy.
 
     The PageRank algorithm was designed for directed graphs but this
     algorithm does not check if the input graph is directed and will
