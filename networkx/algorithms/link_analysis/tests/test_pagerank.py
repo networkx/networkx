@@ -1,4 +1,5 @@
 import random
+import warnings
 
 import pytest
 
@@ -75,6 +76,21 @@ class TestPageRank:
     def test_pagerank_max_iter(self, alg):
         with pytest.raises(nx.PowerIterationFailedConvergence):
             alg(self.G, max_iter=0)
+
+    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python, _pagerank_scipy))
+    def test_pagerank_vacuous_tol_warns(self, alg):
+        # N * tol >= 2 exceeds the max possible L1 error (2), so the convergence
+        # check can never fail. See gh-8651.
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        with pytest.warns(RuntimeWarning, match="N . tol"):
+            alg(G, tol=0.6)
+
+    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python, _pagerank_scipy))
+    def test_pagerank_reasonable_tol_no_warn(self, alg):
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", RuntimeWarning)
+            alg(G, tol=1.0e-8)
 
     def test_numpy_pagerank(self):
         G = self.G

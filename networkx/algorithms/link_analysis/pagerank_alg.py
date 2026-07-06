@@ -1,8 +1,27 @@
 """PageRank analysis of graph structure."""
 
+import warnings
+
 import networkx as nx
 
 __all__ = ["pagerank", "google_matrix"]
+
+
+def _warn_if_tol_vacuous(N, tol):
+    # Both x and xlast are probability vectors, so their L1 distance is at most
+    # 2. That means the convergence check ``err < N * tol`` can never fail once
+    # ``N * tol >= 2``: pagerank then returns after a single iteration without
+    # actually testing convergence. Warn and point at a usable tolerance.
+    if N > 0 and N * tol >= 2:
+        warnings.warn(
+            f"N * tol = {N * tol:g} >= 2 for this graph of {N} nodes, which "
+            "exceeds the largest possible L1 distance (2) between successive "
+            "iterates. The convergence check `err < N * tol` is therefore always "
+            "satisfied and pagerank returns after one iteration without testing "
+            f"convergence. Use a smaller tol (e.g. tol < {2 / N:g}).",
+            RuntimeWarning,
+            stacklevel=3,
+        )
 
 
 @nx._dispatchable(edge_attrs="weight")
@@ -44,6 +63,9 @@ def pagerank(
     tol : float, optional
       Error tolerance used to check convergence in power method solver.
       The iteration will stop after a tolerance of ``len(G) * tol`` is reached.
+      Note that the L1 error between successive iterates is at most 2, so pick
+      ``tol`` small enough that ``len(G) * tol < 2``; otherwise the check is
+      always satisfied and a ``RuntimeWarning`` is raised.
 
     nstart : dictionary, optional
       Starting value of PageRank iteration for each node.
@@ -153,6 +175,8 @@ def _pagerank_python(
         s = sum(dangling.values())
         dangling_weights = {k: v / s for k, v in dangling.items()}
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
+
+    _warn_if_tol_vacuous(N, tol)
 
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
@@ -393,6 +417,9 @@ def _pagerank_scipy(
     tol : float, optional
       Error tolerance used to check convergence in power method solver.
       The iteration will stop after a tolerance of ``len(G) * tol`` is reached.
+      Note that the L1 error between successive iterates is at most 2, so pick
+      ``tol`` small enough that ``len(G) * tol < 2``; otherwise the check is
+      always satisfied and a ``RuntimeWarning`` is raised.
 
     nstart : dictionary, optional
       Starting value of PageRank iteration for each node.
@@ -486,6 +513,8 @@ def _pagerank_scipy(
         # Convert the dangling dictionary into an array in nodelist order
         dangling_weights = np.array([dangling.get(n, 0) for n in nodelist], dtype=float)
         dangling_weights /= dangling_weights.sum()
+
+    _warn_if_tol_vacuous(N, tol)
 
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
