@@ -205,7 +205,7 @@ def leiden_partitions(
     list of sets of nodes
         A partition of `G` as a list of disjoint sets of nodes. Each set represents
         one community of nodes and each node of `G` appears in exactly one set.
-        The quality metric of the yielded partitions increases with each iteration.
+        The quality metric is nondecreasing across the yielded partitions.
 
     References
     ----------
@@ -536,8 +536,8 @@ def leiden_partitions(
         improvement_made = (Q_new - Q) > 0.0000001
         Q = Q_new
 
-        # Aggregate communities into the nodes for the next stage.
-        # Edges in next stage if any edges between nodes at this stage.
+        # Aggregate communities to make nodes for the next stage.
+        # Edges in next stage whenever any edges between nodes at this stage.
         # Sum node and edge data to get aggregated graph data.
         G, node2com = _create_aggregate_graph(G, P_refined, node_attributes)
 
@@ -551,6 +551,8 @@ def leiden_partitions(
 
         if metric == "cpm":
             node_weights = node_attributes["node_weight"]
+            # set node_Weight on graph so metric_function can find it
+            nx.set_node_attributes(G, node_weights, "node_weight")
         elif metric == "modularity":
             if is_directed:
                 in_degrees = node_attributes["in_degree"]
@@ -603,7 +605,7 @@ def _move_nodes_fast(G, node2com, delta_func, seed):
             # Requeue nbrs from other coms if not already in queue
             # Add to end of queue (revisit after currently queued nodes)
             nodes_to_revisit = u_nbrs - P[best_com]
-            dict_deque.update(dict.fromkeys(nodes_to_revisit))
+            dict_deque.update((n, None) for n in nodes_to_revisit)
 
     # remove empty sets from P
     return [p for p in P if p]
@@ -709,13 +711,15 @@ def _create_aggregate_graph(G, P_refined, node_attributes):
                 for attr_name, attr_dict in node_attributes.items():
                     agg_vals[attr_name] += attr_dict[G_node]
 
-            H.add_node(H_node_id, nodes=original_nodes, **agg_vals)
+            H.add_node(H_node_id, nodes=original_nodes)
             for attr_name in node_attributes:
                 H_node_attributes[attr_name][H_node_id] = agg_vals[attr_name]
             H_node_id += 1
-    # load H_node_attr into node_attributes dict (overwrites G data)
-    # This is a hack to morph node info in main function so delta_func can use it
-    # We could store this info as graph node data, but that is slower and fatter.
+    # load H_node_attr into node_attributes dict (overwrites G data with H data).
+    # The dict node_attributes is used in delta_func. When metric_function needs
+    # a node attr (see "node_weight" in "cpm") add to the graph too (after this
+    # function returns). The node_attributes dict is a hack to update node info
+    # inside delta_func. Could store it on H but that is slower and fatter.
     for attr_name in node_attributes:
         node_attributes[attr_name] = H_node_attributes[attr_name]
 

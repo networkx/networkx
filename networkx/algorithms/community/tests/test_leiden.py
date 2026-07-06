@@ -313,17 +313,17 @@ def test_comms_change_after_aggregation():
 
 @pytest.mark.parametrize("m", _metrics())
 def test_undirected_selfloops(m):
-    qmod = "modularity"
     G = nx.karate_club_graph()
-    partition = comm.leiden_communities(G, metric=m, seed=1, weight=None)
+    partition = comm.leiden_communities(G, metric=m, seed=1)
 
     G.add_weighted_edges_from([(i, i, i * 1000) for i in range(4)])
     # large self-loop weight impacts partition
-    big_partition = comm.leiden_communities(G, metric=m, seed=1, weight="weight")
+    big_partition = comm.leiden_communities(G, metric=m, seed=2)
     assert big_partition != partition
 
     # small self-loop weights aren't enough to impact partition in this graph
-    small_partition = comm.leiden_communities(G, metric=m, seed=1, weight=None)
+    G.add_weighted_edges_from([(i, i, 0.1) for i in range(4)])
+    small_partition = comm.leiden_communities(G, metric=m, seed=1)
     assert small_partition == partition
 
 
@@ -362,18 +362,18 @@ def test_directed_selfloops():
 @pytest.mark.parametrize("m", _metrics())
 def test_weights_matter(m):
     G = nx.path_graph(15)
-    no_wts = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=42637))
+    no_wts = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=5))
 
     G.add_weighted_edges_from((u, v, (u + 1) * v) for u, v in G.edges())
 
-    with_wts = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=40))
+    with_wts = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=5))
     assert len(with_wts) > len(no_wts)
     fewer_comms = len(no_wts[-1]) > len(with_wts[-1])
     big_comms = max(len(C) for C in no_wts[-1]) < max(len(C) for C in with_wts[-1])
     assert fewer_comms or big_comms
 
     G.edges[(3, 4)]["weight"] = 100
-    big_wts = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=40))
+    big_wts = list(comm.leiden_partitions(G, metric=m, resolution=2, seed=5))
     part_with_3 = [i for i, c in enumerate(big_wts[-1]) if 3 in c][0]
     assert 4 in big_wts[-1][part_with_3]
 
