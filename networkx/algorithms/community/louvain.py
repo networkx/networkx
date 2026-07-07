@@ -280,7 +280,10 @@ def _one_level(G, partition, m, resolution, is_directed, seed):
     seed.shuffle(rand_nodes)
     nb_moves = 1
     improvement = False
-    while nb_moves > 0:
+    max_iter = 100  # Prevent infinite loops on oscillating partitions
+    iteration = 0
+    while nb_moves > 0 and iteration < max_iter:
+        iteration += 1
         nb_moves = 0
         for u in rand_nodes:
             u_com = node2com[u]
