@@ -29,8 +29,9 @@ def test_adjacency_matrix_format(ary_format):
 
 
 def test_incidence_matrix_simple():
-    deg = [3, 2, 2, 1, 0]
-    G = nx.havel_hakimi_graph(deg)
+    G = nx.Graph()
+    G.add_nodes_from(range(5))
+    G.add_edges_from([(0, 2), (0, 1), (0, 3), (1, 2)])
     deg = [(1, 0), (1, 0), (1, 0), (2, 0), (1, 0), (2, 1), (0, 1), (0, 1)]
     MG = nx.random_clustered_graph(deg, seed=42)
 
