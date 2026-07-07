@@ -43,6 +43,9 @@ def dfs_edges(G, source=None, depth_limit=None, *, sort_neighbors=None):
     ------
     edge: 2-tuple of nodes
        Yields edges resulting from the depth-first-search.
+       For undirected graphs, the edges are yielded strictly as `(parent, child)`
+       indicating the direction of traversal. They are not canonicalized
+       to `(min(u, v), max(u, v))`.
 
     Examples
     --------
