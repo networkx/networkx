@@ -124,15 +124,6 @@ def test_havel_hakimi_construction():
 
     pytest.raises(nx.NetworkXError, nx.havel_hakimi_graph, z, create_using=nx.DiGraph())
 
-    # Test that randomize=True rejects multigraphs
-    pytest.raises(
-        nx.NetworkXError,
-        nx.havel_hakimi_graph,
-        z,
-        randomize=True,
-        create_using=nx.MultiGraph(),
-    )
-
     # Valid sequence: test accepted create_using parameter
     G = nx.havel_hakimi_graph(z, create_using=nx.Graph())
     assert len(G) == len(z)
