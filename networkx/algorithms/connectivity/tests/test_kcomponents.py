@@ -127,6 +127,47 @@ def test_torrents_and_ferraro_graph():
     assert all(len(c) == 5 for c in result[4])
 
 
+def test_generate_partition_does_not_drop_cutset_nodes():
+    # Two icosahedra (5-connected) joined through three connector nodes,
+    # plus a fourth node that makes the graph 4-connected. The minimum
+    # 3-cutsets of the icosahedron-plus-connectors subproblem are the three
+    # connector neighborhoods, and some of their nodes have all their
+    # neighbors inside other cutsets. _generate_partition used to remove the
+    # union of all cutsets in a single pass, dropping those nodes and losing
+    # one of the two 5-components.
+    A = nx.icosahedral_graph()
+    B = nx.relabel_nodes(nx.icosahedral_graph(), {i: i + 12 for i in range(12)})
+    G = nx.union(A, B)
+    G.add_edges_from([(24, 0), (24, 1), (24, 2), (24, 12), (24, 13)])
+    G.add_edges_from([(25, 3), (25, 4), (25, 5), (25, 14), (25, 15)])
+    G.add_edges_from([(26, 6), (26, 7), (26, 8), (26, 16), (26, 17)])
+    G.add_edges_from([(27, 9), (27, 10), (27, 20), (27, 21)])
+    assert nx.node_connectivity(G) == 4
+    result = nx.k_components(G)
+    assert sorted(sorted(c) for c in result[5]) == [
+        sorted(range(12)),
+        sorted(range(12, 24)),
+    ]
+    # The whole graph is 4-connected, so it is the single k-component at
+    # every level from 1 to 4.
+    for k in range(1, 5):
+        assert sorted(sorted(c) for c in result[k]) == [sorted(range(28))]
+
+
+def test_reconstruction_does_not_replace_component_by_fragments():
+    # A 7-connected graph: the whole graph is the only k-component at every
+    # level up to 7. The recursive cuts record lower-connectivity fragments
+    # whose union happens to cover all nodes; _reconstruct_k_components used
+    # to skip propagating the whole-graph component down to those levels,
+    # replacing a genuine k-component by its fragments.
+    G = nx.gnp_random_graph(16, 0.6, seed=22070)
+    assert nx.node_connectivity(G) == 7
+    nodes = sorted(G)
+    result = nx.k_components(G)
+    for k in range(1, 8):
+        assert sorted(sorted(c) for c in result[k]) == [nodes]
+
+
 @pytest.mark.parametrize(
     ("n", "p"), [(10, 0.6), pytest.param(50, 0.2, marks=pytest.mark.slow)]
 )
