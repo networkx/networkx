@@ -53,6 +53,7 @@ sphinx_gallery_conf = {
     "matplotlib_animations": True,
     "plot_gallery": "True",
     "reference_url": {"sphinx_gallery": None},
+    "parallel": -1,
 }
 
 rst_epilog = """
