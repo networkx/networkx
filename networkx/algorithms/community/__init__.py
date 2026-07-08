@@ -18,6 +18,7 @@ from networkx.algorithms.community.bipartitions import *
 from networkx.algorithms.community.centrality import *
 from networkx.algorithms.community.divisive import *
 from networkx.algorithms.community.kclique import *
+from networkx.algorithms.community.nocd import *
 from networkx.algorithms.community.label_propagation import *
 from networkx.algorithms.community.lukes import *
 from networkx.algorithms.community.modularity_max import *

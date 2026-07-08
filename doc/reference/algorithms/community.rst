@@ -33,6 +33,14 @@ K-Clique
 
    k_clique_communities
 
+NOCD (Neural Overlapping Community Detection)
+---------------------------------------------
+.. automodule:: networkx.algorithms.community.nocd
+.. autosummary::
+   :toctree: generated/
+
+   nocd_communities
+
 Modularity-based communities
 ----------------------------
 .. automodule:: networkx.algorithms.community.modularity_max
