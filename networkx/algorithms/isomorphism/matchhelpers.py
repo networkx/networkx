@@ -62,6 +62,11 @@ Returns
 match : function
     The customized, categorical `node_match` function.
 
+Raises
+------
+ValueError
+    If `attr` is a list and `default` does not have the same length as `attr`.
+
 Examples
 --------
 >>> import networkx.algorithms.isomorphism as iso
@@ -78,7 +83,7 @@ def categorical_node_match(attr, default):
             return data1.get(attr, default) == data2.get(attr, default)
 
     else:
-        attrs = list(zip(attr, default))  # Python 3
+        attrs = list(zip(attr, default, strict=True))
 
         def match(data1, data2):
             return all(data1.get(attr, d) == data2.get(attr, d) for attr, d in attrs)
@@ -98,7 +103,7 @@ def categorical_multiedge_match(attr, default):
             return values1 == values2
 
     else:
-        attrs = list(zip(attr, default))  # Python 3
+        attrs = list(zip(attr, default, strict=True))
 
         def match(datasets1, datasets2):
             values1 = set()
@@ -147,6 +152,11 @@ Returns
 match : function
     The customized, numerical `node_match` function.
 
+Raises
+------
+ValueError
+    If `attr` is a list and `default` does not have the same length as `attr`.
+
 Examples
 --------
 >>> import networkx.algorithms.isomorphism as iso
@@ -168,7 +178,7 @@ def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08)
             )
 
     else:
-        attrs = list(zip(attr, default))  # Python 3
+        attrs = list(zip(attr, default, strict=True))
 
         def match(data1, data2):
             values1 = [data1.get(attr, d) for attr, d in attrs]
@@ -190,7 +200,7 @@ def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1
             return allclose(values1, values2, rtol=rtol, atol=atol)
 
     else:
-        attrs = list(zip(attr, default))  # Python 3
+        attrs = list(zip(attr, default, strict=True))
 
         def match(datasets1, datasets2):
             values1 = []
@@ -244,6 +254,12 @@ Returns
 match : function
     The customized, generic `node_match` function.
 
+Raises
+------
+ValueError
+    If `attr` is a list and `default` or `op` do not have the same length
+    as `attr`.
+
 Examples
 --------
 >>> from operator import eq
@@ -263,7 +279,7 @@ def generic_node_match(attr, default, op):
             return op(data1.get(attr, default), data2.get(attr, default))
 
     else:
-        attrs = list(zip(attr, default, op))  # Python 3
+        attrs = list(zip(attr, default, op, strict=True))
 
         def match(data1, data2):
             for attr, d, operator in attrs:
@@ -321,7 +337,7 @@ def generic_multiedge_match(attr, default, op):
         attr = [attr]
         default = [default]
         op = [op]
-    attrs = list(zip(attr, default))  # Python 3
+    attrs = list(zip(attr, default, strict=True))
 
     def match(datasets1, datasets2):
         values1 = []

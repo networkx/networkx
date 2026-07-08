@@ -1,5 +1,7 @@
 from operator import eq
 
+import pytest
+
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
 
@@ -8,6 +10,59 @@ def test_categorical_node_match():
     nm = iso.categorical_node_match(["x", "y", "z"], [None] * 3)
     assert nm({"x": 1, "y": 2, "z": 3}, {"x": 1, "y": 2, "z": 3})
     assert not nm({"x": 1, "y": 2, "z": 2}, {"x": 1, "y": 2, "z": 1})
+
+
+@pytest.mark.parametrize(
+    "factory",
+    [
+        iso.categorical_node_match,
+        iso.categorical_edge_match,
+        iso.categorical_multiedge_match,
+        iso.numerical_node_match,
+        iso.numerical_edge_match,
+        iso.numerical_multiedge_match,
+    ],
+)
+def test_match_helper_mismatched_default_length_raises(factory):
+    # gh-8738: a `default` list shorter than `attr` used to be silently
+    # truncated by zip(), so the extra attributes were never compared (the
+    # match function then ignored them). It must raise instead.
+    with pytest.raises(ValueError):
+        factory(["a", "b"], [None])
+    with pytest.raises(ValueError):
+        factory(["a"], [None, None])
+    # the reported footgun: an empty default list
+    with pytest.raises(ValueError):
+        factory(["a"], [None] * 0)
+    # matching lengths still build a working matcher
+    match = factory(["a", "b"], [None, None])
+    assert callable(match)
+
+
+@pytest.mark.parametrize("factory", [iso.generic_node_match, iso.generic_edge_match])
+def test_generic_match_helper_mismatched_length_raises(factory):
+    # gh-8738: mismatched attr/default/op lengths must raise, not truncate.
+    with pytest.raises(ValueError):
+        factory(["a", "b"], [None], [eq, eq])  # default too short
+    with pytest.raises(ValueError):
+        factory(["a", "b"], [None, None], [eq])  # op too short
+    match = factory(["a", "b"], [None, None], [eq, eq])
+    assert callable(match)
+
+
+def test_generic_multiedge_match_mismatched_length_raises():
+    # gh-8738
+    with pytest.raises(ValueError):
+        iso.generic_multiedge_match(["a", "b"], [None], [eq, eq])
+    match = iso.generic_multiedge_match(["a", "b"], [None, None], [eq, eq])
+    assert callable(match)
+
+
+def test_categorical_node_match_string_form_unaffected():
+    # The single-attribute (str) form takes no list and must keep working.
+    nm = iso.categorical_node_match("size", 1)
+    assert nm({"size": 1}, {"size": 1})
+    assert not nm({"size": 1}, {"size": 2})
 
 
 class TestGenericMultiEdgeMatch:
