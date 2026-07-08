@@ -14,13 +14,27 @@ References
 from pathlib import Path
 from typing import Optional
 
-import numpy as np
-import torch
-import torch.nn.functional as F
-from scipy.sparse import csr_matrix
-from torch import nn
-from torch_geometric.nn import GCNConv
-from torch_geometric.utils import from_scipy_sparse_matrix
+_nocd_import_error: ImportError | None
+try:
+    import numpy as np
+    import torch
+    import torch.nn.functional as F
+    from scipy.sparse import csr_matrix
+    from torch import nn
+    from torch_geometric.nn import GCNConv
+    from torch_geometric.utils import from_scipy_sparse_matrix
+
+    _nocd_import_error = None
+except ImportError as exc:  # pragma: no cover
+    # This module is imported during NetworkX doctest collection
+    # (pytest --doctest-modules --pyargs networkx). Keep import-time safe
+    # when optional ML deps are missing; fail only when functionality is used.
+    _nocd_import_error = exc
+
+
+def _raise_if_missing_ml_deps():  # pragma: no cover
+    if _nocd_import_error is not None:
+        raise _nocd_import_error
 
 
 class CSRGraphDataset:
@@ -28,11 +42,12 @@ class CSRGraphDataset:
 
     def __init__(
         self,
-        adjacency_csr: csr_matrix,
-        node_features: np.ndarray | None = None,
-        node_labels: np.ndarray | None = None,
+        adjacency_csr,
+        node_features=None,
+        node_labels=None,
         validate: bool = True,
     ):
+        _raise_if_missing_ml_deps()
         self.adj_csr = adjacency_csr
         self.num_nodes = adjacency_csr.shape[0]
         self.num_edges = adjacency_csr.nnz
@@ -104,6 +119,7 @@ class ProductionGCN(nn.Module):
         activation: str = "relu",
         final_activation: str = "relu",
     ):
+        _raise_if_missing_ml_deps()
         super().__init__()
 
         self.input_dim = input_dim
@@ -163,6 +179,7 @@ class ProductionNOCD(nn.Module):
         hidden_dim: int = 128,
         dropout: float = 0.5,
     ):
+        _raise_if_missing_ml_deps()
         super().__init__()
 
         self.input_dim = input_dim
@@ -198,6 +215,7 @@ class BernoulliPoissonLoss(nn.Module):
     """Balanced Bernoulli-Poisson loss (Equation 4 in the NOCD paper)."""
 
     def __init__(self, batch_size: int = 5000):
+        _raise_if_missing_ml_deps()
         super().__init__()
         self.batch_size = batch_size
 
@@ -267,6 +285,7 @@ class NOCDTrainer:
         device: str = "auto",
         batch_size: int = 500,
     ):
+        _raise_if_missing_ml_deps()
         self.model = model
         self.dataset = dataset
         self.batch_size = batch_size

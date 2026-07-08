@@ -173,17 +173,25 @@ def nocd_communities(
     Examples
     --------
     >>> G = nx.karate_club_graph()
-    >>> comms = list(
-    ...     nx.community.nocd_communities(
-    ...         G,
-    ...         num_communities=4,
-    ...         epochs=100,
-    ...         eval_frequency=25,
-    ...         patience_epochs=2,
-    ...         seed=0,
+    >>> try:
+    ...     import torch  # noqa: F401
+    ...     import torch_geometric  # noqa: F401
+    ...     import numpy  # noqa: F401
+    ...     import scipy  # noqa: F401
+    ... except ImportError:
+    ...     pass
+    ... else:
+    ...     comms = list(
+    ...         nx.community.nocd_communities(
+    ...             G,
+    ...             num_communities=4,
+    ...             epochs=100,
+    ...             eval_frequency=25,
+    ...             patience_epochs=2,
+    ...             seed=0,
+    ...         )
     ...     )
-    ... )
-    >>> nx.community.is_cover(G, comms)
+    ...     nx.community.is_cover(G, comms)
     True
 
     Notes
