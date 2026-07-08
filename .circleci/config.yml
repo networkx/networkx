@@ -60,6 +60,13 @@ jobs:
             pip list
 
       - run:
+          name: Show CPU info
+          command: |
+            source venv/bin/activate
+            echo "nproc: $(nproc)"
+            python -c "import os; from joblib import cpu_count; print('os cpu_count:', os.cpu_count()); print('joblib cpu_count:', cpu_count())"
+
+      - run:
           name: Build docs
           command: |
             # NOTE: bad interaction w/ blas multithreading on circleci
