@@ -186,6 +186,20 @@ try:
 except ImportError:
     has_sympy = False
 
+try:
+    import torch
+
+    has_torch = True
+except ImportError:
+    has_torch = False
+
+try:
+    import torch_geometric
+
+    has_torch_geometric = True
+except ImportError:
+    has_torch_geometric = False
+
 
 # List of files that pytest should ignore
 
@@ -251,6 +265,7 @@ needs_pandas = ["convert_matrix.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
 needs_sympy = ["algorithms/polynomials.py"]
+needs_torch = ["algorithms/community/_nocd.py"]
 
 if not has_numpy:
     collect_ignore += needs_numpy
@@ -266,3 +281,5 @@ if not has_pydot:
     collect_ignore += needs_pydot
 if not has_sympy:
     collect_ignore += needs_sympy
+if not has_torch or not has_torch_geometric:
+    collect_ignore += needs_torch
