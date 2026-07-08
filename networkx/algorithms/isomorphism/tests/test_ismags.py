@@ -748,3 +748,26 @@ def test_weightkey(graph_class):
     g2 = graph_class()
     g2.add_edge("C", "D")
     assert nx.is_isomorphic(g1, g2, edge_match=em)
+
+
+@pytest.mark.parametrize("graph_class", graph_classes)
+def test_edgeless_subgraph_edge_match(graph_class):
+    # gh-8738: a non-trivial edge_match on a subgraph with no edges used to
+    # return no isomorphisms, while edge_match=None found them. Since the
+    # subgraph has no edges, edge matching is vacuous and both must agree.
+    graph = graph_class()
+    graph.add_edges_from([(0, 1), (1, 2)])
+    subgraph = graph_class()
+    subgraph.add_node(0)
+
+    def always_true(*args):
+        return True
+
+    without = iso.ISMAGS(graph, subgraph, edge_match=None)
+    with_match = iso.ISMAGS(graph, subgraph, edge_match=always_true)
+
+    expected = sorted(map(str, without.find_isomorphisms()))
+    found = sorted(map(str, with_match.find_isomorphisms()))
+    assert found == expected
+    # every node of the graph is a valid mapping for the single subgraph node
+    assert len(found) == len(graph)

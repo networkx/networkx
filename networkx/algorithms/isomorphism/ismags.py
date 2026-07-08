@@ -575,6 +575,16 @@ class ISMAGS:
             g_partition = [set(g_things)]
             return sg_partition, g_partition, 1
 
+        # If the subgraph has no things to match (e.g. an edgeless subgraph),
+        # the matcher imposes no constraint, so coloring is vacuous. Mirror the
+        # ``thing_matcher is None`` case above. Otherwise ``make_partition``
+        # below returns an empty subgraph partition (sN == 0), the alignment
+        # loop matches nothing, and the lone empty leftover part is reported as
+        # an unmatched color -- which makes ``find_isomorphisms`` wrongly return
+        # no results when every graph edge should match (see gh-8738).
+        if not sg_things:
+            return [set(sg_things)], [set(g_things)], 1
+
         # Use thing_matcher to create a partition
         # Note: isinstance(G.edges(), OutEdgeDataView) is only true for multi(di)graph
         sg_multiedge = isinstance(sg_things, nx.classes.reportviews.OutEdgeDataView)
