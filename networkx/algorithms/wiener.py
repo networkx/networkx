@@ -18,8 +18,8 @@ References
 import itertools as it
 
 import networkx as nx
-
 from networkx.utils.decorators import not_implemented_for
+
 __all__ = [
     "wiener_index",
     "wiener_index_leaf_update",
@@ -27,6 +27,7 @@ __all__ = [
     "gutman_index",
     "hyper_wiener_index",
 ]
+
 
 @nx._dispatchable(edge_attrs="weight")
 def wiener_index(G, weight=None):
@@ -96,6 +97,7 @@ def wiener_index(G, weight=None):
     total = sum(it.chain.from_iterable(nbrs.values() for node, nbrs in spl))
     # Need to account for double counting pairs of nodes in undirected graphs.
     return total if G.is_directed() else total / 2
+
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")

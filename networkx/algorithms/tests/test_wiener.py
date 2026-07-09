@@ -1,5 +1,7 @@
-import networkx as nx
 import pytest
+
+import networkx as nx
+
 
 def test_wiener_index_of_disconnected_graph():
     assert nx.wiener_index(nx.empty_graph(2)) == float("inf")
@@ -156,6 +158,7 @@ def test_hyper_wiener_of_weighted_graph():
     G.edges[0, 1]["weight"] = 2
     assert nx.hyper_wiener_index(G, weight="weight") == 20.0
 
+
 def _assert_leaf_update_matches_full_recompute(G, attach_to, new_node):
     old_w = nx.wiener_index(G)
     updated_w = nx.wiener_index_leaf_update(G, old_w, attach_to)
@@ -178,9 +181,7 @@ def _assert_leaf_update_matches_full_recompute(G, attach_to, new_node):
         (nx.complete_graph(6), 4, 6),
     ],
 )
-def test_wiener_index_leaf_update_matches_full_recompute(
-    G, attach_to, new_node
-):
+def test_wiener_index_leaf_update_matches_full_recompute(G, attach_to, new_node):
     _assert_leaf_update_matches_full_recompute(G, attach_to, new_node)
 
 
