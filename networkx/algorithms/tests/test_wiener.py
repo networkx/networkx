@@ -1,5 +1,5 @@
 import networkx as nx
-
+import pytest
 
 def test_wiener_index_of_disconnected_graph():
     assert nx.wiener_index(nx.empty_graph(2)) == float("inf")
@@ -155,3 +155,80 @@ def test_hyper_wiener_of_weighted_graph():
     G = nx.path_graph(3)
     G.edges[0, 1]["weight"] = 2
     assert nx.hyper_wiener_index(G, weight="weight") == 20.0
+
+def _assert_leaf_update_matches_full_recompute(G, attach_to, new_node):
+    old_w = nx.wiener_index(G)
+    updated_w = nx.wiener_index_leaf_update(G, old_w, attach_to)
+
+    H = G.copy()
+    H.add_edge(attach_to, new_node)
+
+    assert updated_w == nx.wiener_index(H)
+
+
+@pytest.mark.parametrize(
+    ("G", "attach_to", "new_node"),
+    [
+        (nx.Graph([(0, 1)]), 0, 2),
+        (nx.path_graph(6), 5, 6),
+        (nx.path_graph(6), 2, 6),
+        (nx.star_graph(5), 0, 6),
+        (nx.star_graph(5), 1, 6),
+        (nx.cycle_graph(7), 3, 7),
+        (nx.complete_graph(6), 4, 6),
+    ],
+)
+def test_wiener_index_leaf_update_matches_full_recompute(
+    G, attach_to, new_node
+):
+    _assert_leaf_update_matches_full_recompute(G, attach_to, new_node)
+
+
+def test_wiener_index_leaf_update_supports_non_integer_nodes():
+    G = nx.Graph()
+    G.add_edges_from([("root", "a"), ("root", "b"), ("b", "c")])
+
+    _assert_leaf_update_matches_full_recompute(G, "b", "new-leaf")
+
+
+@pytest.mark.parametrize("n", range(2, 15))
+def test_wiener_index_leaf_update_paths_parametrized(n):
+    G = nx.path_graph(n)
+    W = nx.wiener_index(G)
+
+    attach_to = n - 1
+    new_W = nx.wiener_index_leaf_update(G, W, attach_to)
+
+    H = G.copy()
+    H.add_edge(attach_to, n)
+
+    assert new_W == nx.wiener_index(H)
+
+
+def test_wiener_index_leaf_update_missing_attach_node_raises():
+    G = nx.path_graph(3)
+
+    with pytest.raises(nx.NodeNotFound):
+        nx.wiener_index_leaf_update(G, nx.wiener_index(G), 100)
+
+
+def test_wiener_index_leaf_update_disconnected_graph_raises():
+    G = nx.Graph()
+    G.add_edges_from([(0, 1), (2, 3)])
+
+    with pytest.raises(nx.NetworkXError, match="connected"):
+        nx.wiener_index_leaf_update(G, 0, 0)
+
+
+def test_wiener_index_leaf_update_directed_not_implemented():
+    G = nx.DiGraph([(0, 1)])
+
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.wiener_index_leaf_update(G, 1, 0)
+
+
+def test_wiener_index_leaf_update_multigraph_not_implemented():
+    G = nx.MultiGraph([(0, 1)])
+
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.wiener_index_leaf_update(G, 1, 0)
