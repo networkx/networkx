@@ -22,7 +22,6 @@ from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
     "wiener_index",
-    "wiener_index_leaf_update",
     "schultz_index",
     "gutman_index",
     "hyper_wiener_index",
@@ -85,6 +84,31 @@ def wiener_index(G, weight=None):
         >>> nx.wiener_index(G)
         inf
 
+
+    The Wiener index can be updated efficiently when adding a new leaf.
+    If a new node ``x`` is added adjacent to an existing node ``p``,
+    distances between old nodes do not change and
+
+    ``d(x, v) = d(p, v) + 1``
+
+    for every old node ``v``.
+
+    >>> G = nx.path_graph(3)
+    >>> W = nx.wiener_index(G)
+    >>> attach_to = 2
+    >>> increment = sum(
+    ...     d + 1 for d in nx.single_source_shortest_path_length(G, attach_to).values()
+    ... )
+    >>> W + increment
+    10.0
+
+    This matches recomputing the Wiener index after adding the new leaf:
+
+    >>> H = G.copy()
+    >>> H.add_edge(attach_to, 3)
+    >>> nx.wiener_index(H)
+    10.0
+
     References
     ----------
     .. [1] `Wikipedia: Wiener Index <https://en.wikipedia.org/wiki/Wiener_index>`_
@@ -97,62 +121,6 @@ def wiener_index(G, weight=None):
     total = sum(it.chain.from_iterable(nbrs.values() for node, nbrs in spl))
     # Need to account for double counting pairs of nodes in undirected graphs.
     return total if G.is_directed() else total / 2
-
-
-@not_implemented_for("directed")
-@not_implemented_for("multigraph")
-@nx._dispatchable
-def wiener_index_leaf_update(G, wiener, attach_to):
-    """Return the Wiener index after adding one new leaf to ``attach_to``.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        Existing connected, undirected, unweighted simple graph.
-    wiener : int or float
-        Wiener index of ``G``.
-    attach_to : node
-        Existing node of ``G`` to which a new leaf will be attached.
-
-    Returns
-    -------
-    int or float
-        Wiener index of the graph obtained by adding a new leaf adjacent to
-        ``attach_to``.
-
-    Notes
-    -----
-    If ``G'`` is obtained from ``G`` by adding a new leaf ``x`` adjacent to
-    ``attach_to``, then distances between old nodes do not change and
-
-    .. math::
-
-        d_{G'}(x, v) = d_G(attach\\_to, v) + 1
-
-    for every old node ``v``. Therefore the increment is
-
-    .. math::
-
-        \\sum_{v \\in V(G)} \\left(d_G(attach\\_to, v) + 1\\right).
-
-    Examples
-    --------
-    >>> G = nx.path_graph(3)
-    >>> W = nx.wiener_index(G)
-    >>> wiener_index_leaf_update(G, W, 2)
-    10.0
-    """
-    if attach_to not in G:
-        raise nx.NodeNotFound(f"Attachment node {attach_to!r} is not in the graph.")
-    if len(G) == 0:
-        raise nx.NetworkXPointlessConcept(
-            "Cannot update the Wiener index of an empty graph."
-        )
-    if not nx.is_connected(G):
-        raise nx.NetworkXError("Leaf update is defined here only for connected graphs.")
-
-    dist = nx.single_source_shortest_path_length(G, attach_to)
-    return wiener + sum(d + 1 for d in dist.values())
 
 
 @nx.utils.not_implemented_for("directed")
