@@ -441,8 +441,12 @@ def expected_degree_graph(w, seed=None, selfloops=True):
 @py_random_state("seed")
 @nx._dispatchable(graphs=None, returns_graph=True)
 def havel_hakimi_graph(deg_sequence, create_using=None, *, randomize=False, seed=None):
-    """Returns a simple graph with given degree sequence constructed
-    using the Havel-Hakimi algorithm, or the Kleitman-Wang undirected algorithm.
+    """Returns a simple graph with given degree sequence.
+
+    The resulting graph is constructed using the Havel-Hakimi algorithm with
+    maximal degree nodes selected at each step. Or when `randomize=True`, the
+    construction uses the Kleitman-Wang undirected generalization where nodes
+    are selected at random at each step.
 
     Parameters
     ----------
@@ -452,7 +456,7 @@ def havel_hakimi_graph(deg_sequence, create_using=None, *, randomize=False, seed
         Graph type to create. If graph instance, then cleared before populated.
         Directed graphs are not allowed.
     randomize: bool (default=False)
-        Set to True to use the Kleitman-Wang randomized source algorithm.
+        When True, randomize the source, i.e. use the Kleitman-Wang generalization.
     seed: integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
