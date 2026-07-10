@@ -1010,6 +1010,16 @@ class TestMinimumFeedbackEdgeSet:
         G = nx.complete_graph(3, create_using=nx.DiGraph)
         assert nx.minimum_feedback_edge_set(G)
 
+    def test_graph_type(self):
+        G1 = nx.complete_graph(10, create_using=nx.MultiDiGraph)
+        G2 = nx.MultiGraph(G1)
+        G3 = nx.DiGraph(G1)
+        G4 = nx.Graph(G1)
+        assert nx.minimum_feedback_edge_set(G1)
+        assert nx.minimum_feedback_edge_set(G2)
+        assert nx.minimum_feedback_edge_set(G3)
+        assert nx.minimum_feedback_edge_set(G4)
+
     def test_5_cycle(self):
         G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
         G.add_edges_from([(1, 3), (3, 2)])

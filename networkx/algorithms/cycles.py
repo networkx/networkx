@@ -1235,17 +1235,16 @@ def girth(G):
     return girth
 
 
-@not_implemented_for("undirected")
 def minimum_feedback_edge_set(G, weight=None):
-    """Returns a minimum weight feedback edge set of a directed graph.
+    """Returns a minimum weight feedback edge set of a graph.
 
     A feedback edge set is a set of edges whose removal makes the graph
     acyclic.
 
     Parameters
     ----------
-    G : NetworkX DiGraph
-        A directed graph.
+    G : Graph, DiGraph, MultiGraph, or MultiDiGraph
+        Any NetworkX graph.
 
     weight : string, optional (default = None)
         If None, every edge has weight 1. If a string, use this edge
@@ -1255,7 +1254,7 @@ def minimum_feedback_edge_set(G, weight=None):
     Returns
     -------
     set
-        A set of directed edges.
+        A set of edges.
 
     References
     ----------
@@ -1263,6 +1262,14 @@ def minimum_feedback_edge_set(G, weight=None):
        algorithms for feedback problems in directed graphs." Information
        Processing Letters 86, no. 3 (2003): 129-136.
     """
+
+    if not G.is_directed():
+        T = (
+            nx.maximum_spanning_tree(G, weight=weight)
+            if weight is not None
+            else nx.maximum_spanning_tree(G)
+        )
+        return {e for e in G.edges if e not in T.edges}
 
     H = G.copy()
     F = set()
