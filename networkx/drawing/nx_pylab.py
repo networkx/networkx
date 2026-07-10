@@ -430,17 +430,17 @@ def display(
         Visible nodes missing this attribute will use the final node_color value.
 
     edge_visible : string or bool, default "visible"
-        A string nameing the edge attribute which stores if an edge should be drawn.
+        A string naming the edge attribute which stores if an edge should be drawn.
         If `True`, all edges will be drawn while if `False` no edges will be visible.
         If incomplete, edges missing this attribute will be shown by default. Values
         of this attribute are expected to be booleans.
 
     edge_width : string or int, default "width"
-        A string nameing the edge attribute which stores the width of each edge.
+        A string naming the edge attribute which stores the width of each edge.
         Visible edges without this attribute will use a default width of 1.0.
 
     edge_color : string or color, default "color"
-        A string nameing the edge attribute which stores of color of each edge.
+        A string naming the edge attribute which stores of color of each edge.
         Visible edges without this attribute will be drawn black. Each color can be
         a string or rgb (or rgba) tuple of floats from 0.0 to 1.0.
 
@@ -502,7 +502,7 @@ def display(
         will use a default value of 0.
 
     edge_target_margin : string or int, default "target_margin"
-        A string naming the edge attribute which stores the minimumm margin (gap) between
+        A string naming the edge attribute which stores the minimum margin (gap) between
         the target node and the end of the edge. Visible edges without this attribute
         will use a default value of 0.
 
@@ -617,7 +617,7 @@ def display(
         attr = kwargs.get(param_name, attr)
 
         if default is None:
-            # raise instead of using non-existant default value
+            # raise instead of using non-existent default value
             for n in seq:
                 if attr not in node_subgraph.nodes[n]:
                     raise nx.NetworkXError(f"Attribute '{attr}' missing for node {n}")
@@ -677,7 +677,7 @@ def display(
         attr = kwargs.get(param_name, attr)
 
         if default is None:
-            # raise instead of using non-existant default value
+            # raise instead of using non-existent default value
             for e in seq:
                 if attr not in edge_subgraph.edges[e]:
                     raise nx.NetworkXError(f"Attribute '{attr}' missing for edge {e}")
