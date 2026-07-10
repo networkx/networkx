@@ -5,6 +5,8 @@ import networkx as nx
 from networkx.algorithms import flow
 from networkx.algorithms.connectivity.kcomponents import (
     _consolidate,
+    _generate_partition,
+    _reconstruct_k_components,
     build_k_number_dict,
 )
 
@@ -362,3 +364,84 @@ def test_set_consolidation_rosettacode():
     ]
     solution = [{"A", "C", "B", "D", "G", "F", "I", "H", "K"}]
     list_of_sets_equal(_consolidate(question, 1), solution)
+
+
+# Unit tests for the private helpers, with their contracts stated
+# explicitly (follow-up to the review discussion in gh-8734: both bugs
+# fixed there lived in private helpers whose contracts were only
+# implicit, and neither was reachable by end-to-end tests on the small
+# classic graphs alone).
+
+
+def test_reconstruct_k_components_promotes_spanning_component():
+    # A (k+1)-level component can span several k-level candidates without
+    # being a subset of any of them. It must still be propagated down to
+    # level k, where consolidation merges the candidates it bridges; the
+    # pre-gh-8734 union-coverage check skipped it and returned the two
+    # fragments instead.
+    k_comps = {3: [{1, 2, 3, 4}, {4, 5, 6, 7}], 4: [{2, 3, 4, 5, 6}]}
+    result = _reconstruct_k_components(k_comps)
+    assert result[4] == [{2, 3, 4, 5, 6}]
+    assert result[3] == [{1, 2, 3, 4, 5, 6, 7}]
+    assert result[2] == [{1, 2, 3, 4, 5, 6, 7}]
+    assert result[1] == [{1, 2, 3, 4, 5, 6, 7}]
+
+
+def test_reconstruct_k_components_drops_nested_candidate():
+    # A single _consolidate pass merges on pairwise overlaps of its input
+    # sets only. A propagated (k+1)-level component that shares fewer than
+    # k nodes with each of two level-k candidates is not merged with
+    # either, yet when the two candidates merge with each other it ends up
+    # a strict subset of their union. A nested set is never a maximal
+    # k-connected subgraph, so reconstruction must drop it.
+    A = set(range(1, 9))  # {1..8}
+    B = set(range(5, 13))  # {5..12}, shares {5, 6, 7, 8} with A
+    c = {2, 3, 4, 9, 10, 11}  # inside A | B, shares only 3 with each
+    result = _reconstruct_k_components({4: [A, B], 5: [c]})
+    assert result[5] == [c]
+    assert result[4] == [A | B]
+
+
+def test_reconstruct_k_components_no_nested_output():
+    # Contract: no level of the returned decomposition contains a
+    # component that is a strict subset of another at the same level.
+    k_comps = {
+        2: [set(range(1, 20)), {30, 31, 32}],
+        3: [{1, 2, 3, 4, 5}, {4, 5, 6, 7, 8}, {10, 11, 12, 13}],
+        4: [{2, 3, 4, 6, 7, 8}],
+    }
+    result = _reconstruct_k_components(k_comps)
+    for comps in result.values():
+        for comp in comps:
+            assert not any(comp < other for other in comps)
+
+
+@pytest.mark.parametrize(
+    "G",
+    [
+        nx.karate_club_graph(),
+        nx.gnp_random_graph(30, 0.25, seed=42),
+        nx.gnp_random_graph(25, 0.35, seed=7),
+        nx.davis_southern_women_graph(),
+    ],
+)
+def test_generate_partition_contracts(G):
+    # Contracts (stated in the gh-8734 review discussion): partitioning a
+    # biconnected graph by its minimum-size cutsets never loses a node
+    # (every cutset node has a neighbor outside the cutset, or the cutset
+    # would not be minimum), every part is a strict subset of the input,
+    # and every part induces a connected subgraph.
+    for bc in nx.biconnected_components(G):
+        if len(bc) <= 2:
+            continue
+        B = G.subgraph(bc)
+        k = nx.node_connectivity(B)
+        cuts = list(nx.all_node_cuts(B, k=k))
+        if not cuts:
+            continue
+        parts = list(_generate_partition(B, cuts, k))
+        assert parts
+        assert set().union(*parts) == set(B)
+        for part in parts:
+            assert len(part) < len(B)
+            assert nx.is_connected(B.subgraph(part))
