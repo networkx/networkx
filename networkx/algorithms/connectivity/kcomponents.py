@@ -57,6 +57,10 @@ def k_components(G, flow_func=None):
     >>> # nodes are in a single component on all three connectivity levels
     >>> G = nx.petersen_graph()
     >>> k_components = nx.k_components(G)
+    >>> sorted(k_components)
+    [1, 2, 3]
+    >>> all(comps == [set(G)] for comps in k_components.values())
+    True
 
     Notes
     -----
@@ -240,9 +244,9 @@ def _reconstruct_k_components(k_comps):
     max_k = max(k_comps) if k_comps else 0
     for k in range(max_k, 0, -1):
         if k == max_k:
-            result[k] = list(_consolidate(k_comps[k], k))
+            comps = list(_consolidate(k_comps[k], k))
         elif k not in k_comps:
-            result[k] = list(_consolidate(result[k + 1], k))
+            comps = list(_consolidate(result[k + 1], k))
         else:
             # Propagate a component from level k+1 down to level k unless it
             # is already contained in a single component recorded at level k.
@@ -254,9 +258,14 @@ def _reconstruct_k_components(k_comps):
                 c for c in result[k + 1] if not any(c <= comp for comp in k_comps[k])
             ]
             if to_add:
-                result[k] = list(_consolidate(k_comps[k] + to_add, k))
+                comps = list(_consolidate(k_comps[k] + to_add, k))
             else:
-                result[k] = list(_consolidate(k_comps[k], k))
+                comps = list(_consolidate(k_comps[k], k))
+        # A single _consolidate pass merges on pairwise overlaps of its
+        # input sets, so its output can still contain a set nested inside
+        # a merged one; a nested set is never a maximal k-connected
+        # subgraph, so drop it.
+        result[k] = [c for c in comps if not any(c < d for d in comps)]
     return result
 
 
