@@ -262,3 +262,22 @@ def test_max_level():
         ValueError, match="max_level argument must be a positive integer"
     ):
         nx.community.louvain_communities(G, max_level=0)
+
+
+def test_louvain_no_infinite_loop_on_ties():
+    """Louvain terminates when modularity gains are zero (floating-point ties).
+
+    Regression test for gh-8739: on certain small graphs the local modularity
+    gain for moving a node between two communities is exactly zero (up to
+    floating-point noise), causing the algorithm to oscillate indefinitely.
+    """
+    # Graph Atlas G674 — the reproducer from gh-8739
+    G = nx.Graph(
+        [(0, 1), (0, 2), (0, 5), (0, 6), (1, 2), (1, 4), (2, 3), (2, 5), (2, 6), (3, 4)]
+    )
+    # Must terminate (previously hung forever) and produce a valid partition
+    for seed in range(20):
+        partition = nx.community.louvain_communities(
+            G, weight="weight", resolution=1, seed=seed
+        )
+        assert nx.community.is_partition(G, partition)

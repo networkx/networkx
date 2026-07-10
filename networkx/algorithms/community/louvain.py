@@ -282,6 +282,9 @@ def _one_level(G, partition, m, resolution, is_directed, seed):
     improvement = False
     while nb_moves > 0:
         nb_moves = 0
+        # Track the cumulative modularity gain for this pass to detect
+        # oscillations driven by floating-point noise (see gh-8739).
+        pass_total_gain = 0.0
         for u in rand_nodes:
             u_com = node2com[u]
             u_deg_by_com = defaultdict(float)
@@ -326,7 +329,12 @@ def _one_level(G, partition, m, resolution, is_directed, seed):
                 inner_partition[best_com].add(u)
                 improvement = True
                 nb_moves += 1
+                pass_total_gain += best_mod
                 node2com[u] = best_com
+        # If the total gain across this pass is negligible, the remaining
+        # moves are just floating-point noise causing oscillation.
+        if pass_total_gain <= 1e-15:
+            break
     partition = [p for p in partition if p]
     inner_partition = [p for p in inner_partition if p]
     return partition, inner_partition, improvement
