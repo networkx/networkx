@@ -113,7 +113,6 @@ def _check_connectivity(G, k_components):
             assert K >= k
 
 
-@pytest.mark.slow
 def test_torrents_and_ferraro_graph():
     G = torrents_and_ferraro_graph()
     result = nx.k_components(G)
@@ -170,9 +169,7 @@ def test_reconstruction_does_not_replace_component_by_fragments():
         assert sorted(sorted(c) for c in result[k]) == [nodes]
 
 
-@pytest.mark.parametrize(
-    ("n", "p"), [(10, 0.6), pytest.param(50, 0.2, marks=pytest.mark.slow)]
-)
+@pytest.mark.parametrize(("n", "p"), [(10, 0.6), (50, 0.2)])
 def test_random_gnp(n, p):
     G = nx.gnp_random_graph(n, p, seed=42)
     result = nx.k_components(G)
@@ -183,7 +180,7 @@ def test_random_gnp(n, p):
     "constructor",
     [
         [(5, 8, 0.8), (8, 15, 0.6), (5, 24, 0.2)],
-        pytest.param([(20, 80, 0.8), (80, 180, 0.6)], marks=pytest.mark.slow),
+        [(20, 80, 0.8), (80, 180, 0.6)],
     ],
 )
 def test_shell(constructor):
