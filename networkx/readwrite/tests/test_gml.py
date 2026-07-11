@@ -230,6 +230,19 @@ graph
 ]"""
         assert data == answer
 
+    def test_tuple_label_quote_escape(self):
+        # A tuple used as a label whose repr contains a double quote must be
+        # escaped like any other string, otherwise the extra quote closes the
+        # GML string early and lets crafted content inject nodes/attributes.
+        G = nx.Graph()
+        G.add_node(('x"] node [ id 99 label "pwn', "y"))
+        data = "\n".join(nx.generate_gml(G))
+        assert "&#34;" in data
+        assert '"pwn' not in data
+        H = nx.parse_gml(data)
+        assert len(H) == 1
+        assert list(H) == ["('x\"] node [ id 99 label \"pwn','y')"]
+
     def test_quotes(self, tmp_path):
         # https://github.com/networkx/networkx/issues/1061
         # Encoding quotes as HTML entities.
