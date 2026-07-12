@@ -270,3 +270,10 @@ def test_inf_loops():
     P = nx.community.louvain_communities(G, weight="weight", seed=123)
     # not an infinite loop!  But still check whether ties change output
     assert {frozenset(C) for C in P} == {frozenset({0, 2, 5, 6}), frozenset({1, 3, 4})}
+
+
+def test_petersen():
+    G = nx.petersen_graph()
+    expected = {frozenset(c) for c in ({0, 4, 5, 7, 9}, {1, 2, 3, 6, 8})}
+    P = nx.community.louvain_communities(G, weight="weight", seed=111)
+    assert {frozenset(C) for C in P} == expected
