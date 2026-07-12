@@ -262,3 +262,11 @@ def test_max_level():
         ValueError, match="max_level argument must be a positive integer"
     ):
         nx.community.louvain_communities(G, max_level=0)
+
+
+def test_inf_loops():
+    e = [(0, 1), (0, 2), (0, 5), (0, 6), (1, 2), (1, 4), (2, 3), (2, 5), (2, 6), (3, 4)]
+    G = nx.Graph(e)
+    P = nx.community.louvain_communities(G, weight="weight", seed=123)
+    # not an infinite loop!  But still check whether ties change output
+    assert {frozenset(C) for C in P} == {frozenset({0, 2, 5, 6}), frozenset({1, 3, 4})}
