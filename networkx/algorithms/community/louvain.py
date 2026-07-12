@@ -298,16 +298,16 @@ def _one_level(G, partition, m, resolution, is_directed, seed):
                 degree = degrees[u]
                 Stot[u_com] -= degree
                 x = Stot[u_com] * degree
-            move_cost = u_deg_by_com[u_com] * m - gamma * x
+            remove_cost = u_deg_by_com[u_com] * m - gamma * x
 
-            best_gain = 0
+            best_gain = remove_cost  # check that best_gain > remove_cost
             best_com = u_com
             for nbr_com, wt in u_deg_by_com.items():
                 if is_directed:
                     x = out_degree * Stot_in[nbr_com] + in_degree * Stot_out[nbr_com]
                 else:
                     x = Stot[nbr_com] * degree
-                gain = wt * m  - gamma * x
+                gain = wt * m - gamma * x
                 if gain > best_gain:
                     best_gain = gain
                     best_com = nbr_com
