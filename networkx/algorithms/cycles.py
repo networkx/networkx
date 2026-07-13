@@ -1271,7 +1271,7 @@ def minimum_feedback_edge_set(G, weight=None):
     F = set()
 
     multigraph = G.is_multigraph()
-    weights = {e: G.edges[e].get(weight, 1) for e in G.edges}
+    weights = nx.get_edge_attributes(G, weight, default=1)
     while not nx.is_directed_acyclic_graph(H):
         pairs = nx.utils.pairwise(next(nx.simple_cycles(H)), cyclic=True)
         if multigraph:
