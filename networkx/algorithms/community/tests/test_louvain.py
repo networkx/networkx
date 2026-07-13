@@ -265,6 +265,8 @@ def test_max_level():
 
 
 def test_inf_loops():
+    # Graph Atlas G674 had an inf loop. See gh-8739.
+    # Multiply formula by m**2 to avoid floating point trouble to fix it.
     e = [(0, 1), (0, 2), (0, 5), (0, 6), (1, 2), (1, 4), (2, 3), (2, 5), (2, 6), (3, 4)]
     G = nx.Graph(e)
     P = nx.community.louvain_communities(G, weight="weight", seed=123)

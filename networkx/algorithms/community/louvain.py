@@ -298,6 +298,11 @@ def _one_level(G, partition, m, resolution, is_directed, seed):
                 degree = degrees[u]
                 Stot[u_com] -= degree
                 x = Stot[u_com] * degree
+            # Formula for merging u with u_com (algebra on modularity formula)
+            # is sum(wts from u to u_com) / m - gamma * x / m**2.
+            # Remove cost is negative of merge gain. Need best_gain > remove_cost.
+            # We multiply by m**2 to avoid floating point errors.
+            # Does not change best_com.  See gh-8739.
             remove_cost = u_deg_by_com[u_com] * m - gamma * x
 
             best_gain = remove_cost  # check that best_gain > remove_cost
@@ -307,6 +312,10 @@ def _one_level(G, partition, m, resolution, is_directed, seed):
                     x = out_degree * Stot_in[nbr_com] + in_degree * Stot_out[nbr_com]
                 else:
                     x = Stot[nbr_com] * degree
+                # Formula for merging u with u_com (algebra on modularity formula)
+                # is sum(wts from u to nbr_com) / m - gamma * x / m**2.
+                # We multiply by m**2 to avoid floating point errors.
+                # Does not change best_com.  See gh-8739.
                 gain = wt * m - gamma * x
                 if gain > best_gain:
                     best_gain = gain
