@@ -241,7 +241,7 @@ graph
         assert '"pwn' not in data
         H = nx.parse_gml(data)
         assert len(H) == 1
-        assert list(H) == ["('x\"] node [ id 99 label \"pwn','y')"]
+        assert list(H) == ["""('x"] node [ id 99 label "pwn','y')"""]
 
     def test_quotes(self, tmp_path):
         # https://github.com/networkx/networkx/issues/1061
