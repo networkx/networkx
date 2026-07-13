@@ -470,6 +470,35 @@ class TestDAG:
         G = nx.Graph([(1, 2), (2, 3), (3, 4)])
         pytest.raises(nx.NetworkXNotImplemented, transitive_reduction, G)
 
+    def test_antichain_width(self):
+        G = nx.DiGraph()
+        assert nx.dag.antichain_width(G) == 0
+
+        G.add_nodes_from([0, 1, 2])
+        assert nx.dag.antichain_width(G) == 3
+
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        assert nx.dag.antichain_width(G) == 1
+
+        G = nx.DiGraph([(1, 2), (1, 3), (2, 4), (3, 4)])
+        assert nx.dag.antichain_width(G) == 2
+
+        G = nx.DiGraph([(1, 3), (2, 3), (3, 4), (3, 5)])
+        assert nx.dag.antichain_width(G) == 2
+
+    def test_antichain_width_multidigraph(self):
+        G = nx.MultiDiGraph([(1, 2), (1, 2), (1, 3), (2, 4), (3, 4)])
+        assert nx.dag.antichain_width(G) == 2
+
+    def test_antichain_width_exceptions(self):
+        G = nx.Graph([(1, 2), (2, 3)])
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.dag.antichain_width(G)
+
+        G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
+        with pytest.raises(nx.NetworkXUnfeasible, match="Graph contains a cycle"):
+            nx.dag.antichain_width(G)
+
     def _check_antichains(self, solution, result):
         sol = [frozenset(a) for a in solution]
         res = [frozenset(a) for a in result]
