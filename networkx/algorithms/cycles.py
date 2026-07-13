@@ -1264,11 +1264,7 @@ def minimum_feedback_edge_set(G, weight=None):
     """
 
     if not G.is_directed():
-        T = (
-            nx.maximum_spanning_tree(G, weight=weight)
-            if weight is not None
-            else nx.maximum_spanning_tree(G)
-        )
+        T = nx.maximum_spanning_tree(G, weight=weight)
         return {e for e in G.edges if e not in T.edges}
 
     H = G.copy()
