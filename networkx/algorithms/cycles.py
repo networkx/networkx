@@ -22,7 +22,6 @@ __all__ = [
 ]
 
 
-@not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def cycle_basis(G, root=None):
@@ -37,7 +36,7 @@ def cycle_basis(G, root=None):
 
     Parameters
     ----------
-    G : NetworkX Graph
+    G : NetworkX Graph or DiGraph
     root : node, optional
        Specify starting node for basis.
 
@@ -54,9 +53,25 @@ def cycle_basis(G, root=None):
     >>> nx.cycle_basis(G, 0)
     [[3, 4, 5, 0], [1, 2, 3, 0]]
 
+    For directed graphs, the cycles follow edge directions:
+
+    >>> DG = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+    >>> nx.cycle_basis(DG)
+    [[2, 0, 1]]
+
     Notes
     -----
-    This is adapted from algorithm CACM 491 [1]_.
+    For undirected graphs, this uses Paton's algorithm [1]_.
+
+    For directed graphs, the algorithm finds fundamental directed cycles
+    within strongly connected components. Each returned cycle is a valid
+    directed cycle where edges follow the specified directions. The algorithm:
+
+    1. Identifies strongly connected components (SCCs), since directed
+       cycles can only exist within SCCs.
+    2. For each SCC, builds a spanning arborescence via BFS.
+    3. Each non-tree edge creates a fundamental cycle, found by combining
+       the edge with the shortest directed path back to the source.
 
     References
     ----------
@@ -68,6 +83,10 @@ def cycle_basis(G, root=None):
     simple_cycles
     minimum_cycle_basis
     """
+    if G.is_directed():
+        return _directed_cycle_basis(G, root)
+
+    # Original Paton's algorithm for undirected graphs
     gnodes = dict.fromkeys(G)  # set-like object that maintains node order
     cycles = []
     while gnodes:  # loop over connected components
@@ -99,6 +118,49 @@ def cycle_basis(G, root=None):
         for node in pred:
             gnodes.pop(node, None)
         root = None
+    return cycles
+
+
+def _directed_cycle_basis(G, root=None):
+    """Find fundamental cycle basis for a directed graph using SCCs."""
+    from collections import deque
+
+    cycles = []
+
+    for scc in nx.strongly_connected_components(G):
+        if len(scc) == 1:
+            node = next(iter(scc))
+            if G.has_edge(node, node):
+                cycles.append([node])
+            continue
+
+        subgraph = G.subgraph(scc)
+        scc_list = list(scc)
+        scc_root = root if root in scc else scc_list[0]
+
+        # Build spanning arborescence via BFS
+        tree_edges = set()
+        visited = {scc_root}
+        queue = deque([scc_root])
+
+        while queue:
+            node = queue.popleft()
+            for succ in subgraph.successors(node):
+                if succ not in visited:
+                    visited.add(succ)
+                    tree_edges.add((node, succ))
+                    queue.append(succ)
+
+        # Each non-tree edge creates a fundamental cycle
+        for u, v in subgraph.edges():
+            if (u, v) not in tree_edges and u != v:
+                try:
+                    path = nx.shortest_path(subgraph, v, u)
+                    cycle = [u] + path[:-1]
+                    cycles.append(cycle)
+                except nx.NetworkXNoPath:
+                    pass
+
     return cycles
 
 
@@ -1037,7 +1099,6 @@ def find_cycle(G, source=None, orientation=None):
     return cycle[i:]
 
 
-@not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 def minimum_cycle_basis(G, weight=None):
@@ -1048,7 +1109,7 @@ def minimum_cycle_basis(G, weight=None):
 
     Parameters
     ----------
-    G : NetworkX Graph
+    G : NetworkX Graph or DiGraph
     weight: string
         name of the edge attribute to use for edge weights
 
@@ -1066,6 +1127,22 @@ def minimum_cycle_basis(G, weight=None):
     >>> nx.minimum_cycle_basis(G)
     [[5, 4, 3, 0], [3, 2, 1, 0]]
 
+    For directed graphs, minimum weight directed cycles are returned:
+
+    >>> DG = nx.DiGraph()
+    >>> DG.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 0, 1)])
+    >>> nx.minimum_cycle_basis(DG, weight="weight")
+    [[2, 0, 1]]
+
+    Notes
+    -----
+    For undirected graphs, uses the algorithm by Kavitha et al. [1]_ and
+    de Pina [2]_.
+
+    For directed graphs, the algorithm finds minimum weight fundamental
+    directed cycles within strongly connected components. Each cycle
+    follows edge directions and the total weight is minimized.
+
     References:
         [1] Kavitha, Telikepalli, et al. "An O(m^2n) Algorithm for
         Minimum Cycle Basis of Graphs."
@@ -1077,11 +1154,65 @@ def minimum_cycle_basis(G, weight=None):
     --------
     simple_cycles, cycle_basis
     """
+    if G.is_directed():
+        return _directed_min_cycle_basis(G, weight)
+
     # We first split the graph in connected subgraphs
     return sum(
         (_min_cycle_basis(G.subgraph(c), weight) for c in nx.connected_components(G)),
         [],
     )
+
+
+def _directed_min_cycle_basis(G, weight):
+    """Find minimum weight cycle basis for a directed graph using SCCs."""
+    from collections import deque
+
+    cycles = []
+
+    for scc in nx.strongly_connected_components(G):
+        if len(scc) == 1:
+            node = next(iter(scc))
+            if G.has_edge(node, node):
+                cycles.append([node])
+            continue
+
+        subgraph = G.subgraph(scc)
+        scc_list = list(scc)
+        scc_root = scc_list[0]
+
+        tree_edges = set()
+        visited = {scc_root}
+        queue = deque([scc_root])
+
+        while queue:
+            node = queue.popleft()
+            for succ in subgraph.successors(node):
+                if succ not in visited:
+                    visited.add(succ)
+                    tree_edges.add((node, succ))
+                    queue.append(succ)
+
+        fundamental_cycles = []
+        for u, v in subgraph.edges():
+            if (u, v) not in tree_edges and u != v:
+                try:
+                    path = nx.shortest_path(subgraph, v, u, weight=weight)
+                    edge_wt = subgraph[u][v].get(weight, 1) if weight else 1
+                    path_wt = sum(
+                        subgraph[path[i]][path[i + 1]].get(weight, 1) if weight else 1
+                        for i in range(len(path) - 1)
+                    )
+                    cycle = [u] + path[:-1]
+                    fundamental_cycles.append((edge_wt + path_wt, cycle))
+                except nx.NetworkXNoPath:
+                    pass
+
+        fundamental_cycles.sort(key=lambda x: x[0])
+        for _, cycle in fundamental_cycles:
+            cycles.append(cycle)
+
+    return cycles
 
 
 def _min_cycle_basis(G, weight):

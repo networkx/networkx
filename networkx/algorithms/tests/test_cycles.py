@@ -57,10 +57,48 @@ class TestCycles:
         sort_cy = sorted(sorted(c) for c in cy[:-1]) + [sorted(cy[-1])]
         assert sort_cy == [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5], ["A", "B", "C"]]
 
-    def test_cycle_basis2(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
-            G = nx.DiGraph()
-            cy = nx.cycle_basis(G, 0)
+    def test_cycle_basis_digraph(self):
+        G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+        cy = nx.cycle_basis(G)
+        assert len(cy) == 1
+        assert sorted(cy[0]) == [0, 1, 2]
+        # verify valid directed cycle
+        cycle = cy[0]
+        for i in range(len(cycle)):
+            assert G.has_edge(cycle[i], cycle[(i + 1) % len(cycle)])
+
+    def test_cycle_basis_digraph_two_cycles(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2), (2, 0)])
+        G.add_edges_from([(0, 3), (3, 4), (4, 0)])
+        cy = nx.cycle_basis(G)
+        assert len(cy) == 2
+        for cycle in cy:
+            for i in range(len(cycle)):
+                assert G.has_edge(cycle[i], cycle[(i + 1) % len(cycle)])
+
+    def test_cycle_basis_digraph_no_cycle(self):
+        G = nx.DiGraph([(0, 1), (1, 2), (0, 2)])
+        cy = nx.cycle_basis(G)
+        assert cy == []
+
+    def test_cycle_basis_digraph_self_loop(self):
+        G = nx.DiGraph([(0, 0), (0, 1), (1, 2)])
+        cy = nx.cycle_basis(G)
+        assert [0] in cy
+
+    def test_cycle_basis_digraph_empty(self):
+        G = nx.DiGraph()
+        cy = nx.cycle_basis(G)
+        assert cy == []
+
+    def test_cycle_basis_digraph_multiple_sccs(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2), (2, 0)])
+        G.add_edges_from([(3, 4), (4, 5), (5, 3)])
+        G.add_edge(2, 3)
+        cy = nx.cycle_basis(G)
+        assert len(cy) == 2
 
     def test_cycle_basis3(self):
         with pytest.raises(nx.NetworkXNotImplemented):
@@ -944,6 +982,43 @@ class TestMinimumCycleBasis:
         mcb = list(nx.minimum_cycle_basis(G))
         assert len(mcb) == len(expected)
         assert all(c in expected for c in mcb)
+
+    def test_minimum_cycle_basis_digraph(self):
+        G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+        mcb = nx.minimum_cycle_basis(G)
+        assert len(mcb) == 1
+        cycle = mcb[0]
+        for i in range(len(cycle)):
+            assert G.has_edge(cycle[i], cycle[(i + 1) % len(cycle)])
+
+    def test_minimum_cycle_basis_digraph_weighted(self):
+        G = nx.DiGraph()
+        G.add_edge(0, 1, weight=10)
+        G.add_edge(1, 0, weight=10)
+        G.add_edge(0, 2, weight=1)
+        G.add_edge(2, 3, weight=1)
+        G.add_edge(3, 1, weight=1)
+        G.add_edge(1, 4, weight=1)
+        G.add_edge(4, 0, weight=1)
+        mcb = nx.minimum_cycle_basis(G, weight="weight")
+        for cycle in mcb:
+            for i in range(len(cycle)):
+                assert G.has_edge(cycle[i], cycle[(i + 1) % len(cycle)])
+
+    def test_minimum_cycle_basis_digraph_no_cycle(self):
+        G = nx.DiGraph([(0, 1), (1, 2), (0, 2)])
+        mcb = nx.minimum_cycle_basis(G)
+        assert mcb == []
+
+    def test_minimum_cycle_basis_digraph_self_loop(self):
+        G = nx.DiGraph([(0, 0), (0, 1)])
+        mcb = nx.minimum_cycle_basis(G)
+        assert [0] in mcb
+
+    def test_minimum_cycle_basis_digraph_empty(self):
+        G = nx.DiGraph()
+        mcb = nx.minimum_cycle_basis(G)
+        assert mcb == []
 
 
 class TestGirth:
