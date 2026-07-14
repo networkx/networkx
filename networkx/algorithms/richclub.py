@@ -54,8 +54,9 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None, *, n_samples=1):
     Raises
     ------
     NetworkXError
-        If `G` has fewer than four nodes and ``normalized=True``.
-        A randomly sampled graph for normalization cannot be generated in this case.
+        - If `G` has fewer than four nodes and ``normalized=True``.
+          A randomly sampled graph for normalization cannot be generated in this case.
+        - If normalization coefficient is zero (try increasing n_samples).
 
     Examples
     --------
