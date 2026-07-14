@@ -179,18 +179,60 @@ def _consolidate(sets, k):
 
 
 def _generate_partition(G, cuts, k):
-    def has_nbrs_in_partition(G, node, partition):
-        return any(n in partition for n in G[node])
+    """Generate parts of G induced by its minimum-size node cutsets.
 
-    components = []
-    n_in_cuts = {n for cut in cuts for n in cut}
-    nodes = {n for n, d in G.degree() if d > k} - n_in_cuts
-    H = G.subgraph(nodes)
-    for cc in map(set, nx.connected_components(H)):
-        component = cc | {n for n in n_in_cuts if has_nbrs_in_partition(G, n, cc)}
-        if len(component) < G.order():
-            components.append(component)
-    yield from _consolidate(components, k + 1)
+    Following Moody and White (appendix A, step 3), cutsets are applied
+    one at a time: removing a cutset splits the current set of nodes into
+    two or more connected components, and each component plus the cutset
+    that induced it becomes a new candidate part. Every j-component of
+    ``G`` with ``j > k`` is preserved intact in at least one generated
+    part, because removing ``k < j`` nodes cannot disconnect it.
+
+    Applying cutsets one at a time is necessary for correctness: removing
+    the union of all cutsets in a single pass can drop cutset nodes whose
+    neighbors all belong to other cutsets, silently losing k-components.
+    """
+    order = G.order()
+    cuts = [set(cut) for cut in cuts]
+    parts = []
+    seen = set()
+    stack = [set(G)]
+    while stack:
+        nodes = stack.pop()
+        for cut in cuts:
+            if not cut < nodes:
+                continue
+            components = list(nx.connected_components(G.subgraph(nodes - cut)))
+            if len(components) > 1:
+                for component in components:
+                    # Nodes of the cutset belong to both sides of the induced
+                    # cut, but only if they have a neighbor in the component:
+                    # a cutset node from a j-component (j > k) always has at
+                    # least two neighbors in the component, while attaching a
+                    # neighborless cutset node would disconnect the part.
+                    child = frozenset(
+                        component
+                        | {n for n in cut if any(v in component for v in G[n])}
+                    )
+                    if child not in seen:
+                        seen.add(child)
+                        stack.append(set(child))
+                break
+        else:
+            # No cutset splits this part any further.
+            if len(nodes) < order:
+                parts.append(nodes)
+    # Merging parts that share at least k+1 nodes reduces the number of
+    # subproblems that the loop in k_components examines. This is a
+    # performance heuristic, not needed for correctness: no j-component
+    # with j > k can span two parts. If merging rebuilds the whole graph,
+    # fall back to the raw parts so the caller always recurses on
+    # strictly smaller graphs.
+    consolidated = list(_consolidate(parts, k + 1))
+    if any(len(part) == order for part in consolidated):
+        yield from parts
+    else:
+        yield from consolidated
 
 
 def _reconstruct_k_components(k_comps):
@@ -202,8 +244,15 @@ def _reconstruct_k_components(k_comps):
         elif k not in k_comps:
             result[k] = list(_consolidate(result[k + 1], k))
         else:
-            nodes_at_k = set.union(*k_comps[k])
-            to_add = [c for c in result[k + 1] if any(n not in nodes_at_k for n in c)]
+            # Propagate a component from level k+1 down to level k unless it
+            # is already contained in a single component recorded at level k.
+            # Checking against the union of all components recorded at k is
+            # not enough: a (k+1)-level component can span several k-level
+            # candidates without being a subset of any of them, and skipping
+            # it would replace a genuine k-component by its fragments.
+            to_add = [
+                c for c in result[k + 1] if not any(c <= comp for comp in k_comps[k])
+            ]
             if to_add:
                 result[k] = list(_consolidate(k_comps[k] + to_add, k))
             else:
