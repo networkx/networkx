@@ -115,7 +115,7 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None, *, n_samples=1):
         for deg, coef in averages.items():
             if coef == 0:
                 # Zero average means normalization is undefined at this threshold
-                raise nx.NetworkXAlgorithmError(
+                raise nx.NetworkXError(
                     f"Rich-club coefficient normalization failed at degree {deg}. "
                     f"The average rich-club coefficient of {n_samples} random "
                     f"graphs is zero. Try increasing n_samples."
