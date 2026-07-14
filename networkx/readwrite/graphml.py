@@ -549,7 +549,12 @@ class GraphMLWriter(GraphML):
             # add subelement for data default value if present
             if default is not None:
                 default_element = self.myElement("default")
-                default_element.text = str(default)
+                # xsd:boolean literals are lowercase; str(True) -> "True" is
+                # not a valid boolean value for other GraphML readers.
+                if attr_type == self.get_xml_type(bool):
+                    default_element.text = str(default).lower()
+                else:
+                    default_element.text = str(default)
                 key_element.append(default_element)
             self.xml.insert(0, key_element)
         return new_id
@@ -565,7 +570,12 @@ class GraphMLWriter(GraphML):
             )
         keyid = self.get_key(name, self.get_xml_type(element_type), scope, default)
         data_element = self.myElement("data", key=keyid)
-        data_element.text = str(value)
+        # xsd:boolean literals are lowercase; str(True) -> "True" is not a valid
+        # boolean value for other GraphML readers.
+        if element_type is bool:
+            data_element.text = str(value).lower()
+        else:
+            data_element.text = str(value)
         return data_element
 
     def add_attributes(self, scope, xml_obj, data, default):

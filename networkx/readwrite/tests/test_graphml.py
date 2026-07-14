@@ -1124,6 +1124,25 @@ class TestWriteGraphML(BaseGraphML):
         H = G.copy()
         gmlw.add_graphs([G, H])
 
+    def test_boolean_written_as_lowercase(self):
+        # boolean-typed data and defaults must use the xsd:boolean literals
+        # 'true'/'false', not Python's 'True'/'False'.
+        G = nx.Graph()
+        G.graph["node_default"] = {"flag": True}
+        G.add_node(0, flag=True)
+        G.add_node(1, flag=False)
+        fh = io.BytesIO()
+        self.writer(G, fh)
+        text = fh.getvalue().decode("utf-8")
+        assert ">true<" in text
+        assert ">false<" in text
+        assert ">True<" not in text
+        assert ">False<" not in text
+        fh.seek(0)
+        H = nx.read_graphml(fh)
+        assert H.nodes["0"]["flag"] is True
+        assert H.nodes["1"]["flag"] is False
+
     def test_write_read_simple_no_prettyprint(self):
         G = self.simple_directed_graph
         G.graph["hi"] = "there"
