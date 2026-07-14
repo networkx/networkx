@@ -66,6 +66,7 @@ jobs:
             export OMP_NUM_THREADS=1
             source venv/bin/activate
             make -C doc/ SPHINXOPTS="-j 2" html
+          no_output_timeout: 30m
 
       - store_artifacts:
           path: doc/build/html
