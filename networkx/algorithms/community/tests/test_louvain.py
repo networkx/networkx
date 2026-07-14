@@ -262,3 +262,20 @@ def test_max_level():
         ValueError, match="max_level argument must be a positive integer"
     ):
         nx.community.louvain_communities(G, max_level=0)
+
+
+def test_inf_loops():
+    # Graph Atlas G674 had an inf loop. See gh-8739.
+    # Multiply formula by m**2 to avoid floating point trouble to fix it.
+    e = [(0, 1), (0, 2), (0, 5), (0, 6), (1, 2), (1, 4), (2, 3), (2, 5), (2, 6), (3, 4)]
+    G = nx.Graph(e)
+    P = nx.community.louvain_communities(G, weight="weight", seed=123)
+    # not an infinite loop!  But still check whether ties change output
+    assert {frozenset(C) for C in P} == {frozenset({0, 2, 5, 6}), frozenset({1, 3, 4})}
+
+
+def test_petersen():
+    G = nx.petersen_graph()
+    expected = {frozenset(c) for c in ({0, 4, 5, 7, 9}, {1, 2, 3, 6, 8})}
+    P = nx.community.louvain_communities(G, weight="weight", seed=111)
+    assert {frozenset(C) for C in P} == expected

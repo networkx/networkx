@@ -99,7 +99,7 @@ def louvain_communities(
     --------
     >>> import networkx as nx
     >>> G = nx.petersen_graph()
-    >>> nx.community.louvain_communities(G, seed=123)
+    >>> nx.community.louvain_communities(G, seed=111)
     [{0, 4, 5, 7, 9}, {1, 2, 3, 6, 8}]
 
     Notes
@@ -298,18 +298,27 @@ def _one_level(G, partition, m, resolution, is_directed, seed):
                 degree = degrees[u]
                 Stot[u_com] -= degree
                 x = Stot[u_com] * degree
-            remove_cost = -u_deg_by_com[u_com] / m + gamma * x / m**2
+            # Formula for merging u with u_com (algebra on modularity formula)
+            # is sum(wts from u to u_com) / m - gamma * x / m**2.
+            # Remove cost is negative of merge gain. Need best_gain > remove_cost.
+            # We multiply by m**2 to avoid floating point errors.
+            # Does not change best_com.  See gh-8739.
+            remove_cost = u_deg_by_com[u_com] * m - gamma * x
 
-            best_mod = 0
+            best_gain = remove_cost  # check that best_gain > remove_cost
             best_com = u_com
             for nbr_com, wt in u_deg_by_com.items():
                 if is_directed:
                     x = out_degree * Stot_in[nbr_com] + in_degree * Stot_out[nbr_com]
                 else:
                     x = Stot[nbr_com] * degree
-                gain = remove_cost + wt / m - gamma * x / m**2
-                if gain > best_mod:
-                    best_mod = gain
+                # Formula for merging u with u_com (algebra on modularity formula)
+                # is sum(wts from u to nbr_com) / m - gamma * x / m**2.
+                # We multiply by m**2 to avoid floating point errors.
+                # Does not change best_com.  See gh-8739.
+                gain = wt * m - gamma * x
+                if gain > best_gain:
+                    best_gain = gain
                     best_com = nbr_com
 
             if is_directed:
