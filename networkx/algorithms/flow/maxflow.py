@@ -77,7 +77,9 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     NetworkXError
         The algorithm does not support MultiGraph and MultiDiGraph. If
         the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
+        NetworkXError is raised. It is also raised if `flow_func` is not
+        callable, or if keyword parameters are passed via ``kwargs``
+        without explicitly setting `flow_func`.
 
     NetworkXUnbounded
         If the graph has a path of infinite capacity, the value of a
@@ -121,7 +123,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 
     Specific algorithms may store extra data in :samp:`R`.
 
-    The function should supports an optional boolean parameter value_only. When
+    The function should support an optional boolean parameter value_only. When
     True, it can optionally terminate the algorithm as soon as the maximum flow
     value and the minimum cut can be determined.
 
@@ -233,7 +235,9 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     NetworkXError
         The algorithm does not support MultiGraph and MultiDiGraph. If
         the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
+        NetworkXError is raised. It is also raised if `flow_func` is not
+        callable, or if keyword parameters are passed via ``kwargs``
+        without explicitly setting `flow_func`.
 
     NetworkXUnbounded
         If the graph has a path of infinite capacity, the value of a
@@ -277,7 +281,7 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
 
     Specific algorithms may store extra data in :samp:`R`.
 
-    The function should supports an optional boolean parameter value_only. When
+    The function should support an optional boolean parameter value_only. When
     True, it can optionally terminate the algorithm as soon as the maximum flow
     value and the minimum cut can be determined.
 
@@ -385,9 +389,17 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 
     Raises
     ------
+    NetworkXError
+        The algorithm does not support MultiGraph and MultiDiGraph. If
+        the input graph is an instance of one of these two classes, a
+        NetworkXError is raised. It is also raised if `flow_func` is not
+        callable, if keyword parameters are passed via ``kwargs`` without
+        explicitly setting `flow_func`, or if a cutoff is specified with
+        the :meth:`preflow_push` flow function.
+
     NetworkXUnbounded
         If the graph has a path of infinite capacity, all cuts have
-        infinite capacity and the function raises a NetworkXError.
+        infinite capacity and the function raises a NetworkXUnbounded.
 
     See also
     --------
@@ -426,7 +438,7 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
 
     Specific algorithms may store extra data in :samp:`R`.
 
-    The function should supports an optional boolean parameter value_only. When
+    The function should support an optional boolean parameter value_only. When
     True, it can optionally terminate the algorithm as soon as the maximum flow
     value and the minimum cut can be determined.
 
@@ -554,9 +566,17 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
 
     Raises
     ------
+    NetworkXError
+        The algorithm does not support MultiGraph and MultiDiGraph. If
+        the input graph is an instance of one of these two classes, a
+        NetworkXError is raised. It is also raised if `flow_func` is not
+        callable, if keyword parameters are passed via ``kwargs`` without
+        explicitly setting `flow_func`, or if a cutoff is specified with
+        the :meth:`preflow_push` flow function.
+
     NetworkXUnbounded
         If the graph has a path of infinite capacity, all cuts have
-        infinite capacity and the function raises a NetworkXError.
+        infinite capacity and the function raises a NetworkXUnbounded.
 
     See also
     --------
@@ -595,7 +615,7 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
 
     Specific algorithms may store extra data in :samp:`R`.
 
-    The function should supports an optional boolean parameter value_only. When
+    The function should support an optional boolean parameter value_only. When
     True, it can optionally terminate the algorithm as soon as the maximum flow
     value and the minimum cut can be determined.
 
