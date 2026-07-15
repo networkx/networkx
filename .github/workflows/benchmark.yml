@@ -5,6 +5,9 @@ on:
   pull_request:
     types: [labeled, synchronize]
 
+permissions:
+  contents: read
+
 jobs:
   ## This code below is to make sure a new commit on a PR with the label
   ## retriggers the benchmark, otherwise the label needs to be removed and
@@ -14,9 +17,11 @@ jobs:
     outputs:
       result: ${{ steps.check.outputs.result }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
-      - uses: actions/github-script@v8
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         name: Check for benchmark label and new commit
         id: check
         with:
@@ -38,80 +43,35 @@ jobs:
     # if: contains(github.event.pull_request.labels.*.name, 'run:benchmark') || ${{ github.event.label.name == 'run:benchmark' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          fetch-depth: 2
-      - name: Set up Python
-        uses: actions/setup-python@v6
+          fetch-depth: 0
+
+      - uses: prefix-dev/setup-pixi@a09b6247153796b190642a2b53fac4241043cf6f # v0.10.0
         with:
-          python-version: "3.x"
-
-      - name: Setup some dependencies
-        shell: bash -l {0}
-        run: |
-          sudo apt-get update -y && sudo apt-get install -y ccache
-          # Make gcc/gxx symlinks first in path
-          sudo /usr/sbin/update-ccache-symlinks
-          echo "/usr/lib/ccache" >> $GITHUB_PATH
-
-      - name: "Prepare ccache"
-        id: prepare-ccache
-        shell: bash -l {0}
-        run: |
-          echo "key=benchmark-$RUNNER_OS" >> $GITHUB_OUTPUT
-          echo "timestamp=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
-          ccache -p
-          ccache -z
-
-      - name: "Restore ccache"
-        uses: actions/cache@v5
-        with:
-          path: .ccache
-          key: ccache-${{ secrets.CACHE_VERSION }}-${{ steps.prepare-ccache.outputs.key }}-${{ steps.prepare-ccache.outputs.timestamp }}
-          restore-keys: |
-            ccache-${{ secrets.CACHE_VERSION }}-${{ steps.prepare-ccache.outputs.key }}-
-
-      - name: Install packages
-        run: |
-          pip install --upgrade pip
-          pip install .[default]
-          pip list
+          environments: benchmark
 
       - name: Run benchmarks
-        shell: bash -l {0}
         id: benchmark
         env:
-          ASV_FACTOR: 1.5
-          ASV_SKIP_SLOW: 1
+          PULL_REQUEST_BASE_LABEL: ${{ github.event.pull_request.base.label }}
+          PULL_REQUEST_HEAD_LABEL: ${{ github.event.pull_request.head.label }}
         run: |
           set -euxo pipefail
-          python -m pip install .[benchmarking]
-          cd benchmarks/
 
-          # ID this runner
-          python -m asv machine --yes --conf asv.conf.json
+          echo "Baseline:  ${{ github.event.pull_request.base.sha }} (${PULL_REQUEST_BASE_LABEL})"
+          echo "Contender: ${GITHUB_SHA} (${PULL_REQUEST_HEAD_LABEL})"
 
-          echo "Baseline:  ${{ github.event.pull_request.base.sha }} (${{ github.event.pull_request.base.label }})"
-
-          echo "Contender: ${GITHUB_SHA} (${{ github.event.pull_request.head.label }})"
-
-          # Run benchmarks for current commit against base
-          ASV_OPTIONS="--split --show-stderr --factor $ASV_FACTOR --conf asv.conf.json"
-          python -m asv continuous $ASV_OPTIONS ${{ github.event.pull_request.base.sha }} ${GITHUB_SHA} \
+          pixi run -e benchmark benchmark-continuous \
+              ${{ github.event.pull_request.base.sha }} ${GITHUB_SHA} \
               | sed "/Traceback \|failed$\|PERFORMANCE DECREASED/ s/^/::error::/" \
-              | tee benchmarks.log
+              | tee benchmarks/benchmarks.log
 
-          # Report and export results for subsequent steps
-          if grep "Traceback \|failed\|PERFORMANCE DECREASED" benchmarks.log > /dev/null ; then
+          if grep "Traceback \|failed$\|PERFORMANCE DECREASED" benchmarks/benchmarks.log > /dev/null ; then
              exit 1
           fi
 
-      - name: "Check ccache performance"
-        shell: bash -l {0}
-        run: ccache -s
-        if: always()
-
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         if: always()
         with:
           name: asv-benchmark-results-${{ runner.os }}

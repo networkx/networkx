@@ -83,6 +83,7 @@ Clustering
 
    clustering
    average_clustering
+   butterflies
    latapy_clustering
    robins_alexander_clustering
 

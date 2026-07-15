@@ -103,6 +103,19 @@ def test_triad_type():
     assert nx.triad_type(G) == "300"
 
 
+@pytest.mark.parametrize("num_nodes", (0, 1, 2, 4))
+def test_triad_type_non_order_3(num_nodes):
+    """triad_by_type fails as expected when len(G) != 3"""
+    # Test on graph with no edges
+    G = nx.empty_graph(num_nodes, create_using=nx.DiGraph)
+    with pytest.raises(nx.NetworkXAlgorithmError, match="G is not a triad"):
+        nx.triad_type(G)
+    # Graph with some edges
+    G = nx.path_graph(num_nodes, create_using=nx.DiGraph)
+    with pytest.raises(nx.NetworkXAlgorithmError, match="G is not a triad"):
+        nx.triad_type(G)
+
+
 def test_triads_by_type():
     G = nx.DiGraph()
     G.add_edges_from(["01", "02", "03", "04", "05", "12", "16", "51", "56", "65"])

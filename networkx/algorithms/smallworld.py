@@ -131,7 +131,7 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
     G : graph
         An undirected graph.
 
-    niter : integer (optional, default=1)
+    niter : integer (optional, default=5)
         An edge is rewired approximately niter times.
 
     D : numpy.array (optional, default=None)

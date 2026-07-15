@@ -12,6 +12,10 @@ def relabel_nodes(G, mapping, copy=True):
     The original node ordering may not be preserved if `copy` is `False` and the
     mapping includes overlap between old and new labels.
 
+    When multiple nodes are mapped to the same target node, attribute
+    handling depends on `copy` kwarg. For predictable attribute handling when
+    combining nodes, consider using :any:`contracted_nodes`.
+
     Parameters
     ----------
     G : graph
@@ -116,6 +120,7 @@ def relabel_nodes(G, mapping, copy=True):
     See Also
     --------
     convert_node_labels_to_integers
+    :any:`contracted_nodes`
     """
     # you can pass any callable e.g. f(old_label) -> new_label or
     # e.g. str(old_label) -> new_label, but we'll just make a dictionary here regardless

@@ -197,7 +197,7 @@ def strategy_connected_sequential(G, colors, traversal="bfs"):
         # Yield the source node, then all the nodes in the specified
         # traversal order.
         yield source
-        for _, end in traverse(G.subgraph(component), source):
+        for _, end in traverse(G, source):
             yield end
 
 

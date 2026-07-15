@@ -1,5 +1,4 @@
-"""Functions for detecting communities based on Louvain Community Detection
-Algorithm"""
+"""Detecting communities based on the Louvain Community Detection algorithm"""
 
 import itertools
 from collections import defaultdict, deque
@@ -19,45 +18,47 @@ def louvain_communities(
     r"""Find the best partition of a graph using the Louvain Community Detection
     Algorithm.
 
-    Louvain Community Detection Algorithm is a simple method to extract the community
-    structure of a network. This is a heuristic method based on modularity optimization. [1]_
+    Louvain Community Detection seeks to extract the community structure of a
+    network. It is a heuristic algorithm based on modularity optimization. [1]_
 
-    The algorithm works in 2 steps. On the first step it assigns every node to be
-    in its own community and then for each node it tries to find the maximum positive
-    modularity gain by moving each node to all of its neighbor communities. If no positive
-    gain is achieved the node remains in its original community.
+    The algorithm starts with every node in its own community and then repeatedly
+    updates by merging communities. Each update consists of two phases.
+    First, each node is examined to find the maximum positive modularity gain
+    obtained by moving it to a different community. If no positive gain can be
+    achieved the node remains in its original community. The next node is then
+    considered. Nodes continue to be examined until no improvement in
+    modularity can be obtained by moving nodes. The second phase builds
+    an aggregated network where each community of the original network is a
+    node in the new network with edges connecting then if nodes in those
+    two communities connect to each other. The edge weights and node attributes
+    of the new network are the sums of edge and node attributes from the
+    communities in the previous network. These two phases are repeated until
+    no modularity gain is achieved (or is less than a `threshold`, or until
+    `max_levels` updates have occurred).
 
-    The modularity gain obtained by moving an isolated node $i$ into a community $C$ can
-    easily be calculated by the following formula (combining [1]_ [2]_ and some algebra):
+    The modularity gain obtained by moving an isolated node $i$ into a community
+    $C$ can be calculated by the following formula
+    (combining [1]_ [2]_ and some algebra):
 
     .. math::
         \Delta Q = \frac{k_{i,in}}{2m} - \gamma\frac{ \Sigma_{tot} \cdot k_i}{2m^2}
 
-    where $m$ is the size of the graph, $k_{i,in}$ is the sum of the weights of the links
-    from $i$ to nodes in $C$, $k_i$ is the sum of the weights of the links incident to node $i$,
-    $\Sigma_{tot}$ is the sum of the weights of the links incident to nodes in $C$ and $\gamma$
-    is the resolution parameter.
+    where $m$ is the size of the graph; $k_{i,in}$ is the sum of the edge weights
+    from $i$ to nodes in $C$; $k_i$ is the sum of the edge weights incident to
+    node $i$; $\Sigma_{tot}$ is the sum of the edge weights incident to nodes in $C$;
+    and $\gamma$ is the resolution parameter. Higher resolution produces smaller
+    communities. Low resolution produces larger communities.
 
-    For the directed case the modularity gain can be computed using this formula according to [3]_
+    For the directed case the modularity gain can be computed (see [3]_) using
+    the formula:
 
     .. math::
         \Delta Q = \frac{k_{i,in}}{m}
         - \gamma\frac{k_i^{out} \cdot\Sigma_{tot}^{in} + k_i^{in} \cdot \Sigma_{tot}^{out}}{m^2}
 
-    where $k_i^{out}$, $k_i^{in}$ are the outer and inner weighted degrees of node $i$ and
-    $\Sigma_{tot}^{in}$, $\Sigma_{tot}^{out}$ are the sum of in-going and out-going links incident
-    to nodes in $C$.
-
-    The first phase continues until no individual move can improve the modularity.
-
-    The second phase consists in building a new network whose nodes are now the communities
-    found in the first phase. To do so, the weights of the links between the new nodes are given by
-    the sum of the weight of the links between nodes in the corresponding two communities. Once this
-    phase is complete it is possible to reapply the first phase creating bigger communities with
-    increased modularity.
-
-    The above two phases are executed until no modularity gain is achieved (or is less than
-    the `threshold`, or until `max_levels` is reached).
+    where $k_i^{out}$, $k_i^{in}$ are the outer and inner weighted degrees of node
+    $i$; $\Sigma_{tot}^{in}$ and $\Sigma_{tot}^{out}$ are the sum of in-going and
+    out-going edge weights incident to nodes in $C$.
 
     Be careful with self-loops in the input graph. These are treated as
     previously reduced communities -- as if the process had been started
@@ -65,7 +66,7 @@ def louvain_communities(
     represent strong communities and in practice may be hard to add
     other nodes to.  If your input graph edge weights for self-loops
     do not represent already reduced communities you may want to remove
-    the self-loops before inputting that graph.
+    the self-loops before using that graph.
 
     Parameters
     ----------
@@ -91,29 +92,33 @@ def louvain_communities(
     Returns
     -------
     list
-        A list of sets (partition of `G`). Each set represents one community and contains
-        all the nodes that constitute it.
+        A list of sets (partition of `G`). Each set represents one community
+        and contains all the nodes in that community.
 
     Examples
     --------
     >>> import networkx as nx
     >>> G = nx.petersen_graph()
-    >>> nx.community.louvain_communities(G, seed=123)
+    >>> nx.community.louvain_communities(G, seed=111)
     [{0, 4, 5, 7, 9}, {1, 2, 3, 6, 8}]
 
     Notes
     -----
-    The order in which the nodes are considered can affect the final output. In the algorithm
-    the ordering happens using a random shuffle.
+    The order in which the nodes are considered can affect the final output.
+    In the algorithm the ordering happens using a random shuffle.
 
     References
     ----------
-    .. [1] Blondel, V.D. et al. Fast unfolding of communities in
-       large networks. J. Stat. Mech 10008, 1-12(2008). https://doi.org/10.1088/1742-5468/2008/10/P10008
-    .. [2] Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing
-       well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
-    .. [3] Nicolas Dugué, Anthony Perez. Directed Louvain : maximizing modularity in directed networks.
-        [Research Report] Université d’Orléans. 2015. hal-01231784. https://hal.archives-ouvertes.fr/hal-01231784
+    .. [1] Blondel, V.D. et al. Fast unfolding of communities in large networks.
+           J. Stat. Mech 10008, 1-12(2008).
+           https://doi.org/10.1088/1742-5468/2008/10/P10008
+    .. [2] Traag, V.A., Waltman, L. & van Eck, N.J.
+           From Louvain to Leiden: guaranteeing well-connected communities.
+           Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
+    .. [3] Nicolas Dugué, Anthony Perez.
+           Directed Louvain : maximizing modularity in directed networks.
+           [Research Report] Université d’Orléans. 2015.
+           hal-01231784. https://hal.archives-ouvertes.fr/hal-01231784
 
     See Also
     --------
@@ -137,14 +142,14 @@ def louvain_partitions(
 ):
     """Yield partitions for each level of the Louvain Community Detection Algorithm
 
-    Louvain Community Detection Algorithm is a simple method to extract the community
-    structure of a network. This is a heuristic method based on modularity optimization. [1]_
+    Louvain Community Detection seeks to extract the community structure of a
+    network. It is a heuristic algorithm based on modularity optimization. [1]_
 
-    The partitions at each level (step of the algorithm) form a dendrogram of communities.
-    A dendrogram is a diagram representing a tree and each level represents
-    a partition of the G graph. The top level contains the smallest communities
-    and as you traverse to the bottom of the tree the communities get bigger
-    and the overall modularity increases making the partition better.
+    The partitions at each level (step of the algorithm) form a dendrogram of
+    communities. A dendrogram is a diagram representing a tree and each level
+    represents a partition of the graph `G`. The first level contains the smallest
+    communities and as you traverse to later levels the communities get bigger
+    and the overall modularity increases.
 
     Each level is generated by executing the two phases of the Louvain Community
     Detection Algorithm.
@@ -161,70 +166,73 @@ def louvain_partitions(
     ----------
     G : NetworkX graph
     weight : string or None, optional (default="weight")
-     The name of an edge attribute that holds the numerical value
-     used as a weight. If None then each edge has weight 1.
+        The name of an edge attribute that holds the numerical value
+        used as a weight. If None then each edge has weight 1.
     resolution : float, optional (default=1)
         If resolution is less than 1, the algorithm favors larger communities.
         Greater than 1 favors smaller communities
     threshold : float, optional (default=0.0000001)
-     Modularity gain threshold for each level. If the gain of modularity
-     between 2 levels of the algorithm is less than the given threshold
-     then the algorithm stops and returns the resulting communities.
+        Modularity gain threshold for each level. If the gain of modularity
+        between 2 levels of the algorithm is less than the given threshold
+        then the algorithm stops and returns the resulting communities.
     seed : integer, random_state, or None (default)
-     Indicator of random number generation state.
-     See :ref:`Randomness<randomness>`.
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Yields
     ------
     list
-        A list of sets (partition of `G`). Each set represents one community and contains
-        all the nodes that constitute it.
+        A list of sets (partition of `G`). Each set represents one community
+        and contains all the nodes in that community.
 
     References
     ----------
-    .. [1] Blondel, V.D. et al. Fast unfolding of communities in
-       large networks. J. Stat. Mech 10008, 1-12(2008)
+    .. [1] Blondel, V.D. et al. Fast unfolding of communities in large networks.
+           J. Stat. Mech 10008, 1-12(2008).
+           http://dx.doi.org/10.1088/1742-5468/2008/10/P10008
 
     See Also
     --------
     louvain_communities
     :any:`leiden_partitions`
     """
-
-    partition = [{u} for u in G.nodes()]
+    P = [{u} for u in G]
     if nx.is_empty(G):
-        yield partition
+        yield P
         return
-    mod = modularity(G, partition, resolution=resolution, weight=weight)
-    is_directed = G.is_directed()
-    if G.is_multigraph():
-        graph = _convert_multigraph(G, weight, is_directed)
-    else:
-        graph = G.__class__()
-        graph.add_nodes_from(G)
-        graph.add_weighted_edges_from(G.edges(data=weight, default=1))
 
-    m = graph.size(weight="weight")
-    partition, inner_partition, improvement = _one_level(
-        graph, m, partition, resolution, is_directed, seed
-    )
+    mod = modularity(G, P, resolution=resolution, weight=weight)
+
+    is_directed = G.is_directed()
+    orig_G = G
+    G = nx.DiGraph() if is_directed else nx.Graph()
+    G.add_nodes_from(orig_G)
+
+    if orig_G.is_multigraph():
+        for u, v, wt in orig_G.edges(data=weight, default=1):
+            if G.has_edge(u, v):
+                G[u][v]["weight"] += wt
+            else:
+                G.add_edge(u, v, weight=wt)
+    else:
+        G.add_weighted_edges_from(orig_G.edges(data=weight, default=1))
+
+    m = orig_G.size(weight=weight)
+    P, inner_P, _ = _one_level(G, P, m, resolution, is_directed, seed)
     improvement = True
     while improvement:
-        # gh-5901 protect the sets in the yielded list from further manipulation here
-        yield [s.copy() for s in partition]
-        new_mod = modularity(
-            graph, inner_partition, resolution=resolution, weight="weight"
-        )
+        # use copy to protect P from manipulation of the yielded sets (see gh-5901)
+        yield [C.copy() for C in P]
+        new_mod = modularity(G, inner_P, resolution=resolution, weight="weight")
         if new_mod - mod <= threshold:
             return
+
         mod = new_mod
-        graph = _gen_graph(graph, inner_partition)
-        partition, inner_partition, improvement = _one_level(
-            graph, m, partition, resolution, is_directed, seed
-        )
+        G = _aggregate_graph(G, inner_P)
+        P, inner_P, improvement = _one_level(G, P, m, resolution, is_directed, seed)
 
 
-def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
+def _one_level(G, partition, m, resolution, is_directed, seed):
     """Calculate one level of the Louvain partitions tree
 
     Parameters
@@ -232,7 +240,7 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
     G : NetworkX Graph/DiGraph
         The graph from which to detect communities
     m : number
-        The size of the graph `G`.
+        The size of `G`
     partition : list of sets of nodes
         A valid partition of the graph `G`
     resolution : positive number
@@ -244,14 +252,15 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
         See :ref:`Randomness<randomness>`.
 
     """
-    node2com = {u: i for i, u in enumerate(G.nodes())}
-    inner_partition = [{u} for u in G.nodes()]
+    node2com = {u: i for i, u in enumerate(G)}
+    inner_partition = [{u} for u in G]
     if is_directed:
+        gamma = resolution
         in_degrees = dict(G.in_degree(weight="weight"))
         out_degrees = dict(G.out_degree(weight="weight"))
         Stot_in = list(in_degrees.values())
         Stot_out = list(out_degrees.values())
-        # Calculate weights for both in and out neighbors without considering self-loops
+        # Compute weights for both in and out nbrs, ignoring self-loops
         nbrs = {}
         for u in G:
             nbrs[u] = defaultdict(float)
@@ -262,94 +271,77 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
                 if u != n:
                     nbrs[u][n] += wt
     else:
+        gamma = resolution / 2
         degrees = dict(G.degree(weight="weight"))
         Stot = list(degrees.values())
-        nbrs = {u: {v: data["weight"] for v, data in G[u].items() if v != u} for u in G}
-    rand_nodes = list(G.nodes)
+        nbrs = {u: {v: dd["weight"] for v, dd in G[u].items() if v != u} for u in G}
+
+    rand_nodes = list(G)
     seed.shuffle(rand_nodes)
     nb_moves = 1
     improvement = False
     while nb_moves > 0:
         nb_moves = 0
         for u in rand_nodes:
-            best_mod = 0
-            best_com = node2com[u]
-            weights2com = _neighbor_weights(nbrs[u], node2com)
+            u_com = node2com[u]
+            u_deg_by_com = defaultdict(float)
+            for nbr, wt in nbrs[u].items():
+                u_deg_by_com[node2com[nbr]] += wt
+
             if is_directed:
                 in_degree = in_degrees[u]
                 out_degree = out_degrees[u]
-                Stot_in[best_com] -= in_degree
-                Stot_out[best_com] -= out_degree
-                remove_cost = (
-                    -weights2com[best_com] / m
-                    + resolution
-                    * (out_degree * Stot_in[best_com] + in_degree * Stot_out[best_com])
-                    / m**2
-                )
+                Stot_in[u_com] -= in_degree
+                Stot_out[u_com] -= out_degree
+                x = out_degree * Stot_in[u_com] + in_degree * Stot_out[u_com]
             else:
                 degree = degrees[u]
-                Stot[best_com] -= degree
-                remove_cost = -weights2com[best_com] / m + resolution * (
-                    Stot[best_com] * degree
-                ) / (2 * m**2)
-            for nbr_com, wt in weights2com.items():
+                Stot[u_com] -= degree
+                x = Stot[u_com] * degree
+            # Formula for merging u with u_com (algebra on modularity formula)
+            # is sum(wts from u to u_com) / m - gamma * x / m**2.
+            # Remove cost is negative of merge gain. Need best_gain > remove_cost.
+            # We multiply by m**2 to avoid floating point errors.
+            # Does not change best_com.  See gh-8739.
+            remove_cost = u_deg_by_com[u_com] * m - gamma * x
+
+            best_gain = remove_cost  # check that best_gain > remove_cost
+            best_com = u_com
+            for nbr_com, wt in u_deg_by_com.items():
                 if is_directed:
-                    gain = (
-                        remove_cost
-                        + wt / m
-                        - resolution
-                        * (
-                            out_degree * Stot_in[nbr_com]
-                            + in_degree * Stot_out[nbr_com]
-                        )
-                        / m**2
-                    )
+                    x = out_degree * Stot_in[nbr_com] + in_degree * Stot_out[nbr_com]
                 else:
-                    gain = (
-                        remove_cost
-                        + wt / m
-                        - resolution * (Stot[nbr_com] * degree) / (2 * m**2)
-                    )
-                if gain > best_mod:
-                    best_mod = gain
+                    x = Stot[nbr_com] * degree
+                # Formula for merging u with u_com (algebra on modularity formula)
+                # is sum(wts from u to nbr_com) / m - gamma * x / m**2.
+                # We multiply by m**2 to avoid floating point errors.
+                # Does not change best_com.  See gh-8739.
+                gain = wt * m - gamma * x
+                if gain > best_gain:
+                    best_gain = gain
                     best_com = nbr_com
+
             if is_directed:
                 Stot_in[best_com] += in_degree
                 Stot_out[best_com] += out_degree
             else:
                 Stot[best_com] += degree
-            if best_com != node2com[u]:
-                com = G.nodes[u].get("nodes", {u})
-                partition[node2com[u]].difference_update(com)
-                inner_partition[node2com[u]].remove(u)
-                partition[best_com].update(com)
+
+            if best_com != u_com:
+                u_nodes = G.nodes[u].get("nodes", {u})
+                partition[u_com].difference_update(u_nodes)
+                partition[best_com].update(u_nodes)
+                inner_partition[u_com].remove(u)
                 inner_partition[best_com].add(u)
                 improvement = True
                 nb_moves += 1
                 node2com[u] = best_com
-    partition = list(filter(len, partition))
-    inner_partition = list(filter(len, inner_partition))
+    partition = [p for p in partition if p]
+    inner_partition = [p for p in inner_partition if p]
     return partition, inner_partition, improvement
 
 
-def _neighbor_weights(nbrs, node2com):
-    """Calculate weights between node and its neighbor communities.
-
-    Parameters
-    ----------
-    nbrs : dictionary
-           Dictionary with nodes' neighbors as keys and their edge weight as value.
-    node2com : dictionary
-           Dictionary with all graph's nodes as keys and their community index as value.
-
-    """
-    weights = defaultdict(float)
-    for nbr, wt in nbrs.items():
-        weights[node2com[nbr]] += wt
-    return weights
-
-
-def _gen_graph(G, partition):
+def _aggregate_graph(G, partition):
     """Generate a new graph based on the partitions of a given graph"""
     H = G.__class__()
     node2com = {}
@@ -360,25 +352,11 @@ def _gen_graph(G, partition):
             nodes.update(G.nodes[node].get("nodes", {node}))
         H.add_node(i, nodes=nodes)
 
-    for node1, node2, wt in G.edges(data=True):
-        wt = wt["weight"]
+    for node1, node2, wt in G.edges(data="weight"):
         com1 = node2com[node1]
         com2 = node2com[node2]
-        temp = H.get_edge_data(com1, com2, {"weight": 0})["weight"]
-        H.add_edge(com1, com2, weight=wt + temp)
-    return H
-
-
-def _convert_multigraph(G, weight, is_directed):
-    """Convert a Multigraph to normal Graph"""
-    if is_directed:
-        H = nx.DiGraph()
-    else:
-        H = nx.Graph()
-    H.add_nodes_from(G)
-    for u, v, wt in G.edges(data=weight, default=1):
-        if H.has_edge(u, v):
-            H[u][v]["weight"] += wt
+        if H.has_edge(com1, com2):
+            H.add_edge(com1, com2, weight=wt + H._adj[com1][com2]["weight"])
         else:
-            H.add_edge(u, v, weight=wt)
+            H.add_edge(com1, com2, weight=wt)
     return H
