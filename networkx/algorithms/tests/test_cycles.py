@@ -1020,3 +1020,7 @@ class TestMinimumFeedbackEdgeSet:
 
         G[2][0]["weight"] = 10
         assert nx.minimum_feedback_edge_set(G, weight="weight") == {(0, 1)}
+
+    def test_ties(self):
+        G = nx.cycle_graph(5, create_using=nx.DiGraph)
+        assert len(nx.minimum_feedback_edge_set(G)) == 1
