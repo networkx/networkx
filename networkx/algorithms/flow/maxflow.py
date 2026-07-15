@@ -157,8 +157,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     >>> flow_value == nx.maximum_flow(G, "x", "y", flow_func=sap)[0]
     True
 
-    Floating point values can cause round-off errors which dramatically change
-    results. For example:
+    Floating point values can cause round-off errors which change results. For example:
 
     >>> G = nx.DiGraph()
     >>> nx.add_path(G, (0, "a", 1))
@@ -167,7 +166,8 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     >>> nx.set_edge_attributes(G, {e: 0.3 for e in G.edges}, "capacity")
 
     All weights are 0.3 which cannot be represented exactly in binary floating point.
-    So the total flow is off by a little bit.
+    So the total flow is off a little. In a more complex network the small differences
+    can become larger, and can lead to incorrect flow patterns and/or cut partitions.
 
     >>> flow_value, flow_dict = nx.maximum_flow(G, 0, 1)
     >>> flow_value
