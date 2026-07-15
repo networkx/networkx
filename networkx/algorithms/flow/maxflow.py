@@ -478,7 +478,7 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     # the Notes): a reverse breadth-first search from _t.
     non_reachable = {_t}
     queue = [_t]
-    R_pred = R.pred
+    R_pred = R._pred
     while queue:
         next_layer = []
         for v in queue:
