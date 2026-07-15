@@ -372,7 +372,7 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
     if len(red) > len(blue):
         red, blue = blue, red
 
-    if G.number_of_edges() == 0 or not red or not blue:
+    if not red or not blue:
         return [{n} for n in G]
 
     strength = dict(G.degree(weight=weight))
@@ -380,6 +380,7 @@ def lpawb_plus_communities(G, nodes, weight="weight", seed=None):
     # edge has exactly one red endpoint).
     M = sum(strength[v] for v in red)
 
+    # This also covers graphs without edges: all strengths are zero.
     if M == 0:
         return [{n} for n in G]
 

@@ -450,6 +450,13 @@ class TestLPAwbPlus:
         G = nx.Graph()
         assert bipartite.lpawb_plus_communities(G, set(), seed=0) == []
 
+    def test_graph_without_edges(self):
+        # Nodes on both sides but no edges: every node is its own community.
+        G = nx.Graph()
+        G.add_nodes_from(range(4))
+        comms = bipartite.lpawb_plus_communities(G, {0, 1}, seed=0)
+        assert {frozenset(c) for c in comms} == {frozenset({n}) for n in G}
+
     def test_graph_with_isolates(self):
         # Graph with one edge and one isolated node on each side.
         G = nx.Graph()
