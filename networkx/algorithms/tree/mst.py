@@ -45,7 +45,7 @@ class EdgePartition(Enum):
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
 def boruvka_mst_edges(
-    G, minimum=True, weight="weight", keys=False, data=True, ignore_nan=False
+    G, minimum=True, weight="weight", keys=True, data=True, ignore_nan=False
 ):
     """Iterate over edges of a Borůvka's algorithm min/max spanning tree.
 
@@ -161,7 +161,7 @@ def kruskal_mst_edges(
         The name of the edge attribute holding the edge weights.
 
     keys : bool (default: True)
-        If `G` is a multigraph, `keys` controls whether edge keys ar yielded.
+        If `G` is a multigraph, `keys` controls whether edge keys are yielded.
         Otherwise `keys` is ignored.
 
     data : bool (default: True)
@@ -276,7 +276,7 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
         The name of the edge attribute holding the edge weights.
 
     keys : bool (default: True)
-        If `G` is a multigraph, `keys` controls whether edge keys ar yielded.
+        If `G` is a multigraph, `keys` controls whether edge keys are yielded.
         Otherwise `keys` is ignored.
 
     data : bool (default: True)
@@ -990,6 +990,38 @@ class SpanningTreeIterator:
     to generate minimum spanning trees which respect the partition of edges.
     For spanning trees with the same weight, ties are broken arbitrarily.
 
+    Examples
+    --------
+    `SpanningTreeIterator` can be used to find all minimum or maximum spanning
+    trees of a graph:
+
+    >>> import itertools
+    >>> G = nx.cycle_graph(3)
+    >>> trees_by_weight = itertools.groupby(
+    ...     nx.SpanningTreeIterator(G), key=lambda t: t.size(weight="weight")
+    ... )
+    >>> min_wt, min_wt_trees = next(trees_by_weight)
+    >>> min_wt
+    2.0
+    >>> sorted(t.edges for t in min_wt_trees)
+    [EdgeView([(0, 1), (0, 2)]), EdgeView([(0, 2), (1, 2)]), EdgeView([(0, 1), (1, 2)])]
+
+    The ``minimum=False`` option yields trees by weight in descending order:
+
+    >>> G = nx.Graph()
+    >>> G.add_edge("A", "B", weight=3)
+    >>> G.add_edge("A", "C", weight=2)
+    >>> G.add_edge("B", "C", weight=1)
+    >>> trees_by_weight = itertools.groupby(
+    ...     nx.SpanningTreeIterator(G, minimum=False),
+    ...     key=lambda t: t.size(weight="weight"),
+    ... )
+    >>> max_wt, max_wt_trees = next(trees_by_weight)
+    >>> max_wt
+    5.0
+    >>> sorted(t.edges for t in max_wt_trees)
+    [EdgeView([('A', 'B'), ('A', 'C')])]
+
     References
     ----------
     .. [1] G.K. Janssens, K. Sörensen, An algorithm to generate all spanning
@@ -1042,24 +1074,9 @@ class SpanningTreeIterator:
         self.partition_key = (
             "SpanningTreeIterators super secret partition attribute name"
         )
+        self.partition_queue = None
 
     def __iter__(self):
-        """
-        Returns
-        -------
-        SpanningTreeIterator
-            The iterator object for this graph
-        """
-        self.partition_queue = PriorityQueue()
-        self._clear_partition(self.G)
-        mst_weight = partition_spanning_tree(
-            self.G, self.minimum, self.weight, self.partition_key, self.ignore_nan
-        ).size(weight=self.weight)
-
-        self.partition_queue.put(
-            self.Partition(mst_weight if self.minimum else -mst_weight, {})
-        )
-
         return self
 
     def __next__(self):
@@ -1070,6 +1087,15 @@ class SpanningTreeIterator:
             The spanning tree of next greatest weight, which ties broken
             arbitrarily.
         """
+        if self.partition_queue is None:
+            self.partition_queue = PriorityQueue()
+            self._clear_partition(self.G)
+            mst_weight = partition_spanning_tree(
+                self.G, self.minimum, self.weight, self.partition_key, self.ignore_nan
+            ).size(weight=self.weight)
+            self.partition_queue.put(
+                self.Partition(mst_weight if self.minimum else -mst_weight, {})
+            )
         if self.partition_queue.empty():
             del self.G, self.partition_queue
             raise StopIteration

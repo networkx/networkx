@@ -19,10 +19,6 @@ NetworkX
     :target: https://pypi.python.org/pypi/networkx
 
 .. image::
-    https://img.shields.io/github/labels/networkx/networkx/good%20first%20issue?color=green&label=contribute
-    :target: https://github.com/networkx/networkx/contribute
-
-.. image::
     https://insights.linuxfoundation.org/api/badge/health-score?project=networkx
     :target: https://insights.linuxfoundation.org/project/networkx
 

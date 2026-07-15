@@ -58,57 +58,93 @@ def strongly_connected_components(G):
 
     Notes
     -----
-    Uses Tarjan's algorithm[1]_ with Nuutila's modifications[2]_.
-    Nonrecursive version of algorithm.
+    Iterative version of Tarjan's algorithm using the improvements
+    described by Tarjan and Zwick in their survey [1]_, plus a trick
+    borrowed from the Rust implementation of the WebGraph framework [2]_.
 
     References
     ----------
-    .. [1] Depth-first search and linear graph algorithms, R. Tarjan
-       SIAM Journal of Computing 1(2):146-160, (1972).
+    .. [1] Robert E. Tarjan and Uri Zwick, "Finding strong components using
+       depth-first search", European Journal of Combinatorics, 119, 2024.
+       https://doi.org/10.1016/j.ejc.2023.103815
 
-    .. [2] On finding the strongly connected components in a directed graph.
-       E. Nuutila and E. Soisalon-Soinen
-       Information Processing Letters 49(1): 9-14, (1994)..
-
+    .. [2] Tommaso Fontana, Sebastiano Vigna, and Stefano Zacchiroli,
+       "WebGraph: The next generation (is in Rust)", Companion Proceedings
+       of the ACM Web Conference 2024, pp. 686-689, 2024.
+       https://doi.org/10.1145/3589335.3651581
     """
-    preorder = {}
+    N = len(G)
+    if N == 0:
+        return
+    adj = G._adj
+    # lowlink[v] doubles as preorder timestamp and low-link: on first visit
+    # it is set to v's preorder number and may then only decrease, via
+    # back / cross arcs, toward the preorder number of some ancestor.
     lowlink = {}
     scc_found = set()
-    scc_queue = []
-    i = 0  # Preorder counter
-    neighbors = {v: iter(G._adj[v]) for v in G}
+    # Parallel stacks representing the current DFS path. Each frame holds
+    # (node, iterator over remaining successors, lead flag). A stack
+    # of triples is measurably slower.
+    dfs_v = []
+    dfs_it = []
+    dfs_lead = []
+    # Nodes popped from the DFS path but not yet assigned to any SCC.
+    comp_stack = []
+    index = 0
+
     for source in G:
-        if source not in scc_found:
-            queue = [source]
-            while queue:
-                v = queue[-1]
-                if v not in preorder:
-                    i = i + 1
-                    preorder[v] = i
-                done = True
-                for w in neighbors[v]:
-                    if w not in preorder:
-                        queue.append(w)
-                        done = False
-                        break
-                if done:
-                    lowlink[v] = preorder[v]
-                    for w in G._adj[v]:
-                        if w not in scc_found:
-                            if preorder[w] > preorder[v]:
-                                lowlink[v] = min([lowlink[v], lowlink[w]])
-                            else:
-                                lowlink[v] = min([lowlink[v], preorder[w]])
-                    queue.pop()
-                    if lowlink[v] == preorder[v]:
-                        scc = {v}
-                        while scc_queue and preorder[scc_queue[-1]] > preorder[v]:
-                            k = scc_queue.pop()
-                            scc.add(k)
-                        scc_found.update(scc)
+        if source in lowlink:
+            continue
+        index += 1
+        root_low = index
+        lowlink[source] = index
+        dfs_v.append(source)
+        dfs_it.append(iter(adj[source]))
+        dfs_lead.append(True)
+
+        while dfs_v:
+            v = dfs_v[-1]
+            for w in dfs_it[-1]:
+                if w not in lowlink:
+                    # Tree arc: previsit w and descend.
+                    index += 1
+                    lowlink[w] = index
+                    dfs_v.append(w)
+                    dfs_it.append(iter(adj[w]))
+                    dfs_lead.append(True)
+                    break
+                # Back/cross arc.
+                if w not in scc_found and lowlink[v] > lowlink[w]:
+                    dfs_lead[-1] = False
+                    lowlink[v] = lowlink[w]
+                    # Early exit: every node has been preordered during
+                    # this DFS tree and v has just linked back to the
+                    # root, so the whole graph is a single SCC.
+                    if lowlink[v] == root_low and index == N:
+                        scc = set(comp_stack)
+                        scc.update(dfs_v)
                         yield scc
-                    else:
-                        scc_queue.append(v)
+                        return
+            else:
+                # All successors of v processed: postvisit.
+                dfs_v.pop()
+                dfs_it.pop()
+                if dfs_lead.pop():
+                    # v is an SCC root: pull its members off comp_stack.
+                    v_low = lowlink[v]
+                    scc = {v}
+                    while comp_stack and lowlink[comp_stack[-1]] >= v_low:
+                        scc.add(comp_stack.pop())
+                    scc_found.update(scc)
+                    yield scc
+                else:
+                    # v is not a root: park it on comp_stack and propagate
+                    # its lowlink to the parent frame.
+                    comp_stack.append(v)
+                    parent = dfs_v[-1]
+                    if lowlink[parent] > lowlink[v]:
+                        dfs_lead[-1] = False
+                        lowlink[parent] = lowlink[v]
 
 
 @not_implemented_for("undirected")

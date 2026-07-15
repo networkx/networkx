@@ -639,9 +639,9 @@ def generate_gml(G, stringizer=None):
         strings. If it cannot convert a value into a string, it should raise a
         `ValueError` to indicate that. Default value: None.
 
-    Returns
-    -------
-    lines: generator of strings
+    Yields
+    ------
+    str
         Lines of GML data. Newlines are not appended.
 
     Raises
@@ -756,7 +756,8 @@ def generate_gml(G, stringizer=None):
                     yield from stringize(key, value, (), next_indent)
                 yield indent + "]"
             elif isinstance(value, tuple) and key == "label":
-                yield indent + key + f' "({",".join(repr(v) for v in value)})"'
+                label = f"({','.join(repr(v) for v in value)})"
+                yield f'{indent}{key} "{escape(label)}"'
             elif isinstance(value, list | tuple) and key != "label" and not in_list:
                 if len(value) == 0:
                     yield indent + key + " " + f'"{value!r}"'

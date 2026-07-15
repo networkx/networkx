@@ -32,6 +32,7 @@ class TestFunction:
         assert info_dict["Number of edges"] == 5
         assert info_dict["Average degree (min, max)"] == "2.00 (0, 4)"
         assert info_dict["Number of connected components"] == 2
+        assert info_dict["Density"] == 0.5
 
     def test_nodes(self):
         assert nodes_equal(self.G.nodes(), list(nx.nodes(self.G)))

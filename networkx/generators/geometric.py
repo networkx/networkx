@@ -982,7 +982,7 @@ def geometric_soft_configuration_graph(
             )
 
         n = len(kappas)
-        mean_degree = sum(kappas) / len(kappas)
+        mean_degree = sum(kappas.values()) / len(kappas)
     else:
         if any((n is None, gamma is None, mean_degree is None)):
             raise nx.NetworkXError(

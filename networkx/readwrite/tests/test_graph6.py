@@ -16,7 +16,7 @@ def test_from_graph6_invariant_to_trailing_newline():
 
 def test_from_graph6_raises_header_newline():
     """graph6 headers must not be followed by a newline. See gh-7557."""
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(ValueError):
         G = nx.from_graph6_bytes(b">>graph6<<\nP~~~~~~~~~~~~~~~~~~~~~~{")
 
 
@@ -44,6 +44,12 @@ class TestFromGraph6Bytes:
         Gin = nx.read_graph6(fh)
         assert nodes_equal(G.nodes(), Gin.nodes())
         assert edges_equal(G.edges(), Gin.edges())
+
+    def test_from_graph6_bytes_rejects_below_range(self):
+        # bytes below 63 are out of the valid range(63, 127) and must be
+        # rejected rather than silently producing a wrong graph
+        with pytest.raises(ValueError):
+            nx.from_graph6_bytes(b"C.")
 
 
 class TestReadGraph6:

@@ -1,3 +1,5 @@
+from collections import Counter
+
 import pytest
 
 import networkx as nx
@@ -406,6 +408,17 @@ def check_counterexample(G, sub_graph):
         raise nx.NetworkXException("Bad counter example.")
 
 
+def _assert_half_edge_partition(embedding, faces):
+    face_half_edges = (
+        (u, v) for u in embedding for v in embedding.neighbors_cw_order(u)
+    )
+    embedding_half_edges = (
+        (u, f[i % len(f)]) for f in faces if f for i, u in enumerate(f, 1)
+    )
+    assert Counter(face_half_edges) == Counter(embedding_half_edges)
+    assert all(count == 1 for count in Counter(face_half_edges).values())
+
+
 class TestPlanarEmbeddingClass:
     def test_add_half_edge(self):
         embedding = nx.PlanarEmbedding()
@@ -533,6 +546,55 @@ class TestPlanarEmbeddingClass:
         )
         with pytest.raises(nx.NetworkXException):
             embedding.traverse_face(1, 2)
+
+    def test_faces_cycle_graph_and_half_edge_partition(self):
+        graph = nx.cycle_graph(4)
+        _, embedding = nx.check_planarity(graph)
+
+        faces = list(embedding.faces())
+
+        assert len(faces) == 2
+        _assert_half_edge_partition(embedding, faces)
+
+    def test_faces_tree_has_single_face_walk_with_repeated_vertices(self):
+        graph = nx.path_graph(4)
+        _, embedding = nx.check_planarity(graph)
+
+        faces = list(embedding.faces())
+
+        assert len(faces) == 1
+        assert len(faces[0]) == 2 * graph.number_of_edges()
+        assert len(set(faces[0])) < len(faces[0])
+        _assert_half_edge_partition(embedding, faces)
+
+    def test_faces_k4_match_euler_formula(self):
+        graph = nx.complete_graph(4)
+        _, embedding = nx.check_planarity(graph)
+
+        faces = list(embedding.faces())
+
+        assert len(faces) == graph.number_of_edges() - graph.number_of_nodes() + 2
+        assert sorted(len(face) for face in faces) == [3, 3, 3, 3]
+        _assert_half_edge_partition(embedding, faces)
+
+    def test_faces_disconnected_components_return_component_local_boundary_walks(
+        self,
+    ):
+        graph = nx.disjoint_union(nx.cycle_graph(3), nx.cycle_graph(3))
+        _, embedding = nx.check_planarity(graph)
+
+        faces = list(embedding.faces())
+
+        assert len(faces) == 4
+        _assert_half_edge_partition(embedding, faces)
+
+    def test_faces_isolated_nodes_have_no_faces(self):
+        graph = nx.empty_graph(5)
+        _, embedding = nx.check_planarity(graph)
+
+        faces = list(embedding.faces())
+
+        assert faces == []
 
     def test_forbidden_methods(self):
         embedding = nx.PlanarEmbedding()

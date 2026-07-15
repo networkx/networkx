@@ -45,6 +45,12 @@ def pagerank(
       Error tolerance used to check convergence in power method solver.
       The iteration will stop after a tolerance of ``len(G) * tol`` is reached.
 
+      .. note::
+
+         For large graphs, choose the tolerance carefully. If ``len(G) * tol >= 2``,
+         the power iteration may appear to converge after a single step regardless
+         of the actual accuracy.
+
     nstart : dictionary, optional
       Starting value of PageRank iteration for each node.
 
@@ -459,8 +465,9 @@ def _pagerank_scipy(
     nodelist = list(G)
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
     S = A.sum(axis=1)
-    S[S != 0] = 1.0 / S[S != 0]
-    Q = sp.sparse.dia_array((S.T, 0), shape=A.shape).tocsr()
+    dangling_nodes = S == 0
+    S[~dangling_nodes] = 1.0 / S[~dangling_nodes]
+    Q = sp.sparse.dia_array((S, 0), shape=A.shape).tocsr()
     A = Q @ A
 
     # initial vector
@@ -485,12 +492,14 @@ def _pagerank_scipy(
         # Convert the dangling dictionary into an array in nodelist order
         dangling_weights = np.array([dangling.get(n, 0) for n in nodelist], dtype=float)
         dangling_weights /= dangling_weights.sum()
-    is_dangling = np.where(S == 0)[0]
 
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
         xlast = x
-        x = alpha * (x @ A + sum(x[is_dangling]) * dangling_weights) + (1 - alpha) * p
+        x = (
+            alpha * (x @ A + np.sum(x[dangling_nodes]) * dangling_weights)
+            + (1 - alpha) * p
+        )
         # check convergence, l1 norm
         err = np.absolute(x - xlast).sum()
         if err < N * tol:

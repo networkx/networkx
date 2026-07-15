@@ -5,7 +5,7 @@ import pytest
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
 
-graph_classes = [nx.Graph, nx.MultiGraph, nx.DiGraph, nx.MultiDiGraph]
+graph_classes = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 
 labels_same = ["blue"]
 labels_many = [
@@ -37,6 +37,12 @@ mematch = iso.categorical_multiedge_match("foo", "")
 #   vf2pp_all_isomorphisms()
 #   vf2pp_isomorphism()
 #   vf2pp_is_isomorphic()
+#   vf2pp_all_subgraph_isomorphisms()
+#   vf2pp_subgraph_isomorphism()
+#   vf2pp_subgraph_is_isomorphic()
+#   vf2pp_all_monomorphisms()
+#   vf2pp_monomorphism()
+#   vf2pp_is_monomorphic()
 # vf2:
 #   GraphMatcher gm
 #   gm.is_isomorphic()
@@ -150,19 +156,67 @@ def vf2pp_iter(G1, G2, node_label=None, edge_label=None, symmetry=False):
 
 
 def vf2pp_is_SG_iso(G1, G2, node_label=None, edge_label=None, symmetry=False):
-    pytest.xfail("vf2pp does not handle subgraph isomorphism yet")
+    if symmetry:
+        pytest.xfail("vf2pp does not handle symmetries yet")
+        return nx.vf2pp_all_isomorphisms(G1, G2, symmetry=symmetry)
+    if node_label is nmatch:
+        node_label = "label"
+    if edge_label is not None:
+        pytest.xfail("vf2pp does not handle edge_labels yet")
+        return nx.vf2pp_all_isomorphisms(G1, G2, node_label, edge_label=edge_label)
+    try:
+        mapping = next(nx.vf2pp_all_subgraph_isomorphisms(G1, G2, node_label))
+        return True
+    except StopIteration:
+        return False
 
 
 def vf2pp_subgraph_iter(G1, G2, node_label=None, edge_label=None, symmetry=False):
-    pytest.xfail("vf2pp does not handle subgraph isomorphism yet")
+    if symmetry:
+        pytest.xfail("vf2pp does not handle symmetries yet")
+        return nx.vf2pp_all_subgraph_isomorphisms(G1, G2, symmetry=symmetry)
+    if node_label is nmatch:
+        node_label = "label"
+    if edge_label is not None:
+        pytest.xfail("vf2pp does not handle edge_labels yet")
+        return nx.vf2pp_all_subgraph_isomorphisms(G1, G2, node_label, edge_label)
+    return nx.vf2pp_all_subgraph_isomorphisms(G1, G2, node_label)
 
 
 def vf2pp_is_SG_mono(G1, G2, node_label=None, edge_label=None, symmetry=False):
-    pytest.xfail("vf2pp does not handle monomorphism yet")
+    if symmetry:
+        pytest.xfail("vf2pp does not handle symmetries yet")
+        try:
+            next(nx.vf2pp_all_monomorphisms(G1, G2, node_label, symmetry=symmetry))
+            return True
+        except StopIteration:
+            return False
+    if node_label is nmatch:
+        node_label = "label"
+    if edge_label is not None:
+        pytest.xfail("vf2pp does not handle edge_labels yet")
+        try:
+            next(nx.vf2pp_all_monomorphisms(G1, G2, node_label, edge_label))
+            return True
+        except StopIteration:
+            return False
+    try:
+        mapping = next(nx.vf2pp_all_monomorphisms(G1, G2, node_label))
+        return True
+    except StopIteration:
+        return False
 
 
 def vf2pp_mono_iter(G1, G2, node_label=None, edge_label=None, symmetry=False):
-    pytest.xfail("vf2pp does not handle monomorphism yet")
+    if symmetry:
+        pytest.xfail("vf2pp does not handle symmetries yet")
+        return nx.vf2pp_all_monomorphisms(G1, G2, symmetry=symmetry)
+    if node_label is nmatch:
+        node_label = "label"
+    if edge_label is not None:
+        pytest.xfail("vf2pp does not handle edge_labels yet")
+        return nx.vf2pp_all_monomorphisms(G1, G2, node_label, edge_label)
+    return nx.vf2pp_all_monomorphisms(G1, G2, node_label)
 
 
 is_funcs = {
@@ -186,7 +240,7 @@ is_morphic_funcs = [pytest.param(fn[0], id=id) for id, fn in morphism_funcs.item
 mono_iters = [pytest.param(fn[1], id=id) for id, fn in mono_funcs.items()]
 morphic_and_mapping = [pytest.param(*fns, id=id) for id, fns in morphism_funcs.items()]
 
-is_isomorphic_funcs = [pytest.param(fn[0], id=id) for id, fn in is_funcs.items()]
+is_iso_funcs = [pytest.param(fn[0], id=id) for id, fn in is_funcs.items()]
 is_SG_funcs = [pytest.param(fn[0], id=id) for id, fn in SG_funcs.items()]
 is_mono_funcs = [pytest.param(fn[0], id=id) for id, fn in mono_funcs.items()]
 
@@ -200,12 +254,26 @@ def asymm_3triangles_kite():
         [(1, 2), (1, 3), (1, 4), (2, 3), (3, 2), (2, 6), (3, 4), (1, 5), (2, 5)]
     )
     # for multiedges
-    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    G.add_edges_from([e for i, e in enumerate(G.edges()) if i % 2 == 0])
     # for selfloops (node 1, 2 and 3 mapped to selves)
     G.add_edges_from([(1, 1), (2, 2), (3, 3)])
 
     G.graph["name"] = "asymm_3triangles_kite"
-    G.graph["numb_symmetries"] = 1
+    G.graph["numb_symmetries"] = {g: 1 for g in graph_classes}
+    G.graph["mappings"] = {
+        nx.Graph: [  # USG  (undirected simple graph)
+            {1:1, 2:2, 3:3, 4:4, 6:6, 5:5},
+        ],
+        nx.DiGraph: [  # DSG  (undirected simple graph)
+            {1:1, 2:2, 3:3, 4:4, 6:6, 5:5},
+        ],
+        nx.MultiGraph: [  # UMG  (undirected multi graph)
+            {1:1, 2:2, 3:3, 4:4, 6:6, 5:5},
+        ],
+        nx.MultiDiGraph: [  # DMG  (directed multi graph)
+            {1:1, 2:2, 3:3, 4:4, 6:6, 5:5},
+        ],
+    }  # fmt: skip
     G.graph["show"] = r"""
    5-1-4
    |/ \|
@@ -219,12 +287,26 @@ def asymm_triangle_square_2tails():
         [(1, 2), (5, 1), (5, 6), (2, 3), (2, 4), (3, 4), (5, 4), (2, 7)]
     )
     # for multiedges
-    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    G.add_edges_from([e for i, e in enumerate(G.edges()) if i % 2 == 0])
     G.add_edges_from([(1, 1), (2, 2), (3, 3)])
 
     G.graph["name"] = "asymm_triangle_square_2tails"
-    G.graph["numb_symmetries"] = 1
+    G.graph["numb_symmetries"] = {g: 1 for g in graph_classes}
     G.graph["subgraph_nodes"] = [[2, 3, 4, 7], [1, 4, 5, 6]]
+    G.graph["mappings"] = {
+        nx.Graph: [  # USG  (undirected simple graph)
+            {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7},
+        ],
+        nx.DiGraph: [  # DSG  (undirected simple graph)
+            {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7},
+        ],
+        nx.MultiGraph: [  # UMG  (undirected multi graph)
+            {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7},
+        ],
+        nx.MultiDiGraph: [  # DMG  (directed multi graph)
+            {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7},
+        ],
+    }  # fmt: skip
     G.graph["show"] = r"""
   7-2-1
    /| |
@@ -238,13 +320,28 @@ def symm_water_tower():
         [(1, 2), (1, 3), (1, 4), (2, 3), (3, 2), (2, 6), (4, 3), (3, 7), (1, 5), (5, 2)]
     )
     # for multiedges
-    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    G.add_edges_from([e for i, e in enumerate(G.edges()) if i % 2 == 0])
     # for selfloops (node 1 is mapped to itself, nodes 2 and 3 to each other)
     G.add_edges_from([(1, 1), (2, 2), (3, 3)])
 
     G.graph["name"] = "symm_water_tower"
-    G.graph["numb_symmetries"] = 2
-    G.graph["mappings"] = [{1: 1, 2: 3, 3: 2, 4: 5, 5: 4, 6: 7, 7: 6}]
+    G.graph["numb_symmetries"] = dict(zip(graph_classes, (2, 2, 1, 1)))
+    G.graph["mappings"] = {
+        nx.Graph: [  # USG  (undirected simple graph)
+            {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7},
+            {1:1, 3:2, 2:3, 4:5, 5:4, 6:7, 7:6},
+        ],
+        nx.DiGraph: [  # DSG  (undirected simple graph)
+            {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7},
+            {1:1, 3:2, 2:3, 4:5, 5:4, 6:7, 7:6},
+        ],
+        nx.MultiGraph: [  # UMG  (undirected multi graph)
+            {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7},
+        ],
+        nx.MultiDiGraph: [  # DMG  (directed multi graph)
+            {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7},
+        ],
+    }  # fmt: skip
     G.graph["show"] = r"""
   5-1-4
   |/ \|    mapping: 1-7 <-> (1, 3, 2, 5, 4, 7, 6)
@@ -261,7 +358,7 @@ def symm_balloon():
     nx.add_cycle(G, [2, 3, 4, 5])
     nx.add_cycle(G, [5, 6, 7, 4, 9, 8])
     # for multiedges
-    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    G.add_edges_from([(6, 7)])
     # for selfloops (node 1 is mapped to itself, nodes 2 and 3 to each other)
     G.add_edges_from([(1, 1), (2, 2), (3, 3)])
     # make directed have mappings too
@@ -269,20 +366,26 @@ def symm_balloon():
     nx.add_cycle(G, [3, 2, 1])
 
     G.graph["name"] = "symm_balloon"
-    G.graph["numb_symmetries"] = 4
-    G.graph["numb_directed_symmetries"] = 2
-    G.graph["directed_mappings"] = [
-        {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 8, 7: 9, 9: 7, 8: 6},
-    ]
-    G.graph["mappings"] = [
-        # {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 9: 9, 8: 8},
-        {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 8: 6, 9: 7, 7: 9, 6: 8},
-        {1: 1, 3: 2, 2: 3, 5: 4, 4: 5, 9: 6, 8: 7, 6: 9, 7: 8},
-        {1: 1, 3: 2, 2: 3, 5: 4, 4: 5, 7: 6, 6: 7, 8: 9, 9: 8},
-        # {1: 1, 2: 3, 3: 2, 4: 5, 5: 4, 6: 8, 7: 9, 8: 6, 9: 7},
-        # {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 7, 7: 6, 8: 9, 9: 8},
-        # {1: 1, 2: 3, 3: 2, 4: 5, 5: 4, 6: 6, 7: 7, 8: 8, 9: 9},
-    ]
+    G.graph["numb_symmetries"] = dict(zip(graph_classes, (4, 2, 2, 1)))
+    G.graph["mappings"] = {
+        nx.Graph: [  # USG  (undirected simple graph)
+          {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 9:9, 8:8},
+          {1:1, 2:2, 3:3, 4:4, 5:5, 8:6, 9:7, 7:9, 6:8},
+          {1:1, 3:2, 2:3, 5:4, 4:5, 9:6, 8:7, 6:9, 7:8},
+          {1:1, 3:2, 2:3, 5:4, 4:5, 7:6, 6:7, 8:9, 9:8},
+        ],
+        nx.DiGraph: [  # DSG  (undirected simple graph)
+          {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 9:9, 8:8},
+          {1:1, 2:2, 3:3, 4:4, 5:5, 8:6, 9:7, 7:9, 6:8},
+        ],
+        nx.MultiGraph: [  # UMG  (undirected multi graph)
+          {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 9:9, 8:8},
+          {1:1, 3:2, 2:3, 5:4, 4:5, 7:6, 6:7, 8:9, 9:8},
+        ],
+        nx.MultiDiGraph: [  # DMG  (directed multi graph)
+          {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 9:9, 8:8},
+        ],
+    }  # fmt: skip
     G.graph["show"] = r"""
      3---4
     /|  /|\
@@ -299,19 +402,29 @@ def cyclic_ladder_4rungs():
     G = nx.cycle_graph([1, 2, 3, 7, 6, 5, 8, 4], create_using=nx.MultiDiGraph)
     G.add_edges_from([(1, 5), (6, 2), (3, 4), (7, 8), (2, 1)])
     # for multiedges
-    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    G.add_edges_from([e for i, e in enumerate(G.edges()) if i % 2 == 0])
     # for selfloops
     G.add_edges_from([(0, 0), (2, 2), (4, 4)])
 
     G.graph["name"] = "cyclic_ladder_4rungs"
-    G.graph["numb_symmetries"] = 4
-    G.graph["numb_directed_symmetries"] = 1
-    G.graph["directed_mappings"] = []
-    G.graph["mappings"] = [
-        {1: 1, 4: 2, 3: 3, 7: 7, 8: 6, 5: 5, 6: 8, 2: 4, 0: 0},
-        {3: 1, 2: 2, 1: 3, 5: 7, 6: 6, 7: 5, 8: 8, 4: 4, 0: 0},
-        {3: 1, 4: 2, 1: 3, 5: 7, 8: 6, 7: 5, 6: 8, 2: 4, 0: 0},
-    ]
+    G.graph["numb_symmetries"] = dict(zip(graph_classes, (4, 1, 1, 1)))
+    G.graph["mappings"] = {
+        nx.Graph: [
+          {1:1, 2:2, 3:3, 7:7, 6:6, 5:5, 8:8, 4:4, 0:0},
+          {1:1, 4:2, 3:3, 7:7, 8:6, 5:5, 6:8, 2:4, 0:0},
+          {3:1, 2:2, 1:3, 5:7, 6:6, 7:5, 8:8, 4:4, 0:0},
+          {3:1, 4:2, 1:3, 5:7, 8:6, 7:5, 6:8, 2:4, 0:0},
+        ],
+        nx.DiGraph: [
+          {1:1, 2:2, 3:3, 7:7, 6:6, 5:5, 8:8, 4:4, 0:0},
+        ],
+        nx.MultiGraph: [
+          {1:1, 2:2, 3:3, 7:7, 6:6, 5:5, 8:8, 4:4, 0:0},
+        ],
+        nx.MultiDiGraph: [
+          {1:1, 2:2, 3:3, 7:7, 6:6, 5:5, 8:8, 4:4, 0:0},
+        ],
+    }  # fmt: skip
     G.graph["show"] = r"""
       1
      /|\
@@ -333,13 +446,45 @@ def cycle6_plus_3_2paths():
     nx.add_path(G, [2, 8, 9])
     nx.add_path(G, [4, 10, 11])
     # for multiedges
-    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    G.add_edges_from([e for i, e in enumerate(G.edges()) if i % 2 == 0])
     # for selfloops
     G.add_edges_from([(0, 0), (2, 2), (4, 4)])
 
     G.graph["name"] = "cycle6_plus_3_2paths"
-    G.graph["show"] = "6-cycle with 2-paths stuck onto nodes 0, 2, 4"
-    G.graph["numb_symmetries"] = 6
+    G.graph["numb_symmetries"] = dict(zip(graph_classes, (6, 6, 1, 1)))
+    G.graph["mappings"] = {
+      nx.Graph: [
+        {0:0, 1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:11},
+        {0:0, 5:1, 4:2, 3:3, 2:4, 1:5, 6:6, 7:7, 10:8, 11:9, 8:10, 9:11},
+        {2:0, 1:1, 0:2, 5:3, 4:4, 3:5, 8:6, 9:7, 6:8, 7:9, 10:10, 11:11},
+        {2:0, 3:1, 4:2, 5:3, 0:4, 1:5, 8:6, 9:7, 10:8, 11:9, 6:10, 7:11},
+        {4:0, 3:1, 2:2, 1:3, 0:4, 5:5, 10:6, 11:7, 8:8, 9:9, 6:10, 7:11},
+        {4:0, 5:1, 0:2, 1:3, 2:4, 3:5, 10:6, 11:7, 6:8, 7:9, 8:10, 9:11},
+      ],
+      nx.DiGraph: [
+        {0:0, 1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:11},
+        {0:0, 5:1, 4:2, 3:3, 2:4, 1:5, 6:6, 7:7, 10:8, 11:9, 8:10, 9:11},
+        {2:0, 1:1, 0:2, 5:3, 4:4, 3:5, 8:6, 9:7, 6:8, 7:9, 10:10, 11:11},
+        {2:0, 3:1, 4:2, 5:3, 0:4, 1:5, 8:6, 9:7, 10:8, 11:9, 6:10, 7:11},
+        {4:0, 3:1, 2:2, 1:3, 0:4, 5:5, 10:6, 11:7, 8:8, 9:9, 6:10, 7:11},
+        {4:0, 5:1, 0:2, 1:3, 2:4, 3:5, 10:6, 11:7, 6:8, 7:9, 8:10, 9:11},
+      ],
+      nx.MultiGraph: [
+        {0:0, 1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:11},
+        ],
+      nx.MultiDiGraph: [
+        {0:0, 1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:11},
+      ],
+    }  # fmt: skip
+    G.graph["show"] = r"""
+          0-6-7
+         / \
+        1   5
+        |   |
+    8-9-2   4-10-11
+         \ /
+          3
+"""
     return G
 
 
@@ -368,21 +513,22 @@ def test_single_graph(G, Gclass, iso_ic, iso_iter, symmetry):
     assert iso_ic(G1, G1, symmetry=symmetry)
     assert list(iso_iter(G1, G1, symmetry=symmetry))
 
-    numb_key = "numb_directed_symmetries" if G1.is_directed() else "numb_symmetries"
-    sym = G1.graph.get(numb_key, None)
-    if sym is not None:
-        all_mappings = list(iso_iter(G1, G1, symmetry=symmetry))
-        assert len(all_mappings) == (1 if symmetry else sym)
+    all_mappings = list(iso_iter(G1, G1, symmetry=symmetry))
 
-    map_key = "directed_mappings" if G1.is_directed() else "mappings"
-    mappings = G1.graph.get(map_key, None)
-    if mappings is not None:
-        all_mappings = list(iso_iter(G1, G1, symmetry=symmetry))
+    sym = G1.graph.get("numb_symmetries", None)
+    mappings = G1.graph.get("mappings", None)
+
+    if sym is not None or mappings is not None:
         if symmetry:
             assert len(all_mappings) == 1
-        else:
-            assert all(m in all_mappings for m in mappings)
-            assert len(all_mappings) == len(mappings) + 1
+            return
+        g_type = G1.__class__
+        if sym is not None:
+            assert len(all_mappings) == sym[g_type]
+        if mappings is not None:
+            list_of_maps = mappings[g_type]
+            assert len(all_mappings) == len(list_of_maps)
+            assert all(m in all_mappings for m in list_of_maps)
 
     G2 = G1.copy()
     G2.remove_edge(2, 2)
@@ -438,11 +584,26 @@ def test_single_graph_node_and_edge_labels(G, Gclass, iso_ic, symmetry):
     # swap two node labels and two edge "foo" values
     nodes, edges = G2.nodes, G2.edges
     node1_d, node2_d = (nodes[n] for n in it.islice(nodes, 2))
-    edge1_d, edge2_d = (edges[n] for n in it.islice(edges, 2))
+    edge1_d, edge2_d = (edges[e] for e in it.islice(edges, 2))
     assert node1_d["label"] != node2_d["label"]
     assert edge1_d["foo"] != edge2_d["foo"]
     node2_d["label"], node1_d["label"] = node1_d["label"], node2_d["label"]
     edge2_d["foo"], edge1_d["foo"] = edge1_d["foo"], edge2_d["foo"]
+    if G2.is_multigraph():
+        e1, e2 = it.islice(edges, 2)
+        if e1[:2] == e2[:2]:
+            # test case where two multiedges on same nodes can swap labels
+            assert iso_ic(G1, G2, node_label=None, edge_label=em, symmetry=symmetry)
+            # now swap two edges without same nodes
+            edge2_d["foo"], edge1_d["foo"] = edge1_d["foo"], edge2_d["foo"]
+            e_iter = it.islice(edges, 2, None)
+            e2 = next(e_iter)
+            while e1[:2] == e2[:2]:
+                e2 = next(e_iter)
+            edge2_d = edges[e2]
+            edge2_d["foo"], edge1_d["foo"] = edge1_d["foo"], edge2_d["foo"]
+    # dont select first two to ensure not multiedges with same nodes
+    edge1_d, edge2_d = (edges[e] for e in it.islice(edges, 0, 3, 2))
 
     assert iso_ic(G1, G2, node_label=None, edge_label=None, symmetry=symmetry)
     assert not iso_ic(G1, G2, node_label=nm, edge_label=None, symmetry=symmetry)
@@ -455,14 +616,14 @@ def test_single_graph_node_and_edge_labels(G, Gclass, iso_ic, symmetry):
 
 @pytest.mark.parametrize("Gclass", graph_classes)
 @pytest.mark.parametrize("symmetry", [True, False])
-@pytest.mark.parametrize("iso_ic", is_isomorphic_funcs)
+@pytest.mark.parametrize("iso_ic", is_iso_funcs)
 def test_non_isomorphic_same_degree_sequence(iso_ic, symmetry, Gclass):
     G = nx.MultiDiGraph()
     nx.add_cycle(G, [1, 2, 3, 4])
     nx.add_cycle(G, [5, 6, 7, 8])
     G.add_edge(1, 5)
     # for multiedges
-    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    G.add_edges_from([e for i, e in enumerate(G.edges()) if i % 2 == 0])
     G.add_edges_from([(1, 1), (3, 3), (6, 6)])
 
     G1 = G.copy()
@@ -475,53 +636,60 @@ def test_non_isomorphic_same_degree_sequence(iso_ic, symmetry, Gclass):
 
 @pytest.mark.parametrize("Gclass", graph_classes)
 @pytest.mark.parametrize("symmetry", [True, False])
-@pytest.mark.parametrize("iso_ic", is_isomorphic_funcs)
+@pytest.mark.parametrize("iso_ic", is_iso_funcs)
 def test_morph_triangle_square_2tails(iso_ic, symmetry, Gclass):
     r"""
     7-2-1
      /| |
     3-4-5-6
     """
-    G = asymm_triangle_square_2tails()
+    G = Gclass(asymm_triangle_square_2tails())
     G1 = G.subgraph([2, 3, 4, 7]).copy()
     G2 = G.subgraph([1, 4, 5, 6]).copy()
-    assert not iso_ic(Gclass(G1), Gclass(G2), symmetry=symmetry)
+    assert not iso_ic(G1, G2, symmetry=symmetry)
 
     G1.remove_edge(2, 2)
+    G1.add_edge(2, 3)  # adjust multiedge to match 1-5 multiedge
     G2.add_edge(1, 4)
-    assert iso_ic(Gclass(G1), Gclass(G2), symmetry=symmetry)
+    assert iso_ic(G1, G2, symmetry=symmetry)
 
     G1.add_edges_from([(3, 7), (4, 7)])
     G2.add_edges_from([(1, 6), (4, 6)])
-    assert iso_ic(Gclass(G1), Gclass(G2), symmetry=symmetry)
+    assert iso_ic(G1, G2, symmetry=symmetry)
+    # check todirected version (creates a symmetry in a DiGraph)
+    if G1.is_directed():
+        G1d = G1.to_undirected().to_directed()
+        G2d = G2.to_undirected().to_directed()
+        assert iso_ic(G1d, G2d, symmetry=symmetry)
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
 @pytest.mark.parametrize("symmetry", [True, False])
-@pytest.mark.parametrize("iso_ic", is_isomorphic_funcs)
+@pytest.mark.parametrize("iso_ic", is_iso_funcs)
 def test_morph_3triangles_kite(iso_ic, symmetry, Gclass):
     r"""
       5-1-4
       |/ \|
     6-2---3
     """
-    G1 = asymm_3triangles_kite()
+    G1 = Gclass(asymm_3triangles_kite())
     G2 = G1.copy()
-    assert iso_ic(Gclass(G1), Gclass(G2), symmetry=symmetry)
+    simplegraph = not G1.is_multigraph()
+    assert iso_ic(G1, G2, symmetry=symmetry)
     G2.remove_edges_from([(2, 6)])
-    assert not iso_ic(Gclass(G1), Gclass(G2), symmetry=symmetry)
+    assert not iso_ic(G1, G2, symmetry=symmetry)
     G2.add_edges_from([(3, 7)])
-    assert not iso_ic(Gclass(G1), Gclass(G2), symmetry=symmetry)
+    assert not iso_ic(G1, G2, symmetry=symmetry)
     G2.remove_node(6)
-    assert iso_ic(Gclass(G1), Gclass(G2), symmetry=symmetry)
+    assert iso_ic(G1, G2, symmetry=symmetry) == simplegraph
 
     G2.add_edges_from([(5, 5), (5, 5), (1, 1)])
-    assert not iso_ic(Gclass(G1), Gclass(G2), symmetry=symmetry)
+    assert not iso_ic(G1, G2, symmetry=symmetry)
     G1.add_edges_from([(4, 4), (4, 4), (1, 1)])
-    assert iso_ic(Gclass(G1), Gclass(G2), symmetry=symmetry)
+    assert iso_ic(G1, G2, symmetry=symmetry) == simplegraph
     G2.remove_edge(1, 4)
     G1.remove_edge(1, 5)
-    assert iso_ic(Gclass(G1), Gclass(G2), symmetry=symmetry)
+    assert iso_ic(G1, G2, symmetry=symmetry) == simplegraph
 
 
 ## Subgraph iso and mono
@@ -534,63 +702,62 @@ def test_subgraph_triangle_square_2tails(iso_ic, symmetry, Gclass):
     r"""
     7-2-1
      /| |
-    3-4-5-6
+    3-4-5-6 multiedges on the square (1, 2), (2, 4), (5, 1), (5, 4)
     """
     mono = "mono" in iso_ic.__name__
-    G = asymm_triangle_square_2tails()
+    FG = asymm_triangle_square_2tails()
 
-    SG = G.subgraph([2, 3, 4, 7]).copy()
-    assert iso_ic(Gclass(G), Gclass(SG), symmetry=symmetry)
+    SG = FG.subgraph([2, 3, 4, 7]).copy()
+    assert iso_ic(Gclass(FG), Gclass(SG), symmetry=symmetry)
+
     SG.remove_edge(2, 3)
-
-    if "ismags" not in iso_ic.__name__:
-        # FIXME: check why fails ismags but not vf2
-        assert mono == iso_ic(Gclass(G), Gclass(SG), symmetry=symmetry)
+    assert mono == iso_ic(Gclass(FG), Gclass(SG), symmetry=symmetry)
 
     SG.add_edges_from([(7, 3), (7, 4)])
-    assert not iso_ic(Gclass(G), Gclass(SG), symmetry=symmetry)
+    assert not iso_ic(Gclass(FG), Gclass(SG), symmetry=symmetry)
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
 @pytest.mark.parametrize("symmetry", [False, True])
 @pytest.mark.parametrize("iso_ic", is_SG_funcs + is_mono_funcs)
 def test_monomorphism_path_in_cycle(iso_ic, symmetry, Gclass):
-    G = nx.cycle_graph(14, create_using=nx.MultiDiGraph)
+    FG = nx.cycle_graph(14, create_using=nx.MultiDiGraph)
     # for multiedges
-    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    FG.add_edges_from([e for i, e in enumerate(FG.edges()) if i % 2 == 0])
     # for selfloops (node 1, 2 and 3 mapped to selves)
-    G.add_edges_from([(1, 1), (2, 2), (3, 3)])
+    FG.add_edges_from([(1, 1), (2, 2), (3, 3)])
 
-    SG = G.copy()
+    SG = FG.copy()
     SG.remove_edge(13, 0)
-    assert G.number_of_edges() == SG.number_of_edges() + 1
+    assert FG.number_of_edges() == SG.number_of_edges() + 1
 
     mono = "mono" in iso_ic.__name__
-    assert mono == iso_ic(Gclass(G), Gclass(SG), symmetry=symmetry)
+    assert mono == iso_ic(Gclass(FG), Gclass(SG), symmetry=symmetry)
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
 @pytest.mark.parametrize("symmetry", [True, False])
 @pytest.mark.parametrize("mono_iter", mono_iters)
 def test_monomorphism_count_for_path_in_cycle(mono_iter, symmetry, Gclass):
-    G = nx.cycle_graph(14, create_using=nx.MultiDiGraph)
+    FG = nx.cycle_graph(14, create_using=nx.MultiDiGraph)
     # for multiedges
-    G.add_edges_from([e for i, e in enumerate(G.edges) if i % 2 == 0])
+    FG.add_edges_from([e for i, e in enumerate(FG.edges()) if i % 2 == 0])
     # for selfloops (node 1, 2 and 3 mapped to selves)
-    G.add_edges_from([(1, 1), (2, 2), (3, 3)])
+    FG.add_edges_from([(1, 1), (2, 2), (3, 3)])
 
-    SG = G.copy()
+    SG = FG.copy()
     SG.remove_edge(13, 0)
-    assert G.number_of_edges() == SG.number_of_edges() + 1
+    assert FG.number_of_edges() == SG.number_of_edges() + 1
 
-    G = Gclass(G)
+    FG = Gclass(FG)
     SG = Gclass(SG)
 
-    mappings = mono_iter(G, SG, symmetry=symmetry)
-    assert sum(1 for _ in mappings) == 1 if G.is_directed() else 2
+    mappings = mono_iter(FG, SG, symmetry=symmetry)
+    ans = 1 if (FG.is_directed() or FG.is_multigraph()) else 2
+    assert sum(1 for _ in mappings) == ans
 
-    # switch order of G and SG (bigger cannot be subgraph)
-    assert sum(1 for _ in mono_iter(SG, G, symmetry=symmetry)) == 0
+    # switch order of FG and SG (bigger cannot be subgraph)
+    assert sum(1 for _ in mono_iter(SG, FG, symmetry=symmetry)) == 0
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
@@ -598,16 +765,197 @@ def test_monomorphism_count_for_path_in_cycle(mono_iter, symmetry, Gclass):
 @pytest.mark.parametrize("SG_ic", is_SG_funcs + is_mono_funcs)
 def test_subgraph_mono(SG_ic, symmetry, Gclass):
     # wikipedia example
-    G = Gclass(["ag", "ah", "ai", "bg", "bh", "bj", "cg", "ci", "cj", "dh", "di", "dj"])
-    SG = Gclass(["ag", "cg", "ci", "di", "bg"])
-    # check that G is always subgraph morphic to itself
-    assert SG_ic(G, G, symmetry=symmetry)
+    FG = Gclass(
+        ["ag", "ah", "ai", "bg", "bh", "bj", "cg", "ci", "cj", "dh", "di", "dj"]
+    )
+    SG = Gclass([(1, 5), (8, 5), (8, 4), (3, 4), (6, 5)])
+    # check that FG is always subgraph morphic to itself
+    assert SG_ic(FG, FG, symmetry=symmetry)
 
     # true if is_mono, false if is_SG
-    assert SG_ic(G, SG, symmetry=symmetry) == ("mono" in SG_ic.__name__)
+    assert SG_ic(FG, SG, symmetry=symmetry) == ("mono" in SG_ic.__name__)
 
-    # switch order of G and SG (bigger cannot be subgraph)
-    assert not SG_ic(SG, G, symmetry=symmetry)
+    # switch order of FG and SG (bigger cannot be subgraph)
+    assert not SG_ic(SG, FG, symmetry=symmetry)
 
-    SG.add_edge("c", "a")
-    assert not SG_ic(G, SG, symmetry=symmetry)
+    SG.add_edge(8, 1)
+    assert not SG_ic(FG, SG, symmetry=symmetry)
+
+
+@pytest.mark.parametrize("Gclass", graph_classes)
+@pytest.mark.parametrize("symmetry", [True, False])
+@pytest.mark.parametrize("SG_ic", is_SG_funcs + is_mono_funcs + is_iso_funcs)
+def test_subgraph_mono_small(SG_ic, symmetry, Gclass):
+    # small cycles
+    FG = nx.cycle_graph("abcd", create_using=Gclass)
+    SG = nx.path_graph(3, create_using=Gclass)
+
+    subgraph_morph = "SG" in SG_ic.__name__
+    mono_morph = "mono" in SG_ic.__name__
+    # isolated node not in SG. is_iso => False, subgraph_is_* => True
+    assert SG_ic(FG, SG, symmetry=symmetry) == subgraph_morph
+
+    # add isolated node so SG_iso is False, but SG_mono still True
+    SG.add_node(3)
+    assert SG_ic(FG, SG, symmetry=symmetry) == mono_morph
+
+    # add edge to SG so not any kind of morphism
+    SG.add_edge(0, 2)
+    assert not SG_ic(FG, SG, symmetry=symmetry)
+
+
+@pytest.mark.parametrize("Gclass", graph_classes)
+@pytest.mark.parametrize("symmetry", [True, False])
+@pytest.mark.parametrize("SG_ic", is_SG_funcs + is_mono_funcs + is_iso_funcs)
+def test_multiedge_mono_subgraph(SG_ic, symmetry, Gclass):
+    # small cycles
+    FG = nx.cycle_graph("abcd", create_using=Gclass)
+    SG = nx.path_graph(3, create_using=Gclass)
+
+    subgraph_morph = "SG" in SG_ic.__name__  # induced iso or mono
+    mono_morph = "mono" in SG_ic.__name__
+    not_multi = not SG.is_multigraph()
+    multi_mono = mono_morph or (not_multi and subgraph_morph)
+
+    nm = nmatch
+    em = mematch if SG.is_multigraph() else ematch
+
+    # add multiedges
+    FG.add_edges_from(["ab", "ab"])
+    SG.add_edges_from([(0, 1), (0, 1)])
+    assert SG_ic(FG, SG, symmetry=symmetry) == subgraph_morph
+    result = SG_ic(FG, SG, node_label=nm, edge_label=em, symmetry=symmetry)
+    assert result == subgraph_morph
+
+    # change color of one multiedge
+    if SG.is_multigraph():
+        SG[0][1][1]["foo"] = "pink"
+        assert not SG_ic(FG, SG, node_label=nm, edge_label=em, symmetry=symmetry)
+        del SG[0][1][1]["foo"]
+
+    # change number of multiedges
+    FG.add_edges_from(["ab"])
+
+    assert SG_ic(FG, SG, symmetry=symmetry) == multi_mono
+    result = SG_ic(FG, SG, node_label=nm, edge_label=em, symmetry=symmetry)
+    assert result == multi_mono
+
+    # change SG to hve more multiedges than FG (not iso unless not multigraph)
+    SG.add_edges_from([(0, 1), (0, 1)])
+    assert SG_ic(FG, SG, symmetry=symmetry) == (not_multi and subgraph_morph)
+
+    # match multiedge count by adding edge to FG
+    FG.add_edges_from(["ab"])
+    assert SG_ic(FG, SG, symmetry=symmetry) == subgraph_morph
+
+
+@pytest.mark.parametrize("Gclass", graph_classes)
+@pytest.mark.parametrize("symmetry", [True, False])
+@pytest.mark.parametrize("SG_ic", is_SG_funcs + is_mono_funcs + is_iso_funcs)
+def test_multiedge_colors_like_multiple_graphs(SG_ic, symmetry, Gclass):
+    FG = nx.empty_graph(10, create_using=nx.MultiDiGraph)
+    SG = nx.empty_graph(10, create_using=nx.MultiDiGraph)
+    for i, G in enumerate(solo_graphs):
+        # The edges from each test graph are added with a different color
+        tmpG = G()
+        nx.set_edge_attributes(tmpG, i, "foo")
+        FG.add_edges_from(tmpG.edges(data="foo"))
+        # only some of the test graphs are added to the subgraph
+        if i < len(solo_graphs) / 2:
+            SG.add_edges_from(tmpG.edges(data="foo"))
+
+    FG = Gclass(FG)
+    SG = Gclass(SG)
+
+    mono_morph = "mono" in SG_ic.__name__
+
+    nm = nmatch
+    em = mematch if SG.is_multigraph() else ematch
+
+    assert SG_ic(SG, SG, symmetry=symmetry)
+    assert SG_ic(FG, FG, symmetry=symmetry)
+    assert SG_ic(FG, FG, node_label=nm, edge_label=em, symmetry=symmetry)
+    assert SG_ic(SG, SG, node_label=nm, edge_label=em, symmetry=symmetry)
+
+    assert not SG_ic(SG, FG, symmetry=symmetry)  # small graph is 1st input
+    assert SG_ic(FG, SG, symmetry=symmetry) == mono_morph
+    assert SG_ic(FG, SG, node_label=nm, edge_label=em, symmetry=symmetry) == mono_morph
+
+
+# test multidigraph without multiedges
+wikipedia_graph = nx.MultiDiGraph(
+    ["ag", "ah", "ai", "gb", "bh", "bj", "cg", "ci", "cj", "hd", "di", "dj"]
+)
+wikipedia_graph.name = "wikipedia_graph"
+
+
+@pytest.mark.parametrize("MDG", [cycle6_plus_3_2paths(), wikipedia_graph])
+@pytest.mark.parametrize("symmetry", [True, False])
+@pytest.mark.parametrize("SG_ic", is_SG_funcs + is_mono_funcs + is_iso_funcs)
+def test_match_multiedge_to_simple_graph(MDG, SG_ic, symmetry):
+    DG = nx.DiGraph(MDG)
+    MG = nx.MultiGraph(MDG)
+    G = nx.Graph(MDG)
+
+    wiki_graph = "wikipedia_graph" == MDG.name
+    mono_morph = "mono" in SG_ic.__name__
+    SG_morph = "SG" in SG_ic.__name__
+
+    # morphing between multi/simple graph types
+    assert SG_ic(MG, G, symmetry=symmetry) == (wiki_graph or mono_morph)
+    assert SG_ic(G, MG, symmetry=symmetry) == wiki_graph
+    assert SG_ic(MDG, DG, symmetry=symmetry) == (wiki_graph or mono_morph)
+    assert SG_ic(DG, MDG, symmetry=symmetry) == wiki_graph
+
+    # morphing between multi/simple graph types w/o multiedges
+    SMG = nx.MultiGraph(G)
+    assert SG_ic(SMG, G, symmetry=symmetry)
+    SMDG = nx.MultiDiGraph(DG)
+    assert SG_ic(SMDG, DG, symmetry=symmetry)
+
+
+@pytest.mark.parametrize("MDG", [cycle6_plus_3_2paths(), wikipedia_graph])
+@pytest.mark.parametrize("Gclass", graph_classes)
+@pytest.mark.parametrize("SG_ic", is_SG_funcs + is_mono_funcs + is_iso_funcs)
+@pytest.mark.parametrize("symmetry", [True, False])
+def test_subgraph_multiedge_to_simple_graph(Gclass, MDG, SG_ic, symmetry):
+    G = Gclass(MDG.edges())
+
+    wiki_graph = "wikipedia_graph" == MDG.name
+    mono_morph = "mono" in SG_ic.__name__
+    SG_or_mono_morph = mono_morph or ("SG" in SG_ic.__name__)
+    not_multi = not G.is_multigraph()
+
+    # create some simple graph types to compare with:
+    # - simpleG has single edge for each multiedge in G
+    # - pg is path graph (which appears inside both MDG graphs)
+    if not G.is_directed():
+        pg = nx.path_graph(5)
+        simpleG = nx.Graph(MDG.edges())
+    else:
+        pg = nx.path_graph(5, create_using=nx.DiGraph)
+        simpleG = nx.DiGraph(MDG.edges())
+    # PG is path graph with same graph type as G
+    PG = Gclass(pg.edges())
+
+    # test G vs simpleG
+    if wiki_graph:
+        assert SG_ic(G, simpleG, symmetry=symmetry)
+        assert SG_ic(simpleG, G, symmetry=symmetry)
+    else:
+        assert SG_ic(G, simpleG, symmetry=symmetry) == (not_multi or mono_morph)
+        assert SG_ic(simpleG, G, symmetry=symmetry) == not_multi
+
+    # find simple paths within G or simpleG
+    find_path = SG_or_mono_morph if wiki_graph else mono_morph
+    assert SG_ic(G, pg, symmetry=symmetry) == find_path
+    assert SG_ic(G, PG, symmetry=symmetry) == find_path
+
+    assert SG_ic(simpleG, pg, symmetry=symmetry) == find_path
+    assert SG_ic(simpleG, PG, symmetry=symmetry) == find_path
+
+    # Double all edges to ensure multiedges present for Multigraphs
+    PG.add_edges_from(pg.edges())
+    G.add_edges_from(MDG.edges())
+    assert SG_ic(G, PG, symmetry=symmetry) == find_path
+    assert SG_ic(simpleG, PG, symmetry=symmetry) == (find_path and not_multi)

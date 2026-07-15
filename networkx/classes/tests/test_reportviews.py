@@ -595,9 +595,9 @@ class TestEdgeView:
         with pytest.raises(nx.NetworkXError, match=".*does not support slicing"):
             G.edges[0:5]
 
-        # Invalid edge
-        with pytest.raises(KeyError, match=r".*edge.*is not in the graph."):
-            G.edges[0, 9]
+        # Missing edge
+        with pytest.raises(KeyError, match=r".*edge.*is not in the graph"):
+            G.edges[42, 42]
 
     def test_call(self):
         ev = self.eview(self.G)
@@ -786,6 +786,10 @@ class TestMultiEdgeView(TestEdgeView):
         # slicing
         with pytest.raises(nx.NetworkXError):
             G.edges[0:5]
+
+        # Missing edge
+        with pytest.raises(KeyError, match=r".*edge.*is not in the graph"):
+            G.edges[42, 42, 42]
 
     def test_repr(self):
         ev = self.eview(self.G)

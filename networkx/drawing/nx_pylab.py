@@ -430,17 +430,17 @@ def display(
         Visible nodes missing this attribute will use the final node_color value.
 
     edge_visible : string or bool, default "visible"
-        A string nameing the edge attribute which stores if an edge should be drawn.
+        A string naming the edge attribute which stores if an edge should be drawn.
         If `True`, all edges will be drawn while if `False` no edges will be visible.
         If incomplete, edges missing this attribute will be shown by default. Values
         of this attribute are expected to be booleans.
 
     edge_width : string or int, default "width"
-        A string nameing the edge attribute which stores the width of each edge.
+        A string naming the edge attribute which stores the width of each edge.
         Visible edges without this attribute will use a default width of 1.0.
 
     edge_color : string or color, default "color"
-        A string nameing the edge attribute which stores of color of each edge.
+        A string naming the edge attribute which stores of color of each edge.
         Visible edges without this attribute will be drawn black. Each color can be
         a string or rgb (or rgba) tuple of floats from 0.0 to 1.0.
 
@@ -502,7 +502,7 @@ def display(
         will use a default value of 0.
 
     edge_target_margin : string or int, default "target_margin"
-        A string naming the edge attribute which stores the minimumm margin (gap) between
+        A string naming the edge attribute which stores the minimum margin (gap) between
         the target node and the end of the edge. Visible edges without this attribute
         will use a default value of 0.
 
@@ -575,11 +575,23 @@ def display(
     }
 
     # Check arguments
-    for kwarg in kwargs:
+    known_node_attr = {}
+    known_edge_attr = {}
+    for kwarg, kwarg_value in kwargs.items():
         if kwarg not in defaults:
             raise nx.NetworkXError(
                 f"Unrecognized visualization keyword argument: {kwarg}"
             )
+        if kwarg.startswith("node_") and not isinstance(kwarg_value, dict):
+            if any(kwarg_value in node_data for (_, node_data) in G.nodes(data=True)):
+                known_node_attr[kwarg_value] = True
+            elif kwarg_value == kwarg.split("_", 1)[1]:
+                kwargs[kwarg] = defaults[kwarg]
+        elif kwarg.startswith("edge_") and not isinstance(kwarg_value, dict):
+            if any(kwarg_value in edge_data for (*_, edge_data) in G.edges(data=True)):
+                known_edge_attr[kwarg_value] = True
+            elif kwarg_value == kwarg.split("_", 1)[1]:
+                kwargs[kwarg] = defaults[kwarg]
 
     if canvas is None:
         canvas = plt.gca()
@@ -605,7 +617,7 @@ def display(
         attr = kwargs.get(param_name, attr)
 
         if default is None:
-            # raise instead of using non-existant default value
+            # raise instead of using non-existent default value
             for n in seq:
                 if attr not in node_subgraph.nodes[n]:
                     raise nx.NetworkXError(f"Attribute '{attr}' missing for node {n}")
@@ -615,7 +627,7 @@ def display(
         # attributes which are on the graph
         if (
             attr is not None
-            and nx.get_node_attributes(node_subgraph, attr) == {}
+            and not known_node_attr.get(attr, False)
             and any(attr == v for k, v in kwargs.items() if "node" in k)
         ):
             return [attr for _ in seq]
@@ -665,14 +677,14 @@ def display(
         attr = kwargs.get(param_name, attr)
 
         if default is None:
-            # raise instead of using non-existant default value
+            # raise instead of using non-existent default value
             for e in seq:
                 if attr not in edge_subgraph.edges[e]:
                     raise nx.NetworkXError(f"Attribute '{attr}' missing for edge {e}")
 
         if (
             attr is not None
-            and nx.get_edge_attributes(edge_subgraph, attr) == {}
+            and not known_edge_attr.get(attr, False)
             and any(attr == v for k, v in kwargs.items() if "edge" in k)
         ):
             return [attr for _ in seq]
@@ -691,7 +703,7 @@ def display(
 
         if (
             attr is not None
-            and nx.get_edge_attributes(edge_subgraph, attr) == {}
+            and not known_edge_attr.get(attr, False)
             and attr in kwargs.values()
         ):
             return attr
@@ -711,7 +723,7 @@ def display(
 
         if (
             attr is not None
-            and nx.get_node_attributes(subgraph, attr) == {}
+            and not known_node_attr.get(attr, False)
             and attr in kwargs.values()
         ):
             return attr
@@ -840,6 +852,8 @@ def display(
         )
         pos = default_display_pos_attr
         kwargs["node_pos"] = default_display_pos_attr
+
+    known_node_attr[pos] = True
 
     # Each shape requires a new scatter object since they can't have different
     # shapes.
@@ -1611,7 +1625,6 @@ class FancyArrowFactory:
     ):
         import matplotlib as mpl
         import matplotlib.patches  # call as mpl.patches
-        import matplotlib.pyplot as plt
         import numpy as np
 
         if isinstance(connectionstyle, str):
@@ -1847,7 +1860,9 @@ def draw_networkx_edges(
         radius rad. For example, connectionstyle='arc3,rad=0.2'.
         See `matplotlib.patches.ConnectionStyle` and
         `matplotlib.patches.FancyArrowPatch` for more info.
-        If Iterable, index indicates i'th edge key of MultiGraph
+        If Iterable, index indicates i'th edge key of MultiGraph.
+        Has no effect if edges are represented as a LineCollection - see
+        `arrows` parameter for details.
 
     node_size : scalar or array (default=300)
         Size of nodes. Though the nodes are not drawn with this function, the

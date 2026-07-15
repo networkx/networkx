@@ -1593,7 +1593,7 @@ class Graph:
 
         The copy method by default returns an independent shallow copy
         of the graph and attributes. That is, if an attribute is a
-        container, that container is shared by the original an the copy.
+        container, that container is shared by the original and the copy.
         Use Python's `copy.deepcopy` for new containers.
 
         If `as_view` is True then a view is returned instead of a copy.

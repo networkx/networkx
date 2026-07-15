@@ -101,6 +101,8 @@ Measuring partitions
    :toctree: generated/
 
    modularity
+   overlapping_modularity
+   constant_potts_model
    partition_quality
 
 Partitions via centrality measures
@@ -118,3 +120,4 @@ Validating partitions
    :toctree: generated/
 
    is_partition
+   is_cover

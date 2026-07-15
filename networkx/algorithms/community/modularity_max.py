@@ -1,8 +1,6 @@
 """Functions for detecting communities based on modularity."""
 
-import random
 from collections import defaultdict
-from copy import deepcopy
 
 import networkx as nx
 from networkx.algorithms.community.quality import modularity

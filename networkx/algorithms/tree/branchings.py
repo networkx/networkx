@@ -64,14 +64,6 @@ def random_string(L=15, seed=None):
     return "".join([seed.choice(string.ascii_letters) for n in range(L)])
 
 
-def _min_weight(weight):
-    return -weight
-
-
-def _max_weight(weight):
-    return weight
-
-
 @nx._dispatchable(edge_attrs={"attr": "default"})
 def branching_weight(G, attr="weight", default=1):
     """
