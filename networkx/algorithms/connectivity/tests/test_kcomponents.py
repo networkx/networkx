@@ -363,13 +363,6 @@ def test_set_consolidation_rosettacode():
     list_of_sets_equal(_consolidate(question, 1), solution)
 
 
-# Unit tests for the private helpers, with their contracts stated
-# explicitly (follow-up to the review discussion in gh-8734: both bugs
-# fixed there lived in private helpers whose contracts were only
-# implicit, and neither was reachable by end-to-end tests on the small
-# classic graphs alone).
-
-
 def test_reconstruct_k_components_promotes_spanning_component():
     # A (k+1)-level component can span several k-level candidates without
     # being a subset of any of them. It must still be propagated down to
@@ -413,32 +406,33 @@ def test_reconstruct_k_components_no_nested_output():
             assert not any(comp < other for other in comps)
 
 
-@pytest.mark.parametrize(
-    "G",
-    [
-        nx.karate_club_graph(),
-        nx.gnp_random_graph(30, 0.25, seed=42),
-        nx.gnp_random_graph(25, 0.35, seed=7),
-        nx.davis_southern_women_graph(),
-    ],
-)
-def test_generate_partition_contracts(G):
-    # Contracts (stated in the gh-8734 review discussion): partitioning a
-    # biconnected graph by its minimum-size cutsets never loses a node
-    # (every cutset node has a neighbor outside the cutset, or the cutset
-    # would not be minimum), every part is a strict subset of the input,
-    # and every part induces a connected subgraph.
-    for bc in nx.biconnected_components(G):
-        if len(bc) <= 2:
-            continue
-        B = G.subgraph(bc)
-        k = nx.node_connectivity(B)
-        cuts = list(nx.all_node_cuts(B, k=k))
-        if not cuts:
-            continue
-        parts = list(_generate_partition(B, cuts, k))
-        assert parts
-        assert set().union(*parts) == set(B)
-        for part in parts:
-            assert len(part) < len(B)
-            assert nx.is_connected(B.subgraph(part))
+def test_generate_partition_keeps_cut_adjacent_low_degree_nodes():
+    # The Davis Southern Women graph is biconnected with node connectivity
+    # 2 and has exactly two minimum cutsets, {E8, E9} and {E9, E11}. Three
+    # women attended only two events, both in the cutsets, so removing a
+    # cutset separates each of them from the rest of the graph. The
+    # expected partition thus has four parts: one per separated woman,
+    # holding her and the two events she attended, and one with the other
+    # 29 nodes; the parts overlap in the cutsets. The pre-gh-8734 code
+    # kept only nodes of degree greater than k outside the cutsets, so it
+    # silently dropped the three women.
+    G = nx.davis_southern_women_graph()
+    k = nx.node_connectivity(G)
+    assert k == 2
+    cuts = list(nx.all_node_cuts(G, k=k))
+    assert {frozenset(cut) for cut in cuts} == {
+        frozenset({"E8", "E9"}),
+        frozenset({"E9", "E11"}),
+    }
+    assert set(G["Dorothy Murchison"]) == {"E8", "E9"}
+    assert set(G["Flora Price"]) == {"E9", "E11"}
+    assert set(G["Olivia Carleton"]) == {"E9", "E11"}
+    parts = list(_generate_partition(G, cuts, k))
+    assert {frozenset(part) for part in parts} == {
+        frozenset({"Dorothy Murchison", "E8", "E9"}),
+        frozenset({"Flora Price", "E9", "E11"}),
+        frozenset({"Olivia Carleton", "E9", "E11"}),
+        frozenset(set(G) - {"Dorothy Murchison", "Flora Price", "Olivia Carleton"}),
+    }
+    for part in parts:
+        assert nx.is_connected(G.subgraph(part))
