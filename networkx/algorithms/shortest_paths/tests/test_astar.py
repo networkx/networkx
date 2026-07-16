@@ -252,3 +252,39 @@ class TestAStar:
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NodeNotFound):
             nx.astar_path_length(G, 11, 9)
+
+    def test_alt_heuristic(self):
+        """Tests that alt_heuristic returns a heuristic function
+        that is admissible and consistent"""
+        G = nx.grid_graph(dim=[5, 5])  # nodes are two-tuples (x,y)
+        h = nx.alt_heuristic(G, k=4, weight="weight", method="farthest", seed=10)
+        for u in G.nodes():
+            for v in G.nodes():
+                assert h(u, v) <= nx.shortest_path_length(G, u, v)
+
+    def test_alt_heuristic_k_greater_than_nodes(self):
+        """Tests that alt_heuristic caps k at the number of nodes in the graph"""
+        G = nx.grid_graph(dim=[3, 3])
+        h = nx.alt_heuristic(G, k=10, weight="weight", method="farthest", seed=10)
+        for u in G.nodes():
+            for v in G.nodes():
+                assert h(u, v) <= nx.shortest_path_length(G, u, v)
+
+    def test_alt_heuristic_negative_k(self):
+        """Tests that alt_heuristic raises NetworkXError for negative k"""
+        G = nx.grid_graph(dim=[3, 3])
+        with pytest.raises(nx.NetworkXError):
+            nx.alt_heuristic(G, k=-1, weight="weight", method="farthest", seed=10)
+
+    def test_alt_heuristic_zero_k(self):
+        """Tests that alt_heuristic raises NetworkXError for k=0"""
+        G = nx.grid_graph(dim=[3, 3])
+        with pytest.raises(nx.NetworkXError):
+            nx.alt_heuristic(G, k=0, weight="weight", method="farthest", seed=10)
+
+    def test_alt_heuristic_invalid_method(self):
+        """Tests that alt_heuristic raises ValueError for invalid
+        method (not 'farthest' or 'random')"""
+        G = nx.grid_graph(dim=[3, 3])
+        with pytest.raises(ValueError):
+            nx.alt_heuristic(G, k=4, weight="weight", method="invalid", seed=10)
