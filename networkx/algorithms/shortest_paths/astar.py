@@ -322,7 +322,7 @@ def alt_heuristic(G, k=8, weight="weight", method="farthest", seed=None):
 
         d(u, v) \geq d(u, \ell) - d(v, \ell)
         \qquad
-        d(u, v) \geq d(\ell, u) - d(\ell, v)
+        d(u, v) \geq d(\ell, v) - d(\ell, u)
 
     The heuristic returns the maximum of these bounds over all landmarks, or 0 if no landmark
     yields a finite bound (for example, across disconnected components).
