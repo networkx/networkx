@@ -42,10 +42,10 @@ def is_biconnected(G):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> print(nx.is_biconnected(G))
+    >>> nx.is_biconnected(G)
     False
     >>> G.add_edge(0, 3)
-    >>> print(nx.is_biconnected(G))
+    >>> nx.is_biconnected(G)
     True
 
     See Also
@@ -126,13 +126,13 @@ def biconnected_component_edges(G):
     Examples
     --------
     >>> G = nx.barbell_graph(4, 2)
-    >>> print(nx.is_biconnected(G))
+    >>> nx.is_biconnected(G)
     False
     >>> bicomponents_edges = list(nx.biconnected_component_edges(G))
     >>> len(bicomponents_edges)
     5
     >>> G.add_edge(2, 8)
-    >>> print(nx.is_biconnected(G))
+    >>> nx.is_biconnected(G)
     True
     >>> bicomponents_edges = list(nx.biconnected_component_edges(G))
     >>> len(bicomponents_edges)
@@ -200,13 +200,13 @@ def biconnected_components(G):
     Examples
     --------
     >>> G = nx.lollipop_graph(5, 1)
-    >>> print(nx.is_biconnected(G))
+    >>> nx.is_biconnected(G)
     False
     >>> bicomponents = list(nx.biconnected_components(G))
     >>> len(bicomponents)
     2
     >>> G.add_edge(0, 5)
-    >>> print(nx.is_biconnected(G))
+    >>> nx.is_biconnected(G)
     True
     >>> bicomponents = list(nx.biconnected_components(G))
     >>> len(bicomponents)
@@ -223,9 +223,8 @@ def biconnected_components(G):
     efficient to use max instead of sort.
 
     >>> Gc = max(nx.biconnected_components(G), key=len)
-
-    To create the components as subgraphs use:
-    ``(G.subgraph(c).copy() for c in biconnected_components(G))``
+    >>> len(Gc)
+    5
 
     See Also
     --------
@@ -292,15 +291,15 @@ def articulation_points(G):
     --------
 
     >>> G = nx.barbell_graph(4, 2)
-    >>> print(nx.is_biconnected(G))
+    >>> nx.is_biconnected(G)
     False
-    >>> len(list(nx.articulation_points(G)))
-    4
+    >>> list(nx.articulation_points(G))
+    [6, 5, 4, 3]
     >>> G.add_edge(2, 8)
-    >>> print(nx.is_biconnected(G))
+    >>> nx.is_biconnected(G)
     True
-    >>> len(list(nx.articulation_points(G)))
-    0
+    >>> list(nx.articulation_points(G))
+    []
 
     See Also
     --------
