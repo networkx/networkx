@@ -69,7 +69,7 @@ class UndirectedAlgorithmBenchmarks:
 
 
 class DirectedAlgorithmBenchmarks:
-    timeout = 120
+    timeout = 5
     seed = 42
     _graphs = [
         nx.erdos_renyi_graph(100, 0.005, seed=seed, directed=True),
