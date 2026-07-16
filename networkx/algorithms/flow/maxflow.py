@@ -325,6 +325,9 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
+    # All flow functions return a residual network R that follows the
+    # conventions described in the Notes section: in particular, they
+    # store the maximum flow value in R.graph["flow_value"].
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
 
     return R.graph["flow_value"]
