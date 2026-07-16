@@ -1,3 +1,5 @@
+import random
+
 import pytest
 
 import networkx as nx
@@ -288,3 +290,66 @@ class TestAStar:
         G = nx.grid_graph(dim=[3, 3])
         with pytest.raises(ValueError):
             nx.alt_heuristic(G, k=4, weight="weight", method="invalid", seed=10)
+
+    def test_alt_heuristic_empty_graph(self):
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.alt_heuristic(nx.Graph())
+
+    def test_alt_heuristic_default_weight_directed(self):
+        # Regression guard: with default arguments on a directed weighted graph,
+        # the heuristic must stay admissible
+        G = self._weighted_random_graph(25, 120, seed=10, directed=True)
+        h = nx.alt_heuristic(G, k=4, seed=10)
+        assert self._admissible(G, h)
+
+    def test_alt_heuristic_directed_consistent(self):
+        G = self._weighted_random_graph(25, 120, seed=2, directed=True)
+        h = nx.alt_heuristic(G, k=6, weight="weight", seed=3)
+        assert self._admissible(G, h)
+        assert self._consistent(G, h)
+
+    def test_alt_heuristic_random_method(self):
+        G = nx.grid_2d_graph(5, 5)
+        nx.set_edge_attributes(G, 1, "weight")
+        h = nx.alt_heuristic(G, k=4, weight="weight", method="random", seed=7)
+        assert self._admissible(G, h)
+
+    def test_alt_heuristic_disconnected(self):
+        G = nx.disjoint_union(nx.path_graph(5), nx.cycle_graph(5))
+        nx.set_edge_attributes(G, 1, "weight")
+        h = nx.alt_heuristic(G, k=3, weight="weight", seed=0)
+        assert all(0 <= h(u, 7) < float("inf") for u in G)
+
+    def test_alt_heuristic_matches_dijkstra(self):
+        G = self._weighted_random_graph(40, 150, seed=3, directed=True)
+        h = nx.alt_heuristic(G, k=8, weight="weight", seed=0)
+        rng = random.Random(0)
+        pairs = 0
+        while pairs < 15:
+            s, t = rng.sample(list(G), 2)
+            if not nx.has_path(G, s, t):
+                continue
+            pairs += 1
+            assert nx.astar_path_length(
+                G, s, t, heuristic=h, weight="weight"
+            ) == pytest.approx(nx.dijkstra_path_length(G, s, t, weight="weight"))
+
+    def _admissible(self, G, h, weight="weight"):
+        true = dict(nx.all_pairs_dijkstra_path_length(G, weight=weight))
+        return all(h(u, t) <= true[u].get(t, float("inf")) + 1e-9 for t in G for u in G)
+
+    def _consistent(self, G, h, weight="weight"):
+        for t in G:
+            for u, v, d in G.edges(data=True):
+                w = d.get(weight, 1)
+                if h(u, t) > w + h(v, t) + 1e-9:
+                    return False
+                if not G.is_directed() and h(v, t) > w + h(u, t) + 1e-9:
+                    return False
+        return True
+
+    def _weighted_random_graph(self, n, m, seed, directed=False):
+        G = nx.gnm_random_graph(n, m, seed=seed, directed=directed)
+        for u, v in G.edges():
+            G[u][v]["weight"] = random.Random(u * 31 + v).uniform(0.1, 5)
+        return G
