@@ -123,6 +123,9 @@ class DirectedAlgorithmBenchmarks:
     def time_kosaraju_scc(self, graph):
         _ = list(nx.kosaraju_strongly_connected_components(self.graphs_dict[graph]))
 
+    def time_clustering(self, graph):
+        _ = nx.clustering(self.graphs_dict[graph])
+
 
 class AlgorithmBenchmarksConnectedGraphsOnly:
     timeout = 120
