@@ -242,12 +242,12 @@ def astar_path_length(
 
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
-def alt_heuristic(G, k=8, weight="length", method="farthest", seed=None):
-    """Returns an ALT (A*, Landmarks, Triangle inequality) heuristic for graph `G`.
+def alt_heuristic(G, k=8, weight="weight", method="farthest", seed=None):
+    r"""Returns an ALT (A*, Landmarks, Triangle inequality) heuristic for graph `G`.
 
     It selects `k` landmark nodes and computes shortest-path distances between every
     node and each landmark (one Dijkstra sweep per landmark, two on directed graphs).
-    The returned function ``h(u,v)`` us a lower bound on the shortest-path distance
+    The returned function ``h(u,v)`` is a lower bound on the shortest-path distance
     from ``u`` to ``v`` obtained from the triangle inequality, and can be passed
     directly as the ``heuristic`` argument of :func:`astar_path` or :func:`astar_path_length`.
 
@@ -320,9 +320,9 @@ def alt_heuristic(G, k=8, weight="length", method="farthest", seed=None):
 
     .. math::
 
-        d(u, v) \geq |d(u, \ell) - d(v, \ell)|
+        d(u, v) \geq d(u, \ell) - d(v, \ell)
         \qquad
-        d(u, v) \geq |d(\ell, u) - d(\ell, v)|
+        d(u, v) \geq d(\ell, u) - d(\ell, v)
 
     The heuristic returns the maximum of these bounds over all landmarks, or 0 if no landmark
     yields a finite bound (for example, across disconnected components).
@@ -333,7 +333,7 @@ def alt_heuristic(G, k=8, weight="length", method="farthest", seed=None):
 
     References
     ----------
-    ..  [1] Goldberg, Andrew V., and Chris Harrelson. "Computing the shortest path: A search
+    ..  [1] Goldberg, Andrew V., and Chris Harrelson. "Computing the shortest path: A* search
     meets graph theory." In SODA, vol. 5, pp. 156-165. 2005.
     https://www.cs.princeton.edu/courses/archive/spr06/cos423/Handouts/GH05.pdf
     """
