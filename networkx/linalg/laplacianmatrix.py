@@ -438,65 +438,12 @@ def normalized_magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
     import numpy as np
     import scipy as sp
 
-    if nodelist is None:
-        nodelist = list(G)
+    # Build magnetic_laplacian
+    L = magnetic_laplacian(G, nodelist=nodelist, q=q, weight=weight)
 
-    # Build Hermitian adjacency H
-    n = len(nodelist)
-    node_index = {v: i for i, v in enumerate(nodelist)}
-
-    if not (0 <= q <= 0.5):
-        raise nx.NetworkXError("Parameter q must be a value between 0 and 0.5")
-
-    phase = 2 * np.pi * q
-
-    # Find "phase" matrix
-    # Dict to encode where have been added symetries
-    delta_phase_edge = defaultdict(int)
-    matrix_weights = defaultdict(float)
-
-    phases = {1: np.exp(1j * phase), -1: np.exp(-1j * phase), 0: 1}
-
-    for u, v, wt in G.edges(data=weight, default=1):
-        if u not in node_index or v not in node_index:
-            continue
-
-        ui, vi = node_index[u], node_index[v]
-        delta_phase_edge[(ui, vi)] += 1
-        delta_phase_edge[(vi, ui)] -= 1
-        matrix_weights[(ui, vi)] += 0.5 * wt
-        matrix_weights[(vi, ui)] += 0.5 * wt
-
-    rows, cols, data = [], [], []
-    for u, v in G.edges():
-        if u not in node_index or v not in node_index:
-            continue
-
-        ui, vi = node_index[u], node_index[v]
-        if ui != vi:
-            if delta_phase_edge[(ui, vi)] == 0:
-                rows.append(ui)
-                cols.append(vi)
-                data.append(matrix_weights[(ui, vi)])
-            else:
-                rows.append(ui)
-                cols.append(vi)
-                data.append(
-                    matrix_weights[(ui, vi)] * phases[delta_phase_edge[(ui, vi)]]
-                )
-                rows.append(vi)
-                cols.append(ui)
-                data.append(
-                    matrix_weights[(vi, ui)] * phases[delta_phase_edge[(vi, ui)]]
-                )
-
-    H = sp.sparse.csr_array((data, (rows, cols)), shape=(n, n), dtype=complex)
-
-    # Build degree matrix D
-    diags = np.abs(H).sum(axis=1).ravel()
-    D = sp.sparse.dia_array((diags, 0), shape=(n, n), dtype=complex).tocsr()
-
-    L = D - H
+    # Normalize magnetic_laplacian
+    diags = L.diagonal()
+    n = len(diags)
     with np.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
