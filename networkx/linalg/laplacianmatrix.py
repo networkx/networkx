@@ -374,7 +374,7 @@ def magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
 
     # Build degree matrix D
     diags = np.abs(H).sum(axis=1).ravel()
-    D = sp.sparse.dia_array((diags, 0), shape=(n, n)).tocsr()
+    D = sp.sparse.dia_array((diags, 0), shape=(n, n), dtype=complex).tocsr()
 
     return D - H
 
@@ -494,7 +494,7 @@ def normalized_magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
 
     # Build degree matrix D
     diags = np.abs(H).sum(axis=1).ravel()
-    D = sp.sparse.dia_array((diags, 0), shape=(n, n)).tocsr()
+    D = sp.sparse.dia_array((diags, 0), shape=(n, n), dtype=complex).tocsr()
 
     L = D - H
     with np.errstate(divide="ignore"):
