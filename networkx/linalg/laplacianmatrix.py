@@ -277,23 +277,23 @@ def magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
     matrix associated with the symmetrized weight adjacency matrix :math:`W'`.
 
     The magnetic Laplacian is only implemented for directed graphs. Since for undirected
-    graphs the magnetic Laplacian is the standard Laplacian, we suggest using laplacian_matrix
+    graphs the magnetic Laplacian is the standard Laplacian, we suggest using `laplacian_matrix`
     for computational reasons.
 
 
     Parameters
     ----------
-    G: DiGraph
+    G : DiGraph
         A NetworkX graph
 
-    nodelist: list, optional (default=list(G))
+    nodelist : list, optional (default=list(G))
         Node ordering for row/columns.
 
-    q: float, optional (default=0.25)
+    q : float, optional (default=0.25)
         The phase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
         returns the standard Laplacian.
 
-    weight: string or None, optional (default='weight')
+    weight : string or None, optional (default='weight')
         Edge attribute key for weights. If None, all edges have weight 1.
 
     Returns
@@ -400,17 +400,17 @@ def normalized_magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
 
     Parameters
     ----------
-    G: DiGraph
+    G : DiGraph
         A NetworkX graph
 
     nodelist: list, optional (default=list(G))
         Node ordering for row/columns.
 
-    q: float, optional (default=0.25)
+    q : float, optional (default=0.25)
         The phase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
         returns the standard Laplacian.
 
-    weight: string or None, optional (default='weight')
+    weight : string or None, optional (default='weight')
         Edge attribute key for weights. If None, all edges have weight 1.
 
     Returns
