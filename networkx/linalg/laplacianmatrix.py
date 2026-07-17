@@ -373,7 +373,7 @@ def magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
     H = sp.sparse.csr_array((data, (rows, cols)), shape=(n, n), dtype=complex)
 
     # Build degree matrix D
-    diags = np.abs(H).sum(axis=1).flatten()
+    diags = np.abs(H).sum(axis=1).ravel()
     D = sp.sparse.dia_array((diags, 0), shape=(n, n)).tocsr()
 
     return D - H
@@ -493,7 +493,7 @@ def normalized_magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
     H = sp.sparse.csr_array((data, (rows, cols)), shape=(n, n), dtype=complex)
 
     # Build degree matrix D
-    diags = np.abs(H).sum(axis=1).flatten()
+    diags = np.abs(H).sum(axis=1).ravel()
     D = sp.sparse.dia_array((diags, 0), shape=(n, n)).tocsr()
 
     L = D - H
