@@ -178,10 +178,11 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     We recommend converting floating point to integers when possible based on your
     knowledge of the weight values and the precision needed. For 6 digits:
 
+    >>> precision = 1e6
     >>> flow_value, _ = nx.maximum_flow(
-    ...     G, 0, 1, capacity=lambda u, v, d: int(1e6 * d["capacity"])
+    ...     G, 0, 1, capacity=lambda u, v, d: int(precision * d["capacity"])
     ... )
-    >>> flow_value / 1e6 == 0.9
+    >>> flow_value / precision == 0.9
     True
 
     """
