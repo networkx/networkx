@@ -550,6 +550,25 @@ class TestMaxFlowMinCutInterface:
                         result = result[0]
                     assert fv == result, errmsg
 
+    def test_reusing_residual_after_edge_replacement(self):
+        # Replacing residual edges between runs rebuilds their attribute
+        # dicts without changing the edge count (and the copies retain
+        # stale flow values); flow functions must still reset and compute
+        # correctly, so any per-edge state cached across runs on the
+        # residual network must not trust previously seen dicts.
+        G = self.G
+        s, t = "x", "y"
+        R = build_residual_network(G, "capacity")
+        for flow_func in flow_funcs:
+            errmsg = f"Assertion failed in function: {flow_func.__name__}"
+            fv = nx.maximum_flow_value(G, s, t, flow_func=flow_func, residual=R)
+            for u, v in [("x", "a"), ("b", "c")]:
+                d = dict(R[u][v])
+                R.remove_edge(u, v)
+                R.add_edge(u, v, **d)
+            result = nx.maximum_flow_value(G, s, t, flow_func=flow_func, residual=R)
+            assert fv == result, errmsg
+
 
 # Tests specific to one algorithm
 def test_preflow_push_global_relabel_freq():

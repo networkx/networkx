@@ -471,18 +471,23 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
         raise nx.NetworkXError("cutoff should not be specified.")
 
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
-    # Remove saturated edges from the residual network
-    cutset = [(u, v, d) for u, v, d in R.edges(data=True) if d["flow"] == d["capacity"]]
-    R.remove_edges_from(cutset)
 
-    # Then, reachable and non reachable nodes from source in the
-    # residual network form the node partition that defines
-    # the minimum cut.
-    non_reachable = set(nx.shortest_path_length(R, target=_t))
+    # The nodes that reach _t in the residual network over edges with
+    # spare capacity (flow < capacity) form one side of the minimum
+    # cut, the rest the other (see the residual network conventions in
+    # the Notes): a reverse breadth-first search from _t.
+    non_reachable = {_t}
+    queue = [_t]
+    R_pred = R._pred
+    while queue:
+        next_layer = []
+        for v in queue:
+            for u, attr in R_pred[v].items():
+                if u not in non_reachable and attr["flow"] < attr["capacity"]:
+                    non_reachable.add(u)
+                    next_layer.append(u)
+        queue = next_layer
     partition = (set(flowG) - non_reachable, non_reachable)
-    # Finally add again cutset edges to the residual network to make
-    # sure that it is reusable.
-    R.add_edges_from(cutset)
     return (R.graph["flow_value"], partition)
 
 
