@@ -311,6 +311,7 @@ def magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
     .. [1] Fanuel, M., Alaíz, C. M., Fernández, Á., & Suykens, J. A. (2018).
        Magnetic eigenmaps for the visualization of directed graphs.
        Applied and Computational Harmonic Analysis, 44(1), 189–199.
+       <https://doi.org/10.1016/j.acha.2017.01.004>
     """
     from collections import defaultdict
 
@@ -432,6 +433,7 @@ def normalized_magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
     .. [1] Fanuel, M., Alaíz, C. M., Fernández, Á., & Suykens, J. A. (2018).
        Magnetic eigenmaps for the visualization of directed graphs.
        Applied and Computational Harmonic Analysis, 44(1), 189–199.
+       <https://doi.org/10.1016/j.acha.2017.01.004>
     """
     from collections import defaultdict
 
