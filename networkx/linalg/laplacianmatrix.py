@@ -321,8 +321,6 @@ def magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
     if nodelist is None:
         nodelist = list(G)
 
-    DG = G if G.is_directed() else G.to_directed()
-
     # Build Hermitian adjacency H
     n = len(nodelist)
     node_index = {v: i for i, v in enumerate(nodelist)}
@@ -339,7 +337,7 @@ def magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
 
     phases = {1: np.exp(1j * phase), -1: np.exp(-1j * phase), 0: 1}
 
-    for u, v, wt in DG.edges(data=weight, default=1):
+    for u, v, wt in G.edges(data=weight, default=1):
         if u not in node_index or v not in node_index:
             continue
 
@@ -350,7 +348,7 @@ def magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
         matrix_weights[(vi, ui)] += 0.5 * wt
 
     rows, cols, data = [], [], []
-    for u, v in DG.edges():
+    for u, v in G.edges():
         if u not in node_index or v not in node_index:
             continue
 
@@ -443,8 +441,6 @@ def normalized_magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
     if nodelist is None:
         nodelist = list(G)
 
-    DG = G if G.is_directed() else G.to_directed()
-
     # Build Hermitian adjacency H
     n = len(nodelist)
     node_index = {v: i for i, v in enumerate(nodelist)}
@@ -461,7 +457,7 @@ def normalized_magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
 
     phases = {1: np.exp(1j * phase), -1: np.exp(-1j * phase), 0: 1}
 
-    for u, v, wt in DG.edges(data=weight, default=1):
+    for u, v, wt in G.edges(data=weight, default=1):
         if u not in node_index or v not in node_index:
             continue
 
@@ -472,7 +468,7 @@ def normalized_magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
         matrix_weights[(vi, ui)] += 0.5 * wt
 
     rows, cols, data = [], [], []
-    for u, v in DG.edges():
+    for u, v in G.edges():
         if u not in node_index or v not in node_index:
             continue
 
