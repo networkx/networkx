@@ -64,9 +64,12 @@ class UndirectedAlgorithmBenchmarks:
     def time_minimum_spanning_tree_kruskal(self, graph):
         _ = nx.minimum_spanning_tree(self.graphs_dict[graph], algorithm="kruskal")
 
+    def time_clustering(self, graph):
+        _ = nx.clustering(self.graphs_dict[graph])
+
 
 class DirectedAlgorithmBenchmarks:
-    timeout = 120
+    timeout = 5
     seed = 42
     _graphs = [
         nx.erdos_renyi_graph(100, 0.005, seed=seed, directed=True),
@@ -119,6 +122,9 @@ class DirectedAlgorithmBenchmarks:
 
     def time_kosaraju_scc(self, graph):
         _ = list(nx.kosaraju_strongly_connected_components(self.graphs_dict[graph]))
+
+    def time_clustering(self, graph):
+        _ = nx.clustering(self.graphs_dict[graph])
 
 
 class AlgorithmBenchmarksConnectedGraphsOnly:
