@@ -193,6 +193,7 @@ collect_ignore = []
 
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
+    "algorithms/approximation/density.py",
     "algorithms/centrality/current_flow_closeness.py",
     "algorithms/centrality/laplacian.py",
     "algorithms/node_classification.py",

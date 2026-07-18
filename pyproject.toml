@@ -337,7 +337,7 @@ rasterio = "*"
 # --- Task definitions ---
 
 [tool.pixi.feature.test.tasks]
-test-base = "pytest -n auto --durations=10 --pyargs networkx"
+test-base = "pytest -n auto --doctest-modules --durations=10 --pyargs networkx"
 test-default = "pytest -n auto --doctest-modules --durations=10 --pyargs networkx"
 check-import = "python -Werror -c 'import networkx'"
 test-slow = "pytest -n auto --durations=20 --runslow -m slow --pyargs networkx"
