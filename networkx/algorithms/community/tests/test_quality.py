@@ -522,3 +522,184 @@ def test_inter_community_edges_with_digraphs():
     G = nx.cycle_graph(4, create_using=nx.DiGraph())
     partition = [{0, 1}, {2, 3}]
     assert inter_community_edges(G, partition) == 2
+
+
+def test_map_equation_single_module_equals_visit_rate_entropy():
+    """With every node in one module, the two-level map equation reduces to
+    the entropy of the node visit rates. For the undirected path 0-1-2 the
+    (weighted) degrees are 1, 2, 1 so the stationary visit rates are
+    1/4, 1/2, 1/4, giving H = -(2*0.25*log2(0.25) + 0.5*log2(0.5)) = 1.5 bits.
+    """
+    from networkx.algorithms.community.quality import map_equation
+
+    G = nx.path_graph(3)  # edges (0,1), (1,2)
+    codelength = map_equation(G, [{0, 1, 2}])
+    assert codelength == pytest.approx(1.5)
+
+
+def test_map_equation_matches_cpp_infomap_on_karate():
+    """Cross-validate the codelength against the reference C++ Infomap on the
+    two-level partition it finds for Zachary's karate club. Skips if the
+    ``infomap`` package is not installed (it is not a NetworkX dependency)."""
+    infomap = pytest.importorskip("infomap")
+    from networkx.algorithms.community.quality import map_equation
+
+    G = nx.karate_club_graph()
+
+    im = infomap.Infomap(two_level=True, silent=True, seed=42)
+    for u, v, w in G.edges(data="weight", default=1):
+        im.add_link(u, v, w)
+    im.run()
+
+    modules = {}
+    for node in im.nodes:
+        modules.setdefault(node.module_id, set()).add(node.node_id)
+    partition = list(modules.values())
+
+    assert map_equation(G, partition) == pytest.approx(im.codelength, abs=1e-6)
+
+
+def test_map_equation_matches_cpp_infomap_directed():
+    """Cross-validate directed-flow codelength against the reference C++
+    Infomap (default unrecorded teleportation to links, tau=0.15)."""
+    infomap = pytest.importorskip("infomap")
+    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
+    from networkx.algorithms.community.quality import map_equation
+
+    G = nx.DiGraph()
+    G.add_edges_from([(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (2, 3), (0, 4)])
+
+    im = infomap.Infomap(directed=True, two_level=True, silent=True, seed=42)
+    for u, v in G.edges():
+        im.add_link(u, v)
+    im.run()
+
+    modules = {}
+    for node in im.nodes:
+        modules.setdefault(node.module_id, set()).add(node.node_id)
+    partition = list(modules.values())
+
+    assert map_equation(G, partition) == pytest.approx(im.codelength, abs=1e-9)
+
+
+def test_map_equation_directed_with_dangling_nodes():
+    """Directed flow must match C++ Infomap when the graph has dangling nodes
+    (out-degree zero), exercising the unrecorded-teleportation normalization."""
+    infomap = pytest.importorskip("infomap")
+    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
+    from networkx.algorithms.community.quality import map_equation
+
+    G = nx.DiGraph()
+    G.add_edges_from([(0, 1), (1, 2), (2, 0), (2, 3), (3, 4), (0, 4)])  # 4 dangles
+
+    im = infomap.Infomap(directed=True, two_level=True, silent=True, seed=42)
+    for u, v in G.edges():
+        im.add_link(u, v)
+    im.run()
+
+    modules = {}
+    for node in im.nodes:
+        modules.setdefault(node.module_id, set()).add(node.node_id)
+    partition = list(modules.values())
+
+    assert map_equation(G, partition) == pytest.approx(im.codelength, abs=1e-9)
+
+
+def test_map_equation_directed_asymmetric_enter_exit():
+    """On a directed graph where modules have different enter and exit flow
+    (e.g. a growing DAG), the codelength must still match C++ Infomap. This
+    guards the directed index term, which uses enter flow, not exit flow."""
+    infomap = pytest.importorskip("infomap")
+    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
+    from networkx.algorithms.community.quality import map_equation
+
+    G = nx.gnc_graph(40, seed=3)
+
+    im = infomap.Infomap(
+        directed=True, two_level=True, silent=True, seed=42, num_trials=50
+    )
+    for u, v in G.edges():
+        im.add_link(u, v)
+    im.run()
+    modules = {}
+    for node in im.nodes:
+        modules.setdefault(node.module_id, set()).add(node.node_id)
+    partition = list(modules.values())
+
+    assert map_equation(G, partition, weight=None) == pytest.approx(
+        im.codelength, abs=1e-9
+    )
+
+
+def test_map_equation_undirected_self_loop_known_value():
+    """A self-loop is one transition that keeps the walker in place, so it
+    counts once toward the visit rate (Infomap's undirected normalization
+    ``2*sum_w - sum_self``). For the 4-cycle 0-1-2-3-0 with a weight-3 self-loop
+    on node 0, the visit rates are 5/11, 2/11, 2/11, 2/11, so in a single module
+    the codelength is their entropy. Value validated against the C++ reference.
+    """
+    from networkx.algorithms.community.quality import map_equation
+
+    G = nx.Graph()
+    G.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 3, 1), (3, 0, 1), (0, 0, 3)])
+    assert map_equation(G, [{0, 1, 2, 3}]) == pytest.approx(1.858555, abs=1e-5)
+
+
+def test_map_equation_undirected_self_loops_match_cpp():
+    """Cross-validate the codelength on an undirected graph with self-loops
+    against the reference C++ Infomap, which treats a self-loop as a single
+    transition that never crosses a module boundary."""
+    infomap = pytest.importorskip("infomap")
+    from networkx.algorithms.community.quality import map_equation
+
+    G = nx.Graph()
+    G.add_weighted_edges_from(
+        [
+            (0, 1, 1),
+            (1, 2, 1),
+            (2, 0, 1),
+            (3, 4, 1),
+            (4, 5, 1),
+            (5, 3, 1),
+            (2, 3, 1),
+            (0, 0, 2),
+            (4, 4, 3),
+        ]
+    )
+
+    im = infomap.Infomap(two_level=True, silent=True, seed=42)
+    for u, v, w in G.edges(data="weight", default=1):
+        im.add_link(u, v, w)
+    im.run()
+    modules = {}
+    for node in im.nodes:
+        modules.setdefault(node.module_id, set()).add(node.node_id)
+    partition = list(modules.values())
+
+    assert map_equation(G, partition) == pytest.approx(im.codelength, abs=1e-9)
+
+
+def test_map_equation_directed_self_loops_match_cpp():
+    """Directed self-loops are ordinary links in the PageRank walk, so the
+    codelength must match C++ Infomap on a directed graph that has them."""
+    infomap = pytest.importorskip("infomap")
+    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
+    from networkx.algorithms.community.quality import map_equation
+
+    G = nx.DiGraph()
+    G.add_edges_from(
+        [(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (2, 3), (0, 4), (0, 0), (4, 4)]
+    )
+
+    im = infomap.Infomap(directed=True, two_level=True, silent=True, seed=42)
+    for u, v in G.edges():
+        im.add_link(u, v)
+    im.run()
+    modules = {}
+    for node in im.nodes:
+        modules.setdefault(node.module_id, set()).add(node.node_id)
+    partition = list(modules.values())
+
+    assert map_equation(G, partition, weight=None) == pytest.approx(
+        im.codelength, abs=1e-9
+    )
