@@ -1,3 +1,11 @@
+Pre-release checklist
+=====================
+
+Things to double-check prior to cutting a NetworkX release:
+
+- Ensure that the copyright in ``README.rst`` and ``LICENSE.txt`` is
+  updated to the current year.
+
 Release Process
 ===============
 
