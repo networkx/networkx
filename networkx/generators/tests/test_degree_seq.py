@@ -124,6 +124,31 @@ def test_havel_hakimi_construction():
 
     pytest.raises(nx.NetworkXError, nx.havel_hakimi_graph, z, create_using=nx.DiGraph())
 
+    # Valid sequence: test accepted create_using parameter
+    G = nx.havel_hakimi_graph(z, create_using=nx.Graph())
+    assert len(G) == len(z)
+
+    # Valid sequence: test if correct number and degrees of nodes created
+    # when randomize=True
+    z = [5, 4, 3, 3, 3, 2, 2, 2]
+    G = nx.havel_hakimi_graph(z, randomize=True)
+    assert len(G) == len(z)
+    assert sorted([d for _, d in G.degree()]) == sorted(z)
+    assert nx.number_of_selfloops(G) == 0
+    # Valid sequence: Test 0 degree vertex handling when randomize=True
+    z = [2, 2, 2, 2, 0, 0]
+    G = nx.havel_hakimi_graph(z, randomize=True)
+    assert len(G) == len(z)
+    assert sorted([d for _, d in G.degree()]) == sorted(z)
+    assert nx.number_of_selfloops(G) == 0
+
+    # Valid sequence: test if specific seed produces reproducible results
+    # when randomize=True
+    z = [7, 7, 5, 5, 3, 3, 2, 2, 1, 1]
+    G1 = nx.havel_hakimi_graph(z, randomize=True, seed=86)
+    G2 = nx.havel_hakimi_graph(z, randomize=True, seed=86)
+    assert sorted(G1.edges()) == sorted(G2.edges())
+
 
 def test_directed_havel_hakimi():
     # Test range of valid directed degree sequences

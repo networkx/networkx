@@ -438,10 +438,15 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     return G
 
 
+@py_random_state("seed")
 @nx._dispatchable(graphs=None, returns_graph=True)
-def havel_hakimi_graph(deg_sequence, create_using=None):
-    """Returns a simple graph with given degree sequence constructed
-    using the Havel-Hakimi algorithm.
+def havel_hakimi_graph(deg_sequence, create_using=None, *, randomize=False, seed=None):
+    """Returns a simple graph with given degree sequence.
+
+    The resulting graph is constructed using the Havel-Hakimi algorithm with
+    maximal degree nodes selected at each step. Or when `randomize=True`, the
+    construction uses the Kleitman-Wang undirected generalization where nodes
+    are selected at random at each step.
 
     Parameters
     ----------
@@ -450,12 +455,18 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
         Directed graphs are not allowed.
+    randomize: bool (default=False)
+        When True, randomize the source, i.e. use the Kleitman-Wang generalization.
+    seed: integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Raises
     ------
-    NetworkXException
+    NetworkXError
         For a non-graphical degree sequence (i.e. one
         not realizable by some simple graph).
+        For a directed graph input.
 
     Notes
     -----
@@ -468,6 +479,15 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
 
     The basic algorithm is from Hakimi [1]_ and was generalized by
     Kleitman and Wang [2]_.
+
+    The Kleitman-Wang undirected algorithm generalizes the Havel-Hakimi
+    algorithm by proving that a graph can be successfully constructed by
+    selecting any arbitrary node as the source node, rather than strictly
+    the node of highest degree.
+
+    The randomize mode implements that generalization by selecting a source node
+    at random at each step, and then connecting it to the nodes with the highest
+    remaining degrees.
 
     References
     ----------
@@ -497,23 +517,34 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
         return G
 
     modstubs = [(0, 0)] * (dmax + 1)
-    # Successively reduce degree sequence by removing the maximum degree
+    # Successively reduce degree sequence by removing a source degree
     while n > 0:
-        # Retrieve the maximum degree in the sequence
-        while len(num_degs[dmax]) == 0:
-            dmax -= 1
+        if randomize:
+            # Create a list from all remaining non-zero nodes
+            not_empty = [d for d in range(dmax + 1) if num_degs[d]]
+            # Pick a random source node and recalculate dmax
+            source_deg = seed.choice(not_empty)
+            source = num_degs[source_deg].pop()
+            while dmax > 0 and len(num_degs[dmax]) == 0:
+                dmax -= 1
+        else:
+            # Retrieve the maximum degree in the sequence
+            while len(num_degs[dmax]) == 0:
+                dmax -= 1
+            # Remove largest stub in list
+            source_deg = dmax
+            source = num_degs[dmax].pop()
+
         # If there are not enough stubs to connect to, then the sequence is
         # not graphical
-        if dmax > n - 1:
+        if source_deg > n - 1:
             raise nx.NetworkXError("Non-graphical integer sequence")
 
-        # Remove largest stub in list
-        source = num_degs[dmax].pop()
         n -= 1
         # Reduce the next dmax largest stubs
         mslen = 0
         k = dmax
-        for i in range(dmax):
+        for i in range(source_deg):
             while len(num_degs[k]) == 0:
                 k -= 1
             target = num_degs[k].pop()
