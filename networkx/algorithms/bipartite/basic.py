@@ -90,6 +90,11 @@ def is_bipartite(G):
     ----------
     G : NetworkX graph
 
+    Returns
+    -------
+    bool
+        True if graph G is bipartite, False if not.
+
     Examples
     --------
     >>> G = nx.path_graph(4)
@@ -120,6 +125,11 @@ def is_bipartite_node_set(G, nodes):
 
     nodes: list or container
       Check if nodes are a one of a bipartite set.
+
+    Returns
+    -------
+    bool
+        True if nodes and G/nodes are a bipartition of G, False otherwise.
 
     Examples
     --------
