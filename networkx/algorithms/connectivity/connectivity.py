@@ -82,7 +82,7 @@ def local_node_connectivity(
 
     Returns
     -------
-    K : integer
+    K : int
         local node connectivity for nodes s and t
 
     Examples
@@ -237,7 +237,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
 
     Returns
     -------
-    K : integer
+    K : int
         Node connectivity of G, or local node connectivity if source
         and target are provided.
 
@@ -533,7 +533,7 @@ def local_edge_connectivity(
 
     Returns
     -------
-    K : integer
+    K : int
         local edge connectivity for nodes s and t.
 
     Examples
@@ -679,7 +679,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
 
     Returns
     -------
-    K : integer
+    K : int
         Edge connectivity for G, or local edge connectivity if source
         and target were provided
 

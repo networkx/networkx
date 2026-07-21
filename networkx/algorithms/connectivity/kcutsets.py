@@ -48,9 +48,9 @@ def all_node_cuts(G, k=None, flow_func=None):
 
     Returns
     -------
-    cuts : a generator of node cutsets
-        Each node cutset has cardinality equal to the node connectivity of
-        the input graph.
+    cuts : generator
+        A generator of node cutsets. Each node cutset has cardinality
+        equal to the node connectivity of the input graph.
 
     Examples
     --------
