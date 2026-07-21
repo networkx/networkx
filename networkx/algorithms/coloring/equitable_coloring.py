@@ -407,8 +407,9 @@ def equitable_color(G, num_colors):
 
     Returns
     -------
-    A dictionary with keys representing nodes and values representing
-    corresponding coloring.
+    dict
+        A dictionary with keys representing nodes and values representing
+        corresponding coloring.
 
     Examples
     --------

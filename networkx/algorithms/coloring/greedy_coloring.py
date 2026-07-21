@@ -313,8 +313,9 @@ def greedy_color(G, strategy="largest_first", interchange=False):
 
     Returns
     -------
-    A dictionary with keys representing nodes and values representing
-    corresponding coloring.
+    dict
+        A dictionary with keys representing nodes and values representing
+        corresponding coloring.
 
     Examples
     --------
