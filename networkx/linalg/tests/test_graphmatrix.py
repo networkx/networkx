@@ -294,3 +294,34 @@ class TestGraphMatrix:
             nx.adjacency_matrix(self.no_edges_G, nodelist=[1, 3]).todense(),
             self.no_edges_A,
         )
+
+    def test_normalized_adjacency_matrix(self):
+        "Conversion to normalized adjacency matrix"
+        s = 1 / np.sqrt(2)
+        # fmt: off
+        P3 = np.array(
+            [[0, s, 0],
+             [s, 0, s],
+             [0, s, 0]]
+        )
+        # fmt: on
+        np.testing.assert_almost_equal(
+            nx.normalized_adjacency_matrix(nx.path_graph(3)).todense(), P3
+        )
+        # Undirected normalized adjacency is symmetric.
+        A = nx.normalized_adjacency_matrix(self.G).todense()
+        np.testing.assert_almost_equal(A, A.T)
+        # Weighting the whole graph uniformly leaves the normalization unchanged.
+        np.testing.assert_almost_equal(
+            nx.normalized_adjacency_matrix(self.WG).todense(), A
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_adjacency_matrix(self.G, weight=None).todense(), A
+        )
+        # A zero-degree node yields an all-zero row/column (D^{-1/2} is 0 there).
+        np.testing.assert_almost_equal(A[4], np.zeros(5))
+        # Identity with the normalized Laplacian: N = I - A_hat (no isolated nodes).
+        H = nx.petersen_graph()
+        Ah = nx.normalized_adjacency_matrix(H).todense()
+        N = nx.normalized_laplacian_matrix(H).todense()
+        np.testing.assert_almost_equal(N, np.eye(H.number_of_nodes()) - Ah)

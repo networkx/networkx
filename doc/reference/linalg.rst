@@ -13,6 +13,7 @@ Graph Matrix
    :toctree: generated/
 
    adjacency_matrix
+   normalized_adjacency_matrix
    incidence_matrix
 
 Laplacian Matrix
@@ -72,6 +73,7 @@ Spectrum
    :toctree: generated/
 
    adjacency_spectrum
+   normalized_adjacency_spectrum
    laplacian_spectrum
    bethe_hessian_spectrum
    normalized_laplacian_spectrum
