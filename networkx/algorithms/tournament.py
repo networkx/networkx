@@ -48,6 +48,23 @@ def index_satisfying(iterable, condition):
     `iterable` must not be empty. If `iterable` is empty, this
     function raises :exc:`ValueError`.
 
+    Parameters
+    ----------
+    iterable : iterable
+        An iterable.
+    condition : function
+        A function that takes an element of `iterable` and returns a boolean.
+
+    Returns
+    -------
+    int
+        The index of the first element that satisfies the condition, or the
+        length of the iterable if no such element is found.
+
+    Raises
+    ------
+    ValueError
+        If `iterable` is empty.
     """
     # Pre-condition: iterable must not be empty.
     for i, x in enumerate(iterable):
