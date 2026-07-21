@@ -107,7 +107,7 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
 
     Returns
     -------
-    induced_nodes : Set of nodes
+    induced_nodes : set
         The set of induced nodes in the path from s to t in G
 
     Raises
@@ -364,7 +364,7 @@ def complete_to_chordal_graph(G):
     -------
     H : NetworkX graph
         The chordal enhancement of G
-    alpha : Dictionary
+    alpha : dict
             The elimination ordering of nodes of G
 
     Notes

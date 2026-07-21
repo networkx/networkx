@@ -536,7 +536,7 @@ def node_clique_number(G, nodes=None, cliques=None, separate_nodes=False):
 
     Returns
     -------
-    int or dict
+    size : int or dict
         If `nodes` is a single node, returns the size of the
         largest maximal clique in `G` containing that node.
         Otherwise return a dict keyed by node to the size
@@ -602,7 +602,7 @@ def number_of_cliques(G, nodes=None, cliques=None):
 
     Returns
     -------
-    int or dict
+    num_cliques : int or dict
         If `nodes` is a single node, return the number of maximal cliques it is
         part of. If `nodes` is a list, return a dictionary keyed by node to the
         number of maximal cliques it is part of.
