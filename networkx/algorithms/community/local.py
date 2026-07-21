@@ -7,7 +7,7 @@ Community Detection (GCD), which aims to partition an entire network into
 communities.
 
 LCD is often useful when only a portion of the graph is known or the
-graph is large enough that GCD is infeasable
+graph is large enough that GCD is infeasible
 
 [1]_ Gives a good introduction and overview of LCD
 
