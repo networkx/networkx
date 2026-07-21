@@ -13,6 +13,7 @@ Graph Matcher
 .. autosummary::
    :toctree: generated/
 
+    GraphMatcher
     GraphMatcher.__init__
     GraphMatcher.initialize
     GraphMatcher.is_isomorphic
@@ -34,6 +35,7 @@ DiGraph Matcher
 .. autosummary::
    :toctree: generated/
 
+    DiGraphMatcher
     DiGraphMatcher.__init__
     DiGraphMatcher.initialize
     DiGraphMatcher.is_isomorphic
@@ -46,6 +48,50 @@ DiGraph Matcher
     DiGraphMatcher.match
     DiGraphMatcher.semantic_feasibility
     DiGraphMatcher.syntactic_feasibility
+
+
+MultiGraph Matcher
+------------------
+.. currentmodule:: networkx.algorithms.isomorphism
+
+.. autosummary::
+   :toctree: generated/
+
+    MultiGraphMatcher
+    MultiGraphMatcher.__init__
+    MultiGraphMatcher.initialize
+    MultiGraphMatcher.is_isomorphic
+    MultiGraphMatcher.subgraph_is_isomorphic
+    MultiGraphMatcher.subgraph_is_monomorphic
+    MultiGraphMatcher.isomorphisms_iter
+    MultiGraphMatcher.subgraph_isomorphisms_iter
+    MultiGraphMatcher.subgraph_monomorphisms_iter
+    MultiGraphMatcher.candidate_pairs_iter
+    MultiGraphMatcher.match
+    MultiGraphMatcher.semantic_feasibility
+    MultiGraphMatcher.syntactic_feasibility
+
+
+MultiDiGraph Matcher
+--------------------
+.. currentmodule:: networkx.algorithms.isomorphism
+
+.. autosummary::
+   :toctree: generated/
+
+    MultiDiGraphMatcher
+    MultiDiGraphMatcher.__init__
+    MultiDiGraphMatcher.initialize
+    MultiDiGraphMatcher.is_isomorphic
+    MultiDiGraphMatcher.subgraph_is_isomorphic
+    MultiDiGraphMatcher.subgraph_is_monomorphic
+    MultiDiGraphMatcher.isomorphisms_iter
+    MultiDiGraphMatcher.subgraph_isomorphisms_iter
+    MultiDiGraphMatcher.subgraph_monomorphisms_iter
+    MultiDiGraphMatcher.candidate_pairs_iter
+    MultiDiGraphMatcher.match
+    MultiDiGraphMatcher.semantic_feasibility
+    MultiDiGraphMatcher.syntactic_feasibility
 
 
 Match helpers
