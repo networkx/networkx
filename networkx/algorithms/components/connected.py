@@ -112,7 +112,7 @@ def number_connected_components(G):
 
     Returns
     -------
-    n : integer
+    n : int
        Number of connected components
 
     Raises
