@@ -1,3 +1,5 @@
+import math
+
 import pytest
 
 import networkx as nx
@@ -135,6 +137,42 @@ def test_rich_club_leq_3_nodes_normalized():
         G.add_node(i)
         with pytest.raises(nx.NetworkXError, match="Graph has fewer than four nodes"):
             rc = nx.rich_club_coefficient(G, normalized=True)
+
+
+def test_richclub_normalized_returns_nan_instead_of_raising():
+    """Regression test for
+    https://github.com/networkx/networkx/issues/8485
+
+    For some graphs, the randomized comparison graph's rich-club
+    coefficient can be 0 for a degree at which the original graph's
+    coefficient is not, making the normalized ratio undefined. This
+    must return NaN for that degree rather than raising
+    ZeroDivisionError.
+    """
+    G = nx.Graph()
+    nodes = ["A", "A_1", "A_2", "B", "B_1", "B_2", "C", "D"]
+    G.add_nodes_from(nodes)
+    edges = [
+        ("A", "A_1"),
+        ("A", "A_2"),
+        ("B", "B_1"),
+        ("B", "B_2"),
+        ("A", "B"),
+        ("C", "D"),
+    ]
+    G.add_edges_from(edges)
+
+    nan_seen = False
+    for seed in range(200):
+        rc = nx.rich_club_coefficient(G, normalized=True, Q=1, seed=seed)
+        for value in rc.values():
+            if isinstance(value, float) and math.isnan(value):
+                nan_seen = True
+    assert nan_seen, (
+        "expected at least one NaN across repeated runs "
+        "(if this starts failing, the random swaps may no longer "
+        "reach the zero-coefficient case for this graph/seed range)"
+    )
 
 
 # def test_richclub2_normalized():
