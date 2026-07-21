@@ -51,6 +51,16 @@ def is_threshold_sequence(degree_sequence):
     deconstructed iteratively by removing a node of degree zero or a
     node that connects to the remaining nodes.  If this deconstruction
     fails then the sequence is not a threshold sequence.
+
+    Parameters
+    ----------
+    degree_sequence : list of ints
+        A degree sequence
+
+    Returns
+    -------
+    bool
+        True if the sequence is a threshold degree sequence, False otherwise.
     """
     ds = degree_sequence[:]  # get a copy so we don't destroy original
     ds.sort()
@@ -75,23 +85,38 @@ def creation_sequence(degree_sequence, with_labels=False, compact=False):
     is added.  The first node added is by convention 'd'.
     This list can be converted to a string if desired using "".join(cs)
 
-    If with_labels==True:
-    Returns a list of 2-tuples containing the vertex number
-    and a character 'd' or 'i' which describes the type of vertex.
-
-    If compact==True:
-    Returns the creation sequence in a compact form that is the number
-    of 'i's and 'd's alternating.
-    Examples:
-    [1,2,2,3] represents d,i,i,d,d,i,i,i
-    [3,1,2] represents d,d,d,i,d,d
-
     Notice that the first number is the first vertex to be used for
     construction and so is always 'd'.
 
-    with_labels and compact cannot both be True.
+    Parameters
+    ----------
+    degree_sequence : list or dict
+        A threshold degree sequence.
+    with_labels : bool, optional (default=False)
+        If True, returns a list of 2-tuples containing the vertex number
+        and a character 'd' or 'i' which describes the type of vertex.
+    compact : bool, optional (default=False)
+        If True, returns the creation sequence in a compact form that is the number
+        of 'i's and 'd's alternating. `with_labels` and `compact` cannot both be True.
 
-    Returns None if the sequence is not a threshold sequence
+    Returns
+    -------
+    cs : list or None
+        A creation sequence for the given threshold degree sequence.
+        Returns None if the sequence is not a threshold sequence.
+
+    Raises
+    ------
+    ValueError
+        If `with_labels` and `compact` are both True.
+
+    Examples
+    --------
+    >>> from networkx.algorithms.threshold import creation_sequence
+    >>> creation_sequence([1, 2, 2, 3], compact=True)
+    [1, 2, 1]
+    >>> creation_sequence([3, 1, 2], compact=True)
+    [2, 1, 1]
     """
     if with_labels and compact:
         raise ValueError("compact sequences cannot be labeled")
@@ -129,6 +154,22 @@ def make_compact(creation_sequence):
     Returns the creation sequence in a compact form
     that is the number of 'i's and 'd's alternating.
 
+    Notice that the first number is the first vertex
+    to be used for construction and so is always 'd'.
+
+    Labeled creation sequences lose their labels in the
+    compact representation.
+
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+
+    Returns
+    -------
+    list
+        A compact creation sequence.
+
     Examples
     --------
     >>> from networkx.algorithms.threshold import make_compact
@@ -136,13 +177,6 @@ def make_compact(creation_sequence):
     [1, 2, 2, 3]
     >>> make_compact(["d", "d", "d", "i", "d", "d"])
     [3, 1, 2]
-
-    Notice that the first number is the first vertex
-    to be used for construction and so is always 'd'.
-
-    Labeled creation sequences lose their labels in the
-    compact representation.
-
     >>> make_compact([3, 1, 2])
     [3, 1, 2]
     """
@@ -174,6 +208,16 @@ def uncompact(creation_sequence):
     graph to a standard creation sequence (unlabeled).
     If the creation_sequence is already standard, return it.
     See creation_sequence.
+
+    Parameters
+    ----------
+    creation_sequence : list
+        A compact creation sequence.
+
+    Returns
+    -------
+    list
+        A standard creation sequence.
     """
     first = creation_sequence[0]
     if isinstance(first, str):  # creation sequence
@@ -198,6 +242,16 @@ def creation_sequence_to_weights(creation_sequence):
     graph designated by the creation sequence.  The weights
     are scaled so that the threshold is 1.0.  The order of the
     nodes is the same as that in the creation sequence.
+
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+
+    Returns
+    -------
+    list
+        A list of node weights.
     """
     # Turn input sequence into a labeled creation sequence
     first = creation_sequence[0]
@@ -253,21 +307,37 @@ def weights_to_creation_sequence(
     Dominating vertices are connected to all vertices present
     when it is added.  The first node added is by convention 'd'.
 
-    If with_labels==True:
-    Returns a list of 2-tuples containing the vertex number
-    and a character 'd' or 'i' which describes the type of vertex.
-
-    If compact==True:
-    Returns the creation sequence in a compact form that is the number
-    of 'i's and 'd's alternating.
-    Examples:
-    [1,2,2,3] represents d,i,i,d,d,i,i,i
-    [3,1,2] represents d,d,d,i,d,d
-
     Notice that the first number is the first vertex to be used for
     construction and so is always 'd'.
 
-    with_labels and compact cannot both be True.
+    Parameters
+    ----------
+    weights : list or dict
+        A list of node weights.
+    threshold : float, optional (default=1)
+        The threshold value.
+    with_labels : bool, optional (default=False)
+        If True, returns a list of 2-tuples containing the vertex number
+        and a character 'd' or 'i' which describes the type of vertex.
+    compact : bool, optional (default=False)
+        If True, returns the creation sequence in a compact form that is the number
+        of 'i's and 'd's alternating. `with_labels` and `compact` cannot both be True.
+
+    Returns
+    -------
+    cs : list
+        A creation sequence.
+
+    Raises
+    ------
+    ValueError
+        If `with_labels` and `compact` are both True.
+
+    Examples
+    --------
+    >>> from networkx.algorithms.threshold import weights_to_creation_sequence
+    >>> weights_to_creation_sequence([0.5, 0.4, 0.3, 0.2], threshold=0.8, compact=True)
+    [1, 1, 1, 1]
     """
     if with_labels and compact:
         raise ValueError("compact sequences cannot be labeled")
@@ -310,14 +380,24 @@ def threshold_graph(creation_sequence, create_using=None):
 
     The input sequence can be a
 
-    creation sequence (e.g. ['d','i','d','d','d','i'])
-    labeled creation sequence (e.g. [(0,'d'),(2,'d'),(1,'i')])
-    compact creation sequence (e.g. [2,1,1,2,0])
+    - creation sequence (e.g. ['d','i','d','d','d','i'])
+    - labeled creation sequence (e.g. [(0,'d'),(2,'d'),(1,'i')])
+    - compact creation sequence (e.g. [2,1,1,2,0])
 
     Use cs=creation_sequence(degree_sequence,labeled=True)
     to convert a degree sequence to a creation sequence.
 
-    Returns None if the sequence is not valid
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    Graph
+        A threshold graph. Returns None if the sequence is not valid.
     """
     # Turn input sequence into a labeled creation sequence
     first = creation_sequence[0]
@@ -359,6 +439,16 @@ def find_alternating_4_cycle(G):
     Returns False if there aren't any alternating 4 cycles.
     Otherwise returns the cycle as [a,b,c,d] where (a,b)
     and (c,d) are edges and (a,c) and (b,d) are not.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A graph to check for alternating 4 cycles.
+
+    Returns
+    -------
+    list or bool
+        An alternating 4 cycle as a list of 4 nodes, or False if none exists.
     """
     for u, v in G.edges():
         for w in G.nodes():
@@ -408,7 +498,16 @@ def find_threshold_graph(G, create_using=None):
 def find_creation_sequence(G):
     """
     Find a threshold subgraph that is close to largest in G.
-    Returns the labeled creation sequence of that threshold graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph instance
+        An instance of `Graph`, or `MultiDiGraph`
+
+    Returns
+    -------
+    list
+        The labeled creation sequence of that threshold graph.
     """
     cs = []
     # get a local pointer to the working part of the graph
@@ -441,6 +540,16 @@ def triangles(creation_sequence):
     """
     Compute number of triangles in the threshold graph with the
     given creation sequence.
+
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+
+    Returns
+    -------
+    int
+        Number of triangles.
     """
     # shortcut algorithm that doesn't require computing number
     # of triangles at each node.
@@ -461,6 +570,15 @@ def triangle_sequence(creation_sequence):
     """
     Return triangle sequence for the given threshold graph creation sequence.
 
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+
+    Returns
+    -------
+    list
+        A list of number of triangles for each node.
     """
     cs = creation_sequence
     seq = []
@@ -488,6 +606,16 @@ def triangle_sequence(creation_sequence):
 def cluster_sequence(creation_sequence):
     """
     Return cluster sequence for the given threshold graph creation sequence.
+
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+
+    Returns
+    -------
+    list
+        A list of clustering coefficients for each node.
     """
     triseq = triangle_sequence(creation_sequence)
     degseq = degree_sequence(creation_sequence)
@@ -506,6 +634,16 @@ def degree_sequence(creation_sequence):
     """
     Return degree sequence for the threshold graph with the given
     creation sequence
+
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+
+    Returns
+    -------
+    list
+        A list of degrees for each node.
     """
     cs = creation_sequence  # alias
     seq = []
@@ -523,6 +661,16 @@ def density(creation_sequence):
     """
     Return the density of the graph with this creation_sequence.
     The density is the fraction of possible edges present.
+
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+
+    Returns
+    -------
+    float
+        The density of the graph.
     """
     N = len(creation_sequence)
     two_size = sum(degree_sequence(creation_sequence))
@@ -534,6 +682,16 @@ def density(creation_sequence):
 def degree_correlation(creation_sequence):
     """
     Return the degree-degree correlation over all edges.
+
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+
+    Returns
+    -------
+    float
+        The degree-degree correlation.
     """
     cs = creation_sequence
     s1 = 0  # deg_i*deg_j
@@ -576,8 +734,20 @@ def shortest_path(creation_sequence, u, v):
     Use cs=creation_sequence(degree_sequence,with_labels=True)
     to convert a degree sequence to a creation sequence.
 
-    Returns a list of vertices from u to v.
-    Example: if they are neighbors, it returns [u,v]
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+    u : node
+        A node in the graph.
+    v : node
+        A node in the graph.
+
+    Returns
+    -------
+    list
+        A list of vertices from u to v.
+        Example: if they are neighbors, it returns [u,v]
     """
     # Turn input sequence into a labeled creation sequence
     first = creation_sequence[0]
@@ -626,6 +796,18 @@ def shortest_path_length(creation_sequence, i):
 
     Paths lengths in threshold graphs are at most 2.
     Length to unreachable nodes is set to -1.
+
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+    i : int or label
+        The index or label of the node to find shortest paths from.
+
+    Returns
+    -------
+    dict
+        A dictionary mapping each node to its shortest path length from i.
     """
     # Turn input sequence into a labeled creation sequence
     first = creation_sequence[0]
@@ -666,6 +848,18 @@ def betweenness_sequence(creation_sequence, normalized=True):
     Return betweenness for the threshold graph with the given creation
     sequence.  The result is unscaled.  To scale the values
     to the interval [0,1] divide by (n-1)*(n-2).
+
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+    normalized : bool, optional (default=True)
+        If True, normalize the betweenness values.
+
+    Returns
+    -------
+    list
+        A list of betweenness centralities for each node.
     """
     cs = creation_sequence
     seq = []  # betweenness
@@ -712,6 +906,16 @@ def eigenvectors(creation_sequence):
 
     Notice that the order of the eigenvalues returned by eigenvalues(cs)
     may not correspond to the order of these eigenvectors.
+
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
+
+    Returns
+    -------
+    tuple
+        A tuple of (eigenvalues, eigenvectors).
     """
     ccs = make_compact(creation_sequence)
     N = sum(ccs)
@@ -771,6 +975,18 @@ def spectral_projection(u, eigenpairs):
 
     There's not a lot of error checking on lengths of
     arrays, etc. so be careful.
+
+    Parameters
+    ----------
+    u : list
+        A vector.
+    eigenpairs : tuple
+        A tuple of (eigenvalues, eigenvectors).
+
+    Returns
+    -------
+    list
+        A list of coefficients.
     """
     coeff = []
     evect = eigenpairs[1]
@@ -788,17 +1004,20 @@ def eigenvalues(creation_sequence):
     Based on the Ferrer's diagram method.  The spectrum is integral
     and is the conjugate of the degree sequence.
 
-    See::
+    Parameters
+    ----------
+    creation_sequence : list
+        A creation sequence.
 
-      @Article{degree-merris-1994,
-       author = {Russel Merris},
-       title = {Degree maximal graphs are Laplacian integral},
-       journal = {Linear Algebra Appl.},
-       year = {1994},
-       volume = {199},
-       pages = {381--389},
-      }
+    Returns
+    -------
+    list
+        A list of eigenvalues.
 
+    References
+    ----------
+    .. [1] Russel Merris. "Degree maximal graphs are Laplacian integral".
+       Linear Algebra Appl. 199 (1994): 381-389.
     """
     degseq = degree_sequence(creation_sequence)
     degseq.sort()
@@ -829,18 +1048,30 @@ def random_threshold_sequence(n, p, seed=None):
     A creation sequence is built by randomly choosing d's with
     probability p and i's with probability 1-p.
 
-    s=nx.random_threshold_sequence(10,0.5)
-
-    returns a threshold sequence of length 10 with equal
-    probably of an i or a d at each position.
-
     A "random" threshold graph can be built with
+    `G=nx.threshold_graph(s)`.
 
-    G=nx.threshold_graph(s)
-
+    Parameters
+    ----------
+    n : int
+        The size of the sequence.
+    p : float
+        The probability of choosing a 'd' over an 'i'.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    list
+        A random threshold sequence.
+
+    Examples
+    --------
+    >>> s = nx.random_threshold_sequence(10, 0.5)
+
+    returns a threshold sequence of length 10 with equal
+    probability of an i or a d at each position.
     """
     if not (0 <= p <= 1):
         raise ValueError("p must be in [0,1]")
@@ -875,7 +1106,8 @@ def right_d_threshold_sequence(n, m):
 
     Returns
     -------
-    A list of 'd' (dominant) and 'i' (isolated) forming a right-dominated threshold sequence.
+    list
+        A list of 'd' (dominant) and 'i' (isolated) forming a right-dominated threshold sequence.
 
     Raises
     ------
@@ -930,7 +1162,8 @@ def left_d_threshold_sequence(n, m):
 
     Returns
     -------
-    A list of 'd' (dominant) and 'i' (isolated) forming a left-dominated threshold sequence.
+    list
+        A list of 'd' (dominant) and 'i' (isolated) forming a left-dominated threshold sequence.
 
     Raises
     ------
