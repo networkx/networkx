@@ -80,7 +80,7 @@ def latapy_clustering(G, nodes=None, mode="dot"):
 
     Returns
     -------
-    clustering : dictionary
+    clustering : dict
         A dictionary keyed by node with the clustering coefficient value.
 
 

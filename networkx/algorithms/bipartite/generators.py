@@ -38,6 +38,11 @@ def complete_bipartite_graph(n1, n2, create_using=None):
     create_using : NetworkX graph instance, (default: nx.Graph)
        Return graph of this type.
 
+    Returns
+    -------
+    G : NetworkX graph
+        A bipartite graph.
+
     Notes
     -----
     Nodes are the integers 0 to `n1 + n2 - 1` unless either n1 or n2 are
@@ -83,6 +88,11 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    G : NetworkX graph
+        A bipartite graph.
 
     The graph is composed of two partitions. Set A has nodes 0 to
     (len(aseq) - 1) and set B has nodes len(aseq) to (len(bseq) - 1).
@@ -159,6 +169,11 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
     create_using : NetworkX graph instance, optional
        Return graph of this type.
 
+    Returns
+    -------
+    G : NetworkX graph
+        A bipartite graph.
+
     Notes
     -----
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
@@ -234,6 +249,11 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     create_using : NetworkX graph instance, optional
        Return graph of this type.
 
+    Returns
+    -------
+    G : NetworkX graph
+        A bipartite graph.
+
     Notes
     -----
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
@@ -308,6 +328,11 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
        Degree sequence for node set B.
     create_using : NetworkX graph instance, optional
        Return graph of this type.
+
+    Returns
+    -------
+    G : NetworkX graph
+        A bipartite graph.
 
     Notes
     -----
@@ -388,6 +413,11 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
+    Returns
+    -------
+    G : NetworkX graph
+        A bipartite graph.
+
     References
     ----------
     .. [1] Guillaume, J.L. and Latapy, M.,
@@ -460,6 +490,11 @@ def random_graph(n, m, p, seed=None, directed=False):
         See :ref:`Randomness<randomness>`.
     directed : bool, optional (default=False)
         If True return a directed graph
+
+    Returns
+    -------
+    G : NetworkX graph
+        A bipartite graph.
 
     Notes
     -----
@@ -548,6 +583,11 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
         See :ref:`Randomness<randomness>`.
     directed : bool, optional (default=False)
         If True return a directed graph
+
+    Returns
+    -------
+    G : NetworkX graph
+        A bipartite graph.
 
     Examples
     --------
