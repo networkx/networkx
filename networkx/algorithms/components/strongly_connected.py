@@ -229,7 +229,7 @@ def number_strongly_connected_components(G):
 
     Returns
     -------
-    n : integer
+    n : int
        Number of strongly connected components
 
     Raises

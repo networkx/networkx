@@ -79,7 +79,7 @@ def number_weakly_connected_components(G):
 
     Returns
     -------
-    n : integer
+    n : int
         Number of weakly connected components
 
     Raises
