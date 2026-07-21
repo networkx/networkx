@@ -20,7 +20,7 @@ def degree_centrality(G, nodes):
 
     Returns
     -------
-    centrality : dictionary
+    centrality : dict
        Dictionary keyed by node with bipartite degree centrality as the value.
 
     Examples
@@ -125,7 +125,7 @@ def betweenness_centrality(G, nodes):
 
     Returns
     -------
-    betweenness : dictionary
+    betweenness : dict
         Dictionary keyed by node with bipartite betweenness centrality
         as the value.
 
@@ -203,7 +203,7 @@ def closeness_centrality(G, nodes, normalized=True):
 
     Returns
     -------
-    closeness : dictionary
+    closeness : dict
         Dictionary keyed by node with bipartite closeness centrality
         as the value.
 
