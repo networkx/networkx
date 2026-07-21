@@ -81,7 +81,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
 
     Returns
     -------
-    matches : dictionary
+    matches : dict
 
       The matching is returned as a dictionary, `matches`, such that
       ``matches[v] == w`` if node `v` is matched to node `w`. Unmatched
@@ -200,7 +200,7 @@ def eppstein_matching(G, top_nodes=None):
 
     Returns
     -------
-    matches : dictionary
+    matches : dict
 
       The matching is returned as a dictionary, `matching`, such that
       ``matching[v] == w`` if node `v` is matched to node `w`. Unmatched
@@ -540,7 +540,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
 
     Returns
     -------
-    matches : dictionary
+    matches : dict
 
       The matching is returned as a dictionary, `matches`, such that
       ``matches[v] == w`` if node `v` is matched to node `w`. Unmatched
