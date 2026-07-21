@@ -43,8 +43,9 @@ def cycle_basis(G, root=None):
 
     Returns
     -------
-    A list of cycle lists.  Each cycle list is a list of nodes
-    which forms a cycle (loop) in G.
+    list
+        A list of cycle lists.  Each cycle list is a list of nodes
+        which forms a cycle (loop) in G.
 
     Examples
     --------
@@ -787,8 +788,9 @@ def recursive_simple_cycles(G):
 
     Returns
     -------
-    A list of cycles, where each cycle is represented by a list of nodes
-    along the cycle.
+    list
+        A list of cycles, where each cycle is represented by a list of nodes
+        along the cycle.
 
     Example:
 
@@ -1054,9 +1056,10 @@ def minimum_cycle_basis(G, weight=None):
 
     Returns
     -------
-    A list of cycle lists.  Each cycle list is a list of nodes
-    which forms a cycle (loop) in G. Note that the nodes are not
-    necessarily returned in a order by which they appear in the cycle
+    list
+        A list of cycle lists.  Each cycle list is a list of nodes
+        which forms a cycle (loop) in G. Note that the nodes are not
+        necessarily returned in a order by which they appear in the cycle
 
     Examples
     --------
@@ -1185,6 +1188,7 @@ def girth(G):
     Returns
     -------
     int or math.inf
+        The girth of the graph.
 
     Examples
     --------
