@@ -32,7 +32,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
 
     Returns
     -------
-    nodes : dictionary
+    nodes : dict
         If u (v) is specified, returns a dictionary of nodes with dispersion
         score for all "target" ("source") nodes. If neither u nor v is
         specified, returns a dictionary of dictionaries for all nodes 'u' in the

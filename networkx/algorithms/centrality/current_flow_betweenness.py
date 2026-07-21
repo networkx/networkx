@@ -84,7 +84,7 @@ def approximate_current_flow_betweenness_centrality(
 
     Returns
     -------
-    nodes : dictionary
+    nodes : dict
        Dictionary of nodes with betweenness centrality as the value.
 
     See Also
@@ -206,7 +206,7 @@ def current_flow_betweenness_centrality(
 
     Returns
     -------
-    nodes : dictionary
+    nodes : dict
        Dictionary of nodes with betweenness centrality as the value.
 
     See Also
@@ -301,7 +301,7 @@ def edge_current_flow_betweenness_centrality(
 
     Returns
     -------
-    nodes : dictionary
+    nodes : dict
        Dictionary of edge tuples with betweenness centrality as the value.
 
     Raises

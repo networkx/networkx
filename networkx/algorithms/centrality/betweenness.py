@@ -576,7 +576,7 @@ def _add_edge_keys(G, betweenness, weight=None):
 
     Returns
     -------
-    edges : dictionary
+    edges : dict
         The parameter `betweenness` including edges with keys and their
         betweenness centrality values.
 

@@ -21,7 +21,7 @@ def degree_centrality(G):
 
     Returns
     -------
-    nodes : dictionary
+    nodes : dict
        Dictionary of nodes with degree centrality as the value.
 
     Examples
@@ -79,7 +79,7 @@ def in_degree_centrality(G):
 
     Returns
     -------
-    nodes : dictionary
+    nodes : dict
         Dictionary of nodes with in-degree centrality as values.
 
     Raises
@@ -129,7 +129,7 @@ def out_degree_centrality(G):
 
     Returns
     -------
-    nodes : dictionary
+    nodes : dict
         Dictionary of nodes with out-degree centrality as values.
 
     Raises

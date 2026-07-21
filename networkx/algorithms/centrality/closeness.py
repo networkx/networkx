@@ -72,7 +72,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True, *, sp=None)
 
     Returns
     -------
-    nodes : dictionary
+    nodes : dict
       Dictionary of nodes with closeness centrality as the value.
 
     Examples
@@ -231,7 +231,7 @@ def incremental_closeness_centrality(
 
     Returns
     -------
-    nodes : dictionary
+    nodes : dict
       Dictionary of nodes with closeness centrality as the value.
 
     See Also

@@ -56,7 +56,7 @@ def current_flow_betweenness_centrality_subset(
 
     Returns
     -------
-    nodes : dictionary
+    nodes : dict
        Dictionary of nodes with betweenness centrality as the value.
 
     See Also
