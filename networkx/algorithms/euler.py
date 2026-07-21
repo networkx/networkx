@@ -36,6 +36,11 @@ def is_eulerian(G):
     G : NetworkX graph
        A graph, either directed or undirected.
 
+    Returns
+    -------
+    bool
+        True if the graph is Eulerian, False otherwise.
+
     Examples
     --------
     >>> nx.is_eulerian(nx.DiGraph({0: [3], 1: [2], 2: [3], 3: [0, 1]}))
@@ -57,7 +62,6 @@ def is_eulerian(G):
     >>> nx.is_eulerian(G)
     True
 
-
     """
     if G.is_directed():
         # Every node must have equal in degree and out degree and the
@@ -75,6 +79,16 @@ def is_semieulerian(G):
     """Return True iff `G` is semi-Eulerian.
 
     G is semi-Eulerian if it has an Eulerian path but no Eulerian circuit.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph, either directed or undirected.
+
+    Returns
+    -------
+    bool
+        True if the graph is semi-Eulerian, False otherwise.
 
     See Also
     --------
@@ -278,7 +292,8 @@ def has_eulerian_path(G, source=None):
 
     Returns
     -------
-    Bool : True if G has an Eulerian path.
+    bool
+        True if G has an Eulerian path.
 
     Examples
     --------
@@ -348,8 +363,11 @@ def eulerian_path(G, source=None, keys=False):
 
     Yields
     ------
-    Edge tuples along the eulerian path.
+    tuple
+        Edge tuples along the eulerian path.
 
+    Notes
+    -----
     Warning: If `source` provided is not the start node of an Euler path
     will raise error even if an Euler Path exists.
     """
