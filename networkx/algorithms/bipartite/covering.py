@@ -40,6 +40,12 @@ def min_edge_cover(G, matching_algorithm=None):
         pairs of nodes. It contains both the edges `(u, v)` and `(v, u)`
         for given nodes `u` and `v` among the edges of minimum edge cover.
 
+    Examples
+    --------
+    >>> G = nx.bipartite.random_graph(2, 2, 0.5, seed=42)
+    >>> sorted(nx.bipartite.min_edge_cover(G))
+    [(0, 3), (1, 2), (2, 1), (3, 0)]
+
     Notes
     -----
     An edge cover of a graph is a set of edges such that every node of
