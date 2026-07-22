@@ -86,6 +86,15 @@ Leiden Community Detection
     leiden_communities
     leiden_partitions
 
+Voronoi Community Detection
+---------------------------
+.. automodule:: networkx.algorithms.community.voronoi
+.. autosummary::
+   :toctree: generated/
+
+   voronoi_communities
+   voronoi_partitions
+
 Fluid Communities
 -----------------
 .. automodule:: networkx.algorithms.community.asyn_fluid
