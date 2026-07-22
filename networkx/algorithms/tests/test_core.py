@@ -41,13 +41,12 @@ class TestCore:
         G.add_node(21)
         cls.G = G
 
-        # Create the graph H resulting from the degree sequence
-        # [0, 1, 2, 2, 2, 2, 3] when using the Havel-Hakimi algorithm.
-
-        degseq = [0, 1, 2, 2, 2, 2, 3]
-        H = nx.havel_hakimi_graph(degseq)
-        mapping = {6: 0, 0: 1, 4: 3, 5: 6, 3: 4, 1: 2, 2: 5}
-        cls.H = nx.relabel_nodes(H, mapping)
+        # A 4-cycle with a P2 "tail", and one isolated node. Degree distribution
+        # [0, 1, 2, 2, 2, 2, 3]
+        H = nx.Graph()
+        H.add_node(0)
+        H.add_edges_from([(1, 3), (3, 6), (6, 4), (4, 2), (2, 5), (5, 6)])
+        cls.H = H
 
     def test_trivial(self):
         """Empty graph"""
