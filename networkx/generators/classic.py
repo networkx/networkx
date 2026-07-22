@@ -29,6 +29,7 @@ __all__ = [
     "dorogovtsev_goltsev_mendes_graph",
     "empty_graph",
     "full_rary_tree",
+    "johnson_graph",
     "kneser_graph",
     "ladder_graph",
     "lollipop_graph",
@@ -147,6 +148,64 @@ def kneser_graph(n, k):
     universe = set(range(n))
     comb = itertools.combinations  # only to make it all fit on one line
     G.add_edges_from((s, t) for s in subsets for t in comb(universe - set(s), k))
+    return G
+
+
+@nx._dispatchable(graphs=None, returns_graph=True)
+@nodes_or_number("n")
+def johnson_graph(n, k, *, create_using=None):
+    """Generate a Johnson graph.
+
+    The Johnson graph ``J(n, k)`` has nodes corresponding to all `k`-subsets
+    of an `n`-set ``{0, 1, 2, ..., n - 1}``. Two nodes are adjacent if and only if
+    their corresponding `k`-subsets intersect in exactly ``k - 1`` elements
+    (i.e., they differ by exactly one element).
+
+    Parameters
+    ----------
+    n : int or iterable container of nodes
+        If `n` is an integer, nodes are from ``range(n)``.
+        If `n` is a container of nodes, those nodes appear in the graph.
+
+    k : int
+        Size of each subset (``0 <= k <= n``).
+
+    create_using : NetworkX graph constructor or None, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    networkx.Graph
+        The Johnson graph ``J(n, k)``.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `create_using` is a directed type.
+
+    ValueError
+        If `k` is not between 0 and `n`.
+    """
+    _, nodes = n
+
+    if k > len(nodes) or k < 0:
+        raise ValueError("`k` must be between 0 and `n`")
+
+    combs = list(itertools.combinations(nodes, k))
+    G = nx.empty_graph(combs, create_using=create_using)
+    if G.is_directed():
+        raise nx.NetworkXNotImplemented("not implemented for directed type")
+
+    comb_sets = list(map(set, combs))
+
+    # Two k-subsets are adjacent if they intersect in (k - 1) elements.
+    G.add_edges_from(
+        (ni, nj)
+        for i, (ni, sni) in enumerate(zip(combs, comb_sets))
+        for nj, snj in zip(combs[i + 1 :], comb_sets[i + 1 :])
+        if len(sni & snj) == k - 1
+    )
+
     return G
 
 
