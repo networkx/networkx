@@ -320,6 +320,38 @@ class TestAStar:
         h = nx.alt_heuristic(G, k=3, weight="weight", seed=0)
         assert all(0 <= h(u, 7) < float("inf") for u in G)
 
+    def test_alt_heuristic_explicit_landmarks(self):
+        """Tests that alt_heuristic accepts an explicit list of landmarks and
+        stays admissible"""
+        G = nx.grid_graph(dim=[5, 5])  # nodes are two-tuples (x,y)
+        nx.set_edge_attributes(G, 1, "weight")
+        landmarks = [(0, 0), (4, 4)]
+        h = nx.alt_heuristic(G, weight="weight", landmarks=landmarks)
+        for u in G.nodes():
+            for v in G.nodes():
+                assert h(u, v) <= nx.shortest_path_length(G, u, v, weight="weight")
+
+    def test_alt_heuristic_explicit_landmarks_ignores_k_method(self):
+        """Explicit landmarks are used directly, so an otherwise-invalid k or
+        method does not raise"""
+        G = nx.grid_graph(dim=[3, 3])
+        h = nx.alt_heuristic(G, k=0, method="invalid", landmarks=[(0, 0)])
+        assert h((0, 0), (2, 2)) <= nx.shortest_path_length(G, (0, 0), (2, 2))
+
+    def test_alt_heuristic_empty_landmarks(self):
+        """Tests that alt_heuristic raises NetworkXError for an empty
+        landmarks list"""
+        G = nx.grid_graph(dim=[3, 3])
+        with pytest.raises(nx.NetworkXError):
+            nx.alt_heuristic(G, landmarks=[])
+
+    def test_alt_heuristic_landmark_not_in_graph(self):
+        """Tests that alt_heuristic raises NodeNotFound when a landmark is not
+        a node in G"""
+        G = nx.grid_graph(dim=[3, 3])
+        with pytest.raises(nx.NodeNotFound):
+            nx.alt_heuristic(G, landmarks=[(0, 0), "not-a-node"])
+
     def test_alt_heuristic_matches_dijkstra(self):
         G = self._weighted_random_graph(40, 150, seed=3, directed=True)
         h = nx.alt_heuristic(G, k=8, weight="weight", seed=0)

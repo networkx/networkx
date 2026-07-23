@@ -242,7 +242,9 @@ def astar_path_length(
 
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
-def alt_heuristic(G, k=8, weight="weight", method="farthest", seed=None):
+def alt_heuristic(
+    G, k=8, weight="weight", method="farthest", landmarks=None, seed=None
+):
     r"""Returns an ALT (A*, Landmarks, Triangle inequality) heuristic for graph `G`.
 
     It selects `k` landmark nodes and computes shortest-path distances between every
@@ -262,7 +264,7 @@ def alt_heuristic(G, k=8, weight="weight", method="farthest", seed=None):
     k : int, optional (default=8)
         Number of landmarks to select. Larger values give tighter bounds at the cost of more
         preprocessing time and ``O(k * n)`` memory (``O(2 * k * n)`` for directed graphs).
-        Values greater than ``len(G)`` are capped.
+        Values greater than ``len(G)`` are capped. Ignored when `landmarks` is given.
 
     weight : string or function
         If this is a string, then edge weights will be accessed via the
@@ -280,7 +282,14 @@ def alt_heuristic(G, k=8, weight="weight", method="farthest", seed=None):
         Landmark selection strategy. ``"farthest"`` greedily selects landmarks that are
         far apart: the first landmark is chosen uniformly at random and each subsequent
         landmark maximizes the shortest-path distance to its nearest already-selected landmark.
-        ``"random"`` selects `k` landmarks uniformly at random.
+        ``"random"`` selects `k` landmarks uniformly at random. Ignored when `landmarks` is given.
+
+    landmarks : list of nodes, optional (default=None)
+        An explicit collection of nodes in `G` to use as landmarks. When provided, these nodes
+        are used directly and the automatic selection is skipped, so `k` and `method` are
+        ignored. Good landmarks are far apart and near the "corners" of the graph; poorly
+        placed landmarks remain admissible but give looser bounds. Every node must be in `G`
+        and the collection must be non-empty.
 
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -303,6 +312,12 @@ def alt_heuristic(G, k=8, weight="weight", method="farthest", seed=None):
 
     ValueError
         If `method` is not ``"farthest"`` or ``"random"``.
+
+    NetworkXError
+        If `landmarks` is given but empty.
+
+    NodeNotFound
+        If `landmarks` contains a node that is not in `G`.
 
     Examples
     --------
@@ -338,24 +353,37 @@ def alt_heuristic(G, k=8, weight="weight", method="farthest", seed=None):
     https://www.cs.princeton.edu/courses/archive/spr06/cos423/Handouts/GH05.pdf
     """
 
-    if k < 1:
-        raise nx.NetworkXError(f"Number of landmarks k={k} must be at least 1.")
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
             "ALT heuristic is undefined for empty graphs."
         )
-    if method not in {"farthest", "random"}:
-        raise ValueError(
-            f"Unknown landmark selection method: {method}, must be 'farthest' or 'random'."
-        )
-
-    k = min(k, len(G))
+    if landmarks is not None:
+        landmarks = list(landmarks)
+        if len(landmarks) == 0:
+            raise nx.NetworkXError("Landmarks must contain at least one node.")
+        for node in landmarks:
+            if node not in G:
+                raise nx.NodeNotFound(f"Landmark {node!r} is not a node in G.")
+    else:
+        if k < 1:
+            raise nx.NetworkXError(f"Number of landmarks k={k} must be at least 1.")
+        if method not in {"farthest", "random"}:
+            raise ValueError(
+                f"Unknown landmark selection method: {method}, must be 'farthest' or 'random'."
+            )
+        k = min(k, len(G))
 
     inf = float("inf")
     nodes = list(G)
 
     # Select landmarks and compute distances *from* each landmark.
-    if method == "random":
+    if landmarks is not None:
+        # User-supplied landmarks are used directly.
+        dist_from = [
+            nx.single_source_dijkstra_path_length(G, landmark, weight=weight)
+            for landmark in landmarks
+        ]
+    elif method == "random":
         landmarks = seed.sample(nodes, k)
         dist_from = [
             nx.single_source_dijkstra_path_length(G, landmark, weight=weight)
