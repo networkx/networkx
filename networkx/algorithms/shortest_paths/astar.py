@@ -5,8 +5,9 @@ from itertools import count
 
 import networkx as nx
 from networkx.algorithms.shortest_paths.weighted import _weight_function
+from networkx.utils import py_random_state
 
-__all__ = ["astar_path", "astar_path_length"]
+__all__ = ["astar_path", "astar_path_length", "alt_heuristic"]
 
 
 @nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
@@ -237,3 +238,198 @@ def astar_path_length(
     weight = _weight_function(G, weight)
     path = astar_path(G, source, target, heuristic, weight, cutoff=cutoff)
     return sum(weight(u, v, G[u][v]) for u, v in zip(path[:-1], path[1:]))
+
+
+@py_random_state("seed")
+@nx._dispatchable(edge_attrs="weight")
+def alt_heuristic(
+    G, k=8, weight="weight", method="farthest", landmarks=None, seed=None
+):
+    r"""Returns an ALT (A*, Landmarks, Triangle inequality) heuristic for graph `G`.
+
+    It selects `k` landmark nodes and computes shortest-path distances between every
+    node and each landmark (one Dijkstra sweep per landmark, two on directed graphs).
+    The returned function ``h(u,v)`` is a lower bound on the shortest-path distance
+    from ``u`` to ``v`` obtained from the triangle inequality, and can be passed
+    directly as the ``heuristic`` argument of :func:`astar_path` or :func:`astar_path_length`.
+
+    The heuristic is admissible (it never overestimates the true distance) and consistent,
+    so A* retains its optimality guarantee. The one-time preprocessing cost is amortized over
+    repeated shortest-path queries on the same graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    k : int, optional (default=8)
+        Number of landmarks to select. Larger values give tighter bounds at the cost of more
+        preprocessing time and ``O(k * n)`` memory (``O(2 * k * n)`` for directed graphs).
+        Values greater than ``len(G)`` are capped. Ignored when `landmarks` is given.
+
+    weight : string or function
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
+
+    method : string, optional (default="farthest")
+        Landmark selection strategy. ``"farthest"`` greedily selects landmarks that are
+        far apart: the first landmark is chosen uniformly at random and each subsequent
+        landmark maximizes the shortest-path distance to its nearest already-selected landmark.
+        ``"random"`` selects `k` landmarks uniformly at random. Ignored when `landmarks` is given.
+
+    landmarks : list of nodes, optional (default=None)
+        An explicit collection of nodes in `G` to use as landmarks. When provided, these nodes
+        are used directly and the automatic selection is skipped, so `k` and `method` are
+        ignored. Good landmarks are far apart and near the "corners" of the graph; poorly
+        placed landmarks remain admissible but give looser bounds. Every node must be in `G`
+        and the collection must be non-empty.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    heuristic : callable
+        A function ``h(u,v)`` that returns a lower bound on the shortest-path distance from
+        ``u`` to ``v`` in `G`. The function is admissible and consistent. Suitable for the
+        ``heuristic`` argument of :func:`astar_path` or :func:`astar_path_length`.
+
+    Raises
+    ------
+    NetworkXError
+        If `k` is less than 1.
+
+    NetworkXPointlessConcept
+        If `G` is empty.
+
+    ValueError
+        If `method` is not ``"farthest"`` or ``"random"``.
+
+    NetworkXError
+        If `landmarks` is given but empty.
+
+    NodeNotFound
+        If `landmarks` contains a node that is not in `G`.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> h = nx.alt_heuristic(G, k=2, seed=10)
+    >>> nx.astar_path(G, 0, 4, heuristic=h)
+    [0, 1, 2, 3, 4]
+    >>> h(0, 4)
+    4
+
+    Notes
+    -----
+    For each landmark :math:`\ell` with precomputed distances, the triangle inequality yields
+    two lower bounds on the distance :math:`d(u, v)`:
+
+    .. math::
+
+        d(u, v) \geq d(u, \ell) - d(v, \ell)
+        \qquad
+        d(u, v) \geq d(\ell, v) - d(\ell, u)
+
+    The heuristic returns the maximum of these bounds over all landmarks, or 0 if no landmark
+    yields a finite bound (for example, across disconnected components).
+
+    All shortest-path queries answered with this heuristic must use the same `weight` attribute
+    that was used to build it; using a different weight may make the heuristic inadmissible and
+    A* may return suboptimal paths.
+
+    References
+    ----------
+    ..  [1] Goldberg, Andrew V., and Chris Harrelson. "Computing the shortest path: A* search
+    meets graph theory." In SODA, vol. 5, pp. 156-165. 2005.
+    https://www.cs.princeton.edu/courses/archive/spr06/cos423/Handouts/GH05.pdf
+    """
+
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept(
+            "ALT heuristic is undefined for empty graphs."
+        )
+    if landmarks is not None:
+        landmarks = list(landmarks)
+        if len(landmarks) == 0:
+            raise nx.NetworkXError("Landmarks must contain at least one node.")
+        for node in landmarks:
+            if node not in G:
+                raise nx.NodeNotFound(f"Landmark {node!r} is not a node in G.")
+    else:
+        if k < 1:
+            raise nx.NetworkXError(f"Number of landmarks k={k} must be at least 1.")
+        if method not in {"farthest", "random"}:
+            raise ValueError(
+                f"Unknown landmark selection method: {method}, must be 'farthest' or 'random'."
+            )
+        k = min(k, len(G))
+
+    inf = float("inf")
+    nodes = list(G)
+
+    # Select landmarks and compute distances *from* each landmark.
+    if landmarks is not None:
+        # User-supplied landmarks are used directly.
+        dist_from = [
+            nx.single_source_dijkstra_path_length(G, landmark, weight=weight)
+            for landmark in landmarks
+        ]
+    elif method == "random":
+        landmarks = seed.sample(nodes, k)
+        dist_from = [
+            nx.single_source_dijkstra_path_length(G, landmark, weight=weight)
+            for landmark in landmarks
+        ]
+    elif method == "farthest":
+        # Greedy farthest-point selection. Unreachable nodes are at distance infinity from each landmark,
+        # so they are selected first, placing landmarks in every component.
+        landmarks = [seed.choice(nodes)]
+        dist_from = [
+            nx.single_source_dijkstra_path_length(G, landmarks[0], weight=weight)
+        ]
+        nearest = {v: dist_from[0].get(v, inf) for v in nodes}
+        while len(landmarks) < k:
+            chosen = set(landmarks)
+            farthest = max(
+                (v for v in nodes if v not in chosen), key=nearest.__getitem__
+            )
+            landmarks.append(farthest)
+            dists = nx.single_source_dijkstra_path_length(G, farthest, weight=weight)
+            dist_from.append(dists)
+            for v, d in dists.items():
+                if d < nearest[v]:
+                    nearest[v] = d
+
+    # Distances *to* each landmark. On undirected graphs these equal the distances from each landmark,
+    # so the same tables are reused.
+    if G.is_directed():
+        dist_to = [
+            nx.single_source_dijkstra_path_length(
+                G.reverse(copy=False), landmark, weight=weight
+            )
+            for landmark in landmarks
+        ]
+    else:
+        dist_to = dist_from
+
+    def heuristic(u, v):
+        best = 0
+        for d_from, d_to in zip(dist_from, dist_to):
+            u_to, v_to = d_to.get(u, inf), d_to.get(v, inf)
+            if u_to < inf and v_to < inf and u_to - v_to > best:
+                best = u_to - v_to
+            u_from, v_from = d_from.get(u, inf), d_from.get(v, inf)
+            if u_from < inf and v_from < inf and v_from - u_from > best:
+                best = v_from - u_from
+        return best
+
+    return heuristic
