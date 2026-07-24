@@ -15,6 +15,12 @@ def test_random_seed():
     assert nx.maximal_independent_set(G, seed=1) == {1, 0, 3, 2, 4}
 
 
+def test_null_graph():
+    """The maximal independent set of the null (empty) graph is the empty set."""
+    assert nx.maximal_independent_set(nx.Graph()) == set()
+    assert nx.maximal_independent_set(nx.empty_graph(0)) == set()
+
+
 @pytest.mark.parametrize("graph", [nx.complete_graph(5), nx.complete_graph(55)])
 def test_K5(graph):
     """Maximal independent set for complete graphs"""

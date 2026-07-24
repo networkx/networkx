@@ -98,6 +98,8 @@ def maximal_independent_set(G, nodes=None, seed=None):
         maximal independent set of maximum cardinality.
     """
     if not nodes:
+        if len(G) == 0:
+            return set()
         nodes = {seed.choice(list(G))}
     else:
         nodes = set(nodes)
