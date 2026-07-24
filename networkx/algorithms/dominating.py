@@ -51,6 +51,8 @@ def dominating_set(G, start_with=None):
 
     """
     all_nodes = set(G)
+    if not all_nodes:
+        return set()
     if start_with is None:
         start_with = nx.utils.arbitrary_element(all_nodes)
     if start_with not in G:

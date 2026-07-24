@@ -21,6 +21,14 @@ def test_complete():
     assert len(nx.dominating_set(K5)) == 1
 
 
+def test_null_graph_dominating_set():
+    """The dominating set of the empty graph is the empty set."""
+    G = nx.Graph()
+    D = nx.dominating_set(G)
+    assert D == set()
+    assert nx.is_dominating_set(G, D)
+
+
 def test_raise_dominating_set():
     with pytest.raises(nx.NetworkXError):
         G = nx.path_graph(4)
