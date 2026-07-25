@@ -16,6 +16,17 @@ class TestBFS:
     def test_successor(self):
         assert dict(nx.bfs_successors(self.G, source=0)) == {0: [1], 1: [2, 3], 2: [4]}
 
+    def test_bfs_successors_no_successors(self):
+        G = nx.Graph()
+        G.add_node(0)
+        assert list(nx.bfs_successors(G, source=0)) == []
+
+        D = nx.DiGraph([(0, 1)])
+        assert list(nx.bfs_successors(D, source=1)) == []
+
+        G2 = nx.path_graph(3)
+        assert list(nx.bfs_successors(G2, source=0, depth_limit=0)) == []
+
     def test_predecessor(self):
         with pytest.deprecated_call():
             assert dict(nx.bfs_predecessors(self.G, source=0)) == {

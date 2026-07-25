@@ -423,7 +423,8 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
         yield (parent, children)
         children = [c]
         parent = p
-    yield (parent, children)
+    if children:
+        yield (parent, children)
 
 
 @nx._dispatchable
