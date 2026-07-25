@@ -679,10 +679,10 @@ class ISMAGS:
             return
         elif len(self.graph) < len(self.subgraph):
             return
-        elif len(self._sgn_partition) > self.N_node_colors:
+        elif any(self._sgn_partition[self.N_node_colors :]):
             # some subgraph nodes have a color that doesn't occur in graph
             return
-        elif len(self._sge_partition) > self.N_edge_colors:
+        elif any(self._sge_partition[self.N_edge_colors :]):
             # some subgraph edges have a color that doesn't occur in graph
             return
 

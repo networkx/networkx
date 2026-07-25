@@ -273,6 +273,45 @@ class TestSubgraphIsomorphism:
             expected_symmetric + expected_asymmetric
         )
 
+    def test_edgeless_subgraph_with_edge_match(self):
+        # gh-8738: a subgraph with no edges should behave the same whether
+        # ``edge_match`` is ``None`` (all edges equal) or a callable that
+        # accepts every pair of edges. The graph having edge "colors" absent
+        # from the (edgeless) subgraph must not prevent matches.
+        graph = nx.Graph([(0, 1)])
+        subgraph = nx.Graph()
+        subgraph.add_node(0)
+
+        expected = [{0: 0}, {1: 0}]
+        none_matches = iso.ISMAGS(graph, subgraph, edge_match=None)
+        assert _matches_to_sets(none_matches.find_isomorphisms()) == _matches_to_sets(
+            expected
+        )
+        all_matches = iso.ISMAGS(graph, subgraph, edge_match=lambda e1, e2: True)
+        assert _matches_to_sets(all_matches.find_isomorphisms()) == _matches_to_sets(
+            expected
+        )
+
+    def test_subgraph_with_graph_only_node_color(self):
+        # gh-8738: a node color present in the graph but not in the subgraph
+        # must not prevent otherwise valid isomorphisms from being found.
+        nm = iso.categorical_node_match("color", None)
+        graph = nx.Graph([(0, 1)])
+        graph.nodes[0]["color"] = "a"
+        graph.nodes[1]["color"] = "b"
+        subgraph = nx.Graph()
+        subgraph.add_node(0, color="a")
+
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nm)
+        assert _matches_to_sets(ismags.find_isomorphisms()) == _matches_to_sets(
+            [{0: 0}]
+        )
+
+        # A color that only the subgraph has should still yield no matches.
+        subgraph.nodes[0]["color"] = "z"
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nm)
+        assert list(ismags.find_isomorphisms()) == []
+
     def test_exceptions_for_bad_match_functions(self):
         def non_transitive_match(attrs1, attrs2):
             return abs(attrs1["freq"] - attrs2["freq"]) <= 1
