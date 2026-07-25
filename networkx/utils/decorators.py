@@ -101,7 +101,7 @@ fopeners = {
 _dispatch_dict = defaultdict(lambda: open, **fopeners)
 
 
-def open_file(path_arg, mode="r"):
+def open_file(path_arg, mode="r", encoding=None):
     """Decorator to ensure clean opening and closing of files.
 
     Parameters
@@ -111,6 +111,12 @@ def open_file(path_arg, mode="r"):
 
     mode : str
         String for opening mode.
+
+    encoding : str or None
+        Encoding passed to the file opener for text modes. If None (the
+        default), the opener's own default is used, which is the platform's
+        preferred encoding and can raise on Windows when writing non-ASCII
+        text. Has no effect when the argument is already an open file object.
 
     Returns
     -------
@@ -191,7 +197,11 @@ def open_file(path_arg, mode="r"):
             # could be None, or a file handle, in which case the algorithm will deal with it
             return path, lambda: None
 
-        fobj = _dispatch_dict[ext](path, mode=mode)
+        opener = _dispatch_dict[ext]
+        if encoding is None:
+            fobj = opener(path, mode=mode)
+        else:
+            fobj = opener(path, mode=mode, encoding=encoding)
         return fobj, lambda: fobj.close()
 
     return argmap(_open_file, path_arg, try_finally=True)

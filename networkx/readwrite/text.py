@@ -419,7 +419,7 @@ def generate_network_text(
                 stack.append(try_frame)
 
 
-@open_file(1, "w")
+@open_file(1, "w", encoding="utf-8")
 def write_network_text(
     graph,
     path=None,

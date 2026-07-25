@@ -1,3 +1,4 @@
+import os
 import random
 from itertools import product
 from textwrap import dedent
@@ -56,6 +57,31 @@ def test_write_network_text_empty_graph():
     assert _graph_str(nx.Graph()) == "╙"
     assert _graph_str(nx.DiGraph(), ascii_only=True) == "+"
     assert _graph_str(nx.Graph(), ascii_only=True) == "+"
+
+
+def test_write_network_text_to_file_is_utf8(tmp_path, monkeypatch):
+    # The default glyphs are non-ASCII, so the output file must be opened as
+    # UTF-8. Previously it used the platform default encoding, which raised
+    # UnicodeEncodeError on Windows (cp1252). Force a non-UTF-8 default here so
+    # the regression is caught on any platform.
+    real_open = open
+    target = tmp_path / "graph.txt"
+
+    def locale_default_open(file, mode="r", *args, **kwargs):
+        if (
+            os.fspath(file) == os.fspath(target)
+            and "b" not in mode
+            and "encoding" not in kwargs
+        ):
+            kwargs["encoding"] = "cp1252"
+        return real_open(file, mode, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", locale_default_open)
+
+    graph = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
+    nx.write_network_text(graph, path=target)
+
+    assert "╙── 0" in target.read_text(encoding="utf-8")
 
 
 def test_write_network_text_within_forest_glyph():
