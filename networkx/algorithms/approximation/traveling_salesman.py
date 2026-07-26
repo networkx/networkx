@@ -45,6 +45,9 @@ __all__ = [
     "christofides",
     "asadpour_atsp",
     "greedy_tsp",
+    "greedy_tsp_minimum_insertions",
+    "greedy_tsp_nearest_insertion",
+    "greedy_tsp_farthest_insertion",
     "simulated_annealing_tsp",
     "threshold_accepting_tsp",
 ]
@@ -1043,6 +1046,339 @@ def greedy_tsp(G, weight="weight", source=None):
         nodeset.remove(next_node)
     cycle.append(cycle[0])
     return cycle
+
+
+@nx._dispatch(edge_attrs="weight")
+def greedy_tsp_minimum_insertions(G, weight="weight", source=None):
+    """Return a low cost cycle starting at 'source' and its cost.
+
+    This approximates a solution to the traveling salesman problem.
+    It finds a cycle of all the nodes that salesman can visit in order to visit
+    all the nodes while minimizing total distance.
+    It uses a simple greedy algorithm.
+    In essence, this function returns a large cycle given a source point
+    for which the total cost of the cycle is minimized.
+
+
+    Parameters
+    ----------
+    G : Graph
+        The Graph should be a complete weighted undirected graph.
+        The distance between all pairs of nodes should be included.
+
+    weight : string, optional (default="weight")
+        Edge data key corresponding to the edge weight.
+        If any edge does not have this attribute the weight is set to 1.
+
+    source : node, optional (default: first node in list(G))
+        Starting node.  If None, defaults to ``next(iter(G))``
+
+    Returns
+    -------
+    cycle : list of nodes
+        Returns the cycle (list of nodes) that a salesman
+        can follow to minimize total weight of the trip.
+
+    Raises
+    ------
+    NetworkXError
+        If `G` is not complete, the algorithm raises an exception.
+
+     Examples
+    --------
+    >>> from networkx.algorithms import approximation as approx
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from({
+    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
+    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
+    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2)
+    ... })
+    >>> cycle = approx.greedy_tsp_minimum_insertions(G, source="D")
+    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
+    >>> cycle
+    ['D', 'C', 'B', 'A', 'D']
+    >>> cost
+    31
+
+    Notes
+    -----
+    This implementation of a greedy algorithm is based on the following:
+
+    - The algorithm adds a node to the solution at every iterarion.
+    - The algorithm checks each node which is not already at the cycle, at all the current available entry points
+      (points that a node can be placed into the cycle) and selects the one that minimizes the cost to the cycle.
+
+    A greedy algorithm does not always give the best optimized solution.
+    However, it can construct a first feasible solution which can be passed as a parameter to an iterative
+    improvement algorithm such as Simulated Annealing, or Threshold Accepting.
+
+    Time complexity: It has a running time $O(|V|^2*log2(|V|)$ ???
+    """
+
+    # Check that G is a complete graph
+    N = len(G) - 1
+    # This check ignores selfloops which is what we want here.
+    if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+        raise nx.NetworkXError("G must be a complete graph.")
+
+    if source is None:
+        source = nx.utils.arbitrary_element(G)
+
+    if G.number_of_nodes() == 2:
+        neighbor = next(G.neighbors(source))
+        return [source, neighbor, source]
+
+    cycle = [source, source]
+    node_set = set(G)
+    node_set.remove(source)
+
+    for i in range(len(G) - 1):
+        index_of_next_node = -1
+        position_of_insertion = -1
+        minimum_insertion_cost = 10**6
+
+        for j in range(len(node_set)):
+            candidate_node = list(node_set)[j]
+            for k in range(len(cycle) - 1):
+                previous_node = cycle[k]
+                after_node = cycle[k + 1]
+                cost_added = G.edges[previous_node, candidate_node].get(
+                    weight, 1
+                ) + G.edges[candidate_node, after_node].get(weight, 1)
+                if previous_node == after_node:
+                    cost_removed = 0
+                else:
+                    cost_removed = G.edges[previous_node, after_node].get(weight, 1)
+                trial_cost = cost_added - cost_removed
+                if trial_cost < minimum_insertion_cost:
+                    index_of_next_node = j
+                    position_of_insertion = k
+                    minimum_insertion_cost = trial_cost
+
+        inserted_node = list(node_set)[index_of_next_node]
+        cycle.insert(position_of_insertion + 1, inserted_node)
+        node_set.remove(inserted_node)
+    return cycle
+
+
+@nx._dispatch(edge_attrs="weight")
+def greedy_tsp_nearest_insertion(G, weight="weight", source=None):
+    """Return a low cost route starting at `source`.
+
+    This function implements the nearest insertion greedy criterion for
+    creating a tsp route. At each iteration, it finds the closest node
+    to any of the nodes of the current route and then calculates the best
+    point to locate it inside the route, until all nodes have been added to
+    the solution.
+
+    Parameters
+    ----------
+    G : Graph
+        The Graph should be a complete weighted undirected graph.
+        The distance between all pairs of nodes should be included.
+
+    weight : string, optional (default="weight")
+        Edge data key corresponding to the edge weight.
+        If any edge does not have this attribute the weight is set to 1.
+
+    source : node, optional (default: first node in list(G))
+        Starting node.  If None, defaults to ``next(iter(G))``
+
+    Returns
+    -------
+    route : list of nodes
+        Returns the route (list of nodes) that a salesman
+        can follow to minimize total weight of the trip.
+
+    Raises
+    ------
+    NetworkXError
+        If `G` is not complete, the algorithm raises an exception.
+
+    Examples
+    --------
+    >>> from networkx.algorithms import approximation as approx
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from({
+    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
+    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
+    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2),
+    ...     ("E", "A", 5), ("A", "E", 7), ("E", "D", 9), ("D", "E", 12),
+    ...     ("E", "C", 10), ("C", "E", 19), ("E", "B", 7), ("B", "E", 3)
+    ... })
+    >>> route = approx.greedy_tsp_nearest_insertion(G, source="A")
+    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(route))
+    >>> route
+    ['A', 'D', 'C', 'E', 'B', 'A']
+    >>> cost
+    45
+
+    Notes
+    -----
+    Time complexity: It has a running time $O(|V|^2)$
+    """
+    # Check that G is a complete graph
+    N = len(G) - 1
+    # This check ignores selfloops which is what we want here.
+    if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+        raise nx.NetworkXError("G must be a complete graph.")
+
+    nodes = list(G)
+    if source is None:
+        source = nodes[0]
+    route = [source, source]
+    nodes.remove(source)
+
+    while nodes:
+        nearest_node = None
+
+        # Find the nearest point to the current cycle
+        for current in route:
+            for node in nodes:
+                d = G[current][node].get(weight, 1)
+                if nearest_node is None or d < nearest_node[1]:
+                    nearest_node = (node, d)
+        nearest_node = nearest_node[0]
+
+        # Find the closest edge of the cycle to the nearest city
+        last = None
+        best = None
+        for current in route:
+            if last is not None:
+                d1 = G[last][nearest_node].get(weight, 1)
+                d2 = G[current][nearest_node].get(weight, 1)
+                d3 = G[last][current].get(weight, 1) if last != current else 0
+                d = d1 + d2 - d3
+
+                if best is None or d < best[2]:
+                    best = (last, current, d)
+            last = current
+
+        if last is None:
+            last = route[0]
+
+        d1 = G[last][nearest_node].get(weight, 1)
+        d2 = G[route[0]][nearest_node].get(weight, 1)
+        d3 = G[last][route[0]].get(weight, 1) if last != current else 0
+        d = d1 + d2 - d3
+        if best is None or d < best[2]:
+            best = (last, route[0], d)
+
+        # Connect the nearest city to the cycle
+        route.insert(route.index(best[0]) + 1, nearest_node)
+        nodes.remove(nearest_node)
+
+    return route
+
+
+@nx._dispatch(edge_attrs="weight")
+def greedy_tsp_farthest_insertion(G, weight="weight", source=None):
+    """Return a low cost route starting at `source`.
+
+    This function implements the farthest insertion greedy criterion for
+    creating a tsp route. At each iteration, it finds the most remote node
+    from any of the nodes of the current route and then calculates the best
+    node to locate it inside the route, until all nodes have been added to
+    the solution.
+
+    Parameters
+    ----------
+    G : Graph
+        The Graph should be a complete weighted undirected graph.
+        The distance between all pairs of nodes should be included.
+
+    weight : string, optional (default="weight")
+        Edge data key corresponding to the edge weight.
+        If any edge does not have this attribute the weight is set to 1.
+
+    source : node, optional (default: first node in list(G))
+        Starting node.  If None, defaults to ``next(iter(G))``
+
+    Returns
+    -------
+    route : list of nodes
+        Returns the route (list of nodes) that a salesman
+        can follow to minimize total weight of the trip.
+
+    Raises
+    ------
+    NetworkXError
+        If `G` is not complete, the algorithm raises an exception.
+
+    Examples
+    --------
+    >>> from networkx.algorithms import approximation as approx
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from({
+    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
+    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
+    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2),
+    ...     ("E", "A", 5), ("A", "E", 7), ("E", "D", 9), ("D", "E", 12),
+    ...     ("E", "C", 10), ("C", "E", 19), ("E", "B", 7), ("B", "E", 3)
+    ... })
+    >>> route = approx.greedy_tsp_farthest_insertion(G, source="A")
+    >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(route))
+    >>> route
+    ['A', 'E', 'D', 'C', 'B', 'A']
+    >>> cost
+    33
+
+    Notes
+    -----
+    Time complexity: It has a running time $O(|V|^2)$
+    """
+    # Check that G is a complete graph
+    N = len(G) - 1
+    # This check ignores selfloops which is what we want here.
+    if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+        raise nx.NetworkXError("G must be a complete graph.")
+
+    nodes = list(G)
+    if source is None:
+        source = next(iter(G))
+    route = [source, source]
+    nodes.remove(source)
+
+    while nodes:
+        farthest_node = None
+
+        # Find the farthest node to the current cycle
+        for current in route:
+            for node in nodes:
+                d = G[current][node].get(weight, 1)
+                if farthest_node is None or d > farthest_node[1]:
+                    farthest_node = (node, d)
+        farthest_node = farthest_node[0]
+
+        # Find the closest edge of the cycle to the farthest city
+        last = None
+        best = None
+        for current in route:
+            if last is not None:
+                d1 = G[last][farthest_node].get(weight, 1)
+                d2 = G[current][farthest_node].get(weight, 1)
+                d3 = G[last][current].get(weight, 1) if last != current else 0
+                d = d1 + d2 - d3
+
+                if best is None or d < best[2]:
+                    best = (last, current, d)
+            last = current
+
+        if last is None:
+            last = route[0]
+
+        d1 = G[last][farthest_node].get(weight, 1)
+        d2 = G[route[0]][farthest_node].get(weight, 1)
+        d3 = G[last][route[0]].get(weight, 1) if last != current else 0
+        d = d1 + d2 - d3
+        if best is None or d < best[2]:
+            best = (last, route[0], d)
+
+        # Connect the farthest city to the cycle
+        route.insert(route.index(best[0]) + 1, farthest_node)
+        nodes.remove(farthest_node)
+
+    return route
 
 
 @py_random_state(9)
