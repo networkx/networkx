@@ -647,7 +647,6 @@ def test_dim_parameter(layout, dim):
     """Test layouts that support unrestricted dim kwarg."""
     G = nx.path_graph(4)
     pos = layout(G, dim=dim)
-    
     assert len(pos) == len(G)
     for coords in pos.values():
         assert len(coords) == dim
