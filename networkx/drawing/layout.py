@@ -1116,6 +1116,9 @@ def spectral_layout(G, weight="weight", scale=1, center=None, dim=2, store_pos_a
             A += A.T
         pos = _spectral(A, dim)
 
+    if pos.shape[1] < dim:
+        pos = np.pad(pos, ((0, 0), (0, dim - pos.shape[1])), constant_values=0)
+
     pos = rescale_layout(pos, scale=scale) + center
     pos = dict(zip(G, pos))
 
