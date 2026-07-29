@@ -312,6 +312,28 @@ class TestSubgraphIsomorphism:
         ismags = iso.ISMAGS(graph, subgraph, node_match=nm)
         assert list(ismags.find_isomorphisms()) == []
 
+    def test_subgraph_color_with_only_node(self):
+        # see gh-8738: default of None used to lead to result == []
+        graph = nx.Graph([(0, 1)])
+        graph.nodes[1]["attr1"] = 0
+        subgraph = nx.empty_graph([5])
+        subgraph.add_node(5, attr1=0)
+
+        nodematch = nx.isomorphism.categorical_node_match(["attr1"], [None])
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch, edge_match=None)
+        result = list(ismags.find_isomorphisms())
+        assert result == [{1: 5}]
+
+        nodematch = nx.isomorphism.categorical_node_match(["attr1"], [0])
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch, edge_match=None)
+        result = list(ismags.find_isomorphisms())
+        assert result == [{0: 5}, {1: 5}]
+
+        nodematch = nx.isomorphism.categorical_node_match(["attr1"], ["blue"])
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch, edge_match=None)
+        result = list(ismags.find_isomorphisms())
+        assert result == [{1: 5}]
+
     def test_exceptions_for_bad_match_functions(self):
         def non_transitive_match(attrs1, attrs2):
             return abs(attrs1["freq"] - attrs2["freq"]) <= 1
