@@ -650,7 +650,7 @@ class ISMAGS:
         if Ncolors < N:
             extra = [g_partition[c] for c in range(N) if c not in gc_to_sgc]
             new_g_p = list(new_g_p) + extra
-            new_sg_p = list(new_sg_p) + [set()] * len(extra)
+            # no pad for new_sg_p -- not used. And keeps len for check in find_isos
 
         return new_sg_p, new_g_p, Ncolors
 
@@ -679,10 +679,10 @@ class ISMAGS:
             return
         elif len(self.graph) < len(self.subgraph):
             return
-        elif any(self._sgn_partition[self.N_node_colors :]):
+        elif len(self._sgn_partition) > self.N_node_colors:
             # some subgraph nodes have a color that doesn't occur in graph
             return
-        elif any(self._sge_partition[self.N_edge_colors :]):
+        elif len(self._sge_partition) > self.N_edge_colors:
             # some subgraph edges have a color that doesn't occur in graph
             return
 
