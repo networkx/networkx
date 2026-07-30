@@ -274,23 +274,18 @@ class TestSubgraphIsomorphism:
         )
 
     def test_edgeless_subgraph_with_edge_match(self):
-        # gh-8738: a subgraph with no edges should behave the same whether
-        # ``edge_match`` is ``None`` (all edges equal) or a callable that
-        # accepts every pair of edges. The graph having edge "colors" absent
-        # from the (edgeless) subgraph must not prevent matches.
+        # gh-8738: A subgraph should give the same for edge_match=None (all edges
+        # equal) or a callable that accepts all edges.
         graph = nx.Graph([(0, 1)])
         subgraph = nx.Graph()
         subgraph.add_node(0)
 
-        expected = [{0: 0}, {1: 0}]
+        expected = _matches_to_sets([{0: 0}, {1: 0}])
         none_matches = iso.ISMAGS(graph, subgraph, edge_match=None)
-        assert _matches_to_sets(none_matches.find_isomorphisms()) == _matches_to_sets(
-            expected
-        )
+        assert _matches_to_sets(none_matches.find_isomorphisms()) == expected
+
         all_matches = iso.ISMAGS(graph, subgraph, edge_match=lambda e1, e2: True)
-        assert _matches_to_sets(all_matches.find_isomorphisms()) == _matches_to_sets(
-            expected
-        )
+        assert _matches_to_sets(all_matches.find_isomorphisms()) == expected
 
     def test_subgraph_with_graph_only_node_color(self):
         # gh-8738: a node color present in the graph but not in the subgraph
@@ -302,35 +297,34 @@ class TestSubgraphIsomorphism:
         subgraph = nx.Graph()
         subgraph.add_node(0, color="a")
 
-        ismags = iso.ISMAGS(graph, subgraph, node_match=nm)
-        assert _matches_to_sets(ismags.find_isomorphisms()) == _matches_to_sets(
-            [{0: 0}]
-        )
+        expected = [{0: 0}]
+        result = list(iso.ISMAGS(graph, subgraph, node_match=nm).find_isomorphisms())
+        assert result == expected
 
         # A color that only the subgraph has should still yield no matches.
         subgraph.nodes[0]["color"] = "z"
-        ismags = iso.ISMAGS(graph, subgraph, node_match=nm)
-        assert list(ismags.find_isomorphisms()) == []
+        result = list(iso.ISMAGS(graph, subgraph, node_match=nm).find_isomorphisms())
+        assert result == []
 
     def test_subgraph_color_with_only_node(self):
-        # see gh-8738: default of None used to lead to result == []
+        # see gh-8738: node_match default of None should not lead to result == []
         graph = nx.Graph([(0, 1)])
         graph.nodes[1]["attr1"] = 0
-        subgraph = nx.empty_graph([5])
+        subgraph = nx.Graph()
         subgraph.add_node(5, attr1=0)
 
         nodematch = nx.isomorphism.categorical_node_match(["attr1"], [None])
-        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch, edge_match=None)
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
         result = list(ismags.find_isomorphisms())
         assert result == [{1: 5}]
 
         nodematch = nx.isomorphism.categorical_node_match(["attr1"], [0])
-        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch, edge_match=None)
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
         result = list(ismags.find_isomorphisms())
         assert result == [{0: 5}, {1: 5}]
 
         nodematch = nx.isomorphism.categorical_node_match(["attr1"], ["blue"])
-        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch, edge_match=None)
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
         result = list(ismags.find_isomorphisms())
         assert result == [{1: 5}]
 
