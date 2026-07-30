@@ -1,3 +1,5 @@
+from functools import partial
+
 import pytest
 
 import networkx as nx
@@ -39,7 +41,10 @@ class TestHITS:
         for n in G:
             assert a[n] == pytest.approx(G.a[n], abs=1e-4)
 
-    @pytest.mark.parametrize("hits_alg", (nx.hits, _hits_python, _hits_svd))
+    @pytest.mark.parametrize(
+        "hits_alg",
+        (nx.hits, partial(nx.hits, method="svd"), _hits_python, _hits_svd),
+    )
     def test_hits(self, hits_alg):
         G = self.G
         h, a = hits_alg(G, tol=1.0e-08)
@@ -77,3 +82,7 @@ class TestHITS:
         h, a = hits_alg(G)
         assert all(v >= 0 for v in h.values())
         assert all(v >= 0 for v in a.values())
+
+    def test_hits_invalid_method(self):
+        with pytest.raises(ValueError, match="method not supported"):
+            nx.hits(self.G, method="spam")
