@@ -53,3 +53,17 @@ def test_reverse1():
     # Other tests for reverse are done by the DiGraph and MultiDigraph.
     G1 = nx.Graph()
     pytest.raises(nx.NetworkXError, nx.reverse, G1)
+
+
+@pytest.mark.parametrize("copy", (True, False))
+def test_reverse_preserves_attrs(copy):
+    G = nx.DiGraph()
+    G.add_node(0, color="red")
+    G.add_edge(0, 1, weight=2.0)
+    G.add_edge(1, 2, weight=3.0)
+    G.graph["foo"] ="bar"
+    R = nx.reverse(G, copy=copy)
+    assert R.nodes[0]["color"] == "red"
+    assert R[1][0]["weight"] == 2.0
+    assert R[2][1]["weight"] == 3.0
+    assert R.graph == {"foo": "bar"}
