@@ -825,6 +825,20 @@ def test_remove_edge_attributes(graph_type):
     assert other_attr in G[1][2] and third_attr in G[1][2]
 
 
+@pytest.mark.parametrize(
+    "remove_fn", (nx.remove_node_attributes, nx.remove_edge_attributes)
+)
+def test_remove_attributes_clears_cache(remove_fn):
+    #  `remove_{node,edge}_attributes` mutate the graph, so, like their
+    # `set_*` siblings, they must clear ``G.__networkx_cache__``
+    G = nx.path_graph(3)
+    G.add_node(0, color="blue")
+    nx.set_edge_attributes(G, {(u, v): u + v for u, v in G.edges()}, name="weight")
+    G.__networkx_cache__["backends"] = {"some_backend": {"key": "cached-conversion"}}
+    remove_fn(G, "weight" if remove_fn is nx.remove_edge_attributes else "color")
+    assert G.__networkx_cache__ == {}
+
+
 @pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.MultiDiGraph))
 def test_remove_multi_edge_attributes(graph_type):
     # Test removing single attribute

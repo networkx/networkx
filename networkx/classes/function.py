@@ -791,6 +791,7 @@ def remove_node_attributes(G, *attr_names, nbunch=None):
                     del d[attr]
                 except KeyError:
                     pass
+    nx._clear_cache(G)
 
 
 @nx._dispatchable(preserve_edge_attrs=True, mutates_input=True)
@@ -1009,6 +1010,7 @@ def remove_edge_attributes(G, *attr_names, ebunch=None):
                     del d[attr]
                 except KeyError:
                     pass
+    nx._clear_cache(G)
 
 
 def all_neighbors(graph, node):
