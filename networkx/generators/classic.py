@@ -12,6 +12,7 @@ in this module return a Graph class (i.e. a simple, undirected graph).
 
 import itertools
 import numbers
+from collections import deque
 
 import networkx as nx
 from networkx.classes import Graph
@@ -53,9 +54,9 @@ def _tree_edges(n, r):
     # helper function for trees
     # yields edges in rooted tree at 0 with n nodes and branching ratio r
     nodes = iter(range(n))
-    parents = [next(nodes)]  # stack of max length r
+    parents = deque([next(nodes)])  # stack of max length r
     while parents:
-        source = parents.pop(0)
+        source = parents.popleft()
         for i in range(r):
             try:
                 target = next(nodes)
