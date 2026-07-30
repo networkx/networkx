@@ -80,11 +80,12 @@ is to say that a subgraph of ``G1`` is isomorphic to ``G2``.
 
 Finally, the term 'subgraph' can have multiple meanings. In this
 context, 'subgraph' always means a 'node-induced subgraph'. Edge-induced
-subgraph isomorphisms are not directly supported, but one should be
-able to perform the check by making use of
-:func:`line_graph <networkx.generators.line.line_graph>`. For
-subgraphs which are not induced, the term 'monomorphism' is preferred
-over 'isomorphism'.
+subgraph isomorphisms are not directly supported. For an edge-induced
+query, a subgraph monomorphism search can be used because it preserves all
+edges in the pattern, although it can also map isolated nodes in the pattern
+to nodes that are incident to other edges. If the pattern contains isolated
+nodes, those nodes need separate handling. For subgraphs which are not
+induced, the term 'monomorphism' is preferred over 'isomorphism'.
 
 Let ``G = (N, E)`` be a graph with a set of nodes ``N`` and set of edges ``E``.
 
