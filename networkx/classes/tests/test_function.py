@@ -835,6 +835,10 @@ def test_remove_attributes_clears_cache(remove_fn):
     G.add_node(0, color="blue")
     nx.set_edge_attributes(G, {(u, v): u + v for u, v in G.edges()}, name="weight")
     G.__networkx_cache__["backends"] = {"some_backend": {"key": "cached-conversion"}}
+
+    remove_fn(G)  # No attr specified. Nothing to do, so don't clear cache
+    assert G.__networkx_cache__ != {}
+
     remove_fn(G, "weight" if remove_fn is nx.remove_edge_attributes else "color")
     assert G.__networkx_cache__ == {}
 
