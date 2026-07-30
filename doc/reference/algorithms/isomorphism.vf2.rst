@@ -10,7 +10,9 @@ Graph Matcher
 -------------
 .. currentmodule:: networkx.algorithms.isomorphism
 
-.. autoclass:: GraphMatcher`n`n.. autosummary::
+.. autoclass:: GraphMatcher
+
+.. autosummary::
    :toctree: generated/
 
     GraphMatcher.__init__
@@ -31,7 +33,9 @@ DiGraph Matcher
 ---------------
 .. currentmodule:: networkx.algorithms.isomorphism
 
-.. autoclass:: DiGraphMatcher`n`n.. autosummary::
+.. autoclass:: DiGraphMatcher
+
+.. autosummary::
    :toctree: generated/
 
     DiGraphMatcher.__init__
