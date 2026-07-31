@@ -1,3 +1,5 @@
+import math
+
 import pytest
 
 import networkx as nx
@@ -82,3 +84,57 @@ def test_ra_clustering_zero():
     assert bipartite.robins_alexander_clustering(G) == 0
     G.add_edge(1, 2)
     assert bipartite.robins_alexander_clustering(G) == 0
+
+
+class TestButterflies:
+    @pytest.mark.parametrize("n", range(2, 6))
+    @pytest.mark.parametrize("nodes", (None, [0, 1], {0, 1}, [0, 1, 2]))
+    def test_complete_bipartite_graph_equipartition(self, n, nodes):
+        """For the complete bipartite graph K_mn with m == n, the total number
+        of butterflies == (n choose 2) ** 2 and the number of
+        butterflies-per-node is (n choose 2) * (n - 1)"""
+        G = nx.complete_bipartite_graph(n, n)
+        butterflies = nx.bipartite.butterflies(G, nodes=nodes)
+
+        expected_per_node = math.comb(n, 2) * (n - 1)
+        nodes_expected_in_result = set(G) if nodes is None else set(nodes)
+        assert set(butterflies) == nodes_expected_in_result
+        assert all(v == expected_per_node for v in butterflies.values())
+        if nodes is None:
+            expected_total = math.comb(n, 2) ** 2
+            assert sum(butterflies.values()) // 4 == expected_total
+
+    @pytest.mark.parametrize(
+        "G", [nx.empty_graph(4), nx.Graph([(0, 1)]), nx.path_graph(4), nx.star_graph(4)]
+    )
+    def test_no_butterflies(self, G):
+        assert all(v == 0 for v in bipartite.butterflies(G).values())
+
+    def test_two_disjoint_k22(self):
+        # Expect sum of butterflies from each component
+        G = nx.Graph()
+        G.add_nodes_from([0, 1, 4, 5], bipartite=0)
+        G.add_nodes_from([2, 3, 6, 7], bipartite=1)
+        G.add_edges_from([(0, 2), (0, 3), (1, 2), (1, 3)])
+        G.add_edges_from([(4, 6), (4, 7), (5, 6), (5, 7)])
+        assert sum(bipartite.butterflies(G).values()) // 4 == 2
+
+    def test_different_sized_partitions(self):
+        G = nx.complete_bipartite_graph(3, 2)
+        assert sum(bipartite.butterflies(G).values()) // 4 == 3
+
+    def test_isolated_node_zero(self):
+        G = nx.complete_bipartite_graph(2, 2)
+        G.add_node(99)
+        assert nx.bipartite.butterflies(G) == {0: 1, 1: 1, 2: 1, 3: 1, 99: 0}
+
+    def test_nodes_param_absent_node_ignored(self):
+        # Nodes not in G are silently ignored, matching nx.triangles() behavior
+        G = nx.complete_bipartite_graph(2, 2)
+        bt = bipartite.butterflies(G, nodes=[0, 99])
+        assert set(bt.keys()) == {0}
+        assert bt[0] == 1
+
+    def test_directed_raises(self):
+        with pytest.raises(nx.NetworkXNotImplemented):
+            bipartite.butterflies(nx.DiGraph([(0, 1), (1, 2)]))

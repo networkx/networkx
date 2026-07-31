@@ -8,7 +8,7 @@ from collections import defaultdict
 from itertools import combinations, permutations
 
 import networkx as nx
-from networkx.utils import not_implemented_for, py_random_state
+from networkx.utils import not_implemented_for
 
 __all__ = [
     "triadic_census",

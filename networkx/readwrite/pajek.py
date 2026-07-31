@@ -277,10 +277,14 @@ def parse_pajek(lines):
 
 def make_qstr(t):
     """Returns the string representation of t.
-    Add outer double-quotes if the string has a space.
+
+    Wrap the string in double-quotes if it contains whitespace, a double
+    quote, or a backslash, escaping the latter two so the Pajek reader
+    (which splits with shlex) recovers the original string unchanged.
     """
     if not isinstance(t, str):
         t = str(t)
-    if " " in t:
+    if any(c.isspace() or c in '"\\' for c in t):
+        t = t.replace("\\", "\\\\").replace('"', '\\"')
         t = f'"{t}"'
     return t

@@ -486,12 +486,12 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
     if G.is_directed():
         raise nx.NetworkXError("Directed graphs are not supported")
     num_degs = [[] for i in range(p)]
-    dmax, dsum, n = 0, 0, 0
+    dmax, n = 0, 0
     for d in deg_sequence:
         # Process only the non-zero integers
         if d > 0:
             num_degs[d].append(n)
-            dmax, dsum, n = max(dmax, d), dsum + d, n + 1
+            dmax, n = max(dmax, d), n + 1
     # Return graph if no edges
     if n == 0:
         return G

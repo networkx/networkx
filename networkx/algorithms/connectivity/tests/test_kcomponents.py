@@ -5,6 +5,8 @@ import networkx as nx
 from networkx.algorithms import flow
 from networkx.algorithms.connectivity.kcomponents import (
     _consolidate,
+    _generate_partition,
+    _reconstruct_k_components,
     build_k_number_dict,
 )
 
@@ -125,6 +127,47 @@ def test_torrents_and_ferraro_graph():
     # There are also 8 4-components all with 5 nodes.
     assert len(result[4]) == 8
     assert all(len(c) == 5 for c in result[4])
+
+
+def test_generate_partition_does_not_drop_cutset_nodes():
+    # Two icosahedra (5-connected) joined through three connector nodes,
+    # plus a fourth node that makes the graph 4-connected. The minimum
+    # 3-cutsets of the icosahedron-plus-connectors subproblem are the three
+    # connector neighborhoods, and some of their nodes have all their
+    # neighbors inside other cutsets. _generate_partition used to remove the
+    # union of all cutsets in a single pass, dropping those nodes and losing
+    # one of the two 5-components.
+    A = nx.icosahedral_graph()
+    B = nx.relabel_nodes(nx.icosahedral_graph(), {i: i + 12 for i in range(12)})
+    G = nx.union(A, B)
+    G.add_edges_from([(24, 0), (24, 1), (24, 2), (24, 12), (24, 13)])
+    G.add_edges_from([(25, 3), (25, 4), (25, 5), (25, 14), (25, 15)])
+    G.add_edges_from([(26, 6), (26, 7), (26, 8), (26, 16), (26, 17)])
+    G.add_edges_from([(27, 9), (27, 10), (27, 20), (27, 21)])
+    assert nx.node_connectivity(G) == 4
+    result = nx.k_components(G)
+    assert sorted(sorted(c) for c in result[5]) == [
+        sorted(range(12)),
+        sorted(range(12, 24)),
+    ]
+    # The whole graph is 4-connected, so it is the single k-component at
+    # every level from 1 to 4.
+    for k in range(1, 5):
+        assert sorted(sorted(c) for c in result[k]) == [sorted(range(28))]
+
+
+def test_reconstruction_does_not_replace_component_by_fragments():
+    # A 7-connected graph: the whole graph is the only k-component at every
+    # level up to 7. The recursive cuts record lower-connectivity fragments
+    # whose union happens to cover all nodes; _reconstruct_k_components used
+    # to skip propagating the whole-graph component down to those levels,
+    # replacing a genuine k-component by its fragments.
+    G = nx.gnp_random_graph(16, 0.6, seed=22070)
+    assert nx.node_connectivity(G) == 7
+    nodes = sorted(G)
+    result = nx.k_components(G)
+    for k in range(1, 8):
+        assert sorted(sorted(c) for c in result[k]) == [nodes]
 
 
 @pytest.mark.parametrize(
@@ -321,3 +364,78 @@ def test_set_consolidation_rosettacode():
     ]
     solution = [{"A", "C", "B", "D", "G", "F", "I", "H", "K"}]
     list_of_sets_equal(_consolidate(question, 1), solution)
+
+
+def test_reconstruct_k_components_promotes_spanning_component():
+    # A (k+1)-level component can span several k-level candidates without
+    # being a subset of any of them. It must still be propagated down to
+    # level k, where consolidation merges the candidates it bridges; the
+    # pre-gh-8734 union-coverage check skipped it and returned the two
+    # fragments instead.
+    k_comps = {3: [{1, 2, 3, 4}, {4, 5, 6, 7}], 4: [{2, 3, 4, 5, 6}]}
+    result = _reconstruct_k_components(k_comps)
+    assert result[4] == [{2, 3, 4, 5, 6}]
+    assert result[3] == [{1, 2, 3, 4, 5, 6, 7}]
+    assert result[2] == [{1, 2, 3, 4, 5, 6, 7}]
+    assert result[1] == [{1, 2, 3, 4, 5, 6, 7}]
+
+
+def test_reconstruct_k_components_drops_nested_candidate():
+    # A single _consolidate pass merges on pairwise overlaps of its input
+    # sets only. A propagated (k+1)-level component that shares fewer than
+    # k nodes with each of two level-k candidates is not merged with
+    # either, yet when the two candidates merge with each other it ends up
+    # a strict subset of their union. A nested set is never a maximal
+    # k-connected subgraph, so reconstruction must drop it.
+    A = set(range(1, 9))  # {1..8}
+    B = set(range(5, 13))  # {5..12}, shares {5, 6, 7, 8} with A
+    c = {2, 3, 4, 9, 10, 11}  # inside A | B, shares only 3 with each
+    result = _reconstruct_k_components({4: [A, B], 5: [c]})
+    assert result[5] == [c]
+    assert result[4] == [A | B]
+
+
+def test_reconstruct_k_components_no_nested_output():
+    # Contract: no level of the returned decomposition contains a
+    # component that is a strict subset of another at the same level.
+    k_comps = {
+        2: [set(range(1, 20)), {30, 31, 32}],
+        3: [{1, 2, 3, 4, 5}, {4, 5, 6, 7, 8}, {10, 11, 12, 13}],
+        4: [{2, 3, 4, 6, 7, 8}],
+    }
+    result = _reconstruct_k_components(k_comps)
+    for comps in result.values():
+        for comp in comps:
+            assert not any(comp < other for other in comps)
+
+
+def test_generate_partition_keeps_cut_adjacent_low_degree_nodes():
+    # The Davis Southern Women graph is biconnected with node connectivity
+    # 2 and has exactly two minimum cutsets, {E8, E9} and {E9, E11}. Three
+    # women attended only two events, both in the cutsets, so removing a
+    # cutset separates each of them from the rest of the graph. The
+    # expected partition thus has four parts: one per separated woman,
+    # holding her and the two events she attended, and one with the other
+    # 29 nodes; the parts overlap in the cutsets. The pre-gh-8734 code
+    # kept only nodes of degree greater than k outside the cutsets, so it
+    # silently dropped the three women.
+    G = nx.davis_southern_women_graph()
+    k = nx.node_connectivity(G)
+    assert k == 2
+    cuts = list(nx.all_node_cuts(G, k=k))
+    assert {frozenset(cut) for cut in cuts} == {
+        frozenset({"E8", "E9"}),
+        frozenset({"E9", "E11"}),
+    }
+    assert set(G["Dorothy Murchison"]) == {"E8", "E9"}
+    assert set(G["Flora Price"]) == {"E9", "E11"}
+    assert set(G["Olivia Carleton"]) == {"E9", "E11"}
+    parts = list(_generate_partition(G, cuts, k))
+    assert {frozenset(part) for part in parts} == {
+        frozenset({"Dorothy Murchison", "E8", "E9"}),
+        frozenset({"Flora Price", "E9", "E11"}),
+        frozenset({"Olivia Carleton", "E9", "E11"}),
+        frozenset(set(G) - {"Dorothy Murchison", "Flora Price", "Olivia Carleton"}),
+    }
+    for part in parts:
+        assert nx.is_connected(G.subgraph(part))

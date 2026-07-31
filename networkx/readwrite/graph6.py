@@ -118,7 +118,7 @@ def from_graph6_bytes(bytes_in):
         bytes_in = bytes_in[10:]
 
     data = [c - 63 for c in bytes_in]
-    if any(c > 63 for c in data):
+    if any(c < 0 or c > 63 for c in data):
         raise ValueError("each input character must be in range(63, 127)")
 
     n, data = data_to_n(data)

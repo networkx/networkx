@@ -61,6 +61,24 @@ def test_dynamic_graph_has_timeformat(time_attr, dyn_attr, tmp_path):
     assert nx.utils.nodes_equal(G.edges, H.edges)
 
 
+def test_dynamic_boolean_attvalue_is_lowercase(tmp_path):
+    """Boolean values in dynamic (spelled) attributes must be written as the
+    xsd:boolean literals 'true'/'false', matching the static path. Previously
+    the dynamic branch wrote Python's 'True'/'False'."""
+    G = nx.Graph(mode="dynamic")
+    G.add_node("n", flag=[(True, 0, 1), (False, 1, 2)])
+    fname = tmp_path / "bool.gexf"
+    nx.write_gexf(G, fname)
+    text = fname.read_text()
+    assert 'value="true"' in text
+    assert 'value="false"' in text
+    assert 'value="True"' not in text
+    assert 'value="False"' not in text
+    # Values still round-trip to Python bools
+    H = nx.read_gexf(fname)
+    assert H.nodes["n"]["flag"] == [(True, 0, 1), (False, 1, 2)]
+
+
 class TestGEXF:
     @classmethod
     def setup_class(cls):
@@ -142,6 +160,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
 """
         cls.attribute_graph = nx.DiGraph()
         cls.attribute_graph.graph["node_default"] = {"frog": True}
+        cls.attribute_graph.graph["description"] = "A Web network"
         cls.attribute_graph.add_node(
             "0", label="Gephi", url="https://gephi.org", indegree=1, frog=False
         )
@@ -219,6 +238,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         G = self.attribute_graph
         H = nx.read_gexf(self.attribute_fh)
         assert sorted(G.nodes(True)) == sorted(H.nodes(data=True))
+        assert H.graph.get("description") == "A Web network"
         ge = sorted(G.edges(data=True))
         he = sorted(H.edges(data=True))
         for a, b in zip(ge, he):
@@ -664,3 +684,19 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert G.nodes[1].get("baz") == H.nodes[1].get("baz")
         assert isinstance(H.nodes[2].get("baz"), float)
         assert G.nodes[2].get("baz") == H.nodes[2].get("baz")
+
+    def test_meta_description_keywords_round_trip(self):
+        G = nx.DiGraph()
+        G.add_node(0, label="Node0")
+        G.add_edge(0, 1)
+        G.graph["description"] = "Test description"
+        G.graph["keywords"] = "test, network, graph"
+        fh = io.BytesIO()
+        nx.write_gexf(G, fh)
+
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert H.graph.get("description") == "Test description"
+        assert H.graph.get("keywords") == "test, network, graph"
+        assert sorted(G.nodes()) == sorted(H.nodes())
+        assert sorted(G.edges()) == sorted(H.edges())
