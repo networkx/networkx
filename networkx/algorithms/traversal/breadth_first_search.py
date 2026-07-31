@@ -374,9 +374,9 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     Returns
     -------
     succ: iterator
-        (node, successors) iterator where `successors` is the list of
-        successors of `node` in a breadth-first search from `source`.
-        Nodes with no successors are included with an empty successor list.
+       (node, successors) iterator where `successors` is the list of
+       successors of `node` in a breadth-first search from `source`.
+       Nodes with no successors are included with an empty successor list.
 
     Examples
     --------
