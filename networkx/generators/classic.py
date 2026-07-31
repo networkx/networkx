@@ -47,24 +47,6 @@ __all__ = [
 # -------------------------------------------------------------------
 
 
-def _tree_edges(n, r):
-    if n == 0:
-        return
-    # helper function for trees
-    # yields edges in rooted tree at 0 with n nodes and branching ratio r
-    nodes = iter(range(n))
-    parents = [next(nodes)]  # stack of max length r
-    while parents:
-        source = parents.pop(0)
-        for i in range(r):
-            try:
-                target = next(nodes)
-                parents.append(target)
-                yield source, target
-            except StopIteration:
-                break
-
-
 @nx._dispatchable(graphs=None, returns_graph=True)
 def full_rary_tree(r, n, create_using=None):
     """Creates a full r-ary tree of `n` nodes.
@@ -99,7 +81,10 @@ def full_rary_tree(r, n, create_using=None):
            James Andrew Storer,  Birkhauser Boston 2001, (page 225).
     """
     G = empty_graph(n, create_using)
-    G.add_edges_from(_tree_edges(n, r))
+    if r > 0:
+        # Nodes are labeled in breadth-first order from the root, so the parent
+        # of node `child` is simply ``(child - 1) // r``.
+        G.add_edges_from(((child - 1) // r, child) for child in range(1, n))
     return G
 
 
