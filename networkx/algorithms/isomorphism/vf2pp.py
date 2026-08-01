@@ -18,14 +18,14 @@ is isomorphic to an induced subgraph of the other graph.
 `vf2pp_subgraph_isomorphism`: obtain the node isomorphism mapping between a
 specified graph and any induced subgraph of the other graph, if possible.
 `vf2pp_all_subgraph_isomorphisms`: generate all possible isomorphism mappings
-between the specified induced subgraph and the graph.
+between the full graph and the specified induced subgraph.
 
-`vf2pp_is_monomorphic`: check whether two graphs are monomorphic. That is,
-the node and edge sets of one are subsets of the other's node and edge sets.
-`vf2pp_monomorphism`: obtain the node monomorphism mapping between a
-specified graph and any subgraph of the other graph, if possible.
+`vf2pp_is_monomorphic`: check whether two graphs are monomorphic. That is, the node
+and edge sets of the subgraph are subsets of the full graph's node and edge sets.
+`vf2pp_monomorphism`: obtain the node monomorphism mapping from the full graph to
+the specified subgraph if possible.
 `vf2pp_all_monomorphisms`: generate all possible monomorphism mappings
-between the specified subgraph and the graph.
+between the graph and the specified subgraph.
 
 Introduction
 ------------
@@ -183,7 +183,7 @@ _StateInfo = collections.namedtuple(
 
 @nx._dispatchable(graphs={"FG": 0, "SG": 1}, node_attrs={"node_label": "default_label"})
 def vf2pp_isomorphism(FG, SG, node_label=None, default_label=None):
-    """Return an isomorphic mapping between `SG` and `FG` if it exists.
+    """Return an isomorphic mapping between `FG` and `SG` if it exists.
 
     Parameters
     ----------
@@ -245,7 +245,7 @@ def vf2pp_is_isomorphic(FG, SG, node_label=None, default_label=None):
 
 @nx._dispatchable(graphs={"FG": 0, "SG": 1}, node_attrs={"node_label": "default_label"})
 def vf2pp_all_isomorphisms(FG, SG, node_label=None, default_label=None):
-    """Yields all the possible mappings between SG and FG.
+    """Yields all the possible mappings between FG and SG.
 
     Parameters
     ----------
@@ -265,14 +265,14 @@ def vf2pp_all_isomorphisms(FG, SG, node_label=None, default_label=None):
     Yields
     ------
     dict
-        Isomorphic mapping between the nodes in `SG` and `FG`.
+        Isomorphic mapping between the nodes in `FG` and `SG`.
     """
     yield from _all_morphisms(FG, SG, node_label, default_label, PT="ISO")
 
 
 @nx._dispatchable(graphs={"FG": 0, "SG": 1}, node_attrs={"node_label": "default_label"})
 def vf2pp_subgraph_isomorphism(FG, SG, node_label=None, default_label=None):
-    """Return an isomorphic mapping between nodes of `SG` and `FG` if it exists.
+    """Return an isomorphic mapping between nodes of `FG` and `SG` if it exists.
 
     Parameters
     ----------
@@ -335,7 +335,7 @@ def vf2pp_subgraph_is_isomorphic(FG, SG, node_label=None, default_label=None):
 
 @nx._dispatchable(graphs={"FG": 0, "SG": 1}, node_attrs={"node_label": "default_label"})
 def vf2pp_all_subgraph_isomorphisms(FG, SG, node_label=None, default_label=None):
-    """Yields all the possible subgraph isomorphisms between SG and FG.
+    """Yields all the possible subgraph isomorphisms between FG and SG.
 
     Parameters
     ----------
@@ -362,7 +362,7 @@ def vf2pp_all_subgraph_isomorphisms(FG, SG, node_label=None, default_label=None)
 
 @nx._dispatchable(graphs={"FG": 0, "SG": 1}, node_attrs={"node_label": "default_label"})
 def vf2pp_monomorphism(FG, SG, node_label=None, default_label=None):
-    """Return a monomorphic mapping between `SG` and `FG` if it exists.
+    """Return a monomorphic mapping between `FG` and `SG` if it exists.
 
     Parameters
     ----------
@@ -424,13 +424,12 @@ def vf2pp_is_monomorphic(FG, SG, node_label=None, default_label=None):
 
 @nx._dispatchable(graphs={"FG": 0, "SG": 1}, node_attrs={"node_label": "default_label"})
 def vf2pp_all_monomorphisms(FG, SG, node_label=None, default_label=None):
-    """Yields all the possible monomorphisms between nodes of SG and FG.
+    """Yields all the possible monomorphisms between nodes of FG and SG.
 
-    A monomorphism means that edges between two nodes in SG must connect the
-    image nodes of those two nodes in FG, but that edges in FG do not have
-    to have pre-image edges in SG. The mapping is injective not bijective.
-    The mapped nodes have to maintain the SG connections, but not the SG
-    disconnections. Maintaining edges and non-edges is provided by the
+    A monomorphism is an injective version of an isomorphism. If two nodes in SG
+    are connected by an edge, the pre-image nodes in FG must also be connected.
+    But two mapped nodes connected by an edge in FG may not have an edge in SG.
+    Maintaining both edges and non-edges (an induced subgraph) is provided by
     subgraph isomorphism functions.
 
     Parameters
@@ -451,7 +450,7 @@ def vf2pp_all_monomorphisms(FG, SG, node_label=None, default_label=None):
     Yields
     ------
     dict
-        Isomorphic mapping between the nodes in `SG` and `FG`.
+        Isomorphic mapping of the nodes in `FG` to nodes in `SG`.
     """
     yield from _all_morphisms(FG, SG, node_label, default_label, PT="MONO")
 
@@ -547,10 +546,10 @@ def _all_morphisms(FG, SG, node_label, default_label, PT):
 
         if _feasibility(current_node, candidate, graph_info, state_info):
             # Yield mapping if extended to all SG
-            if len(mapping) == SG.number_of_nodes() - 1:
-                cp_mapping = mapping.copy()
-                cp_mapping[current_node] = candidate
-                yield cp_mapping
+            if len(rev_map) == SG.number_of_nodes() - 1:
+                cp_rev_map = rev_map.copy()
+                cp_rev_map[candidate] = current_node
+                yield cp_rev_map
                 continue
 
             # Feasibility rules pass, so extend the mapping and update Tinout

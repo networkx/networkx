@@ -3,7 +3,22 @@ import itertools as it
 import pytest
 
 import networkx as nx
-from networkx import vf2pp_all_isomorphisms, vf2pp_is_isomorphic, vf2pp_isomorphism
+from networkx import vf2pp_all_isomorphisms as _all_isomorphisms
+from networkx import vf2pp_is_isomorphic
+from networkx import vf2pp_isomorphism as _isomorphism
+
+
+# Switch order of FG and SG input for vf2_isomorphism and vf2pp_all_isomorphisms
+# This satisfies backward compatibility. These tests are forward compatible -- i.e.
+# they match what vf2 and ismags do. But not what vf2pp used to do for isomorphisms
+# The difference should be gone once we have a unified API.
+def vf2pp_all_isomorphisms(FG, SG, node_label=None, default_label=None):
+    yield from _all_isomorphisms(SG, FG, node_label, default_label)
+
+
+def vf2pp_isomorphism(FG, SG, node_label=None, default_label=None):
+    return _isomorphism(SG, FG, node_label, default_label)
+
 
 labels_same = ["blue"]
 

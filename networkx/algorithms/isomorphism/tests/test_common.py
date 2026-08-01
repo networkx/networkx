@@ -237,6 +237,7 @@ mono_funcs = {
 morphism_funcs = is_funcs | SG_funcs | mono_funcs
 
 is_morphic_funcs = [pytest.param(fn[0], id=id) for id, fn in morphism_funcs.items()]
+mapping_funcs = [pytest.param(fn[1], id=id) for id, fn in morphism_funcs.items()]
 mono_iters = [pytest.param(fn[1], id=id) for id, fn in mono_funcs.items()]
 morphic_and_mapping = [pytest.param(*fns, id=id) for id, fns in morphism_funcs.items()]
 
@@ -502,6 +503,16 @@ solo_graphs = [
 
 #### Test Functions
 ## Self-Isomorphism (Symmetry) tests
+
+
+@pytest.mark.parametrize("morphism", mapping_funcs)
+def test_graph_input_order(morphism):
+    # see gh-8810
+    G = nx.Graph(["eh"])
+    nx.add_path(G, "abcdefg")
+    H = nx.relabel_nodes(G, {a: i for i, a in enumerate(G)})
+
+    assert list(morphism(G, H)) == [dict(zip(G, H))]
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
