@@ -41,7 +41,7 @@ def complement(G):
     return R
 
 
-@nx._dispatchable(returns_graph=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def reverse(G, copy=True):
     """Returns the reverse directed graph of G.
 
