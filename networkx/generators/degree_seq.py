@@ -527,7 +527,7 @@ def havel_hakimi_graph(deg_sequence, create_using=None, *, randomize=False, seed
             source = num_degs[source_deg].pop()
             while dmax > 0 and len(num_degs[dmax]) == 0:
                 dmax -= 1
-        else:
+        else:  # "regular" Havel-Hakimi
             # Retrieve the maximum degree in the sequence
             while len(num_degs[dmax]) == 0:
                 dmax -= 1
