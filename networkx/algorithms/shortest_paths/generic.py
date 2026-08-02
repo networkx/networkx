@@ -67,7 +67,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
 
     method : string, optional (default = 'dijkstra')
         The algorithm to use to compute the path.
-        Supported options: 'dijkstra', 'bellman-ford'.
+        Supported options: ``dijkstra``, ``bellman-ford``.
         Other inputs produce a ValueError.
         If `weight` is None, unweighted graph methods are used, and this
         suggestion is ignored.
@@ -208,7 +208,7 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
 
     method : string, optional (default = 'dijkstra')
         The algorithm to use to compute the path length.
-        Supported options: 'dijkstra', 'bellman-ford'.
+        Supported options: ``dijkstra``, ``bellman-ford``.
         Other inputs produce a ValueError.
         If `weight` is None, unweighted graph methods are used, and this
         suggestion is ignored.
@@ -464,7 +464,7 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
 
     method : string, optional (default = 'dijkstra')
        The algorithm to use to compute the path lengths.
-       Supported options: 'dijkstra', 'bellman-ford'.
+       Supported options: ``dijkstra``, ``bellman-ford``.
        Other inputs produce a ValueError.
        If `weight` is None, unweighted graph methods are used, and this
        suggestion is ignored.
@@ -545,7 +545,7 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
 
     method : string, optional (default = 'dijkstra')
        The algorithm to use to compute the path lengths.
-       Supported options: 'dijkstra', 'bellman-ford'.
+       Supported options: ``dijkstra``, ``bellman-ford``.
        Other inputs produce a ValueError.
        If `weight` is None, unweighted graph methods are used, and this
        suggestion is ignored.
@@ -621,7 +621,7 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
 
     method : string, optional (default = 'dijkstra')
        The algorithm to use to compute the path lengths.
-       Supported options: 'dijkstra', 'bellman-ford'.
+       Supported options: ``dijkstra``, ``bellman-ford``.
        Other inputs produce a ValueError.
        If `weight` is None, unweighted graph methods are used, and this
        suggestion is ignored.
