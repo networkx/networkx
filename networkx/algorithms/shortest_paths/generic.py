@@ -503,7 +503,13 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
     single_source_shortest_path
     all_pairs_shortest_path
     """
-    method = "unweighted" if weight is None else method
+    if weight is None:
+        method = "unweighted"
+    if method == "unweighted":
+        if weight is not None:
+            raise ValueError(f"method not supported: {method}")
+    elif method not in ("dijkstra", "bellman-ford"):
+        raise ValueError(f"method not supported: {method}")
     if method == "unweighted":
         pred = nx.predecessor(G, source)
     elif method == "dijkstra":
@@ -576,7 +582,13 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     all_pairs_shortest_path
     all_pairs_all_shortest_paths
     """
-    method = "unweighted" if weight is None else method
+    if weight is None:
+        method = "unweighted"
+    if method == "unweighted":
+        if weight is not None:
+            raise ValueError(f"method not supported: {method}")
+    elif method not in ("dijkstra", "bellman-ford"):
+        raise ValueError(f"method not supported: {method}")
     if method == "unweighted":
         pred = nx.predecessor(G, source)
     elif method == "dijkstra":

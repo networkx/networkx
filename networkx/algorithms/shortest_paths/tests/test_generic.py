@@ -391,6 +391,32 @@ class TestGenericPath:
                 )
             )
 
+    def test_all_shortest_paths_unweighted_method_with_weight(self):
+        G = nx.Graph()
+        G.add_edge("A", "B", weight=100)
+        G.add_edge("A", "C", weight=1)
+        G.add_edge("C", "D", weight=1)
+        G.add_edge("D", "B", weight=1)
+        with pytest.raises(ValueError):
+            list(
+                nx.all_shortest_paths(
+                    G, "A", "B", weight="weight", method="unweighted"
+                )
+            )
+
+    def test_single_source_all_shortest_paths_unweighted_method_with_weight(self):
+        G = nx.Graph()
+        G.add_edge("A", "B", weight=100)
+        G.add_edge("A", "C", weight=1)
+        G.add_edge("C", "D", weight=1)
+        G.add_edge("D", "B", weight=1)
+        with pytest.raises(ValueError):
+            dict(
+                nx.single_source_all_shortest_paths(
+                    G, "A", weight="weight", method="unweighted"
+                )
+            )
+
     def test_all_shortest_paths_zero_weight_edge(self):
         g = nx.Graph()
         nx.add_path(g, [0, 1, 3])
