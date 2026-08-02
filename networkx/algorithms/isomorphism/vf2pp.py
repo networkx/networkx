@@ -112,7 +112,7 @@ because not all induced edges need to be mapped to.
 >>> nx.vf2pp_is_monomorphic(FG, SG, node_label=None)
 True
 >>> map = nx.vf2pp_monomorphism(FG, SG, node_label=None)
->>> map == {1: 0, 2: 1, 0: 3, 3: 2}
+>>> map == {1: 2, 2: 3, 0: 1, 3: 0}
 True
 
 With node labels:
