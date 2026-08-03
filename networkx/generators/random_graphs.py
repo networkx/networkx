@@ -760,7 +760,7 @@ def dual_barabasi_albert_graph(
         Initial network for Barabási–Albert algorithm.
         A copy of `initial_graph` is used.
         It should be connected for most use cases.
-        If None, starts from an star graph on max(m1, m2) + 1 nodes.
+        If None, starts from a star graph on max(m1, m2) + 1 nodes.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
         Multigraph and directed types are not supported and raise a ``NetworkXError``.
@@ -801,7 +801,7 @@ def dual_barabasi_albert_graph(
         return barabasi_albert_graph(n, m2, seed, create_using=create_using)
 
     if initial_graph is None:
-        # Default initial graph : star graph on max(m1, m2) nodes
+        # Default initial graph : star graph on max(m1, m2) + 1 nodes
         G = star_graph(max(m1, m2), create_using)
     else:
         if len(initial_graph) < max(m1, m2) or len(initial_graph) > n:

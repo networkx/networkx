@@ -47,6 +47,14 @@ class TestSparseGraph6:
             ],
         )
 
+    def test_from_sparse6_bytes_rejects_out_of_range(self):
+        # bytes outside range(63, 127) must be rejected rather than silently
+        # decoding to a wrong graph
+        with pytest.raises(ValueError):
+            nx.from_sparse6_bytes(b":B" + bytes([10]) + b"N")
+        with pytest.raises(ValueError):
+            nx.from_sparse6_bytes(b":BcN" + bytes([200]))
+
     def test_from_bytes_multigraph_graph(self):
         graph_data = b":An"
         G = nx.from_sparse6_bytes(graph_data)

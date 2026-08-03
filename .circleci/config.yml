@@ -21,10 +21,6 @@ jobs:
           command: sudo apt install -y ffmpeg
 
       - run:
-          name: Install Graphviz
-          command: sudo apt install -y graphviz libgraphviz-dev
-
-      - run:
           name: Install pysal dependencies
           command: sudo apt install -y libspatialindex-dev
 
@@ -70,6 +66,7 @@ jobs:
             export OMP_NUM_THREADS=1
             source venv/bin/activate
             make -C doc/ SPHINXOPTS="-j 2" html
+          no_output_timeout: 30m
 
       - store_artifacts:
           path: doc/build/html
@@ -111,11 +108,6 @@ jobs:
       - image: cimg/python:3.12
     steps:
       - checkout
-      - run:
-          name: Before install
-          command: |
-            sudo apt-get update
-            sudo apt-get install graphviz graphviz-dev
       - run:
           name: Install dependencies
           command: |

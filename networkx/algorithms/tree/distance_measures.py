@@ -133,7 +133,7 @@ def _subtree_sizes(G, root):
 
 
 @nx.utils.not_implemented_for("directed")
-@nx._dispatchable
+@nx._dispatchable(name="tree_centroid")
 def centroid(G):
     """Return the centroid of an unweighted tree.
 
@@ -194,7 +194,7 @@ def centroid(G):
 
     See Also
     --------
-    :func:`~networkx.algorithms.distance_measures.barycenter`
+    :func:`~networkx.algorithms.distance_measures.centroid`
     :func:`~networkx.algorithms.distance_measures.center`
     center : tree center
     """

@@ -18,6 +18,26 @@ feature to merge, unless you have a good reason not to do so.
 Reviewing
 ---------
 
+Pre-Merge Requirements
+~~~~~~~~~~~~~~~~~~~~~~
+
+All pull requests should meet the following criteria before merging into ``main``:
+
+1. Have at least two approvals from reviewers on the maintainers or triage team.
+2. Have one of the `type: <https://github.com/networkx/networkx/labels?q=type>`_
+   labels applied prior to merge.
+
+The two approvals requirement applies to PRs originating from external contributors.
+If the PR submitter is a maintainer, then careful review from another maintainer
+is sufficient to meet the "two reviews" threshold.
+
+The ``type:`` labels are used to automatically categorize and generate the
+release notes; therefore one of these labels must be applied for the release
+notes to be generated properly.
+The rule-of-thumb is the first approver is responsible for applying the
+label, but anyone with at least triaging permissions is welcome to apply a
+``type:`` label.
+
 How to Conduct A Good Review
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -83,7 +103,6 @@ the original. In doing so, ensure you communicate that you are not
 throwing the contributor's work away!  You should use GitHub's
 ``Co-authored-by:`` keyword for commit messages to credit the
 original contributor.
-
 
 Please add a note to a pull request after you push new changes; GitHub
 may not send out notifications for these.

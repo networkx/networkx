@@ -6,11 +6,6 @@ that the graph is k-edge-connected; i.e. the graph cannot be disconnected
 unless k or more edges are removed.  Typically, the goal is to find the
 augmentation with minimum weight.  In general, it is not guaranteed that a
 k-edge-augmentation exists.
-
-See Also
---------
-:mod:`edge_kcomponents` : algorithms for finding k-edge-connected components
-:mod:`connectivity` : algorithms for determining edge connectivity.
 """
 
 import itertools as it

@@ -82,6 +82,19 @@ class TestGeneratorClassic:
         t = nx.full_rary_tree(3, 20)
         assert t.order() == 20
 
+    def test_full_rary_tree_edges(self):
+        # nodes are labeled in breadth-first order from the root
+        t = nx.full_rary_tree(3, 8, create_using=nx.DiGraph)
+        assert list(t.edges) == [
+            (0, 1),
+            (0, 2),
+            (0, 3),
+            (1, 4),
+            (1, 5),
+            (1, 6),
+            (2, 7),
+        ]
+
     def test_barbell_graph(self):
         # number of nodes = 2*m1 + m2 (2 m1-complete graphs + m2-path + 2 edges)
         # number of edges = 2*(nx.number_of_edges(m1-complete graph) + m2 + 1

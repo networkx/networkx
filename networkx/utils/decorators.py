@@ -2,8 +2,8 @@ import bz2
 import collections
 import gzip
 import inspect
-import itertools
 import re
+import threading
 from collections import defaultdict
 from os.path import splitext
 from pathlib import Path
@@ -753,10 +753,11 @@ class argmap:
         [1] https://github.com/networkx/networkx/issues/4732
 
         """
-        real_func = func.__argmap__.compile(func.__wrapped__)
-        func.__code__ = real_func.__code__
-        func.__globals__.update(real_func.__globals__)
-        func.__dict__.update(real_func.__dict__)
+        with argmap._compile_lock:
+            real_func = func.__argmap__.compile(func.__wrapped__)
+            func.__globals__.update(real_func.__globals__)
+            func.__dict__.update(real_func.__dict__)
+            func.__code__ = real_func.__code__
         return func
 
     def __call__(self, f):
@@ -822,6 +823,9 @@ class argmap:
         return func
 
     __count = 0
+    # Serializes _lazy_compile so the compound __globals__/__code__ publish and
+    # the __count increments it drives are safe under free-threaded Python.
+    _compile_lock = threading.Lock()
 
     @classmethod
     def _count(cls):

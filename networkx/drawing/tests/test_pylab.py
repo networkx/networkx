@@ -1,7 +1,6 @@
 """Unit tests for matplotlib drawing functions."""
 
 import itertools
-import os
 import warnings
 
 import pytest
@@ -55,7 +54,7 @@ defaults = {
     },
     "edge_style": "-",
     "edge_alpha": 1.0,
-    # These are for undirected-graphs. Directed graphs shouls use "-|>" and 10, respectively
+    # These are for undirected-graphs. Directed graphs should use "-|>" and 10, respectively
     "edge_arrowstyle": "-",
     "edge_arrowsize": 0,
     "edge_curvature": "arc3",

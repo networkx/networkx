@@ -1380,6 +1380,31 @@ class PlanarEmbedding(nx.DiGraph):
 
         return face_nodes
 
+    def faces(self):
+        """Generate facial boundary walks from this planar embedding.
+
+        Yields
+        ------
+        face : list
+            A facial boundary walk as a node sequence in cyclic order.
+            Walks are not guaranteed to be simple cycles: vertices can repeat,
+            for example around bridges or articulation points.
+
+        Notes
+        -----
+        This method traverses each directed half-edge exactly once.
+        For disconnected embeddings, a unique global outer face is not
+        distinguished by the combinatorial embedding.
+        When the embedding is obtained from :func:`check_planarity`,
+        self-loops are not represented and parallel edges are merged
+        before the embedding is constructed.
+        """
+        visited_half_edges = set()
+        for v in self:
+            for w in self.neighbors_cw_order(v):
+                if (v, w) not in visited_half_edges:
+                    yield self.traverse_face(v, w, mark_half_edges=visited_half_edges)
+
     def is_directed(self):
         """A valid PlanarEmbedding is undirected.
 
