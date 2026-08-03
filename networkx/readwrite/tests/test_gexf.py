@@ -300,6 +300,29 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         fh = io.BytesIO(s.encode("UTF-8"))
         pytest.raises(nx.NetworkXError, nx.read_gexf, fh)
 
+    @pytest.mark.parametrize(
+        "attributes_tag", ['<attributes class="graph">', "<attributes>"]
+    )
+    def test_unknown_attribute_class_raises(self, attributes_tag):
+        s = f"""<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version='1.2'>
+    <graph mode="static" defaultedgetype="directed" name="">
+        {attributes_tag}
+            <attribute id="0" title="url" type="string"/>
+        </attributes>
+        <nodes>
+            <node id="0" label="Hello" />
+            <node id="1" label="Word" />
+        </nodes>
+        <edges>
+            <edge id="0" source="0" target="1"/>
+        </edges>
+    </graph>
+</gexf>
+"""
+        fh = io.BytesIO(s.encode("UTF-8"))
+        pytest.raises(nx.NetworkXError, nx.read_gexf, fh)
+
     def test_relabel(self):
         s = """<?xml version="1.0" encoding="UTF-8"?>
 <gexf xmlns="http://www.gexf.net/1.2draft" version='1.2'>
