@@ -741,8 +741,11 @@ def infomap_communities(G, *, weight="weight", seed=None, num_trials=1):
     independent restarts are run and the lowest-codelength partition is kept.
 
     Edge weights are interpreted as flow. For directed graphs the visit rates
-    are the stationary distribution of a random walk with teleportation, as in
-    PageRank.
+    are the stationary distribution of a random walk with teleportation,
+    computed with
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`; as with
+    a direct ``pagerank`` call, this requires SciPy. Undirected graphs use
+    only (weighted) degrees and do not need SciPy.
 
     Parameters
     ----------
@@ -854,6 +857,10 @@ def infomap_partitions(G, *, weight="weight", seed=None, num_trials=1):
     partition per level of that hierarchy, from the coarsest (the top-level
     modules) to the finest. Each yielded value is a list of disjoint sets of
     nodes that together contain every node of `G`.
+
+    Directed graphs require SciPy (the visit rates are computed with
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`);
+    undirected graphs do not.
 
     Parameters
     ----------

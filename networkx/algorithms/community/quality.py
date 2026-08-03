@@ -177,7 +177,10 @@ def map_equation(G, communities, weight="weight", teleportation_prob=0.15):
     For an undirected graph the visit rate of a node is proportional to its
     (weighted) degree, :math:`p_\alpha = k_\alpha / 2m`. For a directed graph
     the visit rates are the stationary distribution of a random walk with
-    teleportation (as in PageRank and Infomap's default directed flow model).
+    teleportation (as in PageRank and Infomap's default directed flow model),
+    computed with
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`, which
+    requires SciPy.
 
     Parameters
     ----------
