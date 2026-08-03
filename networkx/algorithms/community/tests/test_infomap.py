@@ -1,7 +1,6 @@
 import pytest
 
 import networkx as nx
-from networkx.algorithms.community import infomap_communities
 
 
 def test_valid_partition():
@@ -11,7 +10,8 @@ def test_valid_partition():
 
 
 def test_labels_preserved():
-    G = nx.karate_club_graph()
+    # String labels: an accidental relabel-to-index bug cannot hide.
+    G = nx.relabel_nodes(nx.karate_club_graph(), lambda n: f"v{n}")
     partition = nx.community.infomap_communities(G)
     assert set().union(*partition) == set(G.nodes())
 
@@ -22,39 +22,6 @@ def test_directed():
     G = nx.gnc_graph(50, seed=42)
     partition = nx.community.infomap_communities(G)
     assert nx.community.is_partition(G, partition)
-
-
-def test_directedness_from_graph_not_flow_symmetry():
-    """A symmetric directed graph (reciprocal equal-weight links) has symmetric
-    flow, yet Infomap must still treat it as directed. The optimizer takes
-    directedness from the graph, not by inferring it from flow symmetry."""
-    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-    import random
-
-    from networkx.algorithms.community.infomap import _CoreOptimizer
-    from networkx.algorithms.community.quality import _flow
-
-    edges = [(0, 1), (1, 2), (2, 0)]
-    DG = nx.DiGraph()
-    for u, v in edges:
-        DG.add_edge(u, v)
-        DG.add_edge(v, u)  # reciprocal, equal weight -> symmetric flow
-    flow, links = _flow(DG, "weight")
-    opt = _CoreOptimizer(
-        dict(flow), list(links), {n: 0 for n in DG}, random.Random(0), DG.is_directed()
-    )
-    assert opt.directed is True
-
-    UG = nx.Graph(edges)
-    uflow, ulinks = _flow(UG, "weight")
-    uopt = _CoreOptimizer(
-        dict(uflow),
-        list(ulinks),
-        {n: 0 for n in UG},
-        random.Random(0),
-        UG.is_directed(),
-    )
-    assert uopt.directed is False
 
 
 def test_isolated_nodes():
@@ -90,7 +57,6 @@ def test_infomap_native_matches_cpp_codelength_barbell():
     """The native optimizer should reach the same two-level optimum as the
     reference C++ Infomap on a clear two-clique structure."""
     infomap = pytest.importorskip("infomap")
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.barbell_graph(5, 0)
     partition = nx.community.infomap_communities(G, seed=42)
@@ -100,14 +66,15 @@ def test_infomap_native_matches_cpp_codelength_barbell():
     for u, v in G.edges():
         im.add_link(u, v)
     im.run()
-    assert map_equation(G, partition) == pytest.approx(im.codelength, abs=1e-9)
+    assert nx.community.map_equation(G, partition) == pytest.approx(
+        im.codelength, abs=1e-9
+    )
 
 
 def test_infomap_native_matches_cpp_codelength_karate():
     """With aggregation and several trials, the native optimizer should reach
     the same two-level optimum as the reference C++ Infomap on karate."""
     infomap = pytest.importorskip("infomap")
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.karate_club_graph()
     partition = nx.community.infomap_communities(G, seed=42, num_trials=20)
@@ -116,7 +83,9 @@ def test_infomap_native_matches_cpp_codelength_karate():
     for u, v, w in G.edges(data="weight", default=1):
         im.add_link(u, v, w)
     im.run()
-    assert map_equation(G, partition) == pytest.approx(im.codelength, abs=1e-9)
+    assert nx.community.map_equation(G, partition) == pytest.approx(
+        im.codelength, abs=1e-9
+    )
 
 
 def test_infomap_native_matches_cpp_directed_dag():
@@ -124,7 +93,6 @@ def test_infomap_native_matches_cpp_directed_dag():
     should reach the C++ reference two-level codelength given enough trials."""
     infomap = pytest.importorskip("infomap")
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.gnc_graph(40, seed=3)
     partition = nx.community.infomap_communities(G, seed=1, num_trials=20)
@@ -136,15 +104,15 @@ def test_infomap_native_matches_cpp_directed_dag():
     for u, v in G.edges():
         im.add_link(u, v)
     im.run()
-    assert map_equation(G, partition, weight=None) <= im.codelength + 1e-6
+    assert nx.community.map_equation(G, partition, weight=None) <= im.codelength + 1e-6
 
 
 def test_infomap_communities_two_level_matches_cpp_ring_of_cliques():
     """On a genuinely multilevel graph, infomap_communities (two-level) reaches
     the same two-level optimum as the reference C++ Infomap run with
-    two_level=True -- not the coarser hierarchy top it used to return."""
+    two_level=True -- not the coarsest level of the multilevel hierarchy (which
+    infomap_partitions yields first)."""
     infomap = pytest.importorskip("infomap")
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.ring_of_cliques(12, 6)
     partition = nx.community.infomap_communities(G, weight=None, seed=42, num_trials=20)
@@ -153,7 +121,7 @@ def test_infomap_communities_two_level_matches_cpp_ring_of_cliques():
     for u, v in G.edges():
         im.add_link(u, v)
     im.run()
-    assert map_equation(G, partition, weight=None) == pytest.approx(
+    assert nx.community.map_equation(G, partition, weight=None) == pytest.approx(
         im.codelength, abs=1e-6
     )
 
@@ -222,40 +190,35 @@ def test_infomap_multilevel_matches_cpp_ring_of_cliques():
 
 
 def test_infomap_reaches_known_optimum_barbell():
-    from networkx.algorithms.community.quality import map_equation
-
     G = nx.barbell_graph(5, 0)
     partition = nx.community.infomap_communities(G, seed=0, num_trials=10)
     assert nx.community.is_partition(G, partition)
     # Two-level optimum found by the C++ reference for two K5 joined by an edge.
-    assert map_equation(G, partition) == pytest.approx(2.642755, abs=1e-5)
+    assert nx.community.map_equation(G, partition) == pytest.approx(2.642755, abs=1e-5)
 
 
 def test_infomap_reaches_known_optimum_karate():
-    from networkx.algorithms.community.quality import map_equation
-
     G = nx.karate_club_graph()  # weighted (Zachary)
     partition = nx.community.infomap_communities(G, seed=0, num_trials=20)
     assert nx.community.is_partition(G, partition)
-    assert map_equation(G, partition) == pytest.approx(4.087423, abs=1e-5)
+    assert nx.community.map_equation(G, partition) == pytest.approx(4.087423, abs=1e-5)
 
 
 def test_infomap_reaches_known_optimum_caveman():
-    from networkx.algorithms.community.quality import map_equation
-
     G = nx.connected_caveman_graph(5, 6)
     partition = nx.community.infomap_communities(G, weight=None, seed=0, num_trials=10)
-    assert map_equation(G, partition, weight=None) == pytest.approx(3.089847, abs=1e-5)
+    assert nx.community.map_equation(G, partition, weight=None) == pytest.approx(
+        3.089847, abs=1e-5
+    )
 
 
 def test_map_equation_directed_cycle_known_value():
     # Two directed triangles bridged; codelength from the C++ reference.
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.DiGraph([(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (2, 3), (0, 4)])
     partition = [{0, 1, 2}, {3, 4, 5}]
-    assert map_equation(G, partition) == pytest.approx(1.772891, abs=1e-5)
+    assert nx.community.map_equation(G, partition) == pytest.approx(1.772891, abs=1e-5)
 
 
 def test_infomap_reaches_known_optimum_gnc_dag():
@@ -263,11 +226,10 @@ def test_infomap_reaches_known_optimum_gnc_dag():
     most; the optimizer must still reach the C++ two-level optimum. Best over a
     few seeds keeps this robust against per-trial stochasticity."""
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.gnc_graph(80, seed=7)
     best = min(
-        map_equation(
+        nx.community.map_equation(
             G,
             nx.community.infomap_communities(G, weight=None, seed=s, num_trials=15),
             weight=None,
@@ -325,14 +287,15 @@ def test_infomap_communities_optimizes_two_level_objective():
     of the multilevel hierarchy. On a genuinely hierarchical graph the two-level
     optimum compresses strictly better, in two-level terms, than the hierarchy's
     top level (which infomap_partitions yields first)."""
-    from networkx.algorithms.community.quality import map_equation
-
     G = nx.ring_of_cliques(12, 6)
     communities = nx.community.infomap_communities(G, seed=0, num_trials=10)
     hierarchy_top = next(
         iter(nx.community.infomap_partitions(G, seed=0, num_trials=10))
     )
-    assert map_equation(G, communities) < map_equation(G, hierarchy_top) - 1e-9
+    assert (
+        nx.community.map_equation(G, communities)
+        < nx.community.map_equation(G, hierarchy_top) - 1e-9
+    )
 
 
 def test_infomap_partitions_empty_graph():
@@ -340,23 +303,15 @@ def test_infomap_partitions_empty_graph():
     assert list(nx.community.infomap_partitions(nx.Graph())) == [[]]
 
 
-def test_infomap_invalid_num_trials():
-    G = nx.karate_club_graph()
-    with pytest.raises(ValueError, match="num_trials"):
-        nx.community.infomap_communities(G, num_trials=0)
-
-
 def test_infomap_handles_multigraph_as_summed_weights():
     """Parallel edges are summed, matching the equivalent weighted simple graph
     (as Louvain does), so multigraphs are handled rather than rejected."""
-    from networkx.algorithms.community.quality import map_equation
-
     MG = nx.MultiGraph([(0, 1), (0, 1), (1, 2), (2, 0)])
     SG = nx.Graph()
     SG.add_weighted_edges_from([(0, 1, 2), (1, 2, 1), (2, 0, 1)])
     partition = [{0, 1, 2}]
-    assert map_equation(MG, partition, weight=None) == pytest.approx(
-        map_equation(SG, partition)
+    assert nx.community.map_equation(MG, partition, weight=None) == pytest.approx(
+        nx.community.map_equation(SG, partition)
     )
     assert nx.community.is_partition(MG, nx.community.infomap_communities(MG))
 
@@ -379,7 +334,7 @@ def test_infomap_directed_zero_weight_edges():
     )
 
 
-def test_infomap_invalid_num_trials_type():
+def test_infomap_rejects_invalid_num_trials():
     """num_trials must be a positive integer; 0, negatives, and non-ints all
     raise ValueError (not a bare TypeError) per the documented contract."""
     G = nx.karate_club_graph()
@@ -454,13 +409,11 @@ def test_infomap_disconnected_components_not_merged():
 def test_infomap_num_trials_improves_codelength():
     """More restarts can only keep or lower the best codelength found -- the
     first trial of an N-trial run reuses the single-trial seed stream."""
-    from networkx.algorithms.community.quality import map_equation
-
     G = nx.planted_partition_graph(5, 12, 0.3, 0.05, seed=4)
-    c1 = map_equation(
+    c1 = nx.community.map_equation(
         G, nx.community.infomap_communities(G, weight=None, seed=0, num_trials=1)
     )
-    c20 = map_equation(
+    c20 = nx.community.map_equation(
         G, nx.community.infomap_communities(G, weight=None, seed=0, num_trials=20)
     )
     assert c20 <= c1 + 1e-9
@@ -473,12 +426,13 @@ def test_infomap_num_trials_improves_codelength():
         nx.empty_graph(1),
         nx.empty_graph(5),
         nx.path_graph(2),
-        nx.Graph([(0, 0), (0, 1), (1, 1)]),  # self-loops
+        nx.Graph([(0, 0), (0, 1), (1, 1)]),
     ],
+    ids=["empty", "single-node", "edgeless", "single-edge", "self-loops"],
 )
 def test_infomap_degenerate_graphs(G):
-    """Empty, single-node, edgeless, and self-loop graphs return a valid
-    partition (or [] for the empty graph) without crashing."""
+    """Empty, single-node, edgeless, single-edge, and self-loop graphs return a
+    valid partition (or [] for the empty graph) without crashing."""
     partition = nx.community.infomap_communities(G, seed=0)
     if len(G) == 0:
         assert partition == []
@@ -488,11 +442,12 @@ def test_infomap_degenerate_graphs(G):
 
 def test_infomap_directed_reciprocal_matches_cpp():
     """Directed graphs with reciprocal edges exercise the link-counting leftover
-    rule and the strongest-connected tie-break; the optimizer must still reach
-    the reference C++ two-level optimum."""
+    rule and the strongest-connected tie-break -- directedness must come from
+    the graph, since reciprocal equal-weight links make the flow itself
+    symmetric. The optimizer must still reach the reference C++ two-level
+    optimum."""
     infomap = pytest.importorskip("infomap")
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.DiGraph(
         [
@@ -512,7 +467,7 @@ def test_infomap_directed_reciprocal_matches_cpp():
         ]
     )
     best = min(
-        map_equation(
+        nx.community.map_equation(
             G, nx.community.infomap_communities(G, weight=None, seed=s, num_trials=10)
         )
         for s in range(8)

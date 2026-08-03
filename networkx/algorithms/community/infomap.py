@@ -19,7 +19,7 @@ __all__ = ["infomap_communities", "infomap_partitions"]
 # the partition that minimizes it. The search mirrors Louvain and adds
 # Infomap's refinements, in four nested layers:
 #
-#   1. core loop      -- repeatedly move each node to the neighbouring module
+#   1. core loop      -- repeatedly move each node to the neighboring module
 #                        that most lowers the codelength (`_CoreOptimizer`),
 #   2. aggregation    -- collapse the resulting modules into a super-network and
 #                        run the core loop again, building modules of modules
@@ -30,12 +30,13 @@ __all__ = ["infomap_communities", "infomap_partitions"]
 #   4. hierarchy      -- stack super-modules on top and recurse into modules to
 #                        recover a multilevel map (`_build_hierarchy`).
 #
-# `infomap_communities` runs this from several random starts and keeps the best.
+# `infomap_communities` runs this from `num_trials` random starts and keeps the
+# best.
 #
 # The move heuristics and loop structure follow the Infomap algorithm of Rosvall
-# and Bergstrom, so the optimizer minimizes the same map equation and reaches the
-# same optimum. The search is greedy and stochastic: a given seed fixes one path
-# to a local optimum, and different seeds explore different ones.
+# and Bergstrom, so the optimizer minimizes the same map equation. The search is
+# greedy and stochastic: a given seed fixes one path to a local optimum, and
+# different seeds explore different ones.
 
 # Tuning constants for the search: how many sweeps each loop runs before giving
 # up, and how much a move (or a whole pass) must lower the codelength to count.
@@ -43,7 +44,7 @@ _CORE_LOOP_LIMIT = 10
 _AGGREGATION_LOOP_LIMIT = 20
 _MIN_IMPROVEMENT = 1e-10
 _MIN_REL_TUNE_IMPROVEMENT = 1e-5
-_MIN_SINGLE_NODE = 1e-16
+_MIN_SINGLE_NODE_IMPROVEMENT = 1e-16
 _NUM_RANDOM_MOVES = 5
 _MAX_DEGREE_FOR_RANDOM_MOVES = 2  # only low-degree nodes get random targets
 
@@ -55,6 +56,13 @@ def _module_codelength(enter, exit_, used):
     term ``_plogp(Q)`` and a constant node term (see
     :meth:`_CoreOptimizer.codelength`)."""
     return _plogp(used) - _plogp(enter) - _plogp(exit_)
+
+
+def _cross_flow(entry):
+    """Total boundary-crossing flow (``exit + enter``) of a
+    :meth:`_CoreOptimizer._shared_flows` entry; an absent entry means the node
+    shares no flow with that module."""
+    return entry[0] + entry[1] if entry else 0.0
 
 
 class _MoveContext(NamedTuple):
@@ -131,9 +139,10 @@ class _CoreOptimizer:
             _plogp(self.module_exit[m] + self.module_flow[m]) for m in self.module_flow
         )
 
-        # A pool of emptied module ids to reuse for "split into a new module".
+        # A pool of emptied module ids to reuse for "split into a new module";
+        # every id in `module_of` starts with a member, so the pool starts empty.
         self._next_module = (max(self.module_of.values()) + 1) if self.module_of else 0
-        self.empty = [m for m in list(self.size) if self.size[m] == 0]
+        self.empty = []
 
     def codelength(self):
         """The current two-level codelength, the same quantity as
@@ -149,22 +158,14 @@ class _CoreOptimizer:
             - self.node_log
         )
 
-    def _delta_flows(self, node):
+    def _shared_flows(self, node):
         """``module -> [exit, enter]``: flow between `node` and each module it
         links to (out-links add to exit, in-links to enter)."""
-        shared_flow = {}
+        shared_flow = defaultdict(lambda: [0.0, 0.0])
         for v, f in self.out[node].items():
-            entry = shared_flow.get(self.module_of[v])
-            if entry is None:
-                shared_flow[self.module_of[v]] = [f, 0.0]
-            else:
-                entry[0] += f
+            shared_flow[self.module_of[v]][0] += f
         for v, f in self.in_[node].items():
-            entry = shared_flow.get(self.module_of[v])
-            if entry is None:
-                shared_flow[self.module_of[v]] = [0.0, f]
-            else:
-                entry[1] += f
+            shared_flow[self.module_of[v]][1] += f
         return shared_flow
 
     def _prepare_move(self, node, old, old_cross):
@@ -231,10 +232,8 @@ class _CoreOptimizer:
         """Move `node` into module `new`, updating the module flow data and the
         running codelength terms in place."""
         old = self.module_of[node]
-        old_entry = shared_flow.get(old)
-        old_cross = old_entry[0] + old_entry[1] if old_entry else 0.0
-        new_entry = shared_flow.get(new)
-        new_cross = new_entry[0] + new_entry[1] if new_entry else 0.0
+        old_cross = _cross_flow(shared_flow.get(old))
+        new_cross = _cross_flow(shared_flow.get(new))
         # 1. Remove the two modules' current contributions to the global terms.
         self.enter_flow -= self.module_enter[old] + self.module_enter[new]
         self.enter_log -= _plogp(self.module_enter[old]) + _plogp(
@@ -273,9 +272,10 @@ class _CoreOptimizer:
     def run(self, first_loop, loop_limit):
         """Sweep the nodes (in random order) up to `loop_limit` times, moving
         each to the module that lowers the codelength most, until a sweep stops
-        improving the codelength. Returns the resulting codelength. On the initial
-        all-singletons partition, `first_loop` lets nodes join modules but not
-        leave them, so the first sweep builds modules up."""
+        improving the codelength. Returns the resulting codelength. With
+        `first_loop` (the initial all-singletons partition), nodes may join
+        modules but never leave one that has grown past a single member, so
+        every sweep of this run builds modules up instead of reshuffling."""
         nodes = list(self.flow)
         old_codelength = self.codelength()
         for _ in range(loop_limit):
@@ -283,17 +283,14 @@ class _CoreOptimizer:
             self.seed.shuffle(nodes)
             for node in nodes:
                 current = self.module_of[node]
-                # On the first sweep every node is alone; let nodes join modules but
-                # not leave them, so the pass builds modules up instead of
-                # reshuffling singletons.
                 if first_loop and self.size[current] > 1:
                     continue
 
-                # Candidate modules: the node's neighbours; for low-degree nodes, a
+                # Candidate modules: the node's neighbors; for low-degree nodes, a
                 # few random modules as well; and an empty module to split into. The
                 # random and empty targets give the greedy search a way out of
                 # shallow optima.
-                shared_flow = self._delta_flows(node)
+                shared_flow = self._shared_flows(node)
                 candidates = set(shared_flow)
                 if (
                     len(self.out[node]) + len(self.in_[node])
@@ -310,7 +307,7 @@ class _CoreOptimizer:
                     continue
 
                 old_entry = shared_flow.get(current)
-                old_cross = old_entry[0] + old_entry[1] if old_entry else 0.0
+                old_cross = _cross_flow(old_entry)
                 ctx = self._prepare_move(node, current, old_cross)
                 best_module, best_delta = current, 0.0
                 # Track which candidate the node sends the most flow to; ties in
@@ -321,9 +318,9 @@ class _CoreOptimizer:
                 strong_delta = 0.0
                 for module in candidates:
                     entry = shared_flow.get(module)
-                    new_cross = entry[0] + entry[1] if entry else 0.0
+                    new_cross = _cross_flow(entry)
                     delta = self._delta_codelength(ctx, module, new_cross)
-                    if delta < best_delta - _MIN_SINGLE_NODE:
+                    if delta < best_delta - _MIN_SINGLE_NODE_IMPROVEMENT:
                         best_delta, best_module = delta, module
                     exit_to = entry[0] if entry else 0.0
                     if exit_to > strong_exit:
@@ -333,12 +330,12 @@ class _CoreOptimizer:
                             delta,
                         )
                 # Tie-break: when a move barely changes the codelength (within
-                # _MIN_SINGLE_NODE of the best, even slightly worse), prefer the
-                # module the node sends the most exit flow to. It is free now and
-                # usually compresses better on later sweeps.
+                # _MIN_SINGLE_NODE_IMPROVEMENT of the best, even slightly worse),
+                # prefer the module the node sends the most exit flow to. It is
+                # free now and usually compresses better on later sweeps.
                 if (
                     strong_module != best_module
-                    and strong_delta <= best_delta + _MIN_SINGLE_NODE
+                    and strong_delta <= best_delta + _MIN_SINGLE_NODE_IMPROVEMENT
                 ):
                     best_module = strong_module
                 if best_module == current:
@@ -349,7 +346,7 @@ class _CoreOptimizer:
                         self.empty.pop()
                     else:
                         self._next_module += 1
-                # Neighbours of `node` still in `current`, taken before the move
+                # Neighbors of `node` still in `current`, taken before the move
                 # since `_apply` rewrites `module_of`. Used below to rescue a node
                 # the move would otherwise leave stranded.
                 linked_in_old = [
@@ -373,7 +370,7 @@ class _CoreOptimizer:
                         else 1
                     )
                     if n_links == 1:
-                        self._apply(leftover, best_module, self._delta_flows(leftover))
+                        self._apply(leftover, best_module, self._shared_flows(leftover))
                         num_moved += 1
                         if self.size[current] == 0:
                             self.empty.append(current)
@@ -390,15 +387,11 @@ class _CoreOptimizer:
 def _core_loop(
     flow, links, module_of, seed, directed, first_loop=False, loop_limit=None
 ):
-    """Run the stateful core optimizer on `module_of` (mutated in place) and
-    return the resulting codelength."""
+    """Run the stateful core optimizer on `module_of` (mutated in place)."""
     optimizer = _CoreOptimizer(flow, links, module_of, seed, directed)
-    codelength = optimizer.run(
-        first_loop, _CORE_LOOP_LIMIT if loop_limit is None else loop_limit
-    )
+    optimizer.run(first_loop, _CORE_LOOP_LIMIT if loop_limit is None else loop_limit)
     module_of.clear()
     module_of.update(optimizer.module_of)
-    return codelength
 
 
 def _collapse(flow, links, module_of):
@@ -499,8 +492,7 @@ def _coarse_tune(flow, links, module_of, seed, directed):
     # Aggregate the sub-modules, seed each in its original module, and let them
     # regroup with one core-loop run; expanding the result is the tuned partition.
     super_flow, super_links, relabel = _collapse(flow, links, submodule_of)
-    super_origin = {relabel[submodule_of[node]]: module_of[node] for node in flow}
-    super_module = dict(super_origin)
+    super_module = {relabel[submodule_of[node]]: module_of[node] for node in flow}
     _core_loop(super_flow, super_links, super_module, seed, directed)
     return {node: super_module[relabel[submodule_of[node]]] for node in flow}
 
@@ -522,7 +514,8 @@ def _partition(flow, links, seed, directed, first_loop=True):
     `first_loop` forbids pulling a node out of a multi-member module on the very
     first sweep; it holds only for the main network. Recursive partitions of
     super- and sub-networks (the index level and refinement) pass False, matching
-    the reference, where this guard is gated on the main Infomap at level 0."""
+    the C++ Infomap, which applies this guard only in the top-level search of
+    the full network."""
     one_level = _codelength(flow, links, dict.fromkeys(flow, 0))
 
     module_of = _find_top_modules(
@@ -564,10 +557,71 @@ def _partition(flow, links, seed, directed, first_loop=True):
     return module_of
 
 
+def _hierarchical_codelength(flow, links, path):
+    """Multilevel map equation codelength of a hierarchical partition.
+
+    ``path[node]`` is the tuple of module ids from the top level down to the
+    node's innermost module. This is the recursive generalization of the
+    two-level codelength: every module pays ``plogp(exit + sum child_enter) -
+    plogp(exit) - sum plogp(child_enter)`` where a leaf child contributes its
+    node visit rate.
+    """
+    # Each module in the tree is identified by a path prefix; record the tree
+    # structure (a module's child sub-modules and its directly-held leaf nodes).
+    prefixes = set()
+    for p in path.values():
+        for k in range(1, len(p) + 1):
+            prefixes.add(p[:k])
+    children = defaultdict(set)
+    for q in prefixes:
+        if len(q) > 1:
+            children[q[:-1]].add(q)
+    leaf_nodes = defaultdict(list)
+    for node, p in path.items():
+        leaf_nodes[p].append(node)
+
+    # A link u->v crosses the boundary of every module that contains exactly one
+    # of its endpoints: those strictly below the level where the two paths first
+    # differ. It exits each such module on u's side and enters each on v's side.
+    enter = defaultdict(float)
+    exit_ = defaultdict(float)
+    for u, v, f in links:
+        pu, pv = path[u], path[v]
+        common = 0
+        for a, b in zip(pu, pv):
+            if a != b:
+                break
+            common += 1
+        for k in range(common + 1, len(pu) + 1):
+            exit_[pu[:k]] += f
+        for k in range(common + 1, len(pv) + 1):
+            enter[pv[:k]] += f
+
+    # Root index codebook: encodes which top module the walk enters.
+    root_children = [q for q in prefixes if len(q) == 1]
+    total = _plogp(sum(enter[q] for q in root_children)) - sum(
+        _plogp(enter[q]) for q in root_children
+    )
+    # Every module pays its own codebook: it codes entering each child (a
+    # sub-module's enter flow, or a leaf node's visit rate) and exiting itself.
+    for p in prefixes:
+        child_enter = [enter[c] for c in children.get(p, ())]
+        child_enter += [flow[node] for node in leaf_nodes.get(p, ())]
+        total += (
+            _plogp(exit_[p] + sum(child_enter))
+            - _plogp(exit_[p])
+            - sum(_plogp(c) for c in child_enter)
+        )
+    return total
+
+
 def _find_super_modules(flow, links, group_of, seed, directed):
     """Coarsen the current top-level groups into super-groups. The index-level
     super-network uses each module's *enter flow* as its node flow, not its
-    visit rate. Returns ``group_id -> super_id`` or None if trivial."""
+    visit rate: in the hierarchy a module is coded each time the walker
+    *enters* it (see :func:`_hierarchical_codelength`), so enter flows are the
+    visit rates of the index level. Returns ``group_id -> super_id`` or None
+    if trivial."""
     modules = sorted(set(group_of.values()))
     if len(modules) <= 2:
         return None
@@ -645,64 +699,6 @@ def _build_hierarchy(flow, links, seed, directed):
     )  # refine: append sub-levels
 
 
-def _hierarchical_codelength(flow, links, path):
-    """Multilevel map equation codelength of a hierarchical partition.
-
-    ``path[node]`` is the tuple of module ids from the top level down to the
-    node's innermost module. This is the recursive generalization of the
-    two-level codelength: every module pays ``plogp(exit + sum child_enter) -
-    plogp(exit) - sum plogp(child_enter)`` where a leaf child contributes its
-    node visit rate.
-    """
-    # Each module in the tree is identified by a path prefix; record the tree
-    # structure (a module's child sub-modules and its directly-held leaf nodes).
-    prefixes = set()
-    for p in path.values():
-        for k in range(1, len(p) + 1):
-            prefixes.add(p[:k])
-    children = defaultdict(set)
-    for q in prefixes:
-        if len(q) > 1:
-            children[q[:-1]].add(q)
-    leaf_nodes = defaultdict(list)
-    for node, p in path.items():
-        leaf_nodes[p].append(node)
-
-    # A link u->v crosses the boundary of every module that contains exactly one
-    # of its endpoints: those strictly below the level where the two paths first
-    # differ. It exits each such module on u's side and enters each on v's side.
-    enter = defaultdict(float)
-    exit_ = defaultdict(float)
-    for u, v, f in links:
-        pu, pv = path[u], path[v]
-        common = 0
-        for a, b in zip(pu, pv):
-            if a != b:
-                break
-            common += 1
-        for k in range(common + 1, len(pu) + 1):
-            exit_[pu[:k]] += f
-        for k in range(common + 1, len(pv) + 1):
-            enter[pv[:k]] += f
-
-    # Root index codebook: encodes which top module the walk enters.
-    root_children = [q for q in prefixes if len(q) == 1]
-    total = _plogp(sum(enter[q] for q in root_children)) - sum(
-        _plogp(enter[q]) for q in root_children
-    )
-    # Every module pays its own codebook: it codes entering each child (a
-    # sub-module's enter flow, or a leaf node's visit rate) and exiting itself.
-    for p in prefixes:
-        child_enter = [enter[c] for c in children.get(p, ())]
-        child_enter += [flow[node] for node in leaf_nodes.get(p, ())]
-        total += (
-            _plogp(exit_[p] + sum(child_enter))
-            - _plogp(exit_[p])
-            - sum(_plogp(c) for c in child_enter)
-        )
-    return total
-
-
 def _check_num_trials(num_trials):
     """Validate the ``num_trials`` argument shared by the public functions."""
     if not isinstance(num_trials, int) or num_trials < 1:
@@ -724,21 +720,20 @@ def infomap_communities(G, *, weight="weight", seed=None, num_trials=1):
     For a two-level partition :math:`\mathsf{M}` the map equation is
 
     .. math::
-        L(\mathsf{M}) = q_\curvearrowleft H(\mathcal{Q})
+        L(\mathsf{M}) = q_\curvearrowright H(\mathcal{Q})
             + \sum_{i} p^i_\circlearrowright H(\mathcal{P}^i)
 
     where the first term is the cost of coding transitions *between* modules
-    (the index codebook, used at the total exit rate :math:`q_\curvearrowleft`)
+    (the index codebook, used at the total exit rate :math:`q_\curvearrowright`)
     and the second is the cost of coding visits *within* each module :math:`i`.
     Lower codelength means a partition that compresses the flow better.
 
     The optimizer follows the same two phases as Louvain -- greedily moving
-    single nodes to neighbouring modules, then aggregating modules into a
+    single nodes to neighboring modules, then aggregating modules into a
     super-network and repeating -- and adds Infomap's fine-tuning and
     coarse-tuning passes. It returns the two-level partition that minimizes the
     map equation; for the multilevel (hierarchical) partition [2]_, see
-    :func:`infomap_partitions`. The search is stochastic, so `num_trials`
-    independent restarts are run and the lowest-codelength partition is kept.
+    :func:`infomap_partitions`.
 
     Edge weights are interpreted as flow. For directed graphs the visit rates
     are the stationary distribution of a random walk with teleportation,
@@ -761,7 +756,7 @@ def infomap_communities(G, *, weight="weight", seed=None, num_trials=1):
         See :ref:`Randomness<randomness>`.
     num_trials : int, optional (default=1)
         Number of independent restarts; the partition with the lowest
-        codelength is returned.
+        codelength is returned. Must be a positive integer.
 
     Returns
     -------
@@ -776,6 +771,12 @@ def infomap_communities(G, *, weight="weight", seed=None, num_trials=1):
         If `num_trials` is not a positive integer, or if any edge weight is
         negative or not finite.
 
+    Examples
+    --------
+    >>> G = nx.barbell_graph(5, 0)
+    >>> nx.community.infomap_communities(G, seed=42)
+    [{0, 1, 2, 3, 4}, {5, 6, 7, 8, 9}]
+
     Notes
     -----
     The search is stochastic: `seed` fixes the random move order (so a given
@@ -784,13 +785,6 @@ def infomap_communities(G, *, weight="weight", seed=None, num_trials=1):
 
     Self-loops add only to a node's within-module flow; they never cross a
     module boundary, so they do not affect where a node moves.
-
-    Examples
-    --------
-    >>> G = nx.karate_club_graph()
-    >>> communities = nx.community.infomap_communities(G, seed=0)
-    >>> nx.community.is_partition(G, communities)
-    True
 
     References
     ----------
@@ -812,8 +806,7 @@ def infomap_communities(G, *, weight="weight", seed=None, num_trials=1):
     _check_num_trials(num_trials)
     # The flow depends only on the graph, so compute it once and reuse it across
     # every restart and codelength evaluation.
-    visit_rate, link_flows = _flow(G, weight)
-    flow = dict(visit_rate)
+    flow, link_flows = _flow(G, weight)
     if not flow:
         return []  # empty graph
     module_of = _best_two_level(flow, link_flows, seed, num_trials, G.is_directed())
@@ -896,6 +889,13 @@ def infomap_partitions(G, *, weight="weight", seed=None, num_trials=1):
     >>> all(nx.community.is_partition(G, p) for p in levels)
     True
 
+    References
+    ----------
+    .. [1] Rosvall, M. & Bergstrom, C.T. Multilevel compression of random walks
+       on networks reveals hierarchical organization in large integrated
+       systems. PLoS ONE 6(4), e18209 (2011).
+       https://doi.org/10.1371/journal.pone.0018209
+
     See Also
     --------
     infomap_communities
@@ -906,8 +906,7 @@ def infomap_partitions(G, *, weight="weight", seed=None, num_trials=1):
     # Validate num_trials eagerly so a bad value raises on call, not mid-iteration.
     # The hierarchy search runs here; only splitting the result into per-level
     # partitions is deferred to the `_expand_levels` generator.
-    visit_rate, link_flows = _flow(G, weight)
-    flow = dict(visit_rate)
+    flow, link_flows = _flow(G, weight)
     if not flow:
         return iter([[]])  # empty graph -> one empty level (matches louvain_partitions)
     path = _best_hierarchy(flow, link_flows, seed, num_trials, G.is_directed())

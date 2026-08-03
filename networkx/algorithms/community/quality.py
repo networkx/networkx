@@ -44,10 +44,10 @@ class NotAPartition(nx.NetworkXError):
 # A partition that keeps the walker inside modules for long stretches makes
 # module switches -- the shared index codebook -- rare, so the description is
 # short. Minimizing the codelength therefore reveals community structure. Each
-# codebook is an entropy-optimal (Huffman-style) code, so its per-step cost is
-# the Shannon entropy of its symbol frequencies and the whole map equation
-# reduces to sums of ``p * log2(p)`` terms over node and module visit/exit
-# rates -- which is what the helpers below assemble.
+# codebook is costed at the Shannon limit -- the entropy of its symbol
+# frequencies, which a real Huffman code approaches within one bit -- so the
+# whole map equation reduces to sums of ``p * log2(p)`` terms over node and
+# module visit/exit rates, which is what the helpers below assemble.
 # ---------------------------------------------------------------------------
 
 
@@ -70,10 +70,10 @@ def _undirected_flow(G, weight):
     degree and the normalization, giving :math:`2m = 2\sum w - \sum_{self} w`
     (NetworkX's ``degree`` counts a self-loop twice, so subtract one copy). The
     per-step probability of traversing a particular edge is :math:`w / 2m`;
-    ``link_flows`` emits each edge in *both* directions with that flow, so that
+    ``link_flows`` lists each edge in *both* directions with that flow, so that
     summing the flow crossing a module's boundary later gives the rate at which
     the walker enters or leaves it. A self-loop never crosses a boundary, so it
-    is emitted once.
+    appears once.
     """
     self_loop = {}
     for u, v, w in G.edges(data=weight, default=1):
@@ -88,14 +88,13 @@ def _undirected_flow(G, weight):
         for node, strength in G.degree(weight=weight)
     }
 
-    def link_flows():
-        for u, v, w in G.edges(data=weight, default=1):
-            flow = w / total
-            yield u, v, flow
-            if u != v:
-                yield v, u, flow
-
-    return visit_rate, link_flows()
+    link_flows = []
+    for u, v, w in G.edges(data=weight, default=1):
+        flow = w / total
+        link_flows.append((u, v, flow))
+        if u != v:
+            link_flows.append((v, u, flow))
+    return visit_rate, link_flows
 
 
 def _directed_flow(G, weight, teleportation_prob, tol=1e-13):
@@ -109,7 +108,7 @@ def _directed_flow(G, weight, teleportation_prob, tol=1e-13):
     with damping ``1 - teleportation_prob`` and teleportation weighted by
     out-degree (so dangling nodes redistribute their flow the same way).
 
-    Teleportation is a modelling device, not part of the structure we want to
+    Teleportation is a modeling device, not part of the structure we want to
     describe, so the rates that get *coded* come from *unrecorded* teleportation:
     one further link-following step (with no teleportation) on top of ``pi``
     yields the visit rates and link flows the codebooks are built from.
@@ -163,11 +162,11 @@ def map_equation(G, communities, weight="weight", teleportation_prob=0.15):
     The codelength is the map equation
 
     .. math::
-        L = q_\curvearrowleft H(\mathcal{Q})
+        L = q_\curvearrowright H(\mathcal{Q})
             + \sum_i p^i_\circlearrowright H(\mathcal{P}^i)
 
     the index-codebook entropy :math:`H(\mathcal{Q})`, used on every module
-    switch at the total exit rate :math:`q_\curvearrowleft`, plus each module
+    switch at the total exit rate :math:`q_\curvearrowright`, plus each module
     codebook entropy :math:`H(\mathcal{P}^i)`, used at rate
     :math:`p^i_\circlearrowright` (module :math:`i`'s total node visit rate plus
     its exit rate). A partition that keeps the walk inside modules makes
@@ -204,6 +203,8 @@ def map_equation(G, communities, weight="weight", teleportation_prob=0.15):
     ------
     NetworkXError
         If `communities` is not a partition of the nodes of `G`.
+    ValueError
+        If any edge weight is negative or not finite.
 
     References
     ----------
@@ -240,8 +241,7 @@ def _flow(G, weight="weight", teleportation_prob=0.15):
             raise ValueError("edge weights must be finite and non-negative")
     if G.is_directed():
         return _directed_flow(G, weight, teleportation_prob)
-    visit_rate, link_flows = _undirected_flow(G, weight)
-    return visit_rate, list(link_flows)
+    return _undirected_flow(G, weight)
 
 
 def _codelength(visit_rate, link_flows, module_of):

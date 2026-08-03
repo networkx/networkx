@@ -9,6 +9,7 @@ import networkx as nx
 from networkx import barbell_graph
 from networkx.algorithms.community import (
     constant_potts_model,
+    map_equation,
     modularity,
     overlapping_modularity,
     partition_quality,
@@ -530,11 +531,22 @@ def test_map_equation_single_module_equals_visit_rate_entropy():
     (weighted) degrees are 1, 2, 1 so the stationary visit rates are
     1/4, 1/2, 1/4, giving H = -(2*0.25*log2(0.25) + 0.5*log2(0.5)) = 1.5 bits.
     """
-    from networkx.algorithms.community.quality import map_equation
-
     G = nx.path_graph(3)  # edges (0,1), (1,2)
     codelength = map_equation(G, [{0, 1, 2}])
     assert codelength == pytest.approx(1.5)
+
+
+def test_map_equation_two_triangles_hand_calculated():
+    """The canonical two-module example: two triangles joined by a single edge
+    (Rosvall & Bergstrom 2008). With one triangle per module the walker crosses
+    between modules only on the bridge, so the index codebook is used at rate
+    q = 2/14 = 1/7 with two equally likely symbols: index term (1/7) * 1 bit.
+    Each module codebook is used at rate 4/7 (visit rate 1/2 plus exit rate
+    1/14) with symbol frequencies 1/8 (exit), 1/4, 1/4, 3/8:
+    L = 1/7 + 2 * (4/7) * H(1/8, 1/4, 1/4, 3/8) = 2.320730 bits."""
+    G = nx.barbell_graph(3, 0)  # two triangles joined by one edge
+    partition = [{0, 1, 2}, {3, 4, 5}]
+    assert map_equation(G, partition) == pytest.approx(2.320730, abs=1e-5)
 
 
 def test_map_equation_matches_cpp_infomap_on_karate():
@@ -542,7 +554,6 @@ def test_map_equation_matches_cpp_infomap_on_karate():
     two-level partition it finds for Zachary's karate club. Skips if the
     ``infomap`` package is not installed (it is not a NetworkX dependency)."""
     infomap = pytest.importorskip("infomap")
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.karate_club_graph()
 
@@ -564,7 +575,6 @@ def test_map_equation_matches_cpp_infomap_directed():
     Infomap (default unrecorded teleportation to links, tau=0.15)."""
     infomap = pytest.importorskip("infomap")
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.DiGraph()
     G.add_edges_from([(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (2, 3), (0, 4)])
@@ -587,7 +597,6 @@ def test_map_equation_directed_with_dangling_nodes():
     (out-degree zero), exercising the unrecorded-teleportation normalization."""
     infomap = pytest.importorskip("infomap")
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.DiGraph()
     G.add_edges_from([(0, 1), (1, 2), (2, 0), (2, 3), (3, 4), (0, 4)])  # 4 dangles
@@ -611,7 +620,6 @@ def test_map_equation_directed_asymmetric_enter_exit():
     guards the directed index term, which uses enter flow, not exit flow."""
     infomap = pytest.importorskip("infomap")
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.gnc_graph(40, seed=3)
 
@@ -638,8 +646,6 @@ def test_map_equation_undirected_self_loop_known_value():
     on node 0, the visit rates are 5/11, 2/11, 2/11, 2/11, so in a single module
     the codelength is their entropy. Value validated against the C++ reference.
     """
-    from networkx.algorithms.community.quality import map_equation
-
     G = nx.Graph()
     G.add_weighted_edges_from([(0, 1, 1), (1, 2, 1), (2, 3, 1), (3, 0, 1), (0, 0, 3)])
     assert map_equation(G, [{0, 1, 2, 3}]) == pytest.approx(1.858555, abs=1e-5)
@@ -650,7 +656,6 @@ def test_map_equation_undirected_self_loops_match_cpp():
     against the reference C++ Infomap, which treats a self-loop as a single
     transition that never crosses a module boundary."""
     infomap = pytest.importorskip("infomap")
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.Graph()
     G.add_weighted_edges_from(
@@ -684,7 +689,6 @@ def test_map_equation_directed_self_loops_match_cpp():
     codelength must match C++ Infomap on a directed graph that has them."""
     infomap = pytest.importorskip("infomap")
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-    from networkx.algorithms.community.quality import map_equation
 
     G = nx.DiGraph()
     G.add_edges_from(
