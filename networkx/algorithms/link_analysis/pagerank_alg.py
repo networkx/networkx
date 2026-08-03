@@ -45,6 +45,12 @@ def pagerank(
       Error tolerance used to check convergence in power method solver.
       The iteration will stop after a tolerance of ``len(G) * tol`` is reached.
 
+      .. note::
+
+         For large graphs, choose the tolerance carefully. If ``len(G) * tol >= 2``,
+         the power iteration may appear to converge after a single step regardless
+         of the actual accuracy.
+
     nstart : dictionary, optional
       Starting value of PageRank iteration for each node.
 

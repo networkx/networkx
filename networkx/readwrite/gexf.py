@@ -533,15 +533,18 @@ class GEXFWriter(GEXF):
                 for val, start, end in v:
                     e = Element("attvalue")
                     e.attrib["for"] = attr_id
-                    e.attrib["value"] = str(val)
-                    # Handle nan, inf, -inf differently
-                    if val_type is float:
-                        if e.attrib["value"] == "inf":
-                            e.attrib["value"] = "INF"
-                        elif e.attrib["value"] == "nan":
-                            e.attrib["value"] = "NaN"
-                        elif e.attrib["value"] == "-inf":
-                            e.attrib["value"] = "-INF"
+                    if isinstance(val, bool):
+                        e.attrib["value"] = str(val).lower()
+                    else:
+                        e.attrib["value"] = str(val)
+                        # Handle nan, inf, -inf differently
+                        if val_type is float:
+                            if e.attrib["value"] == "inf":
+                                e.attrib["value"] = "INF"
+                            elif e.attrib["value"] == "nan":
+                                e.attrib["value"] = "NaN"
+                            elif e.attrib["value"] == "-inf":
+                                e.attrib["value"] = "-INF"
                     if start is not None:
                         e.attrib["start"] = str(start)
                     if end is not None:

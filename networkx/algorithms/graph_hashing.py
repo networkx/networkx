@@ -121,7 +121,7 @@ def weisfeiler_lehman_graph_hash(
     Raises
     ------
     ValueError
-        If `iterations` is not a positve number.
+        If `iterations` is not a positive number.
 
     Examples
     --------
@@ -323,7 +323,7 @@ def weisfeiler_lehman_subgraph_hashes(
     Raises
     ------
     ValueError
-        If `iterations` is not a positve number.
+        If `iterations` is not a positive number.
 
     Examples
     --------

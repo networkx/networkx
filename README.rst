@@ -85,7 +85,7 @@ License
 
 Released under the `3-clause BSD license <https://github.com/networkx/networkx/blob/main/LICENSE.txt>`_::
 
-    Copyright (c) 2004-2025, NetworkX Developers
+    Copyright (c) 2004-2026, NetworkX Developers
     Aric Hagberg <hagberg@lanl.gov>
     Dan Schult <dschult@colgate.edu>
     Pieter Swart <swart@lanl.gov>

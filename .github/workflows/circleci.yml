@@ -1,13 +1,14 @@
 name: circleci
 
-permissions:
-  contents: read
+permissions: read-all
 
 on: [status]
 jobs:
   image:
     runs-on: ubuntu-latest
     name: Run CircleCI image artifact redirector
+    permissions:
+      statuses: write
     steps:
       - name: GitHub Action step
         uses: scientific-python/circleci-artifacts-redirector-action@5d358ff96e96429a5c64a969bb4a574555439f4f # v1.3.1
@@ -20,6 +21,8 @@ jobs:
   documentation:
     runs-on: ubuntu-latest
     name: Run CircleCI documentation artifact redirector
+    permissions:
+      statuses: write
     steps:
       - name: GitHub Action step
         uses: scientific-python/circleci-artifacts-redirector-action@5d358ff96e96429a5c64a969bb4a574555439f4f # v1.3.1
@@ -31,7 +34,9 @@ jobs:
 
   coverage:
     runs-on: ubuntu-latest
-    name: Run CircleCI documentation artifact redirector
+    name: Run CircleCI coverage artifact redirector
+    permissions:
+      statuses: write
     steps:
       - name: GitHub Action step
         uses: scientific-python/circleci-artifacts-redirector-action@5d358ff96e96429a5c64a969bb4a574555439f4f # v1.3.1

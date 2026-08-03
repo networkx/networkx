@@ -7,6 +7,7 @@ Directed Acyclic Graphs
    :toctree: generated/
 
    ancestors
+   antichain_width
    descendants
    topological_sort
    topological_generations

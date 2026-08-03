@@ -96,10 +96,11 @@ example = [
     'igraph>=0.11',
     'scikit-learn>=1.5',
     'iplotx>=0.9.0',
+    'hiveplotlib>=0.28',
 ]
 extra = [
     'lxml>=4.6',
-    'pygraphviz>=1.14',
+    'pygraphviz>=2.0',
     'pydot>=3.0.1',
     'sympy>=1.10',
 ]
@@ -322,11 +323,6 @@ pandas = ">=2.0"
 libspatialindex = "*"
 pip = "*"
 
-# extra: pygraphviz comes from conda (needs graphviz C library), not pypi
-[tool.pixi.feature.extra.dependencies]
-graphviz = "*"
-pygraphviz = ">=1.14"
-
 [tool.pixi.feature.extra.pypi-dependencies]
 lxml = ">=4.6"
 pydot = ">=3.0.1"
@@ -341,7 +337,7 @@ rasterio = "*"
 # --- Task definitions ---
 
 [tool.pixi.feature.test.tasks]
-test-base = "pytest -n auto --durations=10 --pyargs networkx"
+test-base = "pytest -n auto --doctest-modules --durations=10 --pyargs networkx"
 test-default = "pytest -n auto --doctest-modules --durations=10 --pyargs networkx"
 check-import = "python -Werror -c 'import networkx'"
 test-slow = "pytest -n auto --durations=20 --runslow -m slow --pyargs networkx"
@@ -392,7 +388,7 @@ test-default-py313 = { features = ["nx", "test", "default", "py313"], solve-grou
 test-default-py314 = { features = ["nx", "test", "default", "py314"], solve-group = "py314", no-default-feature = true }
 # Default without scipy
 test-default-no-scipy-py312 = { features = ["nx", "test", "default-no-scipy", "py312"], solve-group = "py312", no-default-feature = true }
-# Extra test (with graphviz from conda)
+# Extra test
 test-extra-py312 = { features = ["nx", "test", "default", "extra", "py312"], solve-group = "py312", no-default-feature = true }
 test-extra-py313 = { features = ["nx", "test", "default", "extra", "py313"], solve-group = "py313", no-default-feature = true }
 # Single-purpose environments
