@@ -537,9 +537,9 @@ def test_map_equation_single_module_equals_visit_rate_entropy():
 
 
 def test_map_equation_two_triangles_hand_calculated():
-    """The canonical two-module example: two triangles joined by a single edge
-    (Rosvall & Bergstrom 2008). With one triangle per module the walker crosses
-    between modules only on the bridge, so the index codebook is used at rate
+    """The smallest clean two-module example: two triangles joined by a single
+    edge. With one triangle per module the walker crosses between modules only
+    on the bridge, so the index codebook is used at rate
     q = 2/14 = 1/7 with two equally likely symbols: index term (1/7) * 1 bit.
     Each module codebook is used at rate 4/7 (visit rate 1/2 plus exit rate
     1/14) with symbol frequencies 1/8 (exit), 1/4, 1/4, 3/8:

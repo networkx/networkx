@@ -562,9 +562,12 @@ def _hierarchical_codelength(flow, links, path):
 
     ``path[node]`` is the tuple of module ids from the top level down to the
     node's innermost module. This is the recursive generalization of the
-    two-level codelength: every module pays ``plogp(exit + sum child_enter) -
-    plogp(exit) - sum plogp(child_enter)`` where a leaf child contributes its
-    node visit rate.
+    two-level codelength: every module runs its own index codebook over its
+    children -- entering a child costs its enter rate, exiting the module
+    costs its exit rate -- and the two-level map equation is the special case
+    of one root codebook over leaf-filled modules. Each module pays
+    ``plogp(exit + sum child_enter) - plogp(exit) - sum plogp(child_enter)``,
+    where a leaf child contributes its node visit rate.
     """
     # Each module in the tree is identified by a path prefix; record the tree
     # structure (a module's child sub-modules and its directly-held leaf nodes).

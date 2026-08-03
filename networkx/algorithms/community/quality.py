@@ -206,6 +206,19 @@ def map_equation(G, communities, weight="weight", teleportation_prob=0.15):
     ValueError
         If any edge weight is negative or not finite.
 
+    Examples
+    --------
+    Two triangles joined by a single edge, with one triangle per module:
+
+    >>> G = nx.barbell_graph(3, 0)
+    >>> nx.community.map_equation(G, [{0, 1, 2}, {3, 4, 5}])
+    2.3207303568337903
+
+    Coding the same walk with a single module costs more:
+
+    >>> nx.community.map_equation(G, [set(G)])
+    2.556656707462823
+
     References
     ----------
     .. [1] Rosvall, M. & Bergstrom, C.T. Maps of random walks on complex
