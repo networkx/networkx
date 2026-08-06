@@ -10,9 +10,7 @@ import networkx as nx
 # Define the default maximum flow function to use in all flow based
 # connectivity algorithms.
 from networkx.algorithms.flow import (
-    boykov_kolmogorov,
     build_residual_network,
-    dinitz,
     edmonds_karp,
     preflow_push,
     shortest_augmenting_path,

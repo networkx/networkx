@@ -15,7 +15,7 @@ Installation
 ------------
 
 We aim to make NetworkX as easy to install as possible.
-Some of our dependencies (e.g., graphviz) can be tricky to install.
+Some of our dependencies can be tricky to install.
 Other of our dependencies are easy to install on the CPython platform, but
 may be more involved on other platforms such as PyPy.
 Addressing these installation issues may involve working with the external projects.
@@ -35,27 +35,29 @@ This includes:
 - growing maintainers and leadership
 - increasing diversity of developer community
 
-Performance
------------
+Benchmarks
+----------
 
 Speed improvements, lower memory usage, and the ability to parallelize
 algorithms are beneficial to most science domains and use cases.
-
-A first step may include implementing a benchmarking system using something
+Toward that goal we want a benchmarking system using something
 like airspeed velocity (https://asv.readthedocs.io/en/stable/).
-It may also include review existing comparisons between NetworkX
-and other packages.
+See a fairly extensive version of this in ``benchmarks/benchmarks``.
+
+Performance
+-----------
 
 Individual functions can be optimized for performance and memory use.
 We are also interested in exploring new technologies to accelerate
-code and reduce memory use.  Before adopting any new technologies
-we will need to careful consider its impact on code readability
+code and reduce memory use. Before adopting any new technologies
+we will need to carefully consider its impact on code readability
 and difficulty of building and installing NetworkX.
 For more information, see our :ref:`mission_and_values`.
 
-Many functions can be trivially parallelized.
-But, we need to decide on an API and perhaps implement some
-helper code to make it consistent.
+Many functions can be trivially parallelized. ``nx-parallel``
+(https://github.com/networkx/nx-parallel) is one possible approach
+using backends. Python's new freethreading feature is a powerful
+possibility.
 
 Documentation
 -------------
@@ -63,26 +65,23 @@ Documentation
 We’d like to improve the content, structure, and presentation of the NetworkX
 documentation. Some specific goals include:
 
-- longer gallery examples
+- examples that include short workflows for specific domains
+- summary doc pages for suites of functions e.g. community with comparisons of
+  functions and why you might pick one over another
+- longer gallery examples or nx-guides, including complete life science workflows
 - domain-specific documentation (NetworkX for Geneticists,
-  NetworkX for Neuroscientists, etc.)
-- examples of how to use NetworkX with other packages
+  NetworkX for Neuroscientists, etc.) probably as nx-guides
+- examples of how to use NetworkX with other packages, e.g. Cytoscape
 
 Linear Algebra
 --------------
 
 We would like to improve our linear algebra based algorithms.
-The code is old and needs review and refactoring.
-This would include investigating SciPy's csgraph.
-It would also include deciding how to handle algorithms that
-have multiple implementations (e.g., some algorithms are implemented in Python,
-NumPy, and SciPy).
-
-NumPy has split its API from its execution engine with ``__array_function__`` and
-``__array_ufunc__``. This will enable parts of NumPy to accept distributed arrays
-(e.g. dask.array.Array) and GPU arrays (e.g. cupy.ndarray) that implement the
-ndarray interface. At the moment it is not yet clear which algorithms will work
-out of the box, and if there are significant performance gains when they do.
+This includes investigating SciPy's csgraph and possibly getting SciPy to support
+a new sparse array format that uses a NX Graph as storage.
+We should also decide how to handle algorithms with multiple implementations
+(e.g., some algorithms are implemented in Python, NumPy, and SciPy).
+Perhaps we can build off of NumPy's array-api to get e.g. PyTorch in our linalg.
 
 Interoperability
 ----------------
@@ -93,7 +92,10 @@ This includes projects we depend on (e.g., NumPy, SciPy, Pandas, Matplotlib)
 as well as ones we don't (e.g., Geopandas).
 
 For example, we would also like to be able to seamlessly exchange graphs with
-other network analysis software.
+other network analysis software. Perhaps SciPy can support a sparse array format
+that uses a NX Graph data structure.  Perhaps we can store all node and edge
+attributes in a DataFrame without copy.
+
 Another way to integrate with other scientific python ecosystem tools is to
 take on features from the other tools that are useful. And we should develop
 tools to ease use of NetworkX from within these other tools.
@@ -108,6 +110,8 @@ Also developing a universal method to represent a graph as a single sequence of
 Visualization
 -------------
 
-Visualization is not a focus on NetworkX, but it is a major feature for
-many users.
-We need to enhance the drawing tools for NetworkX.
+Visualization is not a primary focus on NetworkX, but it is a major feature for
+many users. We need to enhance the drawing tools for NetworkX. We intend to
+evolve to a new ``display`` function that enhances both api and performance relative
+to the draw functions. We should also enhance docs to make connections with
+iplotx and GraphViz.

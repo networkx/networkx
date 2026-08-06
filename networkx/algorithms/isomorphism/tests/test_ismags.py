@@ -273,6 +273,61 @@ class TestSubgraphIsomorphism:
             expected_symmetric + expected_asymmetric
         )
 
+    def test_edgeless_subgraph_with_edge_match(self):
+        # gh-8738: A subgraph should give the same for edge_match=None (all edges
+        # equal) or a callable that accepts all edges.
+        graph = nx.Graph([(0, 1)])
+        subgraph = nx.Graph()
+        subgraph.add_node(0)
+
+        expected = _matches_to_sets([{0: 0}, {1: 0}])
+        none_matches = iso.ISMAGS(graph, subgraph, edge_match=None)
+        assert _matches_to_sets(none_matches.find_isomorphisms()) == expected
+
+        all_matches = iso.ISMAGS(graph, subgraph, edge_match=lambda e1, e2: True)
+        assert _matches_to_sets(all_matches.find_isomorphisms()) == expected
+
+    def test_subgraph_with_graph_only_node_color(self):
+        # gh-8738: a node color present in the graph but not in the subgraph
+        # must not prevent otherwise valid isomorphisms from being found.
+        nm = iso.categorical_node_match("color", None)
+        graph = nx.Graph([(0, 1)])
+        graph.nodes[0]["color"] = "a"
+        graph.nodes[1]["color"] = "b"
+        subgraph = nx.Graph()
+        subgraph.add_node(0, color="a")
+
+        expected = [{0: 0}]
+        result = list(iso.ISMAGS(graph, subgraph, node_match=nm).find_isomorphisms())
+        assert result == expected
+
+        # A color that only the subgraph has should still yield no matches.
+        subgraph.nodes[0]["color"] = "z"
+        result = list(iso.ISMAGS(graph, subgraph, node_match=nm).find_isomorphisms())
+        assert result == []
+
+    def test_subgraph_color_with_only_node(self):
+        # see gh-8738: node_match default of None should not lead to result == []
+        graph = nx.Graph([(0, 1)])
+        graph.nodes[1]["attr1"] = 0
+        subgraph = nx.Graph()
+        subgraph.add_node(5, attr1=0)
+
+        nodematch = nx.isomorphism.categorical_node_match(["attr1"], [None])
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        result = list(ismags.find_isomorphisms())
+        assert result == [{1: 5}]
+
+        nodematch = nx.isomorphism.categorical_node_match(["attr1"], [0])
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        result = list(ismags.find_isomorphisms())
+        assert result == [{0: 5}, {1: 5}]
+
+        nodematch = nx.isomorphism.categorical_node_match(["attr1"], ["blue"])
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        result = list(ismags.find_isomorphisms())
+        assert result == [{1: 5}]
+
     def test_exceptions_for_bad_match_functions(self):
         def non_transitive_match(attrs1, attrs2):
             return abs(attrs1["freq"] - attrs2["freq"]) <= 1

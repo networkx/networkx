@@ -61,6 +61,24 @@ def test_dynamic_graph_has_timeformat(time_attr, dyn_attr, tmp_path):
     assert nx.utils.nodes_equal(G.edges, H.edges)
 
 
+def test_dynamic_boolean_attvalue_is_lowercase(tmp_path):
+    """Boolean values in dynamic (spelled) attributes must be written as the
+    xsd:boolean literals 'true'/'false', matching the static path. Previously
+    the dynamic branch wrote Python's 'True'/'False'."""
+    G = nx.Graph(mode="dynamic")
+    G.add_node("n", flag=[(True, 0, 1), (False, 1, 2)])
+    fname = tmp_path / "bool.gexf"
+    nx.write_gexf(G, fname)
+    text = fname.read_text()
+    assert 'value="true"' in text
+    assert 'value="false"' in text
+    assert 'value="True"' not in text
+    assert 'value="False"' not in text
+    # Values still round-trip to Python bools
+    H = nx.read_gexf(fname)
+    assert H.nodes["n"]["flag"] == [(True, 0, 1), (False, 1, 2)]
+
+
 class TestGEXF:
     @classmethod
     def setup_class(cls):
@@ -275,6 +293,29 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         </nodes>
         <edges>
             <edge id="0" source="0" target="1" type="undirected"/>
+        </edges>
+    </graph>
+</gexf>
+"""
+        fh = io.BytesIO(s.encode("UTF-8"))
+        pytest.raises(nx.NetworkXError, nx.read_gexf, fh)
+
+    @pytest.mark.parametrize(
+        "attributes_tag", ['<attributes class="graph">', "<attributes>"]
+    )
+    def test_unknown_attribute_class_raises(self, attributes_tag):
+        s = f"""<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version='1.2'>
+    <graph mode="static" defaultedgetype="directed" name="">
+        {attributes_tag}
+            <attribute id="0" title="url" type="string"/>
+        </attributes>
+        <nodes>
+            <node id="0" label="Hello" />
+            <node id="1" label="Word" />
+        </nodes>
+        <edges>
+            <edge id="0" source="0" target="1"/>
         </edges>
     </graph>
 </gexf>

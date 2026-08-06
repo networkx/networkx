@@ -557,7 +557,7 @@ def periphery(G, e=None, usebounds=False, weight=None):
 
     See Also
     --------
-    barycenter
+    centroid
     center
     """
     if usebounds is True and e is None and not G.is_directed():
@@ -703,7 +703,7 @@ def center(G, e=None, usebounds=False, weight=None):
     See Also
     --------
     :func:`~networkx.algorithms.tree.distance_measures.center` : tree center
-    barycenter
+    centroid
     periphery
     :func:`~networkx.algorithms.tree.distance_measures.centroid` : tree centroid
     """
@@ -735,6 +735,10 @@ def centroid(G, weight=None, attr=None, sp=None):
     <networkx.algorithms.shortest_paths.generic.shortest_path_length>`.
     This quantity is also known as the :dfn:`barycenter` or :dfn:`median`.
     See [West01]_, p. 78.
+
+    .. versionchanged:: 3.7
+       ``centroid()`` is created by a renaming of ``barycenter()``.
+       The old name still works to call this function.
 
     Parameters
     ----------
@@ -773,7 +777,6 @@ def centroid(G, weight=None, attr=None, sp=None):
     --------
     center
     periphery
-    barycenter
     :func:`~networkx.algorithms.tree.distance_measures.centroid` : tree centroid
     """
     if weight is None and attr is None and sp is None:
@@ -806,9 +809,7 @@ def centroid(G, weight=None, attr=None, sp=None):
     return centroid_vertices
 
 
-def barycenter(G, weight=None, attr=None, sp=None):
-    """Alias for `centroid` - see `centroid` docstring for details."""
-    return centroid(G, weight, attr, sp)
+barycenter = centroid
 
 
 @not_implemented_for("directed")

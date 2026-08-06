@@ -6,7 +6,7 @@ from networkx.algorithms.assortativity.correlation import attribute_ac
 from .base_test import BaseTestAttributeMixing, BaseTestDegreeMixing
 
 np = pytest.importorskip("numpy")
-pytest.importorskip("scipy")
+sp = pytest.importorskip("scipy")
 
 
 class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
@@ -60,6 +60,24 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
     def test_degree_assortativity_double_star(self):
         r = nx.degree_assortativity_coefficient(self.DS)
         np.testing.assert_almost_equal(r, -0.9339, decimal=4)
+
+    @pytest.mark.parametrize(
+        "G",
+        [
+            nx.empty_graph(2),
+            nx.DiGraph([(1, 2)]),
+            nx.Graph([(1, 1)]),
+        ],
+    )
+    def test_degree_pearson_assortativity_insufficient_samples(self, G):
+        r = nx.degree_pearson_correlation_coefficient(G)
+        assert np.isnan(r)
+
+    def test_degree_pearson_assortativity_selfloop_only_graph(self):
+        G = nx.Graph([(1, 1), (2, 2), (3, 3)])
+        with pytest.warns(sp.stats.ConstantInputWarning):
+            r = nx.degree_pearson_correlation_coefficient(G)
+        assert np.isnan(r)
 
 
 class TestAttributeMixingCorrelation(BaseTestAttributeMixing):

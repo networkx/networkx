@@ -226,9 +226,6 @@ def mixing_dict(xy, normalized=False):
     xy : list or container of two-tuples
        Pairs of (x,y) items.
 
-    attribute : string
-       Node attribute key
-
     normalized : bool (default=False)
        Return counts if False or probabilities if True.
 

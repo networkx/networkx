@@ -45,7 +45,7 @@ class EdgePartition(Enum):
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
 def boruvka_mst_edges(
-    G, minimum=True, weight="weight", keys=False, data=True, ignore_nan=False
+    G, minimum=True, weight="weight", keys=True, data=True, ignore_nan=False
 ):
     """Iterate over edges of a Borůvka's algorithm min/max spanning tree.
 
@@ -161,7 +161,7 @@ def kruskal_mst_edges(
         The name of the edge attribute holding the edge weights.
 
     keys : bool (default: True)
-        If `G` is a multigraph, `keys` controls whether edge keys ar yielded.
+        If `G` is a multigraph, `keys` controls whether edge keys are yielded.
         Otherwise `keys` is ignored.
 
     data : bool (default: True)
@@ -276,7 +276,7 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
         The name of the edge attribute holding the edge weights.
 
     keys : bool (default: True)
-        If `G` is a multigraph, `keys` controls whether edge keys ar yielded.
+        If `G` is a multigraph, `keys` controls whether edge keys are yielded.
         Otherwise `keys` is ignored.
 
     data : bool (default: True)

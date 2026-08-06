@@ -780,6 +780,8 @@ def remove_node_attributes(G, *attr_names, nbunch=None):
     >>> nx.get_node_attributes(G, "color")
     {}
     """
+    if not attr_names:
+        return
 
     if nbunch is None:
         nbunch = G.nodes()
@@ -791,6 +793,7 @@ def remove_node_attributes(G, *attr_names, nbunch=None):
                     del d[attr]
                 except KeyError:
                     pass
+    nx._clear_cache(G)
 
 
 @nx._dispatchable(preserve_edge_attrs=True, mutates_input=True)
@@ -996,6 +999,9 @@ def remove_edge_attributes(G, *attr_names, ebunch=None):
     >>> nx.get_edge_attributes(G, "weight")
     {}
     """
+    if not attr_names:
+        return
+
     if ebunch is None:
         ebunch = G.edges(keys=True) if G.is_multigraph() else G.edges()
 
@@ -1009,6 +1015,7 @@ def remove_edge_attributes(G, *attr_names, ebunch=None):
                     del d[attr]
                 except KeyError:
                     pass
+    nx._clear_cache(G)
 
 
 def all_neighbors(graph, node):

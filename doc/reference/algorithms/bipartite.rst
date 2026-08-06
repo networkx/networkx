@@ -83,6 +83,7 @@ Clustering
 
    clustering
    average_clustering
+   butterflies
    latapy_clustering
    robins_alexander_clustering
 
@@ -149,3 +150,10 @@ Link Analysis
 
    birank
 
+Communities
+-----------
+.. automodule:: networkx.algorithms.bipartite.community
+.. autosummary::
+   :toctree: generated/
+
+   modularity

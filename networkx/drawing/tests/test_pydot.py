@@ -1,5 +1,6 @@
 """Unit tests for pydot drawing functions."""
 
+import subprocess
 from io import StringIO
 
 import pytest
@@ -9,8 +10,17 @@ from networkx.utils import graphs_equal
 
 pydot = pytest.importorskip("pydot")
 
+# NOTE: pydot layouts and drawing require graphviz to be installed. Skip these
+# tests if they are not found
+try:
+    subprocess.check_output("dot -V".split())
+    has_graphviz = True
+except FileNotFoundError:
+    has_graphviz = False
+
 
 class TestPydot:
+    @pytest.mark.skipif(not has_graphviz, reason="graphviz required for layout")
     @pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
     @pytest.mark.parametrize("prog", ("neato", "dot"))
     def test_pydot(self, G, prog, tmp_path):
@@ -90,6 +100,7 @@ class TestPydot:
         assert graphs_equal(G, H)
 
 
+@pytest.mark.skipif(not has_graphviz, reason="graphviz required for layout")
 def test_pydot_issue_7581(tmp_path):
     """Validate that `nx_pydot.pydot_layout` handles nodes
     with characters like "\n", " ".
@@ -133,6 +144,7 @@ def test_hashable_pydot(graph_type):
     )
 
 
+@pytest.mark.skipif(not has_graphviz, reason="graphviz required for layout")
 def test_pydot_numerical_name():
     G = nx.Graph()
     G.add_edges_from([("A", "B"), (0, 1)])

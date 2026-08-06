@@ -146,6 +146,45 @@ def test_karate_0():
     _check_connectivity(G)
 
 
+def test_two_icosahedra_with_connector_nodes():
+    # Regression test mirroring the exact algorithm's test for the
+    # _generate_partition bug: two icosahedra (5-connected) joined through
+    # three connector nodes, plus a fourth node that makes the graph
+    # 4-connected. The approximation uses a different procedure and was
+    # never affected, but it recovers the exact solution on this graph and
+    # should keep doing so.
+    A = nx.icosahedral_graph()
+    B = nx.relabel_nodes(nx.icosahedral_graph(), {i: i + 12 for i in range(12)})
+    G = nx.union(A, B)
+    G.add_edges_from([(24, 0), (24, 1), (24, 2), (24, 12), (24, 13)])
+    G.add_edges_from([(25, 3), (25, 4), (25, 5), (25, 14), (25, 15)])
+    G.add_edges_from([(26, 6), (26, 7), (26, 8), (26, 16), (26, 17)])
+    G.add_edges_from([(27, 9), (27, 10), (27, 20), (27, 21)])
+    result = k_components(G)
+    assert sorted(sorted(c) for c in result[5]) == [
+        sorted(range(12)),
+        sorted(range(12, 24)),
+    ]
+    # The whole graph is 4-connected, so it is the single k-component at
+    # every level from 1 to 4.
+    for k in range(1, 5):
+        assert sorted(sorted(c) for c in result[k]) == [sorted(range(28))]
+
+
+def test_highly_connected_gnp_graph():
+    # Regression test mirroring the exact algorithm's test for the
+    # _reconstruct_k_components bug: a 7-connected graph in which the whole
+    # graph is the only k-component at every level up to 7. The
+    # approximation reconstructs each level independently and was never
+    # affected, but it recovers the exact solution on this graph and should
+    # keep doing so.
+    G = nx.gnp_random_graph(16, 0.6, seed=22070)
+    nodes = sorted(G)
+    result = k_components(G)
+    for k in range(1, 8):
+        assert sorted(sorted(c) for c in result[k]) == [nodes]
+
+
 def test_karate_1():
     karate_k_num = {
         0: 4,
