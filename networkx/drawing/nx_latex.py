@@ -390,7 +390,7 @@ def to_latex(
         The latex label used for the figure for easy referral from the main text
     sub_captions : list of strings
         The sub_caption string for each subfigure in the figure
-    sub_latex_labels : list of strings
+    sub_labels : list of strings
         The latex label for each subfigure in the figure
     n_rows : int
         The number of rows of subfigures to arrange for multiple graphs
