@@ -549,6 +549,17 @@ def test_map_equation_two_triangles_hand_calculated():
     assert map_equation(G, partition) == pytest.approx(2.320730, abs=1e-5)
 
 
+def test_map_equation_not_a_partition():
+    """`communities` must partition the nodes: both an uncovered node and an
+    overlapping node raise the documented NetworkXError."""
+    G = nx.barbell_graph(3, 0)
+    missing_node = [{0, 1, 2}, {3, 4}]
+    overlapping = [{0, 1, 2, 3}, {3, 4, 5}]
+    for communities in (missing_node, overlapping):
+        with pytest.raises(nx.NetworkXError, match="not a partition"):
+            map_equation(G, communities)
+
+
 def test_map_equation_matches_cpp_infomap_on_karate():
     """Cross-validate the codelength against the reference C++ Infomap on the
     two-level partition it finds for Zachary's karate club. Skips if the
@@ -637,6 +648,39 @@ def test_map_equation_directed_asymmetric_enter_exit():
     assert map_equation(G, partition, weight=None) == pytest.approx(
         im.codelength, abs=1e-9
     )
+
+
+def test_map_equation_matches_cpp_nondefault_teleportation():
+    """`teleportation_probability` is wired through to the directed flow: at a
+    non-default value the codelength must match the reference C++ Infomap run
+    with the same teleportation probability."""
+    infomap = pytest.importorskip("infomap")
+    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
+
+    G = nx.DiGraph()
+    G.add_edges_from([(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (2, 3), (0, 4)])
+
+    im = infomap.Infomap(
+        directed=True,
+        two_level=True,
+        silent=True,
+        seed=42,
+        teleportation_probability=0.5,
+    )
+    for u, v in G.edges():
+        im.add_link(u, v)
+    im.run()
+
+    modules = {}
+    for node in im.nodes:
+        modules.setdefault(node.module_id, set()).add(node.node_id)
+    partition = list(modules.values())
+
+    codelength = map_equation(G, partition, teleportation_probability=0.5)
+    assert codelength == pytest.approx(im.codelength, abs=1e-9)
+    # Guard against vacuous parity (both sides ignoring the parameter): the
+    # non-default value must actually change the codelength.
+    assert codelength != pytest.approx(map_equation(G, partition))
 
 
 def test_map_equation_undirected_self_loop_known_value():
