@@ -605,6 +605,35 @@ class TestLargestCommonSubgraph:
         assert expected == found_mcis1
         assert expected == found_mcis2
 
+    def test_extra_colors(self):
+        graph = nx.Graph([(0, 1)])
+        graph.nodes[1]["attr1"] = 0
+        graph.add_node(2, attr1=1)
+        subgraph = nx.Graph()
+        subgraph.add_node(2, attr1=2)
+        subgraph.add_node(5, attr1=0)
+
+        nodematch = nx.isomorphism.categorical_node_match(["attr1"], [None])
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        result = list(ismags.largest_common_subgraph(symmetry=True))
+        assert result == [{1: 5}]
+        result = list(ismags.largest_common_subgraph(symmetry=False))
+        assert result == [{1: 5}]
+
+        assert ismags.N_node_colors == 1
+        assert ismags.N_edge_colors == 1
+        assert len(ismags._sgn_partition) == 2
+        assert ismags._sgn_partition == [{5}, {2}]
+        # _gn_partition padded (empty set aligns with subgraph extra color)
+        assert len(ismags._gn_partition) == 4
+        assert ismags._gn_partition == [{1}, set(), {0}, {2}]
+
+        # switch graph order
+        graph, subgraph = subgraph, graph
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        assert ismags._sgn_partition == [{1}, {0}, {2}]
+        assert ismags._gn_partition == [{5}, set(), set(), {2}]
+
 
 def is_isomorphic(G, SG, edge_match=None, node_match=None):
     return iso.ISMAGS(G, SG, node_match, edge_match).is_isomorphic()
