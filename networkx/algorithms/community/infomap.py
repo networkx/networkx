@@ -710,7 +710,9 @@ def _check_num_trials(num_trials):
 
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
-def infomap_communities(G, *, weight="weight", seed=None, num_trials=1):
+def infomap_communities(
+    G, *, weight="weight", seed=None, num_trials=1, teleportation_probability=0.15
+):
     r"""Find communities in `G` using the Infomap algorithm (the map equation).
 
     Infomap detects community structure by minimizing the *map equation* [1]_,
@@ -760,6 +762,10 @@ def infomap_communities(G, *, weight="weight", seed=None, num_trials=1):
     num_trials : int, optional (default=1)
         Number of independent restarts; the partition with the lowest
         codelength is returned. Must be a positive integer.
+    teleportation_probability : float, optional (default=0.15)
+        Teleportation probability for the directed-flow random walk, as in
+        :func:`~networkx.algorithms.community.quality.map_equation`. Ignored
+        for undirected graphs.
 
     Returns
     -------
@@ -809,7 +815,7 @@ def infomap_communities(G, *, weight="weight", seed=None, num_trials=1):
     _check_num_trials(num_trials)
     # The flow depends only on the graph, so compute it once and reuse it across
     # every restart and codelength evaluation.
-    flow, link_flows = _flow(G, weight)
+    flow, link_flows = _flow(G, weight, teleportation_probability)
     if not flow:
         return []  # empty graph
     module_of = _best_two_level(flow, link_flows, seed, num_trials, G.is_directed())
@@ -845,7 +851,9 @@ def _best_hierarchy(flow, links, seed, num_trials, directed):
 
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight")
-def infomap_partitions(G, *, weight="weight", seed=None, num_trials=1):
+def infomap_partitions(
+    G, *, weight="weight", seed=None, num_trials=1, teleportation_probability=0.15
+):
     r"""Yield the community partition at each level of the Infomap hierarchy.
 
     Infomap finds a multilevel (hierarchical) partition by minimizing the map
@@ -873,6 +881,10 @@ def infomap_partitions(G, *, weight="weight", seed=None, num_trials=1):
     num_trials : int, optional (default=1)
         Number of independent restarts; the levels of the lowest-codelength
         hierarchy found are yielded. Must be a positive integer.
+    teleportation_probability : float, optional (default=0.15)
+        Teleportation probability for the directed-flow random walk, as in
+        :func:`~networkx.algorithms.community.quality.map_equation`. Ignored
+        for undirected graphs.
 
     Yields
     ------
@@ -909,7 +921,7 @@ def infomap_partitions(G, *, weight="weight", seed=None, num_trials=1):
     # Validate num_trials eagerly so a bad value raises on call, not mid-iteration.
     # The hierarchy search runs here; only splitting the result into per-level
     # partitions is deferred to the `_expand_levels` generator.
-    flow, link_flows = _flow(G, weight)
+    flow, link_flows = _flow(G, weight, teleportation_probability)
     if not flow:
         return iter([[]])  # empty graph -> one empty level (matches louvain_partitions)
     path = _best_hierarchy(flow, link_flows, seed, num_trials, G.is_directed())

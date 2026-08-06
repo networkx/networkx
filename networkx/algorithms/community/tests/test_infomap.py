@@ -479,3 +479,39 @@ def test_infomap_directed_reciprocal_matches_cpp():
         im.add_link(u, v)
     im.run()
     assert best == pytest.approx(im.codelength, abs=1e-6)
+
+
+def test_infomap_nondefault_teleportation_matches_cpp():
+    """teleportation_probability shapes the flow the optimizer minimizes over. On a
+    growing DAG the tau=0.85 optimum is a *different partition* than the
+    default tau=0.15 one (evaluating the latter at tau=0.85 is ~1e-3 worse),
+    so reaching the C++ reference optimum here proves the parameter reaches
+    the flow computation rather than being silently ignored."""
+    infomap = pytest.importorskip("infomap")
+    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
+
+    G = nx.gnc_graph(40, seed=3)
+    im = infomap.Infomap(
+        directed=True,
+        two_level=True,
+        silent=True,
+        seed=42,
+        num_trials=100,
+        teleportation_probability=0.85,
+    )
+    for u, v in G.edges():
+        im.add_link(u, v)
+    im.run()
+
+    best = min(
+        nx.community.map_equation(
+            G,
+            nx.community.infomap_communities(
+                G, weight=None, seed=s, num_trials=15, teleportation_probability=0.85
+            ),
+            weight=None,
+            teleportation_probability=0.85,
+        )
+        for s in range(3)
+    )
+    assert best == pytest.approx(im.codelength, abs=1e-6)
