@@ -563,28 +563,29 @@ def test_map_equation_not_a_partition():
 def test_map_equation_matches_cpp_infomap_on_karate():
     """Cross-validate the codelength against the reference C++ Infomap on the
     two-level partition it finds for Zachary's karate club. Skips if the
-    ``infomap`` package is not installed (it is not a NetworkX dependency)."""
-    infomap = pytest.importorskip("infomap")
+    ``infomap`` package is not installed (it is not a NetworkX dependency) or
+    predates the Result API of infomap 2.14."""
+    infomap = pytest.importorskip("infomap", minversion="2.14")
 
     G = nx.karate_club_graph()
 
     im = infomap.Infomap(two_level=True, silent=True, seed=42)
     for u, v, w in G.edges(data="weight", default=1):
         im.add_link(u, v, w)
-    im.run()
+    result = im.run()
 
     modules = {}
-    for node in im.nodes:
-        modules.setdefault(node.module_id, set()).add(node.node_id)
+    for node, module in result.modules().items():
+        modules.setdefault(module, set()).add(node)
     partition = list(modules.values())
 
-    assert map_equation(G, partition) == pytest.approx(im.codelength, abs=1e-6)
+    assert map_equation(G, partition) == pytest.approx(result.codelength, abs=1e-6)
 
 
 def test_map_equation_matches_cpp_infomap_directed():
     """Cross-validate directed-flow codelength against the reference C++
     Infomap (default unrecorded teleportation to links, tau=0.15)."""
-    infomap = pytest.importorskip("infomap")
+    infomap = pytest.importorskip("infomap", minversion="2.14")
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
 
     G = nx.DiGraph()
@@ -593,20 +594,20 @@ def test_map_equation_matches_cpp_infomap_directed():
     im = infomap.Infomap(directed=True, two_level=True, silent=True, seed=42)
     for u, v in G.edges():
         im.add_link(u, v)
-    im.run()
+    result = im.run()
 
     modules = {}
-    for node in im.nodes:
-        modules.setdefault(node.module_id, set()).add(node.node_id)
+    for node, module in result.modules().items():
+        modules.setdefault(module, set()).add(node)
     partition = list(modules.values())
 
-    assert map_equation(G, partition) == pytest.approx(im.codelength, abs=1e-9)
+    assert map_equation(G, partition) == pytest.approx(result.codelength, abs=1e-9)
 
 
 def test_map_equation_directed_with_dangling_nodes():
     """Directed flow must match C++ Infomap when the graph has dangling nodes
     (out-degree zero), exercising the unrecorded-teleportation normalization."""
-    infomap = pytest.importorskip("infomap")
+    infomap = pytest.importorskip("infomap", minversion="2.14")
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
 
     G = nx.DiGraph()
@@ -615,21 +616,21 @@ def test_map_equation_directed_with_dangling_nodes():
     im = infomap.Infomap(directed=True, two_level=True, silent=True, seed=42)
     for u, v in G.edges():
         im.add_link(u, v)
-    im.run()
+    result = im.run()
 
     modules = {}
-    for node in im.nodes:
-        modules.setdefault(node.module_id, set()).add(node.node_id)
+    for node, module in result.modules().items():
+        modules.setdefault(module, set()).add(node)
     partition = list(modules.values())
 
-    assert map_equation(G, partition) == pytest.approx(im.codelength, abs=1e-9)
+    assert map_equation(G, partition) == pytest.approx(result.codelength, abs=1e-9)
 
 
 def test_map_equation_directed_asymmetric_enter_exit():
     """On a directed graph where modules have different enter and exit flow
     (e.g. a growing DAG), the codelength must still match C++ Infomap. This
     guards the directed index term, which uses enter flow, not exit flow."""
-    infomap = pytest.importorskip("infomap")
+    infomap = pytest.importorskip("infomap", minversion="2.14")
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
 
     G = nx.gnc_graph(40, seed=3)
@@ -639,14 +640,14 @@ def test_map_equation_directed_asymmetric_enter_exit():
     )
     for u, v in G.edges():
         im.add_link(u, v)
-    im.run()
+    result = im.run()
     modules = {}
-    for node in im.nodes:
-        modules.setdefault(node.module_id, set()).add(node.node_id)
+    for node, module in result.modules().items():
+        modules.setdefault(module, set()).add(node)
     partition = list(modules.values())
 
     assert map_equation(G, partition, weight=None) == pytest.approx(
-        im.codelength, abs=1e-9
+        result.codelength, abs=1e-9
     )
 
 
@@ -654,30 +655,34 @@ def test_map_equation_matches_cpp_nondefault_teleportation():
     """`teleportation_probability` is wired through to the directed flow: at a
     non-default value the codelength must match the reference C++ Infomap run
     with the same teleportation probability."""
-    infomap = pytest.importorskip("infomap")
+    infomap = pytest.importorskip("infomap", minversion="2.14")
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
 
     G = nx.DiGraph()
     G.add_edges_from([(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (2, 3), (0, 4)])
 
-    im = infomap.Infomap(
-        directed=True,
-        two_level=True,
-        silent=True,
-        seed=42,
-        teleportation_probability=0.5,
-    )
+    net = infomap.Network()
     for u, v in G.edges():
-        im.add_link(u, v)
-    im.run()
+        net.add_link(u, v)
+    # The teleportation probability rides on Options: as a constructor kwarg
+    # it is pending deprecation upstream (leaves in infomap 3.0).
+    result = net.run(
+        options=infomap.Options(
+            directed=True,
+            two_level=True,
+            silent=True,
+            seed=42,
+            teleportation_probability=0.5,
+        )
+    )
 
     modules = {}
-    for node in im.nodes:
-        modules.setdefault(node.module_id, set()).add(node.node_id)
+    for node, module in result.modules().items():
+        modules.setdefault(module, set()).add(node)
     partition = list(modules.values())
 
     codelength = map_equation(G, partition, teleportation_probability=0.5)
-    assert codelength == pytest.approx(im.codelength, abs=1e-9)
+    assert codelength == pytest.approx(result.codelength, abs=1e-9)
     # Guard against vacuous parity (both sides ignoring the parameter): the
     # non-default value must actually change the codelength.
     assert codelength != pytest.approx(map_equation(G, partition))
@@ -699,7 +704,7 @@ def test_map_equation_undirected_self_loops_match_cpp():
     """Cross-validate the codelength on an undirected graph with self-loops
     against the reference C++ Infomap, which treats a self-loop as a single
     transition that never crosses a module boundary."""
-    infomap = pytest.importorskip("infomap")
+    infomap = pytest.importorskip("infomap", minversion="2.14")
 
     G = nx.Graph()
     G.add_weighted_edges_from(
@@ -719,19 +724,19 @@ def test_map_equation_undirected_self_loops_match_cpp():
     im = infomap.Infomap(two_level=True, silent=True, seed=42)
     for u, v, w in G.edges(data="weight", default=1):
         im.add_link(u, v, w)
-    im.run()
+    result = im.run()
     modules = {}
-    for node in im.nodes:
-        modules.setdefault(node.module_id, set()).add(node.node_id)
+    for node, module in result.modules().items():
+        modules.setdefault(module, set()).add(node)
     partition = list(modules.values())
 
-    assert map_equation(G, partition) == pytest.approx(im.codelength, abs=1e-9)
+    assert map_equation(G, partition) == pytest.approx(result.codelength, abs=1e-9)
 
 
 def test_map_equation_directed_self_loops_match_cpp():
     """Directed self-loops are ordinary links in the PageRank walk, so the
     codelength must match C++ Infomap on a directed graph that has them."""
-    infomap = pytest.importorskip("infomap")
+    infomap = pytest.importorskip("infomap", minversion="2.14")
     pytest.importorskip("scipy")  # directed flow uses nx.pagerank
 
     G = nx.DiGraph()
@@ -742,12 +747,12 @@ def test_map_equation_directed_self_loops_match_cpp():
     im = infomap.Infomap(directed=True, two_level=True, silent=True, seed=42)
     for u, v in G.edges():
         im.add_link(u, v)
-    im.run()
+    result = im.run()
     modules = {}
-    for node in im.nodes:
-        modules.setdefault(node.module_id, set()).add(node.node_id)
+    for node, module in result.modules().items():
+        modules.setdefault(module, set()).add(node)
     partition = list(modules.values())
 
     assert map_equation(G, partition, weight=None) == pytest.approx(
-        im.codelength, abs=1e-9
+        result.codelength, abs=1e-9
     )
