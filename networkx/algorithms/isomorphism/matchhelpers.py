@@ -51,11 +51,11 @@ G1 and G2 are the same, then the constructed function returns True.
 Parameters
 ----------
 attr : string | list
-    The categorical node attribute to compare, or a list of categorical
+    The name of the categorical node attribute to compare, or a list of categorical
     node attributes to compare.
 default : value | list
-    The default value for the categorical node attribute, or a list of
-    default values for the categorical node attributes.
+    When `attr` is a string, the default value for that categorical node attribute.
+    Otherwise, a list of default values for each node attributes.
 
 Returns
 -------
@@ -78,7 +78,10 @@ def categorical_node_match(attr, default):
             return data1.get(attr, default) == data2.get(attr, default)
 
     else:
-        attrs = list(zip(attr, default))  # Python 3
+        if isinstance(default, list):
+            attrs = list(zip(attr, default, strict=True))
+        else:
+            attrs = [(a, default) for a in attr]
 
         def match(data1, data2):
             return all(data1.get(attr, d) == data2.get(attr, d) for attr, d in attrs)
@@ -98,7 +101,10 @@ def categorical_multiedge_match(attr, default):
             return values1 == values2
 
     else:
-        attrs = list(zip(attr, default))  # Python 3
+        if isinstance(default, list):
+            attrs = list(zip(attr, default, strict=True))
+        else:
+            attrs = [(a, default) for a in attr]
 
         def match(datasets1, datasets2):
             values1 = set()
@@ -132,11 +138,11 @@ tolerance, then the constructed function returns True.
 Parameters
 ----------
 attr : string | list
-    The numerical node attribute to compare, or a list of numerical
+    The name of the numerical node attribute to compare, or a list of numerical
     node attributes to compare.
 default : value | list
-    The default value for the numerical node attribute, or a list of
-    default values for the numerical node attributes.
+    If `attr` is a string, the default numerical value for that attribute.
+    Otherwise, a list of same length as `attr` with default values for each attribute.
 rtol : float
     The relative error tolerance.
 atol : float
@@ -168,7 +174,10 @@ def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08)
             )
 
     else:
-        attrs = list(zip(attr, default))  # Python 3
+        if isinstance(default, list):
+            attrs = list(zip(attr, default, strict=True))
+        else:
+            attrs = [(a, default) for a in attr]
 
         def match(data1, data2):
             values1 = [data1.get(attr, d) for attr, d in attrs]
@@ -190,7 +199,10 @@ def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1
             return allclose(values1, values2, rtol=rtol, atol=atol)
 
     else:
-        attrs = list(zip(attr, default))  # Python 3
+        if isinstance(default, list):
+            attrs = list(zip(attr, default, strict=True))
+        else:
+            attrs = [(a, default) for a in attr]
 
         def match(datasets1, datasets2):
             values1 = []
@@ -233,11 +245,11 @@ attr : string | list
     The node attribute to compare, or a list of node attributes
     to compare.
 default : value | list
-    The default value for the node attribute, or a list of
-    default values for the node attributes.
+    When `attr` is a string, the default value for that attribute.
+    Otherwise, a list the same length as `attr` with default values for each attribute.
 op : callable | list
-    The operator to use when comparing attribute values, or a list
-    of operators to use when comparing values for each attribute.
+    When `attr` is a string, the operator to use when comparing attribute values.
+    Otherwise, a list the same length as `attr` with operators to for each attribute.
 
 Returns
 -------
@@ -263,7 +275,16 @@ def generic_node_match(attr, default, op):
             return op(data1.get(attr, default), data2.get(attr, default))
 
     else:
-        attrs = list(zip(attr, default, op))  # Python 3
+        if isinstance(default, list):
+            if isinstance(op, list):
+                attrs = list(zip(attr, default, op, strict=True))
+            else:
+                attrs = [(a, d, op) for a, d in zip(attr, default, strict=True)]
+        else:
+            if isinstance(op, list):
+                attrs = [(a, default, o) for a, o in zip(attr, op, strict=True)]
+            else:
+                attrs = [(a, default, op) for a in attr]
 
         def match(data1, data2):
             for attr, d, operator in attrs:
@@ -293,11 +314,17 @@ def generic_multiedge_match(attr, default, op):
         The edge attribute to compare, or a list of node attributes
         to compare.
     default : value | list
-        The default value for the edge attribute, or a list of
-        default values for the edgeattributes.
+        When `attr` is a string, `default` is the default value for that
+        edge attribute.
+        When `attr` is a list, `default` is a default value for all edge
+        attributes or a list of length same as `attr` holding default
+        values for each edge attributes.
     op : callable | list
-        The operator to use when comparing attribute values, or a list
-        of operators to use when comparing values for each attribute.
+        When `attr` is a string, `op` is the operator to use when comparing
+        that attribute.
+        When `attr` is a list, `op` is an operator to use when comparing
+        each edge attribute or a list of length same as `attr` holding
+        operators to use when comparing values for each attribute.
 
     Returns
     -------
@@ -316,33 +343,40 @@ def generic_multiedge_match(attr, default, op):
     """
 
     # This is slow, but generic.
-    # We must test every possible isomorphism between the edges.
+    # We must test every possible isomorphism between the multiedges.
     if isinstance(attr, str):
         attr = [attr]
         default = [default]
-        op = [op]
-    attrs = list(zip(attr, default))  # Python 3
+
+    if isinstance(default, list):
+        attrs = list(zip(attr, default, strict=True))
+    else:
+        attrs = [(a, default) for a in attr]
+
+    # ops is a list of functions to check for a match of each attr in order
+    if isinstance(op, list):
+        if len(op) != len(attr):
+            msg = f"zip() argument length not right. Got {len(op)=}. Need {len(attr)=}"
+            raise ValueError(msg)
+        ops = op
+    else:
+        ops = [op] * len(attr)
 
     def match(datasets1, datasets2):
-        values1 = []
-        for data1 in datasets1.values():
-            x = tuple(data1.get(attr, d) for attr, d in attrs)
-            values1.append(x)
-        values2 = []
-        for data2 in datasets2.values():
-            x = tuple(data2.get(attr, d) for attr, d in attrs)
-            values2.append(x)
-        for vals2 in permutations(values2):
-            for xi, yi in zip(values1, vals2):
-                if not all(map(lambda x, y, z: z(x, y), xi, yi, op)):
-                    # This is not an isomorphism, go to next permutation.
+        # multiedges is a list across multiedges of lists across attrs of attr values
+        multiedges1 = [[dd.get(a, d) for a, d in attrs] for dd in datasets1.values()]
+        multiedges2 = [[dd.get(a, d) for a, d in attrs] for dd in datasets2.values()]
+        # order of multiedges is not relevant so have to check all permutations
+        for me2_perm in permutations(multiedges2):
+            for eattrs1, eattrs2 in zip(multiedges1, me2_perm):
+                if not all(m(ea1, ea2) for ea1, ea2, m in zip(eattrs1, eattrs2, ops)):
+                    # This is not an isomorphism, break to next permutation.
                     break
             else:
-                # Then we found an isomorphism.
+                # No break! We found an isomorphism.
                 return True
-        else:
-            # Then there are no isomorphisms between the multiedges.
-            return False
+        # No isomorphisms exist between the multiedges.
+        return False
 
     return match
 
