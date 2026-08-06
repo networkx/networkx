@@ -97,15 +97,15 @@ def _undirected_flow(G, weight):
     return visit_rate, link_flows
 
 
-def _directed_flow(G, weight, teleportation_prob, tol=1e-13):
+def _directed_flow(G, weight, teleportation_probability, tol=1e-13):
     r"""Random-walk flow of a directed graph: ``(visit_rate, link_flows)``.
 
     A directed graph has no closed-form stationary distribution, and a plain
     walk can get stuck (in sinks or cycles). Infomap uses the PageRank remedy:
-    with probability ``teleportation_prob`` the walker teleports instead of
+    with probability ``teleportation_probability`` the walker teleports instead of
     following a link, which makes the walk ergodic. The recorded distribution
     ``pi`` is exactly :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
-    with damping ``1 - teleportation_prob`` and teleportation weighted by
+    with damping ``1 - teleportation_probability`` and teleportation weighted by
     out-degree (so dangling nodes redistribute their flow the same way).
 
     Teleportation is a modeling device, not part of the structure we want to
@@ -125,7 +125,7 @@ def _directed_flow(G, weight, teleportation_prob, tol=1e-13):
     teleport = {u: out_strength[u] / sum_out for u in nodes}
     pi = nx.pagerank(
         G,
-        alpha=1 - teleportation_prob,
+        alpha=1 - teleportation_probability,
         personalization=teleport,
         dangling=teleport,
         weight=weight,
@@ -152,7 +152,7 @@ def _directed_flow(G, weight, teleportation_prob, tol=1e-13):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def map_equation(G, communities, weight="weight", teleportation_prob=0.15):
+def map_equation(G, communities, weight="weight", teleportation_probability=0.15):
     r"""Return the two-level map equation codelength of a partition of `G`.
 
     The map equation [1]_ is the expected per-step description length, in bits,
@@ -190,7 +190,7 @@ def map_equation(G, communities, weight="weight", teleportation_prob=0.15):
     weight : string or None, optional (default="weight")
         Edge attribute holding the numerical weight. If None, every edge has
         weight 1.
-    teleportation_prob : float, optional (default=0.15)
+    teleportation_probability : float, optional (default=0.15)
         Teleportation probability for the directed-flow random walk. Ignored
         for undirected graphs.
 
@@ -229,11 +229,11 @@ def map_equation(G, communities, weight="weight", teleportation_prob=0.15):
     if not is_partition(G, communities):
         raise nx.NetworkXError("`communities` is not a partition of the nodes of `G`")
     module_of = {node: i for i, c in enumerate(communities) for node in c}
-    visit_rate, link_flows = _flow(G, weight, teleportation_prob)
+    visit_rate, link_flows = _flow(G, weight, teleportation_probability)
     return _codelength(visit_rate, link_flows, module_of)
 
 
-def _flow(G, weight="weight", teleportation_prob=0.15):
+def _flow(G, weight="weight", teleportation_probability=0.15):
     """Return ``(visit_rate, link_flows)`` for `G`, dispatching on direction.
 
     The flow depends only on the graph, not on any partition, so it is computed
@@ -253,7 +253,7 @@ def _flow(G, weight="weight", teleportation_prob=0.15):
         if not isfinite(w) or w < 0:
             raise ValueError("edge weights must be finite and non-negative")
     if G.is_directed():
-        return _directed_flow(G, weight, teleportation_prob)
+        return _directed_flow(G, weight, teleportation_probability)
     return _undirected_flow(G, weight)
 
 
