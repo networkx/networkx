@@ -1403,7 +1403,7 @@ def _inner_bellman_ford(
     ----------
     G : NetworkX graph
 
-    source: list
+    sources : list
         List of source nodes. The shortest path from any of the source
         nodes will be found if multiple sources are provided.
 
