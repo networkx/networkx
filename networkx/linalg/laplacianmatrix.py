@@ -280,7 +280,6 @@ def magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
     graphs the magnetic Laplacian is the standard Laplacian, we suggest using `laplacian_matrix`
     for computational reasons.
 
-
     Parameters
     ----------
     G : DiGraph

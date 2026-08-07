@@ -19,14 +19,7 @@ class TestSpectrum:
         cls.DG = nx.DiGraph()
         nx.add_path(cls.DG, [0, 1, 2])
         cls.Dcycle = nx.DiGraph()
-        cls.Dcycle.add_edges_from(
-            (
-                (1, 2, {"weight": 2}),
-                (2, 3, {"weight": 2}),
-                (3, 4, {"weight": 2}),
-                (4, 1, {"weight": 2}),
-            )
-        )
+        cls.Dcycle.add_weighted_edges_from([(1, 2, 2), (2, 3, 2), (3, 4, 2), (4, 1, 2)])
 
     def test_laplacian_spectrum(self):
         "Laplacian eigenvalues"
