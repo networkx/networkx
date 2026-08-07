@@ -356,3 +356,15 @@ class TestRelabel:
         actual = {frozenset(e) for e in G.edges}
         expected = {frozenset(e) for e in [("a", 2), ("a", 3), ("b", 3)]}
         assert actual == expected
+
+    def test_relabel_existing_node_attributes_are_consistent(self):
+        G = nx.Graph()
+        G.add_nodes_from((n, {"val": n}) for n in range(5))
+
+        H = nx.relabel_nodes(G, {1: 4}, copy=True)
+
+        G2 = G.copy()
+        nx.relabel_nodes(G2, {1: 4}, copy=False)
+
+        assert H.nodes[4] == {"val": 1}
+        assert G2.nodes[4] == {"val": 1}
