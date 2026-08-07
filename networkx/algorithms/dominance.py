@@ -49,6 +49,13 @@ def immediate_dominators(G, start):
     >>> sorted(nx.immediate_dominators(G, 1).items())
     [(2, 1), (3, 1), (4, 3), (5, 1)]
 
+    We can obtain the immediate post-dominators by reversing the graph
+    before calling ``immediate_dominators``.
+
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (2, 4), (3, 5), (4, 5), (5, 6)])
+    >>> nx.immediate_dominators(G.reverse(copy=False), 6)
+    {5: 6, 4: 5, 3: 5, 2: 5, 1: 2}
+
     References
     ----------
     .. [1] Cooper, Keith D., Harvey, Timothy J. and Kennedy, Ken.
