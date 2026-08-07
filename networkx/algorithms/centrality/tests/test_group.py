@@ -100,6 +100,46 @@ class TestGroupBetweennessCentrality:
         b_answer = 5.0
         assert b == b_answer
 
+    def test_group_betweenness_directed_not_strongly_connected(self):
+        """
+        Group betweenness on a directed graph that is not strongly connected
+        (gh-8559). A single-node group must equal the per-node betweenness, and
+        multi-node groups must not raise and must give the correct value.
+        """
+        G = nx.path_graph(4, create_using=nx.DiGraph)  # 0 -> 1 -> 2 -> 3
+        per_node = nx.betweenness_centrality(G, normalized=False, endpoints=False)
+        for v in G:
+            b = nx.group_betweenness_centrality(
+                G, {v}, normalized=False, endpoints=False
+            )
+            assert b == per_node[v]
+        # multi-node groups previously raised KeyError on such graphs
+        assert (
+            nx.group_betweenness_centrality(
+                G, {0, 2}, normalized=False, endpoints=False
+            )
+            == 1.0
+        )
+
+    def test_group_betweenness_multinode_directed(self):
+        """
+        Groups of size >= 3 on a directed path (gh-8559). Only the pair (0, 4)
+        of non-group nodes has a path, and it passes through the group.
+        """
+        G = nx.path_graph(5, create_using=nx.DiGraph)  # 0 -> 1 -> 2 -> 3 -> 4
+        assert (
+            nx.group_betweenness_centrality(
+                G, {1, 2, 3}, normalized=False, endpoints=False
+            )
+            == 1.0
+        )
+        assert (
+            nx.group_betweenness_centrality(
+                G, {1, 3}, normalized=False, endpoints=False
+            )
+            == 3.0
+        )
+
 
 class TestProminentGroup:
     np = pytest.importorskip("numpy")
