@@ -18,6 +18,8 @@ class TestSpectrum:
         cls.WG.add_node(4)
         cls.DG = nx.DiGraph()
         nx.add_path(cls.DG, [0, 1, 2])
+        cls.Dcycle = nx.DiGraph()
+        cls.Dcycle.add_weighted_edges_from([(1, 2, 2), (2, 3, 2), (3, 4, 2), (4, 1, 2)])
 
     def test_laplacian_spectrum(self):
         "Laplacian eigenvalues"
@@ -41,6 +43,18 @@ class TestSpectrum:
         e = sorted(nx.normalized_laplacian_spectrum(self.WG))
         np.testing.assert_almost_equal(e, evals)
         e = sorted(nx.normalized_laplacian_spectrum(self.WG, weight="other"))
+        np.testing.assert_almost_equal(e, evals)
+
+    def test_magnetic_spectrum(self):
+        "Magnetic Laplacian Eigenvalues"
+        evals = np.array([0.0, 2.0, 2.0, 4.0])
+        e = sorted(nx.magnetic_spectrum(self.Dcycle))
+        np.testing.assert_almost_equal(e, evals)
+
+    def test_normalized_magnetic_spectrum(self):
+        "Normalized Magnetic Laplacian Eigenvalues"
+        evals = np.array([0.0, 1.0, 1.0, 2.0])
+        e = sorted(nx.normalized_magnetic_spectrum(self.Dcycle))
         np.testing.assert_almost_equal(e, evals)
 
     def test_adjacency_spectrum(self):

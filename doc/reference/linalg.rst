@@ -23,6 +23,8 @@ Laplacian Matrix
 
    laplacian_matrix
    normalized_laplacian_matrix
+   magnetic_laplacian
+   normalized_magnetic_laplacian
    directed_laplacian_matrix
    directed_combinatorial_laplacian_matrix
 
@@ -76,3 +78,5 @@ Spectrum
    bethe_hessian_spectrum
    normalized_laplacian_spectrum
    modularity_spectrum
+   magnetic_spectrum
+   normalized_magnetic_spectrum
