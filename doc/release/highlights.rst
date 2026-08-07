@@ -5,7 +5,8 @@ Highlights for release 3.7
 
 - Leiden based community detection algorithms are now supported via
   `leiden_communities` and `leiden_partitions`. This provides an
-  alternative, often improved, version of the Louvain functions.
+  alternative, often improved, community detection algorithm compared
+  to the Louvain functions.
 
 - The isomorphism checking suite of tools has been upgraded. The
   ISMAGS symmetry aware isomorphism and subgraph isomorphism checking
