@@ -490,47 +490,22 @@ def test_three_node(e1, e2, isomorphic, subgraph_is_isomorphic):
     assert gm.subgraph_is_isomorphic() == subgraph_is_isomorphic
 
 
-def test_graph_monomorphism_unconnected_match():
-    G = nx.Graph()
-    G.add_node(1)
-    G.add_node(2)
-    G.add_node(3)
-    G.add_node(4)
-    G.add_node(5)
-    G.add_edge(1, 2, label="A")
-    G.add_edge(2, 3, label="B")
-    G.add_edge(4, 5, label="C")
+@pytest.mark.parametrize("nxGraph", [nx.Graph, nx.DiGraph])
+def test_graph_exactly_one_of_T1_or_T2_empty(nxGraph):
+    G = nx.empty_graph(range(1, 6), create_using=nxGraph)
+    G.add_weighted_edges_from([(1, 2, "A"), (2, 3, "B"), (4, 5, "C")], weight="label")
 
-    SG = nx.Graph()
-    SG.add_node(7)
-    SG.add_node(8)
-    SG.add_node(9)
-    SG.add_node(10)
-    SG.add_edge(7, 8, label="A")
-    SG.add_edge(9, 10, label="C")
+    SG = nx.empty_graph(range(7, 11), create_using=nxGraph)
+    SG.add_weighted_edges_from([(7, 8, "A"), (9, 10, "C")], weight="label")
 
-    gm = iso.GraphMatcher(G, SG, edge_match=iso.categorical_edge_match("label", None))
+    matcher = iso.DiGraphMatcher if G.is_directed() else iso.GraphMatcher
+    gm = matcher(G, SG, edge_match=iso.categorical_edge_match("label", None))
     assert gm.subgraph_is_monomorphic()
+    assert gm.subgraph_is_isomorphic()
+    assert not gm.is_isomorphic()
 
-
-def test_digraph_monomorphism_unconnected_match():
-    G = nx.DiGraph()
-    G.add_node(1)
-    G.add_node(2)
-    G.add_node(3)
-    G.add_node(4)
-    G.add_node(5)
-    G.add_edge(1, 2, label="A")
-    G.add_edge(2, 3, label="B")
-    G.add_edge(4, 5, label="C")
-
-    SG = nx.DiGraph()
-    SG.add_node(7)
-    SG.add_node(8)
-    SG.add_node(9)
-    SG.add_node(10)
-    SG.add_edge(7, 8, label="A")
-    SG.add_edge(9, 10, label="C")
-
-    gm = iso.DiGraphMatcher(G, SG, edge_match=iso.categorical_edge_match("label", None))
-    assert gm.subgraph_is_monomorphic()
+    # reverse G, SG to check when T1 not empty and T2 is. Should bail.
+    gm = matcher(SG, G, edge_match=iso.categorical_edge_match("label", None))
+    assert not gm.subgraph_is_monomorphic()
+    assert not gm.subgraph_is_isomorphic()
+    assert not gm.is_isomorphic()
