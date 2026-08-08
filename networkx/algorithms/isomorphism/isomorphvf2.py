@@ -245,19 +245,16 @@ class GraphMatcher:
             for node_1 in T1_inout:
                 yield node_1, node_2
 
-        else:
-            # If T1_inout and T2_inout were both empty....
+        elif not T2_inout and (not T1_inout or self.test != "graph"):
+            # both Ts are empty or (T2_inout empty and want subgraphs). Get others!
             # P(s) = (N_1 - M_1) x {min (N_2 - M_2)}
-            # if not (T1_inout or T2_inout):  # as suggested by  [2], incorrect
-            # if 1:  # as inferred from [1], correct
-            if not T2_inout:
-                # First we determine the candidate node for G2
-                other_node = min(G2_nodes - set(self.core_2), key=min_key)
-                for node in self.G1:
-                    if node not in self.core_1:
-                        yield node, other_node
-
-        # For all other cases, we don't have any candidate pairs.
+            # First we determine the candidate node for G2
+            other_node = min(G2_nodes - set(self.core_2), key=min_key)
+            for node in self.G1:
+                if node not in self.core_1:
+                    yield node, other_node
+        else:
+            return  # no pairs available for this problem type. Can't be morphic.
 
     def initialize(self):
         """Reinitializes the state of the algorithm.
@@ -665,11 +662,8 @@ class DiGraphMatcher(GraphMatcher):
             for node_1 in T1_out:
                 yield node_1, node_2
 
-        # If T1_out and T2_out were both empty....
-        # We compute the in-terminal sets.
-
-        # elif not (T1_out or T2_out):   # as suggested by [2], incorrect
-        else:  # as suggested by [1], correct
+        elif not T2_out and (not T1_out or self.test != "graph"):
+            # both T_outs are empty or (T2_out empty and want subgraphs). Check T_in!
             T1_in = [node for node in self.in_1 if node not in self.core_1]
             T2_in = [node for node in self.in_2 if node not in self.core_2]
 
@@ -680,18 +674,17 @@ class DiGraphMatcher(GraphMatcher):
                 for node_1 in T1_in:
                     yield node_1, node_2
 
-            # If all terminal sets are empty...
-            # P(s) = (N_1 - M_1) x {min (N_2 - M_2)}
-
-            # elif not (T1_in or T2_in):   # as suggested by  [2], incorrect
-            # else:  # as inferred from [1], correct
-            elif not (T2_out or T2_in):
+            elif not T2_in and (not T1_in or self.test != "graph"):
+                # all 4 Ts are empty or (T2s are empty and want subgraph). Get others!
+                # P(s) = (N_1 - M_1) x {min (N_2 - M_2)}
                 node_2 = min(G2_nodes - set(self.core_2), key=min_key)
                 for node_1 in G1_nodes:
                     if node_1 not in self.core_1:
                         yield node_1, node_2
-
-        # For all other cases, we don't have any candidate pairs.
+            else:
+                return  # no pairs available for this problem type. Can't be morphic.
+        else:
+            return  # no pairs available for this problem type. Can't be morphic.
 
     def initialize(self):
         """Reinitializes the state of the algorithm.
