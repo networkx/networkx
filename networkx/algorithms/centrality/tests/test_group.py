@@ -76,6 +76,62 @@ class TestGroupBetweennessCentrality:
         b_answer = 0.0
         assert b == b_answer
 
+    def test_group_betweenness_single_node_directed_not_strongly_connected(self):
+        """
+        A single-node group equals that node's betweenness centrality, also on
+        a directed graph that is not strongly connected. See gh-8559.
+        """
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        expected = nx.betweenness_centrality(G, normalized=False, endpoints=False)
+
+        for v in G:
+            b = nx.group_betweenness_centrality(
+                G, {v}, normalized=False, endpoints=False
+            )
+            assert b == expected[v]
+            assert b >= 0
+
+    def test_group_betweenness_single_node_directed_disconnected(self):
+        """
+        Same identity on a directed graph with an unreachable component.
+        """
+        G = nx.DiGraph([(0, 1), (1, 2), (3, 4)])
+        expected = nx.betweenness_centrality(G, normalized=False, endpoints=False)
+
+        for v in G:
+            b = nx.group_betweenness_centrality(
+                G, {v}, normalized=False, endpoints=False
+            )
+            assert b == expected[v]
+
+    def test_group_betweenness_directed_unreachable_group_pair(self):
+        """
+        A group whose nodes cannot all reach each other must not raise. See
+        gh-8559, where the distance lookup assumed symmetric reachability.
+        """
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+
+        # 0 is not reachable from 2, so D[2] has no entry for 0
+        nx.group_betweenness_centrality(G, {0, 2}, normalized=False, endpoints=False)
+
+    def test_group_betweenness_endpoints_directed(self):
+        """
+        With endpoints, a single-node group counts every reachable ordered pair
+        it takes part in, in either direction.
+        """
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+
+        # node 0 is the source of 0->1, 0->2, 0->3 and the target of none
+        assert (
+            nx.group_betweenness_centrality(G, {0}, normalized=False, endpoints=True)
+            == 3.0
+        )
+        # node 3 is the target of 0->3, 1->3, 2->3 and the source of none
+        assert (
+            nx.group_betweenness_centrality(G, {3}, normalized=False, endpoints=True)
+            == 3.0
+        )
+
     def test_group_betweenness_node_not_in_graph(self):
         """
         Node(s) in C not in graph, raises NodeNotFound exception
