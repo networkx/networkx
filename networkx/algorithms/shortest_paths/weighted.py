@@ -2460,7 +2460,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def johnson(G, weight="weight"):
+def johnson(G, weight="weight", dist=None, pred=None, paths=None):
     r"""Uses Johnson's Algorithm to compute shortest paths.
 
     Johnson's Algorithm finds a shortest path between each pair of
@@ -2483,10 +2483,20 @@ def johnson(G, weight="weight"):
         dictionary of edge attributes for that edge. The function must
         return a number.
 
+    paths : dict or None (default=None)
+        If a dict is provided, it will be filled with shortest paths, keyed by source and target.
+    pred : dict or None (default=None)
+        If a dict is provided, it will be filled with predecessors, keyed by source and target.
+    dist : dict or None (default=None)
+        If a dict is provided, it will be filled with distances, keyed by source and target.
+        If None, a new dict will be created and returned.
+
     Returns
     -------
-    distance : dictionary
-        Dictionary, keyed by source and target, of shortest paths.
+    If all of (paths, pred, dist) are None:
+        Returns dict of paths (backward compatibility).
+    Else:
+        Returns dict of distances.
 
     Examples
     --------
@@ -2522,12 +2532,17 @@ def johnson(G, weight="weight"):
     all_pairs_bellman_ford_path_length
 
     """
-    dist = {v: 0 for v in G}
-    pred = {v: [] for v in G}
+    if dist is None and pred is None and paths is None:
+        paths = {}
+    elif dist is None:
+        dist = {}
+
     weight = _weight_function(G, weight)
 
     # Calculate distance of shortest paths
-    dist_bellman = _bellman_ford(G, list(G), weight, pred=pred, dist=dist)
+    dist_bellman = _bellman_ford(
+        G, list(G), weight, pred={v: [] for v in G}, dist={v: 0 for v in G}
+    )
 
     # Update the weight function to take into account the Bellman--Ford
     # relaxation distances.
@@ -2535,8 +2550,25 @@ def johnson(G, weight="weight"):
         return weight(u, v, d) + dist_bellman[u] - dist_bellman[v]
 
     def dist_path(v):
-        paths = {v: [v]}
-        _dijkstra(G, v, new_weight, paths=paths)
-        return paths
+        path_from_v = None
+        if paths is not None:
+            paths[v] = {v: [v]}
+            path_from_v = paths[v]
+        pred_from_v = None
+        if pred is not None:
+            pred[v] = {v: []}
+            pred_from_v = pred[v]
+        dist_from_v = _dijkstra(G, v, new_weight, paths=path_from_v, pred=pred_from_v)
+        if dist is not None:
+            dist[v] = {
+                target: value - dist_bellman[v] + dist_bellman[target]
+                for target, value in dist_from_v.items()
+            }
 
-    return {v: dist_path(v) for v in G}
+    for v in G:
+        dist_path(v)
+
+    if dist is None:
+        return paths
+    else:
+        return dist
