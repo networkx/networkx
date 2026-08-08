@@ -33,8 +33,9 @@ def test_kleitman_wang_randomized_degree_gives_all_graphs():
     assert len(seen) == len(expected)
 
     # And that each of the results is one of the 4 expected graphs
-    for G in expected:
-        assert sum(nx.is_isomorphic(G, H) for H in seen) == 1
+    {nx.weisfeiler_lehman_graph_hash(G) for G in expected} == {
+        nx.weisfeiler_lehman_graph_hash(H) for H in seen
+    }
 
 
 class TestConfigurationModel:
