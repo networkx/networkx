@@ -456,7 +456,8 @@ def havel_hakimi_graph(deg_sequence, create_using=None, *, randomize=False, seed
         Graph type to create. If graph instance, then cleared before populated.
         Directed graphs are not allowed.
     randomize: bool (default=False)
-        When True, randomize the source, i.e. use the Kleitman-Wang generalization.
+        When True, randomize the graph construction (source choice and
+        tie-breaking among targets), i.e. use the Kleitman-Wang generalization.
     seed: integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -487,7 +488,8 @@ def havel_hakimi_graph(deg_sequence, create_using=None, *, randomize=False, seed
 
     The randomize mode implements that generalization by selecting a source node
     at random at each step, and then connecting it to the nodes with the highest
-    remaining degrees.
+    remaining degrees. Ties among targets of equal remaining degree are broken
+    uniformly at random.
 
     References
     ----------
@@ -520,11 +522,19 @@ def havel_hakimi_graph(deg_sequence, create_using=None, *, randomize=False, seed
     # Successively reduce degree sequence by removing a source degree
     while n > 0:
         if randomize:
-            # Create a list from all remaining non-zero nodes
-            not_empty = [d for d in range(dmax + 1) if num_degs[d]]
-            # Pick a random source node and recalculate dmax
-            source_deg = seed.choice(not_empty)
-            source = num_degs[source_deg].pop()
+            # Select the source uniformly at random from the n remaining nodes.
+            # Use the chosen index r to walk the buckets and find which it
+            # belongs to.
+            r = seed.randrange(n)
+            for source_deg in range(dmax + 1):
+                bucket_len = len(num_degs[source_deg])
+                if r < bucket_len:
+                    break
+                r -= bucket_len
+            # Move the chosen node to the end of its bucket so pop() removes it
+            src_bucket = num_degs[source_deg]
+            src_bucket[r], src_bucket[-1] = src_bucket[-1], src_bucket[r]
+            source = src_bucket.pop()
             while dmax > 0 and len(num_degs[dmax]) == 0:
                 dmax -= 1
         else:  # "regular" Havel-Hakimi
@@ -547,7 +557,15 @@ def havel_hakimi_graph(deg_sequence, create_using=None, *, randomize=False, seed
         for i in range(source_deg):
             while len(num_degs[k]) == 0:
                 k -= 1
-            target = num_degs[k].pop()
+            trgt_bucket = num_degs[k]
+            if randomize:
+                # Pick a random bucket index and move that element to the
+                # end of the bucket list.
+                # This breaks deterministic LIFO pops which prevent the
+                # realization of all possible graphs.
+                j = seed.randrange(len(trgt_bucket))
+                trgt_bucket[j], trgt_bucket[-1] = trgt_bucket[-1], trgt_bucket[j]
+            target = trgt_bucket.pop()
             G.add_edge(source, target)
             n -= 1
             if k > 1:
