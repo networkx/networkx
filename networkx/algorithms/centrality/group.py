@@ -146,11 +146,15 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                     if not (
                         sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[v][y] == 0
                     ):
-                        if D[x][v] == D[x][y] + D[y][v]:
+                        # The sigma checks above only establish that y, v are
+                        # reachable from x and y from v. On a directed graph
+                        # reachability is not symmetric, so D[y][v] and D[v][x]
+                        # may be missing and have to be tested separately.
+                        if v in D[y] and D[x][v] == D[x][y] + D[y][v]:
                             dxyv = sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
                         if D[x][y] == D[x][v] + D[v][y]:
                             dxvy = sigma_m[x][v] * sigma_m[v][y] / sigma_m[x][y]
-                        if D[v][y] == D[v][x] + D[x][y]:
+                        if x in D[v] and D[v][y] == D[v][x] + D[x][y]:
                             dvxy = sigma_m[v][x] * sigma[x][y] / sigma[v][y]
                     sigma_m_v[x][y] = sigma_m[x][y] * (1 - dxvy)
                     PB_m_v[x][y] = PB_m[x][y] - PB_m[x][y] * dxvy
@@ -164,23 +168,21 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
         # endpoints
         v, c = len(G), len(group)
         if not endpoints:
+            # Subtract the pairs that were counted only because a group node
+            # was one of their endpoints: the ordered pairs (s, t), s != t,
+            # with t reachable from s and at least one of s, t in the group.
+            # Counting from the source side for group nodes and from the
+            # target side otherwise covers each such pair exactly once, and
+            # keeps source and target reachability apart -- on a directed
+            # graph "t is reachable from s" does not imply the reverse.
+            # For a (strongly) connected graph this comes to the familiar
+            # c * (2 * v - c - 1).
             scale = 0
-            # if the graph is connected then subtract the endpoints from
-            # the count for all the nodes in the graph. else count how many
-            # nodes are connected to the group's nodes and subtract that.
-            if nx.is_directed(G):
-                if nx.is_strongly_connected(G):
-                    scale = c * (2 * v - c - 1)
-            elif nx.is_connected(G):
-                scale = c * (2 * v - c - 1)
-            if scale == 0:
-                for group_node1 in group:
-                    for node in D[group_node1]:
-                        if node != group_node1:
-                            if node in group:
-                                scale += 1
-                            else:
-                                scale += 2
+            for node in G:
+                if node in group:
+                    scale += len(D[node]) - 1
+                else:
+                    scale += sum(1 for gn in group if gn != node and gn in D[node])
             GBC_group -= scale
 
         # normalized
