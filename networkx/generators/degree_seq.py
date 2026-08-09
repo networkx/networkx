@@ -491,6 +491,10 @@ def havel_hakimi_graph(deg_sequence, create_using=None, *, randomize=False, seed
     remaining degrees. Ties among targets of equal remaining degree are broken
     uniformly at random.
 
+    In randomize mode every simple graph realizing the given degree sequence
+    is reachable, but they are not sampled uniformly. Kleitman-Wang does not
+    guarantee a uniform distribution over realizations.
+
     References
     ----------
     .. [1] Hakimi S., On Realizability of a Set of Integers as
