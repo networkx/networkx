@@ -196,7 +196,7 @@ def normalized_magnetic_spectrum(G, q=0.25, weight="weight"):
     import scipy as sp
 
     return sp.linalg.eigh(
-        nx.normalized_magnetic_laplacian(G, q=q, weight=weight).todense(),
+        nx.magnetic_laplacian(G, normalized=True, q=q, weight=weight).todense(),
         eigvals_only=True,
     )
 
