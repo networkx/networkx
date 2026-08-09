@@ -76,21 +76,21 @@ def _undirected_flow(G, weight):
     appears once.
     """
     self_loop = {}
-    for u, v, w in G.edges(data=weight, default=1):
+    for u, v, wt in G.edges(data=weight, default=1):
         if u == v:
-            self_loop[u] = self_loop.get(u, 0.0) + w
+            self_loop[u] = self_loop.get(u, 0.0) + wt
     # 2m with self-loops counted once (Infomap's undirected normalization).
-    total = 2 * G.size(weight=weight) - sum(self_loop.values())
-    if total == 0:  # no edges (or only zero-weight edges), no flow
+    total_strength = 2 * G.size(weight=weight) - sum(self_loop.values())
+    if total_strength == 0:  # no edges (or only zero-weight edges), no flow
         return {node: 0.0 for node in G}, []
     visit_rate = {
-        node: (strength - self_loop.get(node, 0.0)) / total
+        node: (strength - self_loop.get(node, 0.0)) / total_strength
         for node, strength in G.degree(weight=weight)
     }
 
     link_flows = []
-    for u, v, w in G.edges(data=weight, default=1):
-        flow = w / total
+    for u, v, wt in G.edges(data=weight, default=1):
+        flow = wt / total_strength
         link_flows.append((u, v, flow))
         if u != v:
             link_flows.append((v, u, flow))
@@ -139,20 +139,20 @@ def _directed_flow(G, weight, teleportation_probability, tol=1e-13):
     sum_node_rank = 1 - sum(pi[u] for u in dangling)
     visit_rate = {u: 0.0 for u in nodes}
     link_flows = []
-    for u, v, w in G.edges(data=weight, default=1):
+    for u, v, wt in G.edges(data=weight, default=1):
         # A dangling source (zero out-strength) redistributes its flow purely by
         # teleportation, already captured in ``pi``; its links carry no recorded
         # flow, so skip them -- and avoid dividing by its zero out-strength.
         if out_strength[u] == 0:
             continue
-        flow = pi[u] * w / out_strength[u] / sum_node_rank
+        flow = pi[u] * wt / out_strength[u] / sum_node_rank
         visit_rate[v] += flow
         link_flows.append((u, v, flow))
     return visit_rate, link_flows
 
 
 @nx._dispatchable(edge_attrs="weight")
-def map_equation(G, communities, weight="weight", teleportation_probability=0.15):
+def map_equation(G, communities, *, weight="weight", teleportation_probability=0.15):
     r"""Return the two-level map equation codelength of a partition of `G`.
 
     The map equation [1]_ is the expected per-step description length, in bits,
@@ -249,8 +249,8 @@ def _flow(G, weight="weight", teleportation_probability=0.15):
     # Flow is a probability distribution, so weights must be finite and
     # non-negative; reject ill-defined inputs instead of returning a
     # clean-looking but meaningless codelength.
-    for _, _, w in G.edges(data=weight, default=1):
-        if not isfinite(w) or w < 0:
+    for _, _, wt in G.edges(data=weight, default=1):
+        if not isfinite(wt) or wt < 0:
             raise ValueError("edge weights must be finite and non-negative")
     if G.is_directed():
         return _directed_flow(G, weight, teleportation_probability)
@@ -281,27 +281,27 @@ def _codelength(visit_rate, link_flows, module_of):
     ``link_flows`` carries both directions, so they coincide. Module ids may be
     any non-negative integers; empty modules contribute nothing.
     """
-    n_modules = (max(module_of.values()) + 1) if module_of else 0
+    num_modules = (max(module_of.values()) + 1) if module_of else 0
 
     # p_i: total visit rate of each module (entropy of node names lives here).
-    module_visit = [0.0] * n_modules
-    for node, visits in visit_rate.items():
-        module_visit[module_of[node]] += visits
+    module_visit = [0.0] * num_modules
+    for node, rate in visit_rate.items():
+        module_visit[module_of[node]] += rate
 
     # e_i / x_i: flow entering / leaving each module. Only boundary-crossing
     # link flow counts; flow that stays inside a module is never coded by the
     # index codebook.
-    module_enter = [0.0] * n_modules
-    module_exit = [0.0] * n_modules
+    module_enter = [0.0] * num_modules
+    module_exit = [0.0] * num_modules
     for source, target, flow in link_flows:
-        src_module, tgt_module = module_of[source], module_of[target]
-        if src_module != tgt_module:
-            module_exit[src_module] += flow
-            module_enter[tgt_module] += flow
+        source_module, target_module = module_of[source], module_of[target]
+        if source_module != target_module:
+            module_exit[source_module] += flow
+            module_enter[target_module] += flow
 
     total_switching = sum(module_enter)  # Q; equals sum(module_exit)
-    index_term = _plogp(total_switching) - sum(_plogp(e) for e in module_enter)
-    node_term = -sum(_plogp(p) for p in visit_rate.values())
+    index_term = _plogp(total_switching) - sum(_plogp(rate) for rate in module_enter)
+    node_term = -sum(_plogp(rate) for rate in visit_rate.values())
     module_term = sum(
         _plogp(exit_rate + visit) - _plogp(exit_rate)
         for exit_rate, visit in zip(module_exit, module_visit)

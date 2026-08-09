@@ -41,28 +41,28 @@ __all__ = ["infomap_communities", "infomap_partitions"]
 # Tuning constants for the search: how many sweeps each loop runs before giving
 # up, and how much a move (or a whole pass) must lower the codelength to count.
 _CORE_LOOP_LIMIT = 10
-_AGGREGATION_LOOP_LIMIT = 20
+_AGGREGATION_CORE_LOOP_LIMIT = 20
 _MIN_IMPROVEMENT = 1e-10
-_MIN_REL_TUNE_IMPROVEMENT = 1e-5
+_MIN_RELATIVE_TUNE_IMPROVEMENT = 1e-5
 _MIN_SINGLE_NODE_IMPROVEMENT = 1e-16
 _NUM_RANDOM_MOVES = 5
 _MAX_DEGREE_FOR_RANDOM_MOVES = 2  # only low-degree nodes get random targets
 
 
-def _module_codelength(enter, exit_, used):
+def _module_codelength(enter_flow, exit_flow, usage):
     """One module's contribution to the two-level codelength: minus its enter
-    and exit codebook terms, plus its module-usage term (``used = exit + visit
-    rate``). The whole codelength sums this over every module and adds the index
-    term ``_plogp(Q)`` and a constant node term (see
+    and exit codebook terms, plus its module-usage term (``usage = exit flow +
+    visit rate``). The whole codelength sums this over every module and adds the
+    index term ``_plogp(Q)`` and a constant node term (see
     :meth:`_CoreOptimizer.codelength`)."""
-    return _plogp(used) - _plogp(enter) - _plogp(exit_)
+    return _plogp(usage) - _plogp(enter_flow) - _plogp(exit_flow)
 
 
-def _cross_flow(entry):
-    """Total boundary-crossing flow (``exit + enter``) of a
+def _cross_flow(shared):
+    """Total boundary-crossing flow (``exit + enter``) of one
     :meth:`_CoreOptimizer._shared_flows` entry; an absent entry means the node
     shares no flow with that module."""
-    return entry[0] + entry[1] if entry else 0.0
+    return shared[0] + shared[1] if shared else 0.0
 
 
 class _MoveContext(NamedTuple):
@@ -75,7 +75,7 @@ class _MoveContext(NamedTuple):
     node_flow: float
     old_cross: float  # flow the node shares with its current module
     enter_flow: float  # total inter-module (index) flow, Q
-    p_enter_flow: float  # _plogp(enter_flow), cached to skip it per candidate
+    enter_flow_log: float  # _plogp(enter_flow), cached to skip it per candidate
     old_delta: float  # change in the current module's codelength as the node leaves
 
 
@@ -102,31 +102,31 @@ class _CoreOptimizer:
 
         # Per node: its out-/in-link flows and their totals (its own exit/enter
         # rate). Self-links never cross a boundary, so drop them here.
-        self.out = {u: {} for u in flow}
-        self.in_ = {u: {} for u in flow}
+        self.out_links = {u: {} for u in flow}
+        self.in_links = {u: {} for u in flow}
         for u, v, f in links:
             if u == v:
                 continue
-            self.out[u][v] = self.out[u].get(v, 0.0) + f
-            self.in_[v][u] = self.in_[v].get(u, 0.0) + f
-        self.node_enter = {u: sum(self.in_[u].values()) for u in flow}
-        self.node_exit = {u: sum(self.out[u].values()) for u in flow}
+            self.out_links[u][v] = self.out_links[u].get(v, 0.0) + f
+            self.in_links[v][u] = self.in_links[v].get(u, 0.0) + f
+        self.node_enter = {u: sum(self.in_links[u].values()) for u in flow}
+        self.node_exit = {u: sum(self.out_links[u].values()) for u in flow}
         self.node_log = sum(_plogp(flow[u]) for u in flow)  # constant node term
 
-        # Per module: total flow, boundary-crossing enter/exit flow, and size.
+        # Per module: total flow, boundary-crossing enter/exit flow, member count.
         self.module_of = dict(module_of)
         self.module_flow = defaultdict(float)
         self.module_enter = defaultdict(float)
         self.module_exit = defaultdict(float)
-        self.size = Counter()
+        self.module_members = Counter()
         for u in flow:
             m = self.module_of[u]
             self.module_flow[m] += flow[u]
-            self.size[m] += 1
-            for v, f in self.out[u].items():
+            self.module_members[m] += 1
+            for v, f in self.out_links[u].items():
                 if self.module_of[v] != m:
                     self.module_exit[m] += f
-            for v, f in self.in_[u].items():
+            for v, f in self.in_links[u].items():
                 if self.module_of[v] != m:
                     self.module_enter[m] += f
 
@@ -142,7 +142,7 @@ class _CoreOptimizer:
         # A pool of emptied module ids to reuse for "split into a new module";
         # every id in `module_of` starts with a member, so the pool starts empty.
         self._next_module = (max(self.module_of.values()) + 1) if self.module_of else 0
-        self.empty = []
+        self.empty_modules = []
 
     def codelength(self):
         """The current two-level codelength, the same quantity as
@@ -162,9 +162,9 @@ class _CoreOptimizer:
         """``module -> [exit, enter]``: flow between `node` and each module it
         links to (out-links add to exit, in-links to enter)."""
         shared_flow = defaultdict(lambda: [0.0, 0.0])
-        for v, f in self.out[node].items():
+        for v, f in self.out_links[node].items():
             shared_flow[self.module_of[v]][0] += f
-        for v, f in self.in_[node].items():
+        for v, f in self.in_links[node].items():
             shared_flow[self.module_of[v]][1] += f
         return shared_flow
 
@@ -178,16 +178,16 @@ class _CoreOptimizer:
         node_enter = self.node_enter[node]
         node_exit = self.node_exit[node]
         node_flow = self.flow[node]
-        enter = self.module_enter[old]
-        exit_ = self.module_exit[old]
-        used = exit_ + self.module_flow[old]
+        old_enter = self.module_enter[old]
+        old_exit = self.module_exit[old]
+        old_usage = old_exit + self.module_flow[old]
         # `old`'s codelength before and after `node` leaves it: it sheds the
         # node's enter/exit/flow, and the links they shared become crossing.
-        old_before = _module_codelength(enter, exit_, used)
+        old_before = _module_codelength(old_enter, old_exit, old_usage)
         old_after = _module_codelength(
-            enter - node_enter + old_cross,
-            exit_ - node_exit + old_cross,
-            used - node_exit - node_flow + old_cross,
+            old_enter - node_enter + old_cross,
+            old_exit - node_exit + old_cross,
+            old_usage - node_exit - node_flow + old_cross,
         )
         # `self.enter_flow` and the module terms are stable during the scan (no
         # move is applied until a winner is chosen), so capturing them is safe.
@@ -211,21 +211,21 @@ class _CoreOptimizer:
         the flow the node shares with `new` (``exit + enter``); joining `new`
         makes those links internal and brings the node's own flow with it.
         """
-        enter = self.module_enter[new]
-        exit_ = self.module_exit[new]
-        used = exit_ + self.module_flow[new]
-        new_before = _module_codelength(enter, exit_, used)
+        new_enter = self.module_enter[new]
+        new_exit = self.module_exit[new]
+        new_usage = new_exit + self.module_flow[new]
+        new_before = _module_codelength(new_enter, new_exit, new_usage)
         new_after = _module_codelength(
-            enter + ctx.node_enter - new_cross,
-            exit_ + ctx.node_exit - new_cross,
-            used + ctx.node_exit + ctx.node_flow - new_cross,
+            new_enter + ctx.node_enter - new_cross,
+            new_exit + ctx.node_exit - new_cross,
+            new_usage + ctx.node_exit + ctx.node_flow - new_cross,
         )
         # Index codebook: only the total switching rate Q shifts. The node's
         # shared flow with `old` was internal and becomes crossing (+old_cross);
         # with `new` it was crossing and becomes internal (-new_cross); its flow
         # to all *other* modules stays crossing and cancels.
         q = ctx.enter_flow + ctx.old_cross - new_cross
-        delta_index = _plogp(q) - ctx.p_enter_flow
+        delta_index = _plogp(q) - ctx.enter_flow_log
         return delta_index + ctx.old_delta + (new_after - new_before)
 
     def _apply(self, node, new, shared_flow):
@@ -265,11 +265,11 @@ class _CoreOptimizer:
         self.flow_log += _plogp(self.module_exit[old] + self.module_flow[old]) + _plogp(
             self.module_exit[new] + self.module_flow[new]
         )
-        self.size[old] -= 1
-        self.size[new] += 1
+        self.module_members[old] -= 1
+        self.module_members[new] += 1
         self.module_of[node] = new
 
-    def run(self, first_loop, loop_limit):
+    def optimize(self, first_loop, loop_limit):
         """Sweep the nodes (in random order) up to `loop_limit` times, moving
         each to the module that lowers the codelength most, until a sweep stops
         improving the codelength. Returns the resulting codelength. With
@@ -283,7 +283,7 @@ class _CoreOptimizer:
             self.seed.shuffle(nodes)
             for node in nodes:
                 current = self.module_of[node]
-                if first_loop and self.size[current] > 1:
+                if first_loop and self.module_members[current] > 1:
                     continue
 
                 # Candidate modules: the node's neighbors; for low-degree nodes, a
@@ -293,15 +293,19 @@ class _CoreOptimizer:
                 shared_flow = self._shared_flows(node)
                 candidates = set(shared_flow)
                 if (
-                    len(self.out[node]) + len(self.in_[node])
+                    len(self.out_links[node]) + len(self.in_links[node])
                     <= _MAX_DEGREE_FOR_RANDOM_MOVES
                 ):
                     for _ in range(_NUM_RANDOM_MOVES):
                         candidates.add(self.module_of[self.seed.choice(nodes)])
                 candidates.discard(current)
                 empty_module = None
-                if self.size[current] > 1:
-                    empty_module = self.empty[-1] if self.empty else self._next_module
+                if self.module_members[current] > 1:
+                    empty_module = (
+                        self.empty_modules[-1]
+                        if self.empty_modules
+                        else self._next_module
+                    )
                     candidates.add(empty_module)
                 if not candidates:
                     continue
@@ -313,9 +317,9 @@ class _CoreOptimizer:
                 # Track which candidate the node sends the most flow to; ties in
                 # codelength are broken toward it (see below). Seed it with the
                 # current module so a move wins the tie only by being more cohesive.
-                strong_module = current
-                strong_exit = old_entry[0] if old_entry else 0.0
-                strong_delta = 0.0
+                strongest_module = current
+                strongest_exit = old_entry[0] if old_entry else 0.0
+                strongest_delta = 0.0
                 for module in candidates:
                     entry = shared_flow.get(module)
                     new_cross = _cross_flow(entry)
@@ -323,8 +327,8 @@ class _CoreOptimizer:
                     if delta < best_delta - _MIN_SINGLE_NODE_IMPROVEMENT:
                         best_delta, best_module = delta, module
                     exit_to = entry[0] if entry else 0.0
-                    if exit_to > strong_exit:
-                        strong_exit, strong_module, strong_delta = (
+                    if exit_to > strongest_exit:
+                        strongest_exit, strongest_module, strongest_delta = (
                             exit_to,
                             module,
                             delta,
@@ -334,46 +338,47 @@ class _CoreOptimizer:
                 # prefer the module the node sends the most exit flow to. It is
                 # free now and usually compresses better on later sweeps.
                 if (
-                    strong_module != best_module
-                    and strong_delta <= best_delta + _MIN_SINGLE_NODE_IMPROVEMENT
+                    strongest_module != best_module
+                    and strongest_delta <= best_delta + _MIN_SINGLE_NODE_IMPROVEMENT
                 ):
-                    best_module = strong_module
+                    best_module = strongest_module
                 if best_module == current:
                     continue
 
                 if best_module == empty_module:
-                    if self.empty:
-                        self.empty.pop()
+                    if self.empty_modules:
+                        self.empty_modules.pop()
                     else:
                         self._next_module += 1
                 # Neighbors of `node` still in `current`, taken before the move
                 # since `_apply` rewrites `module_of`. Used below to rescue a node
                 # the move would otherwise leave stranded.
                 linked_in_old = [
-                    w
-                    for w in set(self.out[node]) | set(self.in_[node])
-                    if self.module_of[w] == current
+                    neighbor
+                    for neighbor in set(self.out_links[node]) | set(self.in_links[node])
+                    if self.module_of[neighbor] == current
                 ]
                 self._apply(node, best_module, shared_flow)
                 num_moved += 1
-                if self.size[current] == 0:
-                    self.empty.append(current)
-                elif self.size[current] == 1 and len(linked_in_old) == 1:
+                if self.module_members[current] == 0:
+                    self.empty_modules.append(current)
+                elif self.module_members[current] == 1 and len(linked_in_old) == 1:
                     leftover = linked_in_old[0]
                     # A leftover linked to the mover by a single link is about to
                     # sit alone with no internal flow, costing index codebook for
                     # nothing, so move it along too. A directed reciprocal pair (a
                     # link each way) keeps flow between the two, so leave it.
-                    n_links = (
-                        (leftover in self.out[node]) + (leftover in self.in_[node])
+                    num_links = (
+                        (leftover in self.out_links[node])
+                        + (leftover in self.in_links[node])
                         if self.directed
                         else 1
                     )
-                    if n_links == 1:
+                    if num_links == 1:
                         self._apply(leftover, best_module, self._shared_flows(leftover))
                         num_moved += 1
-                        if self.size[current] == 0:
-                            self.empty.append(current)
+                        if self.module_members[current] == 0:
+                            self.empty_modules.append(current)
             # Stop once a whole sweep no longer lowers the codelength enough.
             # Besides saving sweeps, this bounds the neutral lateral moves the
             # strongest-connected tie-break can otherwise keep making.
@@ -389,7 +394,9 @@ def _core_loop(
 ):
     """Run the stateful core optimizer on `module_of` (mutated in place)."""
     optimizer = _CoreOptimizer(flow, links, module_of, seed, directed)
-    optimizer.run(first_loop, _CORE_LOOP_LIMIT if loop_limit is None else loop_limit)
+    optimizer.optimize(
+        first_loop, _CORE_LOOP_LIMIT if loop_limit is None else loop_limit
+    )
     module_of.clear()
     module_of.update(optimizer.module_of)
 
@@ -447,7 +454,7 @@ def _find_top_modules(flow, links, module_of, seed, directed, first_loop=False):
             seed,
             directed,
             first_loop=(first_loop and level == 0),
-            loop_limit=_CORE_LOOP_LIMIT if level == 0 else _AGGREGATION_LOOP_LIMIT,
+            loop_limit=_CORE_LOOP_LIMIT if level == 0 else _AGGREGATION_CORE_LOOP_LIMIT,
         )
         if len(set(super_module.values())) == len(super_flow):
             break  # core loop merged nothing -> converged
@@ -516,7 +523,7 @@ def _partition(flow, links, seed, directed, first_loop=True):
     super- and sub-networks (the index level and refinement) pass False, matching
     the C++ Infomap, which applies this guard only in the top-level search of
     the full network."""
-    one_level = _codelength(flow, links, dict.fromkeys(flow, 0))
+    one_level_codelength = _codelength(flow, links, dict.fromkeys(flow, 0))
 
     module_of = _find_top_modules(
         flow,
@@ -542,7 +549,8 @@ def _partition(flow, links, seed, directed, first_loop=True):
         new_codelength = _codelength(flow, links, module_of)
         is_improvement = (
             new_codelength <= old_codelength - _MIN_IMPROVEMENT
-            and new_codelength < old_codelength - one_level * _MIN_REL_TUNE_IMPROVEMENT
+            and new_codelength
+            < old_codelength - one_level_codelength * _MIN_RELATIVE_TUNE_IMPROVEMENT
         )
         if not is_improvement:
             if coarse_tuned:
@@ -552,7 +560,7 @@ def _partition(flow, links, seed, directed, first_loop=True):
         do_fine_tune = not do_fine_tune
 
     # Never do worse than putting everything in one module.
-    if _codelength(flow, links, module_of) > one_level:
+    if _codelength(flow, links, module_of) > one_level_codelength:
         return dict.fromkeys(flow, 0)
     return module_of
 
@@ -572,77 +580,77 @@ def _hierarchical_codelength(flow, links, path):
     # Each module in the tree is identified by a path prefix; record the tree
     # structure (a module's child sub-modules and its directly-held leaf nodes).
     prefixes = set()
-    for p in path.values():
-        for k in range(1, len(p) + 1):
-            prefixes.add(p[:k])
+    for node_path in path.values():
+        for depth in range(1, len(node_path) + 1):
+            prefixes.add(node_path[:depth])
     children = defaultdict(set)
-    for q in prefixes:
-        if len(q) > 1:
-            children[q[:-1]].add(q)
+    for module in prefixes:
+        if len(module) > 1:
+            children[module[:-1]].add(module)
     leaf_nodes = defaultdict(list)
-    for node, p in path.items():
-        leaf_nodes[p].append(node)
+    for node, node_path in path.items():
+        leaf_nodes[node_path].append(node)
 
     # A link u->v crosses the boundary of every module that contains exactly one
     # of its endpoints: those strictly below the level where the two paths first
     # differ. It exits each such module on u's side and enters each on v's side.
-    enter = defaultdict(float)
-    exit_ = defaultdict(float)
+    enter_flow = defaultdict(float)
+    exit_flow = defaultdict(float)
     for u, v, f in links:
-        pu, pv = path[u], path[v]
+        path_u, path_v = path[u], path[v]
         common = 0
-        for a, b in zip(pu, pv):
-            if a != b:
+        for module_u, module_v in zip(path_u, path_v):
+            if module_u != module_v:
                 break
             common += 1
-        for k in range(common + 1, len(pu) + 1):
-            exit_[pu[:k]] += f
-        for k in range(common + 1, len(pv) + 1):
-            enter[pv[:k]] += f
+        for depth in range(common + 1, len(path_u) + 1):
+            exit_flow[path_u[:depth]] += f
+        for depth in range(common + 1, len(path_v) + 1):
+            enter_flow[path_v[:depth]] += f
 
     # Root index codebook: encodes which top module the walk enters.
-    root_children = [q for q in prefixes if len(q) == 1]
-    total = _plogp(sum(enter[q] for q in root_children)) - sum(
-        _plogp(enter[q]) for q in root_children
+    top_modules = [module for module in prefixes if len(module) == 1]
+    codelength = _plogp(sum(enter_flow[module] for module in top_modules)) - sum(
+        _plogp(enter_flow[module]) for module in top_modules
     )
     # Every module pays its own codebook: it codes entering each child (a
     # sub-module's enter flow, or a leaf node's visit rate) and exiting itself.
-    for p in prefixes:
-        child_enter = [enter[c] for c in children.get(p, ())]
-        child_enter += [flow[node] for node in leaf_nodes.get(p, ())]
-        total += (
-            _plogp(exit_[p] + sum(child_enter))
-            - _plogp(exit_[p])
-            - sum(_plogp(c) for c in child_enter)
+    for module in prefixes:
+        child_enter = [enter_flow[child] for child in children.get(module, ())]
+        child_enter += [flow[node] for node in leaf_nodes.get(module, ())]
+        codelength += (
+            _plogp(exit_flow[module] + sum(child_enter))
+            - _plogp(exit_flow[module])
+            - sum(_plogp(rate) for rate in child_enter)
         )
-    return total
+    return codelength
 
 
-def _find_super_modules(flow, links, group_of, seed, directed):
-    """Coarsen the current top-level groups into super-groups. The index-level
+def _find_super_modules(flow, links, module_of, seed, directed):
+    """Coarsen the current top-level modules into super-modules. The index-level
     super-network uses each module's *enter flow* as its node flow, not its
     visit rate: in the hierarchy a module is coded each time the walker
     *enters* it (see :func:`_hierarchical_codelength`), so enter flows are the
-    visit rates of the index level. Returns ``group_id -> super_id`` or None
-    if trivial."""
-    modules = sorted(set(group_of.values()))
+    visit rates of the index level. Returns ``module_id -> super_module_id`` or
+    None if trivial."""
+    modules = sorted(set(module_of.values()))
     if len(modules) <= 2:
         return None
     relabel = {m: i for i, m in enumerate(modules)}
     enter = defaultdict(float)
     super_links = defaultdict(float)
     for u, v, f in links:
-        a, b = group_of[u], group_of[v]
-        if a != b:
-            enter[relabel[b]] += f
-            super_links[relabel[a], relabel[b]] += f
+        module_u, module_v = module_of[u], module_of[v]
+        if module_u != module_v:
+            enter[relabel[module_v]] += f
+            super_links[relabel[module_u], relabel[module_v]] += f
     super_flow = {i: enter.get(i, 0.0) for i in range(len(modules))}
     super_links = [(a, b, f) for (a, b), f in super_links.items()]
     super_partition = _partition(
         super_flow, super_links, seed, directed, first_loop=False
     )
-    n_super = len(set(super_partition.values()))
-    if n_super == 1 or n_super == len(modules):
+    num_super = len(set(super_partition.values()))
+    if num_super == 1 or num_super == len(modules):
         return None
     return {m: super_partition[relabel[m]] for m in modules}
 
