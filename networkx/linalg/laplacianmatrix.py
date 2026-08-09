@@ -248,7 +248,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 @not_implemented_for("multigraph")
 @not_implemented_for("undirected")
 @nx._dispatchable(edge_attrs="weight")
-def magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
+def magnetic_laplacian(G, *, nodelist=None, normalized=False, q=0.25, weight="weight"):
     r"""Returns the magnetic Laplacian matrix of G
 
     The magnetic Laplacian (also called the q-magnetic Laplacian) is a
@@ -373,6 +373,17 @@ def magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
 
     # Build degree matrix D
     diags = np.abs(H).sum(axis=1).ravel()
+
+    if normalized:
+        with np.errstate(divide="ignore"):
+            diags_sqrt = 1.0 / np.sqrt(diags)
+        diags_sqrt[np.isinf(diags_sqrt)] = 0
+        DH = sp.sparse.dia_array((diags_sqrt, 0), shape=(n, n)).tocsr()
+        H = DH @ (H @ DH)
+        diags = np.ones(
+            n,
+        )
+
     D = sp.sparse.dia_array((diags, 0), shape=(n, n), dtype=complex).tocsr()
 
     return D - H
