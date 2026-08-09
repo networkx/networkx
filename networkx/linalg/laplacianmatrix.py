@@ -17,7 +17,6 @@ __all__ = [
     "directed_laplacian_matrix",
     "directed_combinatorial_laplacian_matrix",
     "magnetic_laplacian",
-    "normalized_magnetic_laplacian",
 ]
 
 
@@ -387,79 +386,6 @@ def magnetic_laplacian(G, *, nodelist=None, normalized=False, q=0.25, weight="we
     D = sp.sparse.dia_array((diags, 0), shape=(n, n), dtype=complex).tocsr()
 
     return D - H
-
-
-@not_implemented_for("multigraph")
-@not_implemented_for("undirected")
-@nx._dispatchable(edge_attrs="weight")
-def normalized_magnetic_laplacian(G, *, nodelist=None, q=0.25, weight="weight"):
-    r"""Returns the normalized magnetic Laplacian matrix of G
-
-    The normalized magnetic Laplacian is a Hermitian matrix for directed graphs
-    that encodes edge directionality via complex phases [1]_. It's the normalized
-    version of the magnetic Laplacian.
-
-    .. math::
-        L^{(q)}_{N} := D^{-0.5} L^{(q)} D^{-0.5}
-
-    where :math:`L^{(q)}` is the magnetic Laplacian and :math:`D^{-0.5}` is the degree
-    matrix associated with the symmetrized weight adjacency matrix powered to :math:`-0.5`,
-    assuming :math:`0^{-0.5} = 0`.
-
-
-    Parameters
-    ----------
-    G : DiGraph
-        A NetworkX graph
-
-    nodelist: list, optional (default=list(G))
-        Node ordering for row/columns.
-
-    q : float, optional (default=0.25)
-        The phase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
-        returns the standard Laplacian.
-
-    weight : string or None, optional (default='weight')
-        Edge attribute key for weights. If None, all edges have weight 1.
-
-    Returns
-    -------
-    L : SciPy sparse array (complex dtype)
-        The magnetic Laplacian matrix of G
-
-    Raises
-    ------
-    NetworkXError
-        If q is not between 0 and 0.5
-
-    See also
-    --------
-    magnetic_laplacian
-
-    References
-    ----------
-    .. [1] Fanuel, M., Alaíz, C. M., Fernández, Á., & Suykens, J. A. (2018).
-       Magnetic eigenmaps for the visualization of directed graphs.
-       Applied and Computational Harmonic Analysis, 44(1), 189–199.
-       <https://doi.org/10.1016/j.acha.2017.01.004>
-    """
-    from collections import defaultdict
-
-    import numpy as np
-    import scipy as sp
-
-    # Build magnetic_laplacian
-    L = magnetic_laplacian(G, nodelist=nodelist, q=q, weight=weight)
-
-    # Normalize magnetic_laplacian
-    diags = L.diagonal()
-    n = len(diags)
-    with np.errstate(divide="ignore"):
-        diags_sqrt = 1.0 / np.sqrt(diags)
-    diags_sqrt[np.isinf(diags_sqrt)] = 0
-    DH = sp.sparse.dia_array((diags_sqrt, 0), shape=(n, n)).tocsr()
-
-    return DH @ (L @ DH)
 
 
 ###############################################################################
