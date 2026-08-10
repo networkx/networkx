@@ -157,6 +157,13 @@ class TestAdjlist:
         H = nx.read_multiline_adjlist(fname, encoding="latin-1")
         assert graphs_equal(G, H)
 
+    def test_parse_adjlist_whitespace_line(self):
+        # A whitespace-only line splits to an empty list and must be skipped,
+        # not pop from an empty list (IndexError).
+        G = nx.parse_adjlist([" ", "a b c"])
+        assert nodes_equal(G.nodes(), ["a", "b", "c"])
+        assert edges_equal(G.edges(), [("a", "b"), ("a", "c")])
+
     def test_parse_adjlist(self):
         lines = ["1 2 5", "2 3 4", "3 5", "4", "5"]
         nx.parse_adjlist(lines, nodetype=int)  # smoke test

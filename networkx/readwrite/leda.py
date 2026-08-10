@@ -75,20 +75,28 @@ def parse_leda(lines):
             if not (line.startswith(("#", "\n")) or line == "")
         ]
     )
+    def next_line():
+        # A truncated LEDA.GRAPH file must raise NetworkXError, not a bare
+        # StopIteration escaping from next().
+        try:
+            return next(lines)
+        except StopIteration:
+            raise nx.NetworkXError("Truncated LEDA.GRAPH file") from None
+
     for i in range(3):
-        next(lines)
+        next_line()
     # Graph
-    du = int(next(lines))  # -1=directed, -2=undirected
+    du = int(next_line())  # -1=directed, -2=undirected
     if du == -1:
         G = nx.DiGraph()
     else:
         G = nx.Graph()
 
     # Nodes
-    n = int(next(lines))  # number of nodes
+    n = int(next_line())  # number of nodes
     node = {}
     for i in range(1, n + 1):  # LEDA counts from 1 to n
-        symbol = next(lines).rstrip().strip("|{}|  ")
+        symbol = next_line().rstrip().strip("|{}|  ")
         if symbol == "":
             symbol = str(i)  # use int if no label - could be trouble
         node[i] = symbol
@@ -96,7 +104,7 @@ def parse_leda(lines):
     G.add_nodes_from([s for i, s in node.items()])
 
     # Edges
-    m = int(next(lines))  # number of edges
+    m = int(next_line())  # number of edges
     for i in range(m):
         try:
             s, t, reversal, label = next(lines).split()

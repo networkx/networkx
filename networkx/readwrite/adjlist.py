@@ -222,6 +222,10 @@ def parse_adjlist(
         if not len(line):
             continue
         vlist = line.rstrip("\n").split(delimiter)
+        if not vlist:
+            # A whitespace-only line splits to an empty list; skip it rather
+            # than popping from it (IndexError).
+            continue
         u = vlist.pop(0)
         # convert types
         if nodetype is not None:
