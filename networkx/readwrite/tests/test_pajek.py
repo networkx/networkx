@@ -33,6 +33,13 @@ class TestPajek:
         assert sorted(G.nodes()) == ["1", "2"]
         assert edges_equal(G.edges(), [("1", "2"), ("1", "2")])
 
+    def test_parse_pajek_edges_without_vertices(self):
+        # An *arcs/*edges section without a preceding *vertices section used to
+        # raise UnboundLocalError on 'nodelabels'; edges should use the raw ids.
+        G = nx.parse_pajek("*Arcs\n1 2\n")
+        assert sorted(G.nodes()) == ["1", "2"]
+        assert edges_equal(G.edges(), [("1", "2")])
+
     def test_parse_pajek(self):
         G = nx.parse_pajek(self.data)
         assert sorted(G.nodes()) == ["A1", "Bb", "C", "D2"]

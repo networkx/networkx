@@ -189,6 +189,9 @@ def parse_pajek(lines):
     lines = iter([line.rstrip("\n") for line in lines])
     G = nx.MultiDiGraph()  # are multiedges allowed in Pajek? assume yes
     labels = []  # in the order of the file, needed for matrix
+    # Initialize here so an *edges/*arcs section without a preceding *vertices
+    # section does not raise UnboundLocalError; edges then use the raw ids.
+    nodelabels = {}
     while lines:
         try:
             l = next(lines)
