@@ -158,6 +158,8 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
     The map equation [1]_ is the expected per-step description length, in bits,
     of a random walk on `G` encoded with a two-level codebook given by
     `communities`. Infomap finds communities by minimizing this quantity.
+    Following the map equation literature, the description below calls a
+    community a *module*.
 
     The codelength is the map equation
 

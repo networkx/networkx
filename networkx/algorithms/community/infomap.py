@@ -1,5 +1,12 @@
 """Functions for detecting communities based on the Infomap algorithm
 (the map equation).
+
+The name is the cartographer's. A partition is a *map* of the network's flow:
+like a map of terrain it leaves detail out without obscuring the relationships
+that matter, so a good map is also a good compression (Rosvall & Bergstrom,
+PNAS 2008). The map equation makes that tradeoff measurable -- the bits per
+step needed to describe a random walk under a given map -- and Infomap searches
+for the map that needs fewest.
 """
 
 from collections import Counter, defaultdict
@@ -13,22 +20,37 @@ __all__ = ["infomap_communities", "infomap_partitions"]
 
 
 # ---------------------------------------------------------------------------
+# Terminology
+#
+# The code below follows the map equation literature, which calls a community a
+# *module*. The word is kept because this file mirrors the reference C++
+# implementation and the `infomap` package, whose results are phrased in modules
+# too. Everywhere a user looks -- the public functions here, and the rest of
+# networkx -- the same thing is called a community.
+#
+# Two more words recur below. An *aggregated network* (Louvain's term) is the
+# network in which each module of the level below has been contracted to a
+# single node; those nodes are *super-nodes*, and a module of super-nodes is a
+# *super-module*.
+#
 # The optimizer
 #
-# `quality.map_equation` says how good a partition is; this module searches for
-# the partition that minimizes it. The search mirrors Louvain and adds
-# Infomap's refinements, in four nested layers:
+# `quality.map_equation` says how good a partition is; the optimizer below
+# searches for the partition that minimizes it. The search mirrors Louvain and
+# adds Infomap's refinements, in four nested layers:
 #
-#   1. core loop      -- repeatedly move each node to the neighboring module
+#   1. core loop      -- repeatedly move each node into the neighboring module
 #                        that most lowers the codelength (`_CoreOptimizer`),
-#   2. aggregation    -- collapse the resulting modules into a super-network and
-#                        run the core loop again, building modules of modules
+#   2. aggregation    -- build an aggregated network in which each module of the
+#                        level below is one node, then run the core loop on that,
+#                        so its modules are modules of modules
 #                        (`_find_top_modules`),
 #   3. tuning         -- alternate fine-tuning (re-move single nodes) and
 #                        coarse-tuning (re-split modules) to escape the local
 #                        optima the greedy moves get stuck in (`_partition`),
-#   4. hierarchy      -- stack super-modules on top and recurse into modules to
-#                        recover a multilevel map (`_build_hierarchy`).
+#   4. hierarchy      -- aggregate once more above the top level and recurse into
+#                        the modules below it, so the result is a tree of modules
+#                        rather than one flat level (`_build_hierarchy`).
 #
 # `infomap_communities` runs this from `num_trials` random starts and keeps the
 # best.
@@ -730,6 +752,9 @@ def infomap_communities(
     a natural fit for networks where community structure is carried by the
     direction and volume of flow.
 
+    Following the map equation literature, the description below calls a
+    community a *module*.
+
     For a two-level partition :math:`\mathsf{M}` the map equation is
 
     .. math::
@@ -742,9 +767,9 @@ def infomap_communities(
     Lower codelength means a partition that compresses the flow better.
 
     The optimizer follows the same two phases as Louvain -- greedily moving
-    single nodes to neighboring modules, then aggregating modules into a
-    super-network and repeating -- and adds Infomap's fine-tuning and
-    coarse-tuning passes. It returns the two-level partition that minimizes the
+    single nodes to neighboring modules, then building an aggregated network in
+    which each module is a node and repeating -- and adds Infomap's fine-tuning
+    and coarse-tuning passes. It returns the two-level partition that minimizes the
     map equation; for the multilevel (hierarchical) partition [2]_, see
     :func:`infomap_partitions`.
 
