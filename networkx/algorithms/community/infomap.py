@@ -1,12 +1,28 @@
 """Functions for detecting communities based on the Infomap algorithm
 (the map equation).
 
-The name is the cartographer's. A partition is a *map* of the network's flow:
-like a map of terrain it leaves detail out without obscuring the relationships
-that matter, so a good map is also a good compression (Rosvall & Bergstrom,
-PNAS 2008). The map equation makes that tradeoff measurable -- the bits per
-step needed to describe a random walk under a given map -- and Infomap searches
-for the map that needs fewest.
+The method is built on a random walk. In a network with modular structure the
+walk gets trapped: having entered a densely connected region it tends to stay
+there for a long time, and steps between regions are rare. Those regions are the
+communities, so a boundary here is where the walk seldom crosses, which makes it
+a property of the dynamics rather than of the nodes themselves.
+
+That persistence is what makes a compact description possible. Name the regions
+in one shared codebook and reuse short node names inside every region, the way
+street names repeat from city to city without confusion because most routes stay
+inside one city; bits go to saying which region the walk is in only when it
+leaves one. The map equation is that description length in bits per step, and
+Infomap searches for the partition that minimizes it. The minimum balances two
+costs: split too finely and almost every step announces a crossing, lump too
+coarsely and the node names grow long again. A network with no persistent
+regions is best described in a single module.
+
+"Map" here carries the cartographer's sense of a simplification that keeps what
+matters, not a geometric one: the regions need be neither contiguous nor planar.
+
+Rosvall & Bergstrom introduced the map equation in 2008. Rosvall, Axelsson &
+Bergstrom (2009) work the coding argument through at greater length, which
+makes it the easier read for the intuition.
 """
 
 from collections import Counter, defaultdict
@@ -770,7 +786,7 @@ def infomap_communities(
     single nodes to neighboring modules, then building an aggregated network in
     which each module is a node and repeating -- and adds Infomap's fine-tuning
     and coarse-tuning passes. It returns the two-level partition that minimizes the
-    map equation; for the multilevel (hierarchical) partition [2]_, see
+    map equation; for the multilevel (hierarchical) partition [3]_, see
     :func:`infomap_partitions`.
 
     Edge weights are interpreted as flow. For directed graphs the visit rates
@@ -828,12 +844,20 @@ def infomap_communities(
     Self-loops add only to a node's within-module flow; they never cross a
     module boundary, so they do not affect where a node moves.
 
+    A module is a region the walk stays inside for a long time, so its boundary
+    is set by where the walk seldom crosses rather than by any property of the
+    nodes. See [2]_ for a step-by-step account of why that makes the walk cheap
+    to describe.
+
     References
     ----------
     .. [1] Rosvall, M. & Bergstrom, C.T. Maps of random walks on complex
        networks reveal community structure. PNAS 105, 1118-1123 (2008).
        https://doi.org/10.1073/pnas.0706851105
-    .. [2] Rosvall, M. & Bergstrom, C.T. Multilevel compression of random walks
+    .. [2] Rosvall, M., Axelsson, D. & Bergstrom, C.T. The map equation.
+       Eur. Phys. J. Special Topics 178, 13-23 (2009).
+       https://doi.org/10.1140/epjst/e2010-01179-1
+    .. [3] Rosvall, M. & Bergstrom, C.T. Multilevel compression of random walks
        on networks reveals hierarchical organization in large integrated
        systems. PLoS ONE 6(4), e18209 (2011).
        https://doi.org/10.1371/journal.pone.0018209
