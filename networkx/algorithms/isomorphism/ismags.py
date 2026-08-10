@@ -650,7 +650,7 @@ class ISMAGS:
         if Ncolors < N:
             extra = [g_partition[c] for c in range(N) if c not in gc_to_sgc]
             new_g_p = list(new_g_p) + extra
-            new_sg_p = list(new_sg_p) + [set()] * len(extra)
+            # no pad for new_sg_p -- not used. And keeps len for check in find_isos
 
         return new_sg_p, new_g_p, Ncolors
 

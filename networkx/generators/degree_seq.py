@@ -655,7 +655,7 @@ def degree_sequence_tree(deg_sequence, create_using=None):
 
     Parameters
     ----------
-    degree_sequence : iterable
+    deg_sequence : iterable
         Iterable of node degrees.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)

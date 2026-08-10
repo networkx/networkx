@@ -1903,11 +1903,6 @@ def rescale_layout(pos, scale=1):
     scale : number (default: 1)
         The size of the resulting extent in all directions.
 
-    attribute : str, default None
-        If non-None, the position of each node will be stored on the graph as
-        an attribute named `attribute` which can be accessed with
-        `G.nodes[...][attribute]`. The function still returns the dictionary.
-
     Returns
     -------
     pos : numpy array

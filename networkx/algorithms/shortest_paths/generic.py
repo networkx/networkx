@@ -464,10 +464,12 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
 
     method : string, optional (default = 'dijkstra')
        The algorithm to use to compute the path lengths.
-       Supported options: 'dijkstra', 'bellman-ford'.
-       Other inputs produce a ValueError.
-       If `weight` is None, unweighted graph methods are used, and this
-       suggestion is ignored.
+       Supported options: 'dijkstra', 'bellman-ford', 'unweighted'.
+       Other inputs produce a ValueError. If `method='unweighted'` is
+       passed explicitly, the search treats every edge as having equal
+       weight, and the `weight` argument, if given, is ignored.
+       If `weight` is None, unweighted graph methods are used
+       regardless of what `method` is set to.
 
     Returns
     -------
@@ -477,7 +479,8 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
     Raises
     ------
     ValueError
-        If `method` is not among the supported options.
+        If `method` is not among the supported options: 'dijkstra',
+        'bellman-ford', 'unweighted'.
 
     NetworkXNoPath
         If `target` cannot be reached from `source`.
@@ -539,10 +542,12 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
 
     method : string, optional (default = 'dijkstra')
        The algorithm to use to compute the path lengths.
-       Supported options: 'dijkstra', 'bellman-ford'.
-       Other inputs produce a ValueError.
-       If `weight` is None, unweighted graph methods are used, and this
-       suggestion is ignored.
+       Supported options: 'dijkstra', 'bellman-ford', 'unweighted'.
+       Other inputs produce a ValueError. If `method='unweighted'` is
+       passed explicitly, the search treats every edge as having equal
+       weight, and the `weight` argument, if given, is ignored.
+       If `weight` is None, unweighted graph methods are used
+       regardless of what `method` is set to.
 
     Returns
     -------
@@ -552,7 +557,8 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     Raises
     ------
     ValueError
-        If `method` is not among the supported options.
+        If `method` is not among the supported options: 'dijkstra',
+        'bellman-ford', 'unweighted'.
 
     Examples
     --------
@@ -609,10 +615,12 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
 
     method : string, optional (default = 'dijkstra')
        The algorithm to use to compute the path lengths.
-       Supported options: 'dijkstra', 'bellman-ford'.
-       Other inputs produce a ValueError.
-       If `weight` is None, unweighted graph methods are used, and this
-       suggestion is ignored.
+       Supported options: 'dijkstra', 'bellman-ford', 'unweighted'.
+       Other inputs produce a ValueError. If `method='unweighted'` is
+       passed explicitly, the search treats every edge as having equal
+       weight, and the `weight` argument, if given, is ignored.
+       If `weight` is None, unweighted graph methods are used
+       regardless of what `method` is set to.
 
     Returns
     -------
@@ -622,7 +630,8 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
     Raises
     ------
     ValueError
-        If `method` is not among the supported options.
+        If `method` is not among the supported options: 'dijkstra',
+        'bellman-ford', 'unweighted'.
 
     Examples
     --------

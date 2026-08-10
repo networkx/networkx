@@ -832,7 +832,7 @@ class GEXFReader(GEXF):
                 edge_default.update(ed)
                 G.graph["edge_default"] = edge_default
             else:
-                raise  # unknown attribute class
+                raise nx.NetworkXError(f"Unknown attribute class {attr_class}.")
 
         # Hack to handle Gephi0.7beta bug
         # add weight attribute
