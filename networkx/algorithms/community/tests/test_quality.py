@@ -55,8 +55,8 @@ class TestCoverage:
 class TestPartitionQuality:
     """Unit tests for the :func:`partition_quality` function."""
 
-    def test_empty_graph(self):
-        """Tests that an empty graph raises NetworkXError."""
+    def test_null_graph(self):
+        """Tests that a null graph raises NetworkXError."""
         with pytest.raises(nx.NetworkXError, match="partition_quality is not defined"):
             partition_quality(nx.Graph(), [])
 
