@@ -371,9 +371,6 @@ def _snap_split(groups, neighbor_info, group_lookup, group_id):
     neighbor_info: dict
         A data structure indicating the number of edges a node has with the
         groups in the current summarization of each edge type
-    edge_types: dict
-        dictionary of edges in the graph and their corresponding attributes recognized
-        in the summarization
     group_lookup: dict
         dictionary of nodes and their current corresponding group ID
     group_id: object
