@@ -666,6 +666,11 @@ def partition_quality(G, partition):
            *Physics Reports*, Volume 486, Feb 2010, Issue 3--5 pp. 75--174
            <https://arxiv.org/abs/0906.0612>
     """
+    if len(G) < 2 or G.size() == 0:
+        raise nx.NetworkXError(
+            "partition_quality is not defined for graphs with fewer than "
+            "two nodes or no edges"
+        )
 
     node_community = {}
     for i, community in enumerate(partition):

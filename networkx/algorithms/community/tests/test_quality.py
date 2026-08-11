@@ -52,6 +52,31 @@ class TestCoverage:
         assert 6 / 7 == pytest.approx(partition_quality(G, partition)[0], abs=1e-7)
 
 
+class TestPartitionQuality:
+    """Unit tests for the :func:`partition_quality` function."""
+
+    def test_empty_graph(self):
+        """Tests that an empty graph raises NetworkXError."""
+        with pytest.raises(nx.NetworkXError, match="partition_quality is not defined"):
+            partition_quality(nx.Graph(), [])
+
+    def test_single_node_graph(self):
+        """Tests that a single-node graph raises NetworkXError."""
+        G = nx.Graph()
+        G.add_node(0)
+
+        with pytest.raises(nx.NetworkXError, match="partition_quality is not defined"):
+            partition_quality(G, [{0}])
+
+    def test_graph_with_no_edges(self):
+        """Tests that a graph with no edges raises NetworkXError."""
+        G = nx.Graph()
+        G.add_nodes_from([0, 1, 2])
+
+        with pytest.raises(nx.NetworkXError, match="partition_quality is not defined"):
+            partition_quality(G, [{0}, {1, 2}])
+
+
 def test_modularity():
     G = nx.barbell_graph(3, 0)
     C = [{0, 1, 4}, {2, 3, 5}]
