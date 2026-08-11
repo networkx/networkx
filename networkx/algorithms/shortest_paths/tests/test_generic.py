@@ -412,6 +412,20 @@ class TestGenericPath:
         assert sorted(paths03d) == sorted(p[::-1] for p in paths30b)
         assert sorted(paths03b) == sorted(p[::-1] for p in paths30b)
 
+    def test_single_source_all_shortest_paths_zero_weight_cycle(self):
+        # A zero-weight edge back toward the source records the source itself
+        # as a predecessor, which used to produce duplicate paths.
+        # https://github.com/networkx/networkx/issues/8833
+        g = nx.Graph()
+        g.add_edge(0, 1, weight=0)
+        g.add_edge(1, 2, weight=100)
+        ans = dict(nx.single_source_all_shortest_paths(g, 0, weight="weight"))
+        assert ans[0] == [[0]]
+        assert ans[2] == [[0, 1, 2]]
+        ans = dict(nx.all_pairs_all_shortest_paths(g, weight="weight"))
+        assert ans[0][0] == [[0]]
+        assert ans[0][2] == [[0, 1, 2]]
+
 
 class TestAverageShortestPathLength:
     def test_cycle_graph(self):

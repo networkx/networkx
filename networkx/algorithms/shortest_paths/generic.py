@@ -707,11 +707,11 @@ def _build_paths_from_predecessors(sources, target, pred):
 
     while stack:
         node, preds = stack[-1]
-        if node in sources:
-            yield path[::-1]
-
         for predecessor in preds:
             if predecessor in seen:
+                continue
+            if predecessor in sources:
+                yield (path + [predecessor])[::-1]
                 continue
             seen.add(predecessor)
             path.append(predecessor)
@@ -721,3 +721,6 @@ def _build_paths_from_predecessors(sources, target, pred):
             stack.pop()
             path.pop()
             seen.remove(node)
+
+    if target in sources:
+        yield [target]
