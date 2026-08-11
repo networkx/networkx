@@ -248,7 +248,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 @not_implemented_for("undirected")
 @nx._dispatchable(edge_attrs="weight")
 def magnetic_laplacian(G, *, nodelist=None, normalized=False, q=0.25, weight="weight"):
-    r"""Returns the magnetic Laplacian matrix of G
+    r"""Returns the magnetic Laplacian matrix of G or it's normalized version.
 
     The magnetic Laplacian (also called the q-magnetic Laplacian) is a
     Hermitian matrix for directed graphs that encodes edge directionality
@@ -275,6 +275,13 @@ def magnetic_laplacian(G, *, nodelist=None, normalized=False, q=0.25, weight="we
     :math:`H^{(q)}_{jk} = W'_{jk} e^{2\pi i q \delta_{jk}}`, and :math:`D` is the degree
     matrix associated with the symmetrized weight adjacency matrix :math:`W'`.
 
+    If it's specified to compute the normalized version, using the Moore-Penrose
+    inverse :math:`D^{+}}` of the degree matrix :math:`D`, the normalized version is computed
+    as:
+
+    .. math::
+        L^{(q)}_{norm} = (D^{+})^{0.5} L^{(q)} (D^{+})^{0.5}
+
     The magnetic Laplacian is only implemented for directed graphs. Since for undirected
     graphs the magnetic Laplacian is the standard Laplacian, we suggest using `laplacian_matrix`
     for computational reasons.
@@ -287,6 +294,10 @@ def magnetic_laplacian(G, *, nodelist=None, normalized=False, q=0.25, weight="we
     nodelist : list, optional (default=list(G))
         Node ordering for row/columns.
 
+    normalized : bool, optional (default=False)
+        Bool that encodes if return the magnetic Laplacian or the normalized magnetic
+        Laplacian. If True returns the normalized version.
+
     q : float, optional (default=0.25)
         The phase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
         returns the standard Laplacian.
@@ -297,7 +308,8 @@ def magnetic_laplacian(G, *, nodelist=None, normalized=False, q=0.25, weight="we
     Returns
     -------
     L : SciPy sparse array (complex dtype)
-        The magnetic Laplacian matrix of G
+        The magnetic Laplacian matrix of G (if normalized=False) and the normalized version
+        if normalized=True
 
     Raises
     ------
