@@ -1066,15 +1066,13 @@ class ISMAGS:
                                 cand_sets[sgn2] = cand_sets[sgn2] | {not_gn_nbrs}
                         else:
                             # edge color must match when sgn2 connected to sgn
-                            g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
                             # check if (gn, gn2) has same number of edges as (sgn, sgn2)
                             sgn_e_cnt = subgraph.number_of_edges(sgn, sgn2)
+                            sge_color = self_sge_colors[sgn, sgn2]
                             gn2_cands = {
                                 n
-                                for e in g_edges
-                                if gn in e
-                                for n in e
-                                if n != gn
+                                for n in graph_adj[gn]
+                                if self._ge_colors[gn, n] == sge_color
                                 if MONO_fits(sgn_e_cnt, graph.number_of_edges(gn, n))
                             }
                             # Do not change the original set. So do not use |= operator
@@ -1094,40 +1092,40 @@ class ISMAGS:
                                     cand_sets[sgn2] = cand_sets[sgn2] | {not_gn_nbrs}
                             else:  # sgn2 in sgn_preds
                                 sgn_in = subgraph.number_of_edges(sgn2, sgn)
-                                g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
+                                sge_color = self_sge_colors[sgn2, sgn]
                                 gn2_cands = {
-                                    u
-                                    for u, v in g_edges
-                                    if gn == v
-                                    if MONO_fits(sgn_in, graph.number_of_edges(u, gn))
+                                    n
+                                    for n in graph._pred[gn]
+                                    if self._ge_colors[n, gn] == sge_color
+                                    if MONO_fits(sgn_in, graph.number_of_edges(n, gn))
                                 }
                         else:
                             if sgn2 not in sgn_preds:
                                 sgn_out = subgraph.number_of_edges(sgn, sgn2)
-                                g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
+                                sge_color = self_sge_colors[sgn, sgn2]
                                 gn2_cands = {
-                                    v
-                                    for u, v in g_edges
-                                    if gn == u
-                                    if MONO_fits(sgn_out, graph.number_of_edges(gn, v))
+                                    n
+                                    for n in graph_adj[gn]
+                                    if self._ge_colors[gn, n] == sge_color
+                                    if MONO_fits(sgn_out, graph.number_of_edges(gn, n))
                                 }
                             else:
                                 sgn_out = subgraph.number_of_edges(sgn, sgn2)
                                 sgn_in = subgraph.number_of_edges(sgn2, sgn)
                                 # gn2 must have correct color in both directions
-                                g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
+                                sge_color = self_sge_colors[sgn, sgn2]
                                 gn2_cands = {
-                                    v
-                                    for u, v in g_edges
-                                    if gn == u
-                                    if MONO_fits(sgn_out, graph.number_of_edges(gn, v))
+                                    n
+                                    for n in graph_adj[gn]
+                                    if self._ge_colors[gn, n] == sge_color
+                                    if MONO_fits(sgn_out, graph.number_of_edges(gn, n))
                                 }
-                                g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
+                                sge_color = self_sge_colors[sgn2, sgn]
                                 gn2_cands &= {
-                                    u
-                                    for u, v in g_edges
-                                    if gn == v
-                                    if MONO_fits(sgn_in, graph.number_of_edges(u, gn))
+                                    n
+                                    for n in graph._pred[gn]
+                                    if self._ge_colors[n, gn] == sge_color
+                                    if MONO_fits(sgn_in, graph.number_of_edges(n, gn))
                                 }
                             # Do not change the original set. So do not use |= operator
                             cand_sets[sgn2] = cand_sets[sgn2] | {frozenset(gn2_cands)}
