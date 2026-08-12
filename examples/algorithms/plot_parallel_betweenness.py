@@ -17,8 +17,8 @@ faster. This is a limitation of our CI/CD pipeline.
 Depending on your setup, you will likely observe a speedup.
 """
 
-# Prevent this example from running in a parallel sphinx-gallery run to prevent
-# resource oversubscription, since this example itself makes uses of parallelism
+# Don't run this example in parallel via sphinx-gallery to prevent
+# resource oversubscription. This example itself makes uses of parallelism.
 # sphinx_gallery_parallel = False
 
 from multiprocessing import Pool
