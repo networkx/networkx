@@ -1517,6 +1517,52 @@ class DynamicTopologicalSorter:
         self._reorder(u, v)
         self._graph.add_edge(u, v)
 
+    def _dfs_forward(self, start, lower, upper, source):
+        # collect nodes reachable from start within position range [lower, upper]
+        # raises NetworkXUnfeasible if source is reached (cycle)
+        visited = set()
+        stack = [start]
+        while stack:
+            node = stack.pop()
+            if node in visited:
+                continue
+            visited.add(node)
+            for successor in self._graph.successors(node):
+                if successor == source:
+                    raise nx.NetworkXUnfeasible(
+                        "Adding this edge would create a cycle."
+                    )
+                if lower <= self._pos[successor] <= upper:
+                    stack.append(successor)
+        return visited
+
+    def _dfs_backward(self, start, lower, upper):
+        # collect nodes that can reach start within position range [lower, upper]
+        visited = set()
+        stack = [start]
+        while stack:
+            node = stack.pop()
+            if node in visited:
+                continue
+            visited.add(node)
+            for predecessor in self._graph.predecessors(node):
+                if lower <= self._pos[predecessor] <= upper:
+                    stack.append(predecessor)
+        return visited
+
     def _reorder(self, u, v):
-        # Pearce-Kelly reorder — to be implemented
-        raise NotImplementedError
+        lower = self._pos[v]
+        upper = self._pos[u]
+
+        df = self._dfs_forward(v, lower, upper, u)
+        db = self._dfs_backward(u, lower, upper)
+
+        # collect and sort the positions occupied by these two groups
+        free_positions = sorted(self._pos[n] for n in df | db)
+
+        # assign db nodes to the lower slots, df nodes to the upper slots
+        db_sorted = sorted(db, key=lambda n: self._pos[n])
+        df_sorted = sorted(df, key=lambda n: self._pos[n])
+
+        for node, pos in zip(db_sorted + df_sorted, free_positions):
+            self._pos[node] = pos
