@@ -741,9 +741,21 @@ def test_monomorphism_path_in_cycle(iso_ic, symmetry, Gclass):
     SG = FG.copy()
     SG.remove_edge(13, 0)
     assert FG.number_of_edges() == SG.number_of_edges() + 1
+    FG, SG = Gclass(FG), Gclass(SG)
 
     mono = "mono" in iso_ic.__name__
-    assert mono == iso_ic(Gclass(FG), Gclass(SG), symmetry=symmetry)
+    assert mono == iso_ic(FG, SG, symmetry=symmetry)
+    if FG.is_multigraph():
+        FG.add_edge(3, 3)
+        assert mono == iso_ic(FG, SG, symmetry=symmetry)
+        SG.add_edge(3, 3)
+        assert mono == iso_ic(FG, SG, symmetry=symmetry)
+        SG.add_edge(3, 3)
+        assert not iso_ic(FG, SG, symmetry=symmetry)
+        FG.add_edge(3, 3)
+        assert mono == iso_ic(FG, SG, symmetry=symmetry)
+    SG.add_edge(7, 7)
+    assert not iso_ic(FG, SG, symmetry=symmetry)
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
