@@ -1504,9 +1504,16 @@ class DynamicTopologicalSorter:
 
         Raises NetworkXUnfeasible if the edge would create a cycle.
         """
+        if u == v:
+            raise nx.NetworkXUnfeasible("Adding this edge would create a cycle.")
+
         # ensure both nodes exist
         self.add_node(u)
         self.add_node(v)
+
+        # skip if edge already exists
+        if self._graph.has_edge(u, v):
+            return
 
         # Case 1: order already valid — nothing to do
         if self._pos[u] < self._pos[v]:
