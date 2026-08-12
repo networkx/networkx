@@ -1504,4 +1504,19 @@ class DynamicTopologicalSorter:
 
         Raises NetworkXUnfeasible if the edge would create a cycle.
         """
+        # ensure both nodes exist
+        self.add_node(u)
+        self.add_node(v)
+
+        # Case 1: order already valid — nothing to do
+        if self._pos[u] < self._pos[v]:
+            self._graph.add_edge(u, v)
+            return
+
+        # Case 2: order violated — need to reorder the affected region
+        self._reorder(u, v)
+        self._graph.add_edge(u, v)
+
+    def _reorder(self, u, v):
+        # Pearce-Kelly reorder — to be implemented
         raise NotImplementedError
