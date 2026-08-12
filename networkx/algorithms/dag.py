@@ -29,6 +29,7 @@ __all__ = [
     "dag_longest_path",
     "dag_longest_path_length",
     "dag_to_branching",
+    "DynamicTopologicalSorter",
 ]
 
 
@@ -1460,3 +1461,47 @@ def colliders(G):
     for node in G.nodes:
         for p1, p2 in combinations(G.predecessors(node), 2):
             yield (p1, node, p2)
+
+
+class DynamicTopologicalSorter:
+    """Maintains a topological ordering of a DAG under edge insertions.
+
+    Keeps a persistent position map so only the affected region is
+    updated when an edge is added, instead of recomputing from scratch.
+    """
+
+    def __init__(self, G=None):
+        # Internal digraph storing the edges
+        self._graph = nx.DiGraph()
+        # Maps each node to its current topological position (integer rank)
+        self._pos = {}
+        # Counter used to assign positions to new nodes
+        self._next_pos = 0
+
+        if G is not None:
+            if not G.is_directed():
+                raise nx.NetworkXError(
+                    "DynamicTopologicalSorter requires a directed graph."
+                )
+            for node in G.nodes:
+                self.add_node(node)
+            for u, v in G.edges:
+                self.add_edge(u, v)
+
+    def add_node(self, n):
+        """Add node `n` and assign it the next available position."""
+        if n not in self._pos:
+            self._pos[n] = self._next_pos
+            self._next_pos += 1
+            self._graph.add_node(n)
+
+    def topological_order(self):
+        """Return nodes sorted by their current topological position."""
+        return sorted(self._pos, key=self._pos.__getitem__)
+
+    def add_edge(self, u, v):
+        """Add edge u -> v and update the topological ordering.
+
+        Raises NetworkXUnfeasible if the edge would create a cycle.
+        """
+        raise NotImplementedError
