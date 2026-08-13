@@ -473,3 +473,35 @@ def test_infomap_terminates_on_every_atlas_graph():
         # Levels must nest, at every graph, not just the hierarchical ones.
         for coarse, fine in nx.utils.pairwise(levels):
             assert all(any(c <= parent for parent in coarse) for c in fine)
+
+
+@pytest.mark.parametrize(
+    "build",
+    [
+        lambda: nx.MultiDiGraph(nx.gnc_graph(30, seed=2)),
+        lambda: nx.freeze(nx.karate_club_graph()),
+        lambda: nx.karate_club_graph().subgraph(range(12)),
+        lambda: nx.reverse_view(nx.gnc_graph(30, seed=2)),
+        # Any hashable is a node, and nothing here orders them.
+        lambda: nx.Graph([(0, "a"), ("a", (1, 2)), ((1, 2), 0), (0, frozenset({1}))]),
+    ],
+    ids=["multidigraph", "frozen", "subgraph-view", "reverse-view", "mixed-node-types"],
+)
+def test_infomap_accepts_every_graph_flavour(build):
+    """Graph classes and node types beyond the plain Graph/DiGraph pair: Louvain
+    covers MultiDiGraph the same way, views must not need copying, and node
+    labels are only ever hashed, never ordered."""
+    G = build()
+    if G.is_directed():
+        pytest.importorskip("scipy")  # directed flow uses nx.pagerank
+    assert nx.community.is_partition(G, nx.community.infomap_communities(G, seed=1))
+
+
+def test_infomap_leaves_the_graph_untouched():
+    """None of the three entry points may modify the graph they are given."""
+    G = nx.karate_club_graph()
+    before = (dict(G.nodes(data=True)), sorted(G.edges(data=True)))
+    nx.community.infomap_communities(G, seed=1)
+    list(nx.community.infomap_partitions(G, seed=1))
+    nx.community.map_equation(G, [set(G)])
+    assert (dict(G.nodes(data=True)), sorted(G.edges(data=True))) == before
