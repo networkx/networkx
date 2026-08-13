@@ -176,6 +176,17 @@ class _CoreOptimizer:
             _plogp(self.module_exit[m] + self.module_flow[m]) for m in self.module_flow
         )
 
+        # Each module's own codelength contribution, cached because a move
+        # re-reads the destination's current value once per candidate but only
+        # changes it once per applied move. An unseen (empty) module is 0.
+        self.module_codelength = defaultdict(float)
+        for m in self.module_flow:
+            self.module_codelength[m] = _module_codelength(
+                self.module_enter[m],
+                self.module_exit[m],
+                self.module_exit[m] + self.module_flow[m],
+            )
+
         # A pool of emptied module ids to reuse for "split into a new module";
         # every id in `module_of` starts with a member, so the pool starts empty.
         self._next_module = (max(self.module_of.values()) + 1) if self.module_of else 0
@@ -220,7 +231,7 @@ class _CoreOptimizer:
         old_usage = old_exit + self.module_flow[old]
         # `old`'s codelength before and after `node` leaves it: it sheds the
         # node's enter/exit/flow, and the links they shared become crossing.
-        old_before = _module_codelength(old_enter, old_exit, old_usage)
+        old_before = self.module_codelength[old]
         old_after = _module_codelength(
             old_enter - node_enter + old_cross,
             old_exit - node_exit + old_cross,
@@ -251,7 +262,7 @@ class _CoreOptimizer:
         new_enter = self.module_enter[new]
         new_exit = self.module_exit[new]
         new_usage = new_exit + self.module_flow[new]
-        new_before = _module_codelength(new_enter, new_exit, new_usage)
+        new_before = self.module_codelength[new]
         new_after = _module_codelength(
             new_enter + ctx.node_enter - new_cross,
             new_exit + ctx.node_exit - new_cross,
@@ -302,6 +313,12 @@ class _CoreOptimizer:
         self.flow_log += _plogp(self.module_exit[old] + self.module_flow[old]) + _plogp(
             self.module_exit[new] + self.module_flow[new]
         )
+        for m in (old, new):
+            self.module_codelength[m] = _module_codelength(
+                self.module_enter[m],
+                self.module_exit[m],
+                self.module_exit[m] + self.module_flow[m],
+            )
         self.module_members[old] -= 1
         self.module_members[new] += 1
         self.module_of[node] = new

@@ -505,3 +505,31 @@ def test_infomap_leaves_the_graph_untouched():
     list(nx.community.infomap_partitions(G, seed=1))
     nx.community.map_equation(G, [set(G)])
     assert (dict(G.nodes(data=True)), sorted(G.edges(data=True))) == before
+
+
+def test_core_optimizer_cached_module_codelength_stays_exact():
+    """The optimizer caches each module's own codelength contribution and
+    updates it per move. Drift there would bias every later move, so check it
+    against a fresh recomputation once the search has finished."""
+    import random
+
+    from networkx.algorithms.community.infomap import _CoreOptimizer, _module_codelength
+    from networkx.algorithms.community.quality import _flow
+
+    G = nx.karate_club_graph()
+    flow, links = _flow(G, "weight")
+    singletons = {node: i for i, node in enumerate(flow)}
+    optimizer = _CoreOptimizer(flow, links, singletons, random.Random(7), False)
+    optimizer.optimize(False, 10)
+
+    for module in set(optimizer.module_of.values()):
+        assert optimizer.module_codelength[module] == _module_codelength(
+            optimizer.module_enter[module],
+            optimizer.module_exit[module],
+            optimizer.module_exit[module] + optimizer.module_flow[module],
+        )
+    # ...and the running codelength still agrees with the public quality function.
+    communities = list(nx.utils.groups(optimizer.module_of).values())
+    assert optimizer.codelength() == pytest.approx(
+        nx.community.map_equation(G, communities), abs=1e-12
+    )
