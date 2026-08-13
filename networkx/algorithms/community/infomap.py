@@ -864,11 +864,11 @@ def infomap_communities(
     :any:`leiden_communities`
     """
     _check_num_trials(num_trials)
+    if nx.is_empty(G):  # no edges, so no flow to compress: every node is alone
+        return [{u} for u in G]
     # The flow depends only on the graph, so compute it once and reuse it across
     # every restart and codelength evaluation.
     flow, link_flows = _flow(G, weight, teleportation_probability)
-    if not flow:
-        return []  # empty graph
     module_of = _best_two_level(flow, link_flows, seed, num_trials, G.is_directed())
     return list(groups(module_of).values())
 
@@ -963,9 +963,9 @@ def infomap_partitions(
     # Validate num_trials eagerly so a bad value raises on call, not mid-iteration.
     # The hierarchy search runs here; only splitting the result into per-level
     # partitions is deferred to the `_expand_levels` generator.
+    if nx.is_empty(G):  # one level of singletons, as louvain_partitions gives
+        return iter([[{u} for u in G]])
     flow, link_flows = _flow(G, weight, teleportation_probability)
-    if not flow:
-        return iter([[]])  # empty graph -> one empty level (matches louvain_partitions)
     path = _best_hierarchy(flow, link_flows, seed, num_trials, G.is_directed())
     return _expand_levels(path)
 
