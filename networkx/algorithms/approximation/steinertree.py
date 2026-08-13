@@ -63,6 +63,9 @@ def metric_closure(G, weight="weight"):
 
 
 def _mehlhorn_steiner_tree(G, terminal_nodes, weight):
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("G is not a connected graph.")
+
     distances, paths = nx.multi_source_dijkstra(G, terminal_nodes, weight=weight)
 
     d_1 = {}

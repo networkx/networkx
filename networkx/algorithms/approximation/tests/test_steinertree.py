@@ -304,3 +304,18 @@ def test_steiner_tree_non_terminal_leaves_multigraph_self_loop_edges():
 
     # Only the terminal nodes should be left
     assert list(G) == [4, 5, 6, 7]
+
+
+def test_steiner_tree_disconnected_raises(method):
+    # GH#8839: mehlhorn method raised KeyError for disconnected graphs;
+    # both methods should raise NetworkXError.
+    G = nx.Graph()
+    G.add_edges_from([("A", "B"), ("C", "D")])
+    with pytest.raises(nx.NetworkXError, match="not a connected graph"):
+        steiner_tree(G, ["A", "C"], method=method)
+
+    # Same for MultiGraph
+    MG = nx.MultiGraph()
+    MG.add_edges_from([("A", "B"), ("C", "D")])
+    with pytest.raises(nx.NetworkXError, match="not a connected graph"):
+        steiner_tree(MG, ["A", "C"], method=method)
