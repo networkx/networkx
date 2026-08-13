@@ -1,3 +1,5 @@
+from typing import NamedTuple
+
 import pytest
 
 import networkx as nx
@@ -53,81 +55,6 @@ def test_seed_reproducible():
     assert sorted(map(sorted, p1)) == sorted(map(sorted, p2))
 
 
-def test_infomap_native_matches_cpp_codelength_barbell():
-    """The native optimizer should reach the same two-level optimum as the
-    reference C++ Infomap on a clear two-clique structure."""
-    infomap = pytest.importorskip("infomap", minversion="2.14")
-
-    G = nx.barbell_graph(5, 0)
-    partition = nx.community.infomap_communities(G, seed=42)
-    assert nx.community.is_partition(G, partition)
-
-    im = infomap.Infomap(two_level=True, silent=True, seed=42)
-    for u, v in G.edges():
-        im.add_link(u, v)
-    result = im.run()
-    assert nx.community.map_equation(G, partition) == pytest.approx(
-        result.codelength, abs=1e-9
-    )
-
-
-def test_infomap_native_matches_cpp_codelength_karate():
-    """With aggregation and several trials, the native optimizer should reach
-    the same two-level optimum as the reference C++ Infomap on karate."""
-    infomap = pytest.importorskip("infomap", minversion="2.14")
-
-    G = nx.karate_club_graph()
-    partition = nx.community.infomap_communities(G, seed=42, num_trials=20)
-
-    im = infomap.Infomap(two_level=True, silent=True, seed=42, num_trials=50)
-    for u, v, w in G.edges(data="weight", default=1):
-        im.add_link(u, v, w)
-    result = im.run()
-    assert nx.community.map_equation(G, partition) == pytest.approx(
-        result.codelength, abs=1e-9
-    )
-
-
-def test_infomap_native_matches_cpp_directed_dag():
-    """On a directed growing DAG (a hard case for greedy search), the optimizer
-    should reach the C++ reference two-level codelength given enough trials."""
-    infomap = pytest.importorskip("infomap", minversion="2.14")
-    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-
-    G = nx.gnc_graph(40, seed=3)
-    partition = nx.community.infomap_communities(G, seed=1, num_trials=20)
-    assert nx.community.is_partition(G, partition)
-
-    im = infomap.Infomap(
-        directed=True, two_level=True, silent=True, seed=42, num_trials=100
-    )
-    for u, v in G.edges():
-        im.add_link(u, v)
-    result = im.run()
-    assert (
-        nx.community.map_equation(G, partition, weight=None) <= result.codelength + 1e-6
-    )
-
-
-def test_infomap_communities_two_level_matches_cpp_ring_of_cliques():
-    """On a genuinely multilevel graph, infomap_communities (two-level) reaches
-    the same two-level optimum as the reference C++ Infomap run with
-    two_level=True -- not the coarsest level of the multilevel hierarchy (which
-    infomap_partitions yields first)."""
-    infomap = pytest.importorskip("infomap", minversion="2.14")
-
-    G = nx.ring_of_cliques(12, 6)
-    partition = nx.community.infomap_communities(G, weight=None, seed=42, num_trials=20)
-
-    im = infomap.Infomap(two_level=True, silent=True, seed=42, num_trials=50)
-    for u, v in G.edges():
-        im.add_link(u, v)
-    result = im.run()
-    assert nx.community.map_equation(G, partition, weight=None) == pytest.approx(
-        result.codelength, abs=1e-6
-    )
-
-
 def test_hierarchical_codelength_matches_cpp_multilevel():
     """The multilevel (hierarchical) codelength must match the C++ reference
     on a graph where Infomap finds a >2-level hierarchy."""
@@ -152,66 +79,8 @@ def test_hierarchical_codelength_matches_cpp_multilevel():
     )
 
 
-def test_infomap_multilevel_matches_cpp_ring_of_cliques():
-    """The multilevel optimizer should reach the C++ reference hierarchical
-    codelength on a genuinely 3-level structure (ring of cliques)."""
-    import random
-
-    infomap = pytest.importorskip("infomap", minversion="2.14")
-    from networkx.algorithms.community.infomap import (
-        _build_hierarchy,
-        _hierarchical_codelength,
-    )
-    from networkx.algorithms.community.quality import _flow
-
-    G = nx.ring_of_cliques(12, 6)
-    im = infomap.Infomap(silent=True, seed=42, num_trials=80)
-    for u, v in G.edges():
-        im.add_link(u, v)
-    result = im.run()
-    assert result.num_levels >= 3
-
-    flow, links = _flow(G, None)
-    flow = dict(flow)
-    best_path = min(
-        (
-            _build_hierarchy(flow, links, random.Random(s), G.is_directed())
-            for s in range(15)
-        ),
-        key=lambda p: _hierarchical_codelength(flow, links, p),
-    )
-    depth = max(len(p) for p in best_path.values())
-    assert depth >= 2  # genuinely multilevel (>= 2 module levels)
-    assert _hierarchical_codelength(flow, links, best_path) == pytest.approx(
-        result.codelength, abs=1e-6
-    )
-
-
 # --- NetworkX-native parity tests (hardcoded codelengths validated against the
 # --- reference C++ Infomap; no dependency on the `infomap` package) ---
-
-
-def test_infomap_reaches_known_optimum_barbell():
-    G = nx.barbell_graph(5, 0)
-    partition = nx.community.infomap_communities(G, seed=0, num_trials=10)
-    assert nx.community.is_partition(G, partition)
-    # Two-level optimum found by the C++ reference for two K5 joined by an edge.
-    assert nx.community.map_equation(G, partition) == pytest.approx(2.642755, abs=1e-5)
-
-
-def test_infomap_reaches_known_optimum_karate():
-    G = nx.karate_club_graph()  # weighted (Zachary)
-    partition = nx.community.infomap_communities(G, seed=0, num_trials=20)
-    assert nx.community.is_partition(G, partition)
-    assert nx.community.map_equation(G, partition) == pytest.approx(4.087423, abs=1e-5)
-
-
-def test_infomap_reaches_known_optimum_caveman():
-    G = nx.connected_caveman_graph(5, 6)
-    partition = nx.community.infomap_communities(G, weight=None, seed=0, num_trials=10)
-    assert nx.community.map_equation(G, partition, weight=None) == pytest.approx(
-        3.089847, abs=1e-5
-    )
 
 
 def test_map_equation_directed_cycle_known_value():
@@ -221,24 +90,6 @@ def test_map_equation_directed_cycle_known_value():
     G = nx.DiGraph([(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (2, 3), (0, 4)])
     partition = [{0, 1, 2}, {3, 4, 5}]
     assert nx.community.map_equation(G, partition) == pytest.approx(1.772891, abs=1e-5)
-
-
-def test_infomap_reaches_known_optimum_gnc_dag():
-    """Growing DAGs are the hard case where Infomap's move heuristics matter
-    most; the optimizer must still reach the C++ two-level optimum. Best over a
-    few seeds keeps this robust against per-trial stochasticity."""
-    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-
-    G = nx.gnc_graph(80, seed=7)
-    best = min(
-        nx.community.map_equation(
-            G,
-            nx.community.infomap_communities(G, weight=None, seed=s, num_trials=15),
-            weight=None,
-        )
-        for s in range(3)
-    )
-    assert best == pytest.approx(2.020374, abs=1e-5)
 
 
 def test_infomap_multilevel_reaches_known_optimum_no_dep():
@@ -442,82 +293,159 @@ def test_infomap_degenerate_graphs(G):
         assert nx.community.is_partition(G, partition)
 
 
-def test_infomap_directed_reciprocal_matches_cpp():
-    """Directed graphs with reciprocal edges exercise the link-counting leftover
-    rule and the strongest-connected tie-break -- directedness must come from
-    the graph, since reciprocal equal-weight links make the flow itself
-    symmetric. The optimizer must still reach the reference C++ two-level
-    optimum."""
-    infomap = pytest.importorskip("infomap", minversion="2.14")
-    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-
-    G = nx.DiGraph(
-        [
-            (0, 1),
-            (1, 0),
-            (1, 2),
-            (2, 1),
-            (2, 0),
-            (0, 2),
-            (3, 4),
-            (4, 3),
-            (4, 5),
-            (5, 4),
-            (5, 3),
-            (3, 5),
-            (2, 3),
-        ]
-    )
-    best = min(
-        nx.community.map_equation(
-            G, nx.community.infomap_communities(G, weight=None, seed=s, num_trials=10)
-        )
-        for s in range(8)
-    )
-    im = infomap.Infomap(
-        directed=True, two_level=True, silent=True, seed=42, num_trials=80
-    )
-    for u, v in G.edges():
-        im.add_link(u, v)
-    result = im.run()
-    assert best == pytest.approx(result.codelength, abs=1e-6)
+# --- Recorded optima ----------------------------------------------------------
+#
+# Each case records a graph and the two-level codelength the reference C++
+# Infomap reports as its optimum. The optimizer here is checked against the
+# recorded number, so these tests run whether or not the `infomap` package is
+# installed and do not move when it changes. A second, skippable test re-derives
+# the same numbers from C++, which is what catches drift between the two.
 
 
-def test_infomap_nondefault_teleportation_matches_cpp():
-    """teleportation_probability shapes the flow the optimizer minimizes over. On a
-    growing DAG the tau=0.85 optimum is a *different partition* than the
-    default tau=0.15 one (evaluating the latter at tau=0.85 is ~1e-3 worse),
-    so reaching the C++ reference optimum here proves the parameter reaches
-    the flow computation rather than being silently ignored."""
-    infomap = pytest.importorskip("infomap", minversion="2.14")
-    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
+class _OptimumCase(NamedTuple):
+    id: str
+    build: object  # () -> graph
+    codelength: float
+    weight: str | None = "weight"
+    seeds: tuple = (0,)
+    num_trials: int = 10
+    teleportation_probability: float = 0.15
+    directed: bool = False
+    cpp_trials: int = 50
 
-    G = nx.gnc_graph(40, seed=3)
-    net = infomap.Network()
-    for u, v in G.edges():
-        net.add_link(u, v)
-    # The teleportation probability rides on Options: as a constructor kwarg
-    # it is pending deprecation upstream (leaves in infomap 3.0).
-    result = net.run(
-        options=infomap.Options(
-            directed=True,
-            two_level=True,
-            silent=True,
-            seed=42,
-            num_trials=100,
-            teleportation_probability=0.85,
-        )
+
+def _reciprocal_triangles():
+    return nx.DiGraph(
+        [(0, 1), (1, 0), (1, 2), (2, 1), (2, 0), (0, 2)]
+        + [(3, 4), (4, 3), (4, 5), (5, 4), (5, 3), (3, 5), (2, 3)]
     )
 
-    best = min(
+
+_OPTIMUM_CASES = [
+    _OptimumCase("barbell", lambda: nx.barbell_graph(5, 0), 2.6427550064563676),
+    _OptimumCase("karate", nx.karate_club_graph, 4.087423158819623, num_trials=20),
+    _OptimumCase(
+        "caveman",
+        lambda: nx.connected_caveman_graph(5, 6),
+        3.089850642923342,
+        weight=None,
+    ),
+    _OptimumCase(
+        # Genuinely multilevel, so this pins the two-level optimum rather than
+        # the coarsest level of the hierarchy.
+        "ring-of-cliques",
+        lambda: nx.ring_of_cliques(12, 6),
+        3.146423428048501,
+        weight=None,
+        seeds=(42,),
+        num_trials=20,
+    ),
+    _OptimumCase(
+        # Growing DAGs are the hard case for the greedy search.
+        "gnc-dag-80",
+        lambda: nx.gnc_graph(80, seed=7),
+        2.0203742478586735,
+        weight=None,
+        seeds=(0, 1, 2),
+        num_trials=15,
+        directed=True,
+        cpp_trials=100,
+    ),
+    _OptimumCase(
+        "gnc-dag-40",
+        lambda: nx.gnc_graph(40, seed=3),
+        2.3493511266833416,
+        weight=None,
+        seeds=(0, 1, 2),
+        num_trials=15,
+        directed=True,
+        cpp_trials=100,
+    ),
+    _OptimumCase(
+        # At tau=0.85 the optimum is a different partition than at the default,
+        # so this fails if teleportation_probability stops reaching the flow.
+        "gnc-dag-40-teleportation-0.85",
+        lambda: nx.gnc_graph(40, seed=3),
+        2.7403670603341608,
+        weight=None,
+        seeds=(0, 1, 2),
+        num_trials=15,
+        teleportation_probability=0.85,
+        directed=True,
+        cpp_trials=100,
+    ),
+    _OptimumCase(
+        # Reciprocal links make the flow symmetric while the graph stays
+        # directed, which exercises the directed leftover-move rule.
+        "directed-reciprocal",
+        _reciprocal_triangles,
+        1.754327284932079,
+        weight=None,
+        seeds=tuple(range(8)),
+        directed=True,
+        cpp_trials=80,
+    ),
+]
+
+
+def _best_codelength(case):
+    """Lowest codelength this implementation reaches over the case's seeds."""
+    G = case.build()
+    return min(
         nx.community.map_equation(
             G,
             nx.community.infomap_communities(
-                G, weight=None, seed=s, num_trials=15, teleportation_probability=0.85
+                G,
+                weight=case.weight,
+                seed=seed,
+                num_trials=case.num_trials,
+                teleportation_probability=case.teleportation_probability,
             ),
-            weight=None,
-            teleportation_probability=0.85,
+            weight=case.weight,
+            teleportation_probability=case.teleportation_probability,
         )
-        for s in range(3)
+        for seed in case.seeds
     )
-    assert best == pytest.approx(result.codelength, abs=1e-6)
+
+
+def _cpp_codelength(case, *, two_level=True, num_trials=None):
+    """Codelength the reference C++ Infomap reaches, or skip if it is absent."""
+    infomap = pytest.importorskip("infomap", minversion="2.14")
+    G = case.build()
+    network = infomap.Network()
+    for u, v, wt in G.edges(data=case.weight, default=1):
+        network.add_link(u, v, wt)
+    return network.run(
+        options=infomap.Options(
+            two_level=two_level,
+            silent=True,
+            seed=42,
+            directed=case.directed,
+            num_trials=case.cpp_trials if num_trials is None else num_trials,
+            teleportation_probability=case.teleportation_probability,
+        )
+    ).codelength
+
+
+@pytest.mark.parametrize("case", _OPTIMUM_CASES, ids=lambda c: c.id)
+def test_infomap_reaches_recorded_optimum(case):
+    """The optimizer reaches the recorded optimum. Runs with or without the
+    `infomap` package, so a break here is a break in networkx."""
+    assert _best_codelength(case) == pytest.approx(case.codelength, abs=1e-9)
+
+
+@pytest.mark.parametrize("case", _OPTIMUM_CASES, ids=lambda c: c.id)
+def test_recorded_optimum_matches_cpp(case):
+    """The recorded optima still agree with the reference C++ Infomap. Skipped
+    when the package is missing, so an unavailable or changed upstream stops
+    guarding against drift rather than failing the suite."""
+    assert _cpp_codelength(case) == pytest.approx(case.codelength, abs=1e-9)
+
+
+def test_recorded_multilevel_optimum_matches_cpp():
+    """Companion to test_infomap_multilevel_reaches_known_optimum_no_dep: the
+    recorded hierarchical optimum still agrees with the C++ reference."""
+    case = next(c for c in _OPTIMUM_CASES if c.id == "ring-of-cliques")
+    assert _cpp_codelength(case, two_level=False, num_trials=50) == pytest.approx(
+        3.128528943240294, abs=1e-9
+    )
