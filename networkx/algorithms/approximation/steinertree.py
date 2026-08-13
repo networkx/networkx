@@ -231,10 +231,17 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     NetworkXError
         If ``method=kou`` and `G` is not connected
 
+    KeyError
+        If ``method=mehlhorn``, `G` is not connected,  and there is not at least
+        one terminal node in every component.
+
     Notes
     -----
     For multigraphs, the edge between two nodes with minimum weight is the
     edge put into the Steiner tree.
+
+    The ``mehlhorn`` method supports graphs with multiple components, so long
+    as there is at least one terminal node in each component.
 
     References
     ----------
