@@ -451,3 +451,25 @@ def test_recorded_multilevel_optimum_matches_cpp():
     assert _cpp_codelength(case, two_level=False, num_trials=50) == pytest.approx(
         3.128528943240294, abs=1e-9
     )
+
+
+def test_infomap_terminates_on_every_atlas_graph():
+    """Both entry points terminate and return a valid partition for all 1252
+    graphs in the atlas. Louvain had an infinite loop on one of them (gh-8739)
+    from floating-point ties, and the search here alternates fine- and
+    coarse-tuning under similar thresholds, so the whole atlas is swept rather
+    than one graph pinned."""
+    from networkx.generators.atlas import graph_atlas_g
+
+    for G in graph_atlas_g():
+        if len(G) == 0:
+            continue
+        assert nx.community.is_partition(
+            G, nx.community.infomap_communities(G, seed=123)
+        )
+        levels = list(nx.community.infomap_partitions(G, seed=123))
+        for partition in levels:
+            assert nx.community.is_partition(G, partition)
+        # Levels must nest, at every graph, not just the hierarchical ones.
+        for coarse, fine in nx.utils.pairwise(levels):
+            assert all(any(c <= parent for parent in coarse) for c in fine)
