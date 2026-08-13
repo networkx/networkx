@@ -208,12 +208,35 @@ class _CoreOptimizer:
 
     def _shared_flows(self, node):
         """``module -> [exit, enter]``: flow between `node` and each module it
-        links to (out-links add to exit, in-links to enter)."""
-        shared_flow = defaultdict(lambda: [0.0, 0.0])
+        links to (out-links add to exit, in-links to enter).
+
+        Called once per node per sweep, so it avoids a default factory and, on
+        an undirected network, walks the links once: there ``in_links`` repeats
+        ``out_links``, so both halves of an entry take the same value.
+        """
+        shared_flow = {}
+        module_of = self.module_of
+        if self.directed:
+            for v, f in self.out_links[node].items():
+                module = module_of[v]
+                if (entry := shared_flow.get(module)) is None:
+                    shared_flow[module] = [f, 0.0]
+                else:
+                    entry[0] += f
+            for v, f in self.in_links[node].items():
+                module = module_of[v]
+                if (entry := shared_flow.get(module)) is None:
+                    shared_flow[module] = [0.0, f]
+                else:
+                    entry[1] += f
+            return shared_flow
         for v, f in self.out_links[node].items():
-            shared_flow[self.module_of[v]][0] += f
-        for v, f in self.in_links[node].items():
-            shared_flow[self.module_of[v]][1] += f
+            module = module_of[v]
+            if (entry := shared_flow.get(module)) is None:
+                shared_flow[module] = [f, f]
+            else:
+                entry[0] += f
+                entry[1] += f
         return shared_flow
 
     def _prepare_move(self, node, old, old_cross):
