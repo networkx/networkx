@@ -251,8 +251,8 @@ def color_degree_by_node_no_multi(G, n_colors, e_colors):
     the color tuples.
 
     Not used for largest_common_subgraph. Only for _all_morphisms when considering
-    PT == "MONO", or cases with no multigraphs present. MONO needs to allow lower
-    numbers of multiedges in the subgraph, so we can't use that as a color (which
+    problem_type == "MONO", or cases with no multigraphs present. MONO needs to allow
+    lower numbers of multiedges in the subgraph, so we can't use that as a color (which
     are essentially treated using equality checks for isomorphisms. We handle
     multiedge checks for MONO during mapping update checks rather than candidate
     identifying part of the loop. Ignoring the multiedges gives the same code we
@@ -699,10 +699,10 @@ class ISMAGS:
 
     def find_isomorphisms(self, symmetry=True):
         """left for backward compatibility. Use isomorphisms_iter"""
-        yield from self._all_morphisms(symmetry, PT="SUB")
+        yield from self._all_morphisms(symmetry, problem_type="SUB")
         return
 
-    def _all_morphisms(self, symmetry=True, PT="SUB"):
+    def _all_morphisms(self, symmetry, problem_type):
         """Find all subgraph isomorphisms between subgraph and graph
 
         Finds isomorphisms where :attr:`subgraph` <= :attr:`graph`.
@@ -712,14 +712,20 @@ class ISMAGS:
         symmetry: bool
             Whether symmetry should be taken into account. If False, found
             isomorphisms may be symmetrically equivalent.
+        problem_type : string
+            The problem type to be used:
+            - "ISO" for graph isomorphism,
+            - "MONO" for monomorphism.
+            - "SUB" or any other string produces subgraph isomorphism
+            Not checked for correctness.
 
         Yields
         ------
         dict
             The found isomorphism mappings of {graph_node: subgraph_node}.
         """
-        SG_fits = operator.eq if PT == "ISO" else operator.le
-        MONO_fits = operator.eq if PT != "MONO" else operator.le
+        SG_fits = operator.eq if problem_type == "ISO" else operator.le
+        MONO_fits = operator.eq if problem_type != "MONO" else operator.le
         # The networkx VF2 algorithm is slightly funny in when it yields an
         # empty dict and when not.
         if not self.subgraph:
@@ -735,7 +741,7 @@ class ISMAGS:
         elif not SG_fits(len(self._sge_partition), self.N_edge_colors):
             # some subgraph edges have a color that doesn't occur in graph
             return
-        if PT == "ISO":
+        if problem_type == "ISO":
             if not SG_fits(len(self._gn_partition), self.N_node_colors):
                 return
             if not SG_fits(len(self._ge_partition), self.N_edge_colors):
@@ -906,15 +912,15 @@ class ISMAGS:
         :attr:`subgraph` have the same number of nodes.
         """
         if len(self.graph) == len(self.subgraph):
-            yield from self._all_morphisms(symmetry=symmetry, PT="ISO")
+            yield from self._all_morphisms(symmetry, problem_type="ISO")
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
         """Alternative name for :meth:`_all_morphisms`."""
-        return self._all_morphisms(symmetry)
+        return self._all_morphisms(symmetry, problem_type="SUB")
 
     def monomorphisms_iter(self, symmetry=True):
         """Iterate over monomorphism."""
-        return self._all_morphisms(symmetry, PT="MONO")
+        return self._all_morphisms(symmetry, problem_type="MONO")
 
     def _get_node_color_candidate_sets(self, MONO_fits):
         """
