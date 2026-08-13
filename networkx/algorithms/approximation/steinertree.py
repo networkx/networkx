@@ -228,11 +228,13 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     ValueError
         If the specified `method` is not supported.
 
+    NetworkXError
+        If ``method=kou`` and `G` is not connected
+
     Notes
     -----
     For multigraphs, the edge between two nodes with minimum weight is the
     edge put into the Steiner tree.
-
 
     References
     ----------
