@@ -250,7 +250,7 @@ def color_degree_by_node_no_multi(G, n_colors, e_colors):
     Similar to color_degree_by_node except that multiedges are not included in
     the color tuples.
 
-    Not used for largest_common_subgraph. Only for all_morphisms when considering
+    Not used for largest_common_subgraph. Only for _all_morphisms when considering
     PT == "MONO", or cases with no multigraphs present. MONO needs to allow lower
     numbers of multiedges in the subgraph, so we can't use that as a color (which
     are essentially treated using equality checks for isomorphisms. We handle
@@ -699,10 +699,10 @@ class ISMAGS:
 
     def find_isomorphisms(self, symmetry=True):
         """left for backward compatibility. Use isomorphisms_iter"""
-        yield from self.all_morphisms(symmetry, PT="SUB")
+        yield from self._all_morphisms(symmetry, PT="SUB")
         return
 
-    def all_morphisms(self, symmetry=True, PT="SUB"):
+    def _all_morphisms(self, symmetry=True, PT="SUB"):
         """Find all subgraph isomorphisms between subgraph and graph
 
         Finds isomorphisms where :attr:`subgraph` <= :attr:`graph`.
@@ -902,19 +902,19 @@ class ISMAGS:
 
     def isomorphisms_iter(self, symmetry=True):
         """
-        Does the same as :meth:`all_morphisms` if :attr:`graph` and
+        Does the same as :meth:`_all_morphisms` if :attr:`graph` and
         :attr:`subgraph` have the same number of nodes.
         """
         if len(self.graph) == len(self.subgraph):
-            yield from self.all_morphisms(symmetry=symmetry, PT="ISO")
+            yield from self._all_morphisms(symmetry=symmetry, PT="ISO")
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
-        """Alternative name for :meth:`all_morphisms`."""
-        return self.all_morphisms(symmetry)
+        """Alternative name for :meth:`_all_morphisms`."""
+        return self._all_morphisms(symmetry)
 
     def monomorphisms_iter(self, symmetry=True):
         """Iterate over monomorphism."""
-        return self.all_morphisms(symmetry, PT="MONO")
+        return self._all_morphisms(symmetry, PT="MONO")
 
     def _get_node_color_candidate_sets(self, MONO_fits):
         """
