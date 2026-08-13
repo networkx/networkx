@@ -652,6 +652,9 @@ def partition_quality(G, partition):
     ------
     NetworkXError
         If `partition` is not a valid partition of the nodes of `G`.
+    NetworkXPointlessConcept
+        If `G` has no edges (coverage is undefined) or fewer than 2 nodes
+        (performance is undefined for a non-multigraph).
 
     Notes
     -----
@@ -701,11 +704,19 @@ def partition_quality(G, partition):
         else:
             inter_community_non_edges -= 1
 
+    if len(G.edges) == 0:
+        raise nx.NetworkXPointlessConcept(
+            "coverage is undefined for a graph with no edges"
+        )
     coverage = intra_community_edges / len(G.edges)
 
     if G.is_multigraph():
         performance = -1.0
     else:
+        if total_pairs == 0:
+            raise nx.NetworkXPointlessConcept(
+                "performance is undefined for a graph with fewer than 2 nodes"
+            )
         performance = (intra_community_edges + inter_community_non_edges) / total_pairs
 
     return coverage, performance

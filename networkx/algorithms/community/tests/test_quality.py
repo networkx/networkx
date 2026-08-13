@@ -52,6 +52,23 @@ class TestCoverage:
         assert 6 / 7 == pytest.approx(partition_quality(G, partition)[0], abs=1e-7)
 
 
+def test_partition_quality_no_edges_raises():
+    # GH#8830: ZeroDivisionError when the graph has no edges
+    G = nx.Graph()
+    G.add_nodes_from([0, 1, 2])
+    with pytest.raises(nx.NetworkXPointlessConcept, match="no edges"):
+        partition_quality(G, [{0}, {1, 2}])
+
+
+def test_partition_quality_single_node_raises():
+    # GH#8830: ZeroDivisionError for performance when n < 2
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_edge(0, 0)  # self-loop so edges is non-empty
+    with pytest.raises(nx.NetworkXPointlessConcept, match="fewer than 2 nodes"):
+        partition_quality(G, [{0}])
+
+
 def test_modularity():
     G = nx.barbell_graph(3, 0)
     C = [{0, 1, 4}, {2, 3, 5}]
