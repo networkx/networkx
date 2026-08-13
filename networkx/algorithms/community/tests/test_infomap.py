@@ -431,6 +431,8 @@ def _cpp_codelength(case, *, two_level=True, num_trials=None):
 def test_infomap_reaches_recorded_optimum(case):
     """The optimizer reaches the recorded optimum. Runs with or without the
     `infomap` package, so a break here is a break in networkx."""
+    if case.directed:
+        pytest.importorskip("scipy")  # directed flow uses nx.pagerank
     assert _best_codelength(case) == pytest.approx(case.codelength, abs=1e-9)
 
 

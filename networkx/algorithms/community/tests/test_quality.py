@@ -703,6 +703,8 @@ def _cpp_codelength(case):
 def test_map_equation_matches_ground_truth(case):
     """map_equation reproduces the recorded codelength. Runs with or without
     the `infomap` package, so a break here is a break in networkx."""
+    if case.directed:
+        pytest.importorskip("scipy")  # directed flow uses nx.pagerank
     codelength = map_equation(
         case.build(),
         case.communities,
