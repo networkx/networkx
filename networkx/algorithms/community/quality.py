@@ -75,18 +75,16 @@ def _undirected_flow(G, weight):
     the walker enters or leaves it. A self-loop never crosses a boundary, so it
     appears once.
     """
-    self_loop = {}
-    for u, v, wt in G.edges(data=weight, default=1):
-        if u == v:
-            self_loop[u] = self_loop.get(u, 0.0) + wt
-    # 2m with self-loops counted once (Infomap's undirected normalization).
-    total_strength = 2 * G.size(weight=weight) - sum(self_loop.values())
+    visit_rate = dict(G.degree(weight=weight))
+    # Undo the second count of each self-loop, giving 2m with self-loops
+    # counted once (Infomap's undirected normalization).
+    for node, _, wt in nx.selfloop_edges(G, data=weight, default=1):
+        visit_rate[node] -= wt
+    total_strength = sum(visit_rate.values())
     if total_strength == 0:  # no edges (or only zero-weight edges), no flow
         return {node: 0.0 for node in G}, []
-    visit_rate = {
-        node: (strength - self_loop.get(node, 0.0)) / total_strength
-        for node, strength in G.degree(weight=weight)
-    }
+    for node in visit_rate:
+        visit_rate[node] /= total_strength
 
     link_flows = []
     for u, v, wt in G.edges(data=weight, default=1):
@@ -113,16 +111,15 @@ def _directed_flow(G, weight, teleportation_probability, tol=1e-13):
     one further link-following step (with no teleportation) on top of ``pi``
     yields the visit rates and link flows the codebooks are built from.
     """
-    nodes = list(G)
     out_strength = dict(G.out_degree(weight=weight))
-    dangling = [u for u in nodes if out_strength[u] == 0]
+    dangling = [u for u, strength in out_strength.items() if strength == 0]
     sum_out = sum(out_strength.values())
     if sum_out == 0:  # no out-links anywhere: uniform visits, nothing crosses
-        return {u: 1 / len(nodes) for u in nodes}, []
+        return {u: 1 / len(G) for u in G}, []
 
     # Teleport in proportion to out-degree (Infomap's default "to links"); this
     # is exactly PageRank's personalization (and dangling) vector.
-    teleport = {u: out_strength[u] / sum_out for u in nodes}
+    teleport = {u: strength / sum_out for u, strength in out_strength.items()}
     pi = nx.pagerank(
         G,
         alpha=1 - teleportation_probability,
@@ -137,7 +134,7 @@ def _directed_flow(G, weight, teleportation_probability, tol=1e-13):
     # renormalizing away the flow that would have teleported. The result is the
     # visit rate and per-link flow the codebooks are built from.
     sum_node_rank = 1 - sum(pi[u] for u in dangling)
-    visit_rate = {u: 0.0 for u in nodes}
+    visit_rate = {u: 0.0 for u in G}
     link_flows = []
     for u, v, wt in G.edges(data=weight, default=1):
         # A dangling source (zero out-strength) redistributes its flow purely by
@@ -216,7 +213,7 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
     >>> nx.community.map_equation(G, [{0, 1, 2}, {3, 4, 5}])
     2.3207303568337903
 
-    Coding the same walk with a single module costs more:
+    Coding the same walk with a single module costs more bits:
 
     >>> nx.community.map_equation(G, [set(G)])
     2.556656707462823

@@ -3,6 +3,8 @@ module.
 
 """
 
+from typing import NamedTuple
+
 import pytest
 
 import networkx as nx
@@ -560,134 +562,6 @@ def test_map_equation_not_a_partition():
             map_equation(G, communities)
 
 
-def test_map_equation_matches_cpp_infomap_on_karate():
-    """Cross-validate the codelength against the reference C++ Infomap on the
-    two-level partition it finds for Zachary's karate club. Skips if the
-    ``infomap`` package is not installed (it is not a NetworkX dependency) or
-    predates the Result API of infomap 2.14."""
-    infomap = pytest.importorskip("infomap", minversion="2.14")
-
-    G = nx.karate_club_graph()
-
-    im = infomap.Infomap(two_level=True, silent=True, seed=42)
-    for u, v, w in G.edges(data="weight", default=1):
-        im.add_link(u, v, w)
-    result = im.run()
-
-    modules = {}
-    for node, module in result.modules().items():
-        modules.setdefault(module, set()).add(node)
-    partition = list(modules.values())
-
-    assert map_equation(G, partition) == pytest.approx(result.codelength, abs=1e-6)
-
-
-def test_map_equation_matches_cpp_infomap_directed():
-    """Cross-validate directed-flow codelength against the reference C++
-    Infomap (default unrecorded teleportation to links, tau=0.15)."""
-    infomap = pytest.importorskip("infomap", minversion="2.14")
-    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-
-    G = nx.DiGraph()
-    G.add_edges_from([(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (2, 3), (0, 4)])
-
-    im = infomap.Infomap(directed=True, two_level=True, silent=True, seed=42)
-    for u, v in G.edges():
-        im.add_link(u, v)
-    result = im.run()
-
-    modules = {}
-    for node, module in result.modules().items():
-        modules.setdefault(module, set()).add(node)
-    partition = list(modules.values())
-
-    assert map_equation(G, partition) == pytest.approx(result.codelength, abs=1e-9)
-
-
-def test_map_equation_directed_with_dangling_nodes():
-    """Directed flow must match C++ Infomap when the graph has dangling nodes
-    (out-degree zero), exercising the unrecorded-teleportation normalization."""
-    infomap = pytest.importorskip("infomap", minversion="2.14")
-    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-
-    G = nx.DiGraph()
-    G.add_edges_from([(0, 1), (1, 2), (2, 0), (2, 3), (3, 4), (0, 4)])  # 4 dangles
-
-    im = infomap.Infomap(directed=True, two_level=True, silent=True, seed=42)
-    for u, v in G.edges():
-        im.add_link(u, v)
-    result = im.run()
-
-    modules = {}
-    for node, module in result.modules().items():
-        modules.setdefault(module, set()).add(node)
-    partition = list(modules.values())
-
-    assert map_equation(G, partition) == pytest.approx(result.codelength, abs=1e-9)
-
-
-def test_map_equation_directed_asymmetric_enter_exit():
-    """On a directed graph where modules have different enter and exit flow
-    (e.g. a growing DAG), the codelength must still match C++ Infomap. This
-    guards the directed index term, which uses enter flow, not exit flow."""
-    infomap = pytest.importorskip("infomap", minversion="2.14")
-    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-
-    G = nx.gnc_graph(40, seed=3)
-
-    im = infomap.Infomap(
-        directed=True, two_level=True, silent=True, seed=42, num_trials=50
-    )
-    for u, v in G.edges():
-        im.add_link(u, v)
-    result = im.run()
-    modules = {}
-    for node, module in result.modules().items():
-        modules.setdefault(module, set()).add(node)
-    partition = list(modules.values())
-
-    assert map_equation(G, partition, weight=None) == pytest.approx(
-        result.codelength, abs=1e-9
-    )
-
-
-def test_map_equation_matches_cpp_nondefault_teleportation():
-    """`teleportation_probability` is wired through to the directed flow: at a
-    non-default value the codelength must match the reference C++ Infomap run
-    with the same teleportation probability."""
-    infomap = pytest.importorskip("infomap", minversion="2.14")
-    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
-
-    G = nx.DiGraph()
-    G.add_edges_from([(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (2, 3), (0, 4)])
-
-    net = infomap.Network()
-    for u, v in G.edges():
-        net.add_link(u, v)
-    # The teleportation probability rides on Options: as a constructor kwarg
-    # it is pending deprecation upstream (leaves in infomap 3.0).
-    result = net.run(
-        options=infomap.Options(
-            directed=True,
-            two_level=True,
-            silent=True,
-            seed=42,
-            teleportation_probability=0.5,
-        )
-    )
-
-    modules = {}
-    for node, module in result.modules().items():
-        modules.setdefault(module, set()).add(node)
-    partition = list(modules.values())
-
-    codelength = map_equation(G, partition, teleportation_probability=0.5)
-    assert codelength == pytest.approx(result.codelength, abs=1e-9)
-    # Guard against vacuous parity (both sides ignoring the parameter): the
-    # non-default value must actually change the codelength.
-    assert codelength != pytest.approx(map_equation(G, partition))
-
-
 def test_map_equation_undirected_self_loop_known_value():
     """A self-loop is one transition that keeps the walker in place, so it
     counts once toward the visit rate (Infomap's undirected normalization
@@ -700,59 +574,147 @@ def test_map_equation_undirected_self_loop_known_value():
     assert map_equation(G, [{0, 1, 2, 3}]) == pytest.approx(1.858555, abs=1e-5)
 
 
-def test_map_equation_undirected_self_loops_match_cpp():
-    """Cross-validate the codelength on an undirected graph with self-loops
-    against the reference C++ Infomap, which treats a self-loop as a single
-    transition that never crosses a module boundary."""
-    infomap = pytest.importorskip("infomap", minversion="2.14")
+# --- Ground-truth codelengths -------------------------------------------------
+#
+# Each case records a graph, a partition, and the codelength the reference C++
+# Infomap reports for it. networkx is checked against the recorded number, so
+# these tests run whether or not the `infomap` package is installed and do not
+# move when it changes. A second, skippable test re-derives the same numbers
+# from the C++ implementation, which is what catches drift between the two.
 
+
+class _MapEquationCase(NamedTuple):
+    id: str
+    build: object  # () -> graph
+    communities: list
+    codelength: float
+    weight: str | None = "weight"
+    teleportation_probability: float = 0.15
+    directed: bool = False
+    num_trials: int = 1
+
+
+def _directed_cycles():
+    return nx.DiGraph([(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (2, 3), (0, 4)])
+
+
+def _undirected_self_loops():
     G = nx.Graph()
     G.add_weighted_edges_from(
+        [(0, 1, 1), (1, 2, 1), (2, 0, 1), (3, 4, 1), (4, 5, 1), (5, 3, 1), (2, 3, 1)]
+        + [(0, 0, 2), (4, 4, 3)]
+    )
+    return G
+
+
+_MAP_EQUATION_CASES = [
+    _MapEquationCase(
+        "karate",
+        nx.karate_club_graph,
         [
-            (0, 1, 1),
-            (1, 2, 1),
-            (2, 0, 1),
-            (3, 4, 1),
-            (4, 5, 1),
-            (5, 3, 1),
-            (2, 3, 1),
-            (0, 0, 2),
-            (4, 4, 3),
-        ]
-    )
+            {0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21},
+            {4, 5, 6, 10, 16},
+            {8, 9, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33},
+        ],
+        4.087423158819623,
+    ),
+    _MapEquationCase(
+        "directed-cycles",
+        _directed_cycles,
+        [{0, 1, 2}, {3, 4, 5}],
+        1.77289125575288,
+        directed=True,
+    ),
+    _MapEquationCase(
+        "directed-dangling",
+        lambda: nx.DiGraph([(0, 1), (1, 2), (2, 0), (2, 3), (3, 4), (0, 4)]),
+        [{0, 1, 2}, {3, 4}],
+        1.9850494902284956,
+        directed=True,
+    ),
+    _MapEquationCase(
+        # A growing DAG: enter and exit flow differ per module, which is what
+        # exercises the directed index term.
+        "gnc-dag",
+        lambda: nx.gnc_graph(40, seed=3),
+        [
+            {0, 1, 3, 4, 6, 10, 13, 20, 23, 32},
+            {2, 26},
+            {5, 27, 36, 38},
+            {7, 9, 15, 16, 19, 21, 24, 25, 28, 31, 35, 37, 39},
+            {8, 11, 14},
+            {12, 17, 22, 33},
+            {18, 29},
+            {30, 34},
+        ],
+        2.3493511266833416,
+        weight=None,
+        directed=True,
+        num_trials=50,
+    ),
+    _MapEquationCase(
+        "directed-teleportation-0.5",
+        _directed_cycles,
+        [{0, 1, 2}, {3, 4, 5}],
+        2.008314883625276,
+        teleportation_probability=0.5,
+        directed=True,
+    ),
+    _MapEquationCase(
+        "undirected-self-loops",
+        _undirected_self_loops,
+        [{0, 1, 2}, {3, 4, 5}],
+        2.1133480671115863,
+    ),
+    _MapEquationCase(
+        "directed-self-loops",
+        lambda: nx.DiGraph(
+            [(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (2, 3), (0, 4), (0, 0)]
+            + [(4, 4)]
+        ),
+        [{0, 1, 2}, {3, 4, 5}],
+        1.6879974334326313,
+        weight=None,
+        directed=True,
+    ),
+]
 
-    im = infomap.Infomap(two_level=True, silent=True, seed=42)
-    for u, v, w in G.edges(data="weight", default=1):
-        im.add_link(u, v, w)
-    result = im.run()
-    modules = {}
-    for node, module in result.modules().items():
-        modules.setdefault(module, set()).add(node)
-    partition = list(modules.values())
 
-    assert map_equation(G, partition) == pytest.approx(result.codelength, abs=1e-9)
-
-
-def test_map_equation_directed_self_loops_match_cpp():
-    """Directed self-loops are ordinary links in the PageRank walk, so the
-    codelength must match C++ Infomap on a directed graph that has them."""
+def _cpp_codelength(case):
+    """Codelength the reference C++ Infomap reports for `case`, or skip."""
     infomap = pytest.importorskip("infomap", minversion="2.14")
-    pytest.importorskip("scipy")  # directed flow uses nx.pagerank
+    G = case.build()
+    network = infomap.Network()
+    for u, v, wt in G.edges(data=case.weight, default=1):
+        network.add_link(u, v, wt)
+    return network.run(
+        options=infomap.Options(
+            two_level=True,
+            silent=True,
+            seed=42,
+            directed=case.directed,
+            num_trials=case.num_trials,
+            teleportation_probability=case.teleportation_probability,
+        )
+    ).codelength
 
-    G = nx.DiGraph()
-    G.add_edges_from(
-        [(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (2, 3), (0, 4), (0, 0), (4, 4)]
+
+@pytest.mark.parametrize("case", _MAP_EQUATION_CASES, ids=lambda c: c.id)
+def test_map_equation_matches_ground_truth(case):
+    """map_equation reproduces the recorded codelength. Runs with or without
+    the `infomap` package, so a break here is a break in networkx."""
+    codelength = map_equation(
+        case.build(),
+        case.communities,
+        weight=case.weight,
+        teleportation_probability=case.teleportation_probability,
     )
+    assert codelength == pytest.approx(case.codelength, abs=1e-9)
 
-    im = infomap.Infomap(directed=True, two_level=True, silent=True, seed=42)
-    for u, v in G.edges():
-        im.add_link(u, v)
-    result = im.run()
-    modules = {}
-    for node, module in result.modules().items():
-        modules.setdefault(module, set()).add(node)
-    partition = list(modules.values())
 
-    assert map_equation(G, partition, weight=None) == pytest.approx(
-        result.codelength, abs=1e-9
-    )
+@pytest.mark.parametrize("case", _MAP_EQUATION_CASES, ids=lambda c: c.id)
+def test_map_equation_ground_truth_matches_cpp(case):
+    """The recorded codelengths still agree with the reference C++ Infomap.
+    Skipped when the `infomap` package is missing, so an unavailable or changed
+    upstream stops guarding against drift rather than failing the suite."""
+    assert _cpp_codelength(case) == pytest.approx(case.codelength, abs=1e-9)
