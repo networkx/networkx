@@ -843,6 +843,103 @@ def test_ancestors_descendants_undirected():
     nx.ancestors(G, 2) == nx.descendants(G, 2) == {0, 1, 3, 4}
 
 
+class TestDynamicTopologicalSorter:
+    def test_add_node(self):
+        s = nx.DynamicTopologicalSorter()
+        s.add_node("a")
+        s.add_node("b")
+        assert s.topological_order() == ["a", "b"]
+
+    def test_add_node_duplicate(self):
+        s = nx.DynamicTopologicalSorter()
+        s.add_node("a")
+        s.add_node("a")
+        assert s.topological_order() == ["a"]
+
+    def test_add_edge_fast_path(self):
+        s = nx.DynamicTopologicalSorter()
+        s.add_node("a")
+        s.add_node("b")
+        s.add_node("c")
+        s.add_edge("a", "b")
+        s.add_edge("b", "c")
+        assert s.topological_order() == ["a", "b", "c"]
+
+    def test_add_edge_auto_adds_nodes(self):
+        s = nx.DynamicTopologicalSorter()
+        s.add_edge("x", "y")
+        order = s.topological_order()
+        assert order.index("x") < order.index("y")
+
+    def test_add_edge_reorder(self):
+        s = nx.DynamicTopologicalSorter()
+        for n in ["a", "b", "c", "d", "e"]:
+            s.add_node(n)
+        s.add_edge("a", "b")
+        s.add_edge("b", "c")
+        s.add_edge("c", "d")
+        # e is at position 4, b is at position 1 — violated
+        s.add_edge("e", "b")
+        order = s.topological_order()
+        assert order.index("e") < order.index("b")
+        assert order.index("b") < order.index("c")
+        assert order.index("c") < order.index("d")
+
+    def test_add_edge_duplicate_no_op(self):
+        s = nx.DynamicTopologicalSorter()
+        s.add_edge("a", "b")
+        s.add_edge("a", "b")
+        assert s.topological_order().index("a") < s.topological_order().index("b")
+
+    def test_cycle_detection(self):
+        s = nx.DynamicTopologicalSorter()
+        s.add_edge("a", "b")
+        s.add_edge("b", "c")
+        with pytest.raises(nx.NetworkXUnfeasible):
+            s.add_edge("c", "a")
+
+    def test_self_loop(self):
+        s = nx.DynamicTopologicalSorter()
+        with pytest.raises(nx.NetworkXUnfeasible):
+            s.add_edge("a", "a")
+
+    def test_remove_edge(self):
+        s = nx.DynamicTopologicalSorter()
+        s.add_edge("a", "b")
+        s.remove_edge("a", "b")
+        order = s.topological_order()
+        assert "a" in order and "b" in order
+
+    def test_remove_edge_missing(self):
+        s = nx.DynamicTopologicalSorter()
+        s.add_node("a")
+        with pytest.raises(nx.NetworkXError):
+            s.remove_edge("a", "b")
+
+    def test_remove_node(self):
+        s = nx.DynamicTopologicalSorter()
+        s.add_edge("a", "b")
+        s.add_edge("b", "c")
+        s.remove_node("b")
+        assert s.topological_order() == ["a", "c"]
+
+    def test_remove_node_missing(self):
+        s = nx.DynamicTopologicalSorter()
+        with pytest.raises(nx.NetworkXError):
+            s.remove_node("z")
+
+    def test_constructor_with_graph(self):
+        G = nx.DiGraph([("a", "b"), ("b", "c")])
+        s = nx.DynamicTopologicalSorter(G)
+        order = s.topological_order()
+        assert order.index("a") < order.index("b")
+        assert order.index("b") < order.index("c")
+
+    def test_constructor_undirected_raises(self):
+        G = nx.Graph([("a", "b")])
+        with pytest.raises(nx.NetworkXError):
+            nx.DynamicTopologicalSorter(G)
+
 def test_v_structures_raise():
     G = nx.Graph()
     with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
