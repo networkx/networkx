@@ -1524,6 +1524,25 @@ class DynamicTopologicalSorter:
         self._reorder(u, v)
         self._graph.add_edge(u, v)
 
+    def remove_edge(self, u, v):
+        """Remove edge u -> v from the sorter.
+
+        Raises NetworkXError if the edge does not exist.
+        """
+        if not self._graph.has_edge(u, v):
+            raise nx.NetworkXError(f"Edge ({u}, {v}) not in graph.")
+        self._graph.remove_edge(u, v)
+
+    def remove_node(self, n):
+        """Remove node n and all its edges from the sorter.
+
+        Raises NetworkXError if the node does not exist.
+        """
+        if n not in self._pos:
+            raise nx.NetworkXError(f"Node {n} not in graph.")
+        self._graph.remove_node(n)
+        del self._pos[n]
+
     def _dfs_forward(self, start, lower, upper, source):
         # collect nodes reachable from start within position range [lower, upper]
         # raises NetworkXUnfeasible if source is reached (cycle)
