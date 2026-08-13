@@ -180,7 +180,7 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     edge weights) among all such trees.
 
     The approximation algorithm is specified with the `method` keyword
-    argument. All three available algorithms produce a tree whose weight is
+    argument. All available algorithms produce a tree whose weight is
     within a ``(2 - (2 / l))`` factor of the weight of the optimal Steiner tree,
     where ``l`` is the minimum number of leaf nodes across all possible Steiner
     trees.
