@@ -200,7 +200,7 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
 
     Raises
     ------
-    NetworkXError
+    NotAPartition
         If `communities` is not a partition of the nodes of `G`.
     ValueError
         If any edge weight is negative or not finite.
@@ -224,9 +224,10 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
        networks reveal community structure. PNAS 105, 1118-1123 (2008).
        https://doi.org/10.1073/pnas.0706851105
     """
-    communities = [set(c) for c in communities]
+    if not isinstance(communities, list):
+        communities = list(communities)
     if not is_partition(G, communities):
-        raise nx.NetworkXError("`communities` is not a partition of the nodes of `G`")
+        raise NotAPartition(G, communities)
     module_of = {node: i for i, c in enumerate(communities) for node in c}
     visit_rate, link_flows = _flow(G, weight, teleportation_probability)
     return _codelength(visit_rate, link_flows, module_of)

@@ -552,14 +552,18 @@ def test_map_equation_two_triangles_hand_calculated():
 
 
 def test_map_equation_not_a_partition():
-    """`communities` must partition the nodes: both an uncovered node and an
-    overlapping node raise the documented NetworkXError."""
+    """`communities` must partition the nodes. An uncovered node, an
+    overlapping node and a node listed twice within one community all raise,
+    matching what modularity rejects for the same input."""
     G = nx.barbell_graph(3, 0)
     missing_node = [{0, 1, 2}, {3, 4}]
     overlapping = [{0, 1, 2, 3}, {3, 4, 5}]
-    for communities in (missing_node, overlapping):
-        with pytest.raises(nx.NetworkXError, match="not a partition"):
+    duplicated = [[0, 0, 1, 2], [3, 4, 5]]
+    for communities in (missing_node, overlapping, duplicated):
+        with pytest.raises(nx.NetworkXError, match="not a valid partition"):
             map_equation(G, communities)
+        with pytest.raises(nx.NetworkXError, match="not a valid partition"):
+            modularity(G, communities)
 
 
 def test_map_equation_undirected_self_loop_known_value():
