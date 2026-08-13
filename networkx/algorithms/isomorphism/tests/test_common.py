@@ -747,15 +747,24 @@ def test_monomorphism_path_in_cycle(iso_ic, symmetry, Gclass):
 
     mono = "mono" in iso_ic.__name__
     assert mono == iso_ic(FG, SG, symmetry=symmetry)
+
+    # Test self-loop multiedges
+    # Add a multiedge to FG, then too many to SG, then even them out again.
+    # is_mono functions should pass on all except when SG has more multiedges than FG
+    # is_SG functions should fail on all b/c induced SG cant be missing edge (13, 0)
     if FG.is_multigraph():
+        # more edges in FG does not affect is_mono
         FG.add_edge(3, 3)
         assert mono == iso_ic(FG, SG, symmetry=symmetry)
+        # too many multiedge loops in SG rules out morphism
         SG.add_edge(3, 3)
-        assert mono == iso_ic(FG, SG, symmetry=symmetry)
         SG.add_edge(3, 3)
         assert not iso_ic(FG, SG, symmetry=symmetry)
+        # equal number in SG and FG so back True is_mono
         FG.add_edge(3, 3)
         assert mono == iso_ic(FG, SG, symmetry=symmetry)
+
+    # an extra SG multiedge loop rules out morphism
     SG.add_edge(7, 7)
     assert not iso_ic(FG, SG, symmetry=symmetry)
 
@@ -789,6 +798,7 @@ def test_monomorphism_count_for_path_in_cycle(mono_iter, symmetry, Gclass):
     ans = 1 if (FG.is_directed() or FG.is_multigraph()) else 2
     assert sum(1 for _ in mappings) == ans
 
+    # test multigraph to non-multigraph: simple edge equiv to single multiedge
     if FG.is_multigraph():
         USG = nx.DiGraph(SG) if FG.is_directed() else nx.Graph(SG)
         mappings = mono_iter(FG, USG, symmetry=symmetry)
@@ -799,7 +809,8 @@ def test_monomorphism_count_for_path_in_cycle(mono_iter, symmetry, Gclass):
         mappings = mono_iter(UFG, SG, symmetry=symmetry)
         assert sum(1 for _ in mappings) == 0
 
-    SG.add_edge(10, 11)
+    # Add multiedge to SG. Lowers numb mappings (unless not multigraph cuz not added)
+    SG.add_edge(10, 11)  # multiedge to SG
     mappings = mono_iter(FG, SG, symmetry=symmetry)
     assert sum(1 for _ in mappings) == 0 if FG.is_multigraph() else 1
 
