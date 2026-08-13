@@ -30,7 +30,7 @@ from typing import NamedTuple
 
 import networkx as nx
 from networkx.algorithms.community.quality import _codelength, _flow, _plogp
-from networkx.utils import py_random_state
+from networkx.utils import groups, py_random_state
 
 __all__ = ["infomap_communities", "infomap_partitions"]
 
@@ -156,11 +156,10 @@ class _CoreOptimizer:
         self.module_flow = defaultdict(float)
         self.module_enter = defaultdict(float)
         self.module_exit = defaultdict(float)
-        self.module_members = Counter()
+        self.module_members = Counter(self.module_of.values())
         for u in flow:
             m = self.module_of[u]
             self.module_flow[m] += flow[u]
-            self.module_members[m] += 1
             for v, f in self.out_links[u].items():
                 if self.module_of[v] != m:
                     self.module_exit[m] += f
@@ -334,8 +333,10 @@ class _CoreOptimizer:
                     len(self.out_links[node]) + len(self.in_links[node])
                     <= _MAX_DEGREE_FOR_RANDOM_MOVES
                 ):
-                    for _ in range(_NUM_RANDOM_MOVES):
-                        candidates.add(self.module_of[self.seed.choice(nodes)])
+                    candidates.update(
+                        self.module_of[n]
+                        for n in self.seed.choices(nodes, k=_NUM_RANDOM_MOVES)
+                    )
                 candidates.discard(current)
                 empty_module = None
                 if self.module_members[current] > 1:
@@ -463,9 +464,8 @@ def _collapse(flow, links, module_of):
 def _induced(flow, links, nodes):
     """Restrict the flow network to `nodes`: their visit rates and the links
     with both endpoints inside (the induced sub-network)."""
-    nodeset = set(nodes)
     sub_flow = {node: flow[node] for node in nodes}
-    sub_links = [(u, v, f) for u, v, f in links if u in nodeset and v in nodeset]
+    sub_links = [(u, v, f) for u, v, f in links if u in sub_flow and v in sub_flow]
     return sub_flow, sub_links
 
 
@@ -510,9 +510,7 @@ def _coarse_tune(flow, links, module_of, seed, directed):
     optimizing the induced sub-network, then let those sub-modules regroup
     starting from the current modular structure. Returns a ``node -> module``
     mapping (the caller decides whether it improved)."""
-    members = defaultdict(list)
-    for node, module in module_of.items():
-        members[module].append(node)
+    members = groups(module_of)
 
     submodule_of = {}
     offset = 0
@@ -625,9 +623,7 @@ def _hierarchical_codelength(flow, links, path):
     for module in prefixes:
         if len(module) > 1:
             children[module[:-1]].add(module)
-    leaf_nodes = defaultdict(list)
-    for node, node_path in path.items():
-        leaf_nodes[node_path].append(node)
+    leaf_nodes = groups(path)
 
     # A link u->v crosses the boundary of every module that contains exactly one
     # of its endpoints: those strictly below the level where the two paths first
@@ -696,12 +692,10 @@ def _find_super_modules(flow, links, module_of, seed, directed):
 def _refine_hierarchy(flow, links, path, seed, directed):
     """Recursively split each innermost module into sub-modules, appending a
     deeper level whenever it lowers the hierarchical codelength."""
-    groups = defaultdict(list)
-    for node, p in path.items():
-        groups[p].append(node)
+    innermost = groups(path)
     changed = False
     new_path = dict(path)
-    for p, nodes in groups.items():
+    for p, nodes in innermost.items():
         if len(nodes) <= 2:
             continue
         sub_flow, sub_links = _induced(flow, links, nodes)
@@ -876,34 +870,25 @@ def infomap_communities(
     if not flow:
         return []  # empty graph
     module_of = _best_two_level(flow, link_flows, seed, num_trials, G.is_directed())
-    groups = {}
-    for node, module in module_of.items():
-        groups.setdefault(module, set()).add(node)
-    return list(groups.values())
+    return list(groups(module_of).values())
 
 
 def _best_two_level(flow, links, seed, num_trials, directed):
     """Return the lowest-codelength two-level partition over `num_trials`
     restarts, as a ``node -> module`` mapping."""
-    best_module_of, best_codelength = None, float("inf")
-    for _ in range(num_trials):
-        module_of = _partition(flow, links, seed, directed)
-        codelength = _codelength(flow, links, module_of)
-        if codelength < best_codelength:
-            best_codelength, best_module_of = codelength, module_of
-    return best_module_of
+    return min(
+        (_partition(flow, links, seed, directed) for _ in range(num_trials)),
+        key=lambda module_of: _codelength(flow, links, module_of),
+    )
 
 
 def _best_hierarchy(flow, links, seed, num_trials, directed):
     """Return the lowest-codelength multilevel partition over `num_trials`
     restarts, as a ``node -> path`` mapping (top module first)."""
-    best_path, best_codelength = None, float("inf")
-    for _ in range(num_trials):
-        path = _build_hierarchy(flow, links, seed, directed)
-        codelength = _hierarchical_codelength(flow, links, path)
-        if codelength < best_codelength:
-            best_codelength, best_path = codelength, path
-    return best_path
+    return min(
+        (_build_hierarchy(flow, links, seed, directed) for _ in range(num_trials)),
+        key=lambda path: _hierarchical_codelength(flow, links, path),
+    )
 
 
 @py_random_state("seed")
@@ -990,7 +975,4 @@ def _expand_levels(path):
     coarsest level first; each is a list of node sets covering all of `G`."""
     depth = max(len(p) for p in path.values())
     for level in range(1, depth + 1):
-        groups = {}
-        for node, node_path in path.items():
-            groups.setdefault(node_path[:level], set()).add(node)
-        yield list(groups.values())
+        yield list(groups({n: q[:level] for n, q in path.items()}).values())

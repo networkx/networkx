@@ -130,7 +130,7 @@ def test_infomap_partitions_yields_nested_levels():
     # ...and the levels genuinely nest: every community of a finer level is a
     # subset of some community one level coarser (a true refinement, not a
     # reshuffle that merely happens to have more parts).
-    for coarse, fine in zip(levels, levels[1:]):
+    for coarse, fine in nx.utils.pairwise(levels):
         for community in fine:
             assert any(community <= parent for parent in coarse)
 

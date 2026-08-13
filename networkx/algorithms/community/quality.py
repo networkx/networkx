@@ -248,9 +248,8 @@ def _flow(G, weight="weight", teleportation_probability=0.15):
     # Flow is a probability distribution, so weights must be finite and
     # non-negative; reject ill-defined inputs instead of returning a
     # clean-looking but meaningless codelength.
-    for _, _, wt in G.edges(data=weight, default=1):
-        if not isfinite(wt) or wt < 0:
-            raise ValueError("edge weights must be finite and non-negative")
+    if any(not isfinite(wt) or wt < 0 for _, _, wt in G.edges(data=weight, default=1)):
+        raise ValueError("edge weights must be finite and non-negative")
     if G.is_directed():
         return _directed_flow(G, weight, teleportation_probability)
     return _undirected_flow(G, weight)
