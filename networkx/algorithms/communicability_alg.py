@@ -44,7 +44,7 @@ def communicability(G):
     This algorithm uses a spectral decomposition of the adjacency matrix.
     Let $G=(V,E)$ be a simple undirected graph.  Using the connection between
     the powers of the adjacency matrix and the number of walks in the graph,
-    the communicability  between nodes ``u`` and ``v`` based on the graph spectrum
+    the communicability between nodes ``u`` and ``v`` based on the graph spectrum
     is:
 
     .. math::
