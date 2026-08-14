@@ -180,7 +180,7 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     edge weights) among all such trees.
 
     The approximation algorithm is specified with the `method` keyword
-    argument. All three available algorithms produce a tree whose weight is
+    argument. All available algorithms produce a tree whose weight is
     within a ``(2 - (2 / l))`` factor of the weight of the optimal Steiner tree,
     where ``l`` is the minimum number of leaf nodes across all possible Steiner
     trees.
@@ -228,11 +228,20 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     ValueError
         If the specified `method` is not supported.
 
+    NetworkXError
+        If ``method=kou`` and `G` is not connected
+
+    KeyError
+        If ``method=mehlhorn``, `G` is not connected, and there is not at least
+        one terminal node in every component.
+
     Notes
     -----
     For multigraphs, the edge between two nodes with minimum weight is the
     edge put into the Steiner tree.
 
+    The ``mehlhorn`` method supports graphs with multiple components, so long
+    as there is at least one terminal node in each component.
 
     References
     ----------
