@@ -93,18 +93,18 @@ def communicability(G):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def communicability_exp(G):
-    r"""Returns communicability between all pairs of nodes in G.
+    r"""Returns communicability between all pairs of nodes in `G`.
 
-    Communicability between pair of node (u,v) of node in G is the sum of
-    walks of different lengths starting at node u and ending at node v.
+    Communicability between pair of node ``(u, v)`` of node in `G` is the sum of
+    walks of different lengths starting at node ``u`` and ending at node ``v``.
 
     Parameters
     ----------
-    G: graph
+    G : graph
 
     Returns
     -------
-    comm: dictionary of dictionaries
+    comm : dictionary of dictionaries
         Dictionary of dictionaries keyed by nodes with communicability
         as the value.
 
@@ -116,7 +116,7 @@ def communicability_exp(G):
     See Also
     --------
     communicability:
-       Communicability between pairs of nodes in G.
+       Communicability between pairs of nodes in `G` via spectral decomposition
     communicability_betweenness_centrality:
        Communicability betweenness centrality for each node in G.
 
@@ -124,14 +124,14 @@ def communicability_exp(G):
     -----
     This algorithm uses matrix exponentiation of the adjacency matrix.
 
-    Let G=(V,E) be a simple undirected graph.  Using the connection between
+    Let $G=(V,E)$ be a simple undirected graph. Using the connection between
     the powers  of the adjacency matrix and the number of walks in the graph,
-    the communicability between nodes u and v is [1]_,
+    the communicability between nodes ``u`` and ``v`` is:
 
     .. math::
         C(u,v) = (e^A)_{uv},
 
-    where `A` is the adjacency matrix of G.
+    where ``A`` is the adjacency matrix of `G` [1]_.
 
     References
     ----------
