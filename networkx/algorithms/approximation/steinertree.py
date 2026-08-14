@@ -232,7 +232,7 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
         If ``method=kou`` and `G` is not connected
 
     KeyError
-        If ``method=mehlhorn``, `G` is not connected,  and there is not at least
+        If ``method=mehlhorn``, `G` is not connected, and there is not at least
         one terminal node in every component.
 
     Notes
