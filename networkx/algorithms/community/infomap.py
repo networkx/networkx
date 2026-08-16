@@ -1,26 +1,28 @@
 """Functions for detecting communities based on the Infomap algorithm
 (the map equation).
 
-The method is built on a random walk. In a network with modular structure the
-walk gets trapped: having entered a densely connected region it tends to stay
-there for a long time, and steps between regions are rare. Those regions are the
-communities, so a boundary here is where the walk seldom crosses, which makes it
-a property of the dynamics rather than of the nodes themselves.
+Infomap finds communities by watching a random walk. In a modular network the
+walk gets stuck: it enters a densely connected region and stays for many steps
+before leaving. Those regions are the communities. Their boundaries lie wherever
+the walk rarely crosses, which is a fact about the traffic and not about the
+nodes.
 
-That persistence is what makes a compact description possible. Name the regions
-in one shared codebook and reuse short node names inside every region, the way
-street names repeat from city to city without confusion because most routes stay
-inside one city; bits go to saying which region the walk is in only when it
-leaves one. The map equation is that description length in bits per step, and
-Infomap searches for the partition that minimizes it. The minimum balances two
-costs: split too finely and almost every step announces a crossing, lump too
+Getting stuck like that makes the walk cheap to describe. Give each region its
+own codebook, so node names can be short and can repeat from one region to the
+next, the way most cities have a Main Street. The reuse causes no confusion,
+because a route rarely leaves the city it started in. Bits then go to naming a
+region only when the walk moves between them.
+
+The map equation is that description length, in bits per step, and Infomap
+searches for the partition that makes it smallest. The minimum sits between two
+costs. Split too finely and almost every step announces a crossing; lump too
 coarsely and the node names grow long again. A network with no persistent
-regions is best described in a single module.
+regions compresses best as one module.
 
-"Map" here carries the cartographer's sense of a simplification that keeps what
-matters, not a geometric one: the regions need be neither contiguous nor planar.
+"Map" here is the cartographer's word for a simplification that keeps what
+matters. It carries no geometry: regions need be neither contiguous nor planar.
 
-The map equation is from the 2008 paper below; the 2009 one works the coding
+The map equation is from the 2008 paper below. The 2009 one works the coding
 argument through at greater length and is the easier read for the intuition.
 
 References
