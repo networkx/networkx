@@ -183,7 +183,8 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
     Parameters
     ----------
     G : NetworkX graph
-        An undirected or directed graph. Edge weights are interpreted as flow.
+        An undirected or directed graph. Edge weights are the relative rates at
+        which the walk traverses each link; the flow follows from them.
     communities : list or iterable of set of nodes
         A partition of the nodes of `G`.
     weight : string or None, optional (default="weight")

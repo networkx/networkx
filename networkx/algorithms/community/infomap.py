@@ -836,8 +836,11 @@ def infomap_communities(
     map equation; for the multilevel (hierarchical) partition [3]_, see
     :func:`infomap_partitions`.
 
-    Edge weights are interpreted as flow. For directed graphs the visit rates
-    are the stationary distribution of a random walk with teleportation,
+    Edge weights set how often the walk uses each link, and the flow follows
+    from them rather than being given directly. For an undirected graph a
+    node's visit rate is its share of the total weighted degree; for a directed
+    graph the visit rates are the stationary distribution of a walk with
+    teleportation,
     computed with
     :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`; as with
     a direct ``pagerank`` call, this requires SciPy. Undirected graphs use
@@ -847,8 +850,8 @@ def infomap_communities(
     ----------
     G : NetworkX graph
         An undirected or directed graph; multigraphs are accepted and parallel
-        edges are summed. Edge weights are interpreted as flow and must be
-        finite and non-negative.
+        edges are summed. Edge weights are the relative rates at which the walk
+        traverses each link, and must be finite and non-negative.
     weight : string or None, optional (default="weight")
         The name of an edge attribute holding the numerical weight. If None,
         every edge has weight 1.
@@ -965,8 +968,8 @@ def infomap_partitions(
     ----------
     G : NetworkX graph
         An undirected or directed graph; multigraphs are accepted and parallel
-        edges are summed. Edge weights are interpreted as flow and must be
-        finite and non-negative.
+        edges are summed. Edge weights are the relative rates at which the walk
+        traverses each link, and must be finite and non-negative.
     weight : string or None, optional (default="weight")
         The name of an edge attribute holding the numerical weight. If None,
         every edge has weight 1.
