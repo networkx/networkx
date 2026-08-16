@@ -20,9 +20,22 @@ regions is best described in a single module.
 "Map" here carries the cartographer's sense of a simplification that keeps what
 matters, not a geometric one: the regions need be neither contiguous nor planar.
 
-Rosvall & Bergstrom introduced the map equation in 2008. Rosvall, Axelsson &
-Bergstrom (2009) work the coding argument through at greater length, which
-makes it the easier read for the intuition.
+The map equation is from the 2008 paper below; the 2009 one works the coding
+argument through at greater length and is the easier read for the intuition.
+
+References
+----------
+Rosvall, M. & Bergstrom, C.T. Maps of random walks on complex networks reveal
+community structure. PNAS 105, 1118-1123 (2008).
+https://doi.org/10.1073/pnas.0706851105
+
+Rosvall, M., Axelsson, D. & Bergstrom, C.T. The map equation.
+Eur. Phys. J. Special Topics 178, 13-23 (2009).
+https://doi.org/10.1140/epjst/e2010-01179-1
+
+Rosvall, M. & Bergstrom, C.T. Multilevel compression of random walks on networks
+reveals hierarchical organization in large integrated systems.
+PLoS ONE 6(4), e18209 (2011). https://doi.org/10.1371/journal.pone.0018209
 """
 
 from collections import Counter, defaultdict
@@ -45,7 +58,7 @@ __all__ = ["infomap_communities", "infomap_partitions"]
 # networkx -- the same thing is called a community.
 #
 # Two more words recur below. An *aggregated network* (Louvain's term) is the
-# network in which each module of the level below has been contracted to a
+# network in which each module of the previous level has been contracted to a
 # single node; those nodes are *super-nodes*, and a module of super-nodes is a
 # *super-module*.
 #
@@ -58,9 +71,9 @@ __all__ = ["infomap_communities", "infomap_partitions"]
 #   1. core loop      -- repeatedly move each node into the neighboring module
 #                        that most lowers the codelength (`_CoreOptimizer`),
 #   2. aggregation    -- build an aggregated network in which each module of the
-#                        level below is one node, then run the core loop on that,
-#                        so its modules are modules of modules
-#                        (`_find_top_modules`),
+#                        previous level is one node, then run the core loop on
+#                        that, so the new super-modules are collections of the
+#                        previous level's modules (`_find_top_modules`),
 #   3. tuning         -- alternate fine-tuning (re-move single nodes) and
 #                        coarse-tuning (re-split modules) to escape the local
 #                        optima the greedy moves get stuck in (`_partition`),
