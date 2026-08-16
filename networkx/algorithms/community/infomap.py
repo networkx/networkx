@@ -1,10 +1,11 @@
 """Detecting communities based on the Infomap algorithm.
 
 Infomap identifies communities as regions in which a random walk tends to
-remain. It searches for a partition that compresses the walk: node codewords can
-be reused inside modules, while transitions between modules require additional
-codewords. The map equation measures the resulting codelength in bits per step.
-The literature calls a community a module.
+remain. It searches for a partition that compresses the walk: each module has
+its own codebook, so node codewords can be reused between modules, while
+transitions between modules require additional codewords. The map equation
+measures the resulting codelength in bits per step. The literature calls a
+community a module.
 
 :func:`infomap_communities` searches for a flat, two-level partition.
 :func:`infomap_partitions` searches for a multilevel hierarchy.
@@ -17,7 +18,8 @@ metadata-aware, and bipartite flow models are not exposed. A NetworkX bipartite
 graph is treated as an ordinary first-order graph.
 
 Rosvall & Bergstrom (2008) introduce the method. Rosvall, Axelsson & Bergstrom
-(2009) derive the map equation in full.
+(2009) derive the map equation in full. Rosvall & Bergstrom (2011) extend it to
+a multilevel hierarchy.
 
 References
 ----------
@@ -816,8 +818,8 @@ def infomap_communities(
             + \sum_i p^i_\circlearrowright H(\mathcal{P}^i)
 
     The first term codes transitions between modules. The second codes node
-    visits within each module. Lower codelength means that the partition
-    compresses the flow better. See
+    visits and module exits inside each module. Lower codelength means that the
+    partition compresses the flow better. See
     :func:`~networkx.algorithms.community.quality.map_equation` for the full
     definition.
 
@@ -826,9 +828,9 @@ def infomap_communities(
     multilevel map equation separately [3]_, so this result is not guaranteed to
     match any level of its hierarchy.
 
-    Modularity, which :any:`louvain_communities` and
-    :any:`leiden_communities` optimize, compares link weights against a null model
-    and can select a different partition on the same directed graph.
+    Modularity, which :any:`louvain_communities` and :any:`leiden_communities`
+    optimize, compares link weights against a null model rather than following
+    flow, and can select a different partition on the same graph.
 
     The search moves nodes between neighboring modules, aggregates modules, and
     applies Infomap's fine- and coarse-tuning passes. Directed graphs use the
