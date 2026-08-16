@@ -152,53 +152,51 @@ def _directed_flow(G, weight, teleportation_probability, tol=1e-13):
 def map_equation(G, communities, *, weight="weight", teleportation_probability=0.15):
     r"""Return the two-level map equation codelength of a partition of `G`.
 
-    The map equation [1]_ is the expected per-step description length, in bits,
-    of a random walk on `G` encoded with a two-level codebook given by
-    `communities`. That walk is the *flow*: how much of its time it spends at
-    each node, and how often it crosses each link. Infomap finds communities by
-    minimizing this quantity.
-
-    The map equation literature calls a community a *module*, and so does the
-    rest of this description. The codelength is
+    The map equation [1]_ is the average per-step codelength of a random walk on
+    `G` under a two-level code: one index codebook over the modules, and one
+    codebook per module over the nodes inside it plus an exit symbol.
 
     .. math::
         L = q_\curvearrowright H(\mathcal{Q})
             + \sum_i p^i_\circlearrowright H(\mathcal{P}^i)
 
-    the index-codebook entropy :math:`H(\mathcal{Q})`, used on every module
-    switch at the total exit rate :math:`q_\curvearrowright`, plus each module
-    codebook entropy :math:`H(\mathcal{P}^i)`, used at rate
-    :math:`p^i_\circlearrowright` (module :math:`i`'s total node visit rate plus
-    its exit rate). A partition that keeps the walk inside modules makes
-    switches rare, so the codelength is short. (Internally this is evaluated by
-    the equivalent closed form in sums of :math:`x \log_2 x`.)
+    The index codebook is used at :math:`q_\curvearrowright`, the rate at which
+    the walk changes module, and costs :math:`H(\mathcal{Q})` bits per use.
+    Module :math:`i`'s codebook is used at :math:`p^i_\circlearrowright`, its
+    total node visit rate plus its exit rate, and costs
+    :math:`H(\mathcal{P}^i)`. This is evaluated by the equivalent closed form in
+    sums of :math:`x \log_2 x`.
 
-    For an undirected graph the visit rate of a node is proportional to its
-    (weighted) degree, :math:`p_\alpha = k_\alpha / 2m`. For a directed graph
-    the visit rates are the stationary distribution of a random walk with
-    teleportation (as in PageRank and Infomap's default directed flow model),
-    computed with
-    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`, which
-    requires SciPy.
+    The visit and transition rates the codebooks are built from, together called
+    the flow, come from the walk itself. On an undirected graph a node's rate is
+    proportional to its weighted degree, :math:`p_\alpha = k_\alpha / 2m`. A
+    directed graph uses Infomap's default unrecorded teleportation-to-links flow
+    model [2]_. PageRank first supplies stationary node ranks; only a subsequent
+    link-following step contributes to the recorded node visits and link flows.
+    Computing directed flow requires SciPy.
 
     Parameters
     ----------
-    G : NetworkX graph
-        An undirected or directed graph. Edge weights are the relative rates at
-        which the walk traverses each link; the flow follows from them.
+    G : Graph, DiGraph, MultiGraph, or MultiDiGraph
+        An undirected or directed first-order graph. Parallel edges contribute
+        independently, which is equivalent to summing their weights.
     communities : list or iterable of set of nodes
         A partition of the nodes of `G`.
     weight : string or None, optional (default="weight")
-        Edge attribute holding the numerical weight. If None, every edge has
-        weight 1.
+        Edge attribute holding the numerical weight. Higher weights represent
+        stronger flow and make an edge more likely to be traversed; they should
+        not represent distances or costs. Weights must be finite and
+        non-negative. If None, every edge has weight 1.
     teleportation_probability : float, optional (default=0.15)
         Teleportation probability for the directed-flow random walk. Ignored
-        for undirected graphs.
+        for undirected graphs. Values should lie in the interval [0, 1].
 
     Returns
     -------
     float
-        The codelength in bits. Lower is better.
+        The average codelength in bits per random-walk step. Lower values mean
+        better compression for partitions of the same graph under the same
+        `weight` and `teleportation_probability` settings.
 
     Raises
     ------
@@ -206,6 +204,8 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
         If `communities` is not a partition of the nodes of `G`.
     ValueError
         If any edge weight is negative or not finite.
+    PowerIterationFailedConvergence
+        If PageRank fails to converge when computing directed flow.
 
     Examples
     --------
@@ -220,11 +220,30 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
     >>> nx.community.map_equation(G, [set(G)])
     2.556656707462823
 
+    Notes
+    -----
+    When evaluating a partition returned by :func:`infomap_communities`, pass
+    the same `weight` and `teleportation_probability` values that were used for
+    the search.
+
+    This function evaluates a flat partition under the two-level map equation.
+    It does not evaluate the complete hierarchy returned by
+    :func:`infomap_partitions`.
+
     References
     ----------
     .. [1] Rosvall, M. & Bergstrom, C.T. Maps of random walks on complex
        networks reveal community structure. PNAS 105, 1118-1123 (2008).
        https://doi.org/10.1073/pnas.0706851105
+    .. [2] Lambiotte, R. & Rosvall, M. Ranking and clustering of nodes in
+       networks with smart teleportation. Phys. Rev. E 85, 056107 (2012).
+       https://doi.org/10.1103/PhysRevE.85.056107
+
+    See Also
+    --------
+    :any:`infomap_communities`
+    :any:`infomap_partitions`
+    modularity
     """
     if not isinstance(communities, list):
         communities = list(communities)

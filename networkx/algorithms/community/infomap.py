@@ -1,29 +1,23 @@
-"""Functions for detecting communities based on the Infomap algorithm
-(the map equation).
+"""Detecting communities based on the Infomap algorithm.
 
-Infomap finds communities by watching a random walk. In a modular network the
-walk gets stuck: it enters a densely connected region and stays for many steps
-before leaving. Those regions are the communities. Their boundaries lie wherever
-the walk rarely crosses, which is a fact about the traffic and not about the
-nodes.
+Infomap identifies communities as regions in which a random walk tends to
+remain. It searches for a partition that compresses the walk: node codewords can
+be reused inside modules, while transitions between modules require additional
+codewords. The map equation measures the resulting codelength in bits per step.
+The literature calls a community a module.
 
-Getting stuck like that makes the walk cheap to describe. Give each region its
-own codebook, so node names can be short and can repeat from one region to the
-next, the way most cities have a Main Street. The reuse causes no confusion,
-because a route rarely leaves the city it started in. Bits then go to naming a
-region only when the walk moves between them.
+:func:`infomap_communities` searches for a flat, two-level partition.
+:func:`infomap_partitions` searches for a multilevel hierarchy.
+:func:`~networkx.algorithms.community.quality.map_equation` scores a flat
+partition under the same flow model.
 
-The map equation is that description length, in bits per step, and Infomap
-searches for the partition that makes it smallest. The minimum sits between two
-costs. Split too finely and almost every step announces a crossing; lump too
-coarsely and the node names grow long again. A network with no persistent
-regions compresses best as one module.
+This module accepts first-order ``Graph``, ``DiGraph``, ``MultiGraph``, and
+``MultiDiGraph`` inputs. Specialized multilayer, higher-order or state,
+metadata-aware, and bipartite flow models are not exposed. A NetworkX bipartite
+graph is treated as an ordinary first-order graph.
 
-"Map" here is the cartographer's word for a simplification that keeps what
-matters. It carries no geometry: regions need be neither contiguous nor planar.
-
-The map equation is from the 2008 paper below. The 2009 one works the coding
-argument through at greater length and is the easier read for the intuition.
+Rosvall & Bergstrom (2008) introduce the method. Rosvall, Axelsson & Bergstrom
+(2009) derive the map equation in full.
 
 References
 ----------
@@ -808,55 +802,56 @@ def _check_num_trials(num_trials):
 def infomap_communities(
     G, *, weight="weight", seed=None, num_trials=1, teleportation_probability=0.15
 ):
-    r"""Find communities in `G` using the Infomap algorithm (the map equation).
+    r"""Find communities in `G` with the two-level Infomap heuristic.
 
-    Infomap detects community structure by minimizing the *map equation* [1]_,
-    the expected per-step description length of a random walk on the network.
-    That walk is the *flow*: how much of its time it spends at each node, and
-    how often it crosses each link. A community here is a region the walk stays
-    inside for a long time; the map equation literature calls it a *module*,
-    and so does the rest of this page.
+    Infomap searches for a partition that compresses the flow of a random walk
+    on `G`. The flow consists of the walk's node-visit and link-transition rates.
+    The map equation literature calls a community a module.
 
-    Modularity, which :any:`louvain_communities` and :any:`leiden_communities`
-    optimize, instead counts link weights against what a null model would give.
-    The two therefore answer different questions, and on a directed graph they
-    can differ sharply: flow follows link direction, so a group that traps the
-    walk need not be the group with the most internal weight.
+    For a two-level partition :math:`\mathsf{M}`, the objective is the map
+    equation [1]_ [2]_:
 
-    The codelength trades the cost of naming which module the walk is in
-    against the cost of naming nodes inside one, so it is lowest for a
-    partition the walk rarely leaves. For the formula and its terms see
-    :func:`~networkx.algorithms.community.quality.map_equation`, which also
-    scores a partition you already have.
+    .. math::
+        L(\mathsf{M}) = q_\curvearrowright H(\mathcal{Q})
+            + \sum_i p^i_\circlearrowright H(\mathcal{P}^i)
 
-    The optimizer follows the same two phases as Louvain -- greedily moving
-    single nodes to neighboring modules, then building an aggregated network in
-    which each module is a node and repeating -- and adds Infomap's fine-tuning
-    and coarse-tuning passes. It returns the two-level partition that minimizes
-    the map equation; for the multilevel (hierarchical) partition [3]_, see
-    :func:`infomap_partitions`.
+    The first term codes transitions between modules. The second codes node
+    visits within each module. Lower codelength means that the partition
+    compresses the flow better. See
+    :func:`~networkx.algorithms.community.quality.map_equation` for the full
+    definition.
 
-    Edge weights set how often the walk uses each link, and the flow follows
-    from them rather than being given directly. Directed graphs need SciPy,
-    because their visit rates come from
-    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`;
-    undirected graphs do not.
+    This function runs `num_trials` randomized searches and returns the
+    lowest-codelength partition found. :func:`infomap_partitions` optimizes the
+    multilevel map equation separately [3]_, so this result is not guaranteed to
+    match any level of its hierarchy.
+
+    Modularity, which :any:`louvain_communities` and
+    :any:`leiden_communities` optimize, compares link weights against a null model
+    and can select a different partition on the same directed graph.
+
+    The search moves nodes between neighboring modules, aggregates modules, and
+    applies Infomap's fine- and coarse-tuning passes. Directed graphs use the
+    unrecorded teleportation-to-links flow model described by
+    :func:`~networkx.algorithms.community.quality.map_equation` and require
+    SciPy.
 
     Parameters
     ----------
-    G : NetworkX graph
-        An undirected or directed graph; multigraphs are accepted and parallel
-        edges are summed. Edge weights are the relative rates at which the walk
-        traverses each link, and must be finite and non-negative.
+    G : Graph, DiGraph, MultiGraph, or MultiDiGraph
+        An undirected or directed first-order graph. Parallel edges are summed.
     weight : string or None, optional (default="weight")
-        The name of an edge attribute holding the numerical weight. If None,
-        every edge has weight 1.
+        The name of an edge attribute holding the numerical weight. Higher
+        weights represent stronger flow and make an edge more likely to be
+        traversed; they should not represent distances or costs. Weights must be
+        finite and non-negative. If None, every edge has weight 1.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
     num_trials : int, optional (default=1)
-        Number of independent restarts; the partition with the lowest
-        codelength is returned. Must be a positive integer.
+        Number of randomized searches. The partition with the lowest codelength
+        is returned. Runtime is approximately proportional to `num_trials`.
+        Must be a positive integer.
     teleportation_probability : float, optional (default=0.15)
         Teleportation probability for the directed-flow random walk, as in
         :func:`~networkx.algorithms.community.quality.map_equation`. Ignored
@@ -865,34 +860,38 @@ def infomap_communities(
     Returns
     -------
     list of sets of nodes
-        A partition of `G` as a list of disjoint sets of nodes, together
-        containing every node. This is the two-level partition that minimizes
-        the map equation.
+        The lowest-codelength two-level partition found across `num_trials`
+        searches. The sets are disjoint and together contain every node of `G`.
+        Their order is arbitrary.
 
     Raises
     ------
     ValueError
         If `num_trials` is not a positive integer, or if any edge weight is
         negative or not finite.
+    PowerIterationFailedConvergence
+        If PageRank fails to converge when computing directed flow.
 
     Examples
     --------
     >>> G = nx.barbell_graph(5, 0)
-    >>> nx.community.infomap_communities(G, seed=42)
-    [{0, 1, 2, 3, 4}, {5, 6, 7, 8, 9}]
+    >>> communities = nx.community.infomap_communities(G, seed=42, num_trials=10)
+    >>> sorted(map(sorted, communities))
+    [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]
 
     Notes
     -----
-    The search is stochastic: `seed` fixes the random move order (so a given
-    seed is reproducible), and `num_trials` restarts improve the chance of
-    reaching the global optimum.
+    The search is stochastic. With unchanged graph iteration order, a fixed
+    `seed` reproduces its random choices. `num_trials` increases the search
+    coverage without guaranteeing a global optimum.
 
-    Self-loops add only to a node's within-module flow; they never cross a
-    module boundary, so they do not affect where a node moves.
+    Self-loops contribute to node visit rates and within-module flow, but never
+    to boundary-crossing flow. They can therefore affect codelengths and the
+    returned partition.
 
-    A module's boundary is set by where the walk seldom crosses, not by any
-    property of the nodes themselves. See [2]_ for a step-by-step account of
-    why that makes the walk cheap to describe.
+    A one-community result is valid. It means that none of the partitions found
+    compresses the flow better than the one-level baseline under the selected
+    flow model.
 
     References
     ----------
@@ -947,56 +946,75 @@ def _best_hierarchy(flow, links, seed, num_trials, directed):
 def infomap_partitions(
     G, *, weight="weight", seed=None, num_trials=1, teleportation_probability=0.15
 ):
-    r"""Yield the community partition at each level of the Infomap hierarchy.
+    r"""Return an iterator over the nested partitions of a multilevel Infomap hierarchy.
 
-    Infomap finds a multilevel (hierarchical) partition by minimizing the map
-    equation, the description length of a random walk on the network (see
-    :func:`infomap_communities`). This generator yields one flat partition per
-    level of that hierarchy, from the coarsest (the top-level modules) to the
-    finest. Each yielded value is a list of disjoint sets of
-    nodes that together contain every node of `G`.
+    Infomap searches for a multilevel partition with the multilevel map equation
+    [1]_, which gives every internal module its own index codebook
+    rather than keeping a single one at the top. The hierarchy is computed when
+    this function is called. The returned iterator exposes one flat partition
+    per level, coarsest first.
 
-    Directed graphs require SciPy (the visit rates are computed with
-    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`);
-    undirected graphs do not.
+    The first partition contains the top-level modules. Each later partition
+    refines the previous one, and the last contains the leaf modules. A branch
+    without deeper submodules remains unchanged at later levels. This hierarchy
+    is optimized separately from the two-level partition returned by
+    :func:`infomap_communities`.
+
+    Directed graphs use the unrecorded teleportation-to-links flow model
+    described by :func:`~networkx.algorithms.community.quality.map_equation` and
+    require SciPy.
 
     Parameters
     ----------
-    G : NetworkX graph
-        An undirected or directed graph; multigraphs are accepted and parallel
-        edges are summed. Edge weights are the relative rates at which the walk
-        traverses each link, and must be finite and non-negative.
+    G : Graph, DiGraph, MultiGraph, or MultiDiGraph
+        An undirected or directed first-order graph. Parallel edges are summed.
     weight : string or None, optional (default="weight")
-        The name of an edge attribute holding the numerical weight. If None,
-        every edge has weight 1.
+        The name of an edge attribute holding the numerical weight. Higher
+        weights represent stronger flow and make an edge more likely to be
+        traversed; they should not represent distances or costs. Weights must be
+        finite and non-negative. If None, every edge has weight 1.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
     num_trials : int, optional (default=1)
-        Number of independent restarts; the levels of the lowest-codelength
-        hierarchy found are yielded. Must be a positive integer.
+        Number of randomized searches. The hierarchy with the lowest
+        codelength is returned. Runtime is approximately proportional to
+        `num_trials`. Must be a positive integer.
     teleportation_probability : float, optional (default=0.15)
         Teleportation probability for the directed-flow random walk, as in
         :func:`~networkx.algorithms.community.quality.map_equation`. Ignored
         for undirected graphs.
 
-    Yields
-    ------
-    list of sets of nodes
-        The partition of `G` at the current hierarchy level, coarsest first.
+    Returns
+    -------
+    iterator of list of sets of nodes
+        An iterator over the partitions of `G`, coarsest first. The sets in each
+        partition are disjoint, cover every node, and have arbitrary order.
 
     Raises
     ------
     ValueError
         If `num_trials` is not a positive integer, or if any edge weight is
         negative or not finite.
+    PowerIterationFailedConvergence
+        If PageRank fails to converge when computing directed flow.
 
     Examples
     --------
-    >>> G = nx.karate_club_graph()
-    >>> levels = list(nx.community.infomap_partitions(G, seed=0))
-    >>> all(nx.community.is_partition(G, p) for p in levels)
-    True
+    >>> G = nx.ring_of_cliques(12, 6)
+    >>> levels = list(nx.community.infomap_partitions(G, seed=0, num_trials=10))
+    >>> [len(level) for level in levels]
+    [3, 12]
+
+    Notes
+    -----
+    With unchanged graph iteration order, a fixed `seed` reproduces the
+    stochastic search. Increasing `num_trials` explores more candidate
+    hierarchies but does not guarantee a global optimum.
+
+    :func:`~networkx.algorithms.community.quality.map_equation` scores a flat
+    partition under the two-level objective. It does not score the complete
+    hierarchy returned here.
 
     References
     ----------
