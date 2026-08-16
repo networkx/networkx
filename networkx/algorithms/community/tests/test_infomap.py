@@ -79,8 +79,8 @@ def test_hierarchical_codelength_matches_cpp_multilevel():
     )
 
 
-# --- NetworkX-native parity tests (hardcoded codelengths validated against the
-# --- reference C++ Infomap; no dependency on the `infomap` package) ---
+# --- Single recorded values, kept out of the case table below because each
+# --- checks one specific path rather than the optimizer's usual entry points ---
 
 
 def test_map_equation_directed_cycle_known_value():
@@ -115,6 +115,9 @@ def test_infomap_multilevel_reaches_known_optimum_no_dep():
         for s in range(6)
     )
     assert best == pytest.approx(3.128529, abs=1e-5)
+
+
+# --- Structural properties of the result ---
 
 
 def test_infomap_partitions_yields_nested_levels():
@@ -453,6 +456,9 @@ def test_recorded_multilevel_optimum_matches_cpp():
     )
 
 
+# --- Robustness: termination, graph flavours, and the no-mutation contract ---
+
+
 def test_infomap_terminates_on_every_atlas_graph():
     """Both entry points terminate and return a valid partition for all 1252
     graphs in the atlas. Louvain had an infinite loop on one of them (gh-8739)
@@ -505,6 +511,9 @@ def test_infomap_leaves_the_graph_untouched():
     list(nx.community.infomap_partitions(G, seed=1))
     nx.community.map_equation(G, [set(G)])
     assert (dict(G.nodes(data=True)), sorted(G.edges(data=True))) == before
+
+
+# --- Optimizer internals ---
 
 
 def test_core_optimizer_cached_module_codelength_stays_exact():
