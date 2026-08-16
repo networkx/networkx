@@ -192,7 +192,7 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
         non-negative. If None, every edge has weight 1.
     teleportation_probability : float, optional (default=0.15)
         Teleportation probability for the directed-flow random walk. Ignored
-        for undirected graphs. Values should lie in the interval [0, 1].
+        for undirected graphs. Values must lie in the interval [0, 1].
 
     Returns
     -------
@@ -206,7 +206,8 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
     NotAPartition
         If `communities` is not a partition of the nodes of `G`.
     ValueError
-        If any edge weight is negative or not finite.
+        If any edge weight is negative or not finite, or if a directed graph's
+        `teleportation_probability` is outside the interval [0, 1].
     PowerIterationFailedConvergence
         If PageRank fails to converge when computing directed flow.
 
@@ -275,9 +276,19 @@ def _flow(G, weight="weight", teleportation_probability=0.15):
     # clean-looking but meaningless codelength.
     if any(not isfinite(wt) or wt < 0 for _, _, wt in G.edges(data=weight, default=1)):
         raise ValueError("edge weights must be finite and non-negative")
+    _check_teleportation_probability(G, teleportation_probability)
     if G.is_directed():
         return _directed_flow(G, weight, teleportation_probability)
     return _undirected_flow(G, weight)
+
+
+def _check_teleportation_probability(G, teleportation_probability):
+    """Validate the ``teleportation_probability`` argument shared by the public
+    functions. Only the directed flow model reads it, so an undirected graph
+    accepts any value. The comparison also rejects nan and the infinities.
+    """
+    if G.is_directed() and not 0 <= teleportation_probability <= 1:
+        raise ValueError("teleportation_probability must be between 0 and 1")
 
 
 def _codelength(visit_rate, link_flows, module_of):

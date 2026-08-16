@@ -40,7 +40,12 @@ from collections import Counter, defaultdict
 from typing import NamedTuple
 
 import networkx as nx
-from networkx.algorithms.community.quality import _codelength, _flow, _plogp
+from networkx.algorithms.community.quality import (
+    _check_teleportation_probability,
+    _codelength,
+    _flow,
+    _plogp,
+)
 from networkx.utils import groups, py_random_state
 
 __all__ = ["infomap_communities", "infomap_partitions"]
@@ -857,7 +862,7 @@ def infomap_communities(
     teleportation_probability : float, optional (default=0.15)
         Teleportation probability for the directed-flow random walk, as in
         :func:`~networkx.algorithms.community.quality.map_equation`. Ignored
-        for undirected graphs. Values should lie in the interval [0, 1].
+        for undirected graphs. Values must lie in the interval [0, 1].
 
     Returns
     -------
@@ -870,7 +875,8 @@ def infomap_communities(
     ------
     ValueError
         If `num_trials` is not a positive integer, or if any edge weight is
-        negative or not finite.
+        negative or not finite, or if a directed graph's
+        `teleportation_probability` is outside the interval [0, 1].
     PowerIterationFailedConvergence
         If PageRank fails to converge when computing directed flow.
 
@@ -916,6 +922,7 @@ def infomap_communities(
     :any:`leiden_communities`
     """
     _check_num_trials(num_trials)
+    _check_teleportation_probability(G, teleportation_probability)
     if nx.is_empty(G):  # no edges, so no flow to compress: every node is alone
         return [{u} for u in G]
     # The flow depends only on the graph, so compute it once and reuse it across
@@ -985,7 +992,7 @@ def infomap_partitions(
     teleportation_probability : float, optional (default=0.15)
         Teleportation probability for the directed-flow random walk, as in
         :func:`~networkx.algorithms.community.quality.map_equation`. Ignored
-        for undirected graphs. Values should lie in the interval [0, 1].
+        for undirected graphs. Values must lie in the interval [0, 1].
 
     Returns
     -------
@@ -997,7 +1004,8 @@ def infomap_partitions(
     ------
     ValueError
         If `num_trials` is not a positive integer, or if any edge weight is
-        negative or not finite.
+        negative or not finite, or if a directed graph's
+        `teleportation_probability` is outside the interval [0, 1].
     PowerIterationFailedConvergence
         If PageRank fails to converge when computing directed flow.
 
@@ -1039,10 +1047,11 @@ def infomap_partitions(
     :func:`~networkx.algorithms.community.quality.map_equation`
     :any:`louvain_partitions`
     """
+    # Validate the arguments eagerly so a bad value raises on call, not
+    # mid-iteration. The hierarchy search runs here too; only splitting the
+    # result into per-level partitions is deferred to `_expand_levels`.
     _check_num_trials(num_trials)
-    # Validate num_trials eagerly so a bad value raises on call, not mid-iteration.
-    # The hierarchy search runs here; only splitting the result into per-level
-    # partitions is deferred to the `_expand_levels` generator.
+    _check_teleportation_probability(G, teleportation_probability)
     if nx.is_empty(G):  # one level of singletons, as louvain_partitions gives
         return iter([[{u} for u in G]])
     flow, link_flows = _flow(G, weight, teleportation_probability)

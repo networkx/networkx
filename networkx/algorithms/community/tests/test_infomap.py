@@ -208,6 +208,15 @@ def test_infomap_partitions_validates_num_trials_eagerly():
             nx.community.infomap_partitions(G, num_trials=bad)
 
 
+@pytest.mark.parametrize("bad", [-0.1, 1.1, float("nan"), float("inf")])
+def test_infomap_rejects_invalid_teleportation_probability_eagerly(bad):
+    G = nx.empty_graph(2, create_using=nx.DiGraph)
+    with pytest.raises(ValueError, match="teleportation_probability"):
+        nx.community.infomap_communities(G, teleportation_probability=bad)
+    with pytest.raises(ValueError, match="teleportation_probability"):
+        nx.community.infomap_partitions(G, teleportation_probability=bad)
+
+
 def test_infomap_rejects_invalid_weights():
     """Flow is a probability distribution, so negative or non-finite weights are
     rejected rather than silently producing a meaningless codelength."""

@@ -592,6 +592,13 @@ def test_map_equation_directed_without_flow_is_zero():
     assert map_equation(G, [set(G)]) == 0.0
 
 
+@pytest.mark.parametrize("bad", [-0.1, 1.1, float("nan"), float("inf")])
+def test_map_equation_rejects_invalid_teleportation_probability(bad):
+    G = nx.DiGraph([(0, 1), (1, 0)])
+    with pytest.raises(ValueError, match="teleportation_probability"):
+        map_equation(G, [set(G)], teleportation_probability=bad)
+
+
 # --- Ground-truth codelengths -------------------------------------------------
 #
 # Each case records a graph, a partition, and the codelength the reference C++
