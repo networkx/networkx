@@ -578,6 +578,20 @@ def test_map_equation_undirected_self_loop_known_value():
     assert map_equation(G, [{0, 1, 2, 3}]) == pytest.approx(1.858555, abs=1e-5)
 
 
+def test_map_equation_directed_without_flow_is_zero():
+    """A directed graph whose links carry no weight has no recorded flow, so
+    there is nothing to code and the codelength is 0. Uniform visit rates would
+    give log2(n) instead. Value validated against the C++ reference, which
+    reports 0 both with no links at all and with a single zero-weight link.
+    """
+    G = nx.DiGraph()
+    G.add_nodes_from([0, 1])
+    assert map_equation(G, [set(G)]) == 0.0
+
+    G.add_edge(0, 1, weight=0.0)
+    assert map_equation(G, [set(G)]) == 0.0
+
+
 # --- Ground-truth codelengths -------------------------------------------------
 #
 # Each case records a graph, a partition, and the codelength the reference C++

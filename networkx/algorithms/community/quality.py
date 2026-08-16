@@ -114,8 +114,8 @@ def _directed_flow(G, weight, teleportation_probability, tol=1e-13):
     out_strength = dict(G.out_degree(weight=weight))
     dangling = [u for u, strength in out_strength.items() if strength == 0]
     sum_out = sum(out_strength.values())
-    if sum_out == 0:  # no out-links anywhere: uniform visits, nothing crosses
-        return {u: 1 / len(G) for u in G}, []
+    if sum_out == 0:  # no positive-weight out-links, so there is no flow
+        return {u: 0.0 for u in G}, []
 
     # Teleport in proportion to out-degree (Infomap's default "to links"); this
     # is exactly PageRank's personalization (and dangling) vector.
