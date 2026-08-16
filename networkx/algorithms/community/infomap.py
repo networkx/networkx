@@ -810,10 +810,15 @@ def infomap_communities(
 
     Infomap detects community structure by minimizing the *map equation* [1]_,
     the expected per-step description length of a random walk on the network.
-    Unlike the modularity-based methods :any:`louvain_communities` and
-    :any:`leiden_communities`, Infomap is a *flow-based* method, which makes it
-    a natural fit for networks where community structure is carried by the
-    direction and volume of flow.
+    That walk is the *flow*: how much of its time it spends at each node, and
+    how often it crosses each link. A community here is a region the walk stays
+    inside for a long time.
+
+    Modularity, which :any:`louvain_communities` and :any:`leiden_communities`
+    optimize, instead counts link weights against what a null model would give.
+    The two therefore answer different questions, and on a directed graph they
+    can differ sharply: flow follows link direction, so a group that traps the
+    walk need not be the group with the most internal weight.
 
     Following the map equation literature, the description below calls a
     community a *module*.
@@ -955,7 +960,8 @@ def infomap_partitions(
     r"""Yield the community partition at each level of the Infomap hierarchy.
 
     Infomap finds a multilevel (hierarchical) partition by minimizing the map
-    equation (see :func:`infomap_communities`). This generator yields one flat
+    equation, the description length of a random walk on the network (see
+    :func:`infomap_communities`). This generator yields one flat
     partition per level of that hierarchy, from the coarsest (the top-level
     modules) to the finest. Each yielded value is a list of disjoint sets of
     nodes that together contain every node of `G`.
