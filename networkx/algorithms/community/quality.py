@@ -157,10 +157,9 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
     `communities`. That walk is the *flow*: how much of its time it spends at
     each node, and how often it crosses each link. Infomap finds communities by
     minimizing this quantity.
-    Following the map equation literature, the description below calls a
-    community a *module*.
 
-    The codelength is the map equation
+    The map equation literature calls a community a *module*, and so does the
+    rest of this description. The codelength is
 
     .. math::
         L = q_\curvearrowright H(\mathcal{Q})

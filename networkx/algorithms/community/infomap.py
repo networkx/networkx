@@ -820,10 +820,9 @@ def infomap_communities(
     can differ sharply: flow follows link direction, so a group that traps the
     walk need not be the group with the most internal weight.
 
-    Following the map equation literature, the description below calls a
-    community a *module*.
-
-    For a two-level partition :math:`\mathsf{M}` the map equation is
+    The map equation literature calls a community a *module*, and so does the
+    rest of this description. For a two-level partition :math:`\mathsf{M}` the
+    map equation is
 
     .. math::
         L(\mathsf{M}) = q_\curvearrowright H(\mathcal{Q})
@@ -837,19 +836,18 @@ def infomap_communities(
     The optimizer follows the same two phases as Louvain -- greedily moving
     single nodes to neighboring modules, then building an aggregated network in
     which each module is a node and repeating -- and adds Infomap's fine-tuning
-    and coarse-tuning passes. It returns the two-level partition that minimizes the
-    map equation; for the multilevel (hierarchical) partition [3]_, see
+    and coarse-tuning passes. It returns the two-level partition that minimizes
+    the map equation; for the multilevel (hierarchical) partition [3]_, see
     :func:`infomap_partitions`.
 
     Edge weights set how often the walk uses each link, and the flow follows
-    from them rather than being given directly. For an undirected graph a
-    node's visit rate is its share of the total weighted degree; for a directed
-    graph the visit rates are the stationary distribution of a walk with
-    teleportation,
-    computed with
-    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`; as with
-    a direct ``pagerank`` call, this requires SciPy. Undirected graphs use
-    only (weighted) degrees and do not need SciPy.
+    from them rather than being given directly. An undirected graph needs
+    nothing beyond the weighted degrees, since a node's visit rate is its share
+    of their total. A directed graph has no such closed form, so its visit
+    rates come from
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`, a walk
+    with teleportation; that is why directed graphs require SciPy and
+    undirected ones do not.
 
     Parameters
     ----------
@@ -899,10 +897,9 @@ def infomap_communities(
     Self-loops add only to a node's within-module flow; they never cross a
     module boundary, so they do not affect where a node moves.
 
-    A module is a region the walk stays inside for a long time, so its boundary
-    is set by where the walk seldom crosses rather than by any property of the
-    nodes. See [2]_ for a step-by-step account of why that makes the walk cheap
-    to describe.
+    A module's boundary is set by where the walk seldom crosses, not by any
+    property of the nodes themselves. See [2]_ for a step-by-step account of
+    why that makes the walk cheap to describe.
 
     References
     ----------
@@ -961,9 +958,9 @@ def infomap_partitions(
 
     Infomap finds a multilevel (hierarchical) partition by minimizing the map
     equation, the description length of a random walk on the network (see
-    :func:`infomap_communities`). This generator yields one flat
-    partition per level of that hierarchy, from the coarsest (the top-level
-    modules) to the finest. Each yielded value is a list of disjoint sets of
+    :func:`infomap_communities`). This generator yields one flat partition per
+    level of that hierarchy, from the coarsest (the top-level modules) to the
+    finest. Each yielded value is a list of disjoint sets of
     nodes that together contain every node of `G`.
 
     Directed graphs require SciPy (the visit rates are computed with
