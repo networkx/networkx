@@ -1,11 +1,10 @@
 """Detecting communities based on the Infomap algorithm.
 
 Infomap identifies communities as regions in which a random walk tends to
-remain. It searches for a partition that compresses the walk: each module has
-its own codebook, so node codewords can be reused between modules, while
-transitions between modules require additional codewords. The map equation
-measures the resulting codelength in bits per step. The literature calls a
-community a module.
+remain; the literature calls them modules. It searches for a partition that
+compresses the walk: each module has its own codebook, so node codewords can be
+reused between modules, while transitions between modules require additional
+codewords. The map equation measures the resulting codelength in bits per step.
 
 :func:`infomap_communities` searches for a flat, two-level partition.
 :func:`infomap_partitions` searches for a multilevel hierarchy.
