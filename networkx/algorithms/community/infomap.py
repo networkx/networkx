@@ -857,7 +857,7 @@ def infomap_communities(
     teleportation_probability : float, optional (default=0.15)
         Teleportation probability for the directed-flow random walk, as in
         :func:`~networkx.algorithms.community.quality.map_equation`. Ignored
-        for undirected graphs.
+        for undirected graphs. Values should lie in the interval [0, 1].
 
     Returns
     -------
@@ -985,7 +985,7 @@ def infomap_partitions(
     teleportation_probability : float, optional (default=0.15)
         Teleportation probability for the directed-flow random walk, as in
         :func:`~networkx.algorithms.community.quality.map_equation`. Ignored
-        for undirected graphs.
+        for undirected graphs. Values should lie in the interval [0, 1].
 
     Returns
     -------
@@ -1013,6 +1013,14 @@ def infomap_partitions(
     With unchanged graph iteration order, a fixed `seed` reproduces the
     stochastic search. Increasing `num_trials` explores more candidate
     hierarchies but does not guarantee a global optimum.
+
+    Self-loops contribute to node visit rates and within-module flow, but never
+    to boundary-crossing flow. They can therefore affect codelengths and the
+    returned hierarchy.
+
+    A single level of one community is valid. It means that none of the
+    hierarchies found compresses the flow better than the one-level baseline
+    under the selected flow model.
 
     :func:`~networkx.algorithms.community.quality.map_equation` scores a flat
     partition under the two-level objective. It does not score the complete

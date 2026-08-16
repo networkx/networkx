@@ -182,8 +182,7 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
     Parameters
     ----------
     G : Graph, DiGraph, MultiGraph, or MultiDiGraph
-        An undirected or directed first-order graph. Parallel edges contribute
-        independently, which is equivalent to summing their weights.
+        An undirected or directed first-order graph. Parallel edges are summed.
     communities : list or iterable of set of nodes
         A partition of the nodes of `G`.
     weight : string or None, optional (default="weight")
