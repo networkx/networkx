@@ -152,20 +152,24 @@ def _directed_flow(G, weight, teleportation_probability, tol=1e-13):
 def map_equation(G, communities, *, weight="weight", teleportation_probability=0.15):
     r"""Return the two-level map equation codelength of a partition of `G`.
 
-    The map equation [1]_ is the average per-step codelength of a random walk on
-    `G` under a two-level code: one index codebook over the modules, and one
-    codebook per module over the nodes inside it plus an exit symbol.
+    The map equation [1]_ gives the theoretical lower bound on the average
+    per-step codelength of a random walk on `G` under a two-level code: one
+    index codebook over the modules, and one codebook per module over the nodes
+    inside it plus an exit symbol. For the partition :math:`\mathsf{M}` given by
+    `communities`:
 
     .. math::
-        L = q_\curvearrowright H(\mathcal{Q})
+        L(\mathsf{M}) = q_\curvearrowright H(\mathcal{Q})
             + \sum_i p^i_\circlearrowright H(\mathcal{P}^i)
 
     The index codebook is used at :math:`q_\curvearrowright`, the rate at which
-    the walk changes module, and costs :math:`H(\mathcal{Q})` bits per use.
-    Module :math:`i`'s codebook is used at :math:`p^i_\circlearrowright`, its
-    total node visit rate plus its exit rate, and costs
-    :math:`H(\mathcal{P}^i)`. This is evaluated by the equivalent closed form in
-    sums of :math:`x \log_2 x`.
+    the walk changes module. Its entropy :math:`H(\mathcal{Q})` is calculated
+    from the module enter rates normalized by :math:`q_\curvearrowright`. Module
+    :math:`i`'s codebook is used at :math:`p^i_\circlearrowright`, its total
+    node visit rate plus its exit rate. Its entropy :math:`H(\mathcal{P}^i)` is
+    calculated from the node visit rates and exit rate normalized by
+    :math:`p^i_\circlearrowright`. The implementation evaluates the equivalent
+    closed form as sums of :math:`x \log_2 x`.
 
     The visit and transition rates the codebooks are built from, together called
     the flow, come from the walk itself. On an undirected graph a node's rate is
