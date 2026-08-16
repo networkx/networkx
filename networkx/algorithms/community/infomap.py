@@ -812,7 +812,8 @@ def infomap_communities(
     the expected per-step description length of a random walk on the network.
     That walk is the *flow*: how much of its time it spends at each node, and
     how often it crosses each link. A community here is a region the walk stays
-    inside for a long time.
+    inside for a long time; the map equation literature calls it a *module*,
+    and so does the rest of this page.
 
     Modularity, which :any:`louvain_communities` and :any:`leiden_communities`
     optimize, instead counts link weights against what a null model would give.
@@ -820,18 +821,11 @@ def infomap_communities(
     can differ sharply: flow follows link direction, so a group that traps the
     walk need not be the group with the most internal weight.
 
-    The map equation literature calls a community a *module*, and so does the
-    rest of this description. For a two-level partition :math:`\mathsf{M}` the
-    map equation is
-
-    .. math::
-        L(\mathsf{M}) = q_\curvearrowright H(\mathcal{Q})
-            + \sum_{i} p^i_\circlearrowright H(\mathcal{P}^i)
-
-    where the first term is the cost of coding transitions *between* modules
-    (the index codebook, used at the total exit rate :math:`q_\curvearrowright`)
-    and the second is the cost of coding visits *within* each module :math:`i`.
-    Lower codelength means a partition that compresses the flow better.
+    The codelength trades the cost of naming which module the walk is in
+    against the cost of naming nodes inside one, so it is lowest for a
+    partition the walk rarely leaves. For the formula and its terms see
+    :func:`~networkx.algorithms.community.quality.map_equation`, which also
+    scores a partition you already have.
 
     The optimizer follows the same two phases as Louvain -- greedily moving
     single nodes to neighboring modules, then building an aggregated network in
@@ -841,13 +835,10 @@ def infomap_communities(
     :func:`infomap_partitions`.
 
     Edge weights set how often the walk uses each link, and the flow follows
-    from them rather than being given directly. An undirected graph needs
-    nothing beyond the weighted degrees, since a node's visit rate is its share
-    of their total. A directed graph has no such closed form, so its visit
-    rates come from
-    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`, a walk
-    with teleportation; that is why directed graphs require SciPy and
-    undirected ones do not.
+    from them rather than being given directly. Directed graphs need SciPy,
+    because their visit rates come from
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`;
+    undirected graphs do not.
 
     Parameters
     ----------
