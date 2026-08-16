@@ -969,6 +969,10 @@ def infomap_partitions(
     is optimized separately from the two-level partition returned by
     :func:`infomap_communities`.
 
+    Unlike :any:`louvain_partitions` and :any:`leiden_partitions`, which run
+    from finer partitions to coarser ones, this function follows the Infomap
+    hierarchy from its top modules down to its leaf modules.
+
     Directed graphs use the unrecorded teleportation-to-links flow model
     described by :func:`~networkx.algorithms.community.quality.map_equation` and
     require SciPy.
