@@ -143,15 +143,30 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                     dxvy = 0
                     dxyv = 0
                     dvxy = 0
-                    if not (
-                        sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[v][y] == 0
+                    if (
+                        D[x][v] == D[x][y] + D[y][v]
+                        and sigma_m[x][y]
+                        and sigma_m[y][v]
+                        and sigma_m[x][v]
                     ):
-                        if D[x][v] == D[x][y] + D[y][v]:
-                            dxyv = sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
-                        if D[x][y] == D[x][v] + D[v][y]:
-                            dxvy = sigma_m[x][v] * sigma_m[v][y] / sigma_m[x][y]
-                        if D[v][y] == D[v][x] + D[x][y]:
-                            dvxy = sigma_m[v][x] * sigma[x][y] / sigma[v][y]
+                        # fraction of x->v paths that pass through y
+                        dxyv = sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
+                    if (
+                        D[x][y] == D[x][v] + D[v][y]
+                        and sigma_m[x][v]
+                        and sigma_m[v][y]
+                        and sigma_m[x][y]
+                    ):
+                        # fraction of x->y paths that pass through v
+                        dxvy = sigma_m[x][v] * sigma_m[v][y] / sigma_m[x][y]
+                    if (
+                        D[v][y] == D[v][x] + D[x][y]
+                        and sigma_m[v][x]
+                        and sigma_m[x][y]
+                        and sigma_m[v][y]
+                    ):
+                        # fraction of v->y paths that pass through x
+                        dvxy = sigma_m[v][x] * sigma_m[x][y] / sigma_m[v][y]
                     sigma_m_v[x][y] = sigma_m[x][y] * (1 - dxvy)
                     PB_m_v[x][y] = PB_m[x][y] - PB_m[x][y] * dxvy
                     if y != v:
