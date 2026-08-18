@@ -59,7 +59,9 @@ mematch = iso.categorical_multiedge_match("foo", "")
 #   ismags.subgraph_isomorphisms_iter()
 #   ismags.largest_common_subgraph()
 #   ismags.analyse_subgraph_symmetry()
-#   ismags.find_isomorphisms()          # same as isomorphisms_iter
+#   ismags.isomorphisms_iter()
+#   ismags.is_monomorphic()
+#   ismags.monomorphisms_iter()
 
 
 def ismags_is_iso(G1, G2, node_label=None, edge_label=None, symmetry=False):
@@ -82,11 +84,13 @@ def ismags_subgraph_iter(G1, G2, node_label=None, edge_label=None, symmetry=Fals
 
 
 def ismags_is_SG_mono(G1, G2, node_label=None, edge_label=None, symmetry=False):
-    pytest.xfail("ismags does not handle monomorphism yet")
+    gm = iso.ISMAGS(G1, G2, node_label, edge_label)
+    return gm.is_monomorphic(symmetry=symmetry)
 
 
 def ismags_mono_iter(G1, G2, node_label=None, edge_label=None, symmetry=False):
-    pytest.xfail("ismags does not handle monomorphism yet")
+    gm = iso.ISMAGS(G1, G2, node_label, edge_label)
+    return gm.monomorphisms_iter(symmetry=symmetry)
 
 
 def vf2_is_iso(G1, G2, node_label=None, edge_label=None, symmetry=False):
@@ -522,9 +526,8 @@ def test_graph_input_order(morphism):
 def test_single_graph(G, Gclass, iso_ic, iso_iter, symmetry):
     G1 = Gclass(G())
     assert iso_ic(G1, G1, symmetry=symmetry)
-    assert list(iso_iter(G1, G1, symmetry=symmetry))
-
     all_mappings = list(iso_iter(G1, G1, symmetry=symmetry))
+    assert all_mappings
 
     sym = G1.graph.get("numb_symmetries", None)
     mappings = G1.graph.get("mappings", None)
@@ -641,7 +644,6 @@ def test_non_isomorphic_same_degree_sequence(iso_ic, symmetry, Gclass):
     G1.add_edge(4, 8)
     G2 = G.copy()
     G2.add_edge(3, 7)
-    # 3rd value is whether isomorphic or not
     assert not iso_ic(Gclass(G1), Gclass(G2), symmetry=symmetry)
 
 
@@ -741,9 +743,30 @@ def test_monomorphism_path_in_cycle(iso_ic, symmetry, Gclass):
     SG = FG.copy()
     SG.remove_edge(13, 0)
     assert FG.number_of_edges() == SG.number_of_edges() + 1
+    FG, SG = Gclass(FG), Gclass(SG)
 
     mono = "mono" in iso_ic.__name__
-    assert mono == iso_ic(Gclass(FG), Gclass(SG), symmetry=symmetry)
+    assert mono == iso_ic(FG, SG, symmetry=symmetry)
+
+    # Test self-loop multiedges
+    # Add a multiedge to FG, then too many to SG, then even them out again.
+    # is_mono functions should pass on all except when SG has more multiedges than FG
+    # is_SG functions should fail on all b/c induced SG cant be missing edge (13, 0)
+    if FG.is_multigraph():
+        # more edges in FG does not affect is_mono
+        FG.add_edge(3, 3)
+        assert mono == iso_ic(FG, SG, symmetry=symmetry)
+        # too many multiedge loops in SG rules out morphism
+        SG.add_edge(3, 3)
+        SG.add_edge(3, 3)
+        assert not iso_ic(FG, SG, symmetry=symmetry)
+        # equal number in SG and FG so back True is_mono
+        FG.add_edge(3, 3)
+        assert mono == iso_ic(FG, SG, symmetry=symmetry)
+
+    # an extra SG multiedge loop rules out morphism
+    SG.add_edge(7, 7)
+    assert not iso_ic(FG, SG, symmetry=symmetry)
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
@@ -769,6 +792,27 @@ def test_monomorphism_count_for_path_in_cycle(mono_iter, symmetry, Gclass):
 
     # switch order of FG and SG (bigger cannot be subgraph)
     assert sum(1 for _ in mono_iter(SG, FG, symmetry=symmetry)) == 0
+
+    FG.add_edge(7, 8)
+    mappings = mono_iter(FG, SG, symmetry=symmetry)
+    ans = 1 if (FG.is_directed() or FG.is_multigraph()) else 2
+    assert sum(1 for _ in mappings) == ans
+
+    # test multigraph to non-multigraph: simple edge equiv to single multiedge
+    if FG.is_multigraph():
+        USG = nx.DiGraph(SG) if FG.is_directed() else nx.Graph(SG)
+        mappings = mono_iter(FG, USG, symmetry=symmetry)
+        ans = 1 if FG.is_directed() else 2
+        assert sum(1 for _ in mappings) == ans
+
+        UFG = nx.DiGraph(FG) if FG.is_directed() else nx.Graph(FG)
+        mappings = mono_iter(UFG, SG, symmetry=symmetry)
+        assert sum(1 for _ in mappings) == 0
+
+    # Add multiedge to SG. Lowers numb mappings (unless not multigraph cuz not added)
+    SG.add_edge(10, 11)  # multiedge to SG
+    mappings = mono_iter(FG, SG, symmetry=symmetry)
+    assert sum(1 for _ in mappings) == 0 if FG.is_multigraph() else 1
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
