@@ -59,6 +59,4 @@ def __getattr__(name):
             "nx.random_tree was removed in version 3.4. Use `nx.random_labeled_tree` instead.\n"
             "See: https://networkx.org/documentation/latest/release/release_3.4.html"
         )
-    if name == "readwrite.p2g":
-        print("hit it")
     raise AttributeError(f"module 'networkx' has no attribute '{name}'")
