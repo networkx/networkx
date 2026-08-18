@@ -107,6 +107,7 @@ class TestGroupBetweennessCentrality:
 
         The non-group nodes 3, 4 and 5 have no shortest path between them
         with an interior node in C, so the group betweenness is 0.
+        Note that `endpoints=False` is used here.
         """
         G = nx.Graph(
             [(0, 1), (0, 2), (0, 3), (0, 4), (1, 3), (2, 3), (2, 4), (3, 4), (4, 5)]
