@@ -1,4 +1,5 @@
 import io
+import sys
 import warnings
 
 import pytest
@@ -6,6 +7,28 @@ import pytest
 import networkx as nx
 from networkx.readwrite.p2g import read_p2g, write_p2g
 from networkx.utils import edges_equal
+
+
+@pytest.fixture(scope="function", autouse=True)
+def import_cache_clearer():
+    yield "Resetting imports"
+    ### Cleanup
+    # Clear python modules cache
+    sys.modules.pop("networkx.readwrite.p2g")
+    # Clear dispatching registration manifest
+    to_del = [k for k in nx.utils.backends._registered_algorithms if "p2g" in k]
+    for fn in to_del:
+        nx.utils.backends._registered_algorithms.pop(fn)
+
+
+def test_from_import_deprecation():
+    with pytest.deprecated_call():
+        from networkx.readwrite import p2g
+
+
+def test_import_deprecation():
+    with pytest.deprecated_call():
+        import networkx.readwrite.p2g
 
 
 class TestP2G:
