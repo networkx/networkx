@@ -8,16 +8,24 @@ import networkx as nx
 from networkx.utils import edges_equal
 
 
-@pytest.fixture(autouse=True)
-def import_cache_clearer():
-    yield "Resetting imports"
-    ### Cleanup
+def _clear_modules():
     # Clear python modules cache
     sys.modules.pop("networkx.readwrite.p2g")
     # Clear dispatching registration manifest
     to_del = [k for k in nx.utils.backends._registered_algorithms if "p2g" in k]
     for fn in to_del:
         nx.utils.backends._registered_algorithms.pop(fn)
+
+
+@pytest.fixture(autouse=True)
+def import_cache_clearer():
+    ### Initialize - clear import cache if the module exists already (e.g.
+    if "networkx.readwrite.p2g" in sys.modules:
+        _clear_modules()
+    #   from doctests
+    yield "Resetting imports"
+    ### Cleanup
+    _clear_modules()
 
 
 def test_fn_import_from_module_deprecation():
