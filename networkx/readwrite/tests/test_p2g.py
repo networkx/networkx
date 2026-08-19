@@ -5,11 +5,10 @@ import warnings
 import pytest
 
 import networkx as nx
-from networkx.readwrite.p2g import read_p2g, write_p2g
 from networkx.utils import edges_equal
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture()
 def import_cache_clearer():
     yield "Resetting imports"
     ### Cleanup
@@ -21,12 +20,17 @@ def import_cache_clearer():
         nx.utils.backends._registered_algorithms.pop(fn)
 
 
-def test_from_import_deprecation():
+def test_from_import_deprecation(import_cache_clearer):
     with pytest.deprecated_call():
         from networkx.readwrite import p2g
 
 
-def test_import_deprecation():
+def test_fn_import_from_module_deprecation(import_cache_clearer):
+    with pytest.deprecated_call():
+        from networkx.readwrite.p2g import read_p2g
+
+
+def test_import_deprecation(import_cache_clearer):
     with pytest.deprecated_call():
         import networkx.readwrite.p2g
 
@@ -41,6 +45,8 @@ class TestP2G:
         cls.DG = nx.DiGraph(cls.G)
 
     def test_read_p2g(self):
+        from networkx.readwrite.p2g import read_p2g
+
         s = b"""\
 name
 3 4
@@ -60,6 +66,8 @@ c
         )
 
     def test_write_p2g(self):
+        from networkx.readwrite.p2g import write_p2g
+
         s = b"""foo
 3 2
 1
@@ -79,6 +87,8 @@ c
         assert r == s
 
     def test_write_read_p2g(self):
+        from networkx.readwrite.p2g import read_p2g, write_p2g
+
         fh = io.BytesIO()
         G = nx.DiGraph()
         G.name = "foo"
