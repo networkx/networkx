@@ -125,6 +125,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nbfs_predecessors"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="The p2g module"
+    )
 
 
 @pytest.fixture(autouse=True)
