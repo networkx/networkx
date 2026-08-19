@@ -8,7 +8,7 @@ import networkx as nx
 from networkx.utils import edges_equal
 
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 def import_cache_clearer():
     yield "Resetting imports"
     ### Cleanup
@@ -20,17 +20,12 @@ def import_cache_clearer():
         nx.utils.backends._registered_algorithms.pop(fn)
 
 
-def test_from_import_deprecation(import_cache_clearer):
-    with pytest.deprecated_call():
-        from networkx.readwrite import p2g
-
-
-def test_fn_import_from_module_deprecation(import_cache_clearer):
+def test_fn_import_from_module_deprecation():
     with pytest.deprecated_call():
         from networkx.readwrite.p2g import read_p2g
 
 
-def test_import_deprecation(import_cache_clearer):
+def test_import_deprecation():
     with pytest.deprecated_call():
         import networkx.readwrite.p2g
 
