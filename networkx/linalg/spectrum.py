@@ -150,9 +150,10 @@ def magnetic_spectrum(G, *, q=0.25, weight="weight", normalized=False):
     evals : np.ndarray
         Eigenvalues of the magnetic Laplacian matrix
 
-    Notes
-    -----
-    Not implemented for Graph, MultiGraph, and MultiDiGraph.
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is undirected or a multigraph.
 
     See Also
     --------
