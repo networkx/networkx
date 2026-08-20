@@ -183,6 +183,151 @@ class TestLaplacian:
         )
 
 
+class TestMagneticLaplacian:
+    @classmethod
+    def setup_class(cls):
+        cls.G = nx.DiGraph([(1, 2), (2, 1), (2, 3), (3, 2), (3, 4), (4, 3)])
+        cls.DiG = nx.DiGraph([(1, 2), (2, 1), (2, 3), (4, 3)])
+
+        wt2 = {"weight": 2}
+        wt3 = {"weight": 3}
+        cls.DiGW = nx.DiGraph([(1, 2, wt2), (2, 1, wt3), (2, 3, wt2), (4, 3, wt2)])
+
+    def test_inputs(self):
+        with pytest.raises(ValueError, match="Parameter q"):
+            nx.magnetic_laplacian_matrix(self.G, q=-0.1)
+        with pytest.raises(ValueError, match="Parameter q"):
+            nx.magnetic_laplacian_matrix(self.G, q=1.1)
+        A = nx.magnetic_laplacian_matrix(self.G, nodelist=[1, 2])
+        assert A.shape == (2, 2)
+
+    def test_magnetic_laplacian(self):
+        ML = nx.magnetic_laplacian_matrix(self.G).todense()
+        GL = np.array([[1, -1, 0, 0], [-1, 2, -1, 0], [0, -1, 2, -1], [0, 0, -1, 1]])
+        np.testing.assert_allclose(ML, GL)
+
+        ML = nx.magnetic_laplacian_matrix(self.DiG, q=0.5).todense()
+        DL_50 = np.array(
+            [[1, -1, 0, 0], [-1, 1.5, 0.5, 0], [0, 0.5, 1, 0.5], [0, 0, 0.5, 0.5]]
+        )
+        np.testing.assert_allclose(ML, DL_50)
+
+        ML = nx.magnetic_laplacian_matrix(self.DiG, q=0.25).todense()
+        DL_25 = np.array(
+            [[1, -1, 0, 0], [-1, 1.5, -0.5j, 0], [0, 0.5j, 1, 0.5j], [0, 0, -0.5j, 0.5]]
+        )
+        np.testing.assert_allclose(ML, DL_25)
+
+        ML = nx.magnetic_laplacian_matrix(self.DiG, q=0).todense()
+        DL_0 = np.array(
+            [[1, -1, 0, 0], [-1, 1.5, -0.5, 0], [0, -0.5, 1, -0.5], [0, 0, -0.5, 0.5]]
+        )
+        np.testing.assert_allclose(ML, DL_0)
+
+        ML = nx.magnetic_laplacian_matrix(self.DiGW, q=0.5).todense()
+        DLW_50 = np.array(
+            [[2.5, -2.5, 0, 0], [-2.5, 3.5, 1, 0], [0, 1, 2, 1], [0, 0, 1, 1]]
+        )
+        np.testing.assert_allclose(ML, DLW_50)
+
+        ML = nx.magnetic_laplacian_matrix(self.DiGW, q=0.25).todense()
+        DLW_25 = np.array(
+            [[2.5, -2.5, 0, 0], [-2.5, 3.5, -1j, 0], [0, 1j, 2, 1j], [0, 0, -1j, 1]]
+        )
+        np.testing.assert_allclose(ML, DLW_25)
+
+        ML = nx.magnetic_laplacian_matrix(self.DiGW, q=0).todense()
+        DLW_0 = np.array(
+            [[2.5, -2.5, 0, 0], [-2.5, 3.5, -1, 0], [0, -1, 2, -1], [0, 0, -1, 1]]
+        )
+        np.testing.assert_allclose(ML, DLW_0)
+
+    def test_norm_mag_laplacian(self):
+        NDL_50 = np.array(
+            [
+                [1, -1 / np.sqrt(1.5), 0, 0],
+                [-1 / np.sqrt(1.5), 1, 0.5 / np.sqrt(1.5), 0],
+                [0, 0.5 / np.sqrt(1.5), 1, 0.5 / np.sqrt(0.5)],
+                [0, 0, 0.5 / np.sqrt(0.5), 1],
+            ]
+        )
+        np.testing.assert_almost_equal(
+            nx.magnetic_laplacian_matrix(self.DiG, normalized=True, q=0.5).todense(),
+            NDL_50,
+            decimal=3,
+        )
+
+        NML = nx.magnetic_laplacian_matrix(self.DiG, normalized=True, q=0.5).todense()
+        assert np.allclose(NML, NDL_50)
+        np.testing.assert_allclose(NML, NDL_50)
+
+        NDL_25 = np.array(
+            [
+                [1, -1 / np.sqrt(1.5), 0, 0],
+                [-1 / np.sqrt(1.5), 1, -0.5j / np.sqrt(1.5), 0],
+                [0, 0.5j / np.sqrt(1.5), 1, 0.5j / np.sqrt(0.5)],
+                [0, 0, -0.5j / np.sqrt(0.5), 1],
+            ]
+        )
+        NML = nx.magnetic_laplacian_matrix(self.DiG, normalized=True, q=0.25).todense()
+        np.testing.assert_allclose(NML, NDL_25)
+
+        NDL_0 = np.array(
+            [
+                [1, -1 / np.sqrt(1.5), 0, 0],
+                [-1 / np.sqrt(1.5), 1, -0.5 / np.sqrt(1.5), 0],
+                [0, -0.5 / np.sqrt(1.5), 1, -0.5 / np.sqrt(0.5)],
+                [0, 0, -0.5 / np.sqrt(0.5), 1],
+            ]
+        )
+        NML = nx.magnetic_laplacian_matrix(self.DiG, normalized=True, q=0).todense()
+        np.testing.assert_allclose(NML, NDL_0)
+
+        NWDL_50 = np.array(
+            [
+                [1, -2.5 / np.sqrt(2.5 * 3.5), 0, 0],
+                [-2.5 / np.sqrt(2.5 * 3.5), 1, 1 / np.sqrt(3.5 * 2), 0],
+                [0, 1 / np.sqrt(3.5 * 2), 1, 1 / np.sqrt(2)],
+                [0, 0, 1 / np.sqrt(2), 1],
+            ]
+        )
+        NML = nx.magnetic_laplacian_matrix(self.DiGW, normalized=True, q=0.5).todense()
+        np.testing.assert_allclose(NML, NWDL_50)
+
+        NWDL_25 = np.array(
+            [
+                [1, -2.5 / np.sqrt(2.5 * 3.5), 0, 0],
+                [-2.5 / np.sqrt(2.5 * 3.5), 1, -1j / np.sqrt(3.5 * 2), 0],
+                [0, 1j / np.sqrt(3.5 * 2), 1, 1j / np.sqrt(2)],
+                [0, 0, -1j / np.sqrt(2), 1],
+            ]
+        )
+        NML = nx.magnetic_laplacian_matrix(self.DiGW, normalized=True, q=0.25).todense()
+        np.testing.assert_allclose(NML, NWDL_25)
+
+        NWDL_0 = np.array(
+            [
+                [1, -2.5 / np.sqrt(2.5 * 3.5), 0, 0],
+                [-2.5 / np.sqrt(2.5 * 3.5), 1, -1 / np.sqrt(3.5 * 2), 0],
+                [0, -1 / np.sqrt(3.5 * 2), 1, -1 / np.sqrt(2)],
+                [0, 0, -1 / np.sqrt(2), 1],
+            ]
+        )
+        NML = nx.magnetic_laplacian_matrix(self.DiGW, normalized=True, q=0).todense()
+        np.testing.assert_allclose(NML, NWDL_0)
+
+        NGL = np.array(
+            [
+                [1, -1 / np.sqrt(2), 0, 0],
+                [-1 / np.sqrt(2), 1, -1 / 2, 0],
+                [0, -1 / 2, 1, -1 / np.sqrt(2)],
+                [0, 0, -1 / np.sqrt(2), 1],
+            ]
+        )
+        NML = nx.magnetic_laplacian_matrix(self.G, normalized=True).todense()
+        np.testing.assert_allclose(NML, NGL)
+
+
 def test_directed_laplacian():
     "Directed Laplacian"
     # Graph used as an example in Sec. 4.1 of Langville and Meyer,
