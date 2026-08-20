@@ -20,9 +20,9 @@ def _clear_modules():
 @pytest.fixture(autouse=True)
 def import_cache_clearer():
     ### Initialize - clear import cache if the module exists already (e.g.
+    #   from doctests
     if "networkx.readwrite.p2g" in sys.modules:
         _clear_modules()
-    #   from doctests
     yield "Resetting imports"
     ### Cleanup
     _clear_modules()
