@@ -200,41 +200,41 @@ class TestMagneticLaplacian:
         cls.DiGW = nx.DiGraph([(1, 2, wt2), (2, 1, wt3), (2, 3, wt2), (4, 3, wt2)])
 
     def test_magnetic_laplacian(self):
-        ML =nx.magnetic_laplacian_matrix(self.G).todense()
+        ML = nx.magnetic_laplacian_matrix(self.G).todense()
         GL = np.array([[1, -1, 0, 0], [-1, 2, -1, 0], [0, -1, 2, -1], [0, 0, -1, 1]])
         np.testing.assert_allclose(ML, GL)
 
-        ML =nx.magnetic_laplacian_matrix(self.DiG, q=0.5).todense()
+        ML = nx.magnetic_laplacian_matrix(self.DiG, q=0.5).todense()
         DL_50 = np.array(
             [[1, -1, 0, 0], [-1, 1.5, 0.5, 0], [0, 0.5, 1, 0.5], [0, 0, 0.5, 0.5]]
         )
         np.testing.assert_allclose(ML, DL_50)
 
-        ML =nx.magnetic_laplacian_matrix(self.DiG, q=0.25).todense()
+        ML = nx.magnetic_laplacian_matrix(self.DiG, q=0.25).todense()
         DL_25 = np.array(
             [[1, -1, 0, 0], [-1, 1.5, -0.5j, 0], [0, 0.5j, 1, 0.5j], [0, 0, -0.5j, 0.5]]
         )
         np.testing.assert_allclose(ML, DL_25)
 
-        ML =nx.magnetic_laplacian_matrix(self.DiG, q=0).todense()
+        ML = nx.magnetic_laplacian_matrix(self.DiG, q=0).todense()
         DL_0 = np.array(
             [[1, -1, 0, 0], [-1, 1.5, -0.5, 0], [0, -0.5, 1, -0.5], [0, 0, -0.5, 0.5]]
         )
         np.testing.assert_allclose(ML, DL_0)
 
-        ML =nx.magnetic_laplacian_matrix(self.DiGW, q=0.5).todense()
+        ML = nx.magnetic_laplacian_matrix(self.DiGW, q=0.5).todense()
         DLW_50 = np.array(
             [[2.5, -2.5, 0, 0], [-2.5, 3.5, 1, 0], [0, 1, 2, 1], [0, 0, 1, 1]]
         )
         np.testing.assert_allclose(ML, DLW_50)
 
-        ML =nx.magnetic_laplacian_matrix(self.DiGW, q=0.25).todense()
+        ML = nx.magnetic_laplacian_matrix(self.DiGW, q=0.25).todense()
         DLW_25 = np.array(
             [[2.5, -2.5, 0, 0], [-2.5, 3.5, -1j, 0], [0, 1j, 2, 1j], [0, 0, -1j, 1]]
         )
         np.testing.assert_allclose(ML, DLW_25)
 
-        ML =nx.magnetic_laplacian_matrix(self.DiGW, q=0).todense()
+        ML = nx.magnetic_laplacian_matrix(self.DiGW, q=0).todense()
         DLW_0 = np.array(
             [[2.5, -2.5, 0, 0], [-2.5, 3.5, -1, 0], [0, -1, 2, -1], [0, 0, -1, 1]]
         )

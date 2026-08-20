@@ -248,7 +248,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 @not_implemented_for("undirected")
 @nx._dispatchable(edge_attrs="weight")
 def magnetic_laplacian_matrix(
-        G, *, nodelist=None, normalized=False, q=0.25, weight="weight"
+    G, *, nodelist=None, normalized=False, q=0.25, weight="weight"
 ):
     r"""Returns the magnetic Laplacian matrix of DiGraph G.
 
