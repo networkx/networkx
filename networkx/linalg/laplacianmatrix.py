@@ -311,7 +311,7 @@ def magnetic_laplacian_matrix(
 
     Raises
     ------
-    NetworkXError
+    ValueError
         If q is not between 0 and 0.5
 
     NetworkXNotImplemented
@@ -337,7 +337,7 @@ def magnetic_laplacian_matrix(
     node_index = {v: i for i, v in enumerate(nodelist)}
 
     if not (0 <= q <= 0.5):
-        raise nx.NetworkXError("Parameter q must be a value between 0 and 0.5")
+        raise ValueError("Parameter q must be a value between 0 and 0.5")
 
     phase = 2 * np.pi * q
 

@@ -194,9 +194,9 @@ class TestMagneticLaplacian:
         cls.DiGW = nx.DiGraph([(1, 2, wt2), (2, 1, wt3), (2, 3, wt2), (4, 3, wt2)])
 
     def test_inputs(self):
-        with pytest.raises(nx.NetworkXError, match="Parameter q"):
+        with pytest.raises(ValueError, match="Parameter q"):
             nx.magnetic_laplacian_matrix(self.G, q=-0.1)
-        with pytest.raises(nx.NetworkXError, match="Parameter q"):
+        with pytest.raises(ValueError, match="Parameter q"):
             nx.magnetic_laplacian_matrix(self.G, q=1.1)
         A = nx.magnetic_laplacian_matrix(self.G, nodelist=[1, 2])
         assert A.shape == (2, 2)
