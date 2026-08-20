@@ -130,11 +130,12 @@ def magnetic_spectrum(G, *, q=0.25, weight="weight", normalized=False):
 
     Parameters
     ----------
-    G: DiGraph
-      NetworkX graph
+    G : DiGraph
+        Directed graph
 
-    q: float (default=0.25)
-      Phase of the magnetic laplacian Float in [0,0.5]
+    q : float (default=0.25)
+        The phase of the magnetic potential is the charge parameter 0 <= q <= 0.5.
+        At q=0 returns the standard Laplacian.
 
     weight : string or None, optional (default='weight')
        The edge data key used to compute each value in the matrix.
@@ -146,8 +147,8 @@ def magnetic_spectrum(G, *, q=0.25, weight="weight", normalized=False):
 
     Returns
     -------
-    evals: NumPy array with real values
-      Eigenvalues
+    evals : np.ndarray
+        Eigenvalues of the magnetic Laplacian matrix
 
     Notes
     -----
