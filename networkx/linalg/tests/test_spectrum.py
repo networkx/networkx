@@ -57,6 +57,14 @@ class TestSpectrum:
         e = sorted(nx.magnetic_spectrum(self.Dcycle, normalized=True))
         np.testing.assert_allclose(e, evals, atol=1e-9)
 
+    def test_magnetic_spectrum_raises(self):
+        G = nx.cycle_graph(4)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.magnetic_spectrum(G)
+        MG = nx.MultiGraph(G)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.magnetic_spectrum(MG)
+
     def test_adjacency_spectrum(self):
         "Adjacency eigenvalues"
         evals = np.array([-np.sqrt(2), 0, np.sqrt(2)])
