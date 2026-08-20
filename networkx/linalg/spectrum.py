@@ -125,7 +125,7 @@ def adjacency_spectrum(G, weight="weight"):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def magnetic_spectrum(G, q=0.25, weight="weight", normalized=False):
+def magnetic_spectrum(G, *, q=0.25, weight="weight", normalized=False):
     """Returns eigenvalues of the magnetic laplacian matrix with phase `q`.
 
     Parameters
