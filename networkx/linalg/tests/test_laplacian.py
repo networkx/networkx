@@ -186,12 +186,6 @@ class TestLaplacian:
 class TestMagneticLaplacian:
     @classmethod
     def setup_class(cls):
-        r"""
-        We define tests for the magnetic laplacian matrix, to check if it correctly
-        returns the matrices for an undirected graph and for a directed graph.
-        In the directed graph we add edges between nodes in both directions to
-        check that the matrix has a real entry.
-        """
         cls.G = nx.DiGraph([(1, 2), (2, 1), (2, 3), (3, 2), (3, 4), (4, 3)])
         cls.DiG = nx.DiGraph([(1, 2), (2, 1), (2, 3), (4, 3)])
 
