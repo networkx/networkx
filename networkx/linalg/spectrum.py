@@ -11,7 +11,6 @@ __all__ = [
     "normalized_laplacian_spectrum",
     "bethe_hessian_spectrum",
     "magnetic_spectrum",
-    "normalized_magnetic_spectrum",
 ]
 
 
@@ -126,7 +125,7 @@ def adjacency_spectrum(G, weight="weight"):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def magnetic_spectrum(G, q=0.25, weight="weight"):
+def magnetic_spectrum(G, q=0.25, weight="weight", normalized=False):
     """
     Returns eigenvalues of the magnetic laplacian with phase, q.
 
@@ -142,6 +141,10 @@ def magnetic_spectrum(G, q=0.25, weight="weight"):
        The edge data key used to compute each value in the matrix.
        If None, then each edge has weight 1.
 
+    normalized : bool, optional (default=False)
+        If True, return the spectrum of the normalized magnetic laplacian matrix.
+        If False, use the magnetic laplacian matrix without normalization.
+
     Returns
     -------
     evals: NumPy array with real values
@@ -149,56 +152,16 @@ def magnetic_spectrum(G, q=0.25, weight="weight"):
 
     Notes
     -----
-    For Graph, MultiGraph/MuldiDiGraph the magnetic_laplacian is not implemented.
+    Not implemented for Graph, MultiGraph, and MultiDiGraph.
 
     See Also
     --------
-    magnetic_laplacian
+    magnetic_laplacian_matrix
     """
     import scipy as sp
 
-    return sp.linalg.eigh(
-        nx.magnetic_laplacian(G, q=q, weight=weight).todense(),
-        eigvals_only=True,
-    )
-
-
-@nx._dispatchable(edge_attrs="weight")
-def normalized_magnetic_spectrum(G, q=0.25, weight="weight"):
-    """
-    Returns eigenvalues of the normalized magnetic laplacian with phase, q.
-
-    Parameters
-    ----------
-    G: DiGraph
-      NetworkX graph
-
-    q: float (default=0.25)
-      Phase of the magnetic laplacian Float in [0,0.5]
-
-    weight : string or None, optional (default='weight')
-       The edge data key used to compute each value in the matrix.
-       If None, then each edge has weight 1.
-
-    Returns
-    -------
-    evals: NumPy array with real values
-      Eigenvalues of the normalized magnetic laplacian (between 0 and 2)
-
-    Notes
-    -----
-    For Graph, MultiGraph/MuldiDiGraph the normalized_magnetic_laplacian is not implemented.
-
-    See Also
-    --------
-    normalized_magnetic_laplacian
-    """
-    import scipy as sp
-
-    return sp.linalg.eigh(
-        nx.magnetic_laplacian(G, normalized=True, q=q, weight=weight).todense(),
-        eigvals_only=True,
-    )
+    ML = nx.magnetic_laplacian_matrix(G, q=q, weight=weight, normalized=normalized)
+    return sp.linalg.eigh(ML.toarray(), eigvals_only=True)
 
 
 @nx._dispatchable

@@ -16,7 +16,7 @@ __all__ = [
     "normalized_laplacian_matrix",
     "directed_laplacian_matrix",
     "directed_combinatorial_laplacian_matrix",
-    "magnetic_laplacian",
+    "magnetic_laplacian_matrix",
 ]
 
 
@@ -247,10 +247,12 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 @not_implemented_for("multigraph")
 @not_implemented_for("undirected")
 @nx._dispatchable(edge_attrs="weight")
-def magnetic_laplacian(G, *, nodelist=None, normalized=False, q=0.25, weight="weight"):
-    r"""Returns the magnetic Laplacian matrix of G or it's normalized version.
+def magnetic_laplacian_matrix(
+        G, *, nodelist=None, normalized=False, q=0.25, weight="weight"
+):
+    r"""Returns the magnetic Laplacian matrix of DiGraph G.
 
-    The magnetic Laplacian (also called the q-magnetic Laplacian) is a
+    The magnetic Laplacian matrix (also called the q-magnetic Laplacian) is a
     Hermitian matrix for directed graphs that encodes edge directionality
     via complex phases [1]_.
 
@@ -266,25 +268,23 @@ def magnetic_laplacian(G, *, nodelist=None, normalized=False, q=0.25, weight="we
             0 & \text{if both or neither edge is present.}
             \end{cases}
 
-    Then, the magnetic Laplacian is defined as:
+    Then, the magnetic Laplacian matrix is defined as:
 
     .. math::
         L^{(q)} := D - H^{(q)}
 
     where :math:`H^{(q)}` is the Hermitian adjacency matrix with entries
-    :math:`H^{(q)}_{jk} = W'_{jk} e^{2\pi i q \delta_{jk}}`, and :math:`D` is the degree
-    matrix associated with the symmetrized weight adjacency matrix :math:`W'`.
+    :math:`H^{(q)}_{jk} = W'_{jk} e^{2\pi i q \delta_{jk}}`, and :math:`D` is the
+    degree matrix associated with the symmetrized weight adjacency matrix :math:`W'`.
 
     If it's specified to compute the normalized version, using the Moore-Penrose
-    inverse :math:`D^{+}}` of the degree matrix :math:`D`, the normalized version is computed
-    as:
+    inverse :math:`D^{+}}` of the degree matrix :math:`D`, the normalized version
+    is computed as:
 
     .. math::
         L^{(q)}_{norm} = (D^{+})^{0.5} L^{(q)} (D^{+})^{0.5}
 
-    The magnetic Laplacian is only implemented for directed graphs. Since for undirected
-    graphs the magnetic Laplacian is the standard Laplacian, we suggest using `laplacian_matrix`
-    for computational reasons.
+    Not implemented for Graph, MultiGraph, MultiDiGraph.
 
     Parameters
     ----------
@@ -299,8 +299,8 @@ def magnetic_laplacian(G, *, nodelist=None, normalized=False, q=0.25, weight="we
         Laplacian. If True returns the normalized version.
 
     q : float, optional (default=0.25)
-        The phase of the magnetic potential. Is the charge parameter q ∈ [0, 0.5]. At q=0
-        returns the standard Laplacian.
+        The phase of the magnetic potential is the charge parameter 0 <= q <= 0.5.
+        At q=0 returns the standard Laplacian.
 
     weight : string or None, optional (default='weight')
         Edge attribute key for weights. If None, all edges have weight 1.
@@ -308,8 +308,8 @@ def magnetic_laplacian(G, *, nodelist=None, normalized=False, q=0.25, weight="we
     Returns
     -------
     L : SciPy sparse array (complex dtype)
-        The magnetic Laplacian matrix of G (if normalized=False) and the normalized version
-        if normalized=True
+        The magnetic Laplacian matrix of `G` if not `normalized`
+        and the normalized version if `normalized`
 
     Raises
     ------

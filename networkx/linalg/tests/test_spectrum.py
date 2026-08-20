@@ -49,13 +49,13 @@ class TestSpectrum:
         "Magnetic Laplacian Eigenvalues"
         evals = np.array([0.0, 2.0, 2.0, 4.0])
         e = sorted(nx.magnetic_spectrum(self.Dcycle))
-        np.testing.assert_almost_equal(e, evals)
+        np.testing.assert_allclose(e, evals, atol=1e-9)
 
     def test_normalized_magnetic_spectrum(self):
         "Normalized Magnetic Laplacian Eigenvalues"
         evals = np.array([0.0, 1.0, 1.0, 2.0])
-        e = sorted(nx.normalized_magnetic_spectrum(self.Dcycle))
-        np.testing.assert_almost_equal(e, evals)
+        e = sorted(nx.magnetic_spectrum(self.Dcycle, normalized=True))
+        np.testing.assert_allclose(e, evals, atol=1e-9)
 
     def test_adjacency_spectrum(self):
         "Adjacency eigenvalues"

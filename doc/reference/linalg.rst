@@ -23,9 +23,9 @@ Laplacian Matrix
 
    laplacian_matrix
    normalized_laplacian_matrix
-   magnetic_laplacian
    directed_laplacian_matrix
    directed_combinatorial_laplacian_matrix
+   magnetic_laplacian_matrix
 
 Bethe Hessian Matrix
 --------------------
