@@ -709,7 +709,7 @@ class ISMAGS:
 
         Parameters
         ----------
-        symmetry: bool
+        symmetry : bool
             Whether symmetry should be taken into account.
             If False, morphisms may be symmetrically equivalent.
         problem_type : string
@@ -810,7 +810,7 @@ class ISMAGS:
 
         Parameters
         ----------
-        symmetry: bool
+        symmetry : bool
             Whether symmetry should be taken into account. If False, found
             largest common subgraphs may be symmetrically equivalent.
 
@@ -882,7 +882,7 @@ class ISMAGS:
         return cosets
 
     def is_isomorphic(self, symmetry=False):
-        """Returns True if the input graphs are isomorphic, False otherwise.
+        """Returns True if the class input graphs are isomorphic, False otherwise.
 
         Isomorphic means there is a mapping of nodes from ``graph`` to ``subgraph``
         that maintains connectivity and node/edge matchings.
@@ -897,7 +897,7 @@ class ISMAGS:
         return isom is not None
 
     def subgraph_is_isomorphic(self, symmetry=False):
-        """Returns True if the input graphs are subgraph isomorphic, False otherwise.
+        """Returns True if the class input graphs are subgraph isomorphic, False otherwise.
 
         Subgraph isomorphic means there is a mapping of nodes from an induced
         subgraph of ``graph`` to ``subgraph`` that maintains connectivity and
@@ -914,7 +914,7 @@ class ISMAGS:
         return isom is not None
 
     def is_monomorphic(self, symmetry=False):
-        """Returns True if the input graphs are monomorphic, False otherwise.
+        """Returns True if the class input graphs are monomorphic, False otherwise.
 
         Monomorphic means there is a mapping of some nodes in ``graph`` to all
         nodes in ``subgraph`` that covers all nodes/edges in ``subgraph``.
@@ -932,18 +932,16 @@ class ISMAGS:
         return mom is not None
 
     def isomorphisms_iter(self, symmetry=True):
-        """Find all isomorphisms between graph and subgraph
+        """Yields all isomorphisms from graph to subgraph
 
-        Yield isomorphisms from ``graph`` to ``subgraph``. An isomorphism is an
-        all-to-all mapping of the nodes that maintains connectivity and node/edge
-        matchings.
+        An isomorphism is an all-to-all mapping of the nodes that maintains
+        connectivity and node/edge matchings.
 
-        Symmetric isomorphisms are ignored for the symmetries of ``subgraph``
-        when `symmetry` is ``True`` (the default).
+        Symmetric isomorphisms can be ignored for the symmetries of ``subgraph``.
 
         Parameters
         ----------
-        symmetry: bool, optional (default: True)
+        symmetry : bool, optional (default: True)
             Whether symmetries of ``subgraph`` should be taken into account.
             If False, isomorphisms may be symmetrically equivalent.
 
@@ -956,18 +954,17 @@ class ISMAGS:
             yield from self._all_morphisms(symmetry, problem_type="ISO")
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
-        """Find all subgraph isomorphisms between graph and subgraph
+        """Yields all subgraph isomorphisms from graph to subgraph
 
-        Yield subgraph isomorphisms from ``graph`` to ``subgraph``. An isomorphism
-        is a mapping of nodes that maintains connectivity and node/edge matchings.
-        Symmetric isomorphisms are ignored for the symmetries of ``subgraph``.
+        An isomorphism is a mapping of nodes that maintains connectivity and
+        node/edge matchings. Subgraph isomorphism means an isomorphism from an
+        induced subgraph of ``graph`` to ``subgraph``.
 
-        Subgraph isomorphism means a mapping from an induced subgraph of ``graph``
-        to ``subgraph`` that maintains connectivity and node/edge matchings.
+        Symmetric isomorphisms can be ignored for the symmetries of ``subgraph``.
 
         Parameters
         ----------
-        symmetry: bool
+        symmetry : bool, optional (default: True)
             Whether symmetries of ``subgraph`` should be taken into account.
             If False, isomorphisms may be symmetrically equivalent.
 
@@ -979,16 +976,19 @@ class ISMAGS:
         return self._all_morphisms(symmetry, problem_type="SUB")
 
     def monomorphisms_iter(self, symmetry=True):
-        """Find all monomorphisms between graph and subgraph
+        """Yields all monomorphisms from graph to subgraph
 
-        Yield monomorphisms from ``graph`` to ``subgraph``. A monomorphism is
-        a mapping of nodes that maintains node/edge matchings as well as
-        connectivity in ``subgraph``. Edges in ``graph`` need not map to ``subgraph``
-        Symmetric monomorphisms are ignored for the symmetries of ``subgraph``.
+        A monomorphism is a mapping of nodes that only maintains connectivity
+        and node/edge matchings in ``subgraph``. Edges in ``graph`` need not
+        map to ``subgraph``. In other words, the mapping covers all edges in
+        ``subgraph``, but is not a bijection (some nodes and edges are not mapped).
+        Some people call this kind of subgraph a non-induced subgraph.
+
+        Symmetric monomorphisms can be ignored for the symmetries of ``subgraph``.
 
         Parameters
         ----------
-        symmetry: bool
+        symmetry : bool, optional (default: True)
             Whether symmetries of ``subgraph`` should be taken into account.
             If False, monomorphisms may be symmetrically equivalent.
 
