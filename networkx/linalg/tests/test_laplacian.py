@@ -195,8 +195,8 @@ class TestMagneticLaplacian:
         cls.G = nx.DiGraph([(1, 2), (2, 1), (2, 3), (3, 2), (3, 4), (4, 3)])
         cls.DiG = nx.DiGraph([(1, 2), (2, 1), (2, 3), (4, 3)])
 
-        wt2 = dict(weight=2)
-        wt3 = dict(weight=3)
+        wt2 = {"weight": 2}
+        wt3 = {"weight": 3}
         cls.DiGW = nx.DiGraph([(1, 2, wt2), (2, 1, wt3), (2, 3, wt2), (4, 3, wt2)])
 
     def test_magnetic_laplacian(self):
