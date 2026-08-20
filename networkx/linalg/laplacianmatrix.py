@@ -284,12 +284,10 @@ def magnetic_laplacian_matrix(
     .. math::
         L^{(q)}_{norm} = (D^{+})^{0.5} L^{(q)} (D^{+})^{0.5}
 
-    Not implemented for Graph, MultiGraph, MultiDiGraph.
-
     Parameters
     ----------
     G : DiGraph
-        A NetworkX graph
+        A directed graph
 
     nodelist : list, optional (default=list(G))
         Node ordering for row/columns.
@@ -315,6 +313,9 @@ def magnetic_laplacian_matrix(
     ------
     NetworkXError
         If q is not between 0 and 0.5
+
+    NetworkXNotImplemented
+        If `G` is undirected or a multigraph
 
     References
     ----------
