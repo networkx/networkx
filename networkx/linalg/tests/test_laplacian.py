@@ -198,7 +198,8 @@ class TestMagneticLaplacian:
             nx.magnetic_laplacian_matrix(self.G, q=-0.1)
         with pytest.raises(nx.NetworkXError, match="Parameter q"):
             nx.magnetic_laplacian_matrix(self.G, q=1.1)
-        nx.magnetic_laplacian_matrix(self.G, nodelist=[1, 2])
+        A = nx.magnetic_laplacian_matrix(self.G, nodelist=[1, 2])
+        assert A.shape == (2, 2)
 
     def test_magnetic_laplacian(self):
         ML = nx.magnetic_laplacian_matrix(self.G).todense()
