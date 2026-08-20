@@ -277,9 +277,9 @@ def magnetic_laplacian_matrix(
     :math:`H^{(q)}_{jk} = W'_{jk} e^{2\pi i q \delta_{jk}}`, and :math:`D` is the
     degree matrix associated with the symmetrized weight adjacency matrix :math:`W'`.
 
-    If it's specified to compute the normalized version, using the Moore-Penrose
-    inverse :math:`D^{+}}` of the degree matrix :math:`D`, the normalized version
-    is computed as:
+    If `normalized` is True, compute the normalized version using the Moore-Penrose
+    inverse :math:`D^{+}}` of the degree matrix :math:`D`. The normalized formula
+    is then:
 
     .. math::
         L^{(q)}_{norm} = (D^{+})^{0.5} L^{(q)} (D^{+})^{0.5}
