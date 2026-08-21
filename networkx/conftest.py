@@ -125,6 +125,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nbfs_predecessors"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="The p2g module"
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -189,7 +192,7 @@ except ImportError:
 
 # List of files that pytest should ignore
 
-collect_ignore = []
+collect_ignore = ["readwrite/p2g.py"]
 
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
