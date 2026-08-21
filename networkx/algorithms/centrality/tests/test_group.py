@@ -100,6 +100,58 @@ class TestGroupBetweennessCentrality:
         b_answer = 5.0
         assert b == b_answer
 
+    def test_group_betweenness_group_of_three(self):
+        """
+        Group betweenness centrality is exact for groups of three or more
+        nodes (regression test for gh-8827).
+
+        The non-group nodes 3, 4 and 5 have no shortest path between them
+        with an interior node in C, so the group betweenness is 0.
+        Note that `endpoints=False` is used here.
+        """
+        G = nx.Graph(
+            [(0, 1), (0, 2), (0, 3), (0, 4), (1, 3), (2, 3), (2, 4), (3, 4), (4, 5)]
+        )
+        C = [0, 1, 2]
+        b = nx.group_betweenness_centrality(G, C, normalized=False, endpoints=False)
+        assert b == 0.0
+
+    def test_group_betweenness_directed_group_of_three(self):
+        """
+        Group betweenness centrality is exact for directed graphs with groups
+        of three or more nodes (regression test for gh-8827).
+
+        The expected value (8/3) was verified against a brute-force
+        enumeration of shortest paths in the issue.
+        """
+        G = nx.DiGraph(
+            [
+                (0, 6),
+                (1, 3),
+                (1, 6),
+                (2, 5),
+                (2, 6),
+                (2, 7),
+                (3, 1),
+                (3, 4),
+                (4, 0),
+                (4, 2),
+                (4, 5),
+                (4, 7),
+                (5, 1),
+                (5, 7),
+                (6, 0),
+                (6, 1),
+                (6, 7),
+                (7, 2),
+                (7, 4),
+                (7, 6),
+            ]
+        )
+        C = [1, 2, 3]
+        b = nx.group_betweenness_centrality(G, C, normalized=False, endpoints=False)
+        assert b == pytest.approx(8 / 3)
+
 
 class TestProminentGroup:
     np = pytest.importorskip("numpy")
