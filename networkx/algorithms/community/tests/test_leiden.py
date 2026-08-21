@@ -33,7 +33,7 @@ def singletons(G):
 
 
 def _metrics():
-    yield from ["cpm", "modularity"]
+    return ["cpm", "modularity"]
 
 
 def _quality():
@@ -43,8 +43,11 @@ def _quality():
     def qmod(G, P):
         return comm.modularity(G, P, resolution=0.2)
 
-    for gamma in [0.2, 0.5, 0.9]:
-        yield from [("cpm", cpm, gamma), ("modularity", qmod, gamma)]
+    return [
+        (metric, Q_func, gamma)
+        for gamma in [0.2, 0.5, 0.9]
+        for metric, Q_func in [("cpm", cpm), ("modularity", qmod)]
+    ]
 
 
 def test_valid_partition(G):
