@@ -26,3 +26,4 @@ from networkx.algorithms.community.community_utils import *
 from networkx.algorithms.community.louvain import *
 from networkx.algorithms.community.leiden import *
 from networkx.algorithms.community.local import *
+from networkx.algorithms.community.community_formation import *
