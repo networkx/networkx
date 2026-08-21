@@ -227,37 +227,21 @@ def test_missing_source_target(flow_func, interface_func):
 
 @pytest.mark.parametrize("flow_func", flow_funcs)
 @pytest.mark.parametrize("interface_func", [nx.minimum_node_cut, nx.minimum_edge_cut])
-def test_not_weakly_connected(flow_func, interface_func):
-    G = nx.DiGraph()
-    nx.add_path(G, [1, 2, 3])
-    nx.add_path(G, [4, 5])
+@pytest.mark.parametrize("graph", [nx.Graph, nx.DiGraph])
+def test_not_connected(flow_func, interface_func, graph):
+    # Input must be connected (weakly connected if digraph)
+    G = graph([(1, 2), (2, 3), (4, 5)])
 
     with pytest.raises(nx.NetworkXError, match="graph is not connected"):
         interface_func(G, flow_func=flow_func)
 
 
-def test_not_connected():
-    G = nx.Graph()
-    nx.add_path(G, [1, 2, 3])
-    nx.add_path(G, [4, 5])
-    for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
-        for flow_func in flow_funcs:
-            pytest.raises(nx.NetworkXError, interface_func, G, flow_func=flow_func)
-
-
-def tests_min_cut_complete():
-    G = nx.complete_graph(5)
-    for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
-        for flow_func in flow_funcs:
-            assert 4 == len(interface_func(G, flow_func=flow_func))
-
-
-def tests_min_cut_complete_directed():
-    G = nx.complete_graph(5)
-    G = G.to_directed()
-    for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
-        for flow_func in flow_funcs:
-            assert 4 == len(interface_func(G, flow_func=flow_func))
+@pytest.mark.parametrize("flow_func", flow_funcs)
+@pytest.mark.parametrize("interface_func", [nx.minimum_node_cut, nx.minimum_edge_cut])
+@pytest.mark.parametrize("graph", [nx.Graph, nx.DiGraph])
+def tests_min_cut_complete(flow_func, interface_func, graph):
+    G = nx.complete_graph(5, create_using=graph)
+    assert 4 == len(interface_func(G, flow_func=flow_func))
 
 
 def tests_minimum_st_node_cut():
@@ -270,19 +254,19 @@ def tests_minimum_st_node_cut():
 
 def test_invalid_auxiliary():
     G = nx.complete_graph(5)
-    pytest.raises(nx.NetworkXError, minimum_st_node_cut, G, 0, 3, auxiliary=G)
+    with pytest.raises(nx.NetworkXError, match="Invalid auxiliary digraph"):
+        minimum_st_node_cut(G, 0, 3, auxiliary=G)
 
 
-def test_interface_only_source():
+@pytest.mark.parametrize("interface_func", [nx.minimum_node_cut, nx.minimum_edge_cut])
+def test_interface_only_source(interface_func):
     G = nx.complete_graph(5)
-    for interface_func in [nx.minimum_node_cut, nx.minimum_edge_cut]:
-        pytest.raises(nx.NetworkXError, interface_func, G, s=0)
 
+    with pytest.raises(nx.NetworkXError, match="source and target must be specified"):
+        interface_func(G, s=0)
 
-def test_interface_only_target():
-    G = nx.complete_graph(5)
-    for interface_func in [nx.minimum_node_cut, nx.minimum_edge_cut]:
-        pytest.raises(nx.NetworkXError, interface_func, G, t=3)
+    with pytest.raises(nx.NetworkXError, match="source and target must be specified"):
+        interface_func(G, t=3)
 
 
 @pytest.mark.parametrize("flow_func", flow_funcs)
