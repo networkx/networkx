@@ -309,44 +309,42 @@ def test_interface_only_target():
         pytest.raises(nx.NetworkXError, interface_func, G, t=3)
 
 
-def test_directed_minimum_st_node_cut_reverse_edge():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_directed_minimum_st_node_cut_reverse_edge(flow_func):
     # In a digraph an edge from t to s is not an s-t path, so s can still be
     # separated from t. Only a direct edge from s to t makes the pair
     # inseparable, and then the empty set is returned.
     G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])  # the directed triangle
-    for flow_func in flow_funcs:
-        errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        assert minimum_st_node_cut(G, 0, 2, flow_func=flow_func) == {1}, errmsg
-        assert minimum_st_node_cut(G, 0, 1, flow_func=flow_func) == set(), errmsg
+    assert minimum_st_node_cut(G, 0, 2, flow_func=flow_func) == {1}
+    assert minimum_st_node_cut(G, 0, 1, flow_func=flow_func) == set()
 
 
-def test_directed_minimum_node_cut():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_directed_minimum_node_cut(flow_func):
     # The node connectivity of the directed triangle is 1, so its minimum node
     # cut holds a single node. The initial cutset has to isolate the starting
     # node through its predecessors or its successors, whichever is smaller,
     # and not through its successors alone.
     G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
-    for flow_func in flow_funcs:
-        errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        cut = nx.minimum_node_cut(G, flow_func=flow_func)
-        assert len(cut) == nx.node_connectivity(G) == 1, errmsg
-        H = G.copy()
-        H.remove_nodes_from(cut)
-        assert not nx.is_strongly_connected(H), errmsg
+    cut = nx.minimum_node_cut(G, flow_func=flow_func)
+    assert len(cut) == nx.node_connectivity(G) == 1
+    H = G.copy()
+    H.remove_nodes_from(cut)
+    assert not nx.is_strongly_connected(H)
 
 
-def test_directed_minimum_node_cut_not_strongly_connected():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_directed_minimum_node_cut_not_strongly_connected(flow_func):
     # A weakly connected digraph that is not strongly connected is already
     # disconnected, so no node has to be removed and the cut is empty.
     G = nx.DiGraph([(0, 1), (1, 2), (2, 0), (3, 0)])  # a triangle and a source
     assert nx.is_weakly_connected(G)
     assert not nx.is_strongly_connected(G)
-    for flow_func in flow_funcs:
-        errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        assert nx.minimum_node_cut(G, flow_func=flow_func) == set(), errmsg
+    assert nx.minimum_node_cut(G, flow_func=flow_func) == set()
 
 
-def test_directed_minimum_node_cut_both_orders():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_directed_minimum_node_cut_both_orders(flow_func):
     # A minimum node cut of a digraph separates an ordered pair, and the two
     # orders need not agree, so the starting node has to be tried as source
     # and as target. Removing node 4 leaves this digraph not strongly
@@ -372,23 +370,20 @@ def test_directed_minimum_node_cut_both_orders():
         ]
     )
     assert nx.is_strongly_connected(G)
-    for flow_func in flow_funcs:
-        errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        cut = nx.minimum_node_cut(G, flow_func=flow_func)
-        assert len(cut) == 1, errmsg
-        H = G.copy()
-        H.remove_nodes_from(cut)
-        assert not nx.is_strongly_connected(H), errmsg
+    cut = nx.minimum_node_cut(G, flow_func=flow_func)
+    assert len(cut) == 1
+    H = G.copy()
+    H.remove_nodes_from(cut)
+    assert not nx.is_strongly_connected(H)
 
 
-def test_minimum_node_cut_self_loops():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_minimum_node_cut_self_loops(flow_func):
     # Self-loops do not affect node connectivity, so they must not enlarge the
     # minimum node cut either. The initial cutset is built from the neighbors
     # of the starting node, and a self-loop puts that node in its own cutset.
     G = nx.complete_graph(5)
     G.add_edges_from((u, u) for u in G)
     D = G.to_directed()
-    for flow_func in flow_funcs:
-        errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        assert len(nx.minimum_node_cut(G, flow_func=flow_func)) == 4, errmsg
-        assert len(nx.minimum_node_cut(D, flow_func=flow_func)) == 4, errmsg
+    assert len(nx.minimum_node_cut(G, flow_func=flow_func)) == 4
+    assert len(nx.minimum_node_cut(D, flow_func=flow_func)) == 4
