@@ -1,5 +1,3 @@
-import itertools
-
 import pytest
 
 import networkx as nx
@@ -83,15 +81,10 @@ class TestBiadjacencyMatrix:
         B = bipartite.from_biadjacency_matrix(M, create_using=nx.MultiGraph())
         assert edges_equal(B.edges(), [(0, 2), (0, 3), (0, 3), (1, 3), (1, 3), (1, 3)])
 
+    @pytest.mark.parametrize("row_order", [None, ("a", "b"), (25, (0, 5, 10))])
+    @pytest.mark.parametrize("column_order", [None, ("c", "d"), (26, (0, 5, 10))])
     @pytest.mark.parametrize(
-        "row_order,column_order,create_using",
-        list(
-            itertools.product(
-                (None, ("a", "b"), (25, (0, 5, 10))),
-                (None, ("c", "d"), (26, (0, 5, 10))),
-                (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph),
-            )
-        ),
+        "create_using", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
     )
     def test_from_biadjacency_nodelist(self, row_order, column_order, create_using):
         M = sp.sparse.csc_array([[1, 2], [0, 3]])

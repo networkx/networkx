@@ -1,5 +1,3 @@
-import itertools
-
 import pytest
 
 import networkx as nx
@@ -165,9 +163,8 @@ class TestBipartiteLinkAnalysis:
         with pytest.raises(nx.NetworkXAlgorithmError):
             bipartite.birank(G, all_nodes)
 
-    @pytest.mark.parametrize(
-        "damping_factor,value", list(itertools.product(["alpha", "beta"], [-0.1, 1.1]))
-    )
+    @pytest.mark.parametrize("damping_factor", ["alpha", "beta"])
+    @pytest.mark.parametrize("value", [-0.1, 1.1])
     def test_birank_invalid_alpha_beta(self, damping_factor, value):
         kwargs = {damping_factor: value}
         with pytest.raises(nx.NetworkXAlgorithmError):
@@ -182,22 +179,18 @@ class TestBipartiteLinkAnalysis:
             )
 
     @pytest.mark.parametrize(
-        "personalization,alpha,beta",
-        list(
-            itertools.product(
-                [
-                    # Concentrated case
-                    lambda x: 1000 if x == 0 else 0,
-                    # Uniform case
-                    lambda x: 5,
-                    # Zero case
-                    lambda x: 0,
-                ],
-                [i / 2 for i in range(3)],
-                [i / 2 for i in range(3)],
-            )
-        ),
+        "personalization",
+        [
+            # Concentrated case
+            lambda x: 1000 if x == 0 else 0,
+            # Uniform case
+            lambda x: 5,
+            # Zero case
+            lambda x: 0,
+        ],
     )
+    @pytest.mark.parametrize("alpha", [i / 2 for i in range(3)])
+    @pytest.mark.parametrize("beta", [i / 2 for i in range(3)])
     def test_gnmk_convergence_birank(self, personalization, alpha, beta):
         top_personalization_dict = {
             node: personalization(node) for node in self.gnmk_random_graph_top_nodes
