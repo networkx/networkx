@@ -1,40 +1,9 @@
 """Bounded-Scope Depth-First Search (BS-DFS) for length-bounded simple path and cycle enumeration."""
 
 
-# :func:`bsdfs` enumerates all length-bounded simple paths or cycles
-# in a graph extending a given prefix path.
-#
-# :func:`bsdfs` is used in NetworkX functions `all_simple_edge_paths` and
-# `simple_cycles` when a length bound is specified.
-#
-# Cycle mode and path mode
-# ------------------------
-# The two modes differ in one bit, selected by ``targets``:
-#
-# * ``targets is None`` -- *cycle mode*.  The implied target is ``prefix[0]``,
-#   so the walk reported returns to the node it started from.
-# * ``targets`` a set -- *path mode*.  The walk reported ends at a target.
-#   Targets are otherwise ordinary nodes, so a walk may run through one on its
-#   way to another.
-#
-# In path mode ``prefix`` and ``targets`` need not be disjoint, but a target on
-# the prefix cannot be reached again.  The only visible effect is that
-# ``prefix[-1] in targets`` yields the empty extension, which is NetworkX's
-# trivial path.
-#
 # Implementation overview
 # -----------------------
-# An iterative depth-limited depth-first search starting at ``prefix[-1]``.
-# A set of forbidden nodes -- the prefix, plus everything currently on the search
-# stack -- keeps the reported walks simple.
-#
-# The modes differ only in how the last step is taken.  In cycle mode the root
-# stays forbidden and is never entered, so the edge ``v -> prefix[0]`` is reported
-# where it is found and consumes one edge of the bound.  In path mode a target
-# is entered like any other node and the path ending there is reported on
-# arrival, consuming nothing further.  Both are the same rule seen through a
-# virtual target ``t*``, joined to every target by an edge of length 1 resp. 0.
-#
+# An iterative depth-limited depth-first search starting at ``s``.
 # To prevent excessive fruitless searches, the search is pruned by node barriers.
 #
 # Barriers
@@ -43,7 +12,7 @@
 # on the number of edges from ``v`` to ``t*`` in the graph minus the nodes
 # currently on the search stack ``stack``.  All barriers start at 0, which is
 # trivially valid.  With ``v`` on top of ``stack`` at depth ``h`` (so ``h`` edges
-# from the root to ``v``), a successor ``w`` is *admissible* iff
+# from ``s`` to ``v``), a successor ``w`` is *admissible* iff
 #
 #     b[w] + h < k                                                        (A)
 #
@@ -113,17 +82,12 @@ import networkx as nx
 __all__ = ["bsdfs"]
 
 
-_NO_ROOT = object()  # sentinel: never equal to any node
+_NO_TARGET = object()  # sentinel: never equal to any node
+_INF = float("inf")  # sentinel shortest distance: no target found below
 
 
 class _OutEdgeCache(dict):
-    """Caches, per node, the list of its outgoing edges as tuples.
-
-    Same purpose as ``_NeighborhoodCache`` in ``cycles.py`` -- avoid the
-    per-access cost of subgraph views -- but stores edge tuples ``(v, w)``,
-    resp. ``(v, w, key)`` for multigraphs, since the path caller needs the
-    multigraph key and cannot recover it from the node sequence.
-    """
+    """Caches, per node, the list of its outgoing edges as tuples."""
 
     def __init__(self, G):
         self.G = G
@@ -147,74 +111,71 @@ class _InNodeCache(dict):
 
 
 @nx._dispatchable
-def bsdfs(G, prefix, targets, k):
-    """Yield all length-bounded simple paths or cycles extending ``prefix`` to ``targets``.
+def bsdfs(G, s, t, k):
+    """Yield all length-bounded simple paths or cycles from ``s`` to ``t``.
 
     Parameters
     ----------
     G : NetworkX graph
         Directed or undirected, graph or multigraph.
-    prefix : list
-        Non-empty prefix, a simple path in ``G`` given as a node list.
-        Not mutated.
-    targets : set or None
-        Selects the mode.  Not mutated.
-
-        * a set -- *path mode*.  The walk reported ends at a target node.
-          Targets are otherwise ordinary nodes, so a walk may run through
-          one on its way to another.
-        * ``None`` -- *cycle mode*.  The implied target is ``prefix[0]``,
-          so the walk reported returns to the node it started from.
+    s : node
+        Source node, where every reported walk starts.
+    t : node or set of nodes
+        A single node enumerates the simple paths from ``s`` to ``t``; as a
+        special case, ``t == s`` enumerates the simple cycles through ``s``.
+        A set enumerates the simple paths from ``s`` to any node of the set,
+        and such a path may pass through one node of the set on its way to
+        another.  A single node and the corresponding one-element set give
+        the same paths, except in the cycle case ``t == s``.
     k : int
-        Length bound in edges, counted from ``prefix[0]``, i.e. the prefix
-        already consumes ``len(prefix) - 1`` of the budget.
+        Length bound in edges.
 
     Yields
     ------
     list of edges
-        The edges extending ``prefix[-1]`` to some node in ``targets``.
-        If ``targets`` is ``None``, cycles to ``prefix[0]`` are yielded.
-        Empty only for the trivial path, i.e. when ``prefix[-1]`` is itself a target.
+        The edges of the walk from ``s``, as ``(u, v)`` resp. ``(u, v, key)``.
+        Empty only for the trivial path, i.e. when ``s`` is itself a target.
 
     Raises
     ------
     ValueError
-        If ``k`` is negative, ``prefix`` is empty, or ``targets`` is an empty set.
+        If ``k`` is negative, or ``t`` is an empty set.
     NodeNotFound
-        If a node of ``prefix`` is not in ``G``.
+        If ``s`` is not in ``G``, or ``t`` is neither a node of ``G`` nor a
+        set of nodes.
 
     Examples
     --------
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 0)])
 
-    Cycle mode.  The cycle 0, 1, 2, 3 has 4 edges and exceeds the bound, so
-    only two are reported.  The caller prepends the prefix to obtain nodes.
+    With ``t == s`` these are the cycles through ``s``; the 4-edge cycle
+    0, 1, 2, 3 exceeds the bound.  A caller wanting nodes drops the last
+    component of each edge.
 
-    >>> list(bsdfs(G, [0], None, 3))
+    >>> list(bsdfs(G, 0, 0, 3))
     [[(0, 1), (1, 3), (3, 0)], [(0, 2), (2, 3), (3, 0)]]
-    >>> [[e[0] for e in E] for E in bsdfs(G, [0], None, 3)]
+    >>> [[e[0] for e in E] for E in bsdfs(G, 0, 0, 3)]
     [[0, 1, 3], [0, 2, 3]]
 
-    A longer prefix restricts the search, and only the extension is reported.
+    Cycles through the edge (0, 1): search from 1 back to 0, with one edge of
+    the bound already spent, and prepend 0.
 
-    >>> list(bsdfs(G, [0, 1], None, 3))
-    [[(1, 3), (3, 0)]]
-    >>> [[0] + [e[0] for e in E] for E in bsdfs(G, [0, 1], None, 3)]
+    >>> [[0] + [e[0] for e in E] for E in bsdfs(G, 1, 0, 2)]
     [[0, 1, 3]]
 
-    Path mode, to one target and to a set of targets.  Targets are entered
-    like any other node, so 0, 1, 2, 3 is reported although it runs through
-    the target 2.
+    A set of targets may be passed through, so 0, 1, 2, 3 is reported
+    although it runs through the target 2.  A single node and the matching
+    one-element set agree.
 
-    >>> list(bsdfs(G, [0], {3}, 3))
-    [[(0, 1), (1, 2), (2, 3)], [(0, 1), (1, 3)], [(0, 2), (2, 3)]]
-    >>> list(bsdfs(G, [0], {2, 3}, 3))
+    >>> list(bsdfs(G, 0, {2, 3}, 3))
     [[(0, 1), (1, 2)], [(0, 1), (1, 2), (2, 3)], [(0, 1), (1, 3)], [(0, 2)], [(0, 2), (2, 3)]]
+    >>> list(bsdfs(G, 0, {3}, 3)) == list(bsdfs(G, 0, 3, 3))
+    True
 
-    A target on the prefix is forbidden and cannot be entered again, so
-    ``prefix[-1]`` in ``targets`` adds the empty extension and nothing else.
+    ``s`` in a target set yields the trivial path and nothing more, since no
+    simple path returns to ``s``; ``t == s`` is the cycle query instead.
 
-    >>> list(bsdfs(G, [0], {0, 3}, 3))
+    >>> list(bsdfs(G, 0, {0, 3}, 3))
     [[], [(0, 1), (1, 2), (2, 3)], [(0, 1), (1, 3)], [(0, 2), (2, 3)]]
 
     See Also
@@ -242,31 +203,31 @@ def bsdfs(G, prefix, targets, k):
 
     if k < 0:
         raise ValueError(f"length bound {k=} must be non-negative")
-    if not prefix:
-        raise ValueError(f"{prefix=} must be a non-empty list of nodes")
-    for v in prefix:
-        if v not in G:
-            raise nx.NodeNotFound(f"prefix node {v} not in graph")
-    if targets is not None and not targets:
-        raise ValueError(f"{targets=} must be None or a non-empty set of nodes")
+    if s not in G:
+        raise nx.NodeNotFound(f"source node {s} not in graph")
+
+    if t in G:  # a single node: terminal, exactly as in the paper
+        terminal, targets = t, frozenset()
+    else:  # a set of nodes: NetworkX extension, targets are entered
+        try:
+            targets = set(t)
+        except TypeError as err:
+            raise nx.NodeNotFound(f"target node {t} not in graph") from err
+        if not targets:
+            raise ValueError(f"{t=} must be a node or a non-empty set of nodes")
+        terminal = _NO_TARGET
 
     succ = _OutEdgeCache(G)
     pred = _InNodeCache(G.pred if G.is_directed() else G.adj)
 
-    if targets is None:  # cycle mode: only the root is a target
-        cycle_root, targets = prefix[0], frozenset()
-    else:  # path mode: no cycle is closed
-        cycle_root = _NO_ROOT
-
     barrier = defaultdict(int)  # barriers, persistent over the whole run
-    stack = list(prefix)  # node stack; do not mutate the caller's list
-    plen = len(stack)  # where the reported edge list starts
-    forbidden = set(stack)  # node set on stack, forbidden for re-visiting
-    edges = [None] * plen  # edges[i] enters stack[i]; prefix part unused
-    iters = [iter(succ[stack[-1]])]  # only the last prefix node gets a frame
-    shortest_distances = [k + 1]  # per frame: shortest distance to t* found below
+    stack = [s]  # search path, node stack
+    forbidden = {s}  # nodes on the stack in a set, forbidden for re-visiting
+    edges = [None]  # edges[i] enters stack[i]; edges[0] is a dummy
+    iters = [iter(succ[s])]  # one successor iterator per frame
+    shortest_distances = [_INF]  # per frame: shortest distance to a target
 
-    if stack[-1] in targets and plen - 1 <= k:  # the prefix already ends at a target
+    if s in targets:  # the source is itself a target
         shortest_distances[-1] = 0
         yield []
 
@@ -286,8 +247,8 @@ def bsdfs(G, prefix, targets, k):
         for e in iters[-1]:
             w = e[1]
             if barrier[w] + h < k:  # admissible
-                if w == cycle_root:  # the root is forbidden: close, do not push
-                    yield edges[plen:] + [e]
+                if w == terminal:  # terminal target: report, do not enter
+                    yield edges[1:] + [e]
                     if shortest_distances[-1] > 1:
                         shortest_distances[-1] = 1
                 elif w not in forbidden:  # descend: call Search(w)
@@ -297,9 +258,9 @@ def bsdfs(G, prefix, targets, k):
                     iters.append(iter(succ[w]))
                     if w in targets:  # a target: report the path on arrival
                         shortest_distances.append(0)
-                        yield edges[plen:]
+                        yield edges[1:]
                     else:
-                        shortest_distances.append(k + 1)
+                        shortest_distances.append(_INF)
                     break
         else:  # return from Search(v)
             v = stack[-1]

@@ -282,7 +282,10 @@ def _directed_cycle_search(G, length_bound):
         if length_bound is None:
             yield from _johnson_cycle_search(Gc, [v])
         else:
-            yield from _bsdfs_bounded_cycle_search(Gc, [v], length_bound)
+            # bsdfs yields edge lists, reduce to node lists
+            yield from (
+                [e[0] for e in E] for E in nx.traversal.bsdfs(Gc, v, v, length_bound)
+            )
         # delete v after searching G, to make sure we can find v
         G.remove_node(v)
         components.extend(c for c in scc(Gc) if len(c) >= 2)
@@ -334,7 +337,13 @@ def _undirected_cycle_search(G, length_bound):
         if length_bound is None:
             yield from _johnson_cycle_search(Gc, uv)
         else:
-            yield from _bsdfs_bounded_cycle_search(Gc, uv, length_bound)
+            u, v = uv
+            # bsdfs is used to enumerate simple vu-paths extending edge (u, v) to simple cycles
+            # bsdfs yields edge lists, reduce to node lists
+            yield from (
+                [u] + [e[0] for e in E]
+                for E in nx.traversal.bsdfs(Gc, v, u, length_bound - 1)
+            )
         components.extend(c for c in bcc(Gc) if len(c) >= 3)
 
 
@@ -412,12 +421,6 @@ def _johnson_cycle_search(G, path):
             else:
                 for w in G[v]:
                     B[w].add(v)
-
-
-def _bsdfs_bounded_cycle_search(G, path, length_bound):
-    head = path[:-1]
-    for E in nx.traversal.bsdfs(G, path, None, length_bound):
-        yield head + [e[0] for e in E]
 
 
 @nx._dispatchable

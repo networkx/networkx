@@ -235,24 +235,16 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     Notes
     -----
-    This algorithm uses a modified depth-first search to generate the
-    paths [1]_.  A single path can be found in $O(V+E)$ time but the
-    number of simple paths in a graph can be very large, e.g. $O(n!)$ in
-    the complete graph of order $n$.
+    This algorithm calls :func:`all_simple_edge_paths` and reduces the results to a node lists.
 
     This function does not check that a path exists between `source` and
-    `target`. For large graphs, this may result in very long runtimes.
+    `target`. For large graphs, this may result in longer runtimes.
     Consider using `has_path` to check that a path exists between `source` and
     `target` before calling this function on large graphs.
 
-    References
-    ----------
-    .. [1] R. Sedgewick, "Algorithms in C, Part 5: Graph Algorithms",
-       Addison Wesley Professional, 3rd ed., 2001.
-
     See Also
     --------
-    all_shortest_paths, shortest_path, has_path
+    all_simple_edge_paths, all_shortest_paths, shortest_path, has_path
 
     """
     for edge_path in all_simple_edge_paths(G, source, target, cutoff):
@@ -351,6 +343,7 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
     the last) is bounded:  $O(V+E)$ per path if ``cutoff`` is ``None``,
     using a Johnson-style blocked depth-first search [1]_, and
     $O(k(V+E))$ per path for ``cutoff=k``, using a variant of BS-DFS [2]_.
+
     The *number* of simple paths can nevertheless be very large,
     e.g. $\\Theta((n-2)!)$ between two fixed nodes of the complete
     graph of order n, so consume the generator lazily rather than
@@ -367,7 +360,7 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
 
     See Also
     --------
-    all_shortest_paths, shortest_path, all_simple_paths
+    all_shortest_paths, shortest_path, all_simple_paths, bsdfs
 
     """
     if source not in G:
@@ -384,7 +377,7 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
     if cutoff is None and targets:
         yield from _johnson_all_simple_edge_paths(G, source, targets)
     elif cutoff >= 0 and targets:
-        yield from _bsdfs_all_simple_edge_paths(G, source, targets, cutoff)
+        yield from nx.traversal.bsdfs(G, source, targets, cutoff)
 
 
 def _johnson_all_simple_edge_paths(G, source, targets):
@@ -468,10 +461,6 @@ def _johnson_all_simple_edge_paths(G, source, targets):
                     B[w].add(v)
             if stack:
                 edge_path.pop()
-
-
-def _bsdfs_all_simple_edge_paths(G, source, targets, cutoff):
-    return nx.traversal.bsdfs(G, [source], targets, cutoff)
 
 
 @not_implemented_for("multigraph")
