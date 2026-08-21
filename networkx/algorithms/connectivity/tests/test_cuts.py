@@ -85,7 +85,8 @@ def test_brandes_erlebach_book(flow_func):
     assert not nx.is_connected(H)
 
 
-def test_white_harary_paper():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_white_harary_paper(flow_func):
     # Figure 1b white and harary (2001)
     # https://doi.org/10.1111/0081-1750.00098
     # A graph with high adhesion (edge connectivity) and low cohesion
@@ -98,21 +99,19 @@ def test_white_harary_paper():
     G.remove_node(G.order() - 1)
     for i in range(7, 10):
         G.add_edge(0, i)
-    for flow_func in flow_funcs:
-        kwargs = {"flow_func": flow_func}
-        errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        # edge cuts
-        edge_cut = nx.minimum_edge_cut(G, **kwargs)
-        assert 3 == len(edge_cut), errmsg
-        H = G.copy()
-        H.remove_edges_from(edge_cut)
-        assert not nx.is_connected(H), errmsg
-        # node cuts
-        node_cut = nx.minimum_node_cut(G, **kwargs)
-        assert {0} == node_cut, errmsg
-        H = G.copy()
-        H.remove_nodes_from(node_cut)
-        assert not nx.is_connected(H), errmsg
+
+    # edge cuts
+    edge_cut = nx.minimum_edge_cut(G, flow_func=flow_func)
+    assert 3 == len(edge_cut)
+    H = G.copy()
+    H.remove_edges_from(edge_cut)
+    assert not nx.is_connected(H)
+    # node cuts
+    node_cut = nx.minimum_node_cut(G, flow_func=flow_func)
+    assert {0} == node_cut
+    H = G.copy()
+    H.remove_nodes_from(node_cut)
+    assert not nx.is_connected(H)
 
 
 def test_petersen_cutset():
