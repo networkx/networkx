@@ -85,10 +85,12 @@ class TestBiadjacencyMatrix:
 
     @pytest.mark.parametrize(
         "row_order,column_order,create_using",
-        itertools.product(
-            (None, ("a", "b"), (25, (0, 5, 10))),
-            (None, ("c", "d"), (26, (0, 5, 10))),
-            (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph),
+        list(
+            itertools.product(
+                (None, ("a", "b"), (25, (0, 5, 10))),
+                (None, ("c", "d"), (26, (0, 5, 10))),
+                (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph),
+            )
         ),
     )
     def test_from_biadjacency_nodelist(self, row_order, column_order, create_using):

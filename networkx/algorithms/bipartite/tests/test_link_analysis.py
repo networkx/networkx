@@ -166,7 +166,7 @@ class TestBipartiteLinkAnalysis:
             bipartite.birank(G, all_nodes)
 
     @pytest.mark.parametrize(
-        "damping_factor,value", itertools.product(["alpha", "beta"], [-0.1, 1.1])
+        "damping_factor,value", list(itertools.product(["alpha", "beta"], [-0.1, 1.1]))
     )
     def test_birank_invalid_alpha_beta(self, damping_factor, value):
         kwargs = {damping_factor: value}
@@ -183,17 +183,19 @@ class TestBipartiteLinkAnalysis:
 
     @pytest.mark.parametrize(
         "personalization,alpha,beta",
-        itertools.product(
-            [
-                # Concentrated case
-                lambda x: 1000 if x == 0 else 0,
-                # Uniform case
-                lambda x: 5,
-                # Zero case
-                lambda x: 0,
-            ],
-            [i / 2 for i in range(3)],
-            [i / 2 for i in range(3)],
+        list(
+            itertools.product(
+                [
+                    # Concentrated case
+                    lambda x: 1000 if x == 0 else 0,
+                    # Uniform case
+                    lambda x: 5,
+                    # Zero case
+                    lambda x: 0,
+                ],
+                [i / 2 for i in range(3)],
+                [i / 2 for i in range(3)],
+            )
         ),
     )
     def test_gnmk_convergence_birank(self, personalization, alpha, beta):
