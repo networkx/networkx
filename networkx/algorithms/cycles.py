@@ -4,7 +4,7 @@ Cycle finding algorithms
 ========================
 """
 
-from collections import defaultdict
+from collections import defaultdict, deque
 from itertools import combinations, product
 from math import inf
 
@@ -114,10 +114,10 @@ def simple_cycles(G, length_bound=None):
 
     Optionally, the cycles are bounded in length.  In the unbounded case, we use
     a nonrecursive, iterator/generator version of Johnson's algorithm [1]_.  In
-    the bounded case, we use a version of the algorithm of Gupta and
-    Suzumura [2]_. There may be better algorithms for some cases [3]_ [4]_ [5]_.
+    the bounded case, we use a version of the BS-DFS algorithm of Bauernöppel and
+    Sack [2]_. There may be better algorithms for some cases [3]_ [4]_ [5]_.
 
-    The algorithms of Johnson, and Gupta and Suzumura, are enhanced by some
+    The algorithms of Johnson, and Bauernöppel and Sack, are enhanced by some
     well-known preprocessing techniques.  When `G` is directed, we restrict our
     attention to strongly connected components of `G`, generate all simple cycles
     containing a certain node, remove that node, and further decompose the
@@ -178,8 +178,9 @@ def simple_cycles(G, length_bound=None):
     .. [1] Finding all the elementary circuits of a directed graph.
        D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.
        https://doi.org/10.1137/0204007
-    .. [2] Finding All Bounded-Length Simple Cycles in a Directed Graph
-       A. Gupta and T. Suzumura https://arxiv.org/abs/2105.10094
+    .. [2] Enumerating Length-Bounded Simple Paths and Cycles in Directed Graphs
+       with O(k(n+m)) Delay Using Edge-Consistent Node Barriers
+       Frank Bauernöppel, Jörg-Rüdiger Sack https://arxiv.org/abs/2607.14745
     .. [3] Enumerating the cycles of a digraph: a new preprocessing strategy.
        G. Loizou and P. Thanish, Information Sciences, v. 27, 163-182, 1982.
     .. [4] A search strategy for the elementary cycles of a directed graph.
@@ -281,7 +282,7 @@ def _directed_cycle_search(G, length_bound):
         if length_bound is None:
             yield from _johnson_cycle_search(Gc, [v])
         else:
-            yield from _bounded_cycle_search(Gc, [v], length_bound)
+            yield from _bsdfs_bounded_cycle_search(Gc, [v], length_bound)
         # delete v after searching G, to make sure we can find v
         G.remove_node(v)
         components.extend(c for c in scc(Gc) if len(c) >= 2)
@@ -333,7 +334,7 @@ def _undirected_cycle_search(G, length_bound):
         if length_bound is None:
             yield from _johnson_cycle_search(Gc, uv)
         else:
-            yield from _bounded_cycle_search(Gc, uv, length_bound)
+            yield from _bsdfs_bounded_cycle_search(Gc, uv, length_bound)
         components.extend(c for c in bcc(Gc) if len(c) >= 3)
 
 
@@ -413,65 +414,10 @@ def _johnson_cycle_search(G, path):
                     B[w].add(v)
 
 
-def _bounded_cycle_search(G, path, length_bound):
-    """The main loop of the cycle-enumeration algorithm of Gupta and Suzumura.
-
-    Parameters
-    ----------
-    G : NetworkX Graph or DiGraph
-       A graph
-
-    path : list
-       A cycle prefix.  All cycles generated will begin with this prefix.
-
-    length_bound: int
-        A length bound.  All cycles generated will have length at most length_bound.
-
-    Yields
-    ------
-    list of nodes
-       Each cycle is represented by a list of nodes along the cycle.
-
-    References
-    ----------
-    .. [1] Finding All Bounded-Length Simple Cycles in a Directed Graph
-       A. Gupta and T. Suzumura https://arxiv.org/abs/2105.10094
-
-    """
-    G = _NeighborhoodCache(G)
-    lock = {v: 0 for v in path}
-    B = defaultdict(set)
-    start = path[0]
-    stack = [iter(G[path[-1]])]
-    blen = [length_bound]
-    while stack:
-        nbrs = stack[-1]
-        for w in nbrs:
-            if w == start:
-                yield path[:]
-                blen[-1] = 1
-            elif len(path) < lock.get(w, length_bound):
-                path.append(w)
-                blen.append(length_bound)
-                lock[w] = len(path)
-                stack.append(iter(G[w]))
-                break
-        else:
-            stack.pop()
-            v = path.pop()
-            bl = blen.pop()
-            if blen:
-                blen[-1] = min(blen[-1], bl)
-            if bl < length_bound:
-                relax_stack = [(bl, v)]
-                while relax_stack:
-                    bl, u = relax_stack.pop()
-                    if lock.get(u, length_bound) < length_bound - bl + 1:
-                        lock[u] = length_bound - bl + 1
-                        relax_stack.extend((bl + 1, w) for w in B[u].difference(path))
-            else:
-                for w in G[v]:
-                    B[w].add(v)
+def _bsdfs_bounded_cycle_search(G, path, length_bound):
+    head = path[:-1]
+    for E in nx.traversal.bsdfs(G, path, None, length_bound):
+        yield head + [e[0] for e in E]
 
 
 @nx._dispatchable
@@ -1104,11 +1050,13 @@ def _min_cycle_basis(G, weight):
         # orthogonal to the newly found cycle, as per [p. 336, 1]
         set_orth = [
             (
-                {e for e in orth if e not in base if e[::-1] not in base}
-                | {e for e in base if e not in orth if e[::-1] not in orth}
+                (
+                    {e for e in orth if e not in base if e[::-1] not in base}
+                    | {e for e in base if e not in orth if e[::-1] not in orth}
+                )
+                if sum((e in orth or e[::-1] in orth) for e in cycle_edges) % 2
+                else orth
             )
-            if sum((e in orth or e[::-1] in orth) for e in cycle_edges) % 2
-            else orth
             for orth in set_orth
         ]
     return cb
