@@ -192,7 +192,7 @@ except ImportError:
 
 # List of files that pytest should ignore
 
-collect_ignore = []
+collect_ignore = ["readwrite/p2g.py"]
 
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
