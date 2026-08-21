@@ -1,42 +1,42 @@
-"""Bounded-Scope Depth-First Search (BS-DFS) for legnth bound path/cycle enumeration"""
+"""Bounded-Scope Depth-First Search (BS-DFS) for length-bounded simple path and cycle enumeration."""
 
 
-# :func:`bsdfs` enumerates all length bounded simple paths or cycles
+# :func:`bsdfs` enumerates all length-bounded simple paths or cycles
 # in a graph extending a given prefix path.
-
+#
 # :func:`bsdfs` is used in NetworkX functions `all_simple_edge_paths` and
 # `simple_cycles` when a length bound is specified.
-
+#
 # Cycle mode and path mode
 # ------------------------
 # The two modes differ in one bit, selected by ``targets``:
-
+#
 # * ``targets is None`` -- *cycle mode*.  The implied target is ``prefix[0]``,
 #   so the walk reported returns to the node it started from.
 # * ``targets`` a set -- *path mode*.  The walk reported ends at a target.
 #   Targets are otherwise ordinary nodes, so a walk may run through one on its
 #   way to another.
-
+#
 # In path mode ``prefix`` and ``targets`` need not be disjoint, but a target on
 # the prefix cannot be reached again.  The only visible effect is that
 # ``prefix[-1] in targets`` yields the empty extension, which is NetworkX's
 # trivial path.
-
+#
 # Implementation overview
 # -----------------------
 # An iterative depth-limited depth-first search starting at ``prefix[-1]``.
 # A set of forbidden nodes -- the prefix, plus everything currently on the search
 # stack -- keeps the reported walks simple.
-
+#
 # The modes differ only in how the last step is taken.  In cycle mode the root
 # stays forbidden and is never entered, so the edge ``v -> prefix[0]`` is reported
 # where it is found and consumes one edge of the bound.  In path mode a target
 # is entered like any other node and the path ending there is reported on
 # arrival, consuming nothing further.  Both are the same rule seen through a
 # virtual target ``t*``, joined to every target by an edge of length 1 resp. 0.
-
+#
 # To prevent excessive fruitless searches, the search is pruned by node barriers.
-
+#
 # Barriers
 # --------
 # The search maintains one integer per node, ``b[v]``, a *certified lower bound*
@@ -44,39 +44,39 @@
 # currently on the search stack ``stack``.  All barriers start at 0, which is
 # trivially valid.  With ``v`` on top of ``stack`` at depth ``h`` (so ``h`` edges
 # from the root to ``v``), a successor ``w`` is *admissible* iff
-
+#
 #     b[w] + h < k                                                        (A)
-
+#
 # Rationale: entering ``w`` costs one edge, and ``b[w]`` further edges are needed
 # before ``t*`` can possibly be reached, so any output through ``w`` has length
 # at least ``h + 1 + b[w]``; requiring that to be at most ``k`` is exactly (A).
 # Because ``b[w]`` is a *lower* bound, (A) never discards an output: it prunes
 # only branches that provably cannot finish within the budget.
-
+#
 # Barriers are written in exactly two places, both on return from ``Search(v)``
 # with ``v`` at depth ``h``:
-
+#
 # * **unfruitful return** -- ``v`` produced no output.  The subsearch had a
 #   budget of ``k - h`` edges and exhausted it, so ``t*`` is farther than that:
-
+#
 #       b[v] = k - h + 1                                    (a *raise*)
-
+#
 # * **fruitful return** -- ``v`` produced an output, and ``sd`` is the exact
 #   number of edges from ``v`` to ``t*`` along the shortest output found below
 #   ``v``.  Setting ``b[v] = sd`` may *invalidate* the barriers of predecessors,
 #   which were justified relative to a larger distance from ``v``.  A backward
 #   BFS restores the invariant
-
+#
 #       b[u] <= b[w] + 1     for every edge u -> w with u not on stack       (EC)
-
+#
 #   ("edge-consistency"), lowering barriers where needed; see ``cascade`` below.
 #   Nodes on ``stack`` are skipped: their barriers are written when they are popped,
 #   not while they are forbidden.
-
+#
 # Edge-consistency is what makes the pop obligation local, and it is why the
 # cascade terminates quickly: a node is re-entered by the BFS only when its
 # barrier strictly drops, and each barrier only ever moves within ``[0, k+1]``.
-
+#
 # Delay
 # -----
 # Every cascade is triggered by a fruitful return, i.e. it is charged to an
@@ -84,13 +84,13 @@
 # gives worst-case delay ``3(k+1)(n+m)`` and amortized delay ``2(k+1)(n+m)``,
 # with ``n`` nodes and ``m`` edges -- in particular ``O(k(n+m))`` with a small
 # constant.  See [1]_.
-
+#
 # Prior work
 # ----------
 # Two earlier algorithms for the same enumeration problems are listed here as
 # prior art, not as alternatives: [1]_ and [2]_ demonstrate inputs on which
 # [3]_ and [4]_ omit valid outputs.
-
+#
 # References
 # ----------
 # .. [1] Frank Bauernoeppel, Joerg-Ruediger Sack,
@@ -148,7 +148,7 @@ class _InNodeCache(dict):
 
 @nx._dispatchable
 def bsdfs(G, prefix, targets, k):
-    """Yield all length bounded simple paths or cycles extending prefix to targets.
+    """Yield all length-bounded simple paths or cycles extending ``prefix`` to ``targets``.
 
     Parameters
     ----------
@@ -158,8 +158,13 @@ def bsdfs(G, prefix, targets, k):
         Non-empty prefix, a simple path in ``G`` given as a node list.
         Not mutated.
     targets : set or None
-        Target nodes, or ``None`` to search for cycles starting with ``prefix``.
-        Not mutated.
+        Selects the mode.  Not mutated.
+
+        * a set -- *path mode*.  The walk reported ends at a target node.
+          Targets are otherwise ordinary nodes, so a walk may run through
+          one on its way to another.
+        * ``None`` -- *cycle mode*.  The implied target is ``prefix[0]``,
+          so the walk reported returns to the node it started from.
     k : int
         Length bound in edges, counted from ``prefix[0]``, i.e. the prefix
         already consumes ``len(prefix) - 1`` of the budget.
@@ -169,6 +174,7 @@ def bsdfs(G, prefix, targets, k):
     list of edges
         The edges extending ``prefix[-1]`` to some node in ``targets``.
         If ``targets`` is ``None``, cycles to ``prefix[0]`` are yielded.
+        Empty only for the trivial path, i.e. when ``prefix[-1]`` is itself a target.
 
     Raises
     ------
@@ -213,7 +219,9 @@ def bsdfs(G, prefix, targets, k):
 
     See Also
     --------
-    all_simple_edge_paths, all_simple_paths, simple_cycles
+    :func:`~networkx.algorithms.simple_paths.all_simple_edge_paths`
+    :func:`~networkx.algorithms.simple_paths.all_simple_paths`
+    :func:`~networkx.algorithms.cycles.simple_cycles`
 
     Notes
     -----
@@ -222,8 +230,7 @@ def bsdfs(G, prefix, targets, k):
     edges, and at most ``2(k+1)(n+m)`` amortized over all outputs [1]_.
     One elementary step is a single adjacency-list entry scanned, plus
     constant bookkeeping per call and per barrier update, so the delay is
-    ``O(k(n+m))``.  The module docstring describes the node barriers this
-    rests on, and relates the algorithm to earlier, incomplete ones.
+    ``O(k(n+m))``.
 
     References
     ----------
