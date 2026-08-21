@@ -114,144 +114,126 @@ def test_white_harary_paper(flow_func):
     assert not nx.is_connected(H)
 
 
-def test_petersen_cutset():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_petersen_cutset(flow_func):
     G = nx.petersen_graph()
-    for flow_func in flow_funcs:
-        kwargs = {"flow_func": flow_func}
-        errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        # edge cuts
-        edge_cut = nx.minimum_edge_cut(G, **kwargs)
-        assert 3 == len(edge_cut), errmsg
-        H = G.copy()
-        H.remove_edges_from(edge_cut)
-        assert not nx.is_connected(H), errmsg
-        # node cuts
-        node_cut = nx.minimum_node_cut(G, **kwargs)
-        assert 3 == len(node_cut), errmsg
-        H = G.copy()
-        H.remove_nodes_from(node_cut)
-        assert not nx.is_connected(H), errmsg
+
+    # edge cuts
+    edge_cut = nx.minimum_edge_cut(G, flow_func=flow_func)
+    assert 3 == len(edge_cut)
+    H = G.copy()
+    H.remove_edges_from(edge_cut)
+    assert not nx.is_connected(H)
+    # node cuts
+    node_cut = nx.minimum_node_cut(G, flow_func=flow_func)
+    assert 3 == len(node_cut)
+    H = G.copy()
+    H.remove_nodes_from(node_cut)
+    assert not nx.is_connected(H)
 
 
-def test_octahedral_cutset():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_octahedral_cutset(flow_func):
     G = nx.octahedral_graph()
-    for flow_func in flow_funcs:
-        kwargs = {"flow_func": flow_func}
-        errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        # edge cuts
-        edge_cut = nx.minimum_edge_cut(G, **kwargs)
-        assert 4 == len(edge_cut), errmsg
-        H = G.copy()
-        H.remove_edges_from(edge_cut)
-        assert not nx.is_connected(H), errmsg
-        # node cuts
-        node_cut = nx.minimum_node_cut(G, **kwargs)
-        assert 4 == len(node_cut), errmsg
-        H = G.copy()
-        H.remove_nodes_from(node_cut)
-        assert not nx.is_connected(H), errmsg
+
+    # edge cuts
+    edge_cut = nx.minimum_edge_cut(G, flow_func=flow_func)
+    assert 4 == len(edge_cut)
+    H = G.copy()
+    H.remove_edges_from(edge_cut)
+    assert not nx.is_connected(H)
+    # node cuts
+    node_cut = nx.minimum_node_cut(G, flow_func=flow_func)
+    assert 4 == len(node_cut)
+    H = G.copy()
+    H.remove_nodes_from(node_cut)
+    assert not nx.is_connected(H)
 
 
-def test_icosahedral_cutset():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_icosahedral_cutset(flow_func):
     G = nx.icosahedral_graph()
-    for flow_func in flow_funcs:
-        kwargs = {"flow_func": flow_func}
-        errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        # edge cuts
-        edge_cut = nx.minimum_edge_cut(G, **kwargs)
-        assert 5 == len(edge_cut), errmsg
-        H = G.copy()
-        H.remove_edges_from(edge_cut)
-        assert not nx.is_connected(H), errmsg
-        # node cuts
-        node_cut = nx.minimum_node_cut(G, **kwargs)
-        assert 5 == len(node_cut), errmsg
-        H = G.copy()
-        H.remove_nodes_from(node_cut)
-        assert not nx.is_connected(H), errmsg
+
+    # edge cuts
+    edge_cut = nx.minimum_edge_cut(G, flow_func=flow_func)
+    assert 5 == len(edge_cut)
+    H = G.copy()
+    H.remove_edges_from(edge_cut)
+    assert not nx.is_connected(H)
+    # node cuts
+    node_cut = nx.minimum_node_cut(G, flow_func=flow_func)
+    assert 5 == len(node_cut)
+    H = G.copy()
+    H.remove_nodes_from(node_cut)
+    assert not nx.is_connected(H)
 
 
-def test_node_cutset_exception():
-    G = nx.Graph()
-    G.add_edges_from([(1, 2), (3, 4)])
-    for flow_func in flow_funcs:
-        pytest.raises(nx.NetworkXError, nx.minimum_node_cut, G, flow_func=flow_func)
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_node_cutset_exception(flow_func):
+    G = nx.Graph([(1, 2), (3, 4)])
+    with pytest.raises(nx.NetworkXError, match="is not connected"):
+        nx.minimum_node_cut(G, flow_func=flow_func)
 
 
-def test_node_cutset_random_graphs():
-    for flow_func in flow_funcs:
-        errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        for i in range(3):
-            G = nx.fast_gnp_random_graph(50, 0.25, seed=42)
-            if not nx.is_connected(G):
-                ccs = iter(nx.connected_components(G))
-                start = arbitrary_element(next(ccs))
-                G.add_edges_from((start, arbitrary_element(c)) for c in ccs)
-            cutset = nx.minimum_node_cut(G, flow_func=flow_func)
-            assert nx.node_connectivity(G) == len(cutset), errmsg
-            G.remove_nodes_from(cutset)
-            assert not nx.is_connected(G), errmsg
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_node_cutset_random_graphs(flow_func):
+    G = nx.fast_gnp_random_graph(50, 0.25, seed=42)
+
+    cutset = nx.minimum_node_cut(G, flow_func=flow_func)
+    assert nx.node_connectivity(G) == len(cutset)
+    G.remove_nodes_from(cutset)
+    assert not nx.is_connected(G)
 
 
-def test_edge_cutset_random_graphs():
-    for flow_func in flow_funcs:
-        errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        for i in range(3):
-            G = nx.fast_gnp_random_graph(50, 0.25, seed=42)
-            if not nx.is_connected(G):
-                ccs = iter(nx.connected_components(G))
-                start = arbitrary_element(next(ccs))
-                G.add_edges_from((start, arbitrary_element(c)) for c in ccs)
-            cutset = nx.minimum_edge_cut(G, flow_func=flow_func)
-            assert nx.edge_connectivity(G) == len(cutset), errmsg
-            G.remove_edges_from(cutset)
-            assert not nx.is_connected(G), errmsg
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_edge_cutset_random_graphs(flow_func):
+    G = nx.fast_gnp_random_graph(50, 0.25, seed=42)
+
+    cutset = nx.minimum_edge_cut(G, flow_func=flow_func)
+    assert nx.edge_connectivity(G) == len(cutset)
+    G.remove_edges_from(cutset)
+    assert not nx.is_connected(G)
 
 
-def test_empty_graphs():
-    G = nx.Graph()
-    D = nx.DiGraph()
-    for interface_func in [nx.minimum_node_cut, nx.minimum_edge_cut]:
-        for flow_func in flow_funcs:
-            pytest.raises(
-                nx.NetworkXPointlessConcept, interface_func, G, flow_func=flow_func
-            )
-            pytest.raises(
-                nx.NetworkXPointlessConcept, interface_func, D, flow_func=flow_func
-            )
+@pytest.mark.parametrize("flow_func", flow_funcs)
+@pytest.mark.parametrize("interface_func", [nx.minimum_node_cut, nx.minimum_edge_cut])
+@pytest.mark.parametrize("graph", [nx.Graph, nx.DiGraph])
+def test_empty_graphs(flow_func, interface_func, graph):
+    G = graph()
+
+    with pytest.raises(nx.NetworkXPointlessConcept):
+        interface_func(G, flow_func=flow_func)
 
 
-def test_unbounded():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_unbounded(flow_func):
     G = nx.complete_graph(5)
-    for flow_func in flow_funcs:
-        assert 4 == len(minimum_st_edge_cut(G, 1, 4, flow_func=flow_func))
+    assert 4 == len(minimum_st_edge_cut(G, 1, 4, flow_func=flow_func))
 
 
-def test_missing_source():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+@pytest.mark.parametrize("interface_func", [nx.minimum_node_cut, nx.minimum_edge_cut])
+def test_missing_source_target(flow_func, interface_func):
     G = nx.path_graph(4)
-    for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
-        for flow_func in flow_funcs:
-            pytest.raises(
-                nx.NetworkXError, interface_func, G, 10, 1, flow_func=flow_func
-            )
+
+    # Source node not in graph
+    with pytest.raises(nx.NetworkXError, match="node 10 not in graph"):
+        interface_func(G, 10, 1, flow_func=flow_func)
+
+    # Target node not in graph
+    with pytest.raises(nx.NetworkXError, match="node 10 not in graph"):
+        interface_func(G, 1, 10, flow_func=flow_func)
 
 
-def test_missing_target():
-    G = nx.path_graph(4)
-    for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
-        for flow_func in flow_funcs:
-            pytest.raises(
-                nx.NetworkXError, interface_func, G, 1, 10, flow_func=flow_func
-            )
-
-
-def test_not_weakly_connected():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+@pytest.mark.parametrize("interface_func", [nx.minimum_node_cut, nx.minimum_edge_cut])
+def test_not_weakly_connected(flow_func, interface_func):
     G = nx.DiGraph()
     nx.add_path(G, [1, 2, 3])
     nx.add_path(G, [4, 5])
-    for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
-        for flow_func in flow_funcs:
-            pytest.raises(nx.NetworkXError, interface_func, G, flow_func=flow_func)
+
+    with pytest.raises(nx.NetworkXError, match="graph is not connected"):
+        interface_func(G, flow_func=flow_func)
 
 
 def test_not_connected():
