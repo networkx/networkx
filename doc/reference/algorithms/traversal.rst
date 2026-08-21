@@ -61,3 +61,11 @@ Breadth First Search on Edges
    :toctree: generated/
 
    edge_bfs
+
+Bounded-Scope Depth First Search
+--------------------------------
+.. automodule:: networkx.algorithms.traversal.bounded_dfs
+.. autosummary::
+   :toctree: generated/
+
+   bsdfs
