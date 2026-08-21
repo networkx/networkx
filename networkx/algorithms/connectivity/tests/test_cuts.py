@@ -39,7 +39,8 @@ def test_articulation_points(flow_func):
     assert cut.pop() in set(nx.articulation_points(G))
 
 
-def test_brandes_erlebach_book():
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_brandes_erlebach_book(flow_func):
     # Figure 1 chapter 7: Connectivity
     # http://www.informatik.uni-augsburg.de/thi/personen/kammer/Graph_Connectivity.pdf
     G = nx.Graph()
@@ -66,25 +67,22 @@ def test_brandes_erlebach_book():
             (10, 11),
         ]
     )
-    for flow_func in flow_funcs:
-        kwargs = {"flow_func": flow_func}
-        errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        # edge cutsets
-        assert 3 == len(nx.minimum_edge_cut(G, 1, 11, **kwargs)), errmsg
-        edge_cut = nx.minimum_edge_cut(G, **kwargs)
-        # Node 5 has only two edges
-        assert 2 == len(edge_cut), errmsg
-        H = G.copy()
-        H.remove_edges_from(edge_cut)
-        assert not nx.is_connected(H), errmsg
-        # node cuts
-        assert {6, 7} == minimum_st_node_cut(G, 1, 11, **kwargs), errmsg
-        assert {6, 7} == nx.minimum_node_cut(G, 1, 11, **kwargs), errmsg
-        node_cut = nx.minimum_node_cut(G, **kwargs)
-        assert 2 == len(node_cut), errmsg
-        H = G.copy()
-        H.remove_nodes_from(node_cut)
-        assert not nx.is_connected(H), errmsg
+    # edge cutsets
+    assert 3 == len(nx.minimum_edge_cut(G, 1, 11, flow_func=flow_func))
+    edge_cut = nx.minimum_edge_cut(G, flow_func=flow_func)
+    # Node 5 has only two edges
+    assert 2 == len(edge_cut)
+    H = G.copy()
+    H.remove_edges_from(edge_cut)
+    assert not nx.is_connected(H)
+    # node cuts
+    assert {6, 7} == minimum_st_node_cut(G, 1, 11, flow_func=flow_func)
+    assert {6, 7} == nx.minimum_node_cut(G, 1, 11, flow_func=flow_func)
+    node_cut = nx.minimum_node_cut(G, flow_func=flow_func)
+    assert 2 == len(node_cut)
+    H = G.copy()
+    H.remove_nodes_from(node_cut)
+    assert not nx.is_connected(H)
 
 
 def test_white_harary_paper():
