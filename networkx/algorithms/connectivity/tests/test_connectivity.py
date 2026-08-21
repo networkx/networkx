@@ -260,6 +260,45 @@ def test_not_connected():
         assert nx.edge_connectivity(G) == 0, errmsg
 
 
+def test_directed_node_connectivity_not_strongly_connected():
+    # A weakly connected digraph that is not strongly connected has node
+    # connectivity 0. Node connectivity for digraphs is bounded by the smaller
+    # of the in-degree and the out-degree. Node 3 has the unique minimum total
+    # degree, so it is always the starting node whatever the insertion order,
+    # and its in-degree is 0.
+    G = nx.DiGraph([(0, 1), (1, 2), (2, 0), (3, 0)])  # a triangle and a source
+    assert nx.is_weakly_connected(G)
+    assert not nx.is_strongly_connected(G)
+    for flow_func in flow_funcs:
+        errmsg = f"Assertion failed in function: {flow_func.__name__}"
+        assert 0 == nx.node_connectivity(G, flow_func=flow_func), errmsg
+
+
+def test_node_connectivity_self_loops():
+    # Self-loops do not affect node connectivity. A complete graph is the only
+    # shape that exposes an inflated bound, because no pair of nodes is left to
+    # compute a local node connectivity that would lower it again.
+    G = nx.complete_graph(5)
+    G.add_edges_from((u, u) for u in G)
+    D = G.to_directed()
+    for flow_func in flow_funcs:
+        errmsg = f"Assertion failed in function: {flow_func.__name__}"
+        assert nx.node_connectivity(G, flow_func=flow_func) == 4, errmsg
+        assert nx.node_connectivity(D, flow_func=flow_func) == 4, errmsg
+
+
+def test_node_connectivity_multigraphs():
+    # Parallel edges do not add node connectivity, and as with self-loops only
+    # a complete graph exposes an inflated bound.
+    G = nx.complete_graph(5, nx.MultiGraph)
+    G.add_edges_from(list(G.edges()))  # duplicate every edge
+    D = G.to_directed()
+    for flow_func in flow_funcs:
+        errmsg = f"Assertion failed in function: {flow_func.__name__}"
+        assert nx.node_connectivity(G, flow_func=flow_func) == 4, errmsg
+        assert nx.node_connectivity(D, flow_func=flow_func) == 4, errmsg
+
+
 def test_directed_edge_connectivity():
     G = nx.cycle_graph(10, create_using=nx.DiGraph())  # only one direction
     D = nx.cycle_graph(10).to_directed()  # 2 reciprocal edges
@@ -419,3 +458,49 @@ class TestAllPairsNodeConnectivity:
         assert sorted((k, sorted(v)) for k, v in A.items()) == sorted(
             (k, sorted(v)) for k, v in C.items()
         )
+
+
+def test_directed_node_connectivity_both_orders():
+    # Node connectivity of a digraph is a minimum over ordered pairs, and the
+    # two orders of a pair need not agree, so the starting node has to be
+    # tried as source and as target. Here node 1 cannot reach node 0, so the
+    # graph is not strongly connected and its node connectivity is 0, but only
+    # the pair (1, 0) shows it: the local node connectivity of (0, 1) is 1.
+    G = nx.DiGraph([(0, 3), (1, 2), (2, 1), (3, 0), (3, 1), (3, 2)])
+    assert nx.is_weakly_connected(G)
+    assert not nx.is_strongly_connected(G)
+    assert local_node_connectivity(G, 0, 1) == 1
+    assert local_node_connectivity(G, 1, 0) == 0
+    for flow_func in flow_funcs:
+        errmsg = f"Assertion failed in function: {flow_func.__name__}"
+        assert nx.node_connectivity(G, flow_func=flow_func) == 0, errmsg
+
+
+def test_directed_node_connectivity_both_orders_strongly_connected():
+    # The same, on a strongly connected digraph: removing node 4 leaves it
+    # disconnected, so the node connectivity is 1 and not the 2 that only
+    # looking at one order of each pair reports.
+    G = nx.DiGraph(
+        [
+            (0, 1),
+            (0, 2),
+            (0, 3),
+            (1, 0),
+            (1, 2),
+            (2, 0),
+            (2, 5),
+            (3, 4),
+            (3, 5),
+            (4, 0),
+            (4, 1),
+            (4, 2),
+            (4, 3),
+            (4, 5),
+            (5, 3),
+            (5, 4),
+        ]
+    )
+    assert nx.is_strongly_connected(G)
+    for flow_func in flow_funcs:
+        errmsg = f"Assertion failed in function: {flow_func.__name__}"
+        assert nx.node_connectivity(G, flow_func=flow_func) == 1, errmsg
