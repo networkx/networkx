@@ -17,6 +17,10 @@ faster. This is a limitation of our CI/CD pipeline.
 Depending on your setup, you will likely observe a speedup.
 """
 
+# Don't run this example in parallel via sphinx-gallery to prevent
+# resource oversubscription. This example itself makes uses of parallelism.
+# sphinx_gallery_parallel = False
+
 from multiprocessing import Pool
 import time
 import itertools
