@@ -488,3 +488,24 @@ def test_three_node(e1, e2, isomorphic, subgraph_is_isomorphic):
     gm = iso.DiGraphMatcher(G1, G2)
     assert gm.is_isomorphic() == isomorphic
     assert gm.subgraph_is_isomorphic() == subgraph_is_isomorphic
+
+
+@pytest.mark.parametrize("nxGraph", [nx.Graph, nx.DiGraph])
+def test_graph_exactly_one_of_T1_or_T2_empty(nxGraph):
+    G = nx.empty_graph(range(1, 6), create_using=nxGraph)
+    G.add_weighted_edges_from([(1, 2, "A"), (2, 3, "B"), (4, 5, "C")], weight="label")
+
+    SG = nx.empty_graph(range(7, 11), create_using=nxGraph)
+    SG.add_weighted_edges_from([(7, 8, "A"), (9, 10, "C")], weight="label")
+
+    matcher = iso.DiGraphMatcher if G.is_directed() else iso.GraphMatcher
+    gm = matcher(G, SG, edge_match=iso.categorical_edge_match("label", None))
+    assert gm.subgraph_is_monomorphic()
+    assert gm.subgraph_is_isomorphic()
+    assert not gm.is_isomorphic()
+
+    # reverse G, SG to check when T1 not empty and T2 is. Should bail.
+    gm = matcher(SG, G, edge_match=iso.categorical_edge_match("label", None))
+    assert not gm.subgraph_is_monomorphic()
+    assert not gm.subgraph_is_isomorphic()
+    assert not gm.is_isomorphic()
