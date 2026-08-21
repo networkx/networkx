@@ -623,6 +623,65 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         )
         pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 1)
 
+    def test_unreachable_negative_selfloop(self):
+        # gh-7362: a negative self-loop (a negative cycle) in a component that
+        # does not contain the source must not be reported, matching the
+        # documented contract of both routines. Previously the global
+        # self-loop pre-check raised regardless of reachability.
+        G = nx.DiGraph()
+        G.add_nodes_from(range(7))
+        edges = [
+            (0, 1, 2),
+            (1, 2, 3),
+            (2, 3, 2),
+            (3, 0, 1),
+            (4, 5, 1),
+            (5, 5, -1),  # negative self-loop in the {4, 5, 6} component
+            (5, 6, 1),
+            (6, 4, 1),
+        ]
+        for u, v, w in edges:
+            G.add_edge(u, v, weight=w)
+        # Source 1 cannot reach node 5, so no cycle should be detected and the
+        # returned distances only cover nodes reachable from the source.
+        assert nx.goldberg_radzik(G, 1)[1] == {1: 0, 2: 3, 3: 5, 0: 6}
+        assert nx.bellman_ford_predecessor_and_distance(G, 1)[1] == {
+            1: 0,
+            2: 3,
+            3: 5,
+            0: 6,
+        }
+
+        # Undirected: a negative self-loop in another connected component is
+        # likewise not reported.
+        H = nx.Graph([(0, 1, {"weight": 1}), (5, 5, {"weight": -2})])
+        assert nx.goldberg_radzik(H, 0)[1] == {0: 0, 1: 1}
+        assert nx.bellman_ford_predecessor_and_distance(H, 0)[1] == {0: 0, 1: 1}
+
+        # MultiDiGraph variant.
+        M = nx.MultiDiGraph([(0, 1, {"weight": 1}), (9, 9, {"weight": -5})])
+        assert nx.goldberg_radzik(M, 0)[1] == {0: 0, 1: 1}
+        assert nx.bellman_ford_predecessor_and_distance(M, 0)[1] == {0: 0, 1: 1}
+
+    def test_reachable_negative_selfloop(self):
+        # A negative self-loop reachable from the source is a negative cycle and
+        # must still raise -- both when it sits on the source and when it is
+        # reached through a path.
+        at_source = nx.DiGraph([(1, 1, {"weight": -1})])
+        pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, at_source, 1)
+        pytest.raises(
+            nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, at_source, 1
+        )
+
+        reached = nx.DiGraph()
+        reached.add_edge(0, 1, weight=1)
+        reached.add_edge(1, 2, weight=1)
+        reached.add_edge(2, 2, weight=-1)
+        pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, reached, 0)
+        pytest.raises(
+            nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, reached, 0
+        )
+
     def test_find_negative_cycle_longer_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
         nx.add_cycle(G, [3, 5, 6, 7, 8, 9])

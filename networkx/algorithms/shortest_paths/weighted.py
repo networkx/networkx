@@ -1162,6 +1162,48 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
         yield (n, path(G, n, cutoff=cutoff, weight=weight))
 
 
+def _has_negative_selfloop_reachable_from(G, source, weight):
+    """Return whether ``G`` has a negative self-loop reachable from ``source``.
+
+    A negative-weight self-loop is a negative cycle located on a single node.
+    Both :func:`bellman_ford_predecessor_and_distance` and
+    :func:`goldberg_radzik` only report negative cycles in the component
+    containing ``source`` (as documented in their ``Notes`` sections), so such
+    a self-loop is relevant only when its node is reachable from ``source``.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+    source : node label
+        Must be a node of ``G``.
+    weight : function
+        Weight function as returned by :func:`_weight_function`.
+
+    Returns
+    -------
+    bool
+    """
+    if G.is_multigraph():
+        neg_selfloop_nodes = {
+            u
+            for u, v, k, d in nx.selfloop_edges(G, keys=True, data=True)
+            if weight(u, v, {k: d}) < 0
+        }
+    else:
+        neg_selfloop_nodes = {
+            u for u, v, d in nx.selfloop_edges(G, data=True) if weight(u, v, d) < 0
+        }
+    if not neg_selfloop_nodes:
+        return False
+    if source in neg_selfloop_nodes:
+        return True
+    # ``nx.descendants`` performs a traversal over the same successor adjacency
+    # (``G._adj``) used by the shortest-path search below, so it yields exactly
+    # the nodes the search can reach (successors for directed graphs, the
+    # connected component for undirected graphs).
+    return not neg_selfloop_nodes.isdisjoint(nx.descendants(G, source))
+
+
 @nx._dispatchable(edge_attrs="weight")
 def bellman_ford_predecessor_and_distance(
     G, source, target=None, weight="weight", heuristic=False
@@ -1268,15 +1310,8 @@ def bellman_ford_predecessor_and_distance(
     if source not in G:
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
-    if G.is_multigraph():
-        if any(
-            weight(u, v, {k: d}) < 0
-            for u, v, k, d in nx.selfloop_edges(G, keys=True, data=True)
-        ):
-            raise nx.NetworkXUnbounded("Negative cycle detected.")
-    else:
-        if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-            raise nx.NetworkXUnbounded("Negative cycle detected.")
+    if _has_negative_selfloop_reachable_from(G, source, weight):
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     dist = {source: 0}
     pred = {source: []}
@@ -2041,15 +2076,8 @@ def goldberg_radzik(G, source, weight="weight"):
     if source not in G:
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
-    if G.is_multigraph():
-        if any(
-            weight(u, v, {k: d}) < 0
-            for u, v, k, d in nx.selfloop_edges(G, keys=True, data=True)
-        ):
-            raise nx.NetworkXUnbounded("Negative cycle detected.")
-    else:
-        if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-            raise nx.NetworkXUnbounded("Negative cycle detected.")
+    if _has_negative_selfloop_reachable_from(G, source, weight):
+        raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     if len(G) == 1:
         return {source: None}, {source: 0}
