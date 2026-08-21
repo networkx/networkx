@@ -3,7 +3,6 @@ import pytest
 import networkx as nx
 from networkx.algorithms import flow
 from networkx.algorithms.connectivity import minimum_st_edge_cut, minimum_st_node_cut
-from networkx.utils import arbitrary_element
 
 flow_funcs = [
     flow.boykov_kolmogorov,
@@ -16,24 +15,11 @@ flow_funcs = [
 # Tests for node and edge cutsets
 
 
-def _generate_no_biconnected(max_attempts=50):
-    attempts = 0
-    while True:
-        G = nx.fast_gnp_random_graph(100, 0.0575, seed=42)
-        if nx.is_connected(G) and not nx.is_biconnected(G):
-            attempts = 0
-            yield G
-        else:
-            if attempts >= max_attempts:
-                msg = f"Tried {attempts} times: no suitable Graph."
-                raise Exception(msg)
-            else:
-                attempts += 1
-
-
 @pytest.mark.parametrize("flow_func", flow_funcs)
 def test_articulation_points(flow_func):
-    G = next(_generate_no_biconnected())
+    # Graph instance which is connected but *not* biconnected
+    G = nx.fast_gnp_random_graph(100, 0.0575, seed=42)
+    assert nx.is_connected(G) and not nx.is_biconnected(G)
     cut = nx.minimum_node_cut(G, flow_func=flow_func)
     assert len(cut) == 1
     assert cut.pop() in set(nx.articulation_points(G))
