@@ -309,9 +309,9 @@ def test_interface_only_target():
         pytest.raises(nx.NetworkXError, interface_func, G, t=3)
 
 
-def test_directed_minimum_st_node_cut_reverse_arc():
-    # In a digraph an arc from t to s is not an s-t path, so s can still be
-    # separated from t. Only a direct arc from s to t makes the pair
+def test_directed_minimum_st_node_cut_reverse_edge():
+    # In a digraph an edge from t to s is not an s-t path, so s can still be
+    # separated from t. Only a direct edge from s to t makes the pair
     # inseparable, and then the empty set is returned.
     G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])  # the directed triangle
     for flow_func in flow_funcs:

@@ -209,7 +209,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
 
         Returns an empty set if source and target are either in different
         components or are joined by an edge from source to target, as no node
-        removal can destroy that path. In a digraph an arc from target to
+        removal can destroy that path. In a digraph an edge from target to
         source is not a source-target path, and does not stop source from
         being separated from target [2]_.
 
@@ -302,9 +302,9 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     if mapping is None:
         raise nx.NetworkXError("Invalid auxiliary digraph.")
     # No set of nodes other than s and t can destroy a direct s-t edge. In a
-    # digraph an arc from t to s is irrelevant: it is not an s-t path, so s can
+    # digraph an edge from t to s is irrelevant: it is not an s-t path, so s can
     # still be separated from t. The footnote on page 513 of [2] skips the pair
-    # only in the direction of the arc, for this reason. `has_edge` is
+    # only in the direction of the edge, for this reason. `has_edge` is
     # symmetric for undirected graphs.
     if G.has_edge(s, t):
         return set()
