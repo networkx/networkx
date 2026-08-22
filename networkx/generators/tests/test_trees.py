@@ -6,6 +6,57 @@ import networkx as nx
 from networkx.utils import arbitrary_element, graphs_equal
 
 
+def test_prefix_tree_default_attr_name():
+    G = nx.prefix_tree(["ab", "ac", "abd", "acde"])
+    expected_nodes = {
+        # Sentinel nodes: root and leaf
+        0: {"source": None},
+        -1: {"source": "NIL"},
+        # Nodes from paths
+        1: {"source": "a"},
+        2: {"source": "b"},
+        3: {"source": "d"},
+        4: {"source": "c"},
+        5: {"source": "d"},
+        6: {"source": "e"},
+    }
+    assert dict(G.nodes(data=True)) == expected_nodes
+
+
+def test_prefix_tree_attr_name():
+    G = nx.prefix_tree(["ab", "ac", "abd", "acde"], attr_name="letter")
+    expected_nodes = {
+        # Sentinel nodes: root and leaf
+        0: {"letter": None},
+        -1: {"letter": "NIL"},
+        # Nodes from paths
+        1: {"letter": "a"},
+        2: {"letter": "b"},
+        3: {"letter": "d"},
+        4: {"letter": "c"},
+        5: {"letter": "d"},
+        6: {"letter": "e"},
+    }
+    assert dict(G.nodes(data=True)) == expected_nodes
+
+
+def test_prefix_tree_attr_name_None():
+    G = nx.prefix_tree(["ab", "ac", "abd", "acde"], attr_name=None)
+    expected_nodes = {
+        # Sentinel nodes: root and leaf
+        0: {},
+        -1: {},
+        # Nodes from paths
+        1: {},
+        2: {},
+        3: {},
+        4: {},
+        5: {},
+        6: {},
+    }
+    assert dict(G.nodes(data=True)) == expected_nodes
+
+
 @pytest.mark.parametrize("prefix_tree_fn", (nx.prefix_tree, nx.prefix_tree_recursive))
 def test_basic_prefix_tree(prefix_tree_fn):
     # This example is from the Wikipedia article "Trie"
