@@ -12,7 +12,7 @@ flow_funcs = [
     flow.shortest_augmenting_path,
 ]
 
-# Tests for node and edge cutsets
+interface_funcs = [nx.minimum_node_cut, nx.minimum_edge_cut]
 
 
 @pytest.mark.parametrize("flow_func", flow_funcs)
@@ -152,7 +152,7 @@ def test_edge_cutset_random_graphs(flow_func):
 
 
 @pytest.mark.parametrize("flow_func", flow_funcs)
-@pytest.mark.parametrize("interface_func", [nx.minimum_node_cut, nx.minimum_edge_cut])
+@pytest.mark.parametrize("interface_func", interface_funcs)
 @pytest.mark.parametrize("graph", [nx.Graph, nx.DiGraph])
 def test_empty_graphs(flow_func, interface_func, graph):
     G = graph()
@@ -168,7 +168,7 @@ def test_unbounded(flow_func):
 
 
 @pytest.mark.parametrize("flow_func", flow_funcs)
-@pytest.mark.parametrize("interface_func", [nx.minimum_node_cut, nx.minimum_edge_cut])
+@pytest.mark.parametrize("interface_func", interface_funcs)
 def test_missing_source_target(flow_func, interface_func):
     G = nx.path_graph(4)
 
@@ -182,7 +182,7 @@ def test_missing_source_target(flow_func, interface_func):
 
 
 @pytest.mark.parametrize("flow_func", flow_funcs)
-@pytest.mark.parametrize("interface_func", [nx.minimum_node_cut, nx.minimum_edge_cut])
+@pytest.mark.parametrize("interface_func", interface_funcs)
 @pytest.mark.parametrize("graph", [nx.Graph, nx.DiGraph])
 def test_not_connected(flow_func, interface_func, graph):
     # Input must be connected (weakly connected if digraph)
@@ -193,7 +193,7 @@ def test_not_connected(flow_func, interface_func, graph):
 
 
 @pytest.mark.parametrize("flow_func", flow_funcs)
-@pytest.mark.parametrize("interface_func", [nx.minimum_node_cut, nx.minimum_edge_cut])
+@pytest.mark.parametrize("interface_func", interface_funcs)
 @pytest.mark.parametrize("graph", [nx.Graph, nx.DiGraph])
 def tests_min_cut_complete(flow_func, interface_func, graph):
     G = nx.complete_graph(5, create_using=graph)
@@ -214,7 +214,7 @@ def test_invalid_auxiliary():
         minimum_st_node_cut(G, 0, 3, auxiliary=G)
 
 
-@pytest.mark.parametrize("interface_func", [nx.minimum_node_cut, nx.minimum_edge_cut])
+@pytest.mark.parametrize("interface_func", interface_funcs)
 def test_interface_only_source(interface_func):
     G = nx.complete_graph(5)
 
