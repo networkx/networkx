@@ -130,6 +130,61 @@ def test_directed_node_connectivity():
     assert 2 == approx.node_connectivity(D, 1, 4)
 
 
+def test_directed_node_connectivity_not_strongly_connected():
+    # A weakly connected digraph that is not strongly connected has node
+    # connectivity 0. Node connectivity for digraphs is bounded by the smaller
+    # of the in-degree and the out-degree. Node 3 has the unique minimum total
+    # degree, so it is always the starting node whatever the insertion order,
+    # and its in-degree is 0.
+    G = nx.DiGraph([(0, 1), (1, 2), (2, 0), (3, 0)])  # a triangle and a source
+    assert nx.is_weakly_connected(G)
+    assert not nx.is_strongly_connected(G)
+    assert 0 == approx.node_connectivity(G)
+
+
+def test_directed_node_connectivity_both_orders():
+    # Node connectivity of a digraph is a minimum over ordered pairs, and the
+    # two orders of a pair need not agree, so the starting node has to be
+    # tried as source and as target. Here node 1 cannot reach node 0, so the
+    # graph is not strongly connected and its node connectivity is 0, but only
+    # the pair (1, 0) shows it: the local node connectivity of (0, 1) is 1.
+    G = nx.DiGraph([(0, 3), (1, 2), (2, 1), (3, 0), (3, 1), (3, 2)])
+    assert nx.is_weakly_connected(G)
+    assert not nx.is_strongly_connected(G)
+    assert 1 == approx.local_node_connectivity(G, 0, 1)
+    assert 0 == approx.local_node_connectivity(G, 1, 0)
+    assert 0 == approx.node_connectivity(G)
+
+
+def test_node_connectivity_self_loops():
+    # Self-loops do not affect node connectivity. A complete graph is the only
+    # shape that exposes an inflated bound, because no pair of nodes is left to
+    # compute a local node connectivity that would lower it again.
+    G = nx.complete_graph(5)
+    G.add_edges_from((u, u) for u in G)
+    D = G.to_directed()
+    assert 4 == approx.node_connectivity(G)
+    assert 4 == approx.node_connectivity(D)
+
+
+def test_node_connectivity_multigraphs():
+    # Parallel edges do not add node connectivity, and as with self-loops only
+    # a complete graph exposes an inflated bound.
+    G = nx.complete_graph(5, nx.MultiGraph)
+    G.add_edges_from(list(G.edges()))  # duplicate every edge
+    D = G.to_directed()
+    assert 4 == approx.node_connectivity(G)
+    assert 4 == approx.node_connectivity(D)
+
+
+def test_node_connectivity_is_a_lower_bound():
+    # The approximation must never exceed the exact value, for digraphs too.
+    for seed in range(30):
+        for directed in (False, True):
+            G = nx.gnp_random_graph(12, 0.25, seed=seed, directed=directed)
+            assert approx.node_connectivity(G) <= nx.node_connectivity(G)
+
+
 class TestAllPairsNodeConnectivityApprox:
     @classmethod
     def setup_class(cls):
