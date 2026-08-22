@@ -7,7 +7,13 @@ __all__ = ["hits"]
 
 @nx._dispatchable(preserve_edge_attrs={"G": {"weight": 1}})
 def hits(
-    G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True, method="power_iteration"
+    G,
+    max_iter=100,
+    tol=1.0e-8,
+    nstart=None,
+    normalized=True,
+    *,
+    method="power_iteration",
 ):
     """Returns HITS hubs and authorities values for nodes.
 
