@@ -101,54 +101,24 @@ def test_white_harary_paper(flow_func):
 
 
 @pytest.mark.parametrize("flow_func", flow_funcs)
-def test_petersen_cutset(flow_func):
-    G = nx.petersen_graph()
-
+@pytest.mark.parametrize(
+    ("G", "expected"),
+    [
+        (nx.petersen_graph(), 3),
+        (nx.octahedral_graph(), 4),
+        (nx.icosahedral_graph(), 5),
+    ],
+)
+def test_node_edge_cutsets(flow_func, G, expected):
     # edge cuts
     edge_cut = nx.minimum_edge_cut(G, flow_func=flow_func)
-    assert 3 == len(edge_cut)
+    assert len(edge_cut) == expected
     H = G.copy()
     H.remove_edges_from(edge_cut)
     assert not nx.is_connected(H)
     # node cuts
     node_cut = nx.minimum_node_cut(G, flow_func=flow_func)
-    assert 3 == len(node_cut)
-    H = G.copy()
-    H.remove_nodes_from(node_cut)
-    assert not nx.is_connected(H)
-
-
-@pytest.mark.parametrize("flow_func", flow_funcs)
-def test_octahedral_cutset(flow_func):
-    G = nx.octahedral_graph()
-
-    # edge cuts
-    edge_cut = nx.minimum_edge_cut(G, flow_func=flow_func)
-    assert 4 == len(edge_cut)
-    H = G.copy()
-    H.remove_edges_from(edge_cut)
-    assert not nx.is_connected(H)
-    # node cuts
-    node_cut = nx.minimum_node_cut(G, flow_func=flow_func)
-    assert 4 == len(node_cut)
-    H = G.copy()
-    H.remove_nodes_from(node_cut)
-    assert not nx.is_connected(H)
-
-
-@pytest.mark.parametrize("flow_func", flow_funcs)
-def test_icosahedral_cutset(flow_func):
-    G = nx.icosahedral_graph()
-
-    # edge cuts
-    edge_cut = nx.minimum_edge_cut(G, flow_func=flow_func)
-    assert 5 == len(edge_cut)
-    H = G.copy()
-    H.remove_edges_from(edge_cut)
-    assert not nx.is_connected(H)
-    # node cuts
-    node_cut = nx.minimum_node_cut(G, flow_func=flow_func)
-    assert 5 == len(node_cut)
+    assert len(node_cut) == expected
     H = G.copy()
     H.remove_nodes_from(node_cut)
     assert not nx.is_connected(H)
