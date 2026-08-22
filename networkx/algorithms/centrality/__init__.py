@@ -18,3 +18,4 @@ from .subgraph_alg import *
 from .trophic import *
 from .voterank_alg import *
 from .laplacian import *
+from .linear_geometric_centrality import *
