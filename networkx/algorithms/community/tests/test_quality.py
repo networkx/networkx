@@ -522,3 +522,30 @@ def test_inter_community_edges_with_digraphs():
     G = nx.cycle_graph(4, create_using=nx.DiGraph())
     partition = [{0, 1}, {2, 3}]
     assert inter_community_edges(G, partition) == 2
+
+
+def test_partition_quality_large_partition_and_directed():
+    # Directed graph
+    G = nx.DiGraph()
+    G.add_edges_from([(0, 1), (1, 2), (2, 3), (3, 0), (0, 2)])
+    partition = [{0, 1}, {2, 3}]
+    coverage, performance = partition_quality(G, partition)
+    # Directed: total_pairs = 4 * 3 = 12.
+    # Intra edges: (0, 1) and (2, 3) = 2.
+    # Total edges = 5 -> coverage = 2/5 = 0.4
+    # Possible inter-community edges = 4^2 - (2^2 + 2^2) = 16 - 8 = 8.
+    # Actual inter-community edges: (1, 2), (3, 0), (0, 2) = 3.
+    # Inter non-edges = 8 - 3 = 5.
+    # Performance = (2 + 5) / 12 = 7 / 12.
+    assert coverage == pytest.approx(2 / 5)
+    assert performance == pytest.approx(7 / 12)
+
+    # 100 single-node communities
+    G_large = nx.path_graph(100)
+    partition_large = [{i} for i in range(100)]
+    cov, perf = partition_quality(G_large, partition_large)
+    assert cov == pytest.approx(0.0)
+    # All 99 edges are inter-community, so inter_community_non_edges = 4950 - 99 = 4851
+    # perf = 4851 / 4950
+    assert perf == pytest.approx(4851 / 4950)
+

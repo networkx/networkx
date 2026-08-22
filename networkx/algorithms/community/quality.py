@@ -4,7 +4,6 @@ communities).
 """
 
 from collections import defaultdict
-from itertools import combinations
 
 import networkx as nx
 from networkx.algorithms.community.community_utils import is_cover, is_partition
@@ -631,7 +630,7 @@ def partition_quality(G, partition):
     intra-community edges plus inter-community non-edges divided by the total
     number of potential edges.
 
-    This algorithm has complexity $O(C^2 + L)$ where C is the number of
+    This algorithm has complexity $O(C + L)$ where C is the number of
     communities and L is the number of links.
 
     Parameters
@@ -674,13 +673,14 @@ def partition_quality(G, partition):
 
     # `performance` is not defined for multigraphs
     if not G.is_multigraph():
-        # Iterate over the communities, quadratic, to calculate `possible_inter_community_edges`
-        possible_inter_community_edges = sum(
-            len(p1) * len(p2) for p1, p2 in combinations(partition, 2)
-        )
-
+        # Calculate `possible_inter_community_edges` in O(C) using the algebraic identity:
+        # 2 * sum_{i < j} |p_i| * |p_j| = (sum |p_i|)^2 - sum |p_i|^2 = n^2 - sum |p_i|^2
+        n = len(G)
+        sum_p_squared = sum(len(p) ** 2 for p in partition)
         if G.is_directed():
-            possible_inter_community_edges *= 2
+            possible_inter_community_edges = n**2 - sum_p_squared
+        else:
+            possible_inter_community_edges = (n**2 - sum_p_squared) // 2
     else:
         possible_inter_community_edges = 0
 
