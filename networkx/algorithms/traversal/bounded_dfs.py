@@ -212,7 +212,9 @@ def bsdfs(G, s, t, k):
         try:
             targets = set(t)
         except TypeError as err:
-            raise nx.NodeNotFound(f"target node {t} not in graph") from err
+            raise nx.NodeNotFound(
+                f"target {t!r} is neither a node of G nor an iterable of nodes"
+            ) from err
         if not targets:
             raise ValueError(f"{t=} must be a node or a non-empty set of nodes")
         terminal = _NO_TARGET
