@@ -224,8 +224,11 @@ def current_flow_betweenness_centrality(
     sparse methods you can achieve $O(nm{\sqrt k})$ where $k$ is the
     Laplacian matrix condition number.
 
-    The space required is $O(nw)$ where $w$ is the width of the sparse
-    Laplacian matrix.  Worse case is $w=n$ for $O(n^2)$.
+    The algorithm uses $O(n + m)$ space, excluding storage used by the linear
+    solver, for $n$ nodes and $m$ edges. Solver storage depends on ``solver``:
+    ``"full"`` stores an $O(n^2)$ dense inverse, while ``"lu"`` and ``"cg"``
+    use sparse factorization or preconditioner storage whose size depends on
+    fill-in and can reach $O(n^2)$ in the worst case.
 
     If the edges have a 'weight' attribute they will be used as
     weights in this algorithm.  Unspecified weights are set to 1.
@@ -325,8 +328,11 @@ def edge_current_flow_betweenness_centrality(
     sparse methods you can achieve $O(nm{\sqrt k})$ where $k$ is the
     Laplacian matrix condition number.
 
-    The space required is $O(nw)$ where $w$ is the width of the sparse
-    Laplacian matrix.  Worse case is $w=n$ for $O(n^2)$.
+    The algorithm uses $O(n + m)$ space, excluding storage used by the linear
+    solver, for $n$ nodes and $m$ edges. Solver storage depends on ``solver``:
+    ``"full"`` stores an $O(n^2)$ dense inverse, while ``"lu"`` and ``"cg"``
+    use sparse factorization or preconditioner storage whose size depends on
+    fill-in and can reach $O(n^2)$ in the worst case.
 
     If the edges have a 'weight' attribute they will be used as
     weights in this algorithm.  Unspecified weights are set to 1.

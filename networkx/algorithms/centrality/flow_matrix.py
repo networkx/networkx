@@ -16,17 +16,22 @@ def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
     n = G.number_of_nodes()
     L = nx.laplacian_matrix(G, nodelist=range(n), weight=weight).asformat("csc")
     L = L.astype(dtype)
-    C = solvername[solver](L, dtype=dtype)  # initialize solver
-    w = C.w  # w is the Laplacian matrix width
+    # The endpoint formulation needs only one reusable right-hand-side row.
+    C = solvername[solver](L, width=1, dtype=dtype)  # initialize solver
+    rhs = C.C[0]
     # row-by-row flow matrix
     for u, v in sorted(sorted((u, v)) for u, v in G.edges()):
-        B = np.zeros(w, dtype=dtype)
-        c = G[u][v].get(weight, 1.0)
-        B[u % w] = c
-        B[v % w] = -c
-        # get only the rows needed in the inverse laplacian
-        # and multiply to get the flow matrix row
-        row = B @ C.get_rows(u, v)
+        c = C.C.dtype.type(G[u][v].get(weight, 1.0))
+        if u == v or c == 0:
+            row = np.zeros(n, dtype=C.C.dtype)
+        elif isinstance(C, FullInverseLaplacian):
+            row = np.subtract(C.IL[u], C.IL[v])
+            row *= c
+        else:
+            rhs[u] = c
+            rhs[v] = -c
+            row = C.solve(rhs)
+            rhs[u] = rhs[v] = 0
         yield row, (u, v)
 
 

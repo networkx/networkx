@@ -3,9 +3,155 @@ import pytest
 import networkx as nx
 from networkx import approximate_current_flow_betweenness_centrality as approximate_cfbc
 from networkx import edge_current_flow_betweenness_centrality as edge_current_flow
+from networkx.algorithms.centrality.flow_matrix import (
+    CGInverseLaplacian,
+    FullInverseLaplacian,
+    SuperLUInverseLaplacian,
+    flow_matrix_row,
+)
 
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
+
+INVERSE_LAPLACIANS = {
+    "full": FullInverseLaplacian,
+    "lu": SuperLUInverseLaplacian,
+    "cg": CGInverseLaplacian,
+}
+
+
+def test_full_solver_uses_inverse_endpoint_rows(monkeypatch):
+    def fail_if_called(self, rhs):
+        raise AssertionError("full inverse endpoint rows should be used directly")
+
+    monkeypatch.setattr(FullInverseLaplacian, "solve", fail_if_called)
+    graph = nx.power(nx.path_graph(6), 2)
+    rows = list(flow_matrix_row(graph, solver="full"))
+    assert len(rows) == len(graph.edges)
+
+
+@pytest.mark.parametrize("solver", INVERSE_LAPLACIANS)
+@pytest.mark.parametrize("dtype", [np.float32, np.float64])
+def test_endpoint_row_difference_matches_full_inverse(dtype, solver):
+    graph = nx.power(nx.path_graph(6), 2)
+    for i, (u, v) in enumerate(graph.edges()):
+        graph[u][v]["weight"] = 0.5 + i / 7
+
+    n = len(graph)
+    laplacian = nx.laplacian_matrix(graph, nodelist=range(n), weight="weight").asformat(
+        "csc"
+    )
+    laplacian = laplacian.astype(dtype)
+    inverse = np.zeros((n, n), dtype=dtype)
+    inverse[1:, 1:] = np.linalg.inv(laplacian[1:, 1:].toarray())
+
+    for actual, (u, v) in flow_matrix_row(
+        graph, weight="weight", dtype=dtype, solver=solver
+    ):
+        c = dtype(graph[u][v]["weight"])
+        expected = c * (inverse[u] - inverse[v])
+        assert actual.dtype == expected.dtype == dtype
+        tolerance = (
+            1e-4 if solver == "cg" and dtype == np.float32 else 50 * np.finfo(dtype).eps
+        )
+        np.testing.assert_allclose(actual, expected, rtol=tolerance, atol=tolerance)
+
+
+@pytest.mark.parametrize("solver", ["lu", "cg"])
+def test_endpoint_row_difference_uses_one_linear_solve(monkeypatch, solver):
+    calls = []
+    inverse_type = INVERSE_LAPLACIANS[solver]
+    solve = inverse_type.solve
+
+    def record_call(self, rhs):
+        calls.append(rhs.copy())
+        return solve(self, rhs)
+
+    monkeypatch.setattr(inverse_type, "solve", record_call)
+    graph = nx.complete_graph(5)
+    list(flow_matrix_row(graph, solver=solver))
+    edges = sorted(tuple(sorted(edge)) for edge in graph.edges)
+    assert len(calls) == len(edges)
+    for rhs, (u, v) in zip(calls, edges):
+        expected = np.zeros(len(graph))
+        expected[u] = 1
+        expected[v] = -1
+        np.testing.assert_array_equal(rhs, expected)
+
+
+@pytest.mark.parametrize("solver", INVERSE_LAPLACIANS)
+def test_flow_rows_are_independent(solver):
+    rows = []
+    snapshots = []
+    for row, _ in flow_matrix_row(nx.power(nx.path_graph(6), 2), solver=solver):
+        rows.append(row)
+        snapshots.append(row.copy())
+
+    for i, (row, expected) in enumerate(zip(rows, snapshots)):
+        np.testing.assert_array_equal(row, expected)
+        assert all(not np.shares_memory(row, other) for other in rows[i + 1 :])
+
+
+@pytest.mark.parametrize("solver", INVERSE_LAPLACIANS)
+@pytest.mark.parametrize("dtype", [np.float32, np.float64])
+def test_self_loop_flow_row_is_zero(solver, dtype):
+    graph = nx.path_graph(4)
+    graph.add_edge(1, 1, weight=7)
+    rows = {
+        edge: row
+        for row, edge in flow_matrix_row(
+            graph, weight="weight", dtype=dtype, solver=solver
+        )
+    }
+    assert rows[1, 1].dtype == dtype
+    np.testing.assert_array_equal(rows[1, 1], np.zeros(len(graph), dtype=dtype))
+
+
+@pytest.mark.parametrize("solver", INVERSE_LAPLACIANS)
+def test_self_loop_does_not_change_current_flow_centrality(solver):
+    graph = nx.path_graph(4)
+    expected_nodes = nx.current_flow_betweenness_centrality(graph, solver=solver)
+    expected_edges = nx.edge_current_flow_betweenness_centrality(graph, solver=solver)
+
+    graph.add_edge(1, 1, weight=7)
+    actual_nodes = nx.current_flow_betweenness_centrality(
+        graph, weight="weight", solver=solver
+    )
+    actual_edges = nx.edge_current_flow_betweenness_centrality(
+        graph, weight="weight", solver=solver
+    )
+
+    assert actual_nodes == pytest.approx(expected_nodes)
+    assert actual_edges[1, 1] == pytest.approx(0)
+    for edge, expected in expected_edges.items():
+        assert actual_edges[edge] == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("solver", ["lu", "cg"])
+def test_zero_weight_edge_does_not_solve_linear_system(monkeypatch, solver):
+    inverse_type = INVERSE_LAPLACIANS[solver]
+    calls = []
+    solve = inverse_type.solve
+
+    def record_call(self, rhs):
+        calls.append(rhs.copy())
+        return solve(self, rhs)
+
+    monkeypatch.setattr(inverse_type, "solve", record_call)
+    graph = nx.path_graph(5)
+    graph.add_edge(0, 4, weight=0.0)
+    rows = {
+        edge: row
+        for row, edge in flow_matrix_row(graph, weight="weight", solver=solver)
+    }
+    edges = sorted(tuple(sorted(edge)) for edge in nx.path_graph(5).edges)
+    assert len(calls) == len(edges)
+    for rhs, (u, v) in zip(calls, edges):
+        expected = np.zeros(len(graph))
+        expected[u] = 1
+        expected[v] = -1
+        np.testing.assert_array_equal(rhs, expected)
+    np.testing.assert_array_equal(rows[0, 4], 0)
 
 
 class TestFlowBetweennessCentrality:
