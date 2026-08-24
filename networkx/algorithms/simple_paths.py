@@ -235,7 +235,8 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     Notes
     -----
-    This algorithm calls :func:`all_simple_edge_paths` and reduces the results to a node lists.
+    This algorithm calls :func:`all_simple_edge_paths` and reduces the results
+    to node lists, with the same complexity.
 
     This function does not check that a path exists between `source` and
     `target`. For large graphs, this may result in longer runtimes.

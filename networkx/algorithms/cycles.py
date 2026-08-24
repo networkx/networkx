@@ -164,9 +164,14 @@ def simple_cycles(G, length_bound=None):
     Notes
     -----
     When `length_bound` is None, the time complexity is $O((n+e)(c+1))$ for $n$
-    nodes, $e$ edges and $c$ simple circuits.  Otherwise, when ``length_bound > 1``,
-    the time complexity is $O((c+n)(k-1)d^k)$ where $d$ is the average degree of
-    the nodes of `G` and $k$ = `length_bound`.
+    nodes, $e$ edges and $c$ simple circuits.  Otherwise, with $k$ =
+    `length_bound`, the time complexity is $O((c+n)k(n+e))$ for directed and
+    $O((c+e)k(n+e))$ for undirected graphs.
+
+    The *number* of simple cycles can nevertheless be very large,
+    e.g. $\\Theta((n-1)!)$ for the complete graph of order n,
+    so consume the generator lazily rather than
+    materializing the full list.
 
     Raises
     ------
