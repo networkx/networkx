@@ -217,7 +217,7 @@ def test_invalid_auxiliary():
 
 
 @pytest.mark.parametrize("interface_func", interface_funcs)
-def test_interface_only_source(interface_func):
+def test_interface_only_source_or_only_target_specified(interface_func):
     G = nx.complete_graph(5)
 
     with pytest.raises(nx.NetworkXError, match="source and target must be specified"):
