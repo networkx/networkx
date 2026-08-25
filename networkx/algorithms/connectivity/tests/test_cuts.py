@@ -133,7 +133,8 @@ def test_node_cutset_exception(flow_func):
 
 @pytest.mark.parametrize("flow_func", flow_funcs)
 def test_node_cutset_random_graphs(flow_func):
-    G = nx.fast_gnp_random_graph(50, 0.25, seed=42)
+    G = nx.fast_gnp_random_graph(50, 0.25, seed=42)  # A connected graph
+    assert nx.is_connected(G)
 
     cutset = nx.minimum_node_cut(G, flow_func=flow_func)
     assert nx.node_connectivity(G) == len(cutset)
@@ -143,7 +144,8 @@ def test_node_cutset_random_graphs(flow_func):
 
 @pytest.mark.parametrize("flow_func", flow_funcs)
 def test_edge_cutset_random_graphs(flow_func):
-    G = nx.fast_gnp_random_graph(50, 0.25, seed=42)
+    G = nx.fast_gnp_random_graph(50, 0.25, seed=42)  # A connected graph
+    assert nx.is_connected(G)
 
     cutset = nx.minimum_edge_cut(G, flow_func=flow_func)
     assert nx.edge_connectivity(G) == len(cutset)
