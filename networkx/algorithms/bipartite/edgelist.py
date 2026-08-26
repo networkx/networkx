@@ -63,20 +63,22 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
     Use a BytesIO object to simulate a file handle opened in "wb" mode.
 
     >>> test_edgelist = io.BytesIO()
-    >>> nx.write_edgelist(G, test_edgelist)
+    >>> nx.bipartite.write_edgelist(G, test_edgelist)
     >>> print(test_edgelist.getvalue().decode())
     0 1 {}
-    1 2 {}
+    2 1 {}
     2 3 {}
     <BLANKLINE>
 
     Edge data are included by default
 
     >>> G = nx.Graph()
+    >>> G.add_node(1, bipartite=0)
+    >>> G.add_node(2, bipartite=1)
     >>> G.add_edge(1, 2, weight=7, color="red")
 
     >>> test_edgelist = io.BytesIO()
-    >>> nx.write_edgelist(G, test_edgelist)
+    >>> nx.bipartite.write_edgelist(G, test_edgelist)
     >>> print(test_edgelist.getvalue().decode())
     1 2 {'weight': 7, 'color': 'red'}
     <BLANKLINE>
@@ -85,7 +87,7 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
     are included.
 
     >>> test_edgelist = io.BytesIO()
-    >>> nx.write_edgelist(G, test_edgelist, data=False)
+    >>> nx.bipartite.write_edgelist(G, test_edgelist, data=False)
     >>> print(test_edgelist.getvalue().decode())
     1 2
     <BLANKLINE>
@@ -93,13 +95,13 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
     Or to specify which edge attribute data to include:
 
     >>> test_edgelist = io.BytesIO()
-    >>> nx.write_edgelist(G, test_edgelist, data=["color"])
+    >>> nx.bipartite.write_edgelist(G, test_edgelist, data=["color"])
     >>> print(test_edgelist.getvalue().decode())
     1 2 red
     <BLANKLINE>
 
     >>> test_edgelist = io.BytesIO()
-    >>> nx.write_edgelist(G, test_edgelist, data=["color", "weight"])
+    >>> nx.bipartite.write_edgelist(G, test_edgelist, data=["color", "weight"])
     >>> print(test_edgelist.getvalue().decode())
     1 2 red 7
     <BLANKLINE>
