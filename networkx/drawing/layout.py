@@ -1970,14 +1970,14 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None, store_pos_as
     Parameters
     ----------
     G : NetworkX graph
-        A position will be assigned to every node in G.
+        A position will be assigned to every node in `G`.
 
     start : node in `G`
         Starting node for bfs
 
     align : string (default='vertical')
-        The alignment of nodes within a layer, either `"vertical"` or
-        `"horizontal"`.
+        The alignment of nodes within a layer, either ``"vertical"`` or
+        ``"horizontal"``.
 
     scale : number (default: 1)
         Scale factor for positions.
@@ -1995,6 +1995,12 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None, store_pos_as
     pos : dict
         A dictionary of positions keyed by node.
 
+    Raises
+    ------
+    NetworkXError
+        If any nodes are unreachable from `start`, e.g. `G` is not connected,
+        or `G` is directed and `start` has 0 out degree.
+
     Examples
     --------
     >>> from pprint import pprint
@@ -2008,13 +2014,10 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None, store_pos_as
      2: array([0.33333333, 0.        ]),
      3: array([1., 0.])}
 
-
-
     Notes
     -----
     This algorithm currently only works in two dimensions and does not
     try to minimize edge crossings.
-
     """
     G, center = _process_params(G, center, 2)
 
