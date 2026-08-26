@@ -27,6 +27,20 @@ class AtlasView(Mapping):
     The inner level of dict is read-write. But the
     outer level is read-only.
 
+    Indexing a graph with a node, such as `G[n]`, returns an
+    `AtlasView` that maps each neighbor of `n` to the edge-attribute
+    dictionary for the edge between `n` and that neighbor.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.DiGraph()
+    >>> G.add_edge(1, 2, weight=3)
+    >>> G[1]
+    AtlasView({2: {'weight': 3}})
+    >>> G[1][2]["weight"]
+    3
+
     See Also
     ========
     AdjacencyView: View into dict-of-dict-of-dict
