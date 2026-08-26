@@ -68,9 +68,7 @@ def communicability(G):
     """
     import numpy as np
 
-    nodelist = list(G)  # ordering of nodes in matrix
-    A = nx.to_numpy_array(G, nodelist, weight=None)
-
+    A = nx.to_numpy_array(G, weight=None)
     w, vec = np.linalg.eigh(A)
     communicability = (vec * np.exp(w)) @ vec.T
 
