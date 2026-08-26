@@ -72,20 +72,13 @@ def communicability(G):
     A = nx.to_numpy_array(G, nodelist, weight=None)
 
     w, vec = np.linalg.eigh(A)
-    expw = np.exp(w)
-    mapping = dict(zip(nodelist, range(len(nodelist))))
-    c = {}
-    # computing communicabilities
-    for u in G:
-        c[u] = {}
-        for v in G:
-            s = 0
-            p = mapping[u]
-            q = mapping[v]
-            for j in range(len(nodelist)):
-                s += vec[:, j][p] * vec[:, j][q] * expw[j]
-            c[u][v] = float(s)
-    return c
+    communicability = (vec * np.exp(w)) @ vec.T
+
+    # Convert to dict-of-dict keyed by nodes to the communicability value
+    return {
+        u: {v: float(communicability[i][j]) for j, v in enumerate(G)}
+        for i, u in enumerate(G)
+    }
 
 
 @not_implemented_for("directed")
