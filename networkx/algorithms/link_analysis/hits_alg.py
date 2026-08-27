@@ -42,7 +42,7 @@ def hits(
        The implementation to use, one of "power_iteration" or "svd".
        The "svd" method computes the values from the largest singular
        value/vectors of the adjacency matrix using
-       ``scipy.sparse.linalg.svds`` and requires SciPy.
+       ``scipy.sparse.linalg.svds``.
 
     Returns
     -------
