@@ -173,8 +173,28 @@ def write_graphml_lxml(
 
     Examples
     --------
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
+
+    Write graph data to disk in graphml format:
+
     >>> G = nx.path_graph(4)
-    >>> nx.write_graphml_lxml(G, "fourpath.graphml")
+    >>> fpath = tmp_path / "fourpath.graphml"
+    >>> nx.write_graphml(G, fpath)
+
+    View the graphml data, ignoring the first two lines of header/metadata:
+
+    >>> with open(fpath) as fh:
+    ...     lines_from_file = fh.readlines()
+    >>> print("".join(lines_from_file[2:]))
+    <node id="1"/>
+    <node id="2"/>
+    <node id="3"/>
+    <edge source="0" target="1"/>
+    <edge source="1" target="2"/>
+    <edge source="2" target="3"/>
+    </graph></graphml>
 
     Notes
     -----
