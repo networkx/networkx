@@ -698,14 +698,14 @@ class ISMAGS:
         return new_sg_p, new_g_p, Ncolors
 
     def find_isomorphisms(self, symmetry=True):
-        """left for backward compatibility. Use isomorphisms_iter"""
+        """left for backward compatibility. Use subgraph_isomorphisms_iter"""
         yield from self._all_morphisms(symmetry, problem_type="SUB")
         return
 
     def _all_morphisms(self, symmetry, problem_type):
-        """Find all morphisms between subgraph and graph
+        """Find all morphisms between :attr:`graph` and :attr:`subgraph`
 
-        Yield isomorphisms or monomorphisms from ``graph`` to ``subgraph``.
+        Yield isomorphisms or monomorphisms depending on `problem_type`.
 
         Parameters
         ----------
@@ -932,29 +932,29 @@ class ISMAGS:
         return mom is not None
 
     def isomorphisms_iter(self, symmetry=True):
-        """Yields all isomorphisms from graph to subgraph
+        """Yields all isomorphisms from :attr:`graph` to :attr:`subgraph`
 
         An isomorphism is an all-to-all mapping of the nodes that maintains
         connectivity and node/edge matchings.
 
-        Symmetric isomorphisms can be ignored for the symmetries of ``subgraph``.
+        Symmetric isomorphisms can be ignored for the symmetries of :attr:`subgraph`.
 
         Parameters
         ----------
         symmetry : bool, optional (default: True)
-            Whether symmetries of ``subgraph`` should be taken into account.
-            If False, isomorphisms may be symmetrically equivalent.
+            Whether symmetries of :attr:`subgraph` should be taken into account.
+            If False, yielded isomorphisms may be symmetrically equivalent.
 
         Yields
         ------
         dict
-            The isomorphism mappings in form: {graph_node: subgraph_node}.
+            The isomorphism mappings in form: ``{graph_node: subgraph_node}``.
         """
         if len(self.graph) == len(self.subgraph):
             yield from self._all_morphisms(symmetry, problem_type="ISO")
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
-        """Yields all subgraph isomorphisms from graph to subgraph
+        """Yields all subgraph isomorphisms from :attr:`graph` to :attr:`subgraph`
 
         An isomorphism is a mapping of nodes that maintains connectivity and
         node/edge matchings. Subgraph isomorphism means an isomorphism from an
@@ -976,7 +976,7 @@ class ISMAGS:
         return self._all_morphisms(symmetry, problem_type="SUB")
 
     def monomorphisms_iter(self, symmetry=True):
-        """Yields all monomorphisms from graph to subgraph
+        """Yields all monomorphisms from :attr:`graph` to :attr:`subgraph`
 
         A monomorphism is a mapping of nodes that only maintains connectivity
         and node/edge matchings in ``subgraph``. Edges in ``graph`` need not
