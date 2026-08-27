@@ -41,10 +41,75 @@ options are applied to a TikZ "scope" which contains a path for each edge.
 
 Examples
 ========
+>>> from pathlib import Path
+>>> import tempfile
+>>> tmp_path = Path(tempfile.gettempdir())
+
 >>> G = nx.path_graph(3)
->>> nx.write_latex(G, "just_my_figure.tex", as_document=True)
->>> nx.write_latex(G, "my_figure.tex", caption="A path graph", latex_label="fig1")
->>> latex_code = nx.to_latex(G)  # a string rather than a file
+
+The TeX-formatted graph can be written to a file as a standalone document:
+
+>>> fpath = tmp_path / "just_my_figure.tex"
+>>> nx.write_latex(G, fpath, as_document=True)
+
+>>> with open(fpath) as fh:
+...     print(fh.read())
+\documentclass{report}
+\usepackage{tikz}
+\usepackage{subcaption}
+<BLANKLINE>
+\begin{document}
+\begin{figure}
+  \begin{tikzpicture}
+      \draw
+        (0.0:2) node (0){0}
+        (120.0:2) node (1){1}
+        (240.0:2) node (2){2};
+      \begin{scope}[-]
+        \draw (0) to (1);
+        \draw (1) to (2);
+      \end{scope}
+    \end{tikzpicture}
+\end{figure}
+\end{document}
+
+Or as a figure to be incorporated in another TeX document:
+
+>>> fpath = tmp_path / "my_figure.tex"
+>>> nx.write_latex(G, fpath, as_document=False, caption="P3", latex_label="fig1")
+
+>>> with open(fpath) as fh:
+...     print(fh.read())
+\begin{figure}
+  \begin{tikzpicture}
+      \draw
+        (0.0:2) node (0){0}
+        (120.0:2) node (1){1}
+        (240.0:2) node (2){2};
+      \begin{scope}[-]
+        \draw (0) to (1);
+        \draw (1) to (2);
+      \end{scope}
+    \end{tikzpicture}
+  \caption{P3}\label{fig1}
+\end{figure}
+
+The TeX code can be generated programmatically without writing to disk with `to_latex`:
+
+>>> latex_code = nx.to_latex(G, as_document=False)
+>>> print(latex_code)
+\begin{figure}
+  \begin{tikzpicture}
+      \draw
+        (0.0:2) node (0){0}
+        (120.0:2) node (1){1}
+        (240.0:2) node (2){2};
+      \begin{scope}[-]
+        \draw (0) to (1);
+        \draw (1) to (2);
+      \end{scope}
+    \end{tikzpicture}
+\end{figure}
 
 You can change many features of the nodes and edges.
 
@@ -62,7 +127,25 @@ You can change many features of the nodes and edges.
 >>> G.edges[(2, 3)]["label"] = "3rd Step"
 >>> G.edges[(2, 3)]["label_opts"] = "near end"
 
->>> nx.write_latex(G, "latex_graph.tex", pos=pos, as_document=True)
+>>> fpath = tmp_path / "latex_graph.tex"
+>>> nx.write_latex(G, fpath, pos=pos, as_document=False)
+
+>>> with open(fpath) as fh:
+...     print(fh.read())
+\begin{figure}
+  \begin{tikzpicture}
+      \draw
+        (0, 0) node (0){0}
+        (1, 1) node (1){1}
+        (2, 2) node (2){2}
+        (3, 3) node (3){3};
+      \begin{scope}[->]
+        \draw (0) to (1);
+        \draw (1) to (2);
+        \draw (2) to (3);
+      \end{scope}
+    \end{tikzpicture}
+\end{figure}
 
 Then compile the LaTeX using something like ``pdflatex latex_graph.tex``
 and view the pdf file created: ``latex_graph.pdf``.
@@ -79,16 +162,15 @@ If you want **subfigures** each containing one graph, you can input a list of gr
 >>> nx.write_latex(graphs, "subfigs.tex", n_rows=2, sub_captions=caps, sub_labels=lbls)
 >>> latex_code = nx.to_latex(graphs, n_rows=2, sub_captions=caps, sub_labels=lbls)
 
+Visualization properties such as colors, line widths, etc. can be specified manually:
+
 >>> node_color = {0: "red", 1: "orange", 2: "blue", 3: "gray!90"}
 >>> edge_width = {e: "line width=1.5" for e in H3.edges}
 >>> pos = nx.circular_layout(H3)
->>> latex_code = nx.to_latex(H3, pos, node_options=node_color, edge_options=edge_width)
+>>> latex_code = nx.to_latex(
+...     H3, pos, node_options=node_color, edge_options=edge_width, as_document=False
+... )
 >>> print(latex_code)
-\documentclass{report}
-\usepackage{tikz}
-\usepackage{subcaption}
-<BLANKLINE>
-\begin{document}
 \begin{figure}
   \begin{tikzpicture}
       \draw
@@ -111,7 +193,6 @@ If you want **subfigures** each containing one graph, you can input a list of gr
       \end{scope}
     \end{tikzpicture}
 \end{figure}
-\end{document}
 
 Notes
 -----
