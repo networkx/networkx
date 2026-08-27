@@ -159,8 +159,51 @@ If you want **subfigures** each containing one graph, you can input a list of gr
 >>> graphs = [H1, H2, H3, H4]
 >>> caps = ["Path 4", "Complete graph 4", "Path 8", "Complete graph 8"]
 >>> lbls = ["fig2a", "fig2b", "fig2c", "fig2d"]
->>> nx.write_latex(graphs, "subfigs.tex", n_rows=2, sub_captions=caps, sub_labels=lbls)
->>> latex_code = nx.to_latex(graphs, n_rows=2, sub_captions=caps, sub_labels=lbls)
+
+>>> fpath = tmp_path / "subfigs.tex"
+>>> nx.write_latex(
+...     graphs, fpath, n_rows=2, sub_captions=caps, sub_labels=lbls, as_document=False
+... )
+
+The lines in the output file corresponding to the first two sub figures:
+
+>>> with open(fpath) as fh:
+...     lines_from_file = fh.readlines()
+>>> print("".join(lines_from_file[1:34]))
+  \begin{subfigure}{0.5\textwidth}
+  \begin{tikzpicture}
+      \draw
+        (0.0:2) node (0){0}
+        (90.0:2) node (1){1}
+        (180.0:2) node (2){2}
+        (270.0:2) node (3){3};
+      \begin{scope}[-]
+        \draw (0) to (1);
+        \draw (1) to (2);
+        \draw (2) to (3);
+      \end{scope}
+    \end{tikzpicture}
+    \caption{Path 4}\label{fig2a}
+  \end{subfigure}
+  \begin{subfigure}{0.5\textwidth}
+  \begin{tikzpicture}
+      \draw
+        (0.0:2) node (0){0}
+        (90.0:2) node (1){1}
+        (180.0:2) node (2){2}
+        (270.0:2) node (3){3};
+      \begin{scope}[-]
+        \draw (0) to (1);
+        \draw (0) to (2);
+        \draw (0) to (3);
+        \draw (1) to (2);
+        \draw (1) to (3);
+        \draw (2) to (3);
+      \end{scope}
+    \end{tikzpicture}
+    \caption{Complete graph 4}\label{fig2b}
+  \end{subfigure}
+<BLANKLINE>
 
 Visualization properties such as colors, line widths, etc. can be specified manually:
 
