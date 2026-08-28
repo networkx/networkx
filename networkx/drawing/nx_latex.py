@@ -111,7 +111,8 @@ The TeX code can be generated programmatically without writing to disk with `to_
     \end{tikzpicture}
 \end{figure}
 
-You can change many features of the nodes and edges.
+You can change many features of the nodes and edges, either by looking up
+visualization properties stored as attributes on the nodes/edges:
 
 >>> G = nx.path_graph(4, create_using=nx.DiGraph)
 >>> pos = {n: (n, n) for n in G}  # nodes set on a line
@@ -128,21 +129,28 @@ You can change many features of the nodes and edges.
 >>> G.edges[(2, 3)]["label_opts"] = "near end"
 
 >>> fpath = tmp_path / "latex_graph.tex"
->>> nx.write_latex(G, fpath, pos=pos, as_document=False)
+>>> opts = {  # Name of node/edge attributes that hold visualization options
+...     "node_label": "label",
+...     "edge_label": "label",
+...     "node_options": "style",
+...     "edge_options": "style",
+...     "edge_label_options": "label_opts",
+... }
+>>> nx.write_latex(G, fpath, pos=pos, as_document=False, **opts)
 
 >>> with open(fpath) as fh:
 ...     print(fh.read())
 \begin{figure}
   \begin{tikzpicture}
       \draw
-        (0, 0) node (0){0}
+        (0, 0) node[blue] (0){0}
         (1, 1) node (1){1}
-        (2, 2) node (2){2}
-        (3, 3) node (3){3};
+        (2, 2) node[line width=3,draw] (2){2}
+        (3, 3) node (3){Stop};
       \begin{scope}[->]
-        \draw (0) to (1);
-        \draw (1) to (2);
-        \draw (2) to (3);
+        \draw (0) to node[near start] {1st Step} (1);
+        \draw[line width=3] (1) to node[] {2nd Step} (2);
+        \draw[green] (2) to node[near end] {3rd Step} (3);
       \end{scope}
     \end{tikzpicture}
 \end{figure}
