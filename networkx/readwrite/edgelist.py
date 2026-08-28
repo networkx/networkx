@@ -148,19 +148,60 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
 
     Examples
     --------
+    >>> from pathlib import Path
+    >>> import tempfile, gzip
+    >>> tmp_path = Path(tempfile.gettempdir())
+
     >>> G = nx.path_graph(4)
-    >>> nx.write_edgelist(G, "test.edgelist")
-    >>> G = nx.path_graph(4)
-    >>> fh = open("test.edgelist", "wb")
-    >>> nx.write_edgelist(G, fh)
-    >>> nx.write_edgelist(G, "test.edgelist.gz")
-    >>> nx.write_edgelist(G, "test.edgelist_nodata.gz", data=False)
+
+    Write out the edgelist to file:
+
+    >>> fpath = tmp_path / "test.edgelist"
+    >>> nx.write_edgelist(G, fpath)
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    0 1 {}
+    1 2 {}
+    2 3 {}
+    <BLANKLINE>
+
+    A filename ending with ".gz" or ".bz2" will be automatically compressed:
+
+    >>> fpath = tmp_path / "test_edgelist.gz"
+    >>> nx.write_edgelist(G, fpath)
+    >>> with gzip.open(fpath) as fh:
+    ...     print(fh.read().decode())
+    0 1 {}
+    1 2 {}
+    2 3 {}
+    <BLANKLINE>
+
+    The `data` parameter is used to toggle whether edge attribute data are
+    included:
 
     >>> G = nx.Graph()
     >>> G.add_edge(1, 2, weight=7, color="red")
-    >>> nx.write_edgelist(G, "test.edgelist_bigger_nodata", data=False)
-    >>> nx.write_edgelist(G, "test.edgelist_color", data=["color"])
-    >>> nx.write_edgelist(G, "test.edgelist_color_weight", data=["color", "weight"])
+
+    >>> fpath = tmp_path / "test.edgelist"
+    >>> nx.write_edgelist(G, fpath, data=False)
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    1 2
+    <BLANKLINE>
+
+    Or to specify which edge attribute data to include:
+
+    >>> nx.write_edgelist(G, fpath, data=["color"])
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    1 2 red
+    <BLANKLINE>
+
+    >>> nx.write_edgelist(G, fpath, data=["color", "weight"])
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    1 2 red 7
+    <BLANKLINE>
 
     See Also
     --------
