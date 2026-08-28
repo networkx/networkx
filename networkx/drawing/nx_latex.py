@@ -111,8 +111,8 @@ The TeX code can be generated programmatically without writing to disk with `to_
     \end{tikzpicture}
 \end{figure}
 
-You can change many features of the nodes and edges, either by looking up
-visualization properties stored as attributes on the nodes/edges:
+Visualization properties such as colors, line widths, etc. can be changed either
+by looking up values stored as node/edge attributes by name:
 
 >>> G = nx.path_graph(4, create_using=nx.DiGraph)
 >>> pos = {n: (n, n) for n in G}  # nodes set on a line
@@ -154,6 +154,35 @@ visualization properties stored as attributes on the nodes/edges:
       \end{scope}
     \end{tikzpicture}
 \end{figure}
+
+Or by specifying them manually:
+
+>>> node_color = {0: "red", 1: "orange", 2: "blue", 3: "gray!90"}
+>>> edge_width = {e: "line width=1.5" for e in G.edges}
+>>> pos = nx.circular_layout(G)
+>>> nx.write_latex(G, fpath, pos=pos, node_options=node_color, edge_options=edge_width)
+>>> with open(fpath) as fh:
+...     print(fh.read())
+\documentclass{report}
+\usepackage{tikz}
+\usepackage{subcaption}
+<BLANKLINE>
+\begin{document}
+\begin{figure}
+  \begin{tikzpicture}
+      \draw
+        (1.0, 0.0) node[red] (0){0}
+        (-0.0, 1.0) node[orange] (1){1}
+        (-1.0, -0.0) node[blue] (2){2}
+        (0.0, -1.0) node[gray!90] (3){3};
+      \begin{scope}[->]
+        \draw[line width=1.5] (0) to (1);
+        \draw[line width=1.5] (1) to (2);
+        \draw[line width=1.5] (2) to (3);
+      \end{scope}
+    \end{tikzpicture}
+\end{figure}
+\end{document}
 
 Then compile the LaTeX using something like ``pdflatex latex_graph.tex``
 and view the pdf file created: ``latex_graph.pdf``.
@@ -212,38 +241,6 @@ The lines in the output file corresponding to the first two sub figures:
     \caption{Complete graph 4}\label{fig2b}
   \end{subfigure}
 <BLANKLINE>
-
-Visualization properties such as colors, line widths, etc. can be specified manually:
-
->>> node_color = {0: "red", 1: "orange", 2: "blue", 3: "gray!90"}
->>> edge_width = {e: "line width=1.5" for e in H3.edges}
->>> pos = nx.circular_layout(H3)
->>> latex_code = nx.to_latex(
-...     H3, pos, node_options=node_color, edge_options=edge_width, as_document=False
-... )
->>> print(latex_code)
-\begin{figure}
-  \begin{tikzpicture}
-      \draw
-        (1.0, 0.0) node[red] (0){0}
-        (0.707, 0.707) node[orange] (1){1}
-        (-0.0, 1.0) node[blue] (2){2}
-        (-0.707, 0.707) node[gray!90] (3){3}
-        (-1.0, -0.0) node (4){4}
-        (-0.707, -0.707) node (5){5}
-        (0.0, -1.0) node (6){6}
-        (0.707, -0.707) node (7){7};
-      \begin{scope}[-]
-        \draw[line width=1.5] (0) to (1);
-        \draw[line width=1.5] (1) to (2);
-        \draw[line width=1.5] (2) to (3);
-        \draw[line width=1.5] (3) to (4);
-        \draw[line width=1.5] (4) to (5);
-        \draw[line width=1.5] (5) to (6);
-        \draw[line width=1.5] (6) to (7);
-      \end{scope}
-    \end{tikzpicture}
-\end{figure}
 
 Notes
 -----
