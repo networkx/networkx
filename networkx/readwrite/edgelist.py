@@ -381,29 +381,57 @@ def read_edgelist(
 
     Examples
     --------
-    >>> nx.write_edgelist(nx.path_graph(4), "test.edgelist_P4")
-    >>> G = nx.read_edgelist("test.edgelist_P4")
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
 
-    >>> fh = open("test.edgelist_P4", "rb")
-    >>> G = nx.read_edgelist(fh)
-    >>> fh.close()
+    >>> fpath = tmp_path / "P4.edgelist"
+    >>> nx.write_edgelist(nx.path_graph(4), fpath)
+    >>> G = nx.read_edgelist(fpath)
+    >>> G.edges
+    EdgeView([('0', '1'), ('1', '2'), ('2', '3')])
 
-    >>> G = nx.read_edgelist("test.edgelist_P4", nodetype=int)
-    >>> G = nx.read_edgelist("test.edgelist_P4", create_using=nx.DiGraph)
+    Nodes read from the file are interpreted as strings by default. The `nodetype`
+    parameter can be used to convert the nodes to another type:
 
-    Edgelist with data in a list:
+    >>> G = nx.read_edgelist(fpath, nodetype=int)
+    >>> G.edges
+    EdgeView([(0, 1), (1, 2), (2, 3)])
 
-    >>> textline = "1 2 3"
-    >>> fh = open("test.textline", "w")
-    >>> d = fh.write(textline)
-    >>> fh.close()
-    >>> G = nx.read_edgelist("test.textline", nodetype=int, data=(("weight", float),))
-    >>> list(G)
-    [1, 2]
-    >>> list(G.edges(data=True))
-    [(1, 2, {'weight': 3.0})]
+    The optional `create_using` parameter indicates the type of NetworkX
+    graph created. By default an undirected ``nx.Graph`` is returned. To read
+    the data as a directed graph use:
 
-    See parse_edgelist() for more examples of formatting.
+    >>> G = nx.read_edgelist(fpath, create_using=nx.DiGraph)
+    >>> G.is_directed()
+    True
+
+    By default, edge data is expected to be stored in a serialized dict-like
+    format keyed by the attribute name:
+
+    >>> fpath = tmp_path / "test.text"
+    >>> with open(fpath, "w") as fh:  # Create a file with data in default format
+    ...     _ = fh.write("1 2 {'weight': 3}")
+
+    >>> G = nx.read_edgelist(fpath, nodetype=int)
+    >>> G.edges(data=True)
+    EdgeDataView([(1, 2, {'weight': 3})])
+
+    Alternatively, edge data stored as a flat list without keys can be parsed
+    by passing in the attribute name and data type via `data`:
+
+    >>> textline = "1 2 red 10"
+    >>> fpath = tmp_path / "test.textline"
+    >>> with open(fpath, "w") as fh:  # Create a file with flattened edge data
+    ...     _ = fh.write(textline)
+
+    >>> G = nx.read_edgelist(
+    ...     fpath, nodetype=int, data=[("color", str), ("weight", float)]
+    ... )
+    >>> G.edges(data=True)
+    EdgeDataView([(1, 2, {'color': 'red', 'weight': 10.0})])
+
+    See `parse_edgelist` for more examples of formatting.
 
     See Also
     --------
