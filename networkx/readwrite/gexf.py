@@ -154,7 +154,7 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
 
 
 def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
-    """Generate lines of GEXF format representation of G.
+    r"""Generate lines of GEXF format representation of G.
 
     "GEXF (Graph Exchange XML Format) is a language for describing
     complex networks structures, their associated data and dynamics" [1]_.
@@ -183,11 +183,30 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
 
     Examples
     --------
+    >>> import itertools
+
     >>> G = nx.path_graph(4)
-    >>> linefeed = chr(10)  # linefeed=\n
-    >>> s = linefeed.join(nx.generate_gexf(G))
-    >>> for line in nx.generate_gexf(G):  # doctest: +SKIP
-    ...     print(line)
+    >>> gexf_gen = nx.generate_gexf(G)
+
+    The first several lines are the header containing only metadata - skip them
+    in this example for the purposes of viewing only the GEXF-formatted graph data:
+
+    >>> gexf_headerless = itertools.islice(gexf_gen, 4, None)
+    >>> print("\n".join(gexf_headerless))
+      <graph defaultedgetype="undirected" mode="static" name="">
+        <nodes>
+          <node id="0" label="0" />
+          <node id="1" label="1" />
+          <node id="2" label="2" />
+          <node id="3" label="3" />
+        </nodes>
+        <edges>
+          <edge source="0" target="1" id="0" />
+          <edge source="1" target="2" id="1" />
+          <edge source="2" target="3" id="2" />
+        </edges>
+      </graph>
+    </gexf>
 
     Notes
     -----
