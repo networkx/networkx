@@ -156,7 +156,7 @@ def bsdfs(G, s, t, k):
 
     See Also
     --------
-    bsdfs_edges
+    :func:`bsdfs_edges`
     :func:`~networkx.algorithms.simple_paths.all_simple_paths`
     :func:`~networkx.algorithms.simple_paths.all_simple_edge_paths`
     :func:`~networkx.algorithms.cycles.simple_cycles`
@@ -169,6 +169,11 @@ def bsdfs(G, s, t, k):
     One elementary step is a single adjacency-list entry scanned, plus
     constant bookkeeping per call and per barrier update, so the delay is
     ``O(k(n+m))``.
+
+    A search from several sources is obtained by adding a virtual source node
+    joined to each of them, running with the bound ``k + 1``, and dropping the
+    leading virtual edge from each result.  The sources do not block one
+    another, so a walk from one may pass through another.
 
     References
     ----------
@@ -310,7 +315,7 @@ def bsdfs_edges(G, s, t, k):
 
     See Also
     --------
-    bsdfs
+    :func:`bsdfs`
     :func:`~networkx.algorithms.simple_paths.all_simple_edge_paths`
     """
     walks = bsdfs(G, s, t, k)
