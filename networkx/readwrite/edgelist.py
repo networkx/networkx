@@ -455,7 +455,7 @@ def read_edgelist(
 
 
 def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
-    """Write graph G as a list of edges with numeric weights.
+    """Write graph `G` as a list of edges with numeric weights.
 
     Parameters
     ----------
@@ -474,9 +474,18 @@ def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-
 
     Examples
     --------
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
+
     >>> G = nx.Graph()
     >>> G.add_edge(1, 2, weight=7)
-    >>> nx.write_weighted_edgelist(G, "test.weighted.edgelist")
+    >>> fpath = tmp_path / "test.weighted.edgelist"
+    >>> nx.write_weighted_edgelist(G, fpath)
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    1 2 7
+    <BLANKLINE>
 
     See Also
     --------
@@ -532,16 +541,29 @@ def read_weighted_edgelist(
     Since nodes must be hashable, the function nodetype must return hashable
     types (e.g. int, float, str, frozenset - or tuples of those, etc.)
 
-    Example edgelist file format.
+    Examples
+    --------
+    >>> from pathlib import Path
+    >>> import tempfile, gzip
+    >>> tmp_path = Path(tempfile.gettempdir())
 
-    With numeric edge data::
+    read_weighted_edgelist expected data of the form ``u v w``, as is generated
+    by `write_weighted_edgelist`:
 
-     # read with
-     # >>> G=nx.read_weighted_edgelist(fh)
-     # source target data
-     a b 1
-     a c 3.14159
-     d e 42
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from([(0, 1, 1), (1, 2, 2.718), (2, 0, 10)])
+    >>> fpath = tmp_path / "C3_weighted.list"
+    >>> nx.write_weighted_edgelist(G, fpath)
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    0 1 1
+    0 2 10
+    1 2 2.718
+    <BLANKLINE>
+
+    >>> H = nx.read_weighted_edgelist(fpath, nodetype=int)
+    >>> H.edges(data="weight")
+    EdgeDataView([(0, 1, 1.0), (0, 2, 10.0), (1, 2, 2.718)])
 
     See Also
     --------
