@@ -130,18 +130,43 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
 
     Examples
     --------
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
+
     >>> G = nx.path_graph(4)
-    >>> nx.write_adjlist(G, "path4.adjlist")
+    >>> fpath = tmp_path / "path4.adjlist"
+    >>> nx.write_adjlist(G, fpath)
+
+    View the data as stored in file, ignoring header lines which start with the
+    comment character ("#" by default):
+
+    >>> with open(fpath) as fh:
+    ...     lines_from_file = fh.readlines()
+    >>> print("".join(l for l in lines_from_file if not l.startswith("#")))
+    0 1
+    1 2
+    2 3
+    3
+    <BLANKLINE>
 
     The path can be a filehandle or a string with the name of the file. If a
     filehandle is provided, it has to be opened in 'wb' mode.
 
-    >>> fh = open("path4.adjlist2", "wb")
-    >>> nx.write_adjlist(G, fh)
+    >>> with open(tmp_path / "path4.adjlist2", "wb") as fh:
+    ...     nx.write_adjlist(G, fh)
+    >>> with open(tmp_path / "path4.adjlist2") as fh:
+    ...     lines_from_file = fh.readlines()
+    >>> print("".join(l for l in lines_from_file if not l.startswith("#")))
+    0 1
+    1 2
+    2 3
+    3
+    <BLANKLINE>
 
     Notes
     -----
-    The default `delimiter=" "` will result in unexpected results if node names contain
+    The default ``delimiter=" "`` will result in unexpected results if node names contain
     whitespace characters. To avoid this problem, specify an alternate delimiter when spaces are
     valid in node names.
     NB: This option is not available for data that isn't user-generated.
