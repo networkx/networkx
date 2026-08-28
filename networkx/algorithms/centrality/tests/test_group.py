@@ -65,6 +65,22 @@ class TestGroupBetweennessCentrality:
         b_answer = 0.0
         assert b == b_answer
 
+    def test_group_betweenness_many_groups(self):
+        """
+        Group betweenness centrality with single graph over many groups.
+        Also checks that singleton groups equal regular betweenness values.
+        """
+        G = nx.path_graph(5)
+        G.remove_edge(0, 1)
+
+        bc = nx.betweenness_centrality(G, normalized=False)
+        gbc_singletons = [0, 0, 2, 2, 0]
+        assert list(bc.values()) == gbc_singletons
+
+        many_groups = [[node] for node in G]
+        results = nx.group_betweenness_centrality(G, many_groups, normalized=False)
+        assert results == gbc_singletons
+
     def test_group_betweenness_disconnected_graph(self):
         """
         Group betweenness centrality in a disconnected graph
