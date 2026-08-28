@@ -157,18 +157,46 @@ def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-
 
     Examples
     --------
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
+
     >>> G = nx.path_graph(4)
-    >>> nx.write_multiline_adjlist(G, "test.multi_adjlist")
+    >>> fpath = tmp_path / "test.multi_adjlist"
+    >>> nx.write_multiline_adjlist(G, fpath)
+
+    View the data as stored in the file, ignoring header lines which start with
+    the comment character ("#" by default):
+
+    >>> with open(fpath) as fh:
+    ...     lines_from_file = fh.readlines()
+    >>> print("".join(l for l in lines_from_file if not l.startswith("#")))
+    0 1
+    1 {}
+    1 1
+    2 {}
+    2 1
+    3 {}
+    3 0
+    <BLANKLINE>
 
     The path can be a file handle or a string with the name of the file. If a
     file handle is provided, it has to be opened in 'wb' mode.
 
-    >>> fh = open("test.multi_adjlist2", "wb")
-    >>> nx.write_multiline_adjlist(G, fh)
-
-    Filenames ending in .gz or .bz2 will be compressed.
-
-    >>> nx.write_multiline_adjlist(G, "test.multi_adjlist.gz")
+    >>> fpath = tmp_path / "test.multi_adjlist2"
+    >>> with open(fpath, "wb") as fh:
+    ...     nx.write_multiline_adjlist(G, fh)
+    >>> with open(fpath) as fh:
+    ...     lines_from_file = fh.readlines()
+    >>> print("".join(l for l in lines_from_file if not l.startswith("#")))
+    0 1
+    1 {}
+    1 1
+    2 {}
+    2 1
+    3 {}
+    3 0
+    <BLANKLINE>
 
     See Also
     --------
