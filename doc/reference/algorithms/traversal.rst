@@ -69,3 +69,4 @@ Bounded-Scope Depth First Search
    :toctree: generated/
 
    bsdfs
+   bsdfs_edges
