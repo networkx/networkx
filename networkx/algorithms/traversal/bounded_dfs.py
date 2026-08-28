@@ -96,7 +96,7 @@ def bsdfs(G, s, t, k):
     G : NetworkX graph
         Directed or undirected, graph or multigraph.
     s : node
-        Source node, where every reported walk starts.
+        Source node, where every reported path starts.
     t : node or set of nodes
         A single node enumerates the simple paths from ``s`` to ``t``; as a
         special case, ``t == s`` enumerates the simple cycles through ``s``.
@@ -110,7 +110,7 @@ def bsdfs(G, s, t, k):
     Yields
     ------
     list of nodes
-        The nodes of the walk, beginning at ``s`` and ending at the target
+        The nodes of the path, beginning at ``s`` and ending at the target
         reached.  All nodes are distinct, except that a cycle (``t == s``)
         ends at ``s`` again.  The one-node list ``[s]`` is yielded for the
         trivial path, i.e. when ``s`` is itself a target.
@@ -173,7 +173,7 @@ def bsdfs(G, s, t, k):
     A search from several sources is obtained by adding a virtual source node
     joined to each of them, running with the bound ``k + 1``, and dropping the
     leading virtual edge from each result.  The sources do not block one
-    another, so a walk from one may pass through another.
+    another, so a path from one may pass through another.
 
     References
     ----------
@@ -259,13 +259,13 @@ def bsdfs(G, s, t, k):
 
 @nx._dispatchable
 def bsdfs_edges(G, s, t, k):
-    """Yield the walks of :func:`bsdfs` as edge lists rather than node lists.
+    """Yield the paths of :func:`bsdfs` as edge lists rather than node lists.
 
     This is to :func:`bsdfs` what
     :func:`~networkx.algorithms.simple_paths.all_simple_edge_paths` is to
     :func:`~networkx.algorithms.simple_paths.all_simple_paths`.  The search
-    is identical; only the reporting differs.  On a multigraph one node walk
-    corresponds to several edge walks, one per combination of parallel edge
+    is identical; only the reporting differs.  On a multigraph one node path
+    corresponds to several edge paths, one per combination of parallel edge
     keys, and all of them are yielded.
 
     Parameters
@@ -273,7 +273,7 @@ def bsdfs_edges(G, s, t, k):
     G : NetworkX graph
         Directed or undirected, graph or multigraph.
     s : node
-        Source node, where every reported walk starts.
+        Source node, where every reported path starts.
     t : node or set of nodes
         A single node enumerates the simple paths from ``s`` to ``t``; as a
         special case, ``t == s`` enumerates the simple cycles through ``s``.
@@ -287,7 +287,7 @@ def bsdfs_edges(G, s, t, k):
     Yields
     ------
     list of edges
-        The edges of the walk, as ``(u, v)``, resp. ``(u, v, key)`` on a
+        The edges of the path, as ``(u, v)``, resp. ``(u, v, key)`` on a
         multigraph.  The empty list is yielded for the trivial path, i.e.
         when ``s`` is itself a target.
 
@@ -305,7 +305,7 @@ def bsdfs_edges(G, s, t, k):
     >>> list(bsdfs_edges(G, 0, 3, 3))
     [[(0, 1), (1, 2), (2, 3)], [(0, 1), (1, 3)], [(0, 2), (2, 3)]]
 
-    Parallel edges give one walk each, distinguished by their key.
+    Parallel edges give one path each, distinguished by their key.
 
     >>> M = nx.MultiDiGraph([(0, 1), (0, 1), (1, 2)])
     >>> list(bsdfs(M, 0, 2, 3))
@@ -318,11 +318,11 @@ def bsdfs_edges(G, s, t, k):
     :func:`bsdfs`
     :func:`~networkx.algorithms.simple_paths.all_simple_edge_paths`
     """
-    walks = bsdfs(G, s, t, k)
+    paths = bsdfs(G, s, t, k)
     if G.is_multigraph():
-        for walk in walks:
-            choices = [[(u, v, key) for key in G[u][v]] for u, v in zip(walk, walk[1:])]
+        for path in paths:
+            choices = [[(u, v, key) for key in G[u][v]] for u, v in zip(path, path[1:])]
             yield from (list(c) for c in itertools.product(*choices))
     else:
-        for walk in walks:
-            yield [(u, v) for u, v in zip(walk, walk[1:])]
+        for path in paths:
+            yield [(u, v) for u, v in zip(path, path[1:])]
