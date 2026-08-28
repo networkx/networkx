@@ -305,37 +305,55 @@ def read_adjlist(
 
     Examples
     --------
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
+
     >>> G = nx.path_graph(4)
-    >>> nx.write_adjlist(G, "test.adjlist")
-    >>> G = nx.read_adjlist("test.adjlist")
+    >>> fpath = tmp_path / "test.adjlist"
+    >>> nx.write_adjlist(G, fpath)
+    >>> H = nx.read_adjlist(fpath)
+
+    Data read from the file are interpreted as strings by default, regardless of
+    the node type of the original graph.
+
+    >>> G.edges
+    EdgeView([(0, 1), (1, 2), (2, 3)])
+    >>> H.edges
+    EdgeView([('0', '1'), ('1', '2'), ('2', '3')])
+
+    The node data can be converted to a specific type with the `nodetype`
+    parameter.
+
+    >>> H = nx.read_adjlist(fpath, nodetype=int)
+    >>> H.edges
+    EdgeView([(0, 1), (1, 2), (2, 3)])
+    >>> nx.utils.edges_equal(G.edges, H.edges)
+    True
+
+    Since nodes must be hashable, the function `nodetype` must return hashable
+    types (e.g. int, float, str, frozenset - or tuples of those, etc.)
+
+    The optional `create_using` parameter indicates the type of NetworkX graph
+    created. The default is `nx.Graph`, an undirected graph. To read the data
+    as a directed graph use
+
+    >>> H = nx.read_adjlist(fpath, create_using=nx.DiGraph)
+    >>> H.is_directed()
+    True
 
     The path can be a filehandle or a string with the name of the file. If a
     filehandle is provided, it has to be opened in 'rb' mode.
 
-    >>> fh = open("test.adjlist", "rb")
-    >>> G = nx.read_adjlist(fh)
+    >>> with open(fpath, "rb") as fh:
+    ...     H = nx.read_adjlist(fh, nodetype=int)
+    >>> H.edges
+    EdgeView([(0, 1), (1, 2), (2, 3)])
 
-    Filenames ending in .gz or .bz2 will be compressed.
+    Filenames ending in .gz or .bz2 will be compressed automatically.
 
-    >>> nx.write_adjlist(G, "test.adjlist.gz")
-    >>> G = nx.read_adjlist("test.adjlist.gz")
-
-    The optional nodetype is a function to convert node strings to nodetype.
-
-    For example
-
-    >>> G = nx.read_adjlist("test.adjlist", nodetype=int)
-
-    will attempt to convert all nodes to integer type.
-
-    Since nodes must be hashable, the function nodetype must return hashable
-    types (e.g. int, float, str, frozenset - or tuples of those, etc.)
-
-    The optional create_using parameter indicates the type of NetworkX graph
-    created.  The default is `nx.Graph`, an undirected graph.
-    To read the data as a directed graph use
-
-    >>> G = nx.read_adjlist("test.adjlist", create_using=nx.DiGraph)
+    >>> fpath = tmp_path / "test_adjlist.gz"
+    >>> nx.write_adjlist(G, fpath)
 
     Notes
     -----
