@@ -10,6 +10,7 @@ __all__ = [
     "modularity_spectrum",
     "normalized_laplacian_spectrum",
     "bethe_hessian_spectrum",
+    "magnetic_spectrum",
 ]
 
 
@@ -121,6 +122,47 @@ def adjacency_spectrum(G, weight="weight"):
     import scipy as sp
 
     return sp.linalg.eigvals(nx.adjacency_matrix(G, weight=weight).todense())
+
+
+@nx._dispatchable(edge_attrs="weight")
+def magnetic_spectrum(G, *, q=0.25, weight="weight", normalized=False):
+    """Returns eigenvalues of the magnetic laplacian matrix with phase `q`.
+
+    Parameters
+    ----------
+    G : DiGraph
+        Directed graph
+
+    q : float (default=0.25)
+        The phase of the magnetic potential is the charge parameter 0 <= q <= 0.5.
+        At q=0 returns the standard Laplacian.
+
+    weight : string or None, optional (default='weight')
+       The edge data key used to compute each value in the matrix.
+       If None, then each edge has weight 1.
+
+    normalized : bool, optional (default=False)
+        If True, return the spectrum of the normalized magnetic laplacian matrix.
+        If False, use the magnetic laplacian matrix without normalization.
+
+    Returns
+    -------
+    evals : np.ndarray
+        Eigenvalues of the magnetic Laplacian matrix
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is undirected or a multigraph.
+
+    See Also
+    --------
+    magnetic_laplacian_matrix
+    """
+    import scipy as sp
+
+    ML = nx.magnetic_laplacian_matrix(G, q=q, weight=weight, normalized=normalized)
+    return sp.linalg.eigh(ML.toarray(), eigvals_only=True)
 
 
 @nx._dispatchable

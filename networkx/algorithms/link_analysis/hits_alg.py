@@ -6,7 +6,15 @@ __all__ = ["hits"]
 
 
 @nx._dispatchable(preserve_edge_attrs={"G": {"weight": 1}})
-def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
+def hits(
+    G,
+    max_iter=100,
+    tol=1.0e-8,
+    nstart=None,
+    normalized=True,
+    *,
+    method="power_iteration",
+):
     """Returns HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node.
@@ -30,6 +38,12 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     normalized : bool (default=True)
        Normalize results by the sum of all of the values.
 
+    method : string (default="power_iteration")
+       The implementation to use, one of "power_iteration" or "svd".
+       The "svd" method computes the values from the largest singular
+       value/vectors of the adjacency matrix using
+       ``scipy.sparse.linalg.svds``.
+
     Returns
     -------
     (hubs,authorities) : two-tuple of dictionaries
@@ -43,6 +57,9 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
         within the specified number of iterations of the power iteration
         method.
 
+    ValueError
+        If `method` is not one of "power_iteration" or "svd".
+
     Examples
     --------
     >>> G = nx.path_graph(4)
@@ -50,10 +67,12 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
 
     Notes
     -----
-    The eigenvector calculation is done by the power iteration method
-    and has no guarantee of convergence.  The iteration will stop
-    after max_iter iterations or an error tolerance of
-    number_of_nodes(G)*tol has been reached.
+    With ``method="power_iteration"``, the eigenvector calculation is done
+    by the power iteration method and has no guarantee of convergence. The
+    iteration will stop after `max_iter` iterations or when the change in
+    the hub values between two successive iterations is smaller than `tol`.
+    With ``method="svd"``, `max_iter` and `tol` are passed to
+    ``scipy.sparse.linalg.svds``.
 
     The HITS algorithm was designed for directed graphs but this
     algorithm does not check if the input graph is directed and will
@@ -70,6 +89,60 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
        https://www.cs.cornell.edu/home/kleinber/auth.pdf
        doi:10.1145/324133.324140.
     """
+    if method == "power_iteration":
+        return _hits_power_iteration(G, max_iter, tol, nstart, normalized)
+    if method == "svd":
+        return _hits_svd(G, max_iter, tol, nstart, normalized)
+    raise ValueError(f"method not supported: {method}")
+
+
+def _hits_power_iteration(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
+    import numpy as np
+
+    N = len(G)
+    if N == 0:
+        return {}, {}
+    nodelist = list(G)
+    A = nx.adjacency_matrix(G, nodelist=nodelist, dtype=float)
+
+    if nstart is None:
+        h = np.full(N, 1.0 / N)
+    else:
+        missing = G.nodes - nstart.keys()
+        if missing:
+            raise nx.NetworkXError(
+                f"nstart must have a value for every node; missing: {missing}"
+            )
+        h = np.array([nstart[node] for node in nodelist], dtype=float)
+        s = h.sum()
+        if s == 0:
+            raise nx.NetworkXError("nstart values must not sum to zero")
+        h = h / s
+
+    if max_iter <= 0:
+        raise nx.PowerIterationFailedConvergence(max_iter)
+
+    for _ in range(max_iter):
+        hlast = h
+        a = h @ A
+        h = A @ a
+        h /= h.max()
+        if np.abs(h - hlast).sum() < tol:
+            break
+    else:
+        raise nx.PowerIterationFailedConvergence(max_iter)
+
+    if normalized:
+        h /= h.sum()
+        a /= a.sum()
+    else:
+        a /= a.max()
+    hubs = dict(zip(nodelist, map(float, h)))
+    authorities = dict(zip(nodelist, map(float, a)))
+    return hubs, authorities
+
+
+def _hits_svd(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     import numpy as np
     import scipy as sp
 
@@ -214,11 +287,11 @@ def _hits_numpy(G, normalized=True):
     adj_ary = nx.to_numpy_array(G)
     # Hub matrix
     H = adj_ary @ adj_ary.T
-    e, ev = np.linalg.eig(H)
+    e, ev = np.linalg.eigh(H)
     h = ev[:, np.argmax(e)]  # eigenvector corresponding to the maximum eigenvalue
     # Authority matrix
     A = adj_ary.T @ adj_ary
-    e, ev = np.linalg.eig(A)
+    e, ev = np.linalg.eigh(A)
     a = ev[:, np.argmax(e)]  # eigenvector corresponding to the maximum eigenvalue
     if normalized:
         h /= h.sum()

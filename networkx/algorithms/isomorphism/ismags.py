@@ -698,34 +698,40 @@ class ISMAGS:
         return new_sg_p, new_g_p, Ncolors
 
     def find_isomorphisms(self, symmetry=True):
-        """left for backward compatibility. Use isomorphisms_iter"""
+        """left for backward compatibility. Use subgraph_isomorphisms_iter"""
         yield from self._all_morphisms(symmetry, problem_type="SUB")
         return
 
     def _all_morphisms(self, symmetry, problem_type):
-        """Find all subgraph isomorphisms between subgraph and graph
+        """Find all morphisms between :attr:`graph` and :attr:`subgraph`
 
-        Finds isomorphisms where :attr:`subgraph` <= :attr:`graph`.
+        Yield isomorphisms or monomorphisms depending on `problem_type`.
 
         Parameters
         ----------
-        symmetry: bool
-            Whether symmetry should be taken into account. If False, found
-            isomorphisms may be symmetrically equivalent.
+        symmetry : bool
+            Whether symmetry should be taken into account.
+            If False, morphisms may be symmetrically equivalent.
         problem_type : string
             The problem type to be used:
             - "ISO" for graph isomorphism,
+            - "SUB" for subgraph isomorphism,
             - "MONO" for monomorphism.
-            - "SUB" or any other string produces subgraph isomorphism
-            Not checked for correctness.
 
         Yields
         ------
         dict
-            The found isomorphism mappings of {graph_node: subgraph_node}.
+            The isomorphism mappings in form: {graph_node: subgraph_node}.
         """
-        SG_fits = operator.eq if problem_type == "ISO" else operator.le
-        MONO_fits = operator.eq if problem_type != "MONO" else operator.le
+        if problem_type == "ISO":
+            SG_fits = MONO_fits = operator.eq
+        elif problem_type == "SUB":
+            SG_fits = operator.le
+            MONO_fits = operator.eq
+        elif problem_type == "MONO":
+            SG_fits = MONO_fits = operator.le
+        else:
+            raise ValueError(f'Invalid {problem_type=}. Must be "ISO", "SUB" or "MONO"')
         # The networkx VF2 algorithm is slightly funny in when it yields an
         # empty dict and when not.
         if not self.subgraph:
@@ -804,7 +810,7 @@ class ISMAGS:
 
         Parameters
         ----------
-        symmetry: bool
+        symmetry : bool
             Whether symmetry should be taken into account. If False, found
             largest common subgraphs may be symmetrically equivalent.
 
@@ -876,9 +882,12 @@ class ISMAGS:
         return cosets
 
     def is_isomorphic(self, symmetry=False):
-        """
-        Returns True if :attr:`graph` is isomorphic to :attr:`subgraph` and
-        False otherwise.
+        """Returns True if the class input graphs are isomorphic, False otherwise.
+
+        Isomorphic means there is a mapping of nodes from ``graph`` to ``subgraph``
+        that maintains connectivity and node/edge matchings.
+        Note: `symmetry` is only used for testing. We only find 1 isomorphism
+        so there is no gain from looking for symmetries.
 
         Returns
         -------
@@ -888,38 +897,106 @@ class ISMAGS:
         return isom is not None
 
     def subgraph_is_isomorphic(self, symmetry=False):
-        """
-        Returns True if a subgraph of :attr:`graph` is isomorphic to
-        :attr:`subgraph` and False otherwise.
+        """Returns True if the class input graphs are subgraph isomorphic, False otherwise.
+
+        Subgraph isomorphic means there is a mapping of nodes from an induced
+        subgraph of ``graph`` to ``subgraph`` that maintains connectivity and
+        node/edge matching.
+
+        Note: `symmetry` is only used for testing. We only find 1 isomorphism
+        so there is no gain from looking for symmetries.
 
         Returns
         -------
         bool
         """
-        # symmetry=False, since we only need to know whether there is any
-        # example; figuring out all symmetry elements probably costs more time
-        # than it gains.
         isom = next(self.subgraph_isomorphisms_iter(symmetry=symmetry), None)
         return isom is not None
 
     def is_monomorphic(self, symmetry=False):
+        """Returns True if the class input graphs are monomorphic, False otherwise.
+
+        Monomorphic means there is a mapping of some nodes in ``graph`` to all
+        nodes in ``subgraph`` that covers all nodes/edges in ``subgraph``.
+        No induced subgraph structure is needed. For example, an edge between
+        two nodes is monomorphic to any subgraph with two nodes.
+
+        Note: `symmetry` is only used for testing. We only find 1 monomorphism
+        so there is no gain from looking for symmetries.
+
+        Returns
+        -------
+        bool
+        """
         mom = next(self.monomorphisms_iter(symmetry=symmetry), None)
         return mom is not None
 
     def isomorphisms_iter(self, symmetry=True):
-        """
-        Does the same as :meth:`_all_morphisms` if :attr:`graph` and
-        :attr:`subgraph` have the same number of nodes.
+        """Yields all isomorphisms from :attr:`graph` to :attr:`subgraph`
+
+        An isomorphism is an all-to-all mapping of the nodes that maintains
+        connectivity and node/edge matchings.
+
+        Symmetric isomorphisms can be ignored for the symmetries of :attr:`subgraph`.
+
+        Parameters
+        ----------
+        symmetry : bool, optional (default: True)
+            Whether symmetries of :attr:`subgraph` should be taken into account.
+            If False, yielded isomorphisms may be symmetrically equivalent.
+
+        Yields
+        ------
+        dict
+            The isomorphism mappings in form: ``{graph_node: subgraph_node}``.
         """
         if len(self.graph) == len(self.subgraph):
             yield from self._all_morphisms(symmetry, problem_type="ISO")
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
-        """Alternative name for :meth:`_all_morphisms`."""
+        """Yields all subgraph isomorphisms from :attr:`graph` to :attr:`subgraph`
+
+        An isomorphism is a mapping of nodes that maintains connectivity and
+        node/edge matchings. Subgraph isomorphism means an isomorphism from an
+        induced subgraph of ``graph`` to ``subgraph``.
+
+        Symmetric isomorphisms can be ignored for the symmetries of ``subgraph``.
+
+        Parameters
+        ----------
+        symmetry : bool, optional (default: True)
+            Whether symmetries of ``subgraph`` should be taken into account.
+            If False, isomorphisms may be symmetrically equivalent.
+
+        Yields
+        ------
+        dict
+            The isomorphism mappings in form: {graph_node: subgraph_node}.
+        """
         return self._all_morphisms(symmetry, problem_type="SUB")
 
     def monomorphisms_iter(self, symmetry=True):
-        """Iterate over monomorphism."""
+        """Yields all monomorphisms from :attr:`graph` to :attr:`subgraph`
+
+        A monomorphism is a mapping of nodes that only maintains connectivity
+        and node/edge matchings in ``subgraph``. Edges in ``graph`` need not
+        map to ``subgraph``. In other words, the mapping covers all edges in
+        ``subgraph``, but is not a bijection (some nodes and edges are not mapped).
+        Some people call this kind of subgraph a non-induced subgraph.
+
+        Symmetric monomorphisms can be ignored for the symmetries of ``subgraph``.
+
+        Parameters
+        ----------
+        symmetry : bool, optional (default: True)
+            Whether symmetries of ``subgraph`` should be taken into account.
+            If False, monomorphisms may be symmetrically equivalent.
+
+        Yields
+        ------
+        dict
+            The monomorphism mappings in form: {graph_node: subgraph_node}.
+        """
         return self._all_morphisms(symmetry, problem_type="MONO")
 
     def _get_node_color_candidate_sets(self, MONO_fits):
@@ -1012,7 +1089,7 @@ class ISMAGS:
         # Membership: any candidate must be an element of each of the frozensets.
         # Length: length of the intersection set. Use heuristic min(len of frozensets).
         # This intersection improves future length heuristics which can only occur
-        # after this element of the queu is popped. But it means future additional
+        # after this element of the queue is popped. But it means future additional
         # restriction frozensets that duplicate previous ones are not ignored.
         sgn_candidates = frozenset.intersection(*candidate_sets[sgn])
         candidate_sets[sgn] = {sgn_candidates}
@@ -1221,7 +1298,7 @@ class ISMAGS:
                 # symmetry constraints. We know that for every constraint we
                 # have those subgraph nodes are equal. So whenever we would
                 # remove the lower part of a constraint, remove the higher
-                # instead. This is all dealth with by _remove_node. And because
+                # instead. This is all dealt with by _remove_node. And because
                 # left_to_be_mapped is a set, we don't do double work.
 
                 # And finally, make the subgraph one node smaller.
