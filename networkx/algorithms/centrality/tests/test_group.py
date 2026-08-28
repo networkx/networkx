@@ -100,6 +100,15 @@ class TestGroupBetweennessCentrality:
         b_answer = 5.0
         assert b == b_answer
 
+    def test_group_betweenness_no_paths_through_group(self):
+        """
+        GBC sanity check when no paths pass through group (regression test for gh-8827)
+        """
+        # The non-group nodes 3, 4 and 5 have no shortest path between them that also
+        # has an interior node in C, so the group betweenness is 0.
+        G = nx.Graph([(0, 1), (0, 2), (0, 3), (0, 4), (1, 3), (2, 3), (3, 4), (4, 5)])
+        assert 0 == nx.group_betweenness_centrality(G, [0, 1, 2], normalized=False)
+
 
 class TestProminentGroup:
     np = pytest.importorskip("numpy")
