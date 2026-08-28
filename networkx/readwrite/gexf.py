@@ -73,14 +73,63 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
 
     Examples
     --------
-    >>> G = nx.path_graph(4)
-    >>> nx.write_gexf(G, "test.gexf")
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
 
-    # visualization data
+    >>> G = nx.path_graph(4)
+    >>> fpath = tmp_path / "test.gexf"
+    >>> nx.write_gexf(G, fpath)
+
+    View the GEXF graph data, ignoring the header/metadata:
+
+    >>> with open(fpath) as fh:
+    ...     lines_from_file = fh.readlines()
+    >>> print("".join(lines_from_file[5:-1]))
+      <graph defaultedgetype="undirected" mode="static" name="">
+        <nodes>
+          <node id="0" label="0" />
+          <node id="1" label="1" />
+          <node id="2" label="2" />
+          <node id="3" label="3" />
+        </nodes>
+        <edges>
+          <edge source="0" target="1" id="0" />
+          <edge source="1" target="2" id="1" />
+          <edge source="2" target="3" id="2" />
+        </edges>
+      </graph>
+    <BLANKLINE>
+
+    Visualization data in GEXF format is supported and is read from the ``"viz"``
+    node attribute:
+
     >>> G.nodes[0]["viz"] = {"size": 54}
     >>> G.nodes[0]["viz"]["position"] = {"x": 0, "y": 1}
     >>> G.nodes[0]["viz"]["color"] = {"r": 0, "g": 0, "b": 256}
+    >>> nx.write_gexf(G, fpath)
 
+    >>> with open(fpath) as fh:
+    ...     lines_from_file = fh.readlines()
+    >>> print("".join(lines_from_file[5:-1]))  # Ignore header and metadata tags
+      <graph defaultedgetype="undirected" mode="static" name="">
+        <nodes>
+          <node id="0" label="0">
+            <viz:color r="0" g="0" b="256" a="1.0" />
+            <viz:size value="54" />
+            <viz:position x="0" y="1" z="None" />
+          </node>
+          <node id="1" label="1" />
+          <node id="2" label="2" />
+          <node id="3" label="3" />
+        </nodes>
+        <edges>
+          <edge source="0" target="1" id="0" />
+          <edge source="1" target="2" id="1" />
+          <edge source="2" target="3" id="2" />
+        </edges>
+      </graph>
+    <BLANKLINE>
 
     Notes
     -----
