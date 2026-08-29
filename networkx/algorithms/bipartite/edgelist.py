@@ -54,20 +54,64 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
 
     Examples
     --------
+    >>> from pathlib import Path
+    >>> import tempfile, gzip
+    >>> tmp_path = Path(tempfile.gettempdir())
+
     >>> G = nx.path_graph(4)
     >>> G.add_nodes_from([0, 2], bipartite=0)
     >>> G.add_nodes_from([1, 3], bipartite=1)
-    >>> nx.write_edgelist(G, "test.edgelist")
-    >>> fh = open("test.edgelist_open", "wb")
-    >>> nx.write_edgelist(G, fh)
-    >>> nx.write_edgelist(G, "test.edgelist.gz")
-    >>> nx.write_edgelist(G, "test.edgelist_nodata.gz", data=False)
+
+    Write out the bipartite edgelist to file
+
+    >>> fpath = tmp_path / "test.edgelist"
+    >>> nx.bipartite.write_edgelist(G, fpath)
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    0 1 {}
+    2 1 {}
+    2 3 {}
+    <BLANKLINE>
+
+    A filename ending with ".gz" or ".bz2" will be automatically compressed
+
+    >>> fpath = tmp_path / "test_edgelist.gz"
+    >>> nx.bipartite.write_edgelist(G, fpath)
+    >>> with gzip.open(fpath) as fh:
+    ...     print(fh.read().decode())
+    0 1 {}
+    2 1 {}
+    2 3 {}
+    <BLANKLINE>
+
+    The `data` keyword argument is used to toggle whether edge attribute data
+    are included:
 
     >>> G = nx.Graph()
+    >>> G.add_node(1, bipartite=0)
+    >>> G.add_node(2, bipartite=1)
     >>> G.add_edge(1, 2, weight=7, color="red")
-    >>> nx.write_edgelist(G, "test.edgelist_bigger_nodata", data=False)
-    >>> nx.write_edgelist(G, "test.edgelist_color", data=["color"])
-    >>> nx.write_edgelist(G, "test.edgelist_color_weight", data=["color", "weight"])
+
+    >>> fpath = tmp_path / "test.edgelist"
+    >>> nx.bipartite.write_edgelist(G, fpath, data=False)
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    1 2
+    <BLANKLINE>
+
+    Or to specify which edge attribute data to include:
+
+    >>> nx.bipartite.write_edgelist(G, fpath, data=["color"])
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    1 2 red
+    <BLANKLINE>
+
+    >>> nx.bipartite.write_edgelist(G, fpath, data=["color", "weight"])
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    1 2 red 7
+    <BLANKLINE>
 
     See Also
     --------
