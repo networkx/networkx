@@ -20,6 +20,15 @@ class TestGroupBetweennessCentrality:
         b_answer = 3.0
         assert b == b_answer
 
+    def test_group_betweenness_guard_against_keyerror(self):
+        """
+        Check for KeyErrors in D[u][v] inside group_betweenness_centrality
+        """
+        G = nx.path_graph(6, create_using=nx.DiGraph)
+        # y_in_Dx is enforced by the loop bounds. (KeyError if not enforced)
+        # Also checks v_in_Dy, y_in_Dv, x_in_Dv and v_in_Dx. Note: do not need x_in_Dy
+        assert 2 == nx.group_betweenness_centrality(G, [2, 3, 4], normalized=False)
+
     def test_group_betweenness_with_endpoints(self):
         """
         Group betweenness centrality for single node group
