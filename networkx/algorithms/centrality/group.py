@@ -171,7 +171,6 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                     if Dx[y] == Dx[v] + Dv[y] and sig_xy:
                         sig_xvy = sig_xv * sig_vy
                         PB_x[y] *= 1 - sig_xvy / sig_xy
-
                         sig_x[y] -= sig_xvy
                         if y == v:
                             # update sig_xv for future y-values
