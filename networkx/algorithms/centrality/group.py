@@ -151,7 +151,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                         if D[x][y] == D[x][v] + D[v][y]:
                             dxvy = sigma_m[x][v] * sigma_m[v][y] / sigma_m[x][y]
                         if D[v][y] == D[v][x] + D[x][y]:
-                            dvxy = sigma_m[v][x] * sigma[x][y] / sigma[v][y]
+                            dvxy = sigma_m[v][x] * sigma_m[x][y] / sigma_m[v][y]
                     sigma_m_v[x][y] = sigma_m[x][y] * (1 - dxvy)
                     PB_m_v[x][y] = PB_m[x][y] - PB_m[x][y] * dxvy
                     if y != v:

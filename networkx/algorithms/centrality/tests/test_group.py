@@ -65,6 +65,22 @@ class TestGroupBetweennessCentrality:
         b_answer = 0.0
         assert b == b_answer
 
+    def test_group_betweenness_many_groups(self):
+        """
+        Group betweenness centrality with single graph over many groups.
+        Also checks that singleton groups equal regular betweenness values.
+        """
+        G = nx.path_graph(5)
+        G.remove_edge(0, 1)
+
+        bc = nx.betweenness_centrality(G, normalized=False)
+        gbc_singletons = [0, 0, 2, 2, 0]
+        assert list(bc.values()) == gbc_singletons
+
+        many_groups = [[node] for node in G]
+        results = nx.group_betweenness_centrality(G, many_groups, normalized=False)
+        assert results == gbc_singletons
+
     def test_group_betweenness_disconnected_graph(self):
         """
         Group betweenness centrality in a disconnected graph
@@ -99,6 +115,15 @@ class TestGroupBetweennessCentrality:
         b = nx.group_betweenness_centrality(G, C, weight="weight", normalized=False)
         b_answer = 5.0
         assert b == b_answer
+
+    def test_group_betweenness_no_paths_through_group(self):
+        """
+        GBC sanity check when no paths pass through group (regression test for gh-8827)
+        """
+        # The non-group nodes 3, 4 and 5 have no shortest path between them that also
+        # has an interior node in C, so the group betweenness is 0.
+        G = nx.Graph([(0, 1), (0, 2), (0, 3), (0, 4), (1, 3), (2, 3), (3, 4), (4, 5)])
+        assert 0 == nx.group_betweenness_centrality(G, [0, 1, 2], normalized=False)
 
 
 class TestProminentGroup:
