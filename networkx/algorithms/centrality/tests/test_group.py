@@ -125,6 +125,38 @@ class TestGroupBetweennessCentrality:
         G = nx.Graph([(0, 1), (0, 2), (0, 3), (0, 4), (1, 3), (2, 3), (3, 4), (4, 5)])
         assert 0 == nx.group_betweenness_centrality(G, [0, 1, 2], normalized=False)
 
+    def test_group_betweenness_directed_ground_truth(self):
+        """
+        GBC check against exhaustive counting for directed graph (see gh-8827)
+        """
+        G = nx.DiGraph(
+            [
+                (0, 6),
+                (1, 3),
+                (1, 6),
+                (2, 5),
+                (2, 6),
+                (2, 7),
+                (3, 1),
+                (3, 4),
+                (4, 0),
+                (4, 2),
+                (4, 5),
+                (4, 7),
+                (5, 1),
+                (5, 7),
+                (6, 0),
+                (6, 1),
+                (6, 7),
+                (7, 2),
+                (7, 4),
+                (7, 6),
+            ]
+        )
+
+        b = nx.group_betweenness_centrality(G, [1, 2, 3], normalized=False)
+        assert b == pytest.approx(8 / 3)
+
 
 class TestProminentGroup:
     np = pytest.importorskip("numpy")
