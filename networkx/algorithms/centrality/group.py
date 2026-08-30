@@ -162,30 +162,32 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
             PB_m, PB_m_v = PB_m_v, PB_m
 
         # endpoints
-        v, c = len(G), len(group)
+        N, c = len(G), len(group)
         if not endpoints:
-            scale = 0
             # if the graph is connected then subtract the endpoints from
             # the count for all the nodes in the graph. else count how many
             # nodes are connected to the group's nodes and subtract that.
             if nx.is_directed(G):
                 if nx.is_strongly_connected(G):
-                    scale = c * (2 * v - c - 1)
+                    extra = c * (2 * N - c - 1)
+                else:
+                    # count paths for group to or from anything
+                    reachables = ((u, v) for u in G for v in D[u] if v != u)
+                    extra = sum(1 for u, v in reachables if (u in group or v in group))
             elif nx.is_connected(G):
-                scale = c * (2 * v - c - 1)
-            if scale == 0:
-                for group_node1 in group:
-                    for node in D[group_node1]:
-                        if node != group_node1:
-                            if node in group:
-                                scale += 1
-                            else:
-                                scale += 2
-            GBC_group -= scale
+                extra = c * (2 * N - c - 1)
+            else:
+                # count paths for group to anything
+                # (use 2 if v not in group to shorten reachables)
+                reachables = ((u, v) for u in group for v in D[u] if v != u)
+                extra = sum((1 if v in group else 2) for u, v in reachables)
+
+            GBC_group -= extra
 
         # normalized
         if normalized:
-            scale = 1 / ((v - c) * (v - c - 1))
+            N_out = N - c
+            scale = 1 / (N_out * (N_out - 1))
             GBC_group *= scale
 
         # If undirected than count only the undirected edges

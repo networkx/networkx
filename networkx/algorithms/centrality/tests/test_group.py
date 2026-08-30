@@ -92,6 +92,22 @@ class TestGroupBetweennessCentrality:
         b_answer = 0.0
         assert b == b_answer
 
+    def test_group_betweenness_many_groups_directed_graph(self):
+        """
+        Group betweenness centrality with directed graph over many groups.
+        Also checks that singleton groups equal regular betweenness values.
+        """
+        G = nx.path_graph(5, create_using=nx.DiGraph)
+        G.remove_edge(0, 1)
+
+        bc = nx.betweenness_centrality(G, normalized=False)
+        gbc_singletons = [0, 0, 2, 2, 0]
+        assert list(bc.values()) == gbc_singletons
+
+        many_groups = [[node] for node in G]
+        results = nx.group_betweenness_centrality(G, many_groups, normalized=False)
+        assert results == gbc_singletons
+
     def test_group_betweenness_node_not_in_graph(self):
         """
         Node(s) in C not in graph, raises NodeNotFound exception
@@ -115,6 +131,25 @@ class TestGroupBetweennessCentrality:
         b = nx.group_betweenness_centrality(G, C, weight="weight", normalized=False)
         b_answer = 5.0
         assert b == b_answer
+
+    def test_group_betweenness_disconnected_directed_graph(self):
+        """
+        GBC check of disconnected directed graph (from gh-8666 comment)
+        """
+        # unweighted version
+        G = nx.DiGraph([(1, 0), (1, 5), (2, 0), (2, 3), (3, 2), (5, 3)])
+        G.add_node(4)
+        C = [3, 4, 2]
+        assert 1 == nx.group_betweenness_centrality(G, C, normalized=False)
+
+        # weighted version
+        G = nx.DiGraph()
+        G.add_node(4)
+        G.add_weighted_edges_from(
+            [(1, 0, 2), (1, 5, 4), (2, 0, 1), (2, 3, 5), (3, 2, 2), (5, 3, 3)]
+        )
+        ans = nx.group_betweenness_centrality(G, C, weight="weight", normalized=False)
+        assert ans == 1
 
     def test_group_betweenness_no_paths_through_group(self):
         """
