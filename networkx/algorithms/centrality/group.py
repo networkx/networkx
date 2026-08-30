@@ -134,33 +134,47 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
         GBC_group = 0
         sigma_m = deepcopy(sigma)
         PB_m = deepcopy(PB)
-        sigma_m_v = deepcopy(sigma_m)
-        PB_m_v = deepcopy(PB_m)
         for v in group:
-            GBC_group += PB_m[v][v]
-            for x in group:
-                for y in group:
-                    dxvy = 0
-                    dxyv = 0
-                    dvxy = 0
-                    if not (
-                        sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[v][y] == 0
-                    ):
-                        if D[x][v] == D[x][y] + D[y][v]:
-                            dxyv = sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
-                        if D[x][y] == D[x][v] + D[v][y]:
-                            dxvy = sigma_m[x][v] * sigma_m[v][y] / sigma_m[x][y]
-                        if D[v][y] == D[v][x] + D[x][y]:
-                            dvxy = sigma_m[v][x] * sigma_m[x][y] / sigma_m[v][y]
-                    sigma_m_v[x][y] = sigma_m[x][y] * (1 - dxvy)
-                    PB_m_v[x][y] = PB_m[x][y] - PB_m[x][y] * dxvy
-                    if y != v:
-                        PB_m_v[x][y] -= PB_m[x][v] * dxyv
-                    if x != v:
-                        PB_m_v[x][y] -= PB_m[v][y] * dvxy
-            sigma_m, sigma_m_v = sigma_m_v, sigma_m
-            PB_m, PB_m_v = PB_m_v, PB_m
+            # store lookups and set
+            Dv = D[v]
+            PB_v = PB_m[v]
+            sig_v = sigma_m[v]
+            group_in_Dv = group & Dv.keys()
 
+            GBC_group += PB_m[v][v]
+            for x in group_in_Dv:
+                # store lookups
+                Dx = D[x]
+                PB_x = PB_m[x]
+                sig_x = sigma_m[x]
+                sig_xv = sig_x[v]
+                sig_vx = sig_v[x]
+
+                # ensure y is in Dx otherwise v is not in path with x and y
+                for y in group_in_Dv & Dx.keys():
+                    # store lookups
+                    Dy = D[y]
+                    sig_y = sigma_m[y]
+                    sig_xy = sig_x[y]
+                    sig_vy = sig_v[y]
+
+                    # Order x-y-v
+                    if Dx[v] == Dx[y] + Dy[v] and sig_xv:
+                        if y != v:
+                            PB_x[y] -= PB_x[v] * sig_xy * sig_y[v] / sig_xv
+                    # Order v-x-y
+                    if Dv[y] == Dv[x] + Dx[y] and sig_vy:
+                        if x != v:
+                            # fraction of v->y paths that pass through x
+                            PB_x[y] -= PB_v[y] * sig_vx * sig_xy / sig_vy
+                    # order x-v-y
+                    if Dx[y] == Dx[v] + Dv[y] and sig_xy:
+                        sig_xvy = sig_xv * sig_vy
+                        PB_x[y] *= 1 - sig_xvy / sig_xy
+                        sig_x[y] -= sig_xvy
+                        if y == v:
+                            # update sig_xv for future y-values
+                            sig_xv -= sig_xvy
         # endpoints
         N, c = len(G), len(group)
         if not endpoints:
