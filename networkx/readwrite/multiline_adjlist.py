@@ -365,43 +365,54 @@ def read_multiline_adjlist(
 
     Returns
     -------
-    G: NetworkX graph
+    G : NetworkX graph
 
     Examples
     --------
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
+
     >>> G = nx.path_graph(4)
-    >>> nx.write_multiline_adjlist(G, "test.multi_adjlistP4")
-    >>> G = nx.read_multiline_adjlist("test.multi_adjlistP4")
+    >>> fpath = tmp_path / "test.multi_adjlistP4"
+    >>> nx.write_multiline_adjlist(G, fpath)
+    >>> H = nx.read_multiline_adjlist(fpath)
+
+    Data read from the file are interpreted as strings by default, regardless of
+    the node type of the original graph.
+
+    >>> G.edges
+    EdgeView([(0, 1), (1, 2), (2, 3)])
+    >>> H.edges
+    EdgeView([('0', '1'), ('1', '2'), ('2', '3')])
+
+    The node data can be converted to a specific type with the `nodetype`
+    parameter.
+
+    >>> H = nx.read_multiline_adjlist(fpath, nodetype=int)
+    >>> H.edges
+    EdgeView([(0, 1), (1, 2), (2, 3)])
+    >>> nx.utils.edges_equal(G.edges, H.edges)
+    True
+
+    Since nodes must be hashable, the function `nodetype` must return hashable
+    types (e.g. int, float, str, frozenset - or tuples of those, etc.)
+
+    The optional `create_using` parameter indicates the type of NetworkX graph
+    created. The default is ``nx.Graph``, an undirected graph. To read the data
+    as a directed graph use:
+
+    >>> H = nx.read_multiline_adjlist(fpath, create_using=nx.DiGraph)
+    >>> H.is_directed()
+    True
 
     The path can be a file or a string with the name of the file. If a
-    file s provided, it has to be opened in 'rb' mode.
+    file is provided, it has to be opened in 'rb' mode.
 
-    >>> fh = open("test.multi_adjlistP4", "rb")
-    >>> G = nx.read_multiline_adjlist(fh)
-
-    Filenames ending in .gz or .bz2 will be compressed.
-
-    >>> nx.write_multiline_adjlist(G, "test.multi_adjlistP4.gz")
-    >>> G = nx.read_multiline_adjlist("test.multi_adjlistP4.gz")
-
-    The optional nodetype is a function to convert node strings to nodetype.
-
-    For example
-
-    >>> G = nx.read_multiline_adjlist("test.multi_adjlistP4", nodetype=int)
-
-    will attempt to convert all nodes to integer type.
-
-    The optional edgetype is a function to convert edge data strings to
-    edgetype.
-
-    >>> G = nx.read_multiline_adjlist("test.multi_adjlistP4")
-
-    The optional create_using parameter is a NetworkX graph container.
-    The default is Graph(), an undirected graph.  To read the data as
-    a directed graph use
-
-    >>> G = nx.read_multiline_adjlist("test.multi_adjlistP4", create_using=nx.DiGraph)
+    >>> with open(fpath, "rb") as fh:
+    ...     H = nx.read_multiline_adjlist(fh, nodetype=int)
+    >>> H.edges
+    EdgeView([(0, 1), (1, 2), (2, 3)])
 
     Notes
     -----
