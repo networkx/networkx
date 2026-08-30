@@ -355,34 +355,65 @@ def read_edgelist(
 
     Examples
     --------
-    >>> from networkx.algorithms import bipartite
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
+
+    >>> fpath = tmp_path / "test.edgelist"
     >>> G = nx.path_graph(4)
     >>> G.add_nodes_from([0, 2], bipartite=0)
     >>> G.add_nodes_from([1, 3], bipartite=1)
-    >>> bipartite.write_edgelist(G, "test.edgelist")
-    >>> G = bipartite.read_edgelist("test.edgelist")
+    >>> nx.bipartite.write_edgelist(G, fpath)
 
-    >>> fh = open("test.edgelist", "rb")
-    >>> G = bipartite.read_edgelist(fh)
-    >>> fh.close()
+    >>> H = nx.bipartite.read_edgelist(fpath)
+    >>> H.nodes(data="bipartite")
+    NodeDataView({'0': 0, '1': 1, '2': 0, '3': 1}, data='bipartite')
+    >>> H.edges
+    EdgeView([('0', '1'), ('1', '2'), ('2', '3')])
 
-    >>> G = bipartite.read_edgelist("test.edgelist", nodetype=int)
+    Nodes read from the file are interpreted as strings by default. The `nodetype`
+    parameter can be used to convert the nodes to another type:
 
-    Edgelist with data in a list:
+    >>> H = nx.bipartite.read_edgelist(fpath, nodetype=int)
+    >>> H.edges
+    EdgeView([(0, 1), (1, 2), (2, 3)])
 
-    >>> textline = "1 2 3"
-    >>> fh = open("test.edgelist", "w")
-    >>> d = fh.write(textline)
-    >>> fh.close()
-    >>> G = bipartite.read_edgelist(
-    ...     "test.edgelist", nodetype=int, data=(("weight", float),)
+    The optional `create_using` parameter indicates the type of NetworkX graph
+    created. By default an undirected ``nx.Graph`` is returned. To read the data
+    as a directed graph use:
+
+    >>> H = nx.bipartite.read_edgelist(fpath, create_using=nx.DiGraph)
+    >>> H.is_directed()
+    True
+
+    By default, edge data is expected to be stored in a serialized dict-like
+    format keyed by attribute name:
+
+    >>> fpath = tmp_path / "test_edgelist.data"
+    >>> with open(fpath, "w") as fh:
+    ...     _ = fh.write("1 2 {'weight': 3}")
+
+    >>> G = nx.bipartite.read_edgelist(fpath, nodetype=int)
+    >>> G.nodes(data="bipartite")
+    NodeDataView({1: 0, 2: 1}, data='bipartite')
+    >>> G.edges(data=True)
+    EdgeDataView([(1, 2, {'weight': 3})])
+
+    Alternatively, edge data stored as a flat list without keys can be parsed
+    by passing in the attribute name and data type via `data`:
+
+    >>> textline = "1 2 red 10"
+    >>> fpath = tmp_path / "test_edgelist.multidata"
+    >>> with open(fpath, "w") as fh:  # Create a file with multi edge data attrs
+    ...     _ = fh.write(textline)
+
+    >>> G = nx.bipartite.read_edgelist(
+    ...     fpath, nodetype=int, data=[("color", str), ("weight", float)]
     ... )
-    >>> list(G)
-    [1, 2]
-    >>> list(G.edges(data=True))
-    [(1, 2, {'weight': 3.0})]
-
-    See parse_edgelist() for more examples of formatting.
+    >>> G.nodes(data="bipartite")
+    NodeDataView({1: 0, 2: 1}, data='bipartite')
+    >>> G.edges(data=True)
+    EdgeDataView([(1, 2, {'color': 'red', 'weight': 10.0})])
 
     See Also
     --------
