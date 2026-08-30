@@ -116,7 +116,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     """
     GBC = []  # initialize betweenness
     list_of_groups = True
-    #  check weather C contains one or many groups
+    # check whether C contains one or many groups
     if any(el in G for el in C):
         C = [C]
         list_of_groups = False
@@ -124,51 +124,55 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     if set_v - G.nodes:  # element(s) of C not in G
         raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are in C but not in G.")
 
-    # pre-processing
+    # pre-process dict-of-dicts: path btwn(PB), short path counts(sigma), distances(D)
     PB, sigma, D = _group_preprocessing(G, set_v, weight)
 
-    # the algorithm for each group
+    # Run the algorithm for each group
     for group in C:
         group = set(group)  # set of nodes in group
-        # initialize the matrices of the sigma and the PB
+        # initialize the matrices sigma_m and PB_m (path betweenness)
         GBC_group = 0
         sigma_m = deepcopy(sigma)
         PB_m = deepcopy(PB)
         for v in group:
-            # store lookups and set
+            # main point of this whole loop!
+            GBC_group += PB_m[v][v]
+
+            # store lookups
             Dv = D[v]
             PB_v = PB_m[v]
             sig_v = sigma_m[v]
-            group_in_Dv = group & Dv.keys()
 
-            GBC_group += PB_m[v][v]
-            for x in group_in_Dv:
-                # store lookups
+            for x in group:
+                # store lookups and set
                 Dx = D[x]
                 PB_x = PB_m[x]
                 sig_x = sigma_m[x]
                 sig_xv = sig_x[v]
                 sig_vx = sig_v[x]
+                x_in_Dv = x in Dv
+                v_in_Dx = v in Dx
 
-                # ensure y is in Dx otherwise v is not in path with x and y
-                for y in group_in_Dv & Dx.keys():
+                # ensure y is in Dx otherwise all 3 Orders will not occur
+                for y in group & Dx.keys():
                     # store lookups
                     Dy = D[y]
-                    sig_y = sigma_m[y]
                     sig_xy = sig_x[y]
                     sig_vy = sig_v[y]
+                    v_in_Dy = v in Dy
+                    y_in_Dv = y in Dv
 
-                    # Order x-y-v
-                    if Dx[v] == Dx[y] + Dy[v] and sig_xv:
+                    # Order x-y-v  If v_in_Dy then v_in_Dx for sure.
+                    if v_in_Dy and Dx[v] == Dx[y] + Dy[v] and sig_xv:
                         if y != v:
-                            PB_x[y] -= PB_x[v] * sig_xy * sig_y[v] / sig_xv
-                    # Order v-x-y
-                    if Dv[y] == Dv[x] + Dx[y] and sig_vy:
+                            PB_x[y] -= PB_x[v] * sig_xy * sigma_m[y][v] / sig_xv
+                    # Order v-x-y  If x_in_Dv then y_in_Dv for sure.
+                    if x_in_Dv and Dv[y] == Dv[x] + Dx[y] and sig_vy:
                         if x != v:
                             # fraction of v->y paths that pass through x
                             PB_x[y] -= PB_v[y] * sig_vx * sig_xy / sig_vy
                     # order x-v-y
-                    if Dx[y] == Dx[v] + Dv[y] and sig_xy:
+                    if v_in_Dx and y_in_Dv and Dx[y] == Dx[v] + Dv[y] and sig_xy:
                         sig_xvy = sig_xv * sig_vy
                         PB_x[y] *= 1 - sig_xvy / sig_xy
                         sig_x[y] -= sig_xvy
