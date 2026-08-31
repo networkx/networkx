@@ -157,6 +157,11 @@ class TestGeneratorsSmall:
         assert G.number_of_edges() == 10
         assert sorted(d for n, d in G.degree()) == [1, 2, 2, 2, 3, 3, 3, 4]
 
+        G = nx.shrikhande_graph()
+        assert sorted(G) == [(u, v) for u in range(4) for v in range(4)]
+        assert G.number_of_edges() == 48
+        assert [d for n, d in G.degree()] == 16 * [6]
+
         G = nx.tetrahedral_graph()
         assert sorted(G) == list(range(4))
         assert G.number_of_edges() == 6

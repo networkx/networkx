@@ -24,6 +24,7 @@ __all__ = [
     "pappus_graph",
     "petersen_graph",
     "sedgewick_maze_graph",
+    "shrikhande_graph",
     "tetrahedral_graph",
     "truncated_cube_graph",
     "truncated_tetrahedron_graph",
@@ -868,6 +869,57 @@ def sedgewick_maze_graph(create_using=None):
     G.add_edges_from([[3, 4], [3, 5]])
     G.add_edges_from([[4, 5], [4, 7], [4, 6]])
     G.name = "Sedgewick Maze"
+    return G
+
+
+@_raise_on_directed
+@nx._dispatchable(graphs=None, returns_graph=True)
+def shrikhande_graph(create_using=None):
+    r"""
+    Returns the Shrikhane Graph.
+
+    The Shrikhande graph has 16 nodes and 48 edges.
+    This graph can be constructed as a Cayley graph [1]_.
+    The vertex set is $\mathbb{Z}_4 \times \mathbb{Z}_4$.
+    Two vertices are adjacent if and only if the difference is in
+    $\{\pm(1, 0), \pm(0, 1), \pm(1, 1)\}$.
+
+    Parameters
+    ----------
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        Shrikhande Graph with 16 nodes and 48 edges
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Shrikhande_graph
+    """
+    G = nx.from_dict_of_lists(
+        {
+            (0, 0): [(0, 1), (3, 0), (3, 3), (1, 0), (1, 1), (0, 3)],
+            (0, 1): [(0, 0), (0, 2), (3, 1), (3, 0), (1, 1), (1, 2)],
+            (3, 0): [(0, 0), (0, 1), (2, 0), (2, 3), (3, 1), (3, 3)],
+            (3, 3): [(0, 0), (3, 0), (0, 3), (2, 2), (2, 3), (3, 2)],
+            (1, 0): [(0, 0), (0, 3), (1, 1), (2, 0), (2, 1), (1, 3)],
+            (1, 1): [(0, 0), (0, 1), (1, 0), (1, 2), (2, 1), (2, 2)],
+            (0, 3): [(0, 0), (3, 3), (1, 0), (0, 2), (3, 2), (1, 3)],
+            (0, 2): [(0, 1), (0, 3), (3, 2), (3, 1), (1, 2), (1, 3)],
+            (3, 1): [(0, 1), (3, 0), (0, 2), (2, 0), (2, 1), (3, 2)],
+            (1, 2): [(0, 1), (1, 1), (0, 2), (1, 3), (2, 2), (2, 3)],
+            (2, 0): [(3, 0), (1, 0), (3, 1), (1, 3), (2, 1), (2, 3)],
+            (2, 3): [(3, 0), (3, 3), (1, 2), (1, 3), (2, 0), (2, 2)],
+            (2, 2): [(3, 3), (1, 1), (1, 2), (3, 2), (2, 1), (2, 3)],
+            (3, 2): [(3, 3), (0, 3), (0, 2), (3, 1), (2, 1), (2, 2)],
+            (2, 1): [(1, 0), (1, 1), (3, 1), (3, 2), (2, 0), (2, 2)],
+            (1, 3): [(1, 0), (0, 3), (0, 2), (1, 2), (2, 3), (2, 0)],
+        },
+        create_using=create_using,
+    )
+    G.name = "Shrikhande Graph"
     return G
 
 
