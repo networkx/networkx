@@ -168,13 +168,17 @@ def read_pajek(path, encoding="UTF-8"):
     >>> import tempfile
     >>> tmp_path = Path(tempfile.gettempdir())
 
-    >>> G = nx.path_graph(4)
-    >>> nx.write_pajek(G, "test.net")
-    >>> G = nx.read_pajek("test.net")
+    >>> fpath = tmp_path / "test.net"
+    >>> nx.write_pajek(nx.path_graph(4), fpath)
+    >>> G = nx.read_pajek(fpath)
+    >>> G.edges
+    MultiEdgeView([('0', '1', 0), ('1', '2', 0), ('2', '3', 0)])
 
     To create a Graph instead of a MultiGraph use
 
     >>> G1 = nx.Graph(G)
+    >>> G1.edges
+    EdgeView([('0', '1'), ('1', '2'), ('2', '3')])
 
     References
     ----------
