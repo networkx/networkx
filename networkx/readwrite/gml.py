@@ -161,19 +161,24 @@ def read_gml(path, label="label", destringizer=None):
 
     Examples
     --------
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
+
     >>> G = nx.path_graph(4)
-    >>> nx.write_gml(G, "test_path4.gml")
+    >>> fpath = tmp_path / "test_path4.gml"
+    >>> nx.write_gml(G, fpath)
 
     GML values are interpreted as strings by default:
 
-    >>> H = nx.read_gml("test_path4.gml")
+    >>> H = nx.read_gml(fpath)
     >>> H.nodes
     NodeView(('0', '1', '2', '3'))
 
     When a `destringizer` is provided, GML values are converted to the provided type.
     For example, integer nodes can be recovered as shown below:
 
-    >>> J = nx.read_gml("test_path4.gml", destringizer=int)
+    >>> J = nx.read_gml(fpath, destringizer=int)
     >>> J.nodes
     NodeView((0, 1, 2, 3))
 
