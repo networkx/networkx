@@ -128,6 +128,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="The p2g module"
     )
+    # NOTE: pydot is a common source of deprecation warnings from its underlying
+    # dependencies - notably pyparsing. Filter these warnings out.
+    warnings.filterwarnings("ignore", category=DeprecationWarning, module="pydot")
 
 
 @pytest.fixture(autouse=True)
