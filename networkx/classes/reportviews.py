@@ -191,6 +191,7 @@ Performance & pitfalls
   the precomputed degrees using ``degrees = dict(G.degree)``.
 """
 
+import weakref
 from abc import ABC
 from collections.abc import Mapping, Set
 
@@ -525,6 +526,31 @@ class DiDegreeView:
     >>> DVnbunch = G.degree(nbunch=(1, 2))
     >>> assert len(list(DVnbunch)) == 2  # iteration over nbunch only
     """
+
+    # See ``OutEdgeView._graph``: the graph is held weakly so that caching
+    # this view on the graph does not create a reference cycle.
+    @property
+    def _graph(self):
+        G = self._graph_ref()
+        if G is None:
+            raise ReferenceError(
+                "the graph this view was created from no longer exists"
+            )
+        return G
+
+    @_graph.setter
+    def _graph(self, G):
+        self._graph_ref = weakref.ref(G)
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["_graph_ref"]
+        state["_graph"] = self._graph  # a strong reference in the pickle
+        return state
+
+    def __setstate__(self, state):
+        self._graph = state.pop("_graph")  # rebuilds the weak reference
+        self.__dict__.update(state)
 
     def __init__(self, G, nbunch=None, weight=None):
         self._graph = G
@@ -1149,7 +1175,25 @@ class InMultiEdgeDataView(OutMultiEdgeDataView):
 class OutEdgeView(Set, Mapping, EdgeViewABC):
     """A EdgeView class for outward edges of a DiGraph"""
 
-    __slots__ = ("_adjdict", "_graph", "_nodes_nbrs")
+    __slots__ = ("_adjdict", "_graph_ref", "_nodes_nbrs")
+
+    # The graph caches this view (``G.edges`` is a ``cached_property``), so a
+    # strong ``_graph`` back-reference would make every graph whose views were
+    # ever read reclaimable only by the cyclic garbage collector. Hold the
+    # graph weakly instead: iteration and lookup only need ``_adjdict``, and
+    # the few paths that need the graph itself go through this property.
+    @property
+    def _graph(self):
+        G = self._graph_ref()
+        if G is None:
+            raise ReferenceError(
+                "the graph this view was created from no longer exists"
+            )
+        return G
+
+    @_graph.setter
+    def _graph(self, G):
+        self._graph_ref = weakref.ref(G)
 
     def __getstate__(self):
         return {"_graph": self._graph, "_adjdict": self._adjdict}
