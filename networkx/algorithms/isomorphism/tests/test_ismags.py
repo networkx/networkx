@@ -634,6 +634,41 @@ class TestLargestCommonSubgraph:
         assert ismags._sgn_partition == [{1}, {0}, {2}]
         assert ismags._gn_partition == [{5}, set(), set(), {2}]
 
+    def test_no_common_colors(self):
+        # gh-8885: when no subgraph node shares a color with any graph node,
+        # largest_common_subgraph used to raise ValueError from an empty
+        # min() call instead of reporting that no common subgraph exists.
+        graph = nx.Graph()
+        graph.add_node(0)
+
+        subgraph = nx.Graph()
+        subgraph.add_node(0, attr1=0)
+
+        nodematch = nx.isomorphism.categorical_node_match(["attr1"], [None])
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        assert ismags.N_node_colors == 0
+
+        assert list(ismags.largest_common_subgraph(symmetry=True)) == []
+        assert list(ismags.largest_common_subgraph(symmetry=False)) == []
+
+    def test_no_common_colors_multi_node(self):
+        # Same as test_no_common_colors, but with several nodes on each side
+        # to make sure the guard covers non-trivial to_be_mapped sets too.
+        graph = nx.Graph([(0, 1), (1, 2)])
+        for n in graph:
+            graph.nodes[n]["attr1"] = "g"
+
+        subgraph = nx.Graph([(0, 1), (1, 2)])
+        for n in subgraph:
+            subgraph.nodes[n]["attr1"] = "sg"
+
+        nodematch = nx.isomorphism.categorical_node_match(["attr1"], [None])
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        assert ismags.N_node_colors == 0
+
+        assert list(ismags.largest_common_subgraph(symmetry=True)) == []
+        assert list(ismags.largest_common_subgraph(symmetry=False)) == []
+
 
 def is_isomorphic(G, SG, edge_match=None, node_match=None):
     return iso.ISMAGS(G, SG, node_match, edge_match).is_isomorphic()
