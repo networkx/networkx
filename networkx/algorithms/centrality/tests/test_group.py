@@ -20,6 +20,15 @@ class TestGroupBetweennessCentrality:
         b_answer = 3.0
         assert b == b_answer
 
+    def test_group_betweenness_guard_against_keyerror(self):
+        """
+        Check for KeyErrors in D[u][v] inside group_betweenness_centrality
+        """
+        G = nx.path_graph(6, create_using=nx.DiGraph)
+        # y_in_Dx is enforced by the loop bounds. (KeyError if not enforced)
+        # Also checks v_in_Dy, y_in_Dv, x_in_Dv and v_in_Dx. Note: do not need x_in_Dy
+        assert 2 == nx.group_betweenness_centrality(G, [2, 3, 4], normalized=False)
+
     def test_group_betweenness_with_endpoints(self):
         """
         Group betweenness centrality for single node group
@@ -65,6 +74,22 @@ class TestGroupBetweennessCentrality:
         b_answer = 0.0
         assert b == b_answer
 
+    def test_group_betweenness_many_groups(self):
+        """
+        Group betweenness centrality with single graph over many groups.
+        Also checks that singleton groups equal regular betweenness values.
+        """
+        G = nx.path_graph(5)
+        G.remove_edge(0, 1)
+
+        bc = nx.betweenness_centrality(G, normalized=False)
+        gbc_singletons = [0, 0, 2, 2, 0]
+        assert list(bc.values()) == gbc_singletons
+
+        many_groups = [[node] for node in G]
+        results = nx.group_betweenness_centrality(G, many_groups, normalized=False)
+        assert results == gbc_singletons
+
     def test_group_betweenness_disconnected_graph(self):
         """
         Group betweenness centrality in a disconnected graph
@@ -75,6 +100,22 @@ class TestGroupBetweennessCentrality:
         b = nx.group_betweenness_centrality(G, C, weight=None, normalized=False)
         b_answer = 0.0
         assert b == b_answer
+
+    def test_group_betweenness_many_groups_directed_graph(self):
+        """
+        Group betweenness centrality with directed graph over many groups.
+        Also checks that singleton groups equal regular betweenness values.
+        """
+        G = nx.path_graph(5, create_using=nx.DiGraph)
+        G.remove_edge(0, 1)
+
+        bc = nx.betweenness_centrality(G, normalized=False)
+        gbc_singletons = [0, 0, 2, 2, 0]
+        assert list(bc.values()) == gbc_singletons
+
+        many_groups = [[node] for node in G]
+        results = nx.group_betweenness_centrality(G, many_groups, normalized=False)
+        assert results == gbc_singletons
 
     def test_group_betweenness_node_not_in_graph(self):
         """
@@ -99,6 +140,66 @@ class TestGroupBetweennessCentrality:
         b = nx.group_betweenness_centrality(G, C, weight="weight", normalized=False)
         b_answer = 5.0
         assert b == b_answer
+
+    def test_group_betweenness_disconnected_directed_graph(self):
+        """
+        GBC check of disconnected directed graph (from gh-8666 comment)
+        """
+        # unweighted version
+        G = nx.DiGraph([(1, 0), (1, 5), (2, 0), (2, 3), (3, 2), (5, 3)])
+        G.add_node(4)
+        C = [3, 4, 2]
+        assert 1 == nx.group_betweenness_centrality(G, C, normalized=False)
+
+        # weighted version
+        G = nx.DiGraph()
+        G.add_node(4)
+        G.add_weighted_edges_from(
+            [(1, 0, 2), (1, 5, 4), (2, 0, 1), (2, 3, 5), (3, 2, 2), (5, 3, 3)]
+        )
+        ans = nx.group_betweenness_centrality(G, C, weight="weight", normalized=False)
+        assert ans == 1
+
+    def test_group_betweenness_no_paths_through_group(self):
+        """
+        GBC sanity check when no paths pass through group (regression test for gh-8827)
+        """
+        # The non-group nodes 3, 4 and 5 have no shortest path between them that also
+        # has an interior node in C, so the group betweenness is 0.
+        G = nx.Graph([(0, 1), (0, 2), (0, 3), (0, 4), (1, 3), (2, 3), (3, 4), (4, 5)])
+        assert 0 == nx.group_betweenness_centrality(G, [0, 1, 2], normalized=False)
+
+    def test_group_betweenness_directed_ground_truth(self):
+        """
+        GBC check against exhaustive counting for directed graph (see gh-8827)
+        """
+        G = nx.DiGraph(
+            [
+                (0, 6),
+                (1, 3),
+                (1, 6),
+                (2, 5),
+                (2, 6),
+                (2, 7),
+                (3, 1),
+                (3, 4),
+                (4, 0),
+                (4, 2),
+                (4, 5),
+                (4, 7),
+                (5, 1),
+                (5, 7),
+                (6, 0),
+                (6, 1),
+                (6, 7),
+                (7, 2),
+                (7, 4),
+                (7, 6),
+            ]
+        )
+
+        b = nx.group_betweenness_centrality(G, [1, 2, 3], normalized=False)
+        assert b == pytest.approx(8 / 3)
 
 
 class TestProminentGroup:

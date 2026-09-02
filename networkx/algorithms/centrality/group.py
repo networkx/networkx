@@ -116,7 +116,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     """
     GBC = []  # initialize betweenness
     list_of_groups = True
-    #  check weather C contains one or many groups
+    # check whether C contains one or many groups
     if any(el in G for el in C):
         C = [C]
         list_of_groups = False
@@ -124,68 +124,88 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     if set_v - G.nodes:  # element(s) of C not in G
         raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are in C but not in G.")
 
-    # pre-processing
+    # pre-process dict-of-dicts: path btwn(PB), short path counts(sigma), distances(D)
     PB, sigma, D = _group_preprocessing(G, set_v, weight)
 
-    # the algorithm for each group
+    # Run the algorithm for each group
     for group in C:
         group = set(group)  # set of nodes in group
-        # initialize the matrices of the sigma and the PB
+        # initialize the matrices sigma_m and PB_m (path betweenness)
         GBC_group = 0
         sigma_m = deepcopy(sigma)
         PB_m = deepcopy(PB)
-        sigma_m_v = deepcopy(sigma_m)
-        PB_m_v = deepcopy(PB_m)
         for v in group:
+            # main point of this whole loop!
             GBC_group += PB_m[v][v]
-            for x in group:
-                for y in group:
-                    dxvy = 0
-                    dxyv = 0
-                    dvxy = 0
-                    if not (
-                        sigma_m[x][y] == 0 or sigma_m[x][v] == 0 or sigma_m[v][y] == 0
-                    ):
-                        if D[x][v] == D[x][y] + D[y][v]:
-                            dxyv = sigma_m[x][y] * sigma_m[y][v] / sigma_m[x][v]
-                        if D[x][y] == D[x][v] + D[v][y]:
-                            dxvy = sigma_m[x][v] * sigma_m[v][y] / sigma_m[x][y]
-                        if D[v][y] == D[v][x] + D[x][y]:
-                            dvxy = sigma_m[v][x] * sigma[x][y] / sigma[v][y]
-                    sigma_m_v[x][y] = sigma_m[x][y] * (1 - dxvy)
-                    PB_m_v[x][y] = PB_m[x][y] - PB_m[x][y] * dxvy
-                    if y != v:
-                        PB_m_v[x][y] -= PB_m[x][v] * dxyv
-                    if x != v:
-                        PB_m_v[x][y] -= PB_m[v][y] * dvxy
-            sigma_m, sigma_m_v = sigma_m_v, sigma_m
-            PB_m, PB_m_v = PB_m_v, PB_m
 
+            # store lookups
+            Dv = D[v]
+            PB_v = PB_m[v]
+            sig_v = sigma_m[v]
+
+            for x in group:
+                # store lookups and set
+                Dx = D[x]
+                PB_x = PB_m[x]
+                sig_x = sigma_m[x]
+                sig_xv = sig_x[v]
+                sig_vx = sig_v[x]
+                x_in_Dv = x in Dv
+                v_in_Dx = v in Dx
+
+                # ensure y is in Dx otherwise all 3 Orders will not occur
+                for y in group & Dx.keys():
+                    # store lookups
+                    Dy = D[y]
+                    sig_xy = sig_x[y]
+                    sig_vy = sig_v[y]
+                    v_in_Dy = v in Dy
+                    y_in_Dv = y in Dv
+
+                    # Order x-y-v  If v_in_Dy then v_in_Dx for sure.
+                    if v_in_Dy and Dx[v] == Dx[y] + Dy[v] and sig_xv:
+                        if y != v:
+                            PB_x[y] -= PB_x[v] * sig_xy * sigma_m[y][v] / sig_xv
+                    # Order v-x-y  If x_in_Dv then y_in_Dv for sure.
+                    if x_in_Dv and Dv[y] == Dv[x] + Dx[y] and sig_vy:
+                        if x != v:
+                            # fraction of v->y paths that pass through x
+                            PB_x[y] -= PB_v[y] * sig_vx * sig_xy / sig_vy
+                    # order x-v-y
+                    if v_in_Dx and y_in_Dv and Dx[y] == Dx[v] + Dv[y] and sig_xy:
+                        sig_xvy = sig_xv * sig_vy
+                        PB_x[y] *= 1 - sig_xvy / sig_xy
+                        sig_x[y] -= sig_xvy
+                        if y == v:
+                            # update sig_xv for future y-values
+                            sig_xv -= sig_xvy
         # endpoints
-        v, c = len(G), len(group)
+        N, c = len(G), len(group)
         if not endpoints:
-            scale = 0
             # if the graph is connected then subtract the endpoints from
             # the count for all the nodes in the graph. else count how many
             # nodes are connected to the group's nodes and subtract that.
             if nx.is_directed(G):
                 if nx.is_strongly_connected(G):
-                    scale = c * (2 * v - c - 1)
+                    extra = c * (2 * N - c - 1)
+                else:
+                    # count paths for group to or from anything
+                    reachables = ((u, v) for u in G for v in D[u] if v != u)
+                    extra = sum(1 for u, v in reachables if (u in group or v in group))
             elif nx.is_connected(G):
-                scale = c * (2 * v - c - 1)
-            if scale == 0:
-                for group_node1 in group:
-                    for node in D[group_node1]:
-                        if node != group_node1:
-                            if node in group:
-                                scale += 1
-                            else:
-                                scale += 2
-            GBC_group -= scale
+                extra = c * (2 * N - c - 1)
+            else:
+                # count paths for group to anything
+                # (use 2 if v not in group to shorten reachables)
+                reachables = ((u, v) for u in group for v in D[u] if v != u)
+                extra = sum((1 if v in group else 2) for u, v in reachables)
+
+            GBC_group -= extra
 
         # normalized
         if normalized:
-            scale = 1 / ((v - c) * (v - c - 1))
+            N_out = N - c
+            scale = 1 / (N_out * (N_out - 1))
             GBC_group *= scale
 
         # If undirected than count only the undirected edges

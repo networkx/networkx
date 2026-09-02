@@ -1,9 +1,12 @@
+from functools import partial
+
 import pytest
 
 import networkx as nx
 from networkx.algorithms.link_analysis.hits_alg import (
     _hits_numpy,
     _hits_python,
+    _hits_svd,
 )
 
 np = pytest.importorskip("numpy")
@@ -38,7 +41,10 @@ class TestHITS:
         for n in G:
             assert a[n] == pytest.approx(G.a[n], abs=1e-4)
 
-    @pytest.mark.parametrize("hits_alg", (nx.hits, _hits_python))
+    @pytest.mark.parametrize(
+        "hits_alg",
+        (nx.hits, partial(nx.hits, method="svd"), _hits_python, _hits_svd),
+    )
     def test_hits(self, hits_alg):
         G = self.G
         h, a = hits_alg(G, tol=1.0e-08)
@@ -69,3 +75,14 @@ class TestHITS:
             nx.hits(G, max_iter=0)
         with pytest.raises(nx.PowerIterationFailedConvergence):
             nx.hits(G, max_iter=1)
+
+    @pytest.mark.parametrize("hits_alg", (nx.hits, _hits_python))
+    def test_hits_gh6289_star_graph(self, hits_alg):
+        G = nx.star_graph(9)
+        h, a = hits_alg(G)
+        assert all(v >= 0 for v in h.values())
+        assert all(v >= 0 for v in a.values())
+
+    def test_hits_invalid_method(self):
+        with pytest.raises(ValueError, match="method not supported"):
+            nx.hits(self.G, method="spam")
