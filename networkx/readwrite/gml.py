@@ -877,12 +877,44 @@ def write_gml(G, path, stringizer=None):
 
     Examples
     --------
-    >>> G = nx.path_graph(5)
-    >>> nx.write_gml(G, "test_path5.gml")
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
+
+    >>> fpath = tmp_path / "test_path3.gml"
+    >>> G = nx.path_graph(3)
+    >>> nx.write_gml(G, fpath)
+
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    graph [
+      node [
+        id 0
+        label "0"
+      ]
+      node [
+        id 1
+        label "1"
+      ]
+      node [
+        id 2
+        label "2"
+      ]
+      edge [
+        source 0
+        target 1
+      ]
+      edge [
+        source 1
+        target 2
+      ]
+    ]
+    <BLANKLINE>
 
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> nx.write_gml(G, "test_path5.gml.gz")
+    >>> fpath = tmp_path / "test_path5.gml.gz"
+    >>> nx.write_gml(G, fpath)
     """
     for line in generate_gml(G, stringizer):
         path.write((line + "\n").encode("ascii"))
