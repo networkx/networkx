@@ -28,6 +28,7 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
     'Programming Language :: Python :: 3.14',
+    'Programming Language :: Python :: 3.15',
     'Programming Language :: Python :: 3 :: Only',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Scientific/Engineering :: Bio-Informatics',
@@ -293,7 +294,7 @@ filterwarnings = ["error"]
 # ---- Pixi configuration ----
 
 [tool.pixi.workspace]
-channels = ["conda-forge"]
+channels = ["conda-forge/label/python_rc", "conda-forge"]
 platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 
 [tool.pixi.feature.nx.pypi-dependencies]
@@ -312,6 +313,12 @@ python = "3.14.*"
 
 [tool.pixi.feature.py314t.dependencies]
 python-freethreading = "3.14.*"
+
+[tool.pixi.feature.py315.dependencies]
+python = "3.15.*"
+
+[tool.pixi.feature.py315t.dependencies]
+python-freethreading = "3.15.*"
 
 # --- Dependency features ---
 # Most pypi-dependencies are auto-created from [project.optional-dependencies].
@@ -385,15 +392,19 @@ default = { features = ["nx", "test", "default", "py313"], solve-group = "py313"
 test-base-py313 = { features = ["nx", "test", "py313"], solve-group = "py313", no-default-feature = true }
 test-base-py314 = { features = ["nx", "test", "py314"], solve-group = "py314", no-default-feature = true }
 test-base-py314t = { features = ["nx", "test", "py314t"], solve-group = "py314t", no-default-feature = true }
+test-base-py315 = { features = ["nx", "test", "py315"], solve-group = "py315", no-default-feature = true }
+test-base-py315t = { features = ["nx", "test", "py315t"], solve-group = "py315t", no-default-feature = true }
 # Default test (with numpy/scipy/matplotlib/pandas)
 test-default-py312 = { features = ["nx", "test", "default", "py312"], solve-group = "py312", no-default-feature = true }
 test-default-py313 = { features = ["nx", "test", "default", "py313"], solve-group = "py313", no-default-feature = true }
 test-default-py314 = { features = ["nx", "test", "default", "py314"], solve-group = "py314", no-default-feature = true }
+test-default-py315 = { features = ["nx", "test", "default", "py315"], solve-group = "py315", no-default-feature = true }
 # Default without scipy
 test-default-no-scipy-py312 = { features = ["nx", "test", "default-no-scipy", "py312"], solve-group = "py312", no-default-feature = true }
 # Extra test
 test-extra-py312 = { features = ["nx", "test", "default", "extra", "py312"], solve-group = "py312", no-default-feature = true }
 test-extra-py313 = { features = ["nx", "test", "default", "extra", "py313"], solve-group = "py313", no-default-feature = true }
+test-extra-py314 = { features = ["nx", "test", "default", "extra", "py314"], solve-group = "py314", no-default-feature = true }
 # Single-purpose environments
 lint = { features = ["nx", "developer", "py313"], solve-group = "py313", no-default-feature = true }
 type-check = { features = ["nx", "developer", "py312"], solve-group = "py312", no-default-feature = true }
@@ -407,4 +418,5 @@ benchmark = { features = ["benchmarking", "py313"], solve-group = "py313", no-de
 prerelease-py312 = { features = ["nx", "prerelease", "py312"], solve-group = "py312", no-default-feature = true }
 prerelease-py313 = { features = ["nx", "prerelease", "py313"], solve-group = "py313", no-default-feature = true }
 prerelease-py314 = { features = ["nx", "prerelease", "py314"], solve-group = "py314", no-default-feature = true }
+prerelease-py315 = { features = ["nx", "prerelease", "py315"], solve-group = "py315", no-default-feature = true }
 test-randomly = { features = ["nx", "test", "default", "test-extras", "py313"], solve-group = "py313", no-default-feature = true }
