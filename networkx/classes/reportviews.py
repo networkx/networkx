@@ -223,6 +223,48 @@ __all__ = [
 ]
 
 
+def _dead_ref():
+    return None
+
+
+def _nbunch_iter(adj, nbunch=None):
+    """The body of ``Graph.nbunch_iter`` on an adjacency dict.
+
+    Views call this with the dict they hold so they never need the graph
+    object itself; ``Graph.nbunch_iter`` delegates here.
+    """
+    if nbunch is None:  # include all nodes via iterator
+        return iter(adj)
+    try:
+        single = nbunch in adj
+    except TypeError:
+        single = False
+    if single:  # if nbunch is a single node
+        return iter([nbunch])
+
+    def bunch_iter(nlist, adj):
+        try:
+            for n in nlist:
+                if n in adj:
+                    yield n
+        except TypeError as err:
+            exc, message = err, err.args[0]
+            # capture error for non-sequence/iterator nbunch.
+            if "iter" in message:
+                exc = nx.NetworkXError("nbunch is not a node or a sequence of nodes.")
+            # capture single nodes that are not in the graph.
+            if "object is not iterable" in message:
+                exc = nx.NetworkXError(f"Node {nbunch} is not in the graph.")
+            # capture error for unhashable node.
+            if "hashable" in message:
+                exc = nx.NetworkXError(
+                    f"Node {n} in sequence nbunch is not a valid node."
+                )
+            raise exc
+
+    return bunch_iter(nbunch, adj)
+
+
 # NodeViews
 class NodeView(Mapping, Set):
     """A NodeView class to act as G.nodes for a NetworkX Graph
@@ -540,12 +582,12 @@ class DiDegreeView:
 
     @_graph.setter
     def _graph(self, G):
-        self._graph_ref = weakref.ref(G)
+        self._graph_ref = weakref.ref(G) if G is not None else _dead_ref
 
     def __getstate__(self):
         state = self.__dict__.copy()
         del state["_graph_ref"]
-        state["_graph"] = self._graph  # a strong reference in the pickle
+        state["_graph"] = self._graph_ref()  # strong reference (or None) in the pickle
         return state
 
     def __setstate__(self, state):
@@ -556,22 +598,37 @@ class DiDegreeView:
         self._graph = G
         self._succ = G._succ if hasattr(G, "_succ") else G._adj
         self._pred = G._pred if hasattr(G, "_pred") else G._adj
-        self._nodes = self._succ if nbunch is None else list(G.nbunch_iter(nbunch))
+        self._nodes = (
+            self._succ if nbunch is None else list(_nbunch_iter(self._succ, nbunch))
+        )
         self._weight = weight
+
+    @classmethod
+    def _from_view(cls, view, nbunch, weight):
+        """A sibling view sharing ``view``'s dicts; needs no graph object."""
+        new = cls.__new__(cls)
+        new._graph_ref = view._graph_ref
+        new._succ = view._succ
+        new._pred = view._pred
+        new._nodes = (
+            new._succ if nbunch is None else list(_nbunch_iter(new._succ, nbunch))
+        )
+        new._weight = weight
+        return new
 
     def __call__(self, nbunch=None, weight=None):
         if nbunch is None:
             if weight == self._weight:
                 return self
-            return self.__class__(self._graph, None, weight)
+            return self._from_view(self, None, weight)
         try:
             if nbunch in self._nodes:
                 if weight == self._weight:
                     return self[nbunch]
-                return self.__class__(self._graph, None, weight)[nbunch]
+                return self._from_view(self, None, weight)[nbunch]
         except TypeError:
             pass
-        return self.__class__(self._graph, nbunch, weight)
+        return self._from_view(self, nbunch, weight)
 
     def __getitem__(self, n):
         weight = self._weight
@@ -908,7 +965,7 @@ class OutEdgeDataView(EdgeViewABC):
             self._nodes_nbrs = adjdict.items
         else:
             # dict retains order of nodes but acts like a set
-            nbunch = dict.fromkeys(viewer._graph.nbunch_iter(nbunch))
+            nbunch = dict.fromkeys(_nbunch_iter(adjdict, nbunch))
             self._nodes_nbrs = lambda: [(n, adjdict[n]) for n in nbunch]
         self._nbunch = nbunch
         self._data = data
@@ -1052,7 +1109,7 @@ class OutMultiEdgeDataView(OutEdgeDataView):
             self._nodes_nbrs = adjdict.items
         else:
             # dict retains order of nodes but acts like a set
-            nbunch = dict.fromkeys(viewer._graph.nbunch_iter(nbunch))
+            nbunch = dict.fromkeys(_nbunch_iter(adjdict, nbunch))
             self._nodes_nbrs = lambda: [(n, adjdict[n]) for n in nbunch]
         self._nbunch = nbunch
         self._data = data
@@ -1180,8 +1237,9 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
     # The graph caches this view (``G.edges`` is a ``cached_property``), so a
     # strong ``_graph`` back-reference would make every graph whose views were
     # ever read reclaimable only by the cyclic garbage collector. Hold the
-    # graph weakly instead: iteration and lookup only need ``_adjdict``, and
-    # the few paths that need the graph itself go through this property.
+    # graph weakly instead. Nothing in the view needs the graph object: it
+    # works from ``_adjdict`` alone, and ``_graph`` is kept only for pickling
+    # and for code that reaches through the view to its graph.
     @property
     def _graph(self):
         G = self._graph_ref()
@@ -1193,10 +1251,10 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
 
     @_graph.setter
     def _graph(self, G):
-        self._graph_ref = weakref.ref(G)
+        self._graph_ref = weakref.ref(G) if G is not None else _dead_ref
 
     def __getstate__(self):
-        return {"_graph": self._graph, "_adjdict": self._adjdict}
+        return {"_graph": self._graph_ref(), "_adjdict": self._adjdict}
 
     def __setstate__(self, state):
         self._graph = state["_graph"]

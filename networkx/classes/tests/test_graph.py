@@ -233,6 +233,25 @@ class BaseGraphTester:
         finally:
             gc.enable()
 
+    def test_views_of_temporary_graphs(self):
+        """A view stays usable when its graph was only a temporary.
+
+        In ``f().degree(weight=w)`` the graph is released as soon as
+        ``.degree`` returns, so the view must not need the graph object to
+        answer calls.
+        """
+        G = self.Graph([(0, 1), (1, 2)])
+        edges = [(0, 1), (1, 2)]
+        assert dict(self.Graph(edges).degree(weight="w")) == dict(G.degree(weight="w"))
+        assert dict(self.Graph(edges).degree([1])) == dict(G.degree([1]))
+        assert self.Graph(edges).degree(1, weight="w") == G.degree(1, weight="w")
+        assert list(self.Graph(edges).edges([1])) == list(G.edges([1]))
+        assert list(self.Graph(edges).edges(data=True, nbunch=[1])) == list(
+            G.edges(data=True, nbunch=[1])
+        )
+        assert dict(G.copy().degree(weight="w")) == dict(G.degree(weight="w"))
+        assert dict(G.subgraph([0, 1]).degree([0])) == {0: 1}
+
     def test_cached_views_survive_pickle_and_deepcopy(self):
         G = self.Graph()
         G.add_edge(0, 1)
