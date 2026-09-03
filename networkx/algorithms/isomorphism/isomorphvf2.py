@@ -316,6 +316,17 @@ class GraphMatcher:
         """Generator over isomorphisms between G1 and G2."""
         # Declare that we are looking for a graph-graph isomorphism.
         self.test = "graph"
+
+        # Check global properties
+        if self.G1.order() != self.G2.order():
+            return
+
+        # Check local properties
+        d1 = sorted(d for n, d in self.G1.degree)
+        d2 = sorted(d for n, d in self.G2.degree)
+        if d1 != d2:
+            return
+
         self.initialize()
         yield from self.match()
 
