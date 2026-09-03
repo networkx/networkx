@@ -1,3 +1,4 @@
+import copy
 import gc
 import pickle
 import platform
@@ -202,6 +203,72 @@ class BaseGraphTester:
         assert id(G.nodes) == id(old_nodes)
         G._node = {}
         assert id(G.nodes) != id(old_nodes)
+
+    def test_views_do_not_create_reference_cycles(self):
+        """Reading the cached views must not make the graph collector-only.
+
+        The views hold the graph weakly (see reportviews), so a graph whose
+        views have been read is still reclaimed by reference counting alone.
+        """
+        gc.disable()
+        try:
+            G = self.Graph()
+            G.add_edges_from([(0, 1), (1, 2)])
+            for name in (
+                "nodes",
+                "adj",
+                "edges",
+                "in_edges",
+                "out_edges",
+                "degree",
+                "in_degree",
+                "out_degree",
+            ):
+                getattr(G, name, None)
+            G.number_of_edges()  # size() reads self.degree
+            str(G)  # __str__ reads number_of_edges()
+            ref = weakref.ref(G)
+            del G
+            assert ref() is None
+        finally:
+            gc.enable()
+
+    def test_views_of_temporary_graphs(self):
+        """A view stays usable when its graph was only a temporary.
+
+        In ``f().degree(weight=w)`` the graph is released as soon as
+        ``.degree`` returns, so the view must not need the graph object to
+        answer calls.
+        """
+        G = self.Graph([(0, 1), (1, 2)])
+        edges = [(0, 1), (1, 2)]
+        assert dict(self.Graph(edges).degree(weight="w")) == dict(G.degree(weight="w"))
+        assert dict(self.Graph(edges).degree([1])) == dict(G.degree([1]))
+        assert self.Graph(edges).degree(1, weight="w") == G.degree(1, weight="w")
+        assert list(self.Graph(edges).edges([1])) == list(G.edges([1]))
+        assert list(self.Graph(edges).edges(data=True, nbunch=[1])) == list(
+            G.edges(data=True, nbunch=[1])
+        )
+        assert dict(G.copy().degree(weight="w")) == dict(G.degree(weight="w"))
+        assert dict(G.subgraph([0, 1]).degree([0])) == {0: 1}
+
+    def test_cached_views_survive_pickle_and_deepcopy(self):
+        G = self.Graph()
+        G.add_edge(0, 1)
+        _ = G.edges  # populate the caches before copying
+        _ = G.degree
+        D = copy.deepcopy(G)
+        assert D.edges._graph is D
+        assert D.degree._graph is D  # not G
+        D.add_edge(1, 2)
+        assert D.number_of_edges() == G.number_of_edges() + 1
+        assert D.degree(2) == 1
+        if "<locals>" in self.Graph.__qualname__:
+            pytest.skip("pickle cannot serialize a class defined in a function")
+        H = pickle.loads(pickle.dumps(G, -1))
+        assert H.edges._graph is H
+        assert H.degree._graph is H
+        assert graphs_equal(G, H)
 
     def test_attributes_cached(self):
         G = self.K3.copy()
