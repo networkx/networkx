@@ -100,9 +100,11 @@ class TestPajek:
 
         import warnings
 
-        with warnings.catch_warnings(record=True) as w:
+        with warnings.catch_warnings(
+            record=True, category=UserWarning, action="always"
+        ) as w:
             nx.write_pajek(G, fh)
-            assert len(w) == 4
+        assert len(w) == 4
 
     def test_noname(self):
         # Make sure we can parse a line such as:  *network
