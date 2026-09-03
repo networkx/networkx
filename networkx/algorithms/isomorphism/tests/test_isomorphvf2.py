@@ -62,11 +62,10 @@ class TestWikipediaExample:
         assert gm.subgraph_is_monomorphic()
         assert gm.subgraph_is_isomorphic()
 
-        mapping = list(gm.mapping.items())
         # this mapping is only one of the 48 possibilities
         all_mappings = list(gm.isomorphisms_iter())
         assert len(all_mappings) == numb_maps
-        assert dict(mapping) in all_mappings
+        assert gm.mapping in all_mappings
 
     @pytest.mark.parametrize("graph_class", [nx.Graph, nx.DiGraph])
     def test_subgraph(self, graph_class):
@@ -384,6 +383,26 @@ def test_isomorphism_iter2():
         gm = iso.GraphMatcher(g1, g1)
         s = len(list(gm.isomorphisms_iter()))
         assert s == 2 * L
+
+
+@pytest.mark.parametrize(
+    "is_directed, matcher", [(nx.Graph, iso.GraphMatcher), (nx.Graph, iso.GraphMatcher)]
+)
+def test_isomorphisms_iter3(is_directed, matcher):
+    # motivated by gh-8891 which reported subgraph isomorphisms
+    G1 = nx.empty_graph(2, create_using=is_directed)
+    G2 = nx.empty_graph(1, create_using=is_directed)
+    gm = matcher(G1, G2)
+
+    # Check: G1 is subgraph isomorphic to G2, but not isomorphic
+    assert not gm.is_isomorphic()
+    assert gm.subgraph_is_isomorphic()
+    assert gm.subgraph_is_monomorphic()
+
+    # check that morphism_iter matches is_morphic
+    assert not list(gm.isomorphisms_iter())
+    assert list(gm.subgraph_isomorphisms_iter())
+    assert list(gm.subgraph_monomorphisms_iter())
 
 
 def test_multiple():
