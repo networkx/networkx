@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        environment: [test-base-py313, test-base-py314, test-base-py314t]
+        environment: [test-base-py313, test-base-py314, test-base-py314t, test-base-py315, test-base-py315t]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -32,7 +32,7 @@ jobs:
       matrix:
         os: [ubuntu, macos, windows]
         environment:
-          [test-default-py312, test-default-py313, test-default-py314]
+          [test-default-py312, test-default-py313, test-default-py314, test-default-py315]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -76,7 +76,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        environment: [test-extra-py312, test-extra-py313]
+        environment: [test-extra-py312, test-extra-py313, test-extra-py314]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -92,7 +92,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos]
-        environment: [prerelease-py312, prerelease-py313, prerelease-py314]
+        environment: [prerelease-py312, prerelease-py313, prerelease-py314, prerelease-py315]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
