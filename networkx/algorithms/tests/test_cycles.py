@@ -980,3 +980,47 @@ class TestGirth:
     )
     def test_girth(self, G, expected):
         assert nx.girth(G) == expected
+
+
+class TestMinimumFeedbackEdgeSet:
+    def test_paper_figure_2(self):
+        G = nx.DiGraph(
+            [
+                (2, 1, {"weight": 4}),
+                (1, 5, {"weight": 5}),
+                (5, 2, {"weight": 6}),
+                (2, 4, {"weight": 5}),
+                (4, 5, {"weight": 7}),
+                (4, 3, {"weight": 2}),
+                (3, 2, {"weight": 6}),
+                # three triangles: 2-1-5, 2-4-5, 2-4-3
+            ]
+        )
+        assert nx.minimum_feedback_edge_set(G, weight="weight") == {(4, 3), (5, 2)}
+
+    def test_small_complete_graph(self):
+        G = nx.complete_graph(3, create_using=nx.DiGraph)
+        assert nx.minimum_feedback_edge_set(G)
+
+    def test_graph_type(self):
+        G1 = nx.complete_graph(10, create_using=nx.MultiDiGraph)
+        G2 = nx.MultiGraph(G1)
+        G3 = nx.DiGraph(G1)
+        G4 = nx.Graph(G1)
+        assert nx.minimum_feedback_edge_set(G1)
+        assert nx.minimum_feedback_edge_set(G2)
+        assert nx.minimum_feedback_edge_set(G3)
+        assert nx.minimum_feedback_edge_set(G4)
+
+    def test_5_cycle(self):
+        G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+        G.add_edges_from([(1, 3), (3, 2)])
+        G.add_edges_from([(3, 4), (4, 2)])
+        assert nx.minimum_feedback_edge_set(G) in ({(0, 1)}, {(2, 0)})
+
+        G[2][0]["weight"] = 10
+        assert nx.minimum_feedback_edge_set(G, weight="weight") == {(0, 1)}
+
+    def test_ties(self):
+        G = nx.cycle_graph(5, create_using=nx.DiGraph)
+        assert len(nx.minimum_feedback_edge_set(G)) == 1
