@@ -6,6 +6,9 @@ from collections import defaultdict
 from operator import itemgetter
 
 import networkx as nx
+from networkx.algorithms.approximation.connectivity import (
+    local_node_connectivity as approx_local_node_connectivity,
+)
 from networkx.algorithms.flow import (
     build_residual_network,
     edmonds_karp,
@@ -74,6 +77,16 @@ def all_node_cuts(G, k=None, flow_func=None):
     node and the target node of the local maximum flow computation to make
     sure that we will not find that minimum cut again.
 
+    Before each of those maximum flow computations a much cheaper call is
+    made to the shortest path based approximation of local node
+    connectivity (see
+    :meth:`networkx.algorithms.approximation.local_node_connectivity`),
+    following [2]_. Only a pair of nodes whose local node connectivity is
+    exactly $k$ can yield a cut of cardinality $k$, and the approximation
+    is a strict lower bound on that connectivity, so a pair for which it
+    already exceeds $k$ is skipped. This does not change the cuts that are
+    returned, nor the order in which they are generated.
+
     See also
     --------
     node_connectivity
@@ -85,6 +98,12 @@ def all_node_cuts(G, k=None, flow_func=None):
     .. [1]  Kanevsky, A. (1993). Finding all minimum-size separating vertex
             sets in a graph. Networks 23(6), 533--541.
             http://onlinelibrary.wiley.com/doi/10.1002/net.3230230604/abstract
+
+    .. [2]  Robert S. Sinkovits. Fast and Accurate Determination of Graph Node
+            Connectivity Leveraging Approximate Methods. Computational Science
+            - ICCS 2021, Lecture Notes in Computer Science, Volume 12742,
+            Springer, 2021.
+            https://doi.org/10.1007/978-3-030-77961-0_41
 
     """
     if not nx.is_connected(G):
@@ -137,6 +156,16 @@ def all_node_cuts(G, k=None, flow_func=None):
         # non adjacent nodes in G
         non_adjacent = set(G) - {x} - set(G[x])
         for v in non_adjacent:
+            # Only a pair whose local node connectivity is exactly k can
+            # contribute a cut of cardinality k. The shortest path based
+            # approximation is a strict lower bound on that connectivity,
+            # so a value above k proves this pair cannot, and the maximum
+            # flow below is a waste. Skipping the pair is not merely safe
+            # but invisible: everything the loop does past this point,
+            # including the bookkeeping edge added to H and R, happens
+            # only when the flow value equals k.
+            if approx_local_node_connectivity(G, x, v, cutoff=k + 1) > k:
+                continue
             # step 4: compute maximum flow in an Even-Tarjan reduction H of G
             # and step 5: build the associated residual network R
             # After adding edges in previous iterations, there may be
