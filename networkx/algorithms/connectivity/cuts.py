@@ -5,6 +5,9 @@ Flow based cut algorithms
 import itertools
 
 import networkx as nx
+from networkx.algorithms.approximation.connectivity import (
+    local_node_connectivity as approx_local_node_connectivity,
+)
 
 # Define the default maximum flow function to use in all flow based
 # cut algorithms.
@@ -396,6 +399,16 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     A minimum node cut of a digraph separates an ordered pair of nodes,
     and the two orders need not agree, so both are considered [2]_.
 
+    Each pair is first passed to a much cheaper call to the shortest
+    path based approximation of local node connectivity (see
+    :meth:`networkx.algorithms.approximation.local_node_connectivity`),
+    following [3]_. The size of a minimum st node cut is the local node
+    connectivity of the pair, and the approximation is a strict lower
+    bound on it, so whenever it already reaches the size of the smallest
+    cut found so far that pair cannot yield a smaller one and is skipped.
+    The result is still a cut of minimum cardinality, but which of the
+    minimum cuts is returned may differ from the unfiltered search.
+
     See also
     --------
     :meth:`minimum_st_node_cut`
@@ -418,6 +431,12 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
         Connectivity. SIAM Journal on Computing, Volume 4, Issue 4,
         pp. 507-518, 1975.
         https://doi.org/10.1137/0204043
+
+    .. [3] Robert S. Sinkovits. Fast and Accurate Determination of Graph Node
+        Connectivity Leveraging Approximate Methods. Computational Science -
+        ICCS 2021, Lecture Notes in Computer Science, Volume 12742,
+        Springer, 2021.
+        https://doi.org/10.1007/978-3-030-77961-0_41
 
     """
     if (s is not None and t is None) or (s is None and t is not None):
@@ -481,6 +500,13 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     # Compute st node cuts between v and all its non-neighbors nodes in G.
     for w in set(G) - v_nbrs - {v}:
         for s, t in ordered_pairs(v, w):
+            # The size of a minimum st node cut is the local node connectivity
+            # of the pair, and the approximation is a strict lower bound on it,
+            # so a value that reaches K means this pair cannot give a smaller
+            # cut.
+            K = len(min_cut)
+            if approx_local_node_connectivity(G, s, t, cutoff=K) >= K:
+                continue
             this_cut = minimum_st_node_cut(G, s, t, **kwargs)
             if len(min_cut) >= len(this_cut):
                 min_cut = this_cut
@@ -488,7 +514,8 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     for x, y in iter_func(v_nbrs, 2):
         # `minimum_st_node_cut` returns an empty set when x and y cannot be
         # separated, which must not be taken for a smaller cut.
-        if y in G[x]:
+        K = len(min_cut)
+        if y in G[x] or approx_local_node_connectivity(G, x, y, cutoff=K) >= K:
             continue
         this_cut = minimum_st_node_cut(G, x, y, **kwargs)
         if len(min_cut) >= len(this_cut):
