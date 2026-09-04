@@ -912,7 +912,7 @@ def shrikhande_graph(create_using=None):
     #    O-O-O-O-
     rows = cols = range(4)
     plus_one = [1, 2, 3, 0]
-    G = nx.Graph(name="Shrikhande Graph")
+    G = nx.Graph(create_using=create_using, name="Shrikhande Graph")
     G.add_edges_from(((x, y), (plus_one[x], y)) for x in rows for y in cols)
     G.add_edges_from(((x, y), (x, plus_one[y])) for x in rows for y in cols)
     G.add_edges_from(((x, y), (plus_one[x], plus_one[y])) for x in rows for y in cols)
