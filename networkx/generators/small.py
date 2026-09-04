@@ -883,6 +883,7 @@ def shrikhande_graph(create_using=None):
     The vertex set is $\mathbb{Z}_4 \times \mathbb{Z}_4$.
     Two vertices are adjacent if and only if the difference is in
     $\{\pm(1, 0), \pm(0, 1), \pm(1, 1)\}$.
+    The Shrikhande graph is also known as a troidal graph [2]_.
 
     Parameters
     ----------
@@ -897,18 +898,24 @@ def shrikhande_graph(create_using=None):
     References
     ----------
     .. [1] https://en.wikipedia.org/wiki/Shrikhande_graph
+    .. [2] https://mathworld.wolfram.com/ShrikhandeGraph.html
     """
-    from itertools import product
-
-    _ = [(1, 0), (0, 1), (1, 1), (-1, 0), (0, -1), (-1, -1)]
-    G = nx.Graph(
-        (
-            ((u, v), ((u + w) % 4, (v + x) % 4))
-            for (u, v), (w, x) in product(product(range(4), range(4)), _)
-        ),
-        create_using=create_using,
-    )
-    G.name = "Shrikhande Graph"
+    # basic 2d 4x4 periodic grid but only connect to the East, North and NE.
+    # Missing edges are SE and NW. The others get filled in by wraparound.
+    #    |/|/|/|/
+    #    O-O-O-O-
+    #    |/|/|/|/        Circle is a node.
+    #    O-O-O-O-        Wrap is shown
+    #    |/|/|/|/        using lines heading
+    #    O-O-O-O-        to the right and up.
+    #    |/|/|/|/
+    #    O-O-O-O-
+    rows = cols = range(4)
+    plus_one = [1, 2, 3, 0]
+    G = nx.Graph(name="Shrikhande Graph")
+    G.add_edges_from(((x, y), (plus_one[x], y)) for x in rows for y in cols)
+    G.add_edges_from(((x, y), (x, plus_one[y])) for x in rows for y in cols)
+    G.add_edges_from(((x, y), (plus_one[x], plus_one[y])) for x in rows for y in cols)
     return G
 
 
