@@ -293,6 +293,13 @@ def _hits_numpy(G, normalized=True):
     A = adj_ary.T @ adj_ary
     e, ev = np.linalg.eigh(A)
     a = ev[:, np.argmax(e)]  # eigenvector corresponding to the maximum eigenvalue
+    # Eigenvectors are only defined up to sign. Orient so the largest-magnitude
+    # entry is positive before scaling (avoids divide-by-zero when all entries
+    # are non-positive, which can happen after the switch to np.linalg.eigh).
+    if h[np.argmax(np.abs(h))] < 0:
+        h = -h
+    if a[np.argmax(np.abs(a))] < 0:
+        a = -a
     if normalized:
         h /= h.sum()
         a /= a.sum()

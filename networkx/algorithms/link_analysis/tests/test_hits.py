@@ -41,6 +41,16 @@ class TestHITS:
         for n in G:
             assert a[n] == pytest.approx(G.a[n], abs=1e-4)
 
+    def test_hits_numpy_normalized_false_finite(self):
+        # Regression for gh-8898: eigh can return a negated dominant
+        # eigenvector; scaling by max() must not produce inf/NaN.
+        G = nx.path_graph(3)
+        hubs, authorities = _hits_numpy(G, normalized=False)
+        assert all(np.isfinite(v) for v in hubs.values())
+        assert all(np.isfinite(v) for v in authorities.values())
+        assert all(v >= 0 for v in hubs.values())
+        assert all(v >= 0 for v in authorities.values())
+
     @pytest.mark.parametrize(
         "hits_alg",
         (nx.hits, partial(nx.hits, method="svd"), _hits_python, _hits_svd),
