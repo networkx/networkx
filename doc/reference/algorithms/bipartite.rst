@@ -41,6 +41,7 @@ Matching
    to_vertex_cover
    maximum_matching
    minimum_weight_full_matching
+   dulmage_mendelsohn_decomposition
 
 
 Matrix
