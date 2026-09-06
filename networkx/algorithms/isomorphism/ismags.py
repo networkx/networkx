@@ -1141,7 +1141,8 @@ class ISMAGS:
                 # update the candidate_sets for unmapped sgn based on sgn mapped
                 if not is_directed:
                     sgn_nbrs = subgraph_adj[sgn]
-                    not_gn_nbrs = frozenset(graph_adj.keys() - graph_adj[gn].keys())
+                    if MONO_fits == operator.eq:
+                        not_gn_nbrs = frozenset(graph_adj.keys() - graph_adj[gn].keys())
                     for sgn2 in left_to_map:
                         if sgn2 not in sgn_nbrs:
                             # Do not change the original set. So do not use |= operator
@@ -1163,9 +1164,12 @@ class ISMAGS:
                 else:  # directed
                     sgn_nbrs = subgraph_adj[sgn]
                     sgn_preds = subgraph._pred[sgn]
-                    not_gn_nbrs = frozenset(
-                        graph_adj.keys() - graph_adj[gn].keys() - graph._pred[gn].keys()
-                    )
+                    if MONO_fits == operator.eq:
+                        not_gn_nbrs = frozenset(
+                            graph_adj.keys()
+                            - graph_adj[gn].keys()
+                            - graph._pred[gn].keys()
+                        )
                     for sgn2 in left_to_map:
                         # edge color must match when sgn2 connected to sgn
                         if sgn2 not in sgn_nbrs:
