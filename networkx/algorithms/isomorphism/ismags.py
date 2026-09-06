@@ -1083,7 +1083,6 @@ class ISMAGS:
         subgraph_adj = subgraph._adj
         graph = self.graph
         graph_adj = graph._adj
-        self_ge_partition = self._ge_partition
         self_sge_colors = self._sge_colors
         is_directed = subgraph.is_directed()
 
