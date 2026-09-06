@@ -1182,6 +1182,10 @@ class ISMAGS:
                                     if self._ge_colors[n, gn] == sge_color
                                     if MONO_fits(sgn_in, graph.number_of_edges(n, gn))
                                 }
+                                # Restrict predecessors as well as successors.
+                                cand_sets[sgn2] = cand_sets[sgn2] | {
+                                    frozenset(gn2_cands)
+                                }
                         else:
                             if sgn2 not in sgn_preds:
                                 sgn_out = subgraph.number_of_edges(sgn, sgn2)

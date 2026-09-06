@@ -640,6 +640,45 @@ def is_isomorphic(G, SG, edge_match=None, node_match=None):
 
 
 class TestDiGraphISO:
+    @pytest.mark.parametrize("symmetry", [True, False])
+    @pytest.mark.parametrize("graph_class", [nx.DiGraph, nx.MultiDiGraph])
+    def test_incoming_edge_subgraph_constraints(self, graph_class, symmetry):
+        graph = graph_class([(1, 3), (2, 3), (3, 1), (3, 2)])
+        subgraph = graph_class([(0, 1), (1, 2), (2, 0)])
+
+        # A bidirectional star cannot contain a directed triangle.
+        matcher = iso.ISMAGS(graph, subgraph)
+        assert not matcher.subgraph_is_isomorphic(symmetry=symmetry)
+        assert list(matcher.subgraph_isomorphisms_iter(symmetry=symmetry)) == []
+
+    @pytest.mark.parametrize("symmetry", [True, False])
+    def test_incoming_edge_monomorphism_multiplicity(self, symmetry):
+        graph = nx.MultiDiGraph([(0, 2), (1, 0), (1, 0)])
+        subgraph = nx.MultiDiGraph()
+        # Visit the sink first so constraints must propagate to its predecessor.
+        subgraph.add_nodes_from([0, 1])
+        subgraph.add_edges_from([(1, 0), (1, 0)])
+
+        matcher = iso.ISMAGS(graph, subgraph)
+        assert list(matcher.monomorphisms_iter(symmetry=symmetry)) == [{0: 0, 1: 1}]
+
+    @pytest.mark.parametrize("symmetry", [True, False])
+    def test_incoming_edge_monomorphism_color(self, symmetry):
+        graph = nx.DiGraph()
+        graph.add_edge(0, 2, color="blue")
+        graph.add_edges_from([(0, 1), (1, 2)], color="red")
+        subgraph = nx.DiGraph()
+        subgraph.add_nodes_from([0, 1])
+        subgraph.add_edge(1, 0, color="red")
+
+        matcher = iso.ISMAGS(
+            graph, subgraph, edge_match=iso.categorical_edge_match("color", None)
+        )
+        mappings = matcher.monomorphisms_iter(symmetry=symmetry)
+        assert _matches_to_sets(mappings) == _matches_to_sets(
+            [{1: 0, 0: 1}, {2: 0, 1: 1}]
+        )
+
     def test_wikipedia_graph(self):
         edges1 = [
             (1, 5),
