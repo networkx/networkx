@@ -812,7 +812,8 @@ def test_monomorphism_count_for_path_in_cycle(mono_iter, symmetry, Gclass):
     # Add multiedge to SG. Lowers numb mappings (unless not multigraph cuz not added)
     SG.add_edge(10, 11)  # multiedge to SG
     mappings = mono_iter(FG, SG, symmetry=symmetry)
-    assert sum(1 for _ in mappings) == 0 if FG.is_multigraph() else 1
+    ans = 0 if FG.is_multigraph() else (1 if FG.is_directed() else 2)
+    assert sum(1 for _ in mappings) == ans
 
 
 @pytest.mark.parametrize("Gclass", graph_classes)
