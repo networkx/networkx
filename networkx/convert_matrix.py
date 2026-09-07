@@ -828,7 +828,7 @@ def from_scipy_sparse_array(
     Examples
     --------
     >>> import scipy as sp
-    >>> A = sp.sparse.eye(2, 2, 1)
+    >>> A = sp.sparse.eye_array(2, 2, k=1)
     >>> G = nx.from_scipy_sparse_array(A)
 
     If `create_using` indicates a multigraph and the matrix has only integer
