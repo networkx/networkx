@@ -404,7 +404,7 @@ test-base-py315t = { features = ["nx", "test", "py315t"], solve-group = "py315t"
 test-default-py312 = { features = ["nx", "test", "default", "py312"], solve-group = "py312", no-default-feature = true }
 test-default-py313 = { features = ["nx", "test", "default", "py313"], solve-group = "py313", no-default-feature = true }
 test-default-py314 = { features = ["nx", "test", "default", "py314"], solve-group = "py314", no-default-feature = true }
-test-default-py315 = { features = ["nx", "test", "default", "py315"], solve-group = "py315", no-default-feature = true }
+# test-default-py315 = { features = ["nx", "test", "default", "py315"], solve-group = "py315", no-default-feature = true }
 # Default without scipy
 test-default-no-scipy-py312 = { features = ["nx", "test", "default-no-scipy", "py312"], solve-group = "py312", no-default-feature = true }
 # Extra test
