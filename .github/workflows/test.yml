@@ -39,12 +39,7 @@ jobs:
       matrix:
         os: [ubuntu, macos, windows]
         environment:
-          [
-            test-default-py312,
-            test-default-py313,
-            test-default-py314,
-            test-default-py315,
-          ]
+          [test-default-py312, test-default-py313, test-default-py314]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
