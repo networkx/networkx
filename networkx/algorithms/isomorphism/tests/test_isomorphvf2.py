@@ -413,7 +413,6 @@ def test_isomorphism_reuse_matcher(is_directed):
     G2 = nx.cycle_graph(4, create_using=create_using)
     gm = (iso.DiGraphMatcher if is_directed else iso.GraphMatcher)(G1, G2)
 
-    # Check: G1 is subgraph isomorphic to G2, but not isomorphic
     assert gm.is_isomorphic()
     orig_mapping = gm.mapping.copy()
     all_mappings = list(gm.isomorphisms_iter())
