@@ -328,7 +328,7 @@ class GraphMatcher:
         we yield the mapping.
 
         """
-        if len(self.core_1) == len(self.G2):
+        if len(self.core_1) == len(self.G2) and len(self.core_1) == len(self.G):
             # Save the final mapping, otherwise garbage collection deletes it.
             self.mapping = self.core_1.copy()
             # The mapping is complete.
