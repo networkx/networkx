@@ -288,11 +288,13 @@ def _hits_numpy(G, normalized=True):
     # Hub matrix
     H = adj_ary @ adj_ary.T
     e, ev = np.linalg.eigh(H)
-    h = ev[:, np.argmax(e)]  # eigenvector corresponding to the maximum eigenvalue
+    # eigenvector for the maximum eigenvalue. All same sign by Perron-Frob. Make sign +.
+    h = np.abs(ev[:, np.argmax(e)])
     # Authority matrix
     A = adj_ary.T @ adj_ary
     e, ev = np.linalg.eigh(A)
-    a = ev[:, np.argmax(e)]  # eigenvector corresponding to the maximum eigenvalue
+    # eigenvector for the maximum eigenvalue. All same sign by Perron-Frob. Make sign +.
+    a = np.abs(ev[:, np.argmax(e)])
     if normalized:
         h /= h.sum()
         a /= a.sum()

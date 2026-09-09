@@ -162,14 +162,14 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     Parameters
     ----------
     G : graph
-    A NetworkX graph
+       A NetworkX graph
     encoding : string (optional, default: 'utf-8')
-    Encoding for text data.
+       Encoding for text data.
     prettyprint : bool (optional, default: True)
-    If True use line breaks and indenting in output XML.
+       If True use line breaks and indenting in output XML.
     version : string (default: 1.2draft)
-    Version of GEFX File Format (see http://gexf.net/schema.html)
-    Supported values: "1.1draft", "1.2draft"
+       Version of GEFX File Format (see http://gexf.net/schema.html)
+       Supported values: "1.1draft", "1.2draft"
 
     Yields
     ------

@@ -914,12 +914,12 @@ class ISMAGS:
         return isom is not None
 
     def is_monomorphic(self, symmetry=False):
-        """Returns True if the class input graphs are monomorphic, False otherwise.
+        """Returns True if ``graph`` contains a monomorphic copy of ``subgraph``.
 
-        Monomorphic means there is a mapping of some nodes in ``graph`` to all
-        nodes in ``subgraph`` that covers all nodes/edges in ``subgraph``.
-        No induced subgraph structure is needed. For example, an edge between
-        two nodes is monomorphic to any subgraph with two nodes.
+        All nodes and edges in ``subgraph`` must be matched, respecting node/edge
+        matching. Extra edges between matched nodes in ``graph`` are allowed.
+        For example, a triangle contains a three-node path as a non-induced
+        subgraph.
 
         Note: `symmetry` is only used for testing. We only find 1 monomorphism
         so there is no gain from looking for symmetries.
@@ -978,11 +978,12 @@ class ISMAGS:
     def monomorphisms_iter(self, symmetry=True):
         """Yields all monomorphisms from :attr:`graph` to :attr:`subgraph`
 
-        A monomorphism is a mapping of nodes that only maintains connectivity
-        and node/edge matchings in ``subgraph``. Edges in ``graph`` need not
-        map to ``subgraph``. In other words, the mapping covers all edges in
-        ``subgraph``, but is not a bijection (some nodes and edges are not mapped).
-        Some people call this kind of subgraph a non-induced subgraph.
+        Each mapping assigns distinct nodes in ``graph`` to all nodes in
+        ``subgraph``, preserving the connectivity and node/edge matches required
+        by ``subgraph``. Extra edges between matched nodes in ``graph`` are
+        allowed, so the matched subgraph need not be induced. For multigraphs,
+        ``graph`` must supply at least the required number of parallel edges
+        and self-loops, subject to the edge-matching function.
 
         Symmetric monomorphisms can be ignored for the symmetries of ``subgraph``.
 
@@ -995,7 +996,20 @@ class ISMAGS:
         Yields
         ------
         dict
-            The monomorphism mappings in form: {graph_node: subgraph_node}.
+            The monomorphism mappings in form: ``{graph_node: subgraph_node}``.
+
+        Examples
+        --------
+        A triangle contains a path as a non-induced subgraph. Accounting for
+        the path's reflection symmetry halves the number of reported mappings.
+
+        >>> matcher = ISMAGS(nx.cycle_graph(3), nx.path_graph(3))
+        >>> matcher.subgraph_is_isomorphic()
+        False
+        >>> len(list(matcher.monomorphisms_iter(symmetry=False)))
+        6
+        >>> len(list(matcher.monomorphisms_iter()))
+        3
         """
         return self._all_morphisms(symmetry, problem_type="MONO")
 
@@ -1069,7 +1083,6 @@ class ISMAGS:
         subgraph_adj = subgraph._adj
         graph = self.graph
         graph_adj = graph._adj
-        self_ge_partition = self._ge_partition
         self_sge_colors = self._sge_colors
         is_directed = subgraph.is_directed()
 
@@ -1141,7 +1154,8 @@ class ISMAGS:
                 # update the candidate_sets for unmapped sgn based on sgn mapped
                 if not is_directed:
                     sgn_nbrs = subgraph_adj[sgn]
-                    not_gn_nbrs = frozenset(graph_adj.keys() - graph_adj[gn].keys())
+                    if MONO_fits == operator.eq:
+                        not_gn_nbrs = frozenset(graph_adj.keys() - graph_adj[gn].keys())
                     for sgn2 in left_to_map:
                         if sgn2 not in sgn_nbrs:
                             # Do not change the original set. So do not use |= operator
@@ -1163,9 +1177,12 @@ class ISMAGS:
                 else:  # directed
                     sgn_nbrs = subgraph_adj[sgn]
                     sgn_preds = subgraph._pred[sgn]
-                    not_gn_nbrs = frozenset(
-                        graph_adj.keys() - graph_adj[gn].keys() - graph._pred[gn].keys()
-                    )
+                    if MONO_fits == operator.eq:
+                        not_gn_nbrs = frozenset(
+                            graph_adj.keys()
+                            - graph_adj[gn].keys()
+                            - graph._pred[gn].keys()
+                        )
                     for sgn2 in left_to_map:
                         # edge color must match when sgn2 connected to sgn
                         if sgn2 not in sgn_nbrs:
@@ -1181,6 +1198,10 @@ class ISMAGS:
                                     for n in graph._pred[gn]
                                     if self._ge_colors[n, gn] == sge_color
                                     if MONO_fits(sgn_in, graph.number_of_edges(n, gn))
+                                }
+                                # Restrict predecessors as well as successors.
+                                cand_sets[sgn2] = cand_sets[sgn2] | {
+                                    frozenset(gn2_cands)
                                 }
                         else:
                             if sgn2 not in sgn_preds:
