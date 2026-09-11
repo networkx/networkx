@@ -880,10 +880,10 @@ def shrikhande_graph(create_using=None):
     The Shrikhande graph is a 4-by-4, 2-D grid with wraparound connections
     going in all north and east directions (and south and west -- it is undirected).
     No connections go northwest or southeast.
- 
+
     The Shrikhande graph has 16 nodes and 48 edges.
     This graph can be constructed as a Cayley graph [1]_.
-    The vertex set is $\mathbb{Z}_4 \times \mathbb{Z}_4$.
+    The node set is $\mathbb{Z}_4 \times \mathbb{Z}_4$.
     Two vertices are adjacent if and only if the difference is in
     $\{\pm(1, 0), \pm(0, 1), \pm(1, 1)\}$.
     The Shrikhande graph is also known as a troidal graph [2]_.
@@ -896,7 +896,7 @@ def shrikhande_graph(create_using=None):
     Returns
     -------
     G : networkx Graph
-        Shrikhande Graph with 16 nodes and 48 edges
+        Shrikhande Graph
 
     References
     ----------
