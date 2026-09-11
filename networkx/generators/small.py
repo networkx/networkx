@@ -875,9 +875,12 @@ def sedgewick_maze_graph(create_using=None):
 @_raise_on_directed
 @nx._dispatchable(graphs=None, returns_graph=True)
 def shrikhande_graph(create_using=None):
-    r"""
-    Returns the Shrikhane Graph.
+    r"""Returns the Shrikhane Graph.
 
+    The Shrikhande graph is a 4-by-4, 2-D grid with wraparound connections
+    going in all north and east directions (and south and west -- it is undirected).
+    No connections go northwest or southeast.
+ 
     The Shrikhande graph has 16 nodes and 48 edges.
     This graph can be constructed as a Cayley graph [1]_.
     The vertex set is $\mathbb{Z}_4 \times \mathbb{Z}_4$.
