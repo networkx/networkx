@@ -74,10 +74,10 @@ def core_number(G):
 
     Examples
     --------
-    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
-    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H = nx.Graph([(0, 4), (1, 2), (1, 3), (2, 5), (3, 5), (4, 5)])
+    >>> H.add_node(6)
     >>> nx.core_number(H)
-    {0: 1, 1: 2, 2: 2, 3: 2, 4: 1, 5: 2, 6: 0}
+    {0: 1, 4: 1, 1: 2, 2: 2, 3: 2, 5: 2, 6: 0}
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (2, 1), (2, 3), (2, 4), (3, 4), (4, 3)])
     >>> nx.core_number(G)
@@ -186,10 +186,10 @@ def k_core(G, k=None, core_number=None):
 
     Examples
     --------
-    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
-    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H = nx.Graph([(0, 4), (1, 2), (1, 3), (2, 5), (3, 5), (4, 5)])
+    >>> H.add_node(6)
     >>> H.degree
-    DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
+    DegreeView({0: 1, 4: 2, 1: 2, 2: 2, 3: 2, 5: 3, 6: 0})
     >>> nx.k_core(H).nodes
     NodeView((1, 2, 3, 5))
 
@@ -250,10 +250,10 @@ def k_shell(G, k=None, core_number=None):
 
     Examples
     --------
-    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
-    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H = nx.Graph([(0, 4), (1, 2), (1, 3), (2, 5), (3, 5), (4, 5)])
+    >>> H.add_node(6)
     >>> H.degree
-    DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
+    DegreeView({0: 1, 4: 2, 1: 2, 2: 2, 3: 2, 5: 3, 6: 0})
     >>> nx.k_shell(H, k=1).nodes
     NodeView((0, 4))
 
@@ -316,10 +316,10 @@ def k_crust(G, k=None, core_number=None):
 
     Examples
     --------
-    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
-    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H = nx.Graph([(0, 4), (1, 2), (1, 3), (2, 5), (3, 5), (4, 5)])
+    >>> H.add_node(6)
     >>> H.degree
-    DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
+    DegreeView({0: 1, 4: 2, 1: 2, 2: 2, 3: 2, 5: 3, 6: 0})
     >>> nx.k_crust(H, k=1).nodes
     NodeView((0, 4, 6))
 
@@ -380,10 +380,10 @@ def k_corona(G, k, core_number=None):
 
     Examples
     --------
-    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
-    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H = nx.Graph([(0, 4), (1, 2), (1, 3), (2, 5), (3, 5), (4, 5)])
+    >>> H.add_node(6)
     >>> H.degree
-    DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
+    DegreeView({0: 1, 4: 2, 1: 2, 2: 2, 3: 2, 5: 3, 6: 0})
     >>> nx.k_corona(H, k=2).nodes
     NodeView((1, 2, 3, 5))
 
@@ -446,12 +446,12 @@ def k_truss(G, k):
 
     Examples
     --------
-    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
-    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H = nx.Graph([(0, 4), (1, 2), (1, 3), (2, 5), (3, 5), (4, 5)])
+    >>> H.add_node(6)
     >>> H.degree
-    DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
-    >>> nx.k_truss(H, k=2).nodes
-    NodeView((0, 1, 2, 3, 4, 5))
+    DegreeView({0: 1, 4: 2, 1: 2, 2: 2, 3: 2, 5: 3, 6: 0})
+    >>> sorted(nx.k_truss(H, k=2))
+    [0, 1, 2, 3, 4, 5]
 
     References
     ----------
@@ -516,10 +516,10 @@ def onion_layers(G):
 
     Examples
     --------
-    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
-    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H = nx.Graph([(0, 4), (1, 2), (1, 3), (2, 5), (3, 5), (4, 5)])
+    >>> H.add_node(6)
     >>> H.degree
-    DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
+    DegreeView({0: 1, 4: 2, 1: 2, 2: 2, 3: 2, 5: 3, 6: 0})
     >>> nx.onion_layers(H)
     {6: 1, 0: 2, 4: 3, 1: 4, 2: 4, 3: 4, 5: 4}
 
