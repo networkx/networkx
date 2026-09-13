@@ -34,8 +34,16 @@ itself. Indeed, self-loops are allowed. Node index starts from 0.
 
 """
 
+import warnings
+
 import networkx as nx
 from networkx.utils import open_file
+
+warnings.warn(
+    "The p2g module is deprecated and will be removed in v3.9",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
 @open_file(1, mode="w")

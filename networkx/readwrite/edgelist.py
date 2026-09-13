@@ -148,19 +148,60 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
 
     Examples
     --------
+    >>> from pathlib import Path
+    >>> import tempfile, gzip
+    >>> tmp_path = Path(tempfile.gettempdir())
+
     >>> G = nx.path_graph(4)
-    >>> nx.write_edgelist(G, "test.edgelist")
-    >>> G = nx.path_graph(4)
-    >>> fh = open("test.edgelist", "wb")
-    >>> nx.write_edgelist(G, fh)
-    >>> nx.write_edgelist(G, "test.edgelist.gz")
-    >>> nx.write_edgelist(G, "test.edgelist_nodata.gz", data=False)
+
+    Write out the edgelist to file:
+
+    >>> fpath = tmp_path / "test.edgelist"
+    >>> nx.write_edgelist(G, fpath)
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    0 1 {}
+    1 2 {}
+    2 3 {}
+    <BLANKLINE>
+
+    A filename ending with ".gz" or ".bz2" will be automatically compressed:
+
+    >>> fpath = tmp_path / "test_edgelist.gz"
+    >>> nx.write_edgelist(G, fpath)
+    >>> with gzip.open(fpath) as fh:
+    ...     print(fh.read().decode())
+    0 1 {}
+    1 2 {}
+    2 3 {}
+    <BLANKLINE>
+
+    The `data` parameter is used to toggle whether edge attribute data are
+    included:
 
     >>> G = nx.Graph()
     >>> G.add_edge(1, 2, weight=7, color="red")
-    >>> nx.write_edgelist(G, "test.edgelist_bigger_nodata", data=False)
-    >>> nx.write_edgelist(G, "test.edgelist_color", data=["color"])
-    >>> nx.write_edgelist(G, "test.edgelist_color_weight", data=["color", "weight"])
+
+    >>> fpath = tmp_path / "test.edgelist"
+    >>> nx.write_edgelist(G, fpath, data=False)
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    1 2
+    <BLANKLINE>
+
+    Or to specify which edge attribute data to include:
+
+    >>> nx.write_edgelist(G, fpath, data=["color"])
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    1 2 red
+    <BLANKLINE>
+
+    >>> nx.write_edgelist(G, fpath, data=["color", "weight"])
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    1 2 red 7
+    <BLANKLINE>
 
     See Also
     --------
@@ -340,29 +381,57 @@ def read_edgelist(
 
     Examples
     --------
-    >>> nx.write_edgelist(nx.path_graph(4), "test.edgelist_P4")
-    >>> G = nx.read_edgelist("test.edgelist_P4")
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
 
-    >>> fh = open("test.edgelist_P4", "rb")
-    >>> G = nx.read_edgelist(fh)
-    >>> fh.close()
+    >>> fpath = tmp_path / "P4.edgelist"
+    >>> nx.write_edgelist(nx.path_graph(4), fpath)
+    >>> G = nx.read_edgelist(fpath)
+    >>> G.edges
+    EdgeView([('0', '1'), ('1', '2'), ('2', '3')])
 
-    >>> G = nx.read_edgelist("test.edgelist_P4", nodetype=int)
-    >>> G = nx.read_edgelist("test.edgelist_P4", create_using=nx.DiGraph)
+    Nodes read from the file are interpreted as strings by default. The `nodetype`
+    parameter can be used to convert the nodes to another type:
 
-    Edgelist with data in a list:
+    >>> G = nx.read_edgelist(fpath, nodetype=int)
+    >>> G.edges
+    EdgeView([(0, 1), (1, 2), (2, 3)])
 
-    >>> textline = "1 2 3"
-    >>> fh = open("test.textline", "w")
-    >>> d = fh.write(textline)
-    >>> fh.close()
-    >>> G = nx.read_edgelist("test.textline", nodetype=int, data=(("weight", float),))
-    >>> list(G)
-    [1, 2]
-    >>> list(G.edges(data=True))
-    [(1, 2, {'weight': 3.0})]
+    The optional `create_using` parameter indicates the type of NetworkX
+    graph created. By default an undirected ``nx.Graph`` is returned. To read
+    the data as a directed graph use:
 
-    See parse_edgelist() for more examples of formatting.
+    >>> G = nx.read_edgelist(fpath, create_using=nx.DiGraph)
+    >>> G.is_directed()
+    True
+
+    By default, edge data is expected to be stored in a serialized dict-like
+    format keyed by the attribute name:
+
+    >>> fpath = tmp_path / "test.text"
+    >>> with open(fpath, "w") as fh:  # Create a file with data in default format
+    ...     _ = fh.write("1 2 {'weight': 3}")
+
+    >>> G = nx.read_edgelist(fpath, nodetype=int)
+    >>> G.edges(data=True)
+    EdgeDataView([(1, 2, {'weight': 3})])
+
+    Alternatively, edge data stored as a flat list without keys can be parsed
+    by passing in the attribute name and data type via `data`:
+
+    >>> textline = "1 2 red 10"
+    >>> fpath = tmp_path / "test.textline"
+    >>> with open(fpath, "w") as fh:  # Create a file with flattened edge data
+    ...     _ = fh.write(textline)
+
+    >>> G = nx.read_edgelist(
+    ...     fpath, nodetype=int, data=[("color", str), ("weight", float)]
+    ... )
+    >>> G.edges(data=True)
+    EdgeDataView([(1, 2, {'color': 'red', 'weight': 10.0})])
+
+    See `parse_edgelist` for more examples of formatting.
 
     See Also
     --------
@@ -386,7 +455,7 @@ def read_edgelist(
 
 
 def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
-    """Write graph G as a list of edges with numeric weights.
+    """Write graph `G` as a list of edges with numeric weights.
 
     Parameters
     ----------
@@ -405,9 +474,18 @@ def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-
 
     Examples
     --------
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>> tmp_path = Path(tempfile.gettempdir())
+
     >>> G = nx.Graph()
     >>> G.add_edge(1, 2, weight=7)
-    >>> nx.write_weighted_edgelist(G, "test.weighted.edgelist")
+    >>> fpath = tmp_path / "test.weighted.edgelist"
+    >>> nx.write_weighted_edgelist(G, fpath)
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    1 2 7
+    <BLANKLINE>
 
     See Also
     --------
@@ -463,16 +541,29 @@ def read_weighted_edgelist(
     Since nodes must be hashable, the function nodetype must return hashable
     types (e.g. int, float, str, frozenset - or tuples of those, etc.)
 
-    Example edgelist file format.
+    Examples
+    --------
+    >>> from pathlib import Path
+    >>> import tempfile, gzip
+    >>> tmp_path = Path(tempfile.gettempdir())
 
-    With numeric edge data::
+    read_weighted_edgelist expected data of the form ``u v w``, as is generated
+    by `write_weighted_edgelist`:
 
-     # read with
-     # >>> G=nx.read_weighted_edgelist(fh)
-     # source target data
-     a b 1
-     a c 3.14159
-     d e 42
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from([(0, 1, 1), (1, 2, 2.718), (2, 0, 10)])
+    >>> fpath = tmp_path / "C3_weighted.list"
+    >>> nx.write_weighted_edgelist(G, fpath)
+    >>> with open(fpath) as fh:
+    ...     print(fh.read())
+    0 1 1
+    0 2 10
+    1 2 2.718
+    <BLANKLINE>
+
+    >>> H = nx.read_weighted_edgelist(fpath, nodetype=int)
+    >>> H.edges(data="weight")
+    EdgeDataView([(0, 1, 1.0), (0, 2, 10.0), (1, 2, 2.718)])
 
     See Also
     --------

@@ -660,11 +660,11 @@ def test_get_edge_attributes():
 
         default_val = vals
         G.add_edge(4, 5)
-        deafult_attrs = nx.get_edge_attributes(G, attr, default=default_val)
-        assert len(deafult_attrs) == 3
+        default_attrs = nx.get_edge_attributes(G, attr, default=default_val)
+        assert len(default_attrs) == 3
 
         for edge in G.edges:
-            assert deafult_attrs[edge] == vals
+            assert default_attrs[edge] == vals
 
 
 @pytest.mark.parametrize(

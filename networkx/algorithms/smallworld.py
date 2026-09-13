@@ -71,8 +71,6 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
 
     from networkx.utils import cumulative_distribution, discrete_sequence
 
-    local_conn = nx.connectivity.local_edge_connectivity
-
     G = G.copy()
     keys, degrees = zip(*G.degree())  # keys, degree
     cdf = cumulative_distribution(degrees)  # cdf of degree
@@ -106,7 +104,7 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
                 G.remove_edge(c, d)
 
                 # Check if the graph is still connected
-                if connectivity and local_conn(G, a, b) == 0:
+                if connectivity and not nx.has_path(G, a, b):
                     # Not connected, revert the swap
                     G.remove_edge(a, d)
                     G.remove_edge(c, b)
@@ -172,8 +170,6 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
 
     from networkx.utils import cumulative_distribution, discrete_sequence
 
-    local_conn = nx.connectivity.local_edge_connectivity
-
     if len(G) < 4:
         raise nx.NetworkXError("Graph has fewer than four nodes.")
     if len(G.edges) < 2:
@@ -230,7 +226,7 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
                     G.remove_edge(c, d)
 
                     # Check if the graph is still connected
-                    if connectivity and local_conn(G, a, b) == 0:
+                    if connectivity and not nx.has_path(G, a, b):
                         # Not connected, revert the swap
                         G.remove_edge(a, d)
                         G.remove_edge(c, b)

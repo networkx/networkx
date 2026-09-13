@@ -291,21 +291,6 @@ class GraphMatcher:
 
     def is_isomorphic(self):
         """Returns True if G1 and G2 are isomorphic graphs."""
-
-        # Let's do two very quick checks!
-        # QUESTION: Should we call faster_graph_could_be_isomorphic(G1,G2)?
-        # For now, I just copy the code.
-
-        # Check global properties
-        if self.G1.order() != self.G2.order():
-            return False
-
-        # Check local properties
-        d1 = sorted(d for n, d in self.G1.degree())
-        d2 = sorted(d for n, d in self.G2.degree())
-        if d1 != d2:
-            return False
-
         try:
             x = next(self.isomorphisms_iter())
             return True
@@ -316,7 +301,22 @@ class GraphMatcher:
         """Generator over isomorphisms between G1 and G2."""
         # Declare that we are looking for a graph-graph isomorphism.
         self.test = "graph"
-        self.initialize()
+        self.initialize()  # clears self.mapping and/or sets up
+
+        # Let's do two very quick checks!
+        # QUESTION: Should we call faster_graph_could_be_isomorphic(G1,G2)?
+        # For now, we just copy the code from there.
+
+        # Check global properties
+        if self.G1.order() != self.G2.order():
+            return
+
+        # Check local properties
+        d1 = sorted(d for n, d in self.G1.degree)
+        d2 = sorted(d for n, d in self.G2.degree)
+        if d1 != d2:
+            return
+
         yield from self.match()
 
     def match(self):

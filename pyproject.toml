@@ -287,6 +287,9 @@ disable_error_code = ["var-annotated"]
 module = 'networkx.classes.reportviews'
 ignore_errors = true
 
+[tool.pytest.ini_options]
+filterwarnings = ["error"]
+
 # ---- Pixi configuration ----
 
 [tool.pixi.workspace]

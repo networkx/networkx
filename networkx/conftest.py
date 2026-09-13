@@ -125,6 +125,12 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nbfs_predecessors"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="The p2g module"
+    )
+    # NOTE: pydot is a common source of deprecation warnings from its underlying
+    # dependencies - notably pyparsing. Filter these warnings out.
+    warnings.filterwarnings("ignore", category=DeprecationWarning, module="pydot")
 
 
 @pytest.fixture(autouse=True)
@@ -186,10 +192,17 @@ try:
 except ImportError:
     has_sympy = False
 
+try:
+    import lxml
+
+    has_lxml = True
+except ImportError:
+    has_lxml = False
+
 
 # List of files that pytest should ignore
 
-collect_ignore = []
+collect_ignore = ["readwrite/p2g.py"]
 
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
@@ -252,6 +265,7 @@ needs_pandas = ["convert_matrix.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
 needs_sympy = ["algorithms/polynomials.py"]
+needs_lxml = ["readwrite/graphml.py"]
 
 if not has_numpy:
     collect_ignore += needs_numpy
@@ -267,3 +281,5 @@ if not has_pydot:
     collect_ignore += needs_pydot
 if not has_sympy:
     collect_ignore += needs_sympy
+if not has_lxml:
+    collect_ignore += needs_lxml

@@ -62,11 +62,11 @@ class TestWikipediaExample:
         assert gm.subgraph_is_monomorphic()
         assert gm.subgraph_is_isomorphic()
 
-        mapping = list(gm.mapping.items())
-        # this mapping is only one of the 48 possibilities
+        orig_mapping = gm.mapping.copy()
+        # this mapping is only one of the numb_maps possibilities
         all_mappings = list(gm.isomorphisms_iter())
         assert len(all_mappings) == numb_maps
-        assert dict(mapping) in all_mappings
+        assert orig_mapping in all_mappings
 
     @pytest.mark.parametrize("graph_class", [nx.Graph, nx.DiGraph])
     def test_subgraph(self, graph_class):
@@ -384,6 +384,41 @@ def test_isomorphism_iter2():
         gm = iso.GraphMatcher(g1, g1)
         s = len(list(gm.isomorphisms_iter()))
         assert s == 2 * L
+
+
+@pytest.mark.parametrize("is_directed", [True, False])
+def test_isomorphism_iter3(is_directed):
+    # motivated by gh-8891 which reported subgraph isomorphisms
+    create_using = nx.DiGraph if is_directed else nx.Graph
+    G1 = nx.empty_graph(2, create_using=create_using)
+    G2 = nx.empty_graph(1, create_using=create_using)
+    gm = (iso.DiGraphMatcher if is_directed else iso.GraphMatcher)(G1, G2)
+
+    # Check: G1 is subgraph isomorphic to G2, but not isomorphic
+    assert not gm.is_isomorphic()
+    assert gm.subgraph_is_isomorphic()
+    assert gm.subgraph_is_monomorphic()
+
+    # check that morphism_iter matches is_morphic
+    assert not list(gm.isomorphisms_iter())
+    assert list(gm.subgraph_isomorphisms_iter())
+    assert list(gm.subgraph_monomorphisms_iter())
+
+
+@pytest.mark.parametrize("is_directed", [True, False])
+def test_isomorphism_reuse_matcher(is_directed):
+    # motivated by discussion in gh-8895 about initialization
+    create_using = nx.DiGraph if is_directed else nx.Graph
+    G1 = nx.cycle_graph(4, create_using=create_using)
+    G2 = nx.cycle_graph(4, create_using=create_using)
+    gm = (iso.DiGraphMatcher if is_directed else iso.GraphMatcher)(G1, G2)
+
+    assert gm.is_isomorphic()
+    orig_mapping = gm.mapping.copy()
+    all_mappings = list(gm.isomorphisms_iter())
+    assert len(all_mappings) == (4 if is_directed else 8)
+    assert orig_mapping in all_mappings
+    assert orig_mapping != all_mappings[-1]
 
 
 def test_multiple():

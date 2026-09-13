@@ -633,6 +633,26 @@ def test_layouts_negative_dim(layout):
 
 
 @pytest.mark.parametrize(
+    "layout",
+    [
+        nx.random_layout,
+        nx.circular_layout,
+        nx.kamada_kawai_layout,
+        nx.spring_layout,
+        nx.spectral_layout,
+    ],
+)
+@pytest.mark.parametrize("dim", [3, 4, 5])
+def test_dim_parameter(layout, dim):
+    """Test layouts that support unrestricted dim kwarg."""
+    G = nx.path_graph(4)
+    pos = layout(G, dim=dim)
+    assert len(pos) == len(G)
+    for coords in pos.values():
+        assert len(coords) == dim
+
+
+@pytest.mark.parametrize(
     ("num_nodes", "expected_method"), [(100, "force"), (501, "energy")]
 )
 @pytest.mark.parametrize(

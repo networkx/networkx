@@ -371,6 +371,13 @@ class TestGenericPath:
             nx.all_shortest_paths(G, 0, 3, weight="weight", method="bellman-ford")
         )
 
+    def test_all_shortest_paths_8833_regression(self):
+        # Regression test for https://github.com/networkx/networkx/issues/8833
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=0)
+        G.add_edge(1, 2, weight=100)
+        assert [[0, 1, 2]] == sorted(nx.all_shortest_paths(G, 0, 2, weight="weight"))
+
     def test_all_shortest_paths_raise(self):
         with pytest.raises(nx.NetworkXNoPath):
             G = nx.path_graph(4)

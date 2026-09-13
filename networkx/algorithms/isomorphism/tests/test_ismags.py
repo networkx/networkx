@@ -282,10 +282,10 @@ class TestSubgraphIsomorphism:
 
         expected = _matches_to_sets([{0: 0}, {1: 0}])
         none_matches = iso.ISMAGS(graph, subgraph, edge_match=None)
-        assert _matches_to_sets(none_matches.find_isomorphisms()) == expected
+        assert _matches_to_sets(none_matches.subgraph_isomorphisms_iter()) == expected
 
         all_matches = iso.ISMAGS(graph, subgraph, edge_match=lambda e1, e2: True)
-        assert _matches_to_sets(all_matches.find_isomorphisms()) == expected
+        assert _matches_to_sets(all_matches.subgraph_isomorphisms_iter()) == expected
 
     def test_subgraph_with_graph_only_node_color(self):
         # gh-8738: a node color present in the graph but not in the subgraph
@@ -298,13 +298,13 @@ class TestSubgraphIsomorphism:
         subgraph.add_node(0, color="a")
 
         expected = [{0: 0}]
-        result = list(iso.ISMAGS(graph, subgraph, node_match=nm).find_isomorphisms())
-        assert result == expected
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nm)
+        assert list(ismags.subgraph_isomorphisms_iter()) == expected
 
         # A color that only the subgraph has should still yield no matches.
         subgraph.nodes[0]["color"] = "z"
-        result = list(iso.ISMAGS(graph, subgraph, node_match=nm).find_isomorphisms())
-        assert result == []
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nm)
+        assert list(ismags.subgraph_isomorphisms_iter()) == []
 
     def test_subgraph_color_with_only_node(self):
         # see gh-8738: node_match default of None should not lead to result == []
@@ -315,17 +315,17 @@ class TestSubgraphIsomorphism:
 
         nodematch = nx.isomorphism.categorical_node_match(["attr1"], [None])
         ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
-        result = list(ismags.find_isomorphisms())
+        result = list(ismags.subgraph_isomorphisms_iter())
         assert result == [{1: 5}]
 
         nodematch = nx.isomorphism.categorical_node_match(["attr1"], [0])
         ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
-        result = list(ismags.find_isomorphisms())
+        result = list(ismags.subgraph_isomorphisms_iter())
         assert result == [{0: 5}, {1: 5}]
 
         nodematch = nx.isomorphism.categorical_node_match(["attr1"], ["blue"])
         ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
-        result = list(ismags.find_isomorphisms())
+        result = list(ismags.subgraph_isomorphisms_iter())
         assert result == [{1: 5}]
 
     def test_exceptions_for_bad_match_functions(self):
@@ -508,6 +508,49 @@ class TestWikipediaExample:
 
 
 class TestLargestCommonSubgraph:
+    def test_largest_subgraph_null_graph_cases(self):
+        graph = nx.path_graph(5)
+        ismags = iso.ISMAGS(nx.Graph(), graph)
+        assert list(ismags.largest_common_subgraph()) == []
+        ismags = iso.ISMAGS(graph, nx.Graph())
+        assert list(ismags.largest_common_subgraph()) == [{}]
+
+    def test_largest_subgraph_empty_graphs(self):
+        graph = nx.empty_graph(1)
+        subgraph = nx.empty_graph(1)
+        subgraph.nodes[0]["color"] = "red"
+
+        ismags = iso.ISMAGS(graph, subgraph)
+        assert list(ismags.largest_common_subgraph()) == [{0: 0}]
+
+        nodematch = nx.isomorphism.categorical_node_match("color", None)
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        assert list(ismags.largest_common_subgraph()) == []
+        assert ismags.N_node_colors == 0
+
+    def test_largest_subgraph_color_mismatches(self):
+        # see gh-8885
+        graph = nx.path_graph(5)
+        subgraph = nx.path_graph(5)
+
+        # check that normal case works as expected
+        ismags = iso.ISMAGS(graph, subgraph)
+        assert list(ismags.largest_common_subgraph()) == [{i: i for i in subgraph}]
+
+        # check case when no subgraph nodes have candidate color match
+        for n in subgraph:
+            subgraph.nodes[n]["color"] = "blue"
+        nodematch = nx.isomorphism.categorical_node_match("color", None)
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        assert list(ismags.largest_common_subgraph()) == []
+        assert ismags.N_node_colors == 0
+
+        # check case when no subgraph nodes have candidates due to selfloops
+        for n in graph:
+            graph.add_edge(n, n)
+        ismags = iso.ISMAGS(graph, subgraph)
+        assert list(ismags.largest_common_subgraph(symmetry=False)) == []
+
     def test_mcis(self):
         # Example graphs from DOI: 10.1002/spe.588
         graph1 = nx.Graph()
@@ -605,12 +648,80 @@ class TestLargestCommonSubgraph:
         assert expected == found_mcis1
         assert expected == found_mcis2
 
+    def test_extra_colors(self):
+        graph = nx.Graph([(0, 1)])
+        graph.nodes[1]["attr1"] = 0
+        graph.add_node(2, attr1=1)
+        subgraph = nx.Graph()
+        subgraph.add_node(2, attr1=2)
+        subgraph.add_node(5, attr1=0)
+
+        nodematch = nx.isomorphism.categorical_node_match(["attr1"], [None])
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        result = list(ismags.largest_common_subgraph(symmetry=True))
+        assert result == [{1: 5}]
+        result = list(ismags.largest_common_subgraph(symmetry=False))
+        assert result == [{1: 5}]
+
+        assert ismags.N_node_colors == 1
+        assert ismags.N_edge_colors == 1
+        assert len(ismags._sgn_partition) == 2
+        assert ismags._sgn_partition == [{5}, {2}]
+        # _gn_partition padded (empty set aligns with subgraph extra color)
+        assert len(ismags._gn_partition) == 4
+        assert ismags._gn_partition == [{1}, set(), {0}, {2}]
+
+        # switch graph order
+        graph, subgraph = subgraph, graph
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        assert ismags._sgn_partition == [{1}, {0}, {2}]
+        assert ismags._gn_partition == [{5}, set(), set(), {2}]
+
 
 def is_isomorphic(G, SG, edge_match=None, node_match=None):
     return iso.ISMAGS(G, SG, node_match, edge_match).is_isomorphic()
 
 
 class TestDiGraphISO:
+    @pytest.mark.parametrize("symmetry", [True, False])
+    @pytest.mark.parametrize("graph_class", [nx.DiGraph, nx.MultiDiGraph])
+    def test_incoming_edge_subgraph_constraints(self, graph_class, symmetry):
+        graph = graph_class([(1, 3), (2, 3), (3, 1), (3, 2)])
+        subgraph = graph_class([(0, 1), (1, 2), (2, 0)])
+
+        # A bidirectional star cannot contain a directed triangle.
+        matcher = iso.ISMAGS(graph, subgraph)
+        assert not matcher.subgraph_is_isomorphic(symmetry=symmetry)
+        assert list(matcher.subgraph_isomorphisms_iter(symmetry=symmetry)) == []
+
+    @pytest.mark.parametrize("symmetry", [True, False])
+    def test_incoming_edge_monomorphism_multiplicity(self, symmetry):
+        graph = nx.MultiDiGraph([(0, 2), (1, 0), (1, 0)])
+        subgraph = nx.MultiDiGraph()
+        # Visit the sink first so constraints must propagate to its predecessor.
+        subgraph.add_nodes_from([0, 1])
+        subgraph.add_edges_from([(1, 0), (1, 0)])
+
+        matcher = iso.ISMAGS(graph, subgraph)
+        assert list(matcher.monomorphisms_iter(symmetry=symmetry)) == [{0: 0, 1: 1}]
+
+    @pytest.mark.parametrize("symmetry", [True, False])
+    def test_incoming_edge_monomorphism_color(self, symmetry):
+        graph = nx.DiGraph()
+        graph.add_edge(0, 2, color="blue")
+        graph.add_edges_from([(0, 1), (1, 2)], color="red")
+        subgraph = nx.DiGraph()
+        subgraph.add_nodes_from([0, 1])
+        subgraph.add_edge(1, 0, color="red")
+
+        matcher = iso.ISMAGS(
+            graph, subgraph, edge_match=iso.categorical_edge_match("color", None)
+        )
+        mappings = matcher.monomorphisms_iter(symmetry=symmetry)
+        assert _matches_to_sets(mappings) == _matches_to_sets(
+            [{1: 0, 0: 1}, {2: 0, 1: 1}]
+        )
+
     def test_wikipedia_graph(self):
         edges1 = [
             (1, 5),
@@ -631,13 +742,13 @@ class TestDiGraphISO:
         G1 = nx.DiGraph(edges1)
         G2 = nx.relabel_nodes(G1, mapped)
 
-        result = next(nx.isomorphism.ISMAGS(G1, G2).find_isomorphisms())
+        result = next(nx.isomorphism.ISMAGS(G1, G2).subgraph_isomorphisms_iter())
         assert result == mapped
 
         # Change the direction of an edge
         G1.remove_edge(1, 5)
         G1.add_edge(5, 1)
-        result = list(nx.isomorphism.ISMAGS(G1, G2).find_isomorphisms())
+        result = list(nx.isomorphism.ISMAGS(G1, G2).subgraph_isomorphisms_iter())
         assert result == []
 
     def test_non_isomorphic_same_degree_sequence(self):

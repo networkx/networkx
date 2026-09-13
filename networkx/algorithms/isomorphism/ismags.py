@@ -123,6 +123,7 @@ References
 __all__ = ["ISMAGS"]
 
 import itertools
+import operator
 from collections import Counter, defaultdict
 
 import networkx as nx
@@ -243,18 +244,60 @@ def node_to_part_ID_dict(partition):
     return {node: ID for ID, part in enumerate(partition) for node in part}
 
 
+def color_degree_by_node_no_multi(G, n_colors, e_colors):
+    """Returns a dict keyed by node to counts of edge and nbr color combos.
+
+    Similar to color_degree_by_node except that multiedges are not included in
+    the color tuples.
+
+    Not used for largest_common_subgraph. Only for _all_morphisms when considering
+    problem_type == "MONO", or cases with no multigraphs present. MONO needs to allow
+    lower numbers of multiedges in the subgraph, so we can't use that as a color (which
+    are essentially treated using equality checks for isomorphisms. We handle
+    multiedge checks for MONO during mapping update checks rather than candidate
+    identifying part of the loop. Ignoring the multiedges gives the same code we
+    can use when both graph and subgraph are not multigraphs.
+    """
+    # undirected colored degree
+    if not G.is_directed():
+        return {
+            u: (n_colors[u], Counter((e_colors[u, v], n_colors[v]) for v in nbrs))
+            for u, nbrs in G.adjacency()
+        }
+    # directed colored out and in degree
+    return {
+        u: (
+            n_colors[u],
+            Counter((e_colors[u, v], n_colors[v]) for v in nbrs),
+            Counter((e_colors[v, u], n_colors[v]) for v in G._pred[u]),
+        )
+        for u, nbrs in G.adjacency()
+    }
+
+
 def color_degree_by_node(G, n_colors, e_colors):
-    """Returns a dict by node to counts of edge and node color for that node.
+    """Returns a dict keyed by node to counts of edge/nbr color for that node.
 
-    This returns a dict by node to a 2-tuple of node color and degree by
-    (edge color and nbr color). E.g. ``{0: (1, {(0, 2): 5})}`` means that
-    node ``0`` has node type 1 and has 5 edges of type 0 that go to nodes of type 2.
-    Thus, this is a measure of degree (edge count) by color of edge and color
-    of the node on the other side of that edge.
+    The inputs are G -- graph of interest; `n_colors` -- a dict keyed by node
+    to the node color/label associated with that node; `e_colors` -- a dict
+    keyed by edge to the edge color/label associated with that edge.
 
-    For directed graphs the degree counts is a 2-tuple of (in, out) degree counts.
+    The returned dict is keyed by node to a 2-tuple of node color and degree
+    dict. The degree dict holds counts for each edge-key which is a
+    3-tuple: (edge color, number of multiedges, nbr color). For example,
+    ``{0: (1, {(0, 1, 2): 5})}`` means that node ``0`` has node color 1 and
+    has 5 edges of color 0 that have 1 multiedge to nodes of color 2.
+    This dict is a measure of degree (edge count) by color of edge, number of
+    multiedges and color of the node on the other side of that edge.
 
-    Ideally, if edge_match is None, this could get simplified to just the node
+    For directed graphs the degree counts are a 2-tuple of 2 dicts indicating
+    (in, out) degree counts respectively.
+
+    When both graph and subgraph are not multigraphs, the multiedge indicator
+    is not relevant. Use `color_degree_by_node_no_multi` to make the keys of
+    the inner dict 2-tuples with edge color and nbr node color.
+
+    TODO: if edge_match is None, this could get simplified to just the node
     color on the other end of the edge. Similarly if node_match is None then only
     edge color is tracked. And if both are None, we simply count the number of edges.
     """
@@ -655,21 +698,40 @@ class ISMAGS:
         return new_sg_p, new_g_p, Ncolors
 
     def find_isomorphisms(self, symmetry=True):
-        """Find all subgraph isomorphisms between subgraph and graph
+        """left for backward compatibility. Use subgraph_isomorphisms_iter"""
+        yield from self._all_morphisms(symmetry, problem_type="SUB")
+        return
 
-        Finds isomorphisms where :attr:`subgraph` <= :attr:`graph`.
+    def _all_morphisms(self, symmetry, problem_type):
+        """Find all morphisms between :attr:`graph` and :attr:`subgraph`
+
+        Yield isomorphisms or monomorphisms depending on `problem_type`.
 
         Parameters
         ----------
-        symmetry: bool
-            Whether symmetry should be taken into account. If False, found
-            isomorphisms may be symmetrically equivalent.
+        symmetry : bool
+            Whether symmetry should be taken into account.
+            If False, morphisms may be symmetrically equivalent.
+        problem_type : string
+            The problem type to be used:
+            - "ISO" for graph isomorphism,
+            - "SUB" for subgraph isomorphism,
+            - "MONO" for monomorphism.
 
         Yields
         ------
         dict
-            The found isomorphism mappings of {graph_node: subgraph_node}.
+            The isomorphism mappings in form: {graph_node: subgraph_node}.
         """
+        if problem_type == "ISO":
+            SG_fits = MONO_fits = operator.eq
+        elif problem_type == "SUB":
+            SG_fits = operator.le
+            MONO_fits = operator.eq
+        elif problem_type == "MONO":
+            SG_fits = MONO_fits = operator.le
+        else:
+            raise ValueError(f'Invalid {problem_type=}. Must be "ISO", "SUB" or "MONO"')
         # The networkx VF2 algorithm is slightly funny in when it yields an
         # empty dict and when not.
         if not self.subgraph:
@@ -677,14 +739,19 @@ class ISMAGS:
             return
         elif not self.graph:
             return
-        elif len(self.graph) < len(self.subgraph):
+        elif not SG_fits(len(self.subgraph), len(self.graph)):
             return
-        elif len(self._sgn_partition) > self.N_node_colors:
+        elif not SG_fits(len(self._sgn_partition), self.N_node_colors):
             # some subgraph nodes have a color that doesn't occur in graph
             return
-        elif len(self._sge_partition) > self.N_edge_colors:
+        elif not SG_fits(len(self._sge_partition), self.N_edge_colors):
             # some subgraph edges have a color that doesn't occur in graph
             return
+        if problem_type == "ISO":
+            if not SG_fits(len(self._gn_partition), self.N_node_colors):
+                return
+            if not SG_fits(len(self._ge_partition), self.N_edge_colors):
+                return
 
         if symmetry:
             cosets = self.analyze_subgraph_symmetry()
@@ -693,9 +760,9 @@ class ISMAGS:
         else:
             constraints = []
 
-        cand_sets = self._get_node_color_candidate_sets()
+        cand_sets = self._get_node_color_candidate_sets(MONO_fits)
 
-        lookahead_candidates = self._get_color_degree_candidates()
+        lookahead_candidates = self._get_color_degree_candidates(SG_fits, MONO_fits)
         for sgn, lookahead_cands in lookahead_candidates.items():
             cand_sets[sgn].add(frozenset(lookahead_cands))
 
@@ -706,24 +773,29 @@ class ISMAGS:
             # computing the intersection of the frozensets for each node.
             start_sgn = min(cand_sets, key=lambda n: min(len(x) for x in cand_sets[n]))
             cand_sets[start_sgn] = (frozenset.intersection(*cand_sets[start_sgn]),)
-            yield from self._map_nodes(start_sgn, cand_sets, constraints)
+            yield from self._map_nodes(start_sgn, cand_sets, constraints, MONO_fits)
         return
 
-    def _get_color_degree_candidates(self):
+    def _get_color_degree_candidates(self, SG_fits, MONO_fits):
         """
         Returns a mapping of {subgraph node: set of graph nodes} for
         which the graph nodes are feasible mapping candidate_sets for the
         subgraph node, as determined by looking ahead one edge.
         """
-        g_deg = color_degree_by_node(self.graph, self._gn_colors, self._ge_colors)
-        sg_deg = color_degree_by_node(self.subgraph, self._sgn_colors, self._sge_colors)
+        MONO = MONO_fits == operator.le
+        if (self.graph.is_multigraph() or self.subgraph.is_multigraph()) and not MONO:
+            color_count = color_degree_by_node
+        else:
+            color_count = color_degree_by_node_no_multi
+        g_deg = color_count(self.graph, self._gn_colors, self._ge_colors)
+        sg_deg = color_count(self.subgraph, self._sgn_colors, self._sge_colors)
 
         return {
             sgn: {
                 gn
                 for gn, (_, *g_counts) in g_deg.items()
                 if all(
-                    sg_cnt <= g_counts[idx][color]
+                    SG_fits(sg_cnt, g_counts[idx][color])
                     for idx, counts in enumerate(needed_counts)
                     for color, sg_cnt in counts.items()
                 )
@@ -738,7 +810,7 @@ class ISMAGS:
 
         Parameters
         ----------
-        symmetry: bool
+        symmetry : bool
             Whether symmetry should be taken into account. If False, found
             largest common subgraphs may be symmetrically equivalent.
 
@@ -762,15 +834,17 @@ class ISMAGS:
         else:
             constraints = []
 
-        candidate_sets = self._get_node_color_candidate_sets()
+        candidate_sets = self._get_node_color_candidate_sets(MONO_fits=operator.eq)
 
-        if any(candidate_sets.values()):
+        # ensure that some subgraph node has a candidate graph node
+        if any(all(constraint) for constraint in candidate_sets.values()):
             relevant_parts = self._sgn_partition[: self.N_node_colors]
             to_be_mapped = {frozenset(n for p in relevant_parts for n in p)}
             yield from self._largest_common_subgraph(
                 candidate_sets, constraints, to_be_mapped
             )
         else:
+            # No subgraph node matches with any graph node: no common subgraph
             return
 
     def analyze_subgraph_symmetry(self):
@@ -810,46 +884,138 @@ class ISMAGS:
         return cosets
 
     def is_isomorphic(self, symmetry=False):
-        """
-        Returns True if :attr:`graph` is isomorphic to :attr:`subgraph` and
-        False otherwise.
+        """Returns True if the class input graphs are isomorphic, False otherwise.
+
+        Isomorphic means there is a mapping of nodes from ``graph`` to ``subgraph``
+        that maintains connectivity and node/edge matchings.
+        Note: `symmetry` is only used for testing. We only find 1 isomorphism
+        so there is no gain from looking for symmetries.
 
         Returns
         -------
         bool
         """
-        return len(self.subgraph) == len(self.graph) and self.subgraph_is_isomorphic(
-            symmetry
-        )
+        isom = next(self.isomorphisms_iter(symmetry=symmetry), None)
+        return isom is not None
 
     def subgraph_is_isomorphic(self, symmetry=False):
-        """
-        Returns True if a subgraph of :attr:`graph` is isomorphic to
-        :attr:`subgraph` and False otherwise.
+        """Returns True if the class input graphs are subgraph isomorphic, False otherwise.
+
+        Subgraph isomorphic means there is a mapping of nodes from an induced
+        subgraph of ``graph`` to ``subgraph`` that maintains connectivity and
+        node/edge matching.
+
+        Note: `symmetry` is only used for testing. We only find 1 isomorphism
+        so there is no gain from looking for symmetries.
 
         Returns
         -------
         bool
         """
-        # symmetry=False, since we only need to know whether there is any
-        # example; figuring out all symmetry elements probably costs more time
-        # than it gains.
         isom = next(self.subgraph_isomorphisms_iter(symmetry=symmetry), None)
         return isom is not None
 
-    def isomorphisms_iter(self, symmetry=True):
+    def is_monomorphic(self, symmetry=False):
+        """Returns True if ``graph`` contains a monomorphic copy of ``subgraph``.
+
+        All nodes and edges in ``subgraph`` must be matched, respecting node/edge
+        matching. Extra edges between matched nodes in ``graph`` are allowed.
+        For example, a triangle contains a three-node path as a non-induced
+        subgraph.
+
+        Note: `symmetry` is only used for testing. We only find 1 monomorphism
+        so there is no gain from looking for symmetries.
+
+        Returns
+        -------
+        bool
         """
-        Does the same as :meth:`find_isomorphisms` if :attr:`graph` and
-        :attr:`subgraph` have the same number of nodes.
+        mom = next(self.monomorphisms_iter(symmetry=symmetry), None)
+        return mom is not None
+
+    def isomorphisms_iter(self, symmetry=True):
+        """Yields all isomorphisms from :attr:`graph` to :attr:`subgraph`
+
+        An isomorphism is an all-to-all mapping of the nodes that maintains
+        connectivity and node/edge matchings.
+
+        Symmetric isomorphisms can be ignored for the symmetries of :attr:`subgraph`.
+
+        Parameters
+        ----------
+        symmetry : bool, optional (default: True)
+            Whether symmetries of :attr:`subgraph` should be taken into account.
+            If False, yielded isomorphisms may be symmetrically equivalent.
+
+        Yields
+        ------
+        dict
+            The isomorphism mappings in form: ``{graph_node: subgraph_node}``.
         """
         if len(self.graph) == len(self.subgraph):
-            yield from self.subgraph_isomorphisms_iter(symmetry=symmetry)
+            yield from self._all_morphisms(symmetry, problem_type="ISO")
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
-        """Alternative name for :meth:`find_isomorphisms`."""
-        return self.find_isomorphisms(symmetry)
+        """Yields all subgraph isomorphisms from :attr:`graph` to :attr:`subgraph`
 
-    def _get_node_color_candidate_sets(self):
+        An isomorphism is a mapping of nodes that maintains connectivity and
+        node/edge matchings. Subgraph isomorphism means an isomorphism from an
+        induced subgraph of ``graph`` to ``subgraph``.
+
+        Symmetric isomorphisms can be ignored for the symmetries of ``subgraph``.
+
+        Parameters
+        ----------
+        symmetry : bool, optional (default: True)
+            Whether symmetries of ``subgraph`` should be taken into account.
+            If False, isomorphisms may be symmetrically equivalent.
+
+        Yields
+        ------
+        dict
+            The isomorphism mappings in form: {graph_node: subgraph_node}.
+        """
+        return self._all_morphisms(symmetry, problem_type="SUB")
+
+    def monomorphisms_iter(self, symmetry=True):
+        """Yields all monomorphisms from :attr:`graph` to :attr:`subgraph`
+
+        Each mapping assigns distinct nodes in ``graph`` to all nodes in
+        ``subgraph``, preserving the connectivity and node/edge matches required
+        by ``subgraph``. Extra edges between matched nodes in ``graph`` are
+        allowed, so the matched subgraph need not be induced. For multigraphs,
+        ``graph`` must supply at least the required number of parallel edges
+        and self-loops, subject to the edge-matching function.
+
+        Symmetric monomorphisms can be ignored for the symmetries of ``subgraph``.
+
+        Parameters
+        ----------
+        symmetry : bool, optional (default: True)
+            Whether symmetries of ``subgraph`` should be taken into account.
+            If False, monomorphisms may be symmetrically equivalent.
+
+        Yields
+        ------
+        dict
+            The monomorphism mappings in form: ``{graph_node: subgraph_node}``.
+
+        Examples
+        --------
+        A triangle contains a path as a non-induced subgraph. Accounting for
+        the path's reflection symmetry halves the number of reported mappings.
+
+        >>> matcher = ISMAGS(nx.cycle_graph(3), nx.path_graph(3))
+        >>> matcher.subgraph_is_isomorphic()
+        False
+        >>> len(list(matcher.monomorphisms_iter(symmetry=False)))
+        6
+        >>> len(list(matcher.monomorphisms_iter()))
+        3
+        """
+        return self._all_morphisms(symmetry, problem_type="MONO")
+
+    def _get_node_color_candidate_sets(self, MONO_fits):
         """
         For each node in subgraph store all nodes in graph with same color
         and self-loop count. These sets should not change so we cache them.
@@ -864,7 +1030,7 @@ class ISMAGS:
         we want to avoid that. But I wonder if checking hash/equality when `add`ing
         removes the benefit of avoiding computing intersections.
         """
-        g_loops = {n: self.graph.number_of_edges(n, n) for n in self.graph}
+        loops = {n: self.graph.number_of_edges(n, n) for n in self.graph}
 
         candidate_sets = {}
         for sgn in self.subgraph.nodes:
@@ -873,9 +1039,8 @@ class ISMAGS:
                 # color has no candidates in gn
                 candidate_sets[sgn] = {frozenset()}
                 continue
-            # TODO make work for monomorphism (<=)
-            loops = self.subgraph.number_of_edges(sgn, sgn)
-            c = (n for n in self._gn_partition[sgn_color] if loops == g_loops[n])
+            L = self.subgraph.number_of_edges(sgn, sgn)
+            c = (n for n in self._gn_partition[sgn_color] if MONO_fits(L, loops[n]))
             candidate_sets[sgn] = {frozenset(c)}  # cands for sgn must be in c
         return candidate_sets
 
@@ -900,7 +1065,9 @@ class ISMAGS:
             color_degree = color_degree_by_node(graph, node_colors, edge_colors)
         return partition
 
-    def _map_nodes(self, sgn, candidate_sets, constraints, to_be_mapped=None):
+    def _map_nodes(
+        self, sgn, candidate_sets, constraints, MONO_fits, to_be_mapped=None
+    ):
         """
         Find all subgraph isomorphisms honoring constraints.
         The collection `candidate_sets` is stored as a dict-of-set-of-frozenset.
@@ -918,7 +1085,6 @@ class ISMAGS:
         subgraph_adj = subgraph._adj
         graph = self.graph
         graph_adj = graph._adj
-        self_ge_partition = self._ge_partition
         self_sge_colors = self._sge_colors
         is_directed = subgraph.is_directed()
 
@@ -938,7 +1104,7 @@ class ISMAGS:
         # Membership: any candidate must be an element of each of the frozensets.
         # Length: length of the intersection set. Use heuristic min(len of frozensets).
         # This intersection improves future length heuristics which can only occur
-        # after this element of the queu is popped. But it means future additional
+        # after this element of the queue is popped. But it means future additional
         # restriction frozensets that duplicate previous ones are not ignored.
         sgn_candidates = frozenset.intersection(*candidate_sets[sgn])
         candidate_sets[sgn] = {sgn_candidates}
@@ -947,6 +1113,22 @@ class ISMAGS:
             sgn, candidate_sets, sgn_cand_iter = queue[-1]
 
             for gn in sgn_cand_iter:
+                if MONO_fits == operator.le:
+                    if any(
+                        sgn != sgn2
+                        and sgn2 in mapping
+                        and mapping[sgn2] not in graph_adj[gn]
+                        for sgn2 in subgraph_adj[sgn]
+                    ):
+                        continue
+                    if is_directed:
+                        if any(
+                            sgn != sgn2
+                            and sgn2 in mapping
+                            and mapping[sgn2] not in graph._pred[gn]
+                            for sgn2 in subgraph._pred[sgn]
+                        ):
+                            continue
                 # We're going to try to map sgn to gn.
                 if gn in rev_mapping:
                     continue  # pragma: no cover
@@ -974,75 +1156,85 @@ class ISMAGS:
                 # update the candidate_sets for unmapped sgn based on sgn mapped
                 if not is_directed:
                     sgn_nbrs = subgraph_adj[sgn]
-                    not_gn_nbrs = graph_adj.keys() - graph_adj[gn].keys()
+                    if MONO_fits == operator.eq:
+                        not_gn_nbrs = frozenset(graph_adj.keys() - graph_adj[gn].keys())
                     for sgn2 in left_to_map:
                         if sgn2 not in sgn_nbrs:
-                            gn2_cands = not_gn_nbrs
+                            # Do not change the original set. So do not use |= operator
+                            if MONO_fits == operator.eq:
+                                cand_sets[sgn2] = cand_sets[sgn2] | {not_gn_nbrs}
                         else:
                             # edge color must match when sgn2 connected to sgn
-                            g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
                             # check if (gn, gn2) has same number of edges as (sgn, sgn2)
-                            sgn_multi_cnt = subgraph.number_of_edges(sgn, sgn2)
+                            sgn_e_cnt = subgraph.number_of_edges(sgn, sgn2)
+                            sge_color = self_sge_colors[sgn, sgn2]
                             gn2_cands = {
                                 n
-                                for e in g_edges
-                                if gn in e
-                                for n in e
-                                if n != gn
-                                if graph.number_of_edges(gn, n) == sgn_multi_cnt
+                                for n in graph_adj[gn]
+                                if self._ge_colors[gn, n] == sge_color
+                                if MONO_fits(sgn_e_cnt, graph.number_of_edges(gn, n))
                             }
-                        # Do not change the original set. So do not use |= operator
-                        cand_sets[sgn2] = cand_sets[sgn2] | {frozenset(gn2_cands)}
+                            # Do not change the original set. So do not use |= operator
+                            cand_sets[sgn2] = cand_sets[sgn2] | {frozenset(gn2_cands)}
                 else:  # directed
-                    sgn_nbrs = subgraph_adj[sgn].keys()
-                    sgn_preds = subgraph._pred[sgn].keys()
-                    not_gn_nbrs = (
-                        graph_adj.keys() - graph_adj[gn].keys() - graph._pred[gn].keys()
-                    )
+                    sgn_nbrs = subgraph_adj[sgn]
+                    sgn_preds = subgraph._pred[sgn]
+                    if MONO_fits == operator.eq:
+                        not_gn_nbrs = frozenset(
+                            graph_adj.keys()
+                            - graph_adj[gn].keys()
+                            - graph._pred[gn].keys()
+                        )
                     for sgn2 in left_to_map:
                         # edge color must match when sgn2 connected to sgn
                         if sgn2 not in sgn_nbrs:
                             if sgn2 not in sgn_preds:
-                                gn2_cands = not_gn_nbrs
+                                if MONO_fits == operator.eq:
+                                    # Do not change the original set. So do not use |=
+                                    cand_sets[sgn2] = cand_sets[sgn2] | {not_gn_nbrs}
                             else:  # sgn2 in sgn_preds
-                                sgn_multi_in = subgraph.number_of_edges(sgn2, sgn)
-                                g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
+                                sgn_in = subgraph.number_of_edges(sgn2, sgn)
+                                sge_color = self_sge_colors[sgn2, sgn]
                                 gn2_cands = {
-                                    u
-                                    for u, v in g_edges
-                                    if gn == v
-                                    if graph.number_of_edges(u, gn) == sgn_multi_in
+                                    n
+                                    for n in graph._pred[gn]
+                                    if self._ge_colors[n, gn] == sge_color
+                                    if MONO_fits(sgn_in, graph.number_of_edges(n, gn))
+                                }
+                                # Restrict predecessors as well as successors.
+                                cand_sets[sgn2] = cand_sets[sgn2] | {
+                                    frozenset(gn2_cands)
                                 }
                         else:
                             if sgn2 not in sgn_preds:
-                                sgn_multi_out = subgraph.number_of_edges(sgn, sgn2)
-                                g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
+                                sgn_out = subgraph.number_of_edges(sgn, sgn2)
+                                sge_color = self_sge_colors[sgn, sgn2]
                                 gn2_cands = {
-                                    v
-                                    for u, v in g_edges
-                                    if gn == u
-                                    if graph.number_of_edges(gn, v) == sgn_multi_out
+                                    n
+                                    for n in graph_adj[gn]
+                                    if self._ge_colors[gn, n] == sge_color
+                                    if MONO_fits(sgn_out, graph.number_of_edges(gn, n))
                                 }
                             else:
-                                sgn_multi_out = subgraph.number_of_edges(sgn, sgn2)
-                                sgn_multi_in = subgraph.number_of_edges(sgn2, sgn)
+                                sgn_out = subgraph.number_of_edges(sgn, sgn2)
+                                sgn_in = subgraph.number_of_edges(sgn2, sgn)
                                 # gn2 must have correct color in both directions
-                                g_edges = self_ge_partition[self_sge_colors[sgn, sgn2]]
+                                sge_color = self_sge_colors[sgn, sgn2]
                                 gn2_cands = {
-                                    v
-                                    for u, v in g_edges
-                                    if gn == u
-                                    if graph.number_of_edges(gn, v) == sgn_multi_out
+                                    n
+                                    for n in graph_adj[gn]
+                                    if self._ge_colors[gn, n] == sge_color
+                                    if MONO_fits(sgn_out, graph.number_of_edges(gn, n))
                                 }
-                                g_edges = self_ge_partition[self_sge_colors[sgn2, sgn]]
+                                sge_color = self_sge_colors[sgn2, sgn]
                                 gn2_cands &= {
-                                    u
-                                    for u, v in g_edges
-                                    if gn == v
-                                    if graph.number_of_edges(u, gn) == sgn_multi_in
+                                    n
+                                    for n in graph._pred[gn]
+                                    if self._ge_colors[n, gn] == sge_color
+                                    if MONO_fits(sgn_in, graph.number_of_edges(n, gn))
                                 }
-                        # Do not change the original set. So do not use |= operator
-                        cand_sets[sgn2] = cand_sets[sgn2] | {frozenset(gn2_cands)}
+                            # Do not change the original set. So do not use |= operator
+                            cand_sets[sgn2] = cand_sets[sgn2] | {frozenset(gn2_cands)}
 
                 for sgn2 in left_to_map:
                     # symmetry must match. constraints mean gn2>gn iff sgn2>sgn
@@ -1066,7 +1258,7 @@ class ISMAGS:
                     continue
                 cand_sets[new_sgn] = {new_sgn_candidates}
                 queue.append((new_sgn, cand_sets, iter(new_sgn_candidates)))
-                break
+                break  # leave "for gn in sgn_cand_iter" loop. Process next in queue
             else:  # all gn candidates tried for sgn.
                 queue.pop()
                 if sgn in mapping:
@@ -1077,6 +1269,7 @@ class ISMAGS:
         """
         Find all largest common subgraphs honoring constraints.
         """
+        MONO_fits = operator.eq
         # to_be_mapped is a set of frozensets of subgraph nodes
         if to_be_mapped is None:
             to_be_mapped = {frozenset(self.subgraph.nodes)}
@@ -1100,7 +1293,7 @@ class ISMAGS:
                 # Find the isomorphism between subgraph[to_be_mapped] <= graph
                 next_sgn = min(nodes, key=lambda n: min(len(x) for x in candidates[n]))
                 isomorphs = self._map_nodes(
-                    next_sgn, candidates, constraints, to_be_mapped=nodes
+                    next_sgn, candidates, constraints, MONO_fits, to_be_mapped=nodes
                 )
 
                 # This is effectively `yield from isomorphs`, except that we look
@@ -1128,7 +1321,7 @@ class ISMAGS:
                 # symmetry constraints. We know that for every constraint we
                 # have those subgraph nodes are equal. So whenever we would
                 # remove the lower part of a constraint, remove the higher
-                # instead. This is all dealth with by _remove_node. And because
+                # instead. This is all dealt with by _remove_node. And because
                 # left_to_be_mapped is a set, we don't do double work.
 
                 # And finally, make the subgraph one node smaller.

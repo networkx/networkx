@@ -10,6 +10,8 @@ Graph Matcher
 -------------
 .. currentmodule:: networkx.algorithms.isomorphism
 
+.. autoclass:: GraphMatcher
+
 .. autosummary::
    :toctree: generated/
 
@@ -31,6 +33,8 @@ DiGraph Matcher
 ---------------
 .. currentmodule:: networkx.algorithms.isomorphism
 
+.. autoclass:: DiGraphMatcher
+
 .. autosummary::
    :toctree: generated/
 
@@ -46,6 +50,18 @@ DiGraph Matcher
     DiGraphMatcher.match
     DiGraphMatcher.semantic_feasibility
     DiGraphMatcher.syntactic_feasibility
+
+
+MultiGraph Matchers
+-------------------
+.. currentmodule:: networkx.algorithms.isomorphism
+
+The multigraph matchers inherit all of their methods from
+:class:`GraphMatcher` and :class:`DiGraphMatcher` respectively.
+
+.. autoclass:: MultiGraphMatcher
+
+.. autoclass:: MultiDiGraphMatcher
 
 
 Match helpers

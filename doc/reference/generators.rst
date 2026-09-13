@@ -98,6 +98,7 @@ Small
    pappus_graph
    petersen_graph
    sedgewick_maze_graph
+   shrikhande_graph
    tetrahedral_graph
    truncated_cube_graph
    truncated_tetrahedron_graph
