@@ -2008,12 +2008,18 @@ def generate_random_paths(
     source : node, optional
         Node to use as the starting point for all generated paths.
         If None then starting nodes are selected uniformly at random
-        from non-isolated nodes.
+        from non-isolated nodes, or from all nodes if `path_length` is zero.
 
     Returns
     -------
     paths : generator of lists
-        Generator of `sample_size` paths each with length `path_length`.
+        Generator of `sample_size` paths, each containing `path_length + 1` nodes.
+
+    Raises
+    ------
+    NetworkXUnfeasible
+        If a path is requested with `source` set to None and no eligible
+        starting node is available.
 
     Examples
     --------
@@ -2071,18 +2077,21 @@ def generate_random_paths(
     node_map = list(G)
     num_nodes = G.number_of_nodes()
 
-    # Identify non-isolated nodes (row_sums > 0) so we never start a walk
-    # from a node with NaN transition probabilities.
-    non_isolated_indices = np.flatnonzero(row_sums.ravel() > 0)
+    # Zero-step walks can start at any node, including isolates.
+    if path_length == 0:
+        starting_indices = np.arange(num_nodes)
+    else:
+        starting_indices = np.flatnonzero(row_sums.ravel() > 0)
 
     for path_index in range(sample_size):
         if source is None:
             # Sample current vertex v = v_i uniformly at random
-            # from non-isolated nodes only.
-            if len(non_isolated_indices) == 0:
-                yield []
-                continue
-            node_index = seed.choice(non_isolated_indices)
+            # from eligible starting nodes.
+            if len(starting_indices) == 0:
+                raise nx.NetworkXUnfeasible(
+                    "Cannot generate random paths: no eligible starting nodes."
+                )
+            node_index = seed.choice(starting_indices)
             node = node_map[node_index]
         else:
             if source not in node_map:

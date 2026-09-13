@@ -50,6 +50,57 @@ def test_generate_random_paths_with_isolated_nodes():
     assert all(path[0] in (0, 1) for path in paths)
 
 
+@pytest.mark.parametrize(
+    ("G", "path_length"),
+    [
+        (nx.empty_graph(0), 0),
+        (nx.empty_graph(0), 2),
+        (nx.empty_graph(2), 2),
+        (nx.Graph([(0, 1, {"weight": 0})]), 2),
+    ],
+)
+def test_generate_random_paths_no_eligible_starting_nodes(G, path_length):
+    pytest.importorskip("numpy")
+    index_map = {}
+    paths = nx.generate_random_paths(
+        G, 2, path_length=path_length, index_map=index_map, seed=42
+    )
+    with pytest.raises(nx.NetworkXUnfeasible, match="no eligible starting nodes"):
+        next(paths)
+    assert index_map == {}
+
+
+@pytest.mark.parametrize("edges", [[], [(0, 0)], [(0, 1, {"weight": 0})]])
+@pytest.mark.parametrize("source", [None, 1])
+def test_generate_random_paths_zero_length(edges, source):
+    pytest.importorskip("numpy")
+    G = nx.empty_graph(2)
+    G.add_edges_from(edges)
+    index_map = {}
+    paths = list(
+        nx.generate_random_paths(
+            G, 2, path_length=0, index_map=index_map, source=source, seed=42
+        )
+    )
+    if source is None:
+        assert paths == [[0], [1]]
+        assert index_map == {0: {0}, 1: {1}}
+    else:
+        assert paths == [[1], [1]]
+        assert index_map == {1: {0, 1}}
+
+
+@pytest.mark.parametrize("path_length", [0, 2])
+def test_generate_random_paths_no_samples(path_length):
+    pytest.importorskip("numpy")
+    index_map = {}
+    paths = nx.generate_random_paths(
+        nx.empty_graph(0), 0, path_length=path_length, index_map=index_map, seed=42
+    )
+    assert list(paths) == []
+    assert index_map == {}
+
+
 def nmatch(n1, n2):
     return n1 == n2
 
@@ -885,6 +936,19 @@ class TestSimilarity:
             match="Panther similarity is not defined for the isolated source node 1.",
         ):
             nx.panther_similarity(G, source=1)
+
+    @pytest.mark.parametrize(
+        ("similarity", "kwargs"),
+        [
+            (nx.panther_similarity, {}),
+            (nx.panther_vector_similarity, {"D": 2}),
+        ],
+    )
+    def test_panther_similarity_no_eligible_starting_nodes(self, similarity, kwargs):
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=0)
+        with pytest.raises(nx.NetworkXUnfeasible, match="no eligible starting nodes"):
+            similarity(G, 0, k=1, seed=42, **kwargs)
 
     @pytest.mark.parametrize("num_paths", (1, 3, 10))
     @pytest.mark.parametrize("source", (0, 1))
