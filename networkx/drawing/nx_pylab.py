@@ -2150,6 +2150,7 @@ def draw_networkx_labels(
     ax=None,
     clip_on=True,
     hide_ticks=True,
+    rotation=0,
 ):
     """Draw node labels on the graph G.
 
@@ -2205,6 +2206,10 @@ def draw_networkx_labels(
         are removed from the axes. To set ticks and tick labels to the pyplot default,
         use ``hide_ticks=False``.
 
+    rotation : float or dictionary of floats (default=0)
+        Rotation of text labels in degrees (anti-clockwise). If a dictionary is
+        specified it must be keyed by node.
+
     Returns
     -------
     dict
@@ -2254,6 +2259,7 @@ def draw_networkx_labels(
     check_individual_params(alpha, "alpha")
     check_individual_params(horizontalalignment, "horizontalalignment")
     check_individual_params(verticalalignment, "verticalalignment")
+    check_individual_params(rotation, "rotation")
 
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
@@ -2278,6 +2284,7 @@ def draw_networkx_labels(
             transform=ax.transData,
             bbox=bbox,
             clip_on=clip_on,
+            rotation=get_param_value(n, rotation, "rotation"),
         )
         text_items[n] = t
 
