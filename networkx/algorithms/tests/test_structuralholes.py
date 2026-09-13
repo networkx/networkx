@@ -122,27 +122,35 @@ class TestStructuralHolesNoScipy:
     def test_constraint_isolated(self):
         G = self.G.copy()
         G.add_node(1)
-        constraint = nx.constraint(G, nodes=self.Gnodes + [1])
+        nodes = None if self.Gnodes is None else self.Gnodes + [1]
+        constraint = nx.constraint(G, nodes=nodes)
         assert math.isnan(constraint[1])
 
     def test_effective_size_isolated(self):
         G = self.G.copy()
         G.add_node(1)
         nx.set_edge_attributes(G, self.G_weights, "weight")
-        effective_size = nx.effective_size(G, weight="weight", nodes=self.Gnodes + [1])
+        nodes = None if self.Gnodes is None else self.Gnodes + [1]
+        effective_size = nx.effective_size(G, weight="weight", nodes=nodes)
         assert math.isnan(effective_size[1])
 
     def test_effective_size_borgatti_isolated(self):
         G = self.G.copy()
         G.add_node(1)
-        effective_size = nx.effective_size(G, nodes=self.Gnodes + [1])
+        nodes = None if self.Gnodes is None else self.Gnodes + [1]
+        effective_size = nx.effective_size(G, nodes=nodes)
         assert math.isnan(effective_size[1])
 
 
 class TestStructuralHoles(TestStructuralHolesNoScipy):
+    """Same tests, but with ``nodes=None`` so the vectorized code paths run."""
+
     pytest.importorskip("scipy")
-    Dnodes = None
-    Gnodes = None
+
+    def setup_method(self):
+        super().setup_method()
+        self.Dnodes = None
+        self.Gnodes = None
 
 
 @pytest.mark.parametrize("graph", (nx.Graph, nx.DiGraph))
