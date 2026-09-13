@@ -890,6 +890,56 @@ class TestSimilarity:
         actual = nx.similarity._simrank_similarity_numpy(G, source=0, target=0)
         np.testing.assert_allclose(expected, actual, atol=1e-7)
 
+    @pytest.fixture
+    def set_panther_paths(self, monkeypatch):
+        def set_paths(paths):
+            def generate_paths(G, sample_size, *, path_length, index_map, **kwargs):
+                assert sample_size == len(paths)
+                for path_index, path in enumerate(paths):
+                    assert len(path) == path_length + 1
+                    for node in path:
+                        index_map.setdefault(node, set()).add(path_index)
+                    yield path
+
+            monkeypatch.setattr(nx.similarity, "generate_random_paths", generate_paths)
+
+        return set_paths
+
+    @pytest.mark.parametrize(
+        ("path_length", "c", "expected"),
+        [(2, 0.5, 13), (5, 0.5, 19), (2, 0.01, 1)],
+    )
+    def test_panther_sample_size(self, path_length, c, expected):
+        G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (2, 4)])
+        _, _, index_map, inv_sample_size, _ = nx.similarity._prepare_panther_paths(
+            G, 0, path_length=path_length, c=c, seed=42
+        )
+        assert inv_sample_size == 1 / expected
+        assert set().union(*index_map.values()) == set(range(expected))
+
+    @pytest.mark.parametrize(
+        "similarity", [nx.panther_similarity, nx.panther_vector_similarity]
+    )
+    @pytest.mark.parametrize(
+        ("kwargs", "message"),
+        [
+            ({"path_length": 0}, "path_length must be >= 2"),
+            ({"path_length": 1}, "path_length must be >= 2"),
+            ({"delta": -0.1}, r"delta must be in \(0, 1\)"),
+            ({"delta": 0}, r"delta must be in \(0, 1\)"),
+            ({"delta": 1}, r"delta must be in \(0, 1\)"),
+            ({"delta": 1.1}, r"delta must be in \(0, 1\)"),
+            ({"eps": 0}, "eps must be positive"),
+            ({"eps": -1}, "eps must be positive"),
+            ({"c": 0}, "c must be positive"),
+            ({"c": -1}, "c must be positive"),
+        ],
+    )
+    def test_panther_invalid_parameters(self, similarity, kwargs, message):
+        G = nx.path_graph(10)
+        with pytest.raises(nx.NetworkXError, match=message):
+            similarity(G, 0, k=1, seed=42, **kwargs)
+
     def test_panther_similarity_unweighted(self):
         G = nx.Graph()
         G.add_edge(0, 1)
@@ -949,6 +999,32 @@ class TestSimilarity:
         G.add_edge(0, 1, weight=0)
         with pytest.raises(nx.NetworkXUnfeasible, match="no eligible starting nodes"):
             similarity(G, 0, k=1, seed=42, **kwargs)
+
+    @pytest.mark.parametrize(
+        ("source", "expected"),
+        [
+            (0, {1: 1.0, 2: 0.0, 3: 0.0}),
+            (2, {0: 0.0, 1: 0.0, 3: 0.0}),
+        ],
+    )
+    def test_panther_similarity_unvisited_nodes(
+        self, set_panther_paths, source, expected
+    ):
+        G = nx.Graph([(0, 1), (2, 3)])
+        set_panther_paths([[0, 1, 0]] * 3)
+        sim = nx.panther_similarity(G, source, k=3, path_length=2, eps=1, seed=42)
+        assert sim == expected
+
+    def test_panther_similarity_tied_scores(self, set_panther_paths, monkeypatch):
+        G = nx.complete_graph(3)
+        set_panther_paths([[0, 1, 2]] * 3)
+        monkeypatch.setattr(
+            np, "argpartition", lambda scores, kth: np.arange(len(scores))
+        )
+        sim = nx.panther_similarity(G, 0, k=1, path_length=2, eps=1, seed=42)
+        assert len(sim) == 1
+        assert 0 not in sim
+        assert list(sim.values()) == [1.0]
 
     @pytest.mark.parametrize("num_paths", (1, 3, 10))
     @pytest.mark.parametrize("source", (0, 1))
@@ -1141,6 +1217,47 @@ class TestSimilarity:
         assert all(score > 0 for score in sim.values())
         assert all(node in sim for node in ["v2", "v3", "v4"])
 
+    @pytest.mark.parametrize("eps", [0.5, 1.0])
+    def test_panther_vector_similarity_scores(self, set_panther_paths, eps):
+        G = nx.path_graph(4)
+        set_panther_paths([[0, 1, 0], [1, 2, 1], [2, 3, 2], [0, 1, 2]])
+        sim = nx.panther_vector_similarity(
+            G, 1, D=3, k=3, path_length=2, c=0.75 * eps**2, eps=eps, seed=42
+        )
+        # Top-3 features: [2, 2, 1]/4, [3, 2, 2]/4, [3, 2, 1]/4, [1, 1, 0]/4.
+        expected = {0: 4 / np.sqrt(2), 2: 4.0, 3: 4 / 3}
+        assert sim == pytest.approx(expected)
+
+    @pytest.mark.parametrize("source", [0, 2])
+    def test_panther_vector_similarity_unvisited_nodes(self, set_panther_paths, source):
+        G = nx.Graph([(0, 1), (2, 3)])
+        set_panther_paths([[0, 1, 0]] * 3)
+        sim = nx.panther_vector_similarity(
+            G, source, D=2, k=3, path_length=2, eps=1, seed=42
+        )
+        expected = dict.fromkeys(set(G) - {source}, 1 / np.sqrt(2))
+        expected[source + 1] = 1 / np.finfo(float).eps
+        assert sim == pytest.approx(expected)
+
+    def test_panther_vector_similarity_tied_scores(
+        self, set_panther_paths, monkeypatch
+    ):
+        from scipy.spatial import KDTree
+
+        G = nx.complete_graph(3)
+        set_panther_paths([[0, 1, 2]] * 3)
+
+        def query(self, x, k):
+            return np.zeros(k), np.arange(1, k + 1)
+
+        monkeypatch.setattr(KDTree, "query", query)
+        sim = nx.panther_vector_similarity(
+            G, 0, D=3, k=1, path_length=2, eps=1, seed=42
+        )
+        assert len(sim) == 1
+        assert 0 not in sim
+        assert list(sim.values()) == [1 / np.finfo(float).eps]
+
     def test_panther_vector_similarity_source_not_found(self):
         """Test panther_vector_similarity with non-existent source node."""
         G = nx.Graph()
@@ -1191,9 +1308,7 @@ class TestSimilarity:
 
         sim = nx.panther_vector_similarity(G, 0, D=2, k=2, seed=42)
 
-        assert len(sim) == 1
-        assert 1 in sim
-        assert sim[1] > 0
+        assert sim == {1: 1 / np.finfo(float).eps}
 
     def test_panther_vector_similarity_deterministic(self):
         """Test that results are deterministic with fixed seed."""
