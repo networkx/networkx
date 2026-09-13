@@ -174,7 +174,7 @@ def effective_size(G, nodes=None, weight=None):
             mutual_weights1 /= mutual_weights1.sum(axis=1)[:, np.newaxis]
 
             # Mutual_weights2 = Normalize mutual weights by row max
-            mutual_weights2 /= mutual_weights2.max(axis=1).toarray()
+            mutual_weights2 /= mutual_weights2.max(axis=1).toarray()[:, np.newaxis]
 
         # Calculate effective sizes
         r = 1 - (mutual_weights1 @ mutual_weights2.T).toarray()
