@@ -1,8 +1,14 @@
-"""Functions for computing measures of structural holes."""
+import math
 
 import networkx as nx
 
-__all__ = ["constraint", "local_constraint", "effective_size"]
+__all__ = [
+    "constraint",
+    "local_constraint",
+    "effective_size",
+    "hierarchy",
+    "structural_efficiency",
+]
 
 
 @nx._dispatchable(edge_attrs="weight")
@@ -372,3 +378,269 @@ def local_constraint(G, u, v, weight=None):
         for w in set(nx.all_neighbors(G, u))
     )
     return (direct + indirect) ** 2
+
+
+@nx._dispatchable(edge_attrs="weight")
+def hierarchy(G, nodes=None, weight=None):
+    r"""Returns the hierarchy of nodes in the graph ``G``.
+
+    The *hierarchy* of a node measures the extent to which constraint on
+    ego is concentrated in a single contact or a minority of contacts [1]_.
+    It uses the Coleman-Theil disorder index to quantify the inequality of
+    local constraints across contacts.
+
+    Formally, the hierarchy of a node $u$, denoted $H(u)$, is defined by
+
+    .. math::
+
+       H(u) = \frac{\sum_{v \in N(u) \setminus \{u\}} \left(\frac{c_{uv}}{C(u) / N(u)}\right) \ln\left(\frac{c_{uv}}{C(u) / N(u)}\right)}{N(u) \ln(N(u))}
+
+    where $N(u)$ is the set of neighbors of $u$ (excluding self-loops),
+    $c_{uv}$ is the local constraint on $u$ with respect to contact $v$,
+    and $C(u) = \sum_{v \in N(u) \setminus \{u\}} c_{uv}$ is the aggregate constraint on $u$ [1]_.
+    The ratio $\frac{c_{uv}}{C(u) / N(u)}$ measures how much contact $v$ is a more
+    severe source of constraint than the average contact of $u$.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The graph containing ``nodes``. Directed graphs are treated like
+        undirected graphs when computing neighbors of each node.
+
+    nodes : container, optional (default=None)
+        Container of nodes in the graph ``G`` to compute the hierarchy.
+        If None, the hierarchy of every node is computed.
+
+    weight : None or string, optional (default=None)
+        If None, all edge weights are considered equal.
+        Otherwise holds the name of the edge attribute used as weight.
+
+    Returns
+    -------
+    dict
+        Dictionary with nodes as keys and hierarchy values as values.
+
+    Notes
+    -----
+    - Isolated nodes, including nodes which only have self-loop edges, do not
+      have a well-defined hierarchy and return ``float("nan")``:
+
+      >>> G = nx.Graph([(0, 1)])
+      >>> G.add_node(2)
+      >>> nx.hierarchy(G)
+      {0: 1.0, 1: 1.0, 2: nan}
+
+    - For nodes with only a single contact ($N(u) = 1$), all constraint is
+      concentrated on that contact, and hierarchy equals 1.0.
+    - For symmetric structures where constraint is uniformly distributed across
+      all contacts (such as complete graphs $K_n$), hierarchy equals 0.0.
+
+    See also
+    --------
+    constraint
+    local_constraint
+    effective_size
+    structural_efficiency
+
+    References
+    ----------
+    .. [1] Burt, Ronald S.
+           *Structural Holes: The Social Structure of Competition.*
+           Cambridge: Harvard University Press, 1995.
+
+    .. [2] Burt, Ronald S.
+           "The Network Structure of Social Capital."
+           *Research in Organizational Behavior*, 2000.
+           http://faculty.chicagobooth.edu/ronald.burt/research/files/NSSC.pdf
+    """
+    try:
+        import numpy as np
+        import scipy.sparse as sp
+
+        has_scipy = True
+    except:
+        has_scipy = False
+
+    if nodes is None and has_scipy:
+        P = nx.adjacency_matrix(G, weight=weight)
+        mutual_weights = P + P.T
+
+        # Exclude diagonal (self-loops) for degree and contact counting
+        mw_no_diag = mutual_weights.copy().tolil()
+        mw_no_diag.setdiag(0)
+        mw_no_diag = mw_no_diag.tocsr()
+
+        degrees = np.diff(mw_no_diag.indptr)
+
+        sum_mutual_weights = np.asarray(mutual_weights.sum(axis=1)).flatten()
+        with np.errstate(divide="ignore"):
+            normalized_mw = mutual_weights.astype(float)
+            inv_sum = np.where(sum_mutual_weights == 0, 0.0, 1.0 / sum_mutual_weights)
+            normalized_mw = normalized_mw.multiply(inv_sum[:, np.newaxis])
+
+        # local_constraints: (P + P^2)^2
+        P_sq = normalized_mw @ normalized_mw
+        P_sum = normalized_mw + P_sq
+        local_constraints = P_sum.multiply(P_sum)
+
+        # Only keep constraints on actual contacts (excluding self)
+        mask = mw_no_diag > 0
+        contact_constraints = mask.multiply(local_constraints).tocsr()
+
+        # Aggregate constraint per node
+        agg_constraint = np.asarray(contact_constraints.sum(axis=1)).flatten()
+
+        h = np.zeros(len(G), dtype=float)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            valid_mask = (degrees > 1) & (agg_constraint > 0)
+
+            scale_factor = np.zeros(len(G), dtype=float)
+            scale_factor[valid_mask] = degrees[valid_mask] / agg_constraint[valid_mask]
+
+            ratio_mat = contact_constraints.multiply(scale_factor[:, np.newaxis]).tocsr()
+            ratio_data = ratio_mat.data
+            pos_mask = ratio_data > 0
+            term_data = np.zeros_like(ratio_data)
+            term_data[pos_mask] = ratio_data[pos_mask] * np.log(ratio_data[pos_mask])
+
+            term_mat = sp.csr_array(
+                (term_data, ratio_mat.indices, ratio_mat.indptr), shape=ratio_mat.shape
+            )
+            numerator = np.asarray(term_mat.sum(axis=1)).flatten()
+
+            denom = degrees * np.log(degrees)
+            h[valid_mask] = numerator[valid_mask] / denom[valid_mask]
+            h = np.clip(h, 0.0, 1.0)
+
+            h[degrees == 0] = float("nan")
+            h[degrees == 1] = 1.0
+            h[(degrees > 1) & (agg_constraint == 0)] = 0.0
+
+        return dict(zip(G, h.tolist()))
+
+    # Iterative fallback for subset of nodes or environments without SciPy
+    hierarchy_vals = {}
+    if nodes is None:
+        nodes = G
+    for v in nodes:
+        neighbors = set(nx.all_neighbors(G, v)) - {v}
+        N = len(neighbors)
+        if N == 0:
+            hierarchy_vals[v] = float("nan")
+            continue
+        if N == 1:
+            hierarchy_vals[v] = 1.0
+            continue
+        c = {w: local_constraint(G, v, w, weight=weight) for w in neighbors}
+        C = sum(c.values())
+        if C == 0:
+            hierarchy_vals[v] = 0.0
+            continue
+        mean_c = C / N
+        numerator = 0.0
+        for w in neighbors:
+            if c[w] > 0:
+                ratio = c[w] / mean_c
+                numerator += ratio * math.log(ratio)
+        denom = N * math.log(N)
+        val = numerator / denom
+        hierarchy_vals[v] = max(0.0, min(1.0, float(val)))
+    return hierarchy_vals
+
+
+@nx._dispatchable(edge_attrs="weight")
+def structural_efficiency(G, nodes=None, weight=None):
+    r"""Returns the structural efficiency of all nodes in the graph ``G``.
+
+    The *structural efficiency* of a node's ego network measures the
+    nonredundant proportion of its contacts, defined by Ronald Burt as its
+    effective size divided by its degree [1]_.
+
+    Formally, the structural efficiency of a node $u$, denoted $\eta(u)$, is
+    defined by
+
+    .. math::
+
+       \eta(u) = \frac{e(u)}{N(u)}
+
+    where $e(u)$ is the effective size of node $u$, and $N(u)$ is the number
+    of contacts (degree excluding self-loops) of $u$ [1]_.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The graph containing ``nodes``. Directed graphs are treated like
+        undirected graphs when computing neighbors of each node.
+
+    nodes : container, optional (default=None)
+        Container of nodes in the graph ``G`` to compute efficiency.
+        If None, the structural efficiency of every node is computed.
+
+    weight : None or string, optional (default=None)
+        If None, all edge weights are considered equal.
+        Otherwise holds the name of the edge attribute used as weight.
+
+    Returns
+    -------
+    dict
+        Dictionary with nodes as keys and structural efficiency as values.
+
+    Notes
+    -----
+    Isolated nodes, including nodes which only have self-loop edges, do not
+    have a well-defined efficiency and return ``float("nan")``:
+
+    >>> G = nx.path_graph(3)
+    >>> G.add_node(3)
+    >>> nx.structural_efficiency(G)
+    {0: 1.0, 1: 1.0, 2: 1.0, 3: nan}
+
+    See also
+    --------
+    effective_size
+    constraint
+    hierarchy
+
+    References
+    ----------
+    .. [1] Burt, Ronald S.
+           *Structural Holes: The Social Structure of Competition.*
+           Cambridge: Harvard University Press, 1995.
+    """
+    try:
+        import numpy as np
+
+        has_scipy = True
+    except:
+        has_scipy = False
+
+    if nodes is None and has_scipy:
+        esize_dict = effective_size(G, weight=weight)
+        P = nx.adjacency_matrix(G, weight=weight)
+        mutual_weights = P + P.T
+        mw_no_diag = mutual_weights.copy().tolil()
+        mw_no_diag.setdiag(0)
+        degrees = np.diff(mw_no_diag.tocsr().indptr)
+
+        esizes = np.array([esize_dict[n] for n in G], dtype=float)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            eff = np.where(degrees == 0, float("nan"), esizes / degrees)
+        return dict(zip(G, eff.tolist()))
+
+    # Iterative fallback
+    esize = effective_size(G, nodes=nodes, weight=weight)
+    if nodes is None:
+        nodes = G
+    eff = {}
+    for v in nodes:
+        neighbors = set(nx.all_neighbors(G, v)) - {v}
+        N = len(neighbors)
+        if N == 0 or math.isnan(esize[v]):
+            eff[v] = float("nan")
+        else:
+            eff[v] = esize[v] / N
+    return eff
+
+
+# Alias inside structuralholes module
+efficiency = structural_efficiency

@@ -138,6 +138,78 @@ class TestStructuralHolesNoScipy:
         effective_size = nx.effective_size(G, nodes=self.Gnodes + [1])
         assert math.isnan(effective_size[1])
 
+    def test_hierarchy_directed(self):
+        h = nx.hierarchy(self.D, nodes=self.Dnodes)
+        assert h[0] == pytest.approx(0.110, abs=1e-3)
+        assert h[1] == pytest.approx(0.110, abs=1e-3)
+        assert h[2] == pytest.approx(0.0, abs=1e-3)
+
+    def test_structural_efficiency_directed(self):
+        eff = nx.structural_efficiency(self.D, nodes=self.Dnodes)
+        assert eff[0] == pytest.approx(0.583, abs=1e-3)
+        assert eff[1] == pytest.approx(0.583, abs=1e-3)
+        assert eff[2] == pytest.approx(0.500, abs=1e-3)
+
+    def test_hierarchy_weighted_directed(self):
+        D = self.D.copy()
+        nx.set_edge_attributes(D, self.D_weights, "weight")
+        h = nx.hierarchy(D, weight="weight", nodes=self.Dnodes)
+        assert h[0] == pytest.approx(0.057, abs=1e-3)
+        assert h[1] == pytest.approx(0.166, abs=1e-3)
+        assert h[2] == pytest.approx(0.035, abs=1e-3)
+
+    def test_structural_efficiency_weighted_directed(self):
+        D = self.D.copy()
+        nx.set_edge_attributes(D, self.D_weights, "weight")
+        eff = nx.structural_efficiency(D, weight="weight", nodes=self.Dnodes)
+        assert eff[0] == pytest.approx(0.783, abs=1e-3)
+        assert eff[1] == pytest.approx(0.542, abs=1e-3)
+        assert eff[2] == pytest.approx(0.500, abs=1e-3)
+
+    def test_hierarchy_undirected(self):
+        h = nx.hierarchy(self.G, nodes=self.Gnodes)
+        assert h["A"] == pytest.approx(0.168, abs=1e-3)
+        assert h["B"] == pytest.approx(0.074, abs=1e-3)
+        assert h["G"] == pytest.approx(0.095, abs=1e-3)
+        assert h["C"] == pytest.approx(1.0, abs=1e-3)
+
+    def test_structural_efficiency_undirected(self):
+        eff = nx.structural_efficiency(self.G, nodes=self.Gnodes)
+        assert eff["A"] == pytest.approx(0.625, abs=1e-3)
+        assert eff["B"] == pytest.approx(0.556, abs=1e-3)
+        assert eff["G"] == pytest.approx(0.778, abs=1e-3)
+        assert eff["C"] == pytest.approx(1.0, abs=1e-3)
+
+    def test_hierarchy_weighted_undirected(self):
+        G = self.G.copy()
+        nx.set_edge_attributes(G, self.G_weights, "weight")
+        h = nx.hierarchy(G, weight="weight", nodes=self.Gnodes)
+        assert h["A"] == pytest.approx(0.395, abs=1e-3)
+        assert h["B"] == pytest.approx(0.421, abs=1e-3)
+        assert h["G"] == pytest.approx(0.125, abs=1e-3)
+        assert h["C"] == pytest.approx(1.0, abs=1e-3)
+
+    def test_structural_efficiency_weighted_undirected(self):
+        G = self.G.copy()
+        nx.set_edge_attributes(G, self.G_weights, "weight")
+        eff = nx.structural_efficiency(G, weight="weight", nodes=self.Gnodes)
+        assert eff["A"] == pytest.approx(0.619, abs=1e-3)
+        assert eff["B"] == pytest.approx(0.557, abs=1e-3)
+        assert eff["G"] == pytest.approx(0.912, abs=1e-3)
+        assert eff["C"] == pytest.approx(1.0, abs=1e-3)
+
+    def test_hierarchy_isolated(self):
+        G = self.G.copy()
+        G.add_node(1)
+        h = nx.hierarchy(G, nodes=self.Gnodes + [1])
+        assert math.isnan(h[1])
+
+    def test_structural_efficiency_isolated(self):
+        G = self.G.copy()
+        G.add_node(1)
+        eff = nx.structural_efficiency(G, nodes=self.Gnodes + [1])
+        assert math.isnan(eff[1])
+
 
 class TestStructuralHoles(TestStructuralHolesNoScipy):
     pytest.importorskip("scipy")
@@ -189,3 +261,88 @@ def test_constraint_isolated_node_with_selfloop_weighted_using_nodes_kwarg(graph
     G = graph()
     G.add_weighted_edges_from([(0, 0, 10)])
     assert nx.constraint(G, nodes=[0])[0] == 4
+
+
+def test_hierarchy_complete_graph():
+    for n in (3, 4, 6):
+        G = nx.complete_graph(n)
+        h = nx.hierarchy(G)
+        for node, val in h.items():
+            assert val == pytest.approx(0.0, abs=1e-6)
+
+
+def test_hierarchy_star_graph():
+    G = nx.star_graph(5)
+    h = nx.hierarchy(G)
+    assert h[0] == pytest.approx(0.0, abs=1e-6)
+    for leaf in range(1, 6):
+        assert h[leaf] == pytest.approx(1.0, abs=1e-6)
+
+
+def test_hierarchy_path_graph():
+    G = nx.path_graph(4)
+    h = nx.hierarchy(G)
+    assert h[0] == pytest.approx(1.0, abs=1e-6)
+    assert h[1] == pytest.approx(0.0, abs=1e-6)
+    assert h[2] == pytest.approx(0.0, abs=1e-6)
+    assert h[3] == pytest.approx(1.0, abs=1e-6)
+
+
+def test_structural_efficiency_complete_graph():
+    for n in (3, 4, 6):
+        G = nx.complete_graph(n)
+        eff = nx.structural_efficiency(G)
+        for node, val in eff.items():
+            assert val == pytest.approx(1.0 / (n - 1), abs=1e-6)
+
+
+def test_structural_efficiency_star_graph():
+    G = nx.star_graph(5)
+    eff = nx.structural_efficiency(G)
+    for node, val in eff.items():
+        assert val == pytest.approx(1.0, abs=1e-6)
+
+
+@pytest.mark.parametrize("graph", (nx.Graph, nx.DiGraph))
+@pytest.mark.parametrize("nodes", (None, [0]))
+def test_hierarchy_isolated_node_with_selfloop(graph, nodes):
+    G = graph([(0, 0)])
+    assert math.isnan(nx.hierarchy(G, nodes=nodes)[0])
+
+
+@pytest.mark.parametrize("graph", (nx.Graph, nx.DiGraph))
+@pytest.mark.parametrize("nodes", (None, [0]))
+def test_structural_efficiency_isolated_node_with_selfloop(graph, nodes):
+    G = graph([(0, 0)])
+    assert math.isnan(nx.structural_efficiency(G, nodes=nodes)[0])
+
+
+def test_structural_efficiency_alias():
+    from networkx.algorithms.structuralholes import efficiency, structural_efficiency
+
+    assert efficiency is structural_efficiency
+
+
+def test_hierarchy_scipy_sparse_parity():
+    pytest.importorskip("scipy")
+    import numpy as np
+
+    for G in [
+        nx.karate_club_graph(),
+        nx.erdos_renyi_graph(20, 0.3, seed=42),
+        nx.path_graph(8),
+    ]:
+        h_all = nx.hierarchy(G)
+        h_iter = nx.hierarchy(G, nodes=list(G))
+        eff_all = nx.structural_efficiency(G)
+        eff_iter = nx.structural_efficiency(G, nodes=list(G))
+
+        for n in G:
+            if np.isnan(h_all[n]):
+                assert np.isnan(h_iter[n])
+            else:
+                assert h_all[n] == pytest.approx(h_iter[n], abs=1e-7)
+            if np.isnan(eff_all[n]):
+                assert np.isnan(eff_iter[n])
+            else:
+                assert eff_all[n] == pytest.approx(eff_iter[n], abs=1e-7)
