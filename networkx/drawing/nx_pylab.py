@@ -2252,6 +2252,8 @@ def draw_networkx_labels(
     check_individual_params(font_weight, "font_weight")
     check_individual_params(font_family, "font_family")
     check_individual_params(alpha, "alpha")
+    check_individual_params(horizontalalignment, "horizontalalignment")
+    check_individual_params(verticalalignment, "verticalalignment")
 
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
@@ -2267,8 +2269,12 @@ def draw_networkx_labels(
             family=get_param_value(n, font_family, "font_family"),
             weight=get_param_value(n, font_weight, "font_weight"),
             alpha=get_param_value(n, alpha, "alpha"),
-            horizontalalignment=horizontalalignment,
-            verticalalignment=verticalalignment,
+            horizontalalignment=get_param_value(
+                n, horizontalalignment, "horizontalalignment"
+            ),
+            verticalalignment=get_param_value(
+                n, verticalalignment, "verticalalignment"
+            ),
             transform=ax.transData,
             bbox=bbox,
             clip_on=clip_on,
