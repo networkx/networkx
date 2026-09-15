@@ -3,6 +3,41 @@ import pytest
 import networkx as nx
 
 
+@pytest.mark.slow
+def test_kleitman_wang_randomized_degree_gives_all_graphs():
+    """Test that havel_hakimi_graph with `randomize=True` effectively probes
+    the distribution of all possible graphs with a given degree sequence."""
+    # There are exactly 4 unique (nonisomorphic) graphs with the following
+    # degree sequence
+    z = [2, 2, 2, 2, 3, 3]
+    # They are:
+    barbell = nx.Graph([(0, 1), (0, 5), (1, 5), (5, 4), (4, 3), (3, 2), (4, 2)])
+    ladder = nx.Graph([(0, 3), (3, 4), (4, 5), (5, 0), (5, 1), (1, 2), (2, 4)])
+    c5_hat = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 5), (5, 1), (4, 0), (5, 0)])
+    rocket = nx.Graph([(0, 4), (0, 2), (2, 5), (4, 1), (4, 3), (5, 1), (5, 3)])
+    expected = {barbell, ladder, c5_hat, rocket}
+    # double-checkt that they all have the correct degree sequence
+    assert all(sorted(z) == sorted(d for _, d in G.degree) for G in expected)
+
+    # Stochastically sample the distribution of graphs with the given degree
+    # sequence with `randomize=True` (unseeded). We expect to recover all possible
+    # graphs with this degree distribution with enough samples.
+    seen = []
+    for _ in range(1000):
+        G = nx.havel_hakimi_graph(z, randomize=True)
+        if any(nx.is_isomorphic(g, G) for g in seen):
+            continue
+        seen.append(G)
+
+    # Expect exactly 4 results
+    assert len(seen) == len(expected)
+
+    # And that each of the results is one of the 4 expected graphs
+    {nx.weisfeiler_lehman_graph_hash(G) for G in expected} == {
+        nx.weisfeiler_lehman_graph_hash(H) for H in seen
+    }
+
+
 class TestConfigurationModel:
     """Unit tests for the :func:`~networkx.configuration_model`
     function.
@@ -123,6 +158,31 @@ def test_havel_hakimi_construction():
     G = nx.havel_hakimi_graph(z)
 
     pytest.raises(nx.NetworkXError, nx.havel_hakimi_graph, z, create_using=nx.DiGraph())
+
+    # Valid sequence: test accepted create_using parameter
+    G = nx.havel_hakimi_graph(z, create_using=nx.Graph)
+    assert len(G) == len(z)
+
+    # Valid sequence: test if correct number and degrees of nodes created
+    # when randomize=True
+    z = [5, 4, 3, 3, 3, 2, 2, 2]
+    G = nx.havel_hakimi_graph(z, randomize=True)
+    assert len(G) == len(z)
+    assert sorted([d for _, d in G.degree]) == sorted(z)
+    assert nx.number_of_selfloops(G) == 0
+    # Valid sequence: Test 0 degree vertex handling when randomize=True
+    z = [2, 2, 2, 2, 0, 0]
+    G = nx.havel_hakimi_graph(z, randomize=True)
+    assert len(G) == len(z)
+    assert sorted([d for _, d in G.degree]) == sorted(z)
+    assert nx.number_of_selfloops(G) == 0
+
+    # Valid sequence: test if specific seed produces reproducible results
+    # when randomize=True
+    z = [7, 7, 5, 5, 3, 3, 2, 2, 1, 1]
+    G1 = nx.havel_hakimi_graph(z, randomize=True, seed=86)
+    G2 = nx.havel_hakimi_graph(z, randomize=True, seed=86)
+    assert sorted(G1.edges()) == sorted(G2.edges())
 
 
 def test_directed_havel_hakimi():
