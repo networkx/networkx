@@ -238,38 +238,8 @@ class Graph:
     Each of these three dicts can be replaced in a subclass by a user defined
     dict-like object. In general, the dict-like features should be
     maintained but extra features can be added. To replace one of the
-    dicts create a new graph class by changing the class(!) variable
-    holding the factory for that dict-like structure.
-
-    node_dict_factory : function, (default: dict)
-        Factory function to be used to create the dict containing node
-        attributes, keyed by node id.
-        It should require no arguments and return a dict-like object
-
-    node_attr_dict_factory: function, (default: dict)
-        Factory function to be used to create the node attribute
-        dict which holds attribute values keyed by attribute name.
-        It should require no arguments and return a dict-like object
-
-    adjlist_outer_dict_factory : function, (default: dict)
-        Factory function to be used to create the outer-most dict
-        in the data structure that holds adjacency info keyed by node.
-        It should require no arguments and return a dict-like object.
-
-    adjlist_inner_dict_factory : function, (default: dict)
-        Factory function to be used to create the adjacency list
-        dict which holds edge data keyed by neighbor.
-        It should require no arguments and return a dict-like object
-
-    edge_attr_dict_factory : function, (default: dict)
-        Factory function to be used to create the edge attribute
-        dict which holds attribute values keyed by attribute name.
-        It should require no arguments and return a dict-like object.
-
-    graph_attr_dict_factory : function, (default: dict)
-        Factory function to be used to create the graph attribute
-        dict which holds attribute values keyed by attribute name.
-        It should require no arguments and return a dict-like object.
+    dicts create a new graph class by overriding the factory methods
+    for that dict-like structure.
 
     Typically, if your extension doesn't impact the data structure all
     methods will inherit without issue except: `to_directed/to_undirected`.
@@ -294,10 +264,8 @@ class Graph:
     >>> class ThinGraph(nx.Graph):
     ...     all_edge_dict = {"weight": 1}
     ...
-    ...     def single_edge_dict(self):
+    ...     def edge_attr_dict_factory(self):
     ...         return self.all_edge_dict
-    ...
-    ...     edge_attr_dict_factory = single_edge_dict
     >>> G = ThinGraph()
     >>> G.add_edge(2, 1)
     >>> G[2][1]
@@ -312,12 +280,38 @@ class Graph:
     _adj = _CachedPropertyResetterAdj()
     _node = _CachedPropertyResetterNode()
 
-    node_dict_factory = dict
-    node_attr_dict_factory = dict
-    adjlist_outer_dict_factory = dict
-    adjlist_inner_dict_factory = dict
-    edge_attr_dict_factory = dict
-    graph_attr_dict_factory = dict
+    def node_dict_factory(self):
+        """Factory function to be used to create the dict containing node attributes, keyed by node id."""
+        return {}
+
+    def node_attr_dict_factory(self):
+        """Factory function to be used to create the node attribute
+        dict which holds attribute values keyed by attribute name.
+        It should return a dict-like object"""
+        return {}
+
+    def adjlist_outer_dict_factory(self):
+        """Factory function to be used to create the outer-most dict
+        in the data structure that holds adjacency info keyed by node."""
+        return {}
+
+    def adjlist_inner_dict_factory(self):
+        """Factory function to be used to create the adjacency list
+        dict which holds edge data keyed by neighbor.
+        It should return a dict-like object"""
+        return {}
+
+    def edge_attr_dict_factory(self):
+        """Factory function to be used to create the edge attribute
+        dict which holds attribute values keyed by attribute name.
+        It should return a dict-like object."""
+        return {}
+
+    def graph_attr_dict_factory(self):
+        """Factory function to be used to create the graph attribute
+        dict which holds attribute values keyed by attribute name.
+        It should return a dict-like object."""
+        return {}
 
     def to_directed_class(self):
         """Returns the class to use for empty directed copies.
