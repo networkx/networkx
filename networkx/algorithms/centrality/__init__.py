@@ -12,6 +12,7 @@ from .harmonic import *
 from .katz import *
 from .load import *
 from .percolation import *
+from .power import *
 from .reaching import *
 from .second_order import *
 from .subgraph_alg import *
