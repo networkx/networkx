@@ -103,7 +103,7 @@ def cycle_basis(G, root=None):
 
 
 @nx._dispatchable
-def simple_cycles(G, length_bound=None):
+def simple_cycles(G, length_bound=None, min_length=None):
     """Find simple cycles (elementary circuits) of a graph.
 
     A "simple cycle", or "elementary circuit", is a closed path where
@@ -141,6 +141,11 @@ def simple_cycles(G, length_bound=None):
        If `length_bound` is an int, generate all simple cycles of `G` with length at
        most `length_bound`.  Otherwise, generate all simple cycles of `G`.
 
+    min_length : int or None, optional (default=None)
+       If `min_length` is an int, generate all simple cycles of `G` with length at
+       least `min_length`.  The lower bound is applied *after* the search, so it
+       does not prune the search space (unlike `length_bound`).
+
     Yields
     ------
     list of nodes
@@ -161,17 +166,27 @@ def simple_cycles(G, length_bound=None):
     >>> sorted(nx.simple_cycles(H))
     [[0, 1, 2], [0, 2], [1, 2]]
 
+    Use ``min_length`` to get only cycles of at least a certain length:
+
+    >>> sorted(nx.simple_cycles(G, min_length=2))
+    [[0, 1, 2], [0, 2], [1, 2]]
+
     Notes
     -----
     When `length_bound` is None, the time complexity is $O((n+e)(c+1))$ for $n$
     nodes, $e$ edges and $c$ simple circuits.  Otherwise, when ``length_bound > 1``,
     the time complexity is $O((c+n)(k-1)d^k)$ where $d$ is the average degree of
-    the nodes of `G` and $k$ = `length_bound`.
+    the nodes of `G$ and $k$ = `length_bound`.
+
+    The `min_length` parameter filters the output *after* the search completes.
+    It does **not** reduce the search space, so the time complexity remains the
+    same regardless of `min_length`.  If you need both lower and upper bounds,
+    pass both `min_length` and `length_bound`.
 
     Raises
     ------
     ValueError
-        when ``length_bound < 0``.
+        when ``length_bound < 0`` or ``min_length < 1``.
 
     References
     ----------
@@ -182,12 +197,12 @@ def simple_cycles(G, length_bound=None):
        A. Gupta and T. Suzumura https://arxiv.org/abs/2105.10094
     .. [3] Enumerating the cycles of a digraph: a new preprocessing strategy.
        G. Loizou and P. Thanish, Information Sciences, v. 27, 163-182, 1982.
-    .. [4] A search strategy for the elementary cycles of a directed graph.
+    .. [4] A search strategy for the elementary cycles of a digraph.
        J.L. Szwarcfiter and P.E. Lauer, BIT NUMERICAL MATHEMATICS,
        v. 16, no. 2, 192-204, 1976.
     .. [5] Optimal Listing of Cycles and st-Paths in Undirected Graphs
         R. Ferreira and R. Grossi and A. Marino and N. Pisanti and R. Rizzi and
-        G. Sacomoto https://arxiv.org/abs/1205.2766
+        G. Sacomoto https://arxiv.org/abs/1205.2765
 
     See Also
     --------
@@ -200,6 +215,9 @@ def simple_cycles(G, length_bound=None):
             return
         elif length_bound < 0:
             raise ValueError("length bound must be non-negative")
+
+    if min_length is not None and min_length < 1:
+        raise ValueError("min_length must be >= 1")
 
     directed = G.is_directed()
     yield from ([v] for v, Gv in G.adj.items() if v in Gv)
@@ -232,12 +250,12 @@ def simple_cycles(G, length_bound=None):
         return
 
     if directed:
-        yield from _directed_cycle_search(G, length_bound)
+        yield from _directed_cycle_search(G, length_bound, min_length)
     else:
-        yield from _undirected_cycle_search(G, length_bound)
+        yield from _undirected_cycle_search(G, length_bound, min_length)
 
 
-def _directed_cycle_search(G, length_bound):
+def _directed_cycle_search(G, length_bound, min_length=None):
     """A dispatch function for `simple_cycles` for directed graphs.
 
     We generate all cycles of G through binary partition.
@@ -266,6 +284,9 @@ def _directed_cycle_search(G, length_bound):
        If length_bound is an int, generate all simple cycles of G with length at most length_bound.
        Otherwise, generate all simple cycles of G.
 
+    min_length : int or None, optional (default=None)
+       If min_length is an int, yield only cycles of length at least min_length.
+
     Yields
     ------
     list of nodes
@@ -279,15 +300,15 @@ def _directed_cycle_search(G, length_bound):
         Gc = G.subgraph(c)
         v = next(iter(c))
         if length_bound is None:
-            yield from _johnson_cycle_search(Gc, [v])
+            yield from _johnson_cycle_search(Gc, [v], min_length)
         else:
-            yield from _bounded_cycle_search(Gc, [v], length_bound)
+            yield from _bounded_cycle_search(Gc, [v], length_bound, min_length)
         # delete v after searching G, to make sure we can find v
         G.remove_node(v)
         components.extend(c for c in scc(Gc) if len(c) >= 2)
 
 
-def _undirected_cycle_search(G, length_bound):
+def _undirected_cycle_search(G, length_bound, min_length=None):
     """A dispatch function for `simple_cycles` for undirected graphs.
 
     We generate all cycles of G through binary partition.
@@ -331,9 +352,9 @@ def _undirected_cycle_search(G, length_bound):
         G.remove_edge(*uv)
         # delete (u, v) before searching G, to avoid fake 3-cycles [u, v, u]
         if length_bound is None:
-            yield from _johnson_cycle_search(Gc, uv)
+            yield from _johnson_cycle_search(Gc, uv, min_length)
         else:
-            yield from _bounded_cycle_search(Gc, uv, length_bound)
+            yield from _bounded_cycle_search(Gc, uv, length_bound, min_length)
         components.extend(c for c in bcc(Gc) if len(c) >= 3)
 
 
@@ -353,7 +374,7 @@ class _NeighborhoodCache(dict):
         return Gv
 
 
-def _johnson_cycle_search(G, path):
+def _johnson_cycle_search(G, path, min_length=None):
     """The main loop of the cycle-enumeration algorithm of Johnson.
 
     Parameters
@@ -363,6 +384,9 @@ def _johnson_cycle_search(G, path):
 
     path : list
        A cycle prefix.  All cycles generated will begin with this prefix.
+
+    min_length : int or None, optional (default=None)
+       If min_length is an int, yield only cycles of length at least min_length.
 
     Yields
     ------
@@ -387,7 +411,8 @@ def _johnson_cycle_search(G, path):
         nbrs = stack[-1]
         for w in nbrs:
             if w == start:
-                yield path[:]
+                if min_length is None or len(path) >= min_length:
+                    yield path[:]
                 closed[-1] = True
             elif w not in blocked:
                 path.append(w)
@@ -413,7 +438,7 @@ def _johnson_cycle_search(G, path):
                     B[w].add(v)
 
 
-def _bounded_cycle_search(G, path, length_bound):
+def _bounded_cycle_search(G, path, length_bound, min_length=None):
     """The main loop of the cycle-enumeration algorithm of Gupta and Suzumura.
 
     Parameters
@@ -426,6 +451,9 @@ def _bounded_cycle_search(G, path, length_bound):
 
     length_bound: int
         A length bound.  All cycles generated will have length at most length_bound.
+
+    min_length : int or None, optional (default=None)
+       If min_length is an int, yield only cycles of length at least min_length.
 
     Yields
     ------
@@ -448,7 +476,8 @@ def _bounded_cycle_search(G, path, length_bound):
         nbrs = stack[-1]
         for w in nbrs:
             if w == start:
-                yield path[:]
+                if min_length is None or len(path) >= min_length:
+                    yield path[:]
                 blen[-1] = 1
             elif len(path) < lock.get(w, length_bound):
                 path.append(w)
