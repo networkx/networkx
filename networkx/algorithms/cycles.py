@@ -297,6 +297,9 @@ def _directed_cycle_search(G, length_bound, min_length=None):
     components = [c for c in scc(G) if len(c) >= 2]
     while components:
         c = components.pop()
+        # Optimization: skip components that cannot contain cycles of length >= min_length
+        if min_length is not None and len(c) < min_length:
+            continue
         Gc = G.subgraph(c)
         v = next(iter(c))
         if length_bound is None:
@@ -347,6 +350,9 @@ def _undirected_cycle_search(G, length_bound, min_length=None):
     components = [c for c in bcc(G) if len(c) >= 3]
     while components:
         c = components.pop()
+        # Optimization: skip components that cannot contain cycles of length >= min_length
+        if min_length is not None and len(c) < min_length:
+            continue
         Gc = G.subgraph(c)
         uv = list(next(iter(Gc.edges)))
         G.remove_edge(*uv)

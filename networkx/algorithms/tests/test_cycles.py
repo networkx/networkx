@@ -703,6 +703,22 @@ class TestCycleEnumeration:
         G2 = nx.DiGraph([(0, 1), (1, 0)])
         assert sorted(nx.simple_cycles(G2, min_length=1)) == [[0, 1]]
 
+    def test_simple_cycles_min_length_skips_small_components(self):
+        # A graph with a small component (2 nodes) and a large component (5 nodes)
+        # When min_length=3, the small component should be skipped entirely
+        G = nx.DiGraph()
+        # Small component: 2 nodes, 1 edge (no cycle)
+        G.add_edge('a', 'b')
+        # Large component: 5 nodes forming a cycle
+        G.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 5), (5, 1)])
+        
+        result = list(nx.simple_cycles(G, min_length=3))
+        # Only the 5-cycle should be found
+        assert result == [[1, 2, 3, 4, 5]]
+        
+        # With min_length=6, no cycles should be found
+        assert list(nx.simple_cycles(G, min_length=6)) == []
+
     def test_simple_cycles_min_length_error(self):
         with pytest.raises(ValueError):
             G = nx.DiGraph()
