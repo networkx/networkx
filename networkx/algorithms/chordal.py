@@ -75,7 +75,10 @@ def is_chordal(G):
     search. It returns False when it finds that the separator for any node
     is not a clique.  Based on the algorithms in [1]_.
 
-    Self loops are ignored.
+    Self loops are ignored. Think about carefully if they exist in your graph.
+    Chordal graphs (without self-loops) are strongly related with perfect graphs,
+    perfect elimination orderings, holes, etc. The presence of self-loops breaks
+    important relations.
 
     References
     ----------
