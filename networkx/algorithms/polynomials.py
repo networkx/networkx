@@ -27,7 +27,7 @@ from collections import deque
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ["tutte_polynomial", "chromatic_polynomial"]
+__all__ = ["chromatic_polynomial", "matching_polynomial", "tutte_polynomial"]
 
 
 @not_implemented_for("directed")
@@ -50,7 +50,7 @@ def tutte_polynomial(G):
     Def 1 (rank-nullity expansion): For `G` an undirected graph, `n(G)` the
     number of vertices of `G`, `E` the edge set of `G`, `V` the vertex set of
     `G`, and `c(A)` the number of connected components of the graph with vertex
-    set `V` and edge set `A` [3]_:
+    set `V` and edge set `A [3]_:
 
     .. math::
 
@@ -197,7 +197,7 @@ def chromatic_polynomial(G):
     Def 1 (explicit formula):
     For `G` an undirected graph, `c(G)` the number of connected components of
     `G`, `E` the edge set of `G`, and `G(S)` the spanning subgraph of `G` with
-    edge set `S` [1]_:
+    edge set `S`_ [1]_:
 
     .. math::
 
@@ -209,13 +209,13 @@ def chromatic_polynomial(G):
     and `k_i` the number of distinct ways to color the vertices of `G` with `i`
     unique colors (for `i` a natural number at most `n(G)`), `X_G(x)` is the
     unique Lagrange interpolating polynomial of degree `n(G)` through the points
-    `(0, k_0), (1, k_1), \dots, (n(G), k_{n(G)})` [2]_.
+    `(0, k_0), (1, k_1), \dots, (n(G), k_{n(G)})`_ [2]_.
 
 
     Def 3 (chromatic recurrence):
     For `G` an undirected graph, `G-e` the graph obtained from `G` by deleting
     edge `e`, `G/e` the graph obtained from `G` by contracting edge `e`, `n(G)`
-    the number of vertices of `G`, and `e(G)` the number of edges of `G` [3]_:
+    the number of vertices of `G`, and `e(G)` the number of edges of `G`_ [3]_:
 
     .. math::
         X_G(x) = \begin{cases}
@@ -255,7 +255,7 @@ def chromatic_polynomial(G):
 
     The chromatic polynomial may take negative arguments, though evaluations
     may not have chromatic interpretations. For instance, ``X_G(-1)`` enumerates
-    the acyclic orientations of `G` [7]_.
+    the acyclic orientations of `G`_ [7]_.
 
     References
     ----------
@@ -304,3 +304,144 @@ def chromatic_polynomial(G):
             stack.append(G)
             stack.append(C)
     return polynomial
+
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
+def matching_polynomial(G):
+    r"""Returns the matching polynomial of `G`
+
+    This function computes the matching polynomial via an iterative version of
+    the deletion-edge-vertex recurrence.
+
+    The matching polynomial `\mu_G(x)` is a fundamental graph polynomial
+    invariant in one variable. If `p(G, k)` denotes the number of `k`-matchings
+    (matchings with `k` edges) in `G`, the matching polynomial is defined as
+    [1]_:
+
+    .. math::
+
+        \mu_G(x) = \sum_{k \ge 0} (-1)^k p(G, k) x^{n(G) - 2k}
+
+    There are several equivalent definitions; here are three:
+
+    Def 1 (explicit formula): For `G` an undirected graph, `n(G)` the number of
+    vertices of `G`, `E` the edge set of `G`, and `p(G, k)` the number of
+    k-matchings in `G` (i.e., matchings containing exactly `k` edges) [1]_:
+
+    .. math::
+
+        \mu_G(x) = \sum_{k=0}^{\lfloor n(G)/2 \rfloor} (-1)^k p(G, k) x^{n(G) - 2k}
+
+    Def 2 (generating function of matchings): For `G` an undirected graph,
+    `\mu_G(x)` is the ordinary generating function of matchings in `G`, weighted
+    by size and signed by parity [2]_.
+
+    Def 3 (deletion-edge-vertex recurrence): For `G` an undirected graph,
+    `e = \{u, v\}` an edge of `G`, `G-e` the graph obtained from `G` by deleting
+    edge `e`, and `G-\{u,v\}` the graph obtained from `G` by deleting vertices
+    `u` and `v` and all their incident edges [1]_ [3]_:
+
+    .. math::
+        \mu_G(x) = \begin{cases}
+    	   x^{n(G)}, & \text{if $E(G) = \emptyset$} \\
+           \mu_{G-e}(x) - \mu_{G-\{u,v\}}(x), & \text{otherwise, for an arbitrary edge $e = \{u,v\} \in E(G)$}
+        \end{cases}
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    Returns
+    -------
+    instance of `sympy.core.add.Add`
+        A Sympy expression representing the matching polynomial for `G`.
+
+    Examples
+    --------
+    >>> C = nx.cycle_graph(5)
+    >>> nx.matching_polynomial(C)
+    x**5 - 5*x**3 + 5*x
+
+    >>> G = nx.complete_graph(4)
+    >>> nx.matching_polynomial(G)
+    x**4 - 6*x**2 + 3
+
+    >>> P = nx.path_graph(4)
+    >>> nx.matching_polynomial(P)
+    x**4 - 3*x**2 + 1
+
+    Notes
+    -----
+    Some specializations of the matching polynomial:
+
+    - `|\mu_G(0)|` counts the number of perfect matchings of `G` when `n(G)` is
+      even, and `|\mu_G(0)| = 0` when `n(G)` is odd.
+    - `\mu_G(1)` equals the alternating sum `\sum_k (-1)^k p(G, k)`.
+    - All zeros of `\mu_G(x)` are real [4]_.
+    - The matching polynomials of a graph `G` determine the matching polynomials
+      of its complement `\overline{G}` via Godsil's duality theorem [3]_.
+
+    The matching polynomial is related to the characteristic polynomial of the
+    adjacency matrix. In particular, for trees, the matching polynomial equals
+    the characteristic polynomial [4]_.
+
+    Edge deletion and vertex deletion are introduced in [5]_.
+    The matching polynomial and its properties are discussed in [1]_.
+    Combinatorial applications are discussed in [6]_.
+
+    Practically, up-front computation of the matching polynomial may be useful
+    when users wish to study the matching structure, enumerate matchings, or
+    investigate spectral properties of a graph.
+
+    References
+    ----------
+    .. [1] C. D. Godsil,
+       "Matching polynomials and duality"
+       Journal of Combinatorial Theory, Series B, 1981
+       https://doi.org/10.1016/0095-8956(81)90031-0
+    .. [2] C. D. Godsil,
+       "Algebraic Combinatorics"
+       Chapman and Hall, 1993
+    .. [3] C. D. Godsil,
+       "Hermite polynomials and a duality relation for matching polynomials"
+       Combinatorica, 1 (3): 257-262, 1981
+       https://doi.org/10.1007/BF02579331
+    .. [4] O. J. Heilmann, E. H. Lieb,
+       "Theory of monomer-dimer systems"
+       Communications in Mathematical Physics, 25(3): 190-232, 1972
+       https://doi.org/10.1007/BF01877590
+    .. [5] D. B. West,
+       "Introduction to Graph Theory," p. 181
+    .. [6] L. Lovász, M. D. Plummer,
+       "Matching Theory"
+       North-Holland, 1986
+    """
+    import sympy
+
+    x = sympy.Symbol("x")
+    G = nx.Graph(G)
+    if nx.number_of_selfloops(G) > 0:
+        raise nx.NetworkXError(
+            "Matching polynomial not defined for graphs with self-loops"
+        )
+    stack = deque()
+    stack.append((G, 1))
+
+    polynomial = 0
+    while stack:
+        G, sign = stack.pop()
+        n = len(G)
+        edges = list(G.edges)
+        if not edges:
+            polynomial += sign * x**n
+        else:
+            u, v = edges[0]
+            G_minus_e = G.copy()
+            G_minus_e.remove_edge(u, v)
+            G_minus_uv = G.copy()
+            G_minus_uv.remove_nodes_from([u, v])
+            stack.append((G_minus_e, sign))
+            stack.append((G_minus_uv, -sign))
+    return sympy.expand(polynomial)

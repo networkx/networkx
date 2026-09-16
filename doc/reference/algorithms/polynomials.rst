@@ -8,3 +8,4 @@ Graph Polynomials
 
    tutte_polynomial
    chromatic_polynomial
+   matching_polynomial

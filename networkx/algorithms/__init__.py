@@ -120,6 +120,7 @@ from networkx.algorithms.isomorphism import could_be_isomorphic
 from networkx.algorithms.isomorphism import fast_could_be_isomorphic
 from networkx.algorithms.isomorphism import faster_could_be_isomorphic
 from networkx.algorithms.isomorphism import is_isomorphic
+from networkx.algorithms.polynomials import matching_polynomial
 from networkx.algorithms.isomorphism.vf2pp import *
 from networkx.algorithms.tree.branchings import maximum_branching
 from networkx.algorithms.tree.branchings import maximum_spanning_arborescence
