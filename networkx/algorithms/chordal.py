@@ -217,6 +217,10 @@ def chordal_graph_cliques(G):
     >>> cliques = [c for c in chordal_graph_cliques(G)]
     >>> cliques[0]
     frozenset({1, 2, 3})
+
+    Notes
+    -----
+    Self loops are ignored.
     """
     for C in (G.subgraph(c).copy() for c in connected_components(G)):
         if C.number_of_nodes() == 1:
@@ -277,6 +281,10 @@ def chordal_graph_treewidth(G):
     networkx.algorithms.approximation.treewidth.treewidth_min_degree
     networkx.algorithms.approximation.treewidth.treewidth_min_fill_in
 
+    Notes
+    -----
+    Self loops are ignored.
+
     References
     ----------
     .. [1] https://en.wikipedia.org/wiki/Tree_decomposition#Treewidth
@@ -288,7 +296,10 @@ def chordal_graph_treewidth(G):
 
 
 def _is_complete_graph(G):
-    """Returns True if G is a complete graph."""
+    """Returns True if G is a complete graph.
+
+    It ignores any self loops.
+    """
     n = G.number_of_nodes()
     if n < 2:
         return True
@@ -376,6 +387,8 @@ def complete_to_chordal_graph(G):
     that this triangulation is not necessarily a global minimum.
 
     https://en.wikipedia.org/wiki/Chordal_graph
+
+    Self loops are ignored.
 
     References
     ----------
