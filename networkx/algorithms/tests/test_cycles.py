@@ -681,6 +681,39 @@ class TestCycleEnumeration:
         assert list(nx.chordless_cycles(G, length_bound=0)) == []
         assert list(nx.chordless_cycles(DG, length_bound=0)) == []
 
+    def test_simple_cycles_min_length(self):
+        # Directed graph
+        DG = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+        assert sorted(nx.simple_cycles(DG, min_length=2)) == [[0, 1, 2]]
+        assert sorted(nx.simple_cycles(DG, min_length=3)) == [[0, 1, 2]]
+        assert list(nx.simple_cycles(DG, min_length=4)) == []
+
+        # Undirected graph
+        G = nx.Graph([(0, 1), (1, 2), (2, 0)])
+        assert sorted(nx.simple_cycles(G, min_length=2)) == [[0, 1, 2]]
+        assert sorted(nx.simple_cycles(G, min_length=3)) == [[0, 1, 2]]
+        assert list(nx.simple_cycles(G, min_length=4)) == []
+
+        # With length_bound
+        DG2 = nx.DiGraph([(0, 1), (1, 2), (2, 0), (2, 3), (3, 4), (4, 2)])
+        result = list(nx.simple_cycles(DG2, length_bound=3, min_length=2))
+        assert sorted(result) == [[0, 1, 2], [2, 3, 4]]
+
+        # min_length=1 should return all cycles
+        G2 = nx.DiGraph([(0, 1), (1, 0)])
+        assert sorted(nx.simple_cycles(G2, min_length=1)) == [[0, 1]]
+
+    def test_simple_cycles_min_length_error(self):
+        with pytest.raises(ValueError):
+            G = nx.DiGraph()
+            for c in nx.simple_cycles(G, min_length=0):
+                assert False
+
+        with pytest.raises(ValueError):
+            G = nx.Graph()
+            for c in nx.simple_cycles(G, min_length=-1):
+                assert False
+
     def test_simple_cycles_bound_error(self):
         with pytest.raises(ValueError):
             G = nx.DiGraph()
