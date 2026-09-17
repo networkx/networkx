@@ -6,6 +6,6 @@ contextily>=1.6
 seaborn>=0.13
 cairocffi>=1.7
 igraph>=0.11
-scikit-learn>=1.5
+scikit-learn>=1.6
 iplotx>=0.9.0
 hiveplotlib>=0.28
