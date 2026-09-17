@@ -14,7 +14,7 @@ from functools import cached_property
 import networkx as nx
 from networkx import convert
 from networkx.classes.coreviews import AdjacencyView
-from networkx.classes.reportviews import DegreeView, EdgeView, NodeView
+from networkx.classes.reportviews import DegreeView, EdgeView, NodeView, _nbunch_iter
 
 __all__ = ["Graph"]
 
@@ -2049,33 +2049,4 @@ class Graph:
         or None, a :exc:`NetworkXError` is raised.  Also, if any object in
         nbunch is not hashable, a :exc:`NetworkXError` is raised.
         """
-        if nbunch is None:  # include all nodes via iterator
-            bunch = iter(self._adj)
-        elif nbunch in self:  # if nbunch is a single node
-            bunch = iter([nbunch])
-        else:  # if nbunch is a sequence of nodes
-
-            def bunch_iter(nlist, adj):
-                try:
-                    for n in nlist:
-                        if n in adj:
-                            yield n
-                except TypeError as err:
-                    exc, message = err, err.args[0]
-                    # capture error for non-sequence/iterator nbunch.
-                    if "iter" in message:
-                        exc = nx.NetworkXError(
-                            "nbunch is not a node or a sequence of nodes."
-                        )
-                    # capture single nodes that are not in the graph.
-                    if "object is not iterable" in message:
-                        exc = nx.NetworkXError(f"Node {nbunch} is not in the graph.")
-                    # capture error for unhashable node.
-                    if "hashable" in message:
-                        exc = nx.NetworkXError(
-                            f"Node {n} in sequence nbunch is not a valid node."
-                        )
-                    raise exc
-
-            bunch = bunch_iter(nbunch, self._adj)
-        return bunch
+        return _nbunch_iter(self._adj, nbunch)
