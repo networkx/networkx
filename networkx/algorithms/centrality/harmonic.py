@@ -64,25 +64,34 @@ def harmonic_centrality(G, nbunch=None, distance=None, sources=None):
     .. [1] Boldi, Paolo, and Sebastiano Vigna. "Axioms for centrality."
            Internet Mathematics 10.3-4 (2014): 222-262.
     """
+    if nbunch is None:
+        nbunch_list = list(G.nodes)
+    else:
+        nbunch_list = list(G.nbunch_iter(nbunch))
+    nbunch_set = set(nbunch_list)
 
-    nbunch = set(G.nbunch_iter(nbunch) if nbunch is not None else G.nodes)
-    sources = set(G.nbunch_iter(sources) if sources is not None else G.nodes)
+    if sources is None:
+        sources_list = list(G.nodes)
+    else:
+        sources_list = list(G.nbunch_iter(sources))
+    sources_set = set(sources_list)
 
-    centrality = {u: 0 for u in nbunch}
+    centrality = dict.fromkeys(nbunch_list, 0)
 
     transposed = False
-    if len(nbunch) < len(sources):
+    if len(nbunch_set) < len(sources_set):
         transposed = True
-        nbunch, sources = sources, nbunch
+        nbunch_list, sources_list = sources_list, nbunch_list
+        nbunch_set, sources_set = sources_set, nbunch_set
         if nx.is_directed(G):
             G = nx.reverse(G, copy=False)
 
     spl = partial(nx.shortest_path_length, G, weight=distance)
-    for v in sources:
+    for v in sources_list:
         dist = spl(v)
         for u, d_uv in dist.items():
             # Ignore self-loops and edges with 0 weight
-            if d_uv != 0 and u in nbunch:
+            if d_uv != 0 and u in nbunch_set:
                 centrality[v if transposed else u] += 1 / d_uv
 
     return centrality
