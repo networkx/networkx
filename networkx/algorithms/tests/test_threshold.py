@@ -243,8 +243,22 @@ class TestGeneratorThreshold:
         assert nxt.eigenvalues("dddiiid") == [0, 1, 1, 1, 4, 4, 7]
 
     def test_tg_creation_routines(self):
-        s = nxt.left_d_threshold_sequence(5, 7)
-        s = nxt.right_d_threshold_sequence(5, 7)
+        for n, m in [(5, 7), (4, 4), (6, 3), (2, 1)]:
+            for seq in (
+                nxt.left_d_threshold_sequence(n, m),
+                nxt.right_d_threshold_sequence(n, m),
+            ):
+                assert len(seq) == n
+                G = nxt.threshold_graph(seq)
+                assert G.number_of_nodes() == n
+                assert G.number_of_edges() == m
+
+        for routine in (
+            nxt.left_d_threshold_sequence,
+            nxt.right_d_threshold_sequence,
+        ):
+            with pytest.raises(ValueError, match="Too many edges"):
+                routine(4, 100)
 
     def test_eigenvectors(self):
         np = pytest.importorskip("numpy")

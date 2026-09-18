@@ -1419,7 +1419,6 @@ class TestMultiGraphISOVF2pp:
         FHG = nx.compose(FH, nx.MultiGraph(FG.subgraph([10, 11, 12, 13])))
         SHG = nx.compose(SH, nx.MultiGraph(SG.subgraph(["a", "b", "d", "e"])))
 
-        m = vf2pp_isomorphism(FH, SH, node_label="label")
         m = vf2pp_isomorphism(FHG, SHG, node_label="label")
         assert m
 
