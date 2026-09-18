@@ -69,10 +69,10 @@ benchmarking = [
     'virtualenv',
 ]
 default = [
-    'numpy>=2',
-    'scipy>=1.13',
-    'matplotlib>=3.9',
-    'pandas>=2.3.0',
+    'numpy>=2.2',
+    'scipy>=1.15',
+    'matplotlib>=3.10',
+    'pandas>=2.3',
 ]
 developer = [
     'pre-commit>=4.1',
@@ -95,7 +95,7 @@ example = [
     'seaborn>=0.13',
     'cairocffi>=1.7',
     'igraph>=0.11',
-    'scikit-learn>=1.5',
+    'scikit-learn>=1.6',
     'iplotx>=0.9.0',
     'hiveplotlib>=0.28',
 ]
@@ -331,9 +331,9 @@ python-freethreading = "3.15.*"
 # Only features that differ from or have no matching optional-deps group are listed here.
 
 [tool.pixi.feature.default-no-scipy.pypi-dependencies]
-numpy = ">=1.25"
-matplotlib = ">=3.8"
-pandas = ">=2.0"
+numpy = ">=2.2"
+matplotlib = ">=3.10"
+pandas = ">=2.3"
 
 [tool.pixi.feature.doc.dependencies]
 libspatialindex = "*"
