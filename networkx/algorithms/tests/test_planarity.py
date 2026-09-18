@@ -497,13 +497,16 @@ class TestPlanarEmbeddingClass:
     def test_invalid_edge_orientation(self):
         embedding = nx.PlanarEmbedding(
             {
-                1: {2: {"cw": 2, "ccw": 2}},
+                1: {2: {"cw": 2, "ccw": 2}, 3: {"cw": 3, "ccw": 3}},
                 2: {1: {"cw": 1, "ccw": 1}},
-                1: {3: {}},
-                3: {1: {}},
+                3: {1: {"cw": 1, "ccw": 1}},
             }
         )
-        with pytest.raises(nx.NetworkXException):
+        with pytest.raises(
+            nx.NetworkXException, match="Edge orientations not set correctly"
+        ):
+            # Invalid structure because the cw/ccw references of node 1 form
+            # two separate cycles instead of one over all its neighbors
             embedding.check_structure()
 
     def test_missing_half_edge(self):
