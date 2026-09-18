@@ -221,17 +221,17 @@ def betweenness_centrality(
         nodes = G
     else:
         nodes = seed.sample(list(G.nodes()), k)
-    for s in nodes:
-        # single source shortest paths
-        if weight is None:  # use BFS
-            S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
-        else:  # use Dijkstra's algorithm
+    if weight is None:
+        _brandes_unweighted(G, nodes, betweenness, endpoints)
+    else:
+        for s in nodes:
+            # single source shortest paths using Dijkstra's algorithm
             S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
-        # accumulation
-        if endpoints:
-            betweenness, _ = _accumulate_endpoints(betweenness, S, P, sigma, s)
-        else:
-            betweenness, _ = _accumulate_basic(betweenness, S, P, sigma, s)
+            # accumulation
+            if endpoints:
+                betweenness, _ = _accumulate_endpoints(betweenness, S, P, sigma, s)
+            else:
+                betweenness, _ = _accumulate_basic(betweenness, S, P, sigma, s)
     # rescaling
     betweenness = _rescale(
         betweenness,
@@ -366,24 +366,23 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     >>> nx.edge_betweenness_centrality(G, k=2, normalized=True, seed=42)
     {(0, 1): 0.75, (1, 2): 0.75}
     """
-    betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
-    # b[e]=0 for e in G.edges()
-    betweenness.update(dict.fromkeys(G.edges(), 0.0))
     if k is None:
         nodes = G
     else:
         nodes = seed.sample(list(G.nodes()), k)
-    for s in nodes:
-        # single source shortest paths
-        if weight is None:  # use BFS
-            S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
-        else:  # use Dijkstra's algorithm
+    if weight is None:
+        betweenness = _brandes_unweighted_edges(G, nodes)
+    else:
+        betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
+        # b[e]=0 for e in G.edges()
+        betweenness.update(dict.fromkeys(G.edges(), 0.0))
+        for s in nodes:
+            # single source shortest paths using Dijkstra's algorithm
             S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
-        # accumulation
-        betweenness = _accumulate_edges(betweenness, S, P, sigma, s)
-    # rescaling
-    for n in G:  # remove nodes to only return edges
-        del betweenness[n]
+            # accumulation
+            betweenness = _accumulate_edges(betweenness, S, P, sigma, s)
+        for n in G:  # remove nodes to only return edges
+            del betweenness[n]
     betweenness = _rescale(
         betweenness,
         len(G),
@@ -397,6 +396,149 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
 
 
 # helpers for betweenness centrality
+
+
+def _brandes_unweighted(G, sources, betweenness, endpoints):
+    """Add the unnormalized betweenness contribution of `sources` to `betweenness`.
+
+    Runs Brandes' algorithm with all hot-loop containers as flat lists indexed
+    by a dense integer relabeling of the nodes, which is considerably faster
+    than dict-of-node containers. Results are identical to running
+    `_single_source_shortest_path_basic` + `_accumulate_basic`/`_accumulate_endpoints`
+    per source (up to floating point summation order).
+    """
+    nodes = list(G)
+    n = len(nodes)
+    index = {v: i for i, v in enumerate(nodes)}
+    G_adj = G._adj
+    adj = [[index[w] for w in G_adj[v]] for v in nodes]
+    bt = [0.0] * n
+    source_indices = range(n) if sources is G else (index[s] for s in sources)
+    for s in source_indices:
+        # BFS: level-synchronous single-source shortest paths
+        D = [-1] * n  # distances (-1 = unseen)
+        sigma = [0.0] * n  # number of shortest paths
+        P = [None] * n  # predecessor lists
+        sigma[s] = 1.0
+        D[s] = 0
+        levels = [[s]]
+        d1 = 1
+        while True:
+            next_level = []
+            for v in levels[-1]:
+                sigma_v = sigma[v]
+                for w in adj[v]:
+                    dw = D[w]
+                    if dw == -1:
+                        D[w] = d1
+                        next_level.append(w)
+                        sigma[w] = sigma_v
+                        P[w] = [v]
+                    elif dw == d1:  # this is a shortest path, count paths
+                        sigma[w] += sigma_v
+                        P[w].append(v)
+            if not next_level:
+                break
+            levels.append(next_level)
+            d1 += 1
+        # accumulation: walk levels in reverse (reverse topological order
+        # of the shortest-path DAG)
+        delta = [0.0] * n
+        if endpoints:
+            bt[s] += sum(map(len, levels)) - 1
+            for level in reversed(levels[1:]):
+                for w in level:
+                    delta_w = delta[w]
+                    coeff = (1 + delta_w) / sigma[w]
+                    for v in P[w]:
+                        delta[v] += sigma[v] * coeff
+                    bt[w] += delta_w + 1
+        else:
+            for level in reversed(levels[1:]):
+                for w in level:
+                    delta_w = delta[w]
+                    coeff = (1 + delta_w) / sigma[w]
+                    for v in P[w]:
+                        delta[v] += sigma[v] * coeff
+                    bt[w] += delta_w
+    for i, v in enumerate(nodes):
+        betweenness[v] += bt[i]
+
+
+def _brandes_unweighted_edges(G, sources):
+    """Return the unnormalized edge betweenness contribution of `sources`.
+
+    Edge counterpart of `_brandes_unweighted`: dense integer relabeling,
+    level-synchronous BFS, flat-list containers. Each adjacency entry carries
+    a dense edge id so the accumulation pass needs no edge-key hashing.
+    Results are identical to `_single_source_shortest_path_basic` +
+    `_accumulate_edges` per source (up to floating point summation order).
+    """
+    nodes = list(G)
+    n = len(nodes)
+    index = {v: i for i, v in enumerate(nodes)}
+    directed = G.is_directed()
+    G_adj = G._adj
+    edge_index = {}
+    adj = []
+    n_edges = 0
+    for v in nodes:
+        i = index[v]
+        row = []
+        for w in G_adj[v]:
+            j = index[w]
+            e = edge_index.get((i, j))
+            if e is None:
+                if not directed:
+                    e = edge_index.get((j, i))
+                if e is None:
+                    e = n_edges
+                    n_edges += 1
+                edge_index[(i, j)] = e
+            row.append((j, e))
+        adj.append(row)
+    bt_e = [0.0] * n_edges
+    source_indices = range(n) if sources is G else (index[s] for s in sources)
+    for s in source_indices:
+        # BFS: level-synchronous single-source shortest paths
+        D = [-1] * n  # distances (-1 = unseen)
+        sigma = [0.0] * n  # number of shortest paths
+        P = [None] * n  # predecessor (node, edge id) lists
+        sigma[s] = 1.0
+        D[s] = 0
+        levels = [[s]]
+        d1 = 1
+        while True:
+            next_level = []
+            for v in levels[-1]:
+                sigma_v = sigma[v]
+                for w, e in adj[v]:
+                    dw = D[w]
+                    if dw == -1:
+                        D[w] = d1
+                        next_level.append(w)
+                        sigma[w] = sigma_v
+                        P[w] = [(v, e)]
+                    elif dw == d1:  # this is a shortest path, count paths
+                        sigma[w] += sigma_v
+                        P[w].append((v, e))
+            if not next_level:
+                break
+            levels.append(next_level)
+            d1 += 1
+        # accumulation over the shortest-path DAG's edges, by reverse level
+        delta = [0.0] * n
+        for level in reversed(levels[1:]):
+            for w in level:
+                coeff = (1 + delta[w]) / sigma[w]
+                for v, e in P[w]:
+                    c = sigma[v] * coeff
+                    bt_e[e] += c
+                    delta[v] += c
+    betweenness = dict.fromkeys(G.edges(), 0.0)
+    for u, v in betweenness:
+        betweenness[(u, v)] = bt_e[edge_index[(index[u], index[v])]]
+    return betweenness
 
 
 def _single_source_shortest_path_basic(G, s):
