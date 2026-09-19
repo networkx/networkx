@@ -84,6 +84,10 @@ def betweenness_centrality(
     See [4]_ for the original first published version and [2]_ for details on
     algorithms for variations and related metrics.
 
+    For exact, unweighted betweenness on simple undirected forests, subtree
+    sizes are used to count paths in linear time. Normalization still uses
+    the number of nodes in the entire graph, including isolated nodes.
+
     For approximate betweenness calculations, set `k` to the number of sampled
     nodes ("pivots") used as sources to estimate the betweenness values.
     The formula then sums over $s$ is in these pivots, instead of over all nodes.
@@ -217,6 +221,23 @@ def betweenness_centrality(
     if k == len(G):
         # This is done for performance; the result is the same regardless.
         k = None
+    if (
+        k is None
+        and weight is None
+        and len(G) > 1
+        and not G.is_directed()
+        and not G.is_multigraph()
+        and G.number_of_edges() < len(G)
+    ):
+        forest_betweenness = _betweenness_centrality_forest(G, endpoints)
+        if forest_betweenness is not None:
+            return _rescale(
+                forest_betweenness,
+                len(G),
+                normalized=normalized,
+                directed=False,
+                endpoints=endpoints,
+            )
     if k is None:
         nodes = G
     else:
@@ -241,6 +262,46 @@ def betweenness_centrality(
         endpoints=endpoints,
         sampled_nodes=None if k is None else nodes,
     )
+    return betweenness
+
+
+def _betweenness_centrality_forest(G, endpoints):
+    """Return ordered path counts for a simple undirected forest, else None."""
+    betweenness = dict.fromkeys(G, 0.0)
+    parent = {}
+    for root in G:
+        if root in parent:
+            continue
+        parent[root] = root
+        order = [root]
+        for v in order:
+            for w in G[v]:
+                if w == v:
+                    return None
+                if w == parent[v]:
+                    continue
+                if w in parent:
+                    return None
+                parent[w] = v
+                order.append(w)
+
+        size = {}
+        n = len(order)
+        for v in reversed(order):
+            total = 0
+            pairs = 0
+            for w in G[v]:
+                if parent[w] == v:
+                    pairs += total * size[w]
+                    total += size[w]
+            size[v] = total + 1
+            # The remaining branch goes through v's parent. Each pair in
+            # different branches has exactly one shortest path through v.
+            pairs += total * (n - size[v])
+            if endpoints:
+                pairs += n - 1
+            # _rescale expects both orientations of each undirected path.
+            betweenness[v] = 2.0 * pairs
     return betweenness
 
 

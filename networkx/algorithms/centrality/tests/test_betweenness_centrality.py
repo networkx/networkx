@@ -412,6 +412,85 @@ class TestBetweennessCentrality:
         assert b1 == b2
 
 
+class TestForestBetweennessCentrality:
+    @pytest.mark.parametrize("normalized", [False, True])
+    @pytest.mark.parametrize("endpoints", [False, True])
+    def test_graph_atlas(self, normalized, endpoints):
+        # Unit weights force the existing Dijkstra implementation as a reference.
+        # The atlas includes forests and sparse cyclic graphs with isolates.
+        for G in nx.graph_atlas_g():
+            expected = nx.betweenness_centrality(
+                G, weight="unit", normalized=normalized, endpoints=endpoints
+            )
+            actual = nx.betweenness_centrality(
+                G, normalized=normalized, endpoints=endpoints
+            )
+            assert actual == pytest.approx(expected)
+
+    @pytest.mark.parametrize("normalized", [False, True])
+    @pytest.mark.parametrize("endpoints", [False, True])
+    def test_disconnected_labels(self, normalized, endpoints):
+        G = nx.Graph()
+        nx.add_path(G, ["a", (1, 2), 7])
+        G.add_edge("b", "c")
+        G.add_node("isolated")
+        expected = dict.fromkeys(G, 0.0)
+        expected[(1, 2)] = 1.0
+        if endpoints:
+            for v in ["a", (1, 2), 7]:
+                expected[v] += 2
+            expected["b"] = expected["c"] = 1.0
+        if normalized:
+            scale = 2 / (6 * 5) if endpoints else 2 / (5 * 4)
+            expected = {v: value * scale for v, value in expected.items()}
+        assert nx.betweenness_centrality(
+            G, normalized=normalized, endpoints=endpoints
+        ) == pytest.approx(expected)
+
+    @pytest.mark.parametrize("endpoints", [False, True])
+    @pytest.mark.parametrize("k", [None, 1500])
+    def test_long_path(self, endpoints, k):
+        # Exceeds the usual recursion limit; the fast path must be iterative.
+        n = 1500
+        G = nx.path_graph(n)
+        extra = n - 1 if endpoints else 0
+        expected = {v: float(v * (n - v - 1) + extra) for v in G}
+        assert (
+            nx.betweenness_centrality(G, k=k, normalized=False, endpoints=endpoints)
+            == expected
+        )
+
+    @pytest.mark.parametrize("endpoints", [False, True])
+    def test_late_cycle_and_self_loop(self, endpoints):
+        for edges in [[(4, 5), (5, 6), (6, 4)], [(4, 4)], [(4, 5), (5, 5)]]:
+            G = nx.path_graph(4)
+            G.add_edges_from(edges)
+            G.add_nodes_from(range(7, 12))
+            # A forest component is visited before discovering a later cycle.
+            expected = nx.betweenness_centrality(G, weight="unit", endpoints=endpoints)
+            assert nx.betweenness_centrality(G, endpoints=endpoints) == pytest.approx(
+                expected
+            )
+
+    @pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph])
+    @pytest.mark.parametrize("kwargs", [{"weight": "unit"}, {"k": 2, "seed": 42}, {}])
+    def test_fast_path_scope(self, monkeypatch, graph_type, kwargs):
+        if graph_type is nx.Graph and not kwargs:
+            return
+        G = nx.path_graph(5, create_using=graph_type)
+        expected = nx.betweenness_centrality(G, **kwargs)
+
+        def unexpected_fast_path(*args):
+            pytest.fail("Forest shortcut used outside exact simple unweighted graphs")
+
+        monkeypatch.setattr(
+            nx.algorithms.centrality.betweenness,
+            "_betweenness_centrality_forest",
+            unexpected_fast_path,
+        )
+        assert nx.betweenness_centrality(G, **kwargs) == expected
+
+
 class TestWeightedBetweennessCentrality:
     def test_K5(self):
         """Weighted betweenness centrality: K5"""
