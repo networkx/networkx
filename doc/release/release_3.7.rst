@@ -1,14 +1,14 @@
-networkx 3.7rc0
-===============
+networkx 3.7
+============
 
-We're happy to announce the release of networkx 3.7rc0!
+We're happy to announce the release of networkx 3.7!
 
 Highlights
 ----------
 
-- {label=Highlight} The isomorphism checking suite of tools has been upgraded. The VF2++ functions now provide subgraph isomorphism and subgraph monomorphism checking (`#8506 <https://github.com/networkx/networkx/pull/8506>`_).
-- {label=Highlight} Leiden based community detection algorithms are now supported via ``leiden_communities`` and ``leiden_partitions``. This provides an alternative, often improved, community detection algorithm compared to the Louvain functions (`#8509 <https://github.com/networkx/networkx/pull/8509>`_).
-- {label=Highlight} The pygraphviz library is now provided via ``pip`` with wheels that include the GraphViz binaries. This should make the NetworkX interface to pygraphviz easier to use for graph layout and rendering (`#8694 <https://github.com/networkx/networkx/pull/8694>`_).
+- The isomorphism checking suite of tools has been upgraded. The VF2++ functions now provide subgraph isomorphism and subgraph monomorphism checking (`#8506 <https://github.com/networkx/networkx/pull/8506>`_).
+- Leiden based community detection algorithms are now supported via ``leiden_communities`` and ``leiden_partitions``. This provides an alternative, often improved, community detection algorithm compared to the Louvain functions (`#8509 <https://github.com/networkx/networkx/pull/8509>`_).
+- The pygraphviz library is now provided via ``pip`` with wheels that include the GraphViz binaries. This should make the NetworkX interface to pygraphviz easier to use for graph layout and rendering (`#8694 <https://github.com/networkx/networkx/pull/8694>`_).
 
 API Changes
 -----------
@@ -32,7 +32,7 @@ Enhancements
 - Improve chordal code readability by removing helper function (`#8479 <https://github.com/networkx/networkx/pull/8479>`_).
 - FEAT: Added basic random walk utilities #8378 (`#8383 <https://github.com/networkx/networkx/pull/8383>`_).
 - Implement Constant-Potts Model (for use with Leiden community detection) (`#8507 <https://github.com/networkx/networkx/pull/8507>`_).
-- {label=Highlight} The isomorphism checking suite of tools has been upgraded. The VF2++ functions now provide subgraph isomorphism and subgraph monomorphism checking (`#8506 <https://github.com/networkx/networkx/pull/8506>`_).
+- The isomorphism checking suite of tools has been upgraded. The VF2++ functions now provide subgraph isomorphism and subgraph monomorphism checking (`#8506 <https://github.com/networkx/networkx/pull/8506>`_).
 - Adding optional sp arg to closeness_centrality (`#8424 <https://github.com/networkx/networkx/pull/8424>`_).
 - perf: replace built-in sum() with np.sum() in pagerank and katz (`#8561 <https://github.com/networkx/networkx/pull/8561>`_).
 - ENH: Add format parameter to adjacency_matrix (`#8545 <https://github.com/networkx/networkx/pull/8545>`_).
@@ -45,7 +45,7 @@ Enhancements
 - Add description and keywords support to GEXF reader/writer (`#8629 <https://github.com/networkx/networkx/pull/8629>`_).
 - DOC: more ``barycenter`` and ``centroid`` equivalence (`#8630 <https://github.com/networkx/networkx/pull/8630>`_).
 - ENH: Add Barber's bipartite modularity quality function (`#8618 <https://github.com/networkx/networkx/pull/8618>`_).
-- {label=Highlight} Leiden based community detection algorithms are now supported via ``leiden_communities`` and ``leiden_partitions``. This provides an alternative, often improved, community detection algorithm compared to the Louvain functions (`#8509 <https://github.com/networkx/networkx/pull/8509>`_).
+- Leiden based community detection algorithms are now supported via ``leiden_communities`` and ``leiden_partitions``. This provides an alternative, often improved, community detection algorithm compared to the Louvain functions (`#8509 <https://github.com/networkx/networkx/pull/8509>`_).
 - ENH: Add Shen's overlapping modularity quality function (`#8647 <https://github.com/networkx/networkx/pull/8647>`_).
 - ENH: leiden test and doc_string improvements (`#8656 <https://github.com/networkx/networkx/pull/8656>`_).
 - Add butterflies() to bipartite cluster module (`#8591 <https://github.com/networkx/networkx/pull/8591>`_).
@@ -191,7 +191,6 @@ Maintenance
 - BENCH: Add minimum spanning tree to benchmarks (`#8403 <https://github.com/networkx/networkx/pull/8403>`_).
 - fix: circular_ladder_graph edge cases for n < 2 (`#8399 <https://github.com/networkx/networkx/pull/8399>`_).
 - Fix/refactor dag root to leaf (`#8437 <https://github.com/networkx/networkx/pull/8437>`_).
-- Bump the actions group with 4 updates (`#8441 <https://github.com/networkx/networkx/pull/8441>`_).
 - fix: preserve string positions in to_agraph conversion (Fixes #8203) (`#8397 <https://github.com/networkx/networkx/pull/8397>`_).
 - BUG: forceatlas2 layout with nonarray complete initial positions (`#8451 <https://github.com/networkx/networkx/pull/8451>`_).
 - Add benchmarks for is_chordal (`#8462 <https://github.com/networkx/networkx/pull/8462>`_).
@@ -207,31 +206,26 @@ Maintenance
 - Expire random lobster dep (`#8499 <https://github.com/networkx/networkx/pull/8499>`_).
 - MAINT: Reuse ``could_be_isomorphic`` in ``fast_/faster_`` variants (`#8497 <https://github.com/networkx/networkx/pull/8497>`_).
 - API: Expire deprecations of could-be isomorphism aliases (`#8498 <https://github.com/networkx/networkx/pull/8498>`_).
-- Bump actions/attest-build-provenance from 3.1.0 to 3.2.0 in the actions group (`#8501 <https://github.com/networkx/networkx/pull/8501>`_).
 - MAINT: Bump linters (`#8513 <https://github.com/networkx/networkx/pull/8513>`_).
 - CI: Use pixi for CI platform/OS independent tasks (`#8508 <https://github.com/networkx/networkx/pull/8508>`_).
 - CI: Explicitly add pip as a dep while resolving doc env (`#8522 <https://github.com/networkx/networkx/pull/8522>`_).
 - Minor random_walks test refactor (`#8524 <https://github.com/networkx/networkx/pull/8524>`_).
 - Refactor random walk implementation (`#8525 <https://github.com/networkx/networkx/pull/8525>`_).
-- Bump the actions group with 2 updates (`#8541 <https://github.com/networkx/networkx/pull/8541>`_).
 - Minor update to zip examples (`#8544 <https://github.com/networkx/networkx/pull/8544>`_).
 - TST: Dedup and refactor closeness centrality tests (`#8548 <https://github.com/networkx/networkx/pull/8548>`_).
 - MAINT: clarify error when RandomState is used with random API (`#8558 <https://github.com/networkx/networkx/pull/8558>`_).
 - MAINT: remove unused functions and imports (`#8572 <https://github.com/networkx/networkx/pull/8572>`_).
 - MAINT: Minor readability tweaks to pagerank (`#8582 <https://github.com/networkx/networkx/pull/8582>`_).
-- Bump the actions group with 2 updates (`#8594 <https://github.com/networkx/networkx/pull/8594>`_).
 - Raise ValueError in ``write_gexf`` for mixed typed attributes (`#8549 <https://github.com/networkx/networkx/pull/8549>`_).
 - BUG: Handle small graphs in information_centrality (`#7475 <https://github.com/networkx/networkx/pull/7475>`_).
 - CI: fix benchmark PR workflow checkout (`#8633 <https://github.com/networkx/networkx/pull/8633>`_).
 - Followup that fixes import order (`#8634 <https://github.com/networkx/networkx/pull/8634>`_).
 - MAINT: remove unused imports and dead helpers (`#8627 <https://github.com/networkx/networkx/pull/8627>`_).
 - MAINT: Handle insufficient degree Pearson samples (`#8628 <https://github.com/networkx/networkx/pull/8628>`_).
-- Bump the actions group with 2 updates (`#8646 <https://github.com/networkx/networkx/pull/8646>`_).
 - Optimize VF2 GMState frontier update by removing full core scan (`#8649 <https://github.com/networkx/networkx/pull/8649>`_).
 - MAINT: Avoid subgraph views in ``strategy_connected_sequential`` (`#8643 <https://github.com/networkx/networkx/pull/8643>`_).
 - Cleanup butterflies tests (`#8664 <https://github.com/networkx/networkx/pull/8664>`_).
 - Remove unused dsum variable from havel_hakimi_graph (`#8678 <https://github.com/networkx/networkx/pull/8678>`_).
-- Bump prefix-dev/setup-pixi from 0.9.5 to 0.9.6 in the actions group (`#8679 <https://github.com/networkx/networkx/pull/8679>`_).
 - CI: networkx default deps were leaking into the pixi default env (`#8683 <https://github.com/networkx/networkx/pull/8683>`_).
 - DOC/CI: Update github label requirements for user experience (`#8689 <https://github.com/networkx/networkx/pull/8689>`_).
 - CI: Redo benchmarks to use pixi around asv (`#8688 <https://github.com/networkx/networkx/pull/8688>`_).
@@ -244,11 +238,9 @@ Maintenance
 - CI: Fix circleci artifact redirector permissions (`#8707 <https://github.com/networkx/networkx/pull/8707>`_).
 - write xsd:boolean true/false for dynamic gexf attvalues (`#8709 <https://github.com/networkx/networkx/pull/8709>`_).
 - escape quotes and backslashes in pajek make_qstr (`#8693 <https://github.com/networkx/networkx/pull/8693>`_).
-- {label=Highlight} The pygraphviz library is now provided via ``pip`` with wheels that include the GraphViz binaries. This should make the NetworkX interface to pygraphviz easier to use for graph layout and rendering (`#8694 <https://github.com/networkx/networkx/pull/8694>`_).
 - Louvain updates to docs and code readability (`#8722 <https://github.com/networkx/networkx/pull/8722>`_).
 - Align boruvka_mst_edges keys default with kruskal/prim and fix docstring typo (`#8728 <https://github.com/networkx/networkx/pull/8728>`_).
 - TST: Test maintenance for ``test_clique.py`` (`#8214 <https://github.com/networkx/networkx/pull/8214>`_).
-- Bump the actions group with 4 updates (`#8730 <https://github.com/networkx/networkx/pull/8730>`_).
 - Optimize Leiden data handling (`#8715 <https://github.com/networkx/networkx/pull/8715>`_).
 - MAINT: Avoid Louvain infinite loops (`#8757 <https://github.com/networkx/networkx/pull/8757>`_).
 - MAINT: avoid timeouts on circleci (`#8758 <https://github.com/networkx/networkx/pull/8758>`_).
@@ -259,7 +251,6 @@ Maintenance
 - Fix ``reverse`` to preserve all attributes in dispatch conversions (`#8807 <https://github.com/networkx/networkx/pull/8807>`_).
 - Clear the dispatch cache in ``remove_{node,edge}_attributes`` (`#8806 <https://github.com/networkx/networkx/pull/8806>`_).
 - Fix "accidentally quadratic" use of list as queue in ``full_rary_tree`` (`#8808 <https://github.com/networkx/networkx/pull/8808>`_).
-- Bump the actions group with 3 updates (`#8812 <https://github.com/networkx/networkx/pull/8812>`_).
 - MAINT: allow isomorphism match helpers to be lists or not (`#8803 <https://github.com/networkx/networkx/pull/8803>`_).
 - fix: correct typo in test variable name (`#8809 <https://github.com/networkx/networkx/pull/8809>`_).
 - Allow spectral_layout to handle dim>=len(G). Added dim tests (`#8801 <https://github.com/networkx/networkx/pull/8801>`_).
@@ -269,12 +260,12 @@ Maintenance
 - TST: Cleanup & modernize the minimum cuts test suite (`#8864 <https://github.com/networkx/networkx/pull/8864>`_).
 - MAINT: Refactor communicability tests (`#8869 <https://github.com/networkx/networkx/pull/8869>`_).
 - ENH: Use linear algebra to compute communicability (`#8870 <https://github.com/networkx/networkx/pull/8870>`_).
-- Bump the actions group with 3 updates (`#8889 <https://github.com/networkx/networkx/pull/8889>`_).
 - MNT: Raise warnings to errors while running pytest (`#8860 <https://github.com/networkx/networkx/pull/8860>`_).
 - MAINT: sparse.eye is deprecated, use eye_array (`#8901 <https://github.com/networkx/networkx/pull/8901>`_).
 - BUG: Fix _hits_numpy inf/NaN when eigh returns negated eigenvector (`#8899 <https://github.com/networkx/networkx/pull/8899>`_).
 - Fix typo while dispatching vf2pp (`#8904 <https://github.com/networkx/networkx/pull/8904>`_).
 - Support for Py3.15 (`#8896 <https://github.com/networkx/networkx/pull/8896>`_).
+- Update minimum dependencies (SPEC 0) (`#8916 <https://github.com/networkx/networkx/pull/8916>`_).
 
 Other
 -----
