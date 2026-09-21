@@ -21,6 +21,7 @@ __all__ = [
     "gnm_random_graph",
     "erdos_renyi_graph",
     "binomial_graph",
+    "newman_watts_graph",
     "newman_watts_strogatz_graph",
     "watts_strogatz_graph",
     "connected_watts_strogatz_graph",
@@ -310,6 +311,79 @@ def gnm_random_graph(n, m, seed=None, directed=False, *, create_using=None):
     return G
 
 
+@py_random_state("seed")
+@nx._dispatchable(graphs=None, returns_graph=True)
+def newman_watts_graph(n, k, p, seed=None, *, create_using=None):
+    """Returns a Newman--Watts small-world graph.
+
+    Parameters
+    ----------
+    n : int
+        The number of nodes.
+    k : int
+        Each node is joined with its `k` nearest neighbors in a ring
+        topology.
+    p : float
+        The probability of adding a new edge for each edge.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+    create_using : Graph constructor, optional (default=nx.MultiGraph)
+        Graph type to create. If graph instance, then cleared before populated.
+        Non-multigraph or directed types are not supported and raise a ``NetworkXError``.
+
+    Notes
+    -----
+    First create a ring over $n$ nodes [1]_.  Then each node in the ring is
+    connected with its $k$ nearest neighbors (or $k - 1$ neighbors if $k$
+    is odd).  Then shortcuts are created by adding new edges as follows: for
+    each edge $(u, v)$ in the underlying "$n$-ring with $k$ nearest
+    neighbors" with probability $p$ add a new edge $(u, w)$ with
+    randomly-chosen existing node $w$.
+
+    In contrast with :func:`watts_strogatz_graph`,
+    the edges $(u, v)$ are not removed.
+    In contrast with :func:`newman_watts_strogatz_graph` and :func:`watts_strogatz_graph`,
+    self-loops and multi-edges are allowed.
+
+    See Also
+    --------
+    newman_watts_strogatz_graph
+    watts_strogatz_graph
+
+    References
+    ----------
+    .. [1] M. E. J. Newman and D. J. Watts,
+       Scaling and percolation in the small-world network model,
+       Phys. Rev. E60(6), 7332--7342, 1999.
+       https://doi.org/10.1103/PhysRevE.60.7332
+    """
+    create_using = check_create_using(
+        create_using, directed=False, multigraph=True, default=nx.MultiGraph
+    )
+    if k > n:
+        raise nx.NetworkXError("k>=n, choose smaller k or larger n")
+
+    # If k == n the graph return is a complete graph
+    if k == n:
+        return nx.complete_graph(n, create_using)
+
+    G = empty_graph(n, create_using)
+    nodes = list(range(n))
+    # connect the k/2 neighbors
+    for j in range(1, k // 2 + 1):
+        targets = nodes[j:] + nodes[:j]  # the first j are now last
+        G.add_edges_from(zip(nodes, targets))
+    # for each edge u-v, with probability p, randomly select existing
+    # node w and add new edge u-w
+    e = list(G.edges())
+    for u, _ in e:
+        if seed.random() < p:
+            w = seed.choice(nodes)
+            G.add_edge(u, w)  # self-loops and multi-edges are allowed
+    return G
+
+
 @py_random_state(3)
 @nx._dispatchable(graphs=None, returns_graph=True)
 def newman_watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
@@ -338,11 +412,16 @@ def newman_watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
     is odd).  Then shortcuts are created by adding new edges as follows: for
     each edge $(u, v)$ in the underlying "$n$-ring with $k$ nearest
     neighbors" with probability $p$ add a new edge $(u, w)$ with
-    randomly-chosen existing node $w$.  In contrast with
-    :func:`watts_strogatz_graph`, no edges are removed.
+    randomly-chosen existing node $w$.
+
+    In contrast with :func:`watts_strogatz_graph`,
+    the edges $(u, v)$ are not removed.
+    In contrast with :func:`newman_watts_graph`,
+    self-loops and multi-edges are not allowed.
 
     See Also
     --------
+    newman_watts_graph
     watts_strogatz_graph
 
     References
@@ -408,6 +487,7 @@ def watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
 
     See Also
     --------
+    newman_watts_graph
     newman_watts_strogatz_graph
     connected_watts_strogatz_graph
 
@@ -421,7 +501,10 @@ def watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
     random choice of existing node $w$.
 
     In contrast with :func:`newman_watts_strogatz_graph`, the random rewiring
-    does not increase the number of edges. The rewired graph is not guaranteed
+    does not increase the number of edges.
+    In contrast with :func:`newman_watts_graph`,
+    self-loops and multi-edges are not allowed.
+    The rewired graph is not guaranteed
     to be connected as in :func:`connected_watts_strogatz_graph`.
 
     References
