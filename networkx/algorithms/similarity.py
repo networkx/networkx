@@ -140,11 +140,11 @@ def graph_edit_distance(
         cost of 1 is used.  If edge_ins_cost is not specified then
         default edge insertion cost of 1 is used.
 
-    roots : 2-tuple
-        Tuple where first element is a node in G1 and the second
+    roots : 2-tuple or list of 2-tuples
+        Tuples where first element is a node in G1 and the second
         is a node in G2.
         These nodes are forced to be matched in the comparison to
-        allow comparison between rooted graphs.
+        allow comparison between multiply vertex-rooted graphs.
 
     upper_bound : numeric
         Maximum edit distance to consider.  Return None if no edit
@@ -165,8 +165,10 @@ def graph_edit_distance(
     >>> G2 = nx.star_graph(5)
     >>> nx.graph_edit_distance(G1, G2, roots=(0, 0))
     0.0
-    >>> nx.graph_edit_distance(G1, G2, roots=(1, 0))
+    >>> nx.graph_edit_distance(G1, G2, roots=[(1, 0)])
     8.0
+    >>> nx.graph_edit_distance(G1, G2, roots=[(0, 1), (4,2)])
+    7.0
 
     See Also
     --------
@@ -220,6 +222,7 @@ def optimal_edit_paths(
     edge_del_cost=None,
     edge_ins_cost=None,
     upper_bound=None,
+    roots=None,
 ):
     """Returns all minimum-cost edit paths transforming G1 to G2.
 
@@ -312,6 +315,12 @@ def optimal_edit_paths(
     upper_bound : numeric
         Maximum edit distance to consider.
 
+    roots : 2-tuple or list of 2-tuples
+        Tuples where first element is a node in G1 and the second
+        is a node in G2.
+        These nodes are forced to be matched in the comparison to
+        allow comparison between multiply vertex-rooted graphs.
+
     Returns
     -------
     edit_paths : list of tuples (node_edit_path, edge_edit_path)
@@ -374,6 +383,8 @@ def optimal_edit_paths(
         edge_ins_cost,
         upper_bound,
         False,
+        roots,
+
     ):
         # assert bestcost is None or cost <= bestcost
         if bestcost is not None and cost < bestcost:
@@ -396,6 +407,7 @@ def optimize_graph_edit_distance(
     edge_del_cost=None,
     edge_ins_cost=None,
     upper_bound=None,
+    roots=None,
 ):
     """Returns consecutive approximations of GED (graph edit distance)
     between graphs G1 and G2.
@@ -490,6 +502,12 @@ def optimize_graph_edit_distance(
     upper_bound : numeric
         Maximum edit distance to consider.
 
+    roots : 2-tuple or list of 2-tuples
+        Tuples where first element is a node in G1 and the second
+        is a node in G2.
+        These nodes are forced to be matched in the comparison to
+        allow comparison between multiply vertex-rooted graphs.
+
     Returns
     -------
     Generator of consecutive approximations of graph edit distance.
@@ -530,6 +548,7 @@ def optimize_graph_edit_distance(
         edge_ins_cost,
         upper_bound,
         True,
+        roots,
     ):
         yield cost
 
@@ -651,11 +670,11 @@ def optimize_edit_paths(
         decreasing cost.  Otherwise, return all edit paths of cost
         less than or equal to the previous minimum cost.
 
-    roots : 2-tuple
-        Tuple where first element is a node in G1 and the second
+    roots : 2-tuple or list of 2-tuples
+        Tuples where first element is a node in G1 and the second
         is a node in G2.
         These nodes are forced to be matched in the comparison to
-        allow comparison between rooted graphs.
+        allow comparison between multiply vertex-rooted graphs.
 
     timeout : numeric
         Maximum number of seconds to execute.
@@ -1058,13 +1077,14 @@ def optimize_edit_paths(
 
     initial_cost = 0
     if roots:
-        root_u, root_v = roots
-        if root_u not in pending_u or root_v not in pending_v:
-            raise nx.NodeNotFound("Root node not in graph.")
+        roots = [roots] if type(roots) == tuple else roots
+        for root_u, root_v in roots:
+            if root_u not in pending_u or root_v not in pending_v:
+                raise nx.NodeNotFound("Root node not in graph.")
 
-        # remove roots from pending
-        pending_u.remove(root_u)
-        pending_v.remove(root_v)
+            # remove roots from pending
+            pending_u.remove(root_u)
+            pending_v.remove(root_v)
 
     # cost matrix of vertex mappings
     m = len(pending_u)
@@ -1079,7 +1099,8 @@ def optimize_edit_paths(
             ]
         ).reshape(m, n)
         if roots:
-            initial_cost = node_subst_cost(G1.nodes[root_u], G2.nodes[root_v])
+            initial_cost = sum(
+                [node_subst_cost(G1.nodes[root_u], G2.nodes[root_v]) for root_u, root_v in roots])
     elif node_match:
         C[0:m, 0:n] = np.array(
             [
@@ -1089,7 +1110,8 @@ def optimize_edit_paths(
             ]
         ).reshape(m, n)
         if roots:
-            initial_cost = 1 - node_match(G1.nodes[root_u], G2.nodes[root_v])
+            initial_cost = sum(
+                [1 - node_match(G1.nodes[root_u], G2.nodes[root_v]) for root_u, root_v in roots])
     else:
         # all zeroes
         pass
@@ -1181,7 +1203,7 @@ def optimize_edit_paths(
 
     # Now go!
 
-    done_uv = [] if roots is None else [roots]
+    done_uv = [] if roots is None else roots
 
     for vertex_path, edge_path, cost in get_edit_paths(
         done_uv, pending_u, pending_v, Cv, [], pending_g, pending_h, Ce, initial_cost
