@@ -3,6 +3,16 @@ import pytest
 import networkx as nx
 
 
+@pytest.mark.parametrize("n", range(1, 6))
+def test_chordal_graph_clique_ignores_selfloops(n):
+    """The one and only chordal graph clique of a complete graph K_n is the
+    set of n nodes. Ensure this is the case even when self-loops are present."""
+    G = nx.complete_graph(n)
+    assert list(nx.chordal_graph_cliques(G)) == [frozenset(G)]
+    G.add_edge(0, 0)
+    assert list(nx.chordal_graph_cliques(G)) == [frozenset(G)]
+
+
 @pytest.mark.parametrize(
     ("G", "expected"),
     (
