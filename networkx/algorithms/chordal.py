@@ -223,32 +223,27 @@ def chordal_graph_cliques(G):
     Self loops are ignored.
     """
     for C in (G.subgraph(c).copy() for c in connected_components(G)):
-        if C.number_of_nodes() == 1:
-            if nx.number_of_selfloops(C) > 0:
-                raise nx.NetworkXError("Input graph is not chordal.")
-            yield frozenset(C.nodes())
-        else:
-            unnumbered = set(C.nodes())
-            v = arbitrary_element(C)
+        unnumbered = set(C.nodes())
+        v = arbitrary_element(C)
+        unnumbered.remove(v)
+        numbered = {v}
+        clique_wanna_be = {v}
+        while unnumbered:
+            # The node from the unnumbered set with the most connections
+            # to nodes in the numbered set
+            v = max(unnumbered, key=lambda n: len(G._adj[n].keys() & numbered))
             unnumbered.remove(v)
-            numbered = {v}
-            clique_wanna_be = {v}
-            while unnumbered:
-                # The node from the unnumbered set with the most connections
-                # to nodes in the numbered set
-                v = max(unnumbered, key=lambda n: len(G._adj[n].keys() & numbered))
-                unnumbered.remove(v)
-                numbered.add(v)
-                new_clique_wanna_be = set(C.neighbors(v)) & numbered
-                sg = C.subgraph(clique_wanna_be)
-                if _is_complete_graph(sg):
-                    new_clique_wanna_be.add(v)
-                    if not new_clique_wanna_be >= clique_wanna_be:
-                        yield frozenset(clique_wanna_be)
-                    clique_wanna_be = new_clique_wanna_be
-                else:
-                    raise nx.NetworkXError("Input graph is not chordal.")
-            yield frozenset(clique_wanna_be)
+            numbered.add(v)
+            new_clique_wanna_be = set(C.neighbors(v)) & numbered
+            sg = C.subgraph(clique_wanna_be)
+            if _is_complete_graph(sg):
+                new_clique_wanna_be.add(v)
+                if not new_clique_wanna_be >= clique_wanna_be:
+                    yield frozenset(clique_wanna_be)
+                clique_wanna_be = new_clique_wanna_be
+            else:
+                raise nx.NetworkXError("Input graph is not chordal.")
+        yield frozenset(clique_wanna_be)
 
 
 @nx._dispatchable
