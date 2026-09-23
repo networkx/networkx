@@ -451,7 +451,6 @@ def prominent_group(
     # If undirected then count only the undirected edges
     elif not G.is_directed():
         max_GBC /= 2
-    max_GBC = float(f"{max_GBC:.2f}")
     return max_GBC, max_group
 
 
