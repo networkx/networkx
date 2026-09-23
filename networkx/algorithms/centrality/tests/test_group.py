@@ -279,7 +279,7 @@ class TestProminentGroup:
         k = 2
         b, g = nx.prominent_group(G, k, normalized=True, endpoints=True)
         b_answer, g_answer = 1.7, [2, 5]
-        assert b == b_answer and g == g_answer
+        assert b == pytest.approx(b_answer) and g == pytest.approx(g_answer)
 
     def test_prominent_group_disconnected_graph(self):
         """
@@ -324,7 +324,7 @@ class TestProminentGroup:
         k = 2
         b, g = nx.prominent_group(G, k, normalized=True, endpoints=True, greedy=True)
         b_answer, g_answer = 1.7, [6, 3]
-        assert b == b_answer and g == g_answer
+        assert b == pytest.approx(b_answer) and g == pytest.approx(g_answer)
 
 
 class TestGroupClosenessCentrality:
