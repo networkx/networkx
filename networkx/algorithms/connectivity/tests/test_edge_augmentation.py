@@ -263,7 +263,6 @@ def _assert_solution_properties(G, aug_edges, avail_dict=None):
         )
 
     unique_aug = set(map(tuple, map(sorted, aug_edges)))
-    unique_aug = list(map(tuple, map(sorted, aug_edges)))
     assert len(aug_edges) == len(unique_aug), "edges should be unique"
 
     assert not any(u == v for u, v in unique_aug), "should be no self-edges"
