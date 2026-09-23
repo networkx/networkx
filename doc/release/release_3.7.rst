@@ -266,6 +266,7 @@ Maintenance
 - Fix typo while dispatching vf2pp (`#8904 <https://github.com/networkx/networkx/pull/8904>`_).
 - Support for Py3.15 (`#8896 <https://github.com/networkx/networkx/pull/8896>`_).
 - Update minimum dependencies (SPEC 0) (`#8916 <https://github.com/networkx/networkx/pull/8916>`_).
+- Fix ``cytoscape_data`` to export edge endpoints as node id strings, producing valid CYJS for graphs with complex (e.g. tuple) nodes (`gh-7962 <https://github.com/networkx/networkx/issues/7962>`_).
 
 Other
 -----

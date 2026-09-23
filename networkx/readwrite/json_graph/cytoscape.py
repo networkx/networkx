@@ -3,6 +3,13 @@ import networkx as nx
 __all__ = ["cytoscape_data", "cytoscape_graph"]
 
 
+def _to_tuple(x):
+    """Recursively convert lists to tuples so JSON round-trips keep hashable node keys."""
+    if isinstance(x, list):
+        return tuple(map(_to_tuple, x))
+    return x
+
+
 def cytoscape_data(G, name="name", ident="id"):
     """Returns data in Cytoscape JSON format (cyjs).
 
@@ -47,7 +54,7 @@ def cytoscape_data(G, name="name", ident="id"):
      'multigraph': False,
      'elements': {'nodes': [{'data': {'id': '0', 'value': 0, 'name': '0'}},
                             {'data': {'id': '1', 'value': 1, 'name': '1'}}],
-                  'edges': [{'data': {'source': 0, 'target': 1}}]}}
+                  'edges': [{'data': {'source': '0', 'target': '1'}}]}}
 
     The :mod:`json` package can be used to serialize the resulting data
 
@@ -69,9 +76,10 @@ def cytoscape_data(G, name="name", ident="id"):
     nodes = jsondata["elements"]["nodes"]
     edges = jsondata["elements"]["edges"]
 
+    nid = {i: j.get(ident) or str(i) for i, j in G.nodes.items()}
     for i, j in G.nodes.items():
         n = {"data": j.copy()}
-        n["data"]["id"] = j.get(ident) or str(i)
+        n["data"]["id"] = nid[i]
         n["data"]["value"] = i
         n["data"]["name"] = j.get(name) or str(i)
         nodes.append(n)
@@ -79,15 +87,15 @@ def cytoscape_data(G, name="name", ident="id"):
     if G.is_multigraph():
         for e in G.edges(keys=True):
             n = {"data": G.adj[e[0]][e[1]][e[2]].copy()}
-            n["data"]["source"] = e[0]
-            n["data"]["target"] = e[1]
+            n["data"]["source"] = nid[e[0]]
+            n["data"]["target"] = nid[e[1]]
             n["data"]["key"] = e[2]
             edges.append(n)
     else:
         for e in G.edges():
             n = {"data": G.adj[e[0]][e[1]].copy()}
-            n["data"]["source"] = e[0]
-            n["data"]["target"] = e[1]
+            n["data"]["source"] = nid[e[0]]
+            n["data"]["target"] = nid[e[1]]
             edges.append(n)
     return jsondata
 
@@ -139,7 +147,7 @@ def cytoscape_graph(data, name="name", ident="id"):
     ...             {"data": {"id": "0", "value": 0, "name": "0"}},
     ...             {"data": {"id": "1", "value": 1, "name": "1"}},
     ...         ],
-    ...         "edges": [{"data": {"source": 0, "target": 1}}],
+    ...         "edges": [{"data": {"source": "0", "target": "1"}}],
     ...     },
     ... }
     >>> G = nx.cytoscape_graph(data_dict)
@@ -150,7 +158,7 @@ def cytoscape_graph(data, name="name", ident="id"):
     >>> G.nodes(data=True)[0]
     {'id': '0', 'value': 0, 'name': '0'}
     >>> G.edges(data=True)
-    EdgeDataView([(0, 1, {'source': 0, 'target': 1})])
+    EdgeDataView([(0, 1, {'source': '0', 'target': '1'})])
     """
     if name == ident:
         raise nx.NetworkXError("name and ident must be different.")
@@ -164,9 +172,12 @@ def cytoscape_graph(data, name="name", ident="id"):
     if directed:
         graph = graph.to_directed()
     graph.graph = dict(data.get("data"))
+    node_id = {}
     for d in data["elements"]["nodes"]:
         node_data = d["data"].copy()
-        node = d["data"]["value"]
+        node = _to_tuple(d["data"]["value"])
+        node_key = d["data"].get(ident) or str(node)
+        node_id[node_key] = node
 
         if d["data"].get(name):
             node_data[name] = d["data"].get(name)
@@ -178,8 +189,13 @@ def cytoscape_graph(data, name="name", ident="id"):
 
     for d in data["elements"]["edges"]:
         edge_data = d["data"].copy()
-        sour = d["data"]["source"]
-        targ = d["data"]["target"]
+        sour = _to_tuple(d["data"]["source"])
+        targ = _to_tuple(d["data"]["target"])
+        # Resolve node identifiers (as written by cytoscape_data) back to the
+        # original node objects, falling back to a string comparison for
+        # exports written before gh-7962 where edge ends were raw node objects.
+        sour = node_id.get(sour, node_id.get(str(sour), sour))
+        targ = node_id.get(targ, node_id.get(str(targ), targ))
         if multigraph:
             key = d["data"].get("key", 0)
             graph.add_edge(sour, targ, key=key)
