@@ -57,29 +57,74 @@ def maximal_matching(G):
     return matching
 
 
-def matching_dict_to_set(matching):
-    """Converts matching dict format to matching set format
-
-    Converts a dictionary representing a matching (as returned by
-    :func:`max_weight_matching`) to a set representing a matching (as
-    returned by :func:`maximal_matching`).
-
-    In the definition of maximal matching adopted by NetworkX,
-    self-loops are not allowed, so the provided dictionary is expected
-    to never have any mapping from a key to itself. However, the
-    dictionary is expected to have mirrored key/value pairs, for
-    example, key ``u`` with value ``v`` and key ``v`` with value ``u``.
-
+def _matching_to_set(matching, is_directed=False):
     """
+    Converts `matching` given as `set` or `dict` to `set`.
+    If `is_directed` is `True`, edges are considered to be directed.
+    """
+    matching_edges = matching if isinstance(matching, set) else matching.items()
+    if is_directed:
+        return matching_edges
+
     edges = set()
-    for edge in matching.items():
+    for edge in matching_edges:
+        if len(edge) != 2:
+            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
         u, v = edge
-        if (v, u) in edges or edge in edges:
-            continue
-        if u == v:
-            raise nx.NetworkXError(f"Selfloops cannot appear in matchings {edge}")
-        edges.add(edge)
+        if (v, u) not in edges:
+            edges.add(edge)
     return edges
+
+
+def _check_matching(G, matching):
+    """
+    Common checking step for `is_*matching` functions.
+
+    Return whether `matching` is a matching,
+    and the sets of edges and nodes in it.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    matching : dict or set
+        A dictionary or set representing a matching. If a dictionary, it
+        must have ``matching[u] == v`` for each edge ``(u, v)`` in the matching.
+        If a set, it must have elements of the form ``(u, v)`` representing
+        an edge in the matching.
+
+    Returns
+    -------
+    b : bool
+        Whether `matching` is a matching.
+
+    edges : set
+        The set of edges in `matching`.
+
+    nodes : set
+        The set of nodes in `matching`.
+
+    Raises
+    ------
+    NetworkXError
+        If `matching` is not a valid matching candidate.
+    """
+    matching_edges = _matching_to_set(matching, is_directed=G.is_directed())
+
+    for edge in matching_edges:
+        u, v = edge
+        if not G.has_edge(u, v):
+            raise nx.NetworkXError(f"matching contains edge {edge} not in G")
+        if u == v:
+            raise nx.NetworkXError(f"matching contains self-loop edge {edge}")
+
+    nodes = set()
+    for u, v in matching_edges:
+        if u in nodes or v in nodes:
+            return False, matching_edges, nodes
+        nodes.update((u, v))
+
+    return True, matching_edges, nodes
 
 
 @nx._dispatchable
@@ -96,7 +141,7 @@ def is_matching(G, matching):
 
     matching : dict or set
         A dictionary or set representing a matching. If a dictionary, it
-        must have ``matching[u] == v`` and ``matching[v] == u`` for each
+        must have ``matching[u] == v`` for each
         edge ``(u, v)`` in the matching. If a set, it must have elements
         of the form ``(u, v)``, where ``(u, v)`` is an edge in the
         matching.
@@ -123,24 +168,8 @@ def is_matching(G, matching):
     True
 
     """
-    if isinstance(matching, dict):
-        matching = matching_dict_to_set(matching)
-
-    nodes = set()
-    for edge in matching:
-        if len(edge) != 2:
-            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
-        u, v = edge
-        if u not in G or v not in G:
-            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
-        if u == v:
-            return False
-        if not G.has_edge(u, v):
-            return False
-        if u in nodes or v in nodes:
-            return False
-        nodes.update(edge)
-    return True
+    b, _, _ = _check_matching(G, matching)
+    return b
 
 
 @nx._dispatchable
@@ -156,7 +185,7 @@ def is_maximal_matching(G, matching):
 
     matching : dict or set
         A dictionary or set representing a matching. If a dictionary, it
-        must have ``matching[u] == v`` and ``matching[v] == u`` for each
+        must have ``matching[u] == v`` for each
         edge ``(u, v)`` in the matching. If a set, it must have elements
         of the form ``(u, v)``, where ``(u, v)`` is an edge in the
         matching.
@@ -174,35 +203,18 @@ def is_maximal_matching(G, matching):
     True
 
     """
-    if isinstance(matching, dict):
-        matching = matching_dict_to_set(matching)
-    # If the given set is not a matching, then it is not a maximal matching.
-    edges = set()
-    nodes = set()
-    for edge in matching:
-        if len(edge) != 2:
-            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
-        u, v = edge
-        if u not in G or v not in G:
-            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
-        if u == v:
-            return False
-        if not G.has_edge(u, v):
-            return False
-        if u in nodes or v in nodes:
-            return False
-        nodes.update(edge)
-        edges.add(edge)
-        edges.add((v, u))
-    # A matching is maximal if adding any new edge from G to it
+    b, edges, nodes = _check_matching(G, matching)
+
+    # A matching is maximal if adding any new (non self-loop) edge from G to it
     # causes the resulting set to match some node twice.
-    # Be careful to check for adding selfloops
-    for u, v in G.edges:
-        if (u, v) not in edges:
-            # could add edge (u, v) to edges and have a bigger matching
-            if u not in nodes and v not in nodes and u != v:
-                return False
-    return True
+    # I.e. every edge in G should either
+    return b and all(
+        (u, v) in edges  # be in the matching, or
+        or u == v  # be a self-loop, or
+        or u in nodes
+        or v in nodes  # contain a previously matched node.
+        for u, v in G.edges()
+    )
 
 
 @nx._dispatchable
@@ -218,7 +230,7 @@ def is_perfect_matching(G, matching):
 
     matching : dict or set
         A dictionary or set representing a matching. If a dictionary, it
-        must have ``matching[u] == v`` and ``matching[v] == u`` for each
+        must have ``matching[u] == v`` for each
         edge ``(u, v)`` in the matching. If a set, it must have elements
         of the form ``(u, v)``, where ``(u, v)`` is an edge in the
         matching.
@@ -237,24 +249,8 @@ def is_perfect_matching(G, matching):
     True
 
     """
-    if isinstance(matching, dict):
-        matching = matching_dict_to_set(matching)
-
-    nodes = set()
-    for edge in matching:
-        if len(edge) != 2:
-            raise nx.NetworkXError(f"matching has non-2-tuple edge {edge}")
-        u, v = edge
-        if u not in G or v not in G:
-            raise nx.NetworkXError(f"matching contains edge {edge} with node not in G")
-        if u == v:
-            return False
-        if not G.has_edge(u, v):
-            return False
-        if u in nodes or v in nodes:
-            return False
-        nodes.update(edge)
-    return len(nodes) == len(G)
+    b, _, nodes = _check_matching(G, matching)
+    return b and len(nodes) == len(G)
 
 
 @not_implemented_for("multigraph")
@@ -1145,4 +1141,4 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     if allinteger:
         verifyOptimum()
 
-    return matching_dict_to_set(mate)
+    return _matching_to_set(mate, is_directed=G.is_directed())
