@@ -639,6 +639,85 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G.add_edge(0, 1, weight=-1)
         assert nx.find_negative_cycle(G, 1) == [1, 0, 1]
 
+    def test_find_negative_cycle_not_found(self):
+        # https://github.com/networkx/networkx/issues/5916
+        # The greedy DFS reconstruction over the SPFA predecessor map can
+        # fail to close a cycle when the detection node is not on it.
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(
+            [
+                (0, 6, -1),
+                (1, 3, -1),
+                (1, 4, 0),
+                (2, 0, 1),
+                (2, 1, 0),
+                (3, 0, 0),
+                (3, 4, -1),
+                (4, 6, 0),
+                (6, 2, -1),
+            ]
+        )
+        cycle = nx.find_negative_cycle(G, 6)
+        assert cycle[0] == cycle[-1]
+        assert len(set(cycle[:-1])) == len(cycle) - 1
+        assert sum(G[u][v]["weight"] for u, v in pairwise(cycle)) < 0
+
+        # Zero-weight edges create equal-cost predecessor records that can
+        # otherwise yield a non-negative tie cycle.
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(
+            [
+                (0, 2, 2),
+                (0, 3, 1),
+                (1, 3, -1),
+                (1, 4, 0),
+                (2, 1, 2),
+                (2, 5, -2),
+                (3, 4, -1),
+                (3, 5, 0),
+                (4, 2, 2),
+                (5, 1, 0),
+                (5, 3, 0),
+                (5, 4, -1),
+            ]
+        )
+        cycle = nx.find_negative_cycle(G, 5)
+        assert sum(G[u][v]["weight"] for u, v in pairwise(cycle)) < 0
+
+        # A negative cycle that is not reachable from the source is not a
+        # negative cycle for this source. Nodes 0, 1, 2 carry a negative
+        # cycle but the source 4 is confined to a separate component that
+        # does not reach it.
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(
+            [(0, 1, 1), (1, 2, -3), (2, 0, 1), (3, 4, 0), (4, 3, 0)]
+        )
+        with pytest.raises(nx.NetworkXError, match="No negative cycles detected"):
+            nx.find_negative_cycle(G, 4)
+
+    def test_find_negative_cycle_self_loop(self):
+        # A negative self-loop must be returned whatever its position is and
+        # must not raise (the SPFA count heuristic can detect the cycle
+        # before a predecessor for the node itself is recorded, so the
+        # greedy reconstruction falls through to the Bellman-Ford fallback).
+        G = nx.DiGraph()
+        G.add_edge(0, 0, weight=-1)
+        assert nx.find_negative_cycle(G, 0) == [0, 0]
+        G = nx.Graph()
+        G.add_edge(0, 0, weight=-1)
+        assert nx.find_negative_cycle(G, 0) == [0, 0]
+        G = nx.MultiDiGraph()
+        G.add_edge(0, 0, weight=1)
+        G.add_edge(0, 0, weight=-1)
+        assert nx.find_negative_cycle(G, 0) == [0, 0]
+
+    def test_find_negative_cycle_zero_weight_cycle(self):
+        # A zero-weight cycle is not a negative cycle.
+        G = nx.DiGraph()
+        G.add_weighted_edges_from([(0, 1, 1), (1, 0, -1)])
+        with pytest.raises(nx.NetworkXError, match="No negative cycles detected"):
+            nx.find_negative_cycle(G, 0)
+
     def test_negative_weight(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
         G.add_edge(1, 2, weight=-3)

@@ -2274,36 +2274,99 @@ def find_negative_cycle(G, source, weight="weight"):
     if v is None:
         raise nx.NetworkXError("No negative cycles detected.")
 
-    # negative cycle detected... find it
-    neg_cycle = []
-    stack = [(v, list(pred[v]))]
-    seen = {v}
-    while stack:
-        node, preds = stack[-1]
-        if v in preds:
-            # found the cycle
-            neg_cycle.extend([node, v])
-            neg_cycle = list(reversed(neg_cycle))
-            return neg_cycle
+    def _cycle_weight(cycle):
+        """Total weight of ``cycle`` (a closed node list) under ``weight``."""
+        return sum(weight(u, v, G.adj[u][v]) for u, v in zip(cycle, cycle[1:]))
 
-        if preds:
-            nbr = preds.pop()
-            if nbr not in seen:
-                stack.append((nbr, list(pred[nbr])))
-                neg_cycle.append(node)
-                seen.add(nbr)
-        else:
-            stack.pop()
-            if neg_cycle:
-                neg_cycle.pop()
+    # negative cycle detected... find it. The SPFA predecessor map also
+    # records equal-cost (tie) predecessors, so the greedy search below can
+    # either fail to close the cycle or close a non-negative one (see
+    # gh-5916). It is therefore validated and the cycle is otherwise
+    # reconstructed from a strict Bellman-Ford predecessor pass, where every
+    # loop is built only from strict improvements.
+    try:
+        neg_cycle = []
+        stack = [(v, list(pred[v]))]
+        seen = {v}
+        while stack:
+            node, preds = stack[-1]
+            if v in preds:
+                # found a cycle
+                neg_cycle.extend([node, v])
+                cycle = list(reversed(neg_cycle))
+                if _cycle_weight(cycle) < 0:
+                    return cycle
+                break
+
+            if preds:
+                nbr = preds.pop()
+                if nbr not in seen:
+                    stack.append((nbr, list(pred[nbr])))
+                    neg_cycle.append(node)
+                    seen.add(nbr)
             else:
-                if v in G[v] and weight(G, v, v) < 0:
-                    return [v, v]
-                # should not reach here
-                raise nx.NetworkXError("Negative cycle is detected but not found")
-    # should not get here...
-    msg = "negative cycle detected but not identified"
-    raise nx.NetworkXUnbounded(msg)
+                stack.pop()
+                if neg_cycle:
+                    neg_cycle.pop()
+                else:
+                    if v in G[v] and weight(v, v, G[v][v]) < 0:
+                        return [v, v]
+                    raise nx.NetworkXError("Negative cycle is detected but not found")
+    except (nx.NetworkXError, nx.NetworkXUnbounded):
+        pass
+
+    # reconstruct the cycle with the textbook single-source Bellman-Ford
+    # relaxation (n = len(G) passes), keeping only strict improvements. Since
+    # a negative cycle reachable from `source` exists, the predecessor
+    # structure is guaranteed to contain a negative loop.
+    edges = [
+        (u, v, weight(u, v, e)) for u in G for v, e in G._adj[u].items()
+    ]
+    dist = {node: float("inf") for node in G}
+    dist[source] = 0.0
+    pred = {}
+    for _ in range(len(G)):
+        changed = False
+        for u, nbr, w in edges:
+            dist_nbr = dist[u] + w
+            if dist_nbr < dist[nbr]:
+                dist[nbr] = dist_nbr
+                pred[nbr] = u
+                changed = True
+        if not changed:
+            break
+        # once the short negative cycles are present in the predecessor
+        # structure, recover them early instead of running all n passes
+        if v in pred:
+            chain = []
+            index = {}
+            cur = pred[v]
+            while cur is not None and cur not in index:
+                index[cur] = len(chain)
+                chain.append(cur)
+                cur = pred.get(cur)
+            if cur is not None:
+                cycle = list(reversed(chain[index[cur]:] + [cur]))
+                if _cycle_weight(cycle) < 0:
+                    return cycle
+
+    # find a loop in the predecessor structure by walking backwards until a
+    # node repeats; reversing the walked subchain yields the cycle in edge
+    # order (its last node equals its first)
+    for node in G:
+        chain = []
+        index = {}
+        cur = node
+        while cur is not None and cur not in index:
+            index[cur] = len(chain)
+            chain.append(cur)
+            cur = pred.get(cur)
+        if cur is not None:
+            cycle = list(reversed(chain[index[cur]:] + [cur]))
+            if _cycle_weight(cycle) < 0:
+                return cycle
+    # should not reach here
+    raise nx.NetworkXError("Negative cycle is detected but not found")
 
 
 @nx._dispatchable(edge_attrs="weight")
