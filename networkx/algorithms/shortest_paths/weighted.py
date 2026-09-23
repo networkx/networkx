@@ -2319,9 +2319,7 @@ def find_negative_cycle(G, source, weight="weight"):
     # relaxation (n = len(G) passes), keeping only strict improvements. Since
     # a negative cycle reachable from `source` exists, the predecessor
     # structure is guaranteed to contain a negative loop.
-    edges = [
-        (u, v, weight(u, v, e)) for u in G for v, e in G._adj[u].items()
-    ]
+    edges = [(u, v, weight(u, v, e)) for u in G for v, e in G._adj[u].items()]
     dist = {node: float("inf") for node in G}
     dist[source] = 0.0
     pred = {}
@@ -2346,7 +2344,7 @@ def find_negative_cycle(G, source, weight="weight"):
                 chain.append(cur)
                 cur = pred.get(cur)
             if cur is not None:
-                cycle = list(reversed(chain[index[cur]:] + [cur]))
+                cycle = list(reversed(chain[index[cur] :] + [cur]))
                 if _cycle_weight(cycle) < 0:
                     return cycle
 
@@ -2362,7 +2360,7 @@ def find_negative_cycle(G, source, weight="weight"):
             chain.append(cur)
             cur = pred.get(cur)
         if cur is not None:
-            cycle = list(reversed(chain[index[cur]:] + [cur]))
+            cycle = list(reversed(chain[index[cur] :] + [cur]))
             if _cycle_weight(cycle) < 0:
                 return cycle
     # should not reach here
