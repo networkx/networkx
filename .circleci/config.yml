@@ -6,6 +6,7 @@ jobs:
   documentation:
     docker:
       - image: cimg/python:3.12
+    resource_class: medium.gen2
 
     steps:
       - checkout
@@ -74,6 +75,7 @@ jobs:
   image:
     docker:
       - image: cimg/python:3.12
+    resource_class: medium.gen2
 
     steps:
       - checkout
@@ -106,6 +108,7 @@ jobs:
   coverage:
     docker:
       - image: cimg/python:3.12
+    resource_class: medium.gen2
     steps:
       - checkout
       - run:
