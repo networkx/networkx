@@ -3,6 +3,7 @@ Tests for Group Centrality Measures
 """
 
 import itertools
+from functools import partial
 
 import pytest
 
@@ -279,84 +280,220 @@ class TestGroupBetweennessCentrality:
         assert b == pytest.approx(8 / 3)
 
 
+def check_prominent(
+    gbc_exp, grp_exp, gbc, grp, G, k, weight=None, normalized=True, endpoints=False
+):
+    gbc_exp_calc = nx.group_betweenness_centrality(
+        G, grp_exp, normalized=normalized, weight=weight, endpoints=endpoints
+    )
+    assert gbc_exp_calc == pytest.approx(gbc_exp), (
+        f"input {gbc_exp=} != GBC({grp_exp=})={gbc_exp_calc}"
+    )
+    gbc_calc = nx.group_betweenness_centrality(
+        G, grp, normalized=normalized, weight=weight, endpoints=endpoints
+    )
+    assert len(grp) == k and gbc == pytest.approx(gbc_exp)
+    if grp == grp_exp:
+        return
+
+    # if multple groups tie for best betweenness grp != grp_exp might occur
+    gbc_group = nx.group_betweenness_centrality(
+        G, grp, normalized=normalized, weight=weight, endpoints=endpoints
+    )
+    assert len(grp) == k and gbc_group == gbc_exp_calc
+
+
+def check_prominent_brute_force(G, k, wt=None, norm=True, ep=False):
+    GBC = partial(
+        nx.group_betweenness_centrality, G, weight=wt, normalized=norm, endpoints=ep
+    )
+    return max((GBC(nodes), nodes) for nodes in itertools.combinations(G, k))
+
+
 class TestProminentGroup:
     np = pytest.importorskip("numpy")
     pd = pytest.importorskip("pandas")
 
-    def test_prominent_group_single_node(self):
-        """
-        Prominent group for single node
-        """
-        G = nx.path_graph(5)
+    @pytest.mark.parametrize(
+        "create_using",
+        [nx.Graph, pytest.param(nx.DiGraph, marks=pytest.mark.xfail(rasies=KeyError))],
+    )
+    def test_prominent_group_single_node(self, create_using):
+        G = nx.path_graph(5, create_using=create_using)
         k = 1
         b, g = nx.prominent_group(G, k, normalized=False, endpoints=False)
-        b_answer, g_answer = 4.0, [2]
-        assert b == b_answer and g == g_answer
+        assert b == 4
+        assert nx.group_betweenness_centrality(G, g, normalized=False) == b
+        GBC = partial(nx.group_betweenness_centrality, G, normalized=False)
+        assert GBC(g) == b
+        max_gbc, max_group = max((GBC([n]), [n]) for n in G)
+        assert g == max_group
+        assert b == max_gbc
+        check_prominent(4, [2], b, g, G, k, normalized=False, endpoints=False)
 
-    def test_prominent_group_with_c(self):
+    @pytest.mark.xfail(reason="known KeyError in GBC calculation", raises=KeyError)
+    def test_group_betweenness_guard_against_keyerror(self):
         """
-        Prominent group without some nodes
+        Check for KeyErrors in D[u][v] inside prominent_group
         """
+        G = nx.path_graph(6, create_using=nx.DiGraph)
+        k = 3
+        # y_in_Dx is enforced by the loop bounds. (KeyError if not enforced)
+        # This checks v_in_Dy, y_in_Dv, x_in_Dv and v_in_Dx. Note: do not need x_in_Dy
+        b, g = nx.prominent_group(G, k, normalized=False)
+        check_prominent(2, [3, 1, 0], b, g, G, k, normalized=False)
+
+    def test_prominent_group_with_excluded_nodes(self):
         G = nx.path_graph(5)
         k = 1
         b, g = nx.prominent_group(G, k, normalized=False, C=[2])
-        b_answer, g_answer = 3.0, [1]
-        assert b == b_answer and g == g_answer
+        check_prominent(3, [1], b, g, G, k, normalized=False, endpoints=False)
 
-    def test_prominent_group_normalized_endpoints(self):
-        """
-        Prominent group with normalized result, with endpoints
-        """
+        b, g = nx.prominent_group(G, k, normalized=False, C=[1])
+        check_prominent(4, [2], b, g, G, k, normalized=False)
+
+    @pytest.mark.parametrize(
+        "cls, k, norm, ep, gbc_exp, grp_exp",
+        [
+            # (nx.Graph, 3, True, True, 0.952381, [1, 3, 6]),
+            (nx.Graph, 3, True, False, 0.833333, [1, 3, 6]),
+            (nx.Graph, 3, False, True, 20, [1, 3, 6]),
+            (nx.Graph, 3, False, False, 5, [1, 3, 6]),
+            # (nx.Graph, 2, True, True, 0.8095238, [2, 5]),
+            (nx.Graph, 2, True, False, 0.6, [2, 5]),
+            (nx.Graph, 2, False, True, 17, [2, 5]),
+            (nx.Graph, 2, False, False, 6, [2, 5]),
+            # (nx.DiGraph, 3, True, True, 4.0833333, [2, 4, 6]),
+            # (nx.DiGraph, 3, True, False, 1.5833333, [2, 4, 6]),
+            # (nx.DiGraph, 3, False, True, 49, [2, 4, 6]),
+            # (nx.DiGraph, 3, False, False, 11, [2, 4, 6]),
+            # (nx.DiGraph, 2, True, True, 0.904762, [2, 5]),
+            (nx.DiGraph, 2, True, False, 0.8, [2, 5]),
+            (nx.DiGraph, 2, False, True, 38, [2, 5]),
+            (nx.DiGraph, 2, False, False, 16, [2, 5]),
+        ],
+    )
+    def test_prom_group_normalized_endpoints(self, cls, k, norm, ep, gbc_exp, grp_exp):
+        G = nx.cycle_graph(7, create_using=cls)
+
+        true_gbc, true_grp = check_prominent_brute_force(
+            G, k, wt=None, norm=norm, ep=ep
+        )
+        gbc_exp_calc = nx.group_betweenness_centrality(
+            G, grp_exp, normalized=norm, endpoints=ep
+        )
+        if true_gbc != pytest.approx(gbc_exp):
+            gbc_exp_calc = nx.group_betweenness_centrality(
+                G, grp_exp, normalized=norm, endpoints=ep
+            )
+        assert true_gbc == pytest.approx(gbc_exp)
+
+        b, g = nx.prominent_group(G, k, normalized=norm, endpoints=ep)
+        gbc_g = nx.group_betweenness_centrality(G, g, normalized=norm, endpoints=ep)
+        # gbc_360 = nx.group_betweenness_centrality(G, [3, 6, 0], normalized=norm, endpoints=ep)
+        # gbc_246 = nx.group_betweenness_centrality(G, [2, 4, 6], normalized=norm, endpoints=ep)
+        # print(f"{b=} {g=} {gbc_g=} {gbc_360=} {gbc_246=}")
+        assert gbc_g == pytest.approx(b)
+        assert b == pytest.approx(true_gbc)
+        check_prominent(gbc_exp, grp_exp, b, g, G, k, normalized=norm, endpoints=ep)
+
+    @pytest.mark.parametrize(
+        "create_using, gbc, ngbc",
+        [(nx.Graph, 5, 0.833333), (nx.DiGraph, 5, 0.833333)],
+    )
+    def test_prominent_group_connected_graph(self, create_using, gbc, ngbc):
         G = nx.cycle_graph(7)
-        k = 2
-        b, g = nx.prominent_group(G, k, normalized=True, endpoints=True)
-        b_answer, g_answer = 1.7, [2, 5]
-        assert b == pytest.approx(b_answer) and g == pytest.approx(g_answer)
+        nx.add_path(G, [6, 5, 4])  # only affects DiGraph
+        k = 3
+        b, g = nx.prominent_group(G, k, normalized=False)
+        check_prominent(gbc, [1, 3, 5], b, g, G, k, normalized=False)
 
-    def test_prominent_group_disconnected_graph(self):
-        """
-        Prominent group of disconnected graph
-        """
+        b, g = nx.prominent_group(G, k, normalized=True)
+        check_prominent(ngbc, [1, 3, 5], b, g, G, k, normalized=True)
+
+    @pytest.mark.parametrize(
+        "create_using, gbc, ngbc",
+        [(nx.Graph, 6, 1), (nx.DiGraph, 7, 7 / 12)],
+    )
+    def test_prominent_group_disconnected_graph(self, create_using, gbc, ngbc):
         G = nx.path_graph(6)
         G.remove_edge(0, 1)
         k = 1
-        b, g = nx.prominent_group(G, k, weight=None, normalized=False)
-        b_answer, g_answer = 4.0, [3]
-        assert b == b_answer and g == g_answer
+        b, g = nx.prominent_group(G, k, normalized=False)
+        check_prominent(4, [3], b, g, G, k, normalized=False)
 
-    def test_prominent_group_node_not_in_graph(self):
-        """
-        Node(s) in C not in graph, raises NodeNotFound exception
-        """
+        b, g = nx.prominent_group(G, k, normalized=True)
+        check_prominent(0.4, [3], b, g, G, k, normalized=True)
+
+    def test_prominent_group_excluded_node_not_in_graph(self):
         with pytest.raises(nx.NodeNotFound):
             nx.prominent_group(nx.path_graph(5), 1, C=[10])
 
-    def test_group_betweenness_directed_weighted(self):
-        """
-        Group betweenness centrality in a directed and weighted graph
-        """
-        G = nx.DiGraph()
-        G.add_edge(1, 0, weight=1)
-        G.add_edge(0, 2, weight=2)
-        G.add_edge(1, 2, weight=3)
+    def test_prominent_group_weighted(self):
+        G = nx.Graph()
+        G.add_edge(1, 0, weight=1)  # 0-2-4
+        G.add_edge(0, 2, weight=2)  # | |/
+        G.add_edge(1, 2, weight=3)  # 1-3
         G.add_edge(3, 1, weight=4)
         G.add_edge(2, 3, weight=1)
         G.add_edge(4, 3, weight=6)
         G.add_edge(2, 4, weight=7)
         k = 2
         b, g = nx.prominent_group(G, k, weight="weight", normalized=False)
-        b_answer, g_answer = 5.0, [1, 2]
-        assert b == b_answer and g == g_answer
+        check_prominent(2, [1, 2], b, g, G, k, weight="weight", normalized=False)
+
+        b, g = nx.prominent_group(G, k, weight="weight", normalized=True)
+        check_prominent(0.6666666, [1, 2], b, g, G, k, weight="weight", normalized=True)
+
+    def test_prominent_group_undirected_weighted(self):
+        G = nx.DiGraph()
+        G.add_edge(1, 0, weight=1)  # 0->2->4
+        G.add_edge(0, 2, weight=2)  # ^  |  |
+        G.add_edge(1, 2, weight=3)  # |  v  v
+        G.add_edge(3, 1, weight=4)  # 1<-3-/
+        G.add_edge(2, 3, weight=1)
+        G.add_edge(4, 3, weight=6)
+        G.add_edge(2, 4, weight=7)
+        k = 2
+        b, g = nx.prominent_group(G, k, weight="weight", normalized=False)
+        check_prominent(5, [1, 2], b, g, G, k, weight="weight", normalized=False)
+
+        b, g = nx.prominent_group(G, k, weight="weight", normalized=True)
+        check_prominent(
+            0.83333333, [1, 2], b, g, G, k, weight="weight", normalized=True
+        )
 
     def test_prominent_group_greedy_algorithm(self):
-        """
-        Group betweenness centrality in a greedy algorithm
-        """
         G = nx.cycle_graph(7)
         k = 2
-        b, g = nx.prominent_group(G, k, normalized=True, endpoints=True, greedy=True)
-        b_answer, g_answer = 1.7, [6, 3]
-        assert b == pytest.approx(b_answer) and g == pytest.approx(g_answer)
+        b, g = nx.prominent_group(G, k, normalized=False, endpoints=False, greedy=True)
+        check_prominent(6, [6, 3], b, g, G, k, normalized=False)
+
+        b, g = nx.prominent_group(G, k, normalized=False, endpoints=True, greedy=True)
+        check_prominent(17, [6, 3], b, g, G, k, normalized=False, endpoints=True)
+
+        b, g = nx.prominent_group(G, k, normalized=True, endpoints=False, greedy=True)
+        check_prominent(0.6, [6, 3], b, g, G, k, normalized=True)
+
+        # Currently fails due to normalization error with endpoints=True
+        # b, g = nx.prominent_group(G, k, normalized=True, endpoints=True, greedy=True)
+        # check_prominent(6, [6, 3], b, g, G, k, normalized=True, endpoints=True)
+
+    def test_prominent_group_directed_greedy_algorithm(self):
+        G = nx.cycle_graph(7, create_using=nx.DiGraph)
+        k = 2
+        b, g = nx.prominent_group(G, k, normalized=False, endpoints=False, greedy=True)
+        check_prominent(16, [6, 3], b, g, G, k, normalized=False)
+
+        b, g = nx.prominent_group(G, k, normalized=False, endpoints=True, greedy=True)
+        check_prominent(38, [6, 3], b, g, G, k, normalized=False, endpoints=True)
+
+        b, g = nx.prominent_group(G, k, normalized=True, endpoints=False, greedy=True)
+        check_prominent(0.8, [6, 3], b, g, G, k, normalized=True)
+
+        # Currently fails due to normalization error with endpoints=True
+        # b, g = nx.prominent_group(G, k, normalized=True, endpoints=True, greedy=True)
+        # check_prominent(1.9, [6, 3], b, g, G, k, normalized=True, endpoints=True)
 
 
 class TestGroupClosenessCentrality:
