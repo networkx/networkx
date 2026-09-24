@@ -108,11 +108,7 @@ def _triangles_and_degree_iter(G, nodes=None):
         nodes_nbrs = G.adj.items()
     else:
         nodes_nbrs = ((n, G[n]) for n in G.nbunch_iter(nodes))
-    # Precompute each node's neighbor set once, instead of rebuilding
-    # ``set(G[w])`` for every neighbor ``w`` on every iteration. A node's
-    # neighbor set is otherwise reconstructed roughly ``degree`` times over
-    # the full computation; caching it removes that redundant work.
-    neighbor_sets = {n: set(nbrs) - {n} for n, nbrs in G.adj.items()}
+    neighbor_sets = {n: nbrs.keys() - {n} for n, nbrs in G._adj.items()}
     for v, v_nbrs in nodes_nbrs:
         vs = neighbor_sets[v]
         gen_degree = Counter(len(vs & neighbor_sets[w]) for w in vs)
