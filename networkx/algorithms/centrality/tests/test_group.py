@@ -355,19 +355,19 @@ class TestProminentGroup:
     @pytest.mark.parametrize(
         "cls, k, norm, ep, gbc_exp, grp_exp",
         [
-            # (nx.Graph, 3, True, True, 0.952381, [1, 3, 6]),
+            (nx.Graph, 3, True, True, 0.952381, [1, 3, 6]),
             (nx.Graph, 3, True, False, 0.833333, [1, 3, 6]),
             (nx.Graph, 3, False, True, 20, [1, 3, 6]),
             (nx.Graph, 3, False, False, 5, [1, 3, 6]),
-            # (nx.Graph, 2, True, True, 0.8095238, [2, 5]),
+            (nx.Graph, 2, True, True, 0.8095238, [2, 5]),
             (nx.Graph, 2, True, False, 0.6, [2, 5]),
             (nx.Graph, 2, False, True, 17, [2, 5]),
             (nx.Graph, 2, False, False, 6, [2, 5]),
-            # (nx.DiGraph, 3, True, True, 4.0833333, [2, 4, 6]),
-            # (nx.DiGraph, 3, True, False, 1.5833333, [2, 4, 6]),
-            # (nx.DiGraph, 3, False, True, 49, [2, 4, 6]),
-            # (nx.DiGraph, 3, False, False, 11, [2, 4, 6]),
-            # (nx.DiGraph, 2, True, True, 0.904762, [2, 5]),
+            (nx.DiGraph, 3, True, True, 4.0833333, [2, 4, 6]),
+            (nx.DiGraph, 3, True, False, 1.5833333, [2, 4, 6]),
+            (nx.DiGraph, 3, False, True, 49, [2, 4, 6]),
+            (nx.DiGraph, 3, False, False, 11, [2, 4, 6]),
+            (nx.DiGraph, 2, True, True, 0.904762, [2, 5]),
             (nx.DiGraph, 2, True, False, 0.8, [2, 5]),
             (nx.DiGraph, 2, False, True, 38, [2, 5]),
             (nx.DiGraph, 2, False, False, 16, [2, 5]),
@@ -476,8 +476,8 @@ class TestProminentGroup:
         check_prominent(0.6, [6, 3], b, g, G, k, normalized=True)
 
         # Currently fails due to normalization error with endpoints=True
-        # b, g = nx.prominent_group(G, k, normalized=True, endpoints=True, greedy=True)
-        # check_prominent(6, [6, 3], b, g, G, k, normalized=True, endpoints=True)
+        b, g = nx.prominent_group(G, k, normalized=True, endpoints=True, greedy=True)
+        check_prominent(6, [6, 3], b, g, G, k, normalized=True, endpoints=True)
 
     def test_prominent_group_directed_greedy_algorithm(self):
         G = nx.cycle_graph(7, create_using=nx.DiGraph)
@@ -492,8 +492,8 @@ class TestProminentGroup:
         check_prominent(0.8, [6, 3], b, g, G, k, normalized=True)
 
         # Currently fails due to normalization error with endpoints=True
-        # b, g = nx.prominent_group(G, k, normalized=True, endpoints=True, greedy=True)
-        # check_prominent(1.9, [6, 3], b, g, G, k, normalized=True, endpoints=True)
+        b, g = nx.prominent_group(G, k, normalized=True, endpoints=True, greedy=True)
+        check_prominent(1.9, [6, 3], b, g, G, k, normalized=True, endpoints=True)
 
 
 class TestGroupClosenessCentrality:
