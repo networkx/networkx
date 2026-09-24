@@ -25,7 +25,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     r"""Compute the group betweenness centrality for a group of nodes.
 
     Group betweenness centrality of a group of nodes $C$ is the sum of the
-    fraction of all-pairs shortest paths that pass through any vertex in $C$
+    fraction of all-pairs shortest paths that pass through any node in $C$
 
     .. math::
 
@@ -40,11 +40,11 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
     Parameters
     ----------
     G : graph
-      A NetworkX graph.
+       A NetworkX graph.
 
     C : list or set or list of lists or list of sets
-      A group or a list of groups containing nodes which belong to G,
-      for which group betweenness centrality is to be calculated.
+       A group or a list of groups containing nodes which belong to G,
+       for which group betweenness centrality is to be calculated.
 
     normalized : bool, optional (default=True)
        If True, group betweenness is normalized by $1/(N_{out}(N_{out}-1))$
@@ -281,11 +281,11 @@ def _group_preprocessing(G, set_v, weight):
 def prominent_group(
     G, k, weight=None, C=None, endpoints=False, normalized=True, greedy=False
 ):
-    r"""Find the prominent group of size $k$ in graph $G$. The prominence of the
-    group is evaluated by the group betweenness centrality.
+    r"""Find the prominent group (and its centrality) of size $k$ in graph $G$.
 
+    The prominent group of nodes has the highest group betweenness centrality.
     Group betweenness centrality of a group of nodes $C$ is the sum of the
-    fraction of all-pairs shortest paths that pass through any vertex in $C$
+    fraction of all-pairs shortest paths that pass through any node in $C$
 
     .. math::
 
@@ -316,22 +316,22 @@ def prominent_group(
        The weight of an edge is treated as the length or distance between the two sides.
 
     endpoints : bool, optional (default=False)
-      By default, only node-pairs that are both not in the group are counted for
-      group betweenness centrality. The count is how many non-`C` node-pairs have
-      nodes from the group "between" them on a shortest path.
+       By default, only node-pairs that are both not in the group are counted for
+       group betweenness centrality. The count is how many non-`C` node-pairs have
+       nodes from the group "between" them on a shortest path.
 
-      When ``endpoints=True``, we also count node-pairs with one or both nodes
-      in the group while considering endpoint nodes as being between the node-pairs.
-      So we count paths that start in the group whether or not they pass through
-      any other nodes in the group. This adds centrality to large groups without any
-      reference to the connectivity of the group. The minimum normalized score
-      is $N_{in}(N_{in}-1)/(N(N-1))$ instead of 0. For that reason, this feature
-      is rarely used.
+       When ``endpoints=True``, we also count node-pairs with one or both nodes
+       in the group while considering endpoint nodes as being between the node-pairs.
+       So we count paths that start in the group whether or not they pass through
+       any other nodes in the group. This adds centrality to large groups without any
+       reference to the connectivity of the group. The minimum normalized score
+       is $N_{in}(N_{in}-1)/(N(N-1))$ instead of 0. For that reason, this feature
+       is rarely used.
 
-      We don't currently support considering node-pairs with nodes in the group without
-      also counting their endpoints. Nor do we support counting endpoints while only
-      considering node-pairs that are both not in the group. This keyword indicates
-      both counting endpoints of paths and allowing node-pairs in the group.
+       We don't currently support considering node-pairs with nodes in the group without
+       also counting their endpoints. Nor do we support counting endpoints while only
+       considering node-pairs that are both not in the group. This keyword indicates
+       both counting endpoints of paths and allowing node-pairs in the group.
 
     C : list or set, optional (default=None)
        list of nodes which won't be candidates of the prominent group.
@@ -341,18 +341,16 @@ def prominent_group(
        group. For scale free networks the results are negligibly below the optimal
        results.
 
+    Returns
+    -------
+    max_GBC, max_group : 2-tuple of (float, list or nodes)
+       A 2-tuple of the group betweenness centrality of the prominent group,
+       and a list of nodes in the prominent group.
+
     Raises
     ------
     NodeNotFound
-       If node(s) in C are not present in G.
-
-    Returns
-    -------
-    max_GBC : float
-       The group betweenness centrality of the prominent group.
-
-    max_group : list
-        The list of nodes in the prominent group.
+       If any node(s) in C are not present in G.
 
     See Also
     --------
