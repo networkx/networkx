@@ -33,17 +33,17 @@ jobs:
           command: |
             python3 -m venv venv
             source venv/bin/activate
-            pip install --upgrade pip
+            pip install --upgrade pip uv
             # Install trusted backends, but not their dependencies.
             # We only need to use the "networkx.backend_info" entry-point.
             # This is the nightly wheel for nx-cugraph.
-            pip install nx-cugraph-cu11 --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple --no-deps --pre
+            uv pip install nx-cugraph-cu11 --extra-index-url https://pypi.anaconda.org/rapidsai-wheels-nightly/simple --no-deps --pre
             # Development version of GraphBLAS backend
-            pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
+            uv pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
             # Development version of nx-parallel backend
-            pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
+            uv pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
             # Development version of nx-neptune backend0
-            pip install git+https://github.com/awslabs/nx-neptune.git@main --no-deps
+            uv pip install git+https://github.com/awslabs/nx-neptune.git@main --no-deps
             pip list
 
       - save_cache:
@@ -55,9 +55,9 @@ jobs:
           name: Install
           command: |
             source venv/bin/activate
-            pip install -e '.[default,test,extra,example,doc]'
-            pip install -e .
-            pip list
+            uv pip install -e '.[default,test,extra,example,doc]'
+            uv pip install -e .
+            uv pip list
 
       - run:
           name: Build docs
@@ -83,7 +83,7 @@ jobs:
           command: |
             python -m venv venv
             source venv/bin/activate
-            pip install --upgrade pip
+            pip install --upgrade pip uv
             pip install pytest-mpl  # NOTE: specified here to avoid confusing conda
             pip list
 
@@ -91,8 +91,8 @@ jobs:
           name: Install
           command: |
             source venv/bin/activate
-            pip install -e .[default,test]
-            pip list
+            uv pip install -e .[default,test]
+            uv pip list
 
       - run:
           name: Test NetworkX drawing
@@ -113,8 +113,8 @@ jobs:
           command: |
             python -m venv venv
             source venv/bin/activate
-            pip install --upgrade pip
-            pip install .[default,extra,test]
+            pip install --upgrade pip uv
+            uv pip install .[default,extra,test]
             pip list
       - run:
           name: Run tests
