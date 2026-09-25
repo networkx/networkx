@@ -479,3 +479,29 @@ def test_network_simplex_unbounded_flow():
         match="negative cycle with infinite capacity found",
     ):
         nx.network_simplex(G)
+
+
+def test_callable_capacity_none():
+    G = nx.DiGraph()
+    # Path 1 Direct but expensive (Cost 100)
+    G.add_edge("s", "t", count=10, cost=100)
+
+    # Path 2 Indirect but cheap (Cost 1 + 1 = 2)
+    # If the filter fails, the solver would prefer this path.
+    G.add_edge("s", "hidden", count=10, cost=1)
+    G.add_edge("hidden", "t", count=10, cost=1)
+
+    G.nodes["s"]["demand"] = -1
+    G.nodes["t"]["demand"] = 1
+
+    def cap_func(u, v, d):
+        # Hide any edge connected to 'hidden'
+        if u == "hidden" or v == "hidden":
+            return None
+        return d.get("count", 0)
+
+    min_cost, flow_dict = nx.network_simplex(G, capacity=cap_func, weight="cost")
+
+    # Assertion:
+    assert min_cost == 100
+    assert "hidden" not in flow_dict["s"]
