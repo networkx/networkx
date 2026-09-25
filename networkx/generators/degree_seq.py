@@ -345,7 +345,7 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     ----------
     w : list
         The list of expected degrees.
-    selfloops: bool (default=True)
+    selfloops : bool (default=True)
         Set to False to remove the possibility of self-loop edges.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -445,7 +445,7 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
 
     Parameters
     ----------
-    deg_sequence: list of integers
+    deg_sequence : list of integers
         Each integer corresponds to the degree of a node (need not be sorted).
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.

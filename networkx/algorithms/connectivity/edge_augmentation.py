@@ -1046,7 +1046,7 @@ def collapse(G, grouped_nodes):
     ----------
     G : NetworkX Graph
 
-    grouped_nodes:  list or generator
+    grouped_nodes : list or generator
        Grouping of nodes to collapse. The grouping must be disjoint.
        If grouped_nodes are strongly_connected_components then this is
        equivalent to :func:`condensation`.

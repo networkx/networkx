@@ -60,7 +60,7 @@ def graph_edit_distance(
 
     Parameters
     ----------
-    G1, G2: graphs
+    G1, G2 : graphs
         The two graphs G1 and G2 must be of the same type.
 
     node_match : callable
@@ -229,7 +229,7 @@ def optimal_edit_paths(
 
     Parameters
     ----------
-    G1, G2: graphs
+    G1, G2 : graphs
         The two graphs G1 and G2 must be of the same type.
 
     node_match : callable
@@ -407,7 +407,7 @@ def optimize_graph_edit_distance(
 
     Parameters
     ----------
-    G1, G2: graphs
+    G1, G2 : graphs
         The two graphs G1 and G2 must be of the same type.
 
     node_match : callable
@@ -563,7 +563,7 @@ def optimize_edit_paths(
 
     Parameters
     ----------
-    G1, G2: graphs
+    G1, G2 : graphs
         The two graphs G1 and G2 must be of the same type.
 
     node_match : callable

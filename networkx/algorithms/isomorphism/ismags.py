@@ -136,7 +136,7 @@ def are_all_equal(iterable):
 
     Parameters
     ----------
-    iterable: collections.abc.Iterable
+    iterable : collections.abc.Iterable
         The container whose elements will be checked.
 
     Returns
@@ -234,7 +234,7 @@ def node_to_part_ID_dict(partition):
 
     Parameters
     ----------
-    partition: collections.abc.Sequence[collections.abc.Iterable]
+    partition : collections.abc.Sequence[collections.abc.Iterable]
         As returned by :func:`make_partition`.
 
     Returns
@@ -384,8 +384,8 @@ class ISMAGS:
 
     Attributes
     ----------
-    graph: networkx.Graph
-    subgraph: networkx.Graph
+    graph : networkx.Graph
+    subgraph : networkx.Graph
 
     Notes
     -----
@@ -551,23 +551,23 @@ class ISMAGS:
         """
         Parameters
         ----------
-        graph: networkx.Graph
-        subgraph: networkx.Graph
-        node_match: collections.abc.Callable or None
+        graph : networkx.Graph
+        subgraph : networkx.Graph
+        node_match : collections.abc.Callable or None
             Function used to determine whether two nodes are equivalent. Its
             signature should look like ``f(n1: dict, n2: dict) -> bool``, with
             `n1` and `n2` node property dicts. See also
             :func:`~networkx.algorithms.isomorphism.categorical_node_match` and
             friends.
             If `None`, all nodes are considered equal.
-        edge_match: collections.abc.Callable or None
+        edge_match : collections.abc.Callable or None
             Function used to determine whether two edges are equivalent. Its
             signature should look like ``f(e1: dict, e2: dict) -> bool``, with
             `e1` and `e2` edge property dicts. See also
             :func:`~networkx.algorithms.isomorphism.categorical_edge_match` and
             friends.
             If `None`, all edges are considered equal.
-        cache: collections.abc.Mapping
+        cache : collections.abc.Mapping
             A cache used for caching graph symmetries.
         """
         if graph.is_directed() != subgraph.is_directed():
