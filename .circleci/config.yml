@@ -59,6 +59,33 @@ jobs:
             uv pip install -e '.[default,test,extra,example,doc]'
             uv pip install -e .
             uv pip list
+            python -c "import osmnx; print(osmnx.__version__)" > /tmp/osmnx-version
+
+      # plot_osmnx.py queries the Overpass API, which is sometimes unavailable.
+      # osmnx caches responses (keyed by query) in examples/geospatial/cache,
+      # so fetch them before the doc build with retries, and cache across runs.
+      - restore_cache:
+          keys:
+            - osmnx-cache-v1-{{ checksum "examples/geospatial/plot_osmnx.py" }}-{{ checksum "/tmp/osmnx-version" }}
+
+      - run:
+          name: Pre-fetch OpenStreetMap data
+          command: |
+            source venv/bin/activate
+            cd examples/geospatial
+            # Fail (and skip save_cache) if every attempt fails
+            for delay in 30 60 120 fail; do
+              MPLBACKEND=agg python plot_osmnx.py && break
+              [ "${delay}" = fail ] && exit 1
+              echo "Retrying in ${delay} seconds..."
+              sleep ${delay}
+            done
+            rm -f graph.gpkg graph.graphml
+
+      - save_cache:
+          key: osmnx-cache-v1-{{ checksum "examples/geospatial/plot_osmnx.py" }}-{{ checksum "/tmp/osmnx-version" }}
+          paths:
+            - examples/geospatial/cache
 
       - run:
           name: Build docs
@@ -66,7 +93,7 @@ jobs:
             # NOTE: bad interaction w/ blas multithreading on circleci
             export OMP_NUM_THREADS=1
             source venv/bin/activate
-            make -C doc/ SPHINXOPTS="-j 2" html
+            make -C doc/ SPHINXOPTS="-j 2 -W --keep-going" html
           no_output_timeout: 30m
 
       - store_artifacts:

@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 from intersphinx_registry import get_intersphinx_mapping
@@ -61,28 +62,9 @@ rst_epilog = """
 """
 
 
-def png_scraper(block, block_vars, gallery_conf):
-    """Collect .png files written by pygraphviz examples (e.g. ``A.draw("k5.png")``).
-
-    Unlike ``pygraphviz.scraper.PNGScraper``, only collect files whose names appear
-    in the current code block, so that examples in the same directory running in
-    parallel do not grab each other's (possibly partially written) images.
-    """
-    import glob
-    import shutil
-    from sphinx_gallery.scrapers import figure_rst
-
-    example_dir = os.path.dirname(block_vars["src_file"])
-    image_names = []
-    for png in sorted(glob.glob(os.path.join(example_dir, "*.png"))):
-        if os.path.basename(png) in block.content:
-            image_path = next(block_vars["image_path_iterator"])
-            shutil.move(png, image_path)
-            image_names.append(image_path)
-    return figure_rst(image_names, gallery_conf["src_dir"])
-
-
-sphinx_gallery_conf["image_scrapers"] += (png_scraper,)
+# Make nx_scrapers importable (here and in parallel gallery workers)
+sys.path.insert(0, os.path.dirname(__file__))
+sphinx_gallery_conf["image_scrapers"] += ("nx_scrapers.png_scraper",)
 
 # generate autosummary pages
 autosummary_generate = True
@@ -330,11 +312,12 @@ orig_str = SphinxDocString.__str__
 def new_str(self, indent=0, func_role="obj"):
     rv = orig_str(self, indent=indent, func_role=func_role)
     if "Backends" in self:
-        lines = self._str_section("Backends")
-        # Remove "Backends" as a section and add a divider instead
-        lines[0] = "----"
+        # Drop the "Backends" rubric; the admonition title stands in for it. Avoid a
+        # "----" divider: a transition isn't valid inside the autodoc directive, and
+        # when preceded by a doctest it was rendered as doctest output.
+        lines = self._str_section("Backends")[1:]
         lines = self._str_indent(lines, indent)
-        rv += "\n".join(lines)
+        rv = rv.rstrip() + "\n\n" + "\n".join(lines).lstrip("\n")
     return rv
 
 
