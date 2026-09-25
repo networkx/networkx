@@ -558,7 +558,7 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight="weight"):
 
     See Also
     --------
-    multi_source_dijkstra, multi_source_bellman_ford
+    multi_source_dijkstra
 
     """
     length, path = multi_source_dijkstra(G, sources, cutoff=cutoff, weight=weight)

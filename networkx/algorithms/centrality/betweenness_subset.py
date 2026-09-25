@@ -164,7 +164,7 @@ def edge_betweenness_centrality_subset(
     betweenness_centrality
     betweenness_centrality_subset
     edge_betweenness_centrality
-    edge_load
+    edge_load_centrality
 
     Notes
     -----

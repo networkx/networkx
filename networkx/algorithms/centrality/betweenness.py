@@ -298,7 +298,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     --------
     betweenness_centrality
     edge_betweenness_centrality_subset
-    edge_load
+    edge_load_centrality
 
     Notes
     -----

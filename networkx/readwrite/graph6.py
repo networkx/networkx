@@ -169,7 +169,7 @@ def to_graph6_bytes(G, nodes=None, header=True):
 
     See Also
     --------
-    from_graph6_bytes, read_graph6, write_graph6_bytes
+    from_graph6_bytes, read_graph6, write_graph6
 
     Notes
     -----

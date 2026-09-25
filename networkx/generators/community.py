@@ -294,7 +294,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
 
     See Also
     --------
-    random_partition_model
+    random_partition_graph
 
     References
     ----------
