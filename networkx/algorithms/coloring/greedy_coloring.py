@@ -302,7 +302,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
        * ``'saturation_largest_first'``
        * ``'DSATUR'`` (alias for the previous strategy)
 
-    interchange: bool
+    interchange : bool
        Will use the color interchange algorithm described by [3]_ if set
        to ``True``.
 

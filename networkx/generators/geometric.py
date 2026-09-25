@@ -129,7 +129,7 @@ def random_geometric_graph(
     ----------
     n : int or iterable
         Number of nodes or iterable of nodes
-    radius: float
+    radius : float
         Distance threshold value
     dim : int, optional
         Dimension of graph
@@ -226,7 +226,7 @@ def soft_random_geometric_graph(
     ----------
     n : int or iterable
         Number of nodes or iterable of nodes
-    radius: float
+    radius : float
         Distance threshold value
     dim : int, optional
         Dimension of graph
@@ -364,7 +364,7 @@ def geographical_threshold_graph(
     ----------
     n : int or iterable
         Number of nodes or iterable of nodes
-    theta: float
+    theta : float
         Threshold value
     dim : int, optional
         Dimension of graph
@@ -530,9 +530,9 @@ def waxman_graph(
     ----------
     n : int or iterable
         Number of nodes or iterable of nodes
-    beta: float
+    beta : float
         Model parameter
-    alpha: float
+    alpha : float
         Model parameter
     L : float, optional
         Maximum distance between nodes.  If not specified, the actual distance
@@ -735,9 +735,9 @@ def thresholded_random_geometric_graph(
     ----------
     n : int or iterable
         Number of nodes or iterable of nodes
-    radius: float
+    radius : float
         Distance threshold value
-    theta: float
+    theta : float
         Threshold value
     dim : int, optional
         Dimension of graph

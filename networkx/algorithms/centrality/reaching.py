@@ -14,7 +14,7 @@ def _average_weight(G, path, weight=None):
     G : graph
       A networkx graph.
 
-    path: list
+    path : list
       A list of vertices that define the path.
 
     weight : None or string, optional (default=None)

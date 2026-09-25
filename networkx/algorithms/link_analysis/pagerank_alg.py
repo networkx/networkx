@@ -31,7 +31,7 @@ def pagerank(
     alpha : float, optional
       Damping parameter for PageRank, default=0.85.
 
-    personalization: dict, optional
+    personalization : dict, optional
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
@@ -57,7 +57,7 @@ def pagerank(
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
-    dangling: dict, optional
+    dangling : dict, optional
       The outedges to be assigned to any "dangling" nodes, i.e., nodes without
       any outedges. The dict key is the node the outedge points to and the dict
       value is the weight of that outedge. By default, dangling nodes are given
@@ -193,7 +193,7 @@ def google_matrix(
     alpha : float
       The damping factor.
 
-    personalization: dict, optional
+    personalization : dict, optional
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
@@ -207,7 +207,7 @@ def google_matrix(
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
-    dangling: dict, optional
+    dangling : dict, optional
       The outedges to be assigned to any "dangling" nodes, i.e., nodes without
       any outedges. The dict key is the node the outedge points to and the dict
       value is the weight of that outedge. By default, dangling nodes are given
@@ -292,7 +292,7 @@ def _pagerank_numpy(
     alpha : float, optional
       Damping parameter for PageRank, default=0.85.
 
-    personalization: dict, optional
+    personalization : dict, optional
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
@@ -302,7 +302,7 @@ def _pagerank_numpy(
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
-    dangling: dict, optional
+    dangling : dict, optional
       The outedges to be assigned to any "dangling" nodes, i.e., nodes without
       any outedges. The dict key is the node the outedge points to and the dict
       value is the weight of that outedge. By default, dangling nodes are given
@@ -386,7 +386,7 @@ def _pagerank_scipy(
     alpha : float, optional
       Damping parameter for PageRank, default=0.85.
 
-    personalization: dict, optional
+    personalization : dict, optional
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
@@ -406,7 +406,7 @@ def _pagerank_scipy(
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
-    dangling: dict, optional
+    dangling : dict, optional
       The outedges to be assigned to any "dangling" nodes, i.e., nodes without
       any outedges. The dict key is the node the outedge points to and the dict
       value is the weight of that outedge. By default, dangling nodes are given

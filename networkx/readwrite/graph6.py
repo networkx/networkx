@@ -146,11 +146,11 @@ def to_graph6_bytes(G, nodes=None, header=True):
     ----------
     G : Graph (undirected)
 
-    nodes: list or iterable
+    nodes : list or iterable
        Nodes are labeled 0...n-1 in the order provided.  If None the ordering
        given by ``G.nodes()`` is used.
 
-    header: bool
+    header : bool
        If True add '>>graph6<<' bytes to head of data.
 
     Raises
@@ -270,11 +270,11 @@ def write_graph6(G, path, nodes=None, header=True):
        File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
 
-    nodes: list or iterable
+    nodes : list or iterable
        Nodes are labeled 0...n-1 in the order provided.  If None the ordering
        given by ``G.nodes()`` is used.
 
-    header: bool
+    header : bool
        If True add '>>graph6<<' string to head of data
 
     Raises
@@ -330,11 +330,11 @@ def write_graph6_file(G, f, nodes=None, header=True):
     f : file-like object
        The file to write.
 
-    nodes: list or iterable
+    nodes : list or iterable
        Nodes are labeled 0...n-1 in the order provided.  If None the ordering
        given by ``G.nodes()`` is used.
 
-    header: bool
+    header : bool
        If True add '>>graph6<<' string to head of data
 
     Raises

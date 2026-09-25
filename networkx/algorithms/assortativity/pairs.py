@@ -15,12 +15,12 @@ def node_attribute_xy(G, attribute, nodes=None):
 
     Parameters
     ----------
-    G: NetworkX graph
+    G : NetworkX graph
 
-    attribute: key
+    attribute : key
         The node attribute key.
 
-    nodes: list or iterable (optional)
+    nodes : list or iterable (optional)
         Use only edges that are incident to specified nodes.
         The default is all nodes.
 
@@ -75,20 +75,20 @@ def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
 
     Parameters
     ----------
-    G: NetworkX graph
+    G : NetworkX graph
 
-    x: string ('in','out')
+    x : string ('in','out')
        The degree type for source node (directed graphs only).
 
-    y: string ('in','out')
+    y : string ('in','out')
        The degree type for target node (directed graphs only).
 
-    weight: string or None, optional (default=None)
+    weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
 
-    nodes: list or iterable (optional)
+    nodes : list or iterable (optional)
         Use only edges that are adjacency to specified nodes.
         The default is all nodes.
 
