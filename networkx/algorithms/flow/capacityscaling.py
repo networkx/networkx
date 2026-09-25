@@ -194,14 +194,14 @@ def capacity_scaling(
 
     heap : class
         Type of heap to be used in the algorithm. It should be a subclass of
-        :class:`MinHeap` or implement a compatible interface.
+        ``MinHeap`` or implement a compatible interface.
 
-        If a stock heap implementation is to be used, :class:`BinaryHeap` is
-        recommended over :class:`PairingHeap` for Python implementations without
+        If a stock heap implementation is to be used, ``BinaryHeap`` is
+        recommended over ``PairingHeap`` for Python implementations without
         optimized attribute accesses (e.g., CPython) despite a slower
         asymptotic running time. For Python implementations with optimized
-        attribute accesses (e.g., PyPy), :class:`PairingHeap` provides better
-        performance. Default value: :class:`BinaryHeap`.
+        attribute accesses (e.g., PyPy), ``PairingHeap`` provides better
+        performance. Default value: ``BinaryHeap``.
 
     Returns
     -------

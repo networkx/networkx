@@ -284,10 +284,10 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
        Filename or file handle to read.
        Filenames ending in .gz or .bz2 will be decompressed.
 
-    node_type: Python type (default: str)
+    node_type : Python type (default: str)
        Convert node ids to this type
 
-    edge_key_type: Python type (default: int)
+    edge_key_type : Python type (default: int)
        Convert graphml edge ids to this type. Multigraphs use id as edge key.
        Non-multigraphs add to edge attribute dict with name "id".
 
@@ -359,10 +359,10 @@ def parse_graphml(
        String containing graphml information
        (e.g., contents of a graphml file).
 
-    node_type: Python type (default: str)
+    node_type : Python type (default: str)
        Convert node ids to this type
 
-    edge_key_type: Python type (default: int)
+    edge_key_type : Python type (default: int)
        Convert graphml edge ids to this type. Multigraphs use id as edge key.
        Non-multigraphs add to edge attribute dict with name "id".
 

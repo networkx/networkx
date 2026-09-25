@@ -292,7 +292,7 @@ def min_weight_matching(G, weight="weight"):
     G : NetworkX graph
       Undirected graph
 
-    weight: string, optional (default='weight')
+    weight : string, optional (default='weight')
        Edge data key corresponding to the edge weight.
        If key not found, uses 1 as weight.
 
@@ -331,11 +331,11 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     G : NetworkX graph
       Undirected graph
 
-    maxcardinality: bool, optional (default=False)
+    maxcardinality : bool, optional (default=False)
        If maxcardinality is True, compute the maximum-cardinality matching
        with maximum weight among all maximum-cardinality matchings.
 
-    weight: string, optional (default='weight')
+    weight : string, optional (default='weight')
        Edge data key corresponding to the edge weight.
        If key not found, uses 1 as weight.
 

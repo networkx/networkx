@@ -42,10 +42,10 @@ def choose_pref_attach(degs, seed):
 
     Parameters
     ----------
-    degs: dictionary
+    degs : dictionary
         It contains the possible values (keys) and the corresponding
         probabilities (values)
-    seed: random state
+    seed : random state
 
     Returns
     -------
@@ -78,9 +78,9 @@ class AS_graph_generator:
 
         Parameters
         ----------
-        n: integer
+        n : integer
             Number of graph nodes
-        seed: random state
+        seed : random state
             Indicator of random number generation state.
             See :ref:`Randomness<randomness>`.
 
@@ -177,22 +177,22 @@ class AS_graph_generator:
 
         Parameters
         ----------
-        i: object
+        i : object
             Identifier of the new node
-        kind: string
+        kind : string
             Type of the new node. Options are: 'M' for middle node, 'CP' for
             content provider and 'C' for customer.
-        reg2prob: float
+        reg2prob : float
             Probability the new node can be in two different regions.
-        avg_deg: float
+        avg_deg : float
             Average number of transit nodes of which node i is customer.
-        t_edge_prob: float
+        t_edge_prob : float
             Probability node i establish a customer transit edge with a tier
             one (T) node
 
         Returns
         -------
-        i: object
+        i : object
             Identifier of the new node
         """
 
@@ -239,9 +239,9 @@ class AS_graph_generator:
 
         Parameters
         ----------
-        m: object
+        m : object
             Node identifier
-        to_kind: string
+        to_kind : string
             type for target node j (must be always M)
 
         Returns
@@ -279,9 +279,9 @@ class AS_graph_generator:
 
         Parameters
         ----------
-        cp: object
+        cp : object
             Node identifier
-        to_kind: string
+        to_kind : string
             type for target node j (must be M or CP)
 
         Returns
@@ -323,7 +323,7 @@ class AS_graph_generator:
 
         Parameters
         ----------
-        rn: integer
+        rn : integer
             Number of regions
         """
 
@@ -405,7 +405,7 @@ def random_internet_as_graph(n, seed=None):
 
     Parameters
     ----------
-    n: integer in [1000, 10000]
+    n : integer in [1000, 10000]
         Number of graph nodes
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.

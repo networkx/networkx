@@ -893,7 +893,7 @@ def transitive_closure_dag(G, topo_order=None):
     G : NetworkX DiGraph
         A directed acyclic graph (DAG)
 
-    topo_order: list or tuple, optional
+    topo_order : list or tuple, optional
         A topological order for G (if None, the function will compute one)
 
     Returns
@@ -1019,7 +1019,7 @@ def antichains(G, topo_order=None):
     G : NetworkX DiGraph
         A directed acyclic graph (DAG)
 
-    topo_order: list or tuple, optional
+    topo_order : list or tuple, optional
         A topological order for G (if None, the function will compute one)
 
     Yields
@@ -1092,7 +1092,7 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     default_weight : int, optional
         The weight of edges that do not have a weight attribute
 
-    topo_order: list or tuple, optional
+    topo_order : list or tuple, optional
         A topological order for `G` (if None, the function will compute one)
 
     Returns

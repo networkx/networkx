@@ -416,7 +416,7 @@ def _select_starting_cell(G, starting_edge=None):
     Parameters
     ----------
     G : NetworkX Graph
-    starting_edge: an edge to build the starting cell from
+    starting_edge : an edge to build the starting cell from
 
     Returns
     -------

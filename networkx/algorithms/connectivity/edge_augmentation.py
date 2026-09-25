@@ -171,7 +171,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
         a partial k-edge-augmentation is generated. Adding the edges in a
         partial augmentation to G, minimizes the number of k-edge-connected
         components and maximizes the edge connectivity between those
-        components. For details, see :func:`partial_k_edge_augmentation`.
+        components. For details, see ``partial_k_edge_augmentation``.
 
     Yields
     ------
@@ -1046,7 +1046,7 @@ def collapse(G, grouped_nodes):
     ----------
     G : NetworkX Graph
 
-    grouped_nodes:  list or generator
+    grouped_nodes : list or generator
        Grouping of nodes to collapse. The grouping must be disjoint.
        If grouped_nodes are strongly_connected_components then this is
        equivalent to :func:`condensation`.

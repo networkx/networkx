@@ -149,7 +149,7 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
 
     Parameters
     ----------
-    G1, G2: graphs
+    G1, G2 : graphs
         The two graphs G1 and G2 must be the same type.
 
     node_match : callable

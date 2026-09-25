@@ -26,6 +26,9 @@ doc/path.to.file
 
 examples/advanced/edgelist.utf-8
 examples/basic/grid.edgelist
+examples/geospatial/cache
+examples/geospatial/graph.gpkg
+examples/geospatial/graph.graphml
 
 # Generated when 'python setup_egg.py'
 networkx.egg-info/
