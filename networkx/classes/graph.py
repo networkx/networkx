@@ -856,7 +856,7 @@ class Graph:
         See Also
         --------
         order: identical method
-        __len__: identical method
+        Graph.__len__: identical method
 
         Examples
         --------
@@ -877,7 +877,7 @@ class Graph:
         See Also
         --------
         number_of_nodes: identical method
-        __len__: identical method
+        Graph.__len__: identical method
 
         Examples
         --------

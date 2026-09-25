@@ -10,12 +10,12 @@ New features
  - :mod:`read/write GEXF format files <networkx.readwrite.gexf>`
  - :mod:`find cycles in a directed graph <networkx.algorithms.cycles>`
  - :mod:`DFS <networkx.algorithms.traversal.depth_first_search>` and :mod:`BFS <networkx.algorithms.traversal.breadth_first_search>` algorithms
- - :mod:`chordal graph functions <networkx.algorithms.chordal.chordal_alg>`
- - :mod:`Prim's algorithm for minimum spanning tree <networkx.algorithms.mst>`
+ - chordal graph functions
+ - Prim's algorithm for minimum spanning tree
  - :mod:`r-ary tree generator <networkx.generators.classic>`
  - :mod:`rich club coefficient <networkx.algorithms.richclub>`
  - NumPy matrix version of :mod:`Floyd's algorithm for all-pairs shortest path  <networkx.algorithms.shortest_paths.dense>`
- - :mod:`read GIS shapefiles <networkx.readwrite.nx_shp>`
+ - read GIS shapefiles
  - :mod:`functions to get and set node and edge attributes <networkx.classes.function>`
  - and more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.4
 

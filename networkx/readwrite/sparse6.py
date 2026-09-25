@@ -231,7 +231,7 @@ def to_sparse6_bytes(G, nodes=None, header=True):
 
     See Also
     --------
-    to_sparse6_bytes, read_sparse6, write_sparse6_bytes
+    to_sparse6_bytes, read_sparse6, write_sparse6
 
     Notes
     -----

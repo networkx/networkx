@@ -1,5 +1,7 @@
+import functools
 import os
 import sys
+import types
 from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 from intersphinx_registry import get_intersphinx_mapping
@@ -257,7 +259,19 @@ intersphinx_timeout = 0.5
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
-default_role = "obj"
+default_role = "autolink"
+
+# For -n (nitpicky) builds
+nitpick_ignore = [
+    # Parameter names that "autolink" imports as the attr package or networkx.classes.graph
+    ("py:obj", "attr"),
+    ("py:obj", "graph"),
+]
+nitpick_ignore_regex = [
+    # Return "types" parsed from the docstring signatures of inherited dict methods
+    ("py:class", r"(a set-like object|an object) providing a view on D's \w+"),
+    ("py:class", r"D\[k\] if k in D, else d\..*"),
+]
 
 numpydoc_show_class_members = False
 
@@ -276,6 +290,70 @@ def setup(app):
     # Workaround to prevent duplicate file warnings from sphinx w/ myst-nb.
     # See executablebooks/MyST-NB#363
     app.registry.source_suffix.pop(".ipynb")
+    app.connect("missing-reference", resolve_nx_short_name)
+
+
+# Namespaces searched (in order) for short names like `shortest_path` or
+# `edmonds_karp` that docstrings use to refer to the public API
+_nx_namespaces = (
+    "",
+    "flow",
+    "bipartite",
+    "community",
+    "approximation",
+    "isomorphism",
+    "connectivity",
+    "tree",
+    "utils",
+)
+
+
+def resolve_nx_short_name(app, env, node, contnode):
+    """Resolve Python refs by short or public name, e.g. `NetworkXError`.
+
+    Objects are documented under their defining module or one of its parent
+    packages (e.g. ``networkx.algorithms.centrality.edge_betweenness_centrality``),
+    so look the name up in the public namespaces and retry with those full paths.
+    """
+    if node.get("refdomain") != "py" or node.get("reftype") == "attr":
+        return None
+    target = node["reftarget"].removeprefix("networkx.").removeprefix("nx.")
+    domain = env.get_domain("py")
+    for namespace in _nx_namespaces:
+        try:
+            ns_module = obj = functools.reduce(
+                getattr, namespace.split(".") if namespace else [], nx
+            )
+            for part in target.split("."):
+                parent, obj = obj, getattr(obj, part)
+        except AttributeError:
+            continue
+        if isinstance(obj, types.ModuleType):
+            module, name = obj.__name__, ""
+        elif hasattr(obj, "__qualname__"):
+            module, name = getattr(obj, "__module__", ""), obj.__qualname__
+        elif hasattr(parent, "__qualname__"):  # e.g. properties like Graph.edges
+            module, name = (
+                getattr(parent, "__module__", ""),
+                f"{parent.__qualname__}.{part}",
+            )
+        else:
+            module, name = "", ""
+        # Try the defining module and each parent package, then the namespace
+        # (e.g. nx.flow.edmonds_karp -> networkx.algorithms.flow.edmonds_karp)
+        parts = (module or "").split(".")
+        candidates = [
+            ".".join(parts[:i] + [name]).strip(".")
+            for i in range(len(parts), 0 if name else len(parts) - 1, -1)
+        ]
+        candidates.append(f"{ns_module.__name__}.{target}")
+        for candidate in dict.fromkeys(c for c in candidates if c):
+            # Resolve as "obj" so a wrong role (e.g. :meth: for a function) still links
+            if ref := domain.resolve_xref(
+                env, node["refdoc"], app.builder, "obj", candidate, node, contnode
+            ):
+                return ref
+    return None
 
 
 # Monkeypatch numpydoc to show "Backends" section

@@ -703,7 +703,7 @@ class ISMAGS:
         return
 
     def _all_morphisms(self, symmetry, problem_type):
-        """Find all morphisms between :attr:`graph` and :attr:`subgraph`
+        """Find all morphisms between ``graph`` and ``subgraph``
 
         Yield isomorphisms or monomorphisms depending on `problem_type`.
 
@@ -805,8 +805,8 @@ class ISMAGS:
 
     def largest_common_subgraph(self, symmetry=True):
         """
-        Find the largest common induced subgraphs between :attr:`subgraph` and
-        :attr:`graph`.
+        Find the largest common induced subgraphs between ``subgraph`` and
+        ``graph``.
 
         Parameters
         ----------
@@ -934,17 +934,17 @@ class ISMAGS:
         return mom is not None
 
     def isomorphisms_iter(self, symmetry=True):
-        """Yields all isomorphisms from :attr:`graph` to :attr:`subgraph`
+        """Yields all isomorphisms from ``graph`` to ``subgraph``
 
         An isomorphism is an all-to-all mapping of the nodes that maintains
         connectivity and node/edge matchings.
 
-        Symmetric isomorphisms can be ignored for the symmetries of :attr:`subgraph`.
+        Symmetric isomorphisms can be ignored for the symmetries of ``subgraph``.
 
         Parameters
         ----------
         symmetry : bool, optional (default: True)
-            Whether symmetries of :attr:`subgraph` should be taken into account.
+            Whether symmetries of ``subgraph`` should be taken into account.
             If False, yielded isomorphisms may be symmetrically equivalent.
 
         Yields
@@ -956,7 +956,7 @@ class ISMAGS:
             yield from self._all_morphisms(symmetry, problem_type="ISO")
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
-        """Yields all subgraph isomorphisms from :attr:`graph` to :attr:`subgraph`
+        """Yields all subgraph isomorphisms from ``graph`` to ``subgraph``
 
         An isomorphism is a mapping of nodes that maintains connectivity and
         node/edge matchings. Subgraph isomorphism means an isomorphism from an
@@ -978,7 +978,7 @@ class ISMAGS:
         return self._all_morphisms(symmetry, problem_type="SUB")
 
     def monomorphisms_iter(self, symmetry=True):
-        """Yields all monomorphisms from :attr:`graph` to :attr:`subgraph`
+        """Yields all monomorphisms from ``graph`` to ``subgraph``
 
         Each mapping assigns distinct nodes in ``graph`` to all nodes in
         ``subgraph``, preserving the connectivity and node/edge matches required

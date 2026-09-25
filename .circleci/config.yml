@@ -93,7 +93,7 @@ jobs:
             # NOTE: bad interaction w/ blas multithreading on circleci
             export OMP_NUM_THREADS=1
             source venv/bin/activate
-            make -C doc/ SPHINXOPTS="-j 2 -W --keep-going" html
+            make -C doc/ SPHINXOPTS="-j 2 -nW --keep-going" html
           no_output_timeout: 30m
 
       - store_artifacts:

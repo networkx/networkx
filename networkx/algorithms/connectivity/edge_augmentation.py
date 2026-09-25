@@ -171,7 +171,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
         a partial k-edge-augmentation is generated. Adding the edges in a
         partial augmentation to G, minimizes the number of k-edge-connected
         components and maximizes the edge connectivity between those
-        components. For details, see :func:`partial_k_edge_augmentation`.
+        components. For details, see ``partial_k_edge_augmentation``.
 
     Yields
     ------
