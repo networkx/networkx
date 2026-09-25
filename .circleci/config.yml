@@ -63,7 +63,7 @@ jobs:
 
       # plot_osmnx.py queries the Overpass API, which is sometimes unavailable.
       # osmnx caches responses (keyed by query) in examples/geospatial/cache,
-      # so fetch them before the doc build with retries, and cache across runs.
+      # so fetch them before the doc build and cache them across runs.
       - restore_cache:
           keys:
             - osmnx-cache-v1-{{ checksum "examples/geospatial/plot_osmnx.py" }}-{{ checksum "/tmp/osmnx-version" }}
@@ -73,13 +73,8 @@ jobs:
           command: |
             source venv/bin/activate
             cd examples/geospatial
-            # Fail (and skip save_cache) if every attempt fails
-            for delay in 30 60 120 fail; do
-              MPLBACKEND=agg python plot_osmnx.py && break
-              [ "${delay}" = fail ] && exit 1
-              echo "Retrying in ${delay} seconds..."
-              sleep ${delay}
-            done
+            # If this fails, the job stops here and save_cache is skipped
+            MPLBACKEND=agg python plot_osmnx.py
             rm -f graph.gpkg graph.graphml
 
       - save_cache:
