@@ -174,8 +174,8 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                 x_in_Dv = x in Dv
                 v_in_Dx = v in Dx
 
-                # ensure y is in Dx otherwise all 3 Orders will not occur
                 for y in group:
+                    # ensure y is in Dx, otherwise none of 3 Orders occur so skip
                     if y not in Dx:
                         continue
                     # store lookups
@@ -200,7 +200,6 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                         PB_x[y] *= 1 - sig_xvy / sig_xy
                         sig_x[y] -= sig_xvy
                         if y == v:
-                            # update sig_xv for future y-values
                             sig_xv -= sig_xvy
         # endpoints
         N = len(G)
@@ -257,26 +256,24 @@ def _group_preprocessing(G, set_v, weight):
                 delta[s][i] += 1
             if weight is not None:
                 sigma[s][i] = sigma[s][i] / 2
+
     # building the path betweenness matrix only for nodes that appear in the group
-    PB = dict.fromkeys(G)
-    for group_node1 in set_v:
-        PB[group_node1] = dict.fromkeys(G, 0.0)
-        for group_node2 in set_v:
-            if group_node2 not in D[group_node1]:
-                continue
-            for node in G:
-                # if node is connected to the two group nodes than continue
-                if group_node2 in D[node] and group_node1 in D[node]:
-                    if (
-                        D[node][group_node2]
-                        == D[node][group_node1] + D[group_node1][group_node2]
-                    ):
-                        PB[group_node1][group_node2] += (
-                            delta[node][group_node2]
-                            * sigma[node][group_node1]
-                            * sigma[group_node1][group_node2]
-                            / sigma[node][group_node2]
-                        )
+    PB = dict.fromkeys(set_v)
+    for x in set_v:
+        PB[x] = dict.fromkeys(set_v, 0.0)
+    for s in G:
+        Ds = D[s]
+        delta_s = delta[s]
+        sig_s = sigma[s]
+        s_descendants = set_v & Ds.keys()
+        for x in s_descendants:
+            Dx = D[x]
+            Dsx = Ds[x]
+            sig_x = sigma[x]
+            sig_sx = sig_s[x]
+            for y in s_descendants & Dx.keys():
+                if Ds[y] == Dsx + Dx[y]:
+                    PB[x][y] += delta_s[y] * sig_sx * sig_x[y] / sig_s[y]
     return PB, sigma, D
 
 
@@ -319,7 +316,22 @@ def prominent_group(
        The weight of an edge is treated as the length or distance between the two sides.
 
     endpoints : bool, optional (default=False)
-       If True include the endpoints in the shortest path counts.
+      By default, only node-pairs that are both not in the group are counted for
+      group betweenness centrality. The count is how many non-`C` node-pairs have
+      nodes from the group "between" them on a shortest path.
+
+      When ``endpoints=True``, we also count node-pairs with one or both nodes
+      in the group while considering endpoint nodes as being between the node-pairs.
+      So we count paths that start in the group whether or not they pass through
+      any other nodes in the group. This adds centrality to large groups without any
+      reference to the connectivity of the group. The minimum normalized score
+      is $N_{in}(N_{in}-1)/(N(N-1))$ instead of 0. For that reason, this feature
+      is rarely used.
+
+      We don't currently support considering node-pairs with nodes in the group without
+      also counting their endpoints. Nor do we support counting endpoints while only
+      considering node-pairs that are both not in the group. This keyword indicates
+      both counting endpoints of paths and allowing node-pairs in the group.
 
     C : list or set, optional (default=None)
        list of nodes which won't be candidates of the prominent group.
@@ -383,9 +395,6 @@ def prominent_group(
        "Fast algorithm for successive computation of group betweenness centrality."
        https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
     """
-    import numpy as np
-    import pandas as pd
-
     if C is not None:
         C = set(C)
         if C - G.nodes:  # element(s) of C not in G
@@ -393,198 +402,157 @@ def prominent_group(
         nodes = list(G.nodes - C)
     else:
         nodes = list(G.nodes)
-    DF_tree = nx.Graph()
-    DF_tree.__networkx_cache__ = None  # Disable caching
+
+    # pre-process connectedness for no endpoints treatment
+    is_directed = G.is_directed()
+    connected = nx.is_strongly_connected(G) if is_directed else nx.is_connected(G)
+
     PB, sigma, D = _group_preprocessing(G, nodes, weight)
-    betweenness = pd.DataFrame.from_dict(PB)
-    if C is not None:
-        for node in C:
-            # remove from the betweenness all the nodes not part of the group
-            betweenness = betweenness.drop(index=node)
-            betweenness = betweenness.drop(columns=node)
-    CL = [node for _, node in sorted(zip(np.diag(betweenness), nodes), reverse=True)]
-    max_GBC = 0
-    max_group = []
-    DF_tree.add_node(
-        1,
-        CL=CL,
-        betweenness=betweenness,
-        GBC=0,
-        GM=[],
-        sigma=sigma,
-        cont=dict(zip(nodes, np.diag(betweenness))),
-    )
+    # top remaining nodes sorted by partial betweenness (PB)
+    tops = sorted(nodes, key=lambda n: PB[n][n])
+    heu = sum(PB[node][node] for node in tops[-k:])
+    info = {"GBC": 0, "Grp": [], "tops": tops, "PB": PB, "sigma": sigma, "heu": heu}
 
     # the algorithm
-    DF_tree.nodes[1]["heu"] = 0
-    for i in range(k):
-        DF_tree.nodes[1]["heu"] += DF_tree.nodes[1]["cont"][DF_tree.nodes[1]["CL"][i]]
-    max_GBC, DF_tree, max_group = _dfbnb(
-        G, k, DF_tree, max_GBC, 1, D, max_group, nodes, greedy
-    )
+    max_GBC, max_group = _prominent(k, info, D, nodes, greedy)
 
-    v = len(G)
-    if not endpoints:
-        scale = 0
+    # endpoints
+    N = len(G)
+    if endpoints:
+        Nscale = N
+    else:
+        N_in = k
+        N_out = Nscale = N - N_in
         # if the graph is connected then subtract the endpoints from
         # the count for all the nodes in the graph. else count how many
         # nodes are connected to the group's nodes and subtract that.
-        if nx.is_directed(G):
-            if nx.is_strongly_connected(G):
-                scale = k * (2 * v - k - 1)
-        elif nx.is_connected(G):
-            scale = k * (2 * v - k - 1)
-        if scale == 0:
-            for group_node1 in max_group:
-                for node in D[group_node1]:
-                    if node != group_node1:
-                        if node in max_group:
-                            scale += 1
-                        else:
-                            scale += 2
-        max_GBC -= scale
+        if connected:
+            extra = N_in * (N - 1 + N_out)
+        elif is_directed:
+            # count paths for group to or from anything
+            reachables = ((u, v) for u in G for v in D[u] if v != u)
+            extra = sum(1 for u, v in reachables if (u in max_group or v in max_group))
+        else:
+            # count paths for group to anything
+            # (use 2 if v not in group to shorten reachables)
+            reachables = ((u, v) for u in max_group for v in D[u] if v != u)
+            extra = sum((1 if v in max_group else 2) for u, v in reachables)
+        max_GBC -= extra
 
-    # normalized
+    # normalize
     if normalized:
-        scale = 1 / ((v - k) * (v - k - 1))
-        max_GBC *= scale
-
+        max_GBC /= Nscale * (Nscale - 1)
     # If undirected then count only the undirected edges
-    elif not G.is_directed():
+    elif not is_directed:
         max_GBC /= 2
-    return max_GBC.item(), max_group
+    return max_GBC, max_group
 
 
-def _dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
-    # stopping condition - if we found a group of size k and with higher GBC then prune
-    if len(DF_tree.nodes[root]["GM"]) == k and DF_tree.nodes[root]["GBC"] > max_GBC:
-        return DF_tree.nodes[root]["GBC"], DF_tree, DF_tree.nodes[root]["GM"]
-    # stopping condition - if the size of group members equal to k or there are less than
-    # k - |GM| in the candidate list or the heuristic function plus the GBC is below the
-    # maximal GBC found then prune
-    if (
-        len(DF_tree.nodes[root]["GM"]) == k
-        or len(DF_tree.nodes[root]["CL"]) <= k - len(DF_tree.nodes[root]["GM"])
-        or DF_tree.nodes[root]["GBC"] + DF_tree.nodes[root]["heu"] <= max_GBC
-    ):
-        return max_GBC, DF_tree, max_group
+def _prominent(k, info, D, nodes, greedy):
+    """Return the GBC and the group of k nodes with the biggest GBC value"""
+    max_GBC = 0
+    max_group = []
+    queue = [info]
+    its = 0
 
-    # finding the heuristic of both children
-    node_p, node_m, DF_tree = _heuristic(k, root, DF_tree, D, nodes, greedy)
+    while queue:
+        info = queue.pop()
+        # info:
+        #   "sigma": dod[s][t], count of s-t paths thru group nodes
+        #   "PB": path btwn, dod[s][v], fraction of paths from s through v
+        Grp = info["Grp"]  # list : group being considered
+        GBC = info["GBC"]  # number : group betweenness centrality of the group
+        tops = info["tops"]  # list : candidate nodes for Grp sorted by heuristic
+        heu = info["heu"]  # dict : {node: max GBC change when adding node}
+        # We use heuristic h4 from article: max sum_v PB[v][v] for best nodes
+        # Names: the article uses names replaced here as:
+        # GM<->Grp, CL<->tops, g<->GBC, h<->heu
 
-    # finding the child with the bigger heuristic + GBC and expand
-    # that node first if greedy then only expand the plus node
-    if greedy:
-        max_GBC, DF_tree, max_group = _dfbnb(
-            G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy
-        )
+        # Stopping conditions: go to next item on queue
+        if GBC > max_GBC and len(Grp) == k:  # new max with group of size k found
+            max_GBC = GBC
+            max_group = Grp
+            continue
+        if len(Grp) == k or len(tops) <= k - len(Grp) or GBC + heu <= max_GBC:
+            continue
 
-    elif (
-        DF_tree.nodes[node_p]["GBC"] + DF_tree.nodes[node_p]["heu"]
-        > DF_tree.nodes[node_m]["GBC"] + DF_tree.nodes[node_m]["heu"]
-    ):
-        max_GBC, DF_tree, max_group = _dfbnb(
-            G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy
-        )
-        max_GBC, DF_tree, max_group = _dfbnb(
-            G, k, DF_tree, max_GBC, node_m, D, max_group, nodes, greedy
-        )
-    else:
-        max_GBC, DF_tree, max_group = _dfbnb(
-            G, k, DF_tree, max_GBC, node_m, D, max_group, nodes, greedy
-        )
-        max_GBC, DF_tree, max_group = _dfbnb(
-            G, k, DF_tree, max_GBC, node_p, D, max_group, nodes, greedy
-        )
-    return max_GBC, DF_tree, max_group
+        # add to the queue
+        new_info = deepcopy(info)
 
+        sigma = new_info["sigma"]
+        PB = new_info["PB"]
+        tops = new_info["tops"]
+        v = tops.pop()
+        new_info["Grp"].append(v)
+        # Key step in updating GBC
+        new_info["GBC"] += PB[v][v]
 
-def _heuristic(k, root, DF_tree, D, nodes, greedy):
-    import numpy as np
+        # loop over all pairs of nodes (x, y); update PB and sigma
+        Dv = D[v]
+        PB_v = PB[v]
+        sig_v = sigma[v]
 
-    # This helper function add two nodes to DF_tree - one left son and the
-    # other right son, finds their heuristic, CL, GBC, and GM
-    node_p = DF_tree.number_of_nodes() + 1
-    node_m = DF_tree.number_of_nodes() + 2
-    added_node = DF_tree.nodes[root]["CL"][0]
+        for x in nodes:
+            # store lookups and set
+            Dx = D[x]
+            PB_x = PB[x]
+            sig_x = sigma[x]
+            sig_xv = sig_x[v]
+            sig_vx = sig_v[x]
+            x_in_Dv = x in Dv
+            v_in_Dx = v in Dx
 
-    # adding the plus node
-    DF_tree.add_nodes_from([(node_p, deepcopy(DF_tree.nodes[root]))])
-    DF_tree.nodes[node_p]["GM"].append(added_node)
-    DF_tree.nodes[node_p]["GBC"] += DF_tree.nodes[node_p]["cont"][added_node]
-    root_node = DF_tree.nodes[root]
-    for x in nodes:
-        for y in nodes:
-            dxvy = 0
-            dxyv = 0
-            dvxy = 0
-            if not (
-                root_node["sigma"][x][y] == 0
-                or root_node["sigma"][x][added_node] == 0
-                or root_node["sigma"][added_node][y] == 0
-            ):
-                if D[x][added_node] == D[x][y] + D[y][added_node]:
-                    dxyv = (
-                        root_node["sigma"][x][y]
-                        * root_node["sigma"][y][added_node]
-                        / root_node["sigma"][x][added_node]
-                    )
-                if D[x][y] == D[x][added_node] + D[added_node][y]:
-                    dxvy = (
-                        root_node["sigma"][x][added_node]
-                        * root_node["sigma"][added_node][y]
-                        / root_node["sigma"][x][y]
-                    )
-                if D[added_node][y] == D[added_node][x] + D[x][y]:
-                    dvxy = (
-                        root_node["sigma"][added_node][x]
-                        * root_node["sigma"][x][y]
-                        / root_node["sigma"][added_node][y]
-                    )
-            DF_tree.nodes[node_p]["sigma"][x][y] = root_node["sigma"][x][y] * (1 - dxvy)
-            DF_tree.nodes[node_p]["betweenness"].loc[y, x] = (
-                root_node["betweenness"][x][y] - root_node["betweenness"][x][y] * dxvy
-            )
-            if y != added_node:
-                DF_tree.nodes[node_p]["betweenness"].loc[y, x] -= (
-                    root_node["betweenness"][x][added_node] * dxyv
-                )
-            if x != added_node:
-                DF_tree.nodes[node_p]["betweenness"].loc[y, x] -= (
-                    root_node["betweenness"][added_node][y] * dvxy
-                )
+            # ensure y is in Dx otherwise none of the 3 Orders occur, so skip
+            for y in (n for n in nodes if n in Dx):
+                # store lookups
+                Dy = D[y]
+                sig_xy = sig_x[y]
+                sig_vy = sig_v[y]
+                v_in_Dy = v in Dy
+                y_in_Dv = y in Dv
 
-    DF_tree.nodes[node_p]["CL"] = [
-        node
-        for _, node in sorted(
-            zip(np.diag(DF_tree.nodes[node_p]["betweenness"]), nodes), reverse=True
-        )
-        if node not in DF_tree.nodes[node_p]["GM"]
-    ]
-    DF_tree.nodes[node_p]["cont"] = dict(
-        zip(nodes, np.diag(DF_tree.nodes[node_p]["betweenness"]))
-    )
-    DF_tree.nodes[node_p]["heu"] = 0
-    for i in range(k - len(DF_tree.nodes[node_p]["GM"])):
-        DF_tree.nodes[node_p]["heu"] += DF_tree.nodes[node_p]["cont"][
-            DF_tree.nodes[node_p]["CL"][i]
-        ]
+                # Order x-y-v  If v_in_Dy then v_in_Dx for sure.
+                if v_in_Dy and Dx[v] == Dx[y] + Dy[v] and sig_xv:
+                    if y != v:
+                        PB_x[y] -= PB_x[v] * sig_xy * sigma[y][v] / sig_xv
+                # Order v-x-y  If x_in_Dv then y_in_Dv for sure.
+                if x_in_Dv and Dv[y] == Dv[x] + Dx[y] and sig_vy:
+                    if x != v:
+                        # fraction of v->y paths that pass through x
+                        PB_x[y] -= PB_v[y] * sig_vx * sig_xy / sig_vy
+                # order x-v-y
+                if v_in_Dx and y_in_Dv and Dx[y] == Dx[v] + Dv[y] and sig_xy:
+                    sig_xvy = sig_xv * sig_vy
+                    PB_x[y] *= 1 - sig_xvy / sig_xy
+                    sig_x[y] -= sig_xvy
+                    if y == v:
+                        # update sig_xv for future y-values
+                        sig_xv -= sig_xvy
 
-    # adding the minus node - don't insert the first node in the CL to GM
-    # Insert minus node only if isn't greedy type algorithm
-    if not greedy:
-        DF_tree.add_nodes_from([(node_m, deepcopy(DF_tree.nodes[root]))])
-        DF_tree.nodes[node_m]["CL"].pop(0)
-        DF_tree.nodes[node_m]["cont"].pop(added_node)
-        DF_tree.nodes[node_m]["heu"] = 0
-        for i in range(k - len(DF_tree.nodes[node_m]["GM"])):
-            DF_tree.nodes[node_m]["heu"] += DF_tree.nodes[node_m]["cont"][
-                DF_tree.nodes[node_m]["CL"][i]
-            ]
-    else:
-        node_m = None
+        # update tops and heu
+        new_info["tops"] = tops = sorted(tops, key=lambda n: PB[n][n])
+        top_few = k - len(new_info["Grp"])
+        new_info["heu"] = sum(PB[n][n] for n in tops[-top_few:]) if top_few else 0
 
-    return node_p, node_m, DF_tree
+        if greedy:
+            queue.append(new_info)
+            continue
+
+        # not greedy: add the "minus" version and the new_info (plus version)
+        m_info = deepcopy(info)
+        top_few = k - len(m_info["Grp"])
+        m_tops = m_info["tops"]
+        m_tops.pop()
+        PB = m_info["PB"]
+        m_info["heu"] = sum(PB[n][n] for n in m_tops[-top_few:]) if top_few else 0
+
+        if new_info["GBC"] + new_info["heu"] > m_info["GBC"] + m_info["heu"]:
+            queue.append(m_info)
+            queue.append(new_info)
+        else:
+            queue.append(new_info)
+            queue.append(m_info)
+    return max_GBC, max_group
 
 
 @nx._dispatchable(edge_attrs="weight")
