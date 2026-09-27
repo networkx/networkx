@@ -162,6 +162,24 @@ class TestGroupBetweennessCentrality:
         results = nx.group_betweenness_centrality(G, many_groups, normalized=False)
         assert results == gbc_singletons
 
+    def test_group_betweenness_order_dependent(self):
+        G = nx.path_graph(5, create_using=nx.DiGraph)
+        nx.add_path(G, range(6, 11))
+        nx.add_path(G, [3, 2, 1])  # only affects DiGraph
+        C = [1, 3, 7, 9]
+        b_order1 = nx.group_betweenness_centrality(G, C, normalized=False)
+        C = [9, 7, 3, 1]
+        b_order2 = nx.group_betweenness_centrality(G, C, normalized=False)
+        assert b_order1 == b_order2
+
+    def test_group_betweenness_order_dependent_smaller(self):
+        G = nx.DiGraph([(1, 0), (1, 5), (2, 0), (2, 3), (3, 2), (5, 3)])
+        C = [2, 3]
+        b_order1 = nx.group_betweenness_centrality(G, C, normalized=False)
+        C = [3, 2]
+        b_order2 = nx.group_betweenness_centrality(G, C, normalized=False)
+        assert b_order1 == b_order2
+
     def test_group_betweenness_node_not_in_graph(self):
         """
         Node(s) in C not in graph, raises NodeNotFound exception
