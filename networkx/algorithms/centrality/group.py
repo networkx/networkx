@@ -151,7 +151,6 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
 
     # Run the algorithm for each group
     for group in C:
-        group = set(group)  # set of nodes in group
         # initialize the matrices sigma_m and PB_m (path betweenness)
         GBC_group = 0
         sigma_m = deepcopy(sigma)
@@ -176,7 +175,9 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                 v_in_Dx = v in Dx
 
                 # ensure y is in Dx otherwise all 3 Orders will not occur
-                for y in group & Dx.keys():
+                for y in group:
+                    if y not in Dx:
+                        continue
                     # store lookups
                     Dy = D[y]
                     sig_xy = sig_x[y]
