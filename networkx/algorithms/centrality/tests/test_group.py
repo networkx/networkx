@@ -2,6 +2,8 @@
 Tests for Group Centrality Measures
 """
 
+import itertools
+
 import pytest
 
 import networkx as nx
@@ -163,6 +165,7 @@ class TestGroupBetweennessCentrality:
         assert results == gbc_singletons
 
     def test_group_betweenness_order_dependent(self):
+        # see gh-8931
         G = nx.path_graph(5, create_using=nx.DiGraph)
         nx.add_path(G, range(6, 11))
         nx.add_path(G, [3, 2, 1])  # only affects DiGraph
@@ -171,6 +174,17 @@ class TestGroupBetweennessCentrality:
         C = [9, 7, 3, 1]
         b_order2 = nx.group_betweenness_centrality(G, C, normalized=False)
         assert b_order1 == b_order2
+
+    def test_group_betweenness_all_group_orders_agree(self):
+        G = nx.path_graph(5, create_using=nx.DiGraph)
+        nx.add_path(G, range(6, 11))
+        nx.add_path(G, [3, 2, 1])  # only affects DiGraph
+        C = [1, 3, 7, 9]
+        b_order1 = nx.group_betweenness_centrality(G, C, normalized=False)
+        assert all(
+            nx.group_betweenness_centrality(G, group, normalized=False) == b_order1
+            for group in itertools.permutations(C, 4)
+        )
 
     def test_group_betweenness_order_dependent_smaller(self):
         G = nx.DiGraph([(1, 0), (1, 5), (2, 0), (2, 3), (3, 2), (5, 3)])

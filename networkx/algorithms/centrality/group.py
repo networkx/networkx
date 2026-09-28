@@ -175,7 +175,9 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                 v_in_Dx = v in Dx
 
                 # ensure y is in Dx otherwise all 3 Orders will not occur
-                for y in (n for n in group if n in Dx):
+                for y in group:
+                    if y not in Dx:
+                        continue
                     # store lookups
                     Dy = D[y]
                     sig_xy = sig_x[y]
