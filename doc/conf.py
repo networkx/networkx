@@ -1,6 +1,5 @@
 import functools
 import os
-import sys
 import types
 from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
@@ -63,10 +62,6 @@ rst_epilog = """
 .. |dijkstra| replace:: :doc:`/reference/algorithms/shortest_paths/dijkstra`
 """
 
-
-# Make nx_scrapers importable (here and in parallel gallery workers)
-sys.path.insert(0, os.path.dirname(__file__))
-sphinx_gallery_conf["image_scrapers"] += ("nx_scrapers.png_scraper",)
 
 # generate autosummary pages
 autosummary_generate = True
