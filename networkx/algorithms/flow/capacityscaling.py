@@ -296,7 +296,10 @@ def capacity_scaling(
     # Determine the maximum edge capacity.
     wmax = max(chain([-inf], (e["capacity"] for u, v, e in R.edges(data=True))))
     if wmax == -inf:
-        # Residual network has no edges.
+        # Residual network has no edges, so no flow can be routed at all:
+        # any remaining excess means the demands cannot be satisfied.
+        if any(R.nodes[u]["excess"] != 0 for u in R):
+            raise nx.NetworkXUnfeasible("No flow satisfying all demands.")
         return flow_cost, _build_flow_dict(G, R, capacity, weight)
 
     R_nodes = R.nodes

@@ -68,6 +68,26 @@ class TestMinCostFlow:
         pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
         pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
 
+    def test_no_flow_satisfying_demands_no_residual_edges(self):
+        # gh-8934: when the residual network has no edges at all,
+        # capacity_scaling returned a zero-cost flow that met none of the
+        # demands instead of raising, unlike network_simplex/min_cost_flow.
+        G = nx.DiGraph()
+        G.add_node(0, demand=1)
+        G.add_node(1, demand=-1)
+        G.add_edge(1, 0, capacity=0, weight=1)
+
+        pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+        pytest.raises(nx.NetworkXUnfeasible, nx.min_cost_flow, G)
+        pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+
+        # A graph with no residual edges is still feasible when all demands
+        # are zero, so it must keep returning the (zero) flow.
+        G.nodes[0]["demand"] = 0
+        G.nodes[1]["demand"] = 0
+        assert nx.capacity_scaling(G) == (0, {0: {}, 1: {0: 0}})
+        assert nx.capacity_scaling(nx.DiGraph()) == (0, {})
+
     def test_transshipment(self):
         G = nx.DiGraph()
         G.add_node("a", demand=1)
