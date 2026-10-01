@@ -72,12 +72,13 @@ class TestConnected:
         }
         assert {frozenset(g) for g in cc(G)} == C
 
-    def test_connected_components_nx_loopback(self):
+    @pytest.mark.parametrize("type_based_dispatch", [False, True])
+    def test_connected_components_nx_loopback(self, type_based_dispatch):
         # This tests the @nx._dispatchable mechanism, treating nx.connected_components
         # as if it were a re-implementation from another package.
         # Test duplicated from above
         cc = nx.connected_components
-        G = dispatch_interface.convert(self.G)
+        G = dispatch_interface.convert(self.G, type_based_dispatch)
         C = {
             frozenset([0, 1, 2, 3]),
             frozenset([4, 5, 6, 7, 8, 9]),
