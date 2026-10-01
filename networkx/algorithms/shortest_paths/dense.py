@@ -57,7 +57,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
        If nodelist is None then the ordering is produced by G.nodes.
        Nodelist should include all nodes in G.
 
-    weight: string, optional (default='weight')
+    weight : string, optional (default='weight')
        Edge data key corresponding to the edge weight.
 
     Returns
@@ -366,7 +366,7 @@ def reconstruct_path(source, target, predecessors):
     target : node
        Ending node for path
 
-    predecessors: dictionary
+    predecessors : dictionary
        Dictionary, keyed by source and target, of predecessors in the
        shortest path, as returned by floyd_warshall_predecessor_and_distance
 

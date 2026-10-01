@@ -456,7 +456,7 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     G : NetworkX graph
         Undirected graph
 
-    nbunch: container
+    nbunch : container
         Container of nodes. If provided node connectivity will be computed
         only over pairs of nodes in nbunch.
 

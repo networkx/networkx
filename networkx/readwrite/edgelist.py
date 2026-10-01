@@ -143,7 +143,7 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
        If True write a string representation of the edge data dictionary..
        If a list (or other iterable) is provided, write the  keys specified
        in the list.
-    encoding: string, optional
+    encoding : string, optional
        Specify which encoding to use when writing file.
 
     Examples
@@ -371,7 +371,7 @@ def read_edgelist(
        Tuples specifying dictionary key names and types for edge data
     edgetype : int, float, str, Python type, optional OBSOLETE
        Convert edge data from strings to specified type and use as 'weight'
-    encoding: string, optional
+    encoding : string, optional
        Specify which encoding to use when reading file.
 
     Returns
@@ -469,7 +469,7 @@ def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-
        The character used to indicate the start of a comment
     delimiter : string, optional
        The string used to separate values.  The default is whitespace.
-    encoding: string, optional
+    encoding : string, optional
        Specify which encoding to use when writing file.
 
     Examples
@@ -528,7 +528,7 @@ def read_weighted_edgelist(
        Graph type to create. If graph instance, then cleared before populated.
     nodetype : int, float, str, Python type, optional
        Convert node data from strings to specified type
-    encoding: string, optional
+    encoding : string, optional
        Specify which encoding to use when reading file.
 
     Returns

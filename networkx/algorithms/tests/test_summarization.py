@@ -56,11 +56,11 @@ class TestDirectedDedensification:
 
         Parameters
         ----------
-        G: dedensified graph
+        G : dedensified graph
            A networkx graph
-        compressor_nodes: iterable
+        compressor_nodes : iterable
            Iterable of compressor nodes in the dedensified graph
-        inplace: bool, optional (default: False)
+        inplace : bool, optional (default: False)
            Indicates if densification should be done inplace
 
         Returns

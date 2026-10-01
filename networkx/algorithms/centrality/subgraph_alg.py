@@ -26,7 +26,7 @@ def subgraph_centrality_exp(G, *, normalized=False):
 
     Parameters
     ----------
-    G: graph
+    G : graph
     normalized : bool
         If True, normalize the centrality values using the largest eigenvalue of the
         adjacency matrix so that the centrality values are generally between 0 and 1.
@@ -121,7 +121,7 @@ def subgraph_centrality(G, *, normalized=False):
 
     Parameters
     ----------
-    G: Graph
+    G : Graph
     normalized : bool
         If True, normalize the centrality values using the largest eigenvalue of the
         adjacency matrix so that the centrality values are generally between 0 and 1.
@@ -221,7 +221,7 @@ def communicability_betweenness_centrality(G):
 
     Parameters
     ----------
-    G: graph
+    G : graph
 
     Returns
     -------
@@ -320,7 +320,7 @@ def estrada_index(G):
 
     Parameters
     ----------
-    G: graph
+    G : graph
 
     Returns
     -------

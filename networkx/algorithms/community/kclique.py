@@ -19,7 +19,7 @@ def k_clique_communities(G, k, cliques=None):
     k : int
        Size of smallest clique
 
-    cliques: list or generator
+    cliques : list or generator
        Precomputed cliques (use networkx.find_cliques(G))
 
     Returns

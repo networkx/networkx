@@ -33,7 +33,7 @@ def incidence_matrix(
        The columns are ordered according to the edges in edgelist.
        If edgelist is None, then the ordering is produced by G.edges().
 
-    oriented: bool, optional (default=False)
+    oriented : bool, optional (default=False)
        If True, matrix elements are +1 or -1 for the head or tail node
        respectively of each edge.  If False, +1 occurs at both nodes.
 

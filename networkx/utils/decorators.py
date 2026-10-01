@@ -592,7 +592,7 @@ class argmap:
     are mapped (transformed) to new values before the decorated function is called.
 
     As an overview, the argmap object returns a new function with all the
-    dunder values of the original function (like `__doc__`, `__name__`, etc).
+    dunder values of the original function (like ``__doc__``, ``__name__``, etc).
     Code for this decorated function is built based on the original function's
     signature. It starts by mapping the input arguments to potentially new
     values. Then it calls the decorated function with these new values in place
@@ -635,12 +635,12 @@ class argmap:
     Instantiating an `argmap` object simply stores the mapping function and
     the input identifiers of which arguments to map. The resulting decorator
     is ready to use this map to decorate any function. Calling that object
-    (`argmap.__call__`, but usually done via `@my_decorator`) a lazily
+    (``argmap.__call__``, but usually done via `@my_decorator`) a lazily
     compiled thin wrapper of the decorated function is constructed,
-    wrapped with the necessary function dunder attributes like `__doc__`
-    and `__name__`. That thinly wrapped function is returned as the
+    wrapped with the necessary function dunder attributes like ``__doc__``
+    and ``__name__``. That thinly wrapped function is returned as the
     decorated function. When that decorated function is called, the thin
-    wrapper of code calls `argmap._lazy_compile` which compiles the decorated
+    wrapper of code calls ``argmap._lazy_compile`` which compiles the decorated
     function (using `argmap.compile`) and replaces the code of the thin
     wrapper with the newly compiled code. This saves the compilation step
     every import of networkx, at the cost of compiling upon the first call
@@ -680,11 +680,11 @@ class argmap:
     if needed. It joins the defining code with appropriate indents and
     compiles the result.  Finally, this code is evaluated and the original
     wrapper's implementation is replaced with the compiled version (see
-    `argmap._lazy_compile` for more details).
+    ``argmap._lazy_compile`` for more details).
 
-    Other `argmap` methods include `_name` and `_count` which allow internally
+    Other `argmap` methods include ``_name`` and ``_count`` which allow internally
     generated names to be unique within a python session.
-    The methods `_flatten` and `_indent` process the nested lists of strings
+    The methods ``_flatten`` and ``_indent`` process the nested lists of strings
     into properly indented python code ready to be compiled.
 
     More complicated nested tuples of arguments also allowed though
@@ -703,7 +703,6 @@ class argmap:
     open_file
     nodes_or_number
     py_random_state
-    networkx.algorithms.community.quality.require_partition
 
     """
 
@@ -837,7 +836,7 @@ class argmap:
         that the decorators are created. But that doesn't disrupt `argmap`.
 
         This is used in two places: to construct unique variable names
-        in the `_name` method and to construct unique fictitious filenames
+        in the ``_name`` method and to construct unique fictitious filenames
         in the `_compile` method.
 
         Returns
@@ -854,7 +853,7 @@ class argmap:
     def _name(cls, f):
         """Mangle the name of a function to be unique but somewhat human-readable
 
-        The names are unique within a Python session and set using `_count`.
+        The names are unique within a Python session and set using ``_count``.
 
         Parameters
         ----------
@@ -937,7 +936,7 @@ class argmap:
         Returns
         -------
         sig : argmap.Signature
-            The function signature as an `argmap.Signature` object.
+            The function signature as an ``argmap.Signature`` object.
         wrapped_name : str
             The mangled name used to represent the wrapped function in the code
             being assembled.
