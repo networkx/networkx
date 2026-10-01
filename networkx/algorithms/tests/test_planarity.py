@@ -494,6 +494,22 @@ class TestPlanarEmbeddingClass:
             # Invalid structure because the orientation of the edge was not set
             embedding.check_structure()
 
+    def test_missing_edge_orientation_partial(self):
+        # Node 1 has one correctly-oriented neighbor (2) and one neighbor
+        # (3) with no cw/ccw set at all, so the missing-orientation branch
+        # must fire even when not every edge of the node is unoriented.
+        embedding = nx.PlanarEmbedding(
+            {
+                1: {2: {"cw": 2, "ccw": 2}, 3: {}},
+                2: {1: {"cw": 1, "ccw": 1}},
+                3: {1: {}},
+            }
+        )
+        with pytest.raises(
+            nx.NetworkXException, match="Missing orientation for a neighbor"
+        ):
+            embedding.check_structure()
+
     def test_invalid_edge_orientation(self):
         embedding = nx.PlanarEmbedding(
             {
