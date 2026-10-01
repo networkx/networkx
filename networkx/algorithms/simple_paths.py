@@ -375,11 +375,9 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         except TypeError as err:
             raise nx.NodeNotFound(f"target node {target} not in graph") from err
 
-    if not targets:
-        return
-    if cutoff is None:
+    if cutoff is None and targets:
         yield from _johnson_all_simple_edge_paths(G, source, targets)
-    elif cutoff >= 0:
+    elif cutoff >= 0 and targets:
         yield from nx.traversal.bsdfs_edges(G, source, targets, cutoff)
 
 
