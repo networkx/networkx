@@ -6,6 +6,9 @@ import itertools
 from operator import itemgetter
 
 import networkx as nx
+from networkx.algorithms.approximation.connectivity import (
+    local_node_connectivity as approx_local_node_connectivity,
+)
 
 # Define the default maximum flow function to use in all flow based
 # connectivity algorithms.
@@ -283,6 +286,15 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     The local node connectivity of an ordered pair of nodes of a digraph
     is not symmetric, so both orders of each pair are considered [2]_.
 
+    Before each of those maximum flow problems a much cheaper call is
+    made to the shortest path based approximation of local node
+    connectivity (see
+    :meth:`networkx.algorithms.approximation.local_node_connectivity`),
+    following [3]_. That approximation is a strict lower bound on the
+    exact value, so whenever it already reaches the best value of $K$
+    found so far the maximum flow computation cannot lower $K$ and is
+    skipped. This does not change the result, which is still exact.
+
     See also
     --------
     :meth:`local_node_connectivity`
@@ -301,6 +313,12 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
         Connectivity. SIAM Journal on Computing, Volume 4, Issue 4,
         pp. 507-518, 1975.
         https://doi.org/10.1137/0204043
+
+    .. [3] Robert S. Sinkovits. Fast and Accurate Determination of Graph Node
+        Connectivity Leveraging Approximate Methods. Computational Science -
+        ICCS 2021, Lecture Notes in Computer Science, Volume 12742,
+        Springer, 2021.
+        https://doi.org/10.1007/978-3-030-77961-0_41
 
     """
     if (s is not None and t is None) or (s is None and t is not None):
@@ -366,11 +384,15 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     # compute local node connectivity with all its non-neighbors nodes
     for w in set(G) - v_nbrs - {v}:
         for s, t in ordered_pairs(v, w):
+            # The approximation is a strict lower bound, so a value that
+            # already reaches K means the exact computation cannot lower it.
+            if approx_local_node_connectivity(G, s, t, cutoff=K) >= K:
+                continue
             kwargs["cutoff"] = K
             K = min(K, local_node_connectivity(G, s, t, **kwargs))
     # Also for non adjacent pairs of neighbors of v
     for x, y in iter_func(v_nbrs, 2):
-        if y in G[x]:
+        if y in G[x] or approx_local_node_connectivity(G, x, y, cutoff=K) >= K:
             continue
         kwargs["cutoff"] = K
         K = min(K, local_node_connectivity(G, x, y, **kwargs))
