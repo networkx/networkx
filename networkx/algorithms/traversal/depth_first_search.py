@@ -350,9 +350,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None
     )
     # ``reverse-depth_limit`` closes a node whose subtree was not explored
     # because of the depth limit. It is still the postorder visit of that node.
-    return (
-        v for u, v, d in edges if d == "reverse" or d == "reverse-depth_limit"
-    )
+    return (v for u, v, d in edges if d == "reverse" or d == "reverse-depth_limit")
 
 
 @nx._dispatchable
