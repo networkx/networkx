@@ -75,7 +75,10 @@ def is_chordal(G):
     search. It returns False when it finds that the separator for any node
     is not a clique.  Based on the algorithms in [1]_.
 
-    Self loops are ignored.
+    Self loops are ignored. Think about carefully if they exist in your graph.
+    Chordal graphs (without self-loops) are strongly related with perfect graphs,
+    perfect elimination orderings, holes, etc. The presence of self-loops breaks
+    important relations.
 
     References
     ----------
@@ -214,34 +217,33 @@ def chordal_graph_cliques(G):
     >>> cliques = [c for c in chordal_graph_cliques(G)]
     >>> cliques[0]
     frozenset({1, 2, 3})
+
+    Notes
+    -----
+    Self loops are ignored.
     """
     for C in (G.subgraph(c).copy() for c in connected_components(G)):
-        if C.number_of_nodes() == 1:
-            if nx.number_of_selfloops(C) > 0:
-                raise nx.NetworkXError("Input graph is not chordal.")
-            yield frozenset(C.nodes())
-        else:
-            unnumbered = set(C.nodes())
-            v = arbitrary_element(C)
+        unnumbered = set(C.nodes())
+        v = arbitrary_element(C)
+        unnumbered.remove(v)
+        numbered = {v}
+        clique_wanna_be = {v}
+        while unnumbered:
+            # The node from the unnumbered set with the most connections
+            # to nodes in the numbered set
+            v = max(unnumbered, key=lambda n: len(G._adj[n].keys() & numbered))
             unnumbered.remove(v)
-            numbered = {v}
-            clique_wanna_be = {v}
-            while unnumbered:
-                # The node from the unnumbered set with the most connections
-                # to nodes in the numbered set
-                v = max(unnumbered, key=lambda n: len(G._adj[n].keys() & numbered))
-                unnumbered.remove(v)
-                numbered.add(v)
-                new_clique_wanna_be = set(C.neighbors(v)) & numbered
-                sg = C.subgraph(clique_wanna_be)
-                if _is_complete_graph(sg):
-                    new_clique_wanna_be.add(v)
-                    if not new_clique_wanna_be >= clique_wanna_be:
-                        yield frozenset(clique_wanna_be)
-                    clique_wanna_be = new_clique_wanna_be
-                else:
-                    raise nx.NetworkXError("Input graph is not chordal.")
-            yield frozenset(clique_wanna_be)
+            numbered.add(v)
+            new_clique_wanna_be = set(C.neighbors(v)) & numbered
+            sg = C.subgraph(clique_wanna_be)
+            if _is_complete_graph(sg):
+                new_clique_wanna_be.add(v)
+                if not new_clique_wanna_be >= clique_wanna_be:
+                    yield frozenset(clique_wanna_be)
+                clique_wanna_be = new_clique_wanna_be
+            else:
+                raise nx.NetworkXError("Input graph is not chordal.")
+        yield frozenset(clique_wanna_be)
 
 
 @nx._dispatchable
@@ -274,6 +276,10 @@ def chordal_graph_treewidth(G):
     networkx.algorithms.approximation.treewidth.treewidth_min_degree
     networkx.algorithms.approximation.treewidth.treewidth_min_fill_in
 
+    Notes
+    -----
+    Self loops are ignored.
+
     References
     ----------
     .. [1] https://en.wikipedia.org/wiki/Tree_decomposition#Treewidth
@@ -285,13 +291,14 @@ def chordal_graph_treewidth(G):
 
 
 def _is_complete_graph(G):
-    """Returns True if G is a complete graph."""
-    if nx.number_of_selfloops(G) > 0:
-        raise nx.NetworkXError("Self loop found in _is_complete_graph()")
+    """Returns True if G is a complete graph.
+
+    It ignores any self loops.
+    """
     n = G.number_of_nodes()
     if n < 2:
         return True
-    e = G.number_of_edges()
+    e = G.number_of_edges() - nx.number_of_selfloops(G)
     max_edges = (n * (n - 1)) / 2
     return e == max_edges
 
@@ -375,6 +382,8 @@ def complete_to_chordal_graph(G):
     that this triangulation is not necessarily a global minimum.
 
     https://en.wikipedia.org/wiki/Chordal_graph
+
+    Self loops are ignored.
 
     References
     ----------
