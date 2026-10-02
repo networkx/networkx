@@ -322,7 +322,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None
     >>> list(nx.dfs_postorder_nodes(G, source=0))
     [4, 3, 2, 1, 0]
     >>> list(nx.dfs_postorder_nodes(G, source=0, depth_limit=2))
-    [1, 0]
+    [2, 1, 0]
 
     Notes
     -----
@@ -348,7 +348,11 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None
     edges = nx.dfs_labeled_edges(
         G, source=source, depth_limit=depth_limit, sort_neighbors=sort_neighbors
     )
-    return (v for u, v, d in edges if d == "reverse")
+    # ``reverse-depth_limit`` closes a node whose subtree was not explored
+    # because of the depth limit. It is still the postorder visit of that node.
+    return (
+        v for u, v, d in edges if d == "reverse" or d == "reverse-depth_limit"
+    )
 
 
 @nx._dispatchable
