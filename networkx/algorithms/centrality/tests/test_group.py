@@ -325,7 +325,6 @@ class TestProminentGroup:
     def test_prominent_group_single_node(self, create_using):
         G = nx.path_graph(5, create_using=create_using)
         k = 1
-        # fails DiGraph due to KeyError in handling of directed D[u][v] terms
         b, g = nx.prominent_group(G, k, normalized=False, endpoints=False)
         assert b == 4
         assert nx.group_betweenness_centrality(G, g, normalized=False) == b
@@ -342,8 +341,6 @@ class TestProminentGroup:
         k = 3
         # y_in_Dx is enforced by the loop bounds. (KeyError if not enforced)
         # This checks v_in_Dy, y_in_Dv, x_in_Dv and v_in_Dx. Note: do not need x_in_Dy
-
-        # fails due to KeyError in handling of directed D[u][v] terms
         b, g = nx.prominent_group(G, k, normalized=False)
         check_prominent(2, [3, 1, 0], b, g, G, k, normalized=False)
 

@@ -200,6 +200,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                         PB_x[y] *= 1 - sig_xvy / sig_xy
                         sig_x[y] -= sig_xvy
                         if y == v:
+                            # update sig_xv for future y-values
                             sig_xv -= sig_xvy
         # endpoints
         N = len(G)
