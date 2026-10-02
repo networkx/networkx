@@ -5,6 +5,7 @@ communities).
 
 from collections import defaultdict
 from itertools import combinations
+from math import isfinite, log2
 
 import networkx as nx
 from networkx.algorithms.community.community_utils import is_cover, is_partition
@@ -12,6 +13,7 @@ from networkx.utils.decorators import argmap, not_implemented_for
 
 __all__ = [
     "constant_potts_model",
+    "map_equation",
     "modularity",
     "overlapping_modularity",
     "partition_quality",
@@ -24,6 +26,321 @@ class NotAPartition(nx.NetworkXError):
     def __init__(self, G, collection):
         msg = f"{collection} is not a valid partition of the graph {G}"
         super().__init__(msg)
+
+
+# ---------------------------------------------------------------------------
+# The map equation
+#
+# Infomap pictures a random walker stepping along the (weighted, possibly
+# directed) edges of the network. The map equation [Rosvall & Bergstrom 2008]
+# is the average number of bits needed to describe one step of that walk when
+# the walk is encoded with a *two-level* codebook:
+#
+#   * one **index codebook** names the modules and is used whenever the walker
+#     crosses from one module into another, and
+#   * one **module codebook** per module names the nodes inside it (plus an
+#     "exit" symbol) and is used while the walker stays within that module.
+#
+# A partition that keeps the walker inside modules for long stretches makes
+# module switches -- the shared index codebook -- rare, so the description is
+# short. Minimizing the codelength therefore reveals community structure. Each
+# codebook is costed at the Shannon limit -- the entropy of its symbol
+# frequencies, which a real Huffman code approaches within one bit -- so the
+# whole map equation reduces to sums of ``p * log2(p)`` terms over node and
+# module visit/exit rates, which is what the helpers below assemble.
+# ---------------------------------------------------------------------------
+
+
+def _plogp(p):
+    """Return ``p * log2(p)``, using the convention ``0 * log2(0) = 0``.
+
+    Shannon entropy is ``H = -sum(_plogp(p_i))``, so every codebook cost in the
+    map equation is built from these terms.
+    """
+    return p * log2(p) if p > 0 else 0.0
+
+
+def _undirected_flow(G, weight):
+    r"""Random-walk flow of an undirected graph: ``(visit_rate, link_flows)``.
+
+    On an undirected graph the walker's stationary distribution is known in
+    closed form: it visits a node in proportion to the node's (weighted) degree,
+    :math:`p_\alpha = k_\alpha / 2m`. A self-loop is one transition that keeps
+    the walker in place, so -- as in Infomap -- it counts *once* toward the
+    degree and the normalization, giving :math:`2m = 2\sum w - \sum_{self} w`
+    (NetworkX's ``degree`` counts a self-loop twice, so subtract one copy). The
+    per-step probability of traversing a particular edge is :math:`w / 2m`;
+    ``link_flows`` lists each edge in *both* directions with that flow, so that
+    summing the flow crossing a module's boundary later gives the rate at which
+    the walker enters or leaves it. A self-loop never crosses a boundary, so it
+    appears once.
+    """
+    visit_rate = dict(G.degree(weight=weight))
+    # Undo the second count of each self-loop, giving 2m with self-loops
+    # counted once (Infomap's undirected normalization).
+    for node, _, wt in nx.selfloop_edges(G, data=weight, default=1):
+        visit_rate[node] -= wt
+    total_strength = sum(visit_rate.values())
+    if total_strength == 0:  # no edges (or only zero-weight edges), no flow
+        return {node: 0.0 for node in G}, []
+    for node in visit_rate:
+        visit_rate[node] /= total_strength
+
+    link_flows = []
+    for u, v, wt in G.edges(data=weight, default=1):
+        flow = wt / total_strength
+        link_flows.append((u, v, flow))
+        if u != v:
+            link_flows.append((v, u, flow))
+    return visit_rate, link_flows
+
+
+def _directed_flow(G, weight, teleportation_probability, tol=1e-13):
+    r"""Random-walk flow of a directed graph: ``(visit_rate, link_flows)``.
+
+    A directed graph has no closed-form stationary distribution, and a plain
+    walk can get stuck (in sinks or cycles). Infomap uses the PageRank remedy:
+    with probability ``teleportation_probability`` the walker teleports instead of
+    following a link, which makes the walk ergodic. The recorded distribution
+    ``pi`` is exactly :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    with damping ``1 - teleportation_probability`` and teleportation weighted by
+    out-degree (so dangling nodes redistribute their flow the same way).
+
+    Teleportation is a modeling device, not part of the structure we want to
+    describe, so the rates that get *coded* come from *unrecorded* teleportation:
+    one further link-following step (with no teleportation) on top of ``pi``
+    yields the visit rates and link flows the codebooks are built from.
+    """
+    out_strength = dict(G.out_degree(weight=weight))
+    dangling = [u for u, strength in out_strength.items() if strength == 0]
+    sum_out = sum(out_strength.values())
+    if sum_out == 0:  # no positive-weight out-links, so there is no flow
+        return {u: 0.0 for u in G}, []
+
+    # Teleport in proportion to out-degree (Infomap's default "to links"); this
+    # is exactly PageRank's personalization (and dangling) vector.
+    teleport = {u: strength / sum_out for u, strength in out_strength.items()}
+    pi = nx.pagerank(
+        G,
+        alpha=1 - teleportation_probability,
+        personalization=teleport,
+        dangling=teleport,
+        weight=weight,
+        tol=tol,
+        max_iter=1000,
+    )
+
+    # Unrecorded step: spread ``pi`` once more along links only (no teleporting),
+    # renormalizing away the flow that would have teleported. The result is the
+    # visit rate and per-link flow the codebooks are built from.
+    sum_node_rank = 1 - sum(pi[u] for u in dangling)
+    visit_rate = {u: 0.0 for u in G}
+    link_flows = []
+    for u, v, wt in G.edges(data=weight, default=1):
+        # A dangling source (zero out-strength) redistributes its flow purely by
+        # teleportation, already captured in ``pi``; its links carry no recorded
+        # flow, so skip them -- and avoid dividing by its zero out-strength.
+        if out_strength[u] == 0:
+            continue
+        flow = pi[u] * wt / out_strength[u] / sum_node_rank
+        visit_rate[v] += flow
+        link_flows.append((u, v, flow))
+    return visit_rate, link_flows
+
+
+@nx._dispatchable(edge_attrs="weight")
+def map_equation(G, communities, *, weight="weight", teleportation_probability=0.15):
+    r"""Return the two-level map equation codelength of a partition of `G`.
+
+    The map equation [1]_ gives the theoretical lower bound on the average
+    per-step codelength of a random walk on `G` under a two-level code: one
+    index codebook over the modules, and one codebook per module over the nodes
+    inside it plus an exit symbol. For the partition :math:`\mathsf{M}` given by
+    `communities`:
+
+    .. math::
+        L(\mathsf{M}) = q_\curvearrowright H(\mathcal{Q})
+            + \sum_i p^i_\circlearrowright H(\mathcal{P}^i)
+
+    The index codebook is used at :math:`q_\curvearrowright`, the rate at which
+    the walk changes module. Its entropy :math:`H(\mathcal{Q})` is calculated
+    from the module enter rates normalized by :math:`q_\curvearrowright`. Module
+    :math:`i`'s codebook is used at :math:`p^i_\circlearrowright`, its total
+    node visit rate plus its exit rate. Its entropy :math:`H(\mathcal{P}^i)` is
+    calculated from the node visit rates and exit rate normalized by
+    :math:`p^i_\circlearrowright`. The implementation evaluates the equivalent
+    closed form as sums of :math:`x \log_2 x`.
+
+    The visit and transition rates the codebooks are built from, together called
+    the flow, come from the walk itself. On an undirected graph a node's rate is
+    proportional to its weighted degree, :math:`p_\alpha = k_\alpha / 2m`. A
+    directed graph uses Infomap's default unrecorded teleportation-to-links flow
+    model [2]_. PageRank first supplies stationary node ranks; only a subsequent
+    link-following step contributes to the recorded node visits and link flows.
+    Computing directed flow requires SciPy.
+
+    Parameters
+    ----------
+    G : Graph, DiGraph, MultiGraph, or MultiDiGraph
+        An undirected or directed first-order graph. Parallel edges are summed.
+    communities : list or iterable of set of nodes
+        A partition of the nodes of `G`.
+    weight : string or None, optional (default="weight")
+        Edge attribute holding the numerical weight. Higher weights represent
+        stronger flow and make an edge more likely to be traversed; they should
+        not represent distances or costs. Weights must be finite and
+        non-negative. If None, every edge has weight 1.
+    teleportation_probability : float, optional (default=0.15)
+        Teleportation probability for the directed-flow random walk. Ignored
+        for undirected graphs. Values must lie in the interval [0, 1].
+
+    Returns
+    -------
+    float
+        The average codelength in bits per random-walk step. Lower values mean
+        better compression for partitions of the same graph under the same
+        `weight` and `teleportation_probability` settings.
+
+    Raises
+    ------
+    NotAPartition
+        If `communities` is not a partition of the nodes of `G`.
+    ValueError
+        If any edge weight is negative or not finite, or if a directed graph's
+        `teleportation_probability` is outside the interval [0, 1].
+    PowerIterationFailedConvergence
+        If PageRank fails to converge when computing directed flow.
+
+    Examples
+    --------
+    Two triangles joined by a single edge, with one triangle per module:
+
+    >>> G = nx.barbell_graph(3, 0)
+    >>> nx.community.map_equation(G, [{0, 1, 2}, {3, 4, 5}])
+    2.3207303568337903
+
+    Coding the same walk with a single module costs more bits:
+
+    >>> nx.community.map_equation(G, [set(G)])
+    2.556656707462823
+
+    Notes
+    -----
+    When evaluating a partition returned by :func:`infomap_communities`, pass
+    the same `weight` and `teleportation_probability` values that were used for
+    the search.
+
+    This function evaluates a flat partition under the two-level map equation.
+    It does not evaluate the complete hierarchy returned by
+    :func:`infomap_partitions`.
+
+    References
+    ----------
+    .. [1] Rosvall, M. & Bergstrom, C.T. Maps of random walks on complex
+       networks reveal community structure. PNAS 105, 1118-1123 (2008).
+       https://doi.org/10.1073/pnas.0706851105
+    .. [2] Lambiotte, R. & Rosvall, M. Ranking and clustering of nodes in
+       networks with smart teleportation. Phys. Rev. E 85, 056107 (2012).
+       https://doi.org/10.1103/PhysRevE.85.056107
+
+    See Also
+    --------
+    :any:`infomap_communities`
+    :any:`infomap_partitions`
+    modularity
+    """
+    if not isinstance(communities, list):
+        communities = list(communities)
+    if not is_partition(G, communities):
+        raise NotAPartition(G, communities)
+    module_of = {node: i for i, c in enumerate(communities) for node in c}
+    visit_rate, link_flows = _flow(G, weight, teleportation_probability)
+    return _codelength(visit_rate, link_flows, module_of)
+
+
+def _flow(G, weight="weight", teleportation_probability=0.15):
+    """Return ``(visit_rate, link_flows)`` for `G`, dispatching on direction.
+
+    The flow depends only on the graph, not on any partition, so it is computed
+    once and reused across many codelength evaluations. ``link_flows`` is a
+    materialized list of ``(source, target, flow)`` triples.
+
+    Note this is plain dict/list flow, not an annotated graph. The quantity is
+    random-walk *flow* (computed once), not edge weight, and the optimizer's
+    inner loop wants O(1) dict access -- it builds adjacency dicts from these,
+    just as ``louvain._one_level`` builds them from ``G``. Carrying flow
+    alongside ``G`` also keeps aggregation from copying/mutating graphs.
+    """
+    # Flow is a probability distribution, so weights must be finite and
+    # non-negative; reject ill-defined inputs instead of returning a
+    # clean-looking but meaningless codelength.
+    if any(not isfinite(wt) or wt < 0 for _, _, wt in G.edges(data=weight, default=1)):
+        raise ValueError("edge weights must be finite and non-negative")
+    _check_teleportation_probability(G, teleportation_probability)
+    if G.is_directed():
+        return _directed_flow(G, weight, teleportation_probability)
+    return _undirected_flow(G, weight)
+
+
+def _check_teleportation_probability(G, teleportation_probability):
+    """Validate the ``teleportation_probability`` argument shared by the public
+    functions. Only the directed flow model reads it, so an undirected graph
+    accepts any value. The comparison also rejects nan and the infinities.
+    """
+    if G.is_directed() and not 0 <= teleportation_probability <= 1:
+        raise ValueError("teleportation_probability must be between 0 and 1")
+
+
+def _codelength(visit_rate, link_flows, module_of):
+    r"""Assemble the two-level map equation codelength, in bits per step.
+
+    From the random-walk flow (``visit_rate`` per node and the directed
+    ``link_flows``) and a ``node -> module`` assignment, sum the three groups of
+    terms, one for each codebook role:
+
+    * **node term** -- naming nodes inside their modules costs the entropy of
+      the node visit rates, :math:`-\sum_\alpha plogp(p_\alpha)`.
+    * **index term** -- the index codebook is used on every module switch. Its
+      symbols are the modules, with frequencies equal to the module *enter*
+      rates :math:`e_i`, and it is used at the total switching rate
+      :math:`Q = \sum_i e_i`, costing :math:`plogp(Q) - \sum_i plogp(e_i)`.
+    * **module term** -- each module codebook carries, beyond its nodes, one
+      "exit" symbol at rate :math:`x_i`; the extra cost of mixing that exit into
+      module :math:`i` (visit rate :math:`p_i`) is
+      :math:`plogp(x_i + p_i) - plogp(x_i)`.
+
+    A module's *exit* flow is the flow on links leaving it; its *enter* flow is
+    the flow on links entering it. On a directed graph these differ -- the index
+    codebook is driven by enter flow -- while on an undirected graph
+    ``link_flows`` carries both directions, so they coincide. Module ids may be
+    any non-negative integers; empty modules contribute nothing.
+    """
+    num_modules = (max(module_of.values()) + 1) if module_of else 0
+
+    # p_i: total visit rate of each module (entropy of node names lives here).
+    module_visit = [0.0] * num_modules
+    for node, rate in visit_rate.items():
+        module_visit[module_of[node]] += rate
+
+    # e_i / x_i: flow entering / leaving each module. Only boundary-crossing
+    # link flow counts; flow that stays inside a module is never coded by the
+    # index codebook.
+    module_enter = [0.0] * num_modules
+    module_exit = [0.0] * num_modules
+    for source, target, flow in link_flows:
+        source_module, target_module = module_of[source], module_of[target]
+        if source_module != target_module:
+            module_exit[source_module] += flow
+            module_enter[target_module] += flow
+
+    total_switching = sum(module_enter)  # Q; equals sum(module_exit)
+    index_term = _plogp(total_switching) - sum(_plogp(rate) for rate in module_enter)
+    node_term = -sum(_plogp(rate) for rate in visit_rate.values())
+    module_term = sum(
+        _plogp(exit_rate + visit) - _plogp(exit_rate)
+        for exit_rate, visit in zip(module_exit, module_visit)
+    )
+    return index_term + node_term + module_term
 
 
 def _require_partition(G, partition):
