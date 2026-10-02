@@ -1638,10 +1638,7 @@ def _simrank_star_similarity_numpy(
         newsim = (
             importance_factor
             / 2
-            * (
-                adjacency_matrix @ prevsim
-                + prevsim @ adjacency_matrix.T
-            )
+            * (adjacency_matrix @ prevsim + prevsim @ adjacency_matrix.T)
             + (1 - importance_factor) * identity
         )
 
