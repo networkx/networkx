@@ -743,6 +743,76 @@ class TestSimilarity:
         with pytest.raises(nx.NodeNotFound, match="Target node 10 not in G"):
             nx.simrank_similarity(G, target=10)
 
+    def test_simrank_star(self):
+        G = nx.path_graph(2)
+
+        actual = nx.simrank_star_similarity(G)
+
+        expected = {
+            0: {0: 0.5263157895, 1: 0.4736842105},
+            1: {0: 0.4736842105, 1: 0.5263157895},
+        }
+
+        for node, values in expected.items():
+            assert values == pytest.approx(actual[node], abs=1e-2)
+
+    def test_simrank_star_source(self):
+        G = nx.path_graph(2)
+
+        actual = nx.simrank_star_similarity(G, source=0)
+
+        expected = {
+            0: 0.5263157895,
+            1: 0.4736842105,
+        }
+
+        assert expected == pytest.approx(actual, abs=1e-2)
+
+    def test_simrank_star_source_and_target(self):
+        G = nx.path_graph(2)
+
+        actual = nx.simrank_star_similarity(G, source=0, target=1)
+
+        assert actual == pytest.approx(0.4736842105, abs=1e-2)
+
+    def test_simrank_star_noninteger_nodes(self):
+        G = nx.path_graph(["a", "b"])
+
+        actual = nx.simrank_star_similarity(G)
+
+        expected = {
+            "a": {"a": 0.5263157895, "b": 0.4736842105},
+            "b": {"a": 0.4736842105, "b": 0.5263157895},
+        }
+
+        for node, values in expected.items():
+            assert values == pytest.approx(actual[node], abs=1e-2)
+
+    def test_simrank_star_source_not_found(self):
+        G = nx.cycle_graph(5)
+
+        with pytest.raises(nx.NodeNotFound, match="Source node 10 not in G"):
+            nx.simrank_star_similarity(G, source=10)
+
+    def test_simrank_star_target_not_found(self):
+        G = nx.cycle_graph(5)
+
+        with pytest.raises(nx.NodeNotFound, match="Target node 10 not in G"):
+            nx.simrank_star_similarity(G, target=10)
+
+    def test_simrank_star_max_iterations(self):
+        G = nx.cycle_graph(5)
+
+        with pytest.raises(nx.ExceededMaxIterations):
+            nx.simrank_star_similarity(G, max_iterations=1)
+
+    def test_simrank_star_nonzero_similarity(self):
+        G = nx.path_graph(4)
+
+        actual = nx.simrank_star_similarity(G, source=0, target=3)
+
+        assert actual == pytest.approx(0.0791695966, abs=1e-2)
+
     def test_simrank_between_versions(self):
         G = nx.cycle_graph(5)
         # _python tolerance 1e-4
