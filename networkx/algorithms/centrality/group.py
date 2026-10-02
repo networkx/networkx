@@ -230,7 +230,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
 
         # scale down for normalized or by 2 for undirected
         if normalized:
-            GBC_group /= Nscale * (Nscale - 1)
+            GBC_group /= Nscale * (Nscale - 1) if Nscale > 1 else 1
         elif not is_directed:
             GBC_group /= 2
 
@@ -439,7 +439,7 @@ def prominent_group(
 
     # normalize
     if normalized:
-        max_GBC /= Nscale * (Nscale - 1)
+        max_GBC /= Nscale * (Nscale - 1) if Nscale > 1 else 1
     # If undirected then count only the undirected edges
     elif not is_directed:
         max_GBC /= 2

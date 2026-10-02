@@ -32,6 +32,13 @@ class TestGroupBetweennessCentrality:
         # Also checks v_in_Dy, y_in_Dv, x_in_Dv and v_in_Dx. Note: do not need x_in_Dy
         assert 2 == nx.group_betweenness_centrality(G, [2, 3, 4], normalized=False)
 
+    def test_small_graph_and_group(self):
+        # NScale == 0 or 1 gives trouble with denominator
+        G = nx.path_graph(4)
+        gbc_normed = nx.group_betweenness_centrality(G, [0, 1, 3], normalized=True)
+        gbc_raw = nx.group_betweenness_centrality(G, [0, 1, 3], normalized=False)
+        assert gbc_normed == gbc_raw  # both gbcs zero (Nscale = 1)
+
     @pytest.mark.parametrize("create_using", [nx.Graph, nx.DiGraph])
     def test_group_betweenness_with_endpoints(self, create_using):
         """
@@ -339,6 +346,13 @@ class TestProminentGroup:
         # fails due to KeyError in handling of directed D[u][v] terms
         b, g = nx.prominent_group(G, k, normalized=False)
         check_prominent(2, [3, 1, 0], b, g, G, k, normalized=False)
+
+    def test_small_graph_and_group(self):
+        # NScale == 0 or 1 gives trouble with denominator
+        G = nx.path_graph(4)
+        gbc_normed = nx.prominent_group(G, k=3, normalized=True)
+        gbc_raw = nx.prominent_group(G, k=3, normalized=False)
+        assert gbc_normed == gbc_raw  # both gbcs zero (Nscale = 1)
 
     def test_prominent_group_with_excluded_nodes(self):
         G = nx.path_graph(5)
