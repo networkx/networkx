@@ -788,6 +788,14 @@ class TestSimilarity:
         for node, values in expected.items():
             assert values == pytest.approx(actual[node], abs=1e-2)
 
+    def test_simrank_star_directed(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 2), (1, 2)])
+
+        actual = nx.simrank_star_similarity(G)
+
+        assert actual[0][1] == pytest.approx(0.010125, abs=1e-6)
+
     def test_simrank_star_source_not_found(self):
         G = nx.cycle_graph(5)
 
