@@ -481,52 +481,24 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
     if not nx.is_graphical(deg_sequence):
         raise nx.NetworkXError("Invalid degree sequence")
 
-    p = len(deg_sequence)
-    G = nx.empty_graph(p, create_using)
+    G = nx.empty_graph(len(deg_sequence), create_using)
     if G.is_directed():
         raise nx.NetworkXError("Directed graphs are not supported")
-    num_degs = [[] for i in range(p)]
-    dmax, n = 0, 0
-    for d in deg_sequence:
-        # Process only the non-zero integers
-        if d > 0:
-            num_degs[d].append(n)
-            dmax, n = max(dmax, d), n + 1
-    # Return graph if no edges
-    if n == 0:
-        return G
 
-    modstubs = [(0, 0)] * (dmax + 1)
-    # Successively reduce degree sequence by removing the maximum degree
-    while n > 0:
-        # Retrieve the maximum degree in the sequence
-        while len(num_degs[dmax]) == 0:
-            dmax -= 1
-        # If there are not enough stubs to connect to, then the sequence is
-        # not graphical
-        if dmax > n - 1:
-            raise nx.NetworkXError("Non-graphical integer sequence")
-
-        # Remove largest stub in list
-        source = num_degs[dmax].pop()
-        n -= 1
-        # Reduce the next dmax largest stubs
-        mslen = 0
-        k = dmax
-        for i in range(dmax):
-            while len(num_degs[k]) == 0:
-                k -= 1
-            target = num_degs[k].pop()
-            G.add_edge(source, target)
-            n -= 1
-            if k > 1:
-                modstubs[mslen] = (k - 1, target)
-                mslen += 1
-        # Add back to the list any nonzero stubs that were removed
-        for i in range(mslen):
-            (stubval, stubtarget) = modstubs[i]
-            num_degs[stubval].append(stubtarget)
-            n += 1
+    d = dict(enumerate(deg_sequence))
+    while d:
+        # Select the highest-degree node and remove it from the candidates to
+        # prevent selfloops
+        node = max(d, key=d.get)
+        deg = d.pop(node)
+        # Add edges to the top-k node candidates by degree. Here we rely on
+        # `zip` to terminate once `range(deg)` is exhausted
+        for _, tgt in zip(range(deg), sorted(d, key=d.get, reverse=True)):
+            G.add_edge(node, tgt)
+            d[tgt] -= 1
+            # Remove candidates from consideration if degree drops to 0
+            if d[tgt] < 1:
+                del d[tgt]
 
     return G
 
