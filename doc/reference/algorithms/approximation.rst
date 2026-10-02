@@ -98,6 +98,7 @@ Steiner Tree
 
    metric_closure
    steiner_tree
+   directed_steiner_tree
 
 
 Traveling Salesman
