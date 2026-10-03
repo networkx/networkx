@@ -15,51 +15,52 @@
 #
 # Barriers
 # --------
-# The search maintains one integer per node, ``b[v]``, a *certified lower bound*
-# on the number of edges from ``v`` to ``t*`` in the graph minus the nodes
-# currently on the search stack ``stack``.  All barriers start at 0, which is
-# trivially valid.  With ``v`` on top of ``stack`` at depth ``h`` (so ``h`` edges
-# from ``s`` to ``v``), a successor ``w`` is *admissible* iff
+# The search maintains one integer per node, ``barrier[v]``, a *certified lower
+# bound* on the number of edges from ``v`` to ``t*`` in the graph minus the nodes
+# on the current search path ``[*stack, v]``.  All barriers start at 0, which is
+# trivially valid.  At active node ``v`` at depth ``h`` (so ``h`` edges from ``s``
+# to ``v``), a successor ``w`` is *admissible* iff
 #
-#     b[w] + h < k                                                        (A)
+#     barrier[w] + h < k                                                   (A)
 #
-# Rationale: entering ``w`` costs one edge, and ``b[w]`` further edges are needed
-# before ``t*`` can possibly be reached, so any output through ``w`` has length
-# at least ``h + 1 + b[w]``; requiring that to be at most ``k`` is exactly (A).
-# Because ``b[w]`` is a *lower* bound, (A) never discards an output: it prunes
-# only branches that provably cannot finish within the budget.
+# Rationale: entering ``w`` costs one edge, and ``barrier[w]`` further edges are
+# needed before ``t*`` can possibly be reached, so any output through ``w`` has
+# length at least ``h + 1 + barrier[w]``; requiring that to be at most ``k`` is
+# exactly (A). Because ``barrier[w]`` is a *lower* bound, (A) never discards an
+# output: it prunes only branches that provably cannot finish within the budget.
 #
 # Barriers are updated when the search at ``v`` finishes at depth ``h``.
 # Two search results cause an update:
 #
-# * **unfruitful** -- the search at ``v`` produced no output.  The subsearch had a
+# * **fruitless** -- the search at ``v`` produced no output. Its subsearch had a
 #   budget of ``k - h`` edges and exhausted it, so ``t*`` is farther than that:
 #
-#       b[v] = k - h + 1                                    (a *raise*)
+#       barrier[v] = k - h + 1                               (a *raise*)
 #
 # * **fruitful** -- the search at ``v`` produced an output, and ``sd`` is the exact
 #   number of edges from ``v`` to ``t*`` along the shortest output found below
-#   ``v``.  Setting ``b[v] = sd`` may *invalidate* the barriers of predecessors,
-#   which were justified relative to a larger distance from ``v``.  A backward
-#   BFS restores the invariant
+#   ``v``. Setting ``barrier[v] = sd`` may *invalidate* barriers of predecessors,
+#   which were justified relative to a larger distance from ``v``. A backward BFS
+#   restores the invariant
 #
-#       b[u] <= b[w] + 1     for every edge u -> w with u not on stack       (EC)
+#       barrier[u] <= barrier[w] + 1   for every edge u -> w with u not on the path
 #
 #   ("edge-consistency"), lowering barriers where needed; see ``cascade`` below.
-#   Nodes on ``stack`` are skipped: their barriers are written when they are popped,
-#   not while they are forbidden.
+#   Nodes on the current path are skipped: their barriers are written when their
+#   searches finish, not while they are on the path.
 #
 # Edge-consistency is what makes the pop obligation local, and it is why the
 # cascade terminates quickly: a node is re-entered by the BFS only when its
 # barrier strictly drops, and each barrier only ever moves within ``[0, k+1]``.
 #
-# Delay
-# -----
-# Every cascade is triggered by a fruitful search, i.e. it is charged to an
-# output that has already been emitted.  Together with the raise bound this
-# gives worst-case delay ``3(k+1)(n+m)`` and amortized delay ``2(k+1)(n+m)``,
-# with ``n`` nodes and ``m`` edges -- in particular ``O(k(n+m))`` with a small
-# constant.  See [1]_.
+# Delay (Waiting Time)
+# --------------------
+# The delay is the time a consumer waits for the first path, for each next path,
+# and for exhaustion of a call ``bsdfs(G, s, t, k)``.
+# In [1]_ it is proven that within each such waiting time a node is visited
+# and an edge is scanned at most 3(k+1) times. Hence the delay is O(k(n+m)),
+# where n is the number of nodes reachable from s within the length bound k
+# and m the number of edges incident with them (incoming or outgoing).
 #
 # Prior work
 # ----------
@@ -213,56 +214,54 @@ def bsdfs(G, s, t, k):
     G_pred = G._pred if G.is_directed() else G._adj
 
     barrier = defaultdict(int)  # barriers, persistent over the whole run
-    stack = [s]  # search path, node stack
-    forbidden = {s}  # nodes on the stack in a set, forbidden for re-visiting
-    iters = [iter(G_succ[s])]  # one successor iterator per frame
-    shortest_distances = [_INF]  # per frame: shortest distance to a target
+    stack = {}  # node -> (successor iterator, shortest distance) for suspended frames
+    v = s  # v is the current node, initially s
+    current_iterator = iter(G_succ[v])
+    current_sd = _INF  # shortest distance known to a target from the active node v
 
     if s in targets:  # the source is itself a target
-        shortest_distances[-1] = 0
+        current_sd = 0
         yield [s]
 
     def cascade(v, sd):
-        """Fruitful write ``b[v] = sd``, then restore (EC) by backward BFS."""
+        """Fruitfully set ``barrier[v] = sd``, then restore EC by backward BFS."""
         barrier[v] = sd
-        queue = deque([(v, sd)])
+        queue = deque([v])
         while queue:
-            w, d = queue.popleft()
+            w = queue.popleft()
+            dist_u = barrier[w] + 1  # distance for the predecessors u
             for u in G_pred[w]:
-                if u not in forbidden and barrier[u] > d + 1:
-                    barrier[u] = d + 1  # (EC) was violated at u -> w
-                    queue.append((u, d + 1))
+                if u not in stack and barrier[u] > dist_u:
+                    barrier[u] = dist_u  # (EC) was violated at u -> w
+                    queue.append(u)
 
-    while iters:
-        h = len(stack) - 1  # depth of the top node v
-        for w in iters[-1]:
-            if barrier[w] + h < k:  # admissible
+    while True:
+        h = len(stack)  # number of edges in the current search path [*stack, v]
+        for w in current_iterator:
+            if barrier[w] + h < k:  # node w admissible?
                 if w == terminal:  # terminal target: report, do not enter
-                    yield stack + [w]
-                    if shortest_distances[-1] > 1:
-                        shortest_distances[-1] = 1
-                elif w not in forbidden:
-                    stack.append(w)
-                    forbidden.add(w)
-                    iters.append(iter(G_succ[w]))
+                    yield [*stack, v, w]
+                    current_sd = min(current_sd, 1)  # update shortest distance found
+                elif w != v and w not in stack:
+                    stack[v] = (current_iterator, current_sd)  # push v and its state
+                    v = w
+                    current_iterator = iter(G_succ[w])
                     if w in targets:  # a target: report the path on arrival
-                        shortest_distances.append(0)
-                        yield stack[:]
+                        current_sd = 0
+                        yield [*stack, v]
                     else:
-                        shortest_distances.append(_INF)
+                        current_sd = _INF
                     break  # descend search to w
         else:  # all descend searches completed, finish search at v
-            v = stack[-1]
-            iters.pop()
-            sd = shortest_distances.pop()
-            if sd <= k:
-                cascade(v, sd)  # fruitful; v still forbidden
+            if not stack:
+                return  # v is the root s: search complete, barriers no longer read
+            final_sd = current_sd  # shortest distance found among all w
+            if final_sd <= k:
+                cascade(v, final_sd)  # fruitful cascade
             else:
-                barrier[v] = k - h + 1  # unfruitful raise
-            stack.pop()
-            forbidden.discard(v)
-            if shortest_distances and sd + 1 < shortest_distances[-1]:
-                shortest_distances[-1] = sd + 1  # propagate distance to caller
+                barrier[v] = k - h + 1  # fruitless raise
+            v, (current_iterator, current_sd) = stack.popitem()  # pop parent node
+            current_sd = min(final_sd + 1, current_sd)  # update shortest distance
 
 
 @nx._dispatchable
