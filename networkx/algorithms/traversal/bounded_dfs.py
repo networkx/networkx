@@ -5,6 +5,13 @@
 # -----------------------
 # An iterative depth-limited depth-first search starting at ``s``.
 # To prevent excessive fruitless searches, the search is pruned by node barriers.
+# To prevent excessive fruitless searches, the search is pruned by node barriers.
+# The search is structured using a stack (of nodes forming the path currently
+# being considered), the shortest distances found so far to the target from each
+# of these nodes, and a *barrier* dict of *certified lower bound* values on the
+# number of edges from ``v`` to a target (without using previous nodes on the
+# stack). The search tree is pruned whenever the barrier plus the length of stack
+# is more than `k`, the bound/scope of the search.
 #
 # Barriers
 # --------
@@ -22,8 +29,8 @@
 # Because ``b[w]`` is a *lower* bound, (A) never discards an output: it prunes
 # only branches that provably cannot finish within the budget.
 #
-# Barriers are written in exactly two places, both when the search at ``v``
-# finishes with ``v`` at depth ``h``:
+# Barriers are updated when the search at ``v`` finishes at depth ``h``.
+# Two search results cause an update:
 #
 # * **unfruitful** -- the search at ``v`` produced no output.  The subsearch had a
 #   budget of ``k - h`` edges and exhausted it, so ``t*`` is farther than that:
@@ -56,7 +63,7 @@
 #
 # Prior work
 # ----------
-# Two earlier algorithms for the same enumeration problems are listed here as
+# Two earlier papers for the same enumeration problems are listed here as
 # prior art, not as alternatives: [1]_ and [2]_ demonstrate inputs on which
 # [3]_ and [4]_ omit valid outputs.
 #
@@ -125,6 +132,7 @@ def bsdfs(G, s, t, k):
 
     Examples
     --------
+    Create G from cycles ``[0, 1, 3, 0]``, ``[0, 2, 3, 0]`` and ``[0, 1, 2, 3, 0]``
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 0)])
 
     With ``t == s`` these are the cycles through ``s``, ending at ``s``
@@ -149,7 +157,7 @@ def bsdfs(G, s, t, k):
     True
 
     ``s`` in a target set yields the trivial path ``[s]`` and nothing more,
-    since no simple path returns to ``s``; ``t == s`` is the cycle query.
+    since no simple path returns to ``s``; ``t == s`` is the way to query for a cycle.
 
     >>> list(bsdfs(G, 0, {0, 3}, 3))
     [[0], [0, 1, 2, 3], [0, 1, 3], [0, 2, 3]]
