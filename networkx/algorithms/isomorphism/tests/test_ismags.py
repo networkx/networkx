@@ -508,6 +508,49 @@ class TestWikipediaExample:
 
 
 class TestLargestCommonSubgraph:
+    def test_largest_subgraph_null_graph_cases(self):
+        graph = nx.path_graph(5)
+        ismags = iso.ISMAGS(nx.Graph(), graph)
+        assert list(ismags.largest_common_subgraph()) == []
+        ismags = iso.ISMAGS(graph, nx.Graph())
+        assert list(ismags.largest_common_subgraph()) == [{}]
+
+    def test_largest_subgraph_empty_graphs(self):
+        graph = nx.empty_graph(1)
+        subgraph = nx.empty_graph(1)
+        subgraph.nodes[0]["color"] = "red"
+
+        ismags = iso.ISMAGS(graph, subgraph)
+        assert list(ismags.largest_common_subgraph()) == [{0: 0}]
+
+        nodematch = nx.isomorphism.categorical_node_match("color", None)
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        assert list(ismags.largest_common_subgraph()) == []
+        assert ismags.N_node_colors == 0
+
+    def test_largest_subgraph_color_mismatches(self):
+        # see gh-8885
+        graph = nx.path_graph(5)
+        subgraph = nx.path_graph(5)
+
+        # check that normal case works as expected
+        ismags = iso.ISMAGS(graph, subgraph)
+        assert list(ismags.largest_common_subgraph()) == [{i: i for i in subgraph}]
+
+        # check case when no subgraph nodes have candidate color match
+        for n in subgraph:
+            subgraph.nodes[n]["color"] = "blue"
+        nodematch = nx.isomorphism.categorical_node_match("color", None)
+        ismags = iso.ISMAGS(graph, subgraph, node_match=nodematch)
+        assert list(ismags.largest_common_subgraph()) == []
+        assert ismags.N_node_colors == 0
+
+        # check case when no subgraph nodes have candidates due to selfloops
+        for n in graph:
+            graph.add_edge(n, n)
+        ismags = iso.ISMAGS(graph, subgraph)
+        assert list(ismags.largest_common_subgraph(symmetry=False)) == []
+
     def test_mcis(self):
         # Example graphs from DOI: 10.1002/spe.588
         graph1 = nx.Graph()

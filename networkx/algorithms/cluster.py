@@ -108,10 +108,9 @@ def _triangles_and_degree_iter(G, nodes=None):
         nodes_nbrs = G.adj.items()
     else:
         nodes_nbrs = ((n, G[n]) for n in G.nbunch_iter(nodes))
-
     for v, v_nbrs in nodes_nbrs:
-        vs = set(v_nbrs) - {v}
-        gen_degree = Counter(len(vs & (set(G[w]) - {w})) for w in vs)
+        vs = G._adj[v].keys() - {v}
+        gen_degree = Counter(len(vs & G._adj[w].keys()) - (w in G._adj[w]) for w in vs)
         ntriangles = sum(k * val for k, val in gen_degree.items())
         yield (v, len(vs), ntriangles, gen_degree)
 

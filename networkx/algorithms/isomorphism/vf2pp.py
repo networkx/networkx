@@ -212,7 +212,7 @@ def vf2pp_isomorphism(FG, SG, node_label=None, default_label=None):
         return None
 
 
-@nx._dispatchable(graphs={"SG": 0, "FG": 1}, node_attrs={"node_label": "default_label"})
+@nx._dispatchable(graphs={"FG": 0, "SG": 1}, node_attrs={"node_label": "default_label"})
 def vf2pp_is_isomorphic(FG, SG, node_label=None, default_label=None):
     """Examines whether SG and FG are isomorphic.
 

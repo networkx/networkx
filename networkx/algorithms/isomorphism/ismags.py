@@ -836,13 +836,15 @@ class ISMAGS:
 
         candidate_sets = self._get_node_color_candidate_sets(MONO_fits=operator.eq)
 
-        if any(candidate_sets.values()):
+        # ensure that some subgraph node has a candidate graph node
+        if any(all(constraint) for constraint in candidate_sets.values()):
             relevant_parts = self._sgn_partition[: self.N_node_colors]
             to_be_mapped = {frozenset(n for p in relevant_parts for n in p)}
             yield from self._largest_common_subgraph(
                 candidate_sets, constraints, to_be_mapped
             )
         else:
+            # No subgraph node matches with any graph node: no common subgraph
             return
 
     def analyze_subgraph_symmetry(self):
