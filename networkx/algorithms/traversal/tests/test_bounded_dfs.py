@@ -112,8 +112,8 @@ def test_bsdfs_hard_cycle_instances():
     k = 8
     assert list(bsdfs(G, s, t, k)) == [[1, 0, 2, 1], [1, 2, 1]]
     # nothing missed by CYCLE_SEARCH, so CYCLE_SEARCH would not assert, but detailed tracing will show:
-    # with s = 1 and k =8, vertex 8 violates the stated delay bound:
-    # between the outputs [1,0,2] and [1,2] it is visited 9 times — exceeding both k−1 = 7 and k = 8.
+    # with s = 1 and k = 8, vertex 8 violates the stated delay bound:
+    # between the outputs [1, 0, 2, 1] and [1, 2, 1] it is visited 9 times — exceeding both k−1 = 7 and k = 8.
 
 
 def test_bsdfs_hard_path_instances():
@@ -138,7 +138,7 @@ def test_bsdfs_hard_path_instances():
         ["A", "C", "D", "B", "E"],  # missed by BC-DFS
     ]
 
-    #  A Counter-Example to BC-DFS Monotonicity (Graph Y)
+    # A Counter-Example to BC-DFS Monotonicity (Graph Y)
     G = nx.parse_adjlist(
         ["A D", "B D E F", "C", "D A B C", "E A B D", "F B"], create_using=nx.DiGraph
     )
@@ -151,4 +151,4 @@ def test_bsdfs_hard_path_instances():
         ["E", "D", "C"],
     ]
     # nothing missed by BC-DFS, so BC-DFS would not assert, but detailed tracing will show:
-    # within the same interval, F is unstacked fruitless twice, contradicting their monotonicity claim
+    # within one interval, F is unstacked fruitless twice, contradicting their monotonicity claim

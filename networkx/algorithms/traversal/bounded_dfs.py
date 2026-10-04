@@ -3,23 +3,22 @@
 
 # Implementation overview
 # -----------------------
-# An iterative depth-limited depth-first search starting at ``s``.
-# To prevent excessive fruitless searches, the search is pruned by node barriers.
-# To prevent excessive fruitless searches, the search is pruned by node barriers.
-# The search is structured using a stack (of nodes forming the path currently
-# being considered), the shortest distances found so far to the target from each
-# of these nodes, and a *barrier* dict of *certified lower bound* values on the
-# number of edges from ``v`` to a target (without using previous nodes on the
-# stack). The search tree is pruned whenever the barrier plus the length of stack
-# is more than `k`, the bound/scope of the search.
+# An iterative depth-first type of search starting at ``s`` and terminating
+# in ``t*``, a terminal node or any node of the target set, if a set is specified.
+# ``k`` is the length bound: no output has more than ``k`` edges.
+#
+# The search is structured using a dict as stack.  Its keys are the suspended nodes
+# of the current search path ``P = [*stack, v]``, in path order.  Its values hold,
+# for each of these nodes, the successor iterator to resume from and the shortest
+# distance to ``t*`` found so far.  In addition, one integer *barrier* per node
+# is maintained in a dict for preventing repeated fruitless searches.
 #
 # Barriers
 # --------
-# The search maintains one integer per node, ``barrier[v]``, a *certified lower
-# bound* on the number of edges from ``v`` to ``t*`` in the graph minus the nodes
-# on the current search path ``[*stack, v]``.  All barriers start at 0, which is
-# trivially valid.  At active node ``v`` at depth ``h`` (so ``h`` edges from ``s``
-# to ``v``), a successor ``w`` is *admissible* iff
+# ``barrier[x]`` is a *certified lower bound* on the number of edges from ``x``
+# to ``t*`` in the graph minus the nodes on ``P``.  All barriers start at 0,
+# which is trivially valid.  At active node ``v`` at depth ``h`` (so ``h`` edges
+# from ``s`` to ``v``), a successor ``w`` is *admissible* iff
 #
 #     barrier[w] + h < k                                                   (A)
 #
@@ -30,37 +29,35 @@
 # output: it prunes only branches that provably cannot finish within the budget.
 #
 # Barriers are updated when the search at ``v`` finishes at depth ``h``.
-# Two search results cause an update:
+# Two search results are possible:
 #
 # * **fruitless** -- the search at ``v`` produced no output. Its subsearch had a
-#   budget of ``k - h`` edges and exhausted it, so ``t*`` is farther than that:
+#   budget of ``k - h`` edges and exhausted it, so ``t*`` is farther than that,
+#   or every route within that budget is currently blocked by nodes already on
+#   the search path:
 #
 #       barrier[v] = k - h + 1                               (a *raise*)
 #
 # * **fruitful** -- the search at ``v`` produced an output, and ``sd`` is the exact
 #   number of edges from ``v`` to ``t*`` along the shortest output found below
-#   ``v``. Setting ``barrier[v] = sd`` may *invalidate* barriers of predecessors,
-#   which were justified relative to a larger distance from ``v``. A backward BFS
-#   restores the invariant
+#   ``v``. It is stored as ``barrier[v] = sd``. When ``v`` leaves the path,
+#   barriers of predecessors raised while ``v`` blocked their routes may now be
+#   too high. A backward BFS restores the invariant
 #
-#       barrier[u] <= barrier[w] + 1   for every edge u -> w with u not on the path
+#       barrier[u] <= barrier[w] + 1   for every edge u -> w with u and w not on the path
 #
-#   ("edge-consistency"), lowering barriers where needed; see ``cascade`` below.
+#   ("edge-consistency", EC), lowering barriers where needed; see ``cascade`` below.
 #   Nodes on the current path are skipped: their barriers are written when their
 #   searches finish, not while they are on the path.
 #
-# Edge-consistency is what makes the pop obligation local, and it is why the
-# cascade terminates quickly: a node is re-entered by the BFS only when its
-# barrier strictly drops, and each barrier only ever moves within ``[0, k+1]``.
+# EC together with barrier[t*] == 0 implies the lower-bound property: along
+# any path x = x0, ..., xj = t* in G - P, barrier[x0] <= barrier[x1] + 1
+# <= ... <= j.  So when v leaves the path, only EC on edges u -> v must be
+# re-established.
 #
-# Delay (Waiting Time)
-# --------------------
-# The delay is the time a consumer waits for the first path, for each next path,
-# and for exhaustion of a call ``bsdfs(G, s, t, k)``.
-# In [1]_ it is proven that within each such waiting time a node is visited
-# and an edge is scanned at most 3(k+1) times. Hence the delay is O(k(n+m)),
-# where n is the number of nodes reachable from s within the length bound k
-# and m the number of edges incident with them (incoming or outgoing).
+# Path length ``h`` and barriers thus jointly bound the *scope* of the search,
+# which yields a delay of O(k(n+m)) per output; see the Notes of the ``bsdfs``
+# docstring for the exact bounds and [1]_ for the proofs.
 #
 # Prior work
 # ----------
@@ -101,8 +98,7 @@ def bsdfs(G, s, t, k):
 
     Parameters
     ----------
-    G : NetworkX graph
-        Directed or undirected, graph or multigraph.
+    G : NetworkX DiGraph
     s : node
         Source node, where every reported path starts.
     t : node or set of nodes
@@ -121,7 +117,7 @@ def bsdfs(G, s, t, k):
         The nodes of the path, beginning at ``s`` and ending at the target
         reached.  All nodes are distinct, except that a cycle (``t == s``)
         ends at ``s`` again.  The one-node list ``[s]`` is yielded for the
-        trivial path, i.e. when ``s`` is itself a target.
+        trivial path, i.e. when ``s`` is in the target set.
 
     Raises
     ------
@@ -133,7 +129,8 @@ def bsdfs(G, s, t, k):
 
     Examples
     --------
-    Create G from cycles ``[0, 1, 3, 0]``, ``[0, 2, 3, 0]`` and ``[0, 1, 2, 3, 0]``
+    Create G from cycles ``[0, 1, 3, 0]``, ``[0, 2, 3, 0]`` and ``[0, 1, 2, 3, 0]``.
+
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 0)])
 
     With ``t == s`` these are the cycles through ``s``, ending at ``s``
@@ -157,7 +154,7 @@ def bsdfs(G, s, t, k):
     >>> list(bsdfs(G, 0, {3}, 3)) == list(bsdfs(G, 0, 3, 3))
     True
 
-    ``s`` in a target set yields the trivial path ``[s]`` and nothing more,
+    ``s`` in a target set yields the trivial path ``[s]`` but no cycle,
     since no simple path returns to ``s``; ``t == s`` is the way to query for a cycle.
 
     >>> list(bsdfs(G, 0, {0, 3}, 3))
@@ -172,12 +169,14 @@ def bsdfs(G, s, t, k):
 
     Notes
     -----
-    Between consecutive outputs the algorithm performs at most
-    ``3(k+1)(n+m)`` elementary steps on a graph with ``n`` nodes and ``m``
-    edges, and at most ``2(k+1)(n+m)`` amortized over all outputs [1]_.
-    One elementary step is a single adjacency-list entry scanned, plus
-    constant bookkeeping per call and per barrier update, so the delay is
-    ``O(k(n+m))``.
+    The time a consumer waits for the first path, for each next path, and for
+    exhaustion of the generator, the delay, is at most ``3(k+1)(n+m)``
+    elementary steps, and the first ``p`` outputs are generated in at most
+    ``2p(k+1)(n+m)`` elementary steps [1]_.
+    Here ``n`` is the number of nodes reachable from ``s`` within the length
+    bound ``k``, and ``m`` the number of edges incident with them (incoming or
+    outgoing). An elementary step is a node visit or a single adjacency-list
+    entry scan.
 
     A search from several sources is obtained by adding a virtual source node
     joined to each of them, running with the bound ``k + 1``, and dropping the
@@ -277,8 +276,7 @@ def bsdfs_edges(G, s, t, k):
 
     Parameters
     ----------
-    G : NetworkX graph
-        Directed or undirected, graph or multigraph.
+    G : NetworkX DiGraph
     s : node
         Source node, where every reported path starts.
     t : node or set of nodes
@@ -296,7 +294,7 @@ def bsdfs_edges(G, s, t, k):
     list of edges
         The edges of the path, as ``(u, v)``, resp. ``(u, v, key)`` on a
         multigraph.  The empty list is yielded for the trivial path, i.e.
-        when ``s`` is itself a target.
+        when ``s`` is in the target set.
 
     Raises
     ------
