@@ -230,7 +230,7 @@ def bsdfs(G, s, t, k):
             w = queue.popleft()
             dist_u = barrier[w] + 1  # distance for the predecessors u
             for u in G_pred[w]:
-                if u not in stack and barrier[u] > dist_u:
+                if barrier[u] > dist_u and u not in stack:
                     barrier[u] = dist_u  # (EC) was violated at u -> w
                     queue.append(u)
 
