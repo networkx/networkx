@@ -870,3 +870,25 @@ def test_initial_node_labels_subgraph_hash():
             with_initial_label[u][1:], without_initial_label[u], strict=True
         ):
             assert a == b
+
+
+@pytest.mark.parametrize("node_attr", [None, "label"])
+@pytest.mark.parametrize("digest_size", [16, 32])
+def test_labelled_directed_star_direction(node_attr, digest_size):
+    out_star = nx.DiGraph([(0, 1), (0, 2)])
+    in_star = nx.DiGraph([(1, 0), (2, 0)])
+    for g in [out_star, in_star]:
+        nx.set_node_attributes(g, "x", "label")
+        nx.set_edge_attributes(g, "e", "label")
+    kw = {"node_attr": node_attr, "edge_attr": "label", "digest_size": digest_size}
+    assert nx.weisfeiler_lehman_graph_hash(
+        out_star, **kw
+    ) != nx.weisfeiler_lehman_graph_hash(in_star, **kw)
+    # The shared helper also needs to preserve direction for per-node hashes.
+    a = nx.weisfeiler_lehman_subgraph_hashes(out_star, **kw)
+    b = nx.weisfeiler_lehman_subgraph_hashes(in_star, **kw)
+    assert a[0] != b[0]
+    renamed = nx.relabel_nodes(out_star, {0: "c", 1: "a", 2: "b"})
+    assert nx.weisfeiler_lehman_graph_hash(
+        out_star, **kw
+    ) == nx.weisfeiler_lehman_graph_hash(renamed, **kw)
