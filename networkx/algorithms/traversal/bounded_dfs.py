@@ -88,10 +88,6 @@ import networkx as nx
 __all__ = ["bsdfs", "bsdfs_edges"]
 
 
-_NO_TARGET = object()  # sentinel: never equal to any node
-_INF = float("inf")  # sentinel shortest distance: no target found below
-
-
 @nx._dispatchable
 def bsdfs(G, s, t, k):
     """Yield all length-bounded simple paths or cycles from ``s`` to ``t``.
@@ -207,16 +203,20 @@ def bsdfs(G, s, t, k):
             ) from err
         if not targets:
             raise ValueError(f"{t=} must be a node or a non-empty set of nodes")
-        terminal = _NO_TARGET
+        terminal = object()  # dummy node; never equal to any node in G
 
     G_succ = G._succ if G.is_directed() else G._adj
     G_pred = G._pred if G.is_directed() else G._adj
 
     barrier = defaultdict(int)  # barriers, persistent over the whole run
     stack = {}  # node -> (successor iterator, shortest distance) for suspended frames
+    no_sd = (
+        k + 1
+    )  # shortest distance meaning "no target found so far"; real ones are <= k
+
     v = s  # v is the current node, initially s
     current_iterator = iter(G_succ[v])
-    current_sd = _INF  # shortest distance known to a target from the active node v
+    current_sd = no_sd  # shortest distance known to a target from the active node v
 
     if s in targets:  # the source is itself a target
         current_sd = 0
@@ -240,7 +240,8 @@ def bsdfs(G, s, t, k):
             if barrier[w] + h < k:  # node w admissible?
                 if w == terminal:  # terminal target: report, do not enter
                     yield [*stack, v, w]
-                    current_sd = min(current_sd, 1)  # update shortest distance found
+                    if current_sd > 1:  # update shortest distance found
+                        current_sd = 1
                 elif w != v and w not in stack:
                     stack[v] = (current_iterator, current_sd)  # push v and its state
                     v = w
@@ -249,18 +250,19 @@ def bsdfs(G, s, t, k):
                         current_sd = 0
                         yield [*stack, v]
                     else:
-                        current_sd = _INF
+                        current_sd = no_sd
                     break  # descend search to w
         else:  # all descend searches completed, finish search at v
             if not stack:
                 return  # v is the root s: search complete, barriers no longer read
             final_sd = current_sd  # shortest distance found among all w
-            if final_sd <= k:
-                cascade(v, final_sd)  # fruitful cascade
+            if final_sd < no_sd:  # some path to target found
+                cascade(v, final_sd)  # fruitful cascade, update barriers
             else:
-                barrier[v] = k - h + 1  # fruitless raise
+                barrier[v] = k - h + 1  # fruitless raise, own barrier
             v, (current_iterator, current_sd) = stack.popitem()  # pop parent node
-            current_sd = min(final_sd + 1, current_sd)  # update shortest distance
+            if final_sd < current_sd:  # update shortest distance
+                current_sd = final_sd + 1
 
 
 @nx._dispatchable
