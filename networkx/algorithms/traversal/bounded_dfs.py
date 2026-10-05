@@ -203,7 +203,13 @@ def bsdfs(G, s, t, k):
             ) from err
         if not targets:
             raise ValueError(f"{t=} must be a node or a non-empty set of nodes")
-        terminal = object()  # dummy node; never equal to any node in G
+        if (
+            len(targets) == 1 and s not in targets
+        ):  # {t}: same paths as t, t not entered
+            (terminal,) = targets
+            targets = frozenset()
+        else:
+            terminal = object()  # dummy node; never equal to any node in G
 
     G_succ = G._succ if G.is_directed() else G._adj
     G_pred = G._pred if G.is_directed() else G._adj
