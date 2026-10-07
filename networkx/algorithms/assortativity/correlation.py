@@ -26,18 +26,18 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     ----------
     G : NetworkX graph
 
-    x: string ('in','out')
+    x : string ('in','out')
        The degree type for source node (directed graphs only).
 
-    y: string ('in','out')
+    y : string ('in','out')
        The degree type for target node (directed graphs only).
 
-    weight: string or None, optional (default=None)
+    weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
 
-    nodes: list or iterable (optional)
+    nodes : list or iterable (optional)
         Compute degree assortativity only for nodes in container.
         The default is all nodes.
 
@@ -114,18 +114,18 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     ----------
     G : NetworkX graph
 
-    x: string ('in','out')
+    x : string ('in','out')
        The degree type for source node (directed graphs only).
 
-    y: string ('in','out')
+    y : string ('in','out')
        The degree type for target node (directed graphs only).
 
-    weight: string or None, optional (default=None)
+    weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
 
-    nodes: list or iterable (optional)
+    nodes : list or iterable (optional)
         Compute pearson correlation of degrees only for specified nodes.
         The default is all nodes.
 
@@ -179,7 +179,7 @@ def attribute_assortativity_coefficient(G, attribute, nodes=None):
     attribute : string
         Node attribute key
 
-    nodes: list or iterable (optional)
+    nodes : list or iterable (optional)
         Compute attribute assortativity for nodes in container.
         The default is all nodes.
 
@@ -226,7 +226,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
     attribute : string
         Node attribute key.
 
-    nodes: list or iterable (optional)
+    nodes : list or iterable (optional)
         Compute numeric assortativity only for attributes of nodes in
         container. The default is all nodes.
 

@@ -268,7 +268,7 @@ def is_reachable(G, s, t):
 
     This function is more theoretically efficient than the reachability
     checks than the shortest path algorithms in
-    :mod:`networkx.algorithms.shortest_paths`.
+    ``networkx.algorithms.shortest_paths``.
 
     The given graph **must** be a tournament, otherwise this function's
     behavior is undefined.

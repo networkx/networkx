@@ -118,7 +118,7 @@ def is_bipartite_node_set(G, nodes):
     ----------
     G : NetworkX graph
 
-    nodes: list or container
+    nodes : list or container
       Check if nodes are a one of a bipartite set.
 
     Examples
@@ -228,7 +228,7 @@ def density(B, nodes):
     ----------
     B : NetworkX graph
 
-    nodes: list or container
+    nodes : list or container
       Nodes in one node set of the bipartite graph.
 
     Returns
@@ -278,7 +278,7 @@ def degrees(B, nodes, weight=None):
     ----------
     B : NetworkX graph
 
-    nodes: list or container
+    nodes : list or container
       Nodes in one node set of the bipartite graph.
 
     weight : string or None, optional (default=None)

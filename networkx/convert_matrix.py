@@ -788,7 +788,7 @@ def from_scipy_sparse_array(
 
     Parameters
     ----------
-    A: scipy.sparse array
+    A : scipy.sparse array
       An adjacency matrix representation of a graph
 
     parallel_edges : Boolean
@@ -801,7 +801,7 @@ def from_scipy_sparse_array(
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
-    edge_attribute: string
+    edge_attribute : string
        Name of edge attribute to store matrix numeric value. The data will
        have the same type as the matrix entry (int, float, (real,imag)).
 

@@ -104,13 +104,13 @@ def weisfeiler_lehman_graph_hash(
     edge_attr : string, optional (default=None)
         The key in edge attribute dictionary to be used for hashing.
         If None, edge labels are ignored.
-    node_attr: string, optional (default=None)
+    node_attr : string, optional (default=None)
         The key in node attribute dictionary to be used for hashing.
         If None, and no edge_attr given, use the degrees of the nodes as labels.
-    iterations: int, optional (default=3)
+    iterations : int, optional (default=3)
         Number of neighbor aggregations to perform.
         Should be larger for larger graphs.
-    digest_size: int, optional (default=16)
+    digest_size : int, optional (default=16)
         Size (in bytes) of blake2b hash digest to use for hashing node labels.
 
     Returns

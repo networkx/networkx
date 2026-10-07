@@ -89,9 +89,9 @@ def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
         Node id for which we will execute this neighbor switch.
     unsat : set of integers
         Set of unsaturated node ids that have the same degree as w.
-    h_node_residual: dictionary of integers
+    h_node_residual : dictionary of integers
         Keeps track of the remaining stubs  for a given node.
-    avoid_node_id: integer
+    avoid_node_id : integer
         Node id to avoid when selecting w_prime.
 
     Notes
@@ -364,15 +364,15 @@ def _directed_neighbor_switch(
         graph within which the edge swap will take place.
     w : integer
         node id for which we need to perform a neighbor switch.
-    unsat: set of integers
+    unsat : set of integers
         set of node ids that have the same degree as w and are unsaturated.
-    h_node_residual_out: dict of integers
+    h_node_residual_out : dict of integers
         for a given node, keeps track of the remaining stubs to be added.
-    chords: set of tuples
+    chords : set of tuples
         keeps track of available positions to add edges.
-    h_partition_in: dict of integers
+    h_partition_in : dict of integers
         for a given node, keeps track of its partition id (in degree).
-    partition: integer
+    partition : integer
         partition id to check if chords have to be updated.
 
     Notes
@@ -427,15 +427,15 @@ def _directed_neighbor_switch_rev(
         graph within which the edge swap will take place.
     w : integer
         node id for which we need to perform a neighbor switch.
-    unsat: set of integers
+    unsat : set of integers
         set of node ids that have the same degree as w and are unsaturated.
-    h_node_residual_in: dict of integers
+    h_node_residual_in : dict of integers
         for a given node, keeps track of the remaining stubs to be added.
-    chords: set of tuples
+    chords : set of tuples
         keeps track of available positions to add edges.
-    h_partition_out: dict of integers
+    h_partition_out : dict of integers
         for a given node, keeps track of its partition id (out degree).
-    partition: integer
+    partition : integer
         partition id to check if chords have to be updated.
 
     Notes

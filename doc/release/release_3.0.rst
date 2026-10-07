@@ -82,7 +82,7 @@ API Changes
   OrderedGraph and other Ordered classes are replaced by Graph because
   Python dicts (and thus networkx graphs) now maintain order.
 - [`#5899 <https://github.com/networkx/networkx/pull/5899>`_]
-  The `attrs` keyword argument will be replaced with keyword only arguments
+  The ``attrs`` keyword argument will be replaced with keyword only arguments
   `source`, `target`, `name`, `key` and `link` for `json_graph/node_link` functions.
 
 Deprecations
@@ -92,7 +92,7 @@ Deprecations
   ``nx.nx_pydot.*`` will be deprecated in the future if pydot isn't being
   actively maintained. Users are recommended to use pygraphviz instead.
 - [`#5899 <https://github.com/networkx/networkx/pull/5899>`_]
-  The `attrs` keyword argument will be replaced with keyword only arguments
+  The ``attrs`` keyword argument will be replaced with keyword only arguments
   `source`, `target`, `name`, `key` and `link` for `json_graph/node_link` functions.
 
 Merged PRs

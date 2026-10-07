@@ -294,7 +294,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
 
     See Also
     --------
-    random_partition_model
+    random_partition_graph
 
     References
     ----------
@@ -525,7 +525,7 @@ def stochastic_block_model(
         Whether to create a directed graph or not.
     selfloops : boolean optional, default=False
         Whether to include self-loops or not.
-    sparse: boolean optional, default=True
+    sparse : boolean optional, default=True
         Use the sparse heuristic to speed up the generator.
 
     Returns
