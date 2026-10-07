@@ -16,6 +16,7 @@ See Also
 nx_agraph, nx_pydot
 """
 
+from collections import defaultdict
 from collections.abc import Collection, Generator, Iterator
 
 import networkx as nx
@@ -203,10 +204,8 @@ def to_dict_of_lists(G, nodelist=None):
     if nodelist is None:
         nodelist = G
 
-    d = {}
-    for n in nodelist:
-        d[n] = [nbr for nbr in G.neighbors(n) if nbr in nodelist]
-    return d
+    nodeset = set(nodelist)
+    return {n: list(G._adj[n].keys() & nodeset) for n in nodelist}
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
@@ -237,12 +236,12 @@ def from_dict_of_lists(d, create_using=None):
         # a dict_of_lists can't show multiedges.  BUT for undirected graphs,
         # each edge shows up twice in the dict_of_lists.
         # So we need to treat this case separately.
-        seen = {}
+        seen = set()
         for node, nbrlist in d.items():
             for nbr in nbrlist:
                 if nbr not in seen:
                     G.add_edge(node, nbr)
-            seen[node] = 1  # don't allow reverse edge to show up
+            seen.add(node)  # don't allow reverse edge to show up
     else:
         G.add_edges_from(
             ((node, nbr) for node, nbrlist in d.items() for nbr in nbrlist)
@@ -351,22 +350,19 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     dod = {}
     if nodelist is None:
         if edge_data is None:
-            for u, nbrdict in G.adjacency():
-                dod[u] = nbrdict.copy()
+            dod = {u: nbrdict.copy() for u, nbrdict in G.adjacency()}
         else:  # edge_data is not None
-            for u, nbrdict in G.adjacency():
-                dod[u] = dod.fromkeys(nbrdict, edge_data)
+            dod = {u: dod.fromkeys(nbrdict, edge_data) for u, nbrdict in G.adjacency()}
     else:  # nodelist is not None
+        ns = set(nodelist)
         if edge_data is None:
             for u in nodelist:
-                dod[u] = {}
-                for v, data in ((v, data) for v, data in G[u].items() if v in nodelist):
-                    dod[u][v] = data
+                unbrs = G._adj[u].items()
+                dod[u] = {v: data for v, data in unbrs if v in ns}
         else:  # nodelist and edge_data are not None
             for u in nodelist:
-                dod[u] = {}
-                for v in (v for v in G[u] if v in nodelist):
-                    dod[u][v] = edge_data
+                intersection = G._adj[u].keys() & ns
+                dod[u] = dod.fromkeys(intersection, edge_data)
     return dod
 
 
@@ -419,37 +415,39 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
                     for key, data in datadict.items()
                 )
         else:  # Undirected
+            seen = defaultdict(set)  # don't add both directions of undirected graph
             if G.is_multigraph():
-                seen = set()  # don't add both directions of undirected graph
                 for u, nbrs in d.items():
+                    su = seen[u]
                     for v, datadict in nbrs.items():
-                        if (u, v) not in seen:
+                        if v not in su:
                             G.add_edges_from(
                                 (u, v, key, data) for key, data in datadict.items()
                             )
-                            seen.add((v, u))
+                            seen[v].add(u)
             else:
-                seen = set()  # don't add both directions of undirected graph
                 for u, nbrs in d.items():
+                    su = seen[u]
                     for v, datadict in nbrs.items():
-                        if (u, v) not in seen:
+                        if v not in su:
                             G.add_edges_from(
                                 (u, v, data) for key, data in datadict.items()
                             )
-                            seen.add((v, u))
+                            seen[v].add(u)
 
     else:  # not a multigraph to multigraph transfer
         if G.is_multigraph() and not G.is_directed():
             # d can have both representations u-v, v-u in dict.  Only add one.
             # We don't need this check for digraphs since we add both directions,
             # or for Graph() since it is done implicitly (parallel edges not allowed)
-            seen = set()
+            seen = defaultdict(set)
             for u, nbrs in d.items():
+                su = seen[u]
                 for v, data in nbrs.items():
-                    if (u, v) not in seen:
+                    if v not in su:
                         G.add_edge(u, v, key=0)
                         G[u][v][0].update(data)
-                    seen.add((v, u))
+                        seen[v].add(u)
         else:
             G.add_edges_from(
                 ((u, v, data) for u, nbrs in d.items() for v, data in nbrs.items())
