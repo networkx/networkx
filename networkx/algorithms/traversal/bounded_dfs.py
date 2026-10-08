@@ -44,7 +44,7 @@
 #   barriers of predecessors raised while ``v`` blocked their routes may now be
 #   too high. A backward BFS restores the invariant
 #
-#       barrier[u] <= barrier[w] + 1   for every edge u -> w with u and w not on the path
+#       barrier[u] <= barrier[w] + 1  for every edge u -> w with u and w not on the path
 #
 #   ("edge-consistency", EC), lowering barriers where needed; see ``cascade`` below.
 #   Nodes on the current path are skipped: their barriers are written when their
@@ -203,9 +203,7 @@ def bsdfs(G, s, t, k):
             ) from err
         if not targets:
             raise ValueError(f"{t=} must be a node or a non-empty set of nodes")
-        if (
-            len(targets) == 1 and s not in targets
-        ):  # {t}: same paths as t, t not entered
+        if len(targets) == 1 and s not in targets:  # {t}: same paths as t, faster
             (terminal,) = targets
             targets = frozenset()
         else:
@@ -216,9 +214,7 @@ def bsdfs(G, s, t, k):
 
     barrier = defaultdict(int)  # barriers, persistent over the whole run
     stack = {}  # node -> (successor iterator, shortest distance) for suspended frames
-    no_sd = (
-        k + 1
-    )  # shortest distance meaning "no target found so far"; real ones are <= k
+    no_sd = k + 1  # shortest distance "no target found so far"; real ones are <= k
 
     v = s  # v is the current node, initially s
     current_iterator = iter(G_succ[v])
