@@ -16,22 +16,12 @@ rotation = {n: n * 15 for n in G.nodes()}
 
 nx.draw(G, pos, with_labels=True, rotation=rotation)
 
-pos = {
-    "A1": (0, 3),
-    "A2": (0, 2),
-    "A3": (0, 1),
-    "A4": (0, 0),
-    "B1": (1, 2.5),
-    "B2": (1, 1.5),
-    "B3": (1, 0.5),
-}
-
-G = nx.DiGraph()
-for a in ["A1", "A2", "A3", "A4"]:
-    for b in ["B1", "B2", "B3"]:
-        G.add_edge(a, b)
-
-horizontalalignment = {n: "right" if "A" in n else "left" for n in G.nodes()}
+left_nodes = [f"A{n}" for n in range(1, 5)]
+right_nodes = [f"B{n}" for n in range(1, 4)]
+G = nx.complete_bipartite_graph(left_nodes, right_nodes)
+pos = nx.multipartite_layout(G, subset_key={0: left_nodes, 1: right_nodes})
+ha = {n: "right" if n.startswith("A") else "left" for n in G}
+nx.draw(G, pos, with_labels=True, horizontalalignment=ha, node_size=0)
 
 
 nx.draw(
