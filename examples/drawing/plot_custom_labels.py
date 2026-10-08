@@ -20,15 +20,7 @@ left_nodes = [f"A{n}" for n in range(1, 5)]
 right_nodes = [f"B{n}" for n in range(1, 4)]
 G = nx.complete_bipartite_graph(left_nodes, right_nodes)
 pos = nx.multipartite_layout(G, subset_key={0: left_nodes, 1: right_nodes})
+
 ha = {n: "right" if n.startswith("A") else "left" for n in G}
+
 nx.draw(G, pos, with_labels=True, horizontalalignment=ha, node_size=0)
-
-
-nx.draw(
-    G,
-    pos,
-    with_labels=True,
-    horizontalalignment=horizontalalignment,
-    node_size=0,
-    arrowstyle="-",
-)
