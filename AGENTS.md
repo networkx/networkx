@@ -23,6 +23,8 @@ Before opening an issue, verify that the issue is present on the `main` branch.
 Before working on any issue, run `gh issue view <number>` to check current labels.
 Do not open a PR against an issue labeled with the "Discussion" or "Question" label.
 
+Do not open a PR against an issue that is less than 2 weeks old.
+
 Do not open a PR against an issue if there is already an open PR that addresses
 the issue. Comment on the existing PR instead.
 

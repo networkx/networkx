@@ -29,13 +29,13 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
 
     .. math::
 
-       c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|v)}{\sigma(s, t)}
+       c_B(v) =\sum_{s,t \in V-C} \frac{\sigma(s, t|v)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
     shortest $(s, t)$-paths, and $\sigma(s, t|C)$ is the number of
     those paths passing through some node in group $C$. Note that
     $(s, t)$ are not members of the group ($V-C$ is the set of nodes
-    in $V$ that are not in $C$).
+    in $V$ that are not in $C$ -- see `endpoints` for other options).
 
     Parameters
     ----------
@@ -47,35 +47,35 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
       for which group betweenness centrality is to be calculated.
 
     normalized : bool, optional (default=True)
-      If True, group betweenness is normalized by $1/(N_{out}(N_{out}-1))$
-      where $N_{out}$ is the number of nodes in `G` that are not in `C`.
-      This ensures the reported value is between 0 and 1.
-      If `endpoints` is True, the normalization uses all nodes in `G`.
-      The reported value is then between $2N_{in}/(N-1)$ and 1 where $N_{in}$
-      is the number of nodes in `C` and $N$ the number of nodes in `G`.
+       If True, group betweenness is normalized by $1/(N_{out}(N_{out}-1))$
+       where $N_{out}$ is the number of nodes in `G` that are not in `C`.
+       This ensures the reported value is between 0 and 1.
+       If `endpoints` is True, the normalization uses all nodes in `G`.
+       The reported value is then between $2N_{in}/(N-1)$ and 1 where $N_{in}$
+       is the number of nodes in `C` and $N$ the number of nodes in `G`.
 
     weight : None or string, optional (default=None)
-      If None, all edge weights are considered equal.
-      Otherwise holds the name of the edge attribute used as weight.
-      The weight of an edge is treated as the length or distance between the two sides.
+       If None, all edge weights are considered equal.
+       Otherwise holds the name of the edge attribute used as weight.
+       The weight of an edge is treated as the length or distance between the two sides.
 
     endpoints : bool, optional (default=False)
-      By default, only node-pairs that are both not in `C` are counted for
-      group betweenness centrality. The count is how many non-`C` node-pairs have
-      nodes from `C` "between" them on a shortest path.
+       By default, only node-pairs that are both not in `C` are counted for
+       group betweenness centrality. The count is how many non-`C` node-pairs have
+       nodes from `C` "between" them on a shortest path.
 
-      When ``endpoints=True``, we also count node-pairs with one or both nodes
-      in `C` while considering endpoint nodes as being between the node-pairs.
-      So we count paths that start in `C` whether or not they pass through
-      any other nodes in `C`. This adds centrality to large groups without any
-      reference to the connectivity of the group. The minimum normalized score
-      is $N_{in}(N_{in}-1)/(N(N-1))$ instead of 0. For that reason, this feature
-      is rarely used.
+       When ``endpoints=True``, we also count node-pairs with one or both nodes
+       in `C` while considering endpoint nodes as being between the node-pairs.
+       So we count paths that start in `C` whether or not they pass through
+       any other nodes in `C`. This adds centrality to large groups without any
+       reference to the connectivity of the group. The minimum normalized score
+       is $N_{in}(N_{in}-1)/(N(N-1))$ instead of 0. For that reason, this feature
+       is rarely used.
 
-      We don't currently support considering node-pairs with nodes in `C` without
-      also counting their endpoints. Nor do we support counting endpoints while
-      only considering node-pairs that are both not in `C`. This keyword indicates
-      both coutning endpoints of paths and allowing node-pairs in C.
+       We don't currently support considering node-pairs with nodes in `C` without
+       also counting their endpoints. Nor do we support counting endpoints while
+       only considering node-pairs that are both not in `C`. This keyword indicates
+       both counting endpoints of paths and allowing node-pairs in C.
 
     Raises
     ------
@@ -151,7 +151,6 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
 
     # Run the algorithm for each group
     for group in C:
-        group = set(group)  # set of nodes in group
         # initialize the matrices sigma_m and PB_m (path betweenness)
         GBC_group = 0
         sigma_m = deepcopy(sigma)
@@ -176,7 +175,9 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
                 v_in_Dx = v in Dx
 
                 # ensure y is in Dx otherwise all 3 Orders will not occur
-                for y in group & Dx.keys():
+                for y in group:
+                    if y not in Dx:
+                        continue
                     # store lookups
                     Dy = D[y]
                     sig_xy = sig_x[y]
@@ -291,13 +292,13 @@ def prominent_group(
 
     .. math::
 
-       c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|v)}{\sigma(s, t)}
+       c_B(v) =\sum_{s,t \in V-C} \frac{\sigma(s, t|v)}{\sigma(s, t)}
 
     where $V$ is the set of nodes, $\sigma(s, t)$ is the number of
     shortest $(s, t)$-paths, and $\sigma(s, t|C)$ is the number of
     those paths passing through some node in group $C$. Note that
     $(s, t)$ are not members of the group ($V-C$ is the set of nodes
-    in $V$ that are not in $C$).
+    in $V$ that are not in $C$ -- see `endpoints` for other options).
 
     Parameters
     ----------
@@ -451,8 +452,7 @@ def prominent_group(
     # If undirected then count only the undirected edges
     elif not G.is_directed():
         max_GBC /= 2
-    max_GBC = float(f"{max_GBC:.2f}")
-    return max_GBC, max_group
+    return max_GBC.item(), max_group
 
 
 def _dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
