@@ -206,7 +206,8 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
     NotAPartition
         If `communities` is not a partition of the nodes of `G`.
     ValueError
-        If any edge weight is negative or not finite, or if a directed graph's
+        If any edge weight is negative or not finite, if the weights are too
+        large to sum as floats, or if a directed graph's
         `teleportation_probability` is outside the interval [0, 1].
     PowerIterationFailedConvergence
         If PageRank fails to converge when computing directed flow.
@@ -273,9 +274,15 @@ def _flow(G, weight="weight", teleportation_probability=0.15):
     """
     # Flow is a probability distribution, so weights must be finite and
     # non-negative; reject ill-defined inputs instead of returning a
-    # clean-looking but meaningless codelength.
-    if any(not isfinite(wt) or wt < 0 for _, _, wt in G.edges(data=weight, default=1)):
-        raise ValueError("edge weights must be finite and non-negative")
+    # clean-looking but meaningless codelength. The same goes for finite
+    # weights whose total overflows: normalizing by it would zero every flow.
+    total = 0.0
+    for _, _, wt in G.edges(data=weight, default=1):
+        if not isfinite(wt) or wt < 0:
+            raise ValueError("edge weights must be finite and non-negative")
+        total += wt
+    if not isfinite(2 * total):  # undirected flow normalizes by 2m
+        raise ValueError("edge weights are too large to sum as floats")
     _check_teleportation_probability(G, teleportation_probability)
     if G.is_directed():
         return _directed_flow(G, weight, teleportation_probability)

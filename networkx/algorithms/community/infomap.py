@@ -873,9 +873,10 @@ def infomap_communities(
     Raises
     ------
     ValueError
-        If `num_trials` is not a positive integer, or if any edge weight is
-        negative or not finite, or if a directed graph's
-        `teleportation_probability` is outside the interval [0, 1].
+        If `num_trials` is not a positive integer, if any edge weight is
+        negative or not finite, if the weights are too large to sum as
+        floats, or if a directed graph's `teleportation_probability` is
+        outside the interval [0, 1].
     PowerIterationFailedConvergence
         If PageRank fails to converge when computing directed flow.
 
@@ -1006,9 +1007,10 @@ def infomap_partitions(
     Raises
     ------
     ValueError
-        If `num_trials` is not a positive integer, or if any edge weight is
-        negative or not finite, or if a directed graph's
-        `teleportation_probability` is outside the interval [0, 1].
+        If `num_trials` is not a positive integer, if any edge weight is
+        negative or not finite, if the weights are too large to sum as
+        floats, or if a directed graph's `teleportation_probability` is
+        outside the interval [0, 1].
     PowerIterationFailedConvergence
         If PageRank fails to converge when computing directed flow.
 
