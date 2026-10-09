@@ -186,10 +186,11 @@ def map_equation(G, communities, *, weight="weight", teleportation_probability=0
     communities : list or iterable of set of nodes
         A partition of the nodes of `G`.
     weight : string or None, optional (default="weight")
-        Edge attribute holding the numerical weight. Higher weights represent
-        stronger flow and make an edge more likely to be traversed; they should
-        not represent distances or costs. Weights must be finite and
-        non-negative. If None, every edge has weight 1.
+        The name of an edge attribute holding the numerical weight. Higher
+        weights represent stronger flow and make an edge more likely to be
+        traversed; they should not represent distances or costs. Weights must be
+        finite and non-negative. If None, or if an edge does not have the
+        attribute, that edge has weight 1.
     teleportation_probability : float, optional (default=0.15)
         Teleportation probability for the directed-flow random walk. Ignored
         for undirected graphs. Values must lie in the interval [0, 1].

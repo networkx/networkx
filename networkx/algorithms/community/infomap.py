@@ -850,7 +850,8 @@ def infomap_communities(
         The name of an edge attribute holding the numerical weight. Higher
         weights represent stronger flow and make an edge more likely to be
         traversed; they should not represent distances or costs. Weights must be
-        finite and non-negative. If None, every edge has weight 1.
+        finite and non-negative. If None, or if an edge does not have the
+        attribute, that edge has weight 1.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -985,7 +986,8 @@ def infomap_partitions(
         The name of an edge attribute holding the numerical weight. Higher
         weights represent stronger flow and make an edge more likely to be
         traversed; they should not represent distances or costs. Weights must be
-        finite and non-negative. If None, every edge has weight 1.
+        finite and non-negative. If None, or if an edge does not have the
+        attribute, that edge has weight 1.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
