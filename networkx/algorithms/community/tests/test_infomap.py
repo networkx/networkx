@@ -217,15 +217,35 @@ def test_infomap_rejects_invalid_teleportation_probability_eagerly(bad):
         nx.community.infomap_partitions(G, teleportation_probability=bad)
 
 
-def test_infomap_rejects_invalid_weights():
-    """Flow is a probability distribution, so negative or non-finite weights are
-    rejected rather than silently producing a meaningless codelength."""
-    for bad in (-1.0, float("nan"), float("inf")):
-        G = nx.Graph()
-        G.add_edge(0, 1, weight=bad)
-        G.add_edge(1, 2, weight=2.0)
-        with pytest.raises(ValueError, match="non-negative"):
-            nx.community.infomap_communities(G)
+@pytest.mark.parametrize(
+    "entry_point",
+    [
+        lambda G: nx.community.map_equation(G, [set(G)]),
+        nx.community.infomap_communities,
+        nx.community.infomap_partitions,
+    ],
+    ids=["map_equation", "infomap_communities", "infomap_partitions"],
+)
+@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph])
+@pytest.mark.parametrize(
+    "weights, match",
+    [
+        ([-1.0, 2.0], "non-negative"),
+        ([float("nan"), 2.0], "non-negative"),
+        ([float("inf"), 2.0], "non-negative"),
+        ([1e308, 1e308], "too large"),  # each finite, the total is not
+    ],
+)
+def test_infomap_rejects_invalid_weights(entry_point, graph_type, weights, match):
+    """Flow is a probability distribution, so negative or non-finite weights,
+    or a total that overflows, are rejected rather than silently producing a
+    meaningless codelength. All three entry points share the check, and
+    infomap_partitions runs it on the call, not once the result is iterated."""
+    G = graph_type()
+    G.add_edge(0, 1, weight=weights[0])
+    G.add_edge(1, 2, weight=weights[1])
+    with pytest.raises(ValueError, match=match):
+        entry_point(G)
 
 
 def test_infomap_seed_int_and_random_state_agree():
