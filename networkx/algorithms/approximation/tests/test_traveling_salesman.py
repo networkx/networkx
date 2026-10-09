@@ -1,5 +1,6 @@
 """Unit tests for the traveling_salesman module."""
 
+import math
 import random
 
 import pytest
@@ -292,6 +293,142 @@ class TestThresholdAcceptingTSP(TestSimulatedAnnealingTSP):
         )
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
         assert cost > self.DG_cost
+
+
+def _circle_graph(n):
+    """Complete graph on `n` points of a circle, in order; the circle is the optimum."""
+    pos = [
+        (math.cos(2 * math.pi * k / n), math.sin(2 * math.pi * k / n)) for k in range(n)
+    ]
+    G = nx.complete_graph(n)
+    for u, v in G.edges:
+        G[u][v]["weight"] = math.dist(pos[u], pos[v])
+    return G
+
+
+def _is_circle_order(cycle, n):
+    edges = {frozenset(e) for e in pairwise(cycle)}
+    return len(cycle) == n + 1 and edges == {
+        frozenset((k, (k + 1) % n)) for k in range(n)
+    }
+
+
+class TestLocalSearchTSP(TestBase):
+    tsp = staticmethod(nx_app.local_search_tsp)
+
+    def cost(self, G, cycle):
+        return sum(G[u][v].get("weight", 1) for u, v in pairwise(cycle))
+
+    def test_local_search(self):
+        cycle = self.tsp(self.UG, ["D", "B", "A", "C", "D"], seed=42)
+        assert cycle[0] == cycle[-1] == "D"
+        validate_symmetric_solution(
+            cycle, self.cost(self.UG, cycle), self.UG_cycle, self.UG_cost
+        )
+
+        cycle = self.tsp(self.UG2, "greedy", source="D", seed=42)
+        validate_symmetric_solution(
+            cycle, self.cost(self.UG2, cycle), self.UG2_cycle, self.UG2_cost
+        )
+
+    def test_circle_is_found(self):
+        n = 12
+        G = _circle_graph(n)
+        init = [0, 5, 2, 9, 1, 7, 11, 3, 8, 4, 10, 6, 0]
+        cycle = self.tsp(G, init, seed=42)
+        assert cycle[0] == 0
+        assert _is_circle_order(cycle, n)
+
+    def test_never_longer_than_init(self):
+        rng = random.Random(42)
+        G = nx.complete_graph(30)
+        for u, v in G.edges:
+            G[u][v]["weight"] = rng.randint(1, 100)
+        init = list(G) + [0]
+        cycle = self.tsp(G, init, seed=42)
+        assert cycle[0] == cycle[-1] == 0
+        assert sorted(cycle[:-1]) == list(G)
+        assert self.cost(G, cycle) <= self.cost(G, init)
+
+    def test_seed_reproducible(self):
+        rng = random.Random(7)
+        G = nx.complete_graph(25)
+        for u, v in G.edges:
+            G[u][v]["weight"] = rng.random()
+        assert self.tsp(G, "greedy", seed=3) == self.tsp(G, "greedy", seed=3)
+
+    def test_max_passes_zero_keeps_init_or_shorter(self):
+        G = _circle_graph(10)
+        init = [0, 5, 2, 9, 1, 7, 3, 8, 4, 6, 0]
+        cycle = self.tsp(G, init, max_passes=0, seed=42)
+        # no improvement pass is made, only the random reversal is tried
+        assert self.cost(G, cycle) <= self.cost(G, init)
+
+    def test_directed_not_implemented(self):
+        pytest.raises(nx.NetworkXNotImplemented, self.tsp, self.DG, "greedy")
+
+    def test_not_complete_graph(self):
+        pytest.raises(nx.NetworkXError, self.tsp, self.incompleteUG, [0, 1, 2, 0])
+        pytest.raises(nx.NetworkXError, self.tsp, self.incompleteUG, "greedy")
+
+    def test_bad_init_cycle(self):
+        # not a cycle
+        pytest.raises(nx.NetworkXError, self.tsp, self.UG, ["D", "C", "B", "A"])
+        # misses a node
+        pytest.raises(nx.NetworkXError, self.tsp, self.UG, ["D", "C", "B", "D"])
+        # source is not the first node
+        pytest.raises(
+            nx.NetworkXError,
+            self.tsp,
+            self.UG,
+            ["D", "C", "B", "A", "D"],
+            source="A",
+        )
+
+    def test_not_weighted_graph(self):
+        cycle = self.tsp(self.unweightedUG, "greedy", seed=42)
+        assert sorted(cycle[:-1]) == list(self.unweightedUG)
+        assert self.cost(self.unweightedUG, cycle) == 5
+
+    def test_two_and_three_nodes(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from({(1, 2, 1)})
+        assert self.tsp(G, "greedy") == [1, 2, 1]
+        assert self.tsp(G, [2, 1, 2]) == [2, 1, 2]
+        G = nx.complete_graph(3)
+        assert self.tsp(G, [1, 0, 2, 1]) == [1, 0, 2, 1]
+
+    def test_ignore_selfloops(self):
+        G = _circle_graph(8)
+        G.add_edge(3, 3, weight=-100)
+        cycle = self.tsp(G, [0, 4, 1, 5, 2, 6, 3, 7, 0], seed=42)
+        assert _is_circle_order(cycle, 8)
+
+    def test_traveling_salesman_problem_method(self):
+        G = _circle_graph(10)
+        path = nx_app.traveling_salesman_problem(
+            G, method=nx_app.local_search_tsp, init_cycle="greedy", seed=42
+        )
+        assert _is_circle_order(path, 10)
+
+
+def test_or_opt_move_on_optimal_cycle_does_nothing():
+    # Inserting a chain next to its own neighbours leaves the cycle as it is
+    # and must not be reported as a move.
+    from networkx.algorithms.approximation.traveling_salesman import (
+        _tsp_or_opt_move,
+    )
+
+    n = 9
+    G = _circle_graph(n)
+    dist = [[G[u][v]["weight"] if u != v else 0 for v in range(n)] for u in range(n)]
+    tour = list(range(n))
+    assert not _tsp_or_opt_move(tour, dist)
+    assert tour == list(range(n))
+
+    tour = [0, 2, 1, 3, 4, 5, 6, 7, 8]
+    assert _tsp_or_opt_move(tour, dist)
+    assert _is_circle_order(tour + tour[:1], n)
 
 
 # Tests for function traveling_salesman_problem

@@ -12,6 +12,7 @@ Categories of algorithms which are implemented:
 - Greedy
 - Simulated Annealing (SA)
 - Threshold Accepting (TA)
+- Local search with 2-opt and Or-opt moves
 - Asadpour Asymmetric Traveling Salesman Algorithm
 
 The Travelling Salesman Problem tries to find, given the weight
@@ -47,6 +48,7 @@ __all__ = [
     "greedy_tsp",
     "simulated_annealing_tsp",
     "threshold_accepting_tsp",
+    "local_search_tsp",
 ]
 
 
@@ -220,6 +222,7 @@ def traveling_salesman_problem(
      - greedy_tsp
      - simulated_annealing_tsp
      - threshold_accepting_tsp
+     - local_search_tsp
      - asadpour_atsp
 
     Once the Hamiltonian Cycle is found, this function post-processes to
@@ -257,7 +260,8 @@ def traveling_salesman_problem(
         `G`, and `weight`; and return a list of nodes along the cycle.
 
         Provided options include :func:`christofides`, :func:`greedy_tsp`,
-        :func:`simulated_annealing_tsp` and :func:`threshold_accepting_tsp`.
+        :func:`simulated_annealing_tsp`, :func:`threshold_accepting_tsp`
+        and :func:`local_search_tsp`.
 
         If `method is None`: use :func:`christofides` for undirected `G` and
         :func:`asadpour_atsp` for directed `G`.
@@ -1506,3 +1510,248 @@ def threshold_accepting_tsp(
             threshold -= threshold * alpha
 
     return best_cycle
+
+
+@not_implemented_for("directed")
+@py_random_state(5)
+@nx._dispatchable(edge_attrs="weight")
+def local_search_tsp(
+    G, init_cycle, weight="weight", source=None, max_passes=191, seed=None
+):
+    """Returns an approximate solution to the traveling salesman problem.
+
+    This function improves an initial cycle with local search. Each pass
+    applies 2-opt moves, which reverse a stretch of the cycle, and then one
+    Or-opt move, which moves a chain of one to three consecutive nodes to
+    another place in the cycle, in either orientation. Passes are repeated
+    until no move shortens the cycle or `max_passes` passes have been made.
+    The resulting cycle is then perturbed once by reversing a random stretch
+    of it and improved again; the shorter of the two cycles is returned.
+
+    Parameters
+    ----------
+    G : Graph
+        `G` should be a complete weighted undirected graph.
+        The distance between all pairs of nodes should be included.
+
+    init_cycle : list of all nodes or "greedy"
+        The initial solution (a cycle through all nodes returning to the start).
+        This argument has no default to make you think about it.
+        If "greedy", use `greedy_tsp(G, weight)`.
+        Other common starting cycles are the result of `christofides` or of
+        `simulated_annealing_tsp`.
+
+    weight : string, optional (default="weight")
+        Edge data key corresponding to the edge weight.
+        If any edge does not have this attribute the weight is set to 1.
+
+    source : node, optional (default: first node in list(G))
+        Starting node.  If None, defaults to ``next(iter(G))``
+
+    max_passes : int, optional (default=191)
+        The maximum number of passes of 2-opt and Or-opt moves in each of
+        the two improvement phases. Each pass takes $O(|V|^2)$ time.
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    cycle : list of nodes
+        Returns the cycle (list of nodes) that a salesman
+        can follow to minimize total weight of the trip.
+
+    Raises
+    ------
+    NetworkXError
+        If `G` is not complete the algorithm raises an exception.
+
+    NetworkXNotImplemented
+        If `G` is directed.
+
+    Examples
+    --------
+    >>> from networkx.algorithms import approximation as approx
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from(
+    ...     {
+    ...         ("A", "B", 3),
+    ...         ("A", "C", 17),
+    ...         ("A", "D", 14),
+    ...         ("B", "C", 12),
+    ...         ("B", "D", 16),
+    ...         ("C", "D", 4),
+    ...     }
+    ... )
+    >>> incycle = ["D", "B", "A", "C", "D"]
+    >>> cycle = approx.local_search_tsp(G, incycle, seed=1)
+    >>> sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(incycle))
+    40
+    >>> sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
+    33
+
+    The function can also be used through `traveling_salesman_problem`,
+    here starting from the greedy cycle:
+
+    >>> tsp = nx.approximation.traveling_salesman_problem
+    >>> cycle = tsp(G, method=approx.local_search_tsp, init_cycle="greedy")
+    >>> sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
+    33
+
+    Notes
+    -----
+    2-opt [1]_ removes two edges of the cycle and reconnects the two paths
+    the other way, which reverses one of them. Or-opt [2]_ removes a chain of
+    up to three consecutive nodes and inserts it between two other adjacent
+    nodes, in its original or reversed orientation. The 2-opt moves are
+    applied as soon as they shorten the cycle. Among the shortening Or-opt
+    insertions of a chain, the one with the largest ratio of the shortening
+    to the length of the edge the chain is inserted into is chosen.
+
+    Every move that is applied shortens the cycle, so the returned cycle is
+    never longer than `init_cycle`.
+
+    Time complexity: $O(P |V|^2)$, where $P \\le 2 \\cdot max\\_passes$ is
+    the number of passes made.
+
+    References
+    ----------
+    .. [1] G. A. Croes, "A method for solving traveling-salesman problems",
+       Operations Research 6(6):791-812, 1958.
+    .. [2] I. Or, "Traveling salesman-type combinatorial problems and their
+       relation to the logistics of regional blood banking", PhD thesis,
+       Northwestern University, 1976.
+    """
+    if init_cycle == "greedy":
+        # Construct an initial solution using a greedy algorithm.
+        cycle = greedy_tsp(G, weight=weight, source=source)
+    else:
+        cycle = list(init_cycle)
+        if source is None:
+            source = cycle[0]
+        elif source != cycle[0]:
+            raise nx.NetworkXError("source must be first node in init_cycle")
+        if cycle[0] != cycle[-1]:
+            raise nx.NetworkXError("init_cycle must be a cycle. (return to start)")
+
+        if len(cycle) - 1 != len(G) or len(set(G.nbunch_iter(cycle))) != len(G):
+            raise nx.NetworkXError("init_cycle should be a cycle over all nodes in G.")
+
+        # Check that G is a complete graph
+        N = len(G) - 1
+        # This check ignores selfloops which is what we want here.
+        if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
+            raise nx.NetworkXError("G must be a complete graph.")
+
+    # Every cycle through three or fewer nodes of an undirected graph is optimal.
+    if len(G) < 4:
+        return cycle
+
+    # Work on positions 0..n-1 and a distance matrix, then map back to nodes.
+    nodes = cycle[:-1]
+    n = len(nodes)
+    index = {node: i for i, node in enumerate(nodes)}
+    dist = [[0] * n for _ in range(n)]
+    for u, nbrdict in G.adj.items():
+        row = dist[index[u]]
+        for v, data in nbrdict.items():
+            if u != v:
+                row[index[v]] = data.get(weight, 1)
+
+    best = list(range(n))
+    _tsp_local_search(best, dist, max_passes)
+    best_cost = _tsp_cycle_cost(best, dist)
+
+    # Perturb once by reversing a random stretch, improve again, keep the shorter.
+    i, j = sorted(seed.sample(range(n), k=2))
+    trial = best.copy()
+    trial[i : j + 1] = trial[i : j + 1][::-1]
+    _tsp_local_search(trial, dist, max_passes)
+    if _tsp_cycle_cost(trial, dist) < best_cost:
+        best = trial
+
+    start = best.index(0)
+    best = best[start:] + best[:start]
+    return [nodes[k] for k in best] + [nodes[0]]
+
+
+def _tsp_cycle_cost(tour, dist):
+    """Length of the cycle visiting the positions in `tour` in order."""
+    return sum(dist[u][v] for u, v in pairwise(tour, cyclic=True))
+
+
+def _tsp_local_search(tour, dist, max_passes):
+    """Improve `tour` in place with passes of 2-opt and Or-opt moves."""
+    for _ in range(max_passes):
+        changed = _tsp_two_opt_pass(tour, dist)
+        if not (_tsp_or_opt_move(tour, dist) or changed):
+            break
+
+
+def _tsp_two_opt_pass(tour, dist):
+    """Apply 2-opt moves in one sweep over `tour`; return True if any was applied.
+
+    For each edge ``(a, b)`` at positions ``i, i+1``, every later edge
+    ``(c, d)`` at positions ``j, j+1`` is tried, and the move replacing them
+    by ``(a, c)`` and ``(b, d)`` is applied as soon as it shortens the cycle.
+    """
+    n = len(tour)
+    improved = False
+    for i in range(n - 1):
+        a = tour[i]
+        b = tour[i + 1]
+        # (a, b) and the edge closing the cycle are adjacent when i == 0
+        for j in range(i + 2, n if i else n - 1):
+            c = tour[j]
+            d = tour[(j + 1) % n]
+            if dist[a][c] + dist[b][d] < dist[a][b] + dist[c][d]:
+                tour[i + 1 : j + 1] = tour[i + 1 : j + 1][::-1]
+                b = tour[i + 1]
+                improved = True
+    return improved
+
+
+def _tsp_or_opt_move(tour, dist, max_length=3):
+    """Apply one Or-opt move to `tour`; return True if one was applied.
+
+    Chains of 1, then 2, then 3 consecutive positions are tried in order.
+    For the first chain that has a shortening insertion, the insertion with
+    the largest ratio of shortening to the length of the edge it is inserted
+    into is applied.
+    """
+    n = len(tour)
+    for length in range(1, max_length + 1):
+        for i in range(n - length + 1):
+            first = tour[i]
+            last = tour[i + length - 1]
+            prev = tour[i - 1]
+            succ = tour[(i + length) % n]
+            removed = dist[prev][first] + dist[last][succ] - dist[prev][succ]
+            best = None
+            for j in range(n):
+                # Skip the edges that touch the chain: inserting the chain
+                # there would leave the cycle as it is.
+                if i - 1 <= j <= i + length - 1 or j == (i - 1) % n:
+                    continue
+                u = tour[j]
+                v = tour[(j + 1) % n]
+                uv = dist[u][v]
+                forward = dist[u][first] + dist[last][v] - uv
+                backward = dist[u][last] + dist[first][v] - uv
+                gain = removed - min(forward, backward)
+                if gain <= 0:
+                    continue
+                score = gain / uv if uv else math.inf
+                if best is None or score > best[0]:
+                    best = (score, j, backward < forward)
+            if best is not None:
+                _, j, reverse = best
+                chain = tour[i : i + length]
+                if reverse:
+                    chain.reverse()
+                del tour[i : i + length]
+                at = j - length + 1 if j > i else j + 1
+                tour[at:at] = chain
+                return True
+    return False

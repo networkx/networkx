@@ -111,6 +111,7 @@ Traveling Salesman
    greedy_tsp
    simulated_annealing_tsp
    threshold_accepting_tsp
+   local_search_tsp
    asadpour_atsp
 
 
