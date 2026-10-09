@@ -92,6 +92,19 @@ __all__ = ["bsdfs", "bsdfs_edges"]
 def bsdfs(G, s, t, k):
     """Yield all length-bounded simple paths or cycles from ``s`` to ``t``.
 
+    Bounded-Scope Depth-First Search (BS-DFS) yields every simple path from
+    ``s`` to ``t`` with at most ``k`` edges, or every simple cycle through
+    ``s`` if ``t == s``. Unlike
+    :func:`~networkx.algorithms.traversal.depth_first_search.dfs_edges`,
+    which visits each node once and yields the edges of a single search
+    tree, it yields every such path.
+
+    Together with the length bound, per-node barriers limit the *scope*
+    of the search, hence the name. As a result, the delay, the time until
+    the next output or until the search ends, is ``O(k(n+m))`` (see Notes),
+    whereas a plain depth-limited search can spend time exponential in
+    ``k`` on dead ends.
+
     Parameters
     ----------
     G : NetworkX DiGraph
@@ -284,7 +297,7 @@ def bsdfs_edges(G, s, t, k):
     s : node
         Source node, where every reported path starts.
     t : node or set of nodes
-        A single node enumerates the simple paths from ``s`` to ``t``; as a
+        A single node enumerates the simple paths from ``s`` to ``t``. As a
         special case, ``t == s`` enumerates the simple cycles through ``s``.
         A set enumerates the simple paths from ``s`` to any node of the set,
         and such a path may pass through one node of the set on its way to
@@ -310,6 +323,8 @@ def bsdfs_edges(G, s, t, k):
 
     Examples
     --------
+    Create G from cycles ``[0, 1, 3, 0]``, ``[0, 2, 3, 0]`` and ``[0, 1, 2, 3, 0]``.
+
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 0)])
     >>> list(bsdfs_edges(G, 0, 3, 3))
     [[(0, 1), (1, 2), (2, 3)], [(0, 1), (1, 3)], [(0, 2), (2, 3)]]
