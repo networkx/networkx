@@ -90,7 +90,21 @@ __all__ = ["bsdfs", "bsdfs_edges"]
 
 @nx._dispatchable
 def bsdfs(G, s, t, k):
-    """Yield all length-bounded simple paths or cycles from ``s`` to ``t``.
+"""Yield all length-bounded simple paths or cycles from ``s`` to ``t``.
+
+Bounded-Scope Depth-First Search (BS-DFS) yields every simple path from
+``s`` to ``t`` with at most ``k`` edges, or every simple cycle through
+``s`` if ``t == s``. Unlike
+:func:`~networkx.algorithms.traversal.depth_first_search.dfs_edges`,
+which visits each node once and yields the edges of a single search
+tree, it yields every such path.
+
+Together with the length bound, per-node barriers limit the *scope*
+of the search, hence the name. As a result, the delay, the time until
+the next output or until the search ends, is ``O(k(n+m))`` (see Notes),
+whereas a plain depth-limited search can spend time exponential in
+``k`` on dead ends.
+"""
 
     Parameters
     ----------
