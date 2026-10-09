@@ -385,9 +385,9 @@ def view_pygraphviz(
 
     # to_agraph() uses these values.
     attrs = ["edge", "node", "graph"]
-    for attr in attrs:
-        if attr not in G.graph:
-            G.graph[attr] = {}
+    added_attrs = [attr for attr in attrs if attr not in G.graph]
+    for attr in added_attrs:
+        G.graph[attr] = {}
 
     # These are the default values.
     edge_attrs = {"fontsize": "10"}
@@ -407,26 +407,27 @@ def view_pygraphviz(
             if k not in G.graph[which]:
                 G.graph[which][k] = v
                 added.append(k)
+        return added
 
     def clean_attrs(which, added):
         # Remove added attributes
         for attr in added:
             del G.graph[which][attr]
-        if not G.graph[which]:
+        if which in added_attrs:
             del G.graph[which]
 
     # Update all default values
-    update_attrs("edge", edge_attrs)
-    update_attrs("node", node_attrs)
-    update_attrs("graph", graph_attrs)
+    added_edge_attrs = update_attrs("edge", edge_attrs)
+    added_node_attrs = update_attrs("node", node_attrs)
+    added_graph_attrs = update_attrs("graph", graph_attrs)
 
     # Convert to agraph, so we inherit default values
     A = to_agraph(G)
 
     # Remove the default values we added to the original graph.
-    clean_attrs("edge", edge_attrs)
-    clean_attrs("node", node_attrs)
-    clean_attrs("graph", graph_attrs)
+    clean_attrs("edge", added_edge_attrs)
+    clean_attrs("node", added_node_attrs)
+    clean_attrs("graph", added_graph_attrs)
 
     # If the user passed in an edgelabel, we update the labels for all edges.
     if edgelabel is not None:
