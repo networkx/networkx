@@ -216,9 +216,8 @@ def bsdfs(G, s, t, k):
 
     barrier = defaultdict(int)  # barriers, persistent over the whole run
     stack = {}  # node -> (successor iterator, shortest distance) for suspended frames
-    no_sd = (
-        k + 1
-    )  # shortest distance meaning "no target found so far"; real ones are <= k
+    # shortest distance meaning "no target found so far"; real ones are <= k
+    no_sd = k + 1
 
     v = s  # v is the current node, initially s
     current_iterator = iter(G_succ[v])
