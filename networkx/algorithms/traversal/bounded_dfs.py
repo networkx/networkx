@@ -287,7 +287,7 @@ def bsdfs_edges(G, s, t, k):
     s : node
         Source node, where every reported path starts.
     t : node or set of nodes
-        A single node enumerates the simple paths from ``s`` to ``t``; as a
+        A single node enumerates the simple paths from ``s`` to ``t``. As a
         special case, ``t == s`` enumerates the simple cycles through ``s``.
         A set enumerates the simple paths from ``s`` to any node of the set,
         and such a path may pass through one node of the set on its way to
