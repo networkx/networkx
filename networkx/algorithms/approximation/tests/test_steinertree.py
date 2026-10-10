@@ -304,3 +304,39 @@ def test_steiner_tree_non_terminal_leaves_multigraph_self_loop_edges():
 
     # Only the terminal nodes should be left
     assert list(G) == [4, 5, 6, 7]
+
+
+def test_steiner_tree_single_terminal(method):
+    G = nx.complete_graph(10)
+    T = nx.approximation.steiner_tree(G, [1], method=method)
+    assert list(T.nodes) == [1]
+    assert T.number_of_edges() == 0
+
+
+def test_steiner_tree_single_terminal_keeps_node_attributes(method):
+    G = nx.path_graph(4)
+    G.nodes[2]["color"] = "red"
+    T = nx.approximation.steiner_tree(G, [2], method=method)
+    assert T.nodes[2] == {"color": "red"}
+
+
+def test_steiner_tree_single_terminal_multigraph(method):
+    G = nx.MultiGraph(nx.path_graph(4))
+    T = nx.approximation.steiner_tree(G, [2], method=method)
+    assert T.is_multigraph()
+    assert list(T.nodes) == [2]
+
+
+def test_steiner_tree_lone_terminal_in_component():
+    # Only "mehlhorn" accepts a disconnected graph.
+    G = nx.path_graph(5)
+    G.add_edge(8, 9)
+    T = nx.approximation.steiner_tree(G, [0, 3, 8], method="mehlhorn")
+    assert set(T) == {0, 1, 2, 3, 8}
+    assert edges_equal(T.edges, [(0, 1), (1, 2), (2, 3)])
+
+
+def test_steiner_tree_result_is_frozen_with_isolated_terminal(method):
+    T = nx.approximation.steiner_tree(nx.path_graph(3), [1], method=method)
+    with pytest.raises(nx.NetworkXError):
+        T.add_node(5)
