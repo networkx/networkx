@@ -243,6 +243,9 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     The ``mehlhorn`` method supports graphs with multiple components, so long
     as there is at least one terminal node in each component.
 
+    Every terminal node is a node of the returned graph. If there is only one
+    terminal node in a connected component, it is returned as an isolated node.
+
     References
     ----------
     .. [1] Steiner_tree_problem on Wikipedia.
@@ -270,5 +273,13 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
         edges = (
             (u, v, min(G[u][v], key=lambda k: G[u][v][k][weight])) for u, v in edges
         )
+    edges = list(edges)
     T = G.edge_subgraph(edges)
+    # Terminals with no tree edge (a single terminal, or the only terminal in
+    # a component) are not part of the edge subgraph, so add them back.
+    missing = set(terminal_nodes) - set(T)
+    if missing:
+        T = T.copy()
+        T.add_nodes_from((n, G.nodes[n]) for n in missing)
+        nx.freeze(T)
     return T
