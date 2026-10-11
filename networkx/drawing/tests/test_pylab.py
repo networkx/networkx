@@ -920,6 +920,35 @@ def test_return_types():
         assert isinstance(edges[0], FancyArrowPatch)
 
 
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph, nx.MultiDiGraph))
+@pytest.mark.parametrize("arrows", (True, False, None))
+def test_edge_legend_label(subplots, graph_type, arrows):
+    _, ax = subplots
+    G = nx.path_graph(3, create_using=graph_type)
+    G.add_edge(0, 0)
+    pos = {node: (node, node) for node in G}
+    nx.draw_networkx_edges(
+        G,
+        pos,
+        ax=ax,
+        arrows=arrows,
+        label="edges",
+        edge_color="blue",
+        style="dashed",
+        width=3,
+        alpha=0.5,
+    )
+    handles, labels = ax.get_legend_handles_labels()
+    assert labels == ["edges"]
+    assert len(handles) == 1
+    legend = ax.legend()
+    assert [text.get_text() for text in legend.get_texts()] == ["edges"]
+    if isinstance(handles[0], mpl.lines.Line2D):
+        np.testing.assert_allclose(handles[0].get_color(), (0, 0, 1, 0.5))
+        assert handles[0].get_linewidth() == 3
+        assert handles[0].is_dashed()
+
+
 def test_labels_and_colors():
     G = nx.cubical_graph()
     pos = nx.spring_layout(G, seed=42)  # positions for all nodes

@@ -2115,6 +2115,19 @@ def draw_networkx_edges(
             arrow = fancy_arrow_factory(i)
             ax.add_patch(arrow)
             edge_viz_obj.append(arrow)
+        if label is not None:
+            # Match the line legend used for edges drawn as a collection.
+            first_arrow = edge_viz_obj[0]
+            ax.add_artist(
+                mpl.lines.Line2D(
+                    [],
+                    [],
+                    color=first_arrow.get_edgecolor(),
+                    linewidth=first_arrow.get_linewidth(),
+                    linestyle=first_arrow.get_linestyle(),
+                    label=label,
+                )
+            )
 
     # update view after drawing
     padx, pady = 0.05 * w, 0.05 * h
