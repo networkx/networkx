@@ -316,6 +316,24 @@ def test_directed_bugs():
     assert Tree1_hash != Tree2_hash
 
 
+def test_directed_edge_attr_direction_preserved():
+    """
+    For directed graphs, supplying ``edge_attr`` must not drop the in/out
+    directionality prefix (the ``s_``/``p_`` markers added in the v3.5
+    bugfix). An outward star and an inward star with identical edge labels
+    must therefore hash differently.
+    Regression test for issue #8945.
+    """
+    outward = nx.DiGraph([(0, 1), (0, 2)])  # outward star
+    inward = nx.DiGraph([(1, 0), (2, 0)])  # inward star
+    for G in (outward, inward):
+        nx.set_edge_attributes(G, "e", "label")
+
+    h_out = nx.weisfeiler_lehman_graph_hash(outward, edge_attr="label")
+    h_in = nx.weisfeiler_lehman_graph_hash(inward, edge_attr="label")
+    assert h_out != h_in
+
+
 def test_trivial_labels_isomorphism():
     """
     Trivial labelling of the graph should not change isomorphism verdicts.
