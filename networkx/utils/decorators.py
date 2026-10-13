@@ -21,13 +21,19 @@ __all__ = [
 ]
 
 
-def not_implemented_for(*graph_types):
-    """Decorator to mark algorithms as not implemented
+def not_implemented_for(*graph_types, which_args=0):
+    """Decorator to mark algorithms as not implemented.
 
     Parameters
     ----------
     graph_types : container of strings
-        Entries must be one of "directed", "undirected", "multigraph", or "graph".
+        The types of graph for which the algorithm is not implemented.
+        Entries must be one of ``"directed"``, ``"undirected"``,
+        ``"multigraph"``, or ``"graph"``.
+
+    which_args : string or int or sequence of strings or ints (default=0)
+        If string(s), the name(s) of the argument(s) to be treated.
+        If int(s), the index/indices of the argument(s) to be treated.
 
     Returns
     -------
@@ -36,34 +42,63 @@ def not_implemented_for(*graph_types):
 
     Raises
     ------
+    KeyError
+        If `graph_types` contains an entry other than
+        ``"directed"``, ``"undirected"``, ``"multigraph"``, or ``"graph"``.
+
+    NetworkXError
+        If `which_args` contains an index or name that is not a valid argument.
+
     NetworkXNotImplemented
-    If any of the packages cannot be imported
+        If any of the packages cannot be imported.
+
+    ValueError
+        If both ``"undirected"`` and ``"directed"``
+        or both ``"graph"`` and ``"multigraph"`` are given in `graph_types`.
 
     Notes
     -----
-    Multiple types are joined logically with "and".
-    For "or" use multiple @not_implemented_for() lines.
+    Multiple types are joined logically with ``and``.
+    Multiple `@not_implemented_for()` lines are joined logically with ``or``.
 
     Examples
     --------
     Decorate functions like this::
 
-       @not_implemented_for("directed")
-       def sp_function(G):
-           pass
+        @not_implemented_for("directed")
+        def sp_function(G):
+            pass
 
 
-       # rule out MultiDiGraph
-       @not_implemented_for("directed", "multigraph")
-       def sp_np_function(G):
-           pass
+        # rule out MultiDiGraph (directed and multigraph)
+        @not_implemented_for("directed", "multigraph")
+        def sp_np_function(G):
+            pass
 
 
-       # rule out all except DiGraph
-       @not_implemented_for("undirected")
-       @not_implemented_for("multigraph")
-       def sp_np_function(G):
-           pass
+        # rule out all except DiGraph (undirected or multigraph)
+        @not_implemented_for("undirected")
+        @not_implemented_for("multigraph")
+        def sp_np_function(G):
+            pass
+
+
+        # apply to multiple arguments
+        @not_implemented_for("directed", which_args=("G", "H"))
+        def ta_function(G, H):
+            pass
+
+
+        # equivalent to previous example, but using indices
+        @not_implemented_for("directed", which_args=(0, 1))
+        def ta_function(G, H):
+            pass
+
+
+        # check only one argument
+        @not_implemented_for("directed", which_args="H")
+        def sa_function(G, H):
+            pass
     """
     if ("directed" in graph_types) and ("undirected" in graph_types):
         raise ValueError("Function not implemented on directed AND undirected graphs?")
@@ -88,7 +123,12 @@ def not_implemented_for(*graph_types):
 
         return g
 
-    return argmap(_not_implemented_for, 0)
+    try:
+        iter_wa = iter(which_args)
+    except TypeError:
+        iter_wa = (which_args,)
+
+    return argmap(_not_implemented_for, *iter_wa)
 
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
