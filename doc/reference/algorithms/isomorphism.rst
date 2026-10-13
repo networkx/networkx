@@ -42,3 +42,11 @@ Advanced Interfaces
    isomorphism.vf2
    isomorphism.ismags
 
+
+Canonicalization
+----------------
+.. automodule:: networkx.algorithms.isomorphism.canonicalization
+.. autosummary::
+   :toctree: generated/
+
+   canonical_labeling
