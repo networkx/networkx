@@ -100,3 +100,10 @@ def test_percolation_centrality_small_graphs():
     # Two isolated nodes
     assert nx.percolation_centrality(nx.empty_graph(2)) == {0: 0.0, 1: 0.0}
 
+
+def test_percolation_centrality_zero_denominator():
+    # When all nodes except w have state 0, denominator p_sigma_x_t - states[w] == 0
+    G = nx.path_graph(3)
+    states = {0: 0.0, 1: 1.0, 2: 0.0}
+    assert nx.percolation_centrality(G, states=states) == {0: 0.0, 1: 0.0, 2: 0.0}
+

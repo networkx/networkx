@@ -88,12 +88,10 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
     nodes = G
 
     if states is None:
-        states = nx.get_node_attributes(nodes, attribute, default=1)
+        states = nx.get_node_attributes(nodes, attribute, default=1.0)
 
     # sum of all percolation states
-    p_sigma_x_t = 0.0
-    for v in states.values():
-        p_sigma_x_t += v
+    p_sigma_x_t = sum(states.values())
 
     for s in nodes:
         # single source shortest paths
@@ -125,6 +123,7 @@ def _accumulate_percolation(percolation, S, P, sigma, s, states, p_sigma_x_t):
             delta[v] += sigma[v] * coeff
         if w != s:
             # percolation weight
-            pw_s_w = states[s] / (p_sigma_x_t - states[w])
+            denom = p_sigma_x_t - states[w]
+            pw_s_w = 0.0 if denom == 0 else states[s] / denom
             percolation[w] += delta[w] * pw_s_w
     return percolation
