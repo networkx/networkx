@@ -85,3 +85,18 @@ def test_converge_to_betweenness():
 def test_default_percolation():
     G = nx.erdos_renyi_graph(42, 0.42, seed=42)
     assert nx.percolation_centrality(G) == pytest.approx(nx.betweenness_centrality(G))
+
+
+def test_percolation_centrality_small_graphs():
+    # Null graph (0 nodes)
+    assert nx.percolation_centrality(nx.empty_graph(0)) == {}
+
+    # Single isolated node
+    assert nx.percolation_centrality(nx.empty_graph(1)) == {0: 0.0}
+
+    # Two connected nodes
+    assert nx.percolation_centrality(nx.path_graph(2)) == {0: 0.0, 1: 0.0}
+
+    # Two isolated nodes
+    assert nx.percolation_centrality(nx.empty_graph(2)) == {0: 0.0, 1: 0.0}
+

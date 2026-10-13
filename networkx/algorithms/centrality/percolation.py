@@ -107,6 +107,8 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
         )
 
     n = len(G)
+    if n <= 2:
+        return percolation
 
     for v in percolation:
         percolation[v] *= 1 / (n - 2)
