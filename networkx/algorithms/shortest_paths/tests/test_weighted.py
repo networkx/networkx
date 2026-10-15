@@ -1206,8 +1206,10 @@ class TestNegativeEdgeCycleOriginalGraph:
         original = G.copy()
 
         def weight(u, v, data):
+            # Compare by value: backends may pass edge data from a converted graph.
             assert nx.utils.graphs_equal(G, original)
-            assert data is G._adj[u][v]
+            assert (u, v) == ("loop", "loop")
+            assert data == original._adj[u][v]
             if G.is_multigraph():
                 return min(d["weight"] for d in data.values())
             return data["weight"]
