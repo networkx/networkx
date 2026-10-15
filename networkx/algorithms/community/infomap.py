@@ -516,12 +516,16 @@ def _collapse(flow, links, module_of):
     return dict(super_flow), links_list, relabel
 
 
-def _induced(flow, links, nodes):
-    """Restrict the flow network to `nodes`: their visit rates and the links
-    with both endpoints inside (the induced sub-network)."""
-    sub_flow = {node: flow[node] for node in nodes}
-    sub_links = [(u, v, f) for u, v, f in links if u in sub_flow and v in sub_flow]
-    return sub_flow, sub_links
+def _links_by_module(links, module_of):
+    """Group the links that stay inside a module by that module: the links of
+    each module's induced sub-network. One pass over `links` serves every
+    module; filtering `links` once per module instead costs a pass per module."""
+    module_links = defaultdict(list)
+    for link in links:
+        module = module_of[link[0]]
+        if module == module_of[link[1]]:
+            module_links[module].append(link)
+    return module_links
 
 
 def _find_top_modules(flow, links, module_of, seed, directed, first_loop=False):
@@ -566,19 +570,20 @@ def _coarse_tune(flow, links, module_of, seed, directed):
     starting from the current modular structure. Returns a ``node -> module``
     mapping (the caller decides whether it improved)."""
     members = groups(module_of)
+    module_links = _links_by_module(links, module_of)
 
     submodule_of = {}
     offset = 0
-    for nodes in members.values():
+    for module, nodes in members.items():
         if len(nodes) < 2:
             for node in nodes:
                 submodule_of[node] = offset
             offset += 1
             continue
-        sub_flow, sub_links = _induced(flow, links, nodes)
+        sub_flow = {node: flow[node] for node in nodes}
         singletons = {node: i for i, node in enumerate(sub_flow)}
         sub_partition = _find_top_modules(
-            sub_flow, sub_links, singletons, seed, directed
+            sub_flow, module_links[module], singletons, seed, directed
         )
         relabel = {
             s: offset + i for i, s in enumerate(sorted(set(sub_partition.values())))
@@ -748,13 +753,14 @@ def _refine_hierarchy(flow, links, path, seed, directed):
     """Recursively split each innermost module into sub-modules, appending a
     deeper level whenever it lowers the hierarchical codelength."""
     innermost = groups(path)
+    module_links = _links_by_module(links, path)
     changed = False
     new_path = dict(path)
     for p, nodes in innermost.items():
         if len(nodes) <= 2:
             continue
-        sub_flow, sub_links = _induced(flow, links, nodes)
-        sub = _partition(sub_flow, sub_links, seed, directed, first_loop=False)
+        sub_flow = {node: flow[node] for node in nodes}
+        sub = _partition(sub_flow, module_links[p], seed, directed, first_loop=False)
         k = len(set(sub.values()))
         if k == 1 or k == len(nodes):
             continue
