@@ -160,8 +160,17 @@ class _CoreOptimizer:
         for u, v, f in links:
             if u == v:
                 continue
-            self.out_links[u][v] = self.out_links[u].get(v, 0.0) + f
-            self.in_links[v][u] = self.in_links[v].get(u, 0.0) + f
+            out_links_u = self.out_links[u]
+            if v in out_links_u:  # a parallel link, from a multigraph
+                out_links_u[v] += f
+            else:
+                out_links_u[v] = f
+
+            in_links_v = self.in_links[v]
+            if u in in_links_v:
+                in_links_v[u] += f
+            else:
+                in_links_v[u] = f
         self.node_enter = {u: sum(self.in_links[u].values()) for u in flow}
         self.node_exit = {u: sum(self.out_links[u].values()) for u in flow}
         self.node_log = sum(_plogp(flow[u]) for u in flow)  # constant node term
@@ -234,24 +243,25 @@ class _CoreOptimizer:
         if self.directed:
             for v, f in self.out_links[node].items():
                 module = module_of[v]
-                if (entry := shared_flow.get(module)) is None:
-                    shared_flow[module] = [f, 0.0]
+                if module in shared_flow:
+                    shared_flow[module][0] += f
                 else:
-                    entry[0] += f
+                    shared_flow[module] = [f, 0.0]
             for v, f in self.in_links[node].items():
                 module = module_of[v]
-                if (entry := shared_flow.get(module)) is None:
-                    shared_flow[module] = [0.0, f]
+                if module in shared_flow:
+                    shared_flow[module][1] += f
                 else:
-                    entry[1] += f
+                    shared_flow[module] = [0.0, f]
             return shared_flow
         for v, f in self.out_links[node].items():
             module = module_of[v]
-            if (entry := shared_flow.get(module)) is None:
-                shared_flow[module] = [f, f]
-            else:
+            if module in shared_flow:
+                entry = shared_flow[module]
                 entry[0] += f
                 entry[1] += f
+            else:
+                shared_flow[module] = [f, f]
         return shared_flow
 
     def _prepare_move(self, node, old, old_cross):
@@ -704,17 +714,20 @@ def _hierarchical_codelength(flow, links, path):
 
     # Root index codebook: encodes which top module the walk enters.
     top_modules = [module for module in prefixes if len(module) == 1]
-    codelength = _plogp(sum(enter_flow[module] for module in top_modules)) - sum(
-        _plogp(enter_flow[module]) for module in top_modules
-    )
+    top_enter = [enter_flow[module] for module in top_modules]
+    codelength = _plogp(sum(top_enter)) - sum(_plogp(rate) for rate in top_enter)
     # Every module pays its own codebook: it codes entering each child (a
     # sub-module's enter flow, or a leaf node's visit rate) and exiting itself.
     for module in prefixes:
-        child_enter = [enter_flow[child] for child in children.get(module, ())]
-        child_enter += [flow[node] for node in leaf_nodes.get(module, ())]
+        child_enter = []
+        if module in children:
+            child_enter += [enter_flow[child] for child in children[module]]
+        if module in leaf_nodes:
+            child_enter += [flow[node] for node in leaf_nodes[module]]
+        exit = exit_flow[module]
         codelength += (
-            _plogp(exit_flow[module] + sum(child_enter))
-            - _plogp(exit_flow[module])
+            _plogp(exit + sum(child_enter))
+            - _plogp(exit)
             - sum(_plogp(rate) for rate in child_enter)
         )
     return codelength
@@ -738,7 +751,7 @@ def _find_super_modules(flow, links, module_of, seed, directed):
         if module_u != module_v:
             enter[relabel[module_v]] += f
             super_links[relabel[module_u], relabel[module_v]] += f
-    super_flow = {i: enter.get(i, 0.0) for i in range(len(modules))}
+    super_flow = {i: enter[i] for i in range(len(modules))}
     super_links = [(a, b, f) for (a, b), f in super_links.items()]
     super_partition = _partition(
         super_flow, super_links, seed, directed, first_loop=False
