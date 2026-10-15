@@ -85,13 +85,22 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
     """
     percolation = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
 
-    nodes = G
+    nodes = G.nodes
 
+    # Build a complete mapping of percolation states (float) for all nodes.
+    # If `states` is None, use node attribute `attribute` if present, otherwise default to 1.0.
     if states is None:
-        states = nx.get_node_attributes(nodes, attribute, default=1.0)
+        states = {n: float(nodes[n].get(attribute, 1.0)) for n in nodes}
+    else:
+        # Normalize provided mapping: ensure every node present and value cast to float.
+        # If a node is missing from the provided `states`, fall back to the node attribute or 1.0.
+        states = {
+            n: float(states[n]) if n in states else float(nodes[n].get(attribute, 1.0))
+            for n in nodes
+        }
 
-    # sum of all percolation states
-    p_sigma_x_t = sum(states.values())
+    # sum of all percolation states (ensure float)
+    p_sigma_x_t = float(sum(states.values()))
 
     for s in nodes:
         # single source shortest paths
@@ -115,7 +124,7 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
 
 
 def _accumulate_percolation(percolation, S, P, sigma, s, states, p_sigma_x_t):
-    delta = dict.fromkeys(S, 0)
+    delta = dict.fromkeys(S, 0.0)
     while S:
         w = S.pop()
         coeff = (1 + delta[w]) / sigma[w]
