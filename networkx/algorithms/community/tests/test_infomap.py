@@ -259,6 +259,48 @@ def test_infomap_seed_int_and_random_state_agree():
     assert sorted(map(sorted, p_int)) == sorted(map(sorted, p_rs))
 
 
+class _HashedNode:
+    """A node whose hash the test chooses; equal only to itself."""
+
+    def __init__(self, label, hash_value):
+        self.label = label
+        self.hash_value = hash_value
+
+    def __hash__(self):
+        return self.hash_value
+
+    def __eq__(self, other):
+        return self is other
+
+
+def test_infomap_result_does_not_depend_on_node_hashes():
+    """A fixed seed reproduces the result given the graph's iteration order
+    alone. Python randomizes str hashes per process, so a search that followed
+    the order of a set of nodes would vary from run to run on a string-labeled
+    graph. Two copies of a graph that differ only in their node hashes must
+    give the same communities and hierarchy."""
+    import random
+
+    def with_hashes(G, hashes):
+        return nx.relabel_nodes(G, {u: _HashedNode(u, h) for u, h in zip(G, hashes)})
+
+    def labels(partition):
+        return sorted(sorted(node.label for node in c) for c in partition)
+
+    G = nx.les_miserables_graph()
+    hashes = list(range(len(G)))
+    G1 = with_hashes(G, hashes)
+    random.Random(0).shuffle(hashes)
+    G2 = with_hashes(G, hashes)
+    for seed in range(10):
+        c1 = nx.community.infomap_communities(G1, seed=seed, num_trials=3)
+        c2 = nx.community.infomap_communities(G2, seed=seed, num_trials=3)
+        assert labels(c1) == labels(c2)
+        p1 = nx.community.infomap_partitions(G1, seed=seed, num_trials=3)
+        p2 = nx.community.infomap_partitions(G2, seed=seed, num_trials=3)
+        assert list(map(labels, p1)) == list(map(labels, p2))
+
+
 def test_infomap_different_seeds_vary_partition():
     """The search is stochastic: on a graph without one dominant optimum,
     different seeds explore different partitions -- guards against the seed

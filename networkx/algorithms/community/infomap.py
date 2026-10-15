@@ -535,16 +535,25 @@ def _collapse(flow, links, module_of):
     return dict(super_flow), links_list, relabel
 
 
-def _links_by_module(links, module_of):
-    """Group the links that stay inside a module by that module: the links of
-    each module's induced sub-network. One pass over `links` serves every
-    module; filtering `links` once per module instead costs a pass per module."""
+def _split_by_module(flow, links, module_of):
+    """Split the flow network into the sub-network induced by each module: per
+    module, the visit rates of its nodes and the links with both endpoints
+    inside it. One pass over `flow` and `links` serves every module; filtering
+    them once per module instead costs a pass per module.
+
+    Nodes keep their order in `flow`, the graph's iteration order. The order of
+    a set of nodes depends on their hashes, which Python randomizes for strings,
+    so ordering a sub-network by one would make a seeded search vary from run
+    to run."""
+    module_flows = defaultdict(dict)
+    for node, f in flow.items():
+        module_flows[module_of[node]][node] = f
     module_links = defaultdict(list)
     for link in links:
         module = module_of[link[0]]
         if module == module_of[link[1]]:
             module_links[module].append(link)
-    return module_links
+    return module_flows, module_links
 
 
 def _find_top_modules(flow, links, module_of, seed, directed, first_loop=False):
@@ -588,18 +597,16 @@ def _coarse_tune(flow, links, module_of, seed, directed):
     optimizing the induced sub-network, then let those sub-modules regroup
     starting from the current modular structure. Returns a ``node -> module``
     mapping (the caller decides whether it improved)."""
-    members = groups(module_of)
-    module_links = _links_by_module(links, module_of)
+    module_flows, module_links = _split_by_module(flow, links, module_of)
 
     submodule_of = {}
     offset = 0
-    for module, nodes in members.items():
-        if len(nodes) < 2:
-            for node in nodes:
+    for module, sub_flow in module_flows.items():
+        if len(sub_flow) < 2:
+            for node in sub_flow:
                 submodule_of[node] = offset
             offset += 1
             continue
-        sub_flow = {node: flow[node] for node in nodes}
         singletons = {node: i for i, node in enumerate(sub_flow)}
         sub_partition = _find_top_modules(
             sub_flow, module_links[module], singletons, seed, directed
@@ -607,7 +614,7 @@ def _coarse_tune(flow, links, module_of, seed, directed):
         relabel = {
             s: offset + i for i, s in enumerate(sorted(set(sub_partition.values())))
         }
-        for node in nodes:
+        for node in sub_flow:
             submodule_of[node] = relabel[sub_partition[node]]
         offset += len(relabel)
 
@@ -702,7 +709,11 @@ def _hierarchical_codelength(flow, links, path):
     for module in prefixes:
         if len(module) > 1:
             children[module[:-1]].add(module)
-    leaf_nodes = groups(path)
+    # Leaf nodes in `path` order rather than in a set, whose order follows the
+    # node hashes, so the sums below do not change from run to run.
+    leaf_nodes = defaultdict(list)
+    for node, node_path in path.items():
+        leaf_nodes[node_path].append(node)
 
     # A link u->v crosses the boundary of every module that contains exactly one
     # of its endpoints: those strictly below the level where the two paths first
@@ -774,21 +785,19 @@ def _find_super_modules(flow, links, module_of, seed, directed):
 def _refine_hierarchy(flow, links, path, seed, directed):
     """Recursively split each innermost module into sub-modules, appending a
     deeper level whenever it lowers the hierarchical codelength."""
-    innermost = groups(path)
-    module_links = _links_by_module(links, path)
+    module_flows, module_links = _split_by_module(flow, links, path)
     changed = False
     new_path = dict(path)
     codelength = _hierarchical_codelength(flow, links, new_path)
-    for p, nodes in innermost.items():
-        if len(nodes) <= 2:
+    for p, sub_flow in module_flows.items():
+        if len(sub_flow) <= 2:
             continue
-        sub_flow = {node: flow[node] for node in nodes}
         sub = _partition(sub_flow, module_links[p], seed, directed, first_loop=False)
         k = len(set(sub.values()))
-        if k == 1 or k == len(nodes):
+        if k == 1 or k == len(sub_flow):
             continue
         candidate = dict(new_path)
-        for n in nodes:
+        for n in sub_flow:
             candidate[n] = p + (sub[n],)
         candidate_codelength = _hierarchical_codelength(flow, links, candidate)
         if candidate_codelength < codelength - _MIN_IMPROVEMENT:
