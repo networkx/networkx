@@ -551,8 +551,8 @@ def test_core_optimizer_cached_module_codelength_stays_exact():
     against a fresh recomputation once the search has finished."""
     import random
 
-    from networkx.algorithms.community.infomap import _CoreOptimizer, _module_codelength
-    from networkx.algorithms.community.quality import _flow
+    from networkx.algorithms.community.infomap import _CoreOptimizer
+    from networkx.algorithms.community.quality import _flow, _plogp
 
     G = nx.karate_club_graph()
     flow, links = _flow(G, "weight")
@@ -561,10 +561,11 @@ def test_core_optimizer_cached_module_codelength_stays_exact():
     optimizer.optimize(False, 10)
 
     for module in set(optimizer.module_of.values()):
-        assert optimizer.module_codelength[module] == _module_codelength(
-            optimizer.module_enter[module],
-            optimizer.module_exit[module],
-            optimizer.module_exit[module] + optimizer.module_flow[module],
+        enter = optimizer.module_enter[module]
+        exit = optimizer.module_exit[module]
+        usage = exit + optimizer.module_flow[module]
+        assert optimizer.module_codelength[module] == (
+            _plogp(usage) - _plogp(enter) - _plogp(exit)
         )
     # ...and the running codelength still agrees with the public quality function.
     communities = list(nx.utils.groups(optimizer.module_of).values())

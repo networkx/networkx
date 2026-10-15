@@ -102,22 +102,6 @@ _NUM_RANDOM_MOVES = 5
 _MAX_DEGREE_FOR_RANDOM_MOVES = 2  # only low-degree nodes get random targets
 
 
-def _module_codelength(enter_flow, exit_flow, usage):
-    """One module's contribution to the two-level codelength: minus its enter
-    and exit codebook terms, plus its module-usage term (``usage = exit flow +
-    visit rate``). The whole codelength sums this over every module and adds the
-    index term ``_plogp(Q)`` and a constant node term (see
-    :meth:`_CoreOptimizer.codelength`)."""
-    return _plogp(usage) - _plogp(enter_flow) - _plogp(exit_flow)
-
-
-def _cross_flow(shared):
-    """Total boundary-crossing flow (``exit + enter``) of one
-    :meth:`_CoreOptimizer._shared_flows` entry; an absent entry means the node
-    shares no flow with that module."""
-    return shared[0] + shared[1] if shared else 0.0
-
-
 class _MoveContext(NamedTuple):
     """The destination-independent part of a node's move delta: computed once
     per node by :meth:`_CoreOptimizer._prepare_move` and reused for every
@@ -200,16 +184,18 @@ class _CoreOptimizer:
             _plogp(self.module_exit[m] + self.module_flow[m]) for m in self.module_flow
         )
 
-        # Each module's own codelength contribution, cached because a move
-        # re-reads the destination's current value once per candidate but only
-        # changes it once per applied move. An unseen (empty) module is 0.
+        # Each module's own codelength contribution: its usage term (``usage =
+        # exit flow + visit rate``) minus its enter and exit terms. `codelength`
+        # sums it over the modules and adds the index and node terms. Cached
+        # because a move re-reads the destination's current value once per
+        # candidate but only changes it once per applied move. An unseen (empty)
+        # module is 0.
         self.module_codelength = defaultdict(float)
         for m in self.module_flow:
-            self.module_codelength[m] = _module_codelength(
-                self.module_enter[m],
-                self.module_exit[m],
-                self.module_exit[m] + self.module_flow[m],
-            )
+            enter = self.module_enter[m]
+            exit = self.module_exit[m]
+            usage = exit + self.module_flow[m]
+            self.module_codelength[m] = _plogp(usage) - _plogp(enter) - _plogp(exit)
 
         # A pool of emptied module ids to reuse for "split into a new module";
         # every id in `module_of` starts with a member, so the pool starts empty.
@@ -274,17 +260,14 @@ class _CoreOptimizer:
         node_enter = self.node_enter[node]
         node_exit = self.node_exit[node]
         node_flow = self.flow[node]
-        old_enter = self.module_enter[old]
-        old_exit = self.module_exit[old]
-        old_usage = old_exit + self.module_flow[old]
         # `old`'s codelength before and after `node` leaves it: it sheds the
         # node's enter/exit/flow, and the links they shared become crossing.
         old_before = self.module_codelength[old]
-        old_after = _module_codelength(
-            old_enter - node_enter + old_cross,
-            old_exit - node_exit + old_cross,
-            old_usage - node_exit - node_flow + old_cross,
-        )
+        old_exit = self.module_exit[old]
+        enter = self.module_enter[old] - node_enter + old_cross
+        exit = old_exit - node_exit + old_cross
+        usage = old_exit + self.module_flow[old] - node_exit - node_flow + old_cross
+        old_after = _plogp(usage) - _plogp(enter) - _plogp(exit)
         # `self.enter_flow` and the module terms are stable during the scan (no
         # move is applied until a winner is chosen), so capturing them is safe.
         return _MoveContext(
@@ -307,15 +290,15 @@ class _CoreOptimizer:
         the flow the node shares with `new` (``exit + enter``); joining `new`
         makes those links internal and brings the node's own flow with it.
         """
-        new_enter = self.module_enter[new]
-        new_exit = self.module_exit[new]
-        new_usage = new_exit + self.module_flow[new]
+        # `new`'s codelength before and after the node joins it.
         new_before = self.module_codelength[new]
-        new_after = _module_codelength(
-            new_enter + ctx.node_enter - new_cross,
-            new_exit + ctx.node_exit - new_cross,
-            new_usage + ctx.node_exit + ctx.node_flow - new_cross,
+        new_exit = self.module_exit[new]
+        enter = self.module_enter[new] + ctx.node_enter - new_cross
+        exit = new_exit + ctx.node_exit - new_cross
+        usage = (
+            new_exit + self.module_flow[new] + ctx.node_exit + ctx.node_flow - new_cross
         )
+        new_after = _plogp(usage) - _plogp(enter) - _plogp(exit)
         # Index codebook: only the total switching rate Q shifts. The node's
         # shared flow with `old` was internal and becomes crossing (+old_cross);
         # with `new` it was crossing and becomes internal (-new_cross); its flow
@@ -327,46 +310,64 @@ class _CoreOptimizer:
     def _apply(self, node, new, shared_flow):
         """Move `node` into module `new`, updating the module flow data and the
         running codelength terms in place."""
+        module_flow = self.module_flow
+        module_enter = self.module_enter
+        module_exit = self.module_exit
+        node_flow = self.flow[node]
+        node_enter = self.node_enter[node]
+        node_exit = self.node_exit[node]
         old = self.module_of[node]
-        old_cross = _cross_flow(shared_flow.get(old))
-        new_cross = _cross_flow(shared_flow.get(new))
+        old_cross = sum(shared_flow[old]) if old in shared_flow else 0.0
+        new_cross = sum(shared_flow[new]) if new in shared_flow else 0.0
+
         # 1. Remove the two modules' current contributions to the global terms.
-        self.enter_flow -= self.module_enter[old] + self.module_enter[new]
-        self.enter_log -= _plogp(self.module_enter[old]) + _plogp(
-            self.module_enter[new]
-        )
-        self.exit_log -= _plogp(self.module_exit[old]) + _plogp(self.module_exit[new])
-        self.flow_log -= _plogp(self.module_exit[old] + self.module_flow[old]) + _plogp(
-            self.module_exit[new] + self.module_flow[new]
-        )
+        old_enter = module_enter[old]
+        old_exit = module_exit[old]
+        old_usage = old_exit + module_flow[old]
+        new_enter = module_enter[new]
+        new_exit = module_exit[new]
+        new_usage = new_exit + module_flow[new]
+        self.enter_flow -= old_enter + new_enter
+        self.enter_log -= _plogp(old_enter) + _plogp(new_enter)
+        self.exit_log -= _plogp(old_exit) + _plogp(new_exit)
+        self.flow_log -= _plogp(old_usage) + _plogp(new_usage)
+
         # 2. Carry the node's own flow from `old` to `new`.
-        self.module_flow[old] -= self.flow[node]
-        self.module_enter[old] -= self.node_enter[node]
-        self.module_exit[old] -= self.node_exit[node]
-        self.module_flow[new] += self.flow[node]
-        self.module_enter[new] += self.node_enter[node]
-        self.module_exit[new] += self.node_exit[node]
+        module_flow[old] -= node_flow
+        module_enter[old] -= node_enter
+        module_exit[old] -= node_exit
+        module_flow[new] += node_flow
+        module_enter[new] += node_enter
+        module_exit[new] += node_exit
+
         # 3. Fix the boundary: links to `old` now cross it, links to `new` are
         #    now internal to it.
-        self.module_enter[old] += old_cross
-        self.module_exit[old] += old_cross
-        self.module_enter[new] -= new_cross
-        self.module_exit[new] -= new_cross
-        # 4. Add the two modules' new contributions back.
-        self.enter_flow += self.module_enter[old] + self.module_enter[new]
-        self.enter_log += _plogp(self.module_enter[old]) + _plogp(
-            self.module_enter[new]
-        )
-        self.exit_log += _plogp(self.module_exit[old]) + _plogp(self.module_exit[new])
-        self.flow_log += _plogp(self.module_exit[old] + self.module_flow[old]) + _plogp(
-            self.module_exit[new] + self.module_flow[new]
-        )
-        for m in (old, new):
-            self.module_codelength[m] = _module_codelength(
-                self.module_enter[m],
-                self.module_exit[m],
-                self.module_exit[m] + self.module_flow[m],
-            )
+        module_enter[old] += old_cross
+        module_exit[old] += old_cross
+        module_enter[new] -= new_cross
+        module_exit[new] -= new_cross
+
+        # 4. Add the two modules' new contributions back, and cache each
+        #    module's codelength from the same terms.
+        old_enter = module_enter[old]
+        old_exit = module_exit[old]
+        old_usage = old_exit + module_flow[old]
+        new_enter = module_enter[new]
+        new_exit = module_exit[new]
+        new_usage = new_exit + module_flow[new]
+        old_enter_log = _plogp(old_enter)
+        old_exit_log = _plogp(old_exit)
+        old_usage_log = _plogp(old_usage)
+        new_enter_log = _plogp(new_enter)
+        new_exit_log = _plogp(new_exit)
+        new_usage_log = _plogp(new_usage)
+        self.enter_flow += old_enter + new_enter
+        self.enter_log += old_enter_log + new_enter_log
+        self.exit_log += old_exit_log + new_exit_log
+        self.flow_log += old_usage_log + new_usage_log
+        self.module_codelength[old] = old_usage_log - old_enter_log - old_exit_log
+        self.module_codelength[new] = new_usage_log - new_enter_log - new_exit_log
+
         self.module_members[old] -= 1
         self.module_members[new] += 1
         self.module_of[node] = new
@@ -414,29 +415,37 @@ class _CoreOptimizer:
                 if not candidates:
                     continue
 
-                old_entry = shared_flow.get(current)
-                old_cross = _cross_flow(old_entry)
+                # Each `shared_flow` entry is [exit, enter]; its sum is the flow
+                # that crosses the boundary between the node and that module.
+                if current in shared_flow:
+                    old_entry = shared_flow[current]
+                    old_cross = old_entry[0] + old_entry[1]
+                    strongest_exit = old_entry[0]
+                else:
+                    old_cross = 0.0
+                    strongest_exit = 0.0
                 ctx = self._prepare_move(node, current, old_cross)
                 best_module, best_delta = current, 0.0
                 # Track which candidate the node sends the most flow to; ties in
                 # codelength are broken toward it (see below). Seed it with the
                 # current module so a move wins the tie only by being more cohesive.
                 strongest_module = current
-                strongest_exit = old_entry[0] if old_entry else 0.0
                 strongest_delta = 0.0
                 for module in candidates:
-                    entry = shared_flow.get(module)
-                    new_cross = _cross_flow(entry)
+                    if module in shared_flow:
+                        entry = shared_flow[module]
+                        exit_to = entry[0]
+                        new_cross = entry[0] + entry[1]
+                    else:
+                        exit_to = 0.0
+                        new_cross = 0.0
                     delta = self._delta_codelength(ctx, module, new_cross)
                     if delta < best_delta - _MIN_SINGLE_NODE_IMPROVEMENT:
                         best_delta, best_module = delta, module
-                    exit_to = entry[0] if entry else 0.0
                     if exit_to > strongest_exit:
-                        strongest_exit, strongest_module, strongest_delta = (
-                            exit_to,
-                            module,
-                            delta,
-                        )
+                        strongest_exit = exit_to
+                        strongest_module = module
+                        strongest_delta = delta
                 # Tie-break: when a move barely changes the codelength (within
                 # _MIN_SINGLE_NODE_IMPROVEMENT of the best, even slightly worse),
                 # prefer the module the node sends the most exit flow to. It is
