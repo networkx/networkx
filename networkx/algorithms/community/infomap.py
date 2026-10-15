@@ -629,7 +629,7 @@ def _partition(flow, links, seed, directed, first_loop=True):
         directed,
         first_loop=first_loop,
     )
-    old_codelength = _codelength(flow, links, module_of)
+    old_codelength = codelength = _codelength(flow, links, module_of)
 
     do_fine_tune = True
     coarse_tuned = False
@@ -639,24 +639,24 @@ def _partition(flow, links, seed, directed, first_loop=True):
         else:
             coarse_tuned = True
             tuned = _coarse_tune(flow, links, module_of, seed, directed)
-        if _codelength(flow, links, tuned) < _codelength(flow, links, module_of):
+        if _codelength(flow, links, tuned) < codelength:
             module_of = _find_top_modules(flow, links, tuned, seed, directed)
+            codelength = _codelength(flow, links, module_of)
 
-        new_codelength = _codelength(flow, links, module_of)
         is_improvement = (
-            new_codelength <= old_codelength - _MIN_IMPROVEMENT
-            and new_codelength
+            codelength <= old_codelength - _MIN_IMPROVEMENT
+            and codelength
             < old_codelength - one_level_codelength * _MIN_RELATIVE_TUNE_IMPROVEMENT
         )
         if not is_improvement:
             if coarse_tuned:
                 break
         else:
-            old_codelength = new_codelength
+            old_codelength = codelength
         do_fine_tune = not do_fine_tune
 
     # Never do worse than putting everything in one module.
-    if _codelength(flow, links, module_of) > one_level_codelength:
+    if codelength > one_level_codelength:
         return dict.fromkeys(flow, 0)
     return module_of
 
@@ -756,6 +756,7 @@ def _refine_hierarchy(flow, links, path, seed, directed):
     module_links = _links_by_module(links, path)
     changed = False
     new_path = dict(path)
+    codelength = _hierarchical_codelength(flow, links, new_path)
     for p, nodes in innermost.items():
         if len(nodes) <= 2:
             continue
@@ -767,11 +768,9 @@ def _refine_hierarchy(flow, links, path, seed, directed):
         candidate = dict(new_path)
         for n in nodes:
             candidate[n] = p + (sub[n],)
-        if (
-            _hierarchical_codelength(flow, links, candidate)
-            < _hierarchical_codelength(flow, links, new_path) - _MIN_IMPROVEMENT
-        ):
-            new_path = candidate
+        candidate_codelength = _hierarchical_codelength(flow, links, candidate)
+        if candidate_codelength < codelength - _MIN_IMPROVEMENT:
+            new_path, codelength = candidate, candidate_codelength
             changed = True
     if changed:
         new_path = _refine_hierarchy(flow, links, new_path, seed, directed)
@@ -785,17 +784,16 @@ def _build_hierarchy(flow, links, seed, directed):
     (top level first)."""
     top = _partition(flow, links, seed, directed)
     path = {node: (top[node],) for node in flow}
+    codelength = _hierarchical_codelength(flow, links, path)
     while True:  # coarsen: prepend super-levels
         coarsest = {node: path[node][0] for node in flow}
         super_of = _find_super_modules(flow, links, coarsest, seed, directed)
         if super_of is None:
             break
         candidate = {node: (super_of[coarsest[node]],) + path[node] for node in flow}
-        if (
-            _hierarchical_codelength(flow, links, candidate)
-            < _hierarchical_codelength(flow, links, path) - _MIN_IMPROVEMENT
-        ):
-            path = candidate
+        candidate_codelength = _hierarchical_codelength(flow, links, candidate)
+        if candidate_codelength < codelength - _MIN_IMPROVEMENT:
+            path, codelength = candidate, candidate_codelength
         else:
             break
     # refine: append sub-levels
