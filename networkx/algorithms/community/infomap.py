@@ -792,9 +792,8 @@ def _build_hierarchy(flow, links, seed, directed):
             path = candidate
         else:
             break
-    return _refine_hierarchy(
-        flow, links, path, seed, directed
-    )  # refine: append sub-levels
+    # refine: append sub-levels
+    return _refine_hierarchy(flow, links, path, seed, directed)
 
 
 def _check_num_trials(num_trials):

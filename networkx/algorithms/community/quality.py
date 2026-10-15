@@ -282,7 +282,7 @@ def _flow(G, weight="weight", teleportation_probability=0.15):
         if not isfinite(wt) or wt < 0:
             raise ValueError("edge weights must be finite and non-negative")
         total += wt
-    if not isfinite(2 * total):  # undirected flow normalizes by 2m
+    if not isfinite(2 * total):  # undirected flow normalized by 2m
         raise ValueError("edge weights are too large to sum as floats")
     _check_teleportation_probability(G, teleportation_probability)
     if G.is_directed():
