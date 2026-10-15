@@ -1121,6 +1121,19 @@ class TestHiddenEdges:
 class TestNegativeEdgeCycleOriginalGraph:
     @pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
     @pytest.mark.parametrize("heuristic", [False, True])
+    def test_artificial_return_edges_do_not_create_cycle(self, graph_type, heuristic):
+        G = graph_type([(0, 1)])
+        costs = {(0, 1): -3, (1, 0): 4}
+
+        def weight(u, v, data):
+            return costs.get((u, v), 1)
+
+        # The original round trip costs +1. Adding a synthetic vertex with
+        # return edges of cost 1 would manufacture a cycle costing -1.
+        assert not nx.negative_edge_cycle(G, weight=weight, heuristic=heuristic)
+
+    @pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
+    @pytest.mark.parametrize("heuristic", [False, True])
     @pytest.mark.parametrize("reverse_weight", [0, 1, 2, None])
     @pytest.mark.parametrize("negative_arc", [(0, 1), (1, 0)])
     def test_negative_edge_cycle_asymmetric_weight(
