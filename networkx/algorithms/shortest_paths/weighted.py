@@ -2162,7 +2162,7 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     heuristic : bool
         Determines whether to use a heuristic to early detect negative
@@ -2188,29 +2188,20 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
-    This algorithm uses bellman_ford_predecessor_and_distance() but finds
-    negative cycles on any component by first adding a new node connected to
-    every node, and starting bellman_ford_predecessor_and_distance on that
-    node.  It then removes that extra node.
+    This algorithm uses Bellman–Ford with every node as a source to find
+    negative cycles in any component without modifying the graph. Only
+    original edges are evaluated by the weight function, in traversal order.
     """
     if G.size() == 0:
         return False
 
-    # find unused node to use temporarily
-    newnode = -1
-    while newnode in G:
-        newnode -= 1
-    # connect it to all nodes
-    G.add_edges_from([(newnode, n) for n in G])
-
+    weight = _weight_function(G, weight)
     try:
-        bellman_ford_predecessor_and_distance(
-            G, newnode, weight=weight, heuristic=heuristic
-        )
+        # Initializing every distance to zero reaches all components without
+        # adding artificial edges that could introduce new negative cycles.
+        _bellman_ford(G, list(G), weight, heuristic=heuristic)
     except nx.NetworkXUnbounded:
         return True
-    finally:
-        G.remove_node(newnode)
     return False
 
 
