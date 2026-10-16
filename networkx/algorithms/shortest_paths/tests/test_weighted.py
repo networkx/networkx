@@ -981,3 +981,296 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         validate_path(self.XG3, 0, 3, 15, nx.johnson(self.XG3)[0][3])
         validate_path(self.XG4, 0, 2, 4, nx.johnson(self.XG4)[0][2])
         validate_path(self.MXG4, 0, 2, 4, nx.johnson(self.MXG4)[0][2])
+
+
+class TestHiddenEdges:
+    @staticmethod
+    def weight(u, v, data):
+        return None if data.get("hidden", False) else data.get("weight", 1)
+
+    @pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph])
+    @pytest.mark.parametrize(
+        "algorithm, args, as_dict",
+        [
+            (nx.bellman_ford_predecessor_and_distance, (0,), False),
+            (nx.bellman_ford_path, (0, 2), False),
+            (nx.bellman_ford_path_length, (0, 2), False),
+            (nx.single_source_bellman_ford, (0,), False),
+            (nx.single_source_bellman_ford_path, (0,), False),
+            (nx.single_source_bellman_ford_path_length, (0,), False),
+            (nx.all_pairs_bellman_ford_path, (), True),
+            (nx.all_pairs_bellman_ford_path_length, (), True),
+            (nx.goldberg_radzik, (0,), False),
+            (nx.johnson, (), False),
+        ],
+    )
+    def test_hidden_edges(self, graph_type, algorithm, args, as_dict):
+        G = graph_type()
+        G.add_weighted_edges_from([(0, 1, 0), (1, 2, 2)])
+        G.add_edge(0, 2, weight=-10, hidden=True)
+        G.add_edge(2, 3, hidden=True)
+        H = G.copy()
+        H.remove_edges_from([(0, 2), (2, 3)])
+        result = algorithm(G, *args, weight=self.weight)
+        expected = algorithm(H, *args)
+        if as_dict:
+            result, expected = dict(result), dict(expected)
+        assert result == expected
+
+    def test_issue_example(self):
+        G = nx.DiGraph()
+        G.add_weighted_edges_from([(0, 1, 1), (1, 2, 2)])
+        pred, dist = nx.bellman_ford_predecessor_and_distance(
+            G, 0, weight=lambda u, v, d: d["weight"] if (u, v) == (0, 1) else None
+        )
+        assert pred == {0: [], 1: [0]}
+        assert dist == {0: 0, 1: 1}
+
+    @pytest.mark.parametrize(
+        "algorithm", [nx.bellman_ford_path, nx.bellman_ford_path_length]
+    )
+    def test_no_visible_path(self, algorithm):
+        G = nx.path_graph(3)
+        with pytest.raises(nx.NetworkXNoPath):
+            algorithm(G, 0, 2, weight=lambda u, v, d: None)
+
+    @pytest.mark.parametrize(
+        "algorithm", [nx.bellman_ford_predecessor_and_distance, nx.goldberg_radzik]
+    )
+    @pytest.mark.parametrize(
+        "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+    )
+    @pytest.mark.parametrize("extra_node", [False, True])
+    def test_hidden_selfloop(self, algorithm, graph_type, extra_node):
+        G = graph_type()
+        G.add_edge(0, 0, weight=-1)
+        if extra_node:
+            G.add_node(1)
+        _, dist = algorithm(G, 0, weight=lambda u, v, d: None)
+        assert dist == {0: 0}
+
+    @pytest.mark.parametrize(
+        "algorithm", [nx.bellman_ford_predecessor_and_distance, nx.goldberg_radzik]
+    )
+    @pytest.mark.parametrize("graph_type", [nx.MultiGraph, nx.MultiDiGraph])
+    def test_multigraph_callable(self, algorithm, graph_type):
+        G = graph_type()
+        G.add_edge(0, 0, weight=-10, hidden=True)
+        G.add_edge(0, 0, weight=1)
+        G.add_edge(0, 1, weight=-10, hidden=True)
+        G.add_edge(0, 1, weight=2)
+        G.add_edge(1, 2, hidden=True)
+
+        def weight(u, v, data):
+            visible = [
+                d.get("weight", 1) for d in data.values() if not d.get("hidden", False)
+            ]
+            return min(visible, default=None)
+
+        _, dist = algorithm(G, 0, weight=weight)
+        assert dist == {0: 0, 1: 2}
+
+    @pytest.mark.parametrize(
+        "algorithm", [nx.bellman_ford_predecessor_and_distance, nx.goldberg_radzik]
+    )
+    @pytest.mark.parametrize("graph_type", [nx.MultiGraph, nx.MultiDiGraph])
+    @pytest.mark.parametrize("extra_node", [False, True])
+    def test_multigraph_selfloop_dictionary(self, algorithm, graph_type, extra_node):
+        G = graph_type()
+        G.add_edge(0, 0, key="negative", weight=-3)
+        G.add_edge(0, 0, key="positive", weight=2)
+        if extra_node:
+            G.add_edge(0, 1, weight=4)
+
+        def weight(u, v, data):
+            # Dictionary operations must work on the complete adjacency payload.
+            edge_data = dict.copy(data)
+            return max(d["weight"] for d in edge_data.values())
+
+        _, dist = algorithm(G, 0, weight=weight)
+        assert dist == ({0: 0, 1: 4} if extra_node else {0: 0})
+
+    @pytest.mark.parametrize("heuristic", [False, True])
+    def test_negative_cycle(self, heuristic):
+        G = nx.DiGraph()
+        G.add_weighted_edges_from([(0, 1, -2), (1, 2, 1), (2, 0, 0)])
+        assert nx.find_negative_cycle(G, 0, weight=self.weight) == [2, 0, 1, 2]
+        G[2][0]["hidden"] = True
+        with pytest.raises(nx.NetworkXError, match="No negative cycles detected"):
+            nx.find_negative_cycle(G, 0, weight=self.weight)
+        _, dist = nx.bellman_ford_predecessor_and_distance(
+            G, 0, weight=self.weight, heuristic=heuristic
+        )
+        assert dist == {0: 0, 1: -2, 2: -1}
+        assert nx.goldberg_radzik(G, 0, weight=self.weight)[1] == dist
+        assert nx.johnson(G, weight=self.weight)[0][2] == [0, 1, 2]
+
+    @pytest.mark.parametrize(
+        "algorithm", [nx.bellman_ford_predecessor_and_distance, nx.goldberg_radzik]
+    )
+    @pytest.mark.parametrize(
+        "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+    )
+    def test_visible_negative_selfloop(self, algorithm, graph_type):
+        G = graph_type()
+        G.add_edge(0, 0, weight=-1)
+        with pytest.raises(nx.NetworkXUnbounded):
+            algorithm(G, 0, weight=lambda u, v, d: -1)
+
+
+class TestNegativeEdgeCycleOriginalGraph:
+    @pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
+    @pytest.mark.parametrize("heuristic", [False, True])
+    def test_artificial_return_edges_do_not_create_cycle(self, graph_type, heuristic):
+        G = graph_type([(0, 1)])
+        costs = {(0, 1): -3, (1, 0): 4}
+
+        def weight(u, v, data):
+            return costs.get((u, v), 1)
+
+        # The original round trip costs +1. Adding a synthetic vertex with
+        # return edges of cost 1 would manufacture a cycle costing -1.
+        assert not nx.negative_edge_cycle(G, weight=weight, heuristic=heuristic)
+
+    @pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
+    @pytest.mark.parametrize("heuristic", [False, True])
+    @pytest.mark.parametrize("reverse_weight", [0, 1, 2, None])
+    @pytest.mark.parametrize("negative_arc", [(0, 1), (1, 0)])
+    def test_negative_edge_cycle_asymmetric_weight(
+        self, graph_type, heuristic, reverse_weight, negative_arc
+    ):
+        G = graph_type([(0, 1)])
+        u, v = negative_arc
+
+        def weight(a, b, data):
+            if (a, b) == (u, v):
+                return -1
+            if (a, b) == (v, u):
+                return reverse_weight
+            return 1
+
+        # A negative traversal alone is not a cycle: its return traversal
+        # must be visible and their total weight must be negative.
+        expected = reverse_weight is not None and reverse_weight < 1
+        assert nx.negative_edge_cycle(G, weight=weight, heuristic=heuristic) == expected
+        if expected:
+            with pytest.raises(nx.NetworkXUnbounded):
+                nx.bellman_ford_predecessor_and_distance(
+                    G, u, weight=weight, heuristic=heuristic
+                )
+        else:
+            assert nx.bellman_ford_predecessor_and_distance(
+                G, u, weight=weight, heuristic=heuristic
+            )[1] == {u: 0, v: -1}
+            expected_dist = {v: 0}
+            if reverse_weight is not None:
+                expected_dist[u] = reverse_weight
+            assert (
+                nx.bellman_ford_predecessor_and_distance(
+                    G, v, weight=weight, heuristic=heuristic
+                )[1]
+                == expected_dist
+            )
+
+    @pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
+    @pytest.mark.parametrize("heuristic", [False, True])
+    @pytest.mark.parametrize("hide_arc", [False, True])
+    def test_negative_edge_cycle_asymmetric_triangle(
+        self, graph_type, heuristic, hide_arc
+    ):
+        G = graph_type([(0, 1), (1, 2), (2, 0)])
+        forward = {(0, 1), (1, 2), (2, 0)}
+
+        def weight(u, v, data):
+            if hide_arc and (u, v) == (2, 0):
+                return None
+            return -2 if (u, v) in forward else 3
+
+        # Every two-step cycle costs 1, but the forward triangle costs -6.
+        # Hiding its last traversal leaves only nonnegative cycles.
+        assert nx.negative_edge_cycle(G, weight=weight, heuristic=heuristic) == (
+            not hide_arc
+        )
+
+    @pytest.mark.parametrize(
+        "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+    )
+    @pytest.mark.parametrize("heuristic", [False, True])
+    @pytest.mark.parametrize("loop_weight", [-1, 0, None])
+    def test_negative_edge_cycle_original_graph(
+        self, graph_type, heuristic, loop_weight
+    ):
+        G = graph_type()
+        G.add_node("isolated")
+        G.add_edge("loop", "loop", weight=loop_weight)
+        original = G.copy()
+
+        def weight(u, v, data):
+            # Compare by value: backends may pass edge data from a converted graph.
+            assert nx.utils.graphs_equal(G, original)
+            assert (u, v) == ("loop", "loop")
+            assert data == original._adj[u][v]
+            if G.is_multigraph():
+                return min(d["weight"] for d in data.values())
+            return data["weight"]
+
+        assert nx.negative_edge_cycle(G, weight=weight, heuristic=heuristic) == (
+            loop_weight == -1
+        )
+        assert nx.utils.graphs_equal(G, original)
+
+        def invalid_weight(u, v, data):
+            raise ValueError("callback failure")
+
+        with pytest.raises(ValueError, match="callback failure"):
+            nx.negative_edge_cycle(G, weight=invalid_weight, heuristic=heuristic)
+        assert nx.utils.graphs_equal(G, original)
+
+    def test_negative_cycle_with_hidden_missing_weights(self):
+        G = nx.DiGraph()
+        G.add_weighted_edges_from([(0, 1, -2), (1, 0, 1)])
+        G.add_edge(1, 2)
+
+        def weight(u, v, d):
+            return d.get("weight")
+
+        assert nx.negative_edge_cycle(G, weight=weight)
+        G.remove_edge(1, 0)
+        assert not nx.negative_edge_cycle(G, weight=weight)
+        assert set(G) == {0, 1, 2}
+
+    @pytest.mark.parametrize(
+        "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+    )
+    @pytest.mark.parametrize("heuristic", [False, True])
+    def test_frozen_disconnected_string_weight(self, graph_type, heuristic):
+        G = graph_type()
+        G.add_nodes_from(["isolated", -1])
+        G.add_edge(0, 1, cost=2)
+        G.add_edge(2, 2, cost=-1)
+        nx.freeze(G)
+        assert nx.negative_edge_cycle(G, weight="cost", heuristic=heuristic)
+        # A missing attribute still defaults to one, including parallel bundles.
+        assert not nx.negative_edge_cycle(G, weight="missing", heuristic=heuristic)
+
+    @pytest.mark.parametrize(
+        "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+    )
+    @pytest.mark.parametrize("heuristic", [False, True])
+    def test_empty_frozen_graph(self, graph_type, heuristic):
+        G = nx.freeze(graph_type())
+        assert not nx.negative_edge_cycle(G, heuristic=heuristic)
+        H = nx.freeze(nx.empty_graph(2, create_using=graph_type()))
+        assert not nx.negative_edge_cycle(H, heuristic=heuristic)
+
+    @pytest.mark.parametrize("heuristic", [False, True])
+    def test_hidden_edge_breaks_cycle(self, heuristic):
+        G = nx.DiGraph()
+        G.add_weighted_edges_from([(0, 1, -2), (1, 2, 1), (2, 0, 0)])
+
+        def weight(u, v, data):
+            return None if data.get("hidden", False) else data["weight"]
+
+        assert nx.negative_edge_cycle(G, weight=weight, heuristic=heuristic)
+        G[2][0]["hidden"] = True
+        assert not nx.negative_edge_cycle(G, weight=weight, heuristic=heuristic)

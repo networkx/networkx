@@ -1201,7 +1201,7 @@ def bellman_ford_predecessor_and_distance(
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     heuristic : bool
         Determines whether to use a heuristic to early detect negative
@@ -1268,14 +1268,9 @@ def bellman_ford_predecessor_and_distance(
     if source not in G:
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
-    if G.is_multigraph():
-        if any(
-            weight(u, v, {k: d}) < 0
-            for u, v, k, d in nx.selfloop_edges(G, keys=True, data=True)
-        ):
-            raise nx.NetworkXUnbounded("Negative cycle detected.")
-    else:
-        if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
+    for u in nx.nodes_with_selfloops(G):
+        loop_weight = weight(u, u, G._adj[u][u])
+        if loop_weight is not None and loop_weight < 0:
             raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     dist = {source: 0}
@@ -1319,7 +1314,8 @@ def _bellman_ford(
         The weight of an edge is the value returned by the function. The
         function must accept exactly three positional arguments: the two
         endpoints of an edge and the dictionary of edge attributes for
-        that edge. The function must return a number.
+        that edge. The function must return a number or None to indicate
+        a hidden edge.
 
     pred: dict of lists, optional (default=None)
         dict to store a list of predecessors keyed by that node
@@ -1411,7 +1407,8 @@ def _inner_bellman_ford(
         The weight of an edge is the value returned by the function. The
         function must accept exactly three positional arguments: the two
         endpoints of an edge and the dictionary of edge attributes for
-        that edge. The function must return a number.
+        that edge. The function must return a number or None to indicate
+        a hidden edge.
 
     pred: dict of lists
         dict to store a list of predecessors keyed by that node
@@ -1466,7 +1463,10 @@ def _inner_bellman_ford(
         if all(pred_u not in in_q for pred_u in pred[u]):
             dist_u = dist[u]
             for v, e in G_succ[u].items():
-                dist_v = dist_u + weight(u, v, e)
+                w = weight(u, v, e)
+                if w is None:
+                    continue
+                dist_v = dist_u + w
 
                 if dist_v < dist.get(v, inf):
                     # In this conditional branch we are updating the path with v.
@@ -1535,7 +1535,7 @@ def bellman_ford_path(G, source, target, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -1595,7 +1595,7 @@ def bellman_ford_path_length(G, source, target, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -1663,7 +1663,7 @@ def single_source_bellman_ford_path(G, source, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -1719,7 +1719,7 @@ def single_source_bellman_ford_path_length(G, source, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -1786,7 +1786,7 @@ def single_source_bellman_ford(G, source, target=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -1872,7 +1872,7 @@ def all_pairs_bellman_ford_path_length(G, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -1927,7 +1927,7 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -1986,7 +1986,7 @@ def goldberg_radzik(G, source, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -2041,14 +2041,9 @@ def goldberg_radzik(G, source, weight="weight"):
     if source not in G:
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
-    if G.is_multigraph():
-        if any(
-            weight(u, v, {k: d}) < 0
-            for u, v, k, d in nx.selfloop_edges(G, keys=True, data=True)
-        ):
-            raise nx.NetworkXUnbounded("Negative cycle detected.")
-    else:
-        if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
+    for u in nx.nodes_with_selfloops(G):
+        loop_weight = weight(u, u, G._adj[u][u])
+        if loop_weight is not None and loop_weight < 0:
             raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     if len(G) == 1:
@@ -2078,7 +2073,10 @@ def goldberg_radzik(G, source, weight="weight"):
         for u in relabeled - neg_count.keys():
             d_u = d[u]
             # Skip nodes without out-edges of negative reduced costs.
-            if all(d_u + weight(u, v, e) >= d[v] for v, e in G_succ[u].items()):
+            if all(
+                (w := weight(u, v, e)) is None or d_u + w >= d[v]
+                for v, e in G_succ[u].items()
+            ):
                 continue
             # Nonrecursive DFS that inserts nodes reachable from u via edges of
             # nonpositive reduced costs into to_scan in (reverse) topological
@@ -2095,7 +2093,10 @@ def goldberg_radzik(G, source, weight="weight"):
                     stack.pop()
                     in_stack.remove(u)
                     continue
-                t = d[u] + weight(u, v, e)
+                w = weight(u, v, e)
+                if w is None:
+                    continue
+                t = d[u] + w
                 d_v = d[v]
                 if t < d_v:
                     d[v] = t
@@ -2122,6 +2123,8 @@ def goldberg_radzik(G, source, weight="weight"):
             d_u = d[u]
             for v, e in G_succ[u].items():
                 w_e = weight(u, v, e)
+                if w_e is None:
+                    continue
                 if d_u + w_e < d[v]:
                     d[v] = d_u + w_e
                     pred[v] = u
@@ -2159,7 +2162,7 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     heuristic : bool
         Determines whether to use a heuristic to early detect negative
@@ -2185,29 +2188,20 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
-    This algorithm uses bellman_ford_predecessor_and_distance() but finds
-    negative cycles on any component by first adding a new node connected to
-    every node, and starting bellman_ford_predecessor_and_distance on that
-    node.  It then removes that extra node.
+    This algorithm uses Bellman–Ford with every node as a source to find
+    negative cycles in any component without modifying the graph. Only
+    original edges are evaluated by the weight function, in traversal order.
     """
     if G.size() == 0:
         return False
 
-    # find unused node to use temporarily
-    newnode = -1
-    while newnode in G:
-        newnode -= 1
-    # connect it to all nodes
-    G.add_edges_from([(newnode, n) for n in G])
-
+    weight = _weight_function(G, weight)
     try:
-        bellman_ford_predecessor_and_distance(
-            G, newnode, weight=weight, heuristic=heuristic
-        )
+        # Initializing every distance to zero reaches all components without
+        # adding artificial edges that could introduce new negative cycles.
+        _bellman_ford(G, list(G), weight, heuristic=heuristic)
     except nx.NetworkXUnbounded:
         return True
-    finally:
-        G.remove_node(newnode)
     return False
 
 
@@ -2245,7 +2239,7 @@ def find_negative_cycle(G, source, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Examples
     --------
@@ -2481,7 +2475,7 @@ def johnson(G, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -2532,7 +2526,10 @@ def johnson(G, weight="weight"):
     # Update the weight function to take into account the Bellman--Ford
     # relaxation distances.
     def new_weight(u, v, d):
-        return weight(u, v, d) + dist_bellman[u] - dist_bellman[v]
+        w = weight(u, v, d)
+        if w is None:
+            return None
+        return w + dist_bellman[u] - dist_bellman[v]
 
     def dist_path(v):
         paths = {v: [v]}
