@@ -47,7 +47,7 @@ __all__ = [
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
-def prefix_tree(paths):
+def prefix_tree(paths, *, attr_name="source"):
     """Creates a directed prefix tree from a list of paths.
 
     Usually the paths are described as strings or lists of integers.
@@ -64,19 +64,20 @@ def prefix_tree(paths):
     with the one element sequence of the parent, and so on.
 
     Note that this implementation uses integer nodes with an attribute.
-    Each node has an attribute "source" whose value is the original element
+    Each node has an attribute `attr_name` whose value is the original element
     of the path to which this node corresponds. For example, suppose `paths`
     consists of one path: "can". Then the nodes `[1, 2, 3]` which represent
-    this path have "source" values "c", "a" and "n".
+    this path have values "c", "a" and "n" stored in the node attribute given
+    by `attr_name`.
 
     All the descendants of a node have a common prefix in the sequence/path
     associated with that node. From the returned tree, the prefix for each
     node can be constructed by traversing the tree up to the root and
-    accumulating the "source" values along the way.
+    accumulating the `attr_name` values along the way.
 
-    The root node is always `0` and has "source" attribute `None`.
+    The root node is always `0` and has `attr_name` attribute `None`.
     The root is the only node with in-degree zero.
-    The nil node is always `-1` and has "source" attribute `"NIL"`.
+    The nil node is always `-1` and has `attr_name` attribute `"NIL"`.
     The nil node is the only node with out-degree zero.
 
 
@@ -88,7 +89,14 @@ def prefix_tree(paths):
         nodes of the prefix tree. One leaf of the tree is associated
         with each path. (Identical paths are associated with the same
         leaf of the tree.)
-
+    attr_name : str, optional, default="source"
+        Name of the node attribute on which the original data will be stored.
+        By default, this attribute name is ``"source"``, so the original value
+        of any node can be accessed by ``G.nodes[n]["source"]``.
+        If ``attr_name=None``, the original data will not be stored on the
+        graph. The original `paths` cannot be reconstructed without these values,
+        but this may be useful if you're only interested in the topology of
+        the resultant prefix tree.
 
     Returns
     -------
@@ -103,11 +111,9 @@ def prefix_tree(paths):
         arborescence but a directed acyclic graph; removing the nil node
         makes it an arborescence.)
 
-
     Notes
     -----
     The prefix tree is also known as a *trie*.
-
 
     Examples
     --------
@@ -154,10 +160,10 @@ def prefix_tree(paths):
 
     # Initialize the prefix tree with a root node and a nil node.
     tree = nx.DiGraph()
-    root = 0
-    tree.add_node(root, source=None)
-    NIL = -1
-    tree.add_node(NIL, source="NIL")
+    root, root_data = 0, {attr_name: None} if attr_name is not None else {}
+    tree.add_node(root, **root_data)
+    NIL, nil_data = -1, {attr_name: "NIL"} if attr_name is not None else {}
+    tree.add_node(NIL, **nil_data)
     children = get_children(root, paths)
     stack = [(root, iter(children.items()))]
     while stack:
@@ -170,8 +176,10 @@ def prefix_tree(paths):
             continue
         # We relabel each child with an unused name.
         new_name = len(tree) - 1
-        # The "source" node attribute stores the original node name.
-        tree.add_node(new_name, source=child)
+        # The node attribute given by `attr_name` stores the original node name.
+        # If `attr_name` is None, the value is not stored on the graph
+        data = {attr_name: child} if attr_name is not None else {}
+        tree.add_node(new_name, **data)
         tree.add_edge(parent, new_name)
         children = get_children(new_name, remaining_paths)
         stack.append((new_name, iter(children.items())))
