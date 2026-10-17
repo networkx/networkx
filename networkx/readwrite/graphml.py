@@ -664,7 +664,8 @@ class GraphMLWriter(GraphML):
         else:
             default_edge_type = "undirected"
 
-        graphid = G.graph.pop("id", None)
+        # "id" is written as the <graph> element's id attribute, not as data
+        graphid = G.graph.get("id")
         if graphid is None:
             graph_element = self.myElement("graph", edgedefault=default_edge_type)
         else:
@@ -675,7 +676,7 @@ class GraphMLWriter(GraphML):
         data = {
             k: v
             for (k, v) in G.graph.items()
-            if k not in ["node_default", "edge_default"]
+            if k not in ["node_default", "edge_default", "id"]
         }
         self.add_attributes("graph", graph_element, data, default)
         self.add_nodes(G, graph_element)
@@ -795,7 +796,8 @@ class GraphMLWriterLxml(GraphMLWriter):
         else:
             default_edge_type = "undirected"
 
-        graphid = G.graph.pop("id", None)
+        # "id" is written as the <graph> element's id attribute, not as data
+        graphid = G.graph.get("id")
         if graphid is None:
             graph_element = self._xml.element("graph", edgedefault=default_edge_type)
         else:
@@ -809,7 +811,7 @@ class GraphMLWriterLxml(GraphMLWriter):
         graphdata = {
             k: v
             for k, v in G.graph.items()
-            if k not in ("node_default", "edge_default")
+            if k not in ("node_default", "edge_default", "id")
         }
         node_default = G.graph.get("node_default", {})
         edge_default = G.graph.get("edge_default", {})
