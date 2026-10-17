@@ -16,7 +16,7 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
     r"""Compute the percolation centrality for nodes.
 
     Percolation centrality of a node $v$, at a given time, is defined
-    as the proportion of ‘percolated paths’ that go through that node.
+    as the proportion of 'percolated paths' that go through that node.
 
     This measure quantifies relative impact of nodes based on their
     topological connectivity, as well as their percolation states.
@@ -107,6 +107,9 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
         )
 
     n = len(G)
+
+    if n <= 2:
+        return percolation
 
     for v in percolation:
         percolation[v] *= 1 / (n - 2)
