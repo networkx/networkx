@@ -45,7 +45,7 @@ def _normalized_adjacency(G, weight):
         edges.append((u, v, value))
     # All-zero weighted graphs represent zero opportunities.
     scale = scale or 1.0
-    # Four normalized weights are multiplied in quadrangle counts. For extreme
+    # Three normalized weights are multiplied in triangle counts. For extreme
     # dynamic ranges, float products (or normalization itself) can underflow
     # even when the final ratio is near one. Preserve exact binary-float ratios
     # in that uncommon case; normal inputs retain the fast float path.
@@ -62,9 +62,16 @@ def _normalized_adjacency(G, weight):
 
 
 def _sum(values):
-    """Accurately sum floats, retaining exact fallback fractions when present."""
-    values = iter(values)
-    first = next(values, 0)
+    """Sum a numeric domain without zero terms coercing exact fractions.
+
+    Zero-opportunity terms are omitted and empty sums return integer zero, so
+    subsequent fractional counts retain their domain. All nonzero terms from
+    one prepared graph share a type.
+    """
+    values = (value for value in values if value != 0)
+    first = next(values, None)
+    if first is None:
+        return 0
     values = chain((first,), values)
     return sum(values) if isinstance(first, Fraction) else math.fsum(values)
 

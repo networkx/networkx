@@ -931,8 +931,9 @@ def directed_closure(G, nodes=None, weight=None, *, pattern="total"):
     Notes
     -----
     Patterns use their own endpoint-opportunity denominators. They are not
-    conventional directed clustering or induced triad census values. For unweighted inputs at every
-    node, total equals (source + target) / 2. Reversing all arcs swaps source with
+    conventional directed clustering or induced triad census values. For
+    unweighted inputs at every node, total equals (source + target) / 2.
+    Reversing all arcs swaps source with
     target and head with end, and preserves total, mid and cyclic. Pattern
     counting scans intersections of predecessor/successor sets along incident
     arcs; graph preparation takes O(n + m) space and time.

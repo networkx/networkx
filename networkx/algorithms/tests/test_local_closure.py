@@ -112,3 +112,31 @@ def test_unsupported_patterns_and_weights():
         G = nx.DiGraph([(0, 1, {"w": value})])
         with pytest.raises(ValueError, match="finite nonnegative"):
             nx.closure(G, weight="w")
+
+
+@pytest.mark.parametrize("directed", [False, True])
+@pytest.mark.parametrize("maximum", [1.0, 1e308])
+def test_extreme_weights_and_open_paths_against_exact_oracle(directed, maximum):
+    G = nx.DiGraph() if directed else nx.Graph()
+    G.add_node("isolated")
+    G.add_weighted_edges_from(
+        [(0, 1, 1e-200), (1, 2, 1e-200), (2, 0, maximum), (1, 4, 1e-200)]
+    )
+    before = deepcopy(G)
+    exact = {v: weighted_closure_oracle(G, v, "weight", exact=True) for v in G}
+    assert exact[1] > 0
+    # A final coefficient below the float range can legitimately round to zero.
+    expected = {v: float(value) for v, value in exact.items()}
+    assert nx.closure(G, weight="weight") == pytest.approx(expected, abs=0, rel=1e-12)
+    assert nx.utils.graphs_equal(G, before)
+
+
+def test_full_graph_normalization_and_read_only_views():
+    G = nx.complete_graph(4)
+    nx.set_edge_attributes(G, 1, "w")
+    G.add_edge("outside", "component", w=10)
+    before = deepcopy(G)
+    assert nx.closure(G, 0, "w") == pytest.approx(0.1)
+    for view in (nx.freeze(G), G.subgraph(range(3))):
+        assert nx.closure(view, weight="w")
+    assert nx.utils.graphs_equal(G, before)
