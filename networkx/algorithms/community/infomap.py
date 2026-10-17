@@ -266,6 +266,7 @@ class _CoreOptimizer:
         old_exit = self.module_exit[old]
         enter = self.module_enter[old] - node_enter + old_cross
         exit = old_exit - node_exit + old_cross
+        # The terms of `usage` keep this order on purpose; see _delta_codelength.
         usage = old_exit + self.module_flow[old] - node_exit - node_flow + old_cross
         old_after = _plogp(usage) - _plogp(enter) - _plogp(exit)
         # `self.enter_flow` and the module terms are stable during the scan (no
@@ -295,6 +296,12 @@ class _CoreOptimizer:
         new_exit = self.module_exit[new]
         enter = self.module_enter[new] + ctx.node_enter - new_cross
         exit = new_exit + ctx.node_exit - new_cross
+        # `usage` equals `exit + self.module_flow[new] + ctx.node_flow`, but not
+        # bit for bit: floating-point addition is not associative, and the last
+        # bit can decide a near-tie between two moves (see
+        # _MIN_SINGLE_NODE_IMPROVEMENT). Building it from `exit` sends some
+        # searches to a different local optimum, and no better one on average,
+        # so the terms keep this order.
         usage = (
             new_exit + self.module_flow[new] + ctx.node_exit + ctx.node_flow - new_cross
         )
