@@ -13,3 +13,5 @@ Clustering
    average_clustering
    square_clustering
    generalized_degree
+   closure
+   average_closure
