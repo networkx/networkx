@@ -15,3 +15,5 @@ Clustering
    generalized_degree
    closure
    average_closure
+   directed_closure
+   average_directed_closure
