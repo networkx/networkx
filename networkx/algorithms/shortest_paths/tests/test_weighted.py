@@ -1,6 +1,9 @@
+from functools import partial
+
 import pytest
 
 import networkx as nx
+from networkx.algorithms.shortest_paths import weighted
 from networkx.utils import pairwise
 
 
@@ -638,6 +641,84 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G = nx.Graph()
         G.add_edge(0, 1, weight=-1)
         assert nx.find_negative_cycle(G, 1) == [1, 0, 1]
+
+    @pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
+    @pytest.mark.parametrize("heuristic", [False, True])
+    @pytest.mark.parametrize("callable_weight", [False, True])
+    @pytest.mark.parametrize(
+        "edges",
+        [
+            # The predecessor search used to exhaust without finding a cycle.
+            [
+                (0, 1, 0),
+                (0, 2, 0),
+                (1, 4, -1),
+                (1, 5, 0),
+                (3, 5, 0),
+                (4, 2, 0),
+                (4, 3, 0),
+                (5, 0, -1),
+                (5, 1, 0),
+            ],
+            # Equal-distance predecessors used to yield a zero-weight cycle.
+            [
+                (0, 2, 0),
+                (1, 0, -1),
+                (1, 2, 0),
+                (2, 3, 0),
+                (3, 1, 0),
+                (3, 5, 0),
+                (5, 1, -1),
+                (5, 4, 0),
+            ],
+        ],
+    )
+    def test_find_negative_cycle_zero_weight_edges(
+        self, graph_type, heuristic, callable_weight, edges, monkeypatch
+    ):
+        # Exercise both negative-cycle detection paths in Bellman-Ford.
+        monkeypatch.setattr(
+            weighted,
+            "_inner_bellman_ford",
+            partial(weighted._inner_bellman_ford, heuristic=heuristic),
+        )
+        G = graph_type()
+        G.add_weighted_edges_from(edges, weight="cost")
+        if G.is_multigraph():
+            G.add_weighted_edges_from(
+                [(u, v, w + 10) for u, v, w in edges], weight="cost"
+            )
+
+        if callable_weight:
+
+            def weight(u, v, data):
+                if G.is_multigraph():
+                    return min(d["cost"] for d in data.values())
+                return data["cost"]
+
+        else:
+            weight = "cost"
+
+        cycle = nx.find_negative_cycle(G, 0, weight=weight)
+        assert cycle[0] == cycle[-1]
+        assert len(set(cycle[:-1])) == len(cycle) - 1
+        assert nx.path_weight(G, cycle, "cost") < 0
+
+    @pytest.mark.parametrize(
+        "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+    )
+    @pytest.mark.parametrize("node", [0, 1])
+    def test_find_negative_cycle_self_loop(self, graph_type, node):
+        G = graph_type()
+        G.add_edge(0, node, weight=0)
+        G.add_edge(node, node, weight=-1)
+        assert nx.find_negative_cycle(G, 0) == [node, node]
+
+    def test_find_negative_cycle_unreachable(self):
+        G = nx.DiGraph()
+        G.add_weighted_edges_from([(0, 1, 0), (1, 0, 0), (2, 2, -1)])
+        with pytest.raises(nx.NetworkXError, match="No negative cycles detected"):
+            nx.find_negative_cycle(G, 0)
 
     def test_negative_weight(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
