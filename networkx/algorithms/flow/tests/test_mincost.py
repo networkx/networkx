@@ -68,6 +68,27 @@ class TestMinCostFlow:
         pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
         pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
 
+    def test_capacity_scaling_infeasible_zero_capacity_edges(self):
+        # #8934: with every edge filtered out (capacity 0), the residual
+        # network has no edges and capacity_scaling returned a zero-cost
+        # flow that met none of the demands instead of raising.
+        G = nx.DiGraph()
+        G.add_node(0, demand=1)
+        G.add_node(1, demand=-1)
+        G.add_edge(1, 0, capacity=0, weight=1)
+        pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+        pytest.raises(nx.NetworkXUnfeasible, nx.min_cost_flow, G)
+        pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+
+    def test_capacity_scaling_edgeless_zero_demands(self):
+        # A graph with no usable edges and zero demands is feasible:
+        # the empty flow satisfies them.
+        G = nx.DiGraph()
+        G.add_nodes_from([0, 1])
+        flow_cost, flow = nx.capacity_scaling(G)
+        assert flow_cost == 0
+        assert flow == {0: {}, 1: {}}
+
     def test_transshipment(self):
         G = nx.DiGraph()
         G.add_node("a", demand=1)
