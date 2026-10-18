@@ -870,3 +870,37 @@ def test_initial_node_labels_subgraph_hash():
             with_initial_label[u][1:], without_initial_label[u], strict=True
         ):
             assert a == b
+
+
+def test_directed_edge_attr_distinguishes_in_out():
+    """
+    #8945: with `edge_attr` set, the s_/p_ prefixes were dropped from
+    directed aggregation, so direction-distinct graphs with identical
+    edge labels hashed identically (an outward and an inward star).
+    """
+    out_star = nx.DiGraph([(0, 1), (0, 2)])
+    in_star = nx.DiGraph([(1, 0), (2, 0)])
+    for G in (out_star, in_star):
+        nx.set_edge_attributes(G, "x", "weight")
+
+    with pytest.warns(UserWarning, match="edge attribute"):
+        out_hash = nx.weisfeiler_lehman_graph_hash(out_star, edge_attr="weight")
+    with pytest.warns(UserWarning, match="edge attribute"):
+        in_hash = nx.weisfeiler_lehman_graph_hash(in_star, edge_attr="weight")
+    assert out_hash != in_hash
+
+    # Isomorphic relabeling still hashes identically.
+    out_star_relabeled = nx.DiGraph([(10, 11), (10, 12)])
+    nx.set_edge_attributes(out_star_relabeled, "x", "weight")
+    with pytest.warns(UserWarning, match="edge attribute"):
+        relabeled_hash = nx.weisfeiler_lehman_graph_hash(
+            out_star_relabeled, edge_attr="weight"
+        )
+    assert out_hash == relabeled_hash
+
+    # Subgraph hashes distinguish the centers too.
+    with pytest.warns(UserWarning, match="edge attribute"):
+        out_sub = nx.weisfeiler_lehman_subgraph_hashes(out_star, edge_attr="weight")
+    with pytest.warns(UserWarning, match="edge attribute"):
+        in_sub = nx.weisfeiler_lehman_subgraph_hashes(in_star, edge_attr="weight")
+    assert out_sub[0] != in_sub[0]

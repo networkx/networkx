@@ -54,12 +54,12 @@ def _neighborhood_aggregate_directed(G, node, node_labels, edge_attr=None):
     """
     successor_labels = []
     for nbr in G.successors(node):
-        prefix = "s_" + "" if edge_attr is None else str(G[node][nbr][edge_attr])
+        prefix = "s_" + ("" if edge_attr is None else str(G[node][nbr][edge_attr]))
         successor_labels.append(prefix + node_labels[nbr])
 
     predecessor_labels = []
     for nbr in G.predecessors(node):
-        prefix = "p_" + "" if edge_attr is None else str(G[nbr][node][edge_attr])
+        prefix = "p_" + ("" if edge_attr is None else str(G[nbr][node][edge_attr]))
         predecessor_labels.append(prefix + node_labels[nbr])
     return (
         node_labels[node]
@@ -84,6 +84,12 @@ def weisfeiler_lehman_graph_hash(
         hashes can be obtained by increasing the iteration count by one.
         For more details, see `issue #7806
         <https://github.com/networkx/networkx/issues/7806>`_.
+
+        Hash values for directed graphs with `edge_attr` set changed in v3.8:
+        the in-/out-edge label prefixes were dropped from the aggregation,
+        so direction-distinct graphs with identical edge labels (e.g. an
+        inward and an outward star) hashed identically. See `issue #8945
+        <https://github.com/networkx/networkx/issues/8945>`_.
 
     The function iteratively aggregates and hashes neighborhoods of each node.
     After each node's neighbors are hashed to obtain updated node labels,
@@ -189,6 +195,14 @@ def weisfeiler_lehman_graph_hash(
             UserWarning,
             stacklevel=2,
         )
+        if edge_attr is not None:
+            warnings.warn(
+                "The hashes produced for directed graphs with an edge attribute"
+                " changed in v3.8 due to a bugfix restoring the in-/out-edge"
+                " label prefixes (see documentation).",
+                UserWarning,
+                stacklevel=2,
+            )
     else:
         _neighborhood_aggregate = _neighborhood_aggregate_undirected
 
@@ -388,6 +402,14 @@ def weisfeiler_lehman_subgraph_hashes(
             UserWarning,
             stacklevel=2,
         )
+        if edge_attr is not None:
+            warnings.warn(
+                "The hashes produced for directed graphs with an edge attribute"
+                " changed in v3.8 due to a bugfix restoring the in-/out-edge"
+                " label prefixes (see documentation).",
+                UserWarning,
+                stacklevel=2,
+            )
     else:
         _neighborhood_aggregate = _neighborhood_aggregate_undirected
 
