@@ -101,18 +101,19 @@ def bsdfs(G, source, target, length_bound):
     tree, it yields every such path.
 
     Together with the length bound, per-node barriers limit the *scope*
-    of the search, hence the name. As a result, the delay, the time until
+    of the search, hence the name. As a result, the *delay*, the time until
     the next output or until the search ends, is ``O(k(n+m))`` (see Notes),
     whereas a plain depth-limited search can spend time exponential in
     `length_bound` on dead ends.
 
     Parameters
     ----------
-    G : NetworkX DiGraph
+    G : NetworkX graph
+        Directed or undirected; multigraphs are allowed.
     source : node
         Source node, where every reported path starts.
     target : node or set of nodes
-        A single node enumerates the simple paths from `source` to `target`; as a
+        A single node enumerates the simple paths from `source` to `target`. As a
         special case, ``target == source`` enumerates the simple cycles through `source`.
         A set enumerates the simple paths from `source` to any node of the set,
         and such a path may pass through one node of the set on its way to
@@ -128,6 +129,15 @@ def bsdfs(G, source, target, length_bound):
         reached.  All nodes are distinct, except that a cycle (``target == source``)
         ends at `source` again.  The one-node list ``[source]`` is yielded for the
         trivial path, i.e. when `source` is in the target set.
+
+        On undirected graphs (``Graph`` or ``MultiGraph``), in the cycle case
+        ``target == source`` the search may return to `source` along the edge it left by,
+        so ``[source, u, source]`` is reported for every neighbor ``u``, and every
+        longer cycle is reported twice, once per orientation. Use
+        :func:`~networkx.algorithms.cycles.simple_cycles` for the cycles of an
+        undirected graph. Paths (``target != source``) are not affected. On multigraphs,
+        each node path is reported once; :func:`bsdfs_edges` yields one edge
+        path per combination of parallel edges.
 
     Raises
     ------
@@ -180,10 +190,10 @@ def bsdfs(G, source, target, length_bound):
     Notes
     -----
     The time a consumer waits for the first path, for each next path, and for
-    exhaustion of the generator, the delay, is at most ``3(k+1)(n+m)``
+    exhaustion of the generator, the *delay*, is at most ``3(k+1)(n+m)``
     elementary steps, and the first ``p`` outputs are generated in at most
     ``2p(k+1)(n+m)`` elementary steps [1]_.
-    Here ``k`` is length_bound, ``n`` is the number of nodes reachable from `source`
+    Here ``k`` is `length_bound`, ``n`` is the number of nodes reachable from `source`
     within ``k`` edges, and ``m`` the number of edges incident with them (incoming or
     outgoing). An elementary step is a node visit or a single adjacency-list
     entry scan.
@@ -294,7 +304,8 @@ def bsdfs_edges(G, source, target, length_bound):
 
     Parameters
     ----------
-    G : NetworkX DiGraph
+    G : NetworkX graph
+        Directed or undirected; multigraphs are allowed.
     source : node
         Source node, where every reported path starts.
     target : node or set of nodes
@@ -303,7 +314,7 @@ def bsdfs_edges(G, source, target, length_bound):
         A set enumerates the simple paths from `source` to any node of the set,
         and such a path may pass through one node of the set on its way to
         another.  A single node and the corresponding one-element set give
-        the same paths, except in the cycle case ``target == source``.
+        the same paths, except in the cycle case.
     length_bound : int
         Length bound in edges.
 
@@ -313,6 +324,13 @@ def bsdfs_edges(G, source, target, length_bound):
         The edges of the path, as ``(u, v)``, resp. ``(u, v, key)`` on a
         multigraph.  The empty list is yielded for the trivial path, i.e.
         when `source` is in the target set.
+
+        On undirected graphs (``Graph`` or ``MultiGraph``), in the cycle case
+        ``target == source`` the search may return to `source` along the edge it left by,
+        so ``[(source, u), (u, source)]`` is reported for every neighbor ``u``, and every
+        longer cycle is reported twice, once per orientation. Use
+        :func:`~networkx.algorithms.cycles.simple_cycles` for the cycles of an
+        undirected graph. Paths (``target != source``) are not affected.
 
     Raises
     ------
