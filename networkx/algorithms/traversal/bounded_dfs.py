@@ -60,12 +60,6 @@
 # which yields a delay of O(k(n+m)) per output; see the Notes of the ``bsdfs``
 # docstring for the exact bounds and [1]_ for the proofs.
 #
-# Prior work
-# ----------
-# Two earlier papers for the same enumeration problems are listed here as
-# prior art, not as alternatives: [1]_ and [2]_ demonstrate inputs on which
-# [3]_ and [4]_ omit valid outputs.
-#
 # References
 # ----------
 # .. [1] Frank Bauernöppel, Jörg-Rüdiger Sack,
@@ -75,11 +69,6 @@
 # .. [2] Frank Bauernöppel, Jörg-Rüdiger Sack,
 #     "Finding All Bounded-Length Simple Cycles in a Directed Graph --
 #     Revisited", 2025, https://arxiv.org/abs/2512.08392
-# .. [3] Y. Peng et al., "Efficient Hop-constrained s-t Simple Path
-#     Enumeration", The VLDB Journal 30(5):799-823, 2021,
-#     https://doi.org/10.1007/s00778-021-00674-5
-# .. [4] A. Gupta and T. Suzumura, "Finding All Bounded-Length Simple Cycles
-#     in a Directed Graph", 2021, https://arxiv.org/abs/2105.10094
 
 import itertools
 from collections import defaultdict, deque
@@ -266,8 +255,8 @@ def bsdfs(G, source, target, length_bound):
             if barrier[w] + h < length_bound:  # node w admissible?
                 if w == terminal:  # terminal target: report, do not enter
                     yield [*stack, v, w]
-                    if current_sd > 1:  # update shortest distance found
-                        current_sd = 1
+                    if current_sd > 1:  # noqa: PLR1730, better performance
+                        current_sd = 1  # update shortest distance found
                 elif w != v and w not in stack:
                     stack[v] = (current_iterator, current_sd)  # push v and its state
                     v = w
@@ -364,8 +353,10 @@ def bsdfs_edges(G, source, target, length_bound):
     paths = bsdfs(G, source, target, length_bound)
     if G.is_multigraph():
         for path in paths:
-            choices = [[(u, v, key) for key in G[u][v]] for u, v in zip(path, path[1:])]
+            choices = [
+                [(u, v, key) for key in G[u][v]] for u, v in itertools.pairwise(path)
+            ]
             yield from (list(c) for c in itertools.product(*choices))
     else:
         for path in paths:
-            yield [(u, v) for u, v in zip(path, path[1:])]
+            yield [(u, v) for u, v in itertools.pairwise(path)]
