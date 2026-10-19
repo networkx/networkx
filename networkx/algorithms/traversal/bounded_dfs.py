@@ -3,9 +3,10 @@
 
 # Implementation overview
 # -----------------------
-# An iterative depth-first type of search starting at ``s`` and terminating
-# in ``t*``, a terminal node or any node of the target set, if a set is specified.
-# ``k`` is the length bound: no output has more than ``k`` edges.
+# An iterative depth-first type of search starting at ``s`` (``source``) and
+# terminating in ``t*``, which is a single node (``terminal``) or any node of the node
+# set ``targets`` (the two cases of ``target``).  ``k`` (``length_bound``) is the length
+# bound: no output has more than ``k`` edges.
 #
 # The search is structured using a dict as stack.  Its keys are the suspended nodes
 # of the current search path ``P = [*stack, v]``, in path order.  Its values hold,
