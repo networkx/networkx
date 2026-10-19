@@ -183,6 +183,34 @@ def test_optimal_arborescence2():
     assert branchings.branching_weight(G) == 51
 
 
+def test_spanning_arborescence_reweighting_gh8964():
+    # gh-8964: the weight shift used to find a spanning arborescence must make
+    # every spanning branching beat every non-spanning one; the old constant
+    # could let a lighter non-spanning branching win, causing a spurious
+    # "No ... spanning arborescence in G" exception.
+    edges = [
+        (0, 1, 1.0),
+        (0, 2, 10.0),
+        (0, 4, 1.0),
+        (1, 4, 10.0),
+        (2, 4, 0.4),
+        (3, 1, 10.0),
+        (4, 0, 1.0),
+    ]
+    expected = [(0, 2), (1, 4), (3, 1), (4, 0)]
+
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(edges)
+    A = nx.minimum_spanning_arborescence(G)
+    assert sorted(A.edges) == expected
+    assert A.size(weight="weight") == 31
+
+    H = nx.DiGraph()
+    H.add_weighted_edges_from((u, v, -w) for u, v, w in edges)
+    B = nx.maximum_spanning_arborescence(H)
+    assert sorted(B.edges) == expected
+
+
 def test_greedy_suboptimal_branching1a():
     G = build_branching(greedy_subopt_branching_1a)
     assert recognition.is_arborescence(G), True
