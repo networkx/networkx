@@ -1113,12 +1113,28 @@ class MultiGraph(Graph):
         G = self.__class__()
         G.graph.update(self.graph)
         G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
-        G.add_edges_from(
-            (u, v, key, datadict.copy())
-            for u, nbrs in self._adj.items()
-            for v, keydict in nbrs.items()
-            for key, datadict in keydict.items()
-        )
+        if self.is_directed():
+            G.add_edges_from(
+                (u, v, key, datadict.copy())
+                for u, nbrs in self._adj.items()
+                for v, keydict in nbrs.items()
+                for key, datadict in keydict.items()
+            )
+        else:
+            # ``self._adj`` lists each undirected edge from both endpoints.
+            # ``add_edges_from`` already populates both directions, so emitting
+            # each edge once avoids copying and re-inserting every edge twice.
+            seen = set()
+
+            def _edges_once():
+                for u, nbrs in self._adj.items():
+                    for v, keydict in nbrs.items():
+                        if v not in seen:
+                            for key, datadict in keydict.items():
+                                yield (u, v, key, datadict.copy())
+                    seen.add(u)
+
+            G.add_edges_from(_edges_once())
         return G
 
     def to_directed(self, as_view=False):

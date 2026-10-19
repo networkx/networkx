@@ -1670,11 +1670,26 @@ class Graph:
         G = self.__class__()
         G.graph.update(self.graph)
         G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
-        G.add_edges_from(
-            (u, v, datadict.copy())
-            for u, nbrs in self._adj.items()
-            for v, datadict in nbrs.items()
-        )
+        if self.is_directed():
+            G.add_edges_from(
+                (u, v, datadict.copy())
+                for u, nbrs in self._adj.items()
+                for v, datadict in nbrs.items()
+            )
+        else:
+            # ``self._adj`` lists each undirected edge from both endpoints.
+            # ``add_edges_from`` already populates both directions, so emitting
+            # each edge once avoids copying and re-inserting every edge twice.
+            seen = set()
+
+            def _edges_once():
+                for u, nbrs in self._adj.items():
+                    for v, datadict in nbrs.items():
+                        if v not in seen:
+                            yield (u, v, datadict.copy())
+                    seen.add(u)
+
+            G.add_edges_from(_edges_once())
         return G
 
     def to_directed(self, as_view=False):
