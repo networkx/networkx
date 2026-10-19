@@ -622,3 +622,80 @@ def test_branchings_with_default_weights():
     assert all("weight" not in d for (u, v, d) in graph.edges(data=True)), (
         "The above calls should not modify the initial graph in-place"
     )
+
+
+def test_spanning_arborescence_counterexample_8964():
+    # Counterexample from issue #8964: a graph that contains a unique spanning
+    # arborescence where previously minimal_branching preferred a non-spanning
+    # branching due to insufficient penalty shift C.
+    E = [
+        (0, 1, 1.0),
+        (0, 2, 10.0),
+        (0, 4, 1.0),
+        (1, 4, 10.0),
+        (2, 4, 0.4),
+        (3, 1, 10.0),
+        (4, 0, 1.0),
+    ]
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(E)
+
+    expected_min_edges = [(0, 2, 10.0), (1, 4, 10.0), (3, 1, 10.0), (4, 0, 1.0)]
+    expected_min = build_branching(expected_min_edges)
+
+    B_min = branchings.minimum_spanning_arborescence(G)
+    assert_equal_branchings(B_min, expected_min)
+    assert recognition.is_arborescence(B_min)
+    assert branchings.branching_weight(B_min) == pytest.approx(31.0)
+
+    # minimal_branching should also select the spanning arborescence
+    B_minimal = branchings.minimal_branching(G)
+    assert_equal_branchings(B_minimal, expected_min)
+
+    # Test negated weights on maximum_spanning_arborescence
+    H = nx.DiGraph()
+    H.add_weighted_edges_from((u, v, -w) for u, v, w in E)
+    expected_max_edges = [(u, v, -w) for u, v, w in expected_min_edges]
+    expected_max = build_branching(expected_max_edges)
+
+    B_max = branchings.maximum_spanning_arborescence(H)
+    assert_equal_branchings(B_max, expected_max)
+    assert recognition.is_arborescence(B_max)
+    assert branchings.branching_weight(B_max) == pytest.approx(-31.0)
+
+
+def test_spanning_arborescence_uniform_weights():
+    # Spanning arborescence on graph with uniform (zero, positive, negative) weights
+    G = nx.cycle_graph(4, create_using=nx.DiGraph)
+    for w in [0, 5, -3]:
+        for u, v in G.edges():
+            G[u][v]["weight"] = w
+        B_min = branchings.minimum_spanning_arborescence(G)
+        assert recognition.is_arborescence(B_min)
+        assert len(B_min.edges) == 3
+        assert branchings.branching_weight(B_min) == pytest.approx(3 * w)
+
+        B_max = branchings.maximum_spanning_arborescence(G)
+        assert recognition.is_arborescence(B_max)
+        assert len(B_max.edges) == 3
+        assert branchings.branching_weight(B_max) == pytest.approx(3 * w)
+
+
+def test_spanning_arborescence_edgeless():
+    G0 = nx.DiGraph()
+    with pytest.raises(nx.NetworkXPointlessConcept):
+        branchings.minimum_spanning_arborescence(G0)
+    with pytest.raises(nx.NetworkXPointlessConcept):
+        branchings.maximum_spanning_arborescence(G0)
+
+    G1 = nx.DiGraph()
+    G1.add_node(0)
+    assert list(branchings.minimum_spanning_arborescence(G1).nodes) == [0]
+    assert list(branchings.maximum_spanning_arborescence(G1).nodes) == [0]
+
+    G2 = nx.DiGraph()
+    G2.add_nodes_from([0, 1])
+    with pytest.raises(nx.NetworkXException, match="No minimum spanning arborescence"):
+        branchings.minimum_spanning_arborescence(G2)
+    with pytest.raises(nx.NetworkXException, match="No maximum spanning arborescence"):
+        branchings.maximum_spanning_arborescence(G2)

@@ -661,6 +661,9 @@ def minimal_branching(
     B : (multi)digraph-like
         A minimal branching.
     """
+    if G.number_of_edges() == 0:
+        return maximum_branching(G, attr, default, preserve_attrs, partition)
+
     max_weight = -INF
     min_weight = INF
     for _, _, w in G.edges(data=attr, default=default):
@@ -669,23 +672,25 @@ def minimal_branching(
         if w < min_weight:
             min_weight = w
 
+    n = len(G)
+    C = n * max_weight - (n - 1) * min_weight + 1
+
     for _, _, d in G.edges(data=True):
-        # Transform the weights so that the minimum weight is larger than
-        # the difference between the max and min weights. This is important
-        # in order to prevent the edge weights from becoming negative during
-        # computation
-        d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
+        # Transform the weights so that every branching of maximum cardinality
+        # (in particular, spanning arborescences) strictly dominates any branching
+        # of smaller cardinality, and weights remain positive during computation.
+        d[attr] = C - d.get(attr, default)
     nx._clear_cache(G)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     # Reverse the weight transformations
     for _, _, d in G.edges(data=True):
-        d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
+        d[attr] = C - d.get(attr, default)
     nx._clear_cache(G)
 
     for _, _, d in B.edges(data=True):
-        d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
+        d[attr] = C - d.get(attr, default)
     nx._clear_cache(B)
 
     return B
@@ -705,6 +710,12 @@ def maximum_spanning_arborescence(
     # become negative during the branching algorithm, find the maximum branching and
     # then return them to their original values.
 
+    if G.number_of_edges() == 0:
+        B = maximum_branching(G, attr, default, preserve_attrs, partition)
+        if not is_arborescence(B):
+            raise nx.NetworkXException("No maximum spanning arborescence in G.")
+        return B
+
     min_weight = INF
     max_weight = -INF
     for _, _, w in G.edges(data=attr, default=default):
@@ -713,18 +724,21 @@ def maximum_spanning_arborescence(
         if w > max_weight:
             max_weight = w
 
+    n = len(G)
+    C = (n - 1) * max_weight - n * min_weight + 1
+
     for _, _, d in G.edges(data=True):
-        d[attr] = d.get(attr, default) - min_weight + 1 - (min_weight - max_weight)
+        d[attr] = d.get(attr, default) + C
     nx._clear_cache(G)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     for _, _, d in G.edges(data=True):
-        d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
+        d[attr] = d.get(attr, default) - C
     nx._clear_cache(G)
 
     for _, _, d in B.edges(data=True):
-        d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
+        d[attr] = d.get(attr, default) - C
     nx._clear_cache(B)
 
     if not is_arborescence(B):
