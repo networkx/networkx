@@ -352,11 +352,11 @@ def bsdfs_edges(G, source, target, length_bound):
     """
     paths = bsdfs(G, source, target, length_bound)
     if G.is_multigraph():
+        product = itertools.product
         for path in paths:
-            choices = [
-                [(u, v, key) for key in G[u][v]] for u, v in itertools.pairwise(path)
-            ]
-            yield from (list(c) for c in itertools.product(*choices))
+            nodepairs = nx.utils.pairwise(path)
+            choices = [[(u, v, key) for key in G[u][v]] for u, v in nodepairs]
+            yield from (list(c) for c in product(*choices))
     else:
         for path in paths:
-            yield [(u, v) for u, v in itertools.pairwise(path)]
+            yield list(nx.utils.pairwise(path))
