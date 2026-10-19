@@ -713,18 +713,28 @@ def maximum_spanning_arborescence(
         if w > max_weight:
             max_weight = w
 
+    # The shift C must be large enough that every spanning branching beats
+    # every non-spanning one: a branching with k edges has total weight at
+    # most k * max_weight, so with
+    # C > (n - 2) * max_weight - (n - 1) * min_weight, adding the (n - 1)th
+    # edge is always worth it, and a maximum branching is spanning whenever
+    # the graph has a spanning arborescence (see gh-8964). The shift also
+    # keeps every transformed weight positive, as required above.
+    n = G.number_of_nodes()
+    C = (n - 2) * max_weight - (n - 1) * min_weight + 1
+
     for _, _, d in G.edges(data=True):
-        d[attr] = d.get(attr, default) - min_weight + 1 - (min_weight - max_weight)
+        d[attr] = d.get(attr, default) + C
     nx._clear_cache(G)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     for _, _, d in G.edges(data=True):
-        d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
+        d[attr] = d.get(attr, default) - C
     nx._clear_cache(G)
 
     for _, _, d in B.edges(data=True):
-        d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
+        d[attr] = d.get(attr, default) - C
     nx._clear_cache(B)
 
     if not is_arborescence(B):
@@ -737,13 +747,39 @@ def maximum_spanning_arborescence(
 def minimum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
-    B = minimal_branching(
-        G,
-        attr=attr,
-        default=default,
-        preserve_attrs=preserve_attrs,
-        partition=partition,
-    )
+    # Adjust the weights so that maximizing the total weight finds a minimum
+    # spanning arborescence: with w' = C - w, a branching B has total
+    # |B| * C - w(B). The constant C must be large enough that every spanning
+    # branching beats every non-spanning one: since w(B) <= |B| * max_weight,
+    # C > (n - 1) * max_weight - (n - 2) * min_weight makes the extra edge of
+    # a spanning branching always worth it (see gh-8964). The transformation
+    # also keeps every transformed weight positive, which the branching
+    # algorithm relies on, and it is its own inverse.
+    max_weight = -INF
+    min_weight = INF
+    for _, _, w in G.edges(data=attr, default=default):
+        if w > max_weight:
+            max_weight = w
+        if w < min_weight:
+            min_weight = w
+
+    n = G.number_of_nodes()
+    C = (n - 1) * max_weight - (n - 2) * min_weight + 1
+
+    for _, _, d in G.edges(data=True):
+        d[attr] = C - d.get(attr, default)
+    nx._clear_cache(G)
+
+    B = maximum_branching(G, attr, default, preserve_attrs, partition)
+
+    # Reverse the weight transformations
+    for _, _, d in G.edges(data=True):
+        d[attr] = C - d.get(attr, default)
+    nx._clear_cache(G)
+
+    for _, _, d in B.edges(data=True):
+        d[attr] = C - d.get(attr, default)
+    nx._clear_cache(B)
 
     if not is_arborescence(B):
         raise nx.NetworkXException("No minimum spanning arborescence in G.")
