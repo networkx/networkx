@@ -62,6 +62,85 @@ def test_bsdfs_edges_multigraph_parallel_edges():
     ]
 
 
+def test_bsdfs_length_bound_zero():
+    G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+
+    assert list(bsdfs(G, 0, 0, length_bound=0)) == []
+    assert list(bsdfs(G, 0, 2, length_bound=0)) == []
+    assert list(bsdfs(G, 0, {0, 2}, length_bound=0)) == [[0]]
+
+
+def test_bsdfs_self_loops():
+    G = nx.DiGraph([(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 0)])
+
+    # a self-loop at the source is a cycle; self-loops elsewhere are skipped
+    assert list(bsdfs(G, 0, 0, length_bound=3)) == [[0, 0], [0, 1, 2, 0]]
+    assert list(bsdfs(G, 0, 2, length_bound=3)) == [[0, 1, 2]]
+    assert list(bsdfs(G, 0, {1, 2}, length_bound=3)) == [[0, 1], [0, 1, 2]]
+
+
+def test_bsdfs_undirected_graph():
+    G = nx.Graph([(0, 1), (1, 2), (2, 0), (2, 3)])
+
+    # cycles: [0, u, 0] for each neighbor u, longer cycles in both orientations
+    assert list(bsdfs(G, 0, 0, length_bound=3)) == [
+        [0, 1, 0],
+        [0, 1, 2, 0],
+        [0, 2, 1, 0],
+        [0, 2, 0],
+    ]
+    assert list(bsdfs(G, 0, 3, length_bound=3)) == [[0, 1, 2, 3], [0, 2, 3]]
+
+
+def test_bsdfs_edges_cycle_and_target_set():
+    G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (2, 0)])
+
+    assert list(bsdfs_edges(G, 0, 0, length_bound=3)) == [
+        [(0, 1), (1, 2), (2, 0)],
+        [(0, 2), (2, 0)],
+    ]
+    assert list(bsdfs_edges(G, 0, {1, 2}, length_bound=2)) == [
+        [(0, 1)],
+        [(0, 1), (1, 2)],
+        [(0, 2)],
+    ]
+
+
+def test_bsdfs_cascade_reaches_indirect_predecessors():
+    # A cascade that lowers only the barriers of direct predecessors
+    # misses the cycle [4, 3, 1, 0, 2, 4].
+    G = nx.DiGraph(
+        [(0, 2), (0, 3), (1, 0), (2, 1), (2, 4), (3, 1), (4, 0), (4, 2), (4, 3)]
+    )
+
+    assert list(bsdfs(G, 4, 4, length_bound=5)) == [
+        [4, 0, 2, 4],
+        [4, 2, 4],
+        [4, 3, 1, 0, 2, 4],
+    ]
+
+
+def test_bsdfs_shortest_distance_passed_to_parent():
+    # A search that does not pass a finished node's shortest distance on
+    # to its parent misses the path [2, 3, 1, 0].
+    G = nx.DiGraph([(1, 0), (1, 2), (2, 1), (2, 3), (3, 1)])
+
+    assert list(bsdfs(G, 2, {0, 2}, length_bound=4)) == [[2], [2, 1, 0], [2, 3, 1, 0]]
+
+
+def test_bsdfs_edges_undirected_multigraph():
+    G = nx.MultiGraph([(0, 1), (0, 1), (1, 2), (2, 0)])
+
+    assert list(bsdfs(G, 0, 0, length_bound=2)) == [[0, 1, 0], [0, 2, 0]]
+    assert list(bsdfs_edges(G, 0, 0, length_bound=2)) == [
+        [(0, 1, 0), (1, 0, 0)],
+        [(0, 1, 0), (1, 0, 1)],
+        [(0, 1, 1), (1, 0, 0)],
+        [(0, 1, 1), (1, 0, 1)],
+        [(0, 2, 0), (2, 0, 0)],
+    ]
+
+
 def test_bsdfs_hard_cycle_instances():
     # examples from:
     # Finding All Bounded-Length Simple Cycles in a Directed Graph -- Revisited
