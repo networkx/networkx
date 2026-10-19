@@ -156,7 +156,7 @@ def bsdfs(G, source, target, length_bound):
     With ``target == source`` these are the cycles through `source`, ending at `source`
     again.  The 4-edge cycle 0, 1, 2, 3 exceeds the bound.
 
-    >>> list(bsdfs(G, 0, 0, 3))
+    >>> list(bsdfs(G, source=0, target=0, length_bound=3))
     [[0, 1, 3, 0], [0, 2, 3, 0]]
 
     Cycles through the edge (0, 1) are the paths from 1 back to 0, with one
@@ -169,7 +169,7 @@ def bsdfs(G, source, target, length_bound):
     although it runs through the target 2.  A single node and the matching
     one-element set agree.
 
-    >>> list(bsdfs(G, 0, {2, 3}, 3))
+    >>> list(bsdfs(G, 0, {2, 3}, length_bound=3))
     [[0, 1, 2], [0, 1, 2, 3], [0, 1, 3], [0, 2], [0, 2, 3]]
     >>> list(bsdfs(G, 0, {3}, 3)) == list(bsdfs(G, 0, 3, 3))
     True
@@ -177,7 +177,7 @@ def bsdfs(G, source, target, length_bound):
     `source` in a target set yields the trivial path ``[source]`` but no cycle,
     since no simple path returns to `source`; ``target == source`` is the way to query for a cycle.
 
-    >>> list(bsdfs(G, 0, {0, 3}, 3))
+    >>> list(bsdfs(G, 0, {0, 3}, length_bound=3))
     [[0], [0, 1, 2, 3], [0, 1, 3], [0, 2, 3]]
 
     See Also
@@ -345,15 +345,15 @@ def bsdfs_edges(G, source, target, length_bound):
     Create G from cycles ``[0, 1, 3, 0]``, ``[0, 2, 3, 0]`` and ``[0, 1, 2, 3, 0]``.
 
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 0)])
-    >>> list(bsdfs_edges(G, 0, 3, 3))
+    >>> list(bsdfs_edges(G, source=0, target=3, length_bound=3))
     [[(0, 1), (1, 2), (2, 3)], [(0, 1), (1, 3)], [(0, 2), (2, 3)]]
 
     Parallel edges give one path each, distinguished by their key.
 
     >>> M = nx.MultiDiGraph([(0, 1), (0, 1), (1, 2)])
-    >>> list(bsdfs(M, 0, 2, 3))
+    >>> list(bsdfs(M, 0, 2, length_bound=3))
     [[0, 1, 2]]
-    >>> list(bsdfs_edges(M, 0, 2, 3))
+    >>> list(bsdfs_edges(M, 0, 2, length_bound=3))
     [[(0, 1, 0), (1, 2, 0)], [(0, 1, 1), (1, 2, 0)]]
 
     See Also

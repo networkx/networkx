@@ -7,9 +7,9 @@ from networkx.algorithms.traversal import bsdfs, bsdfs_edges
 def test_bsdfs_length_bound_and_target_set():
     G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 0)])
 
-    assert list(bsdfs(G, 0, 3, 1)) == []
-    assert list(bsdfs(G, 0, 3, 2)) == [[0, 1, 3], [0, 2, 3]]
-    assert list(bsdfs(G, 0, {2, 3}, 3)) == [
+    assert list(bsdfs(G, 0, 3, length_bound=1)) == []
+    assert list(bsdfs(G, 0, 3, length_bound=2)) == [[0, 1, 3], [0, 2, 3]]
+    assert list(bsdfs(G, 0, {2, 3}, length_bound=3)) == [
         [0, 1, 2],
         [0, 1, 2, 3],
         [0, 1, 3],
@@ -21,40 +21,40 @@ def test_bsdfs_length_bound_and_target_set():
 def test_bsdfs_cycles_and_trivial_path():
     G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
 
-    assert list(bsdfs(G, 0, 0, 2)) == []
-    assert list(bsdfs(G, 0, 0, 3)) == [[0, 1, 2, 0]]
-    assert list(bsdfs(G, 0, {0}, 3)) == [[0]]
+    assert list(bsdfs(G, 0, 0, length_bound=2)) == []
+    assert list(bsdfs(G, 0, 0, length_bound=3)) == [[0, 1, 2, 0]]
+    assert list(bsdfs(G, 0, {0}, length_bound=3)) == [[0]]
 
 
 def test_bsdfs_validation():
     G = nx.DiGraph([(0, 1)])
 
     with pytest.raises(ValueError, match="length bound"):
-        list(bsdfs(G, 0, 1, -1))
+        list(bsdfs(G, 0, 1, length_bound=-1))
     with pytest.raises(ValueError, match="non-empty"):
-        list(bsdfs(G, 0, set(), 1))
+        list(bsdfs(G, 0, set(), length_bound=1))
     with pytest.raises(nx.NodeNotFound, match="source node"):
-        list(bsdfs(G, 2, 1, 1))
+        list(bsdfs(G, 2, 1, length_bound=1))
     with pytest.raises(nx.NodeNotFound, match="target"):
-        list(bsdfs(G, 0, 2, 1))
+        list(bsdfs(G, 0, 2, length_bound=1))
 
 
 def test_bsdfs_edges_simple_graph():
     G = nx.DiGraph([(0, 1), (0, 2), (1, 3), (2, 3)])
 
-    assert list(bsdfs_edges(G, 0, 3, 2)) == [
+    assert list(bsdfs_edges(G, 0, 3, length_bound=2)) == [
         [(0, 1), (1, 3)],
         [(0, 2), (2, 3)],
     ]
-    assert list(bsdfs_edges(G, 0, {0}, 2)) == [[]]
+    assert list(bsdfs_edges(G, 0, {0}, length_bound=2)) == [[]]
 
 
 def test_bsdfs_edges_multigraph_parallel_edges():
     G = nx.MultiDiGraph()
     G.add_edges_from([(0, 1), (0, 1), (1, 2), (1, 2)])
 
-    assert list(bsdfs(G, 0, 2, 2)) == [[0, 1, 2]]
-    assert list(bsdfs_edges(G, 0, 2, 2)) == [
+    assert list(bsdfs(G, 0, 2, length_bound=2)) == [[0, 1, 2]]
+    assert list(bsdfs_edges(G, 0, 2, length_bound=2)) == [
         [(0, 1, 0), (1, 2, 0)],
         [(0, 1, 0), (1, 2, 1)],
         [(0, 1, 1), (1, 2, 0)],
@@ -77,7 +77,7 @@ def test_bsdfs_hard_cycle_instances():
     s = "A"
     t = s
     k = 5
-    assert list(bsdfs(G, s, t, k)) == [
+    assert list(bsdfs(G, s, t, length_bound=k)) == [
         ["A", "D", "A"],
         ["A", "D", "B", "E", "C", "A"],
         ["A", "E", "C", "A"],
@@ -110,7 +110,7 @@ def test_bsdfs_hard_cycle_instances():
     s = 1
     t = s
     k = 8
-    assert list(bsdfs(G, s, t, k)) == [[1, 0, 2, 1], [1, 2, 1]]
+    assert list(bsdfs(G, s, t, length_bound=k)) == [[1, 0, 2, 1], [1, 2, 1]]
     # nothing missed by CYCLE_SEARCH, so CYCLE_SEARCH would not assert, but detailed tracing will show:
     # with s = 1 and k = 8, vertex 8 violates the stated delay bound:
     # between the outputs [1, 0, 2, 1] and [1, 2, 1] it is visited 9 times — exceeding both k−1 = 7 and k = 8.
@@ -132,7 +132,7 @@ def test_bsdfs_hard_path_instances():
     s = "A"
     t = "E"
     k = 4
-    assert list(bsdfs(G, s, t, k)) == [
+    assert list(bsdfs(G, s, t, length_bound=k)) == [
         ["A", "B", "E"],
         ["A", "C", "B", "E"],
         ["A", "C", "D", "B", "E"],  # missed by BC-DFS
@@ -145,7 +145,7 @@ def test_bsdfs_hard_path_instances():
     s = "E"
     t = "C"
     k = 6
-    assert list(bsdfs(G, s, t, k)) == [
+    assert list(bsdfs(G, s, t, length_bound=k)) == [
         ["E", "A", "D", "C"],
         ["E", "B", "D", "C"],
         ["E", "D", "C"],
