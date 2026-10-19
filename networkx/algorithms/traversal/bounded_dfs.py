@@ -217,7 +217,7 @@ def bsdfs(G, source, target, length_bound):
         if not targets:
             raise ValueError(f"{target=} must be a node or a non-empty set of nodes")
         if len(targets) == 1 and source not in targets:
-            (terminal,) = targets  # {target}: yields same paths as target, but faster
+            (terminal,) = targets  # shortcut: use the single set element as terminal
             targets = frozenset()
         else:
             terminal = object()  # dummy node; never equal to any node in G
@@ -255,8 +255,7 @@ def bsdfs(G, source, target, length_bound):
             if barrier[w] + h < length_bound:  # node w admissible?
                 if w == terminal:  # terminal target: report, do not enter
                     yield [*stack, v, w]
-                    if current_sd > 1:  # noqa: PLR1730, better performance
-                        current_sd = 1  # update shortest distance found
+                    current_sd = 1  # shortest distance found
                 elif w != v and w not in stack:
                     stack[v] = (current_iterator, current_sd)  # push v and its state
                     v = w
