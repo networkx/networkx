@@ -67,11 +67,11 @@
 #
 # References
 # ----------
-# .. [1] Frank Bauernoeppel, Joerg-Ruediger Sack,
+# .. [1] Frank Bauernöppel, Jörg-Rüdiger Sack,
 #     "Enumerating Length-Bounded Simple Paths and Cycles in Directed Graphs
 #     with $O(k(n+m))$ Delay Using Edge-Consistent Node Barriers", 2026,
 #     https://arxiv.org/abs/2607.14745
-# .. [2] Frank Bauernoeppel, Joerg-Ruediger Sack,
+# .. [2] Frank Bauernöppel, Jörg-Rüdiger Sack,
 #     "Finding All Bounded-Length Simple Cycles in a Directed Graph --
 #     Revisited", 2025, https://arxiv.org/abs/2512.08392
 # .. [3] Y. Peng et al., "Efficient Hop-constrained s-t Simple Path
@@ -89,13 +89,13 @@ __all__ = ["bsdfs", "bsdfs_edges"]
 
 
 @nx._dispatchable
-def bsdfs(G, s, t, k):
-    """Yield all length-bounded simple paths or cycles from ``s`` to ``t``.
+def bsdfs(G, source, target, length_bound):
+    """Yield all length-bounded simple paths or cycles from `source` to `target`.
 
     Bounded-Scope Depth-First Search (BS-DFS) yields every simple path from
-    ``s`` to ``t`` with at most ``k`` edges, or every simple cycle through
-    ``s`` if ``t == s``. Unlike
-    :func:`~networkx.algorithms.traversal.depth_first_search.dfs_edges`,
+    `source` to `target` with at most `length_bound` edges, or every
+    simple cycle through `source` if ``target == source``.
+    Unlike :func:`~networkx.algorithms.traversal.depth_first_search.dfs_edges`,
     which visits each node once and yields the edges of a single search
     tree, it yields every such path.
 
@@ -103,37 +103,37 @@ def bsdfs(G, s, t, k):
     of the search, hence the name. As a result, the delay, the time until
     the next output or until the search ends, is ``O(k(n+m))`` (see Notes),
     whereas a plain depth-limited search can spend time exponential in
-    ``k`` on dead ends.
+    `length_bound` on dead ends.
 
     Parameters
     ----------
     G : NetworkX DiGraph
-    s : node
+    source : node
         Source node, where every reported path starts.
-    t : node or set of nodes
-        A single node enumerates the simple paths from ``s`` to ``t``; as a
-        special case, ``t == s`` enumerates the simple cycles through ``s``.
-        A set enumerates the simple paths from ``s`` to any node of the set,
+    target : node or set of nodes
+        A single node enumerates the simple paths from `source` to `target`; as a
+        special case, ``target == source`` enumerates the simple cycles through `source`.
+        A set enumerates the simple paths from `source` to any node of the set,
         and such a path may pass through one node of the set on its way to
         another.  A single node and the corresponding one-element set give
-        the same paths, except in the cycle case ``t == s``.
-    k : int
+        the same paths, except in the cycle case.
+    length_bound : int
         Length bound in edges.
 
     Yields
     ------
     list of nodes
-        The nodes of the path, beginning at ``s`` and ending at the target
-        reached.  All nodes are distinct, except that a cycle (``t == s``)
-        ends at ``s`` again.  The one-node list ``[s]`` is yielded for the
-        trivial path, i.e. when ``s`` is in the target set.
+        The nodes of the path, beginning at `source` and ending at the target
+        reached.  All nodes are distinct, except that a cycle (``target == source``)
+        ends at `source` again.  The one-node list ``[source]`` is yielded for the
+        trivial path, i.e. when `source` is in the target set.
 
     Raises
     ------
     ValueError
-        If ``k`` is negative, or ``t`` is an empty set.
+        If `length_bound` is negative, or `target` is an empty set.
     NodeNotFound
-        If ``s`` is not in ``G``, or ``t`` is neither a node of ``G`` nor a
+        If `source` is not in `G`, or `target` is neither a node of `G` nor a
         set of nodes.
 
     Examples
@@ -142,7 +142,7 @@ def bsdfs(G, s, t, k):
 
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 0)])
 
-    With ``t == s`` these are the cycles through ``s``, ending at ``s``
+    With ``target == source`` these are the cycles through `source`, ending at `source`
     again.  The 4-edge cycle 0, 1, 2, 3 exceeds the bound.
 
     >>> list(bsdfs(G, 0, 0, 3))
@@ -163,8 +163,8 @@ def bsdfs(G, s, t, k):
     >>> list(bsdfs(G, 0, {3}, 3)) == list(bsdfs(G, 0, 3, 3))
     True
 
-    ``s`` in a target set yields the trivial path ``[s]`` but no cycle,
-    since no simple path returns to ``s``; ``t == s`` is the way to query for a cycle.
+    `source` in a target set yields the trivial path ``[source]`` but no cycle,
+    since no simple path returns to `source`; ``target == source`` is the way to query for a cycle.
 
     >>> list(bsdfs(G, 0, {0, 3}, 3))
     [[0], [0, 1, 2, 3], [0, 1, 3], [0, 2, 3]]
@@ -182,42 +182,42 @@ def bsdfs(G, s, t, k):
     exhaustion of the generator, the delay, is at most ``3(k+1)(n+m)``
     elementary steps, and the first ``p`` outputs are generated in at most
     ``2p(k+1)(n+m)`` elementary steps [1]_.
-    Here ``n`` is the number of nodes reachable from ``s`` within the length
-    bound ``k``, and ``m`` the number of edges incident with them (incoming or
+    Here ``k`` is length_bound, ``n`` is the number of nodes reachable from `source`
+    within ``k`` edges, and ``m`` the number of edges incident with them (incoming or
     outgoing). An elementary step is a node visit or a single adjacency-list
     entry scan.
 
     A search from several sources is obtained by adding a virtual source node
-    joined to each of them, running with the bound ``k + 1``, and dropping the
+    joined to each of them, running with the length bound increased by 1, and dropping the
     leading virtual edge from each result.  The sources do not block one
     another, so a path from one may pass through another.
 
     References
     ----------
-    .. [1] Frank Bauernoeppel, Joerg-Ruediger Sack,
+    .. [1] Frank Bauernöppel, Jörg-Rüdiger Sack,
         "Enumerating Length-Bounded Simple Paths and Cycles in Directed Graphs
         with $O(k(n+m))$ Delay Using Edge-Consistent Node Barriers", 2026,
         https://arxiv.org/abs/2607.14745
     """
 
-    if k < 0:
-        raise ValueError(f"length bound {k=} must be non-negative")
-    if s not in G:
-        raise nx.NodeNotFound(f"source node {s} not in graph")
+    if length_bound < 0:
+        raise ValueError(f"length bound {length_bound=} must be non-negative")
+    if source not in G:
+        raise nx.NodeNotFound(f"source node {source} not in graph")
 
-    if t in G:  # a single node: terminal, exactly as in the paper
-        terminal, targets = t, frozenset()
+    if target in G:  # a single node: terminal, exactly as in the paper
+        terminal, targets = target, frozenset()
     else:  # a set of nodes: NetworkX extension, targets are entered
         try:
-            targets = set(t)
+            targets = set(target)
         except TypeError as err:
             raise nx.NodeNotFound(
-                f"target {t!r} is neither a node of G nor an iterable of nodes"
+                f"target {target!r} is neither a node of G nor an iterable of nodes"
             ) from err
         if not targets:
-            raise ValueError(f"{t=} must be a node or a non-empty set of nodes")
-        if len(targets) == 1 and s not in targets:  # {t}: same paths as t, faster
-            (terminal,) = targets
+            raise ValueError(f"{target=} must be a node or a non-empty set of nodes")
+        if len(targets) == 1 and source not in targets:
+            (terminal,) = targets  # {target}: yields same paths as target, but faster
             targets = frozenset()
         else:
             terminal = object()  # dummy node; never equal to any node in G
@@ -227,15 +227,15 @@ def bsdfs(G, s, t, k):
 
     barrier = defaultdict(int)  # barriers, persistent over the whole run
     stack = {}  # node -> (successor iterator, shortest distance) for suspended frames
-    no_sd = k + 1  # shortest distance "no target found so far"; real ones are <= k
+    no_sd = length_bound + 1  # shortest distance - init value; real ones are smaller
 
-    v = s  # v is the current node, initially s
+    v = source  # v is the current node, initially source
     current_iterator = iter(G_succ[v])
     current_sd = no_sd  # shortest distance known to a target from the active node v
 
-    if s in targets:  # the source is itself a target
+    if source in targets:  # the source is itself a target
         current_sd = 0
-        yield [s]
+        yield [source]
 
     def cascade(v, sd):
         """Fruitfully set ``barrier[v] = sd``, then restore EC by backward BFS."""
@@ -252,7 +252,7 @@ def bsdfs(G, s, t, k):
     while True:
         h = len(stack)  # number of edges in the current search path [*stack, v]
         for w in current_iterator:
-            if barrier[w] + h < k:  # node w admissible?
+            if barrier[w] + h < length_bound:  # node w admissible?
                 if w == terminal:  # terminal target: report, do not enter
                     yield [*stack, v, w]
                     if current_sd > 1:  # update shortest distance found
@@ -269,19 +269,19 @@ def bsdfs(G, s, t, k):
                     break  # descend search to w
         else:  # all descend searches completed, finish search at v
             if not stack:
-                return  # v is the root s: search complete, barriers no longer read
+                return  # v is the root node: search complete, barriers no longer read
             final_sd = current_sd  # shortest distance found among all w
             if final_sd < no_sd:  # some path to target found
                 cascade(v, final_sd)  # fruitful cascade, update barriers
             else:
-                barrier[v] = k - h + 1  # fruitless raise, own barrier
+                barrier[v] = length_bound - h + 1  # fruitless raise, own barrier
             v, (current_iterator, current_sd) = stack.popitem()  # pop parent node
             if final_sd < current_sd:  # update shortest distance
                 current_sd = final_sd + 1
 
 
 @nx._dispatchable
-def bsdfs_edges(G, s, t, k):
+def bsdfs_edges(G, source, target, length_bound):
     """Yield the paths of :func:`bsdfs` as edge lists rather than node lists.
 
     This is to :func:`bsdfs` what
@@ -294,16 +294,16 @@ def bsdfs_edges(G, s, t, k):
     Parameters
     ----------
     G : NetworkX DiGraph
-    s : node
+    source : node
         Source node, where every reported path starts.
-    t : node or set of nodes
-        A single node enumerates the simple paths from ``s`` to ``t``. As a
-        special case, ``t == s`` enumerates the simple cycles through ``s``.
-        A set enumerates the simple paths from ``s`` to any node of the set,
+    target : node or set of nodes
+        A single node enumerates the simple paths from `source` to `target`. As a
+        special case, ``target == source`` enumerates the simple cycles through `source`.
+        A set enumerates the simple paths from `source` to any node of the set,
         and such a path may pass through one node of the set on its way to
         another.  A single node and the corresponding one-element set give
-        the same paths, except in the cycle case ``t == s``.
-    k : int
+        the same paths, except in the cycle case ``target == source``.
+    length_bound : int
         Length bound in edges.
 
     Yields
@@ -311,14 +311,14 @@ def bsdfs_edges(G, s, t, k):
     list of edges
         The edges of the path, as ``(u, v)``, resp. ``(u, v, key)`` on a
         multigraph.  The empty list is yielded for the trivial path, i.e.
-        when ``s`` is in the target set.
+        when `source` is in the target set.
 
     Raises
     ------
     ValueError
-        If ``k`` is negative, or ``t`` is an empty set.
+        If `length_bound` is negative, or `target` is an empty set.
     NodeNotFound
-        If ``s`` is not in ``G``, or ``t`` is neither a node of ``G`` nor a
+        If `source` is not in `G`, or `target` is neither a node of `G` nor a
         set of nodes.
 
     Examples
@@ -342,7 +342,7 @@ def bsdfs_edges(G, s, t, k):
     :func:`bsdfs`
     :func:`~networkx.algorithms.simple_paths.all_simple_edge_paths`
     """
-    paths = bsdfs(G, s, t, k)
+    paths = bsdfs(G, source, target, length_bound)
     if G.is_multigraph():
         for path in paths:
             choices = [[(u, v, key) for key in G[u][v]] for u, v in zip(path, path[1:])]
