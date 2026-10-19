@@ -1,4 +1,4 @@
-"""Bounded-Scope Depth-First Search (BS-DFS) for length-bounded simple path and cycle enumeration."""
+"""Algorithms for simple path and cycle enumeration with a length bound."""
 
 
 # Implementation overview
