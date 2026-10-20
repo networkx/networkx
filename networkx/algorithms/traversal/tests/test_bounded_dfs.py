@@ -26,17 +26,18 @@ def test_bsdfs_cycles_and_trivial_path():
     assert list(bsdfs(G, 0, {0}, length_bound=3)) == [[0]]
 
 
-def test_bsdfs_validation():
+@pytest.mark.parametrize("func", [bsdfs, bsdfs_edges])
+def test_bsdfs_validation(func):
     G = nx.DiGraph([(0, 1)])
 
     with pytest.raises(ValueError, match="length bound"):
-        list(bsdfs(G, 0, 1, length_bound=-1))
+        list(func(G, 0, 1, length_bound=-1))
     with pytest.raises(ValueError, match="non-empty"):
-        list(bsdfs(G, 0, set(), length_bound=1))
+        list(func(G, 0, set(), length_bound=1))
     with pytest.raises(nx.NodeNotFound, match="source node"):
-        list(bsdfs(G, 2, 1, length_bound=1))
+        list(func(G, 2, 1, length_bound=1))
     with pytest.raises(nx.NodeNotFound, match="target"):
-        list(bsdfs(G, 0, 2, length_bound=1))
+        list(func(G, 0, 2, length_bound=1))
 
 
 def test_bsdfs_edges_simple_graph():
@@ -90,6 +91,23 @@ def test_bsdfs_undirected_graph():
         [0, 2, 0],
     ]
     assert list(bsdfs(G, 0, 3, length_bound=3)) == [[0, 1, 2, 3], [0, 2, 3]]
+    assert list(bsdfs_edges(G, 0, 0, length_bound=2)) == [
+        [(0, 1), (1, 0)],
+        [(0, 2), (2, 0)],
+    ]
+
+
+def test_bsdfs_multiple_sources_via_virtual_source():
+    # the recipe from the Notes: a virtual source joined to each source
+    G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
+    G.add_edges_from(("virtual", s) for s in [0, 1])
+
+    # the bound is increased by 1 for the virtual edge; the sources do not
+    # block one another, so [0, 1, 2, 3] passes through the source 1
+    paths = [p[1:] for p in bsdfs(G, "virtual", 3, length_bound=3 + 1)]
+    assert paths == [[0, 1, 2, 3], [1, 2, 3]]
+    paths = [p[1:] for p in bsdfs(G, "virtual", 3, length_bound=2 + 1)]
+    assert paths == [[1, 2, 3]]
 
 
 def test_bsdfs_edges_cycle_and_target_set():

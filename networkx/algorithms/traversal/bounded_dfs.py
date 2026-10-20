@@ -184,8 +184,8 @@ def bsdfs(G, source, target, length_bound):
     ``2p(k+1)(n+m)`` elementary steps [1]_.
     Here ``k`` is `length_bound`, ``n`` is the number of nodes reachable from `source`
     within ``k`` edges, and ``m`` the number of edges incident with them (incoming or
-    outgoing). An elementary step is a node visit or a single adjacency-list
-    entry scan.
+    outgoing). An elementary step is a node visit, the output of one node of a path,
+    or the scan of a single adjacency-list entry.
 
     A search from several sources is obtained by adding a virtual source node
     joined to each of them, running with the length bound increased by 1, and dropping the
@@ -327,6 +327,10 @@ def bsdfs_edges(G, source, target, length_bound):
     NodeNotFound
         If `source` is not in `G`, or `target` is neither a node of `G` nor a
         set of nodes.
+
+    Notes
+    -----
+    The ``O(k(n+m))`` delay of :func:`bsdfs` (see its Notes) carries over.
 
     Examples
     --------
