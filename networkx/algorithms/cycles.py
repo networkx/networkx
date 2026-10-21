@@ -4,7 +4,7 @@ Cycle finding algorithms
 ========================
 """
 
-from collections import defaultdict, deque
+from collections import defaultdict
 from itertools import combinations, product
 from math import inf
 
@@ -168,9 +168,8 @@ def simple_cycles(G, length_bound=None):
     `length_bound`, the time complexity is $O((c+n)k(n+e))$ for directed and
     $O((c+e)k(n+e))$ for undirected graphs.
 
-    The *number* of simple cycles can nevertheless be very large,
-    e.g. $\\Theta((n-1)!)$ for the complete graph of order n,
-    so consume the generator lazily rather than
+    The *number* of simple cycles can be very large, e.g. $\\Theta((n-1)!)$ for the
+    complete graph of order n, so consume the generator lazily rather than
     materializing the full list.
 
     Raises
@@ -199,6 +198,7 @@ def simple_cycles(G, length_bound=None):
     --------
     cycle_basis
     chordless_cycles
+    :func:`~networkx.algorithms.traversal.bounded_dfs.bsdfs`
     """
 
     if length_bound is not None:
