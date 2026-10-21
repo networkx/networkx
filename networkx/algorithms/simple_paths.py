@@ -7,10 +7,10 @@ from networkx.algorithms.shortest_paths.weighted import _weight_function
 from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
+    "all_simple_edge_paths",
     "all_simple_paths",
     "is_simple_path",
     "shortest_simple_paths",
-    "all_simple_edge_paths",
 ]
 
 
@@ -238,10 +238,11 @@ def all_simple_paths(G, source, target, cutoff=None):
     This algorithm calls :func:`all_simple_edge_paths` and reduces the results
     to node lists, with the same complexity.
 
-    This function does not check that a path exists between `source` and
-    `target`. For large graphs, this may result in longer runtimes.
-    Consider using `has_path` to check that a path exists between `source` and
-    `target` before calling this function on large graphs.
+    The time a consumer waits for the first path, for each next path, and for
+    exhaustion of the generator, the *delay*, is ``O(n+m)`` in the unbounded case,
+    and ``O(k(n+m))`` in the length-bounded case.  Here ``k`` is `cutoff`, ``n``
+    is the number of nodes reachable from `source` within ``k`` edges, and ``m``
+    the number of edges incident with them (incoming or outgoing).
 
     See Also
     --------
@@ -345,10 +346,9 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
     using a Johnson-style blocked depth-first search [1]_, and
     $O(k(V+E))$ per path for ``cutoff=k``, using a variant of BS-DFS [2]_.
 
-    The *number* of simple paths can nevertheless be very large,
-    e.g. $\\Theta((n-2)!)$ between two fixed nodes of the complete
-    graph of order n, so consume the generator lazily rather than
-    materializing the full list.
+    The *number* of simple paths can be very large, e.g. $\\Theta((n-2)!)$
+    between two fixed nodes of the complete graph of order n, so consume the
+    generator lazily rather than materializing the full list.
 
     References
     ----------
@@ -356,8 +356,8 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
            SIAM J. Comput., 4(1):77-84, 1975. https://doi.org/10.1137/0204007.
     .. [2] Frank Bauernöppel, Jörg-Rüdiger Sack.
            "Enumerating Length-Bounded Simple Paths and Cycles in Directed Graphs
-            with $O(k(n+m))$ Delay Using Edge-Consistent Node Barriers"
-            https://arxiv.org/abs/2607.14745
+           with $O(k(n+m))$ Delay Using Edge-Consistent Node Barriers", 2026,
+           https://arxiv.org/abs/2607.14745
 
     See Also
     --------
@@ -375,7 +375,9 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         except TypeError as err:
             raise nx.NodeNotFound(f"target node {target} not in graph") from err
 
-    if cutoff is None and targets:
+    if not targets:
+        return
+    if cutoff is None or cutoff >= len(G) - 1:  # unbounded simple paths
         yield from _johnson_all_simple_edge_paths(G, source, targets)
     elif cutoff >= 0 and targets:
         yield from nx.traversal.bsdfs_edges(G, source, targets, cutoff)
@@ -383,13 +385,12 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
 
 def _johnson_all_simple_edge_paths(G, source, targets):
     """
-    Adaption of the Johnson's cycle finding algorithm [1]_
+    Adaption of Johnson's cycle finding algorithm [1]_
     to simple paths in NetworkX [Multi][Di]Graphs.
     The multi-target feature is implemented by introducing
     a virtual target t* to which all real targets connect.
     Johnson's algorithm produces the next output (or terminates)
-    within $O(V+E)$ time with a small constant, a great
-    improvement over earlier work [2]_, [3]_, [4]_.
+    within $O(V+E)$ time, a great improvement over earlier work [2]_, [3]_, [4]_.
 
     References
     ----------
@@ -399,11 +400,10 @@ def _johnson_all_simple_edge_paths(G, source, targets):
             circuits of a graph". Commun. ACM 13(12): 722--726, 1970,
             https://doi.org/10.1145/362814.362819
     .. [3] R. E. Tarjan. "Enumeration of the Elementary Circuits of a Directed Graph"
-             SIAM J. Comput.
+             SIAM J. Comput. 2(3):211-216, 1973"
     .. [4] R. Sedgewick, "Algorithms in C, Part 5: Graph Algorithms",
             Addison Wesley Professional, 3rd ed., 2001.
     """
-    assert targets  # ensured by caller
 
     adj = G._adj  # successors (directed) / neighbors (undirected)
 
