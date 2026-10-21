@@ -239,10 +239,9 @@ def all_simple_paths(G, source, target, cutoff=None):
     to node lists, with the same complexity.
 
     The time a consumer waits for the first path, for each next path, and for
-    exhaustion of the generator, the *delay*, is ``O(n+m)`` in the unbounded case,
-    and ``O(k(n+m))`` in the length-bounded case.  Here ``k`` is `cutoff`, ``n``
-    is the number of nodes reachable from `source` within ``k`` edges, and ``m``
-    the number of edges incident with them (incoming or outgoing).
+    exhaustion of the generator, the *delay*, is ``O(V+E)`` in the unbounded case
+    (``cutoff == None``), and ``O(k(V+E))`` in the length-bounded case,
+    where ``k`` is the `cutoff`.
 
     See Also
     --------
@@ -385,8 +384,11 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
 
 def _johnson_all_simple_edge_paths(G, source, targets):
     """
-    Adaption of Johnson's cycle finding algorithm [1]_
+    Adaptation of Johnson's cycle finding algorithm [1]_
     to simple paths in NetworkX [Multi][Di]Graphs.
+    A single target t (other than the source) takes the role of
+    Johnson's start node: reaching t closes a path, and t is never
+    entered, so nothing beyond t is searched.
     The multi-target feature is implemented by introducing
     a virtual target t* to which all real targets connect.
     Johnson's algorithm produces the next output (or terminates)
@@ -400,7 +402,7 @@ def _johnson_all_simple_edge_paths(G, source, targets):
             circuits of a graph". Commun. ACM 13(12): 722--726, 1970,
             https://doi.org/10.1145/362814.362819
     .. [3] R. E. Tarjan. "Enumeration of the Elementary Circuits of a Directed Graph"
-             SIAM J. Comput. 2(3):211-216, 1973"
+             SIAM J. Comput. 2(3):211-216, 1973
     .. [4] R. Sedgewick, "Algorithms in C, Part 5: Graph Algorithms",
             Addison Wesley Professional, 3rd ed., 2001.
     """
@@ -418,6 +420,12 @@ def _johnson_all_simple_edge_paths(G, source, targets):
         def out_edges(v):
             for w in adj[v]:
                 yield (v, w)
+
+    if len(targets) == 1 and source not in targets:
+        (terminal,) = targets  # single target: report, never enter
+        targets = frozenset()
+    else:
+        terminal = object()  # dummy node; never equal to any node in G
 
     blocked = set()
     B = defaultdict(set)
@@ -442,7 +450,10 @@ def _johnson_all_simple_edge_paths(G, source, targets):
         frame = stack[-1]
         for e in frame[1]:
             w = e[1]
-            if w not in blocked:
+            if w == terminal:  # path closed, as Johnson's circuit at w == s
+                frame[2] = True
+                yield [*edge_path, e]
+            elif w not in blocked:
                 edge_path.append(e)
                 blocked.add(w)
                 stack.append([w, out_edges(w), w in targets])
