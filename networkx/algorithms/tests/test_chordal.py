@@ -132,6 +132,7 @@ class TestMCS:
             frozenset([3, 4, 5, 6]),
         }
         assert set(nx.chordal_graph_cliques(self.chordal_G)) == cliques
+        assert set(nx.chordal_graph_cliques(self.self_loop_G)) == {frozenset([1])}
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
             set(nx.chordal_graph_cliques(self.non_chordal_G))
 
