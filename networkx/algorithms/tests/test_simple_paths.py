@@ -216,6 +216,11 @@ def test_all_simple_paths_corner_cases():
     assert list(nx.all_simple_paths(nx.empty_graph(2), 0, 0)) == [[0]]
     assert list(nx.all_simple_paths(nx.empty_graph(2), 0, 1)) == []
     assert list(nx.all_simple_paths(nx.path_graph(9), 0, 8, 0)) == []
+    # empty target set, with and without cutoff
+    assert list(nx.all_simple_paths(nx.path_graph(3), 0, [])) == []
+    assert list(nx.all_simple_paths(nx.path_graph(3), 0, [], cutoff=1)) == []
+    # negative cutoff: no path, not even the trivial one
+    assert list(nx.all_simple_paths(nx.path_graph(3), 0, 0, cutoff=-1)) == []
 
 
 def test_all_simple_paths_source_in_targets():
@@ -417,6 +422,11 @@ def test_all_simple_edge_paths_corner_cases():
     assert list(nx.all_simple_edge_paths(nx.empty_graph(2), 0, 0)) == [[]]
     assert list(nx.all_simple_edge_paths(nx.empty_graph(2), 0, 1)) == []
     assert list(nx.all_simple_edge_paths(nx.path_graph(9), 0, 8, 0)) == []
+    # empty target set, with and without cutoff
+    assert list(nx.all_simple_paths(nx.path_graph(3), 0, [])) == []
+    assert list(nx.all_simple_paths(nx.path_graph(3), 0, [], cutoff=1)) == []
+    # negative cutoff: no path, not even the trivial one
+    assert list(nx.all_simple_paths(nx.path_graph(3), 0, 0, cutoff=-1)) == []
 
 
 def test_all_simple_edge_paths_ignores_self_loop():
