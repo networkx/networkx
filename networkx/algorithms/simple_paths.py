@@ -427,52 +427,51 @@ def _johnson_all_simple_edge_paths(G, source, targets):
     else:
         terminal = object()  # dummy node; never equal to any node in G
 
-    blocked = set()
-    B = defaultdict(set)
-
-    def unblock(v):
-        pending = [v]
-        while pending:
-            u = pending.pop()
-            if u in blocked:
-                blocked.discard(u)
-                pending.extend(B[u])
-                B[u].clear()
-
+    blocked = {source}  # nodes on the path, and nodes proven fruitless
+    B = defaultdict(set)  # B[w]: blocked nodes to unblock when w gets unblocked
+    stack = {}  # node -> (out-edge iterator, fruitful) for suspended frames
     edge_path = []
-    # frame: [node, out-edge iterator, fruitful]
-    blocked.add(source)
-    stack = [[source, out_edges(source), source in targets]]
-    if source in targets:
+
+    v = source  # v is the current node, initially source
+    current_iterator = out_edges(v)
+    fruitful = source in targets  # a path to a target was found below v
+    if fruitful:
         yield []
 
-    while stack:
-        frame = stack[-1]
-        for e in frame[1]:
+    while True:
+        for e in current_iterator:
             w = e[1]
             if w == terminal:  # path closed, as Johnson's circuit at w == s
-                frame[2] = True
                 yield [*edge_path, e]
+                fruitful = True
             elif w not in blocked:
+                stack[v] = (current_iterator, fruitful)  # push v and its state
                 edge_path.append(e)
+                v = w
+                current_iterator = out_edges(w)
                 blocked.add(w)
-                stack.append([w, out_edges(w), w in targets])
-                if w in targets:
+                fruitful = w in targets
+                if fruitful:  # a target: report the path on arrival
                     yield list(edge_path)
-                break
-        else:
-            # frame[0] exhausted: close the call
-            stack.pop()
-            v = frame[0]
-            if frame[2]:
-                unblock(v)
-                if stack:
-                    stack[-1][2] = True
+                break  # descend search to w
+        else:  # all out-edges done, close the search at v
+            if not stack:
+                return  # v is the source: search complete
+            if fruitful:  # unblock v and, transitively, the nodes waiting on it
+                pending = [v]
+                while pending:
+                    u = pending.pop()
+                    if u in blocked:
+                        blocked.discard(u)
+                        pending.extend(B[u])
+                        B[u].clear()
             else:
                 for w in adj[v]:
                     B[w].add(v)
-            if stack:
-                edge_path.pop()
+            edge_path.pop()
+            child_fruitful = fruitful
+            v, (current_iterator, fruitful) = stack.popitem()  # pop parent node
+            fruitful = fruitful or child_fruitful
 
 
 @not_implemented_for("multigraph")
