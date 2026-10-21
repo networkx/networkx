@@ -240,6 +240,7 @@ class _CoreOptimizer:
                 else:
                     shared_flow[module] = [0.0, f]
             return shared_flow
+        # undirected case
         for v, f in self.out_links[node].items():
             module = module_of[v]
             if module in shared_flow:
