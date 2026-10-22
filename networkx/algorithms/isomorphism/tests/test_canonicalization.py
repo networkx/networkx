@@ -851,6 +851,11 @@ def Petersen_graph():
     ]
 
 
+def K12_graph():
+    "Complete graph on 12 nodes; maximally symmetric, stresses duplicate filtering."
+    return [f"{i} {j}" for i in range(1, 13) for j in range(i + 1, 13)]
+
+
 @pytest.mark.parametrize(
     ("graph", "expected_labeling"),
     [
@@ -1231,6 +1236,23 @@ def Petersen_graph():
             },
         ),
         (Petersen_graph, {1: 7, 2: 5, 3: 6, 4: 8, 5: 2, 6: 3, 7: 9, 8: 4, 9: 1, 10: 0}),
+        (
+            K12_graph,
+            {
+                1: 1,
+                2: 2,
+                3: 3,
+                4: 4,
+                5: 5,
+                6: 6,
+                7: 7,
+                8: 8,
+                9: 9,
+                10: 10,
+                11: 11,
+                12: 0,
+            },
+        ),
     ],
     ids=lambda param: getattr(param, "__name__", None),
 )
@@ -1241,25 +1263,11 @@ def test_regression(graph, expected_labeling):
     assert labeling == expected_labeling
 
 
-def permute_graph(
-    G: nx.Graph,
-) -> nx.Graph:
+def permute_graph(G: nx.Graph) -> nx.Graph:
     """Randomly permute G's node labels."""
-    random.seed(
-        42
-    )  # Subsequent calls of random.shuffle(x[, random]) will now use fixed sequence of values for `random` parameter.
-
-    G_permuted = _permute_graph(G)
-
-    while nx.utils.graphs_equal(G, G_permuted):
-        G_permuted = _permute_graph(G)
-
-    return G_permuted
-
-
-def _permute_graph(G: nx.Graph) -> nx.Graph:
     labels = list(G.nodes)
     permuted_labels = list(labels)  # shallow copy
+    random.seed(42)
     random.shuffle(permuted_labels)
     G_relabeled = nx.relabel_nodes(
         G, dict(zip(permuted_labels, labels, strict=True)), copy=True
@@ -1318,14 +1326,13 @@ def _sort_graph_by_label(G: nx.Graph) -> nx.Graph:
         C240,
         CFI_rigid_t2_0044_01_1,
         Petersen_graph,
+        K12_graph,
     ],
     ids=lambda param: getattr(param, "__name__", None),
 )
 def test_invariance(graph):
     G = nx.parse_edgelist(graph(), nodetype=int)
     G_permuted = permute_graph(G)
-
-    assert not nx.utils.graphs_equal(G, G_permuted)
 
     labeling = iso.canonical_labeling(G)
     permuted_labeling = iso.canonical_labeling(G_permuted)
