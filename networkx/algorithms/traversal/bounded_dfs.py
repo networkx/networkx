@@ -79,7 +79,7 @@ __all__ = ["bsdfs", "bsdfs_edges"]
 
 
 @nx._dispatchable
-def bsdfs(G, source, target, length_bound):
+def bsdfs(G, source, target, *, length_bound):
     """Yield all length-bounded simple paths or cycles from `source` to `target`.
 
     Bounded-Scope Depth-First Search (BS-DFS) yields every simple path from
@@ -151,7 +151,7 @@ def bsdfs(G, source, target, length_bound):
     Cycles through the edge (0, 1) are the paths from 1 back to 0, with one
     edge of the bound already spent by that edge.
 
-    >>> list(bsdfs(G, 1, 0, 2))
+    >>> list(bsdfs(G, 1, 0, length_bound=2))
     [[1, 3, 0]]
 
     A set of targets may be passed through, so 0, 1, 2, 3 is reported
@@ -160,7 +160,7 @@ def bsdfs(G, source, target, length_bound):
 
     >>> list(bsdfs(G, 0, {2, 3}, length_bound=3))
     [[0, 1, 2], [0, 1, 2, 3], [0, 1, 3], [0, 2], [0, 2, 3]]
-    >>> list(bsdfs(G, 0, {3}, 3)) == list(bsdfs(G, 0, 3, 3))
+    >>> list(bsdfs(G, 0, {3}, length_bound=3)) == list(bsdfs(G, 0, 3, length_bound=3))
     True
 
     `source` in a target set yields the trivial path ``[source]`` but no cycle,
@@ -280,7 +280,7 @@ def bsdfs(G, source, target, length_bound):
 
 
 @nx._dispatchable
-def bsdfs_edges(G, source, target, length_bound):
+def bsdfs_edges(G, source, target, *, length_bound):
     """Yield the paths of :func:`bsdfs` as edge lists rather than node lists.
 
     This is to :func:`bsdfs` what
@@ -353,7 +353,7 @@ def bsdfs_edges(G, source, target, length_bound):
     :func:`bsdfs`
     :func:`~networkx.algorithms.simple_paths.all_simple_edge_paths`
     """
-    paths = bsdfs(G, source, target, length_bound)
+    paths = bsdfs(G, source, target, length_bound=length_bound)
     if G.is_multigraph():
         product = itertools.product
         for path in paths:
