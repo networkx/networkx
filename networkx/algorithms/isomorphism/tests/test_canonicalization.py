@@ -896,10 +896,49 @@ def _permute_graph(G: nx.Graph) -> nx.Graph:
     labels = list(G.nodes)
     permuted_labels = list(labels)  # shallow copy
     random.shuffle(permuted_labels)
-
-    return nx.relabel_nodes(
+    G_relabeled = nx.relabel_nodes(
         G, dict(zip(permuted_labels, labels, strict=True)), copy=True
     )
+
+    return _sort_graph_by_label(G_relabeled)
+
+
+def _sort_graph_by_label(G: nx.Graph) -> nx.Graph:
+    """Sort graph by label.
+
+    Ensure that the graph's node iteration order is identical to the label order.
+    In a NetworkX graph, the iteration order of the nodes depends on the initial
+    insertion order of the nodes. There's a crucial difference to `nx.relabel_nodes()`.
+    The latter only changes the labels, without changing the iteration order.
+
+    Original nodes:
+        label | attribute
+        -----------------
+        0     | A
+        1     | B
+        2     | C
+
+    Nodes relabeled with `nx.relabel_nodes()`:
+        label | attribute
+        -----------------
+        1     | A
+        2     | B
+        0     | C
+
+    In contrast, the present function changes the labels _and_ iteration order:
+        label | attribute
+        -----------------
+        0     | C
+        1     | A
+        2     | B
+    """
+    nodes_sorted_by_label = sorted(G.nodes(data=True))
+
+    G_sorted_by_label = nx.Graph()
+    G_sorted_by_label.add_nodes_from(nodes_sorted_by_label)
+    G_sorted_by_label.add_edges_from(G.edges(data=True))
+
+    return G_sorted_by_label
 
 
 @pytest.mark.parametrize(
