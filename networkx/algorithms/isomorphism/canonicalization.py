@@ -141,7 +141,7 @@ def filter_duplicate_partitionings(
     partitions_list: list[dict[Hashable, int]],
     edges: list[tuple[Hashable, Hashable]],
 ) -> list[dict[Hashable, int]]:
-    """Filter out duplicate partitionings.
+    """Filter out duplicate partitionings with isomorphisms testing.
 
     Parameters
     ----------
@@ -155,11 +155,19 @@ def filter_duplicate_partitionings(
     list
         Unique partitionings.
     """
-    unique = {}
+    buckets: dict[tuple, list[tuple[nx.Graph, dict[Hashable, int]]]] = {}
+    unique = []
     for partitions in partitions_list:
-        unique.setdefault(get_partitioning(partitions, edges), partitions)
+        G = nx.Graph()
+        G.add_nodes_from((node, {"partition": p}) for node, p in partitions.items())
+        G.add_edges_from(edges)
+        bucket = buckets.setdefault(get_partitioning(partitions, edges), [])
+        if any(nx.vf2pp_is_isomorphic(G, H, node_label="partition") for H, _ in bucket):
+            continue
+        bucket.append((G, partitions))
+        unique.append(partitions)
 
-    return list(unique.values())
+    return unique
 
 
 def get_refinement_tree_node_children(
