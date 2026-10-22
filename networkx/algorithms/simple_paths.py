@@ -379,7 +379,7 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
     if cutoff is None or cutoff >= len(G) - 1:  # unbounded simple paths
         yield from _johnson_all_simple_edge_paths(G, source, targets)
     elif cutoff >= 0 and targets:
-        yield from nx.traversal.bsdfs_edges(G, source, targets, cutoff)
+        yield from nx.traversal.bsdfs_edges(G, source, targets, length_bound=cutoff)
 
 
 def _johnson_all_simple_edge_paths(G, source, targets):
