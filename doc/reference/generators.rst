@@ -380,3 +380,12 @@ Time Series
    :toctree: generated/
 
    visibility_graph
+
+Dynamic Networks
+----------------
+.. automodule:: networkx.generators.dynamic_networks
+.. autosummary::
+   :toctree: generated/
+
+   gradient_network
+   gradient_network_sequence
