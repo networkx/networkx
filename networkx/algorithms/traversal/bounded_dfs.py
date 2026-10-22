@@ -3,28 +3,41 @@
 
 # Implementation overview
 # -----------------------
-# An iterative depth-first type of search starting at ``s`` (``source``) and
-# terminating in ``t*``, which is a single node (``terminal``) or any node of the node
-# set ``targets`` (the two cases of ``target``).  ``k`` (``length_bound``) is the length
-# bound: no output has more than ``k`` edges.
+# An iterative depth-first type of search starting at `source` (``s``) and
+# terminating in a node ``t`` given by `target`, with at most `length_bound`
+# (``k``) edges per output.  `target` is either a single node of `G`
+# (``terminal``) or a node set (``targets``).  Exactly one of the two is in use:
+#
+#     parameter `target`               ``terminal``   ``targets``
+#     -------------------------------  -------------  ---------------
+#     a node of `G` (may be `source`)  `target`       empty set
+#     a set ``{x}`` without `source`   ``x``          empty set
+#     any other set                    dummy          ``set(target)``
+#
+# The *terminal* is reported as soon as it is an admissible successor and
+# is never entered.  No output passes through it.  It may be the source when
+# searching for cycles.  The dummy is an ``object()`` that equals no node.
+# The nodes of ``targets`` are entered like other nodes, a path is reported
+# on arrival, and the search continues through them.  The middle row is a shortcut:
+# it yields the same paths as ``{x}`` in ``targets`` would.
 #
 # The search is structured using a dict as stack.  Its keys are the suspended nodes
 # of the current search path ``P = [*stack, v]``, in path order.  Its values hold,
 # for each of these nodes, the successor iterator to resume from and the shortest
-# distance to ``t*`` found so far.  In addition, one integer *barrier* per node
+# distance to ``t`` found so far.  In addition, one integer *barrier* per node
 # is maintained in a dict for preventing repeated fruitless searches.
 #
 # Barriers
 # --------
 # ``barrier[x]`` is a *certified lower bound* on the number of edges from ``x``
-# to ``t*`` in the graph minus the nodes on ``P``.  All barriers start at 0,
+# to ``t`` in the graph minus the nodes on ``P``.  All barriers start at 0,
 # which is trivially valid.  At active node ``v`` at depth ``h`` (so ``h`` edges
 # from ``s`` to ``v``), a successor ``w`` is *admissible* iff
 #
 #     barrier[w] + h < k                                                   (A)
 #
 # Rationale: entering ``w`` costs one edge, and ``barrier[w]`` further edges are
-# needed before ``t*`` can possibly be reached, so any output through ``w`` has
+# needed before ``t`` can possibly be reached, so any output through ``w`` has
 # length at least ``h + 1 + barrier[w]``; requiring that to be at most ``k`` is
 # exactly (A). Because ``barrier[w]`` is a *lower* bound, (A) never discards an
 # output: it prunes only branches that provably cannot finish within the budget.
@@ -33,14 +46,14 @@
 # Two search results are possible:
 #
 # * **fruitless** -- the search at ``v`` produced no output. Its subsearch had a
-#   budget of ``k - h`` edges and exhausted it, so ``t*`` is farther than that,
+#   budget of ``k - h`` edges and exhausted it, so ``t`` is farther than that,
 #   or every route within that budget is currently blocked by nodes already on
 #   the search path:
 #
 #       barrier[v] = k - h + 1                               (a *raise*)
 #
 # * **fruitful** -- the search at ``v`` produced an output, and ``sd`` is the exact
-#   number of edges from ``v`` to ``t*`` along the shortest output found below
+#   number of edges from ``v`` to ``t`` along the shortest output found below
 #   ``v``. It is stored as ``barrier[v] = sd``. When ``v`` leaves the path,
 #   barriers of predecessors raised while ``v`` blocked their routes may now be
 #   too high. A backward BFS restores the invariant
@@ -51,14 +64,14 @@
 #   Nodes on the current path are skipped: their barriers are written when their
 #   searches finish, not while they are on the path.
 #
-# EC together with barrier[t*] == 0 implies the lower-bound property: along
-# any path x = x0, ..., xj = t* in G - P, barrier[x0] <= barrier[x1] + 1
+# EC together with barrier[t] == 0 implies the lower-bound property: along
+# any path x = x0, ..., xj = t in G - P, barrier[x0] <= barrier[x1] + 1
 # <= ... <= j.  So when v leaves the path, only EC on edges u -> v must be
 # re-established.
 #
 # Path length ``h`` and barriers thus jointly bound the *scope* of the search,
 # which yields a delay of O(k(n+m)) per output; see the Notes of the ``bsdfs``
-# docstring for the exact bounds and [1]_ for the proofs.
+# docstring for the exact bounds and [1] for the proofs.
 #
 # References
 # ----------
@@ -66,9 +79,6 @@
 #     "Enumerating Length-Bounded Simple Paths and Cycles in Directed Graphs
 #     with $O(k(n+m))$ Delay Using Edge-Consistent Node Barriers", 2026,
 #     https://arxiv.org/abs/2607.14745
-# .. [2] Frank Bauernöppel, Jörg-Rüdiger Sack,
-#     "Finding All Bounded-Length Simple Cycles in a Directed Graph --
-#     Revisited", 2025, https://arxiv.org/abs/2512.08392
 
 import itertools
 from collections import defaultdict, deque
@@ -164,7 +174,8 @@ def bsdfs(G, source, target, *, length_bound):
     True
 
     `source` in a target set yields the trivial path ``[source]`` but no cycle,
-    since no simple path returns to `source`; ``target == source`` is the way to query for a cycle.
+    since no simple path returns to `source`;
+    ``target == source`` is the way to query for a cycle.
 
     >>> list(bsdfs(G, 0, {0, 3}, length_bound=3))
     [[0], [0, 1, 2, 3], [0, 1, 3], [0, 2, 3]]
@@ -188,8 +199,8 @@ def bsdfs(G, source, target, *, length_bound):
     or the scan of a single adjacency-list entry.
 
     A search from several sources is obtained by adding a virtual source node
-    joined to each of them, running with the length bound increased by 1, and dropping the
-    leading virtual edge from each result.  The sources do not block one
+    joined to each of them, running with the length bound increased by 1, and dropping
+    the leading virtual edge from each result.  The sources do not block one
     another, so a path from one may pass through another.
 
     References
@@ -201,11 +212,11 @@ def bsdfs(G, source, target, *, length_bound):
     """
 
     if length_bound < 0:
-        raise ValueError(f"length bound {length_bound=} must be non-negative")
+        raise ValueError(f"length bound {length_bound} must be non-negative")
     if source not in G:
         raise nx.NodeNotFound(f"source node {source} not in graph")
 
-    if target in G:  # a single node: terminal, exactly as in the paper
+    if target in G:  # a single node, as in the paper
         terminal, targets = target, frozenset()
     else:  # a set of nodes: NetworkX extension, targets are entered
         try:
@@ -309,7 +320,7 @@ def bsdfs_edges(G, source, target, *, length_bound):
     Yields
     ------
     list of edges
-        The edges of the path, as ``(u, v)``, resp. ``(u, v, key)`` on a
+        The edges of the path, as ``(u, v)``, or ``(u, v, key)`` on a
         multigraph.  The empty list is yielded for the trivial path, i.e.
         when `source` is in the target set.
 
@@ -327,10 +338,6 @@ def bsdfs_edges(G, source, target, *, length_bound):
     NodeNotFound
         If `source` is not in `G`, or `target` is neither a node of `G` nor a
         set of nodes.
-
-    Notes
-    -----
-    The ``O(k(n+m))`` delay of :func:`bsdfs` (see its Notes) carries over.
 
     Examples
     --------
@@ -352,6 +359,10 @@ def bsdfs_edges(G, source, target, *, length_bound):
     --------
     :func:`bsdfs`
     :func:`~networkx.algorithms.simple_paths.all_simple_edge_paths`
+
+    Notes
+    -----
+    The ``O(k(n+m))`` delay of :func:`bsdfs` carries over, see its Notes.
     """
     paths = bsdfs(G, source, target, length_bound=length_bound)
     if G.is_multigraph():

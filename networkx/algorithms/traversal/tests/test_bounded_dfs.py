@@ -26,6 +26,16 @@ def test_bsdfs_cycles_and_trivial_path():
     assert list(bsdfs(G, 0, {0}, length_bound=3)) == [[0]]
 
 
+def test_bsdfs_one_element_target_set():
+    # a one-element set without the source gives the same paths as its
+    # single node, although a search could continue through 2 to 1 and 3
+    G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (2, 1), (2, 3), (3, 0)])
+
+    expected = [[0, 1, 2], [0, 2]]
+    assert list(bsdfs(G, 0, 2, length_bound=3)) == expected
+    assert list(bsdfs(G, 0, {2}, length_bound=3)) == expected
+
+
 @pytest.mark.parametrize("func", [bsdfs, bsdfs_edges])
 def test_bsdfs_validation(func):
     G = nx.DiGraph([(0, 1)])
@@ -162,7 +172,7 @@ def test_bsdfs_edges_undirected_multigraph():
 def test_bsdfs_hard_cycle_instances():
     # examples from:
     # Finding All Bounded-Length Simple Cycles in a Directed Graph -- Revisited
-    # Frank Bauernöppel, Jörg-Rüdiger Sack 2026; https://arxiv.org/abs/2512.08392
+    # Frank Bauernöppel, Jörg-Rüdiger Sack, 2026, https://arxiv.org/abs/2512.08392v2
 
     G = nx.parse_edgelist(
         ["A D", "A E", "B D", "B E", "C A", "C B", "D A", "D B", "E C"],
@@ -221,7 +231,7 @@ def test_bsdfs_hard_path_instances():
     assert list(bsdfs(X, s, t, length_bound=k)) == [
         ["A", "B", "E"],
         ["A", "C", "B", "E"],
-        ["A", "C", "D", "B", "E"],  # missed by BC-DFS
+        ["A", "C", "D", "B", "E"],
     ]
 
     Y = nx.parse_adjlist(
