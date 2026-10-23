@@ -7,7 +7,6 @@ import pytest
 from networkx import DiGraph
 from networkx.algorithms.tournament import (
     hamiltonian_path,
-    index_satisfying,
     is_reachable,
     is_strongly_connected,
     is_tournament,
@@ -15,16 +14,6 @@ from networkx.algorithms.tournament import (
     score_sequence,
     tournament_matrix,
 )
-
-
-def test_condition_not_satisfied():
-    iter_in = [0]
-    assert index_satisfying(iter_in, lambda x: x > 0) == 1
-
-
-def test_empty_iterable():
-    with pytest.raises(ValueError):
-        index_satisfying([], lambda x: x > 0)
 
 
 def test_is_tournament():
