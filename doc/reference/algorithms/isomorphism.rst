@@ -23,6 +23,12 @@ VF2++
    vf2pp_is_isomorphic
    vf2pp_all_isomorphisms
    vf2pp_isomorphism
+   vf2pp_subgraph_is_isomorphic
+   vf2pp_all_subgraph_isomorphisms
+   vf2pp_subgraph_isomorphism
+   vf2pp_is_monomorphic
+   vf2pp_all_monomorphisms
+   vf2pp_monomorphism
 
 Tree Isomorphism
 -----------------

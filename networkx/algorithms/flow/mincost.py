@@ -266,19 +266,19 @@ def max_flow_min_cost(G, s, t, capacity="capacity", weight="weight"):
         DiGraph on which a minimum cost flow satisfying all demands is
         to be found.
 
-    s: node label
+    s : node label
         Source of the flow.
 
-    t: node label
+    t : node label
         Destination of the flow.
 
-    capacity: string
+    capacity : string
         Edges of the graph G are expected to have an attribute capacity
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
 
-    weight: string
+    weight : string
         Edges of the graph G are expected to have an attribute weight
         that indicates the cost incurred by sending one unit of flow on
         that edge. If not present, the weight is considered to be 0.

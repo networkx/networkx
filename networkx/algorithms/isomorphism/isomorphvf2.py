@@ -162,7 +162,7 @@ class GraphMatcher:
 
         Parameters
         ----------
-        G1,G2: NetworkX Graph or MultiGraph instances.
+        G1,G2 : NetworkX Graph or MultiGraph instances.
            The two graphs to check for isomorphism or monomorphism.
 
         Examples

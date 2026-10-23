@@ -97,10 +97,10 @@ def kneser_graph(n, k):
 
     Parameters
     ----------
-    n: int
+    n : int
         Number of integers from which to make node subsets.
         Subsets are drawn from ``set(range(n))``.
-    k: int
+    k : int
         Size of the subsets.
 
     Returns

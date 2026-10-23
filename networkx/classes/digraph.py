@@ -866,7 +866,7 @@ class DiGraph(Graph):
 
         Parameters
         ----------
-        ebunch: list or container of edge tuples
+        ebunch : list or container of edge tuples
             Each edge given in the list or container will be removed
             from the graph. The edges can be:
 

@@ -63,7 +63,7 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
        Encoding for text data.
     prettyprint : bool (optional, default: True)
        If True use line breaks and indenting in output XML.
-    version: string (optional, default: '1.2draft')
+    version : string (optional, default: '1.2draft')
        The version of GEXF to be used for nodes attributes checking
 
     Raises
@@ -242,7 +242,7 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     path : file or string
        Filename or file handle to read.
        Filenames ending in .gz or .bz2 will be decompressed.
-    node_type: Python type (default: None)
+    node_type : Python type (default: None)
        Convert node ids to this type if not None.
     relabel : bool (default: False)
        If True relabel the nodes to use the GEXF node "label" attribute

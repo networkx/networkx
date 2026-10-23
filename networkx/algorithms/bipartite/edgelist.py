@@ -49,7 +49,7 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
        If True write a string representation of the edge data dictionary..
        If a list (or other iterable) is provided, write the  keys specified
        in the list.
-    encoding: string, optional
+    encoding : string, optional
        Specify which encoding to use when writing file.
 
     Examples
@@ -205,7 +205,7 @@ def parse_edgelist(
        Marker for comment lines
     delimiter : string, optional
        Separator for node labels
-    create_using: NetworkX graph container, optional
+    create_using : NetworkX graph container, optional
        Use given NetworkX graph for holding nodes or edges.
     nodetype : Python type, optional
        Convert nodes to this type.
@@ -345,7 +345,7 @@ def read_edgelist(
        Tuples specifying dictionary key names and types for edge data
     edgetype : int, float, str, Python type, optional OBSOLETE
        Convert edge data from strings to specified type and use as 'weight'
-    encoding: string, optional
+    encoding : string, optional
        Specify which encoding to use when reading file.
 
     Returns

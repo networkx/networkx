@@ -558,7 +558,7 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight="weight"):
 
     See Also
     --------
-    multi_source_dijkstra, multi_source_bellman_ford
+    multi_source_dijkstra
 
     """
     length, path = multi_source_dijkstra(G, sources, cutoff=cutoff, weight=weight)
@@ -797,15 +797,15 @@ def _dijkstra_multisource(
         iterable, the computed paths may begin from any one of the start
         nodes.
 
-    weight: function
+    weight : function
         Function with (u, v, data) input that returns that edge's weight
         or None to indicate a hidden edge
 
-    pred: dict of lists, optional(default=None)
+    pred : dict of lists, optional(default=None)
         dict to store a list of predecessors keyed by that node
         If None, predecessors are not stored.
 
-    paths: dict, optional (default=None)
+    paths : dict, optional (default=None)
         dict to store the path list from source to each node, keyed by node.
         If None, paths are not stored.
 
@@ -1184,7 +1184,7 @@ def bellman_ford_predecessor_and_distance(
         The algorithm works for all types of graphs, including directed
         graphs and multigraphs.
 
-    source: node label
+    source : node label
         Starting node for path
 
     target : node label, optional
@@ -1311,7 +1311,7 @@ def _bellman_ford(
     ----------
     G : NetworkX graph
 
-    source: list
+    source : list
         List of source nodes. The shortest path from any of the source
         nodes will be found if multiple sources are provided.
 
@@ -1321,20 +1321,20 @@ def _bellman_ford(
         endpoints of an edge and the dictionary of edge attributes for
         that edge. The function must return a number.
 
-    pred: dict of lists, optional (default=None)
+    pred : dict of lists, optional (default=None)
         dict to store a list of predecessors keyed by that node
         If None, predecessors are not stored
 
-    paths: dict, optional (default=None)
+    paths : dict, optional (default=None)
         dict to store the path list from source to each node, keyed by node
         If None, paths are not stored
 
-    dist: dict, optional (default=None)
+    dist : dict, optional (default=None)
         dict to store distance from source to the keyed node
         If None, returned dist dict contents default to 0 for every node in the
         source list
 
-    target: node label, optional
+    target : node label, optional
         Ending node for path. Path lengths to other destinations may (and
         probably will) be incorrect.
 
@@ -1413,10 +1413,10 @@ def _inner_bellman_ford(
         endpoints of an edge and the dictionary of edge attributes for
         that edge. The function must return a number.
 
-    pred: dict of lists
+    pred : dict of lists
         dict to store a list of predecessors keyed by that node
 
-    dist: dict, optional (default=None)
+    dist : dict, optional (default=None)
         dict to store distance from source to the keyed node
         If None, returned dist dict contents default to 0 for every node in the
         source list
@@ -1972,7 +1972,7 @@ def goldberg_radzik(G, source, weight="weight"):
         The algorithm works for all types of graphs, including directed
         graphs and multigraphs.
 
-    source: node label
+    source : node label
         Starting node for path
 
     weight : string or function
@@ -2231,7 +2231,7 @@ def find_negative_cycle(G, source, weight="weight"):
     ----------
     G : NetworkX graph
 
-    source: node label
+    source : node label
         The search for the negative cycle will start from this node.
 
     weight : string or function
