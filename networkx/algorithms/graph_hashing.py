@@ -54,12 +54,12 @@ def _neighborhood_aggregate_directed(G, node, node_labels, edge_attr=None):
     """
     successor_labels = []
     for nbr in G.successors(node):
-        prefix = "s_" + "" if edge_attr is None else str(G[node][nbr][edge_attr])
+        prefix = "s_" + ("" if edge_attr is None else str(G[node][nbr][edge_attr]))
         successor_labels.append(prefix + node_labels[nbr])
 
     predecessor_labels = []
     for nbr in G.predecessors(node):
-        prefix = "p_" + "" if edge_attr is None else str(G[nbr][node][edge_attr])
+        prefix = "p_" + ("" if edge_attr is None else str(G[nbr][node][edge_attr]))
         predecessor_labels.append(prefix + node_labels[nbr])
     return (
         node_labels[node]
@@ -82,8 +82,12 @@ def weisfeiler_lehman_graph_hash(
         one extra iteration of WL occurred than indicated by `iterations`.
         For undirected graphs without node or edge labels, the old
         hashes can be obtained by increasing the iteration count by one.
+        Additionally, in version [TBD], a bug was fixed where directed graphs with
+        ``edge_attr`` silently dropped direction prefixes. Previously stored hashes
+        for these graphs must be recomputed.
         For more details, see `issue #7806
-        <https://github.com/networkx/networkx/issues/7806>`_.
+        <https://github.com/networkx/networkx/issues/7806>`_ and `issue #8945
+        <https://github.com/networkx/networkx/issues/8945>`_.
 
     The function iteratively aggregates and hashes neighborhoods of each node.
     After each node's neighbors are hashed to obtain updated node labels,
@@ -185,7 +189,8 @@ def weisfeiler_lehman_graph_hash(
         _neighborhood_aggregate = _neighborhood_aggregate_directed
         warnings.warn(
             "The hashes produced for directed graphs changed in version v3.5"
-            " due to a bugfix to track in and out edges separately (see documentation).",
+            " to track in and out edges separately, and in version [TBD] to include"
+            " direction prefixes when edge_attr is used (see documentation).",
             UserWarning,
             stacklevel=2,
         )
@@ -248,8 +253,12 @@ def weisfeiler_lehman_subgraph_hashes(
         shifting the other calculated hashes one position to the right. To
         obtain the same last subgraph hash, increase the number of iterations
         by one.
+        Additionally, in version [TBD], a bug was fixed where directed graphs with
+        ``edge_attr`` silently dropped direction prefixes. Previously stored hashes
+        for these graphs must be recomputed.
         For more details, see `issue #7806
-        <https://github.com/networkx/networkx/issues/7806>`_.
+        <https://github.com/networkx/networkx/issues/7806>`_ and `issue #8945
+        <https://github.com/networkx/networkx/issues/8945>`_.
 
     Dictionary keys are nodes in `G`, and values are a list of hashes.
     Each hash corresponds to a subgraph rooted at a given node u in `G`.
@@ -384,7 +393,8 @@ def weisfeiler_lehman_subgraph_hashes(
         _neighborhood_aggregate = _neighborhood_aggregate_directed
         warnings.warn(
             "The hashes produced for directed graphs changed in v3.5"
-            " due to a bugfix (see documentation).",
+            " to track in and out edges separately, and in version [TBD] to include"
+            " direction prefixes when edge_attr is used (see documentation).",
             UserWarning,
             stacklevel=2,
         )
