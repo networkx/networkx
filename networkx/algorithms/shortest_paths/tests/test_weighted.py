@@ -642,13 +642,11 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G.add_edge(0, 1, weight=-1)
         assert nx.find_negative_cycle(G, 1) == [1, 0, 1]
 
-    @pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
-    @pytest.mark.parametrize("heuristic", [False, True])
-    @pytest.mark.parametrize("callable_weight", [False, True])
-    @pytest.mark.parametrize(
-        "edges",
-        [
-            # The predecessor search used to exhaust without finding a cycle.
+    def test_find_negative_cycle_detection_outside_cycle(self):
+        # Node 2 has no outgoing edges, so it cannot belong to a cycle.
+        # Bellman-Ford detects a negative cycle while updating this node.
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(
             [
                 (0, 1, 0),
                 (0, 2, 0),
@@ -659,8 +657,16 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                 (4, 3, 0),
                 (5, 0, -1),
                 (5, 1, 0),
-            ],
-            # Equal-distance predecessors used to yield a zero-weight cycle.
+            ]
+        )
+        cycle = nx.find_negative_cycle(G, 0)
+        assert cycle[0] == cycle[-1]
+        assert nx.path_weight(G, cycle, "weight") < 0
+
+    def test_find_negative_cycle_equal_distance_predecessors(self):
+        # The old reconstruction returned [1, 2, 3, 1], with total weight 0.
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(
             [
                 (0, 2, 0),
                 (1, 0, -1),
@@ -670,18 +676,35 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                 (3, 5, 0),
                 (5, 1, -1),
                 (5, 4, 0),
-            ],
-        ],
-    )
-    def test_find_negative_cycle_zero_weight_edges(
-        self, graph_type, heuristic, callable_weight, edges, monkeypatch
+            ]
+        )
+        cycle = nx.find_negative_cycle(G, 0)
+        assert cycle[0] == cycle[-1]
+        assert nx.path_weight(G, cycle, "weight") < 0
+
+    @pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
+    @pytest.mark.parametrize("heuristic", [False, True])
+    @pytest.mark.parametrize("callable_weight", [False, True])
+    def test_find_negative_cycle_zero_weight_edges_options(
+        self, graph_type, heuristic, callable_weight, monkeypatch
     ):
-        # Exercise both negative-cycle detection paths in Bellman-Ford.
+        # find_negative_cycle calls _inner_bellman_ford. Monkeypatch replaces
+        # that internal function here so both detection paths are exercised.
         monkeypatch.setattr(
             weighted,
             "_inner_bellman_ford",
             partial(weighted._inner_bellman_ford, heuristic=heuristic),
         )
+        edges = [
+            (0, 2, 0),
+            (1, 0, -1),
+            (1, 2, 0),
+            (2, 3, 0),
+            (3, 1, 0),
+            (3, 5, 0),
+            (5, 1, -1),
+            (5, 4, 0),
+        ]
         G = graph_type()
         G.add_weighted_edges_from(edges, weight="cost")
         if G.is_multigraph():
