@@ -339,6 +339,27 @@ class BaseAttrGraphTester(BaseGraphTester):
         self.different_attrdict(H, G)
         self.shallow_copy_attrdict(H, G)
 
+    def test_copy_self_loop_and_parallel_edges(self):
+        G = self.Graph()
+        G.add_edge(0, 0, weight=1)
+        G.add_edge(0, 1, weight=2)
+        G.add_edge(1, 2, color="red")
+        if G.is_multigraph():
+            G.add_edge(0, 1, key="a", weight=3)
+            G.add_edge(1, 0, key="b")
+            G.add_edge(0, 0, key="loop", weight=4)
+        H = G.copy()
+        assert H._adj == G._adj
+        assert H.number_of_edges() == G.number_of_edges()
+        assert nx.number_of_selfloops(H) == nx.number_of_selfloops(G)
+        for u, nbrs in H._adj.items():
+            for v, data in nbrs.items():
+                # edge data is copied, not shared with the original
+                assert data is not G._adj[u][v]
+                if not H.is_directed():
+                    # both directions of an undirected edge share one dict
+                    assert data is H._adj[v][u]
+
     def test_class_copy(self):
         G = self.Graph()
         G.add_node(0)
