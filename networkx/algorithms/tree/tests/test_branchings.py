@@ -622,3 +622,38 @@ def test_branchings_with_default_weights():
     assert all("weight" not in d for (u, v, d) in graph.edges(data=True)), (
         "The above calls should not modify the initial graph in-place"
     )
+
+
+def test_spanning_arborescence_weight_shift_issue_8964():
+    """Test that spanning arborescences are found on graphs where earlier
+    weight shifts favored suboptimal non-spanning branchings (issue #8964).
+    """
+    edges = [
+        (0, 1, 1.0),
+        (0, 2, 10.0),
+        (0, 4, 1.0),
+        (1, 4, 10.0),
+        (2, 4, 0.4),
+        (3, 1, 10.0),
+        (4, 0, 1.0),
+    ]
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(edges)
+
+    # Spanning arborescence exists with root 3
+    min_arb = nx.minimum_spanning_arborescence(G)
+    assert nx.is_arborescence(min_arb)
+    assert len(min_arb.edges) == len(G.nodes) - 1
+    assert branchings.branching_weight(min_arb) == pytest.approx(31.0)
+
+    min_branch = branchings.minimal_branching(G)
+    assert nx.is_arborescence(min_branch)
+    assert branchings.branching_weight(min_branch) == pytest.approx(31.0)
+
+    # Maximum spanning arborescence on inverted weights
+    H = nx.DiGraph()
+    H.add_weighted_edges_from((u, v, -w) for u, v, w in edges)
+    max_arb = nx.maximum_spanning_arborescence(H)
+    assert nx.is_arborescence(max_arb)
+    assert len(max_arb.edges) == len(H.nodes) - 1
+    assert branchings.branching_weight(max_arb) == pytest.approx(-31.0)
