@@ -1393,6 +1393,7 @@ def _inner_bellman_ford(
     pred,
     dist=None,
     heuristic=True,
+    pred_edge=None,
 ):
     """Inner Relaxation loop for Bellman–Ford algorithm.
 
@@ -1425,6 +1426,10 @@ def _inner_bellman_ford(
         Determines whether to use a heuristic to early detect negative
         cycles at a hopefully negligible cost.
 
+    pred_edge : dict, optional
+        Store the predecessor from the last strict distance improvement.
+        Unlike `pred`, this does not include equal-distance predecessors.
+
     Returns
     -------
     node or None
@@ -1448,7 +1453,8 @@ def _inner_bellman_ford(
 
     # Heuristic Storage setup. Note: use None because nodes cannot be None
     nonexistent_edge = (None, None)
-    pred_edge = {v: None for v in sources}
+    if pred_edge is None:
+        pred_edge = {v: None for v in sources}
     recent_update = {v: nonexistent_edge for v in sources}
 
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
@@ -1479,6 +1485,7 @@ def _inner_bellman_ford(
                         if v in recent_update[u]:
                             # Negative cycle found!
                             pred[v].append(u)
+                            pred_edge[v] = u
                             return v
 
                         # Transfer the recent update info from u to v if the
@@ -1496,6 +1503,7 @@ def _inner_bellman_ford(
                         count_v = count.get(v, 0) + 1
                         if count_v == n:
                             # Negative cycle found!
+                            pred_edge[v] = u
                             return v
 
                         count[v] = count_v
@@ -2269,41 +2277,22 @@ def find_negative_cycle(G, source, weight="weight"):
     """
     weight = _weight_function(G, weight)
     pred = {source: []}
+    pred_edge = {source: None}
 
-    v = _inner_bellman_ford(G, [source], weight, pred=pred)
+    v = _inner_bellman_ford(G, [source], weight, pred=pred, pred_edge=pred_edge)
     if v is None:
         raise nx.NetworkXError("No negative cycles detected.")
 
-    # negative cycle detected... find it
-    neg_cycle = []
-    stack = [(v, list(pred[v]))]
-    seen = {v}
-    while stack:
-        node, preds = stack[-1]
-        if v in preds:
-            # found the cycle
-            neg_cycle.extend([node, v])
-            neg_cycle = list(reversed(neg_cycle))
-            return neg_cycle
-
-        if preds:
-            nbr = preds.pop()
-            if nbr not in seen:
-                stack.append((nbr, list(pred[nbr])))
-                neg_cycle.append(node)
-                seen.add(nbr)
-        else:
-            stack.pop()
-            if neg_cycle:
-                neg_cycle.pop()
-            else:
-                if v in G[v] and weight(G, v, v) < 0:
-                    return [v, v]
-                # should not reach here
-                raise nx.NetworkXError("Negative cycle is detected but not found")
-    # should not get here...
-    msg = "negative cycle detected but not identified"
-    raise nx.NetworkXUnbounded(msg)
+    # Equal-distance predecessors can form zero-weight cycles. Follow only
+    # strict improvements, starting at the detection node, which need not
+    # itself be on the negative cycle.
+    path = []
+    seen = {}
+    while v not in seen:
+        seen[v] = len(path)
+        path.append(v)
+        v = pred_edge[v]
+    return [v, *reversed(path[seen[v] :])]
 
 
 @nx._dispatchable(edge_attrs="weight")
