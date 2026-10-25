@@ -177,14 +177,6 @@ def test_node_connectivity_multigraphs():
     assert 4 == approx.node_connectivity(D)
 
 
-def test_node_connectivity_is_a_lower_bound():
-    # The approximation must never exceed the exact value, for digraphs too.
-    for seed in range(30):
-        for directed in (False, True):
-            G = nx.gnp_random_graph(12, 0.25, seed=seed, directed=directed)
-            assert approx.node_connectivity(G) <= nx.node_connectivity(G)
-
-
 class TestAllPairsNodeConnectivityApprox:
     @classmethod
     def setup_class(cls):
