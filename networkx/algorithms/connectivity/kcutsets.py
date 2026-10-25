@@ -163,8 +163,12 @@ def all_node_cuts(G, k=None, flow_func=None):
             # flow below is a waste. Skipping the pair is not merely safe
             # but invisible: everything the loop does past this point,
             # including the bookkeeping edge added to H and R, happens
-            # only when the flow value equals k.
-            if approx_local_node_connectivity(G, x, v, cutoff=k + 1) > k:
+            # only when the flow value equals k. A pair with a node of degree
+            # k is at most k-connected, so the approximation cannot exceed k.
+            if (
+                min(G.degree[x], G.degree[v]) > k
+                and approx_local_node_connectivity(G, x, v, cutoff=k + 1) > k
+            ):
                 continue
             # step 4: compute maximum flow in an Even-Tarjan reduction H of G
             # and step 5: build the associated residual network R
