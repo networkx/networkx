@@ -190,10 +190,10 @@ def bsdfs(G, source, target, *, length_bound):
 
     Notes
     -----
-    The time a consumer waits for the first path, for each next path, and for
-    exhaustion of the generator, the *delay*, is at most ``3(k+1)(n+m)``
-    elementary steps, and the first ``p`` outputs are generated in at most
-    ``2p(k+1)(n+m)`` elementary steps [1]_.
+    The *delay* is the time a consumer waits for the first path, for each next
+    path, and for exhaustion of the generator. The *delay*, is at most
+    ``3(k+1)(n+m)`` elementary steps, and the first ``p`` outputs are
+    generated in at most ``2p(k+1)(n+m)`` elementary steps [1]_.
     Here ``k`` is `length_bound`, ``n`` is the number of nodes reachable from `source`
     within ``k`` edges, and ``m`` the number of edges incident with them (incoming or
     outgoing). An elementary step is a node visit, the output of one node of a path,
