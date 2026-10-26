@@ -14,14 +14,15 @@
 #     ``None`` (cycles)      `source`           empty set
 #     a node or node set*    dummy              ``{target}`` or ``set(target)``
 #
-#  * A single target ``t != s``, a node ``t`` or a one-node set ``{t}``, is
-#    handled as ``terminal = t`` with empty ``targets``, for performance.
+#  * If ``t != s``, a single node ``t`` or a one-node set ``{t}`` is handled
+#    as ``terminal = t`` with empty ``targets``, for performance.
 #
 # Paths arriving at ``terminal`` are yielded and no further extension is explored,
 # i.e. no paths pass through ``terminal``.  If ``terminal == source`` then the
 # paths are cycles. The dummy value for ``terminal`` is ``object()`` which equals
 # no node. The nodes of ``targets`` are entered like other nodes, a path is reported
 # on arrival, and the search continues through them.
+# If `source` is in ``targets``, the trivial path ``[source]`` is reported.
 #
 # The search is structured using a dict as stack.  Its keys are the suspended nodes
 # of the current search path ``P = [*stack, v]``, in path order.  Its values hold,
@@ -101,7 +102,7 @@ def bsdfs(G, source, target=None, *, length_bound):
     which visits each node once and yields the edges of a single search
     tree, it yields every such path.
 
-    Together with the length bound, per-node barriers limit the *scope*
+    Together with the length bound, internal per-node barriers limit the *scope*
     of the search, hence the name. As a result, the *delay*, the time until
     the next output or until the search ends, is ``O(k(n+m))`` (see Notes),
     whereas a plain depth-limited search can spend time exponential in
@@ -116,10 +117,9 @@ def bsdfs(G, source, target=None, *, length_bound):
     target : node or set of nodes, optional
         If None (the default), the simple cycles through `source` are enumerated.
         A single node enumerates the simple paths from `source` to `target`.
-        A set enumerates the simple paths from `source` to any node of the set,
-        and such a path may pass through one node of the set on its way to
-        another.  A single node and the corresponding one-element set give
-        the same paths.
+        A set enumerates the simple paths from `source` to any node of the set.
+        Such a path may pass through one node of the set on its way to another.
+        A single node and the corresponding one-element set give the same paths.
     length_bound : int
         Length bound in edges.
 
@@ -301,7 +301,7 @@ def bsdfs(G, source, target=None, *, length_bound):
 
 @nx._dispatchable
 def bsdfs_edges(G, source, target=None, *, length_bound):
-    """Yield the paths of :func:`bsdfs` as edge lists rather than node lists.
+    """Yield the paths or cycles of :func:`bsdfs` as edge lists rather than node lists.
 
     This is to :func:`bsdfs` what
     :func:`~networkx.algorithms.simple_paths.all_simple_edge_paths` is to
