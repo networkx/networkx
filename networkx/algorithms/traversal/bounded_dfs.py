@@ -5,8 +5,15 @@
 # -----------------------
 # An iterative depth-first type of search starting at `source` (``s``) and
 # terminating in a node ``t`` given by `target`, with at most `length_bound`
-# (``k``) edges per output.  `target` is either a single node of `G`
-# (``terminal``) or a node set (``targets``).  Exactly one of the two is in use:
+# (``k``) edges per output.  `target` is either a single node or a set of nodes.
+# We use two variables to handle the two cases (single node or not).
+# Exactly one variable holds a dummy value (either a non-node or an empty set).
+# For a single node, ``terminal`` holds that node and ``targets`` is an empty set.
+# For a set of nodes, ``targets`` holds the set and ``terminal`` is a non-node.
+# A set of one node is treated as a single node. In addition, if it equals ``source``,
+# we yield the singleton path ``[source]`` before other paths. That way
+# ``target=source`` yields cycles while ``target={source}`` yields paths
+# including the singleton path.
 #
 #     parameter: `target`              var: ``terminal``  var: ``targets``
 #     -------------------------------  -----------------  ----------------
