@@ -21,8 +21,10 @@ def test_bsdfs_length_bound_and_target_set():
 def test_bsdfs_cycles_and_trivial_path():
     G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
 
-    assert list(bsdfs(G, 0, 0, length_bound=2)) == []  # no cycle
-    assert list(bsdfs(G, 0, 0, length_bound=3)) == [[0, 1, 2, 0]]  # a cycle
+    assert list(bsdfs(G, 0, length_bound=2)) == []  # no cycle
+    assert list(bsdfs(G, 0, length_bound=3)) == [[0, 1, 2, 0]]  # a cycle
+    assert list(bsdfs(G, 0, None, length_bound=3)) == [[0, 1, 2, 0]]  # a cycle
+    assert list(bsdfs(G, 0, 0, length_bound=3)) == [[0]]  # the trivial path
     assert list(bsdfs(G, 0, {0}, length_bound=3)) == [[0]]  # the trivial path
     assert list(bsdfs(G, 0, {2}, length_bound=3)) == [[0, 1, 2]]  # a path
     assert list(bsdfs(G, 0, {0, 2}, length_bound=3)) == [[0], [0, 1, 2]]  # both paths
@@ -78,7 +80,8 @@ def test_bsdfs_edges_multigraph_parallel_edges():
 def test_bsdfs_length_bound_zero():
     G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
 
-    assert list(bsdfs(G, 0, 0, length_bound=0)) == []
+    assert list(bsdfs(G, 0, length_bound=0)) == []
+    assert list(bsdfs(G, 0, 0, length_bound=0)) == [[0]]
     assert list(bsdfs(G, 0, 2, length_bound=0)) == []
     assert list(bsdfs(G, 0, {0, 2}, length_bound=0)) == [[0]]
 
@@ -86,8 +89,10 @@ def test_bsdfs_length_bound_zero():
 def test_bsdfs_self_loops():
     G = nx.DiGraph([(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 0)])
 
-    # a self-loop at the source is a cycle; self-loops elsewhere are skipped
-    assert list(bsdfs(G, 0, 0, length_bound=3)) == [[0, 0], [0, 1, 2, 0]]
+    # a self-loop at the source is a cycle but not a path; self-loops
+    # elsewhere are skipped
+    assert list(bsdfs(G, 0, length_bound=3)) == [[0, 0], [0, 1, 2, 0]]
+    assert list(bsdfs(G, 0, 0, length_bound=3)) == [[0]]
     assert list(bsdfs(G, 0, 2, length_bound=3)) == [[0, 1, 2]]
     assert list(bsdfs(G, 0, {1, 2}, length_bound=3)) == [[0, 1], [0, 1, 2]]
 
@@ -96,14 +101,16 @@ def test_bsdfs_undirected_graph():
     G = nx.Graph([(0, 1), (1, 2), (2, 0), (2, 3)])
 
     # cycles: [0, u, 0] for each neighbor u, longer cycles in both orientations
-    assert list(bsdfs(G, 0, 0, length_bound=3)) == [
+    assert list(bsdfs(G, 0, length_bound=3)) == [
         [0, 1, 0],
         [0, 1, 2, 0],
         [0, 2, 1, 0],
         [0, 2, 0],
     ]
+    # paths do not return to the source
     assert list(bsdfs(G, 0, 3, length_bound=3)) == [[0, 1, 2, 3], [0, 2, 3]]
-    assert list(bsdfs_edges(G, 0, 0, length_bound=2)) == [
+    assert list(bsdfs(G, 0, 0, length_bound=3)) == [[0]]
+    assert list(bsdfs_edges(G, 0, length_bound=2)) == [
         [(0, 1), (1, 0)],
         [(0, 2), (2, 0)],
     ]
@@ -125,10 +132,11 @@ def test_bsdfs_multiple_sources_via_virtual_source():
 def test_bsdfs_edges_cycle_and_target_set():
     G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (2, 0)])
 
-    assert list(bsdfs_edges(G, 0, 0, length_bound=3)) == [
+    assert list(bsdfs_edges(G, 0, length_bound=3)) == [
         [(0, 1), (1, 2), (2, 0)],
         [(0, 2), (2, 0)],
     ]
+    assert list(bsdfs_edges(G, 0, 0, length_bound=3)) == [[]]
     assert list(bsdfs_edges(G, 0, {1, 2}, length_bound=2)) == [
         [(0, 1)],
         [(0, 1), (1, 2)],
@@ -143,7 +151,7 @@ def test_bsdfs_cascade_reaches_indirect_predecessors():
         [(0, 2), (0, 3), (1, 0), (2, 1), (2, 4), (3, 1), (4, 0), (4, 2), (4, 3)]
     )
 
-    assert list(bsdfs(G, 4, 4, length_bound=5)) == [
+    assert list(bsdfs(G, 4, length_bound=5)) == [
         [4, 0, 2, 4],
         [4, 2, 4],
         [4, 3, 1, 0, 2, 4],
@@ -161,8 +169,8 @@ def test_bsdfs_shortest_distance_passed_to_parent():
 def test_bsdfs_edges_undirected_multigraph():
     G = nx.MultiGraph([(0, 1), (0, 1), (1, 2), (2, 0)])
 
-    assert list(bsdfs(G, 0, 0, length_bound=2)) == [[0, 1, 0], [0, 2, 0]]
-    assert list(bsdfs_edges(G, 0, 0, length_bound=2)) == [
+    assert list(bsdfs(G, 0, length_bound=2)) == [[0, 1, 0], [0, 2, 0]]
+    assert list(bsdfs_edges(G, 0, length_bound=2)) == [
         [(0, 1, 0), (1, 0, 0)],
         [(0, 1, 0), (1, 0, 1)],
         [(0, 1, 1), (1, 0, 0)],
@@ -181,9 +189,8 @@ def test_bsdfs_hard_cycle_instances():
         create_using=nx.DiGraph,
     )
     s = "A"
-    t = s
     k = 5
-    assert list(bsdfs(G, s, t, length_bound=k)) == [
+    assert list(bsdfs(G, s, length_bound=k)) == [
         ["A", "D", "A"],
         ["A", "D", "B", "E", "C", "A"],
         ["A", "E", "C", "A"],
@@ -212,9 +219,8 @@ def test_bsdfs_hard_cycle_instances():
         ]
     )
     s = 1
-    t = s
     k = 8
-    assert list(bsdfs(H, s, t, length_bound=k)) == [[1, 0, 2, 1], [1, 2, 1]]
+    assert list(bsdfs(H, s, length_bound=k)) == [[1, 0, 2, 1], [1, 2, 1]]
 
 
 def test_bsdfs_hard_path_instances():

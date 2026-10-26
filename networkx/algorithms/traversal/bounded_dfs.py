@@ -4,18 +4,18 @@
 # Implementation overview
 # -----------------------
 # An iterative depth-first type of search starting at `source` (``s``) and
-# terminating in a node ``t`` given by `target`, with at most `length_bound`
-# (``k``) edges per output.  `target` is either a single node or a set of nodes.
-# We use two variables to handle these two cases:
+# terminating in a node ``t``, with at most `length_bound` (``k``) edges per
+# output.  If `target` is ``None``, ``t`` is ``s`` and the outputs are cycles.
+# Otherwise ``t`` is `target`, a single node or any node of a set, and the
+# outputs are paths.  We use two variables to handle these cases:
 #
-#     parameter: `target`              var: ``terminal``  var: ``targets``
-#     -------------------------------  -----------------  ----------------
-#     a node of `G` (may be `source`)  `target`           empty set
-#     a node set*                      dummy              ``set(target)``
+#     parameter: `target`    var: ``terminal``  var: ``targets``
+#     ---------------------  -----------------  ----------------------------
+#     ``None`` (cycles)      `source`           empty set
+#     a node or node set*    dummy              ``{target}`` or ``set(target)``
 #
-#  * A one-node set ``{t}`` with ``s != t`` is handled as the single node ``t``
-#    (first row), for performance.  Target sets are for path search only;
-#    cycles are requested by ``target == source``.
+#  * A single target ``t != s``, a node ``t`` or a one-node set ``{t}``, is
+#    handled as ``terminal = t`` with empty ``targets``, for performance.
 #
 # Paths arriving at ``terminal`` are yielded and no further extension is explored,
 # i.e. no paths pass through ``terminal``.  If ``terminal == source`` then the
@@ -91,12 +91,12 @@ __all__ = ["bsdfs", "bsdfs_edges"]
 
 
 @nx._dispatchable
-def bsdfs(G, source, target, *, length_bound):
-    """Yield all length-bounded simple paths or cycles from `source` to `target`.
+def bsdfs(G, source, target=None, *, length_bound):
+    """Yield all length-bounded simple paths or cycles starting at `source`.
 
     Bounded-Scope Depth-First Search (BS-DFS) yields every simple path from
-    `source` to `target` with at most `length_bound` edges, or every
-    simple cycle through `source` if ``target == source``.
+    `source` to `target` with at most `length_bound` edges, or every such
+    simple cycle through `source` if `target` is None.
     Unlike :func:`~networkx.algorithms.traversal.depth_first_search.dfs_edges`,
     which visits each node once and yields the edges of a single search
     tree, it yields every such path.
@@ -112,14 +112,14 @@ def bsdfs(G, source, target, *, length_bound):
     G : NetworkX graph
         Directed or undirected; multigraphs are allowed.
     source : node
-        Source node, where every reported path starts.
-    target : node or set of nodes
-        A single node enumerates the simple paths from `source` to `target`. As a
-        special case, ``target == source`` enumerates the simple cycles through `source`.
+        Source node, where every reported path or cycle starts.
+    target : node or set of nodes, optional
+        If None (the default), the simple cycles through `source` are enumerated.
+        A single node enumerates the simple paths from `source` to `target`.
         A set enumerates the simple paths from `source` to any node of the set,
         and such a path may pass through one node of the set on its way to
         another.  A single node and the corresponding one-element set give
-        the same paths, except in the cycle case.
+        the same paths.
     length_bound : int
         Length bound in edges.
 
@@ -127,16 +127,17 @@ def bsdfs(G, source, target, *, length_bound):
     ------
     list of nodes
         The nodes of the path, beginning at `source` and ending at the target
-        reached.  All nodes are distinct, except that a cycle (``target == source``)
-        ends at `source` again.  The one-node list ``[source]`` is yielded for the
-        trivial path, i.e. when `source` is in the target set.
+        reached, or the nodes of the cycle, beginning and ending at `source`.
+        All nodes are distinct, except for the repeated `source` of a cycle.
+        The one-node list ``[source]`` is yielded for the trivial path, i.e.
+        when `source` is among the targets.
 
-        On undirected graphs (``Graph`` or ``MultiGraph``), in the cycle case
-        ``target == source`` the search may return to `source` along the edge it left by,
+        On undirected graphs (``Graph`` or ``MultiGraph``), the cycle search
+        may return to `source` along the edge it left by,
         so ``[source, u, source]`` is reported for every neighbor ``u``, and every
         longer cycle is reported twice, once per orientation. Use
         :func:`~networkx.algorithms.cycles.simple_cycles` for the cycles of an
-        undirected graph. Paths (``target != source``) are not affected. On multigraphs,
+        undirected graph. Paths are not affected. On multigraphs,
         each node path is reported once; :func:`bsdfs_edges` yields one edge
         path per combination of parallel edges.
 
@@ -154,10 +155,10 @@ def bsdfs(G, source, target, *, length_bound):
 
     >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 0)])
 
-    With ``target == source`` these are the cycles through `source`, ending at `source`
+    Without `target` these are the cycles through `source`, ending at `source`
     again.  The 4-edge cycle 0, 1, 2, 3 exceeds the bound.
 
-    >>> list(bsdfs(G, source=0, target=0, length_bound=3))
+    >>> list(bsdfs(G, source=0, length_bound=3))
     [[0, 1, 3, 0], [0, 2, 3, 0]]
 
     Cycles through the edge (0, 1) are the paths from 1 back to 0, with one
@@ -175,10 +176,11 @@ def bsdfs(G, source, target, *, length_bound):
     >>> list(bsdfs(G, 0, {3}, length_bound=3)) == list(bsdfs(G, 0, 3, length_bound=3))
     True
 
-    `source` in a target set yields the trivial path ``[source]`` but no cycle,
-    since no simple path returns to `source`;
-    ``target == source`` is the way to query for a cycle.
+    `source` as a target, alone or in a set, yields the trivial path ``[source]``
+    but no cycle, since no simple path returns to `source`.
 
+    >>> list(bsdfs(G, 0, 0, length_bound=3))
+    [[0]]
     >>> list(bsdfs(G, 0, {0, 3}, length_bound=3))
     [[0], [0, 1, 2, 3], [0, 1, 3], [0, 2, 3]]
 
@@ -218,21 +220,26 @@ def bsdfs(G, source, target, *, length_bound):
     if source not in G:
         raise nx.NodeNotFound(f"source node {source} not in graph")
 
-    if target in G:  # a single node, as in the paper
-        terminal, targets = target, frozenset()
-    else:  # a set of nodes: NetworkX extension, targets are entered
-        try:
-            targets = set(target)
-        except TypeError as err:
-            raise nx.NodeNotFound(
-                f"target {target!r} is neither a node of G nor an iterable of nodes"
-            ) from err
-        if not targets:
-            raise ValueError(f"{target=} must be a node or a non-empty set of nodes")
-        if len(targets) == 1 and source not in targets:
-            (terminal,) = targets  # shortcut: use the single set element as terminal
-            targets = frozenset()
+    if target is None:  # cycles through source, as in the paper
+        terminal, targets = source, frozenset()
+    else:  # paths to a node or a set of nodes
+        if target in G:
+            targets = {target}
         else:
+            try:
+                targets = set(target)
+            except TypeError as err:
+                raise nx.NodeNotFound(
+                    f"target {target!r} is neither a node of G nor an iterable of nodes"
+                ) from err
+            if not targets:
+                raise ValueError(
+                    f"{target=} must be a node or a non-empty set of nodes"
+                )
+        if len(targets) == 1 and source not in targets:
+            (terminal,) = targets  # a single target, as in the paper
+            targets = frozenset()
+        else:  # NetworkX extension: targets are entered
             terminal = object()  # dummy node; never equal to any node in G
 
     G_succ = G._succ if G.is_directed() else G._adj
@@ -293,7 +300,7 @@ def bsdfs(G, source, target, *, length_bound):
 
 
 @nx._dispatchable
-def bsdfs_edges(G, source, target, *, length_bound):
+def bsdfs_edges(G, source, target=None, *, length_bound):
     """Yield the paths of :func:`bsdfs` as edge lists rather than node lists.
 
     This is to :func:`bsdfs` what
@@ -308,30 +315,30 @@ def bsdfs_edges(G, source, target, *, length_bound):
     G : NetworkX graph
         Directed or undirected; multigraphs are allowed.
     source : node
-        Source node, where every reported path starts.
-    target : node or set of nodes
-        A single node enumerates the simple paths from `source` to `target`. As a
-        special case, ``target == source`` enumerates the simple cycles through `source`.
+        Source node, where every reported path or cycle starts.
+    target : node or set of nodes, optional
+        If None (the default), the simple cycles through `source` are enumerated.
+        A single node enumerates the simple paths from `source` to `target`.
         A set enumerates the simple paths from `source` to any node of the set,
         and such a path may pass through one node of the set on its way to
         another.  A single node and the corresponding one-element set give
-        the same paths, except in the cycle case.
+        the same paths.
     length_bound : int
         Length bound in edges.
 
     Yields
     ------
     list of edges
-        The edges of the path, as ``(u, v)``, or ``(u, v, key)`` on a
+        The edges of the path or cycle, as ``(u, v)``, or ``(u, v, key)`` on a
         multigraph.  The empty list is yielded for the trivial path, i.e.
-        when `source` is in the target set.
+        when `source` is among the targets.
 
-        On undirected graphs (``Graph`` or ``MultiGraph``), in the cycle case
-        ``target == source`` the search may return to `source` along the edge it left by,
+        On undirected graphs (``Graph`` or ``MultiGraph``), the cycle search
+        may return to `source` along the edge it left by,
         so ``[(source, u), (u, source)]`` is reported for every neighbor ``u``, and every
         longer cycle is reported twice, once per orientation. Use
         :func:`~networkx.algorithms.cycles.simple_cycles` for the cycles of an
-        undirected graph. Paths (``target != source``) are not affected.
+        undirected graph. Paths are not affected.
 
     Raises
     ------
