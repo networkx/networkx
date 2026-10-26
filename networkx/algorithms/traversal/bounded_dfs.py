@@ -18,8 +18,9 @@
 # i.e. no paths pass through ``terminal``.  If ``terminal == source`` then the
 # paths are cycles. Terminal's dummy value is ``object()`` so it equals no node.
 # The nodes of ``targets`` are entered like other nodes, a path is reported
-# on arrival, and the search continues through them.  The middle row is a shortcut:
-# it yields the same paths as ``{x}`` in ``targets`` would.
+# on arrival, and the search continues through them. When there is only one
+# node in the set (the middle row in the table) using ``terminal`` or ``targets``
+# yield the same paths, so we use ``terminal`` as a shortcut.
 #
 # The search is structured using a dict as stack.  Its keys are the suspended nodes
 # of the current search path ``P = [*stack, v]``, in path order.  Its values hold,
