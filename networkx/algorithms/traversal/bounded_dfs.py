@@ -14,9 +14,9 @@
 #     a set ``{x}`` without `source`   ``x``              empty set
 #     any other set                    dummy              ``set(target)``
 #
-# The *terminal* is reported as soon as it is an admissible successor and
-# is never entered.  No output passes through it.  It may be the source when
-# searching for cycles.  The dummy is an ``object()`` that equals no node.
+# Paths arriving at ``terminal`` are yielded and no further extension is explored,
+# i.e. no paths pass through ``terminal``.  If ``terminal == source`` then the
+# paths are cycles. Terminal's dummy value is ``object()`` so it equals no node.
 # The nodes of ``targets`` are entered like other nodes, a path is reported
 # on arrival, and the search continues through them.  The middle row is a shortcut:
 # it yields the same paths as ``{x}`` in ``targets`` would.
