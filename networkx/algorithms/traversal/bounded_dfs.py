@@ -54,14 +54,14 @@
 #       barrier[v] = k - h + 1                               (a *raise*)
 #
 # * **fruitful** -- the search at ``v`` produced an output, and ``sd`` is the exact
-#   number of edges from ``v`` to ``t`` along the shortest output found below
-#   ``v``. It is stored as ``barrier[v] = sd``. When ``v`` leaves the path,
-#   barriers of predecessors raised while ``v`` blocked their routes may now be
-#   too high. A backward BFS restores the invariant
+#   number of edges from ``v`` to ``t`` along the shortest output found below``v``.
+#   When ``v`` leaves the path, barriers of predecessors raised while ``v`` blocked
+#   their routes may now be too high. A backward BFS lower barriers where needed
+#   and restores the "edge-consistency" (EC) invariant; see ``cascade`` below. Thus:
 #
+#       barrier[v] = sd
 #       barrier[u] <= barrier[w] + 1  for every edge u -> w with u and w not on the path
 #
-#   ("edge-consistency", EC), lowering barriers where needed; see ``cascade`` below.
 #   Nodes on the current path are skipped: their barriers are written when their
 #   searches finish, not while they are on the path.
 #
