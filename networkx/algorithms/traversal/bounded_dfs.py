@@ -44,7 +44,7 @@
 # output: it prunes only branches that provably cannot finish within the budget.
 #
 # Barriers are updated when the search at ``v`` finishes at depth ``h``.
-# Two search results are possible:
+# Two search results are possible which we call **fruitless** and **fruitful**:
 #
 # * **fruitless** -- the search at ``v`` produced no output. Its subsearch had a
 #   budget of ``k - h`` edges and exhausted it, so ``t`` is farther than that,
