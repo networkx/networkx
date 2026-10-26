@@ -93,7 +93,7 @@ __all__ = ["bsdfs", "bsdfs_edges"]
 
 @nx._dispatchable
 def bsdfs(G, source, target=None, *, length_bound):
-    """Yield all length-bounded simple paths or cycles starting at `source`.
+    """Yield all length-bounded simple paths or cycles starting at `source`, paths ending at `target`.
 
     Bounded-Scope Depth-First Search (BS-DFS) yields every simple path from
     `source` to `target` with at most `length_bound` edges, or every such
