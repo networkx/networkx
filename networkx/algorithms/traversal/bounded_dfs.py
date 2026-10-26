@@ -8,11 +8,11 @@
 # (``k``) edges per output.  `target` is either a single node of `G`
 # (``terminal``) or a node set (``targets``).  Exactly one of the two is in use:
 #
-#     parameter `target`               ``terminal``   ``targets``
-#     -------------------------------  -------------  ---------------
-#     a node of `G` (may be `source`)  `target`       empty set
-#     a set ``{x}`` without `source`   ``x``          empty set
-#     any other set                    dummy          ``set(target)``
+#     parameter: `target`              var: ``terminal``  var: ``targets``
+#     -------------------------------  -----------------  ----------------
+#     a node of `G` (may be `source`)  `target`           empty set
+#     a set ``{x}`` without `source`   ``x``              empty set
+#     any other set                    dummy              ``set(target)``
 #
 # The *terminal* is reported as soon as it is an admissible successor and
 # is never entered.  No output passes through it.  It may be the source when
