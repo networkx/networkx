@@ -71,7 +71,7 @@
 # re-established.
 #
 # Path length ``h`` and barriers thus jointly bound the *scope* of the search,
-# which yields a delay of O(k(n+m)) per output; see the Notes of the ``bsdfs``
+# which results in a delay of O(k(n+m)) per output; see the Notes of ``bsdfs``
 # docstring for the exact bounds and [1] for the proofs.
 #
 # References
