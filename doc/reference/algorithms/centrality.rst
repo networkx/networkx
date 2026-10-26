@@ -27,6 +27,7 @@ Eigenvector
    eigenvector_centrality_numpy
    katz_centrality
    katz_centrality_numpy
+   power_centrality
 
 .. _networkx.algorithms.centrality.closeness:
 
