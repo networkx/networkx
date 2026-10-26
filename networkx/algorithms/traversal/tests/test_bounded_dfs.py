@@ -21,9 +21,11 @@ def test_bsdfs_length_bound_and_target_set():
 def test_bsdfs_cycles_and_trivial_path():
     G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
 
-    assert list(bsdfs(G, 0, 0, length_bound=2)) == []
-    assert list(bsdfs(G, 0, 0, length_bound=3)) == [[0, 1, 2, 0]]
-    assert list(bsdfs(G, 0, {0}, length_bound=3)) == [[0]]
+    assert list(bsdfs(G, 0, 0, length_bound=2)) == []  # no cycle
+    assert list(bsdfs(G, 0, 0, length_bound=3)) == [[0, 1, 2, 0]]  # a cycle
+    assert list(bsdfs(G, 0, {0}, length_bound=3)) == [[0]]  # the trivial path
+    assert list(bsdfs(G, 0, {2}, length_bound=3)) == [[0, 1, 2]]  # a path
+    assert list(bsdfs(G, 0, {0, 2}, length_bound=3)) == [[0], [0, 1, 2]]  # both paths
 
 
 def test_bsdfs_one_element_target_set():

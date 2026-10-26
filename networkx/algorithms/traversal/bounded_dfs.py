@@ -6,28 +6,22 @@
 # An iterative depth-first type of search starting at `source` (``s``) and
 # terminating in a node ``t`` given by `target`, with at most `length_bound`
 # (``k``) edges per output.  `target` is either a single node or a set of nodes.
-# We use two variables to handle the two cases (single node or not).
-# Exactly one variable holds a dummy value (either a non-node or an empty set).
-# For a single node, ``terminal`` holds that node and ``targets`` is an empty set.
-# For a set of nodes, ``targets`` holds the set and ``terminal`` is a non-node.
-# A set of one node is treated as a single node. In addition, if it equals ``source``,
-# we yield the singleton path ``[source]`` before other paths. That way
-# ``target=source`` yields cycles while ``target={source}`` yields paths
-# including the singleton path.
+# We use two variables to handle these two cases:
 #
 #     parameter: `target`              var: ``terminal``  var: ``targets``
 #     -------------------------------  -----------------  ----------------
 #     a node of `G` (may be `source`)  `target`           empty set
-#     a set ``{x}`` without `source`   ``x``              empty set
-#     any other set                    dummy              ``set(target)``
+#     a node set*                      dummy              ``set(target)``
+#
+#  * A one-node set ``{t}`` with ``s != t`` is handled as the single node ``t``
+#    (first row), for performance.  Target sets are for path search only;
+#    cycles are requested by ``target == source``.
 #
 # Paths arriving at ``terminal`` are yielded and no further extension is explored,
 # i.e. no paths pass through ``terminal``.  If ``terminal == source`` then the
-# paths are cycles. Terminal's dummy value is ``object()`` so it equals no node.
-# The nodes of ``targets`` are entered like other nodes, a path is reported
-# on arrival, and the search continues through them. When there is only one
-# node in the set (the middle row in the table) using ``terminal`` or ``targets``
-# yield the same paths, so we use ``terminal`` as a shortcut.
+# paths are cycles. The dummy value for ``terminal`` is ``object()`` which equals
+# no node. The nodes of ``targets`` are entered like other nodes, a path is reported
+# on arrival, and the search continues through them.
 #
 # The search is structured using a dict as stack.  Its keys are the suspended nodes
 # of the current search path ``P = [*stack, v]``, in path order.  Its values hold,
@@ -61,9 +55,9 @@
 #       barrier[v] = k - h + 1
 #
 # * **fruitful** -- the search at ``v`` produced an output, and ``sd`` is the exact
-#   number of edges from ``v`` to ``t`` along the shortest output found below``v``.
+#   number of edges from ``v`` to ``t`` along the shortest output found below ``v``.
 #   When ``v`` leaves the path, barriers of predecessors raised while ``v`` blocked
-#   their routes may now be too high. A backward BFS lower barriers where needed
+#   their routes may now be too high. A backward BFS lowers barriers where needed
 #   and restores the "edge-consistency" (EC) invariant; see ``cascade`` below. Thus:
 #
 #       barrier[v] = sd
@@ -198,7 +192,7 @@ def bsdfs(G, source, target, *, length_bound):
     Notes
     -----
     The *delay* is the time a consumer waits for the first path, for each next
-    path, and for exhaustion of the generator. The *delay*, is at most
+    path, and for exhaustion of the generator. The delay is at most
     ``3(k+1)(n+m)`` elementary steps, and the first ``p`` outputs are
     generated in at most ``2p(k+1)(n+m)`` elementary steps [1]_.
     Here ``k`` is `length_bound`, ``n`` is the number of nodes reachable from `source`
