@@ -49,9 +49,9 @@
 # * **fruitless** -- the search at ``v`` produced no output. Its subsearch had a
 #   budget of ``k - h`` edges and exhausted it, so ``t`` is farther than that,
 #   or every route within that budget is currently blocked by nodes already on
-#   the search path:
+#   the search path. We update the barrier value:
 #
-#       barrier[v] = k - h + 1                               (a *raise*)
+#       barrier[v] = k - h + 1
 #
 # * **fruitful** -- the search at ``v`` produced an output, and ``sd`` is the exact
 #   number of edges from ``v`` to ``t`` along the shortest output found below``v``.
