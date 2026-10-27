@@ -213,7 +213,11 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
         y = seed.choice(list(G[x]))
         if v == y:
             continue  # same target, skip
-        if (x not in G[u]) and (y not in G[v]):  # don't create parallel edges
+        if (
+            (x not in G[u])
+            and (y not in G[v])
+            and (G.is_multigraph() or u != v or x != y)
+        ):  # don't create parallel edges
             G.add_edge(u, x)
             G.add_edge(v, y)
             G.remove_edge(u, v)
@@ -336,7 +340,11 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
                 # If the target nodes are the same, skip this pair.
                 if v == y:
                     continue
-                if x not in G[u] and y not in G[v]:
+                if (
+                    x not in G[u]
+                    and y not in G[v]
+                    and (G.is_multigraph() or u != v or x != y)
+                ):
                     G.remove_edge(u, v)
                     G.remove_edge(x, y)
                     G.add_edge(u, x)
@@ -380,7 +388,11 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
                 # If the target nodes are the same, skip this pair.
                 if v == y:
                     continue
-                if x not in G[u] and y not in G[v]:
+                if (
+                    x not in G[u]
+                    and y not in G[v]
+                    and (G.is_multigraph() or u != v or x != y)
+                ):
                     G.remove_edge(u, v)
                     G.remove_edge(x, y)
                     G.add_edge(u, x)
