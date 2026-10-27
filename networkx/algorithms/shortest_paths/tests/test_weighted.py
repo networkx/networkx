@@ -643,20 +643,16 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert nx.find_negative_cycle(G, 1) == [1, 0, 1]
 
     def test_find_negative_cycle_detection_outside_cycle(self):
-        # Node 2 has no outgoing edges, so it cannot belong to a cycle.
+        # Node 3 has no outgoing edges, so it cannot belong to a cycle.
         # Bellman-Ford detects a negative cycle while updating this node.
         G = nx.DiGraph()
         G.add_weighted_edges_from(
             [
-                (0, 1, 0),
-                (0, 2, 0),
-                (1, 4, -1),
-                (1, 5, 0),
-                (3, 5, 0),
-                (4, 2, 0),
-                (4, 3, 0),
-                (5, 0, -1),
-                (5, 1, 0),
+                (1, 0, -1),
+                (0, 3, -1),
+                (2, 3, -1),
+                (0, 2, -1),
+                (2, 1, -1),
             ]
         )
         cycle = nx.find_negative_cycle(G, 0)
