@@ -9,13 +9,12 @@
 # Otherwise ``t`` is `target`, a single node or any node of a set, and the
 # outputs are paths.  We use two variables to handle these cases:
 #
-#     parameter: `target`    var: ``terminal``  var: ``targets``
-#     ---------------------  -----------------  ----------------------------
-#     ``None`` (cycles)      `source`           empty set
-#     a node or node set*    dummy              ``{target}`` or ``set(target)``
+#     arg: `target`   yield   ``terminal``  ``targets``
+#     --------------  ------  ------------  ---------------
+#     ``None``        cycles  `source`      empty set
+#     single node     paths   the node      empty set
+#     multiple nodes  paths   dummy         ``set(target)``
 #
-#  * If ``t != s``, a single node ``t`` or a one-node set ``{t}`` is handled
-#    as ``terminal = t`` with empty ``targets``, for performance.
 #
 # Paths arriving at ``terminal`` are yielded and no further extension is explored,
 # i.e. no paths pass through ``terminal``.  If ``terminal == source`` then the
