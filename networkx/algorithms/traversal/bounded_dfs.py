@@ -18,7 +18,7 @@
 #
 # Paths arriving at ``terminal`` are yielded and no further extension is explored,
 # i.e. no paths pass through ``terminal``.  If ``terminal == source`` then the
-# paths are cycles. The dummy value for ``terminal`` is ``object()`` which equals
+# a cycle is yielded. The dummy value for ``terminal`` is ``object()`` which equals
 # no node. The nodes of ``targets`` are entered like other nodes, a path is reported
 # on arrival, and the search continues through them.
 # If `source` is in ``targets``, the trivial path ``[source]`` is reported.
