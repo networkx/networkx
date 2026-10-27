@@ -15,9 +15,8 @@
 #     single node     paths   the node      empty set
 #     multiple nodes  paths   dummy         ``set(target)``
 #
-#
 # Paths arriving at ``terminal`` are yielded and no further extension is explored,
-# i.e. no paths pass through ``terminal``.  If ``terminal == source`` then the
+# i.e. no paths pass through ``terminal``.  If ``terminal == source`` then
 # a cycle is yielded. The dummy value for ``terminal`` is ``object()`` which equals
 # no node. The nodes of ``targets`` are entered like other nodes, a path is yielded
 # on arrival, and the search continues through them.
