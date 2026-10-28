@@ -269,6 +269,8 @@ def choose_canonical_labeling(partitions_list, edges):
     )
 
 
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
 def canonical_labeling(G, node_attributes=None):
     """Compute a canonical labeling for ``G``.
 
