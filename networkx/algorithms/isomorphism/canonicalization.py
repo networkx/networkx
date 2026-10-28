@@ -3,32 +3,6 @@ from collections import Counter
 import networkx as nx
 
 
-def get_node_invariants(attributes, neighbors):
-    """Build an invariant for each node from its own and its neighbors' attributes.
-
-    Parameters
-    ----------
-    attributes : dict
-        Mapping from nodes to their attribute values.
-    neighbors : dict
-        Mapping from nodes to tuples of their neighbors.
-
-    Returns
-    -------
-    tuple of tuple
-        Node invariants in the form of attribute sequences in the iteration order of ``attributes``.
-    """
-    result = []
-    for node, attribute in attributes.items():
-        # Node degree (i.e., number of neighbors) is encoded in length of neighbor_attrs.
-        neighbor_attrs = [attributes[neighbor] for neighbor in neighbors[node]]
-        neighbor_attrs.sort()
-        neighbor_attrs.insert(0, attribute)
-        result.append(tuple(neighbor_attrs))
-
-    return tuple(result)
-
-
 def get_partitions_from_attributes(attributes, neighbors):
     """Assign nodes to partitions based on the nodes' attributes.
 
@@ -46,7 +20,14 @@ def get_partitions_from_attributes(attributes, neighbors):
     tuple
         The mapping from nodes to their partitions and the number of partitions.
     """
-    invariants = get_node_invariants(attributes, neighbors)
+    invariants = []
+    for node, attribute in attributes.items():
+        # Node degree (i.e., number of neighbors) is encoded in length of neighbor_attrs.
+        neighbor_attrs = [attributes[neighbor] for neighbor in neighbors[node]]
+        neighbor_attrs.sort()
+        neighbor_attrs.insert(0, attribute)
+        invariants.append(tuple(neighbor_attrs))
+
     unique_invariants = sorted(set(invariants))
     unique_invariants_to_partitions = {
         invariant: partition for partition, invariant in enumerate(unique_invariants)
@@ -95,24 +76,6 @@ def refine_partitions(partitions, node_neighbors):
             return refined_partitions, n_partitions
 
         refined_partitions = next_partitions
-
-
-def get_largest_partition(partitions):
-    """Identify the most populated partition.
-
-    Parameters
-    ----------
-    partitions : dict
-        Mapping from nodes to their partitions.
-
-    Returns
-    -------
-    int
-        The partition containing the most nodes.
-    """
-    partition_sizes = Counter(sorted(partitions.values()))
-
-    return max(partition_sizes, key=partition_sizes.__getitem__)
 
 
 def get_partitioning(partitions, edges):
@@ -175,12 +138,14 @@ def get_refinement_tree_node_children(partitions, node_neighbors):
         Mapping from nodes to refined partitions.
     """
     n_partitions = len(set(partitions.values()))
-    target_partition = get_largest_partition(partitions)
+    partition_sizes = Counter(sorted(partitions.values()))
+    largest_partition = max(partition_sizes, key=partition_sizes.__getitem__)
 
     for node, partition in partitions.items():
-        if partition != target_partition:
+        if partition != largest_partition:
             continue
 
+        # Artificially split the most populated partition.
         individualized = dict(partitions)
         individualized[node] = n_partitions  # Partitions are zero-based.
 
@@ -246,29 +211,6 @@ def get_refinement_tree_levels(partitions, node_neighbors, edges):
         parents = filter_duplicate_partitionings(children, edges)
 
 
-def choose_canonical_labeling(partitions_list, edges):
-    """Choose a canonical labeling from discrete partitionings.
-
-    The canonical labeling is defined as the lexicographically largest partitioning.
-    In case of ties, the first partitioning is selected.
-
-    Parameters
-    ----------
-    partitions_list : list
-        Non-empty list of mappings from nodes to partitions.
-    edges : list
-        The edges of the graph.
-
-    Returns
-    -------
-    dict
-        Mapping from nodes to their partitions.
-    """
-    return max(
-        partitions_list, key=lambda partition: get_partitioning(partition, edges)
-    )
-
-
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 def canonical_labeling(G, node_attributes=None):
@@ -327,4 +269,9 @@ def canonical_labeling(G, node_attributes=None):
         get_refinement_tree_levels(partitions, neighbors, edges)
     )[-1]
 
-    return choose_canonical_labeling(discrete_partitionings, edges)
+    # Choose lexicographically largest partitioning as canonical labeling.
+    canonical_labeling = max(
+        discrete_partitionings, key=lambda partition: get_partitioning(partition, edges)
+    )
+
+    return canonical_labeling
