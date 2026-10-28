@@ -203,8 +203,27 @@ class TestKatzCentralityNumpy:
             nx.katz_centrality(nx.MultiGraph(), 0.1)
 
     def test_empty(self):
-        e = nx.katz_centrality(nx.Graph(), 0.1)
+        e = nx.katz_centrality_numpy(nx.Graph(), 0.1)
         assert e == {}
+
+    def test_single_node(self):
+        G = nx.empty_graph(1)
+        assert nx.katz_centrality_numpy(G) == nx.katz_centrality(G)
+        assert nx.katz_centrality_numpy(G) == {0: 1.0}
+
+    def test_single_node_beta_dict(self):
+        G = nx.empty_graph(1)
+        assert nx.katz_centrality_numpy(G, beta={0: 2.5}) == {0: 1.0}
+
+    def test_single_node_unnormalized(self):
+        G = nx.empty_graph(1)
+        assert nx.katz_centrality_numpy(G, normalized=False, beta=3.0) == {0: 3.0}
+
+    def test_single_node_self_loop(self):
+        G = nx.Graph([(0, 0)])
+        assert nx.katz_centrality_numpy(G, alpha=0.1) == pytest.approx(
+            nx.katz_centrality(G, alpha=0.1)
+        )
 
     def test_bad_beta(self):
         with pytest.raises(nx.NetworkXException):
