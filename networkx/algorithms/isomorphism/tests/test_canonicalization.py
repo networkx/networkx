@@ -1263,7 +1263,7 @@ def test_regression(graph, expected_labeling):
     assert labeling == expected_labeling
 
 
-def permute_graph(G: nx.Graph) -> nx.Graph:
+def permute_graph(G):
     """Randomly permute G's node labels."""
     labels = list(G.nodes)
     permuted_labels = list(labels)  # shallow copy
@@ -1276,7 +1276,7 @@ def permute_graph(G: nx.Graph) -> nx.Graph:
     return _sort_graph_by_label(G_relabeled)
 
 
-def _sort_graph_by_label(G: nx.Graph) -> nx.Graph:
+def _sort_graph_by_label(G):
     """Sort graph by label.
 
     Ensure that the graph's node iteration order is identical to the label order.

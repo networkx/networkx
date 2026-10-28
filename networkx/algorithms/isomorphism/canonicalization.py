@@ -1,13 +1,9 @@
 from collections import Counter
-from collections.abc import Generator, Hashable
-from typing import Any
 
 import networkx as nx
 
 
-def get_node_invariants(
-    attributes: dict[Hashable, Any], neighbors: dict[Hashable, tuple[Hashable, ...]]
-) -> tuple[tuple[Any, ...], ...]:
+def get_node_invariants(attributes, neighbors):
     """Build an invariant for each node from its own and its neighbors' attributes.
 
     Parameters
@@ -33,9 +29,7 @@ def get_node_invariants(
     return tuple(result)
 
 
-def get_partitions_from_attributes(
-    attributes: dict[Hashable, Any], neighbors: dict[Hashable, tuple[Hashable, ...]]
-) -> tuple[dict[Hashable, int], int]:
+def get_partitions_from_attributes(attributes, neighbors):
     """Assign nodes to partitions based on the nodes' attributes.
 
     Nodes with identical attribute-derived invariants are assigned to the same partition.
@@ -68,10 +62,7 @@ def get_partitions_from_attributes(
     return partitions, len(unique_invariants)
 
 
-def refine_partitions(
-    partitions: dict[Hashable, int],
-    node_neighbors: dict[Hashable, tuple[Hashable, ...]],
-) -> tuple[dict[Hashable, int], int]:
+def refine_partitions(partitions, node_neighbors):
     """Iteratively refine partitions with the Weisfeiler-Leman algorithm [1]_.
 
     The refinement stops once the partitions don't change.
@@ -106,7 +97,7 @@ def refine_partitions(
         refined_partitions = next_partitions
 
 
-def get_largest_partition(partitions: dict[Hashable, int]) -> int:
+def get_largest_partition(partitions):
     """Identify the most populated partition.
 
     Parameters
@@ -124,9 +115,7 @@ def get_largest_partition(partitions: dict[Hashable, int]) -> int:
     return max(partition_sizes, key=partition_sizes.__getitem__)
 
 
-def get_partitioning(
-    partitions: dict[Hashable, int], edges: list[tuple[Hashable, Hashable]]
-) -> tuple[tuple[int, ...], ...]:
+def get_partitioning(partitions, edges):
     """Compute a partitioning.
 
     Each edge contributes a sorted pair of its endpoints' partitions.
@@ -137,10 +126,7 @@ def get_partitioning(
     )
 
 
-def filter_duplicate_partitionings(
-    partitions_list: list[dict[Hashable, int]],
-    edges: list[tuple[Hashable, Hashable]],
-) -> list[dict[Hashable, int]]:
+def filter_duplicate_partitionings(partitions_list, edges):
     """Filter out duplicate partitionings with isomorphisms testing.
 
     Parameters
@@ -155,7 +141,7 @@ def filter_duplicate_partitionings(
     list
         Unique partitionings.
     """
-    buckets: dict[tuple, list[tuple[nx.Graph, dict[Hashable, int]]]] = {}
+    buckets = {}
     unique = []
     for partitions in partitions_list:
         G = nx.Graph()
@@ -170,10 +156,7 @@ def filter_duplicate_partitionings(
     return unique
 
 
-def get_refinement_tree_node_children(
-    partitions: dict[Hashable, int],
-    node_neighbors: dict[Hashable, tuple[Hashable, ...]],
-) -> Generator[dict[Hashable, int], None, None]:
+def get_refinement_tree_node_children(partitions, node_neighbors):
     """Yield the children of a node in the partition-refinement tree.
 
     Each node in the most populated partition is assigned a new
@@ -204,7 +187,7 @@ def get_refinement_tree_node_children(
         yield refine_partitions(individualized, node_neighbors)[0]
 
 
-def partitioning_is_discrete(partitions: dict[Hashable, int]) -> bool:
+def partitioning_is_discrete(partitions):
     """Determine whether a partitioning is discrete.
 
     A partitioning is discrete when each node is in its own partition; that is,
@@ -223,11 +206,7 @@ def partitioning_is_discrete(partitions: dict[Hashable, int]) -> bool:
     return len(set(partitions.values())) == len(partitions)
 
 
-def get_refinement_tree_levels(
-    partitions: dict[Hashable, int],
-    node_neighbors: dict[Hashable, tuple[Hashable, ...]],
-    edges: list[tuple[Hashable, Hashable]],
-) -> Generator[list[dict[Hashable, int]], None, None]:
+def get_refinement_tree_levels(partitions, node_neighbors, edges):
     """Yield the levels of a breadth-first partition-refinement tree [1]_.
 
     The initial level contains only the refined input partitions. Subsequent
@@ -267,10 +246,7 @@ def get_refinement_tree_levels(
         parents = filter_duplicate_partitionings(children, edges)
 
 
-def choose_canonical_labeling(
-    partitions_list: list[dict[Hashable, int]],
-    edges: list[tuple[Hashable, Hashable]],
-) -> dict[Hashable, int]:
+def choose_canonical_labeling(partitions_list, edges):
     """Choose a canonical labeling from discrete partitionings.
 
     The canonical labeling is defined as the lexicographically largest partitioning.
@@ -293,9 +269,7 @@ def choose_canonical_labeling(
     )
 
 
-def canonical_labeling(
-    G: nx.Graph, node_attributes: list[str] | None = None
-) -> dict[Hashable, int]:
+def canonical_labeling(G, node_attributes=None):
     """Compute a canonical labeling for ``G``.
 
     An implementation of graph canonicalization using the refinement-individualization paradigm [1]_.
