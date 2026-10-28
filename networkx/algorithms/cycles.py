@@ -288,7 +288,7 @@ def _directed_cycle_search(G, length_bound):
             yield from _johnson_cycle_search(Gc, [v])
         else:
             # bsdfs closes the cycle by repeating the first node
-            for cycle in nx.traversal.bsdfs(Gc, v, v, length_bound=length_bound):
+            for cycle in nx.traversal.bsdfs(Gc, v, None, length_bound=length_bound):
                 yield cycle[:-1]
 
         # delete v after searching G, to make sure we can find v
