@@ -57,7 +57,7 @@ def test_seed_reproducible():
 
 def test_hierarchical_codelength_matches_cpp_multilevel():
     """The multilevel (hierarchical) codelength must match the C++ reference
-    on a graph where Infomap finds a >2-level hierarchy."""
+    on a graph where Infomap finds a >2-level hierarchy, ragged or not."""
     infomap = pytest.importorskip("infomap", minversion="2.14")
     from networkx.algorithms.community.infomap import _hierarchical_codelength
     from networkx.algorithms.community.quality import _flow
@@ -71,9 +71,12 @@ def test_hierarchical_codelength_matches_cpp_multilevel():
     assert result.num_levels >= 3  # genuinely multilevel
 
     flow, links = _flow(G, None)
-    path = {
-        node: tuple(modules) for node, modules in result.multilevel_modules().items()
-    }
+    # Read the module paths off the tree, not multilevel_modules(), which pads
+    # every path to the same depth. Since infomap 2.16 leaf modules can sit at
+    # different depths (modules that do not pay for their codebook are
+    # dissolved, mapequation/infomap#1075), and padding would add module levels
+    # that are not in the tree. A leaf's tree path ends with its own index.
+    path = {node.node_id: node.path[:-1] for node in result.nodes()}
     assert _hierarchical_codelength(dict(flow), links, path) == pytest.approx(
         result.codelength, abs=1e-9
     )
@@ -520,11 +523,14 @@ def test_recorded_optimum_matches_cpp(case):
 
 def test_recorded_multilevel_optimum_matches_cpp():
     """Companion to test_infomap_multilevel_reaches_known_optimum_no_dep: the
-    recorded hierarchical optimum still agrees with the C++ reference."""
+    C++ reference finds no worse a hierarchy than the recorded optimum."""
     case = next(c for c in _OPTIMUM_CASES if c.id == "ring-of-cliques")
-    assert _cpp_codelength(case, two_level=False, num_trials=50) == pytest.approx(
-        3.128528943240294, abs=1e-9
-    )
+    # A bound rather than equality: infomap < 2.16 reaches the recorded optimum
+    # exactly, while 2.16 also dissolves modules that do not pay for their
+    # codebook (mapequation/infomap#1075) and gets lower, to 3.124077. The
+    # optimizer here does not dissolve modules, so its own test stays exact.
+    recorded = 3.128528943240294
+    assert _cpp_codelength(case, two_level=False, num_trials=50) <= recorded + 1e-9
 
 
 # --- Robustness: termination, graph flavours, and the no-mutation contract ---
