@@ -43,7 +43,7 @@ def laplacian_centrality(
         The rows and columns are ordered according to the nodes in nodelist.
         If nodelist is None, then the ordering is produced by G.nodes().
 
-    weight: string or None, optional (default=`weight`)
+    weight : string or None, optional (default=`weight`)
         Optional parameter `weight` to compute the Laplacian matrix.
         The edge data key used to compute each value in the matrix.
         If None, then each edge has weight 1.

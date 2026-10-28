@@ -29,10 +29,10 @@ def current_flow_betweenness_centrality_subset(
     G : graph
       A NetworkX graph
 
-    sources: list of nodes
+    sources : list of nodes
       Nodes to use as sources for current
 
-    targets: list of nodes
+    targets : list of nodes
       Nodes to use as sinks for current
 
     normalized : bool, optional (default=True)
@@ -45,11 +45,11 @@ def current_flow_betweenness_centrality_subset(
       The weight reflects the capacity or the strength of the
       edge.
 
-    dtype: data type (float)
+    dtype : data type (float)
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
-    solver: string (default='lu')
+    solver : string (default='lu')
        Type of linear solver to use for computing the flow matrix.
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
@@ -138,10 +138,10 @@ def edge_current_flow_betweenness_centrality_subset(
     G : graph
       A NetworkX graph
 
-    sources: list of nodes
+    sources : list of nodes
       Nodes to use as sources for current
 
-    targets: list of nodes
+    targets : list of nodes
       Nodes to use as sinks for current
 
     normalized : bool, optional (default=True)
@@ -154,11 +154,11 @@ def edge_current_flow_betweenness_centrality_subset(
       The weight reflects the capacity or the strength of the
       edge.
 
-    dtype: data type (float)
+    dtype : data type (float)
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
-    solver: string (default='lu')
+    solver : string (default='lu')
        Type of linear solver to use for computing the flow matrix.
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).

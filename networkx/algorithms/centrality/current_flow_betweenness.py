@@ -65,13 +65,13 @@ def approximate_current_flow_betweenness_centrality(
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
 
-    epsilon: float
+    epsilon : float
         Absolute error tolerance. Note that smaller values of `epsilon` lead to
         higher numbers of sample pairs (``k``) and thus more computation time. The number
         of sample pairs is approximately ``(c/epsilon)^2 * log(n)`` where ``n`` is the
         number of nodes.
 
-    kmax: int
+    kmax : int
        Maximum number of sample node pairs to use for approximation.
 
     sample_weight : float (default=1)

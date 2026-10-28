@@ -42,10 +42,10 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     G : graph
         A NetworkX graph.
 
-    sources: list of nodes
+    sources : list of nodes
         Nodes to use as sources for shortest paths in betweenness.
 
-    targets: list of nodes
+    targets : list of nodes
         Nodes to use as targets for shortest paths in betweenness.
 
     normalized : bool, optional (default=False)
@@ -138,10 +138,10 @@ def edge_betweenness_centrality_subset(
     G : graph
         A networkx graph.
 
-    sources: list of nodes
+    sources : list of nodes
         Nodes to use as sources for shortest paths in betweenness.
 
-    targets: list of nodes
+    targets : list of nodes
         Nodes to use as targets for shortest paths in betweenness.
 
     normalized : bool, optional (default=False)
@@ -164,7 +164,7 @@ def edge_betweenness_centrality_subset(
     betweenness_centrality
     betweenness_centrality_subset
     edge_betweenness_centrality
-    edge_load
+    edge_load_centrality
 
     Notes
     -----

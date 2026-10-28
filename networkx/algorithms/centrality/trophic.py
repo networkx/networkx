@@ -150,7 +150,7 @@ def trophic_incoherence_parameter(G, weight="weight", cannibalism=False):
     G : DiGraph
         A directed networkx graph
 
-    cannibalism: Boolean
+    cannibalism : Boolean
         If set to False, self edges are not considered in the calculation
 
     Returns

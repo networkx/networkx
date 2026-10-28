@@ -27,6 +27,7 @@ Branchings and Spanning Arborescences
    greedy_branching
    maximum_branching
    minimum_branching
+   minimal_branching
    maximum_spanning_arborescence
    minimum_spanning_arborescence
    ArborescenceIterator

@@ -678,11 +678,11 @@ class MaxWeightClique:
     ----------
     G : NetworkX graph
         The undirected graph for which a maximum weight clique is sought
-    node_weights: dict
+    node_weights : dict
         The weight of each node
     incumbent_nodes : list
         The nodes of the incumbent clique (the best clique found so far)
-    incumbent_weight: int
+    incumbent_weight : int
         The weight of the incumbent clique
     """
 

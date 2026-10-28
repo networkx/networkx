@@ -89,7 +89,7 @@ def k_factor(G, k, matching_weight="weight"):
     k : int
         The degree of the `k`-factor.
 
-    matching_weight: string, optional (default="weight")
+    matching_weight : string, optional (default="weight")
         Edge attribute name corresponding to the edge weight.
         If not present, the edge is assumed to have weight 1.
         Used for finding the max-weighted perfect matching.
