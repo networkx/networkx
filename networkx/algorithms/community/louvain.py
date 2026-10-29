@@ -124,6 +124,7 @@ def louvain_communities(
     --------
     louvain_partitions
     :any:`leiden_communities`
+    :any:`infomap_communities`
     """
 
     partitions = louvain_partitions(G, weight, resolution, threshold, seed)
@@ -195,6 +196,7 @@ def louvain_partitions(
     --------
     louvain_communities
     :any:`leiden_partitions`
+    :any:`infomap_partitions`
     """
     P = [{u} for u in G]
     if nx.is_empty(G):
