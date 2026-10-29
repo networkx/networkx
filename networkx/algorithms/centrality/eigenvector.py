@@ -349,9 +349,14 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
             "`eigenvector_centrality_numpy` does not give consistent results for disconnected graphs"
         )
     M = nx.to_scipy_sparse_array(G, nodelist=list(G), weight=weight, dtype=float)
-    _, eigenvector = sp.sparse.linalg.eigs(
-        M.T, k=1, which="LR", maxiter=max_iter, tol=tol
-    )
+    if len(G) <= 2:
+        # ARPACK needs k < N - 1, so use a dense solver for tiny graphs.
+        eigenvalues, eigenvectors = np.linalg.eig(M.T.toarray())
+        eigenvector = eigenvectors[:, [np.argmax(eigenvalues.real)]]
+    else:
+        _, eigenvector = sp.sparse.linalg.eigs(
+            M.T, k=1, which="LR", maxiter=max_iter, tol=tol
+        )
     largest = eigenvector.flatten().real
     norm = np.sign(largest.sum()) * sp.linalg.norm(largest)
     return dict(zip(G, (largest / norm).tolist()))
