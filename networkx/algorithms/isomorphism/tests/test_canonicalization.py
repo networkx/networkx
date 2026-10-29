@@ -1375,6 +1375,15 @@ def test_canonical_labeling_raises_on_missing_node_attribute():
         iso.canonical_labeling(G, ["foo"])
 
 
+def test_canonical_labeling_raises_on_unorderable_node_attributes():
+    G = nx.path_graph(2)
+    G.nodes[0]["foo"] = None
+    G.nodes[1]["foo"] = "value"
+
+    with pytest.raises(TypeError):
+        iso.canonical_labeling(G, ["foo"])
+
+
 def test_c240_node_attributes_reduce_refinement_tree_levels():
     G = _c240_with_attributes()
 

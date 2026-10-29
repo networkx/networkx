@@ -224,7 +224,8 @@ def canonical_labeling(G, node_attributes=None):
         The graph to label. ``G`` is not modified.
     node_attributes : list of str, default=None
         Optional node attribute names used to distinguish nodes. Every node
-        must have all requested attributes.
+        must have all requested attributes. Attribute values must be hashable
+        and mutually orderable.
 
     Returns
     -------
@@ -235,6 +236,8 @@ def canonical_labeling(G, node_attributes=None):
     ------
     KeyError
         If a node is missing any requested attribute.
+    TypeError
+        If requested attribute values aren't hashable or cannot be ordered.
 
     References
     ----------
