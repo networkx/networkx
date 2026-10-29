@@ -9,6 +9,27 @@ pytest.importorskip("scipy")
 
 
 class TestEigenvectorCentrality:
+    @pytest.mark.parametrize(
+        "G",
+        [
+            nx.empty_graph(1),
+            nx.Graph([(0, 0)]),
+            nx.Graph([(0, 1)]),
+            nx.empty_graph(1, create_using=nx.DiGraph),
+            nx.DiGraph([(0, 1), (1, 0)]),
+        ],
+    )
+    def test_numpy_graphs_with_at_most_two_nodes(self, G):
+        expected = nx.eigenvector_centrality(G, max_iter=1000)
+        result = nx.eigenvector_centrality_numpy(G)
+        assert result == pytest.approx(expected, abs=1e-6)
+
+    def test_numpy_weighted_two_nodes(self):
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=3)
+        result = nx.eigenvector_centrality_numpy(G, weight="weight")
+        assert result == pytest.approx({0: math.sqrt(0.5), 1: math.sqrt(0.5)})
+
     def test_K5(self):
         """Eigenvector centrality: K5"""
         G = nx.complete_graph(5)
