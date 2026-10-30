@@ -389,7 +389,7 @@ def preflow_push(
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
-    stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
+    stored in :samp:`R.graph['flow_value']`. Reachability from :samp:`s` using
     only edges :samp:`(u, v)` such that
     :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
     :samp:`s`-:samp:`t` cut.
