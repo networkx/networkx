@@ -36,10 +36,11 @@ class BaseGraphTester:
 
     def test_nodes(self):
         G = self.K3
-        assert isinstance(G._node, G.node_dict_factory)
-        assert isinstance(G._adj, G.adjlist_outer_dict_factory)
+        assert isinstance(G._node, type(G.node_dict_factory()))
+        assert isinstance(G._adj, type(G.adjlist_outer_dict_factory()))
         assert all(
-            isinstance(adj, G.adjlist_inner_dict_factory) for adj in G._adj.values()
+            isinstance(adj, type(G.adjlist_inner_dict_factory()))
+            for adj in G._adj.values()
         )
         assert sorted(G.nodes()) == self.k3nodes
         assert sorted(G.nodes(data=True)) == [(0, {}), (1, {}), (2, {})]
@@ -115,7 +116,7 @@ class BaseGraphTester:
 
     def test_edges(self):
         G = self.K3
-        assert isinstance(G._adj, G.adjlist_outer_dict_factory)
+        assert isinstance(G._adj, type(G.adjlist_outer_dict_factory()))
         assert edges_equal(G.edges(), [(0, 1), (0, 2), (1, 2)])
         assert edges_equal(G.edges(0), [(0, 1), (0, 2)])
         assert edges_equal(G.edges([0, 1]), [(0, 1), (0, 2), (1, 2)])
@@ -464,7 +465,7 @@ class BaseAttrGraphTester(BaseGraphTester):
     def test_graph_attr(self):
         G = self.K3.copy()
         G.graph["foo"] = "bar"
-        assert isinstance(G.graph, G.graph_attr_dict_factory)
+        assert isinstance(G.graph, type(G.graph_attr_dict_factory()))
         assert G.graph["foo"] == "bar"
         del G.graph["foo"]
         assert G.graph == {}
@@ -475,7 +476,8 @@ class BaseAttrGraphTester(BaseGraphTester):
         G = self.K3.copy()
         G.add_node(1, foo="bar")
         assert all(
-            isinstance(d, G.node_attr_dict_factory) for u, d in G.nodes(data=True)
+            isinstance(d, type(G.node_attr_dict_factory()))
+            for u, d in G.nodes(data=True)
         )
         assert nodes_equal(G.nodes(), [0, 1, 2])
         assert nodes_equal(G.nodes(data=True), [(0, {}), (1, {"foo": "bar"}), (2, {})])
@@ -504,7 +506,8 @@ class BaseAttrGraphTester(BaseGraphTester):
         G = self.Graph()
         G.add_edge(1, 2, foo="bar")
         assert all(
-            isinstance(d, G.edge_attr_dict_factory) for u, v, d in G.edges(data=True)
+            isinstance(d, type(G.edge_attr_dict_factory()))
+            for u, v, d in G.edges(data=True)
         )
         assert edges_equal(G.edges(data=True), [(1, 2, {"foo": "bar"})])
         assert edges_equal(G.edges(data="foo"), [(1, 2, "bar")])
