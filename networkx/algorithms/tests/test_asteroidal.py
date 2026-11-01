@@ -1,23 +1,26 @@
+import pytest
+
 import networkx as nx
 
 
-def test_is_at_free():
-    is_at_free = nx.asteroidal.is_at_free
+@pytest.mark.parametrize(
+    ("graph", "expected"),
+    [
+        (nx.cycle_graph(6), False),
+        (nx.path_graph(6), True),
+        (nx.complete_graph(2), True),
+        (nx.petersen_graph(), False),
+        (nx.complete_graph(6), True),
+        (nx.line_graph(nx.complete_graph(6)), False),
+        (nx.empty_graph(10), True),
+    ],
+)
+def test_is_at_free(graph, expected):
+    assert nx.is_at_free(graph) == expected
 
-    cycle = nx.cycle_graph(6)
-    assert not is_at_free(cycle)
 
-    path = nx.path_graph(6)
-    assert is_at_free(path)
-
-    small_graph = nx.complete_graph(2)
-    assert is_at_free(small_graph)
-
-    petersen = nx.petersen_graph()
-    assert not is_at_free(petersen)
-
-    clique = nx.complete_graph(6)
-    assert is_at_free(clique)
-
-    line_clique = nx.line_graph(clique)
-    assert not is_at_free(line_clique)
+@pytest.mark.parametrize("ast_fn", [nx.is_at_free, nx.find_asteroidal_triple])
+@pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
+def test_asteroidal_not_implemented(ast_fn, graph_type):
+    with pytest.raises(nx.NetworkXNotImplemented, match="not implemented for directed"):
+        ast_fn(graph_type())
