@@ -338,7 +338,7 @@ def bipartite_layout(
     nodes : collection of nodes
         Nodes in one node set of the graph. This set will be placed on
         left or top. If `None` (the default), a node set is chosen arbitrarily
-        if the graph if bipartite.
+        if the graph is bipartite. Nodes not present in G are ignored.
 
     align : string (default='vertical')
         The alignment of nodes. Vertical or horizontal.
@@ -421,12 +421,15 @@ def bipartite_layout(
 
     if nodes is None:
         top, bottom = nx.bipartite.sets(G)
-        nodes = list(G)
     else:
         top = set(nodes)
-        bottom = set(G) - top
-        # Preserves backward-compatible node ordering in returned pos dict
-        nodes = list(top) + list(bottom)
+
+    # Order each side by G's node order so the layout doesn't depend on set
+    # iteration order (which for str nodes changes with PYTHONHASHSEED).
+    bottom = [n for n in G if n not in top]
+    top = [n for n in G if n in top]
+    # Top nodes first, then bottom nodes; each group in G's node order
+    nodes = top + bottom
 
     left_xs = np.repeat(0, len(top))
     right_xs = np.repeat(width, len(bottom))
