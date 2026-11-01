@@ -15,3 +15,4 @@ from networkx.readwrite.graphml import *
 from networkx.readwrite.gexf import *
 from networkx.readwrite.json_graph import *
 from networkx.readwrite.text import *
+from networkx.readwrite.mermaid import *
