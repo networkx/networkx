@@ -603,6 +603,21 @@ def test_bipartite_layout_default_nodes():
         xs = [pos[k][0] for k in nodeset]
         assert all(x == pytest.approx(xs[0]) for x in xs)
 
+    # Path graph where node order in G alternates between bipartite sets
+    G_path = nx.path_graph(4)
+    pos_path = nx.bipartite_layout(G_path)
+    for nodeset in nx.bipartite.sets(G_path):
+        xs = [pos_path[k][0] for k in nodeset]
+        assert all(x == pytest.approx(xs[0]) for x in xs)
+
+
+def test_bipartite_layout_deterministic_order():
+    """Ensure bipartite_layout orders nodes deterministically by G's node order."""
+    G = nx.Graph([("x1", "c1"), ("x1", "c2"), ("x2", "c2"), ("x3", "c3")])
+    top_nodes = ["x1", "x2", "x3"]
+    pos = nx.bipartite_layout(G, nodes=top_nodes)
+    assert list(pos.keys()) == ["x1", "x2", "x3", "c1", "c2", "c3"]
+
 
 @pytest.mark.parametrize(
     "layout",
