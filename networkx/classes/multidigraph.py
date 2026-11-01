@@ -940,7 +940,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 for u, nbrs in self._adj.items()
                 for v, keydict in nbrs.items()
                 for key, data in keydict.items()
-                if v in self._pred[u] and key in self._pred[u][v]
+                if v in self._pred[u]
             )
         else:
             G.add_edges_from(

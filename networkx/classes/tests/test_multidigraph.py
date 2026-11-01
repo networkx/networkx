@@ -228,6 +228,17 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         G.add_edge(2, 1)
         assert G.to_undirected(reciprocal=True).has_edge(1, 2)
 
+    def test_to_undirected_reciprocal_different_keys(self):
+        # Reciprocated edges are kept regardless of the edge keys; the keys
+        # of (u, v) and (v, u) belong to independent namespaces.
+        G = self.Graph()
+        G.add_edge(1, 2, key="a")
+        G.add_edge(2, 1, key="b")
+        assert G.to_undirected(reciprocal=True).has_edge(1, 2)
+        # one-directional edges are still dropped
+        G.add_edge(3, 4, key="a")
+        assert not G.to_undirected(reciprocal=True).has_edge(3, 4)
+
     def test_reverse_copy(self):
         G = nx.MultiDiGraph([(0, 1), (0, 1)])
         R = G.reverse()
