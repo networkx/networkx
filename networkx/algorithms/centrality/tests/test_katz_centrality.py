@@ -128,6 +128,10 @@ class TestKatzCentralityNumpy:
             G, normalized=False
         )
 
+        G_self_loop = nx.Graph()
+        G_self_loop.add_edge(0, 0)
+        assert nx.katz_centrality_numpy(G_self_loop) == nx.katz_centrality(G_self_loop)
+
     def test_K5(self):
         """Katz centrality: K5"""
         G = nx.complete_graph(5)
