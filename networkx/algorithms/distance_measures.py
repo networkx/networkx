@@ -920,26 +920,22 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
     elif nodeA is not None:
         i = node_list.index(nodeA)
         d = {}
-        for n in G:
-            j = node_list.index(n)
+        for j, n in enumerate(node_list):
             d[n] = Linv.item(i, i) + Linv.item(j, j) - Linv.item(i, j) - Linv.item(j, i)
         return d
 
     elif nodeB is not None:
         j = node_list.index(nodeB)
         d = {}
-        for n in G:
-            i = node_list.index(n)
+        for i, n in enumerate(node_list):
             d[n] = Linv.item(i, i) + Linv.item(j, j) - Linv.item(i, j) - Linv.item(j, i)
         return d
 
     else:
         d = {}
-        for n in G:
-            i = node_list.index(n)
+        for i, n in enumerate(node_list):
             d[n] = {}
-            for n2 in G:
-                j = node_list.index(n2)
+            for j, n2 in enumerate(node_list):
                 d[n][n2] = (
                     Linv.item(i, i)
                     + Linv.item(j, j)
