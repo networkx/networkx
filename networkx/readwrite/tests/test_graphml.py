@@ -1138,14 +1138,14 @@ class TestWriteGraphML(BaseGraphML):
         self.simple_directed_fh.seek(0)
 
     def test_write_graph_id_leaves_input_graph_unmodified(self):
-        # the writer used to pop "id" from G.graph
-        G = nx.Graph()
-        G.add_edge(0, 1)
+        """The key `id` has special meaning in the context of graphml. Ensure
+        that user-defined `id` values in the graph attribute are not lost during
+        write. See gh-8956."""
+        G = nx.Graph([(0, 1)])
         G.graph["id"] = "graph_id"
-        G.graph["hi"] = "there"
         fh = io.BytesIO()
         self.writer(G, fh)
-        assert G.graph == {"id": "graph_id", "hi": "there"}
+        assert G.graph == {"id": "graph_id"}
         assert b'id="graph_id"' in fh.getvalue()
         # a second write produces the same document
         fh2 = io.BytesIO()

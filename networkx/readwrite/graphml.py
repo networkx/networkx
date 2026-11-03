@@ -664,7 +664,6 @@ class GraphMLWriter(GraphML):
         else:
             default_edge_type = "undirected"
 
-        # "id" is written as the <graph> element's id attribute, not as data
         graphid = G.graph.get("id")
         if graphid is None:
             graph_element = self.myElement("graph", edgedefault=default_edge_type)
@@ -796,7 +795,6 @@ class GraphMLWriterLxml(GraphMLWriter):
         else:
             default_edge_type = "undirected"
 
-        # "id" is written as the <graph> element's id attribute, not as data
         graphid = G.graph.get("id")
         if graphid is None:
             graph_element = self._xml.element("graph", edgedefault=default_edge_type)
@@ -808,6 +806,8 @@ class GraphMLWriterLxml(GraphMLWriter):
         # gather attributes types for the whole graph
         # to find the most general numeric format needed.
         # Then pass through attributes to create key_id for each.
+        # Ignore graph-wide values stored on G.graph that have specific meaning
+        # in the graphml format: node_default, edge_default, and (graph) id
         graphdata = {
             k: v
             for k, v in G.graph.items()
