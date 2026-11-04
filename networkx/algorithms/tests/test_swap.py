@@ -177,3 +177,34 @@ def test_less_than_3_edges():
     G.add_nodes_from([0, 1, 2, 3])
     with pytest.raises(nx.NetworkXError, match=".*fewer than 2 edges"):
         nx.double_edge_swap(G)
+
+
+@pytest.mark.parametrize("seed", [7, 23, 42])
+def test_double_edge_swap_self_loops_preserves_degrees(seed):
+    # Tests that selecting two distinct self-loops on a Graph does not alter degrees (issue #8970)
+    G = nx.Graph()
+    G.add_nodes_from(range(4))
+    G.add_edges_from([(0, 1), (1, 2), (2, 3), (0, 0), (3, 3)])
+    orig_degrees = dict(G.degree())
+    orig_edges = G.number_of_edges()
+    try:
+        nx.double_edge_swap(G, nswap=1, seed=seed)
+        assert dict(G.degree()) == orig_degrees
+        assert G.number_of_edges() == orig_edges
+    except nx.NetworkXAlgorithmError:
+        pass
+
+
+@pytest.mark.parametrize("window_threshold", [3, 0])
+def test_connected_double_edge_swap_self_loops_preserves_degrees(window_threshold):
+    # Tests connected_double_edge_swap preserving degrees with self-loops across both window paths
+    G = nx.Graph()
+    G.add_nodes_from(range(4))
+    G.add_edges_from([(0, 1), (1, 2), (2, 3), (0, 0), (3, 3)])
+    orig_degrees = dict(G.degree())
+    orig_edges = G.number_of_edges()
+    nx.connected_double_edge_swap(
+        G, nswap=1, _window_threshold=window_threshold, seed=23
+    )
+    assert dict(G.degree()) == orig_degrees
+    assert G.number_of_edges() == orig_edges
