@@ -647,6 +647,19 @@ class TestCycleEnumeration:
         expected = (2**5 - 1) - 11  # 11 disjoint combinations
         self.check_cycle_algorithm(testG, expected)
 
+    def test_simple_cycles_multigraph(self):
+        # parallel edges of an undirected multigraph form 2-cycles
+        G = nx.MultiGraph([(1, 1), (2, 2), (1, 2), (1, 2)])
+        expected_cycles = [[1], [2], [1, 2]]
+        self.check_cycle_algorithm(G, expected_cycles)
+
+        G.add_edges_from([(2, 3), (3, 4), (3, 4), (1, 3)])
+        expected_cycles = [[1], [2], [1, 2], [3, 4], [1, 2, 3]]
+        self.check_cycle_algorithm(G, expected_cycles)
+        for k in range(4):
+            expected = [c for c in expected_cycles if len(c) <= k]
+            self.check_cycle_algorithm(G, expected, length_bound=k)
+
     def test_simple_cycles_bounded(self):
         # iteratively construct a cluster of nested cycles running in the same direction
         # there should be one cycle of every length
