@@ -162,10 +162,10 @@ A few backwards *incompatible* changes were introduced.
   the Stoer–Wagner algorithm. This algorithm is not based on maximum flows.
   Several heap implementations are also added in the utility package
   (:samp:`networkx.utils`) for use in this function.
-  :class:`BinaryHeap` is recommended over :class:`PairingHeap` for Python
+  ``BinaryHeap`` is recommended over ``PairingHeap`` for Python
   implementations without optimized attribute accesses (e.g., CPython)
   despite a slower asymptotic running time. For Python implementations
-  with optimized attribute accesses (e.g., PyPy), :class:`PairingHeap`
+  with optimized attribute accesses (e.g., PyPy), ``PairingHeap``
   provides better performance.
 
 Other new functionalities

@@ -1327,7 +1327,7 @@ def random_kernel_graph(
     kernel_integral : function
         Function that returns the definite integral of the kernel $\kappa(x,y)$,
         $F(y,a,b) := \int_a^b \kappa(x,y)dx$
-    kernel_root: function (optional)
+    kernel_root : function (optional)
         Function that returns the root $b$ of the equation $F(y,a,b) = r$.
         If None, the root is found using :func:`scipy.optimize.brentq`
         (this requires SciPy).

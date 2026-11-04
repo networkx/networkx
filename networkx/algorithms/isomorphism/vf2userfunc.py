@@ -78,10 +78,10 @@ class GraphMatcher(vf2.GraphMatcher):
 
         Parameters
         ----------
-        G1, G2: graph
+        G1, G2 : graph
             The graphs to be tested.
 
-        node_match: callable
+        node_match : callable
             A function that returns True iff node n1 in G1 and n2 in G2
             should be considered equal during the isomorphism test. The
             function will be called like::
@@ -92,7 +92,7 @@ class GraphMatcher(vf2.GraphMatcher):
             of the nodes under consideration. If None, then no attributes are
             considered when testing for an isomorphism.
 
-        edge_match: callable
+        edge_match : callable
             A function that returns True iff the edge attribute dictionary for
             the pair of nodes (u1, v1) in G1 and (u2, v2) in G2 should be
             considered equal during the isomorphism test. The function will be

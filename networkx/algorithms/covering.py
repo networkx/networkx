@@ -67,7 +67,7 @@ def min_edge_cover(G, matching_algorithm=None):
     ``matching_algorithm``.
 
     Minimum edge cover for `G` can also be found using
-    :func:`~networkx.algorithms.bipartite.covering.min_edge_covering` which is
+    :func:`~networkx.algorithms.bipartite.covering.min_edge_cover` which is
     simply this function with a default matching algorithm of
     :func:`~networkx.algorithms.bipartite.matching.hopcroft_karp_matching`
     """

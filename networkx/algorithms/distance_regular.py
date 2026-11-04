@@ -33,7 +33,7 @@ def is_distance_regular(G):
 
     Parameters
     ----------
-    G: Networkx graph (undirected)
+    G : Networkx graph (undirected)
 
     Returns
     -------
@@ -129,7 +129,7 @@ def intersection_array(G):
 
     Parameters
     ----------
-    G: Networkx graph (undirected)
+    G : Networkx graph (undirected)
 
     Returns
     -------

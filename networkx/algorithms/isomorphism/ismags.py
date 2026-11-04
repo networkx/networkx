@@ -136,7 +136,7 @@ def are_all_equal(iterable):
 
     Parameters
     ----------
-    iterable: collections.abc.Iterable
+    iterable : collections.abc.Iterable
         The container whose elements will be checked.
 
     Returns
@@ -234,7 +234,7 @@ def node_to_part_ID_dict(partition):
 
     Parameters
     ----------
-    partition: collections.abc.Sequence[collections.abc.Iterable]
+    partition : collections.abc.Sequence[collections.abc.Iterable]
         As returned by :func:`make_partition`.
 
     Returns
@@ -384,8 +384,8 @@ class ISMAGS:
 
     Attributes
     ----------
-    graph: networkx.Graph
-    subgraph: networkx.Graph
+    graph : networkx.Graph
+    subgraph : networkx.Graph
 
     Notes
     -----
@@ -551,23 +551,23 @@ class ISMAGS:
         """
         Parameters
         ----------
-        graph: networkx.Graph
-        subgraph: networkx.Graph
-        node_match: collections.abc.Callable or None
+        graph : networkx.Graph
+        subgraph : networkx.Graph
+        node_match : collections.abc.Callable or None
             Function used to determine whether two nodes are equivalent. Its
             signature should look like ``f(n1: dict, n2: dict) -> bool``, with
             `n1` and `n2` node property dicts. See also
             :func:`~networkx.algorithms.isomorphism.categorical_node_match` and
             friends.
             If `None`, all nodes are considered equal.
-        edge_match: collections.abc.Callable or None
+        edge_match : collections.abc.Callable or None
             Function used to determine whether two edges are equivalent. Its
             signature should look like ``f(e1: dict, e2: dict) -> bool``, with
             `e1` and `e2` edge property dicts. See also
             :func:`~networkx.algorithms.isomorphism.categorical_edge_match` and
             friends.
             If `None`, all edges are considered equal.
-        cache: collections.abc.Mapping
+        cache : collections.abc.Mapping
             A cache used for caching graph symmetries.
         """
         if graph.is_directed() != subgraph.is_directed():
@@ -703,7 +703,7 @@ class ISMAGS:
         return
 
     def _all_morphisms(self, symmetry, problem_type):
-        """Find all morphisms between :attr:`graph` and :attr:`subgraph`
+        """Find all morphisms between ``graph`` and ``subgraph``
 
         Yield isomorphisms or monomorphisms depending on `problem_type`.
 
@@ -805,8 +805,8 @@ class ISMAGS:
 
     def largest_common_subgraph(self, symmetry=True):
         """
-        Find the largest common induced subgraphs between :attr:`subgraph` and
-        :attr:`graph`.
+        Find the largest common induced subgraphs between ``subgraph`` and
+        ``graph``.
 
         Parameters
         ----------
@@ -934,17 +934,17 @@ class ISMAGS:
         return mom is not None
 
     def isomorphisms_iter(self, symmetry=True):
-        """Yields all isomorphisms from :attr:`graph` to :attr:`subgraph`
+        """Yields all isomorphisms from ``graph`` to ``subgraph``
 
         An isomorphism is an all-to-all mapping of the nodes that maintains
         connectivity and node/edge matchings.
 
-        Symmetric isomorphisms can be ignored for the symmetries of :attr:`subgraph`.
+        Symmetric isomorphisms can be ignored for the symmetries of ``subgraph``.
 
         Parameters
         ----------
         symmetry : bool, optional (default: True)
-            Whether symmetries of :attr:`subgraph` should be taken into account.
+            Whether symmetries of ``subgraph`` should be taken into account.
             If False, yielded isomorphisms may be symmetrically equivalent.
 
         Yields
@@ -956,7 +956,7 @@ class ISMAGS:
             yield from self._all_morphisms(symmetry, problem_type="ISO")
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
-        """Yields all subgraph isomorphisms from :attr:`graph` to :attr:`subgraph`
+        """Yields all subgraph isomorphisms from ``graph`` to ``subgraph``
 
         An isomorphism is a mapping of nodes that maintains connectivity and
         node/edge matchings. Subgraph isomorphism means an isomorphism from an
@@ -978,7 +978,7 @@ class ISMAGS:
         return self._all_morphisms(symmetry, problem_type="SUB")
 
     def monomorphisms_iter(self, symmetry=True):
-        """Yields all monomorphisms from :attr:`graph` to :attr:`subgraph`
+        """Yields all monomorphisms from ``graph`` to ``subgraph``
 
         Each mapping assigns distinct nodes in ``graph`` to all nodes in
         ``subgraph``, preserving the connectivity and node/edge matches required

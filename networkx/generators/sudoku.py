@@ -56,7 +56,7 @@ def sudoku_graph(n=3):
 
     Parameters
     ----------
-    n: integer
+    n : integer
        The order of the Sudoku graph, equal to the square root of the
        number of rows. The default is 3.
 

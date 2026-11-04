@@ -1023,7 +1023,7 @@ class PlanarEmbedding(nx.DiGraph):
             Start node of inserted edge.
         end_node : node
             End node of inserted edge.
-        cw, ccw: node
+        cw, ccw : node
             End node of reference edge.
             Omit or pass `None` if adding the first out-half-edge of `start_node`.
 
@@ -1151,7 +1151,7 @@ class PlanarEmbedding(nx.DiGraph):
             Start node of inserted edge.
         end_node : node
             End node of inserted edge.
-        reference_neighbor: node
+        reference_neighbor : node
             End node of reference edge.
 
         Raises
@@ -1180,7 +1180,7 @@ class PlanarEmbedding(nx.DiGraph):
             Start node of inserted edge.
         end_node : node
             End node of inserted edge.
-        reference_neighbor: node
+        reference_neighbor : node
             End node of reference edge.
 
         Raises
@@ -1242,7 +1242,7 @@ class PlanarEmbedding(nx.DiGraph):
 
         Parameters
         ----------
-        ebunch: list or container of edge tuples
+        ebunch : list or container of edge tuples
             Each pair of half-edges between the nodes given in the tuples
             will be removed from the graph. The nodes can be passed as:
 
@@ -1353,7 +1353,7 @@ class PlanarEmbedding(nx.DiGraph):
             Start node of half-edge.
         w : node
             End node of half-edge.
-        mark_half_edges: set, optional
+        mark_half_edges : set, optional
             Set to which all encountered half-edges are added.
 
         Returns

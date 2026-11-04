@@ -506,7 +506,7 @@ def spring_layout(
     iterations : int  optional (default=50)
         Maximum number of iterations taken
 
-    threshold: float optional (default = 1e-4)
+    threshold : float optional (default = 1e-4)
         Threshold for relative error in node position changes.
         The iteration stops if the error is below this threshold.
 
@@ -547,7 +547,7 @@ def spring_layout(
         values of edge weights and gravitational forces acting on each connected component.
         If 'auto', we use 'force' if ``len(G) < 500`` and 'energy' otherwise.
 
-    gravity: float optional (default=1.0)
+    gravity : float optional (default=1.0)
         Used only for the method='energy'.
         The positive coefficient of gravitational forces per connected component.
 

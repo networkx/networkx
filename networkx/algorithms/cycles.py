@@ -424,7 +424,7 @@ def _bounded_cycle_search(G, path, length_bound):
     path : list
        A cycle prefix.  All cycles generated will begin with this prefix.
 
-    length_bound: int
+    length_bound : int
         A length bound.  All cycles generated will have length at most length_bound.
 
     Yields
@@ -1049,7 +1049,7 @@ def minimum_cycle_basis(G, weight=None):
     Parameters
     ----------
     G : NetworkX Graph
-    weight: string
+    weight : string
         name of the edge attribute to use for edge weights
 
     Returns
