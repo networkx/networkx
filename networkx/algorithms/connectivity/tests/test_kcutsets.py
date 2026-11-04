@@ -267,6 +267,51 @@ def test_all_node_cuts_simple_case():
         assert cut in expected
 
 
+def _two_blobs(blob_size, separator_size):
+    """Two cliques joined only through a separator of non adjacent nodes.
+
+    The connectivity is `separator_size` and the separator is the only
+    minimum cut, while every pair of nodes inside a blob is far more
+    connected than that. That is the shape that makes the pre-filter fire.
+    """
+    G = nx.Graph()
+    for prefix in "ab":
+        blob = [f"{prefix}{i}" for i in range(blob_size)]
+        G.add_edges_from(itertools.combinations(blob, 2))
+    for i in range(separator_size):
+        for prefix in "ab":
+            G.add_edges_from((f"s{i}", f"{prefix}{j}") for j in range(blob_size))
+    return G
+
+
+@pytest.mark.parametrize(
+    "G",
+    [
+        nx.karate_club_graph(),
+        nx.florentine_families_graph(),
+        _two_blobs(4, 2),
+        _two_blobs(5, 3),
+    ],
+)
+def test_all_node_cuts_is_complete_under_the_prefilter(G):
+    """The approximate pre-filter must not drop a minimum cut.
+
+    A pair of nodes whose approximate local node connectivity exceeds `k`
+    cannot yield a cut of cardinality `k`, so `all_node_cuts` skips its
+    maximum flow computation. These are graphs where that skip does fire,
+    unlike the regular graphs elsewhere in this file, and the enumeration is
+    checked against brute force over every `k`-subset of nodes.
+    """
+    k = nx.node_connectivity(G)
+    expected = {
+        frozenset(candidate)
+        for candidate in itertools.combinations(G, k)
+        if not nx.is_connected(nx.restricted_view(G, candidate, []))
+    }
+    assert expected, "the fixture has no minimum cut to find"
+    assert {frozenset(cut) for cut in nx.all_node_cuts(G)} == expected
+
+
 def test_all_node_cuts_sap():
     """Non-slow test for `all_node_cuts` using the shortest augmenting path flow."""
     G = nx.cycle_graph(5)
