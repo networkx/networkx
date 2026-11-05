@@ -14,7 +14,126 @@ import networkx as nx
 FORWARD = "forward"
 REVERSE = "reverse"
 
-__all__ = ["edge_bfs"]
+__all__ = ["edge_bfs", "generic_edge_bfs"]
+
+
+@nx._dispatchable
+def generic_edge_bfs(G, source=None, edges=None):
+    """A generic breadth-first-search of edges in `G`, beginning at `source`.
+
+    Yield edges in breadth-first-search order as supplied by the `edges`
+    callback, continuing until all edges reachable via the callback are
+    generated.
+
+    Parameters
+    ----------
+    G : graph
+        A directed/undirected graph/multigraph.
+
+    source : node, list of nodes, or None (default: None)
+        The node from which the traversal begins. If None, then all nodes in
+        the graph are searched.
+
+    edges : function, optional
+        A function that takes a node of the graph as input and returns an
+        *iterator* (or iterable) of edge tuples incident to that node.
+        If not specified, this defaults to ``G.edges(node, data=False)``
+        (or with ``keys=True`` for multigraphs). In general, it can be any
+        function that returns an iterable over some or all edges incident to
+        a given node.
+
+    Yields
+    ------
+    edge : edge tuple
+        Edges supplied by the callback resulting from the breadth-first
+        traversal.
+        For graphs, `edge` is typically a tuple `(u, v)` as returned by
+        the callback. For multigraphs, `edge` is typically `(u, v, key)`,
+        where `key` is the key of the edge.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> list(nx.generic_edge_bfs(G, source=0))
+    [(0, 1), (1, 2), (2, 3)]
+
+    The `edges` parameter can be used to specify the edges to explore from
+    each node generically:
+
+    >>> G = nx.Graph()
+    >>> G.add_edges_from([(0, 1), (0, 2), (1, 2)])
+    >>> custom_edges = lambda n: [e for e in G.edges(n) if e != (0, 2) and e != (2, 0)]
+    >>> list(nx.generic_edge_bfs(G, source=0, edges=custom_edges))
+    [(0, 1), (1, 2)]
+
+    Notes
+    -----
+    The callback function `edges(node)` must yield edge tuples incident
+    to `node`, such that `node` is present at index 0 or index 1.
+    For multigraphs, the edge key must be at index 2 (e.g., ``(u, v, key)``).
+    Any additional tuple elements beyond the endpoints (and the key in
+    multigraphs), such as edge attribute dictionaries, are preserved in the
+    yielded edge tuples and excluded from the internal edge identity.
+
+    The naming of this function is very similar to `generic_bfs_edges`.
+    The difference is that `generic_edge_bfs` yields edges even if they
+    extend back to an already explored node, while `generic_bfs_edges` yields
+    the edges of the tree that results from a breadth-first-search (BFS) so
+    no edges are reported if they extend to already explored nodes.
+
+    See Also
+    --------
+    edge_bfs
+    generic_bfs_edges
+    edge_dfs
+
+    """
+    nodes = list(G.nbunch_iter(source))
+    if not nodes:
+        return
+
+    is_multi = G.is_multigraph()
+    is_directed = G.is_directed()
+
+    if edges is None:
+        kwds = {"data": False}
+        if is_multi:
+            kwds["keys"] = True
+
+        def edges(node):
+            return iter(G.edges(node, **kwds))
+
+    if is_directed:
+        edge_id = (lambda e: e[:3]) if is_multi else (lambda e: e[:2])
+    else:
+        edge_id = (
+            (lambda e: (frozenset(e[:2]), e[2]))
+            if is_multi
+            else (lambda e: frozenset(e[:2]))
+        )
+
+    # start BFS
+    visited_nodes = set(nodes)
+    visited_edges = set()
+    queue = deque([(n, edges(n)) for n in nodes])
+    while queue:
+        parent, children_edges = queue.popleft()
+        for edge in children_edges:
+            if edge[0] == parent:
+                child = edge[1]
+            elif edge[1] == parent:
+                child = edge[0]
+            else:
+                raise nx.NetworkXError(
+                    f"Edge {edge} is not incident to parent node {parent}"
+                )
+            if child not in visited_nodes:
+                visited_nodes.add(child)
+                queue.append((child, edges(child)))
+            eid = edge_id(edge)
+            if eid not in visited_edges:
+                visited_edges.add(eid)
+                yield edge
 
 
 @nx._dispatchable
@@ -107,6 +226,7 @@ def edge_bfs(G, source=None, orientation=None):
 
     See Also
     --------
+    generic_edge_bfs
     bfs_edges
     bfs_tree
     edge_dfs
@@ -150,36 +270,4 @@ def edge_bfs(G, source=None, orientation=None):
     else:
         raise nx.NetworkXError("invalid orientation argument.")
 
-    if directed:
-        neighbors = G.successors
-
-        def edge_id(edge):
-            # remove direction indicator
-            return edge[:-1] if orientation is not None else edge
-
-    else:
-        neighbors = G.neighbors
-
-        def edge_id(edge):
-            return (frozenset(edge[:2]),) + edge[2:]
-
-    check_reverse = directed and orientation in ("reverse", "ignore")
-
-    # start BFS
-    visited_nodes = set(nodes)
-    visited_edges = set()
-    queue = deque([(n, edges_from(n)) for n in nodes])
-    while queue:
-        parent, children_edges = queue.popleft()
-        for edge in children_edges:
-            if check_reverse and edge[-1] == REVERSE:
-                child = edge[0]
-            else:
-                child = edge[1]
-            if child not in visited_nodes:
-                visited_nodes.add(child)
-                queue.append((child, edges_from(child)))
-            edgeid = edge_id(edge)
-            if edgeid not in visited_edges:
-                visited_edges.add(edgeid)
-                yield edge
+    yield from generic_edge_bfs(G, source=nodes, edges=edges_from)
