@@ -1,3 +1,5 @@
+import random
+
 import pytest
 
 import networkx as nx
@@ -252,3 +254,134 @@ class TestAStar:
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NodeNotFound):
             nx.astar_path_length(G, 11, 9)
+
+    def test_alt_heuristic(self):
+        """Tests that alt_heuristic returns a heuristic function
+        that is admissible and consistent"""
+        G = nx.grid_graph(dim=[5, 5])  # nodes are two-tuples (x,y)
+        h = nx.alt_heuristic(G, k=4, weight="weight", method="farthest", seed=10)
+        for u in G.nodes():
+            for v in G.nodes():
+                assert h(u, v) <= nx.shortest_path_length(G, u, v)
+
+    def test_alt_heuristic_k_greater_than_nodes(self):
+        """Tests that alt_heuristic caps k at the number of nodes in the graph"""
+        G = nx.grid_graph(dim=[3, 3])
+        h = nx.alt_heuristic(G, k=10, weight="weight", method="farthest", seed=10)
+        for u in G.nodes():
+            for v in G.nodes():
+                assert h(u, v) <= nx.shortest_path_length(G, u, v)
+
+    def test_alt_heuristic_negative_k(self):
+        """Tests that alt_heuristic raises NetworkXError for negative k"""
+        G = nx.grid_graph(dim=[3, 3])
+        with pytest.raises(nx.NetworkXError):
+            nx.alt_heuristic(G, k=-1, weight="weight", method="farthest", seed=10)
+
+    def test_alt_heuristic_zero_k(self):
+        """Tests that alt_heuristic raises NetworkXError for k=0"""
+        G = nx.grid_graph(dim=[3, 3])
+        with pytest.raises(nx.NetworkXError):
+            nx.alt_heuristic(G, k=0, weight="weight", method="farthest", seed=10)
+
+    def test_alt_heuristic_invalid_method(self):
+        """Tests that alt_heuristic raises ValueError for invalid
+        method (not 'farthest' or 'random')"""
+        G = nx.grid_graph(dim=[3, 3])
+        with pytest.raises(ValueError):
+            nx.alt_heuristic(G, k=4, weight="weight", method="invalid", seed=10)
+
+    def test_alt_heuristic_empty_graph(self):
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.alt_heuristic(nx.Graph())
+
+    def test_alt_heuristic_default_weight_directed(self):
+        # Regression guard: with default arguments on a directed weighted graph,
+        # the heuristic must stay admissible
+        G = self._weighted_random_graph(25, 120, seed=10, directed=True)
+        h = nx.alt_heuristic(G, k=4, seed=10)
+        assert self._admissible(G, h)
+
+    def test_alt_heuristic_directed_consistent(self):
+        G = self._weighted_random_graph(25, 120, seed=2, directed=True)
+        h = nx.alt_heuristic(G, k=6, weight="weight", seed=3)
+        assert self._admissible(G, h)
+        assert self._consistent(G, h)
+
+    def test_alt_heuristic_random_method(self):
+        G = nx.grid_2d_graph(5, 5)
+        nx.set_edge_attributes(G, 1, "weight")
+        h = nx.alt_heuristic(G, k=4, weight="weight", method="random", seed=7)
+        assert self._admissible(G, h)
+
+    def test_alt_heuristic_disconnected(self):
+        G = nx.disjoint_union(nx.path_graph(5), nx.cycle_graph(5))
+        nx.set_edge_attributes(G, 1, "weight")
+        h = nx.alt_heuristic(G, k=3, weight="weight", seed=0)
+        assert all(0 <= h(u, 7) < float("inf") for u in G)
+
+    def test_alt_heuristic_explicit_landmarks(self):
+        """Tests that alt_heuristic accepts an explicit list of landmarks and
+        stays admissible"""
+        G = nx.grid_graph(dim=[5, 5])  # nodes are two-tuples (x,y)
+        nx.set_edge_attributes(G, 1, "weight")
+        landmarks = [(0, 0), (4, 4)]
+        h = nx.alt_heuristic(G, weight="weight", landmarks=landmarks)
+        for u in G.nodes():
+            for v in G.nodes():
+                assert h(u, v) <= nx.shortest_path_length(G, u, v, weight="weight")
+
+    def test_alt_heuristic_explicit_landmarks_ignores_k_method(self):
+        """Explicit landmarks are used directly, so an otherwise-invalid k or
+        method does not raise"""
+        G = nx.grid_graph(dim=[3, 3])
+        h = nx.alt_heuristic(G, k=0, method="invalid", landmarks=[(0, 0)])
+        assert h((0, 0), (2, 2)) <= nx.shortest_path_length(G, (0, 0), (2, 2))
+
+    def test_alt_heuristic_empty_landmarks(self):
+        """Tests that alt_heuristic raises NetworkXError for an empty
+        landmarks list"""
+        G = nx.grid_graph(dim=[3, 3])
+        with pytest.raises(nx.NetworkXError):
+            nx.alt_heuristic(G, landmarks=[])
+
+    def test_alt_heuristic_landmark_not_in_graph(self):
+        """Tests that alt_heuristic raises NodeNotFound when a landmark is not
+        a node in G"""
+        G = nx.grid_graph(dim=[3, 3])
+        with pytest.raises(nx.NodeNotFound):
+            nx.alt_heuristic(G, landmarks=[(0, 0), "not-a-node"])
+
+    def test_alt_heuristic_matches_dijkstra(self):
+        G = self._weighted_random_graph(40, 150, seed=3, directed=True)
+        h = nx.alt_heuristic(G, k=8, weight="weight", seed=0)
+        rng = random.Random(0)
+        pairs = 0
+        while pairs < 15:
+            s, t = rng.sample(list(G), 2)
+            if not nx.has_path(G, s, t):
+                continue
+            pairs += 1
+            assert nx.astar_path_length(
+                G, s, t, heuristic=h, weight="weight"
+            ) == pytest.approx(nx.dijkstra_path_length(G, s, t, weight="weight"))
+
+    def _admissible(self, G, h, weight="weight"):
+        true = dict(nx.all_pairs_dijkstra_path_length(G, weight=weight))
+        return all(h(u, t) <= true[u].get(t, float("inf")) + 1e-9 for t in G for u in G)
+
+    def _consistent(self, G, h, weight="weight"):
+        for t in G:
+            for u, v, d in G.edges(data=True):
+                w = d.get(weight, 1)
+                if h(u, t) > w + h(v, t) + 1e-9:
+                    return False
+                if not G.is_directed() and h(v, t) > w + h(u, t) + 1e-9:
+                    return False
+        return True
+
+    def _weighted_random_graph(self, n, m, seed, directed=False):
+        G = nx.gnm_random_graph(n, m, seed=seed, directed=directed)
+        for u, v in G.edges():
+            G[u][v]["weight"] = random.Random(u * 31 + v).uniform(0.1, 5)
+        return G
