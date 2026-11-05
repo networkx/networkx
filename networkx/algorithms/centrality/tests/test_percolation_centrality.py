@@ -85,3 +85,36 @@ def test_converge_to_betweenness():
 def test_default_percolation():
     G = nx.erdos_renyi_graph(42, 0.42, seed=42)
     assert nx.percolation_centrality(G) == pytest.approx(nx.betweenness_centrality(G))
+
+
+def test_percolation_centrality_small_graphs():
+    # Null graph (0 nodes)
+    assert nx.percolation_centrality(nx.empty_graph(0)) == {}
+
+    # Single isolated node
+    assert nx.percolation_centrality(nx.empty_graph(1)) == {0: 0.0}
+
+    # Two connected nodes
+    assert nx.percolation_centrality(nx.path_graph(2)) == {0: 0.0, 1: 0.0}
+
+    # Two isolated nodes
+    assert nx.percolation_centrality(nx.empty_graph(2)) == {0: 0.0, 1: 0.0}
+
+
+def test_percolation_centrality_zero_denominator():
+    # When all nodes except w have state 0, denominator p_sigma_x_t - states[w] == 0
+    G = nx.path_graph(3)
+    states = {0: 0.0, 1: 1.0, 2: 0.0}
+    assert nx.percolation_centrality(G, states=states) == {0: 0.0, 1: 0.0, 2: 0.0}
+
+
+def test_percolation_centrality_incomplete_states():
+    # Incomplete states mapping should fall back to node attribute or 1.0
+    G = nx.path_graph(3)
+    states = {0: 0.0, 1: 1.0}
+    # Node 2 omitted from states, should default to 1.0
+    assert nx.percolation_centrality(G, states=states) == {0: 0.0, 1: 1.0, 2: 0.0}
+
+    # Node 2 omitted from states, should fall back to node attribute (0.0)
+    G.nodes[2]["percolation"] = 0.0
+    assert nx.percolation_centrality(G, states=states) == {0: 0.0, 1: 0.0, 2: 0.0}
