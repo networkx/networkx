@@ -78,14 +78,14 @@ def dedensify(G, threshold, prefix=None, copy=True):
 
     Parameters
     ----------
-    G: graph
+    G : graph
        A networkx graph
-    threshold: int
+    threshold : int
        Minimum degree threshold of a node to be considered a high degree node.
        The threshold must be greater than or equal to 2.
-    prefix: str or None, optional (default: None)
+    prefix : str or None, optional (default: None)
        An optional prefix for denoting compressor nodes
-    copy: bool, optional (default: True)
+    copy : bool, optional (default: True)
        Indicates if dedensification should be done inplace
 
     Returns
@@ -235,25 +235,25 @@ def _snap_build_graph(
 
     Parameters
     ----------
-    G: networkx.Graph
+    G : networkx.Graph
         the original graph to be summarized
-    groups: dict
+    groups : dict
         A dictionary of unique group IDs and their corresponding node groups
-    node_attributes: iterable
+    node_attributes : iterable
         An iterable of the node attributes considered in the summarization process
-    edge_attributes: iterable
+    edge_attributes : iterable
         An iterable of the edge attributes considered in the summarization process
-    neighbor_info: dict
+    neighbor_info : dict
         A data structure indicating the number of edges a node has with the
         groups in the current summarization of each edge type
-    edge_types: dict
+    edge_types : dict
         dictionary of edges in the graph and their corresponding attributes recognized
         in the summarization
-    prefix: string
+    prefix : string
         The prefix to be added to all supernodes
-    supernode_attribute: str
+    supernode_attribute : str
         The node attribute for recording the supernode groupings of nodes
-    superedge_attribute: str
+    superedge_attribute : str
         The edge attribute for recording the edge types represented by superedges
 
     Returns
@@ -313,13 +313,13 @@ def _snap_eligible_group(G, groups, group_lookup, edge_types):
 
     Parameters
     ----------
-    G: graph
+    G : graph
         graph to be summarized
-    groups: dict
+    groups : dict
         A dictionary of unique group IDs and their corresponding node groups
-    group_lookup: dict
+    group_lookup : dict
         dictionary of nodes and their current corresponding group ID
-    edge_types: dict
+    edge_types : dict
         dictionary of edges in the graph and their corresponding attributes recognized
         in the summarization
 
@@ -366,14 +366,14 @@ def _snap_split(groups, neighbor_info, group_lookup, group_id):
 
     Parameters
     ----------
-    groups: dict
+    groups : dict
         A dictionary of unique group IDs and their corresponding node groups
-    neighbor_info: dict
+    neighbor_info : dict
         A data structure indicating the number of edges a node has with the
         groups in the current summarization of each edge type
-    group_lookup: dict
+    group_lookup : dict
         dictionary of nodes and their current corresponding group ID
-    group_id: object
+    group_id : object
         ID of group to be split
 
     Returns
@@ -447,21 +447,21 @@ def snap_aggregation(
 
     Parameters
     ----------
-    G: graph
+    G : graph
         Networkx Graph to be summarized
-    node_attributes: iterable, required
+    node_attributes : iterable, required
         An iterable of the node attributes used to group nodes in the summarization process. Nodes
         with the same values for these attributes will be grouped together in the summary graph.
-    edge_attributes: iterable, optional
+    edge_attributes : iterable, optional
         An iterable of the edge attributes considered in the summarization process.  If provided, unique
         combinations of the attribute values found in the graph are used to
         determine the edge types in the graph.  If not provided, all edges
         are considered to be of the same type.
-    prefix: str
+    prefix : str
         The prefix used to denote supernodes in the summary graph. Defaults to 'Supernode-'.
-    supernode_attribute: str
+    supernode_attribute : str
         The node attribute for recording the supernode groupings of nodes. Defaults to 'group'.
-    superedge_attribute: str
+    superedge_attribute : str
         The edge attribute for recording the edge types of multiple edges. Defaults to 'types'.
 
     Returns

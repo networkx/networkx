@@ -87,6 +87,7 @@ doc = [
     'texext>=0.6.7',
     'myst-nb>=1.1',
     'intersphinx-registry',
+    'joblib',  # for sphinx-gallery parallel builds
 ]
 example = [
     'osmnx>=2.0.0',
