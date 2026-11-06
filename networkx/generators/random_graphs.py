@@ -545,8 +545,6 @@ def random_regular_graph(d, n, seed=None, *, create_using=None):
 
     Notes
     -----
-        Notes
-    -----
     The nodes are numbered from $0$ to $n - 1$.
 
     The algorithm is based on the pairing model of Steger and Wormald [1]_,
