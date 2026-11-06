@@ -545,11 +545,17 @@ def random_regular_graph(d, n, seed=None, *, create_using=None):
 
     Notes
     -----
+        Notes
+    -----
     The nodes are numbered from $0$ to $n - 1$.
 
-    Kim and Vu's paper [2]_ shows that this algorithm samples in an
-    asymptotically uniform way from the space of random graphs when
-    $d = O(n^{1 / 3 - \epsilon})$.
+    The algorithm is based on the pairing model of Steger and Wormald [1]_,
+    but pairs stubs in shuffled batches rather than one pair at a time.
+    Kim and Vu [2]_ show that the Steger-Wormald algorithm samples
+    asymptotically uniformly when $d = O(n^{1 / 3 - \epsilon})$; this
+    implementation does not. Its output contains a small, constant excess of
+    short cycles (triangles and 4-cycles) compared to uniform random
+    regular graphs, which does not vanish as $n$ grows.
 
     Raises
     ------
@@ -561,7 +567,7 @@ def random_regular_graph(d, n, seed=None, *, create_using=None):
     ----------
     .. [1] A. Steger and N. Wormald,
        Generating random regular graphs quickly,
-       Probability and Computing 8 (1999), 377-396, 1999.
+       Combinatorics, Probability and Computing 8 (1999), 377-396, 1999.
        https://doi.org/10.1017/S0963548399003867
 
     .. [2] Jeong Han Kim and Van H. Vu,
