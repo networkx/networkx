@@ -29,6 +29,8 @@ http://doi.org/10.1038/srep31708
 
 """
 
+from collections import defaultdict
+
 import networkx as nx
 
 __all__ = [
@@ -102,16 +104,22 @@ def core_number(G):
     curr_degree = 0
     for i, v in enumerate(nodes):
         if degrees[v] > curr_degree:
-            bin_boundaries.extend([i] * (degrees[v] - curr_degree))
+            bin_boundaries.extend((i,) * (degrees[v] - curr_degree))
             curr_degree = degrees[v]
     node_pos = {v: pos for pos, v in enumerate(nodes)}
     # The initial guess for the core number of a node is its degree.
     core = degrees
-    nbrs = {v: list(nx.all_neighbors(G, v)) for v in G}
+    all_nbrs = [{v: set(nx.neighbors(G, v)) for v in G}]
+    if G.is_directed():
+        all_nbrs.append({v: set(G.predecessors(v)) for v in G})
+
     for v in nodes:
-        for u in nbrs[v]:
-            if core[u] > core[v]:
-                nbrs[u].remove(v)
+        cv = core[v]
+        for nbrs_set in all_nbrs:
+            for u in nbrs_set[v]:
+                if core[u] <= cv:
+                    continue
+                nbrs_set[u].discard(v)
                 pos = node_pos[u]
                 bin_start = bin_boundaries[core[u]]
                 node_pos[u] = bin_start
@@ -119,6 +127,7 @@ def core_number(G):
                 nodes[bin_start], nodes[pos] = nodes[pos], nodes[bin_start]
                 bin_boundaries[core[u]] += 1
                 core[u] -= 1
+
     return core
 
 
@@ -467,25 +476,28 @@ def k_truss(G, k):
         )
         raise nx.NetworkXNotImplemented(msg)
 
-    H = G.copy()
+    mapping = {node: i for i, node in enumerate(G)}
+    inverse_mapping = dict(enumerate(G))
+    H = nx.relabel_nodes(G, mapping=mapping, copy=True)
+    t = k - 2
 
     n_dropped = 1
     while n_dropped > 0:
-        n_dropped = 0
         to_drop = []
-        seen = set()
-        for u in H:
-            nbrs_u = set(H[u])
-            seen.add(u)
-            new_nbrs = [v for v in nbrs_u if v not in seen]
-            for v in new_nbrs:
-                if len(nbrs_u & set(H[v])) < (k - 2):
-                    to_drop.append((u, v))
+        for u, u_nbrs in H.adjacency():
+            u_cond = len(u_nbrs) < t
+            u_keys = u_nbrs.keys()
+            to_drop.extend(
+                (u, v)
+                for v in u_nbrs
+                if v > u
+                and (u_cond or len(hv := H._adj[v]) < t or len(u_keys & hv.keys()) < t)
+            )
         H.remove_edges_from(to_drop)
         n_dropped = len(to_drop)
-        H.remove_nodes_from(list(nx.isolates(H)))
+    H.remove_nodes_from(list(nx.isolates(H)))
 
-    return H
+    return nx.relabel_nodes(H, inverse_mapping, copy=True)
 
 
 @nx.utils.not_implemented_for("multigraph")
