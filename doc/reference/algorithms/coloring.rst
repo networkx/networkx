@@ -11,6 +11,7 @@ Coloring
 
    greedy_color
    equitable_color
+   edge_coloring
 
 Some node ordering strategies are provided for use with :func:`greedy_color`.
 
