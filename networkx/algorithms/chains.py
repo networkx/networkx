@@ -70,12 +70,15 @@ def chain_decomposition(G, root=None):
         `G` is an undirected simple graph. `root` is a node in the graph
         from which the depth-first search is started.
 
-        This function returns both the depth-first search cycle graph
-        (as a :class:`~networkx.DiGraph`) and the list of nodes in
-        depth-first preorder. The depth-first search cycle graph is a
-        directed graph whose edges are the edges of `G` oriented toward
-        the root if the edge is a tree edge and away from the root if
-        the edge is a non-tree edge. If `root` is not specified, this
+        This function returns the depth-first search cycle graph and the
+        list of nodes in depth-first preorder. The depth-first search
+        cycle graph is a directed graph whose edges are the edges of `G`
+        oriented toward the root if the edge is a tree edge and away from
+        the root if the edge is a non-tree edge. It is stored as two
+        dicts: `parent` maps each node to its parent in the DFS tree (or
+        None for a root), and `nontree` maps each node to a dict whose
+        keys are the targets of its outgoing nontree edges, in the order
+        they were found. If `root` is not specified, this
         performs a depth-first search on each connected component of `G`
         and returns a directed forest instead.
 
@@ -89,57 +92,54 @@ def chain_decomposition(G, root=None):
         # directed cycle starting with the nontree edge and returning to
         # that node.
         #
-        # The `parent` node attribute stores the parent of each node in
-        # the DFS tree. The `nontree` edge attribute indicates whether
-        # the edge is a tree edge or a nontree edge.
+        # The `parent` dict stores the parent of each node in the DFS
+        # tree. The `nontree` dict stores the nontree edges leaving each
+        # node.
         #
         # We also store the order of the nodes found in the depth-first
         # search in the `nodes` list.
-        H = nx.DiGraph()
+        parent = {}
+        nontree = {}
         nodes = []
         for u, v, d in nx.dfs_labeled_edges(G, source=root):
             if d == "forward":
                 # `dfs_labeled_edges()` yields (root, root, 'forward')
                 # if it is beginning the search on a new connected
                 # component.
-                if u == v:
-                    H.add_node(v, parent=None)
-                    nodes.append(v)
-                else:
-                    H.add_node(v, parent=u)
-                    H.add_edge(v, u, nontree=False)
-                    nodes.append(v)
+                parent[v] = None if u == v else u
+                nontree[v] = {}
+                nodes.append(v)
             # `dfs_labeled_edges` considers nontree edges in both
             # orientations, so we need to not add the edge if it its
             # other orientation has been added.
-            elif d == "nontree" and v not in H[u]:
-                H.add_edge(v, u, nontree=True)
+            elif d == "nontree" and v != parent[u] and v not in nontree[u]:
+                nontree[v][u] = None
             else:
                 # Do nothing on 'reverse' edges; we only care about
                 # forward and nontree edges.
                 pass
-        return H, nodes
+        return parent, nontree, nodes
 
-    def _build_chain(G, u, v, visited):
+    def _build_chain(parent, u, v, visited):
         """Generate the chain starting from the given nontree edge.
 
-        `G` is a DFS cycle graph as constructed by
-        :func:`_dfs_cycle_graph`. The edge (`u`, `v`) is a nontree edge
-        that begins a chain. `visited` is a set representing the nodes
-        in `G` that have already been visited.
+        `parent` maps each node to its parent in the DFS tree, as
+        constructed by :func:`_dfs_cycle_forest`. The edge (`u`, `v`) is
+        a nontree edge that begins a chain. `visited` is a set
+        representing the nodes that have already been visited.
 
         This function yields the edges in an initial segment of the
-        fundamental cycle of `G` starting with the nontree edge (`u`,
-        `v`) that includes all the edges up until the first node that
-        appears in `visited`. The tree edges are given by the 'parent'
-        node attribute. The `visited` set is updated to add each node in
-        an edge yielded by this function.
+        fundamental cycle starting with the nontree edge (`u`, `v`) that
+        includes all the edges up until the first node that appears in
+        `visited`. The tree edges are given by `parent`. The `visited`
+        set is updated to add each node in an edge yielded by this
+        function.
 
         """
         while v not in visited:
             yield u, v
             visited.add(v)
-            u, v = v, G.nodes[v]["parent"]
+            u, v = v, parent[v]
         yield u, v
 
     # Check if the root is in the graph G. If not, raise NodeNotFound
@@ -149,7 +149,7 @@ def chain_decomposition(G, root=None):
     # Create a directed version of H that has the DFS edges directed
     # toward the root and the nontree edges directed away from the root
     # (in each connected component).
-    H, nodes = _dfs_cycle_forest(G, root)
+    parent, nontree, nodes = _dfs_cycle_forest(G, root)
 
     # Visit the nodes again in DFS order. For each node, and for each
     # nontree edge leaving that node, compute the fundamental cycle for
@@ -164,9 +164,8 @@ def chain_decomposition(G, root=None):
     for u in nodes:
         visited.add(u)
         # For each nontree edge going out of node u...
-        edges = ((u, v) for u, v, d in H.out_edges(u, data="nontree") if d)
-        for u, v in edges:
+        for v in nontree[u]:
             # Create the cycle or cycle prefix starting with the
             # nontree edge.
-            chain = list(_build_chain(H, u, v, visited))
+            chain = list(_build_chain(parent, u, v, visited))
             yield chain

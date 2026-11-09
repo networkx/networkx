@@ -134,3 +134,13 @@ class TestChainDecomposition:
         G.add_nodes_from([1, 2, 3])
         with pytest.raises(nx.NodeNotFound):
             nx.has_bridges(G, root=6)
+
+    @pytest.mark.parametrize("seed", range(10))
+    def test_chains_and_bridges_partition_edges(self, seed):
+        """Each edge is in exactly one chain or is a bridge."""
+        G = nx.gnm_random_graph(30, 40, seed=seed)
+        chain_edges = [frozenset(e) for c in nx.chain_decomposition(G) for e in c]
+        assert len(chain_edges) == len(set(chain_edges))
+        bridges = {frozenset(e) for e in nx.bridges(G)}
+        assert set(chain_edges).isdisjoint(bridges)
+        assert set(chain_edges) | bridges == {frozenset(e) for e in G.edges}
