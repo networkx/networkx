@@ -305,6 +305,8 @@ class TestDepthLimitedSearch:
             (2, 7, "reverse"),
             (2, 2, "reverse"),
         ]
+
+
 def test_dfs_depth_limit_zero():
     G = nx.path_graph(3)
     assert list(nx.dfs_edges(G, source=0, depth_limit=0)) == []
