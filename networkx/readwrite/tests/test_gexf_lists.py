@@ -302,3 +302,17 @@ def test_list_file_roundtrip(tmp_path, extension):
     path = tmp_path / f"graph.{extension}"
     nx.write_gexf(graph, path, version="1.3")
     assert nx.read_gexf(path).nodes["a"]["values"] == ["a,b", "λ"]
+
+
+@pytest.mark.parametrize("dtype", ["int32", "int64", "float32", "float64"])
+def test_numpy_list_roundtrip(dtype):
+    np = pytest.importorskip("numpy")
+    graph = nx.Graph()
+    graph.add_node("a", values=[getattr(np, dtype)(1), getattr(np, dtype)(2)])
+    stream = io.BytesIO()
+    nx.write_gexf(graph, stream, version="1.3")
+    stream.seek(0)
+    values = nx.read_gexf(stream).nodes["a"]["values"]
+    assert values == [1, 2]
+    expected_type = int if dtype.startswith("int") else float
+    assert all(type(value) is expected_type for value in values)
