@@ -282,6 +282,11 @@ def test_list_default_type_conflict():
         list(nx.generate_gexf(graph, version="1.3"))
 
 
+def test_empty_list_default_element():
+    graph = nx.read_gexf(list_document("listinteger", "[]", default=""))
+    assert graph.graph["node_default"] == {"values": []}
+
+
 @pytest.mark.parametrize("value", ["NaN", "Infinity", "-Infinity"])
 def test_nonfinite_decimal_list(value):
     graph = nx.Graph()

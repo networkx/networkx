@@ -46,7 +46,7 @@ _LIST_ITEM = re.compile(
 
 def _list_items(value):
     """Read the bracketed, comma-separated GEXF 1.3 list syntax."""
-    text = value.strip()
+    text = "" if value is None else value.strip()
     if not text:
         return []
     if not (text.startswith("[") and text.endswith("]")):
