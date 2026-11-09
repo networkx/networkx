@@ -18,7 +18,11 @@ specification and http://gexf.net/basic.html for examples.
 """
 
 import itertools
+import json
+import re
 import time
+from ast import literal_eval
+from decimal import Decimal
 from xml.etree.ElementTree import (
     Element,
     ElementTree,
@@ -31,6 +35,49 @@ import networkx as nx
 from networkx.utils import open_file
 
 __all__ = ["write_gexf", "read_gexf", "relabel_gexf_graph", "generate_gexf"]
+
+
+_LIST_ITEM = re.compile(
+    r"""\s*(?:(?P<quoted>"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|"""
+    r"""(?P<plain>[^,'"\[\]]+?))\s*(?P<separator>,|$)""",
+    re.DOTALL,
+)
+
+
+def _list_items(value):
+    """Read the bracketed, comma-separated GEXF 1.3 list syntax."""
+    text = value.strip()
+    if not text:
+        return []
+    if not (text.startswith("[") and text.endswith("]")):
+        raise ValueError(f"Invalid GEXF list value: {value!r}")
+    text = text[1:-1].strip()
+    items = []
+    position = 0
+    while position < len(text):
+        match = _LIST_ITEM.match(text, position)
+        if match is None or (match["separator"] and match.end() == len(text)):
+            raise ValueError(f"Invalid GEXF list value: {value!r}")
+        quoted = match["quoted"]
+        if quoted is None:
+            item = match["plain"].strip()
+        elif quoted.startswith('"'):
+            item = json.loads(quoted)
+        else:
+            item = literal_eval(quoted)
+        if not item and match["quoted"] is None:
+            raise ValueError(f"Invalid GEXF list value: {value!r}")
+        items.append(item)
+        position = match.end()
+    return items
+
+
+def _is_dynamic_attribute(value):
+    return (
+        isinstance(value, list)
+        and bool(value)
+        and all(isinstance(item, (list, tuple)) and len(item) == 3 for item in value)
+    )
 
 
 @open_file(1, mode="wb")
@@ -382,6 +429,46 @@ class GEXF:
         self.VERSION = d["VERSION"]
         self.version = version
 
+    def decode_attribute_value(self, attribute_type, value):
+        if self.VERSION == "1.3" and attribute_type.startswith("list"):
+            scalar_type = attribute_type[4:]
+            converters = {
+                "string": str,
+                "char": str,
+                "boolean": self.convert_bool.__getitem__,
+                "integer": int,
+                "long": int,
+                "byte": int,
+                "short": int,
+                "float": float,
+                "double": float,
+                "bigdecimal": Decimal,
+                "biginteger": int,
+            }
+            convert = converters[scalar_type]
+            return [convert(item) for item in _list_items(value)]
+        if attribute_type == "boolean":
+            return self.convert_bool[value]
+        return self.python_type[attribute_type](value)
+
+    def encode_attribute_value(self, attribute_type, value):
+        if self.VERSION == "1.3" and attribute_type.startswith("list"):
+            scalar_type = attribute_type[4:]
+            items = (
+                json.dumps(item, ensure_ascii=False)
+                if scalar_type == "string"
+                else self.encode_attribute_value(scalar_type, item)
+                for item in value
+            )
+            return "[" + ", ".join(items) + "]"
+        if isinstance(value, bool):
+            return str(value).lower()
+        if attribute_type in {"float", "double"}:
+            return {"inf": "INF", "-inf": "-INF", "nan": "NaN"}.get(
+                str(value), str(value)
+            )
+        return str(value)
+
 
 class GEXFWriter(GEXF):
     # class for writing GEXF format files
@@ -436,6 +523,9 @@ class GEXFWriter(GEXF):
         return s
 
     def add_graph(self, G):
+        self.list_types = {}
+        if self.VERSION == "1.3":
+            self.collect_list_types(G)
         # first pass through G collecting edge ids
         for u, v, dd in G.edges(data=True):
             eid = dd.get("id")
@@ -573,12 +663,90 @@ class GEXFWriter(GEXF):
             edges_element.append(edge_element)
         graph_element.append(edges_element)
 
+    def collect_list_types(self, G):
+        """Infer list types before emitting declarations, including empty lists."""
+        for scope, data in (
+            ("node", G.nodes.values()),
+            ("edge", (attrs for _, _, attrs in G.edges(data=True))),
+        ):
+            defaults = G.graph.get(f"{scope}_default", {})
+            for attrs in data:
+                for title, value in attrs.items():
+                    if title in {"parents", "spells", "slices"}:
+                        continue
+                    if not isinstance(value, list):
+                        continue
+                    if _is_dynamic_attribute(value):
+                        mode = (
+                            "dynamic"
+                            if any(
+                                start is not None or end is not None
+                                for _, start, end in value
+                            )
+                            else "static"
+                        )
+                        values = [item for item, _, _ in value]
+                    else:
+                        mode = "static"
+                        values = [value]
+                    if title in defaults:
+                        values.append(defaults[title])
+                    if any(isinstance(item, list) for item in values) and not all(
+                        isinstance(item, list) for item in values
+                    ):
+                        raise ValueError(
+                            f"Conflicting types for list attribute {title!r}"
+                        )
+                    key = (scope, mode, str(title))
+                    if title == "key":
+                        key = (scope, mode, "networkx_key")
+                    for items in values:
+                        if not isinstance(items, list):
+                            continue
+                        self.list_types.setdefault(key, None)
+                        item_types = set()
+                        for item in items:
+                            if isinstance(item, Decimal) and not item.is_finite():
+                                raise ValueError(
+                                    f"Non-finite decimal in list attribute {title!r}"
+                                )
+                            scalar_type = (
+                                "bigdecimal"
+                                if isinstance(item, Decimal)
+                                else self.xml_type.get(type(item))
+                            )
+                            scalar_type = {
+                                "integer": "long",
+                                "int": "long",
+                                "float": "double",
+                            }.get(scalar_type, scalar_type)
+                            if isinstance(item, (list, dict)) or scalar_type not in {
+                                "long",
+                                "double",
+                                "boolean",
+                                "string",
+                                "bigdecimal",
+                            }:
+                                raise TypeError(
+                                    f"Unsupported list attribute {title!r}: {type(item)}"
+                                )
+                            item_types.add(scalar_type)
+                        if len(item_types) > 1:
+                            raise TypeError(f"Mixed types in list attribute {title!r}")
+                        if item_types:
+                            scalar_type = item_types.pop()
+                            previous = self.list_types[key]
+                            if previous is not None and previous != scalar_type:
+                                raise ValueError(
+                                    f"Conflicting types for list attribute {title!r}"
+                                )
+                            self.list_types[key] = scalar_type
+
     def add_attributes(self, node_or_edge, xml_obj, data, default):
         # Add attrvalues to node or edge
         attvalues = Element("attvalues")
         if len(data) == 0:
             return data
-        mode = "static"
         for k, v in data.items():
             # rename generic multigraph key to avoid any name conflict
             if k == "key":
@@ -586,8 +754,10 @@ class GEXFWriter(GEXF):
             val_type = type(v)
             if val_type not in self.xml_type:
                 raise TypeError(f"attribute value type is not allowed: {val_type}")
-            if isinstance(v, list):
-                # dynamic data
+            mode = "static"
+            if isinstance(v, list) and (
+                self.VERSION != "1.3" or _is_dynamic_attribute(v)
+            ):
                 for val, start, end in v:
                     val_type = type(val)
                     if start is not None or end is not None:
@@ -595,49 +765,24 @@ class GEXFWriter(GEXF):
                         self.alter_graph_mode_timeformat(start)
                         self.alter_graph_mode_timeformat(end)
                         break
-                attr_id = self.get_attr_id(
-                    str(k), self.xml_type[val_type], node_or_edge, default, mode
-                )
-                for val, start, end in v:
-                    e = Element("attvalue")
-                    e.attrib["for"] = attr_id
-                    if isinstance(val, bool):
-                        e.attrib["value"] = str(val).lower()
-                    else:
-                        e.attrib["value"] = str(val)
-                        # Handle nan, inf, -inf differently
-                        if val_type is float:
-                            if e.attrib["value"] == "inf":
-                                e.attrib["value"] = "INF"
-                            elif e.attrib["value"] == "nan":
-                                e.attrib["value"] = "NaN"
-                            elif e.attrib["value"] == "-inf":
-                                e.attrib["value"] = "-INF"
-                    if start is not None:
-                        e.attrib["start"] = str(start)
-                    if end is not None:
-                        e.attrib["end"] = str(end)
-                    attvalues.append(e)
+                values = v
             else:
-                # static data
-                mode = "static"
-                attr_id = self.get_attr_id(
-                    str(k), self.xml_type[val_type], node_or_edge, default, mode
-                )
+                values = [(v, None, None)]
+            key = (node_or_edge, mode, str(k))
+            attr_type = (
+                "list" + (self.list_types[key] or "string")
+                if self.VERSION == "1.3" and val_type is list and key in self.list_types
+                else self.xml_type[val_type]
+            )
+            attr_id = self.get_attr_id(str(k), attr_type, node_or_edge, default, mode)
+            for val, start, end in values:
                 e = Element("attvalue")
                 e.attrib["for"] = attr_id
-                if isinstance(v, bool):
-                    e.attrib["value"] = str(v).lower()
-                else:
-                    e.attrib["value"] = str(v)
-                    # Handle float nan, inf, -inf differently
-                    if val_type is float:
-                        if e.attrib["value"] == "inf":
-                            e.attrib["value"] = "INF"
-                        elif e.attrib["value"] == "nan":
-                            e.attrib["value"] = "NaN"
-                        elif e.attrib["value"] == "-inf":
-                            e.attrib["value"] = "-INF"
+                e.attrib["value"] = self.encode_attribute_value(attr_type, val)
+                if start is not None:
+                    e.attrib["start"] = str(start)
+                if end is not None:
+                    e.attrib["end"] = str(end)
                 attvalues.append(e)
         xml_obj.append(attvalues)
         return data
@@ -667,7 +812,9 @@ class GEXFWriter(GEXF):
             default_title = default.get(title)
             if default_title is not None:
                 default_element = Element("default")
-                default_element.text = str(default_title)
+                default_element.text = self.encode_attribute_value(
+                    attr_type, default_title
+                )
                 attribute.append(default_element)
             # new insert it into the XML
             attributes_element = None
@@ -1118,10 +1265,7 @@ class GEXFReader(GEXF):
                     raise nx.NetworkXError(f"No attribute defined for={key}.") from err
                 atype = gexf_keys[key]["type"]
                 value = a.get("value")
-                if atype == "boolean":
-                    value = self.convert_bool[value]
-                else:
-                    value = self.python_type[atype](value)
+                value = self.decode_attribute_value(atype, value)
                 if gexf_keys[key]["mode"] == "dynamic":
                     # for dynamic graphs use list of three-tuples
                     # [(value1,start1,end1), (value2,start2,end2), etc]
@@ -1150,10 +1294,7 @@ class GEXFReader(GEXF):
             # check for the 'default' subelement of key element and add
             default = k.find(f"{{{self.NS_GEXF}}}default")
             if default is not None:
-                if atype == "boolean":
-                    value = self.convert_bool[default.text]
-                else:
-                    value = self.python_type[atype](default.text)
+                value = self.decode_attribute_value(atype, default.text)
                 defaults[title] = value
         return attrs, defaults
 
