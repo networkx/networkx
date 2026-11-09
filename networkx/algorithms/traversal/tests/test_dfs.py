@@ -305,3 +305,14 @@ class TestDepthLimitedSearch:
             (2, 7, "reverse"),
             (2, 2, "reverse"),
         ]
+def test_dfs_depth_limit_zero():
+    G = nx.path_graph(3)
+    assert list(nx.dfs_edges(G, source=0, depth_limit=0)) == []
+    assert list(nx.dfs_preorder_nodes(G, source=0, depth_limit=0)) == [0]
+    T = nx.dfs_tree(G, source=0, depth_limit=0)
+    assert list(T.nodes()) == [0]
+    assert list(T.edges()) == []
+    assert list(nx.dfs_labeled_edges(G, source=0, depth_limit=0)) == [
+        (0, 0, "forward"),
+        (0, 0, "reverse"),
+    ]
