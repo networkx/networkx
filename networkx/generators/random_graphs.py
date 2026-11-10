@@ -548,12 +548,12 @@ def random_regular_graph(d, n, seed=None, *, create_using=None):
     The nodes are numbered from $0$ to $n - 1$.
 
     The algorithm is based on the pairing model of Steger and Wormald [1]_,
-    but pairs stubs in shuffled batches rather than one pair at a time.
+    but we pair stubs in shuffled batches rather than one pair at a time.
     Kim and Vu [2]_ show that the Steger-Wormald algorithm samples
     asymptotically uniformly when $d = O(n^{1 / 3 - \epsilon})$; this
     implementation does not. Its output contains a small, constant excess of
     short cycles (triangles and 4-cycles) compared to uniform random
-    regular graphs, which does not vanish as $n$ grows.
+    regular graphs, so relative bias decreases as ``1/n`` while bias stays fixed.
 
     Raises
     ------
