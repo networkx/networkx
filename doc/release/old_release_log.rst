@@ -264,7 +264,7 @@ Highlights
 
 New features
 ~~~~~~~~~~~~
- - Algorithms for :mod:`generating <networkx.generators.bipartite>`
+ - Algorithms for generating
    and :mod:`analyzing <networkx.algorithms.bipartite>` bipartite graphs
  - :mod:`Maximal independent set <networkx.algorithms.mis>` algorithm
  - :mod:`Erdős-Gallai graphical degree sequence test <networkx.generators.degree_seq>`
@@ -272,7 +272,7 @@ New features
  - More memory efficient :mod:`Dijkstra path length <networkx.algorithms.shortest_paths.weighted>` with cutoff parameter
  - :mod:`Weighted clustering coefficient <networkx.algorithms.cluster>`
  - Read and write version 1.2 of :mod:`GEXF reader <networkx.readwrite.gexf>` format
- - :mod:`Neighbor degree correlation <networkx.algorithms.neighbor_degree>`
+ - Neighbor degree correlation
    that handle subsets of nodes
  - :mod:`In-place node relabeling <networkx.relabel>`
  - Many 'weighted' graph algorithms now take optional parameter to use
@@ -336,12 +336,12 @@ New features
  - :mod:`read/write GEXF format files <networkx.readwrite.gexf>`
  - :mod:`find cycles in a directed graph <networkx.algorithms.cycles>`
  - :mod:`DFS <networkx.algorithms.traversal.depth_first_search>` and :mod:`BFS <networkx.algorithms.traversal.breadth_first_search>` algorithms
- - :mod:`chordal graph functions <networkx.algorithms.chordal.chordal_alg>`
- - :mod:`Prim's algorithm for minimum spanning tree <networkx.algorithms.mst>`
+ - chordal graph functions
+ - Prim's algorithm for minimum spanning tree
  - :mod:`r-ary tree generator <networkx.generators.classic>`
  - :mod:`rich club coefficient <networkx.algorithms.richclub>`
  - NumPy matrix version of :mod:`Floyd's algorithm for all-pairs shortest path  <networkx.algorithms.shortest_paths.dense>`
- - :mod:`read GIS shapefiles <networkx.readwrite.nx_shp>`
+ - read GIS shapefiles
  - :mod:`functions to get and set node and edge attributes <networkx.classes.function>`
  - and more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.4
 
@@ -377,7 +377,7 @@ New features
 
 API changes
 ~~~~~~~~~~~
- - :mod:`minimum_spanning_tree() now returns a NetworkX Graph (a tree or forest) <networkx.algorithms.mst>`
+ - minimum_spanning_tree() now returns a NetworkX Graph (a tree or forest)
 
 Bug fixes
 ~~~~~~~~~
@@ -415,20 +415,20 @@ See: https://networkx.lanl.gov/trac/timeline
 New features
 ~~~~~~~~~~~~
  - :mod:`Algorithm for finding a basis for graph cycles <networkx.algorithms.cycles>`
- - :mod:`Blockmodeling <networkx.algorithms.block>`
- - :mod:`Assortativity and mixing matrices <networkx.algorithms.mixing>`
- - :mod:`in-degree and out-degree centrality <networkx.algorithms.centrality.degree>`
- - :mod:`Attracting components <networkx.algorithms.components.attracting>`
-   and  :mod:`condensation <networkx.algorithms.components.strongly_connected>`.
- - :mod:`Weakly connected components <networkx.algorithms.components.weakly_connected>`
+ - Blockmodeling
+ - Assortativity and mixing matrices
+ - in-degree and out-degree centrality
+ - Attracting components
+   and  condensation.
+ - Weakly connected components
  - :mod:`Simpler interface to shortest path algorithms <networkx.algorithms.shortest_paths.generic>`
  - :mod:`Edgelist format to read and write data with attributes <networkx.readwrite.edgelist>`
  - :mod:`Attribute matrices <networkx.linalg.spectrum>`
  - :mod:`GML reader for nested attributes <networkx.readwrite.gml>`
  - Current-flow (random walk)
-   :mod:`betweenness <networkx.algorithms.centrality.current_flow_betweenness>`
+   betweenness
    and
-   :mod:`closeness <networkx.algorithms.centrality.current_flow_closeness>`.
+   closeness.
  - :mod:`Directed configuration model <networkx.generators.degree_seq>`,
    and  :mod:`directed random graph model <networkx.generators.random_graphs>`.
  - Improved documentation of drawing, shortest paths, and other algorithms
@@ -468,7 +468,7 @@ and the with_labels keyword has been removed:
    :func:`triangles`
  - :func:`node_clique_number`,
    :func:`number_of_cliques`,
-   :func:`cliques_containing_node`
+   ``cliques_containing_node``
  - :func:`eccentricity`
 
 

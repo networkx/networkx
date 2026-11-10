@@ -856,7 +856,7 @@ class Graph:
         See Also
         --------
         order: identical method
-        __len__: identical method
+        Graph.__len__: identical method
 
         Examples
         --------
@@ -877,7 +877,7 @@ class Graph:
         See Also
         --------
         number_of_nodes: identical method
-        __len__: identical method
+        Graph.__len__: identical method
 
         Examples
         --------
@@ -1153,7 +1153,7 @@ class Graph:
 
         Parameters
         ----------
-        ebunch: list or container of edge tuples
+        ebunch : list or container of edge tuples
             Each edge given in the list or container will be removed
             from the graph. The edges can be:
 
@@ -1449,7 +1449,7 @@ class Graph:
         Parameters
         ----------
         u, v : nodes
-        default:  any Python object (default=None)
+        default : any Python object (default=None)
             Value to return if the edge (u, v) is not found.
 
         Returns

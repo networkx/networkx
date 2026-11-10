@@ -337,7 +337,7 @@ def add_cycle(G_to_add_to, nodes_for_cycle, **attr):
     ----------
     G_to_add_to : graph
         A NetworkX graph
-    nodes_for_cycle: iterable container
+    nodes_for_cycle : iterable container
         A container of nodes.  A cycle will be constructed from
         the nodes (in order) and added to the graph.
     attr : keyword arguments, optional (default= no attributes)
@@ -730,7 +730,7 @@ def get_node_attributes(G, name, default=None):
     name : string
        Attribute name
 
-    default: object (default=None)
+    default : object (default=None)
        Default value of the node attribute if there is no value set for that
        node in graph. If `None` then nodes without this attribute are not
        included in the returned dict.
@@ -946,7 +946,7 @@ def get_edge_attributes(G, name, default=None):
     name : string
        Attribute name
 
-    default: object (default=None)
+    default : object (default=None)
        Default value of the edge attribute if there is no value set for that
        edge in graph. If `None` then edges without this attribute are not
        included in the returned dict.
@@ -1166,7 +1166,7 @@ def is_weighted(G, edge=None, weight="weight"):
         A 2-tuple specifying the only edge in `G` that will be tested. If
         None, then every edge in `G` is tested.
 
-    weight: string, optional
+    weight : string, optional
         The attribute name used to query for edge weights.
 
     Returns
@@ -1220,7 +1220,7 @@ def is_negatively_weighted(G, edge=None, weight="weight"):
         A 2-tuple specifying the only edge in `G` that will be tested. If
         None, then every edge in `G` is tested.
 
-    weight: string, optional
+    weight : string, optional
         The attribute name used to query for edge weights.
 
     Returns
@@ -1474,10 +1474,10 @@ def path_weight(G, path, weight):
     G : graph
         A NetworkX graph.
 
-    path: list
+    path : list
         A list of node labels which defines the path to traverse
 
-    weight: string
+    weight : string
         A string indicating which edge attribute to use for path cost
 
     Returns
@@ -1516,7 +1516,7 @@ def describe(G, describe_hook=None):
     G : graph
         A NetworkX graph.
 
-    describe_hook: callable, optional (default=None)
+    describe_hook : callable, optional (default=None)
         A function that takes a graph as input and returns a
         dictionary of additional properties to include in the description.
         The keys of the dictionary are the property names, and the values

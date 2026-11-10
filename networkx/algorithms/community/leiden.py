@@ -139,6 +139,7 @@ def leiden_communities(
     --------
     leiden_partitions
     :any:`louvain_communities`
+    :any:`infomap_communities`
     :func:`networkx.algorithms.community.quality.modularity`
     :any:`constant_potts_model`
     """
@@ -218,6 +219,7 @@ def leiden_partitions(
     --------
     leiden_communities
     :any:`louvain_partitions`
+    :any:`infomap_partitions`
     """
 
     partition = [{u} for u in G]

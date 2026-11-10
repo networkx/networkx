@@ -383,7 +383,7 @@ To measure the test coverage, run::
 
   $ PYTHONPATH=. pytest --cov=networkx networkx
 
-This will print a report with one line for each file in `networkx`,
+This will print a report with one line for each file in ``networkx``,
 detailing the test coverage::
 
   Name                                             Stmts   Miss Branch BrPart  Cover

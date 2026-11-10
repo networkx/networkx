@@ -1,7 +1,7 @@
 """This module provides the functions for node classification problem.
 
 The functions in this module are not imported
-into the top level `networkx` namespace.
+into the top level ``networkx`` namespace.
 You can access these functions by importing
 the `networkx.algorithms.node_classification` modules,
 then accessing the functions as attributes of `node_classification`.

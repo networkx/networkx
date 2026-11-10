@@ -334,11 +334,11 @@ def omega(G, niter=5, nrand=10, seed=None):
     G : NetworkX graph
         An undirected graph.
 
-    niter: integer (optional, default=5)
+    niter : integer (optional, default=5)
         Approximate number of rewiring per edge to compute the equivalent
         random graph.
 
-    nrand: integer (optional, default=10)
+    nrand : integer (optional, default=10)
         Number of random graphs generated to compute the maximal clustering
         coefficient (Cr) and average shortest path length (Lr).
 

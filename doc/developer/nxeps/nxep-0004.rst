@@ -167,7 +167,7 @@ Thus any code that uses `create_random_state` or `create_py_random_state` and
 relies on the ``randint`` method of the returned rng would result in an
 `AttributeError`.
 This can be addressed with a compatibility class similar to the
-`networkx.utils.misc.PythonRandomInterface` class, which provides a compatibility
+``networkx.utils.misc.PythonRandomInterface`` class, which provides a compatibility
 layer between `random` and `numpy.random.RandomState`.
 
 `create_random_state` currently returns the global ``numpy.random.mtrand._rand``

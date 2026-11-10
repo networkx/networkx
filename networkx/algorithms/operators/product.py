@@ -140,7 +140,7 @@ def tensor_product(G, H):
 
     Parameters
     ----------
-    G, H: graphs
+    G, H : graphs
      Networkx graphs.
 
     Returns
@@ -193,7 +193,7 @@ def cartesian_product(G, H):
 
     Parameters
     ----------
-    G, H: graphs
+    G, H : graphs
      Networkx graphs.
 
     Returns
@@ -244,7 +244,7 @@ def lexicographic_product(G, H):
 
     Parameters
     ----------
-    G, H: graphs
+    G, H : graphs
      Networkx graphs.
 
     Returns
@@ -301,7 +301,7 @@ def strong_product(G, H):
 
     Parameters
     ----------
-    G, H: graphs
+    G, H : graphs
      Networkx graphs.
 
     Returns
@@ -486,7 +486,7 @@ def corona_product(G, H):
 
     Parameters
     ----------
-    G, H: NetworkX graphs
+    G, H : NetworkX graphs
         The graphs to take the carona product of.
         `G` is the center graph and `H` is the outer graph
 
@@ -558,7 +558,7 @@ def modular_product(G, H):
 
     Parameters
     ----------
-    G, H: NetworkX graphs
+    G, H : NetworkX graphs
         The graphs to take the modular product of.
 
     Returns

@@ -1104,14 +1104,14 @@ def simulated_annealing_tsp(
 
         - "1-1": 1-1 exchange which transposes the position
           of two elements of the current solution.
-          The function called is :func:`swap_two_nodes`.
+          The function called is ``swap_two_nodes``.
           For example if we apply 1-1 exchange in the solution
           ``A = [3, 2, 1, 4, 3]``
           we can get the following by the transposition of 1 and 4 elements:
           ``A' = [3, 2, 4, 1, 3]``
         - "1-0": 1-0 exchange which moves an node in the solution
           to a new position.
-          The function called is :func:`move_one_node`.
+          The function called is ``move_one_node``.
           For example if we apply 1-0 exchange in the solution
           ``A = [3, 2, 1, 4, 3]``
           we can transfer the fourth element to the second position:
@@ -1331,14 +1331,14 @@ def threshold_accepting_tsp(
 
         - "1-1": 1-1 exchange which transposes the position
           of two elements of the current solution.
-          The function called is :func:`swap_two_nodes`.
+          The function called is ``swap_two_nodes``.
           For example if we apply 1-1 exchange in the solution
           ``A = [3, 2, 1, 4, 3]``
           we can get the following by the transposition of 1 and 4 elements:
           ``A' = [3, 2, 4, 1, 3]``
         - "1-0": 1-0 exchange which moves an node in the solution
           to a new position.
-          The function called is :func:`move_one_node`.
+          The function called is ``move_one_node``.
           For example if we apply 1-0 exchange in the solution
           ``A = [3, 2, 1, 4, 3]``
           we can transfer the fourth element to the second position:
