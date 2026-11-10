@@ -299,7 +299,7 @@ def capacity_scaling(
         # Residual network has no edges, so no more flow can be routed. The demands
         # are infeasible if any node has excess (same check as after the loop below).
         if any(R.nodes[u]["excess"] != 0 for u in R):
-            raise nx.NetworkXUnfeasible("No flow satisfying all demands.")
+            raise nx.NetworkXUnfeasible("no flow satisfies all node demands")
         return flow_cost, _build_flow_dict(G, R, capacity, weight)
 
     R_nodes = R.nodes
