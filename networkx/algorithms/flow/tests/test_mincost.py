@@ -69,10 +69,9 @@ class TestMinCostFlow:
         pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
 
     def test_no_residual_edges_infeasible(self):
-        # A single zero-capacity edge leaves the residual network with no edges,
-        # so capacity_scaling used to take an early return and skip its demand
-        # feasibility check, returning a flow that ignores the demands instead of
-        # raising. It must agree with network_simplex and min_cost_flow. See gh-8934.
+        # See gh-8934.
+        # When the residual network has no edges, the demands are infeasible
+        # if even one nodes has excess. This test should raise for all three functions.
         G = nx.DiGraph()
         G.add_node(0, demand=1)
         G.add_node(1, demand=-1)
