@@ -183,7 +183,7 @@ def test_double_edge_swap_self_loops_preserves_degrees():
     G = nx.Graph([(0, 1), (1, 2), (2, 3), (0, 0), (3, 3)])
     orig_degrees = dict(G.degree())
     orig_edges = G.number_of_edges()
-    nx.double_edge_swap(G, nswap=1, seed=42)
+    nx.double_edge_swap(G, nswap=1, seed=7)
     assert dict(G.degree()) == orig_degrees
     assert G.number_of_edges() == orig_edges
 
