@@ -120,28 +120,6 @@ def chain_decomposition(G, root=None):
                 pass
         return parent, nontree, nodes
 
-    def _build_chain(parent, u, v, visited):
-        """Generate the chain starting from the given nontree edge.
-
-        `parent` maps each node to its parent in the DFS tree, as
-        constructed by :func:`_dfs_cycle_forest`. The edge (`u`, `v`) is
-        a nontree edge that begins a chain. `visited` is a set
-        representing the nodes that have already been visited.
-
-        This function yields the edges in an initial segment of the
-        fundamental cycle starting with the nontree edge (`u`, `v`) that
-        includes all the edges up until the first node that appears in
-        `visited`. The tree edges are given by `parent`. The `visited`
-        set is updated to add each node in an edge yielded by this
-        function.
-
-        """
-        while v not in visited:
-            yield u, v
-            visited.add(v)
-            u, v = v, parent[v]
-        yield u, v
-
     # Check if the root is in the graph G. If not, raise NodeNotFound
     if root is not None and root not in G:
         raise nx.NodeNotFound(f"Root node {root} is not in graph")
@@ -167,5 +145,8 @@ def chain_decomposition(G, root=None):
         for v in nontree[u]:
             # Create the cycle or cycle prefix starting with the
             # nontree edge.
-            chain = list(_build_chain(parent, u, v, visited))
+            chain = [(u, v)]
+            while v not in visited:
+                visited.add(v)
+                chain.append((v, v := parent[v]))
             yield chain
