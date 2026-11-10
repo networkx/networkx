@@ -305,7 +305,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
         raise nx.NetworkXError("Graph not connected")
     if len(G) < 4:
         raise nx.NetworkXError("Graph has fewer than four nodes.")
-    multigraph = G.is_multigraph()
+    multi = G.is_multigraph()
     n = 0
     swapcount = 0
     deg = G.degree()
@@ -340,11 +340,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
                 if v == y:
                     continue
                 # don't create parallel edges
-                if (
-                    (x not in G[u])
-                    and (y not in G[v])
-                    and (multigraph or u != v or x != y)
-                ):
+                if (x not in G[u]) and (y not in G[v]) and (multi or u != v or x != y):
                     G.remove_edge(u, v)
                     G.remove_edge(x, y)
                     G.add_edge(u, x)
@@ -389,11 +385,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
                 if v == y:
                     continue
                 # don't create parallel edges
-                if (
-                    (x not in G[u])
-                    and (y not in G[v])
-                    and (multigraph or u != v or x != y)
-                ):
+                if (x not in G[u]) and (y not in G[v]) and (multi or u != v or x != y):
                     G.remove_edge(u, v)
                     G.remove_edge(x, y)
                     G.add_edge(u, x)
