@@ -634,6 +634,66 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G = nx.path_graph(5, create_using=nx.DiGraph())
         pytest.raises(nx.NetworkXError, nx.find_negative_cycle, G, 3)
 
+    @pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
+    @pytest.mark.parametrize("use_callable", [False, True])
+    def test_find_negative_cycle_zero_weight_branches(self, graph_type, use_callable):
+        G = graph_type()
+        G.add_nodes_from(range(15))
+        G.add_weighted_edges_from(
+            [
+                (0, 1, 0),
+                (1, 2, 0),
+                (2, 5, 0),
+                (3, 4, 0),
+                (4, 5, 0),
+                (5, 8, 0),
+                (6, 3, -1),
+                (7, 9, 0),
+                (8, 7, 0),
+                (9, 13, 0),
+                (10, 8, 0),
+                (11, 6, 0),
+                (12, 10, 0),
+                (12, 11, 0),
+                (13, 14, -1),
+                (14, 12, 0),
+            ],
+            weight="cost",
+        )
+        if G.is_multigraph():
+            G.add_edge(13, 14, cost=5)
+
+        def weight(u, v, data):
+            if G.is_multigraph():
+                return min(edge["cost"] for edge in data.values())
+            return data["cost"]
+
+        original = G.copy()
+        cycle = nx.find_negative_cycle(G, 0, weight=weight if use_callable else "cost")
+        assert cycle[0] == cycle[-1]
+        assert len(set(cycle[:-1])) == len(cycle) - 1
+        assert all(G.has_edge(u, v) for u, v in nx.utils.pairwise(cycle))
+        assert sum(weight(u, v, G[u][v]) for u, v in nx.utils.pairwise(cycle)) < 0
+        assert nx.utils.graphs_equal(G, original)
+
+    @pytest.mark.parametrize(
+        "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+    )
+    def test_find_negative_cycle_self_loop(self, graph_type):
+        G = graph_type()
+        G.add_edge("source", "loop", weight=0)
+        G.add_edge("loop", "loop", weight=-1)
+        if G.is_multigraph():
+            G.add_edge("loop", "loop", weight=2)
+        assert nx.find_negative_cycle(G, "source") == ["loop", "loop"]
+
+    @pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
+    def test_find_negative_cycle_zero_weight_control(self, graph_type):
+        G = graph_type()
+        G.add_weighted_edges_from([(0, 1, 0), (1, 0, 0), (2, 2, -1)])
+        with pytest.raises(nx.NetworkXError, match="No negative cycles detected"):
+            nx.find_negative_cycle(G, 0)
+
     def test_find_negative_cycle_single_edge(self):
         G = nx.Graph()
         G.add_edge(0, 1, weight=-1)
