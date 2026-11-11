@@ -136,8 +136,7 @@ def connected_cuthill_mckee_ordering(G, heuristic=None):
     while queue:
         parent = queue.popleft()
         yield parent
-        nd = sorted(G.degree(set(G[parent]) - visited), key=itemgetter(1))
-        children = [n for n, d in nd]
+        children = sorted(set(G[parent]) - visited, key=G.degree)
         visited.update(children)
         queue.extend(children)
 
