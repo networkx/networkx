@@ -82,7 +82,7 @@ def weisfeiler_lehman_graph_hash(
         one extra iteration of WL occurred than indicated by `iterations`.
         For undirected graphs without node or edge labels, the old
         hashes can be obtained by increasing the iteration count by one.
-        Additionally, in version [TBD], a bug was fixed where directed graphs with
+        Additionally, in version 3.8, a bug was fixed where directed graphs with
         ``edge_attr`` silently dropped direction prefixes. Previously stored hashes
         for these graphs must be recomputed.
         For more details, see `issue #7806
@@ -189,7 +189,7 @@ def weisfeiler_lehman_graph_hash(
         _neighborhood_aggregate = _neighborhood_aggregate_directed
         warnings.warn(
             "The hashes produced for directed graphs changed in version v3.5"
-            " to track in and out edges separately, and in version [TBD] to include"
+            " to track in and out edges separately, and in version 3.8 to include"
             " direction prefixes when edge_attr is used (see documentation).",
             UserWarning,
             stacklevel=2,
@@ -253,7 +253,7 @@ def weisfeiler_lehman_subgraph_hashes(
         shifting the other calculated hashes one position to the right. To
         obtain the same last subgraph hash, increase the number of iterations
         by one.
-        Additionally, in version [TBD], a bug was fixed where directed graphs with
+        Additionally, in version 3.8, a bug was fixed where directed graphs with
         ``edge_attr`` silently dropped direction prefixes. Previously stored hashes
         for these graphs must be recomputed.
         For more details, see `issue #7806
@@ -393,7 +393,7 @@ def weisfeiler_lehman_subgraph_hashes(
         _neighborhood_aggregate = _neighborhood_aggregate_directed
         warnings.warn(
             "The hashes produced for directed graphs changed in v3.5"
-            " to track in and out edges separately, and in version [TBD] to include"
+            " to track in and out edges separately, and in version 3.8 to include"
             " direction prefixes when edge_attr is used (see documentation).",
             UserWarning,
             stacklevel=2,

@@ -881,14 +881,13 @@ def test_labelled_directed_star_direction(node_attr, digest_size):
         nx.set_node_attributes(g, "x", "label")
         nx.set_edge_attributes(g, "e", "label")
     kw = {"node_attr": node_attr, "edge_attr": "label", "digest_size": digest_size}
-    assert nx.weisfeiler_lehman_graph_hash(
-        out_star, **kw
-    ) != nx.weisfeiler_lehman_graph_hash(in_star, **kw)
+    out_hash = nx.weisfeiler_lehman_graph_hash(out_star, **kw)
+    in_hash = nx.weisfeiler_lehman_graph_hash(in_star, **kw)
+    assert out_hash != in_hash
     # The shared helper also needs to preserve direction for per-node hashes.
     a = nx.weisfeiler_lehman_subgraph_hashes(out_star, **kw)
     b = nx.weisfeiler_lehman_subgraph_hashes(in_star, **kw)
     assert a[0] != b[0]
     renamed = nx.relabel_nodes(out_star, {0: "c", 1: "a", 2: "b"})
-    assert nx.weisfeiler_lehman_graph_hash(
-        out_star, **kw
-    ) == nx.weisfeiler_lehman_graph_hash(renamed, **kw)
+    renamed_hash = nx.weisfeiler_lehman_graph_hash(renamed, **kw)
+    assert out_hash == renamed_hash
