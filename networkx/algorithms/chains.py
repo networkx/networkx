@@ -64,70 +64,42 @@ def chain_decomposition(G, root=None):
 
     """
 
-    def _dfs_cycle_forest(G, root=None):
-        """Builds a directed graph composed of cycles from the given graph.
-
-        `G` is an undirected simple graph. `root` is a node in the graph
-        from which the depth-first search is started.
-
-        This function returns the depth-first search cycle graph and the
-        list of nodes in depth-first preorder. The depth-first search
-        cycle graph is a directed graph whose edges are the edges of `G`
-        oriented toward the root if the edge is a tree edge and away from
-        the root if the edge is a non-tree edge. It is stored as two
-        dicts: `parent` maps each node to its parent in the DFS tree (or
-        None for a root), and `nontree` maps each node to a dict whose
-        keys are the targets of its outgoing nontree edges, in the order
-        they were found. If `root` is not specified, this
-        performs a depth-first search on each connected component of `G`
-        and returns a directed forest instead.
-
-        If `root` is not in the graph, this raises :exc:`KeyError`.
-
-        """
-        # Create a directed graph from the depth-first search tree with
-        # root node `root` in which tree edges are directed toward the
-        # root and nontree edges are directed away from the root. For
-        # each node with an incident nontree edge, this creates a
-        # directed cycle starting with the nontree edge and returning to
-        # that node.
-        #
-        # The `parent` dict stores the parent of each node in the DFS
-        # tree. The `nontree` dict stores the nontree edges leaving each
-        # node.
-        #
-        # We also store the order of the nodes found in the depth-first
-        # search in the `nodes` list.
-        parent = {}
-        nontree = {}
-        nodes = []
-        for u, v, d in nx.dfs_labeled_edges(G, source=root):
-            if d == "forward":
-                # `dfs_labeled_edges()` yields (root, root, 'forward')
-                # if it is beginning the search on a new connected
-                # component.
-                parent[v] = None if u == v else u
-                nontree[v] = {}
-                nodes.append(v)
-            # `dfs_labeled_edges` considers nontree edges in both
-            # orientations, so we need to not add the edge if it its
-            # other orientation has been added.
-            elif d == "nontree" and v != parent[u] and v not in nontree[u]:
-                nontree[v][u] = None
-            else:
-                # Do nothing on 'reverse' edges; we only care about
-                # forward and nontree edges.
-                pass
-        return parent, nontree, nodes
-
     # Check if the root is in the graph G. If not, raise NodeNotFound
     if root is not None and root not in G:
         raise nx.NodeNotFound(f"Root node {root} is not in graph")
 
-    # Create a directed version of H that has the DFS edges directed
-    # toward the root and the nontree edges directed away from the root
-    # (in each connected component).
-    parent, nontree, nodes = _dfs_cycle_forest(G, root)
+    # Depth-first search from `root`, or from each connected component
+    # if `root` is None. `parent` maps each node to its parent in the DFS
+    # tree (None for a root), `nontree` maps each node to the nodes at
+    # the far end of the nontree edges directed away from the root, and
+    # `nodes` lists the nodes in DFS preorder.
+    parent, nontree, nodes = {}, {}, []
+    seen = set()
+    for start in [root] if root is not None else G:
+        if start in seen:
+            continue
+        seen.add(start)
+        parent[start] = None
+        nontree[start] = {}
+        nodes.append(start)
+        stack = [(start, G.neighbors(start))]
+        while stack:
+            node, nbrs = stack[-1]
+            for nbr in nbrs:
+                if nbr in seen:
+                    # Each nontree edge is found from both ends; keep the
+                    # first, oriented from the ancestor to the descendant.
+                    if nbr != parent[node] and nbr not in nontree[node]:
+                        nontree[nbr][node] = None
+                else:
+                    seen.add(nbr)
+                    parent[nbr] = node
+                    nontree[nbr] = {}
+                    nodes.append(nbr)
+                    stack.append((nbr, G.neighbors(nbr)))
+                    break
+            else:
+                stack.pop()
 
     # Visit the nodes again in DFS order. For each node, and for each
     # nontree edge leaving that node, compute the fundamental cycle for
