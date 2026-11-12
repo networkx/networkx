@@ -41,7 +41,8 @@ def test_pickle():
     "not nx.config.backend_priority.algos "
     "or nx.config.backend_priority.algos[0] != 'nx_loopback'"
 )
-def test_graph_converter_needs_backend():
+@pytest.mark.parametrize("type_based_dispatch", [False, True])
+def test_graph_converter_needs_backend(type_based_dispatch):
     # When testing, `nx.from_scipy_sparse_array` will *always* call the backend
     # implementation if it's implemented. If `backend=` isn't given, then the result
     # will be converted back to NetworkX via `convert_to_nx`.
@@ -50,7 +51,10 @@ def test_graph_converter_needs_backend():
     from networkx.classes.tests.dispatch_interface import (
         LoopbackBackendInterface,
         LoopbackGraph,
+        LoopbackGraphTypeBased,
     )
+
+    cls = LoopbackGraphTypeBased if type_based_dispatch else LoopbackGraph
 
     A = sp.sparse.coo_array([[0, 3, 2], [3, 0, 1], [2, 1, 0]])
 
@@ -73,22 +77,30 @@ def test_graph_converter_needs_backend():
 
     # *This mutates LoopbackBackendInterface!*
     orig_convert_to_nx = LoopbackBackendInterface.convert_to_nx
+    orig_convert_from_nx = LoopbackBackendInterface.convert_from_nx
+
+    @staticmethod
+    def convert_from_nx(*args, **kwargs):
+        return orig_convert_from_nx(
+            *args, **kwargs, type_based_dispatch=type_based_dispatch
+        )
+
     LoopbackBackendInterface.convert_to_nx = convert_to_nx
+    LoopbackBackendInterface.convert_from_nx = convert_from_nx
     LoopbackBackendInterface.from_scipy_sparse_array = from_scipy_sparse_array
 
     try:
         assert side_effects == []
         assert type(nx.from_scipy_sparse_array(A)) is nx.Graph
         assert side_effects == [1]
-        assert (
-            type(nx.from_scipy_sparse_array(A, backend="nx_loopback")) is LoopbackGraph
-        )
+        assert type(nx.from_scipy_sparse_array(A, backend="nx_loopback")) is cls
         assert side_effects == [1, 1]
         # backend="networkx" is default implementation
         assert type(nx.from_scipy_sparse_array(A, backend="networkx")) is nx.Graph
         assert side_effects == [1, 1]
     finally:
         LoopbackBackendInterface.convert_to_nx = staticmethod(orig_convert_to_nx)
+        LoopbackBackendInterface.convert_from_nx = staticmethod(orig_convert_from_nx)
         del LoopbackBackendInterface.from_scipy_sparse_array
     with pytest.raises(ImportError, match="backend is not installed"):
         nx.from_scipy_sparse_array(A, backend="bad-backend-name")
@@ -98,20 +110,24 @@ def test_graph_converter_needs_backend():
     "not nx.config.backend_priority.algos "
     "or nx.config.backend_priority.algos[0] != 'nx_loopback'"
 )
-def test_networkx_backend():
+@pytest.mark.parametrize("type_based_dispatch", [False, True])
+def test_networkx_backend(type_based_dispatch):
     """Test using `backend="networkx"` in a dispatchable function."""
     # (Implementing this test is harder than it should be)
     from networkx.classes.tests.dispatch_interface import (
         LoopbackBackendInterface,
         LoopbackGraph,
+        LoopbackGraphTypeBased,
     )
 
-    G = LoopbackGraph()
+    cls = LoopbackGraphTypeBased if type_based_dispatch else LoopbackGraph
+
+    G = cls()
     G.add_edges_from([(0, 1), (1, 2), (1, 3), (2, 4)])
 
     @staticmethod
     def convert_to_nx(obj, *, name=None):
-        if isinstance(obj, LoopbackGraph):
+        if type(obj) is cls:
             new_graph = nx.Graph()
             new_graph.__dict__.update(obj.__dict__)
             return new_graph
@@ -133,7 +149,8 @@ def test_dispatchable_are_functions():
 
 
 @pytest.mark.skipif("not nx.utils.backends.backends")
-def test_mixing_backend_graphs():
+@pytest.mark.parametrize("type_based_dispatch", [True, False])
+def test_mixing_backend_graphs(type_based_dispatch):
     from networkx.classes.tests import dispatch_interface
 
     G = nx.Graph()
@@ -143,8 +160,8 @@ def test_mixing_backend_graphs():
     H.add_edge(2, 3)
     rv = nx.intersection(G, H)
     assert set(nx.intersection(G, H)) == {2, 3}
-    G2 = dispatch_interface.convert(G)
-    H2 = dispatch_interface.convert(H)
+    G2 = dispatch_interface.convert(G, type_based_dispatch)
+    H2 = dispatch_interface.convert(H, type_based_dispatch)
     if "nx_loopback" in nx.config.backend_priority:
         # Auto-convert
         assert set(nx.intersection(G2, H)) == {2, 3}
