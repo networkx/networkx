@@ -953,6 +953,51 @@ def test_asadpour_small_graphs():
     assert nx_app.asadpour_atsp(G, source=0) == [0, 1]
 
 
+def test_asadpour_leaves_input_graph_unmodified():
+    """
+    The min cost flow step of the asadpour algorithm needs node demands, which
+    must not be written onto the input graph. Uses the same fractional Held
+    Karp instance as ``test_asadpour_tsp`` so that the flow step is reached.
+    """
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+
+    edge_list = [
+        (0, 1, 100),
+        (0, 2, 100),
+        (0, 5, 1),
+        (1, 2, 100),
+        (1, 4, 1),
+        (2, 3, 1),
+        (3, 4, 100),
+        (3, 5, 100),
+        (4, 5, 100),
+        (1, 0, 100),
+        (2, 0, 100),
+        (5, 0, 1),
+        (2, 1, 100),
+        (4, 1, 1),
+        (3, 2, 1),
+        (4, 3, 100),
+        (5, 3, 100),
+        (5, 4, 100),
+    ]
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(edge_list)
+    dist = dict(nx.all_pairs_dijkstra_path_length(G))
+    G.add_edges_from((u, v, {"weight": dist[u][v]}) for u in G for v in G if u != v)
+    # pre-existing node data must survive, including a "demand" key
+    G.nodes[0]["demand"] = "keep me"
+    G.nodes[1]["color"] = "red"
+    node_data = {n: dict(d) for n, d in G.nodes(data=True)}
+    edge_data = {(u, v): dict(d) for u, v, d in G.edges(data=True)}
+
+    nx_app.asadpour_atsp(G, seed=19)
+
+    assert {n: dict(d) for n, d in G.nodes(data=True)} == node_data
+    assert {(u, v): dict(d) for u, v, d in G.edges(data=True)} == edge_data
+
+
 @pytest.mark.slow
 def test_asadpour_integral_held_karp():
     """
