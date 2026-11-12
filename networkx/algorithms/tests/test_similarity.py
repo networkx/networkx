@@ -837,6 +837,73 @@ class TestSimilarity:
         actual = nx.similarity._simrank_similarity_numpy(G, source=0, target=0)
         np.testing.assert_allclose(expected, actual, atol=1e-7)
 
+    def test_simrank_star_asymmetric_paths(self):
+        """SimRank* should be > 0 for connected nodes with asymmetric path lengths.
+
+        In this DAG: 0 -> 1 -> 2 and 0 -> 3.
+        Common ancestor 0 has path length 2 to node 2 and length 1 to node 3.
+        Classical SimRank returns 0.0 because path lengths are asymmetric.
+        SimRank* captures the connection and returns a positive similarity score.
+        """
+        G = nx.DiGraph([(0, 1), (1, 2), (0, 3)])
+        assert nx.simrank_similarity(G, source=2, target=3) == 0.0
+        val = nx.simrank_star_similarity(G, source=2, target=3)
+        assert val > 0.0
+        assert val == pytest.approx(0.0384, abs=1e-4)
+
+    def test_simrank_star_all_pairs(self):
+        G = nx.path_graph(3)
+        actual = nx.simrank_star_similarity(G)
+        for u in G:
+            for v in G:
+                assert actual[u][v] == pytest.approx(actual[v][u])
+        assert actual[0][2] == pytest.approx(0.2667, abs=1e-3)
+
+    def test_simrank_star_source_no_target(self):
+        G = nx.path_graph(3)
+        actual = nx.simrank_star_similarity(G, source=0)
+        assert set(actual.keys()) == {0, 1, 2}
+        assert actual[2] == pytest.approx(0.2667, abs=1e-3)
+
+    def test_simrank_star_source_and_target(self):
+        G = nx.path_graph(3)
+        actual = nx.simrank_star_similarity(G, source=0, target=2)
+        assert actual == pytest.approx(0.2667, abs=1e-3)
+
+    def test_simrank_star_noninteger_nodes(self):
+        G = nx.Graph([("a", "b"), ("b", "c")])
+        actual = nx.simrank_star_similarity(G, source="a", target="c")
+        assert actual == pytest.approx(0.2667, abs=1e-3)
+
+    def test_simrank_star_disconnected(self):
+        G = nx.Graph([(0, 1), (2, 3)])
+        actual = nx.simrank_star_similarity(G, source=0, target=2)
+        assert actual == 0.0
+
+    def test_simrank_star_empty_and_single_node(self):
+        G_empty = nx.Graph()
+        assert nx.simrank_star_similarity(G_empty) == {}
+        with pytest.raises(nx.NodeNotFound):
+            nx.simrank_star_similarity(G_empty, source=0)
+
+        G_single = nx.Graph()
+        G_single.add_node(0)
+        assert nx.simrank_star_similarity(G_single) == {0: {0: 1.0}}
+        assert nx.simrank_star_similarity(G_single, source=0) == {0: 1.0}
+        assert nx.simrank_star_similarity(G_single, source=0, target=0) == 1.0
+
+    def test_simrank_star_node_not_found(self):
+        G = nx.cycle_graph(4)
+        with pytest.raises(nx.NodeNotFound, match="Source node 10 not in G"):
+            nx.simrank_star_similarity(G, source=10)
+        with pytest.raises(nx.NodeNotFound, match="Target node 10 not in G"):
+            nx.simrank_star_similarity(G, target=10)
+
+    def test_simrank_star_max_iterations(self):
+        G = nx.cycle_graph(5)
+        with pytest.raises(nx.ExceededMaxIterations):
+            nx.simrank_star_similarity(G, max_iterations=1)
+
     def test_panther_similarity_unweighted(self):
         G = nx.Graph()
         G.add_edge(0, 1)

@@ -22,14 +22,15 @@ import networkx as nx
 from networkx.utils import np_random_state
 
 __all__ = [
+    "generate_random_paths",
     "graph_edit_distance",
     "optimal_edit_paths",
-    "optimize_graph_edit_distance",
     "optimize_edit_paths",
-    "simrank_similarity",
+    "optimize_graph_edit_distance",
     "panther_similarity",
     "panther_vector_similarity",
-    "generate_random_paths",
+    "simrank_similarity",
+    "simrank_star_similarity",
 ]
 
 
@@ -1339,6 +1340,121 @@ def simrank_similarity(
     return float(x)
 
 
+@nx._dispatchable
+def simrank_star_similarity(
+    G,
+    source=None,
+    target=None,
+    importance_factor=0.8,
+    max_iterations=1000,
+    tolerance=1e-4,
+):
+    r"""Calculate SimRank* similarity of nodes in ``G``.
+
+    SimRank* is an extension of SimRank that addresses the "zero-similarity"
+    problem [1]_. In classical SimRank, two connected nodes receive a similarity
+    score of zero if there are no symmetric equal-length in-link paths to a
+    common predecessor. SimRank* captures paths of all lengths via a bilinear
+    matrix recurrence:
+
+    .. math::
+
+        S = \frac{C}{2} (Q S + S Q^T) + (1 - C) I
+
+    where $C \in (0, 1)$ is the decay factor (``importance_factor``), $Q$ is
+    the row-normalized backward transition matrix along incoming edges, and $I$
+    is the identity matrix.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A NetworkX graph.
+
+    source : node, optional
+        If specified, the returned dictionary maps each node ``v`` in the graph
+        to the similarity between ``source`` and ``v``.
+
+    target : node, optional
+        If both ``source`` and ``target`` are specified, the similarity
+        value between ``source`` and ``target`` is returned. If
+        ``target`` is specified but ``source`` is not, this argument
+        is ignored.
+
+    importance_factor : float, optional (default=0.8)
+        The decay factor $C \in (0, 1)$.
+
+    max_iterations : integer, optional (default=1000)
+        Maximum number of iterations.
+
+    tolerance : float, optional (default=1e-4)
+        Error tolerance used to check convergence.
+
+    Returns
+    -------
+    similarity : dictionary or float
+        If ``source`` and ``target`` are both ``None``, returns a dictionary of
+        dictionaries where keys are node pairs and values are their similarity.
+
+        If ``source`` is not ``None`` but ``target`` is, returns a dictionary
+        mapping each node to its similarity with ``source``.
+
+        If neither ``source`` nor ``target`` is ``None``, returns the similarity
+        value for the given pair of nodes.
+
+    Raises
+    ------
+    ExceededMaxIterations
+        If the algorithm does not converge within ``max_iterations``.
+
+    NodeNotFound
+        If either ``source`` or ``target`` is not in ``G``.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(3)
+    >>> round(nx.simrank_star_similarity(G, source=0, target=2), 3)
+    0.267
+
+    References
+    ----------
+    .. [1] W. Yu, X. Lin, W. Zhang, J. Pei, and J. A. McCann.
+           "SimRank*: effective and scalable pairwise similarity search based
+           on graph topology."
+           The VLDB Journal 28, no. 3 (2019): 401-426.
+    """
+    import numpy as np
+
+    if len(G) == 0:
+        if source is not None or target is not None:
+            raise nx.NodeNotFound("Graph is empty")
+        return {}
+
+    nodelist = list(G)
+    if source is not None:
+        if source not in nodelist:
+            raise nx.NodeNotFound(f"Source node {source} not in G")
+        s_indx = nodelist.index(source)
+    else:
+        s_indx = None
+
+    if target is not None:
+        if target not in nodelist:
+            raise nx.NodeNotFound(f"Target node {target} not in G")
+        t_indx = nodelist.index(target)
+    else:
+        t_indx = None
+
+    x = _simrank_star_similarity_numpy(
+        G, s_indx, t_indx, importance_factor, max_iterations, tolerance
+    )
+
+    if isinstance(x, np.ndarray):
+        if x.ndim == 1:
+            return dict(zip(G, x.tolist()))
+        return {u: dict(zip(G, row)) for u, row in zip(G, x.tolist())}
+    return float(x)
+
+
 def _simrank_similarity_python(
     G,
     source=None,
@@ -1499,6 +1615,90 @@ def _simrank_similarity_numpy(
     if its + 1 == max_iterations:
         raise nx.ExceededMaxIterations(
             f"simrank did not converge after {max_iterations} iterations."
+        )
+
+    if source is not None and target is not None:
+        return float(newsim[source, target])
+    if source is not None:
+        return newsim[source]
+    return newsim
+
+
+def _simrank_star_similarity_numpy(
+    G,
+    source=None,
+    target=None,
+    importance_factor=0.8,
+    max_iterations=1000,
+    tolerance=1e-4,
+):
+    """Calculate SimRank* of nodes in ``G`` using matrices with ``numpy``.
+
+    The SimRank* algorithm for determining node similarity is defined in
+    [1]_.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A NetworkX graph
+
+    source : node index, optional
+        Integer index of the source node.
+
+    target : node index, optional
+        Integer index of the target node.
+
+    importance_factor : float, optional (default=0.8)
+        The decay factor C in (0, 1).
+
+    max_iterations : integer, optional (default=1000)
+        Maximum number of iterations.
+
+    tolerance : float, optional (default=1e-4)
+        Error tolerance used to check convergence.
+
+    Returns
+    -------
+    similarity : numpy array or float
+    """
+    import numpy as np
+
+    n = len(G)
+    if n == 0:
+        return np.empty((0, 0), dtype=np.float64)
+    if n == 1:
+        if source is not None and target is not None:
+            return 1.0
+        if source is not None:
+            return np.ones(1, dtype=np.float64)
+        return np.ones((1, 1), dtype=np.float64)
+
+    adj = nx.to_numpy_array(G)
+    if G.is_directed():
+        trans = adj.T
+    else:
+        trans = adj
+
+    row_sums = trans.sum(axis=1, keepdims=True)
+    nz = row_sums != 0
+    Q = np.zeros_like(trans)
+    np.divide(trans, row_sums, out=Q, where=nz)
+
+    identity = np.eye(n, dtype=np.float64)
+    newsim = identity.copy()
+
+    c_half = importance_factor / 2.0
+    c_base = 1.0 - importance_factor
+
+    for its in range(max_iterations):
+        prevsim = newsim.copy()
+        newsim = c_half * (Q @ prevsim + prevsim @ Q.T) + c_base * identity
+
+        if np.allclose(prevsim, newsim, atol=tolerance):
+            break
+    else:
+        raise nx.ExceededMaxIterations(
+            f"simrank_star did not converge after {max_iterations} iterations."
         )
 
     if source is not None and target is not None:

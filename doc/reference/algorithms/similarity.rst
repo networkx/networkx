@@ -11,6 +11,7 @@ Similarity Measures
    optimize_graph_edit_distance
    optimize_edit_paths
    simrank_similarity
+   simrank_star_similarity
    panther_similarity
    panther_vector_similarity
    generate_random_paths
