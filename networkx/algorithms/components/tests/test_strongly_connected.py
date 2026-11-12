@@ -65,6 +65,33 @@ class TestStronglyConnected:
         for G, C in self.gc:
             assert {frozenset(g) for g in scc(G)} == C
 
+    def test_kosaraju_source(self):
+        scc = nx.kosaraju_strongly_connected_components
+        # gh-9003: downstream nodes of source must not leak into source's SCC
+        G1 = nx.DiGraph([(1, 0), (0, 2)])
+        assert list(scc(G1, source=0)) == [{0}, {1}]
+        assert list(scc(G1, source=1)) == [{1}]
+        assert list(scc(G1, source=2)) == [{2}, {0}, {1}]
+
+        G2 = nx.DiGraph([(0, 1), (1, 0), (0, 2), (3, 0)])
+        assert list(scc(G2, source=0)) == [{0, 1}, {3}]
+
+        # Downstream edges must not prematurely truncate source's own SCC
+        G3 = nx.DiGraph([(0, 1), (1, 2), (2, 0), (0, 3), (4, 0)])
+        assert list(scc(G3, source=0)) == [{0, 1, 2}, {4}]
+
+        # General invariant across all test graphs and source nodes
+        for G, C in self.gc:
+            for u in G:
+                res = list(scc(G, source=u))
+                assert u in res[0]
+                assert {frozenset(g) for g in res} == {
+                    c for c in C if u in c or nx.has_path(G, next(iter(c)), u)
+                }
+
+        with pytest.raises(nx.NetworkXError):
+            list(scc(G1, source=99))
+
     def test_number_strongly_connected_components(self):
         ncc = nx.number_strongly_connected_components
         for G, C in self.gc:

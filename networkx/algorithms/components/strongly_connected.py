@@ -158,8 +158,11 @@ def kosaraju_strongly_connected_components(G, source=None):
         A directed graph.
 
     source : node, optional (default=None)
-        Specify a node from which to start the depth-first search.
-        If not provided, the algorithm will start from an arbitrary node.
+        Specify a node from which to start the reverse depth-first search.
+        If provided, only the strongly connected components of `G` that can
+        reach `source` are generated, starting with the component containing
+        `source` itself. If not provided, all strongly connected components
+        of `G` are generated.
 
     Yields
     ------
@@ -189,6 +192,11 @@ def kosaraju_strongly_connected_components(G, source=None):
     >>> max(nx.kosaraju_strongly_connected_components(G), key=len)
     {0, 1, 2, 3}
 
+    Pass `source` to retrieve the component containing a specific node first:
+
+    >>> next(nx.kosaraju_strongly_connected_components(G, source=10))
+    {10, 11, 12}
+
     See Also
     --------
     strongly_connected_components
@@ -198,21 +206,20 @@ def kosaraju_strongly_connected_components(G, source=None):
     Uses Kosaraju's algorithm.
     """
     post = list(nx.dfs_postorder_nodes(G.reverse(copy=False), source=source))
-    n = len(post)
-    seen = set()
-    while post and len(seen) < n:
+    unseen = set(post)
+    while post and unseen:
         r = post.pop()
-        if r in seen:
+        if r not in unseen:
             continue
         new = {r}
-        seen.add(r)
+        unseen.remove(r)
         stack = [r]
-        while stack and len(seen) < n:
+        while stack and unseen:
             v = stack.pop()
             for w in G._adj[v]:
-                if w not in seen:
+                if w in unseen:
                     new.add(w)
-                    seen.add(w)
+                    unseen.remove(w)
                     stack.append(w)
         yield new
 
