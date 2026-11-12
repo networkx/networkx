@@ -70,15 +70,14 @@ def chain_decomposition(G, root=None):
 
     # Depth-first search from `root`, or from each connected component
     # if `root` is None. `parent` maps each node to its parent in the DFS
-    # tree (None for a root), `nontree` maps each node to the nodes at
-    # the far end of the nontree edges directed away from the root, and
-    # `nodes` lists the nodes in DFS preorder.
+    # tree (None for a root) and doubles as the set of nodes seen so far,
+    # `nontree` maps each node to the nodes at the far end of the nontree
+    # edges directed away from the root, and `nodes` lists the nodes in
+    # DFS preorder.
     parent, nontree, nodes = {}, {}, []
-    seen = set()
     for start in [root] if root is not None else G:
-        if start in seen:
+        if start in parent:
             continue
-        seen.add(start)
         parent[start] = None
         nontree[start] = {}
         nodes.append(start)
@@ -86,13 +85,12 @@ def chain_decomposition(G, root=None):
         while stack:
             node, nbrs = stack[-1]
             for nbr in nbrs:
-                if nbr in seen:
+                if nbr in parent:
                     # Each nontree edge is found from both ends; keep the
                     # first, oriented from the ancestor to the descendant.
                     if nbr != parent[node] and nbr not in nontree[node]:
                         nontree[nbr][node] = None
                 else:
-                    seen.add(nbr)
                     parent[nbr] = node
                     nontree[nbr] = {}
                     nodes.append(nbr)
