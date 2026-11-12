@@ -595,19 +595,12 @@ def test_bipartite_layout_default_nodes_raises_non_bipartite_input():
     pos = nx.bipartite_layout(G, nodes=[2, 3])
 
 
-def test_bipartite_layout_default_nodes():
-    G = nx.complete_bipartite_graph(3, 3)
+@pytest.mark.parametrize("G", [nx.complete_bipartite_graph(3, 3), nx.path_graph(4)])
+def test_bipartite_layout_default_nodes(G):
     pos = nx.bipartite_layout(G)  # no nodes specified
     # X coords of nodes should be the same within the bipartite sets
     for nodeset in nx.bipartite.sets(G):
         xs = [pos[k][0] for k in nodeset]
-        assert all(x == pytest.approx(xs[0]) for x in xs)
-
-    # Path graph where node order in G alternates between bipartite sets
-    G_path = nx.path_graph(4)
-    pos_path = nx.bipartite_layout(G_path)
-    for nodeset in nx.bipartite.sets(G_path):
-        xs = [pos_path[k][0] for k in nodeset]
         assert all(x == pytest.approx(xs[0]) for x in xs)
 
 
