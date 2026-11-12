@@ -311,7 +311,7 @@ def make_qstr(t):
     """
     if not isinstance(t, str):
         t = str(t)
-    if any(c.isspace() or c in '"\\\'' for c in t):
+    if any(c.isspace() or c in "\"\\'" for c in t):
         t = t.replace("\\", "\\\\").replace('"', '\\"')
         t = f'"{t}"'
     return t
