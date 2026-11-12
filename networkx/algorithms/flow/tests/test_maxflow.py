@@ -506,6 +506,52 @@ class TestMaxFlowMinCutInterface:
             cutoff=1.0,
         )
 
+    def test_minimum_cut_source_reachable_side(self):
+        G = nx.DiGraph()
+        G.add_weighted_edges_from(
+            [
+                (35, 36, 2),
+                (36, 37, 2),
+                (37, 39, 2),
+                (39, 40, 2),
+                (40, 41, 1),
+                (41, 46, 1),
+                (46, 47, 1),
+            ],
+            weight="capacity",
+        )
+        source_side = {35, 36, 37, 39, 40}
+        sink_side = {41, 46, 47}
+        for flow_func in flow_funcs:
+            cut_value, partition = nx.minimum_cut(G, 35, 47, flow_func=flow_func)
+            assert cut_value == 1
+            assert partition == (source_side, sink_side)
+
+    def test_minimum_cut_partition_excludes_unreachable_nodes(self):
+        # The source side of the partition is the set of nodes reachable from
+        # the source in the residual network. Node 2 is not reachable from the
+        # source, so it must not be reported as being on the source side.
+        G = nx.DiGraph()
+        G.add_nodes_from([0, 1, 2])
+        G.add_edge(0, 1, capacity=1)
+        for flow_func in flow_funcs:
+            cut_value, partition = nx.minimum_cut(G, 0, 1, flow_func=flow_func)
+            assert cut_value == 1
+            assert partition == ({0}, {1, 2})
+
+    def test_minimum_cut_needs_flow_not_preflow(self):
+        # The partition is derived from a residual network holding a maximum
+        # *flow*. A maximum *preflow* (value_only=True) may still leave excess
+        # on intermediate nodes: here node 2 keeps excess 1, so the residual
+        # edge 0->2 keeps spare capacity and reachability from the source would
+        # report the cut {0} -> {1, 2} of capacity 2 instead of 1.
+        G = nx.DiGraph()
+        G.add_weighted_edges_from([(0, 1, 1), (0, 2, 1)], weight="capacity")
+        for flow_func in flow_funcs:
+            cut_value, partition = nx.minimum_cut(G, 0, 1, flow_func=flow_func)
+            assert cut_value == 1
+            assert partition == ({0, 2}, {1})
+
     def test_kwargs(self):
         G = self.H
         fv = 1.0
