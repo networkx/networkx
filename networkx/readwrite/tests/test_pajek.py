@@ -148,3 +148,20 @@ class TestPajek:
         assert H.nodes["n0"]["role"] == 'a" pwn "admin'
         assert "pwn" not in H.nodes["n0"]
         assert H['ev il"x 7']["n0"][0]["lbl"] == r"c:\path with space"
+
+    def test_apostrophe_roundtrip(self):
+        # Labels/attributes with single quotes must survive a write/read
+        # round-trip: shlex treats ' as a quote character. See gh-9008.
+        import io
+
+        G = nx.Graph()
+        G.add_edge("O'Brien", "Rock'n'Roll")
+        G.add_edge("RocknRoll", "Jazz")
+        G.nodes["Jazz"]["title"] = "it's"
+        fh = io.BytesIO()
+        nx.write_pajek(G, fh)
+        fh.seek(0)
+        H = nx.read_pajek(fh)
+        assert nodes_equal(list(G), list(H))
+        assert len(H) == 4
+        assert H.nodes["Jazz"]["title"] == "it's"

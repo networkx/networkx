@@ -305,12 +305,13 @@ def make_qstr(t):
     """Returns the string representation of t.
 
     Wrap the string in double-quotes if it contains whitespace, a double
-    quote, or a backslash, escaping the latter two so the Pajek reader
-    (which splits with shlex) recovers the original string unchanged.
+    quote, a single quote, or a backslash, escaping double quotes and
+    backslashes so the Pajek reader (which splits with shlex) recovers the
+    original string unchanged.
     """
     if not isinstance(t, str):
         t = str(t)
-    if any(c.isspace() or c in '"\\' for c in t):
+    if any(c.isspace() or c in '"\\\'' for c in t):
         t = t.replace("\\", "\\\\").replace('"', '\\"')
         t = f'"{t}"'
     return t
