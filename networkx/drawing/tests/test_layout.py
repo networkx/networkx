@@ -616,6 +616,15 @@ def test_bipartite_layout_deterministic_order():
     assert all(x[u] != x[v] for u, v in G.edges())
 
 
+@pytest.mark.parametrize("nodes", [["x3", "x2", "x1"], {"x3", "x2", "x1"}])
+def test_bipartite_layout_top_nodes_in_graph_order(nodes):
+    """The top column follows G's node order, whatever the order of `nodes`."""
+    G = nx.Graph([("x1", "c1"), ("x2", "c1"), ("x3", "c2")])
+    pos = nx.bipartite_layout(G, nodes=nodes)
+    assert list(pos)[:3] == ["x1", "x2", "x3"]
+    assert pos["x1"][1] < pos["x2"][1] < pos["x3"][1]
+
+
 @pytest.mark.parametrize(
     "layout",
     [

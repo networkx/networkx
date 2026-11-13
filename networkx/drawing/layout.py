@@ -420,16 +420,15 @@ def bipartite_layout(
     offset = (width / 2, height / 2)
 
     if nodes is None:
-        top, bottom = nx.bipartite.sets(G)
-        n_top, n_bottom = len(top), len(bottom)
-        # The sets are unordered (str node order changes with PYTHONHASHSEED),
-        # so take the top nodes in G's node order.
-        top = dict.fromkeys(n for n in G if n in top)
+        top, _ = nx.bipartite.sets(G)
     else:
-        top = dict.fromkeys(G.nbunch_iter(nodes))  # remove nodes not in G
-        n_top = len(top)
-        n_bottom = len(G) - n_top
-    # Top nodes first, then bottom nodes in G's node order
+        top = set(G.nbunch_iter(nodes))  # remove nodes not in G
+    # Take the top nodes in G's node order: `nodes` may be a set, and set order
+    # changes between runs for str nodes (PYTHONHASHSEED).
+    top = dict.fromkeys(n for n in G if n in top)
+    n_top = len(top)
+    n_bottom = len(G) - n_top
+    # Top nodes first, then bottom nodes; each group in G's node order
     nodes = top | dict.fromkeys(G)
 
     left_xs = np.repeat(0, n_top)
