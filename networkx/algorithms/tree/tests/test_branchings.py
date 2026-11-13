@@ -1,4 +1,5 @@
 import math
+from fractions import Fraction
 from operator import itemgetter
 
 import pytest
@@ -352,6 +353,103 @@ def test_edmonds2_minarbor():
     assert_equal_branchings(x, x_)
 
 
+@pytest.mark.parametrize("minimum", [True, False])
+def test_spanning_arborescence_cardinality(minimum):
+    # gh-8964: a cheaper nonspanning branching must not defeat the only
+    # spanning arborescence, even after several cycle contractions.
+    edges = [
+        (0, 1, 1.0),
+        (0, 2, 10.0),
+        (0, 4, 1.0),
+        (1, 4, 10.0),
+        (2, 4, 0.4),
+        (3, 1, 10.0),
+        (4, 0, 1.0),
+    ]
+    if not minimum:
+        edges = [(u, v, -w) for u, v, w in edges]
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(edges)
+    original = {(u, v): w for u, v, w in edges}
+    algorithm = (
+        nx.minimum_spanning_arborescence
+        if minimum
+        else nx.maximum_spanning_arborescence
+    )
+
+    B = algorithm(G)
+
+    assert set(B.edges) == {(3, 1), (1, 4), (4, 0), (0, 2)}
+    assert nx.tree.branching_weight(B) == (31 if minimum else -31)
+    assert nx.get_edge_attributes(G, "weight") == original
+    assert nx.get_edge_attributes(B, "weight") == {e: original[e] for e in B.edges}
+
+
+@pytest.mark.parametrize(
+    "algorithm",
+    [nx.minimum_spanning_arborescence, nx.maximum_spanning_arborescence],
+)
+@pytest.mark.parametrize("small_weight", [0.4, math.ulp(0.0)])
+def test_spanning_arborescence_preserves_weights(algorithm, small_weight):
+    # A finite shift can overflow even when this acyclic input requires no
+    # weight arithmetic. The small edge must also retain its exact value.
+    G = nx.MultiDiGraph()
+    G.add_edge(0, 1, cost=1e308, label="large")
+    G.add_edge(1, 2, cost=small_weight, label="small")
+    original = G.copy()
+
+    B = algorithm(G, attr="cost", preserve_attrs=True)
+
+    assert nx.utils.graphs_equal(G, original)
+    assert nx.utils.graphs_equal(B, original)
+
+    # A failed spanning request must not insert default weights in the input.
+    G.add_edge(3, 4, label="unweighted")
+    original = G.copy()
+    with pytest.raises(nx.NetworkXException, match="No .* spanning arborescence"):
+        algorithm(G, attr="cost", default=0.4, preserve_attrs=True)
+    assert nx.utils.graphs_equal(G, original)
+
+
+@pytest.mark.parametrize("minimum", [False, True])
+@pytest.mark.parametrize("weight_type", [None, Fraction], ids=["builtin", "fraction"])
+@pytest.mark.parametrize(
+    "edges, expected",
+    [
+        (
+            [(0, 2, -1e308), (1, 0, -1e307), (2, 0, 1e308)],
+            {(1, 0), (0, 2)},
+        ),
+        (
+            [(0, 1, -1e16), (1, 0, -1e16), (1, 2, -1.0), (2, 1, 0)],
+            {(2, 1), (1, 0)},
+        ),
+    ],
+)
+def test_spanning_arborescence_exact_contraction(edges, expected, weight_type, minimum):
+    # Contraction must preserve finite differences beyond the float range and
+    # distinguish objectives separated by one below a weight of 1e16.
+    G = nx.DiGraph()
+    for u, v, weight in edges:
+        if weight_type is not None:
+            weight = weight_type(weight)
+        G.add_edge(u, v, cost=-weight if minimum else weight)
+    original = G.copy()
+    algorithm = (
+        nx.minimum_spanning_arborescence
+        if minimum
+        else nx.maximum_spanning_arborescence
+    )
+
+    B = algorithm(G, attr="cost")
+
+    assert set(B.edges) == expected
+    assert nx.utils.graphs_equal(G, original)
+    for u, v, data in B.edges(data=True):
+        assert type(data["cost"]) is type(original[u][v]["cost"])
+        assert data["cost"] == original[u][v]["cost"]
+
+
 def test_edmonds3_minbranch1():
     G = G1()
     x = branchings.minimum_branching(G)
@@ -609,12 +707,11 @@ def test_branchings_with_default_weights():
         "test is for graphs without a weight attribute"
     )
 
-    # Calling these functions will modify graph inplace to add weights
-    # copy the graph to avoid this.
-    nx.minimum_spanning_arborescence(graph.copy())
-    nx.maximum_spanning_arborescence(graph.copy())
-    nx.minimum_branching(graph.copy())
-    nx.maximum_branching(graph.copy())
+    nx.minimum_spanning_arborescence(graph)
+    nx.maximum_spanning_arborescence(graph)
+    nx.minimum_branching(graph)
+    nx.maximum_branching(graph)
+    # minimal_branching still materializes the default weights in its input.
     nx.algorithms.tree.minimal_branching(graph.copy())
     nx.algorithms.tree.branching_weight(graph.copy())
     nx.algorithms.tree.greedy_branching(graph.copy())
