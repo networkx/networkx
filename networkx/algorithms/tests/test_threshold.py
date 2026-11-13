@@ -17,6 +17,42 @@ def test_threshold_graph_invalid_creation_sequence():
         nxt.threshold_graph(bad_creation_sequence)
 
 
+@pytest.mark.parametrize("sequence", [[], (), ""])
+@pytest.mark.parametrize("create_using", [None, nx.Graph, nx.MultiGraph])
+def test_threshold_graph_empty_creation_sequence(sequence, create_using):
+    G = nxt.threshold_graph(sequence, create_using=create_using)
+    assert type(G) is (nx.Graph if create_using is None else create_using)
+    assert len(G) == 0
+    assert G.name == "Threshold Graph"
+
+
+@pytest.mark.parametrize("create_using", [None, nx.Graph, nx.MultiGraph])
+def test_find_threshold_graph_empty(create_using):
+    G = nxt.find_threshold_graph(nx.Graph(), create_using=create_using)
+    assert type(G) is (nx.Graph if create_using is None else create_using)
+    assert len(G) == 0
+    assert G.name == "Threshold Graph"
+
+
+@pytest.mark.parametrize("graph_type", [nx.Graph, nx.MultiGraph])
+@pytest.mark.parametrize("function", [nxt.threshold_graph, nxt.find_threshold_graph])
+def test_empty_threshold_graph_create_using_instance(graph_type, function):
+    G = graph_type([(0, 1)])
+    source = [] if function is nxt.threshold_graph else nx.Graph()
+    result = function(source, create_using=G)
+    assert result is G
+    assert len(result) == 0
+    assert result.name == "Threshold Graph"
+
+
+@pytest.mark.parametrize("create_using", [nx.DiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize("function", [nxt.threshold_graph, nxt.find_threshold_graph])
+def test_empty_threshold_graph_directed(create_using, function):
+    source = [] if function is nxt.threshold_graph else nx.Graph()
+    with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
+        function(source, create_using=create_using)
+
+
 class TestGeneratorThreshold:
     def test_threshold_sequence_graph_test(self):
         G = nx.star_graph(10)

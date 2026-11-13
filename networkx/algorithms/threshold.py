@@ -314,22 +314,26 @@ def threshold_graph(creation_sequence, create_using=None):
     labeled creation sequence (e.g. [(0,'d'),(2,'d'),(1,'i')])
     compact creation sequence (e.g. [2,1,1,2,0])
 
+    An empty creation sequence produces an empty graph.
+
     Use cs=creation_sequence(degree_sequence,labeled=True)
     to convert a degree sequence to a creation sequence.
 
     Returns None if the sequence is not valid
     """
     # Turn input sequence into a labeled creation sequence
-    first = creation_sequence[0]
-    if isinstance(first, str):  # creation sequence
-        ci = list(enumerate(creation_sequence))
-    elif isinstance(first, tuple):  # labeled creation sequence
-        ci = creation_sequence[:]
-    elif isinstance(first, int):  # compact creation sequence
-        cs = uncompact(creation_sequence)
-        ci = list(enumerate(cs))
-    else:
-        raise ValueError("not a valid creation sequence")
+    ci = []
+    if len(creation_sequence) > 0:
+        first = creation_sequence[0]
+        if isinstance(first, str):  # creation sequence
+            ci = list(enumerate(creation_sequence))
+        elif isinstance(first, tuple):  # labeled creation sequence
+            ci = creation_sequence[:]
+        elif isinstance(first, int):  # compact creation sequence
+            cs = uncompact(creation_sequence)
+            ci = list(enumerate(cs))
+        else:
+            raise ValueError("not a valid creation sequence")
 
     G = nx.empty_graph(0, create_using)
     if G.is_directed():
