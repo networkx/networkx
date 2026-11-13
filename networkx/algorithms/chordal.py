@@ -354,7 +354,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(returns_graph=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def complete_to_chordal_graph(G):
     """Return a copy of G completed to a chordal graph
 
@@ -381,6 +381,10 @@ def complete_to_chordal_graph(G):
     MCS-M and gives at least minimal (local) triangulation of graph. Note
     that this triangulation is not necessarily a global minimum.
 
+    The weight-bucket implementation of the path search [2]_ takes
+    $O(n(n + m))$ time, where $n$ is the number of nodes and $m$ the number
+    of edges.
+
     https://en.wikipedia.org/wiki/Chordal_graph
 
     Self loops are ignored.
@@ -390,6 +394,10 @@ def complete_to_chordal_graph(G):
     .. [1] Berry, Anne & Blair, Jean & Heggernes, Pinar & Peyton, Barry. (2004)
            Maximum Cardinality Search for Computing Minimal Triangulations of
            Graphs.  Algorithmica. 39. 287-298. 10.1007/s00453-004-1084-3.
+    .. [2] Berry, Anne, Romain Pogorelcnik, and Genevieve Simonet.
+           "An Introduction to Clique Minimal Separator Decomposition."
+           Algorithms 3, no. 2 (2010): 197-215.
+           https://doi.org/10.3390/a3020197
 
     Examples
     --------
@@ -403,25 +411,36 @@ def complete_to_chordal_graph(G):
         return H, alpha
     chords = set()
     weight = {node: 0 for node in H.nodes()}
-    unnumbered_nodes = list(H.nodes())
+    unnumbered_nodes = dict.fromkeys(H)
     for i in range(len(H.nodes()), 0, -1):
         # get the node in unnumbered_nodes with the maximum weight
         z = max(unnumbered_nodes, key=lambda node: weight[node])
-        unnumbered_nodes.remove(z)
+        del unnumbered_nodes[z]
         alpha[z] = i
         update_nodes = []
-        for y in unnumbered_nodes:
-            if G.has_edge(y, z):
+        # Process paths in increasing order of their largest vertex weight.
+        # A vertex reached at level j can propagate through vertices of weight
+        # at most j. A newly reached vertex of greater weight has a path from z
+        # whose internal vertices all have strictly smaller weight.
+        reached = set()
+        reach = [[] for _ in range(weight[z] + 1)]
+        for y in G[z]:
+            if y in unnumbered_nodes:
+                reached.add(y)
+                reach[weight[y]].append(y)
                 update_nodes.append(y)
-            else:
-                # y_weight will be bigger than node weights between y and z
-                y_weight = weight[y]
-                lower_nodes = [
-                    node for node in unnumbered_nodes if weight[node] < y_weight
-                ]
-                if nx.has_path(H.subgraph(lower_nodes + [z, y]), y, z):
-                    update_nodes.append(y)
-                    chords.add((z, y))
+        for level, bucket in enumerate(reach):
+            while bucket:
+                x = bucket.pop()
+                for y in G[x]:
+                    if y in unnumbered_nodes and y not in reached:
+                        reached.add(y)
+                        if weight[y] > level:
+                            reach[weight[y]].append(y)
+                            update_nodes.append(y)
+                            chords.add((z, y))
+                        else:
+                            bucket.append(y)
         # during calculation of paths the weights should not be updated
         for node in update_nodes:
             weight[node] += 1

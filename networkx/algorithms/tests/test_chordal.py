@@ -1,3 +1,5 @@
+from itertools import combinations
+
 import pytest
 
 import networkx as nx
@@ -168,3 +170,30 @@ class TestMCS:
                 assert set(a.values()) == {0}
             else:
                 assert len(set(a.values())) == H.number_of_nodes()
+
+    @pytest.mark.parametrize(
+        "G",
+        (
+            nx.florentine_families_graph(),
+            nx.karate_club_graph(),
+            nx.davis_southern_women_graph(),
+        ),
+    )
+    def test_completion_is_minimal_and_ordering_is_perfect(self, G):
+        original = G.copy()
+        H, alpha = nx.complete_to_chordal_graph(nx.freeze(G))
+        assert nx.utils.graphs_equal(G, original)
+        assert H.graph == G.graph
+        assert dict(H.nodes(data=True)) == dict(G.nodes(data=True))
+        assert all(H[u][v] == data for u, v, data in G.edges(data=True))
+        assert set(alpha.values()) == set(range(1, len(G) + 1))
+        # Every later neighborhood must be a clique in the elimination order.
+        for u in H:
+            later = [v for v in H[u] if alpha[v] > alpha[u]]
+            assert all(H.has_edge(v, w) for v, w in combinations(later, 2))
+        # No individual fill edge can be omitted from a minimal triangulation.
+        fill = [(u, v) for u, v in H.edges if not G.has_edge(u, v)]
+        for u, v in fill:
+            H.remove_edge(u, v)
+            assert not nx.is_chordal(H)
+            H.add_edge(u, v)
