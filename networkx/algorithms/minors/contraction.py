@@ -14,8 +14,6 @@ __all__ = [
     "quotient_graph",
 ]
 
-chaini = chain.from_iterable
-
 
 def equivalence_classes(iterable, relation):
     """Returns equivalence classes of `relation` when applied to `iterable`.
@@ -95,7 +93,7 @@ def equivalence_classes(iterable, relation):
     return {frozenset(block) for block in blocks}
 
 
-@nx._dispatchable(edge_attrs="weight", returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs=True, returns_graph=True)
 def quotient_graph(
     G,
     partition,
@@ -164,9 +162,15 @@ def quotient_graph(
         no such edge occurs in the quotient graph as determined by
         `edge_relation`, then the output of this function is ignored).
 
+        If None, the weight of a quotient edge is the sum of the weights
+        of the original edges between its blocks. If both `G` and the
+        quotient graph are directed, only edges from *B* to *C* contribute
+        to the weight of the edge from *B* to *C*.
+
         If the quotient graph would be a multigraph, this function is
-        not applied, since the edge data from each edge in the graph
-        `G` appears in the edges of the quotient graph.
+        not applied. Each original edge between the blocks becomes a
+        separate quotient edge with its original attributes. Edge keys
+        are assigned in the quotient graph and need not match those in `G`.
 
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
@@ -178,8 +182,13 @@ def quotient_graph(
         :class:`frozenset` instances representing the blocks given in
         `partition`.
 
-    create_using : NetworkX graph constructor, optional (default=nx.Graph)
-       Graph type to create. If graph instance, then cleared before populated.
+    create_using : NetworkX graph constructor, optional
+        Graph type to create. If None, use the same type as `G`.
+        If a graph instance, it is cleared before being populated.
+        If an undirected graph is requested for directed `G`, edges in
+        either direction connect the blocks. If a directed graph is
+        requested for undirected `G`, each crossing edge contributes in
+        both directions.
 
     Returns
     -------
@@ -242,6 +251,14 @@ def quotient_graph(
     >>> Q = nx.quotient_graph(G, same_component)
     >>> nx.is_isomorphic(C, Q)
     True
+
+    For directed quotients, weights are aggregated separately in each direction.
+
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from([(0, 2, 2), (1, 2, 5), (2, 0, 11)])
+    >>> Q = nx.quotient_graph(G, [{0, 1}, {2}], relabel=True)
+    >>> list(Q.edges(data="weight"))
+    [(0, 1, 7), (1, 0, 11)]
 
     Node identification can be represented as the quotient of a graph under the
     equivalence relation that places the two nodes in one block and each other
@@ -369,6 +386,13 @@ def _quotient_graph(
     # Each block of the partition becomes a node in the quotient graph.
     partition = [frozenset(b) for b in partition]
     H.add_nodes_from((b, node_data(b)) for b in partition)
+    use_edge_scan = (
+        edge_relation is None
+        and edge_data is None
+        and not G.is_directed()
+        and not H.is_directed()
+        and not H.is_multigraph()
+    )
     # By default, the edge relation is the relation defined as follows. B is
     # adjacent to C if a node in B is adjacent to a node in C, according to the
     # edge set of G.
@@ -379,32 +403,36 @@ def _quotient_graph(
     if edge_relation is None:
 
         def edge_relation(b, c):
-            return any(v in G[u] for u, v in product(b, c))
+            return any(
+                v in G[u] or (not H.is_directed() and u in G[v])
+                for u, v in product(b, c)
+            )
+
+    def crossing_edge_data(b, c):
+        directed = G.is_directed() and H.is_directed()
+        return (
+            d
+            for u, v, d in G.edges(b | c, data=True)
+            if (u in b and v in c) or (not directed and u in c and v in b)
+        )
 
     # By default, sum the weights of the edges joining pairs of nodes across
     # blocks to get the weight of the edge joining those two blocks.
     if edge_data is None:
 
         def edge_data(b, c):
-            edgedata = (
-                d
-                for u, v, d in G.edges(b | c, data=True)
-                if (u in b and v in c) or (u in c and v in b)
-            )
-            return {"weight": sum(d.get(weight, 1) for d in edgedata)}
+            return {"weight": sum(d.get(weight, 1) for d in crossing_edge_data(b, c))}
 
     block_pairs = permutations(H, 2) if H.is_directed() else combinations(H, 2)
-    # In a multigraph, add one edge in the quotient graph for each edge
-    # in the original graph.
-    if H.is_multigraph():
-        edges = chaini(
-            (
-                (b, c, G.get_edge_data(u, v, default={}))
-                for u, v in product(b, c)
-                if v in G[u]
-            )
+    if use_edge_scan:
+        edges = _quotient_graph_default_edges(G, partition, weight)
+    elif H.is_multigraph():
+        # Preserve every original crossing edge and its own attributes.
+        edges = (
+            (b, c, d)
             for b, c in block_pairs
             if edge_relation(b, c)
+            for d in crossing_edge_data(b, c)
         )
     # In a simple graph, apply the edge data function to each pair of
     # blocks to determine the edge data attributes to apply to each edge
@@ -424,6 +452,40 @@ def _quotient_graph(
         labels = {b: i for i, b in enumerate(partition)}
         H = nx.relabel_nodes(H, labels)
     return H
+
+
+def _quotient_graph_default_edges(G, partition, weight):
+    """Yield edges of an undirected simple quotient from its crossing edges."""
+    # Find adjacent blocks from existing edges, rather than testing every
+    # pair of nodes across every pair of blocks. Built-in integer weights can be
+    # summed during this scan without depending on the traversal order.
+    block_of = {u: i for i, b in enumerate(partition) for u in b}
+    block_edges = {}
+    for u, v, data in G.edges(data=True):
+        i, j = block_of[u], block_of[v]
+        if i == j:
+            continue
+        if i > j:
+            i, j = j, i
+        value = data.get(weight, 1)
+        total = block_edges.setdefault((i, j), 0)
+        if type(value) is int and total is not None:
+            block_edges[i, j] = total + value
+        else:
+            block_edges[i, j] = None
+
+    for i, j in sorted(block_edges):
+        b, c = partition[i], partition[j]
+        total = block_edges[i, j]
+        if total is None:
+            # Preserve the original reduction order for floating-point
+            # weights and objects with user-defined addition.
+            total = sum(
+                data.get(weight, 1)
+                for u, v, data in G.edges(b | c, data=True)
+                if (u in b and v in c) or (u in c and v in b)
+            )
+        yield b, c, {"weight": total}
 
 
 @nx._dispatchable(
