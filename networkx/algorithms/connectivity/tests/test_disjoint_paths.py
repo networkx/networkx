@@ -109,6 +109,24 @@ def test_karate():
         assert nx.node_connectivity(G, 0, 33) == len(node_dpaths), errmsg
 
 
+@pytest.mark.parametrize("flow_func", flow_funcs)
+def test_simple_paths_with_flow_cycles(flow_func):
+    G = nx.karate_club_graph()
+    paths = list(nx.edge_disjoint_paths(G, 0, 1, flow_func=flow_func))
+    assert len(paths) == nx.edge_connectivity(G, 0, 1)
+    assert all(nx.is_simple_path(G, path) for path in paths)
+    assert are_edge_disjoint_paths(G, paths)
+
+
+@pytest.mark.parametrize("create_using", [nx.Graph, nx.DiGraph])
+@pytest.mark.parametrize("path_func", [nx.edge_disjoint_paths, nx.node_disjoint_paths])
+def test_cutoff_with_direct_path(create_using, path_func):
+    G = create_using([(0, 2), (0, 1), (1, 2)])
+    paths = list(path_func(G, 0, 2, flow_func=flow.preflow_push, cutoff=1))
+    assert len(paths) == 1
+    assert nx.is_simple_path(G, paths[0])
+
+
 def test_petersen_disjoint_paths():
     G = nx.petersen_graph()
     for flow_func in flow_funcs:

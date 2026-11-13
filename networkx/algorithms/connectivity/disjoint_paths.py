@@ -146,10 +146,10 @@ def edge_disjoint_paths(
     This is a flow based implementation of edge disjoint paths. We compute
     the maximum flow between source and target on an auxiliary directed
     network. The saturated edges in the residual network after running the
-    maximum flow algorithm correspond to edge disjoint paths between source
-    and target in the original network. This function handles both directed
-    and undirected graphs, and can use all flow algorithms from NetworkX flow
-    package.
+    maximum flow algorithm are decomposed into edge disjoint simple paths.
+    Cycles and preflow paths ending at nodes with excess are discarded.
+    This function handles both directed and undirected graphs, and can use all
+    flow algorithms from NetworkX flow package.
 
     """
     if s not in G:
@@ -205,29 +205,40 @@ def edge_disjoint_paths(
     for u, v in cutset:
         flow_dict[u][v] = 1
 
-    # Rebuild the edge disjoint paths from the flow dictionary.
+    # Decompose the flow into simple paths, discarding any cycles. A preflow
+    # can also contain paths ending at a node with excess instead of at t.
     paths_found = 0
     for v in list(flow_dict[s]):
         if paths_found >= cutoff:
             # preflow_push does not support cutoff: we have to
-            # keep track of the paths founds and stop at cutoff.
+            # keep track of the paths found and stop at cutoff.
             break
-        path = [s]
-        if v == t:
-            path.append(v)
-            yield path
+        if v not in flow_dict[s]:
+            # A cycle through s may already have consumed this edge.
             continue
+        del flow_dict[s][v]
+        path = [s]
+        positions = {s: 0}
         u = v
-        while u != t:
-            path.append(u)
+        while True:
+            if u in positions:
+                # The edges of this cycle have already been consumed. Remove
+                # its nodes from the path before continuing from u.
+                cycle_start = positions[u] + 1
+                for node in path[cycle_start:]:
+                    del positions[node]
+                del path[cycle_start:]
+            else:
+                positions[u] = len(path)
+                path.append(u)
+            if u == t:
+                paths_found += 1
+                yield path
+                break
             try:
                 u, _ = flow_dict[u].popitem()
             except KeyError:
                 break
-        else:
-            path.append(t)
-            yield path
-            paths_found += 1
 
 
 @nx._dispatchable(
