@@ -412,6 +412,15 @@ def test_create_using(generator, kwargs, create_using_instance):
 
 
 @pytest.mark.parametrize("directed", [True, False])
+@pytest.mark.parametrize("p", [1e-18, 1e-320])
+def test_fast_gnp_small_probability(p, directed):
+    G = nx.fast_gnp_random_graph(8, p, seed=1, directed=directed)
+    assert len(G) == 8
+    assert G.number_of_edges() == 0
+    assert G.is_directed() == directed
+
+
+@pytest.mark.parametrize("directed", [True, False])
 @pytest.mark.parametrize("fn", (nx.fast_gnp_random_graph, nx.gnp_random_graph))
 def test_gnp_fns_disallow_multigraph(fn, directed):
     with pytest.raises(nx.NetworkXError, match="must not be a multi-graph"):

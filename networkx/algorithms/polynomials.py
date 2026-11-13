@@ -22,12 +22,198 @@ x**4 - 6*x**2 - 8*x - 3
    "Graph Polynomials"
 """
 
-from collections import deque
-
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ["tutte_polynomial", "chromatic_polynomial"]
+__all__ = ["chromatic_polynomial", "tutte_polynomial"]
+
+
+def _polynomial_add_term(coefficients, powers, value):
+    """Accumulate one exact coefficient, discarding cancellations."""
+    coefficient = coefficients.get(powers, 0) + value
+    if coefficient:
+        coefficients[powers] = coefficient
+    else:
+        coefficients.pop(powers, None)
+
+
+def _polynomial_product(left, right):
+    """Multiply sparse integer coefficient maps in one or two variables."""
+    product = {}
+    for left_powers, left_coefficient in left.items():
+        for right_powers, right_coefficient in right.items():
+            powers = tuple(a + b for a, b in zip(left_powers, right_powers))
+            _polynomial_add_term(product, powers, left_coefficient * right_coefficient)
+    return product
+
+
+def _chromatic_block_coefficients(G):
+    """Evaluate simple-graph factors with an explicit postorder work stack."""
+    from math import comb
+
+    tasks = [("visit", G)]
+    results = []
+    while tasks:
+        operation, value = tasks.pop()
+        if operation == "subtract":
+            contracted = results.pop()
+            deleted = results.pop()
+            for powers, coefficient in contracted.items():
+                _polynomial_add_term(deleted, powers, -coefficient)
+            results.append(deleted)
+            continue
+        if operation == "product":
+            count, components = value
+            product = {(components,): 1}
+            for _ in range(count):
+                block = results.pop()
+                # Every edge-containing block is connected and its polynomial
+                # is divisible by x. One x remains per connected component.
+                reduced = {
+                    (degree - 1,): coefficient
+                    for (degree,), coefficient in block.items()
+                    if degree
+                }
+                product = _polynomial_product(product, reduced)
+            results.append(product)
+            continue
+
+        H = value
+        n = len(H)
+        m = H.number_of_edges()
+        components = nx.number_connected_components(H)
+        if m == n - components:
+            # A forest has x**components * (x - 1)**m.
+            results.append(
+                {
+                    (components + degree,): (-1) ** (m - degree) * comb(m, degree)
+                    for degree in range(m + 1)
+                }
+            )
+            continue
+        if m == n * (n - 1) // 2:
+            # Complete graphs have x * (x - 1) * ... * (x - n + 1).
+            complete = {(0,): 1}
+            for color in range(n):
+                complete = _polynomial_product(complete, {(1,): 1, (0,): -color})
+            results.append(complete)
+            continue
+        if components == 1 and m == n and all(d == 2 for _, d in H.degree):
+            # A simple cycle has (x - 1)**n + (-1)**n * (x - 1).
+            cycle = {
+                (degree,): (-1) ** (n - degree) * comb(n, degree)
+                for degree in range(n + 1)
+            }
+            _polynomial_add_term(cycle, (1,), (-1) ** n)
+            _polynomial_add_term(cycle, (0,), -((-1) ** n))
+            results.append(cycle)
+            continue
+
+        blocks = list(nx.biconnected_components(H))
+        if len(blocks) > 1:
+            # Reductions can expose articulation points that were not present
+            # in the caller's graph. Factor those subproblems as well.
+            tasks.append(("product", (len(blocks), components)))
+            tasks.extend(("visit", H.subgraph(nodes).copy()) for nodes in blocks)
+            continue
+
+        u, v = next(iter(H.edges))
+        contracted = nx.contracted_nodes(
+            H, u, v, self_loops=False, store_contraction_as=None
+        )
+        H.remove_edge(u, v)
+        tasks.append(("subtract", None))
+        tasks.append(("visit", contracted))
+        tasks.append(("visit", H))
+    return results.pop()
+
+
+def _tutte_block_coefficients(G):
+    """Evaluate multigraph factors with loop/bridge reductions and no recursion."""
+    tasks = [("visit", G)]
+    results = []
+    while tasks:
+        operation, value = tasks.pop()
+        if operation == "sum":
+            x_power, y_power = value
+            contracted = results.pop()
+            deleted = results.pop()
+            for powers, coefficient in contracted.items():
+                _polynomial_add_term(deleted, powers, coefficient)
+            results.append(
+                {
+                    (i + x_power, j + y_power): coefficient
+                    for (i, j), coefficient in deleted.items()
+                }
+            )
+            continue
+        if operation == "product":
+            count, x_power, y_power = value
+            product = {(x_power, y_power): 1}
+            for _ in range(count):
+                product = _polynomial_product(product, results.pop())
+            results.append(product)
+            continue
+
+        H = value
+        loops = list(nx.selfloop_edges(H, keys=True))
+        H.remove_edges_from(loops)
+        y_power = len(loops)
+        # One low-link traversal provides both bridges and larger blocks.
+        # A two-vertex block is a bridge only when its edge is not parallel.
+        x_power = 0
+        blocks = []
+        for nodes in nx.biconnected_components(H):
+            if len(nodes) == 2 and H.number_of_edges(*nodes) == 1:
+                x_power += 1
+            else:
+                blocks.append(nodes)
+        if not blocks:
+            results.append({(x_power, y_power): 1})
+            continue
+        if len(blocks) > 1:
+            tasks.append(("product", (len(blocks), x_power, y_power)))
+            tasks.extend(("visit", H.subgraph(nodes).copy()) for nodes in blocks)
+            continue
+
+        if x_power:
+            # Bridge factors have already been accumulated. Discard their
+            # edges before processing the one remaining nontrivial block.
+            H = H.subgraph(blocks[0]).copy()
+
+        # Isolated vertices have Tutte polynomial one. A two-vertex block has
+        # only parallel edges: T = x + y + ... + y**(m-1).
+        if len(blocks[0]) == 2:
+            parallel = {(x_power + 1, y_power): 1}
+            parallel.update(
+                {
+                    (x_power, y_power + degree): 1
+                    for degree in range(1, H.number_of_edges())
+                }
+            )
+            results.append(parallel)
+            continue
+
+        n = len(blocks[0])
+        if H.number_of_edges() == n and all(H.degree[v] == 2 for v in blocks[0]):
+            # A simple cycle has T = x**(n-1) + ... + x + y.
+            cycle = {(degree + x_power, y_power): 1 for degree in range(1, n)}
+            cycle[x_power, y_power + 1] = 1
+            results.append(cycle)
+            continue
+
+        u, v, key = next(iter(H.edges(keys=True)))
+        contracted = nx.contracted_nodes(
+            H, u, v, self_loops=True, store_contraction_as=None
+        )
+        # Exactly one resulting loop represents the selected edge. The other
+        # parallel edges become loop factors on the next visit.
+        contracted.remove_edge(u, u)
+        H.remove_edge(u, v, key)
+        tasks.append(("sum", (x_power, y_power)))
+        tasks.append(("visit", contracted))
+        tasks.append(("visit", H))
+    return results.pop()
 
 
 @not_implemented_for("directed")
@@ -35,8 +221,9 @@ __all__ = ["tutte_polynomial", "chromatic_polynomial"]
 def tutte_polynomial(G):
     r"""Returns the Tutte polynomial of `G`
 
-    This function computes the Tutte polynomial via an iterative version of
-    the deletion-contraction algorithm.
+    This function factors over biconnected blocks and computes each factor
+    using iterative deletion-contraction with immediate loop and bridge
+    reductions. Intermediate coefficients are exact integers.
 
     The Tutte polynomial `T_G(x, y)` is a fundamental graph polynomial invariant in
     two variables. It encodes a wide array of information related to the
@@ -81,7 +268,7 @@ def tutte_polynomial(G):
 
     .. math::
         T_G(x, y) = \begin{cases}
-    	   x^{k(G)} y^{l(G)}, & \text{if all edges are cut-edges or self-loops} \\
+           x^{k(G)} y^{l(G)}, & \text{if all edges are cut-edges or self-loops} \\
            T_{G-e}(x, y) + T_{G/e}(x, y), & \text{otherwise, for an arbitrary edge $e$ not a cut-edge or loop}
         \end{cases}
 
@@ -152,32 +339,14 @@ def tutte_polynomial(G):
     """
     import sympy
 
-    x = sympy.Symbol("x")
-    y = sympy.Symbol("y")
-    stack = deque()
-    stack.append(nx.MultiGraph(G))
-
-    polynomial = 0
-    while stack:
-        G = stack.pop()
-        bridges = set(nx.bridges(G))
-
-        e = None
-        for i in G.edges:
-            if (i[0], i[1]) not in bridges and i[0] != i[1]:
-                e = i
-                break
-        if not e:
-            loops = list(nx.selfloop_edges(G, keys=True))
-            polynomial += x ** len(bridges) * y ** len(loops)
-        else:
-            # deletion-contraction
-            C = nx.contracted_edge(G, e, self_loops=True)
-            C.remove_edge(e[0], e[0])
-            G.remove_edge(*e)
-            stack.append(G)
-            stack.append(C)
-    return sympy.simplify(polynomial)
+    x, y = sympy.symbols("x y")
+    # Attributes and contraction history cannot affect the polynomial.
+    # Preserve the complete multigraph incidence structure, including loops.
+    H = nx.MultiGraph()
+    H.add_nodes_from(G)
+    H.add_edges_from(G.edges())
+    coefficients = _tutte_block_coefficients(H)
+    return sympy.Add(*(value * x**i * y**j for (i, j), value in coefficients.items()))
 
 
 @not_implemented_for("directed")
@@ -185,8 +354,9 @@ def tutte_polynomial(G):
 def chromatic_polynomial(G):
     r"""Returns the chromatic polynomial of `G`
 
-    This function computes the chromatic polynomial via an iterative version of
-    the deletion-contraction algorithm.
+    This function factors over biconnected blocks and computes each factor
+    using iterative deletion-contraction. Forests, cycles and complete graphs
+    use their closed forms. Intermediate coefficients are exact integers.
 
     The chromatic polynomial `X_G(x)` is a fundamental graph polynomial
     invariant in one variable. Evaluating `X_G(k)` for an natural number `k`
@@ -219,7 +389,7 @@ def chromatic_polynomial(G):
 
     .. math::
         X_G(x) = \begin{cases}
-    	   x^{n(G)}, & \text{if $e(G)=0$} \\
+           x^{n(G)}, & \text{if $e(G)=0$} \\
            X_{G-e}(x) - X_{G/e}(x), & \text{otherwise, for an arbitrary edge $e$}
         \end{cases}
 
@@ -251,11 +421,14 @@ def chromatic_polynomial(G):
     cases are listed in [2]_.
 
     The chromatic polynomial is a specialization of the Tutte polynomial; in
-    particular, ``X_G(x) = T_G(x, 0)`` [6]_.
+    particular, ``X_G(x) = (-1)**(n-c) * x**c * T_G(1-x, 0)``, where
+    ``n`` is the number of vertices and ``c`` the number of connected
+    components [6]_.
 
     The chromatic polynomial may take negative arguments, though evaluations
-    may not have chromatic interpretations. For instance, ``X_G(-1)`` enumerates
-    the acyclic orientations of `G` [7]_.
+    may not have chromatic interpretations. For instance, ``(-1)**n * X_G(-1)``
+    enumerates the acyclic orientations of `G`, where ``n`` is the number of
+    vertices [7]_.
 
     References
     ----------
@@ -286,21 +459,12 @@ def chromatic_polynomial(G):
     import sympy
 
     x = sympy.Symbol("x")
-    stack = deque()
-    stack.append(nx.MultiGraph(G, contraction_idx=0))
+    if nx.number_of_selfloops(G):
+        return sympy.S.Zero
 
-    polynomial = 0
-    while stack:
-        G = stack.pop()
-        edges = list(G.edges)
-        if not edges:
-            polynomial += (-1) ** G.graph["contraction_idx"] * x ** len(G)
-        else:
-            e = edges[0]
-            C = nx.contracted_edge(G, e, self_loops=True)
-            C.graph["contraction_idx"] = G.graph["contraction_idx"] + 1
-            C.remove_edge(e[0], e[0])
-            G.remove_edge(*e)
-            stack.append(G)
-            stack.append(C)
-    return polynomial
+    # Parallel edges impose the same coloring constraint; attributes are unused.
+    H = nx.Graph()
+    H.add_nodes_from(G)
+    H.add_edges_from(G.edges())
+    coefficients = _chromatic_block_coefficients(H)
+    return sympy.Add(*(value * x**degree for (degree,), value in coefficients.items()))

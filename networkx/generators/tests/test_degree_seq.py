@@ -1,3 +1,5 @@
+import random
+
 import pytest
 
 import networkx as nx
@@ -83,6 +85,48 @@ def test_expected_degree_graph_empty():
     deg_seq = []
     G = nx.expected_degree_graph(deg_seq)
     assert dict(G.degree()) == {}
+
+
+@pytest.mark.parametrize("weight", [1e-18, 1e-320])
+@pytest.mark.parametrize("selfloops", [True, False])
+def test_expected_degree_graph_small_weights(weight, selfloops):
+    G = nx.expected_degree_graph([weight] * 8, seed=1, selfloops=selfloops)
+    assert len(G) == 8
+    assert G.number_of_edges() == 0
+
+
+@pytest.mark.parametrize(
+    "weights", [[1e308] * 3, [10**400] * 3, [10**400, 1e308, 1e308]]
+)
+@pytest.mark.parametrize("selfloops", [True, False])
+def test_expected_degree_graph_overflowing_total(weights, selfloops):
+    G = nx.expected_degree_graph(weights, seed=1, selfloops=selfloops)
+    assert set(G.edges()) == {
+        (u, v) for u in range(3) for v in range(u + (not selfloops), 3)
+    }
+
+
+def test_expected_degree_graph_overflowing_total_mixed_probabilities():
+    G = nx.expected_degree_graph([1e308, 1e308, 1.0], seed=1, selfloops=False)
+    assert set(G.edges()) == {(0, 1), (1, 2)}
+
+
+def test_expected_degree_graph_tiny_rational_weights():
+    from fractions import Fraction
+
+    G = nx.expected_degree_graph([Fraction(1, 10**400)] * 3, seed=1)
+    assert len(G) == 3
+    assert G.number_of_edges() == 0
+
+
+def test_expected_degree_graph_zero_random_draw():
+    class ZeroRandom(random.Random):
+        def random(self):
+            return 0.0
+
+    G = nx.expected_degree_graph([0.5] * 3, seed=ZeroRandom())
+    assert len(G) == 3
+    assert G.number_of_edges() == 0
 
 
 @pytest.mark.parametrize("seed", [10, 42, 1000])

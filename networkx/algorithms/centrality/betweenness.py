@@ -366,6 +366,18 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     >>> nx.edge_betweenness_centrality(G, k=2, normalized=True, seed=42)
     {(0, 1): 0.75, (1, 2): 0.75}
     """
+    return _edge_betweenness_centrality(G, k, normalized, weight, seed)
+
+
+def _edge_betweenness_centrality(
+    G, k=None, normalized=True, weight=None, seed=None, *, normalization_size=None
+):
+    """Compute edge betweenness, optionally normalizing within a larger graph.
+
+    A connected component has the same raw contributions as in its parent
+    graph. ``normalization_size`` preserves the parent's scaling before
+    multigraph contributions are divided among parallel edges.
+    """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     # b[e]=0 for e in G.edges()
     betweenness.update(dict.fromkeys(G.edges(), 0.0))
@@ -386,7 +398,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
         del betweenness[n]
     betweenness = _rescale(
         betweenness,
-        len(G),
+        len(G) if normalization_size is None else normalization_size,
         normalized=normalized,
         directed=G.is_directed(),
         sampled_nodes=None if k is None else nodes,

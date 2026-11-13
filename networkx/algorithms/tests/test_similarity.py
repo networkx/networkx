@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 import networkx as nx
@@ -116,6 +118,22 @@ class TestSimilarity:
         assert graph_edit_distance(G3, G2) == 7
 
         assert graph_edit_distance(G3, G3) == 0
+
+    def test_graph_edit_distance_uses_explicit_search_stack(self):
+        # Use the retained real social graph. The search depth should not consume
+        # the Python stack available to its caller.
+        G = nx.karate_club_graph()
+        old_limit = sys.getrecursionlimit()
+        depth = 0
+        frame = sys._getframe()
+        while frame is not None:
+            depth += 1
+            frame = frame.f_back
+        try:
+            sys.setrecursionlimit(depth + 30)
+            assert graph_edit_distance(G, G) == 0
+        finally:
+            sys.setrecursionlimit(old_limit)
 
     def test_graph_edit_distance_node_match(self):
         G1 = cycle_graph(5)
@@ -277,6 +295,48 @@ class TestSimilarity:
             assert cost < bestcost
             bestcost = cost
         assert bestcost == 22
+
+    @pytest.mark.parametrize("nodes", [(1, 2, 3), (3, 2, 1)])
+    @pytest.mark.parametrize("extra_node", [None, "source", "target"])
+    @pytest.mark.parametrize("surcharge", [0, 0.1])
+    def test_edit_paths_branch_on_real_vertex(self, nodes, extra_node, surcharge):
+        # Issue #8099: deleting a vertex can be optimal for the node-only
+        # assignment but suboptimal once incident edge costs are included.
+        G = nx.complete_graph(nodes)
+        H = nx.complete_graph([1, 2, 3])
+        if extra_node == "source":
+            G.add_node(4)
+        elif extra_node == "target":
+            H.add_node(4)
+        for graph in (G, H):
+            nx.set_node_attributes(graph, {node: node for node in graph}, "i")
+
+        def node_cost(u, v):
+            if u["i"] == 4 or v["i"] == 4:
+                return 100
+            if v["i"] == 1:
+                return 0
+            if v["i"] == 2 or u["i"] == 3:
+                return 2 + surcharge
+            return 2.2 + surcharge
+
+        expected_cost = 4 + 2 * surcharge + (extra_node is not None)
+        paths, cost = optimal_edit_paths(G, H, node_subst_cost=node_cost)
+        assert cost == pytest.approx(expected_cost)
+        expected = [{(1, 1), (2, 2), (3, 3)}, {(1, 2), (2, 1), (3, 3)}]
+        for mapping in expected:
+            if extra_node == "source":
+                mapping.add((4, None))
+            elif extra_node == "target":
+                mapping.add((None, 4))
+        assert len(paths) == len(expected)
+        assert {frozenset(p) for p, _ in paths} == {frozenset(p) for p in expected}
+        assert graph_edit_distance(
+            G, H, node_subst_cost=node_cost, upper_bound=expected_cost
+        ) == pytest.approx(expected_cost)
+        assert list(optimize_graph_edit_distance(G, H, node_subst_cost=node_cost))[
+            -1
+        ] == pytest.approx(expected_cost)
 
     # def test_graph_edit_distance_bigger(self):
     #     G1 = circular_ladder_graph(12)
@@ -986,6 +1046,64 @@ class TestSimilarity:
         G = nx.DiGraph([(0, 0), (1, 1)])
         assert nx.graph_edit_distance(G, nx.DiGraph()) == 4
 
+    @pytest.mark.parametrize(
+        "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+    )
+    @pytest.mark.parametrize("roots", [None, (0, 0)])
+    def test_edit_paths_single_vertex_loops(self, graph_type, roots):
+        G = graph_type([(0, 0)])
+        H = G.copy()
+        edge = next(iter(G.edges))
+        paths = list(
+            nx.optimize_edit_paths(
+                G,
+                H,
+                edge_subst_cost=lambda g, h: 3,
+                roots=roots,
+                strictly_decreasing=False,
+                upper_bound=2,
+            )
+        )
+        assert len(paths) == 1
+        vertex_path, edge_path, cost = paths[0]
+        assert cost == 2
+        assert vertex_path == [(0, 0)]
+        assert set(edge_path) == {(edge, None), (None, edge)}
+        assert (
+            list(
+                nx.optimize_edit_paths(
+                    G,
+                    H,
+                    edge_subst_cost=lambda g, h: 3,
+                    roots=roots,
+                    upper_bound=1,
+                )
+            )
+            == []
+        )
+
+    @pytest.mark.parametrize(
+        "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+    )
+    @pytest.mark.parametrize("target_loop", [False, True])
+    def test_edit_paths_preserve_loop_endpoints(self, graph_type, target_loop):
+        G = graph_type()
+        H = graph_type()
+        for graph in (G, H):
+            graph.add_nodes_from([(0, {"id": 0}), (1, {"id": 1})])
+        G.add_edge(0, 0)
+        H.add_edge(1, 1) if target_loop else H.add_edge(0, 1)
+        paths, cost = nx.optimal_edit_paths(
+            G,
+            H,
+            node_subst_cost=lambda u, v: 0 if u == v else 10,
+        )
+        assert cost == 2
+        for vertex_path, edge_path in paths:
+            assert set(vertex_path) == {(0, 0), (1, 1)}
+            assert len(edge_path) == 2
+            assert all(g is None or h is None for g, h in edge_path)
+
     def test_symmetry_with_custom_matching(self):
         """G2 has edge (a,b) and G3 has edge (a,a) but node order for G2 is (a,b)
         while for G3 it is (b,a)"""
@@ -1006,13 +1124,15 @@ class TestSimilarity:
         def user_match(x, y):
             return x == y
 
+        # A self-loop cannot substitute for a non-loop. Changing the topology
+        # requires deleting one edge and inserting the other, in either order.
         assert (
             nx.graph_edit_distance(G2, G3, node_match=user_match, edge_match=user_match)
-            == 1
+            == 2
         )
         assert (
             nx.graph_edit_distance(G3, G2, node_match=user_match, edge_match=user_match)
-            == 1
+            == 2
         )
 
     def test_panther_vector_similarity_basic(self):
@@ -1156,3 +1276,89 @@ class TestSimilarity:
                 f"panther_vector_similarity k={k_val} returned {len(result_vector)} results"
             )
             assert 1 not in result_vector, "Source node should not be in results"
+
+
+@pytest.mark.parametrize("graph_type", [nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize("sizes", [(2, 3), (3, 2), (3, 3)])
+@pytest.mark.parametrize("loops", [False, True])
+def test_optimal_edit_paths_all_tied_parallel_edges(graph_type, sizes, loops):
+    import math
+
+    m, n = sizes
+    v = 0 if loops else 1
+    G = graph_type()
+    H = graph_type()
+    G.add_edges_from((0, v, key) for key in range(m))
+    H.add_edges_from((0, v, key) for key in range(n))
+    # A fixed root isolates edge assignment from vertex automorphisms.
+    paths = list(nx.optimize_edit_paths(G, H, roots=(0, 0), strictly_decreasing=False))
+    best = min(cost for _, _, cost in paths)
+    optimum = [edges for _, edges, cost in paths if cost == best]
+    assert best == abs(m - n)
+    assert len(optimum) == math.perm(max(m, n), min(m, n))
+    assert len({frozenset(edges) for edges in optimum}) == len(optimum)
+
+
+@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph])
+def test_optimal_edit_paths_substitution_ties_delete_insert(graph_type):
+    G = graph_type([(0, 1)])
+    paths = list(
+        nx.optimize_edit_paths(
+            G,
+            G,
+            roots=(0, 0),
+            strictly_decreasing=False,
+            node_del_cost=lambda _: 100,
+            node_ins_cost=lambda _: 100,
+            edge_subst_cost=lambda _a, _b: 2,
+        )
+    )
+    optimum = [edges for _, edges, cost in paths if cost == 2]
+    assert len(optimum) == 2
+    assert {frozenset(edges) for edges in optimum} == {
+        frozenset([((0, 1), (0, 1))]),
+        frozenset([((0, 1), None), (None, (0, 1))]),
+    }
+
+
+def test_optimal_edit_paths_fractional_parallel_ties():
+    G = nx.MultiGraph()
+    H = nx.MultiGraph()
+    for key, cost in enumerate([0.1, 0.2, 0.3]):
+        G.add_edge(0, 0, key=key)
+        H.add_edge(0, 0, key=key, cost=cost)
+    paths = list(
+        nx.optimize_edit_paths(
+            G,
+            H,
+            roots=(0, 0),
+            strictly_decreasing=False,
+            edge_subst_cost=lambda _a, b: b["cost"],
+        )
+    )
+    assert len(paths) == 6
+    assert len({frozenset(edges) for _, edges, _ in paths}) == 6
+    assert all(cost == pytest.approx(0.6) for _, _, cost in paths)
+
+
+def test_optimal_edit_paths_overflowing_nonoptimal_assignment():
+    np = pytest.importorskip("numpy")
+    G = nx.MultiGraph()
+    for key in range(2):
+        G.add_edge(0, 0, key=key, kind=key)
+    # Existing matrix bounds can overflow even though the optimum is finite.
+    # An alternative positive cost sum must be pruned without raising.
+    with np.errstate(over="ignore"):
+        paths = list(
+            nx.optimize_edit_paths(
+                G,
+                G,
+                roots=(0, 0),
+                strictly_decreasing=False,
+                edge_subst_cost=lambda a, b: 8e307 if a["kind"] == b["kind"] else 9e307,
+                edge_del_cost=lambda _: 1e308,
+                edge_ins_cost=lambda _: 1e308,
+            )
+        )
+    assert len(paths) == 1
+    assert paths[0][2] == 1.6e308

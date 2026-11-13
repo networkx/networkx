@@ -493,15 +493,19 @@ def random_graph(n, m, p, seed=None, directed=False):
     if p <= 0:
         return G
     if p >= 1:
-        return nx.complete_bipartite_graph(n, m)
+        G = nx.complete_bipartite_graph(n, m)
+        return G.to_directed() if directed else G
 
-    lp = math.log(1.0 - p)
+    lp = math.log1p(-p)
 
     v = 0
     w = -1
     while v < n:
-        lr = math.log(1.0 - seed.random())
-        w = w + 1 + int(lr / lp)
+        lr = math.log1p(-seed.random())
+        skip = lr / lp
+        if skip == math.inf:
+            break  # The skip exceeds the remaining candidate edges.
+        w = w + 1 + int(skip)
         while w >= m and v < n:
             w = w - m
             v = v + 1
@@ -514,8 +518,11 @@ def random_graph(n, m, p, seed=None, directed=False):
         v = 0
         w = -1
         while v < n:
-            lr = math.log(1.0 - seed.random())
-            w = w + 1 + int(lr / lp)
+            lr = math.log1p(-seed.random())
+            skip = lr / lp
+            if skip == math.inf:
+                break
+            w = w + 1 + int(skip)
             while w >= m and v < n:
                 w = w - m
                 v = v + 1

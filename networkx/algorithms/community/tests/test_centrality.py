@@ -5,6 +5,8 @@ module.
 
 from operator import itemgetter
 
+import pytest
+
 import networkx as nx
 
 
@@ -83,3 +85,33 @@ class TestGirvanNewman:
         validate_communities(communities[0], [{0}, {1, 2, 3}])
         validate_communities(communities[1], [{0}, {1}, {2, 3}])
         validate_communities(communities[2], [{0}, {1}, {2}, {3}])
+
+    def test_disconnected_global_ranking_and_order(self):
+        # Global scores select the middle of the four-node path first.
+        # Normalizing each component separately would select the other path.
+        G = nx.Graph()
+        G.add_nodes_from(["x", 0, "y", 1, "z", 2, 3])
+        G.add_edges_from([("x", "y"), ("y", "z"), (0, 1), (1, 2), (2, 3)])
+        assert list(nx.community.girvan_newman(G)) == [
+            ({"x", "y", "z"}, {0, 1}, {2, 3}),
+            ({"x"}, {0, 1}, {"y", "z"}, {2, 3}),
+            ({"x"}, {0}, {"y", "z"}, {1}, {2, 3}),
+            ({"x"}, {0}, {"y"}, {1}, {"z"}, {2, 3}),
+            ({"x"}, {0}, {"y"}, {1}, {"z"}, {2}, {3}),
+        ]
+
+    @pytest.mark.parametrize(
+        "graph_type", [nx.Graph, nx.MultiGraph, nx.DiGraph, nx.MultiDiGraph]
+    )
+    def test_default_matches_public_betweenness(self, graph_type):
+        # Retain the original complete-graph callback path as the reference.
+        # The empirical graph exercises changing components and floating ties.
+        G = graph_type(nx.karate_club_graph())
+
+        def most_central(G):
+            scores = nx.edge_betweenness_centrality(G)
+            return max(scores, key=scores.get)
+
+        assert list(nx.community.girvan_newman(G)) == list(
+            nx.community.girvan_newman(G, most_valuable_edge=most_central)
+        )

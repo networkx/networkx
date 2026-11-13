@@ -91,14 +91,17 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False, *, create_using=None)
 
     G = empty_graph(n, create_using=create_using)
 
-    lp = math.log(1.0 - p)
+    lp = math.log1p(-p)
 
     if directed:
         v = 1
         w = -1
         while v < n:
-            lr = math.log(1.0 - seed.random())
-            w = w + 1 + int(lr / lp)
+            lr = math.log1p(-seed.random())
+            skip = lr / lp
+            if skip == math.inf:
+                break  # The skip exceeds the remaining candidate edges.
+            w = w + 1 + int(skip)
             while w >= v and v < n:
                 w = w - v
                 v = v + 1
@@ -109,8 +112,11 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False, *, create_using=None)
     v = 1
     w = -1
     while v < n:
-        lr = math.log(1.0 - seed.random())
-        w = w + 1 + int(lr / lp)
+        lr = math.log1p(-seed.random())
+        skip = lr / lp
+        if skip == math.inf:
+            break
+        w = w + 1 + int(skip)
         while w >= v and v < n:
             w = w - v
             v = v + 1

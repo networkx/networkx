@@ -343,6 +343,10 @@ def optimal_edit_paths(
     In the case of isomorphic graphs, the cost is zero, and the paths
     represent different isomorphic mappings (isomorphisms). That is, the
     edits involve renaming nodes and edges to match the structure of `G2`.
+    For multigraphs, returned edge identities include their keys:
+    ``(u, v, key)``. Different minimum-cost edge assignments are returned
+    even when their node edit paths are identical. The number of such paths
+    can grow factorially with the number of interchangeable parallel edges.
 
     See Also
     --------
@@ -733,7 +737,7 @@ def optimize_edit_paths(
             rind[rind >= k] -= 1
         return rind
 
-    def match_edges(u, v, pending_g, pending_h, Ce, matched_uv=None):
+    def match_edges(u, v, pending_g, pending_h, Ce, matched_uv):
         """
         Parameters:
             u, v: matched vertices, u=None or v=None for
@@ -754,32 +758,21 @@ def optimize_edit_paths(
         N = len(pending_h)
         # assert Ce.C.shape == (M + N, M + N)
 
-        # only attempt to match edges after one node match has been made
-        # this will stop self-edges on the first node being automatically deleted
-        # even when a substitution is the better option
-
-        substitution_possible = M and N
-        at_least_one_node_match = matched_uv is None or len(matched_uv) == 0
-        if at_least_one_node_match and substitution_possible:
-            g_ind = []
-            h_ind = []
-        else:
-            g_ind = [
-                i
-                for i in range(M)
-                if pending_g[i][:2] == (u, u)
-                or any(
-                    pending_g[i][:2] in ((p, u), (u, p), (p, p)) for p, q in matched_uv
-                )
-            ]
-            h_ind = [
-                j
-                for j in range(N)
-                if pending_h[j][:2] == (v, v)
-                or any(
-                    pending_h[j][:2] in ((q, v), (v, q), (q, q)) for p, q in matched_uv
-                )
-            ]
+        # An edge is ready once both endpoints have been mapped. This includes
+        # self-loops on the first vertex and edges incident to deleted vertices.
+        # Unresolved edges stay in Ce as a permissive lower bound.
+        mapping = {p: q for p, q in matched_uv if p is not None}
+        mapped_h = {q for p, q in matched_uv if q is not None}
+        if u is not None:
+            mapping[u] = v
+        if v is not None:
+            mapped_h.add(v)
+        g_ind = [
+            i for i, g in enumerate(pending_g) if g[0] in mapping and g[1] in mapping
+        ]
+        h_ind = [
+            j for j, h in enumerate(pending_h) if h[0] in mapped_h and h[1] in mapped_h
+        ]
 
         m = len(g_ind)
         n = len(h_ind)
@@ -790,27 +783,13 @@ def optimize_edit_paths(
 
             # Forbid structurally invalid matches
             # NOTE: inf remembered from Ce construction
+            directed = nx.is_directed(G1) or nx.is_directed(G2)
             for k, i in enumerate(g_ind):
-                g = pending_g[i][:2]
+                g = tuple(mapping[p] for p in pending_g[i][:2])
                 for l, j in enumerate(h_ind):
                     h = pending_h[j][:2]
-                    if nx.is_directed(G1) or nx.is_directed(G2):
-                        if any(
-                            g == (p, u) and h == (q, v) or g == (u, p) and h == (v, q)
-                            for p, q in matched_uv
-                        ):
-                            continue
-                    else:
-                        if any(
-                            g in ((p, u), (u, p)) and h in ((q, v), (v, q))
-                            for p, q in matched_uv
-                        ):
-                            continue
-                    if g == (u, u) or any(g == (p, p) for p, q in matched_uv):
-                        continue
-                    if h == (v, v) or any(h == (q, q) for p, q in matched_uv):
-                        continue
-                    C[k, l] = inf
+                    if g != h and (directed or g != h[::-1]):
+                        C[k, l] = inf
 
             localCe = make_CostMatrix(C, m, n)
             ij = [
@@ -827,6 +806,88 @@ def optimize_edit_paths(
             localCe = CostMatrix(np.empty((0, 0)), [], [], 0)
 
         return ij, localCe
+
+    def get_edge_matches(xy, localCe, M, N):
+        """Yield distinct minimum-cost assignments of the ready real edges.
+
+        Dummy-to-dummy permutations do not represent edit operations. Branch
+        on one real source edge instead, either matching it to a remaining
+        target or deleting it; unused target edges are inserted at the leaf.
+        Distance-only searches retain the single preferred assignment.
+        """
+        yield xy
+        if strictly_decreasing:
+            return
+
+        g_ind = sorted(x for x, y in xy if x < M)
+        h_ind = sorted(y for x, y in xy if y < N)
+        if not g_ind or not h_ind:
+            return
+        preferred = frozenset(xy)
+
+        def assigned_costs(Ce):
+            return [Ce.C[i, j] for i, j in zip(Ce.lsa_row_ind, Ce.lsa_col_ind)]
+
+        def sum_costs(costs):
+            # An overflowing positive branch is an inadmissible upper cost,
+            # not an error in an otherwise finite minimum-cost assignment.
+            try:
+                return math.fsum(costs)
+            except OverflowError:
+                return math.inf
+
+        # Compare the original cost terms, not differently rounded partial
+        # sums. This keeps a tied assignment independent of summation order.
+        target_cost = sum_costs(assigned_costs(localCe))
+
+        def assignments(Ce, g_ind, h_ind, costs, path):
+            if timeout is not None and time.perf_counter() - start > timeout:
+                return
+            m, n = len(g_ind), len(h_ind)
+            if not m or not n:
+                if sum_costs(costs + assigned_costs(Ce)) <= target_cost:
+                    result = (
+                        path + [(x, N + x) for x in g_ind] + [(M + y, y) for y in h_ind]
+                    )
+                    if frozenset(result) != preferred:
+                        yield result
+                return
+
+            # Real row zero partitions partial injections without enumerating
+            # the artificial dummy assignments used by the lower bound.
+            for j in range(n + 1):
+                next_costs = costs + [Ce.C[0, j]]
+                if sum_costs(next_costs) > target_cost:
+                    continue
+                reduced = make_CostMatrix(
+                    reduce_C(Ce.C, (0,), (j,), m, n),
+                    m - 1,
+                    n - 1 if j < n else n,
+                )
+                if sum_costs(next_costs + assigned_costs(reduced)) > target_cost:
+                    continue
+                operation = (g_ind[0], h_ind[j] if j < n else N + g_ind[0])
+                yield assignments(
+                    reduced,
+                    g_ind[1:],
+                    h_ind[:j] + h_ind[j + 1 :] if j < n else h_ind,
+                    next_costs,
+                    path + [operation],
+                )
+
+        # Drive assignment descent without reintroducing a Python recursion
+        # limit, and without materializing factorially many tied paths.
+        stack = [assignments(localCe, g_ind, h_ind, [], [])]
+        while stack:
+            try:
+                result = next(stack[-1])
+            except StopIteration:
+                stack.pop()
+                continue
+            if isinstance(result, list):
+                yield result
+            else:
+                stack.append(result)
 
     def reduce_Ce(Ce, ij, m, n):
         if len(ij):
@@ -865,9 +926,15 @@ def optimize_edit_paths(
         n = len(pending_v)
         # assert Cv.C.shape == (m + n, m + n)
 
-        # 1) a vertex mapping from optimal linear sum assignment
+        # 1) a vertex mapping from optimal linear sum assignment. The fixed
+        # column (m <= n) or row (m > n) must represent a real vertex: all
+        # substitutions and its insertion/deletion then partition the search.
+        # Fixing a dummy instead would force an insertion/deletion and omit
+        # feasible substitutions, even when they give a cheaper edit path.
         i, j = min(
-            (k, l) for k, l in zip(Cv.lsa_row_ind, Cv.lsa_col_ind) if k < m or l < n
+            (k, l)
+            for k, l in zip(Cv.lsa_row_ind, Cv.lsa_col_ind)
+            if (l < n if m <= n else k < m)
         )
         xy, localCe = match_edges(
             pending_u[i] if i < m else None,
@@ -889,7 +956,10 @@ def optimize_edit_paths(
                 reduce_ind(Cv.lsa_col_ind, (j, n + i)),
                 Cv.ls - Cv.C[i, j],
             )
-            yield (i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls
+            for edge_matches in get_edge_matches(
+                xy, localCe, len(pending_g), len(pending_h)
+            ):
+                yield (i, j), Cv_ij, edge_matches, Ce_xy, Cv.C[i, j] + localCe.ls
 
         # 2) other candidates, sorted by lower-bound cost estimate
         other = []
@@ -931,9 +1001,15 @@ def optimize_edit_paths(
             # assert Ce.ls <= localCe.ls + Ce_xy.ls
             if prune(matched_cost + Cv.C[i, j] + Cv_ij.ls + localCe.ls + Ce_xy.ls):
                 continue
-            other.append(((i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls))
+            other.append(((i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls, localCe))
 
-        yield from sorted(other, key=lambda t: t[4] + t[1].ls + t[3].ls)
+        for ij, Cv_ij, xy, Ce_xy, cost, localCe in sorted(
+            other, key=lambda t: t[4] + t[1].ls + t[3].ls
+        ):
+            for edge_matches in get_edge_matches(
+                xy, localCe, len(pending_g), len(pending_h)
+            ):
+                yield ij, Cv_ij, edge_matches, Ce_xy, cost
 
     def get_edit_paths(
         matched_uv,
@@ -960,8 +1036,10 @@ def optimize_edit_paths(
             Ce: CostMatrix of pending edge mappings
             matched_cost: cost of partial edit path
 
-        Returns:
-            sequence of (vertex_path, edge_path, cost)
+        Yields:
+            A child search generator, or (vertex_path, edge_path, cost).
+            The outer search drives child generators to completion before
+            resuming their parents, preserving depth-first backtracking.
                 vertex_path: complete vertex edit path
                     list of tuples (u, v) of vertex mappings u<->v,
                     u=None or v=None for deletion/insertion
@@ -974,14 +1052,37 @@ def optimize_edit_paths(
         if prune(matched_cost + Cv.ls + Ce.ls):
             return
 
-        if not max(len(pending_u), len(pending_v)):
-            # assert not len(pending_g)
-            # assert not len(pending_h)
+        if not pending_u or not pending_v:
+            # Once one side is exhausted, every remaining vertex operation is
+            # forced. Complete them together instead of constructing a sequence
+            # of smaller assignment matrices and search frames. Cv.ls is exact
+            # here because its only feasible assignments are insertions or
+            # deletions. Settle edges after adding the full vertex mapping: roots
+            # can leave loops pending even when there are no pending vertices.
+            matched_uv = (
+                matched_uv
+                + [(u, None) for u in pending_u]
+                + [(None, v) for v in pending_v]
+            )
+            xy, localCe = match_edges(None, None, pending_g, pending_h, Ce, matched_uv)
+            matched_cost += Cv.ls + localCe.ls
+            if prune(matched_cost):
+                return
             # path completed!
             # assert matched_cost <= maxcost_value
             nonlocal maxcost_value
             maxcost_value = min(maxcost_value, matched_cost)
-            yield matched_uv, matched_gh, matched_cost
+            for edge_matches in get_edge_matches(
+                xy, localCe, len(pending_g), len(pending_h)
+            ):
+                edge_path = matched_gh + [
+                    (
+                        pending_g[x] if x < len(pending_g) else None,
+                        pending_h[y] if y < len(pending_h) else None,
+                    )
+                    for x, y in edge_matches
+                ]
+                yield matched_uv, edge_path, matched_cost
 
         else:
             edit_ops = get_edit_ops(
@@ -1024,7 +1125,10 @@ def optimize_edit_paths(
                     for y in reversed(sortedy)
                 ]
 
-                yield from get_edit_paths(
+                # Suspend this frame while the caller drives its child. Using
+                # an explicit stack avoids Python's recursion limit without
+                # changing preferred-first traversal or backtracking order.
+                yield get_edit_paths(
                     matched_uv,
                     pending_u,
                     pending_v,
@@ -1183,9 +1287,29 @@ def optimize_edit_paths(
 
     done_uv = [] if roots is None else [roots]
 
-    for vertex_path, edge_path, cost in get_edit_paths(
-        done_uv, pending_u, pending_v, Cv, [], pending_g, pending_h, Ce, initial_cost
-    ):
+    paths = [
+        get_edit_paths(
+            done_uv,
+            pending_u,
+            pending_v,
+            Cv,
+            [],
+            pending_g,
+            pending_h,
+            Ce,
+            initial_cost,
+        )
+    ]
+    while paths:
+        try:
+            result = next(paths[-1])
+        except StopIteration:
+            paths.pop()
+            continue
+        if not isinstance(result, tuple):
+            paths.append(result)
+            continue
+        vertex_path, edge_path, cost = result
         # assert sorted(G1.nodes) == sorted(u for u, v in vertex_path if u is not None)
         # assert sorted(G2.nodes) == sorted(v for u, v in vertex_path if v is not None)
         # assert sorted(G1.edges) == sorted(g for g, h in edge_path if g is not None)

@@ -31,3 +31,12 @@ class ChordalBenchmarks:
     def time_is_chordal_cycle_graph(self, num_nodes):
         """Not chordal, finding chordality breaker requires querying whole graph"""
         nx.is_chordal(self.cycle_graph)
+
+    def time_complete_to_chordal_cycle(self, num_nodes):
+        nx.complete_to_chordal_graph(self.cycle_graph)
+
+    def time_complete_to_chordal_wheel(self, num_nodes):
+        nx.complete_to_chordal_graph(self.wheel_graph)
+
+    def time_complete_to_chordal_path(self, num_nodes):
+        nx.complete_to_chordal_graph(self.path_graph)

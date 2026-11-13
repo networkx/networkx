@@ -501,6 +501,101 @@ class TestMultiSourceDijkstra:
 
 
 class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
+    @pytest.mark.parametrize(
+        "graph_type", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+    )
+    def test_hidden_edges(self, graph_type):
+        # gh-8456: hiding the second edge leaves node 2 unreachable.
+        G = graph_type()
+        G.add_edge(0, 1, weight=1, visible=True)
+        G.add_edge(1, 2, weight=2, visible=False)
+        G.add_edge(1, 1, weight=-1, visible=False)
+
+        def weight(u, v, data):
+            edges = data.values() if G.is_multigraph() else [data]
+            return min((d["weight"] for d in edges if d["visible"]), default=None)
+
+        distances = {0: 0, 1: 1}
+        paths = {0: [0], 1: [0, 1]}
+        assert nx.bellman_ford_predecessor_and_distance(G, 0, weight=weight) == (
+            {0: [], 1: [0]},
+            distances,
+        )
+        assert nx.goldberg_radzik(G, 0, weight=weight) == ({0: None, 1: 0}, distances)
+        assert nx.single_source_bellman_ford(G, 0, weight=weight) == (distances, paths)
+        assert nx.single_source_bellman_ford_path(G, 0, weight=weight) == paths
+        assert (
+            nx.single_source_bellman_ford_path_length(G, 0, weight=weight) == distances
+        )
+        assert dict(nx.all_pairs_bellman_ford_path(G, weight=weight))[0] == paths
+        assert (
+            dict(nx.all_pairs_bellman_ford_path_length(G, weight=weight))[0]
+            == distances
+        )
+        assert nx.johnson(G, weight=weight)[0] == paths
+        for function in (nx.bellman_ford_path, nx.bellman_ford_path_length):
+            with pytest.raises(nx.NetworkXNoPath):
+                function(G, 0, 2, weight=weight)
+
+    @pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.MultiDiGraph))
+    def test_callable_selfloop_uses_all_parallel_edges(self, graph_type):
+        G = graph_type()
+        G.add_edge(0, 0, key="first", weight=-2)
+        G.add_edge(0, 0, key="second", weight=3)
+
+        def weight(u, v, data):
+            assert (u, v) == (0, 0)
+            assert set(data) == {"first", "second"}
+            return sum(d["weight"] for d in data.values())
+
+        for function in (nx.bellman_ford_predecessor_and_distance, nx.goldberg_radzik):
+            assert function(G, 0, weight=weight)[1] == {0: 0}
+            # String weights still select the minimum of the parallel edges.
+            with pytest.raises(nx.NetworkXUnbounded):
+                function(G, 0)
+        assert not nx.negative_edge_cycle(G, weight=weight)
+        with pytest.raises(nx.NetworkXError, match="No negative cycles"):
+            nx.find_negative_cycle(G, 0, weight=weight)
+
+        G[0][0]["second"]["weight"] = 1
+        assert nx.negative_edge_cycle(G, weight=weight)
+        assert nx.find_negative_cycle(G, 0, weight=weight) == [0, 0]
+
+    @pytest.mark.parametrize(
+        "graph_type", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+    )
+    def test_find_negative_selfloop(self, graph_type):
+        G = graph_type()
+        G.add_edge(0, 0, weight=-1)
+        assert nx.find_negative_cycle(G, 0) == [0, 0]
+        with pytest.raises(nx.NetworkXError, match="No negative cycles"):
+            nx.find_negative_cycle(G, 0, weight=lambda u, v, data: None)
+
+    @pytest.mark.parametrize("graph_type", (nx.DiGraph, nx.MultiDiGraph))
+    @pytest.mark.parametrize("heuristic", (False, True))
+    def test_negative_cycle_callable_on_original_edges(self, graph_type, heuristic):
+        G = graph_type()
+        G.add_node("isolated")
+        G.add_edge("a", "b", weight=-2, visible=True)
+        G.add_edge("b", "a", weight=1, visible=True)
+
+        def weight(u, v, data):
+            # A callback is entitled to depend on attributes of actual edges.
+            edges = data.values() if G.is_multigraph() else [data]
+            return min((d["weight"] for d in edges if d["visible"]), default=None)
+
+        # The global search must not mutate G or invent callback inputs.
+        nx.freeze(G)
+        assert nx.negative_edge_cycle(G, weight=weight, heuristic=heuristic)
+        assert nx.find_negative_cycle(G, "a", weight=weight) in (
+            ["a", "b", "a"],
+            ["b", "a", "b"],
+        )
+        for _, _, data in G.edges(data=True):
+            if data["weight"] < 0:
+                data["visible"] = False
+        assert not nx.negative_edge_cycle(G, weight=weight, heuristic=heuristic)
+
     def test_single_node_graph(self):
         G = nx.DiGraph()
         G.add_node(0)
@@ -902,6 +997,28 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
 
 class TestJohnsonAlgorithm(WeightedTestBase):
+    @pytest.mark.parametrize("graph_type", (nx.DiGraph, nx.MultiDiGraph))
+    def test_hidden_edges_with_negative_weights(self, graph_type):
+        G = graph_type()
+        G.add_edge(0, 1, weight=-2)
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(0, 2, weight=3)
+        G.add_edge(2, 0, weight=-3, hidden=True)
+
+        def weight(u, v, data):
+            edges = data.values() if G.is_multigraph() else [data]
+            return min(
+                (d["weight"] for d in edges if not d.get("hidden")), default=None
+            )
+
+        assert nx.johnson(G, weight=weight) == {
+            0: {0: [0], 1: [0, 1], 2: [0, 1, 2]},
+            1: {1: [1], 2: [1, 2]},
+            2: {2: [2]},
+        }
+        for function in (nx.bellman_ford_predecessor_and_distance, nx.goldberg_radzik):
+            assert function(G, 0, weight=weight)[1] == {0: 0, 1: -2, 2: -1}
+
     def test_single_node_graph(self):
         G = nx.DiGraph()
         G.add_node(0)

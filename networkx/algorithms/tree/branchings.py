@@ -29,6 +29,7 @@ This implementation is based on:
 # }
 import string
 from dataclasses import dataclass, field
+from math import isfinite
 from operator import itemgetter
 from queue import PriorityQueue
 
@@ -187,6 +188,33 @@ def maximum_branching(
     preserve_attrs=False,
     partition=None,
 ):
+    return _maximum_branching(G, attr, default, preserve_attrs, partition)
+
+
+def _maximum_branching(
+    G,
+    attr="weight",
+    default=1,
+    preserve_attrs=False,
+    partition=None,
+    *,
+    minimum=False,
+    spanning=False,
+):
+    """Edmonds' algorithm, optionally preferring cardinality over weight.
+
+    In spanning mode, regard each edge weight as the lexicographic pair
+    ``(1, weight)``. Cycle contraction adds one edge weight and subtracts
+    another, so the leading component remains one. Thus all candidate edges
+    are positive in this ordering, regardless of their numeric weight. This
+    maximizes the number of edges before optimizing their total weight,
+    without a finite weight shift that can lose precision or be too small.
+
+    Negate weights only in the working graph for minimization, and recover
+    selected weights from the original edges rather than reversing arithmetic.
+    Finite built-in floats and integers use an exact common power-of-two scale
+    during contraction. Other numeric types retain their own arithmetic.
+    """
     #######################################
     ### Data Structure Helper Functions ###
     #######################################
@@ -262,9 +290,12 @@ def maximum_branching(
 
     # A dict to reliably track mutations to the edges using the key of the edge.
     G_edge_index = {}
+    original_weights = []
     # Each edge is given an arbitrary numerical key
     for key, (u, v, data) in enumerate(G_original.edges(data=True)):
-        d = {attr: data.get(attr, default)}
+        weight = data.get(attr, default)
+        original_weights.append(weight)
+        d = {attr: -weight if minimum else weight}
 
         if data.get(partition) is not None:
             d[partition] = data.get(partition)
@@ -275,6 +306,29 @@ def maximum_branching(
                     d[d_k] = d_v
 
         edmonds_add_edge(G, G_edge_index, u, v, key, **d)
+
+    if any(type(weight) is float for weight in original_weights):
+        ratios = []
+        scale = 0
+        for weight in original_weights:
+            if type(weight) is int:
+                numerator, exponent = weight, 0
+            elif type(weight) is float and isfinite(weight):
+                numerator, denominator = weight.as_integer_ratio()
+                exponent = denominator.bit_length() - 1
+                scale = max(scale, exponent)
+            else:
+                # Keep mixed numeric types and nonfinite values on their
+                # existing arithmetic path, without coercing their values.
+                break
+            ratios.append((numerator, exponent))
+        else:
+            # One positive common scale preserves signs, ties, and objective
+            # comparisons. Integer contraction cannot overflow or cancel.
+            for key, (numerator, exponent) in enumerate(ratios):
+                weight = numerator << (scale - exponent)
+                G_edge_index[key][2][attr] = -weight if minimum else weight
+        del ratios
 
     level = 0  # Stores the number of contracted nodes
 
@@ -506,7 +560,7 @@ def maximum_branching(
 
         # There might be no desired edge if all edges are excluded or
         # v is the last node to be added to B, the ultimate root of the branching
-        if desired_edge is not None and desired_edge_weight > 0:
+        if desired_edge is not None and (spanning or desired_edge_weight > 0):
             u = desired_edge[0]
             # Flag adding the edge will create a circuit before merging the two
             # connected components of u and v in B
@@ -590,7 +644,7 @@ def maximum_branching(
     H.add_nodes_from(G_original)
     for edgekey in edges:
         u, v, d = graphs[0][1][edgekey]
-        dd = {attr: d[attr]}
+        dd = {attr: original_weights[edgekey]}
 
         if preserve_attrs:
             for key, value in d.items():
@@ -606,25 +660,11 @@ def maximum_branching(
     return H
 
 
-@nx._dispatchable(preserve_edge_attrs=True, mutates_input=True, returns_graph=True)
+@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
 def minimum_branching(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
-    for _, _, d in G.edges(data=True):
-        d[attr] = -d.get(attr, default)
-    nx._clear_cache(G)
-
-    B = maximum_branching(G, attr, default, preserve_attrs, partition)
-
-    for _, _, d in G.edges(data=True):
-        d[attr] = -d.get(attr, default)
-    nx._clear_cache(G)
-
-    for _, _, d in B.edges(data=True):
-        d[attr] = -d.get(attr, default)
-    nx._clear_cache(B)
-
-    return B
+    return _maximum_branching(G, attr, default, preserve_attrs, partition, minimum=True)
 
 
 @nx._dispatchable(preserve_edge_attrs=True, mutates_input=True, returns_graph=True)
@@ -691,41 +731,11 @@ def minimal_branching(
     return B
 
 
-@nx._dispatchable(preserve_edge_attrs=True, mutates_input=True, returns_graph=True)
+@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
 def maximum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
-    # In order to use the same algorithm is the maximum branching, we need to adjust
-    # the weights of the graph. The branching algorithm can choose to not include an
-    # edge if it doesn't help find a branching, mainly triggered by edges with negative
-    # weights.
-    #
-    # To prevent this from happening while trying to find a spanning arborescence, we
-    # just have to tweak the edge weights so that they are all positive and cannot
-    # become negative during the branching algorithm, find the maximum branching and
-    # then return them to their original values.
-
-    min_weight = INF
-    max_weight = -INF
-    for _, _, w in G.edges(data=attr, default=default):
-        if w < min_weight:
-            min_weight = w
-        if w > max_weight:
-            max_weight = w
-
-    for _, _, d in G.edges(data=True):
-        d[attr] = d.get(attr, default) - min_weight + 1 - (min_weight - max_weight)
-    nx._clear_cache(G)
-
-    B = maximum_branching(G, attr, default, preserve_attrs, partition)
-
-    for _, _, d in G.edges(data=True):
-        d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
-    nx._clear_cache(G)
-
-    for _, _, d in B.edges(data=True):
-        d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
-    nx._clear_cache(B)
+    B = _maximum_branching(G, attr, default, preserve_attrs, partition, spanning=True)
 
     if not is_arborescence(B):
         raise nx.NetworkXException("No maximum spanning arborescence in G.")
@@ -733,16 +743,18 @@ def maximum_spanning_arborescence(
     return B
 
 
-@nx._dispatchable(preserve_edge_attrs=True, mutates_input=True, returns_graph=True)
+@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
 def minimum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
-    B = minimal_branching(
+    B = _maximum_branching(
         G,
         attr=attr,
         default=default,
         preserve_attrs=preserve_attrs,
         partition=partition,
+        minimum=True,
+        spanning=True,
     )
 
     if not is_arborescence(B):

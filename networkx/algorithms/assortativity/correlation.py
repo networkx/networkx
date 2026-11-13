@@ -1,11 +1,15 @@
 """Node assortativity coefficients and correlation measures."""
 
+from collections import defaultdict
+from math import fsum, sqrt
+from numbers import Integral
+
 import networkx as nx
 from networkx.algorithms.assortativity.mixing import (
-    attribute_mixing_matrix,
-    degree_mixing_matrix,
+    degree_mixing_dict,
+    mixing_dict,
 )
-from networkx.algorithms.assortativity.pairs import node_degree_xy
+from networkx.algorithms.assortativity.pairs import node_attribute_xy, node_degree_xy
 
 __all__ = [
     "degree_pearson_correlation_coefficient",
@@ -65,7 +69,9 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     This computes Eq. (21) in Ref. [1]_ , where e is the joint
     probability distribution (mixing matrix) of the degrees.  If G is
     directed than the matrix e is the joint probability of the
-    user-specified degree type for the source and target.
+    user-specified degree type for the source and target. The coefficient is
+    evaluated from nonzero joint counts without constructing a dense mixing
+    matrix.
 
     References
     ----------
@@ -74,30 +80,8 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     .. [2] Foster, J.G., Foster, D.V., Grassberger, P. & Paczuski, M.
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
     """
-    if nodes is None:
-        nodes = G.nodes
-
-    degrees = None
-
-    if G.is_directed():
-        indeg = (
-            {d for _, d in G.in_degree(nodes, weight=weight)}
-            if "in" in (x, y)
-            else set()
-        )
-        outdeg = (
-            {d for _, d in G.out_degree(nodes, weight=weight)}
-            if "out" in (x, y)
-            else set()
-        )
-        degrees = set.union(indeg, outdeg)
-    else:
-        degrees = {d for _, d in G.degree(nodes, weight=weight)}
-
-    mapping = {d: i for i, d in enumerate(degrees)}
-    M = degree_mixing_matrix(G, x=x, y=y, nodes=nodes, weight=weight, mapping=mapping)
-
-    return _numeric_ac(M, mapping=mapping)
+    d = degree_mixing_dict(G, x=x, y=y, nodes=nodes, weight=weight)
+    return _numeric_ac(d)
 
 
 @nx._dispatchable(edge_attrs="weight")
@@ -201,15 +185,33 @@ def attribute_assortativity_coefficient(G, attribute, nodes=None):
     -----
     This computes Eq. (2) in Ref. [1]_ , (trace(M)-sum(M^2))/(1-sum(M^2)),
     where M is the joint probability distribution (mixing matrix)
-    of the specified attribute.
+    of the specified attribute. The coefficient is evaluated using exact
+    integer counts of matching endpoints and the two marginal distributions,
+    without constructing a dense mixing matrix. It is undefined (NaN) when
+    there are no observations or all endpoints have the same attribute.
 
     References
     ----------
     .. [1] M. E. J. Newman, Mixing patterns in networks,
        Physical Review E, 67 026126, 2003
     """
-    M = attribute_mixing_matrix(G, attribute, nodes)
-    return attribute_ac(M)
+    marginals = defaultdict(lambda: [0, 0])
+    total = matched = 0
+    for x, y in node_attribute_xy(G, attribute, nodes):
+        source = marginals[x]
+        target = marginals[y]
+        source[0] += 1
+        target[1] += 1
+        total += 1
+        # Compare canonical records to retain dictionary-key semantics,
+        # including identity matches for the same NaN category object.
+        if source is target:
+            matched += 1
+    expected = sum(outgoing * incoming for outgoing, incoming in marginals.values())
+    denominator = total * total - expected
+    if not denominator:
+        return float("nan")
+    return (total * matched - expected) / denominator
 
 
 @nx._dispatchable(node_attrs="attribute")
@@ -248,18 +250,24 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
     -----
     This computes Eq. (21) in Ref. [1]_ , which is the Pearson correlation
     coefficient of the specified (scalar valued) attribute across edges.
+    The coefficient is evaluated from nonzero joint counts without constructing
+    a dense mixing matrix. Centering and scaling the attribute values avoids
+    squaring large values or subtracting nearly equal raw moments.
+
+    Returns ``nan`` when no selected edge pairs exist or either endpoint
+    distribution has zero variance.
 
     References
     ----------
     .. [1] M. E. J. Newman, Mixing patterns in networks
            Physical Review E, 67 026126, 2003
     """
-    if nodes is None:
-        nodes = G.nodes
+    nodes = set(G) if nodes is None else set(nodes)
     vals = {G.nodes[n][attribute] for n in nodes}
-    mapping = {d: i for i, d in enumerate(vals)}
-    M = attribute_mixing_matrix(G, attribute, nodes, mapping)
-    return _numeric_ac(M, mapping)
+    # Preserve the support restriction of the previous mixing-matrix mapping.
+    # A selected source can have an unselected neighbor with a selected value.
+    xy = ((x, y) for x, y in node_attribute_xy(G, attribute, nodes) if y in vals)
+    return _numeric_ac(mixing_dict(xy))
 
 
 def attribute_ac(M):
@@ -289,20 +297,68 @@ def attribute_ac(M):
     return float(r)
 
 
-def _numeric_ac(M, mapping):
-    # M is a 2D numpy array
-    # numeric assortativity coefficient, pearsonr
+def _numeric_ac(mixing):
+    """Pearson correlation from nonzero joint counts, without a dense matrix."""
+    xcounts = {}
+    ycounts = {}
+    for x, row in mixing.items():
+        for y, count in row.items():
+            xcounts[x] = xcounts.get(x, 0) + count
+            ycounts[y] = ycounts.get(y, 0) + count
+    n = sum(xcounts.values())
+    if not n:
+        return float("nan")
+
+    x = _normalized_marginal(xcounts, n)
+    y = _normalized_marginal(ycounts, n)
+    if x is None or y is None:
+        return float("nan")
+    r = fsum(
+        count * x[u] * y[v]
+        for u, row in mixing.items()
+        for v, count in row.items()
+    )
+    # Roundoff can otherwise put a perfectly correlated result just outside
+    # the mathematical bounds.
+    return max(-1.0, min(1.0, r))
+
+
+def _normalized_marginal(counts, n):
+    """Center and normalize one marginal using O(number of values) storage."""
     import numpy as np
 
-    if M.sum() != 1.0:
-        M = M / M.sum()
-    x = np.array(list(mapping.keys()))
-    y = x  # x and y have the same support
-    idx = list(mapping.values())
-    a = M.sum(axis=0)
-    b = M.sum(axis=1)
-    vara = (a[idx] * x**2).sum() - ((a[idx] * x).sum()) ** 2
-    varb = (b[idx] * y**2).sum() - ((b[idx] * y).sum()) ** 2
-    xy = np.outer(x, y)
-    ab = np.outer(a[idx], b[idx])
-    return float((xy * (M - ab)).sum() / np.sqrt(vara * varb))
+    # Subtract integer origins in Python, before converting to floating point.
+    # This avoids both fixed-width overflow and loss of small differences
+    # between large integer values.
+    values = [v.item() if isinstance(v, np.generic) else v for v in counts]
+    values = [int(v) if isinstance(v, Integral) else v for v in values]
+    if any(not np.isfinite(v) for v in values if not isinstance(v, Integral)):
+        return None
+    origin = values[0]
+    try:
+        with np.errstate(over="ignore", invalid="ignore"):
+            differences = [v - origin for v in values]
+        finite = all(isinstance(d, Integral) or np.isfinite(d) for d in differences)
+    except OverflowError:
+        finite = False
+    if not finite:
+        # Two finite values can have a difference outside the floating-point
+        # range. Compute only this uncommon case as exact ratios, then scale
+        # it into [-1, 1] before converting to float.
+        from fractions import Fraction
+
+        ratios = [
+            Fraction(v) if isinstance(v, Integral) else Fraction(*v.as_integer_ratio())
+            for v in values
+        ]
+        differences = [v - ratios[0] for v in ratios]
+    scale = max(abs(d) for d in differences)
+    if not scale:
+        return None
+    offsets = [float(d / scale) for d in differences]
+    mean = fsum(count * offset for count, offset in zip(counts.values(), offsets)) / n
+    centered = [offset - mean for offset in offsets]
+    norm = sqrt(fsum(count * d * d for count, d in zip(counts.values(), centered)))
+    if not norm:
+        return None
+    return {v: d / norm for v, d in zip(counts, centered)}
