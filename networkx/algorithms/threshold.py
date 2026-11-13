@@ -320,16 +320,19 @@ def threshold_graph(creation_sequence, create_using=None):
     Returns None if the sequence is not valid
     """
     # Turn input sequence into a labeled creation sequence
-    first = creation_sequence[0]
-    if isinstance(first, str):  # creation sequence
-        ci = list(enumerate(creation_sequence))
-    elif isinstance(first, tuple):  # labeled creation sequence
-        ci = creation_sequence[:]
-    elif isinstance(first, int):  # compact creation sequence
-        cs = uncompact(creation_sequence)
-        ci = list(enumerate(cs))
+    if not creation_sequence:
+        ci = []
     else:
-        raise ValueError("not a valid creation sequence")
+        first = creation_sequence[0]
+        if isinstance(first, str):  # creation sequence
+            ci = list(enumerate(creation_sequence))
+        elif isinstance(first, tuple):  # labeled creation sequence
+            ci = creation_sequence[:]
+        elif isinstance(first, int):  # compact creation sequence
+            cs = uncompact(creation_sequence)
+            ci = list(enumerate(cs))
+        else:
+            raise ValueError("not a valid creation sequence")
 
     G = nx.empty_graph(0, create_using)
     if G.is_directed():
