@@ -1282,6 +1282,8 @@ class TestSimilarity:
 @pytest.mark.parametrize("sizes", [(2, 3), (3, 2), (3, 3)])
 @pytest.mark.parametrize("loops", [False, True])
 def test_optimal_edit_paths_all_tied_parallel_edges(graph_type, sizes, loops):
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     import math
 
     m, n = sizes
@@ -1301,6 +1303,8 @@ def test_optimal_edit_paths_all_tied_parallel_edges(graph_type, sizes, loops):
 
 @pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph])
 def test_optimal_edit_paths_substitution_ties_delete_insert(graph_type):
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     G = graph_type([(0, 1)])
     paths = list(
         nx.optimize_edit_paths(
@@ -1322,6 +1326,8 @@ def test_optimal_edit_paths_substitution_ties_delete_insert(graph_type):
 
 
 def test_optimal_edit_paths_fractional_parallel_ties():
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     G = nx.MultiGraph()
     H = nx.MultiGraph()
     for key, cost in enumerate([0.1, 0.2, 0.3]):
@@ -1343,6 +1349,7 @@ def test_optimal_edit_paths_fractional_parallel_ties():
 
 def test_optimal_edit_paths_overflowing_nonoptimal_assignment():
     np = pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
     G = nx.MultiGraph()
     for key in range(2):
         G.add_edge(0, 0, key=key, kind=key)

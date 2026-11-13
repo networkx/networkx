@@ -1,13 +1,15 @@
 """Independent exact checks for the #4936 assortativity numerical refactor."""
 
-from decimal import Decimal, localcontext
-from fractions import Fraction
 import math
 import random
+from decimal import Decimal, localcontext
+from fractions import Fraction
+
+import pytest
 
 import networkx as nx
-import numpy as np
-import pytest
+
+np = pytest.importorskip("numpy")
 
 
 def _fraction(value):
@@ -103,14 +105,18 @@ def test_numeric_extreme_finite_values(values, request):
     _assert_same(actual, _exact_correlation(_numeric_pairs(G, "value")))
 
 
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 @pytest.mark.parametrize("seed", range(8))
 def test_numerical_metrics_against_exact_edge_reference(graph_type, seed):
     rng = random.Random(seed)
     G = graph_type()
     G.add_nodes_from(range(9))
     for _ in range(23):
-        G.add_edge(rng.randrange(8), rng.randrange(8), strength=rng.randrange(-7, 11) / 4)
+        G.add_edge(
+            rng.randrange(8), rng.randrange(8), strength=rng.randrange(-7, 11) / 4
+        )
     nx.set_node_attributes(G, {u: rng.randrange(-9, 10) / 3 for u in G}, "value")
     for nodes in (None, [0, 2, 4, 6, 8], [1, 3], []):
         expected = _exact_correlation(_numeric_pairs(G, "value", nodes))
@@ -124,7 +130,9 @@ def test_numerical_metrics_against_exact_edge_reference(graph_type, seed):
             for weight in (None, "strength"):
                 expected = _exact_correlation(_degree_pairs(G, x, y, weight, nodes))
                 _assert_same(
-                    nx.degree_assortativity_coefficient(G, x=x, y=y, weight=weight, nodes=nodes),
+                    nx.degree_assortativity_coefficient(
+                        G, x=x, y=y, weight=weight, nodes=nodes
+                    ),
                     expected,
                 )
                 if nodes is not None:
@@ -145,7 +153,9 @@ def test_numeric_subset_preserves_attribute_support():
     _assert_same(nx.numeric_assortativity_coefficient(G, "value", [0, 1]), expected)
 
 
-@pytest.mark.parametrize("G", [nx.empty_graph(3), nx.cycle_graph(4), nx.Graph([(0, 0)])])
+@pytest.mark.parametrize(
+    "G", [nx.empty_graph(3), nx.cycle_graph(4), nx.Graph([(0, 0)])]
+)
 def test_undefined_correlations(G):
     nx.set_node_attributes(G, 7, "value")
     assert math.isnan(nx.degree_assortativity_coefficient(G))
@@ -186,13 +196,17 @@ def _exact_attribute_correlation(G, nodes=None):
     for x, y in pairs:
         M[categories[x]][categories[y]] += Fraction(1, len(pairs))
     trace = sum(M[i][i] for i in range(k))
-    square_sum = sum(M[i][j] * M[j][l] for i in range(k) for j in range(k) for l in range(k))
+    square_sum = sum(
+        M[i][j] * M[j][l] for i in range(k) for j in range(k) for l in range(k)
+    )
     if square_sum == 1:
         return float("nan")
     return float((trace - square_sum) / (1 - square_sum))
 
 
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 @pytest.mark.parametrize("seed", range(8))
 def test_categorical_against_exact_matrix_equation(graph_type, seed):
     rng = random.Random(seed)
@@ -207,10 +221,13 @@ def test_categorical_against_exact_matrix_equation(graph_type, seed):
     # with unselected targets all occur in this family.
     for nodes in (None, [0, 2, 4, 6, 8], [1, 3], []):
         expected = _exact_attribute_correlation(G, nodes)
-        _assert_same(nx.attribute_assortativity_coefficient(G, "category", nodes), expected)
+        _assert_same(
+            nx.attribute_assortativity_coefficient(G, "category", nodes), expected
+        )
         if nodes is not None:
             _assert_same(
-                nx.attribute_assortativity_coefficient(G, "category", iter(nodes)), expected
+                nx.attribute_assortativity_coefficient(G, "category", iter(nodes)),
+                expected,
             )
 
 

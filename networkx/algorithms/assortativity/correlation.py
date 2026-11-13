@@ -314,9 +314,7 @@ def _numeric_ac(mixing):
     if x is None or y is None:
         return float("nan")
     r = fsum(
-        count * x[u] * y[v]
-        for u, row in mixing.items()
-        for v, count in row.items()
+        count * x[u] * y[v] for u, row in mixing.items() for v, count in row.items()
     )
     # Roundoff can otherwise put a perfectly correlated result just outside
     # the mathematical bounds.
