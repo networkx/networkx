@@ -605,7 +605,7 @@ def test_bipartite_layout_default_nodes(G):
 
 
 def test_bipartite_layout_deterministic_order():
-    """Ensure bipartite_layout orders nodes deterministically by G's node order."""
+    """Ensure bipartite_layout places nodes the same way on every run."""
     G = nx.Graph([("x1", "c1"), ("x1", "c2"), ("x2", "c2"), ("x3", "c3")])
     top_nodes = ["x1", "x2", "x3"]
     pos = nx.bipartite_layout(G, nodes=top_nodes)

@@ -421,20 +421,21 @@ def bipartite_layout(
 
     if nodes is None:
         top, bottom = nx.bipartite.sets(G)
+        n_top, n_bottom = len(top), len(bottom)
+        # The sets are unordered (str node order changes with PYTHONHASHSEED),
+        # so take the top nodes in G's node order.
+        top = dict.fromkeys(n for n in G if n in top)
     else:
-        top = set(nodes)
+        top = dict.fromkeys(G.nbunch_iter(nodes))  # remove nodes not in G
+        n_top = len(top)
+        n_bottom = len(G) - n_top
+    # Top nodes first, then bottom nodes in G's node order
+    nodes = top | dict.fromkeys(G)
 
-    # Order each side by G's node order so the layout doesn't depend on set
-    # iteration order (which for str nodes changes with PYTHONHASHSEED).
-    bottom = [n for n in G if n not in top]
-    top = [n for n in G if n in top]
-    # Top nodes first, then bottom nodes; each group in G's node order
-    nodes = top + bottom
-
-    left_xs = np.repeat(0, len(top))
-    right_xs = np.repeat(width, len(bottom))
-    left_ys = np.linspace(0, height, len(top))
-    right_ys = np.linspace(0, height, len(bottom))
+    left_xs = np.repeat(0, n_top)
+    right_xs = np.repeat(width, n_bottom)
+    left_ys = np.linspace(0, height, n_top)
+    right_ys = np.linspace(0, height, n_bottom)
 
     top_pos = np.column_stack([left_xs, left_ys]) - offset
     bottom_pos = np.column_stack([right_xs, right_ys]) - offset
