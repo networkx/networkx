@@ -36,6 +36,10 @@ class TestGeneratorThreshold:
         G = nx.generators.havel_hakimi_graph(deg)
         assert nxt.is_threshold_graph(G)
 
+        # Graphs with self-loops are not threshold graphs
+        assert not nxt.is_threshold_graph(nx.Graph([(0, 0)]))
+        assert not nxt.is_threshold_graph(nx.Graph([(0, 0), (1, 1), (2, 2)]))
+
     def test_creation_sequences(self):
         deg = [3, 2, 2, 1]
         G = nx.generators.havel_hakimi_graph(deg)
@@ -213,6 +217,14 @@ class TestGeneratorThreshold:
 
         cs = nxt.creation_sequence(dict(TG.degree()), with_labels=True)
         assert nxt.find_creation_sequence(G) == cs
+
+        # Graphs with self-loops are rejected
+        msg = "Input graph has self loops which is not permitted."
+        G_loop = nx.Graph([(0, 0)])
+        with pytest.raises(nx.NetworkXError, match=f"^{msg}$"):
+            nxt.find_creation_sequence(G_loop)
+        with pytest.raises(nx.NetworkXError, match=f"^{msg}$"):
+            nxt.find_threshold_graph(G_loop)
 
     def test_fast_versions_properties_threshold_graphs(self):
         cs = "ddiiddid"

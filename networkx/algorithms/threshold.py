@@ -39,6 +39,8 @@ def is_threshold_graph(G):
     ----------
     .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
     """
+    if nx.number_of_selfloops(G) > 0:
+        return False
     return is_threshold_sequence([d for n, d in G.degree()])
 
 
@@ -409,7 +411,15 @@ def find_creation_sequence(G):
     """
     Find a threshold subgraph that is close to largest in G.
     Returns the labeled creation sequence of that threshold graph.
+
+    Raises
+    ------
+    NetworkXError
+        If the input graph contains self-loops.
     """
+    if nx.number_of_selfloops(G) > 0:
+        raise nx.NetworkXError("Input graph has self loops which is not permitted.")
+
     cs = []
     # get a local pointer to the working part of the graph
     H = G
