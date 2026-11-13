@@ -2,6 +2,7 @@
 
 import heapq
 import math
+from fractions import Fraction
 from itertools import chain, combinations, zip_longest
 from operator import itemgetter
 
@@ -409,7 +410,25 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     if n == 0 or max(w) == 0:
         return G
 
-    rho = 1 / sum(w)
+    try:
+        total_weight = sum(w)
+        finite_total = math.isfinite(total_weight)
+    except OverflowError:
+        finite_total = False
+    if not finite_total:
+        # Finite weights can overflow their sum or a float conversion. Keep
+        # exact ratios in this exceptional case and round only probabilities.
+        exact_weights = []
+        for weight in w:
+            if hasattr(weight, "as_integer_ratio"):
+                numerator, denominator = weight.as_integer_ratio()
+            else:
+                rational = Fraction(weight)
+                numerator, denominator = rational.numerator, rational.denominator
+            exact_weights.append(Fraction(int(numerator), int(denominator)))
+        w = exact_weights
+        total_weight = sum(w)
+    convert_probability = type(total_weight) not in (int, float)
     # Sort the weights in decreasing order. The original order of the
     # weights dictates the order of the (integer) node labels, so we
     # need to remember the permutation applied in the sorting.
@@ -423,14 +442,21 @@ def expected_degree_graph(w, seed=None, selfloops=True):
         v = u
         if not selfloops:
             v += 1
-        factor = seq[u] * rho
+        factor = seq[u] / total_weight
         p = min(seq[v] * factor, 1)
+        if convert_probability:
+            p = float(p)
         while v < n and p > 0:
             if p != 1:
                 r = seed.random()
-                v += math.floor(math.log(r, 1 - p))
+                skip = math.log(r) / math.log1p(-p) if r else math.inf
+                if skip >= n - v:
+                    break
+                v += math.floor(skip)
             if v < n:
                 q = min(seq[v] * factor, 1)
+                if convert_probability:
+                    q = float(q)
                 if seed.random() < q / p:
                     G.add_edge(mapping[u], mapping[v])
                 v += 1

@@ -371,6 +371,24 @@ class TestGeneratorsBipartite:
         assert set(range(n)) == X
         assert set(range(n, n + m)) == Y
 
+    @pytest.mark.parametrize("directed", [True, False])
+    @pytest.mark.parametrize("p", [1e-18, 1e-320])
+    def test_random_graph_small_probability(self, p, directed):
+        G = random_graph(8, 8, p, seed=1, directed=directed)
+        assert len(G) == 16
+        assert G.number_of_edges() == 0
+        assert G.is_directed() == directed
+        assert {v: G.nodes[v]["bipartite"] for v in G} == {
+            v: int(v >= 8) for v in range(16)
+        }
+
+    def test_random_digraph_probability_one(self):
+        G = random_graph(2, 3, 1, directed=True)
+        assert G.is_directed()
+        assert set(G.edges) == {
+            edge for u in range(2) for v in range(2, 5) for edge in [(u, v), (v, u)]
+        }
+
     def test_gnmk_random_graph(self):
         n = 10
         m = 20
