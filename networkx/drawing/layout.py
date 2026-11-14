@@ -338,7 +338,7 @@ def bipartite_layout(
     nodes : collection of nodes
         Nodes in one node set of the graph. This set will be placed on
         left or top. If `None` (the default), a node set is chosen arbitrarily
-        if the graph if bipartite.
+        if the graph is bipartite. Nodes not present in G are ignored.
 
     align : string (default='vertical')
         The alignment of nodes. Vertical or horizontal.
@@ -420,18 +420,21 @@ def bipartite_layout(
     offset = (width / 2, height / 2)
 
     if nodes is None:
-        top, bottom = nx.bipartite.sets(G)
-        nodes = list(G)
+        top, _ = nx.bipartite.sets(G)
     else:
-        top = set(nodes)
-        bottom = set(G) - top
-        # Preserves backward-compatible node ordering in returned pos dict
-        nodes = list(top) + list(bottom)
+        top = set(G.nbunch_iter(nodes))  # remove nodes not in G
+    # Take the top nodes in G's node order: `nodes` may be a set, and set order
+    # changes between runs for str nodes (PYTHONHASHSEED).
+    top = dict.fromkeys(n for n in G if n in top)
+    n_top = len(top)
+    n_bottom = len(G) - n_top
+    # Top nodes first, then bottom nodes; each group in G's node order
+    nodes = top | dict.fromkeys(G)
 
-    left_xs = np.repeat(0, len(top))
-    right_xs = np.repeat(width, len(bottom))
-    left_ys = np.linspace(0, height, len(top))
-    right_ys = np.linspace(0, height, len(bottom))
+    left_xs = np.repeat(0, n_top)
+    right_xs = np.repeat(width, n_bottom)
+    left_ys = np.linspace(0, height, n_top)
+    right_ys = np.linspace(0, height, n_bottom)
 
     top_pos = np.column_stack([left_xs, left_ys]) - offset
     bottom_pos = np.column_stack([right_xs, right_ys]) - offset

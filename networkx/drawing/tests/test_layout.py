@@ -595,13 +595,49 @@ def test_bipartite_layout_default_nodes_raises_non_bipartite_input():
     pos = nx.bipartite_layout(G, nodes=[2, 3])
 
 
-def test_bipartite_layout_default_nodes():
-    G = nx.complete_bipartite_graph(3, 3)
+@pytest.mark.parametrize("G", [nx.complete_bipartite_graph(3, 3), nx.path_graph(4)])
+def test_bipartite_layout_default_nodes(G):
     pos = nx.bipartite_layout(G)  # no nodes specified
     # X coords of nodes should be the same within the bipartite sets
     for nodeset in nx.bipartite.sets(G):
         xs = [pos[k][0] for k in nodeset]
         assert all(x == pytest.approx(xs[0]) for x in xs)
+
+
+def test_bipartite_layout_deterministic_order():
+    """Ensure bipartite_layout places nodes the same way on every run."""
+    G = nx.Graph([("x1", "c1"), ("x1", "c2"), ("x2", "c2"), ("x3", "c3")])
+    top_nodes = ["x1", "x2", "x3"]
+    pos = nx.bipartite_layout(G, nodes=top_nodes)
+    x = {n: pos[n][0] for n in G}
+    # All top nodes share one x-coordinate (one column)
+    assert len({x[n] for n in top_nodes}) == 1
+    # No edge connects two nodes in the same column
+    assert all(x[u] != x[v] for u, v in G.edges())
+
+
+@pytest.mark.parametrize("nodes", [["x3", "x2", "x1"], {"x3", "x2", "x1"}])
+def test_bipartite_layout_top_nodes_in_graph_order(nodes):
+    """The top column follows G's node order, whatever the order of `nodes`."""
+    G = nx.Graph([("x1", "c1"), ("x2", "c1"), ("x3", "c2")])
+    pos = nx.bipartite_layout(G, nodes=nodes)
+    assert list(pos)[:3] == ["x1", "x2", "x3"]
+    assert pos["x1"][1] < pos["x2"][1] < pos["x3"][1]
+
+
+def test_bipartite_layout_default_nodes_in_graph_order():
+    """With nodes=None, each column still follows G's node order.
+
+    nx.bipartite.sets returns sets, and set order for str nodes changes between
+    runs (PYTHONHASHSEED), so the columns must not follow it.
+    """
+    G = nx.Graph([("x1", "c1"), ("x2", "c1"), ("x3", "c2"), ("x2", "c2"), ("x4", "c2")])
+    pos = nx.bipartite_layout(G)
+    for x in {p[0] for p in pos.values()}:
+        column = [n for n in G if pos[n][0] == x]
+        assert [n for n in pos if pos[n][0] == x] == column
+        ys = [pos[n][1] for n in column]
+        assert ys == sorted(ys)
 
 
 @pytest.mark.parametrize(
