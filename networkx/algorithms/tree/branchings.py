@@ -662,29 +662,17 @@ def minimal_branching(
         A minimal branching.
     """
     if not G.edges:
-        return maximum_branching(G, attr, default, preserve_attrs, partition)
+        return G.copy()
 
     max_weight = -INF
     min_weight = INF
     for _, _, w in G.edges(data=attr, default=default):
-        if w > max_weight:
-            max_weight = w
-        if w < min_weight:
-            min_weight = w
+        max_weight = max(max_weight, w)
+        min_weight = min(min_weight, w)
 
-    # Transform the weights to invert minimization into maximization while ensuring
-    # that any spanning tree (n - 1 edges) is strictly preferred by maximum_branching
-    # over any non-spanning branching (<= n - 2 edges). The shift must exceed the maximum
-    # possible weight difference between a spanning and a non-spanning branching,
-    # bounded by (n - 1) * max(max_weight, 0) - (n - 2) * min(min_weight, 0).
-    n = len(G)
-    shift = max(
-        max_weight + 1 + (max_weight - min_weight),
-        (n - 1) * max(max_weight, 0)
-        - (n - 2) * min(min_weight, 0)
-        + 1
-        + (max_weight - min_weight),
-    )
+    # Shift edge weights positively so that maximum_branching does not omit
+    # edges that are needed to span the graph.
+    shift = max(0, max_weight) + len(G) * (max_weight - min_weight) + 1
 
     for _, _, d in G.edges(data=True):
         d[attr] = shift - d.get(attr, default)
@@ -709,27 +697,19 @@ def maximum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
     if not G.edges:
-        B = maximum_branching(G, attr, default, preserve_attrs, partition)
-        if not is_arborescence(B):
+        if not is_arborescence(G):
             raise nx.NetworkXException("No maximum spanning arborescence in G.")
-        return B
+        return G.copy()
 
     # Shift edge weights positively so that maximum_branching does not omit
-    # edges that are needed to span the graph. The shift must exceed the maximum
-    # possible weight advantage that a non-spanning branching could have over a spanning one.
+    # edges that are needed to span the graph.
     min_weight = INF
     max_weight = -INF
     for _, _, w in G.edges(data=attr, default=default):
-        if w < min_weight:
-            min_weight = w
-        if w > max_weight:
-            max_weight = w
+        min_weight = min(min_weight, w)
+        max_weight = max(max_weight, w)
 
-    n = len(G)
-    shift = max(
-        1 - min_weight + (max_weight - min_weight),
-        (n - 2) * max(max_weight, 0) - (n - 1) * min(min_weight, 0) + 1,
-    )
+    shift = max(0, -min_weight) + len(G) * (max_weight - min_weight) + 1
 
     for _, _, d in G.edges(data=True):
         d[attr] = d.get(attr, default) + shift
