@@ -22,6 +22,12 @@ jobs:
       - name: Install backend stubs
         run: pixi run -e docs install-backend-stubs
 
+      - name: Cache OpenStreetMap data
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: examples/geospatial/cache
+          key: osmnx-cache-v1-${{ runner.os }}-${{ hashFiles('examples/geospatial/plot_osmnx.py', 'pyproject.toml') }}
+
       # To set up a cross-repository deploy key:
       # 1. Create a key pair:
       #   `ssh-keygen -t ed25519 -C "nx_doc_deploy_bot@nomail"`
