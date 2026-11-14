@@ -625,6 +625,21 @@ def test_bipartite_layout_top_nodes_in_graph_order(nodes):
     assert pos["x1"][1] < pos["x2"][1] < pos["x3"][1]
 
 
+def test_bipartite_layout_default_nodes_in_graph_order():
+    """With nodes=None, each column still follows G's node order.
+
+    nx.bipartite.sets returns sets, and set order for str nodes changes between
+    runs (PYTHONHASHSEED), so the columns must not follow it.
+    """
+    G = nx.Graph([("x1", "c1"), ("x2", "c1"), ("x3", "c2"), ("x2", "c2"), ("x4", "c2")])
+    pos = nx.bipartite_layout(G)
+    for x in {p[0] for p in pos.values()}:
+        column = [n for n in G if pos[n][0] == x]
+        assert [n for n in pos if pos[n][0] == x] == column
+        ys = [pos[n][1] for n in column]
+        assert ys == sorted(ys)
+
+
 @pytest.mark.parametrize(
     "layout",
     [
