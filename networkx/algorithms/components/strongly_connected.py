@@ -158,8 +158,7 @@ def kosaraju_strongly_connected_components(G, source=None):
         A directed graph.
 
     source : node, optional (default=None)
-        Specify a node from which to start the depth-first search.
-        If not provided, the algorithm will start from an arbitrary node.
+        If provided, only components that can reach `source` are yielded.
 
     Yields
     ------
@@ -198,6 +197,7 @@ def kosaraju_strongly_connected_components(G, source=None):
     Uses Kosaraju's algorithm.
     """
     post = list(nx.dfs_postorder_nodes(G.reverse(copy=False), source=source))
+    allowed = None if source is None else set(post)
     n = len(post)
     seen = set()
     while post and len(seen) < n:
@@ -210,7 +210,7 @@ def kosaraju_strongly_connected_components(G, source=None):
         while stack and len(seen) < n:
             v = stack.pop()
             for w in G._adj[v]:
-                if w not in seen:
+                if w not in seen and (allowed is None or w in allowed):
                     new.add(w)
                     seen.add(w)
                     stack.append(w)

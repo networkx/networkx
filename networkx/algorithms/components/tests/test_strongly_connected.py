@@ -65,6 +65,13 @@ class TestStronglyConnected:
         for G, C in self.gc:
             assert {frozenset(g) for g in scc(G)} == C
 
+    def test_kosaraku_9003(self):
+        # See issue #9003
+        G = nx.DiGraph([(1, 0), (0, 2)])
+        assert [{0}, {1}] == list(
+            nx.kosaraju_strongly_connected_components(G, source=0)
+        )
+
     def test_number_strongly_connected_components(self):
         ncc = nx.number_strongly_connected_components
         for G, C in self.gc:
