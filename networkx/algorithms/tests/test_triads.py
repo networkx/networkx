@@ -259,3 +259,33 @@ def test_triadic_census_on_random_graph(N):
             tt: sum(1 for t in tbt.get(tt, []) if any(n in ns for n in t)) for tt in tc1
         }
         assert tc1 == tc2
+
+
+@pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize("view", ["original", "subgraph", "filtered", "reverse"])
+def test_tricode_all_edge_patterns(graph_type, view):
+    from networkx.algorithms.triads import _tricode
+
+    for labels in itertools.permutations(("a", 17, ("node", 2))):
+        v, u, w = labels
+        pairs = ((v, u), (u, v), (v, w), (w, v), (u, w), (w, u))
+        for mask in range(64):
+            G = graph_type()
+            G.add_nodes_from(labels)
+            edges = [edge for i, edge in enumerate(pairs) if mask & (1 << i)]
+            G.add_edges_from(edges)
+            G.add_edges_from((node, node) for node in labels)
+            if G.is_multigraph():
+                G.add_edges_from(edges)
+            expected = mask
+            if view == "subgraph":
+                G = nx.subgraph_view(G)
+            elif view == "filtered":
+                G = nx.subgraph_view(G, filter_edge=lambda a, *rest: a != v)
+                expected &= ~5
+            elif view == "reverse":
+                G = G.reverse(copy=False)
+                expected = ((mask & 21) << 1) | ((mask & 42) >> 1)
+            code = _tricode(G, v, u, w)
+            assert type(code) is int
+            assert code == expected

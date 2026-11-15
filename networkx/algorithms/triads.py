@@ -122,8 +122,15 @@ def _tricode(G, v, u, w):
     the binary representation of an integer.
 
     """
-    combos = ((v, u, 1), (u, v, 2), (v, w, 4), (w, v, 8), (u, w, 16), (w, u, 32))
-    return sum(x for u, v, x in combos if v in G[u])
+    vnbrs, unbrs, wnbrs = G[v], G[u], G[w]
+    return (
+        (1 if u in vnbrs else 0)
+        | (2 if v in unbrs else 0)
+        | (4 if w in vnbrs else 0)
+        | (8 if v in wnbrs else 0)
+        | (16 if w in unbrs else 0)
+        | (32 if u in wnbrs else 0)
+    )
 
 
 @not_implemented_for("undirected")
