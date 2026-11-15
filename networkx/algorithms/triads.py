@@ -115,13 +115,12 @@ TRICODE_TO_NAME = {i: TRIAD_NAMES[code - 1] for i, code in enumerate(TRICODES)}
 
 
 def _tricode(G, v, u, w):
-    """Returns the integer code of the given triad.
+    """Return the six-bit code for the directed triad (v, u, w).
 
-    This is some fancy magic that comes from Batagelj and Mrvar's paper. It
-    treats each edge joining a pair of `v`, `u`, and `w` as a bit in
-    the binary representation of an integer.
-
+    Bits 0/1 encode v->u/u->v, bits 2/3 v->w/w->v, and bits 4/5
+    u->w/w->u, following Batagelj and Mrvar's encoding.
     """
+    # Reuse each outgoing-neighbor view for its two edge checks.
     vnbrs, unbrs, wnbrs = G[v], G[u], G[w]
     return (
         (1 if u in vnbrs else 0)

@@ -282,10 +282,11 @@ def test_tricode_all_edge_patterns(graph_type, view):
                 G = nx.subgraph_view(G)
             elif view == "filtered":
                 G = nx.subgraph_view(G, filter_edge=lambda a, *rest: a != v)
-                expected &= ~5
+                expected &= ~0b000101  # Clear the v->u and v->w bits.
             elif view == "reverse":
                 G = G.reverse(copy=False)
-                expected = ((mask & 21) << 1) | ((mask & 42) >> 1)
+                # Swap the two direction bits for each node pair.
+                expected = ((mask & 0b010101) << 1) | ((mask & 0b101010) >> 1)
             code = _tricode(G, v, u, w)
             assert type(code) is int
             assert code == expected
