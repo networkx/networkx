@@ -1,4 +1,5 @@
 import random
+import warnings
 
 import pytest
 
@@ -169,6 +170,21 @@ class TestPageRank:
         assert _pagerank_python(G) == {}
         assert _pagerank_numpy(G) == {}
         assert nx.google_matrix(G).shape == (0, 0)
+
+    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python))
+    def test_pagerank_vacuous_tolerance(self, alg):
+        G = nx.complete_graph(4)
+        # 4 * 0.5 == 2, so the L1 convergence check is guaranteed to pass
+        with pytest.warns(
+            RuntimeWarning, match="PageRank convergence check is vacuous"
+        ):
+            alg(G, tol=0.5)
+        # a standard tolerance converges without any warning
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            p = alg(G, tol=1e-6)
+        for n in G:
+            assert p[n] == pytest.approx(0.25, abs=1e-4)
 
     @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python))
     def test_multigraph(self, alg):
