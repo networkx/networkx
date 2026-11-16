@@ -612,13 +612,15 @@ def contracted_nodes(
     if not copy:
         edges_to_remap = list(edges_to_remap)
 
-    v_data = H.nodes[v]
+    v_data = H.nodes[v].copy() if copy else H.nodes[v]
     H.remove_node(v)
 
     # A bit of input munging to extract whether contraction info should be
     # stored, and if so bind to a shorter name
     if _store_contraction := (store_contraction_as is not None):
         contraction = store_contraction_as
+        if copy and contraction in v_data:
+            v_data[contraction] = v_data[contraction].copy()
 
     for prev_w, prev_x, d in edges_to_remap:
         w = prev_w if prev_w != v else u
@@ -633,14 +635,22 @@ def contracted_nodes(
 
         # Store information about the contracted edge iff `store_contraction` is not None
         if _store_contraction:
+            edge_data = d.copy() if copy else d
+            if copy and contraction in edge_data:
+                edge_data[contraction] = edge_data[contraction].copy()
+
             if contraction in H.edges[(w, x)]:
-                H.edges[(w, x)][contraction][(prev_w, prev_x)] = d
+                if copy:
+                    H.edges[(w, x)][contraction] = H.edges[(w, x)][contraction].copy()
+                H.edges[(w, x)][contraction][(prev_w, prev_x)] = edge_data
             else:
-                H.edges[(w, x)][contraction] = {(prev_w, prev_x): d}
+                H.edges[(w, x)][contraction] = {(prev_w, prev_x): edge_data}
 
     # Store information about the contracted node iff `store_contraction`
     if _store_contraction:
         if contraction in H.nodes[u]:
+            if copy:
+                H.nodes[u][contraction] = H.nodes[u][contraction].copy()
             H.nodes[u][contraction][v] = v_data
         else:
             H.nodes[u][contraction] = {v: v_data}
