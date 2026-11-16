@@ -64,92 +64,40 @@ def chain_decomposition(G, root=None):
 
     """
 
-    def _dfs_cycle_forest(G, root=None):
-        """Builds a directed graph composed of cycles from the given graph.
-
-        `G` is an undirected simple graph. `root` is a node in the graph
-        from which the depth-first search is started.
-
-        This function returns both the depth-first search cycle graph
-        (as a :class:`~networkx.DiGraph`) and the list of nodes in
-        depth-first preorder. The depth-first search cycle graph is a
-        directed graph whose edges are the edges of `G` oriented toward
-        the root if the edge is a tree edge and away from the root if
-        the edge is a non-tree edge. If `root` is not specified, this
-        performs a depth-first search on each connected component of `G`
-        and returns a directed forest instead.
-
-        If `root` is not in the graph, this raises :exc:`KeyError`.
-
-        """
-        # Create a directed graph from the depth-first search tree with
-        # root node `root` in which tree edges are directed toward the
-        # root and nontree edges are directed away from the root. For
-        # each node with an incident nontree edge, this creates a
-        # directed cycle starting with the nontree edge and returning to
-        # that node.
-        #
-        # The `parent` node attribute stores the parent of each node in
-        # the DFS tree. The `nontree` edge attribute indicates whether
-        # the edge is a tree edge or a nontree edge.
-        #
-        # We also store the order of the nodes found in the depth-first
-        # search in the `nodes` list.
-        H = nx.DiGraph()
-        nodes = []
-        for u, v, d in nx.dfs_labeled_edges(G, source=root):
-            if d == "forward":
-                # `dfs_labeled_edges()` yields (root, root, 'forward')
-                # if it is beginning the search on a new connected
-                # component.
-                if u == v:
-                    H.add_node(v, parent=None)
-                    nodes.append(v)
-                else:
-                    H.add_node(v, parent=u)
-                    H.add_edge(v, u, nontree=False)
-                    nodes.append(v)
-            # `dfs_labeled_edges` considers nontree edges in both
-            # orientations, so we need to not add the edge if it its
-            # other orientation has been added.
-            elif d == "nontree" and v not in H[u]:
-                H.add_edge(v, u, nontree=True)
-            else:
-                # Do nothing on 'reverse' edges; we only care about
-                # forward and nontree edges.
-                pass
-        return H, nodes
-
-    def _build_chain(G, u, v, visited):
-        """Generate the chain starting from the given nontree edge.
-
-        `G` is a DFS cycle graph as constructed by
-        :func:`_dfs_cycle_graph`. The edge (`u`, `v`) is a nontree edge
-        that begins a chain. `visited` is a set representing the nodes
-        in `G` that have already been visited.
-
-        This function yields the edges in an initial segment of the
-        fundamental cycle of `G` starting with the nontree edge (`u`,
-        `v`) that includes all the edges up until the first node that
-        appears in `visited`. The tree edges are given by the 'parent'
-        node attribute. The `visited` set is updated to add each node in
-        an edge yielded by this function.
-
-        """
-        while v not in visited:
-            yield u, v
-            visited.add(v)
-            u, v = v, G.nodes[v]["parent"]
-        yield u, v
-
     # Check if the root is in the graph G. If not, raise NodeNotFound
     if root is not None and root not in G:
         raise nx.NodeNotFound(f"Root node {root} is not in graph")
 
-    # Create a directed version of H that has the DFS edges directed
-    # toward the root and the nontree edges directed away from the root
-    # (in each connected component).
-    H, nodes = _dfs_cycle_forest(G, root)
+    # Depth-first search from `root`, or from each connected component
+    # if `root` is None. `parent` maps each node to its parent in the DFS
+    # tree (None for a root) and doubles as the set of nodes seen so far,
+    # `nontree` maps each node to the nodes at the far end of the nontree
+    # edges directed away from the root, and `nodes` lists the nodes in
+    # DFS preorder.
+    parent, nontree, nodes = {}, {}, []
+    for start in [root] if root is not None else G:
+        if start in parent:
+            continue
+        parent[start] = None
+        nontree[start] = {}
+        nodes.append(start)
+        stack = [(start, G.neighbors(start))]
+        while stack:
+            node, nbrs = stack[-1]
+            for nbr in nbrs:
+                if nbr in parent:
+                    # Each nontree edge is found from both ends; keep the
+                    # first, oriented from the ancestor to the descendant.
+                    if nbr != parent[node] and nbr not in nontree[node]:
+                        nontree[nbr][node] = None
+                else:
+                    parent[nbr] = node
+                    nontree[nbr] = {}
+                    nodes.append(nbr)
+                    stack.append((nbr, G.neighbors(nbr)))
+                    break
+            else:
+                stack.pop()
 
     # Visit the nodes again in DFS order. For each node, and for each
     # nontree edge leaving that node, compute the fundamental cycle for
@@ -164,9 +112,11 @@ def chain_decomposition(G, root=None):
     for u in nodes:
         visited.add(u)
         # For each nontree edge going out of node u...
-        edges = ((u, v) for u, v, d in H.out_edges(u, data="nontree") if d)
-        for u, v in edges:
+        for v in nontree[u]:
             # Create the cycle or cycle prefix starting with the
             # nontree edge.
-            chain = list(_build_chain(H, u, v, visited))
+            chain = [(u, v)]
+            while v not in visited:
+                visited.add(v)
+                chain.append((v, v := parent[v]))
             yield chain
