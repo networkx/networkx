@@ -26,6 +26,7 @@ __all__ = [
     "transitive_closure_dag",
     "transitive_reduction",
     "antichains",
+    "antichain_width",
     "dag_longest_path",
     "dag_longest_path_length",
     "dag_to_branching",
@@ -204,7 +205,7 @@ def antichain_width(G):
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 4), (3, 4)])
-    >>> nx.dag.antichain_width(G)
+    >>> nx.antichain_width(G)
     2
 
     References
