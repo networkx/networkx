@@ -14,4 +14,5 @@ from networkx.readwrite.gml import *
 from networkx.readwrite.graphml import *
 from networkx.readwrite.gexf import *
 from networkx.readwrite.json_graph import *
+from networkx.readwrite.cytoscape import *
 from networkx.readwrite.text import *
