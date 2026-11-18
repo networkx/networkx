@@ -91,14 +91,89 @@ def test_not_implemented_decorator_key():
         test1(nx.Graph())
 
 
-def test_not_implemented_decorator_raise():
+@pytest.mark.parametrize("which_args", [1, "H", ("G", "H")])
+def test_not_implemented_decorator_which_args(which_args):
+    @not_implemented_for("directed", which_args=which_args)
+    def test_wa(G):
+        pass
+
+    with pytest.raises(nx.NetworkXError):
+        test_wa(nx.Graph())
+
+
+def test_not_implemented_decorator_multiple_args():
+    @not_implemented_for("directed", which_args=1)
+    def test_was1(G, H):
+        pass
+
+    test_was1(nx.Graph(), nx.Graph())
+    test_was1(nx.DiGraph(), nx.Graph())
     with pytest.raises(nx.NetworkXNotImplemented):
+        test_was1(nx.Graph(), nx.DiGraph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_was1(nx.DiGraph(), nx.DiGraph())
 
-        @not_implemented_for("graph")
-        def test1(G):
-            pass
+    @not_implemented_for("directed", which_args="H")
+    def test_was2(G, H):
+        pass
 
-        test1(nx.Graph())
+    test_was2(nx.Graph(), nx.Graph())
+    test_was2(nx.DiGraph(), nx.Graph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_was2(nx.Graph(), nx.DiGraph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_was2(nx.DiGraph(), nx.DiGraph())
+
+    @not_implemented_for("directed", which_args=[1])
+    def test_wam1(G, H):
+        pass
+
+    test_wam1(nx.Graph(), nx.Graph())
+    test_wam1(nx.DiGraph(), nx.Graph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_wam1(nx.Graph(), nx.DiGraph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_wam1(nx.DiGraph(), nx.DiGraph())
+
+    @not_implemented_for("directed", which_args=(0, 1))
+    def test_wam2(G, H):
+        pass
+
+    test_wam2(nx.Graph(), nx.Graph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_wam2(nx.Graph(), nx.DiGraph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_wam2(nx.DiGraph(), nx.Graph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_wam2(nx.DiGraph(), nx.DiGraph())
+
+    @not_implemented_for("directed", which_args=("G", "H"))
+    def test_wam3(G, H):
+        pass
+
+    test_wam3(nx.Graph(), nx.Graph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_wam3(nx.Graph(), nx.DiGraph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_wam3(nx.DiGraph(), nx.Graph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_wam3(nx.DiGraph(), nx.DiGraph())
+
+
+def test_not_implemented_decorator_multiple_args_lines():
+    @not_implemented_for("directed", which_args="G")
+    @not_implemented_for("multigraph", which_args="H")
+    def test_wa(G, H):
+        pass
+
+    test_wa(nx.Graph(), nx.Graph())
+    test_wa(nx.MultiGraph(), nx.DiGraph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_wa(nx.DiGraph(), nx.Graph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_wa(nx.Graph(), nx.MultiGraph())
+    with pytest.raises(nx.NetworkXNotImplemented):
+        test_wa(nx.DiGraph(), nx.MultiGraph())
 
 
 class TestOpenFileDecorator:
