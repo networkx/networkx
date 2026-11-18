@@ -1,3 +1,4 @@
+from collections import defaultdict
 from heapq import heappop, heappush
 from itertools import count
 
@@ -6,10 +7,10 @@ from networkx.algorithms.shortest_paths.weighted import _weight_function
 from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
+    "all_simple_edge_paths",
     "all_simple_paths",
     "is_simple_path",
     "shortest_simple_paths",
-    "all_simple_edge_paths",
 ]
 
 
@@ -234,24 +235,17 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     Notes
     -----
-    This algorithm uses a modified depth-first search to generate the
-    paths [1]_.  A single path can be found in $O(V+E)$ time but the
-    number of simple paths in a graph can be very large, e.g. $O(n!)$ in
-    the complete graph of order $n$.
+    This algorithm calls :func:`all_simple_edge_paths` and reduces the results
+    to node lists, with the same complexity.
 
-    This function does not check that a path exists between `source` and
-    `target`. For large graphs, this may result in very long runtimes.
-    Consider using `has_path` to check that a path exists between `source` and
-    `target` before calling this function on large graphs.
-
-    References
-    ----------
-    .. [1] R. Sedgewick, "Algorithms in C, Part 5: Graph Algorithms",
-       Addison Wesley Professional, 3rd ed., 2001.
+    The time a consumer waits for the first path, for each next path, and for
+    exhaustion of the generator, the *delay*, is ``O(V+E)`` in the unbounded case
+    (``cutoff == None``), and ``O(k(V+E))`` in the length-bounded case,
+    where ``k`` is the `cutoff`.
 
     See Also
     --------
-    all_shortest_paths, shortest_path, has_path
+    all_simple_edge_paths, all_shortest_paths, shortest_path, has_path
 
     """
     for edge_path in all_simple_edge_paths(G, source, target, cutoff):
@@ -345,19 +339,28 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
 
     Notes
     -----
-    This algorithm uses a modified depth-first search to generate the
-    paths [1]_.  A single path can be found in $O(V+E)$ time but the
-    number of simple paths in a graph can be very large, e.g. $O(n!)$ in
-    the complete graph of order $n$.
+    This algorithm enumerates paths with polynomial delay, i.e., the time
+    between two consecutive output paths (and before the first and after
+    the last) is bounded:  $O(V+E)$ per path if ``cutoff`` is ``None``,
+    using a Johnson-style blocked depth-first search [1]_, and
+    $O(k(V+E))$ per path for ``cutoff=k``, using a variant of BS-DFS [2]_.
+
+    The *number* of simple paths can be very large, e.g. $\\Theta((n-2)!)$
+    between two fixed nodes of the complete graph of order n, so consume the
+    generator lazily rather than materializing the full list.
 
     References
     ----------
-    .. [1] R. Sedgewick, "Algorithms in C, Part 5: Graph Algorithms",
-       Addison Wesley Professional, 3rd ed., 2001.
+    .. [1] D. B. Johnson. "Finding all the elementary circuits of a directed graph."
+           SIAM J. Comput., 4(1):77-84, 1975. https://doi.org/10.1137/0204007.
+    .. [2] Frank Bauernöppel, Jörg-Rüdiger Sack.
+           "Enumerating Length-Bounded Simple Paths and Cycles in Directed Graphs
+           with $O(k(n+m))$ Delay Using Edge-Consistent Node Barriers", 2026,
+           https://arxiv.org/abs/2607.14745
 
     See Also
     --------
-    all_shortest_paths, shortest_path, all_simple_paths
+    all_shortest_paths, shortest_path, all_simple_paths, bsdfs_edges
 
     """
     if source not in G:
@@ -371,52 +374,104 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         except TypeError as err:
             raise nx.NodeNotFound(f"target node {target} not in graph") from err
 
-    cutoff = cutoff if cutoff is not None else len(G) - 1
+    if not targets:
+        return
+    if cutoff is None or cutoff >= len(G) - 1:  # unbounded simple paths
+        yield from _johnson_all_simple_edge_paths(G, source, targets)
+    elif cutoff >= 0 and targets:
+        yield from nx.traversal.bsdfs_edges(G, source, targets, length_bound=cutoff)
 
-    if cutoff >= 0 and targets:
-        yield from _all_simple_edge_paths(G, source, targets, cutoff)
 
+def _johnson_all_simple_edge_paths(G, source, targets):
+    """
+    Adaptation of Johnson's cycle finding algorithm [1]_
+    to simple paths in NetworkX [Multi][Di]Graphs.
+    A single target t (other than the source) takes the role of
+    Johnson's start node: reaching t closes a path, and t is never
+    entered, so nothing beyond t is searched.
+    The multi-target feature is implemented by introducing
+    a virtual target t* to which all real targets connect.
+    Johnson's algorithm produces the next output (or terminates)
+    within $O(V+E)$ time, a great improvement over earlier work [2]_, [3]_, [4]_.
 
-def _all_simple_edge_paths(G, source, targets, cutoff):
-    # We simulate recursion with a stack, keeping the current path being explored
-    # and the outgoing edge iterators at each point in the stack.
-    # To avoid unnecessary checks, the loop is structured in a way such that a path
-    # is considered for yielding only after a new node/edge is added.
-    # We bootstrap the search by adding a dummy iterator to the stack that only yields
-    # a dummy edge to source (so that the trivial path has a chance of being included).
+    References
+    ----------
+    .. [1] D. B. Johnson. "Finding all the elementary circuits of a directed graph."
+           SIAM J. Comput., 4(1):77-84, 1975. https://doi.org/10.1137/0204007.
+    .. [2] J. C. Tiernan. "An efficient search algorithm to find the elementary
+            circuits of a graph". Commun. ACM 13(12): 722--726, 1970,
+            https://doi.org/10.1145/362814.362819
+    .. [3] R. E. Tarjan. "Enumeration of the Elementary Circuits of a Directed Graph"
+             SIAM J. Comput. 2(3):211-216, 1973
+    .. [4] R. Sedgewick, "Algorithms in C, Part 5: Graph Algorithms",
+            Addison Wesley Professional, 3rd ed., 2001.
+    """
 
-    get_edges = (
-        (lambda node: G.edges(node, keys=True))
-        if G.is_multigraph()
-        else (lambda node: G.edges(node))
-    )
+    adj = G._adj  # successors (directed) / neighbors (undirected)
 
-    # The current_path is a dictionary that maps nodes in the path to the edge that was
-    # used to enter that node (instead of a list of edges) because we want both a fast
-    # membership test for nodes in the path and the preservation of insertion order.
-    current_path = {None: None}
-    stack = [iter([(None, source)])]
+    if G.is_multigraph():
 
-    while stack:
-        # 1. Try to extend the current path.
-        next_edge = next((e for e in stack[-1] if e[1] not in current_path), None)
-        if next_edge is None:
-            # All edges of the last node in the current path have been explored.
-            stack.pop()
-            current_path.popitem()
-            continue
-        previous_node, next_node, *_ = next_edge
+        def out_edges(v):
+            for w, keydict in adj[v].items():
+                for key in keydict:
+                    yield (v, w, key)
+    else:
 
-        # 2. Check if we've reached a target.
-        if next_node in targets:
-            yield (list(current_path.values()) + [next_edge])[2:]  # remove dummy edge
+        def out_edges(v):
+            for w in adj[v]:
+                yield (v, w)
 
-        # 3. Only expand the search through the next node if it makes sense.
-        if len(current_path) - 1 < cutoff and (
-            targets - current_path.keys() - {next_node}
-        ):
-            current_path[next_node] = next_edge
-            stack.append(iter(get_edges(next_node)))
+    if len(targets) == 1 and source not in targets:
+        (terminal,) = targets  # single target: report, never enter
+        targets = frozenset()
+    else:
+        terminal = object()  # dummy node; never equal to any node in G
+
+    blocked = {source}  # nodes on the path, and nodes proven fruitless
+    B = defaultdict(set)  # B[w]: blocked nodes to unblock when w gets unblocked
+    stack = {}  # node -> (out-edge iterator, fruitful) for suspended frames
+    edge_path = []
+
+    v = source  # v is the current node, initially source
+    current_iterator = out_edges(v)
+    fruitful = source in targets  # a path to a target was found below v
+    if fruitful:
+        yield []
+
+    while True:
+        for e in current_iterator:
+            w = e[1]
+            if w == terminal:  # path closed, as Johnson's circuit at w == s
+                yield [*edge_path, e]
+                fruitful = True
+            elif w not in blocked:
+                stack[v] = (current_iterator, fruitful)  # push v and its state
+                edge_path.append(e)
+                v = w
+                current_iterator = out_edges(w)
+                blocked.add(w)
+                fruitful = w in targets
+                if fruitful:  # a target: report the path on arrival
+                    yield list(edge_path)
+                break  # descend search to w
+        else:  # all out-edges done, close the search at v
+            if not stack:
+                return  # v is the source: search complete
+            if fruitful:  # unblock v and, transitively, the nodes waiting on it
+                pending = [v]
+                while pending:
+                    u = pending.pop()
+                    if u in blocked:
+                        blocked.discard(u)
+                        pending.extend(B[u])
+                        B[u].clear()
+            else:
+                for w in adj[v]:
+                    B[w].add(v)
+            edge_path.pop()
+            child_fruitful = fruitful
+            v, (current_iterator, fruitful) = stack.popitem()  # pop parent node
+            fruitful = fruitful or child_fruitful
 
 
 @not_implemented_for("multigraph")
