@@ -20,3 +20,4 @@ Reading and writing graphs
    pajek
    matrix_market
    text
+   mermaid
