@@ -1,4 +1,5 @@
 import networkx as nx
+from networkx.readwrite.json_graph.node_link import _to_tuple
 
 __all__ = ["cytoscape_data", "cytoscape_graph"]
 
@@ -47,7 +48,7 @@ def cytoscape_data(G, name="name", ident="id"):
      'multigraph': False,
      'elements': {'nodes': [{'data': {'id': '0', 'value': 0, 'name': '0'}},
                             {'data': {'id': '1', 'value': 1, 'name': '1'}}],
-                  'edges': [{'data': {'source': 0, 'target': 1}}]}}
+                  'edges': [{'data': {'source': '0', 'target': '1'}}]}}
 
     The :mod:`json` package can be used to serialize the resulting data
 
@@ -68,6 +69,7 @@ def cytoscape_data(G, name="name", ident="id"):
     jsondata["elements"] = {"nodes": [], "edges": []}
     nodes = jsondata["elements"]["nodes"]
     edges = jsondata["elements"]["edges"]
+    node_ids = {}
 
     for i, j in G.nodes.items():
         n = {"data": j.copy()}
@@ -75,19 +77,20 @@ def cytoscape_data(G, name="name", ident="id"):
         n["data"]["value"] = i
         n["data"]["name"] = j.get(name) or str(i)
         nodes.append(n)
+        node_ids[i] = n["data"]["id"]
 
     if G.is_multigraph():
         for e in G.edges(keys=True):
             n = {"data": G.adj[e[0]][e[1]][e[2]].copy()}
-            n["data"]["source"] = e[0]
-            n["data"]["target"] = e[1]
+            n["data"]["source"] = node_ids[e[0]]
+            n["data"]["target"] = node_ids[e[1]]
             n["data"]["key"] = e[2]
             edges.append(n)
     else:
         for e in G.edges():
             n = {"data": G.adj[e[0]][e[1]].copy()}
-            n["data"]["source"] = e[0]
-            n["data"]["target"] = e[1]
+            n["data"]["source"] = node_ids[e[0]]
+            n["data"]["target"] = node_ids[e[1]]
             edges.append(n)
     return jsondata
 
@@ -164,9 +167,11 @@ def cytoscape_graph(data, name="name", ident="id"):
     if directed:
         graph = graph.to_directed()
     graph.graph = dict(data.get("data"))
+    node_ids = {}
     for d in data["elements"]["nodes"]:
         node_data = d["data"].copy()
-        node = d["data"]["value"]
+        node = _to_tuple(d["data"]["value"])
+        node_ids[d["data"]["id"]] = node
 
         if d["data"].get(name):
             node_data[name] = d["data"].get(name)
@@ -178,8 +183,10 @@ def cytoscape_graph(data, name="name", ident="id"):
 
     for d in data["elements"]["edges"]:
         edge_data = d["data"].copy()
-        sour = d["data"]["source"]
-        targ = d["data"]["target"]
+        source_id = _to_tuple(d["data"]["source"])
+        target_id = _to_tuple(d["data"]["target"])
+        sour = node_ids.get(source_id, source_id)
+        targ = node_ids.get(target_id, target_id)
         if multigraph:
             key = d["data"].get("key", 0)
             graph.add_edge(sour, targ, key=key)
