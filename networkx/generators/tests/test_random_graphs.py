@@ -290,15 +290,18 @@ class TestGeneratorsRandom:
         # Test to make sure than n <= k
         pytest.raises(nx.NetworkXError, nx.watts_strogatz_graph, 10, 11, 0.25)
         pytest.raises(nx.NetworkXError, nx.newman_watts_strogatz_graph, 10, 11, 0.25)
+        pytest.raises(nx.NetworkXError, nx.newman_watts_graph, 10, 11, 0.25)
 
         # could create an infinite loop, now doesn't
         # infinite loop used to occur when a node has degree n-1 and needs to rewire
         nx.watts_strogatz_graph(10, 9, 0.25, seed=0)
         nx.newman_watts_strogatz_graph(10, 9, 0.5, seed=0)
+        nx.newman_watts_graph(10, 9, 0.5, seed=0)
 
         # Test k==n scenario
         nx.watts_strogatz_graph(10, 10, 0.25, seed=0)
         nx.newman_watts_strogatz_graph(10, 10, 0.25, seed=0)
+        nx.newman_watts_graph(10, 10, 0.25, seed=0)
 
     def test_random_kernel_graph(self):
         def integral(u, w, z):
@@ -337,14 +340,28 @@ def test_watts_strogatz(k, expected_num_nodes, expected_num_edges):
     assert G.number_of_edges() == expected_num_edges
 
 
-def test_newman_watts_strogatz_zero_probability():
-    G = nx.newman_watts_strogatz_graph(10, 2, 0.0, seed=42)
+@pytest.mark.parametrize(
+    "generator",
+    [
+        nx.newman_watts_strogatz_graph,
+        nx.newman_watts_graph,
+    ],
+)
+def test_nws_zero_probability(generator):
+    G = generator(10, 2, 0.0, seed=42)
     assert len(G) == 10
     assert G.number_of_edges() == 10
 
 
-def test_newman_watts_strogatz_nonzero_probability():
-    G = nx.newman_watts_strogatz_graph(10, 4, 0.25, seed=42)
+@pytest.mark.parametrize(
+    "generator",
+    [
+        nx.newman_watts_strogatz_graph,
+        nx.newman_watts_graph,
+    ],
+)
+def test_nws_nonzero_probability(generator):
+    G = generator(10, 4, 0.25, seed=42)
     assert len(G) == 10
     assert G.number_of_edges() >= 20
 
@@ -437,6 +454,13 @@ def test_gnm_fns_disallow_directed_and_multigraph(fn, graphtype):
 def test_watts_strogatz_disallow_directed_and_multigraph(fn, graphtype):
     with pytest.raises(nx.NetworkXError, match="must not be"):
         fn(10, 2, 0.2, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.Graph, nx.DiGraph, nx.MultiDiGraph))
+def test_newman_watts_disallow_directed_and_graph(graphtype):
+    msg = r"must be a multi-graph|must not be directed"
+    with pytest.raises(nx.NetworkXError, match=msg):
+        nx.newman_watts_graph(10, 2, 0.2, create_using=graphtype)
 
 
 @pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
