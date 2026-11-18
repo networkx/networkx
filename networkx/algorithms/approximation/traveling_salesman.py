@@ -496,12 +496,14 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
         else:
             t_star.add_edge(v, u, **{weight: d})
 
-    # Find the node demands needed to neutralize the flow of t_star in G
+    # Find the node demands needed to neutralize the flow of t_star in G.
+    # Set them on a copy so that the input graph is not modified.
     node_demands = {n: t_star.out_degree(n) - t_star.in_degree(n) for n in t_star}
-    nx.set_node_attributes(G, node_demands, "demand")
+    flow_G = G.copy()
+    nx.set_node_attributes(flow_G, node_demands, "demand")
 
     # Find the min_cost_flow
-    flow_dict = nx.min_cost_flow(G, "demand")
+    flow_dict = nx.min_cost_flow(flow_G, "demand")
 
     # Build the flow into t_star
     for source, values in flow_dict.items():
