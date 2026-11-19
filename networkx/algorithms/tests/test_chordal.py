@@ -135,6 +135,8 @@ class TestMCS:
         assert set(nx.chordal_graph_cliques(self.self_loop_G)) == {frozenset([1])}
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
             set(nx.chordal_graph_cliques(self.non_chordal_G))
+        with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
+            set(nx.chordal_graph_cliques(nx.cycle_graph(5)))
 
     def test_chordal_find_cliques_path(self):
         G = nx.path_graph(10)

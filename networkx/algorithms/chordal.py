@@ -222,6 +222,9 @@ def chordal_graph_cliques(G):
     -----
     Self loops are ignored.
     """
+    if not is_chordal(G):
+        raise nx.NetworkXError("Input graph is not chordal.")
+
     for C in (G.subgraph(c).copy() for c in connected_components(G)):
         unnumbered = set(C.nodes())
         v = arbitrary_element(C)
