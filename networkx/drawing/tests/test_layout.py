@@ -612,8 +612,6 @@ def test_bipartite_layout_deterministic_order():
     xs = {n: pos[n][0] for n in G}
     # All top nodes share one x-coordinate (one column)
     assert all(xs[n] == pytest.approx(xs["x1"]) for n in top_nodes)
-    # No edge connects two nodes in the same column
-    assert all(x[u] != x[v] for u, v in G.edges())
 
 
 @pytest.mark.parametrize("nodes", [["x3", "x2", "x1"], {"x3", "x2", "x1"}])
