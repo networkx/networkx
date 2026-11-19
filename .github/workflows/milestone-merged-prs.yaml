@@ -13,7 +13,7 @@ jobs:
     name: attach to PR
     if: github.repository == 'networkx/networkx'
     runs-on: ubuntu-latest
-    
+
     permissions:
       issues: write
       pull-requests: write
