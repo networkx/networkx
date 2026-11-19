@@ -22,3 +22,4 @@ jobs:
       - uses: scientific-python/attach-next-milestone-action@796cfa44ba1e1a9a4bce7896241d4612a3f06327 # v0.2.0
         with:
           token: ${{ github.token }}
+          force: true
