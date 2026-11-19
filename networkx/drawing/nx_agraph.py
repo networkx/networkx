@@ -366,6 +366,10 @@ def view_pygraphviz(
 
     Notes
     -----
+    Node names are displayed literally when no node label is supplied.
+    Explicit node labels (including defaults in ``G.graph["node"]``) and
+    edge labels retain Graphviz escape-sequence handling.
+
     If this function is called in succession too quickly, sometimes the
     image is not displayed. So you might consider time.sleep(.5) between
     calls if you experience problems.
@@ -423,6 +427,14 @@ def view_pygraphviz(
 
     # Convert to agraph, so we inherit default values
     A = to_agraph(G)
+
+    # Graphviz interprets backslashes even in labels derived from node names.
+    # Escape these names, but preserve explicitly requested label formatting.
+    if "label" not in G.graph["node"]:
+        for node, data in G.nodes(data=True):
+            name = str(node)
+            if "label" not in data and "\\" in name:
+                A.get_node(node).attr["label"] = name.replace("\\", "\\\\")
 
     # Remove the default values we added to the original graph.
     clean_attrs("edge", added_edge_attrs)

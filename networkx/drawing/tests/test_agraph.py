@@ -1,6 +1,7 @@
 """Unit tests for PyGraphviz interface."""
 
 import warnings
+from xml.etree import ElementTree
 
 import pytest
 
@@ -100,6 +101,39 @@ class TestAGraph:
         G = nx.complete_graph(3)
         path, A = nx.nx_agraph.view_pygraphviz(G, suffix=1, show=False)
         assert path[-6:] == "_1.png"
+
+    @pytest.mark.parametrize(
+        "name", [repr("\n"), r"C:\new\report", r"\N", r"\q", r"\\n"]
+    )
+    def test_view_pygraphviz_literal_node_names(self, tmp_path, name):
+        G = nx.Graph()
+        G.add_node(name)
+        path, A = nx.nx_agraph.view_pygraphviz(
+            G, path=tmp_path / "graph.svg", show=False
+        )
+        text = ElementTree.parse(path).iter("{http://www.w3.org/2000/svg}text")
+        assert [element.text for element in text] == [name]
+        assert list(A.nodes()) == [name]
+        assert G.nodes[name] == {}
+        assert G.graph == {}
+
+    @pytest.mark.parametrize("default", [False, True])
+    @pytest.mark.parametrize("label", [r"first\nsecond", ""])
+    def test_view_pygraphviz_explicit_node_labels(self, tmp_path, default, label):
+        G = nx.Graph()
+        name = r"C:\new\report"
+        G.add_node(name)
+        if default:
+            G.graph["node"] = {"label": label}
+        else:
+            G.nodes[name]["label"] = label
+        path, A = nx.nx_agraph.view_pygraphviz(
+            G, path=tmp_path / "graph.svg", show=False
+        )
+        text = ElementTree.parse(path).iter("{http://www.w3.org/2000/svg}text")
+        assert [element.text for element in text] == (
+            ["first", "second"] if label else []
+        )
 
     def test_view_pygraphviz(self):
         G = nx.Graph()  # "An empty graph cannot be drawn."
