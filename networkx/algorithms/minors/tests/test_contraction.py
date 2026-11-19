@@ -565,13 +565,12 @@ def test_contracted_nodes_copy_isolation():
     assert H.edges[0, 1]["contraction"][(2, 1)]["weight"] == 100
 
     # 3. Chained edge contractions on the same target edge
-    G = nx.path_graph(4)
-    G.edges[1, 2]["weight"] = 10
-    G.edges[2, 3]["weight"] = 20
+    G = nx.Graph([(0, 1), (2, 1), (3, 1)])
     H = nx.contracted_nodes(G, 0, 2, copy=True)
-    H_edge_contraction_before = dict(H.edges[0, 1]["contraction"])
     K = nx.contracted_nodes(H, 0, 3, copy=True)
-    assert H.edges[0, 1]["contraction"] == H_edge_contraction_before
+    assert H.edges[0, 1]["contraction"] == {(2, 1): {}}
+    assert K.edges[0, 1]["contraction"] == {(2, 1): {}, (3, 1): {}}
+    assert H.edges[0, 1]["contraction"] is not K.edges[0, 1]["contraction"]
 
     # 4. Same isolation holds for contracted_edge
     G = nx.path_graph(4)
