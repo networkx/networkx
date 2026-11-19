@@ -1,9 +1,7 @@
 name: Milestone
 
 on:
-  pull_request_target:
-    types:
-      - closed
+  push:
     branches:
       - "main"
 
@@ -13,9 +11,14 @@ permissions:
 jobs:
   milestone_pr:
     name: attach to PR
+    if: github.repository == 'networkx/networkx'
     runs-on: ubuntu-latest
+    
+    permissions:
+      issues: write
+      pull-requests: write
+
     steps:
       - uses: scientific-python/attach-next-milestone-action@796cfa44ba1e1a9a4bce7896241d4612a3f06327 # v0.2.0
         with:
-          token: ${{ secrets.MILESTONE_LABELER_TOKEN }}
-          force: true
+          token: ${{ github.token }}
