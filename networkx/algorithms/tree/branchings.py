@@ -667,11 +667,14 @@ def minimal_branching(
     max_weight = -INF
     min_weight = INF
     for _, _, w in G.edges(data=attr, default=default):
-        max_weight = max(max_weight, w)
-        min_weight = min(min_weight, w)
+        if w > max_weight:
+            max_weight = w
+        if w < min_weight:
+            min_weight = w
 
-    # Shift edge weights positively so that maximum_branching does not omit
-    # edges that are needed to span the graph.
+    # Transform the weights to invert minimization into maximization, shifting
+    # so that edge weights remain positive and cannot become negative during
+    # cycle contractions in maximum_branching.
     shift = max(0, max_weight) + len(G) * (max_weight - min_weight) + 1
 
     for _, _, d in G.edges(data=True):
@@ -701,13 +704,22 @@ def maximum_spanning_arborescence(
             raise nx.NetworkXException("No maximum spanning arborescence in G.")
         return G.copy()
 
-    # Shift edge weights positively so that maximum_branching does not omit
-    # edges that are needed to span the graph.
+    # In order to use the same algorithm as maximum branching, we need to adjust
+    # the weights of the graph. The branching algorithm can choose to not include an
+    # edge if it doesn't help find a branching, mainly triggered by edges with negative
+    # weights.
+    #
+    # To prevent this from happening while trying to find a spanning arborescence, we
+    # tweak the edge weights so that they are all positive and cannot become negative
+    # during cycle contractions in the branching algorithm, find the maximum branching,
+    # and then return them to their original values.
     min_weight = INF
     max_weight = -INF
     for _, _, w in G.edges(data=attr, default=default):
-        min_weight = min(min_weight, w)
-        max_weight = max(max_weight, w)
+        if w < min_weight:
+            min_weight = w
+        if w > max_weight:
+            max_weight = w
 
     shift = max(0, -min_weight) + len(G) * (max_weight - min_weight) + 1
 
