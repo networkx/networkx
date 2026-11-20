@@ -423,13 +423,12 @@ def bipartite_layout(
         top, _ = nx.bipartite.sets(G)
     else:
         top = set(G.nbunch_iter(nodes))  # remove nodes not in G
-    # Take the top nodes in G's node order: `nodes` may be a set, and set order
-    # changes between runs for str nodes (PYTHONHASHSEED).
+
+    # Top nodes first, then bottom nodes; each group in G's node order
     top = dict.fromkeys(n for n in G if n in top)
+    nodes = top | dict.fromkeys(G)
     n_top = len(top)
     n_bottom = len(G) - n_top
-    # Top nodes first, then bottom nodes; each group in G's node order
-    nodes = top | dict.fromkeys(G)
 
     left_xs = np.repeat(0, n_top)
     right_xs = np.repeat(width, n_bottom)
