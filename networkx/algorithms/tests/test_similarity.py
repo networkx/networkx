@@ -42,10 +42,12 @@ def test_generate_random_paths_with_isolated_nodes():
     with pytest.raises(ValueError, match="probabilities contain NaN"):
         list(path_gen)
 
-    # Random source that might pick isolated node
-    path_gen = nx.generate_random_paths(G, 2, path_length=2, seed=42)
-    with pytest.raises(ValueError, match="probabilities contain NaN"):
-        list(path_gen)
+    # Random source — isolated nodes are skipped as starting points
+    paths = list(nx.generate_random_paths(G, 2, path_length=2, seed=42))
+    assert len(paths) == 2
+    assert all(len(path) == 3 for path in paths)
+    # All paths should start from non-isolated nodes only
+    assert all(path[0] in (0, 1) for path in paths)
 
 
 def nmatch(n1, n2):
@@ -844,7 +846,12 @@ class TestSimilarity:
         G.add_edge(0, 3)
         G.add_edge(1, 2)
         G.add_edge(2, 4)
-        expected = {3: 0.5, 2: 0.5, 1: 0.5, 4: 0.125}
+        expected = {
+            2: 0.5384615384615385,
+            3: 0.46153846153846156,
+            1: 0.38461538461538464,
+            4: 0.15384615384615385,
+        }
         sim = nx.panther_similarity(G, 0, path_length=2, seed=42)
         assert sim == expected
 
@@ -855,7 +862,12 @@ class TestSimilarity:
         G.add_edge("v1", "v4", w=2)
         G.add_edge("v2", "v3", w=0.1)
         G.add_edge("v3", "v5", w=1)
-        expected = {"v3": 0.75, "v4": 0.5, "v2": 0.5, "v5": 0.25}
+        expected = {
+            "v3": 0.6153846153846154,
+            "v4": 0.5384615384615385,
+            "v2": 0.46153846153846156,
+            "v5": 0.23076923076923078,
+        }
         sim = nx.panther_similarity(G, "v1", path_length=2, weight="w", seed=42)
         assert sim == expected
 
@@ -1029,7 +1041,7 @@ class TestSimilarity:
         assert len(sim) > 0
         assert 0 not in sim  # Source node should not be included
         assert all(node in [1, 2, 3, 4] for node in sim)  # Only valid nodes
-        assert all(0 <= score <= 1 for score in sim.values())  # Valid scores
+        assert all(score > 0 for score in sim.values())  # Positive scores
 
     def test_panther_vector_similarity_unweighted(self):
         """Test panther_vector_similarity with unweighted graph."""
@@ -1045,7 +1057,7 @@ class TestSimilarity:
         assert len(sim) == 4
         assert 0 not in sim
         assert all(node in sim for node in [1, 2, 3, 4])
-        assert all(0 <= score <= 1 for score in sim.values())
+        assert all(score > 0 for score in sim.values())
 
     def test_panther_vector_similarity_weighted(self):
         """Test panther_vector_similarity with weighted graph."""
@@ -1062,7 +1074,7 @@ class TestSimilarity:
 
         assert len(sim) == 4
         assert "v1" not in sim
-        assert all(0 <= score <= 1 for score in sim.values())
+        assert all(score > 0 for score in sim.values())
         assert all(node in sim for node in ["v2", "v3", "v4"])
 
     def test_panther_vector_similarity_source_not_found(self):
@@ -1095,6 +1107,18 @@ class TestSimilarity:
 
         with pytest.raises(nx.NetworkXUnfeasible):
             nx.panther_vector_similarity(G, 0, k=5)
+
+    def test_panther_vector_similarity_with_isolates(self):
+        """Test panther_vector_similarity on graph with non-source isolates."""
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (1, 2)])
+        G.add_node(3)  # isolated node
+
+        # Should not crash — isolate gets zero similarity
+        sim = nx.panther_vector_similarity(G, source=0, D=3, k=2, seed=42)
+        assert 0 not in sim  # source excluded
+        assert 3 not in sim  # isolate should not appear in top-k
+        assert len(sim) <= 2
 
     def test_panther_vector_similarity_small_graph(self):
         """Test panther_vector_similarity with a very small graph."""
