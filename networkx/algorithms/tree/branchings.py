@@ -700,9 +700,9 @@ def maximum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
     if not G.edges:
-        if not is_arborescence(G):
-            raise nx.NetworkXException("No maximum spanning arborescence in G.")
-        return G.copy()
+        if len(G) == 1:
+            return G.copy()
+        raise nx.NetworkXException("No maximum spanning arborescence in G.")
 
     # In order to use the same algorithm as maximum branching, we need to adjust
     # the weights of the graph. The branching algorithm can choose to not include an
