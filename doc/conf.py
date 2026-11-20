@@ -250,7 +250,7 @@ intersphinx_mapping = get_intersphinx_mapping(
 )
 # NOTE: generally not relevant, but prevents very long build times when other
 # projects' docs sites are not responding
-intersphinx_timeout = 0.5
+intersphinx_timeout = 1
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.

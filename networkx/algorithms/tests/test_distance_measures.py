@@ -504,6 +504,24 @@ class TestResistanceDistance:
         assert isinstance(rd, dict)
         assert round(rd[1][3], 5) == 1
 
+    @pytest.mark.parametrize("graph_class", [nx.Graph, nx.MultiGraph])
+    def test_resistance_distance_node_order(self, graph_class):
+        nodes = ["z", 10, ("a", 2), frozenset({3})]
+        G = graph_class()
+        G.add_nodes_from(reversed(nodes))
+        nx.add_path(G, nodes)
+
+        distances = nx.resistance_distance(G)
+        assert list(distances) == list(G)
+        for i, u in enumerate(nodes):
+            expected = {v: abs(i - j) for j, v in enumerate(nodes)}
+            assert list(distances[u]) == list(G)
+            assert distances[u] == pytest.approx(expected)
+            for kwargs in ({"nodeA": u}, {"nodeB": u}):
+                result = nx.resistance_distance(G, **kwargs)
+                assert list(result) == list(G)
+                assert result == pytest.approx(expected)
+
 
 class TestEffectiveGraphResistance:
     @classmethod
