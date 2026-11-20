@@ -148,3 +148,22 @@ class TestPajek:
         assert H.nodes["n0"]["role"] == 'a" pwn "admin'
         assert "pwn" not in H.nodes["n0"]
         assert H['ev il"x 7']["n0"][0]["lbl"] == r"c:\path with space"
+
+    def test_apostrophe_roundtrip(self):
+        # Labels/attributes with single quotes / apostrophes must survive a
+        # write/read round-trip instead of raising ValueError: No closing quotation
+        # or silently merging nodes. See make_qstr and Issue #9008.
+        import io
+
+        G = nx.Graph()
+        G.add_edge("O'Brien", "Smith")
+        G.add_edge("Rock'n'Roll", "RocknRoll")
+        G.add_node("n1", title="it's", mixed='it\'s "x" \\ y')
+        fh = io.BytesIO()
+        nx.write_pajek(G, fh)
+        fh.seek(0)
+        H = nx.read_pajek(fh)
+        assert nodes_equal(list(G), list(H))
+        assert edges_equal(list(G.edges()), list(H.edges()))
+        assert H.nodes["n1"]["title"] == "it's"
+        assert H.nodes["n1"]["mixed"] == 'it\'s "x" \\ y'
