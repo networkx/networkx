@@ -608,21 +608,21 @@ def test_bipartite_layout_default_nodes(G):
 
 def test_bipartite_layout_deterministic_order():
     """Ensure bipartite_layout places nodes the same way on every run."""
-    G = nx.Graph([("x1", "c1"), ("x1", "c2"), ("x2", "c2"), ("x3", "c3")])
-    top_nodes = ["x1", "x2", "x3"]
+    G = nx.Graph([("a1", "b1"), ("a1", "b2"), ("a2", "b2"), ("a3", "b3")])
+    top_nodes = ["a1", "a2", "a3"]
     pos = nx.bipartite_layout(G, nodes=top_nodes)
     xs = {n: pos[n][0] for n in G}
     # All top nodes share one x-coordinate (one column)
-    assert all(xs[n] == pytest.approx(xs["x1"]) for n in top_nodes)
+    assert all(xs[n] == pytest.approx(xs["a1"]) for n in top_nodes)
 
 
-@pytest.mark.parametrize("nodes", [["x3", "x2", "x1"], {"x3", "x2", "x1"}])
+@pytest.mark.parametrize("nodes", [["a3", "a2", "a1"], {"a3", "a2", "a1"}])
 def test_bipartite_layout_top_nodes_in_graph_order(nodes):
     """The top column follows G's node order, whatever the order of `nodes`."""
-    G = nx.Graph([("x1", "c1"), ("x2", "c1"), ("x3", "c2")])
+    G = nx.Graph([("a1", "b1"), ("a2", "b1"), ("a3", "b2")])
     pos = nx.bipartite_layout(G, nodes=nodes)
-    assert list(pos)[:3] == ["x1", "x2", "x3"]
-    assert pos["x1"][1] < pos["x2"][1] < pos["x3"][1]
+    assert list(pos)[:3] == ["a1", "a2", "a3"]
+    assert pos["a1"][1] < pos["a2"][1] < pos["a3"][1]
 
 
 def test_bipartite_layout_default_nodes_in_graph_order():
