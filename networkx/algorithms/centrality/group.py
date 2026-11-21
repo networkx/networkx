@@ -555,7 +555,7 @@ def _prominent(k, info, D, nodes, greedy):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def group_closeness_centrality(G, S, weight=None):
+def group_closeness_centrality(G, S, weight=None, wf_improved=True):
     r"""Compute the group closeness centrality for a group of nodes.
 
     Group closeness centrality of a group of nodes $S$ is a measure
@@ -563,9 +563,25 @@ def group_closeness_centrality(G, S, weight=None):
 
     .. math::
 
+       d_{S, v} = \min_{u \in S} (d_{u, v})
+
        c_{close}(S) = \frac{|V-S|}{\sum_{v \in V-S} d_{S, v}}
 
-       d_{S, v} = min_{u \in S} (d_{u, v})
+    If the graph is not completely connected (or in directed graphs, if not all
+    nodes outside $S$ can reach $S$), the closeness centrality is computed for
+    the reachable nodes and scaled by the fraction of non-group nodes that are
+    reachable when `wf_improved=True`:
+
+    .. math::
+
+       c_{close}(S) = \frac{|R(S)|}{\sum_{v \in R(S)} d_{S, v}} \cdot \frac{|R(S)|}{|V-S|}
+
+    where $R(S)$ is the set of nodes in $V-S$ that can reach $S$. If `wf_improved=False`,
+    the scaling factor $|R(S)| / |V-S|$ is omitted:
+
+    .. math::
+
+       c_{close}(S) = \frac{|R(S)|}{\sum_{v \in R(S)} d_{S, v}}
 
     where $V$ is the set of nodes, $d_{S, v}$ is the distance of
     the group $S$ from $v$ defined as above. ($V-S$ is the set of nodes
@@ -585,6 +601,11 @@ def group_closeness_centrality(G, S, weight=None):
        Otherwise holds the name of the edge attribute used as weight.
        The weight of an edge is treated as the length or distance between the two sides.
 
+    wf_improved : bool, optional (default=True)
+       If True, scale by the fraction of non-group nodes that are reachable.
+       This gives the Wasserman and Faust improved formula. For graphs where
+       all non-group nodes are reachable, it is the same as the original formula.
+
     Raises
     ------
     NodeNotFound
@@ -603,6 +624,7 @@ def group_closeness_centrality(G, S, weight=None):
     -----
     The measure was introduced in [1]_.
     The formula implemented here is described in [2]_.
+    The Wasserman and Faust formulation is described in [3]_.
 
     Higher values of closeness indicate greater centrality.
 
@@ -630,24 +652,32 @@ def group_closeness_centrality(G, S, weight=None):
        Disk Resident Graphs.
        WWWConference Proceedings, 2014. 689-694.
        https://doi.org/10.1145/2567948.2579356
+    .. [3] pg. 201 of Wasserman, S. and Faust, K.,
+       Social Network Analysis: Methods and Applications, 1994,
+       Cambridge University Press.
     """
     if G.is_directed():
         G = G.reverse()  # reverse view
-    closeness = 0  # initialize to 0
     V = set(G)  # set of nodes in G
     S = set(S)  # set of nodes in group S
     V_S = V - S  # set of nodes in V but not S
     shortest_path_lengths = nx.multi_source_dijkstra_path_length(G, S, weight=weight)
-    # accumulation
-    for v in V_S:
-        try:
-            closeness += shortest_path_lengths[v]
-        except KeyError:  # no path exists
-            closeness += 0
-    try:
-        closeness = len(V_S) / closeness
-    except ZeroDivisionError:  # 1 / 0 assumed as 0
-        closeness = 0
+    if not V_S:
+        return 0.0
+
+    tot_dist = 0
+    n_reachable = 0
+    for v, dist in shortest_path_lengths.items():
+        if v not in S:
+            tot_dist += dist
+            n_reachable += 1
+
+    if tot_dist > 0.0:
+        closeness = n_reachable / tot_dist
+        if wf_improved:
+            closeness *= n_reachable / len(V_S)
+    else:
+        closeness = 0.0
     return closeness
 
 

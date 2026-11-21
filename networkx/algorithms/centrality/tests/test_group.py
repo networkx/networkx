@@ -522,6 +522,93 @@ class TestGroupClosenessCentrality:
         with pytest.raises(nx.NodeNotFound):
             nx.group_closeness_centrality(nx.path_graph(5), [6, 7, 8])
 
+    @pytest.mark.parametrize("wf_improved", [True, False])
+    def test_group_closeness_matches_closeness_centrality_single_node(
+        self, wf_improved
+    ):
+        """
+        Singleton groups match nx.closeness_centrality across graph types and wf_improved options.
+        """
+        # Connected graph
+        G1 = nx.path_graph(5)
+        for u in G1:
+            gcc = nx.group_closeness_centrality(G1, [u], wf_improved=wf_improved)
+            cc = nx.closeness_centrality(G1, u=u, wf_improved=wf_improved)
+            assert gcc == pytest.approx(cc)
+
+        # Disconnected graph with isolated nodes and multiple components
+        G2 = nx.Graph([(0, 1), (2, 3)])
+        G2.add_node(4)
+        for u in G2:
+            gcc = nx.group_closeness_centrality(G2, [u], wf_improved=wf_improved)
+            cc = nx.closeness_centrality(G2, u=u, wf_improved=wf_improved)
+            assert gcc == pytest.approx(cc)
+
+        # Directed path graph
+        G3 = nx.path_graph(5, create_using=nx.DiGraph)
+        for u in G3:
+            gcc = nx.group_closeness_centrality(G3, [u], wf_improved=wf_improved)
+            cc = nx.closeness_centrality(G3, u=u, wf_improved=wf_improved)
+            assert gcc == pytest.approx(cc)
+
+        # Weighted disconnected graph
+        G4 = nx.Graph()
+        G4.add_edge(0, 1, weight=2.0)
+        G4.add_edge(1, 2, weight=3.0)
+        G4.add_node(3)
+        for u in G4:
+            gcc = nx.group_closeness_centrality(
+                G4, [u], weight="weight", wf_improved=wf_improved
+            )
+            cc = nx.closeness_centrality(
+                G4, u=u, distance="weight", wf_improved=wf_improved
+            )
+            assert gcc == pytest.approx(cc)
+
+    def test_group_closeness_unreachable_nodes_inflation_fix(self):
+        """
+        Adding unreachable nodes must not inflate group closeness centrality.
+        """
+        G = nx.Graph([(0, 1)])
+        # In a connected 2-node graph, closeness of {0} is 1.0
+        assert nx.group_closeness_centrality(G, [0], wf_improved=True) == 1.0
+
+        # Adding an isolated node 2 makes 1 out of 2 non-group nodes reachable
+        G.add_node(2)
+        # wf_improved scales by (n_reachable / |V-S|) = 1/2: closeness should be 0.5, not 2.0
+        gcc_wf = nx.group_closeness_centrality(G, [0], wf_improved=True)
+        assert gcc_wf == pytest.approx(0.5)
+
+        # Without wf_improved, closeness within the reachable component is 1/1 = 1.0
+        gcc_no_wf = nx.group_closeness_centrality(G, [0], wf_improved=False)
+        assert gcc_no_wf == pytest.approx(1.0)
+
+        # Adding more unreachable nodes strictly decreases wf_improved closeness
+        G.add_node(3)
+        gcc_wf_3 = nx.group_closeness_centrality(G, [0], wf_improved=True)
+        assert gcc_wf_3 < gcc_wf
+        assert gcc_wf_3 == pytest.approx(1.0 / 3.0)
+
+    def test_group_closeness_directed(self):
+        """
+        Group closeness centrality in directed graphs uses incoming distance.
+        """
+        G = nx.path_graph(4, create_using=nx.DiGraph)
+        # Sink group [2, 3] can be reached by 0 and 1
+        c_sink = nx.group_closeness_centrality(G, [2, 3], wf_improved=True)
+        # Source group [0, 1] cannot be reached by 2 or 3
+        c_source = nx.group_closeness_centrality(G, [0, 1], wf_improved=True)
+        assert c_sink == pytest.approx(2.0 / 3.0)
+        assert c_source == 0.0
+        assert c_sink > c_source
+
+    def test_group_closeness_all_nodes_in_group(self):
+        """
+        Group closeness centrality returns 0.0 when all nodes are in group.
+        """
+        G = nx.path_graph(4)
+        assert nx.group_closeness_centrality(G, list(G.nodes)) == 0.0
+
 
 class TestGroupDegreeCentrality:
     def test_group_degree_centrality_single_node(self):
