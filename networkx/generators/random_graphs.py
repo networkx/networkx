@@ -233,7 +233,7 @@ def dense_gnm_random_graph(n, m, seed=None, *, create_using=None):
         return complete_graph(n, create_using)
     G = empty_graph(n, create_using)
 
-    if n == 1:
+    if n == 1 or m <= 0:
         return G
 
     u = 0

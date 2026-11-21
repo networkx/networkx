@@ -419,6 +419,14 @@ def test_gnp_fns_disallow_multigraph(fn, directed):
 
 
 @pytest.mark.parametrize("fn", (nx.gnm_random_graph, nx.dense_gnm_random_graph))
+@pytest.mark.parametrize("n", (0, 1, 2, 5))
+def test_gnm_fns_no_edges(fn, n):
+    G = fn(n, 0, seed=42)
+    assert len(G) == n
+    assert G.number_of_edges() == 0
+
+
+@pytest.mark.parametrize("fn", (nx.gnm_random_graph, nx.dense_gnm_random_graph))
 @pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
 def test_gnm_fns_disallow_directed_and_multigraph(fn, graphtype):
     with pytest.raises(nx.NetworkXError, match="must not be"):
