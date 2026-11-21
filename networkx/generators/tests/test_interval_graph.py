@@ -9,44 +9,49 @@ from networkx.generators.interval_graph import interval_graph
 from networkx.utils import edges_equal
 
 
+@pytest.fixture(params=["sparse", "dense"])
+def method(request):
+    return request.param
+
+
 class TestIntervalGraph:
     """Unit tests for :func:`networkx.generators.interval_graph.interval_graph`"""
 
-    def test_empty(self):
+    def test_empty(self, method):
         """Tests for trivial case of empty input"""
-        assert len(interval_graph([])) == 0
+        assert len(interval_graph([], method)) == 0
 
-    def test_interval_graph_check_invalid(self):
+    def test_interval_graph_check_invalid(self, method):
         """Tests for conditions that raise Exceptions"""
 
         invalids_having_none = [None, (1, 2)]
         with pytest.raises(TypeError):
-            interval_graph(invalids_having_none)
+            interval_graph(invalids_having_none, method)
 
         invalids_having_set = [{1, 2}]
         with pytest.raises(TypeError):
-            interval_graph(invalids_having_set)
+            interval_graph(invalids_having_set, method)
 
         invalids_having_seq_but_not_length2 = [(1, 2, 3)]
         with pytest.raises(TypeError):
-            interval_graph(invalids_having_seq_but_not_length2)
+            interval_graph(invalids_having_seq_but_not_length2, method)
 
         invalids_interval = [[3, 2]]
         with pytest.raises(ValueError):
-            interval_graph(invalids_interval)
+            interval_graph(invalids_interval, method)
 
-    def test_interval_graph_0(self):
+    def test_interval_graph_0(self, method):
         intervals = [(1, 2), (1, 3)]
 
         expected_graph = nx.Graph()
         expected_graph.add_edge(*intervals)
 
-        actual_g = interval_graph(intervals)
+        actual_g = interval_graph(intervals, method)
 
         assert set(actual_g.nodes) == set(expected_graph.nodes)
         assert edges_equal(expected_graph, actual_g)
 
-    def test_interval_graph_1(self):
+    def test_interval_graph_1(self, method):
         intervals = [(1, 2), (2, 3), (3, 4), (1, 4)]
 
         expected_graph = nx.Graph()
@@ -59,23 +64,23 @@ class TestIntervalGraph:
 
         expected_graph.add_edges_from([e1, e2, e3, e4, e5])
 
-        actual_g = interval_graph(intervals)
+        actual_g = interval_graph(intervals, method)
 
         assert set(actual_g.nodes) == set(expected_graph.nodes)
         assert edges_equal(expected_graph, actual_g)
 
-    def test_interval_graph_2(self):
+    def test_interval_graph_2(self, method):
         intervals = [(1, 2), [3, 5], [6, 8], (9, 10)]
 
         expected_graph = nx.Graph()
         expected_graph.add_nodes_from([(1, 2), (3, 5), (6, 8), (9, 10)])
 
-        actual_g = interval_graph(intervals)
+        actual_g = interval_graph(intervals, method)
 
         assert set(actual_g.nodes) == set(expected_graph.nodes)
         assert edges_equal(expected_graph, actual_g)
 
-    def test_interval_graph_3(self):
+    def test_interval_graph_3(self, method):
         intervals = [(1, 4), [3, 5], [2.5, 4]]
 
         expected_graph = nx.Graph()
@@ -86,12 +91,12 @@ class TestIntervalGraph:
 
         expected_graph.add_edges_from([e1, e2, e3])
 
-        actual_g = interval_graph(intervals)
+        actual_g = interval_graph(intervals, method)
 
         assert set(actual_g.nodes) == set(expected_graph.nodes)
         assert edges_equal(expected_graph, actual_g)
 
-    def test_interval_graph_4(self):
+    def test_interval_graph_4(self, method):
         """test all possible overlaps"""
         intervals = [
             (0, 2),
@@ -123,12 +128,12 @@ class TestIntervalGraph:
             (1, 3),
             (2, 3),
         }
-        actual_g = nx.interval_graph(intervals)
+        actual_g = nx.interval_graph(intervals, method)
         actual_nbrs = nx.neighbors(actual_g, (0, 2))
 
         assert set(actual_nbrs) == expected_nbrs
 
-    def test_interval_graph_5(self):
+    def test_interval_graph_5(self, method):
         """this test is to see that an interval supports infinite number"""
         intervals = {(-math.inf, 0), (-1, -1), (0.5, 0.5), (1, 1), (1, math.inf)}
 
@@ -138,7 +143,7 @@ class TestIntervalGraph:
         e2 = ((1, 1), (1, math.inf))
 
         expected_graph.add_edges_from([e1, e2])
-        actual_g = interval_graph(intervals)
+        actual_g = interval_graph(intervals, method)
 
         assert set(actual_g.nodes) == set(expected_graph.nodes)
         assert edges_equal(expected_graph, actual_g)
