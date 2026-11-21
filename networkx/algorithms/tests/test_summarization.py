@@ -640,3 +640,133 @@ class TestSNAPDirectedMulti(AbstractSNAP):
         }
         nx.set_node_attributes(G, supernodes, "group")
         return G
+
+
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
+def test_k_snap_summarization_empty(graph_type):
+    G = graph_type()
+    summary_graph = nx.k_snap_aggregation(G, k=1, node_attributes=("color",))
+    assert nx.is_isomorphic(summary_graph, G)
+
+
+@pytest.mark.parametrize(
+    "snap_test",
+    [
+        TestSNAPUndirected,
+        TestSNAPDirected,
+        TestSNAPUndirectedMulti,
+        TestSNAPDirectedMulti,
+    ],
+)
+class TestKSNAP:
+    node_attributes = ("color",)
+    edge_attributes = ("type",)
+
+    def k_snap(self, snap_test, k):
+        G = snap_test().build_original_graph()
+        return G, nx.k_snap_aggregation(
+            G, k, self.node_attributes, self.edge_attributes
+        )
+
+    def attribute_group_count(self, G):
+        return len({attrs["color"] for _, attrs in G.nodes.items()})
+
+    def test_k_below_attribute_groups(self, snap_test):
+        G = snap_test().build_original_graph()
+        k = self.attribute_group_count(G) - 1
+        with pytest.raises(nx.NetworkXError):
+            nx.k_snap_aggregation(G, k, self.node_attributes, self.edge_attributes)
+
+    def test_k_is_number_of_supernodes(self, snap_test):
+        """
+        Verifies that the summary graph has k supernodes, for every k from the
+        number of node attribute groups to the size of the SNAP summary graph
+        """
+        G = snap_test().build_original_graph()
+        snap_graph = nx.snap_aggregation(G, self.node_attributes, self.edge_attributes)
+        for k in range(self.attribute_group_count(G), len(snap_graph) + 1):
+            _, summary_graph = self.k_snap(snap_test, k)
+            assert len(summary_graph) == k
+
+    def test_supernodes_partition_nodes(self, snap_test):
+        """
+        Verifies that every node is in exactly one supernode and that the
+        nodes in a supernode have the same node attributes
+        """
+        G = snap_test().build_original_graph()
+        snap_graph = nx.snap_aggregation(G, self.node_attributes, self.edge_attributes)
+        for k in range(self.attribute_group_count(G), len(snap_graph) + 1):
+            _, summary_graph = self.k_snap(snap_test, k)
+            groups = [attrs["group"] for _, attrs in summary_graph.nodes.items()]
+            assert sorted(node for group in groups for node in group) == sorted(G)
+            for group in groups:
+                assert len({G.nodes[node]["color"] for node in group}) == 1
+
+    def test_k_at_least_snap_size_equals_snap(self, snap_test):
+        """
+        Verifies that k-SNAP stops at the SNAP summary graph for larger k
+        """
+        G = snap_test().build_original_graph()
+        snap_graph = nx.snap_aggregation(G, self.node_attributes, self.edge_attributes)
+        snap_groups = {
+            frozenset(attrs["group"]) for _, attrs in snap_graph.nodes.items()
+        }
+        for k in (len(snap_graph), len(G), len(G) + 5):
+            _, summary_graph = self.k_snap(snap_test, k)
+            assert nx.is_isomorphic(summary_graph, snap_graph)
+            assert snap_groups == {
+                frozenset(attrs["group"]) for _, attrs in summary_graph.nodes.items()
+            }
+
+
+class TestKSNAPMajority:
+    def build_original_graph(self):
+        nodes = {
+            "A": {"color": "Red"},
+            "B": {"color": "Red"},
+            "C": {"color": "Red"},
+            "D": {"color": "Red"},
+            "E": {"color": "Blue"},
+            "F": {"color": "Blue"},
+        }
+        edges = [
+            ("A", "E", "Strong"),
+            ("B", "E", "Strong"),
+            ("C", "F", "Strong"),
+            ("D", "F", "Weak"),
+        ]
+        G = nx.DiGraph()
+        for node in nodes:
+            G.add_node(node, **nodes[node])
+        for source, target, type in edges:
+            G.add_edge(source, target, type=type)
+        return G
+
+    def test_majority_superedge(self):
+        """
+        All of the Red nodes have an edge to a Blue node, but only
+        three of the four have a Strong one and one has a Weak one
+        """
+        G = self.build_original_graph()
+        summary_graph = nx.k_snap_aggregation(G, 2, ("color",), ("type",))
+        assert len(summary_graph) == 2
+        (edge,) = summary_graph.edges(data=True)
+        assert edge[2]["types"] == [{"type": "Strong"}]
+
+    def test_split_most_disagreeing_group(self):
+        """
+        The Red nodes disagree on having a Strong edge to a Blue node (3 of 4
+        do) and on having a Weak edge (1 of 4 does), so the Red group is split
+        into the nodes with the Strong edge and the node without it
+        """
+        G = self.build_original_graph()
+        summary_graph = nx.k_snap_aggregation(G, 3, ("color",), ("type",))
+        groups = {frozenset(attrs["group"]) for _, attrs in summary_graph.nodes.items()}
+        assert groups == {frozenset("ABC"), frozenset("D"), frozenset("EF")}
+
+    def test_k_below_attribute_groups(self):
+        G = self.build_original_graph()
+        with pytest.raises(nx.NetworkXError):
+            nx.k_snap_aggregation(G, 1, ("color",), ("type",))

@@ -8,3 +8,4 @@ Summarization
 
    dedensify
    snap_aggregation
+   k_snap_aggregation

@@ -63,7 +63,7 @@ from collections import Counter, defaultdict
 
 import networkx as nx
 
-__all__ = ["dedensify", "snap_aggregation"]
+__all__ = ["dedensify", "snap_aggregation", "k_snap_aggregation"]
 
 
 @nx._dispatchable(mutates_input={"not copy": 3}, returns_graph=True)
@@ -554,6 +554,317 @@ def snap_aggregation(
         node_attributes,
         edge_attributes,
         nbr_info,
+        edge_types,
+        prefix,
+        supernode_attribute,
+        superedge_attribute,
+    )
+
+
+def _k_snap_neighbor_info(G, groups, group_lookup, edge_types):
+    """
+    Calculates the neighbor-groups participation counts of every node
+
+    Unlike `_snap_eligible_group`, which stops at the first group that needs to
+    be split, this computes the data structure for all of the groups.
+
+    Parameters
+    ----------
+    G : graph
+        graph to be summarized
+    groups : dict
+        A dictionary of unique group IDs and their corresponding node groups
+    group_lookup : dict
+        dictionary of nodes and their current corresponding group ID
+    edge_types : dict
+        dictionary of edges in the graph and their corresponding attributes recognized
+        in the summarization
+
+    Returns
+    -------
+    dict
+        A data structure indicating the number of edges a node has with the
+        groups in the current summarization of each edge type
+    """
+    nbr_info = {}
+    for group_id in groups:
+        for node in groups[group_id]:
+            nbr_info[node] = {group_id: Counter() for group_id in groups}
+            edges = G.edges(node, keys=True) if G.is_multigraph() else G.edges(node)
+            for edge in edges:
+                neighbor_group_id = group_lookup[edge[1]]
+                nbr_info[node][neighbor_group_id][edge_types[edge]] += 1
+    return nbr_info
+
+
+def _k_snap_best_split(groups, nbr_info):
+    """
+    Finds the group split that best improves the homogeneity of the groups
+
+    A group is split on whether its nodes have an edge of a given type to
+    another group.  The nodes that disagree with the majority of the group on
+    this are counted, and the split with the most disagreeing nodes is chosen.
+
+    Parameters
+    ----------
+    groups : dict
+        A dictionary of unique group IDs and their corresponding node groups
+    nbr_info : dict
+        A data structure indicating the number of edges a node has with the
+        groups in the current summarization of each edge type
+
+    Returns
+    -------
+    tuple or None
+        The ID of the group to split and the set of nodes to move to a new
+        group, or None if all of the groups are already homogeneous.
+    """
+    best_split = None
+    best_count = 0
+    for group_id, group in groups.items():
+        group_size = len(group)
+        for other_group_id in groups:
+            participants = defaultdict(set)
+            for node in group:
+                for edge_type in nbr_info[node][other_group_id]:
+                    participants[edge_type].add(node)
+            for nodes in participants.values():
+                disagreeing = min(len(nodes), group_size - len(nodes))
+                if disagreeing > best_count:
+                    best_count = disagreeing
+                    best_split = (group_id, nodes)
+    return best_split
+
+
+def _k_snap_majority_info(G, groups, nbr_info):
+    """
+    Calculates the edge types that the nodes of each group mostly have
+
+    Used in the k-SNAP algorithm in place of the exact neighbor information of
+    the SNAP algorithm, as the nodes of a group do not necessarily have the
+    same edges.  An edge type is kept for a pair of groups if more than half of
+    the nodes of a group have an edge of that type to the other group.  In an
+    undirected graph, this is true for either of the two groups.
+
+    Parameters
+    ----------
+    G : graph
+        graph to be summarized
+    groups : dict
+        A dictionary of unique group IDs and their corresponding node groups
+    nbr_info : dict
+        A data structure indicating the number of edges a node has with the
+        groups in the current summarization of each edge type
+
+    Returns
+    -------
+    dict
+        A data structure in the form of `nbr_info`, where all of the nodes of a
+        group share the edge types of the majority of the group
+    """
+    majority = {}
+    for group_id, group in groups.items():
+        group_size = len(group)
+        majority[group_id] = {}
+        for other_group_id in groups:
+            edge_counts = Counter()
+            for node in group:
+                edge_counts.update(nbr_info[node][other_group_id].keys())
+            majority[group_id][other_group_id] = [
+                edge_type
+                for edge_type, count in edge_counts.items()
+                if 2 * count > group_size
+            ]
+
+    if not G.is_directed():
+        for group_id in groups:
+            for other_group_id, group_edge_types in majority[group_id].items():
+                for edge_type in list(group_edge_types):
+                    if edge_type not in majority[other_group_id][group_id]:
+                        majority[other_group_id][group_id].append(edge_type)
+
+    return {
+        node: majority[group_id] for group_id in groups for node in groups[group_id]
+    }
+
+
+@nx._dispatchable(
+    node_attrs="[node_attributes]", edge_attrs="[edge_attributes]", returns_graph=True
+)
+def k_snap_aggregation(
+    G,
+    k,
+    node_attributes,
+    edge_attributes=(),
+    prefix="Supernode-",
+    supernode_attribute="group",
+    superedge_attribute="types",
+):
+    """Creates a summary graph with at most k supernodes.
+
+    This function uses the top-down k-SNAP algorithm for summarizing a given
+    graph by grouping nodes by node attributes and their edge attributes
+    into a user-specified number of supernodes in a summary graph.  It is a
+    lossy variant of `snap_aggregation`, which produces as many supernodes as
+    are needed for all of the nodes in each group to have the same edges.  The
+    k-SNAP algorithm trades this exactness for a summary graph of a manageable
+    size.
+
+    Here is a high-level view of how this algorithm works:
+
+    1) Group nodes by node attribute values.
+
+    2) Iteratively split the group whose nodes disagree the most on whether
+    they have an edge of a given type to another group, until there are k
+    groups or all of the groups are homogeneous in their member nodes' edges to
+    other groups.  A group is split into the nodes that have the edge type to
+    the other group and the nodes that do not.
+
+    3) Build the output summary graph, where the groups are represented by
+    super-nodes. Edges represent the edges shared between most of the nodes in
+    each respective groups.  That is, an edge type is recorded between two
+    supernodes when more than half of the nodes in a group have an edge of that
+    type to nodes in the other group.  In an undirected graph, this needs to be
+    true for either of the two groups.
+
+    A k-SNAP summary graph can be used to visualize graphs that are too large to
+    display or visually analyze, even after a `snap_aggregation`, as the number
+    of supernodes can be chosen.
+
+    Parameters
+    ----------
+    G : graph
+        Networkx Graph to be summarized
+    k : int
+        The maximum number of supernodes in the summary graph.  This must be
+        at least the number of unique combinations of values of the node
+        attributes in the graph.
+    node_attributes : iterable, required
+        An iterable of the node attributes used to group nodes in the summarization process. Nodes
+        with the same values for these attributes will be grouped together in the summary graph.
+    edge_attributes : iterable, optional
+        An iterable of the edge attributes considered in the summarization process.  If provided, unique
+        combinations of the attribute values found in the graph are used to
+        determine the edge types in the graph.  If not provided, all edges
+        are considered to be of the same type.
+    prefix : str
+        The prefix used to denote supernodes in the summary graph. Defaults to 'Supernode-'.
+    supernode_attribute : str
+        The node attribute for recording the supernode groupings of nodes. Defaults to 'group'.
+    superedge_attribute : str
+        The edge attribute for recording the edge types of multiple edges. Defaults to 'types'.
+
+    Returns
+    -------
+    networkx.Graph: summary graph
+
+    Raises
+    ------
+    NetworkXError
+        If `k` is less than the number of unique combinations of values of the
+        node attributes in the graph.
+
+    Examples
+    --------
+    k-SNAP aggregation takes a graph and summarizes it in the context of
+    user-provided node and edge attributes, as SNAP aggregation does, but with
+    control over the size of the summary graph
+
+    >>> nodes = {
+    ...     "A": dict(color="Red"),
+    ...     "B": dict(color="Red"),
+    ...     "C": dict(color="Red"),
+    ...     "D": dict(color="Red"),
+    ...     "E": dict(color="Blue"),
+    ...     "F": dict(color="Blue"),
+    ... }
+    >>> edges = [
+    ...     ("A", "E", "Strong"),
+    ...     ("B", "F", "Strong"),
+    ...     ("C", "E", "Weak"),
+    ...     ("D", "F", "Weak"),
+    ... ]
+    >>> G = nx.Graph()
+    >>> for node in nodes:
+    ...     attributes = nodes[node]
+    ...     G.add_node(node, **attributes)
+    >>> for source, target, type in edges:
+    ...     G.add_edge(source, target, type=type)
+    >>> node_attributes = ("color",)
+    >>> edge_attributes = ("type",)
+    >>> summary_graph = nx.k_snap_aggregation(
+    ...     G, k=2, node_attributes=node_attributes, edge_attributes=edge_attributes
+    ... )
+    >>> summary_graph.number_of_nodes()
+    2
+
+    Notes
+    -----
+    The summary graph produced is called a k-SNAP summary.  According to [1]_,
+    the problem of finding the best summary of k groups is NP-complete, so the
+    top-down approach of this function uses a heuristic to choose the group to
+    split.  The first grouping in this approach is the maximal A-compatible
+    grouping, in which all nodes in each group have the same exact node
+    attribute values.  The groups are then split until the grouping is the
+    maximal AR-compatible grouping produced by `snap_aggregation` or there are
+    k groups, whichever comes first.  This means that if k is greater than the
+    number of supernodes in the `snap_aggregation` of a graph, the result is the
+    same as the `snap_aggregation`.
+
+    References
+    ----------
+    .. [1] Y. Tian, R. A. Hankins, and J. M. Patel. Efficient aggregation
+       for graph summarization. In Proc. 2008 ACM-SIGMOD Int. Conf.
+       Management of Data (SIGMOD’08), pages 567–580, Vancouver, Canada,
+       June 2008.
+    """
+    edge_types = {
+        edge: tuple(attrs.get(attr) for attr in edge_attributes)
+        for edge, attrs in G.edges.items()
+    }
+    if not G.is_directed():
+        if G.is_multigraph():
+            # list is needed to avoid mutating while iterating
+            edges = [((v, u, key), etype) for (u, v, key), etype in edge_types.items()]
+        else:
+            # list is needed to avoid mutating while iterating
+            edges = [((v, u), etype) for (u, v), etype in edge_types.items()]
+        edge_types.update(edges)
+
+    group_lookup = {
+        node: tuple(attrs[attr] for attr in node_attributes)
+        for node, attrs in G.nodes.items()
+    }
+    groups = defaultdict(set)
+    for node, node_type in group_lookup.items():
+        groups[node_type].add(node)
+
+    if k < len(groups):
+        raise nx.NetworkXError(
+            f"k must be at least the number of node attribute groups, {len(groups)}"
+        )
+
+    nbr_info = _k_snap_neighbor_info(G, groups, group_lookup, edge_types)
+    while len(groups) < k:
+        split = _k_snap_best_split(groups, nbr_info)
+        if split is None:
+            break
+        group_id, new_group = split
+        # Assign unused integer as the new_group_id
+        # ids are tuples, so will not interact with the original group_ids
+        new_group_id = len(groups)
+        groups[new_group_id] = new_group
+        groups[group_id] -= new_group
+        for node in new_group:
+            group_lookup[node] = new_group_id
+        nbr_info = _k_snap_neighbor_info(G, groups, group_lookup, edge_types)
+
+    return _snap_build_graph(
+        G,
+        groups,
+        node_attributes,
+        edge_attributes,
+        _k_snap_majority_info(G, groups, nbr_info),
         edge_types,
         prefix,
         supernode_attribute,
