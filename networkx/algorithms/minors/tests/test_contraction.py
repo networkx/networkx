@@ -542,3 +542,40 @@ def test_nonexistent_edge():
     G = nx.cycle_graph(4)
     with pytest.raises(ValueError):
         nx.contracted_edge(G, (0, 2))
+
+
+def test_contracted_nodes_copy_isolation():
+    """Tests that contracted_nodes with copy=True does not mutate contraction attributes
+    of the input graph or share mutable contraction dictionary references.
+    """
+    # 1. Chained node contractions do not mutate intermediate graphs
+    G = nx.path_graph(4)
+    H = nx.contracted_nodes(G, 0, 1, copy=True)
+    assert H.nodes[0] == {"contraction": {1: {}}}
+    K = nx.contracted_nodes(H, 0, 2, copy=True)
+    assert H.nodes[0] == {"contraction": {1: {}}}
+    assert K.nodes[0] == {"contraction": {1: {}, 2: {}}}
+
+    # 2. Edge contraction dictionary does not share mutable dict references with input graph
+    G = nx.path_graph(3)
+    G.edges[1, 2]["weight"] = 100
+    H = nx.contracted_nodes(G, 0, 2, copy=True)
+    assert H.edges[0, 1]["contraction"][(2, 1)]["weight"] == 100
+    G.edges[1, 2]["weight"] = 5
+    assert H.edges[0, 1]["contraction"][(2, 1)]["weight"] == 100
+
+    # 3. Chained edge contractions on the same target edge
+    G = nx.Graph([(0, 1), (2, 1), (3, 1)])
+    H = nx.contracted_nodes(G, 0, 2, copy=True)
+    K = nx.contracted_nodes(H, 0, 3, copy=True)
+    assert H.edges[0, 1]["contraction"] == {(2, 1): {}}
+    assert K.edges[0, 1]["contraction"] == {(2, 1): {}, (3, 1): {}}
+    assert H.edges[0, 1]["contraction"] is not K.edges[0, 1]["contraction"]
+
+    # 4. Same isolation holds for contracted_edge
+    G = nx.path_graph(4)
+    H = nx.contracted_edge(G, (0, 1), copy=True)
+    assert H.nodes[0] == {"contraction": {1: {}}}
+    K = nx.contracted_edge(H, (0, 2), copy=True)
+    assert H.nodes[0] == {"contraction": {1: {}}}
+    assert K.nodes[0] == {"contraction": {1: {}, 2: {}}}
