@@ -17,6 +17,7 @@ dedicated and fully-featured graph visualization tools are
 `Graphviz <http://www.graphviz.org/>`_,
 `Hiveplotlib <https://hiveplotlib.readthedocs.io/>`_,
 `iplotx <https://iplotx.readthedocs.io/>`_ and, for
+`LaNet-vi <https://pypi.org/project/lanet-vi/>`_,
 `LaTeX <http://www.latex-project.org/>`_ typesetting,
 `PGF/TikZ <https://github.com/pgf-tikz/pgf/>`_.
 To use these and other such tools, you should export your NetworkX graph into
