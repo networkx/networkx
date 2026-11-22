@@ -624,17 +624,18 @@ def test_branchings_with_default_weights():
     )
 
 
-def test_spanning_arborescence_weight_spread():
-    """Test for issue #8964: spanning arborescence should not be rejected
-    in favor of non-spanning branching due to insufficient weight shift."""
+def test_spanning_arborescence_sufficient_weight_shift():
+    # see gh-8964: spanning arborescence should not be rejected in favor of
+    # non-spanning branching due to insufficient weight shift.
+    # The unique spanning arborescence is the path 0 -> 1 -> 2 -> 3 -> 4.
     edges = [
-        (0, 1, 1.0),
-        (0, 2, 10.0),
-        (0, 4, 1.0),
-        (1, 4, 10.0),
-        (2, 4, 0.4),
-        (3, 1, 10.0),
-        (4, 0, 1.0),
+        (0, 1, 10.0),
+        (1, 2, 10.0),
+        (2, 3, 1.0),
+        (3, 1, 1.0),
+        (3, 2, 1.0),
+        (3, 4, 10.0),
+        (4, 2, 0.4),
     ]
     G = nx.DiGraph()
     G.add_weighted_edges_from(edges)
@@ -642,7 +643,7 @@ def test_spanning_arborescence_weight_spread():
     # Minimum spanning arborescence
     B_min = nx.minimum_spanning_arborescence(G)
     assert nx.is_arborescence(B_min)
-    assert sorted(B_min.edges()) == [(0, 2), (1, 4), (3, 1), (4, 0)]
+    assert sorted(B_min.edges()) == [(0, 1), (1, 2), (2, 3), (3, 4)]
     assert sum(d["weight"] for _, _, d in B_min.edges(data=True)) == 31.0
 
     # Maximum spanning arborescence (with negated weights)
@@ -650,5 +651,5 @@ def test_spanning_arborescence_weight_spread():
     H.add_weighted_edges_from((u, v, -w) for u, v, w in edges)
     B_max = nx.maximum_spanning_arborescence(H)
     assert nx.is_arborescence(B_max)
-    assert sorted(B_max.edges()) == [(0, 2), (1, 4), (3, 1), (4, 0)]
+    assert sorted(B_max.edges()) == [(0, 1), (1, 2), (2, 3), (3, 4)]
     assert sum(d["weight"] for _, _, d in B_max.edges(data=True)) == -31.0
