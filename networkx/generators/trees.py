@@ -82,7 +82,7 @@ def prefix_tree(paths):
 
     Parameters
     ----------
-    paths: iterable of paths
+    paths : iterable of paths
         An iterable of paths which are themselves sequences.
         Matching prefixes among these sequences are identified with
         nodes of the prefix tree. One leaf of the tree is associated
@@ -218,7 +218,7 @@ def prefix_tree_recursive(paths):
 
     Parameters
     ----------
-    paths: iterable of paths
+    paths : iterable of paths
         An iterable of paths which are themselves sequences.
         Matching prefixes among these sequences are identified with
         nodes of the prefix tree. One leaf of the tree is associated
@@ -509,9 +509,9 @@ def _to_nx(edges, n_nodes, root=None, roots=None):
         The flattened list of edges of the graph.
     n_nodes : int
         The number of nodes of the graph.
-    root: int (default=None)
+    root : int (default=None)
         If not None, the "root" attribute of the graph will be set to this value.
-    roots: collection of ints (default=None)
+    roots : collection of ints (default=None)
         If not None, he "roots" attribute of the graph will be set to this value.
 
     Returns

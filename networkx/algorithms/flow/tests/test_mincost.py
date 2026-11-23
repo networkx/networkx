@@ -68,6 +68,28 @@ class TestMinCostFlow:
         pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
         pytest.raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
 
+    @pytest.mark.parametrize(
+        "fn",
+        (nx.network_simplex, nx.min_cost_flow, nx.capacity_scaling),
+    )
+    def test_no_residual_edges_infeasible(self, fn):
+        # See gh-8934.
+        # Excess demand without edges (i.e. no capacity) is infeasible
+        G = nx.DiGraph()
+        G.add_node(0, demand=1)
+        G.add_node(1, demand=-1)
+        with pytest.raises(
+            nx.NetworkXUnfeasible, match="no flow satisfies all node demands"
+        ):
+            fn(G)
+
+        # Same for 0-capacity edges
+        G.add_edge(1, 0, capacity=0, weight=1)
+        with pytest.raises(
+            nx.NetworkXUnfeasible, match="no flow satisfies all node demands"
+        ):
+            fn(G)
+
     def test_transshipment(self):
         G = nx.DiGraph()
         G.add_node("a", demand=1)

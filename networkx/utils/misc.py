@@ -306,7 +306,7 @@ class PythonRandomViaNumpyBits(random.Random):
     bit-stream for all work with NetworkX. This implementation is based on helpful
     comments and code from Robert Kern on NumPy's GitHub Issue #24458.
 
-    This implementation supersedes that of `PythonRandomInterface` which rewrote
+    This implementation supersedes that of ``PythonRandomInterface`` which rewrote
     methods to account for subtle differences in API between `random` and
     `numpy.random`. Instead this subclasses `random.Random` and overwrites
     the methods `random`, `getrandbits`, `getstate`, `setstate` and `seed`.
@@ -471,11 +471,11 @@ def create_py_random_state(random_state=None):
           generator used by `np.random`.
         - If an `np.random.Generator` instance, or the `np.random` package, or
           the global numpy random number generator, then return it.
-          wrapped in a `PythonRandomViaNumpyBits` class.
-        - If a `PythonRandomViaNumpyBits` instance, return it.
-        - If a `PythonRandomInterface` instance, return it.
+          wrapped in a ``PythonRandomViaNumpyBits`` class.
+        - If a ``PythonRandomViaNumpyBits`` instance, return it.
+        - If a ``PythonRandomInterface`` instance, return it.
         - If a `np.random.RandomState` instance and not the global numpy default,
-          return it wrapped in `PythonRandomInterface` for backward bit-stream
+          return it wrapped in ``PythonRandomInterface`` for backward bit-stream
           matching with legacy code.
 
     Notes
@@ -490,9 +490,9 @@ def create_py_random_state(random_state=None):
       random ints, and the wrappers use Numpy bit-streams with CPython's random module
       to choose arbitrarily large random integers too.
     - We provide two wrapper classes:
-      `PythonRandomViaNumpyBits` is usually what you want and is always used for
+      ``PythonRandomViaNumpyBits`` is usually what you want and is always used for
       `np.Generator` instances. But for users who need to recreate random numbers
-      produced in NetworkX 3.2 or earlier, we maintain the `PythonRandomInterface`
+      produced in NetworkX 3.2 or earlier, we maintain the ``PythonRandomInterface``
       wrapper as well. We use it only used if passed a (non-default) `np.RandomState`
       instance pre-initialized from a seed. Otherwise the newer wrapper is used.
     """

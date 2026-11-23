@@ -84,6 +84,11 @@ Reporting Views
    NodeDataView
    EdgeView
    EdgeDataView
+   OutEdgeDataView
+   InEdgeDataView
+   MultiEdgeDataView
+   OutMultiEdgeDataView
+   InMultiEdgeDataView
    DegreeView
 
 Filters

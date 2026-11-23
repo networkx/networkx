@@ -409,14 +409,14 @@ def make_bi_connected(embedding, starting_node, outgoing_node, edges_counted):
 
     Parameters
     ----------
-    embedding: nx.PlanarEmbedding
+    embedding : nx.PlanarEmbedding
         The embedding that defines the faces
     starting_node : node
         A node on the face
     outgoing_node : node
         A node such that the half edge (starting_node, outgoing_node) belongs
         to the face
-    edges_counted: set
+    edges_counted : set
         Set of all half-edges that belong to a face that have been visited
 
     Returns

@@ -782,7 +782,7 @@ def _bidirectional_dijkstra(
     target : node
         Ending node.
 
-    weight: string, function, optional (default='weight')
+    weight : string, function, optional (default='weight')
         Edge data key or weight function corresponding to the edge weight
         If this is a function, the weight of an edge is the value
         returned by the function. The function must accept exactly three

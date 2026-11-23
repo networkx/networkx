@@ -194,14 +194,14 @@ def capacity_scaling(
 
     heap : class
         Type of heap to be used in the algorithm. It should be a subclass of
-        :class:`MinHeap` or implement a compatible interface.
+        ``MinHeap`` or implement a compatible interface.
 
-        If a stock heap implementation is to be used, :class:`BinaryHeap` is
-        recommended over :class:`PairingHeap` for Python implementations without
+        If a stock heap implementation is to be used, ``BinaryHeap`` is
+        recommended over ``PairingHeap`` for Python implementations without
         optimized attribute accesses (e.g., CPython) despite a slower
         asymptotic running time. For Python implementations with optimized
-        attribute accesses (e.g., PyPy), :class:`PairingHeap` provides better
-        performance. Default value: :class:`BinaryHeap`.
+        attribute accesses (e.g., PyPy), ``PairingHeap`` provides better
+        performance. Default value: ``BinaryHeap``.
 
     Returns
     -------
@@ -296,7 +296,10 @@ def capacity_scaling(
     # Determine the maximum edge capacity.
     wmax = max(chain([-inf], (e["capacity"] for u, v, e in R.edges(data=True))))
     if wmax == -inf:
-        # Residual network has no edges.
+        # Residual network has no edges, so no more flow can be routed. The demands
+        # are infeasible if any node has excess (same check as after the loop below).
+        if any(R.nodes[u]["excess"] != 0 for u in R):
+            raise nx.NetworkXUnfeasible("no flow satisfies all node demands")
         return flow_cost, _build_flow_dict(G, R, capacity, weight)
 
     R_nodes = R.nodes

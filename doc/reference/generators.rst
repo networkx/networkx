@@ -56,6 +56,7 @@ Expanders
    chordal_cycle_graph
    paley_graph
    maybe_regular_expander
+   maybe_regular_expander_graph
    is_regular_expander
    random_regular_expander_graph
 

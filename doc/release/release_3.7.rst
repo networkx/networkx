@@ -179,7 +179,7 @@ Documentation
 - DOC: Fix gml docstring examples (`#8894 <https://github.com/networkx/networkx/pull/8894>`_).
 - [BUG][PERF] Fix ISMAGS directed matching and monomorphism overhead (`#8900 <https://github.com/networkx/networkx/pull/8900>`_).
 - DOC: Fix Parameters indentation in generate_gexf (`#8897 <https://github.com/networkx/networkx/pull/8897>`_).
-- Expose *Matcher classes to get them into the objects inventory (`#8903 <https://github.com/networkx/networkx/pull/8903>`_).
+- Expose ``*Matcher`` classes to get them into the objects inventory (`#8903 <https://github.com/networkx/networkx/pull/8903>`_).
 
 Maintenance
 -----------

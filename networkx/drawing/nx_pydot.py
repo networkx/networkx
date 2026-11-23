@@ -281,7 +281,7 @@ def graphviz_layout(G, prog="neato", root=None):
 
 
 def pydot_layout(G, prog="neato", root=None):
-    """Create node positions using :mod:`pydot` and Graphviz.
+    """Create node positions using ``pydot`` and Graphviz.
 
     Parameters
     ----------

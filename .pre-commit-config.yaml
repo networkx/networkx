@@ -86,3 +86,9 @@ repos:
       - id: ruff
         stages: [manual]
         args: [--select=PERF]
+
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: 06a39750ec31860bb44f2acf67182c40016cd1e7 # frozen: v1.32.0
+    hooks:
+      - id: zizmor
+        args: [--no-progress, --fix]

@@ -177,3 +177,22 @@ def test_less_than_3_edges():
     G.add_nodes_from([0, 1, 2, 3])
     with pytest.raises(nx.NetworkXError, match=".*fewer than 2 edges"):
         nx.double_edge_swap(G)
+
+
+def test_double_edge_swap_self_loops_preserves_degrees():
+    G = nx.Graph([(0, 1), (1, 2), (2, 3), (0, 0), (3, 3)])
+    orig_degrees = dict(G.degree())
+    orig_edges = G.number_of_edges()
+    nx.double_edge_swap(G, nswap=1, seed=7)
+    assert dict(G.degree()) == orig_degrees
+    assert G.number_of_edges() == orig_edges
+
+
+@pytest.mark.parametrize("threshold", [3, 0])
+def test_connected_double_edge_swap_self_loops_preserves_degrees(threshold):
+    G = nx.Graph([(0, 1), (1, 2), (2, 3), (0, 0), (3, 3)])
+    orig_degrees = dict(G.degree())
+    orig_edges = G.number_of_edges()
+    nx.connected_double_edge_swap(G, nswap=1, _window_threshold=threshold, seed=23)
+    assert dict(G.degree()) == orig_degrees
+    assert G.number_of_edges() == orig_edges

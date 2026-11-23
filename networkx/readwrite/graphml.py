@@ -284,10 +284,10 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
        Filename or file handle to read.
        Filenames ending in .gz or .bz2 will be decompressed.
 
-    node_type: Python type (default: str)
+    node_type : Python type (default: str)
        Convert node ids to this type
 
-    edge_key_type: Python type (default: int)
+    edge_key_type : Python type (default: int)
        Convert graphml edge ids to this type. Multigraphs use id as edge key.
        Non-multigraphs add to edge attribute dict with name "id".
 
@@ -359,10 +359,10 @@ def parse_graphml(
        String containing graphml information
        (e.g., contents of a graphml file).
 
-    node_type: Python type (default: str)
+    node_type : Python type (default: str)
        Convert node ids to this type
 
-    edge_key_type: Python type (default: int)
+    edge_key_type : Python type (default: int)
        Convert graphml edge ids to this type. Multigraphs use id as edge key.
        Non-multigraphs add to edge attribute dict with name "id".
 
@@ -664,7 +664,7 @@ class GraphMLWriter(GraphML):
         else:
             default_edge_type = "undirected"
 
-        graphid = G.graph.pop("id", None)
+        graphid = G.graph.get("id")
         if graphid is None:
             graph_element = self.myElement("graph", edgedefault=default_edge_type)
         else:
@@ -675,7 +675,7 @@ class GraphMLWriter(GraphML):
         data = {
             k: v
             for (k, v) in G.graph.items()
-            if k not in ["node_default", "edge_default"]
+            if k not in ["node_default", "edge_default", "id"]
         }
         self.add_attributes("graph", graph_element, data, default)
         self.add_nodes(G, graph_element)
@@ -795,7 +795,7 @@ class GraphMLWriterLxml(GraphMLWriter):
         else:
             default_edge_type = "undirected"
 
-        graphid = G.graph.pop("id", None)
+        graphid = G.graph.get("id")
         if graphid is None:
             graph_element = self._xml.element("graph", edgedefault=default_edge_type)
         else:
@@ -806,10 +806,12 @@ class GraphMLWriterLxml(GraphMLWriter):
         # gather attributes types for the whole graph
         # to find the most general numeric format needed.
         # Then pass through attributes to create key_id for each.
+        # Ignore graph-wide values stored on G.graph that have specific meaning
+        # in the graphml format: node_default, edge_default, and (graph) id
         graphdata = {
             k: v
             for k, v in G.graph.items()
-            if k not in ("node_default", "edge_default")
+            if k not in ("node_default", "edge_default", "id")
         }
         node_default = G.graph.get("node_default", {})
         edge_default = G.graph.get("edge_default", {})

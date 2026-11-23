@@ -65,7 +65,7 @@ benchmarking = [
     # 3.12/3.13/3.14 interpreters + soft deps from conda-forge in-process.
     # Pinned <0.22: asv 0.6.5's rattler plugin still calls the pre-0.22
     # solve(channels=...) API (py-rattler 0.22 renamed it to sources=).
-    'py-rattler>=0.21,<0.27',
+    'py-rattler>=0.21,<0.29',
     'virtualenv',
 ]
 default = [
@@ -87,6 +87,7 @@ doc = [
     'texext>=0.6.7',
     'myst-nb>=1.1',
     'intersphinx-registry',
+    'joblib',  # for sphinx-gallery parallel builds
 ]
 example = [
     'osmnx>=2.0.0',

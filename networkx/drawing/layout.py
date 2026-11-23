@@ -338,7 +338,7 @@ def bipartite_layout(
     nodes : collection of nodes
         Nodes in one node set of the graph. This set will be placed on
         left or top. If `None` (the default), a node set is chosen arbitrarily
-        if the graph if bipartite.
+        if the graph is bipartite. Nodes not present in G are ignored.
 
     align : string (default='vertical')
         The alignment of nodes. Vertical or horizontal.
@@ -420,18 +420,20 @@ def bipartite_layout(
     offset = (width / 2, height / 2)
 
     if nodes is None:
-        top, bottom = nx.bipartite.sets(G)
-        nodes = list(G)
+        top, _ = nx.bipartite.sets(G)
     else:
-        top = set(nodes)
-        bottom = set(G) - top
-        # Preserves backward-compatible node ordering in returned pos dict
-        nodes = list(top) + list(bottom)
+        top = set(G.nbunch_iter(nodes))  # remove nodes not in G
 
-    left_xs = np.repeat(0, len(top))
-    right_xs = np.repeat(width, len(bottom))
-    left_ys = np.linspace(0, height, len(top))
-    right_ys = np.linspace(0, height, len(bottom))
+    # Top nodes first, then bottom nodes; each group in G's node order
+    top = dict.fromkeys(n for n in G if n in top)
+    nodes = top | dict.fromkeys(G)
+    n_top = len(top)
+    n_bottom = len(G) - n_top
+
+    left_xs = np.repeat(0, n_top)
+    right_xs = np.repeat(width, n_bottom)
+    left_ys = np.linspace(0, height, n_top)
+    right_ys = np.linspace(0, height, n_bottom)
 
     top_pos = np.column_stack([left_xs, left_ys]) - offset
     bottom_pos = np.column_stack([right_xs, right_ys]) - offset
@@ -506,7 +508,7 @@ def spring_layout(
     iterations : int  optional (default=50)
         Maximum number of iterations taken
 
-    threshold: float optional (default = 1e-4)
+    threshold : float optional (default = 1e-4)
         Threshold for relative error in node position changes.
         The iteration stops if the error is below this threshold.
 
@@ -547,7 +549,7 @@ def spring_layout(
         values of edge weights and gravitational forces acting on each connected component.
         If 'auto', we use 'force' if ``len(G) < 500`` and 'energy' otherwise.
 
-    gravity: float optional (default=1.0)
+    gravity : float optional (default=1.0)
         Used only for the method='energy'.
         The positive coefficient of gravitational forces per connected component.
 

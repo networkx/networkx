@@ -1,5 +1,7 @@
 """Unit tests for layout functions."""
 
+import itertools
+
 import pytest
 
 import networkx as nx
@@ -595,13 +597,48 @@ def test_bipartite_layout_default_nodes_raises_non_bipartite_input():
     pos = nx.bipartite_layout(G, nodes=[2, 3])
 
 
-def test_bipartite_layout_default_nodes():
-    G = nx.complete_bipartite_graph(3, 3)
+@pytest.mark.parametrize("G", [nx.complete_bipartite_graph(3, 3), nx.path_graph(4)])
+def test_bipartite_layout_default_nodes(G):
     pos = nx.bipartite_layout(G)  # no nodes specified
     # X coords of nodes should be the same within the bipartite sets
     for nodeset in nx.bipartite.sets(G):
         xs = [pos[k][0] for k in nodeset]
         assert all(x == pytest.approx(xs[0]) for x in xs)
+
+
+def test_bipartite_layout_deterministic_order():
+    """Ensure bipartite_layout places nodes the same way on every run."""
+    G = nx.Graph([("a1", "b1"), ("a1", "b2"), ("a2", "b2"), ("a3", "b3")])
+    top_nodes = ["a1", "a2", "a3"]
+    pos = nx.bipartite_layout(G, nodes=top_nodes)
+    xs = {n: pos[n][0] for n in G}
+    # All top nodes share one x-coordinate (one column)
+    assert all(xs[n] == pytest.approx(xs["a1"]) for n in top_nodes)
+
+
+@pytest.mark.parametrize("nodes", [["a3", "a2", "a1"], {"a3", "a2", "a1"}])
+def test_bipartite_layout_top_nodes_in_graph_order(nodes):
+    """The top column follows G's node order, whatever the order of `nodes`."""
+    G = nx.Graph([("a1", "b1"), ("a2", "b1"), ("a3", "b2")])
+    pos = nx.bipartite_layout(G, nodes=nodes)
+    assert list(pos)[:3] == ["a1", "a2", "a3"]
+    assert pos["a1"][1] < pos["a2"][1] < pos["a3"][1]
+
+
+def test_bipartite_layout_default_nodes_in_graph_order():
+    """Node position follows node insertion order in G with default nodes=None"""
+    G = nx.Graph([("a1", "b1"), ("a2", "b1"), ("a3", "b2"), ("a2", "b2"), ("a4", "b2")])
+    pos = nx.bipartite_layout(G)
+    # Unpack the x-y coordinates of the layout for convenience
+    xs = {n: pos[n][0] for n in G}
+    ys = {n: pos[n][1] for n in G}
+    # Check the x-coordinate corresponds to the correct partition
+    top, bottom = ("a1", "a2", "a3", "a4"), ("b1", "b2")
+    assert all(xs[n] == xs["a1"] for n in top)
+    assert all(xs[n] == xs["b1"] for n in bottom)
+    # Check that the y-coordinate reflects node insertion order in G
+    assert all(ys[n0] < ys[n1] for n0, n1 in itertools.pairwise(top))
+    assert all(ys[n0] < ys[n1] for n0, n1 in itertools.pairwise(bottom))
 
 
 @pytest.mark.parametrize(

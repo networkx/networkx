@@ -31,10 +31,10 @@ def hnm_harary_graph(n, m, create_using=None):
 
     Parameters
     ----------
-    n: integer
+    n : integer
         The number of nodes the generated graph is to contain.
 
-    m: integer
+    m : integer
         The number of edges the generated graph is to contain.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
@@ -105,10 +105,10 @@ def hkn_harary_graph(k, n, create_using=None):
 
     Parameters
     ----------
-    k: integer
+    k : integer
         The node connectivity of the generated graph.
 
-    n: integer
+    n : integer
         The number of nodes the generated graph is to contain.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)

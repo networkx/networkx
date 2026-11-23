@@ -8,7 +8,7 @@ Highlights
 
 New features
 ~~~~~~~~~~~~
- - Algorithms for :mod:`generating <networkx.generators.bipartite>`
+ - Algorithms for generating
    and :mod:`analyzing <networkx.algorithms.bipartite>` bipartite graphs
  - :mod:`Maximal independent set <networkx.algorithms.mis>` algorithm
  - :mod:`Erdős-Gallai graphical degree sequence test <networkx.generators.degree_seq>`
@@ -16,7 +16,7 @@ New features
  - More memory efficient :mod:`Dijkstra path length <networkx.algorithms.shortest_paths.weighted>` with cutoff parameter
  - :mod:`Weighted clustering coefficient <networkx.algorithms.cluster>`
  - Read and write version 1.2 of :mod:`GEXF reader <networkx.readwrite.gexf>` format
- - :mod:`Neighbor degree correlation <networkx.algorithms.neighbor_degree>`
+ - Neighbor degree correlation
    that handle subsets of nodes
  - :mod:`In-place node relabeling <networkx.relabel>`
  - Many 'weighted' graph algorithms now take optional parameter to use

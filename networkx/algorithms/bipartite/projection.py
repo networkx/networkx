@@ -30,7 +30,7 @@ def projected_graph(B, nodes, multigraph=False):
     nodes : list or iterable
       Nodes to project onto (the "bottom" nodes).
 
-    multigraph: bool (default=False)
+    multigraph : bool (default=False)
        If True return a multigraph where the multiple edges represent multiple
        shared neighbors.  They edge key in the multigraph is assigned to the
        label of the neighbor.
@@ -138,7 +138,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
     nodes : list or iterable
         Distinct nodes to project onto (the "bottom" nodes).
 
-    ratio: Bool (default=False)
+    ratio : Bool (default=False)
         If True, edge weight is the ratio between actual shared neighbors
         and maximum possible shared neighbors (i.e., the size of the other
         node set). If False, edges weight is the number of shared neighbors.
@@ -346,7 +346,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     nodes : list or iterable
         Nodes to project onto (the "bottom" nodes).
 
-    jaccard: Bool (default=True)
+    jaccard : Bool (default=True)
 
     Returns
     -------

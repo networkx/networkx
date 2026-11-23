@@ -151,7 +151,6 @@ class TestAGraph:
         path, A = nx.nx_agraph.view_pygraphviz(G, show=False)
         assert G.graph == {}
 
-    @pytest.mark.xfail(reason="known bug in clean_attrs")
     def test_view_pygraphviz_leaves_input_graph_unmodified(self):
         G = nx.complete_graph(2)
         # Add entries to graph dict that to_agraph handles specially
@@ -159,6 +158,12 @@ class TestAGraph:
         G.graph["edge"] = {"fontsize": "14"}
         path, A = nx.nx_agraph.view_pygraphviz(G, show=False)
         assert G.graph == {"node": {"width": "0.80"}, "edge": {"fontsize": "14"}}
+
+    def test_view_pygraphviz_keeps_empty_attr_dicts(self):
+        G = nx.complete_graph(2)
+        G.graph["graph"] = {}
+        path, A = nx.nx_agraph.view_pygraphviz(G, show=False)
+        assert G.graph == {"graph": {}}
 
     def test_graph_with_AGraph_attrs(self):
         G = nx.complete_graph(2)

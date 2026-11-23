@@ -208,11 +208,11 @@ def to_sparse6_bytes(G, nodes=None, header=True):
     ----------
     G : Graph (undirected)
 
-    nodes: list or iterable
+    nodes : list or iterable
        Nodes are labeled 0...n-1 in the order provided.  If None the ordering
        given by ``G.nodes()`` is used.
 
-    header: bool
+    header : bool
        If True add '>>sparse6<<' bytes to head of data.
 
     Raises
@@ -231,7 +231,7 @@ def to_sparse6_bytes(G, nodes=None, header=True):
 
     See Also
     --------
-    to_sparse6_bytes, read_sparse6, write_sparse6_bytes
+    to_sparse6_bytes, read_sparse6, write_sparse6
 
     Notes
     -----
@@ -329,11 +329,11 @@ def write_sparse6(G, path, nodes=None, header=True):
        File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
 
-    nodes: list or iterable
+    nodes : list or iterable
        Nodes are labeled 0...n-1 in the order provided.  If None the ordering
        given by G.nodes() is used.
 
-    header: bool
+    header : bool
        If True add '>>sparse6<<' string to head of data
 
     Raises
