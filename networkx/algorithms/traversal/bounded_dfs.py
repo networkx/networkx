@@ -314,7 +314,7 @@ def bsdfs_edges(G, source, target=None, *, length_bound):
         Directed or undirected; multigraphs are allowed.
     source : node
         Source node, where every reported path or cycle starts.
-    target : node or set of nodes, optional
+    target : node or set of nodes or None, optional (default: None)
         If None (the default), the simple cycles through `source` are enumerated.
         A single node enumerates the simple paths from `source` to `target`.
         A set enumerates the simple paths from `source` to any node of the set,
