@@ -42,7 +42,18 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
+    # Add slow marker
     config.addinivalue_line("markers", "slow: mark test as slow to run")
+
+    # If xdist is installed and tests are being run in parallel (i.e. numworkers
+    # is >1), then force OMP_NUM_THREADS to 1 to prevent oversubscription in
+    # functions that implicitly depend on e.g. BLAS (layouts e.g.)
+    if config.pluginmanager.hasplugin("xdist"):
+        num_workers = config.getoption("numprocesses", default=None)
+        if num_workers is not None:
+            os.environ["OMP_NUM_THREADS"] = "1"
+
+    # Hooks for backend testing
     backend = config.getoption("--backend")
     if backend is None:
         backend = os.environ.get("NETWORKX_TEST_BACKEND")
