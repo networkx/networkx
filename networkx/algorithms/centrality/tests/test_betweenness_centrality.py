@@ -413,6 +413,12 @@ class TestBetweennessCentrality:
 
 
 class TestWeightedBetweennessCentrality:
+    def test_nan_edge_weight(self):
+        """Weighted betweenness centrality: NaN edge weight raises"""
+        G = nx.Graph([(0, 1, {"weight": 1}), (1, 2, {"weight": float("nan")})])
+        with pytest.raises(ValueError, match="NaN found as an edge weight"):
+            nx.betweenness_centrality(G, weight="weight")
+
     def test_K5(self):
         """Weighted betweenness centrality: K5"""
         G = nx.complete_graph(5)

@@ -448,6 +448,60 @@ class TestDijkstraPathLength:
         assert length == 1 / 10
 
 
+class TestNanEdgeWeight:
+    """Unit tests for NaN edge weights in Dijkstra-based functions."""
+
+    def test_dijkstra_path_length_nan(self):
+        G = nx.Graph([(0, 1, {"weight": 1}), (1, 2, {"weight": float("nan")})])
+        with pytest.raises(ValueError, match="NaN found as an edge weight"):
+            nx.dijkstra_path_length(G, 0, 2)
+
+    def test_single_source_dijkstra_path_length_nan(self):
+        # node 2 has a valid path of length 2 through node 1, but the NaN
+        # edge must raise instead of silently returning a nan length
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=1)
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(0, 2, weight=float("nan"))
+        with pytest.raises(ValueError, match="NaN found as an edge weight"):
+            nx.single_source_dijkstra_path_length(G, 0)
+
+    def test_nan_raises_regardless_of_edge_order(self):
+        # every comparison with NaN is False, so previously the result
+        # depended on the order in which the edges were relaxed
+        for weights in [(float("nan"), 5), (5, float("nan"))]:
+            G = nx.Graph()
+            G.add_edge(0, 1, weight=weights[0])
+            G.add_edge(1, 2, weight=weights[0])
+            G.add_edge(0, 2, weight=weights[1])
+            with pytest.raises(ValueError, match="NaN found as an edge weight"):
+                nx.single_source_dijkstra_path_length(G, 0)
+
+    def test_multigraph_nan_parallel_edge(self):
+        # the minimum over parallel edge weights must not silently
+        # propagate or swallow a NaN depending on the edge order
+        for weights in [(float("nan"), 5), (5, float("nan"))]:
+            G = nx.MultiGraph()
+            G.add_edge(0, 1, weight=weights[0])
+            G.add_edge(0, 1, weight=weights[1])
+            with pytest.raises(ValueError, match="NaN found as an edge weight"):
+                nx.dijkstra_path(G, 0, 1)
+
+    def test_bidirectional_dijkstra_nan(self):
+        G = nx.Graph([(0, 1, {"weight": 1}), (1, 2, {"weight": float("nan")})])
+        with pytest.raises(ValueError, match="NaN found as an edge weight"):
+            nx.bidirectional_dijkstra(G, 0, 2)
+
+    def test_callable_weight_returning_nan(self):
+        G = nx.path_graph(3)
+
+        def weight(u, v, d):
+            return float("nan") if {u, v} == {0, 1} else 1
+
+        with pytest.raises(ValueError, match="NaN found as an edge weight"):
+            nx.dijkstra_path_length(G, 0, 2, weight=weight)
+
+
 class TestMultiSourceDijkstra:
     """Unit tests for the multi-source dialect of Dijkstra's shortest
     path algorithms.

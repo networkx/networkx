@@ -5,6 +5,7 @@ Shortest path algorithms for weighted graphs.
 from collections import deque
 from heapq import heappop, heappush
 from itertools import count, islice
+from math import isnan
 
 import networkx as nx
 from networkx.algorithms.shortest_paths.generic import _build_paths_from_predecessors
@@ -74,7 +75,21 @@ def _weight_function(G, weight):
     # string representing the edge attribute containing the weight of
     # the edge.
     if G.is_multigraph():
-        return lambda u, v, d: min(attr.get(weight, 1) for attr in d.values())
+        # NaN weights must be excluded from the minimum comparison, since
+        # every comparison with NaN is False and min() would otherwise
+        # return an order-dependent result.
+        def multigraph_weight(u, v, d):
+            min_weight = None
+            for attr in d.values():
+                w = attr.get(weight, 1)
+                if isnan(w):
+                    msg = f"NaN found as an edge weight. Edge ({u}, {v})"
+                    raise ValueError(msg)
+                if min_weight is None or w < min_weight:
+                    min_weight = w
+            return min_weight
+
+        return multigraph_weight
     return lambda u, v, data: data.get(weight, 1)
 
 
@@ -863,6 +878,9 @@ def _dijkstra_multisource(
             cost = weight(v, u, e)
             if cost is None:
                 continue
+            if isnan(cost):
+                msg = f"NaN found as an edge weight. Edge ({v}, {u})"
+                raise ValueError(msg)
             vu_dist = dist_v + cost
             if cutoff is not None and vu_dist > cutoff:
                 continue
@@ -2441,6 +2459,9 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
             cost = weight(v, w, d) if direction == 0 else weight(w, v, d)
             if cost is None:
                 continue
+            if isnan(cost):
+                msg = f"NaN found as an edge weight. Edge ({v}, {w})"
+                raise ValueError(msg)
             vwLength = dist + cost
             if w in dists[direction]:
                 if vwLength < dists[direction][w]:
