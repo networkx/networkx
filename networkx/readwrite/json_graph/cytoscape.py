@@ -3,6 +3,16 @@ import networkx as nx
 __all__ = ["cytoscape_data", "cytoscape_graph"]
 
 
+def _to_tuple(x):
+    """Converts lists to tuples, including nested lists.
+
+    Also converts empty lists to empty tuples.
+    """
+    if not isinstance(x, tuple | list):
+        return x
+    return tuple(map(_to_tuple, x))
+
+
 def cytoscape_data(G, name="name", ident="id"):
     """Returns data in Cytoscape JSON format (cyjs).
 
@@ -76,18 +86,23 @@ def cytoscape_data(G, name="name", ident="id"):
         n["data"]["name"] = j.get(name) or str(i)
         nodes.append(n)
 
+    def _node_id(node):
+        return G.nodes[node].get(ident) or (
+            node if isinstance(node, (int, float, str)) else str(node)
+        )
+
     if G.is_multigraph():
         for e in G.edges(keys=True):
             n = {"data": G.adj[e[0]][e[1]][e[2]].copy()}
-            n["data"]["source"] = e[0]
-            n["data"]["target"] = e[1]
+            n["data"]["source"] = _node_id(e[0])
+            n["data"]["target"] = _node_id(e[1])
             n["data"]["key"] = e[2]
             edges.append(n)
     else:
         for e in G.edges():
             n = {"data": G.adj[e[0]][e[1]].copy()}
-            n["data"]["source"] = e[0]
-            n["data"]["target"] = e[1]
+            n["data"]["source"] = _node_id(e[0])
+            n["data"]["target"] = _node_id(e[1])
             edges.append(n)
     return jsondata
 
@@ -164,9 +179,15 @@ def cytoscape_graph(data, name="name", ident="id"):
     if directed:
         graph = graph.to_directed()
     graph.graph = dict(data.get("data"))
+    id_to_node = {}
     for d in data["elements"]["nodes"]:
         node_data = d["data"].copy()
-        node = d["data"]["value"]
+        raw_val = d["data"].get("value", d["data"].get("id"))
+        node = _to_tuple(raw_val)
+        node_id = d["data"].get("id")
+        if node_id is not None:
+            id_to_node[node_id] = node
+            id_to_node[str(node_id)] = node
 
         if d["data"].get(name):
             node_data[name] = d["data"].get(name)
@@ -180,11 +201,13 @@ def cytoscape_graph(data, name="name", ident="id"):
         edge_data = d["data"].copy()
         sour = d["data"]["source"]
         targ = d["data"]["target"]
+        u = id_to_node.get(sour, id_to_node.get(str(sour), _to_tuple(sour)))
+        v = id_to_node.get(targ, id_to_node.get(str(targ), _to_tuple(targ)))
         if multigraph:
             key = d["data"].get("key", 0)
-            graph.add_edge(sour, targ, key=key)
-            graph.edges[sour, targ, key].update(edge_data)
+            graph.add_edge(u, v, key=key)
+            graph.edges[u, v, key].update(edge_data)
         else:
-            graph.add_edge(sour, targ)
-            graph.edges[sour, targ].update(edge_data)
+            graph.add_edge(u, v)
+            graph.edges[u, v].update(edge_data)
     return graph
