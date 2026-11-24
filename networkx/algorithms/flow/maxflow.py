@@ -116,7 +116,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
-    stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
+    stored in :samp:`R.graph['flow_value']`. Reachability from :samp:`s` using
     only edges :samp:`(u, v)` such that
     :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
     :samp:`s`-:samp:`t` cut.
@@ -300,7 +300,7 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
-    stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
+    stored in :samp:`R.graph['flow_value']`. Reachability from :samp:`s` using
     only edges :samp:`(u, v)` such that
     :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
     :samp:`s`-:samp:`t` cut.
@@ -460,7 +460,7 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
-    stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
+    stored in :samp:`R.graph['flow_value']`. Reachability from :samp:`s` using
     only edges :samp:`(u, v)` such that
     :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
     :samp:`s`-:samp:`t` cut.
@@ -523,24 +523,20 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     if kwargs.get("cutoff") is not None and flow_func is preflow_push:
         raise nx.NetworkXError("cutoff should not be specified.")
 
-    R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
+    R = flow_func(flowG, _s, _t, capacity=capacity, value_only=False, **kwargs)
 
-    # The nodes that reach _t in the residual network over edges with
-    # spare capacity (flow < capacity) form one side of the minimum
-    # cut, the rest the other (see the residual network conventions in
-    # the Notes): a reverse breadth-first search from _t.
-    non_reachable = {_t}
-    queue = [_t]
-    R_pred = R._pred
+    reachable = {_s}
+    queue = [_s]
+    R_succ = R._succ
     while queue:
         next_layer = []
-        for v in queue:
-            for u, attr in R_pred[v].items():
-                if u not in non_reachable and attr["flow"] < attr["capacity"]:
-                    non_reachable.add(u)
-                    next_layer.append(u)
+        for u in queue:
+            for v, attr in R_succ[u].items():
+                if v not in reachable and attr["flow"] < attr["capacity"]:
+                    reachable.add(v)
+                    next_layer.append(v)
         queue = next_layer
-    partition = (set(flowG) - non_reachable, non_reachable)
+    partition = (reachable, set(flowG) - reachable)
     return (R.graph["flow_value"], partition)
 
 
@@ -642,7 +638,7 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
-    stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
+    stored in :samp:`R.graph['flow_value']`. Reachability from :samp:`s` using
     only edges :samp:`(u, v)` such that
     :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
     :samp:`s`-:samp:`t` cut.
