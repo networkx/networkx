@@ -877,8 +877,10 @@ def _dijkstra_multisource(
             elif u not in seen or vu_dist < seen[u]:
                 seen[u] = vu_dist
                 heappush(fringe, (vu_dist, next(c), u))
-                if pred_dict is not None:
+                if pred is not None:
                     pred_dict[u] = [v]
+                elif paths is not None:
+                    pred_dict[u] = v
             elif pred is not None and vu_dist == seen[u]:
                 # Found another shortest path to u
                 # We must store *all* predecessors because `pred` was provided by the caller.
@@ -890,17 +892,29 @@ def _dijkstra_multisource(
             # Since `dist` is in increasing distance order, each predecessor's path is
             # already computed by the time we process `v`. We skip the first
             # `number_of_sources` entries because sources already have their paths defined.
-            for v in islice(dist, number_of_sources, None):
-                # `v` must be in `pred_dict`: any node with a distance (and not a source)
-                # has a predecessor.
-                paths[v] = paths[pred_dict[v][0]] + [v]
+            if pred is None:
+                for v in islice(dist, number_of_sources, None):
+                    # `v` must be in `pred_dict`: any node with a distance (and not a source)
+                    # has a predecessor.
+                    paths[v] = paths[pred_dict[v]] + [v]
+            else:
+                for v in islice(dist, number_of_sources, None):
+                    paths[v] = paths[pred_dict[v][0]] + [v]
         else:
             # Caller requested the path to a specific target node.
-            path = paths[target] = [target]
-            while (current_preds := pred_dict.get(path[-1])) is not None:
-                path.append(current_preds[0])
+            path = [target]
+            curr = target
+            if pred is None:
+                while curr in pred_dict:
+                    curr = pred_dict[curr]
+                    path.append(curr)
+            else:
+                while (current_preds := pred_dict.get(curr)) is not None:
+                    curr = current_preds[0]
+                    path.append(curr)
             # The path was built in reverse order, so reverse it at the end.
             path.reverse()
+            paths[target] = path
 
     # The optional predecessor and path dictionaries can be accessed
     # by the caller via the pred and paths objects passed as arguments.
