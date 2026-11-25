@@ -4,7 +4,7 @@ __all__ = ["cytoscape_data", "cytoscape_graph"]
 
 
 def cytoscape_data(G, name="name", ident="id"):
-    """Returns data in Cytoscape JSON format (cyjs).
+    """Returns data in a dictionary, following the Cytoscape adjacency data structure (cyjs).
 
     Parameters
     ----------
@@ -95,7 +95,7 @@ def cytoscape_data(G, name="name", ident="id"):
 @nx._dispatchable(graphs=None, returns_graph=True)
 def cytoscape_graph(data, name="name", ident="id"):
     """
-    Create a NetworkX graph from a dictionary in cytoscape JSON format.
+    Create a NetworkX graph from a dictionary in cytoscape data structure.
 
     Parameters
     ----------
