@@ -8,13 +8,6 @@ __all__ = ["densest_subgraph"]
 
 
 def _greedy_plus_plus(G, iterations):
-    if G.number_of_edges() == 0:
-        return 0.0, set()
-    if iterations < 1:
-        raise ValueError(
-            f"The number of iterations must be an integer >= 1. Provided: {iterations}"
-        )
-
     loads = {node: 0 for node in G.nodes}  # Load vector for Greedy++.
     best_density = 0.0  # Highest density encountered.
     best_subgraph = set()  # Nodes of the best subgraph found.
@@ -44,8 +37,8 @@ def _greedy_plus_plus(G, iterations):
 
             # Pop the node with the smallest weighted degree.
             node, _ = heap.pop()
-            if node not in remaining_nodes:
-                continue  # Skip nodes already removed.
+            while node not in remaining_nodes:
+                node, _ = heap.pop()  # Skip nodes already removed.
 
             # Update the load of the popped node.
             loads[node] += current_degrees[node]
@@ -128,12 +121,6 @@ def _fractional_peeling(G, b, x, node_to_idx, edge_to_idx):
 
 
 def _fista(G, iterations):
-    if G.number_of_edges() == 0:
-        return 0.0, set()
-    if iterations < 1:
-        raise ValueError(
-            f"The number of iterations must be an integer >= 1. Provided: {iterations}"
-        )
     import numpy as np
 
     # 1. Node Mapping: Assign a unique index to each node and edge
@@ -388,6 +375,11 @@ def densest_subgraph(G, iterations=1, *, method="fista"):
        the 2022 Annual ACM-SIAM Symposium on Discrete Algorithms (SODA), pp.
        1531-1555. Society for Industrial and Applied Mathematics, 2022.
     """
+    if G.number_of_edges() == 0:
+        return 0.0, set()
+    if iterations < 1:
+        m = f"The number of iterations must be an integer >= 1. Provided: {iterations}"
+        raise ValueError(m)
     try:
         algo = ALGORITHMS[method]
     except KeyError as e:
