@@ -622,3 +622,40 @@ def test_branchings_with_default_weights():
     assert all("weight" not in d for (u, v, d) in graph.edges(data=True)), (
         "The above calls should not modify the initial graph in-place"
     )
+
+
+def test_spanning_arborescence_large_weight_spread():
+    """
+    Tests that minimum/maximum_spanning_arborescence and minimal_branching
+    find spanning arborescences even when dropping multiple edges saves more
+    than 2 * max_weight - min_weight + 1 (see gh-8964).
+    """
+    edges = [
+        (0, 1, 1.0),
+        (0, 2, 10.0),
+        (0, 4, 1.0),
+        (1, 4, 10.0),
+        (2, 4, 0.4),
+        (3, 1, 10.0),
+        (4, 0, 1.0),
+    ]
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(edges)
+
+    expected_edges = [(0, 2), (1, 4), (3, 1), (4, 0)]
+
+    T_min = nx.minimum_spanning_arborescence(G)
+    assert nx.is_arborescence(T_min)
+    assert sorted(T_min.edges()) == expected_edges
+    assert T_min.size(weight="weight") == pytest.approx(31.0)
+
+    B_min = branchings.minimal_branching(G)
+    assert nx.is_arborescence(B_min)
+    assert sorted(B_min.edges()) == expected_edges
+
+    H = nx.DiGraph()
+    H.add_weighted_edges_from((u, v, -w) for u, v, w in edges)
+    T_max = nx.maximum_spanning_arborescence(H)
+    assert nx.is_arborescence(T_max)
+    assert sorted(T_max.edges()) == expected_edges
+    assert T_max.size(weight="weight") == pytest.approx(-31.0)

@@ -669,23 +669,25 @@ def minimal_branching(
         if w < min_weight:
             min_weight = w
 
+    shift = max_weight + 1 + max(0, len(G) - 2) * (max_weight - min_weight)
     for _, _, d in G.edges(data=True):
-        # Transform the weights so that the minimum weight is larger than
-        # the difference between the max and min weights. This is important
-        # in order to prevent the edge weights from becoming negative during
-        # computation
-        d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
+        # Transform the weights so that a maximum branching prefers adding
+        # edges (fewer trees) over dropping edges, while keeping all transformed
+        # weights positive. With n nodes, a spanning arborescence has n - 1
+        # edges and any non-spanning branching has at most n - 2 edges, so the
+        # per-tree penalty `shift` must exceed (n - 1)*max_w - (n - 2)*min_w.
+        d[attr] = shift - d.get(attr, default)
     nx._clear_cache(G)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     # Reverse the weight transformations
     for _, _, d in G.edges(data=True):
-        d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
+        d[attr] = shift - d.get(attr, default)
     nx._clear_cache(G)
 
     for _, _, d in B.edges(data=True):
-        d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
+        d[attr] = shift - d.get(attr, default)
     nx._clear_cache(B)
 
     return B
@@ -713,18 +715,19 @@ def maximum_spanning_arborescence(
         if w > max_weight:
             max_weight = w
 
+    shift = -min_weight + 1 + max(0, len(G) - 2) * (max_weight - min_weight)
     for _, _, d in G.edges(data=True):
-        d[attr] = d.get(attr, default) - min_weight + 1 - (min_weight - max_weight)
+        d[attr] = d.get(attr, default) + shift
     nx._clear_cache(G)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     for _, _, d in G.edges(data=True):
-        d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
+        d[attr] = d.get(attr, default) - shift
     nx._clear_cache(G)
 
     for _, _, d in B.edges(data=True):
-        d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
+        d[attr] = d.get(attr, default) - shift
     nx._clear_cache(B)
 
     if not is_arborescence(B):
