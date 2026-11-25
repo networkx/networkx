@@ -302,11 +302,11 @@ def _bidirectional_pred_succ(G, source, target):
 
     # handle either directed or undirected
     if G.is_directed():
-        Gpred = G.pred
-        Gsucc = G.succ
+        Gpred = G._pred
+        Gsucc = G._succ
     else:
-        Gpred = G.adj
-        Gsucc = G.adj
+        Gpred = G._adj
+        Gsucc = G._adj
 
     # predecessor and successors in search
     pred = {source: None}
