@@ -653,3 +653,20 @@ def test_spanning_arborescence_sufficient_weight_shift():
     assert nx.is_arborescence(B_max)
     assert sorted(B_max.edges()) == [(0, 1), (1, 2), (2, 3), (3, 4)]
     assert sum(d["weight"] for _, _, d in B_max.edges(data=True)) == -31.0
+
+
+def test_spanning_arborescence_extreme_weights():
+    # Verify that extreme floating-point weights do not suffer cancellation
+    G_neg = nx.DiGraph()
+    G_neg.add_weighted_edges_from([(0, 1, -1e308), (1, 2, -1e308)])
+    T_max = nx.maximum_spanning_arborescence(G_neg)
+    assert nx.is_arborescence(T_max)
+    assert sorted(T_max.edges()) == [(0, 1), (1, 2)]
+    assert T_max[0][1]["weight"] == -1e308
+
+    G_pos = nx.DiGraph()
+    G_pos.add_weighted_edges_from([(0, 1, 1e308), (1, 2, 1e308)])
+    T_min = nx.minimum_spanning_arborescence(G_pos)
+    assert nx.is_arborescence(T_min)
+    assert sorted(T_min.edges()) == [(0, 1), (1, 2)]
+    assert T_min[0][1]["weight"] == 1e308
