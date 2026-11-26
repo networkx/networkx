@@ -622,3 +622,51 @@ def test_branchings_with_default_weights():
     assert all("weight" not in d for (u, v, d) in graph.edges(data=True)), (
         "The above calls should not modify the initial graph in-place"
     )
+
+
+def test_spanning_arborescence_sufficient_weight_shift():
+    # see gh-8964: spanning arborescence should not be rejected in favor of
+    # non-spanning branching due to insufficient weight shift.
+    # The unique spanning arborescence is the path 0 -> 1 -> 2 -> 3 -> 4.
+    edges = [
+        (0, 1, 10.0),
+        (1, 2, 10.0),
+        (2, 3, 1.0),
+        (3, 1, 1.0),
+        (3, 2, 1.0),
+        (3, 4, 10.0),
+        (4, 2, 0.4),
+    ]
+    G = nx.DiGraph()
+    G.add_weighted_edges_from(edges)
+
+    # Minimum spanning arborescence
+    B_min = nx.minimum_spanning_arborescence(G)
+    assert nx.is_arborescence(B_min)
+    assert sorted(B_min.edges()) == [(0, 1), (1, 2), (2, 3), (3, 4)]
+    assert sum(d["weight"] for _, _, d in B_min.edges(data=True)) == 31.0
+
+    # Maximum spanning arborescence (with negated weights)
+    H = nx.DiGraph()
+    H.add_weighted_edges_from((u, v, -w) for u, v, w in edges)
+    B_max = nx.maximum_spanning_arborescence(H)
+    assert nx.is_arborescence(B_max)
+    assert sorted(B_max.edges()) == [(0, 1), (1, 2), (2, 3), (3, 4)]
+    assert sum(d["weight"] for _, _, d in B_max.edges(data=True)) == -31.0
+
+
+def test_spanning_arborescence_extreme_weights():
+    # Verify that extreme floating-point weights do not suffer cancellation
+    G_neg = nx.DiGraph()
+    G_neg.add_weighted_edges_from([(0, 1, -1e308), (1, 2, -1e308)])
+    T_max = nx.maximum_spanning_arborescence(G_neg)
+    assert nx.is_arborescence(T_max)
+    assert sorted(T_max.edges()) == [(0, 1), (1, 2)]
+    assert T_max[0][1]["weight"] == -1e308
+
+    G_pos = nx.DiGraph()
+    G_pos.add_weighted_edges_from([(0, 1, 1e308), (1, 2, 1e308)])
+    T_min = nx.minimum_spanning_arborescence(G_pos)
+    assert nx.is_arborescence(T_min)
+    assert sorted(T_min.edges()) == [(0, 1), (1, 2)]
+    assert T_min[0][1]["weight"] == 1e308
