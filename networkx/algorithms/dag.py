@@ -863,6 +863,40 @@ def transitive_closure(G, reflexive=False):
     if reflexive not in {None, True, False}:
         raise nx.NetworkXError("Incorrect value for the parameter `reflexive`")
 
+    if G.is_directed():
+        # strongly_connected_components yields SCCs in reverse topological order.
+        # Compute reachability once per SCC instead of running BFS/edge_bfs per node.
+        node_to_scc = {}
+        scc_nodes = []
+        reach_by_scc = []
+        g_adj = G._adj
+        tc_adj = TC._adj
+
+        for scc_idx, comp in enumerate(nx.strongly_connected_components(G)):
+            for u in comp:
+                node_to_scc[u] = scc_idx
+            scc_nodes.append(comp)
+            reach = set(comp)
+            seen_succ = {scc_idx}
+            for u in comp:
+                for w in g_adj[u]:
+                    succ_idx = node_to_scc[w]
+                    if succ_idx not in seen_succ:
+                        seen_succ.add(succ_idx)
+                        reach.update(reach_by_scc[succ_idx])
+            reach_by_scc.append(reach)
+
+        for comp, reach in zip(scc_nodes, reach_by_scc):
+            include_self = reflexive is True or (reflexive is False and len(comp) > 1)
+            for v in comp:
+                existing = tc_adj[v]
+                new_targets = reach - existing.keys()
+                if not include_self:
+                    new_targets.discard(v)
+                if new_targets:
+                    TC.add_edges_from((v, u) for u in new_targets)
+        return TC
+
     for v in G:
         if reflexive is None:
             TC.add_edges_from((v, u) for u in nx.descendants(G, v) if u not in TC[v])
@@ -924,11 +958,23 @@ def transitive_closure_dag(G, topo_order=None):
         topo_order = list(topological_sort(G))
 
     TC = G.copy()
+    g_adj = G._adj
+    tc_adj = TC._adj
+    reach = {}
 
-    # idea: traverse vertices following a reverse topological order, connecting
-    # each vertex to its descendants at distance 2 as we go
+    # Traverse vertices in reverse topological order and propagate each
+    # vertex's descendant set from its direct successors in G.
     for v in reversed(topo_order):
-        TC.add_edges_from((v, u) for u in nx.descendants_at_distance(TC, v, 2))
+        r = set()
+        for nbr in g_adj[v]:
+            r.add(nbr)
+            if nbr in reach:
+                r.update(reach[nbr])
+        reach[v] = r
+        existing = tc_adj[v]
+        new_targets = r - existing.keys()
+        if new_targets:
+            TC.add_edges_from((v, u) for u in new_targets)
 
     return TC
 
