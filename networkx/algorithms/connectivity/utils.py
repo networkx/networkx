@@ -66,8 +66,10 @@ def build_auxiliary_edge_connectivity(G):
 
     If the input graph is undirected, we replace each edge (`u`,`v`) with
     two reciprocal arcs (`u`, `v`) and (`v`, `u`) and then we set the attribute
-    'capacity' for each arc to 1. If the input graph is directed we simply
-    add the 'capacity' attribute. Part of algorithm 1 in [1]_ .
+    'capacity' for each arc to 1. If the edge (`u`,`v`) already exists in the graph,we increment capacity of
+    (`u`, `v`) and (`v`, `u`). If the input graph is directed we simply
+    add the 'capacity' attribute. If the edge (`u`,`v`) already exists, we increment the capacity of (`u`,`v`)
+    by 1. Part of algorithm 1 in [1]_ .
 
     References
     ----------
@@ -78,11 +80,19 @@ def build_auxiliary_edge_connectivity(G):
     if G.is_directed():
         H = nx.DiGraph()
         H.add_nodes_from(G.nodes())
-        H.add_edges_from(G.edges(), capacity=1)
+        for source, target in G.edges():
+            if H.has_edge(source, target):
+                H[source][target]["capacity"] += 1
+            else:
+                H.add_edge(source, target, capacity=1)
         return H
     else:
         H = nx.DiGraph()
         H.add_nodes_from(G.nodes())
         for source, target in G.edges():
-            H.add_edges_from([(source, target), (target, source)], capacity=1)
+            if H.has_edge(source, target):
+                H[source][target]["capacity"] += 1
+                H[target][source]["capacity"] += 1
+            else:
+                H.add_edges_from([(source, target), (target, source)], capacity=1)
         return H

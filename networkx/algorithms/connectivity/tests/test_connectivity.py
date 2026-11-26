@@ -504,3 +504,9 @@ def test_directed_node_connectivity_both_orders_strongly_connected():
     for flow_func in flow_funcs:
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         assert nx.node_connectivity(G, flow_func=flow_func) == 1, errmsg
+
+
+def test_multigraph_parallel_edges():
+    G = nx.MultiGraph([(0, 1), (0, 1), (1, 2), (1, 2)])
+    assert nx.edge_connectivity(G) == 2
+    assert nx.edge_connectivity(G, 0, 2) == 2
