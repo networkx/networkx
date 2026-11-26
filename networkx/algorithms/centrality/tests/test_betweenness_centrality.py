@@ -921,3 +921,18 @@ class TestWeightedEdgeBetweennessCentrality:
         norm = len(G) * (len(G) - 1) / 2
         for n in sorted(G.edges(keys=True)):
             assert b[n] == pytest.approx(b_answer[n] / norm, abs=1e-7)
+
+
+def test_betweenness_centrality_callable_weight_none():
+    G = nx.DiGraph()
+    G.add_edge(0, 1, weight=1)
+    G.add_edge(1, 2, weight=1)
+    G.add_edge(0, 2, weight=5)
+
+    def weight_fn(u, v, attr):
+        if u == 1 and v == 2:
+            return None
+        return attr["weight"]
+
+    bc = nx.betweenness_centrality(G, weight=weight_fn, normalized=False)
+    assert bc == {0: 0.0, 1: 0.0, 2: 0.0}

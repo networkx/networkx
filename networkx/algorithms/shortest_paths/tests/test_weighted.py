@@ -981,3 +981,32 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         validate_path(self.XG3, 0, 3, 15, nx.johnson(self.XG3)[0][3])
         validate_path(self.XG4, 0, 2, 4, nx.johnson(self.XG4)[0][2])
         validate_path(self.MXG4, 0, 2, 4, nx.johnson(self.MXG4)[0][2])
+
+
+def test_callable_weight_returning_none_hides_edges():
+    G = nx.DiGraph()
+    G.add_edge(0, 1, weight=1)
+    G.add_edge(1, 2, weight=2)
+    G.add_edge(0, 2, weight=5)
+    G.add_edge(1, 1, weight=-1)  # self-loop hidden by weight function
+
+    def weight_fn(u, v, e_attr):
+        if (u, v) in {(1, 2), (1, 1)}:
+            return None
+        return e_attr["weight"]
+
+    pred, dist = nx.bellman_ford_predecessor_and_distance(G, source=0, weight=weight_fn)
+    assert pred == {0: [], 1: [0], 2: [0]}
+    assert dist == {0: 0, 1: 1, 2: 5}
+    assert nx.bellman_ford_path(G, 0, 2, weight=weight_fn) == [0, 2]
+    assert nx.bellman_ford_path_length(G, 0, 2, weight=weight_fn) == 5
+
+    pred_gr, dist_gr = nx.goldberg_radzik(G, source=0, weight=weight_fn)
+    assert pred_gr == {0: None, 1: 0, 2: 0}
+    assert dist_gr == {0: 0, 1: 1, 2: 5}
+
+    assert nx.johnson(G, weight=weight_fn) == {
+        0: {0: [0], 1: [0, 1], 2: [0, 2]},
+        1: {1: [1]},
+        2: {2: [2]},
+    }

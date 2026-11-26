@@ -1270,12 +1270,15 @@ def bellman_ford_predecessor_and_distance(
     weight = _weight_function(G, weight)
     if G.is_multigraph():
         if any(
-            weight(u, v, {k: d}) < 0
+            (w := weight(u, v, {k: d})) is not None and w < 0
             for u, v, k, d in nx.selfloop_edges(G, keys=True, data=True)
         ):
             raise nx.NetworkXUnbounded("Negative cycle detected.")
     else:
-        if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
+        if any(
+            (w := weight(u, v, d)) is not None and w < 0
+            for u, v, d in nx.selfloop_edges(G, data=True)
+        ):
             raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     dist = {source: 0}
@@ -1466,7 +1469,10 @@ def _inner_bellman_ford(
         if all(pred_u not in in_q for pred_u in pred[u]):
             dist_u = dist[u]
             for v, e in G_succ[u].items():
-                dist_v = dist_u + weight(u, v, e)
+                cost = weight(u, v, e)
+                if cost is None:
+                    continue
+                dist_v = dist_u + cost
 
                 if dist_v < dist.get(v, inf):
                     # In this conditional branch we are updating the path with v.
@@ -2043,12 +2049,15 @@ def goldberg_radzik(G, source, weight="weight"):
     weight = _weight_function(G, weight)
     if G.is_multigraph():
         if any(
-            weight(u, v, {k: d}) < 0
+            (w := weight(u, v, {k: d})) is not None and w < 0
             for u, v, k, d in nx.selfloop_edges(G, keys=True, data=True)
         ):
             raise nx.NetworkXUnbounded("Negative cycle detected.")
     else:
-        if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
+        if any(
+            (w := weight(u, v, d)) is not None and w < 0
+            for u, v, d in nx.selfloop_edges(G, data=True)
+        ):
             raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     if len(G) == 1:
@@ -2078,7 +2087,10 @@ def goldberg_radzik(G, source, weight="weight"):
         for u in relabeled - neg_count.keys():
             d_u = d[u]
             # Skip nodes without out-edges of negative reduced costs.
-            if all(d_u + weight(u, v, e) >= d[v] for v, e in G_succ[u].items()):
+            if all(
+                (w_e := weight(u, v, e)) is None or d_u + w_e >= d[v]
+                for v, e in G_succ[u].items()
+            ):
                 continue
             # Nonrecursive DFS that inserts nodes reachable from u via edges of
             # nonpositive reduced costs into to_scan in (reverse) topological
@@ -2095,7 +2107,10 @@ def goldberg_radzik(G, source, weight="weight"):
                     stack.pop()
                     in_stack.remove(u)
                     continue
-                t = d[u] + weight(u, v, e)
+                w_e = weight(u, v, e)
+                if w_e is None:
+                    continue
+                t = d[u] + w_e
                 d_v = d[v]
                 if t < d_v:
                     d[v] = t
@@ -2122,6 +2137,8 @@ def goldberg_radzik(G, source, weight="weight"):
             d_u = d[u]
             for v, e in G_succ[u].items():
                 w_e = weight(u, v, e)
+                if w_e is None:
+                    continue
                 if d_u + w_e < d[v]:
                     d[v] = d_u + w_e
                     pred[v] = u
@@ -2532,7 +2549,8 @@ def johnson(G, weight="weight"):
     # Update the weight function to take into account the Bellman--Ford
     # relaxation distances.
     def new_weight(u, v, d):
-        return weight(u, v, d) + dist_bellman[u] - dist_bellman[v]
+        w = weight(u, v, d)
+        return None if w is None else w + dist_bellman[u] - dist_bellman[v]
 
     def dist_path(v):
         paths = {v: [v]}
