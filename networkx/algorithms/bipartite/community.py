@@ -64,8 +64,8 @@ def modularity(G, communities, nodes, *, weight="weight", resolution=1):
         These node sets must represent a partition of `G`'s nodes.
         Communities may contain nodes from both bipartite sets.
 
-    nodes : container of nodes
-        A container with all nodes in **one** bipartite node set (the
+    nodes : iterable of nodes
+        An iterable with all nodes in **one** bipartite node set (the
         "red" nodes). The other set is inferred as ``set(G) - set(nodes)``.
         This follows the convention used throughout the bipartite
         subpackage.

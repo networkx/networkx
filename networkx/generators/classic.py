@@ -310,9 +310,9 @@ def complete_graph(n, create_using=None):
 
     Parameters
     ----------
-    n : int or iterable container of nodes
+    n : int or iterable of nodes
         If n is an integer, nodes are from range(n).
-        If n is a container of nodes, those nodes appear in the graph.
+        If n is an iterable of nodes, those nodes appear in the graph.
         Warning: n is not checked for duplicates and if present the
         resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
@@ -471,9 +471,9 @@ def cycle_graph(n, create_using=None):
 
     Parameters
     ----------
-    n : int or iterable container of nodes
+    n : int or iterable of nodes
         If n is an integer, nodes are from `range(n)`.
-        If n is a container of nodes, those nodes appear in the graph.
+        If n is an iterable of nodes, those nodes appear in the graph.
         Warning: n is not checked for duplicates and if present the
         resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
@@ -577,9 +577,9 @@ def empty_graph(n=0, create_using=None, default=Graph):
 
     Parameters
     ----------
-    n : int or iterable container of nodes (default = 0)
+    n : int or iterable of nodes (default = 0)
         If n is an integer, nodes are from `range(n)`.
-        If n is a container of nodes, those nodes appear in the graph.
+        If n is an iterable of nodes, those nodes appear in the graph.
     create_using : Graph Instance, Constructor or None
         Indicator of type of graph to return.
         If a Graph-type instance, then clear and use it.
@@ -701,9 +701,9 @@ def lollipop_graph(m, n, create_using=None):
 
     Parameters
     ----------
-    m, n : int or iterable container of nodes
+    m, n : int or iterable of nodes
         If an integer, nodes are from ``range(m)`` and ``range(m, m+n)``.
-        If a container of nodes, those nodes appear in the graph.
+        If an iterable of nodes, those nodes appear in the graph.
         Warning: `m` and `n` are not checked for duplicates and if present the
         resulting graph may not be as desired. Make sure you have no duplicates.
 
@@ -872,9 +872,9 @@ def tadpole_graph(m, n, create_using=None):
 
     Parameters
     ----------
-    m, n : int or iterable container of nodes
+    m, n : int or iterable of nodes
         If an integer, nodes are from ``range(m)`` and ``range(m,m+n)``.
-        If a container of nodes, those nodes appear in the graph.
+        If an iterable of nodes, those nodes appear in the graph.
         Warning: `m` and `n` are not checked for duplicates and if present the
         resulting graph may not be as desired.
 
@@ -897,7 +897,7 @@ def tadpole_graph(m, n, create_using=None):
     -----
     The 2 subgraphs are joined via an edge ``(m-1, m)``.
     If ``n=0``, this is a cycle graph.
-    `m` and/or `n` can be a container of nodes instead of an integer.
+    `m` and/or `n` can be an iterable of nodes instead of an integer.
 
     """
     m, m_nodes = m

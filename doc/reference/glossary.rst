@@ -15,7 +15,7 @@ Glossary
       with an edge attribute dictionary `(u, v, dict)`.
 
    ebunch
-      An iterable container of edge tuples like a list, iterator,
+      An iterable of edge tuples like a list, iterator,
       or file.
 
    edge attribute
@@ -25,7 +25,7 @@ Glossary
       specified edge *u*-*v*.
 
    nbunch
-      An nbunch is a single node, container of nodes or `None` (representing
+      An nbunch is a single node, iterable of nodes or `None` (representing
       all nodes). It can be a list, set, graph, etc. To filter an nbunch
       so that only nodes actually in ``G`` appear, use ``G.nbunch_iter(nbunch)``.
 

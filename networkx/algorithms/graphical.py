@@ -22,7 +22,7 @@ def is_graphical(sequence, method="eg"):
 
     Parameters
     ----------
-    sequence : list or iterable container
+    sequence : iterable
         A sequence of integer node degrees
 
     method : "eg" | "hh"  (default: 'eg')
@@ -334,7 +334,7 @@ def is_pseudographical(sequence):
 
     Parameters
     ----------
-    sequence : list or iterable container
+    sequence : iterable
         A sequence of integer node degrees
 
     Returns
@@ -379,10 +379,10 @@ def is_digraphical(in_sequence, out_sequence):
 
     Parameters
     ----------
-    in_sequence : list or iterable container
+    in_sequence : iterable
         A sequence of integer node in-degrees
 
-    out_sequence : list or iterable container
+    out_sequence : iterable
         A sequence of integer node out-degrees
 
     Returns

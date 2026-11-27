@@ -233,8 +233,8 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
     ----------
     G : NetworkX graph
 
-    nbunch : container
-        Container of nodes. If provided node connectivity will be computed
+    nbunch : iterable
+        Iterable of nodes. If provided node connectivity will be computed
         only over pairs of nodes in nbunch.
 
     cutoff : integer

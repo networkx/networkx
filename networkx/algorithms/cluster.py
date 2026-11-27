@@ -37,7 +37,7 @@ def triangles(G, nodes=None):
     Returns
     -------
     out : dict or int
-       If `nodes` is a container of nodes, returns number of triangles keyed by node (dict).
+       If `nodes` is an iterable of nodes, returns number of triangles keyed by node (dict).
        If `nodes` is a specific node, returns number of triangles for the node (int).
 
     Examples
@@ -336,8 +336,8 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     ----------
     G : graph
 
-    nodes : container of nodes, optional (default=all nodes in G)
-       Compute average clustering for nodes in this container.
+    nodes : iterable of nodes, optional (default=all nodes in G)
+       Compute average clustering for nodes in this iterable.
 
     weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used as a weight.
@@ -560,8 +560,8 @@ def square_clustering(G, nodes=None):
     ----------
     G : graph
 
-    nodes : container of nodes, optional (default=all nodes in G)
-       Compute clustering for nodes in this container.
+    nodes : iterable of nodes, optional (default=all nodes in G)
+       Compute clustering for nodes in this iterable.
 
     Returns
     -------
@@ -682,8 +682,8 @@ def generalized_degree(G, nodes=None):
     ----------
     G : graph
 
-    nodes : container of nodes, optional (default=all nodes in G)
-       Compute the generalized degree for nodes in this container.
+    nodes : iterable of nodes, optional (default=all nodes in G)
+       Compute the generalized degree for nodes in this iterable.
 
     Returns
     -------

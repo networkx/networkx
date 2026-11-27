@@ -40,9 +40,9 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
 
     Parameters
     ----------
-    m, n : int or iterable container of nodes
+    m, n : int or iterable of nodes
         If an integer, nodes are from `range(n)`.
-        If a container, elements become the coordinate of the nodes.
+        If an iterable, elements become the coordinate of the nodes.
 
     periodic : bool or iterable
         If `periodic` is True, both dimensions are periodic. If False, none

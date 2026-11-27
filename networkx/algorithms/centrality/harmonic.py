@@ -32,11 +32,11 @@ def harmonic_centrality(G, nbunch=None, distance=None, sources=None):
     G : graph
       A NetworkX graph
 
-    nbunch : container (default: all nodes in G)
-      Container of nodes for which harmonic centrality values are calculated.
+    nbunch : iterable (default: all nodes in G)
+      Iterable of nodes for which harmonic centrality values are calculated.
 
-    sources : container (default: all nodes in G)
-      Container of nodes `v` over which reciprocal distances are computed.
+    sources : iterable (default: all nodes in G)
+      Iterable of nodes `v` over which reciprocal distances are computed.
       Nodes not in `G` are silently ignored.
 
     distance : edge attribute key, optional (default=None)
