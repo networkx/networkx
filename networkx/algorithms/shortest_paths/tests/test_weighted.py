@@ -523,9 +523,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         "graph_type", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
     )
     @pytest.mark.parametrize("singleton", (True, False))
-    def test_goldberg_radzik_reachable_negative_selfloop(
-        self, graph_type, singleton
-    ):
+    def test_goldberg_radzik_reachable_negative_selfloop(self, graph_type, singleton):
         G = graph_type()
         if not singleton:
             G.add_edge(0, 1, weight=2)
@@ -538,9 +536,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         "graph_type", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
     )
     @pytest.mark.parametrize("weight", (0, 1))
-    def test_goldberg_radzik_nonnegative_singleton_selfloop(
-        self, graph_type, weight
-    ):
+    def test_goldberg_radzik_nonnegative_singleton_selfloop(self, graph_type, weight):
         G = graph_type()
         G.add_edge(0, 0, weight=weight)
         assert nx.goldberg_radzik(G, 0) == ({0: None}, {0: 0})
