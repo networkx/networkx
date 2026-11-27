@@ -15,8 +15,8 @@ def degree_centrality(G, nodes):
     G : graph
        A bipartite network
 
-    nodes : list or container
-      Container with all nodes in one bipartite node set.
+    nodes : iterable
+      Iterable with all nodes in one bipartite node set.
 
     Returns
     -------
@@ -120,8 +120,8 @@ def betweenness_centrality(G, nodes):
     G : graph
         A bipartite graph
 
-    nodes : list or container
-        Container with all nodes in one bipartite node set.
+    nodes : iterable
+        Iterable with all nodes in one bipartite node set.
 
     Returns
     -------
@@ -195,8 +195,8 @@ def closeness_centrality(G, nodes, normalized=True):
     G : graph
         A bipartite network
 
-    nodes : list or container
-        Container with all nodes in one bipartite node set.
+    nodes : iterable
+        Iterable with all nodes in one bipartite node set.
 
     normalized : bool, optional
       If True (default) normalize by connected component size.

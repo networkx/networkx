@@ -159,8 +159,8 @@ def average_clustering(G, nodes=None, mode="dot"):
     G : graph
         a bipartite graph
 
-    nodes : list or iterable, optional
-        A container of nodes to use in computing the average.
+    nodes : collection, optional
+        A collection of nodes to use in computing the average.
         The nodes should be either the entire graph (the default) or one of the
         bipartite sets.
 
@@ -192,7 +192,7 @@ def average_clustering(G, nodes=None, mode="dot"):
 
     Notes
     -----
-    The container of nodes passed to this function must contain all of the nodes
+    The collection of nodes passed to this function must contain all of the nodes
     in one of the bipartite sets ("top" or "bottom") in order to compute
     the correct average bipartite clustering coefficients.
     See :mod:`bipartite documentation <networkx.algorithms.bipartite>`

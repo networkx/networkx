@@ -501,10 +501,10 @@ class DiGraph(Graph):
 
         Parameters
         ----------
-        nodes_for_adding : iterable container
-            A container of nodes (list, dict, set, etc.).
+        nodes_for_adding : iterable
+            An iterable of nodes (list, dict, set, etc.).
             OR
-            A container of (node, attribute dict) tuples.
+            An iterable of (node, attribute dict) tuples.
             Node attributes are updated using the attribute dict.
         attr : keyword arguments, optional (default= no attributes)
             Update attributes for all nodes in nodes.
@@ -623,9 +623,9 @@ class DiGraph(Graph):
 
         Parameters
         ----------
-        nodes : iterable container
-            A container of nodes (list, dict, set, etc.).  If a node
-            in the container is not in the graph it is silently ignored.
+        nodes : iterable
+            An iterable of nodes (list, dict, set, etc.).  If a node
+            in the iterable is not in the graph it is silently ignored.
 
         See Also
         --------
@@ -710,7 +710,7 @@ class DiGraph(Graph):
         >>> e = (1, 2)
         >>> G.add_edge(1, 2)  # explicit two-node form
         >>> G.add_edge(*e)  # single edge as tuple of two nodes
-        >>> G.add_edges_from([(1, 2)])  # add edges from iterable container
+        >>> G.add_edges_from([(1, 2)])  # add edges from iterable
 
         Associate data to edges using keywords:
 
@@ -749,8 +749,8 @@ class DiGraph(Graph):
 
         Parameters
         ----------
-        ebunch_to_add : container of edges
-            Each edge given in the container will be added to the
+        ebunch_to_add : iterable of edges
+            Each edge given in the iterable will be added to the
             graph. The edges must be given as 2-tuples (u, v) or
             3-tuples (u, v, d) where d is a dictionary containing edge data.
         attr : keyword arguments, optional
@@ -866,8 +866,8 @@ class DiGraph(Graph):
 
         Parameters
         ----------
-        ebunch : list or container of edge tuples
-            Each edge given in the list or container will be removed
+        ebunch : iterable of edge tuples
+            Each edge given in the iterable will be removed
             from the graph. The edges can be:
 
                 - 2-tuples (u, v) edge between u and v.
@@ -983,7 +983,7 @@ class DiGraph(Graph):
 
         Parameters
         ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
+        nbunch : single node, iterable, or all nodes (default= all nodes)
             The view will only report edges from these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
@@ -1043,7 +1043,7 @@ class DiGraph(Graph):
 
         Parameters
         ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
+        nbunch : single node, iterable, or all nodes (default= all nodes)
             The view will only report edges incident to these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
@@ -1088,7 +1088,7 @@ class DiGraph(Graph):
 
         Parameters
         ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
+        nbunch : single node, iterable, or all nodes (default= all nodes)
             The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
@@ -1132,7 +1132,7 @@ class DiGraph(Graph):
 
         Parameters
         ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
+        nbunch : single node, iterable, or all nodes (default= all nodes)
             The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)
@@ -1179,7 +1179,7 @@ class DiGraph(Graph):
 
         Parameters
         ----------
-        nbunch : single node, container, or all nodes (default= all nodes)
+        nbunch : single node, iterable, or all nodes (default= all nodes)
             The view will only report edges incident to these nodes.
 
         weight : string or None, optional (default=None)

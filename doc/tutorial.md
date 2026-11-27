@@ -109,7 +109,7 @@ G.add_edges_from([(1, 2), (1, 3)])
 ```
 
 or by adding any {term}`ebunch` of edges. An _ebunch_ is any iterable
-container of edge-tuples. An edge-tuple can be a 2-tuple of nodes or a 3-tuple
+of edge-tuples. An edge-tuple can be a 2-tuple of nodes or a 3-tuple
 with 2 nodes followed by an edge attribute dictionary, e.g.,
 `(2, 3, {'weight': 3.1415})`. Edge attributes are discussed further
 {ref}`below <attributes>`.
@@ -197,7 +197,7 @@ G.degree[1]  # the number of edges incident to 1
 
 One can specify to report the edges and degree from a subset of all nodes
 using an {term}`nbunch`. An _nbunch_ is any of: `None` (meaning all nodes),
-a node, or an iterable container of nodes that is not itself a node in the
+a node, or an iterable of nodes that is not itself a node in the
 graph.
 
 ```{code-cell}

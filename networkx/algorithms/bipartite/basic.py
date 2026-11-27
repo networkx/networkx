@@ -118,7 +118,7 @@ def is_bipartite_node_set(G, nodes):
     ----------
     G : NetworkX graph
 
-    nodes : list or container
+    nodes : collection
       Check if nodes are a one of a bipartite set.
 
     Examples
@@ -167,8 +167,8 @@ def sets(G, top_nodes=None):
     ----------
     G : NetworkX graph
 
-    top_nodes : container, optional
-      Container with all nodes in one bipartite node set. If not supplied
+    top_nodes : iterable, optional
+      Iterable with all nodes in one bipartite node set. If not supplied
       it will be computed. But if more than one solution exists an exception
       will be raised.
 
@@ -228,7 +228,7 @@ def density(B, nodes):
     ----------
     B : NetworkX graph
 
-    nodes : list or container
+    nodes : collection
       Nodes in one node set of the bipartite graph.
 
     Returns
@@ -246,7 +246,7 @@ def density(B, nodes):
 
     Notes
     -----
-    The container of nodes passed as argument must contain all nodes
+    The collection of nodes passed as argument must contain all nodes
     in one of the two bipartite node sets to avoid ambiguity in the
     case of disconnected graphs.
     See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
@@ -278,7 +278,7 @@ def degrees(B, nodes, weight=None):
     ----------
     B : NetworkX graph
 
-    nodes : list or container
+    nodes : iterable
       Nodes in one node set of the bipartite graph.
 
     weight : string or None, optional (default=None)
@@ -300,7 +300,7 @@ def degrees(B, nodes, weight=None):
 
     Notes
     -----
-    The container of nodes passed as argument must contain all nodes
+    The iterable of nodes passed as argument must contain all nodes
     in one of the two bipartite node sets to avoid ambiguity in the
     case of disconnected graphs.
     See :mod:`bipartite documentation <networkx.algorithms.bipartite>`

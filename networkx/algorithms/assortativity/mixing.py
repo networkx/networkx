@@ -223,7 +223,7 @@ def mixing_dict(xy, normalized=False):
 
     Parameters
     ----------
-    xy : list or container of two-tuples
+    xy : iterable of two-tuples
        Pairs of (x,y) items.
 
     normalized : bool (default=False)
