@@ -16,6 +16,18 @@ def _test_func(G, ebunch, expected, predict_func, **kwargs):
         assert exp_dict[p] == pytest.approx(res_dict[p], abs=1e-7)
 
 
+def test_prediction_functions_accept_an_iterator():
+    G = nx.complete_graph(5)
+    pairs = [(0, 1), (1, 2), (2, 3)]
+    for func in (
+        nx.jaccard_coefficient,
+        nx.adamic_adar_index,
+        nx.resource_allocation_index,
+        nx.preferential_attachment,
+    ):
+        assert list(func(G, iter(pairs))) == list(func(G, pairs))
+
+
 class TestResourceAllocationIndex:
     @classmethod
     def setup_class(cls):
