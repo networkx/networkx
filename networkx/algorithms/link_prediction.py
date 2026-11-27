@@ -37,6 +37,7 @@ def _apply_prediction(G, func, ebunch=None):
     if ebunch is None:
         ebunch = nx.non_edges(G)
     else:
+        ebunch = list(ebunch)
         for u, v in ebunch:
             if u not in G:
                 raise nx.NodeNotFound(f"Node {u} not in G.")
