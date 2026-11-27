@@ -2041,19 +2041,6 @@ def goldberg_radzik(G, source, weight="weight"):
     if source not in G:
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
-    if G.is_multigraph():
-        if any(
-            weight(u, v, {k: d}) < 0
-            for u, v, k, d in nx.selfloop_edges(G, keys=True, data=True)
-        ):
-            raise nx.NetworkXUnbounded("Negative cycle detected.")
-    else:
-        if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-            raise nx.NetworkXUnbounded("Negative cycle detected.")
-
-    if len(G) == 1:
-        return {source: None}, {source: 0}
-
     G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
     inf = float("inf")

@@ -510,6 +510,37 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert nx.bellman_ford_predecessor_and_distance(G, 0) == ({0: []}, {0: 0})
         assert nx.goldberg_radzik(G, 0) == ({0: None}, {0: 0})
 
+    @pytest.mark.parametrize(
+        "graph_type", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+    )
+    def test_goldberg_radzik_unreachable_negative_selfloop(self, graph_type):
+        G = graph_type()
+        G.add_edge(0, 1, weight=2)
+        G.add_edge(2, 2, weight=-1)
+        assert nx.goldberg_radzik(G, 0) == ({0: None, 1: 0}, {0: 0, 1: 2})
+
+    @pytest.mark.parametrize(
+        "graph_type", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+    )
+    @pytest.mark.parametrize("singleton", (True, False))
+    def test_goldberg_radzik_reachable_negative_selfloop(self, graph_type, singleton):
+        G = graph_type()
+        if not singleton:
+            G.add_edge(0, 1, weight=2)
+        node = 0 if singleton else 1
+        G.add_edge(node, node, weight=-1)
+        with pytest.raises(nx.NetworkXUnbounded):
+            nx.goldberg_radzik(G, 0)
+
+    @pytest.mark.parametrize(
+        "graph_type", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+    )
+    @pytest.mark.parametrize("weight", (0, 1))
+    def test_goldberg_radzik_nonnegative_singleton_selfloop(self, graph_type, weight):
+        G = graph_type()
+        G.add_edge(0, 0, weight=weight)
+        assert nx.goldberg_radzik(G, 0) == ({0: None}, {0: 0})
+
     def test_absent_source_bellman_ford(self):
         # the check is in _bellman_ford; this provides regression testing
         # against later changes to "client" Bellman-Ford functions
